@@ -187,7 +187,7 @@ const groupedTrns = computed(() => {
         :checkboxValue="isShowWithDesc"
         :title="t('trns.filter.showTrnsWithDesc')"
         showCheckbox
-        @onClick="isShowWithDesc = !isShowWithDesc"
+        @click="isShowWithDesc = !isShowWithDesc"
       />
     </div>
 
@@ -301,7 +301,7 @@ const groupedTrns = computed(() => {
       class="flex-center pt-1"
     >
       <div
-        class="flex-center bg-item-5 text-secondary hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
+        class="flex-center bg-item-5 text-2 hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

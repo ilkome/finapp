@@ -11,13 +11,15 @@ import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useGuard } from '~/components/user/useGuard'
+import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard']
 
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
-const user = useCurrentUser()
+const userStore = useUserStore()
+// const user = useCurrentUser()
 const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()
@@ -39,7 +41,7 @@ const { error, status } = await useAsyncData(
     if (isDemo.value) {
       await loadDataFromCache()
     }
-    else if (user.value || localAuthUid.value) {
+    else if (userStore.user || localAuthUid.value) {
       await loadDataFromCache()
       loadDataFromDB()
     }

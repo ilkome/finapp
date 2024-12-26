@@ -198,17 +198,17 @@ async function onSave() {
           <UiCheckbox
             :checkboxValue="props.walletForm.isWithdrawal ?? false"
             :title="t('money.options.withdrawal')"
-            @onClick="emit('updateValue', 'isWithdrawal', !props.walletForm.isWithdrawal)"
+            @click="emit('updateValue', 'isWithdrawal', !props.walletForm.isWithdrawal)"
           />
           <UiCheckbox
             :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
             :title="t('money.options.isExcludeInTotal')"
-            @onClick="emit('updateValue', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
+            @click="emit('updateValue', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
           />
           <UiCheckbox
             :checkboxValue="props.walletForm.isArchived ?? false"
             :title="t('money.totals.archived')"
-            @onClick="emit('updateValue', 'isArchived', !props.walletForm.isArchived)"
+            @click="emit('updateValue', 'isArchived', !props.walletForm.isArchived)"
           />
         </div>
       </div>

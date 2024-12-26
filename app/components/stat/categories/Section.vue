@@ -52,7 +52,7 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
     :storageKey="`${storageKey}-${type}-cats`"
     :initStatus="true"
     openPadding="pb-3"
-    class="min-w-80 md:max-w-lg"
+    class="md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
       <div class="flex items-center justify-between md:max-w-lg">

@@ -26,7 +26,7 @@ const emit = defineEmits<{
       insideClasses="!min-h-[44px]"
       @click="emit('click', item.id)"
     >
-      <div class="text-secondary grow pl-1 text-sm leading-none">
+      <div class="text-2 grow pl-1 text-sm leading-none">
         {{ $t(`money.types.${item.id}`) }}
       </div>
 

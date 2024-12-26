@@ -15,7 +15,7 @@ const emit = defineEmits(['click'])
       { '!bg-item-3 !text-1': isActive },
     ]"
     class="
-      border-1 text-secondary2 flex items-center
+      border-1 text-2 flex items-center
       justify-center gap-1
       rounded-md
       px-2 text-sm leading-none

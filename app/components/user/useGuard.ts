@@ -1,14 +1,17 @@
 import { useInitApp } from '~/components/app/useInitApp'
+import { useUserStore } from '~/components/user/useUserStore'
 
 export function useGuard() {
   const route = useRoute()
   const router = useRouter()
-  const user = useCurrentUser()
+
+  // const user = useCurrentUser()
+  const userStore = useUserStore()
   const localAuthUid = useCookie('finapp.localAuthUid')
   const { clearLocalData } = useInitApp()
 
   onMounted(() => {
-    watch(user, (user, prevUser) => {
+    watch(() => userStore.user, (user, prevUser) => {
       if (user?.uid && user?.uid !== localAuthUid.value) {
         clearLocalData()
       }

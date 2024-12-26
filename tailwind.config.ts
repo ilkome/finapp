@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+
 import plugin from 'tailwindcss/plugin'
 
 export default <Partial<Config>>{
@@ -27,6 +28,7 @@ export default <Partial<Config>>{
       },
       colors: {
         '1': 'rgb(var(--text-1))',
+        '2': 'rgb(var(--text-2))',
         '3': 'rgb(var(--text-3))',
         '4': 'rgb(var(--text-4))',
         '5': 'rgb(var(--text-5))',
@@ -64,8 +66,6 @@ export default <Partial<Config>>{
           9: 'rgba(var(--item-9))',
           10: 'rgba(var(--item-10))',
         },
-        'secondary': 'rgb(var(--text-secondary))',
-        'secondary2': 'rgb(var(--text-secondary2))',
       },
       fontFamily: {
         primary: 'Roboto, sans-serif',

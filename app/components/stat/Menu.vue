@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useWindowSize } from '@vueuse/core'
+
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
 
 const props = defineProps<{
@@ -10,6 +12,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const { width } = useWindowSize()
 
 const menu = computed(() => {
   const all: {
@@ -28,10 +31,13 @@ const menu = computed(() => {
     id: 'income',
     name: t('money.income'),
   })
-  all.push({
-    id: 'summary',
-    name: t('money.split'),
-  })
+
+  if (width.value > 1024) {
+    all.push({
+      id: 'summary',
+      name: t('money.split'),
+    })
+  }
 
   return all
 })

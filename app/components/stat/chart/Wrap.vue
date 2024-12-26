@@ -61,11 +61,11 @@ function onChangePeriod(period: Period) {
       v-if="isShowChart"
       class="pb-2"
     >
-      <div class="flex justify-between">
-        <StatChartTypeSelector
+      <div class="flex justify-end">
+        <!-- <StatChartTypeSelector
           :chartType="statConfig.config.value?.chartType"
           @update:chartType="(value: ChartType) => statConfig.updateConfig('chartType', value)"
-        />
+        /> -->
         <StatChartIntervals
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"

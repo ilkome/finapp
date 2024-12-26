@@ -15,7 +15,7 @@ defineProps<{
     v-if="selectedTrnsIds.length > 0"
     :storageKey="`${storageKey}-${type}trns-all`"
     :initStatus="true"
-    class="min-w-80 md:max-w-lg"
+    class="md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
       <div class="flex items-center justify-between">
@@ -40,6 +40,6 @@ defineProps<{
 
   <TrnsNoTrns
     v-else
-    class="min-w-80 md:max-w-lg"
+    class="md:max-w-lg"
   />
 </template>

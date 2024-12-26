@@ -134,7 +134,7 @@ const actions = computed(() => ({
                 />
               </template>
 
-              <div class="text-secondary leading-none">
+              <div class="text-2 leading-none">
                 {{ t(item.localeKey) }}
               </div>
             </UiElement>
@@ -155,7 +155,7 @@ const actions = computed(() => ({
             />
           </template>
 
-          <div class="text-secondary leading-none">
+          <div class="text-2 leading-none">
             {{ t(item.localeKey) }}
           </div>
         </DateLinkItem>

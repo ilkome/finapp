@@ -18,50 +18,52 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 </script>
 
 <template>
-  <UPopover v-if="isLaptop">
-    <slot name="trigger" />
-
-    <template #panel="{ close }">
-      <UiPopoverWrap
-        :title="props.title"
-        class="pb-1"
-        @close="close"
-      >
-        <slot name="content" :close />
-      </UiPopoverWrap>
-    </template>
-  </UPopover>
-
-  <template v-else>
-    <div @click="emit('onOpenModal')">
+  <div>
+    <UPopover v-if="isLaptop">
       <slot name="trigger" />
-    </div>
 
-    <Teleport to="body">
-      <BottomSheet
-        v-if="props.isOpen"
-        isShow
-        drugClassesCustom="bottomSheetDrugClassesCustom"
-        :drugStyle="props.bottomSheetStyle"
-        @closed="emit('onCloseModal')"
-      >
-        <template #handler="{ close }">
-          <BottomSheetHandler />
-          <BottomSheetClose @onClick="close" />
-        </template>
+      <template #panel="{ close }">
+        <UiPopoverWrap
+          :title="props.title"
+          class="pb-1"
+          @close="close"
+        >
+          <slot name="content" :close />
+        </UiPopoverWrap>
+      </template>
+    </UPopover>
 
-        <template #default="{ close }">
-          <div class="bottomSheetContent">
-            <UiTitleModal>
-              {{ props.title }}
-            </UiTitleModal>
+    <template v-else>
+      <div @click="emit('onOpenModal')">
+        <slot name="trigger" />
+      </div>
 
-            <div class="scrollerBlock bottomSheetContentInside">
-              <slot name="content" :close />
+      <Teleport to="body">
+        <BottomSheet
+          v-if="props.isOpen"
+          isShow
+          drugClassesCustom="bottomSheetDrugClassesCustom"
+          :drugStyle="props.bottomSheetStyle"
+          @closed="emit('onCloseModal')"
+        >
+          <template #handler="{ close }">
+            <BottomSheetHandler />
+            <BottomSheetClose @onClick="close" />
+          </template>
+
+          <template #default="{ close }">
+            <div class="bottomSheetContent">
+              <UiTitleModal>
+                {{ props.title }}
+              </UiTitleModal>
+
+              <div class="scrollerBlock bottomSheetContentInside">
+                <slot name="content" :close />
+              </div>
             </div>
-          </div>
-        </template>
-      </BottomSheet>
-    </Teleport>
-  </template>
+          </template>
+        </BottomSheet>
+      </Teleport>
+    </template>
+  </div>
 </template>

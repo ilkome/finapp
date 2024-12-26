@@ -18,7 +18,7 @@
 
   <div
     v-if="$slots.after"
-    class="grid gap-2 pb-2"
+    class="grid gap-2 pb-1"
   >
     <slot name="after" />
   </div>

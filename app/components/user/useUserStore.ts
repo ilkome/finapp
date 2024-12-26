@@ -1,7 +1,8 @@
+import { saveData } from '~~/services/firebase/api'
+import { signOut as signOutFirebase } from 'firebase/auth'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
-import { signOut as signOutFirebase } from 'firebase/auth'
-import { saveData } from '~~/services/firebase/api'
+
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDemo } from '~/components/demo/useDemo'

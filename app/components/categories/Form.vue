@@ -189,20 +189,20 @@ async function onSave() {
           v-if="categoriesStore.getChildsIds(props.categoryId).length > 0"
           :checkboxValue="isUpdateChildCategoriesColor"
           :title="t('categories.form.childColor')"
-          @onClick="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
+          @click="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
         />
 
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
           :checkboxValue="props.categoryForm.showInLastUsed"
           :title="t('categories.form.lastUsed')"
-          @onClick="emit('updateValue', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
+          @click="emit('updateValue', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
           :checkboxValue="props.categoryForm.showInQuickSelector"
           :title="t('categories.form.quickSelector')"
-          @onClick="emit('updateValue', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
+          @click="emit('updateValue', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
         />
       </div>
     </div>

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { FilterProvider } from '~/components/filter/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { getStyles } from '~/components/ui/getStyles'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isShowCategories?: boolean

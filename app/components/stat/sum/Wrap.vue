@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const classes = computed(() => {
   const params = ['padding3', 'center', 'minh1', 'minw1', 'rounded']
 
-  if (props.isShowIncome && props.isShowExpense) {
+  if (props.isShowIncome && props.isShowExpense && props.type === 'netIncome') {
     params.push('link')
   }
 

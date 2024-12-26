@@ -214,7 +214,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('vertical.show') }}
               </div>
-              <FormCheckbox :value="statConfig.config.value.vertical.isShow" />
+              <FormSwitch :value="statConfig.config.value.vertical.isShow" />
             </UiElement>
 
             <!-- Grouping -->
@@ -232,7 +232,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('vertical.grouping') }}
               </div>
-              <FormCheckbox :value="statConfig.config.value.vertical.isGrouped" />
+              <FormSwitch :value="statConfig.config.value.vertical.isGrouped" />
             </UiElement>
           </div>
 
@@ -255,7 +255,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('isShowFavorites') }}
               </div>
-              <FormCheckbox :value="favorites.isShow.value" />
+              <FormSwitch :value="favorites.isShow.value" />
             </UiElement>
 
             <!-- Recent -->
@@ -272,7 +272,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('isShowRecent') }}
               </div>
-              <FormCheckbox :value="recent.isShow.value" />
+              <FormSwitch :value="recent.isShow.value" />
             </UiElement>
           </div>
 
@@ -313,7 +313,7 @@ function onChangeViewOptions(newViewOptions: any) {
                 <div class="grow">
                   {{ t('isItemsBg') }}
                 </div>
-                <FormCheckbox :value="statConfig.config.value.catsList.isItemsBg" />
+                <FormSwitch :value="statConfig.config.value.catsList.isItemsBg" />
               </UiElement>
 
               <!-- Lines -->
@@ -327,7 +327,7 @@ function onChangeViewOptions(newViewOptions: any) {
                 <div class="grow">
                   {{ t('isLines') }}
                 </div>
-                <FormCheckbox :value="statConfig.config.value.catsList.isLines" />
+                <FormSwitch :value="statConfig.config.value.catsList.isLines" />
               </UiElement>
 
               <!-- Round icons -->
@@ -341,7 +341,7 @@ function onChangeViewOptions(newViewOptions: any) {
                 <div class="grow">
                   {{ t('isRoundIcon') }}
                 </div>
-                <FormCheckbox :value="statConfig.config.value.catsList.isRoundIcon" />
+                <FormSwitch :value="statConfig.config.value.catsList.isRoundIcon" />
               </UiElement>
             </div>
 
@@ -353,7 +353,7 @@ function onChangeViewOptions(newViewOptions: any) {
               <div class="grow">
                 {{ t('categories.list.showAsRounded') }}
               </div>
-              <FormCheckbox :value="statConfig.config.value.catsList.isOpened" />
+              <FormSwitch :value="statConfig.config.value.catsList.isOpened" />
             </UiElement>
           </div>
         </div>

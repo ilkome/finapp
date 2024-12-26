@@ -35,62 +35,62 @@ const isShow = ref(false)
     </template>
 
     <template #content="{ close }">
-      <div class="grid gap-6 p-3">
+      <div class="grid gap-4 px-1 pt-3 md:px-3">
         <BottomSheetClose @click="close" />
         <slot />
 
         <!-- Chart show -->
-        <div class="grid gap-2">
+        <div class="border-item-3 grid gap-2 border-b pb-3">
           <div>
             <UiTitleOption class="pb-2">
               {{ t("stat.config.chartShow.title") }}
             </UiTitleOption>
+
             <UiCheckbox
               :checkboxValue="statConfig.config.value.chartShow"
               :title="t('stat.config.chartShow.label')"
-              @onClick="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
+              @click="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
             />
-          </div>
 
-          <template v-if="statConfig.config.value.chartShow">
-            <div>
+            <template v-if="statConfig.config.value.chartShow">
               <UiCheckbox
                 :checkboxValue="statConfig.config.value.chart.isShowAverage ?? false"
                 :title="t('stat.config.chart.average.label')"
-                @onClick="statConfig.updateConfig('chart', { isShowAverage: !statConfig.config.value.chart.isShowAverage })"
+                @click="statConfig.updateConfig('chart', { isShowAverage: !statConfig.config.value.chart.isShowAverage })"
               />
-            </div>
 
-            <div
-              class="hidden md:block"
-            >
-              <UiTitleOption class="pb-2">
-                {{ t("stat.config.chartView.label") }}
-              </UiTitleOption>
+              <div class="hidden gap-3 pt-3 md:grid">
+                <UiTitleOption>
+                  {{ t("stat.config.chartView.label") }}
+                </UiTitleOption>
 
-              <UiTabs1>
-                <UiTabsItem1
-                  v-for="view in chartViewOptions"
-                  :key="view"
-                  :isActive="statConfig.config.value.chartView === view"
-                  @click="statConfig.updateConfig('chartView', view)"
-                >
-                  {{ t(`stat.config.chartView.${view}`) }}
-                </UiTabsItem1>
-              </UiTabs1>
-            </div>
-          </template>
+                <UiTabs1>
+                  <UiTabsItem1
+                    v-for="view in chartViewOptions"
+                    :key="view"
+                    :isActive="statConfig.config.value.chartView === view"
+                    @click="statConfig.updateConfig('chartView', view)"
+                  >
+                    {{ t(`stat.config.chartView.${view}`) }}
+                  </UiTabsItem1>
+                </UiTabs1>
+              </div>
+            </template>
+          </div>
         </div>
 
         <!-- Showed wallets -->
-        <div v-if="props.isShowWallets">
+        <div
+          v-if="props.isShowWallets"
+          class="border-item-3 border-b pb-3"
+        >
           <UiTitleOption class="pb-2">
             {{ t("stat.config.wallets.title") }}
           </UiTitleOption>
           <UiCheckbox
             :checkboxValue="statConfig.config.value.wallets.isShow"
             :title="t('stat.config.wallets.label')"
-            @onClick="statConfig.updateConfig('wallets', { isShow: !statConfig.config.value.wallets.isShow })"
+            @click="statConfig.updateConfig('wallets', { isShow: !statConfig.config.value.wallets.isShow })"
           />
 
           <div
@@ -125,10 +125,14 @@ const isShow = ref(false)
         </div>
 
         <div>
+          <UiTitleOption class="pb-2">
+            {{ t("statistics.title") }}
+          </UiTitleOption>
+
           <UiCheckbox
             :checkboxValue="statConfig.config.value.date.isShowQuick"
             :title="t('stat.config.date.quick.label')"
-            @onClick="statConfig.updateConfig('date', { isShowQuick: !statConfig.config.value.date.isShowQuick })"
+            @click="statConfig.updateConfig('date', { isShowQuick: !statConfig.config.value.date.isShowQuick })"
           />
         </div>
 

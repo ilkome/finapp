@@ -61,8 +61,8 @@ function onClickWallet(walletId: WalletId) {
         />
         <StatConfigModal
           v-if="props.config"
-          :isShowWallets="props.config.isShowWallets"
-          :isShowCategories="props.config.isShowCategories"
+          :isShowWallets="!!props.config.isShowWallets"
+          :isShowCategories="!!props.config.isShowCategories"
         >
           <div v-if="$slots.popover">
             <slot name="popover" />

@@ -47,7 +47,7 @@ const emit = defineEmits<{
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="text-secondary flex items-center gap-2 text-xs leading-none">
+            <div class="text-2 flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>
