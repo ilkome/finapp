@@ -56,10 +56,11 @@ function onClickWallet(walletId: WalletId) {
       >
         <FilterSelector
           v-if="props.filter"
-          :isShowCategories="props.filter.isShowCategories"
-          :isShowWallets="props.filter.isShowWallets"
+          :isShowCategories="!!props.filter.isShowCategories"
+          :isShowWallets="!!props.filter.isShowWallets"
         />
-        <StatConfigModal
+
+        <StatConfig
           v-if="props.config"
           :isShowWallets="!!props.config.isShowWallets"
           :isShowCategories="!!props.config.isShowCategories"
@@ -67,7 +68,7 @@ function onClickWallet(walletId: WalletId) {
           <div v-if="$slots.popover">
             <slot name="popover" />
           </div>
-        </StatConfigModal>
+        </StatConfig>
       </div>
     </template>
 

@@ -9,6 +9,16 @@ import { markArea } from '~/components/stat/chart/utils'
 export function useStatChart() {
   const { t } = useI18n()
 
+  const chartTypes = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
+    icon: 'lucide:chart-line',
+    label: t('chart.types.bar'),
+    value: 'bar',
+  }, {
+    icon: 'lucide:chart-column',
+    label: t('chart.types.line'),
+    value: 'line',
+  }])
+
   function createSeriesItem(typeItem: MoneyTypeSlugNew, data: TotalReturns[], average?: number | false): ChartSeries {
     let markLine = {}
     if (average) {
@@ -65,6 +75,7 @@ export function useStatChart() {
 
   return {
     addMarkArea,
+    chartTypes,
     createSeriesItem,
   }
 }

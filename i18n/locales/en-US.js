@@ -244,9 +244,30 @@ export default {
   stat: {
     balanceTitle: 'Balance',
     config: {
+      categories: {
+        grouping: {
+          grouped: 'Grouped',
+          label: 'Grouping',
+          ungrouped: 'Not grouped',
+        },
+        title: 'Categories config',
+        vertical: {
+          grouped: 'Grouped',
+          label: 'Vertical chart',
+          ungrouped: 'Not grouped',
+        },
+        view: {
+          label: 'View as',
+          list: 'List',
+          round: 'Round',
+        },
+      },
       chart: {
         average: {
-          label: 'Show average values',
+          label: 'Show average line',
+        },
+        type: {
+          label: 'Chart type',
         },
       },
       chartShow: {

@@ -102,7 +102,7 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
           :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
         >
           <template #header="{ toggle, isShown }">
-            <div class="flex items-stretch justify-between">
+            <div class="-mt-px flex items-stretch justify-between">
               <UiToggleAction
                 v-if="item.trnsIds.length > 0"
                 :isShown="isShown"
@@ -128,10 +128,10 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
           </template>
 
           <!-- Inside -->
-          <div class="border-item-5 ml-5 mt-1 -translate-x-px border-l pl-3">
+          <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-3">
             <div
               v-if="!item.categories || item.categories.length === 0"
-              class="mb-3 ml-2"
+              class="mb-3 ml-11"
             >
               <TrnsList
                 :trnsIds="item.trnsIds"
@@ -158,7 +158,7 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
 
             <div
               v-if="!statConfig.config.value.catsList.isOpened"
-              class="grid gap-1"
+              class="_gap-1 grid"
             >
               <UiToggle
                 v-for="itemInside in item.categories"
@@ -194,7 +194,7 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
                 </template>
 
                 <!-- Inside -->
-                <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-5">
+                <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-14">
                   <TrnsList
                     :trnsIds="itemInside.trnsIds"
                     :size="5"

@@ -23,6 +23,13 @@ const grouping = {
 
     return false
   }),
+
+  set(value: boolean) {
+    statConfig.updateConfig('vertical', { isGrouped: value })
+    statConfig.updateConfig('catsRound', { isGrouped: value })
+    statConfig.updateConfig('catsList', { isGrouped: value })
+  },
+
   toggle: () => {
     if (statConfig.config.value.catsView === 'list') {
       statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsList.isGrouped })
@@ -126,6 +133,8 @@ function onChangeViewOptions(newViewOptions: any) {
   const c = defu(newViewOptions.catsList, statConfig.config.value.catsList)
   statConfig.updateConfig('catsList', c)
 }
+
+const isShow = ref(false)
 </script>
 
 <template>
@@ -162,124 +171,95 @@ function onChangeViewOptions(newViewOptions: any) {
       />
     </UiItem1>
 
-    <UPopover
-      :popper="{ placement: 'bottom-end' }"
-      class="group"
+    <BottomSheetOrDropdown
+      :title="t('stat.config.categories.title')"
+      :isOpen="isShow"
+      placement="bottom-end"
+      @onOpenModal="isShow = true"
+      @onCloseModal="isShow = false"
     >
-      <UiItem1
-        class="group-data-[headlessui-state='open']:!border-accent-1 border border-transparent"
-      >
-        <Icon
-          name="lucide:circle-ellipsis"
-          size="18"
-        />
-      </UiItem1>
+      <template #trigger>
+        <UiItem1
+          class="group-data-[headlessui-state='open']:!border-accent-1 border border-transparent"
+        >
+          <Icon name="lucide:circle-ellipsis" size="20" />
+        </UiItem1>
+      </template>
 
-      <template #panel>
-        <div class="relative z-10 grid min-w-64 gap-3 p-3">
-          <div class="-m-1">
-            <div class="border-item-3 flex justify-end gap-3 border-b pb-2">
-              <UiItem1
-                v-if="props.isShowGrouped"
-                @click="grouping.toggle"
-              >
-                <Icon
-                  :name="grouping.isGrouped.value ? 'lucide:folder-tree' : 'lucide:network'"
-                  size="18"
-                />
-              </UiItem1>
-              <UiItem1
-                @click="statConfig.updateConfig('catsView', statConfig.config.value.catsView === 'list' ? 'round' : 'list')"
-              >
-                <Icon :name="statConfig.config.value.catsView === 'list' ? 'lucide:layout-grid' : 'lucide:layout-list'" />
-              </UiItem1>
-            </div>
-          </div>
-
-          <!-- Vertical -->
-          <div
-            v-if="props.catsLength > 1"
-            class="border-item-3 grid border-b pb-2 last:border-0 last:pb-0"
-          >
-            <UiElement
-              class="text-sm"
-              @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
-            >
-              <template #leftIcon>
-                <Icon
-                  name="lucide:chart-no-axes-column-decreasing"
-                  size="18"
-                />
-              </template>
-              <div class="grow">
-                {{ t('vertical.show') }}
-              </div>
-              <FormSwitch :value="statConfig.config.value.vertical.isShow" />
-            </UiElement>
-
+      <template #content="{ close }">
+        <div class="grid min-w-80 gap-4 px-1 pt-3 md:px-3">
+          <BottomSheetClose @click="close" />
+          <div class="border-item-3 grid gap-4 border-b pb-3">
             <!-- Grouping -->
-            <UiElement
-              v-if="statConfig.config.value.vertical.isShow"
-              class="text-sm"
-              @click="statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.vertical.isGrouped })"
-            >
-              <template #leftIcon>
-                <Icon
-                  :name="statConfig.config.value.vertical.isGrouped ? 'lucide:folder-tree' : 'lucide:network'"
-                  size="18"
-                />
-              </template>
-              <div class="grow">
-                {{ t('vertical.grouping') }}
-              </div>
-              <FormSwitch :value="statConfig.config.value.vertical.isGrouped" />
-            </UiElement>
-          </div>
+            <div class="grid gap-3">
+              <UiTitleOption>
+                {{ t("stat.config.categories.grouping.label") }}
+              </UiTitleOption>
 
-          <!-- TODO: use StatConfig -->
-          <div
-            v-if="false"
-            class="border-item-3 border-b pb-2 last:border-0 last:pb-0"
-          >
-            <!-- Favorite -->
-            <UiElement
-              class="text-sm"
-              @click="favorites.toggle"
-            >
-              <template #leftIcon>
-                <Icon
-                  name="lucide:heart"
-                  size="18"
-                />
-              </template>
-              <div class="grow">
-                {{ t('isShowFavorites') }}
-              </div>
-              <FormSwitch :value="favorites.isShow.value" />
-            </UiElement>
+              <UiTabs1>
+                <UiTabsItem1
+                  :isActive="grouping.isGrouped.value"
+                  class="flex gap-1"
+                  @click="grouping.set(true)"
+                >
+                  <Icon
+                    name="lucide:network"
+                    :size="16"
+                  />
+                  {{ t('stat.config.categories.grouping.grouped') }}
+                </UiTabsItem1>
 
-            <!-- Recent -->
-            <UiElement
-              class="text-sm"
-              @click="recent.toggle"
-            >
-              <template #leftIcon>
-                <Icon
-                  name="lucide:history"
-                  size="18"
-                />
-              </template>
-              <div class="grow">
-                {{ t('isShowRecent') }}
-              </div>
-              <FormSwitch :value="recent.isShow.value" />
-            </UiElement>
+                <UiTabsItem1
+                  :isActive="!grouping.isGrouped.value"
+                  class="flex gap-1"
+                  @click="grouping.set(false)"
+                >
+                  <Icon
+                    name="lucide:folder-tree"
+                    :size="16"
+                  />
+                  {{ t('stat.config.categories.grouping.ungrouped') }}
+                </UiTabsItem1>
+              </UiTabs1>
+            </div>
+
+            <div class="grid gap-3">
+              <UiTitleOption>
+                {{ t("stat.config.categories.view.label") }}
+              </UiTitleOption>
+
+              <UiTabs1>
+                <UiTabsItem1
+                  :isActive="statConfig.config.value.catsView === 'list'"
+                  class="flex gap-1"
+                  @click="statConfig.updateConfig('catsView', 'list')"
+                >
+                  <Icon
+                    name="lucide:layout-list"
+                    :size="16"
+                  />
+                  {{ t('stat.config.categories.view.list') }}
+                </UiTabsItem1>
+
+                <UiTabsItem1
+                  :isActive="statConfig.config.value.catsView === 'round'"
+                  class="flex gap-1"
+                  @click="statConfig.updateConfig('catsView', 'round')"
+                >
+                  <Icon
+                    name="lucide:layout-grid"
+                    :size="16"
+                  />
+                  {{ t('stat.config.categories.view.round') }}
+                </UiTabsItem1>
+              </UiTabs1>
+            </div>
           </div>
 
           <!-- List -->
           <div
             v-if="statConfig.config.value.catsView === 'list'"
-            class="grid gap-3"
+            class="border-item-3 grid gap-3 border-b pb-2 last:border-0"
           >
             <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
             <div class="flex gap-1">
@@ -290,6 +270,7 @@ function onChangeViewOptions(newViewOptions: any) {
               >
                 {{ view.title }}
               </UiItem4>
+
               <UiItem4
                 class="!grow-0"
                 @click="isShowMorePresets = !isShowMorePresets"
@@ -356,9 +337,105 @@ function onChangeViewOptions(newViewOptions: any) {
               <FormSwitch :value="statConfig.config.value.catsList.isOpened" />
             </UiElement>
           </div>
+
+          <!-- Vertical -->
+          <div
+            v-if="props.catsLength > 1"
+            class="border-item-3 grid border-b pb-2 last:border-0 md:pb-0"
+          >
+            <UiTitleOption class="pb-2">
+              {{ t('stat.config.categories.vertical.label') }}
+            </UiTitleOption>
+
+            <UiElement
+              class="text-sm"
+              @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
+            >
+              <template #leftIcon>
+                <Icon
+                  name="lucide:chart-no-axes-column-decreasing"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('vertical.show') }}
+              </div>
+              <FormSwitch :value="statConfig.config.value.vertical.isShow" />
+            </UiElement>
+
+            <!-- Grouping -->
+            <UiTabs1
+              v-if="statConfig.config.value.vertical.isShow"
+              class="mt-3"
+            >
+              <UiTabsItem1
+                :isActive="statConfig.config.value.vertical.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.updateConfig('vertical', { isGrouped: true })"
+              >
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.grouped') }}
+              </UiTabsItem1>
+
+              <UiTabsItem1
+                :isActive="!statConfig.config.value.vertical.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.updateConfig('vertical', { isGrouped: false })"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.ungrouped') }}
+              </UiTabsItem1>
+            </UiTabs1>
+          </div>
+
+          <!-- TODO: use StatConfig -->
+          <div
+            v-if="false"
+            class="border-item-3 border-b pb-2 last:border-0 last:pb-0"
+          >
+            <!-- Favorite -->
+            <UiElement
+              class="text-sm"
+              @click="favorites.toggle"
+            >
+              <template #leftIcon>
+                <Icon
+                  name="lucide:heart"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('isShowFavorites') }}
+              </div>
+              <FormSwitch :value="favorites.isShow.value" />
+            </UiElement>
+
+            <!-- Recent -->
+            <UiElement
+              class="text-sm"
+              @click="recent.toggle"
+            >
+              <template #leftIcon>
+                <Icon
+                  name="lucide:history"
+                  size="18"
+                />
+              </template>
+              <div class="grow">
+                {{ t('isShowRecent') }}
+              </div>
+              <FormSwitch :value="recent.isShow.value" />
+            </UiElement>
+          </div>
         </div>
       </template>
-    </UPopover>
+    </BottomSheetOrDropdown>
   </div>
 </template>
 

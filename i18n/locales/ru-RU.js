@@ -245,9 +245,30 @@ export default {
   stat: {
     balanceTitle: 'Баланс',
     config: {
+      categories: {
+        grouping: {
+          grouped: 'Группировать',
+          label: 'Группировка',
+          ungrouped: 'Не группировать',
+        },
+        title: 'Настройки категорий',
+        vertical: {
+          grouped: 'Группировать',
+          label: 'Вертикальный график',
+          ungrouped: 'Не группировать',
+        },
+        view: {
+          label: 'Вид категорий',
+          list: 'Список',
+          round: 'Круглые',
+        },
+      },
       chart: {
         average: {
           label: 'Показывать средние значения',
+        },
+        type: {
+          label: 'Тип графика',
         },
       },
       chartShow: {
@@ -264,6 +285,7 @@ export default {
           label: 'Быстрый выбор даты',
         },
       },
+
       menu: {
         label: 'Настройки страницы',
       },

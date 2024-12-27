@@ -4,6 +4,7 @@ import { usePointer, useWindowSize } from '@vueuse/core'
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
   isOpen?: boolean
+  placement?: string
   title: string
 }>()
 
@@ -19,7 +20,13 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 
 <template>
   <div>
-    <UPopover v-if="isLaptop">
+    <UPopover
+      v-if="isLaptop"
+      :popper="{
+        placement: props.placement ?? 'bottom-start',
+      }"
+      class="group"
+    >
       <slot name="trigger" />
 
       <template #panel="{ close }">

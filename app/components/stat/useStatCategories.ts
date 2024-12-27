@@ -1,10 +1,11 @@
 import type { CategoryId } from '~/components/categories/types'
-import type { TrnId } from '~/components/trns/types'
 import type { CategoriesWithData, CategoryWithData } from '~/components/stat/types'
-import { sortCategoriesByAmount } from '~/components/stat/utils'
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import type { TrnId } from '~/components/trns/types'
+
 import useAmount from '~/components/amount/useAmount'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { sortCategoriesByAmount } from '~/components/stat/utils'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export function useStatCategories() {
   const categoriesStore = useCategoriesStore()

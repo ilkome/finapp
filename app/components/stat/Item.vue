@@ -11,8 +11,8 @@ import type { WalletId } from '~/components/wallets/types'
 
 import useAmount from '~/components/amount/useAmount'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
+import { useStatChart } from '~/components/stat/chart/useStatChart'
 import StatTrnsSection from '~/components/stat/trns/Section.vue'
-import { useStatChart } from '~/components/stat/useStatChart'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{

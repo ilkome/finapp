@@ -1,28 +1,26 @@
 <script setup lang="ts">
 import type { ChartType } from '~/components/stat/chart/types'
 
-const chartType = defineModel<ChartType>('chartType', {
-  default: 'bar',
-})
+import { useStatChart } from '~/components/stat/chart/useStatChart'
 
-const { t } = useI18n()
+const props = defineProps<{
+  chartType: ChartType
+}>()
 
-const items = computed<{ label: string, value: ChartType }[]>(() => [{
-  label: t('chart.types.bar'),
-  value: 'bar',
-}, {
-  label: t('chart.types.line'),
-  value: 'line',
-}])
+const emit = defineEmits<{
+  click: [e: ChartType]
+}>()
+
+const { chartTypes } = useStatChart()
 </script>
 
 <template>
-  <div class="flex gap-0">
+  <div class="flex">
     <StatChartButton
-      v-for="item in items"
+      v-for="item in chartTypes"
       :key="item.value"
-      :isActive="chartType === item.value"
-      @click="chartType = item.value"
+      :isActive="props.chartType === item.value"
+      @click="emit('click', item.value)"
     >
       {{ item.label }}
     </StatChartButton>
