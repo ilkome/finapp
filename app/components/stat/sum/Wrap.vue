@@ -5,7 +5,7 @@ import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
-  averageTotal?: number
+  averageTotal?: Record<string, number>
   isShowExpense: boolean
   isShowIncome: boolean
   selectedType: MoneyTypeSlugNew
@@ -35,7 +35,7 @@ function onClick(type: MoneyTypeSlugNew) {
 </script>
 
 <template>
-  <div class="_bg-foreground-3 mt-2 rounded-md md:max-w-lg">
+  <div class="rounded-md md:max-w-lg">
     <div
       v-if="props.type === 'netIncome'"
       class="flex flex-wrap justify-stretch"

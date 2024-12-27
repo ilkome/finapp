@@ -151,10 +151,7 @@ export default {
       simple: 'Месяц',
     },
     period: 'Период',
-    select: 'Выберите',
-    selector: {
-      title: 'Выбрать период',
-    },
+    select: 'Период',
     week: {
       current: 'Текущая неделя',
       last: 'Прошлая неделя',

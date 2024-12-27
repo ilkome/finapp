@@ -7,7 +7,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 const props = defineProps<{
   amount: number
   amountProps?: Partial<AmountProps>
-  averageTotal?: number
+  averageTotal?: Record<string, number>
   currencyCode?: string
   isActive?: boolean
   isTotal?: boolean
@@ -35,7 +35,7 @@ const currenciesStore = useCurrenciesStore()
       {{ $t(`money.${props.type}`) }}
     </UiTextSm1>
 
-    <div class="flex items-end gap-5">
+    <div class="flex items-end gap-5 overflow-hidden overflow-x-auto">
       <Amount
         :amount="props.amount"
         :currencyCode="props.currencyCode || currenciesStore.base"
@@ -50,20 +50,34 @@ const currenciesStore = useCurrenciesStore()
 
       <div
         v-if="props.averageTotal"
-        class="grid gap-1 pb-[2px]"
+        class="flex gap-5"
       >
-        <UiTitle6>{{ t('money.average') }}</UiTitle6>
+        <div
+          v-for="(averageItem, slug) in props.averageTotal"
+          :key="averageItem"
+          class="grid gap-1 pb-[2px]"
+        >
+          <UiTitle6>{{ t('money.average') }} {{ }} {{ t(`dates.${slug}.simple`) }}</UiTitle6>
 
-        <Amount
-          :amount="props.averageTotal"
-          :currencyCode="currenciesStore.base"
-          :class="{
-            '!text-income-1': props.amount > 0 && type !== 'summary',
-            '!text-expense-1': props.amount < 0 && type !== 'summary',
-          }"
-          align="left"
-        />
+          <Amount
+            :amount="type === 'expense' ? -averageItem : averageItem"
+            :currencyCode="currenciesStore.base"
+            :class="{
+              '!text-income-1': type === 'income',
+              '!text-expense-1': type === 'expense',
+            }"
+            align="left"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
+
+<i18n lang="yaml">
+  en:
+    in: in
+
+  ru:
+    in: в
+  </i18n>

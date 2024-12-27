@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
@@ -73,16 +74,6 @@ const rangeTrnsIds = computed(() => {
 
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
-const chartTrnsIds = computed(() => {
-  return rangeTrnsIds.value
-  // if (!selectedTypesMapping.value) {
-  // }
-
-  // return trnsStore.getStoreTrnsIds({
-  //   trnsIds: rangeTrnsIds.value,
-  // }, { includesChildCategories: false })
-})
-
 const selectedTrnsIds = computed(() => {
   if (!selectedTypesMapping.value) {
     return rangeTrnsIds.value
@@ -105,18 +96,46 @@ const rangeTotal = computed(() => {
 })
 
 const averageTotal = computed(() => {
-  if (intervalsData.value.length < 2)
+  if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
     return
 
-  return intervalsData.value.reduce((acc, i) => acc + i.total.sum, 0) / (intervalsData.value.length)
+  const sum = selectedType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[props.type]
+
+  const date = statDate.params.value.intervalSelected !== -1
+    ? statDate.selectedInterval.value
+    : statDate.range.value
+
+  const dif = {
+    day: differenceInDays(date.end, date.start) + 1,
+    month: differenceInMonths(date.end, date.start) + 1,
+    week: differenceInWeeks(date.end, date.start) + 1,
+  }
+
+  const items = {
+    month: 0,
+    week: 0,
+    // eslint-disable-next-line perfectionist/sort-objects
+    day: 0,
+  }
+
+  if (dif.month > 1)
+    items.month = sum / dif.month
+
+  if (dif.day > 1)
+    items.day = sum / dif.day
+
+  if (dif.week > 1)
+    items.week = sum / dif.week
+
+  return Object.fromEntries(Object.entries(items).filter(([_, value]) => value !== 0))
 })
 
 const chart = {
   series: computed<ChartSeries[]>(() => {
-    const intervalsChartData = getIntervalsData(chartTrnsIds.value, statDate.intervalsInRange.value)
+    const intervalsChartData = getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value)
     const transactionTypes = {
-      hasExpense: chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0),
-      hasIncome: chartTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1),
+      hasExpense: rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0),
+      hasIncome: rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1),
     }
 
     const typesToShow = props.type === 'netIncome'
@@ -127,7 +146,7 @@ const chart = {
       : [props.type]
 
     const intervalTotals = intervalsChartData.map(g => g.total)
-    const baseSeries = typesToShow.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? averageTotal.value : false))
+    const baseSeries = typesToShow.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? intervalsData.value.reduce((acc, i) => acc + i.total[type], 0) / (intervalsData.value.length) : false))
 
     const selectedInterval = intervalsChartData?.[statDate.params.value.intervalSelected]
     if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0) {

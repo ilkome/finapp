@@ -1,5 +1,7 @@
 import { useStorage } from '@vueuse/core'
+
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
+
 import { calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
 
 export function useStatDate({
