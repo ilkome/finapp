@@ -136,7 +136,7 @@ describe('useGetDateRange', () => {
         end: endOfWeek(new Date('2024-11-03'), { weekStartsOn: 1 }).getTime(),
         start: startOfWeek(new Date('2024-10-14'), { weekStartsOn: 1 }).getTime(),
       }
-      expect(getStringDateRange(range, 'week', 1)).toBe('14 Oct - 3 Nov')
+      expect(getStringDateRange(range, 'week', 1)).toBe('14 Oct - 3 Nov 2024')
     })
   })
 
@@ -171,7 +171,7 @@ describe('useGetDateRange', () => {
         end: endOfDay(new Date('2024-03-15')).getTime(),
         start: startOfDay(new Date('2024-03-10')).getTime(),
       }
-      expect(getStringDateRange(range, 'day', 5)).toBe('10-15 Mar')
+      expect(getStringDateRange(range, 'day', 5)).toBe('10-15 Mar 2024')
     })
   })
 })

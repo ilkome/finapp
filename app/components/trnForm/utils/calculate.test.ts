@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+
 import { createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 
 describe('calculator utils', () => {

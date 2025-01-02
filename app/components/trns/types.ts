@@ -1,5 +1,5 @@
-import type { WalletId, WalletItem } from '~/components/wallets/types'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import type { WalletId, WalletItem } from '~/components/wallets/types'
 
 export type TrnId = string
 
@@ -80,21 +80,29 @@ export type TrnsGetterProps = {
     until: number
   }
   trnsIds?: TrnId[]
-  trnType?: TrnType
-  untilDate?: number
-  walletsIds?: WalletId[]
-}
-
-export type TrnsGetterProps2 = {
-  categoriesIds?: CategoryId[]
-  dates?: {
-    from: number
-    until: number
-  }
-  trnsIds?: TrnId[]
   trnsItems?: Trns
   trnsTypes?: TrnType[]
   trnType?: TrnType
   untilDate?: number
   walletsIds?: WalletId[]
+}
+
+export type TrnFormValues = {
+  // ['Transaction', 'expenseTransfer', 'incomeTransfer']
+  amount: [number, number, number]
+  // TODO: is better way to show array meaning?
+  // TODO: is better way to show array meaning?
+  // ['Transaction', 'expenseTransfer', 'incomeTransfer']
+  amountRaw: [string, string, string]
+
+  categoryId: CategoryId | null
+  date: number
+  desc?: string
+  expenseWalletId: WalletId | null
+  incomeWalletId: WalletId | null
+  transferType: TransferType
+  trnId: null | TrnId
+
+  trnType: TrnType
+  walletId: WalletId | null
 }

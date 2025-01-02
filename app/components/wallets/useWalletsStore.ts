@@ -28,15 +28,8 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   function setWallets(values: Wallets | null) {
-    if (values) {
-      const formattedWallets = normalizeWallets(values)
-      items.value = formattedWallets
-      localforage.setItem('finapp.wallets', deepUnref(formattedWallets))
-      return
-    }
-
-    items.value = null
-    localforage.setItem('finapp.wallets', null)
+    items.value = values ? normalizeWallets(values) : null
+    localforage.setItem('finapp.wallets', items.value)
   }
 
   async function addWallet({ id, values }: { id: WalletId, values: WalletItem }) {

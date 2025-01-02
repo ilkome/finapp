@@ -1,18 +1,20 @@
+import { generateId } from '~~/utils/generateId'
 import { defineStore } from 'pinia'
-import UiToastContent from '~/components/ui/ToastContent.vue'
+
 import type { CategoryId } from '~/components/categories/types'
-import type { TransferType, TrnId, TrnItem } from '~/components/trns/types'
-import type { TrnFormUi, TrnFormValues } from '~/components/trnForm/types'
+import type { TrnFormUi } from '~/components/trnForm/types'
+import type { TransferType, TrnFormValues, TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
-import { TrnType } from '~/components/trns/types'
+
 import { errorEmo, random } from '~/assets/js/emo'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { type CalculatorKey, createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
-import { generateId } from '~~/utils/generateId'
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { validate } from '~/components/trnForm/utils/validate'
+import { TrnType } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import UiToastContent from '~/components/ui/ToastContent.vue'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 type Values = {
   categoriesIds: CategoryId[]
@@ -51,10 +53,6 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     catsRootModal: false,
     isShow: false,
     walletsModal: false,
-    walletsTab: 'all',
-    walletsViewAs: 'big',
-    walletTransferModal: false,
-    walletTransferType: 'expense',
   })
 
   const modal = ref({
@@ -227,7 +225,6 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
 
   function trnFormCreate(props?: { categoryId?: CategoryId, walletId?: WalletId }) {
     setValues({
-
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,

@@ -1,32 +1,18 @@
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
+
 import type { Range } from '~/components/date/types'
-import type {
-  TrnId,
-  TrnItem,
-  TrnItemFull,
-  Trns,
-  TrnsGetterProps2,
+import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps,
 } from '~/components/trns/types'
-import {
-  getDataAndWatch,
-  removeData,
-  saveData,
-  unsubscribeData,
-  updateData,
-} from '~~/services/firebase/api'
-import { getTrnsIds } from '~/components/trns/getTrns'
-import {
-  removeTrnToAddLaterLocal,
-  removeTrnToDeleteLaterLocal,
-  saveTrnIDforDeleteWhenClientOnline,
-  saveTrnToAddLaterLocal,
-} from '~/components/trns/helpers'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getEndOf, getStartOf } from '~/components/date/utils'
+import { useDemo } from '~/components/demo/useDemo'
+import { getTrnsIds } from '~/components/trns/getTrns'
+import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIdForDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useDemo } from '~/components/demo/useDemo'
-import { getEndOf, getStartOf } from '~/components/date/utils'
 
 type TrnsGetterParams = {
   includesChildCategories?: boolean
@@ -40,7 +26,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const items = shallowRef<Trns | null | false>(false)
 
-  function getStoreTrnsIds(props: TrnsGetterProps2, params?: TrnsGetterParams) {
+  function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
     const categoriesIds = params?.includesChildCategories
       ? categoriesStore.getTransactibleIds(props.categoriesIds)
       : props.categoriesIds
@@ -126,7 +112,7 @@ export const useTrnsStore = defineStore('trns', () => {
     setTrns(trns)
 
     localforage.setItem('finapp.trns', deepUnref(trns))
-    saveTrnIDforDeleteWhenClientOnline(id)
+    saveTrnIdForDeleteWhenClientOnline(id)
 
     removeData(`users/${userStore.uid}/trns/${id}`).then(() =>
       removeTrnToDeleteLaterLocal(id),

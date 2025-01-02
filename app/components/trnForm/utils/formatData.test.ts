@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import type { TrnFormValues } from '~/components/trnForm/types'
-import type { Transaction, Transfer } from '~/components/trns/types'
+
+import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
+
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 
 const valuesBase: TrnFormValues = {

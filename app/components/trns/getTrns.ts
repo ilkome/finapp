@@ -1,6 +1,6 @@
-import type { TrnId, TrnsGetterProps2 } from '~/components/trns/types'
+import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
-export function getTrnsIds(props: TrnsGetterProps2) {
+export function getTrnsIds(props: TrnsGetterProps) {
   if (!props.trnsIds && !props.trnsItems)
     return []
 
@@ -28,16 +28,16 @@ export function getTrnsIds(props: TrnsGetterProps2) {
     // Wallet filter
     ids => props.walletsIds?.length
       ? ids.filter((id) => {
-        const trn = props.trnsItems?.[id]
-        const walletIds = [
-          trn?.walletId,
-          trn?.expenseWalletId,
-          trn?.incomeWalletId,
-          trn?.walletToId,
-          trn?.walletFromId,
-        ]
-        return walletIds.some(walletId => props.walletsIds?.includes(walletId))
-      })
+          const trn = props.trnsItems?.[id]
+          const walletIds = [
+            trn?.walletId,
+            trn?.expenseWalletId,
+            trn?.incomeWalletId,
+            trn?.walletToId,
+            trn?.walletFromId,
+          ]
+          return walletIds.some(walletId => props.walletsIds?.includes(walletId))
+        })
       : ids,
 
     // Category filter

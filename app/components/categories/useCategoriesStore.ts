@@ -1,9 +1,11 @@
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
 import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
+import { deepUnref } from 'vue-deepunref'
+
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem, CategoryItemWithId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+
 import { getPreparedFormData } from '~/components/categories/getForm'
 import { compareCategoriesByParentAndName, getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
@@ -123,12 +125,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     const maxCategories = Math.min(categoriesIds.value.length, 16)
 
     // Get sorted transaction IDs, excluding type 2 (transfers)
-    const recentTrnIds = Object.keys(trnsItems)
+    const recentTrnsIds = Object.keys(trnsItems)
       .filter(id => trnsItems[id]?.type !== 2)
       .sort((a, b) => trnsItems[b]?.date - trnsItems[a]?.date)
 
     // Collect unique valid categories
-    const categories = recentTrnIds.reduce<CategoryItemWithId[]>((acc, trnId) => {
+    const categories = recentTrnsIds.reduce<CategoryItemWithId[]>((acc, trnId) => {
       if (acc.length >= maxCategories)
         return acc
 
@@ -194,11 +196,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       }
 
       // Remove references to non-existent child categories
-      if (category.childIds?.length) {
-        formattedItems[categoryId].childIds = category.childIds.filter(
-          childId => formattedItems[childId],
-        )
-      }
+      if (category.childIds?.length)
+        formattedItems[categoryId].childIds = category.childIds.filter(childId => formattedItems[childId])
     }
 
     return formattedItems
@@ -212,15 +211,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   function setCategories(values: Categories | null) {
-    if (values) {
-      const valuesWithTransfer = formatCategories({ ...values, transfer })
-      items.value = valuesWithTransfer
-      localforage.setItem('finapp.categories', deepUnref(valuesWithTransfer))
-      return
-    }
-
-    items.value = { transfer }
-    localforage.setItem('finapp.categories', null)
+    items.value = values ? formatCategories({ ...values, transfer }) : { transfer }
+    localforage.setItem('finapp.categories', deepUnref(items.value))
   }
 
   function unsubscribeCategories() {
@@ -246,8 +238,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return hasChildren(categoryId)
       ? Object.keys(items.value)
-        .filter(id => items.value[id]?.parentId === categoryId)
-        .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
+          .filter(id => items.value[id]?.parentId === categoryId)
+          .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
       : []
   }
 

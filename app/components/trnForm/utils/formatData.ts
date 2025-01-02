@@ -1,5 +1,4 @@
-import type { Transaction, Transfer } from '~/components/trns/types'
-import type { TrnFormValues } from '~/components/trnForm/types'
+import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
 
 function formatTransaction(props: TrnFormValues): Transaction | false {
   if (props.trnType === 2 || !props.categoryId || !props.walletId) {
@@ -30,15 +29,16 @@ function formatTransfer(props: TrnFormValues): Transfer | false {
 
   const data: Transfer = {
     categoryId: 'transfer' as const,
+
     date: props.date,
-
     edited: new Date().getTime(),
+
     expenseAmount: props.amount[1],
-
     expenseWalletId: props.expenseWalletId,
-    incomeAmount: props.amount[2],
 
+    incomeAmount: props.amount[2],
     incomeWalletId: props.incomeWalletId,
+
     type: props.trnType,
   }
 
