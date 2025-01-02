@@ -1,6 +1,6 @@
-import { child, get, getDatabase, off, onValue, ref, remove, set, update } from 'firebase/database'
-import { initializeApp } from 'firebase/app'
 import { config } from '~~/services/firebase/config'
+import { initializeApp } from 'firebase/app'
+import { child, get, getDatabase, off, onValue, ref, remove, set, update } from 'firebase/database'
 
 export const app = initializeApp(config)
 export const db = getDatabase(app)

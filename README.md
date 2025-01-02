@@ -20,8 +20,8 @@ Finapp helps you to control personal finances easily and efficiently.
 - Vue
 - Nuxt
 - Tailwind
-- Stylus
 - Firebase
+- PWA
 
 # 📦 Setup
 

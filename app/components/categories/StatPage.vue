@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { MoneyTypeSlugNew } from '~/components/stat/types'
-import { getTypesMapping } from '~/components/stat/utils'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
-import { useStatDate } from '~/components/date/useStatDate'
+import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 

@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 const props = defineProps<{
-  initStatus?: boolean
+  isShown: boolean
   openPadding?: string
-  storageKey?: string
 }>()
 
-const isShown = useStorage(`${props.storageKey}`, props.initStatus)
+const emit = defineEmits<{
+  click: [value: boolean]
+}>()
 </script>
 
 <template>
@@ -15,8 +14,8 @@ const isShown = useStorage(`${props.storageKey}`, props.initStatus)
     <div>
       <slot
         name="header"
-        :isShown
-        :toggle="() => isShown = !isShown"
+        :isShown="props.isShown"
+        :toggle="() => emit('click', !props.isShown)"
       />
     </div>
 
@@ -25,7 +24,7 @@ const isShown = useStorage(`${props.storageKey}`, props.initStatus)
       :class="[props.openPadding]"
     >
       <slot
-        :toggle="() => isShown = !isShown"
+        :toggle="() => emit('click', !props.isShown)"
       />
     </div>
   </div>

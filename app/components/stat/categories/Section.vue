@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+import defu from 'defu'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
-import { useStatCategories } from '~/components/stat/useStatCategories'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useStatCategories } from '~/components/stat/categories/useStatCategories'
 
 const props = defineProps<{
   isOneCategory?: boolean
@@ -19,6 +23,7 @@ defineEmits<{
 }>()
 
 const { getCategoriesWithData } = useStatCategories()
+const categoriesStore = useCategoriesStore()
 const statConfig = inject('statConfig') as StatConfigProvider
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
@@ -45,6 +50,85 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
     income,
   }
 }
+
+type CategoriesOpenedStateInside = Record<CategoryId, { show: boolean }>
+type CategoriesOpenedState = Record<CategoryId, {
+  categories: CategoriesOpenedStateInside
+  show: boolean
+}>
+
+const categoriesOpened = useStorage<CategoriesOpenedState>(`statCategoriesOpened${props.storageKey}`, Object.entries(categoriesStore.items ?? {}).reduce((acc, [id, cat]) => {
+  acc[id] = {
+    categories: (cat.childIds ?? []).reduce((acc, childId) => {
+      acc[childId] = { show: false }
+      return acc
+    }, {} as CategoriesOpenedStateInside),
+    show: false,
+  }
+  return acc
+}, {} as CategoriesOpenedState))
+
+function toggleOpened() {
+  const showedCategories = Object.values(categoriesWithData.value).reduce((acc, cat) => {
+    acc[cat.id] = {
+      categories: Object.keys(cat.categories ?? {}).reduce((acc, childId) => {
+        acc[childId] = {
+          show: categoriesOpened.value[cat.id]?.categories[childId]?.show ?? false,
+        }
+        return acc
+      }, {} as CategoriesOpenedStateInside),
+      show: categoriesOpened.value[cat.id]?.show ?? false,
+    }
+    return acc
+  }, {} as CategoriesOpenedState)
+
+  const isAnyOpen = Object.values(showedCategories).some(cat => cat.show)
+  const isAllOpen = Object.values(showedCategories).every(cat => cat.show)
+  const isAnyChildOpen = Object.values(showedCategories).some(cat => Object.values(cat.categories ?? {}).some(c => c.show))
+  const isAllChildOpen = Object.values(showedCategories).every(cat => Object.values(cat.categories ?? {}).every(c => c.show))
+
+  if (isAllOpen && !isAllChildOpen) {
+    toggleChildLevel(true)
+    return
+  }
+  if (isAnyOpen && isAnyChildOpen) {
+    toggleChildLevel(false)
+  }
+
+  categoriesOpened.value = defu(Object.entries(showedCategories).reduce((acc, [id, cat]) => {
+    acc[id] = {
+      ...cat,
+      show: !isAnyOpen,
+    }
+    return acc
+  }, {} as CategoriesOpenedState), categoriesOpened.value)
+}
+
+function toggleChildLevel(value: boolean) {
+  const showedCategories = Object.values(categoriesWithData.value).reduce((acc, cat) => {
+    acc[cat.id] = {
+      categories: Object.keys(cat.categories ?? {}).reduce((acc, childId) => {
+        acc[childId] = {
+          show: categoriesOpened.value[cat.id]?.categories[childId]?.show ?? false,
+        }
+        return acc
+      }, {} as CategoriesOpenedStateInside),
+      show: categoriesOpened.value[cat.id]?.show ?? false,
+    }
+    return acc
+  }, {} as CategoriesOpenedState)
+
+  categoriesOpened.value = defu(Object.entries(showedCategories).reduce((acc, [id, cat]) => {
+    acc[id] = {
+      ...cat,
+      categories: Object.keys(cat.categories).reduce((acc, childId) => {
+        acc[childId] = { show: value }
+        return acc
+      }, {} as CategoriesOpenedStateInside),
+    }
+    return acc
+  }, {} as CategoriesOpenedState), categoriesOpened.value)
+}
 </script>
 
 <template>
@@ -60,6 +144,12 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
           {{ $t('categories.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
         </UiTitle8>
 
+        <UiItem1 @click="toggleOpened">
+          <Icon
+            name="lucide:folder-open"
+          />
+        </UiItem1>
+
         <StatCategoriesButtons
           v-if="isShown"
           :catsLength="categoriesWithData.length"
@@ -67,6 +157,8 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
         />
       </div>
     </template>
+
+    <!-- <pre>{{ categoriesOpened }}</pre> -->
 
     <template v-if="categoriesWithData.length > 0">
       <div
@@ -91,15 +183,15 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
         }"
         class="pt-2"
       >
-        <UiToggle
+        <UiToggle3
           v-for="item in categoriesWithData"
           :key="item.id"
           :class="{
             group: !statConfig.config.value.catsList.isItemsBg,
           }"
-          :storageKey="`finapp-stat-cats-${statConfig.config.value.catsList.isGrouped ? 'grouped' : 'not-grouped'}-${item.id}-${statConfig.config.value.catsView}-${type}`"
-          :initStatus="false"
+          :isShown="categoriesOpened[item.id]?.show ?? false"
           :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
+          @click="categoriesOpened[item.id].show = !categoriesOpened[item.id]?.show"
         >
           <template #header="{ toggle, isShown }">
             <div class="-mt-px flex items-stretch justify-between">
@@ -160,16 +252,15 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
               v-if="!statConfig.config.value.catsList.isOpened"
               class="_gap-1 grid"
             >
-              <UiToggle
+              <UiToggle3
                 v-for="itemInside in item.categories"
                 :key="itemInside.id"
                 :class="{
                   group: !statConfig.config.value.catsList.isItemsBg,
                 }"
-                :storageKey="`finapp-stat-cats-${itemInside.id}-${type}`"
-                :initStatus="false"
-                :lineWidth="1"
+                :isShown="categoriesOpened[item.id]?.categories[itemInside.id]?.show ?? false"
                 :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
+                @click="categoriesOpened[item.id].categories[itemInside.id].show = !categoriesOpened[item.id]?.categories[itemInside.id]?.show"
               >
                 <template #header="{ toggle: toggleInside, isShown: isShownInside }">
                   <div class="flex items-stretch justify-between">
@@ -204,10 +295,10 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
                     isShowTransfers
                   />
                 </div>
-              </UiToggle>
+              </UiToggle3>
             </div>
           </div>
-        </UiToggle>
+        </UiToggle3>
       </div>
 
       <!-- Rounds -->

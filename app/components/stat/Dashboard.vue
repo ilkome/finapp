@@ -6,7 +6,6 @@ import type { MoneyTypeSlugNew } from '~/components/stat/types'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
-import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
@@ -21,7 +20,6 @@ const storageKey = computed(() => `dashboard-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
-  // trnsTypes: getTypesMapping(activeTab.value),
   walletsIds: filter?.walletsIds?.value,
 }, { includesChildCategories: true }))
 
