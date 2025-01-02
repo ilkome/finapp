@@ -1,8 +1,12 @@
 import currency from 'currency.js'
-import { currencies } from '~/components/currencies/currencies'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 
-export function formatAmount(amount: number, currencyCode?: CurrencyCode) {
+import { currencies } from '~/components/currencies/currencies'
+
+export function formatAmount(amount: number, currencyCode?: CurrencyCode, {
+  precision = 0,
+} = {}) {
   let currencySettings: Partial<currency.Options> | null = null
 
   if (currencyCode && currencies.find(c => c.code === currencyCode))
@@ -10,7 +14,7 @@ export function formatAmount(amount: number, currencyCode?: CurrencyCode) {
 
   return currency(amount, {
     pattern: currencySettings?.pattern ?? '#',
-    precision: currencySettings?.precision ?? 2,
+    precision: precision !== 0 ? precision : currencySettings?.precision ?? 2,
     separator: currencySettings?.separator ?? ' ',
     symbol: '',
   }).format()

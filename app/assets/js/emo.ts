@@ -2,8 +2,8 @@ const successEmo = ['🤟', '🤘', '🤙', '👌', '👍', '💪', '👏', '�
 const errorEmo = ['🤷‍♀️', '🤦‍♀️', '🤔', '😲']
 const updateEmo = ['🤟', '💃', '✨', '🔥', '💥', '🎉', '🤘', '🤙']
 
-function random(items: string[]) {
-  return items[Math.floor(Math.random() * items.length)]
+function random(items: string[]): string {
+  return items[Math.floor(Math.random() * items.length)]!
 }
 
 export {

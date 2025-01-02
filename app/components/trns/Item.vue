@@ -129,10 +129,10 @@ const emit = defineEmits<{
       </div>
 
       <div
-        v-if="trnItem.desc || trnItem.description"
+        v-if="trnItem.desc"
         class="text-2xs opacity-80"
       >
-        {{ trnItem.desc || trnItem.description }}
+        {{ trnItem.desc }}
       </div>
     </div>
   </UiElement>

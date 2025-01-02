@@ -52,7 +52,7 @@ const groupedOptions = useStorage('finapp-wallets-groupedOptions', {
 
 const selectedWallets = computed(() => {
   return Object.fromEntries(
-    Object.entries(walletsStore.itemsWithAmount).filter(([_key, wallet]) => {
+    Object.entries(walletsStore.itemsComputed).filter(([_key, wallet]) => {
       const isCurrencyMatch = currencyFiltered.value === 'all' || currencyFiltered.value === wallet.currency
       if (!isCurrencyMatch)
         return false
@@ -156,16 +156,16 @@ const totalInWallets = computed(() => {
     withdrawal: 0,
   }
 
-  for (const walletId in walletsStore.itemsWithAmount) {
-    const wallet = walletsStore.itemsWithAmount[walletId]
+  for (const walletId in walletsStore.itemsComputed) {
+    const wallet = walletsStore.itemsComputed[walletId]
     if (!wallet)
       continue
 
     const itemValue
       = wallet.currency === currenciesStore.base
-        ? (walletsStore.itemsWithAmount[walletId]?.amount ?? 0)
+        ? (walletsStore.itemsComputed[walletId]?.amount ?? 0)
         : +getAmountInBaseRate({
-            amount: walletsStore.itemsWithAmount[walletId]?.amount ?? 0,
+            amount: walletsStore.itemsComputed[walletId]?.amount ?? 0,
             currencyCode: wallet.currency ?? 'USD',
             noFormat: true,
           })
@@ -206,8 +206,9 @@ const totalInWallets = computed(() => {
     if (wallet.isWithdrawal)
       sum.withdrawal += itemValue
 
-    if (wallet.isArchived)
+    if (wallet.isArchived) {
       sum.archived += itemValue
+    }
   }
 
   return sum
@@ -228,7 +229,7 @@ function countWalletsSum(
   isExcludeInTotal = false,
 ) {
   return walletsIds.reduce((acc, id) => {
-    const wallet = walletsStore.itemsWithAmount[id]
+    const wallet = walletsStore.itemsComputed[id]
     if (!wallet)
       return acc
 
@@ -300,7 +301,7 @@ const counts = computed(() => ({
   archived: {
     id: 'archived',
     isShow: Object.values(walletsStore.items ?? {}).some(wallet => wallet.isArchived),
-    value: totalInWallets.value.archived + totalInWallets.value.archived,
+    value: totalInWallets.value.archived,
   },
 }))
 </script>
@@ -402,7 +403,7 @@ const counts = computed(() => ({
 
           <!-- Total -->
           <UiToggle2
-            v-if="groupedBy === 'list'"
+            v-if="groupedBy === 'list' || groupedBy === 'currencies'"
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${groupedBy}`"
@@ -472,7 +473,7 @@ const counts = computed(() => ({
 
           <!-- Statistics -->
           <UiToggle2
-            v-if="groupedBy === 'list'"
+            v-if="groupedBy === 'list' || groupedBy === 'currencies'"
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${groupedBy}`"
@@ -547,11 +548,12 @@ const counts = computed(() => ({
                   <WalletsItem
                     v-for="walletId in walletsIds"
                     :key="walletId"
-                    :wallet="walletsStore.itemsWithAmount[walletId]"
+                    :wallet="walletsStore.itemsComputed[walletId]"
                     :walletId
                     :lineWidth="2"
                     isShowBaseRate
                     isShowIcon
+                    isShowRate
                     class="group"
                     @click="router.push(`/wallets/${walletId}`)"
                   />
@@ -587,12 +589,13 @@ const counts = computed(() => ({
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
-                        isShowIcon
-                        isShowBaseRate
-                        class="group"
-                        :walletId
-                        :wallet="walletsStore.itemsWithAmount[walletId]"
                         :lineWidth="2"
+                        :wallet="walletsStore.itemsComputed[walletId]"
+                        :walletId
+                        class="group"
+                        isShowBaseRate
+                        isShowIcon
+                        isShowRate
                         @click="router.push(`/wallets/${walletId}`)"
                       />
                     </div>
@@ -635,12 +638,13 @@ const counts = computed(() => ({
                   <WalletsItem
                     v-for="walletId in walletsIds"
                     :key="walletId"
-                    :wallet="walletsStore.itemsWithAmount[walletId]"
-                    :walletId
                     :lineWidth="2"
+                    :wallet="walletsStore.itemsComputed[walletId]"
+                    :walletId
+                    class="group"
                     isShowBaseRate
                     isShowIcon
-                    class="group"
+                    isShowRate
                     @click="router.push(`/wallets/${walletId}`)"
                   />
                 </template>
@@ -684,12 +688,13 @@ const counts = computed(() => ({
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
-                        :wallet="walletsStore.itemsWithAmount[walletId]"
-                        :walletId
                         :lineWidth="2"
+                        :wallet="walletsStore.itemsComputed[walletId]"
+                        :walletId
+                        class="group"
                         isShowBaseRate
                         isShowIcon
-                        class="group"
+                        isShowRate
                         @click="router.push(`/wallets/${walletId}`)"
                       />
                     </div>

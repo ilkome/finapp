@@ -89,7 +89,7 @@ const selectedIds = computed(() => {
 
   if (isShowWithDesc.value && isTrnsWithDesc.value) {
     ids = ids.filter(
-      id => trnsStore.items[id].description || trnsStore.items[id].desc,
+      id => trnsStore.items[id].desc,
     )
   }
 
@@ -110,7 +110,7 @@ const isTrnsWithDesc = computed(() => {
   }
 
   return (ids).some(
-    id => trnsStore.items[id].description || trnsStore.items[id].desc,
+    id => trnsStore.items[id].desc,
   )
 })
 

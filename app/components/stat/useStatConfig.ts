@@ -114,7 +114,6 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     const update = { ...config.value, [key]: typeof value === 'object' ? defu(value, config.value[key]) : value }
 
     if (!ConfigSchema.safeParse(update).success) {
-      console.log('error', key, value)
       return
     }
 

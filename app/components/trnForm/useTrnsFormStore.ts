@@ -156,7 +156,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
 
       values.amountRaw = values.amount.map(i => formatInput(i)) as TrnFormValues['amountRaw']
       values.trnType = props.trn.type
-      values.desc = props.trn.desc || props.trn.description
+      values.desc = props.trn.desc
       values.date = props.trn.date
     }
   }

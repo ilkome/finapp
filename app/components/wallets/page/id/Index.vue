@@ -60,7 +60,7 @@ onMounted(() => {
   trnsFormStore.values.walletId = walletId.value
 })
 
-const total = computed(() => walletsStore.itemsWithAmount[walletId.value]?.amount ?? 0)
+const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 
 function onEditClick() {
   router.push(`/wallets/${walletId.value}/edit`)
@@ -129,6 +129,10 @@ useHead({ title: wallet.value?.name })
               :title="t('wallets.form.credit.limit')"
             />
           </div>
+
+          <UiTextSm2 v-if="wallet.desc" class="pt-2">
+            {{ wallet.desc }}
+          </UiTextSm2>
         </div>
       </template>
     </StatHeader>

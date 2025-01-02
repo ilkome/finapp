@@ -1,7 +1,8 @@
-import { TrnType } from '~/components/trns/types'
-import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { TrnId, TrnItemDirty } from '~/components/trns/types'
 
-export const trnsItems: Record<TrnId, TrnItem> = {
+import { TrnType } from '~/components/trns/types'
+
+export const trnsItems: Record<TrnId, TrnItemDirty> = {
   transactionExpenseWalletCashUSD400: {
     amount: 400,
     categoryId: 'expense',

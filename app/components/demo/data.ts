@@ -26,6 +26,16 @@ const data: {
       showInLastUsed: true,
       showInQuickSelector: false,
     },
+    'd564ed02cf7f': {
+      color: '#8bc34a',
+      editedAt: 1585408861256,
+      icon: 'mdi:human-male',
+      name: 'Freelance',
+      order: 9,
+      parentId: 0,
+      showInLastUsed: true,
+      showInQuickSelector: false,
+    },
     'KsNnR1EDBl9tAZTaWUP': {
       color: '#90a4ae',
       editedAt: 1585408861252,
@@ -169,23 +179,13 @@ const data: {
       showInLastUsed: true,
       showInQuickSelector: false,
     },
-    'd564ed02cf7f': {
-      color: '#8bc34a',
-      editedAt: 1585408861256,
-      icon: 'mdi:human-male',
-      name: 'Freelance',
-      order: 9,
-      parentId: 0,
-      showInLastUsed: true,
-      showInQuickSelector: false,
-    },
   },
 
   wallets: {
     '200921_FltN3F': {
       color: '#1565c0',
       currency: 'RUB',
-      description: '',
+      desc: '',
       isWithdrawal: true,
       name: 'Rubles Cash',
       order: 4,
@@ -194,7 +194,7 @@ const data: {
     '200921_WrAFwe': {
       color: '#ef5350',
       currency: 'USD',
-      description: '',
+      desc: '',
       isWithdrawal: true,
       name: 'USD',
       order: 10,
@@ -203,7 +203,7 @@ const data: {
     '210614_uvi9w8': {
       color: '#ad1457',
       currency: 'USD',
-      description: 'Money for study',
+      desc: 'Money for study',
       isWithdrawal: true,
       name: 'Study',
       order: 9,
@@ -212,7 +212,7 @@ const data: {
     '220315_p78836': {
       color: '#388e3c',
       currency: 'USD',
-      description: 'Money for party',
+      desc: 'Money for party',
       isArchived: true,
       isWithdrawal: true,
       name: 'Party',
@@ -222,7 +222,7 @@ const data: {
     '231223_x83sls': {
       color: '#1565c0',
       currency: 'RUB',
-      description: 'Money for auto',
+      desc: 'Money for auto',
       isWithdrawal: true,
       name: 'Auto',
       order: 3,
@@ -232,7 +232,7 @@ const data: {
       color: '#d32f2f',
       creditLimit: 160000,
       currency: 'RUB',
-      description: 'Money for office',
+      desc: 'Money for office',
       name: 'Credit Card',
       order: 1,
       type: 'credit',

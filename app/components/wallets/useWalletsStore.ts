@@ -5,14 +5,14 @@ import { deepUnref } from 'vue-deepunref'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
-import type { WalletId, WalletItem, WalletItemWithAmount, Wallets } from '~/components/wallets/types'
+import type { WalletForm, WalletId, WalletItemComputed, Wallets } from '~/components/wallets/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { normalizeWallets } from '~/components/wallets/utils'
+import { normalizeWalletItem, normalizeWallets } from '~/components/wallets/utils'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -32,15 +32,16 @@ export const useWalletsStore = defineStore('wallets', () => {
     localforage.setItem('finapp.wallets', deepUnref(items.value))
   }
 
-  async function addWallet({ id, values }: { id: WalletId, values: WalletItem }) {
+  async function addWallet({ id, values }: { id: WalletId, values: WalletForm }) {
+    const walletValues = normalizeWalletItem(values)
     // Set default currency based on first created wallet
     if (!hasItems.value)
-      currenciesStore.updateBase(values.currency)
+      currenciesStore.updateBase(walletValues.currency)
 
     if (isDemo.value) {
       items.value = {
         ...items.value,
-        [id]: values,
+        [id]: walletValues,
       }
       localforage.setItem('finapp.wallets', deepUnref(items.value))
       return
@@ -100,7 +101,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     )
   })
 
-  const itemsWithAmount = computed(() =>
+  const itemsComputed = computed(() =>
     sortedIds.value.reduce((acc, id) => {
       acc[id] = {
         ...items.value[id],
@@ -113,10 +114,10 @@ export const useWalletsStore = defineStore('wallets', () => {
         }),
       }
       return acc
-    }, {} as Record<WalletId, WalletItemWithAmount>),
+    }, {} as Record<WalletId, WalletItemComputed>),
   )
 
-  const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsWithAmount.value, 'currency'))
+  const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsComputed.value, 'currency'))
 
   async function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
     if (isDemo.value) {
@@ -137,7 +138,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     hasItems,
     initWallets,
     items,
-    itemsWithAmount,
+    itemsComputed,
     saveWalletsOrder,
     setWallets,
     sortedIds,

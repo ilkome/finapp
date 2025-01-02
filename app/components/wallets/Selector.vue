@@ -26,7 +26,7 @@ function onClickWallet(walletId: WalletId) {
 <template>
   <div>
     <WalletsItem
-      v-for="(wallet, walletId) in walletsStore.itemsWithAmount"
+      v-for="(wallet, walletId) in walletsStore.itemsComputed"
       :key="walletId"
       :activeItemId="props.activeItemId || (props.selectedIds?.includes(walletId) ? walletId : null)"
       :walletId

@@ -38,7 +38,6 @@ const isShow = ref(false)
     <template #content="{ close }">
       <div class="grid gap-4 px-1 pt-3 md:px-3">
         <BottomSheetClose @click="close" />
-        <slot />
 
         <!-- Chart -->
         <div class="border-item-3 border-b pb-3">

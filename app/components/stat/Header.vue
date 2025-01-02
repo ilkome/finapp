@@ -106,7 +106,7 @@ function onClickWallet(walletId: WalletId) {
               :key="walletId"
               :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
               :walletId
-              :wallet="walletsStore.itemsWithAmount?.[walletId]!"
+              :wallet="walletsStore.itemsComputed?.[walletId]!"
               insideClasses="!min-h-[38px]"
               alt
               @click="onClickWallet(walletId)"

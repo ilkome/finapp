@@ -95,8 +95,7 @@ async function onSave() {
   if (!validate(props.walletForm))
     return
 
-  const values: WalletItem = normalizeWalletItem(props.walletForm)
-  await walletsStore.addWallet({ id: editWalletId, values })
+  await walletsStore.addWallet({ id: editWalletId, values: props.walletForm })
   emit('afterSave')
 }
 </script>
@@ -153,8 +152,8 @@ async function onSave() {
         </template>
         <UiFormInput
           :placeholder="t('wallets.form.description.placeholder')"
-          :value="props.walletForm.description ?? ''"
-          @updateValue="(value: string) => emit('updateValue', 'description', value)"
+          :value="props.walletForm.desc ?? ''"
+          @updateValue="(value: string) => emit('updateValue', 'desc', value)"
         />
       </UiFormElement>
 

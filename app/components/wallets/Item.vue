@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onLongPress, useStorage } from '@vueuse/core'
 
-import type { WalletId, WalletItemWithAmount } from '~/components/wallets/types'
+import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getStyles } from '~/components/ui/getStyles'
@@ -16,7 +16,7 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
-  wallet: WalletItemWithAmount
+  wallet: WalletItemComputed
   walletId: WalletId
 }>()
 
@@ -91,11 +91,12 @@ if (!props.isSort) {
           {{ wallet.name }}
         </div>
         <div
-          v-if="props.isShowRate && wallet.currency !== currenciesStore.base"
+          v-if="props.isShowRate && wallet.currency !== currenciesStore.base && wallet.rate"
           class="opacity-90"
         >
           <Amount
             :amount="wallet.rate"
+            :precision="2"
             :currencyCode="currenciesStore.base"
             :isShowBaseRate="false"
             align="left"

@@ -16,12 +16,12 @@ const stateLimit = ref(0)
 
 const walletsItemsLimited = computed<WalletsWithAmount>(() => {
   if (stateLimit.value === 0)
-    return walletsStore.itemsWithAmount
+    return walletsStore.itemsComputed
 
   return walletsStore.sortedIds
     .slice(0, stateLimit.value)
     .reduce((acc, id) => {
-      acc[id] = walletsStore.itemsWithAmount[id]!
+      acc[id] = walletsStore.itemsComputed[id]!
       return acc
     }, {} as WalletsWithAmount)
 })

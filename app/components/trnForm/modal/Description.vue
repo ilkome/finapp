@@ -3,11 +3,11 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const trnsFormStore = useTrnsFormStore()
 
-const description = ref('')
-onMounted(() => description.value = trnsFormStore.values.desc ?? '')
+const desc = ref('')
+onMounted(() => desc.value = trnsFormStore.values.desc ?? '')
 
 function onSave(close: () => void) {
-  trnsFormStore.values.desc = description.value
+  trnsFormStore.values.desc = desc.value
   close()
 }
 </script>
@@ -30,7 +30,7 @@ function onSave(close: () => void) {
 
           <div class="px-2">
             <textarea
-              v-model="description"
+              v-model="desc"
               class="text-item-base bg-item-4 border-item-5 placeholder:text-item-2 focus:text-item-1 focus:bg-item-5 focus:border-accent-4 m-0 h-28 w-full rounded-lg border border-solid px-4 py-3 text-base font-normal transition ease-in-out focus:outline-none"
               :placeholder="$t('trnForm.description.placeholder')"
             />

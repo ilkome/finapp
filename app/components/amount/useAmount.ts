@@ -1,7 +1,8 @@
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
-import { formatAmount } from '~/components/amount/utils'
+
 import { type TotalReturns, getAmountInRate, getTotal } from '~/components/amount/getTotal'
+import { formatAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -17,7 +18,7 @@ export default function useAmount() {
     amount: number
     currencyCode: CurrencyCode
     noFormat?: boolean
-  }) {
+  }, { precision }: { precision?: number } = {}) {
     const rates = currenciesStore.rates
     const baseCurrencyCode = currenciesStore.base
 
@@ -31,7 +32,7 @@ export default function useAmount() {
     if (noFormat)
       return `${amountInBaseRate}`
 
-    return formatAmount(+amountInBaseRate, baseCurrencyCode)
+    return formatAmount(+amountInBaseRate, baseCurrencyCode, { precision })
   }
 
   const baseCurrencyCode = computed(() => currenciesStore.base)

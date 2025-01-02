@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
-import useAmount from '~/components/amount/useAmount'
-import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
+
+import useAmount from '~/components/amount/useAmount'
+import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
 
 export type AmountProps = {
   align?: 'left' | 'center' | 'right'
@@ -13,6 +14,7 @@ export type AmountProps = {
   isShowMinus?: boolean
   isShowPlus?: boolean
   isShowSymbol?: boolean
+  precision?: number
   type?: MoneyTypeNumber
   variant?: '2xs' | '3xl' | 'base' | 'sm' | 'xl'
 }
@@ -59,7 +61,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     <template v-if="amount !== 0">
       <AmountItem
         :align="props.align"
-        :amount="formatAmount(amount, currencyCode)"
+        :amount="formatAmount(amount, currencyCode, { precision: props.precision })"
         :isShowMinus="props.isShowMinus"
         :isShowPlus="props.isShowPlus"
         :isShowSymbol="props.isShowSymbol"

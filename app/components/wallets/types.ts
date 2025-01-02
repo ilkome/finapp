@@ -1,6 +1,7 @@
-import type { CurrencyCode } from '~/components/currencies/types'
-import type { TotalReturns } from '~/components/amount/getTotal'
 import type { DeepPartial } from '~~/utils/types'
+
+import type { TotalReturns } from '~/components/amount/getTotal'
+import type { CurrencyCode } from '~/components/currencies/types'
 
 export const types = [
   'cash',
@@ -36,21 +37,19 @@ export const icons: Record<WalletType, string> = {
   deposit: 'lucide:diamond-percent',
 } as const
 
-type WalletItemBase = {
+export type WalletItemBase = {
   color: string
-  creditLimit?: number
   currency: CurrencyCode
-  description?: string
+  desc?: string
   editedAt: number
   isArchived?: boolean
   isExcludeInTotal?: boolean
   isWithdrawal?: boolean
   name: string
   order: number
-  rate: number
 }
 
-type WalletItemSimple = WalletItemBase & {
+export type WalletItemSimple = WalletItemBase & {
   type: Exclude<WalletType, 'credit'>
 }
 
@@ -61,44 +60,29 @@ type WalletItemCredit = WalletItemBase & {
 
 export type WalletItem = WalletItemSimple | WalletItemCredit
 
-export type WalletItemRaw = {
-  archived?: boolean
-  color: string
-  creditLimit?: number
-  currency: CurrencyCode
-  description?: string
-  edited?: number
-  isCash?: boolean
-  isCashless?: boolean
-  isCredit?: boolean
-  isDebt?: boolean
-  isDeposit?: boolean
-  isExcludeTotal?: boolean
-  name: string
-  order: number
-  withdrawal?: boolean
-} & WalletItem
+export type WalletItemDirty = WalletItem & Partial<{
+  archived: boolean
+  creditLimit: number
+  description: string
+  edited: number
+  isCash: boolean
+  isCashless: boolean
+  isCredit: boolean
+  isDebt: boolean
+  isDeposit: boolean
+  isExcludeTotal: boolean
+  withdrawal: boolean
+}>
 
-export type WalletForm = DeepPartial<WalletItem> & {
+export type WalletForm = DeepPartial<WalletItemDirty> & {
   creditLimit?: number | null
   description?: string | null
 }
 
 export type Wallets = Record<WalletId, WalletItem>
-export type WalletsRaw = Record<WalletId, WalletItemRaw>
-export type WalletsWithAmount = Record<WalletId, WalletItemWithAmount>
+export type WalletsDirty = Record<WalletId, WalletItemDirty>
 
-export type WalletWithTotal = {
-  total: TotalReturns
-} & WalletItem
-
-export type Item = {
-  count: number
-  ids: WalletId[]
-  total: number
-  totalInBase: number
-}
-
-export type WalletItemWithAmount = {
+export type WalletItemComputed = WalletItem & {
   amount: number
-} & WalletItem
+  rate?: number
+}

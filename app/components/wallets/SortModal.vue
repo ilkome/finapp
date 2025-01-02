@@ -57,7 +57,7 @@ async function saveWalletsOrder(close: () => void) {
               v-for="walletId in sortedWalletsIds"
               :key="walletId"
               :walletId
-              :wallet="walletsStore.itemsWithAmount[walletId]!"
+              :wallet="walletsStore.itemsComputed[walletId]!"
               alt
               isSort
               isShowIcon
