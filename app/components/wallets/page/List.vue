@@ -286,13 +286,11 @@ const counts = computed(() => ({
     value: totalInWallets.value.debt,
   },
   deposit: {
-    icon: 'deposit',
     id: 'deposit',
     isShow: groupedBy.value === 'list' && totalInWallets.value.deposit !== 0,
     value: totalInWallets.value.deposit,
   },
   withdrawal: {
-    icon: 'UiIconWalletWithdrawal',
     id: 'withdrawal',
     isShow: groupedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
     value: totalInWallets.value.withdrawal,
@@ -403,7 +401,6 @@ const counts = computed(() => ({
 
           <!-- Total -->
           <UiToggle2
-            v-if="groupedBy === 'list' || groupedBy === 'currencies'"
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${groupedBy}`"
@@ -473,7 +470,6 @@ const counts = computed(() => ({
 
           <!-- Statistics -->
           <UiToggle2
-            v-if="groupedBy === 'list' || groupedBy === 'currencies'"
             :initStatus="true"
             :lineWidth="0"
             :storageKey="`finapp-wallets-total-${groupedBy}`"

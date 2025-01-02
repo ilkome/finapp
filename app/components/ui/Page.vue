@@ -1,7 +1,7 @@
 <template>
   <div
     id="pageScroll"
-    class="-pb-[52px] relative w-full overflow-y-auto overflow-x-hidden pb-3"
+    class="relative w-full overflow-y-auto overflow-x-hidden pb-[50px] md:pb-0"
   >
     <slot />
   </div>

@@ -24,7 +24,7 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="grid gap-1 border border-transparent px-3 py-2"
+    class="grid gap-1 border border-transparent px-3 pt-2"
     :class="{
       '!border-accent-1/40 !bg-item-9': props.isActive,
     }"
@@ -35,7 +35,7 @@ const currenciesStore = useCurrenciesStore()
       {{ $t(`money.${props.type}`) }}
     </UiTextSm1>
 
-    <div class="flex items-end gap-5 overflow-hidden overflow-x-auto">
+    <div class="flex items-end gap-5 overflow-hidden overflow-x-auto pb-2">
       <Amount
         :amount="props.amount"
         :currencyCode="props.currencyCode || currenciesStore.base"
@@ -57,7 +57,7 @@ const currenciesStore = useCurrenciesStore()
           :key="averageItem"
           class="grid gap-1 pb-[2px]"
         >
-          <UiTitle6>{{ t('money.average') }} {{ }} {{ t(`dates.${slug}.simple`) }}</UiTitle6>
+          <UiTitle6>{{ t('money.average') }} <br> {{ t(`dates.${slug}.simple`) }}</UiTitle6>
 
           <Amount
             :amount="type === 'expense' ? -averageItem : averageItem"

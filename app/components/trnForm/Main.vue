@@ -171,7 +171,7 @@ const actions = computed(() => ({
       :amountRaw="trnsFormStore.values.amountRaw[trnsFormStore.activeAmountIdx]"
       :highlight="trnsFormStore.values.trnType === 0 ? 'income' : 'expense'"
       :isShowSum="trnsFormStore.getIsShowSum()"
-      class="px-3 pb-2 "
+      class="px-3 pb-2"
       @onChange="trnsFormStore.onChangeAmount"
     />
 

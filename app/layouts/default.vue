@@ -92,7 +92,7 @@ useSeoMeta({
 
         <div
           :class="{ 'md:translate-x-20': isShow }"
-          class="@container/main grid h-full overflow-hidden pb-12 transition-all duration-300 ease-in-out sm:pb-0 md:pb-0"
+          class="@container/main _pb-[42px] grid h-full overflow-hidden transition-all duration-300 ease-in-out sm:pb-0 md:pb-0"
         >
           <NuxtPage :keepalive="{ include: keepalive }" />
         </div>
