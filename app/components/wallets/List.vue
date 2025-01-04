@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { WalletsComputed } from '~/components/wallets/types'
+
 import { getStyles } from '~/components/ui/getStyles'
-import type { WalletsWithAmount } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(defineProps<{
@@ -14,7 +15,7 @@ const { t } = useI18n()
 const walletsStore = useWalletsStore()
 const stateLimit = ref(0)
 
-const walletsItemsLimited = computed<WalletsWithAmount>(() => {
+const walletsItemsLimited = computed<WalletsComputed>(() => {
   if (stateLimit.value === 0)
     return walletsStore.itemsComputed
 
@@ -23,7 +24,7 @@ const walletsItemsLimited = computed<WalletsWithAmount>(() => {
     .reduce((acc, id) => {
       acc[id] = walletsStore.itemsComputed[id]!
       return acc
-    }, {} as WalletsWithAmount)
+    }, {} as WalletsComputed)
 })
 
 function toggle() {

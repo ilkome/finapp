@@ -22,7 +22,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@formkit/drag-and-drop": "0.1.5",
+    "@formkit/drag-and-drop": "0.3.1",
     "@pinia/nuxt": "^0.9.0",
     "currency.js": "^2.0.4",
     "echarts": "^5.6.0",
@@ -31,13 +31,13 @@
     "pinia": "^2.3.0",
     "swiper": "8.4.7",
     "v-calendar": "^3.1.2",
-    "vite": "^5.4.10",
+    "vite": "^6.0.7",
     "vue-deepunref": "^1.0.1",
     "vue-echarts": "^7.0.3",
     "vue3-toastify": "^0.2.8"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "2.27.3",
+    "@antfu/eslint-config": "^3.12.1",
     "@iconify-json/lucide": "^1.2.20",
     "@nuxt/eslint": "^0.7.4",
     "@nuxt/fonts": "^0.10.3",
@@ -55,7 +55,7 @@
     "eslint": "^9.17.0",
     "eslint-flat-config-utils": "^0.4.0",
     "eslint-plugin-format": "^0.1.3",
-    "eslint-plugin-perfectionist": "^4.5.0",
+    "eslint-plugin-perfectionist": "^4.6.0",
     "eslint-plugin-tailwindcss": "^3.17.5",
     "nuxt": "^3.15.0",
     "nuxt-icon": "^0.6.10",

@@ -1,11 +1,11 @@
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
-import { uniqueElementsBy } from '~~/utils/simple'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import { uniqueElementsBy } from '~~/utils/simple'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
-import type { WalletForm, WalletId, WalletItemComputed, Wallets } from '~/components/wallets/types'
+import type { WalletForm, WalletId, WalletItemComputed, Wallets, WalletsComputed } from '~/components/wallets/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -101,7 +101,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     )
   })
 
-  const itemsComputed = computed(() =>
+  const itemsComputed = computed<WalletsComputed>(() =>
     sortedIds.value.reduce((acc, id) => {
       acc[id] = {
         ...items.value[id],

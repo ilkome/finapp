@@ -3,12 +3,7 @@ import { useStorage } from '@vueuse/core'
 import { groupBy } from 'es-toolkit'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type {
-  WalletId,
-  WalletItem,
-  WalletViewTypes,
-  WalletViewTypesObj,
-} from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletViewTypes, WalletViewTypesObj } from '~/components/wallets/types'
 
 import useAmount from '~/components/amount/useAmount'
 import { useAppNav } from '~/components/app/useAppNav'
@@ -65,8 +60,8 @@ const selectedWallets = computed(() => {
         available: (checkIsAvailable(wallet) && !wallet.isArchived) ?? false,
         cash: wallet.type === 'cash' && !wallet.isArchived,
         cashless: wallet.type === 'cashless' && !wallet.isArchived,
-        credit: wallet.type === 'credit',
-        creditPossible: !!wallet.creditLimit,
+        credit: wallet.type === 'credit' && !wallet.isArchived,
+        creditPossible: wallet.type === 'credit' && wallet.creditLimit > 0,
         crypto: wallet.type === 'crypto' && !wallet.isArchived,
         debt: wallet.type === 'debt' && !wallet.isArchived,
         deposit: wallet.type === 'deposit' && !wallet.isArchived,
@@ -108,36 +103,29 @@ const groupedWalletsByCurrency = computed(() => {
   }, grouped)
 })
 
-const groupedWalletsByType = computed(() =>
-  viewTypes.reduce(
-    (acc, type) => {
-      acc[type] = walletsStore.sortedIds.filter((id) => {
-        const wallet = walletsStore.items?.[id]
+const groupedWalletsByType = computed(() => {
+  return viewTypes.reduce((acc, type) => {
+    acc[type] = walletsStore.sortedIds.filter((id) => {
+      const wallet = walletsStore.items?.[id]
+      if (!wallet)
+        return false
 
-        if (!wallet)
-          return false
+      const isCurrencyFiltered = currencyFiltered.value === 'all' || wallet.currency === currencyFiltered.value
+      const isAvailable = checkIsAvailable(wallet)
 
-        const isCurrencyFiltered
-          = currencyFiltered.value === 'all'
-            ? true
-            : wallet?.currency === currencyFiltered.value
+      switch (type) {
+        case 'available':
+          return isAvailable && isCurrencyFiltered && !wallet.isArchived
+        case 'archived':
+          return isCurrencyFiltered && wallet.isArchived
+        default:
+          return wallet.type === type && isCurrencyFiltered && !wallet.isArchived
+      }
+    })
 
-        if (type === 'available') {
-          return checkIsAvailable(wallet) && isCurrencyFiltered && !wallet?.isArchived
-        }
-
-        if (type === 'archived') {
-          return isCurrencyFiltered && wallet?.isArchived
-        }
-
-        return wallet.type === type && isCurrencyFiltered && !wallet?.isArchived
-      })
-
-      return acc
-    },
-    {} as Record<CurrencyCode, WalletId[]>,
-  ),
-)
+    return acc
+  }, {} as Record<CurrencyCode, WalletId[]>)
+})
 
 const groupedWalletsByTypeOnly = computed(() => {
   return Object.fromEntries(Object.entries(groupedWalletsByType.value).filter(([_, walletsIds]) => walletsIds.length > 0))
@@ -260,36 +248,41 @@ const counts = computed(() => ({
     isShow: true,
     value: totalInWallets.value.total - totalInWallets.value.credit - totalInWallets.value.debt,
   },
-  cash: {
-    id: 'cash',
-    isShow: Object.keys(walletsStore.items ?? {}).length > 1 && groupedBy.value === 'list' && totalInWallets.value.cash !== 0,
-    value: totalInWallets.value.cash,
-  },
   cashless: {
     id: 'cashless',
     isShow: groupedBy.value === 'list' && totalInWallets.value.cashless !== 0,
     value: totalInWallets.value.cashless,
+  },
+  // eslint-disable-next-line perfectionist/sort-objects
+  cash: {
+    id: 'cash',
+    isShow: Object.keys(walletsStore.items ?? {}).length > 1 && groupedBy.value === 'list' && totalInWallets.value.cash !== 0,
+    value: totalInWallets.value.cash,
   },
   credit: {
     id: 'credit',
     isShow: groupedBy.value === 'list' && totalInWallets.value.credit !== 0,
     value: totalInWallets.value.credit,
   },
+  // eslint-disable-next-line perfectionist/sort-objects
   creditPossible: {
     id: 'creditPossible',
     isShow: totalInWallets.value.creditPossible !== 0,
     value: totalInWallets.value.creditPossible + totalInWallets.value.credit,
   },
+  // eslint-disable-next-line perfectionist/sort-objects
   debt: {
     id: 'debt',
     isShow: groupedBy.value === 'list' && totalInWallets.value.debt !== 0,
     value: totalInWallets.value.debt,
   },
+  // eslint-disable-next-line perfectionist/sort-objects
   deposit: {
     id: 'deposit',
     isShow: groupedBy.value === 'list' && totalInWallets.value.deposit !== 0,
     value: totalInWallets.value.deposit,
   },
+  // eslint-disable-next-line perfectionist/sort-objects
   withdrawal: {
     id: 'withdrawal',
     isShow: groupedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,

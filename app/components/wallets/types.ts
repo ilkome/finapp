@@ -86,3 +86,5 @@ export type WalletItemComputed = WalletItem & {
   amount: number
   rate?: number
 }
+
+export type WalletsComputed = Record<WalletId, WalletItemComputed>
