@@ -2,7 +2,7 @@
 import { useStorage } from '@vueuse/core'
 import defu from 'defu'
 
-import type { CategoryId } from '~/components/categories/types'
+import type { Categories, CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
@@ -51,87 +51,120 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
   }
 }
 
-type CategoriesOpenedStateInside = Record<CategoryId, { show: boolean }>
-type CategoriesOpenedState = Record<CategoryId, {
-  categories: CategoriesOpenedStateInside
+// Simplified type definitions
+type CategoryState = {
+  categories?: CategoryStateInside
   show: boolean
-}>
-
-const categoriesOpened = useStorage<CategoriesOpenedState>(`statCategoriesOpened${props.storageKey}`, Object.entries(categoriesStore.items ?? {}).reduce((acc, [id, cat]) => {
-  acc[id] = {
-    categories: (cat.childIds ?? []).reduce((acc, childId) => {
-      acc[childId] = { show: false }
-      return acc
-    }, {} as CategoriesOpenedStateInside),
-    show: false,
-  }
-  return acc
-}, {} as CategoriesOpenedState))
-
-function toggleOpened() {
-  const showedCategories = Object.values(categoriesWithData.value).reduce((acc, cat) => {
-    acc[cat.id] = {
-      categories: Object.keys(cat.categories ?? {}).reduce((acc, childId) => {
-        acc[childId] = {
-          show: categoriesOpened.value[cat.id]?.categories[childId]?.show ?? false,
-        }
-        return acc
-      }, {} as CategoriesOpenedStateInside),
-      show: categoriesOpened.value[cat.id]?.show ?? false,
-    }
-    return acc
-  }, {} as CategoriesOpenedState)
-
-  const isAnyOpen = Object.values(showedCategories).some(cat => cat.show)
-  const isAllOpen = Object.values(showedCategories).every(cat => cat.show)
-  const isAnyChildOpen = Object.values(showedCategories).some(cat => Object.values(cat.categories ?? {}).some(c => c.show))
-  const isAllChildOpen = Object.values(showedCategories).every(cat => Object.values(cat.categories ?? {}).every(c => c.show))
-
-  if (isAllOpen && !isAllChildOpen) {
-    toggleChildLevel(true)
-    return
-  }
-  if (isAnyOpen && isAnyChildOpen) {
-    toggleChildLevel(false)
-  }
-
-  categoriesOpened.value = defu(Object.entries(showedCategories).reduce((acc, [id, cat]) => {
-    acc[id] = {
-      ...cat,
-      show: !isAnyOpen,
-    }
-    return acc
-  }, {} as CategoriesOpenedState), categoriesOpened.value)
 }
 
-function toggleChildLevel(value: boolean) {
-  const showedCategories = Object.values(categoriesWithData.value).reduce((acc, cat) => {
+type CategoryStateInside = Record<CategoryId, { show: boolean }>
+type CategoriesState = Record<CategoryId, CategoryState>
+
+function createInitialState(storeCategories: Categories): CategoriesState {
+  return Object.entries(storeCategories).reduce((acc, [id, cat]) => {
+    acc[id] = {
+      categories: (cat.childIds ?? []).reduce((childAcc, childId) => {
+        childAcc[childId] = { show: false }
+        return childAcc
+      }, {} as CategoryStateInside),
+      show: false,
+    }
+    return acc
+  }, {} as CategoriesState)
+}
+
+const categoriesOpened = useStorage<CategoriesState>(
+  `statCategoriesOpened1${props.storageKey}`,
+  createInitialState(categoriesStore.items ?? {}),
+)
+
+function getCurrentState(categories: CategoryWithData[]): CategoriesState {
+  return Object.values(categories).reduce((acc, cat) => {
     acc[cat.id] = {
-      categories: Object.keys(cat.categories ?? {}).reduce((acc, childId) => {
-        acc[childId] = {
-          show: categoriesOpened.value[cat.id]?.categories[childId]?.show ?? false,
-        }
-        return acc
-      }, {} as CategoriesOpenedStateInside),
+      categories: Object.values(cat.categories ?? {}).reduce((childAcc, child) => {
+        childAcc[child.id] = { show: categoriesOpened.value[cat.id]?.categories?.[child.id]?.show ?? false }
+        return childAcc
+      }, {} as CategoryStateInside),
       show: categoriesOpened.value[cat.id]?.show ?? false,
     }
-    return acc
-  }, {} as CategoriesOpenedState)
 
-  categoriesOpened.value = defu(Object.entries(showedCategories).reduce((acc, [id, cat]) => {
-    acc[id] = {
-      ...cat,
-      categories: Object.keys(cat.categories).reduce((acc, childId) => {
-        acc[childId] = { show: value }
-        return acc
-      }, {} as CategoriesOpenedStateInside),
-    }
     return acc
-  }, {} as CategoriesOpenedState), categoriesOpened.value)
+  }, {} as CategoriesState)
+}
+
+const currentState = computed(() => getCurrentState(categoriesWithData.value))
+const openedStatus = computed(() => {
+  const categories = Object.values(currentState.value)
+  return {
+    isAllChildOpen: categories.every(cat => Object.values(cat.categories ?? {}).every(c => c.show)),
+    isAllRootOpen: categories.every(cat => cat.show),
+    isAnyChildOpen: categories.some(cat => Object.values(cat.categories ?? {}).some(c => c.show)),
+    isAnyRootOpen: categories.some(cat => cat.show),
+  }
+})
+
+function toggleOpened() {
+  if (openedStatus.value.isAllRootOpen && !openedStatus.value.isAllChildOpen) {
+    updateState(currentState.value, { childShow: true })
+    return
+  }
+
+  if (openedStatus.value.isAnyRootOpen) {
+    updateState(currentState.value, { childShow: false, parentShow: false })
+    return
+  }
+
+  updateState(currentState.value, { parentShow: true })
+}
+
+function toggleRoot(id: CategoryId) {
+  const root = currentState.value[id]
+  const allOpen = Object.values(root?.categories ?? {}).some(c => c.show)
+
+  if (root?.show && allOpen) {
+    categoriesOpened.value[id].categories = Object.keys(currentState.value[id]?.categories ?? {}).reduce((childAcc, childId) => {
+      childAcc[childId] = { show: false }
+      return childAcc
+    }, {} as CategoryStateInside)
+
+    return
+  }
+
+  categoriesOpened.value[id].show = !categoriesOpened.value[id]?.show
+}
+
+function toggleChild(id: CategoryId, childId: CategoryId) {
+  categoriesOpened.value[id].categories[childId].show = !categoriesOpened.value[id]?.categories?.[childId]?.show
+}
+
+// Combined update function
+function updateState(
+  state: CategoriesState,
+  options: { childShow?: boolean, parentShow?: boolean },
+) {
+  const { childShow, parentShow } = options
+
+  categoriesOpened.value = defu(
+    Object.entries(state).reduce((acc, [id, cat]) => {
+      acc[id] = {
+        ...cat,
+        ...(parentShow !== undefined && { show: parentShow }),
+        ...(childShow !== undefined && {
+          categories: Object.fromEntries(
+            Object.keys(cat.categories ?? {})
+              .map(childId => [childId, { show: childShow }]),
+          ),
+        }),
+      }
+      return acc
+    }, {} as CategoriesState),
+    categoriesOpened.value,
+  )
 }
 </script>
 
 <template>
+  <pre class="text-2xs">{{ currentState }}</pre>
   <UiToggle
     :storageKey="`${storageKey}-${type}-cats`"
     :initStatus="true"
@@ -146,7 +179,16 @@ function toggleChildLevel(value: boolean) {
 
         <UiItem1 @click="toggleOpened">
           <Icon
+            v-if="openedStatus.isAllRootOpen && !openedStatus.isAllChildOpen"
             name="lucide:folder-open"
+          />
+          <Icon
+            v-if="openedStatus.isAllRootOpen && openedStatus.isAllChildOpen"
+            name="lucide:folder-kanban"
+          />
+          <Icon
+            v-if="!openedStatus.isAllRootOpen"
+            name="lucide:folder"
           />
         </UiItem1>
 
@@ -157,8 +199,6 @@ function toggleChildLevel(value: boolean) {
         />
       </div>
     </template>
-
-    <!-- <pre>{{ categoriesOpened }}</pre> -->
 
     <template v-if="categoriesWithData.length > 0">
       <div
@@ -191,7 +231,7 @@ function toggleChildLevel(value: boolean) {
           }"
           :isShown="categoriesOpened[item.id]?.show ?? false"
           :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
-          @click="categoriesOpened[item.id].show = !categoriesOpened[item.id]?.show"
+          @click="toggleRoot(item.id)"
         >
           <template #header="{ toggle, isShown }">
             <div class="-mt-px flex items-stretch justify-between">
@@ -260,7 +300,7 @@ function toggleChildLevel(value: boolean) {
                 }"
                 :isShown="categoriesOpened[item.id]?.categories[itemInside.id]?.show ?? false"
                 :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
-                @click="categoriesOpened[item.id].categories[itemInside.id].show = !categoriesOpened[item.id]?.categories[itemInside.id]?.show"
+                @click="toggleChild(item.id, itemInside.id)"
               >
                 <template #header="{ toggle: toggleInside, isShown: isShownInside }">
                   <div class="flex items-stretch justify-between">
