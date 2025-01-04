@@ -164,7 +164,6 @@ function updateState(
 </script>
 
 <template>
-  <pre class="text-2xs">{{ currentState }}</pre>
   <UiToggle
     :storageKey="`${storageKey}-${type}-cats`"
     :initStatus="true"
