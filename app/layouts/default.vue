@@ -19,7 +19,6 @@ const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashbo
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 const userStore = useUserStore()
-// const user = useCurrentUser()
 const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()

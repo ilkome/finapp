@@ -5,7 +5,6 @@ export function useGuard() {
   const route = useRoute()
   const router = useRouter()
 
-  // const user = useCurrentUser()
   const userStore = useUserStore()
   const localAuthUid = useCookie('finapp.localAuthUid')
   const { clearLocalData } = useInitApp()
