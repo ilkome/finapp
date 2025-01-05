@@ -1,11 +1,9 @@
+import { config } from '~~/services/firebase/config'
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
 import { child, get, getDatabase, off, onValue, ref, remove, set, update } from 'firebase/database'
-import { config } from '~/services/firebase/config'
 
 export const app = initializeApp(config)
 export const db = getDatabase(app)
-export const auth = getAuth(app)
 
 export function getDataOnce(path) {
   return new Promise((resolve) => {
@@ -29,10 +27,18 @@ export function getDataAndWatch(path, callback) {
   })
 }
 
-export const updateData = (path, updates) => update(ref(db, path), updates)
+export function updateData(path, updates) {
+  return update(ref(db, path), updates)
+}
 
-export const removeData = path => remove(ref(db, path))
+export function removeData(path) {
+  return remove(ref(db, path))
+}
 
-export const saveData = async (path, value) => await set(ref(db, path), value)
+export async function saveData(path, value) {
+  return await set(ref(db, path), value)
+}
 
-export const unsubscribeData = path => off(ref(db, path))
+export function unsubscribeData(path) {
+  return off(ref(db, path))
+}

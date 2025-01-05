@@ -1,93 +1,104 @@
-import { TrnType } from '~/components/trns/types'
-import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { TrnId, TrnItemDirty } from '~/components/trns/types'
 
-export const trnsItems: Record<TrnId, TrnItem> = {
-  transactionIncomeWalletCashUSD1000: {
-    amount: 1000,
-    date: 123456, // TODO: add real dates
-    categoryId: 'income',
-    type: TrnType.Income,
+import { TrnType } from '~/components/trns/types'
+
+export const trnsItems: Record<TrnId, TrnItemDirty> = {
+  transactionExpenseWalletCashUSD400: {
+    amount: 400,
+    categoryId: 'expense',
+    date: 123456,
+    edited: 12,
+    type: TrnType.Expense,
     walletId: 'walletCashUSD',
   },
 
-  transactionExpenseWalletCashUSD400: {
-    amount: 400,
-    date: 123456, // TODO: add real dates
-    categoryId: 'expense',
+  transactionExpenseWalletOneRUB900: {
+    amount: 900,
+    categoryId: 'category1',
+    date: 123456,
+    edited: 12,
     type: TrnType.Expense,
+    walletId: 'walletOneRUB',
+  },
+
+  transactionIncomeWalletCashUSD1000: {
+    amount: 1000,
+    categoryId: 'income',
+    date: 123456,
+    edited: 12,
+    type: TrnType.Income,
     walletId: 'walletCashUSD',
   },
 
   transactionIncomeWalletOneRUB700: {
     amount: 700,
-    date: 123456, // TODO: add real dates
     categoryId: 'category1',
+    date: 123456,
+    edited: 12,
     type: TrnType.Income,
     walletId: 'walletOneRUB',
   },
 
-  transactionExpenseWalletOneRUB900: {
-    amount: 900,
-    date: 123456, // TODO: add real dates
-    categoryId: 'category1',
+  transferCategoryIdExpenseWalletCashUSD30: {
+    amount: 30,
+    categoryId: 'transfer',
+    date: 123456,
+    edited: 12,
     type: TrnType.Expense,
-    walletId: 'walletOneRUB',
+    walletId: 'walletCashUSD',
+  },
+
+  transferCategoryNameIncomeWalletCashUSD30: {
+    amount: 30,
+    categoryId: 'transfer3',
+    date: 123456,
+    edited: 12,
+    type: TrnType.Income,
+    walletId: 'walletCashUSD',
+  },
+
+  transferExpenseWalletCashUSD10IncomeWalletRUB700: {
+    categoryId: 'transfer',
+    date: 123456,
+    edited: 12,
+    expenseAmount: 10,
+    expenseWalletId: 'walletCashUSD',
+    incomeAmount: 700,
+    incomeWalletId: 'walletRUB',
+    type: TrnType.Transfer,
   },
 
   transferExpenseWalletCreditUSD40IncomeWalletCashUSD40: {
-    date: 123456, // TODO: add real dates
     categoryId: 'transfer',
-    incomeAmount: 40,
-    incomeWalletId: 'walletCashUSD',
+    date: 123456,
+    edited: 12,
     expenseAmount: 40,
     expenseWalletId: 'walletCreditUSD',
+    incomeAmount: 40,
+    incomeWalletId: 'walletCashUSD',
     type: TrnType.Transfer,
   },
 
   transferExpenseWalletRUB300IncomeWalletCreditUSD10: {
-    date: 123456, // TODO: add real dates
     categoryId: 'transfer',
-    incomeAmount: 10,
-    incomeWalletId: 'walletCreditUSD',
+    date: 123456,
+    edited: 12,
     expenseAmount: 300,
     expenseWalletId: 'walletRUB',
+    incomeAmount: 10,
+    incomeWalletId: 'walletCreditUSD',
     type: TrnType.Transfer,
-  },
-
-  transferExpenseWalletCashUSD10IncomeWalletRUB700: {
-    date: 123456, // TODO: add real dates
-    categoryId: 'transfer',
-    incomeAmount: 700,
-    incomeWalletId: 'walletRUB',
-    expenseAmount: 10,
-    expenseWalletId: 'walletCashUSD',
-    type: TrnType.Transfer,
-  },
-
-  transferCategoryNameIncomeWalletCashUSD30: {
-    date: 123456, // TODO: add real dates
-    amount: 30,
-    categoryId: 'categoryTransferOld',
-    type: TrnType.Income,
-    walletId: 'walletCashUSD',
-  },
-
-  transferCategoryIdExpenseWalletCashUSD30: {
-    date: 123456, // TODO: add real dates
-    amount: 30,
-    categoryId: 'transfer',
-    type: TrnType.Expense,
-    walletId: 'walletCashUSD',
   },
 
   // @deprecated: use New Transaction type instead or Transfer CategoryId
   transferOLDExpense2500Income3500: {
-    date: 123456, // TODO: add real dates
-    categoryId: 'transfer',
-    type: TrnType.Transfer,
     amountFrom: 2500,
-    walletFromId: 'walletDeprecatedTransferExpense',
     amountTo: 3500,
+    categoryId: 'transfer',
+    date: 123456,
+    edited: 12,
+    type: TrnType.Transfer,
+    walletFromId: 'walletDeprecatedTransferExpense',
     walletToId: 'walletDeprecatedTransferIncome',
   },
 }

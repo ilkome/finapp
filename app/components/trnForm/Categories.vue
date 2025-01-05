@@ -1,0 +1,146 @@
+<script setup lang="ts">
+import Swiper from 'swiper'
+import 'swiper/css'
+
+import type { CategoryId } from '~/components/categories/types'
+
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+
+const emit = defineEmits<{
+  (e: 'click', id: CategoryId): void
+}>()
+
+const trnsFormStore = useTrnsFormStore()
+const categoriesStore = useCategoriesStore()
+
+const sliderObj = ref()
+const sliderRef = ref()
+
+function onClick(categoryId: CategoryId) {
+  emit('click', categoryId)
+}
+
+onMounted(() => {
+  const initialSlide = 1
+
+  sliderObj.value = new Swiper(sliderRef.value, {
+    autoHeight: false,
+    initialSlide,
+    longSwipesMs: 60,
+    longSwipesRatio: 0.1,
+    observeParents: true,
+    observer: true,
+    shortSwipes: false,
+    slidesPerView: 1,
+    touchStartPreventDefault: false,
+  })
+})
+</script>
+
+<template>
+  <div class="contentWrap grid h-full grid-rows-[1fr,auto]">
+    <div class="contentWrap__box">
+      <div ref="sliderRef" class="swiper-container">
+        <div class="swiper-wrapper">
+          <!-- Recent -->
+          <div class="swiper-slide">
+            <div
+              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+            >
+              {{ $t("categories.lastUsedTitle") }}
+            </div>
+            <div class="px-3 pb-1">
+              <CategoriesList
+                :activeItemId="trnsFormStore?.values?.categoryId"
+                :ids="categoriesStore.recentCategoriesIds"
+                class="!gap-x-1"
+                @click="onClick"
+              />
+            </div>
+          </div>
+
+          <!-- Main -->
+          <div class="swiper-slide">
+            <div
+              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+            >
+              {{ $t("categories.title") }}
+            </div>
+            <div class="px-3 pb-1">
+              <CategoriesList
+                :activeItemId="trnsFormStore?.values?.categoryId"
+                :ids="categoriesStore.categoriesRootIds"
+                class="!gap-x-1"
+                @click="onClick"
+              />
+            </div>
+          </div>
+
+          <!-- Favorite -->
+          <div class="swiper-slide">
+            <div
+              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+            >
+              {{ $t("categories.favoriteTitle") }}
+            </div>
+            <div class="px-3 pb-1">
+              <CategoriesList
+                :activeItemId="trnsFormStore?.values?.categoryId"
+                :ids="categoriesStore.favoriteCategoriesIds"
+                class="!gap-x-1"
+                @click="onClick"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="sliderObj" class="px-3 py-2">
+      <UiTabs1>
+        <UiTabsItem1
+          :isActive="sliderObj.activeIndex === 0"
+          @click="sliderObj.slideTo(0)"
+        >
+          {{ $t("categories.lastUsedTitle") }}
+        </UiTabsItem1>
+
+        <UiTabsItem1
+          :isActive="sliderObj.activeIndex === 1"
+          @click="sliderObj.slideTo(1)"
+        >
+          {{ $t("categories.allTitle") }}
+        </UiTabsItem1>
+
+        <UiTabsItem1
+          :isActive="sliderObj.activeIndex === 2"
+          @click="sliderObj.slideTo(2)"
+        >
+          {{ $t("categories.favoriteTitle") }}
+        </UiTabsItem1>
+      </UiTabs1>
+    </div>
+  </div>
+</template>
+
+<style lang="stylus" scoped>
+.contentWrap
+  overflow hidden
+  position relative
+
+  &__box
+    overflow hidden
+    height 100%
+
+  .swiper-container
+  .swiper-container .swiper-slide
+    height 100%
+
+.scrollBlock
+  overflow hidden
+  display grid
+  align-items flex-end
+  width 100%
+  height 100%
+</style>

@@ -1,0 +1,19 @@
+{
+	"folders": [
+    {
+      "name": "app",
+      "path": "app"
+    },
+    {
+      "name": "finapp",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "cSpell.words": [
+      "deepunref",
+      "defu"
+    ],
+    "typescript.tsdk": "finapp/node_modules/typescript/lib"
+  },
+}

@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .flex-center-col {
+    @apply flex flex-col items-center justify-center;
+  }
+
+  .absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .overflow-scroll-y {
+    @apply overflow-hidden overflow-y-auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+html,
+body {
+  overscroll-behavior-y: none;
+  user-select: none;
+
+  @apply bg-foreground-1 font-primary text-1 leading-none antialiased h-dvh;
+}
+
+.layoutBase {
+  @apply overflow-hidden relative h-dvh;
+}
+
+.pageWrapper {
+  @apply max-w-xl grow px-2 lg:px-4 2xl:px-8;
+}
+
+.bottomSheetDrugClassesCustom {
+  @apply bg-foreground-1 max-w-md rounded-xl;
+}
+
+.bottomSheetContent {
+  @apply grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden;
+}
+
+.bottomSheetContentInside {
+  @apply grid h-full gap-1 overflow-hidden overflow-y-auto px-2 py-px;
+}
+
+.bottomSheetContentBottom {
+  @apply flex items-center justify-center p-2;
+}
+
+.trnForm .trnForm__pagination {
+  z-index: 2;
+  position: absolute;
+  left: 50%;
+  bottom: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  padding: 6px;
+  border-radius: 6px;
+  transform: translateX(-50%);
+  @apply bg-foreground-1;
+}
+
+.trnForm .swiper-pagination-bullet {
+  display: block;
+  opacity: 1;
+  width: 6px;
+  height: 6px;
+  margin: 0 4px;
+  border-radius: 50%;
+  @apply bg-item-3;
+}
+
+.trnForm .swiper-pagination-bullet-active {
+  @apply bg-accent-1;
+}

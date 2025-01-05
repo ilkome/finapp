@@ -6,7 +6,6 @@ Finapp helps you to control personal finances easily and efficiently.
 # 🕹 Demo
 [finapp.ilko.me](https://finapp.ilko.me/)
 
-
 # 🏞 Screenshots
 ![Finapp 2.0.0](https://firebasestorage.googleapis.com/v0/b/finapp-17474.appspot.com/o/2.0.0%2Ffinapp-2.0.0-promo.png?alt=media&token=bce821da-f5fa-4e8a-be7a-8fc0ebfaf260)
 
@@ -14,16 +13,15 @@ Finapp helps you to control personal finances easily and efficiently.
 - Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions.
 - Instant synchronization between all device (Firebase).
 - Optimized for mobile and PC.
-- Themes: dark and white.
+- Themes: dark and light.
 - Support multiple currencies with auto conversion.
 
 # 🦄 Technologies
 - Vue
 - Nuxt
-- Stylus
 - Tailwind
-- Pug
 - Firebase
+- PWA
 
 # 📦 Setup
 
@@ -37,7 +35,7 @@ git clone https://github.com/ilkome/finapp.git finapp
 cd finapp
 
 # install dependencies
-yarn
+pnpm i
 ```
 
 ### Firebase setup
@@ -96,29 +94,30 @@ messagingSenderId: 'YOUR_CONFIG'
 - Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
 - Rename `.env.example` to `.env`
 - Set your App ID in `.env`
+
 ``` bash
 OPEN_EXCHANGE_RATES=app_id
 ```
 
-If you use netlify or similar services you need add OPEN_EXCHANGE_RATES to env variables.
+If you use netlify or similar services you need to add OPEN_EXCHANGE_RATES env.
 
 ## Development
 
 ### Compiles and hot-reloads
 
 ``` bash
-yarn dev
+pnpm dev
 ```
 
 ## Production
 
-### Generate static files
-
-This will give you `build` folder. You can upload files from this folder to any shared hosting.
+### Generate for static server
 
 ``` bash
-yarn build
+pnpm generate
 ```
+
+Upload `.output/public` folder to any shared hosting.
 
 # 🤪 Stay In Touch
 
