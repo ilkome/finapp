@@ -1,0 +1,4 @@
+{
+  "tailwindAttributes": ["insideClasses"],
+  "tailwindFunctions": ["clsx"]
+}

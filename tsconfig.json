@@ -1,11 +1,7 @@
 {
   "extends": "./.nuxt/tsconfig.json",
-  "exclude": [
-    "node_modules"
-  ],
   "compilerOptions": {
-    "types": [
-      "@nuxtjs/i18n",
-    ]
-  },
+    "strict": true,
+    "skipLibCheck": true
+  }
 }

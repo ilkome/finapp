@@ -1,7 +1,7 @@
-import type { CategoryItem } from '~/components/categories/types'
+import type { Categories, CategoryItem } from '~/components/categories/types'
 
-export const categoriesItems = {
+export const categoriesItems: Categories = {
   categoryTransferOld: {
     name: 'Перевод',
-  } as CategoryItem,
+  },
 }

@@ -13,16 +13,10 @@ export const walletsItems = {
     name: 'Wallet Credit USD',
   } as WalletItem,
 
-  walletRUB: {
+  walletDeprecatedTransferExpense: {
     color: 'yellow',
     currency: 'RUB',
-    name: 'Wallet RUB',
-  } as WalletItem,
-
-  walletOneRUB: {
-    color: 'yellow',
-    currency: 'RUB',
-    name: 'Wallet One Transaction RUB',
+    name: 'Wallet for deprecated Transfer expense',
   } as WalletItem,
 
   walletDeprecatedTransferIncome: {
@@ -31,9 +25,15 @@ export const walletsItems = {
     name: 'Wallet for deprecated Transfer income',
   } as WalletItem,
 
-  walletDeprecatedTransferExpense: {
+  walletOneRUB: {
     color: 'yellow',
     currency: 'RUB',
-    name: 'Wallet for deprecated Transfer expense',
+    name: 'Wallet One Transaction RUB',
+  } as WalletItem,
+
+  walletRUB: {
+    color: 'yellow',
+    currency: 'RUB',
+    name: 'Wallet RUB',
   } as WalletItem,
 }
