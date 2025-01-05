@@ -8,7 +8,10 @@ const props = defineProps<{
   isShowFavorites?: boolean
   isShowGrouped?: boolean
   isShowRecent?: boolean
+  openedStatus: unknown
 }>()
+
+const emit = defineEmits(['toggleOpened'])
 
 const { t } = useI18n()
 const statConfig = inject('statConfig') as StatConfigProvider
@@ -93,15 +96,15 @@ const recent = {
 }
 
 const viewPresets = computed(() => ({
-  standard: {
+  minimal: {
     props: {
       catsList: {
         isItemsBg: false,
-        isLines: true,
-        isRoundIcon: true,
+        isLines: false,
+        isRoundIcon: false,
       },
     },
-    title: t('standard'),
+    title: t('minimal'),
   },
   // eslint-disable-next-line perfectionist/sort-objects
   alt: {
@@ -115,15 +118,15 @@ const viewPresets = computed(() => ({
     title: t('alt'),
   },
 
-  minimal: {
+  standard: {
     props: {
       catsList: {
         isItemsBg: false,
-        isLines: false,
-        isRoundIcon: false,
+        isLines: true,
+        isRoundIcon: true,
       },
     },
-    title: t('minimal'),
+    title: t('standard'),
   },
 }))
 
@@ -147,6 +150,24 @@ const isShow = ref(false)
       <Icon
         name="lucide:chart-no-axes-column-decreasing"
         size="18"
+      />
+    </UiItem1>
+
+    <UiItem1
+      v-if="statConfig.config.value.catsView === 'list'"
+      @click="emit('toggleOpened')"
+    >
+      <Icon
+        v-if="props.openedStatus.isAllRootOpen && !props.openedStatus.isAllChildOpen"
+        name="lucide:folder-open"
+      />
+      <Icon
+        v-if="props.openedStatus.isAllRootOpen && props.openedStatus.isAllChildOpen"
+        name="lucide:folder-kanban"
+      />
+      <Icon
+        v-if="!props.openedStatus.isAllRootOpen"
+        name="lucide:folder"
       />
     </UiItem1>
 

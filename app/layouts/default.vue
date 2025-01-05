@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import '~/assets/stylus/index.styl'
 
-import { useWindowSize } from '@vueuse/core'
+import { useStorage, useWindowSize } from '@vueuse/core'
 
 import { useAppNav } from '~/components/app/useAppNav'
 import { useInitApp } from '~/components/app/useInitApp'
@@ -28,7 +28,8 @@ const { locale, t } = useI18n()
 const { pointerClasses } = usePointerClass()
 const { width } = useWindowSize()
 
-const isShow = computed(() => trnsFormStore.ui.isShow)
+const isShowTrnForm = computed(() => trnsFormStore.ui.isShow)
+const isShowSidebar = useStorage('isShowSidebar', true)
 
 useGuard()
 
@@ -81,22 +82,23 @@ useSeoMeta({
     </div>
 
     <div v-else-if="status === 'success'" class="layoutBase">
-      <div class="grid h-full sm:grid-cols-[auto_1fr_auto]">
-        <LayoutSidebar :isShow />
-
-        <LayoutMenuSidebar
-          :isShowTitle="false"
-          class="sm:align-center bg-item-4 hidden justify-center gap-1 sm:flex sm:flex-col md:hidden"
+      <!-- Content -->
+      <div class="grid h-full grid-cols-[auto_1fr]">
+        <LayoutSidebar
+          :isShowTrnForm
+          :isShowSidebar
+          @toggleSidebar="isShowSidebar = !isShowSidebar"
         />
 
         <div
-          :class="{ 'md:translate-x-20': isShow }"
+          :class="{ 'md:translate-x-20': isShowTrnForm }"
           class="@container/main _pb-[42px] grid h-full overflow-hidden transition-all duration-300 ease-in-out sm:pb-0 md:pb-0"
         >
           <NuxtPage :keepalive="{ include: keepalive }" />
         </div>
       </div>
 
+      <!-- Menu -->
       <LayoutMenuBottom />
       <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
       <TrnFormFloatOpener />

@@ -176,25 +176,12 @@ function updateState(
           {{ $t('categories.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
         </UiTitle8>
 
-        <UiItem1 @click="toggleOpened">
-          <Icon
-            v-if="openedStatus.isAllRootOpen && !openedStatus.isAllChildOpen"
-            name="lucide:folder-open"
-          />
-          <Icon
-            v-if="openedStatus.isAllRootOpen && openedStatus.isAllChildOpen"
-            name="lucide:folder-kanban"
-          />
-          <Icon
-            v-if="!openedStatus.isAllRootOpen"
-            name="lucide:folder"
-          />
-        </UiItem1>
-
         <StatCategoriesButtons
           v-if="isShown"
           :catsLength="categoriesWithData.length"
           :isShowGrouped="!props.isOneCategory"
+          :openedStatus
+          @toggleOpened="toggleOpened"
         />
       </div>
     </template>
