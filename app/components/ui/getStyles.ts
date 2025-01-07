@@ -26,7 +26,6 @@ export const classes = {
     padding1: 'px-2 py-1.5',
     padding2: 'px-2',
     padding3: 'px-3',
-
     padding4: 'px-1',
 
     rounded: 'rounded-md',

@@ -84,7 +84,6 @@ onMounted(() => {
         v-if="opened.includes(categoryId) && categoriesStore.hasChildren(categoryId)"
         class="pb-2 pl-4 pr-2"
       >
-        <!-- :activeItemId="isEveryChildsSelected(categoryId) ? null : props.selectedIds?.includes(childCategoryId) ? childCategoryId : null" -->
         <CategoriesItem
           v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"
           :key="childCategoryId"
