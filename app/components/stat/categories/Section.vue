@@ -187,6 +187,7 @@ function updateState(
     </template>
 
     <template v-if="categoriesWithData.length > 0">
+      <!-- Vertical -->
       <div
         v-if="statConfig.config.value.vertical.isShow && verticalCategories.length > 1"
         class="grid"

@@ -7,7 +7,8 @@ import { type TransferType, TrnType } from '~/components/trns/types'
 import { getStyles } from '~/components/ui/getStyles'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-defineProps<{
+const props = defineProps<{
+  bottomSheetStyle?: Record<string, string>
   isLaptop: boolean
 }>()
 
@@ -80,18 +81,20 @@ watch(
 
           <TrnFormSelectorWallet
             v-if="slug === 'income' && incomeWalletId"
+            :bottomSheetStyle="props.bottomSheetStyle"
+            :isLaptop
             :title="t(slug)"
             :walletId="incomeWalletId"
-            :isLaptop
             @onOpen="n => emit('onOpen', n)"
             @onSelected="id => trnsFormStore.values.incomeWalletId = id"
           />
 
           <TrnFormSelectorWallet
             v-if="slug === 'expense' && expenseWalletId"
+            :bottomSheetStyle="props.bottomSheetStyle"
+            :isLaptop
             :title="t(slug)"
             :walletId="expenseWalletId"
-            :isLaptop
             @onOpen="n => emit('onOpen', n)"
             @onSelected="id => trnsFormStore.values.expenseWalletId = id"
           />
