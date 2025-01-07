@@ -58,9 +58,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     <template v-if="amount !== 0">
       <AmountItem
         :align="props.align"
-        :amount="
-          formatAmount(amount, currencyCode, { precision: props.precision })
-        "
+        :amount="formatAmount(amount, currencyCode, { precision: props.precision })"
         :isShowMinus="props.isShowMinus"
         :isShowPlus="props.isShowPlus"
         :isShowSymbol="props.isShowSymbol"

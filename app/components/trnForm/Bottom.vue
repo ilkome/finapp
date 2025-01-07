@@ -69,7 +69,7 @@ onMounted(init)
 <template>
   <BottomSheet
     :isShow="isShow"
-    drugClassesCustom="max-h-[100dvh] max-w-md"
+    drugClassesCustom="max-h-[98dvh] max-w-md"
     @closed="trnsFormStore.onClose()"
   >
     <template #handler="{ close }">
@@ -95,7 +95,7 @@ onMounted(init)
           <!-- Main -->
           <div class="swiper-slide getHeight bg-foreground-1">
             <div class="scroll scrollerBlock">
-              <div class="max-h-[90dvh]">
+              <div class="max-h-[98dvh]">
                 <TrnFormMain :maxHeight />
               </div>
             </div>

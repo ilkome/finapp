@@ -25,7 +25,7 @@
 @layer base {
   html,
   body {
-    @apply bg-foreground-1 font-primary text-1 leading-none antialiased h-dvh select-none;
+    @apply bg-foreground-1 font-primary text-1 leading-none antialiased select-none;
     overscroll-behavior-y: none;
   }
 }
@@ -44,7 +44,8 @@
   }
 
   .bottomSheetContent {
-    @apply grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden;
+    @apply grid h-full max-h-[98dvh] grid-rows-[auto,1fr,auto] overflow-hidden;
+    padding-bottom: calc(env(safe-area-inset-bottom) - 22px);
   }
 
   .bottomSheetContentInside {

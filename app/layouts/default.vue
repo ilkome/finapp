@@ -76,6 +76,7 @@ usePageScroll()
   <div
     :class="{ 'md:translate-x-20': isShowTrnForm && isShowSidebar && width >= 767 }"
     class="layoutBase @container/main overflow-hidden transition-all duration-300 ease-in-out"
+    style="margin-left: env(safe-area-inset-left)"
   >
     <NuxtPwaManifest />
 

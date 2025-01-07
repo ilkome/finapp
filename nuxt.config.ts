@@ -18,7 +18,7 @@ export default defineNuxtConfig({
       }],
       meta: [
         { charset: 'utf-8' },
-        { content: 'width=device-width, initial-scale=1', name: 'viewport' },
+        { content: 'width=device-width, initial-scale=1, viewport-fit=cover', name: 'viewport' },
         {
           content: process.env.npm_package_description || '',
           hid: 'description',
