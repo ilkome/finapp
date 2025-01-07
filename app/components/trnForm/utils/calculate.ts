@@ -28,7 +28,7 @@ function isOperator(value: string): boolean {
 }
 
 function isValidAction(value: string): value is CalculatorAction {
-  return ['*', '+', '.', '/', '=', '-', 'c'].includes(value)
+  return ['*', '+', '-', '.', '/', '=', 'c'].includes(value)
 }
 
 function getLastNumber(expression: string): string {
@@ -46,7 +46,7 @@ export function evaluateExpression(value: string): number {
     // Using Function constructor is necessary for dynamic evaluation
     // but we ensure input is sanitized
     // eslint-disable-next-line no-new-func
-    const result = Function(`"use strict";return (${expression})`)()
+    const result = new Function(`"use strict";return (${expression})`)()
 
     return result <= Number.MAX_SAFE_INTEGER ? Math.abs(result) : 0
   }

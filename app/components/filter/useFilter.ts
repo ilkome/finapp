@@ -1,5 +1,6 @@
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 

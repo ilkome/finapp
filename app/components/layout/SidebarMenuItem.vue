@@ -3,12 +3,12 @@ import useMenuData, { type MenuItem } from '~/components/layout/useMenuData'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
-  isShowTitle?: boolean
+  isShowText?: boolean
   item: MenuItem
   menuId: string
   position?: 'bottom'
 }>(), {
-  isShowTitle: true,
+  isShowText: true,
 })
 
 const { checkIsActive, onClick } = useMenuData()
@@ -20,7 +20,7 @@ const { checkIsActive, onClick } = useMenuData()
       getStyles('item', ['center', 'link', 'minh1', 'rounded', 'padding1']),
       {
         '!text-1': checkIsActive(props.menuId),
-        'gap-3': props.isShowTitle,
+        'gap-3': props.isShowText,
       },
     ]"
     class="group"
@@ -35,7 +35,7 @@ const { checkIsActive, onClick } = useMenuData()
     </div>
 
     <div
-      v-if="props.isShowTitle"
+      v-if="props.isShowText"
       class="text-sm"
     >
       {{ item.name }}

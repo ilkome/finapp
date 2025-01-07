@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+
 import { getPreparedFormData } from '~/components/categories/getForm'
 
 const { t } = useI18n()

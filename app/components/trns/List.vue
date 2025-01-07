@@ -80,6 +80,20 @@ const typeFilters = computed(() => {
   return [all, expense, income, transfers].filter(item => item.isShow)
 })
 
+const isTrnsWithDesc = computed(() => {
+  let ids = props.trnsIds ?? []
+
+  if (filterBy.value !== 'all') {
+    const typeFilter = typeFilters.value.find(item => item.slug === filterBy.value)
+
+    ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilter.type)
+  }
+
+  return (ids).some(
+    id => trnsStore.items[id].desc,
+  )
+})
+
 const selectedIds = computed(() => {
   let ids = props.trnsIds ?? []
 
@@ -99,20 +113,6 @@ const selectedIds = computed(() => {
 const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.value * props.size))
 
 const isShowedAllTrns = computed(() => paginatedTrnsIds.value.length === selectedIds.value.length)
-
-const isTrnsWithDesc = computed(() => {
-  let ids = props.trnsIds ?? []
-
-  if (filterBy.value !== 'all') {
-    const typeFilter = typeFilters.value.find(item => item.slug === filterBy.value)
-
-    ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilter.type)
-  }
-
-  return (ids).some(
-    id => trnsStore.items[id].desc,
-  )
-})
 
 function setFilterBy(type: TrnType | undefined) {
   if (filterBy.value === type) {
@@ -164,7 +164,7 @@ const groupedTrns = computed(() => {
       v-if="isShowFilterByType && typeFilters.length > 2"
       class="mb-2 ml-2"
     >
-      <UiTabsItem5
+      <UiTabsItem4
         v-for="filterItem in typeFilters"
         :key="filterItem.slug"
         :isActive="filterBy === filterItem.slug"
@@ -174,7 +174,7 @@ const groupedTrns = computed(() => {
         @click="setFilterBy(filterItem.slug)"
       >
         {{ filterItem.name }}
-      </UiTabsItem5>
+      </UiTabsItem4>
     </UiTabs2>
 
     <!-- With Desc -->
@@ -199,7 +199,7 @@ const groupedTrns = computed(() => {
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-item-5 border-b pb-2 pr-3"
+        class="border-b border-item-5 pb-2 pr-3"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -242,11 +242,11 @@ const groupedTrns = computed(() => {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="bg-item-9 overflow-hidden rounded-lg"
+        class="overflow-hidden rounded-lg bg-item-9"
       >
         <div
-          :class="{ '-border-b border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="_bg-item-4 flex items-end gap-2 px-3 py-2 pb-1"
+          :class="{ 'border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
+          class="flex items-end gap-2 px-3 py-2 pb-1"
         >
           <DateTrns
             :date="+date"
@@ -301,7 +301,7 @@ const groupedTrns = computed(() => {
       class="flex-center pt-1"
     >
       <div
-        class="flex-center bg-item-5 text-2 hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
+        class="flex-center rounded-full bg-item-5 px-5 py-2 text-sm text-2 hocus:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

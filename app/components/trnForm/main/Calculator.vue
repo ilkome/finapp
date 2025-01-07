@@ -35,7 +35,14 @@ onLongPress(
 </script>
 
 <template>
-  <div class="grid grid-cols-[.26fr,1fr,.26fr] justify-between gap-0">
+  <div
+    class="
+    _@sm/trnForm:bg-blue-500
+    _@md/trnForm:bg-red-500
+    _@lg/trnForm:bg-green-500
+    _@xs/trnForm:bg-yellow-500
+    grid grid-cols-[auto,1fr,auto] justify-between gap-0"
+  >
     <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="onClick('*')">
         <Icon
@@ -54,7 +61,7 @@ onLongPress(
       </TrnFormMainCalculatorButton>
     </div>
 
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col gap-1 px-3">
       <div
         v-for="(row, rowIdx) in buttons"
         :key="rowIdx"
@@ -91,7 +98,7 @@ onLongPress(
         <Icon name="mdi:comment-text-outline" />
         <div
           v-if="!!trnsFormStore.values.desc"
-          class="bg-accent-1 absolute right-1 top-1 aspect-square w-2 rounded-full"
+          class="absolute right-1 top-1 aspect-square w-2 rounded-full bg-accent-1"
         />
       </TrnFormMainCalculatorButton>
 

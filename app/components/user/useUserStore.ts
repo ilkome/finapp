@@ -55,8 +55,8 @@ export const useUserStore = defineStore('user', () => {
     }
 
     try {
-      trnsStore.unsubscribeTrns(null)
-      categoriesStore.unsubscribeCategories(null)
+      trnsStore.unsubscribeTrns()
+      categoriesStore.unsubscribeCategories()
       walletsStore.unsubscribeWallets()
       setUser(null)
 

@@ -45,7 +45,7 @@ pnpm i
 - Open Realtime Database and go to Rules tab.
 - Change rules to:
 
-``` javascript
+``` json
 {
   "rules": {
     "users": {

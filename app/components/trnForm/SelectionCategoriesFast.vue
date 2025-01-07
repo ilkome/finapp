@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -21,7 +22,7 @@ const trnsFormStore = useTrnsFormStore()
     class="pb-6"
   >
     <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-20 px-3 pb-3 pt-4"
+      class="sticky top-0 z-20 bg-foreground-1 px-3 pb-3 pt-4"
       @click="trnsFormStore.ui.catsRootModal = true"
     >
       {{ t("categories.favoriteTitle") }}
@@ -39,7 +40,7 @@ const trnsFormStore = useTrnsFormStore()
   <!-- Recent categories -->
   <div v-if="categoriesStore.recentCategoriesIds.length > 0">
     <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-20 px-3 pb-3 pt-4"
+      class="sticky top-0 z-20 bg-foreground-1 px-3 pb-3 pt-4"
       @click="trnsFormStore.ui.catsRootModal = true"
     >
       {{ t("categories.lastUsedTitle") }}

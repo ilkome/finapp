@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Period, StatDateProvider } from '~/components/date/types'
-import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 

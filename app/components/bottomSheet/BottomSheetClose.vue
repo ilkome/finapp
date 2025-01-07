@@ -1,7 +1,13 @@
+<script setup lang="ts">
+const emit = defineEmits<{
+  onClick: [e: Event]
+}>()
+</script>
+
 <template>
   <div
-    class="bg-item-5 hover:bg-item-6 absolute right-1 top-1 z-30 flex size-8 items-center justify-center rounded-full transition ease-in-out"
-    @click="$emit('onClick')"
+    class="absolute right-1 top-1 z-30 flex size-8 items-center justify-center rounded-full bg-item-5 transition ease-in-out hover:bg-item-6"
+    @click="(e: Event) => emit('onClick', e)"
   >
     <Icon
       name="lucide:x"

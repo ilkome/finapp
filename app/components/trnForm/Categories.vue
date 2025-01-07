@@ -39,14 +39,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="contentWrap grid h-full grid-rows-[1fr,auto]">
-    <div class="contentWrap__box">
-      <div ref="sliderRef" class="swiper-container">
+  <div class="relative grid h-full grid-rows-[1fr,auto] overflow-hidden">
+    <div class="h-full overflow-hidden">
+      <div ref="sliderRef" class="swiper-container h-full">
         <div class="swiper-wrapper">
           <!-- Recent -->
-          <div class="swiper-slide">
+          <div class="swiper-slide h-full">
             <div
-              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+              class="scrollBlock overflow-scroll-y scrollerBlock rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.lastUsedTitle") }}
             </div>
@@ -61,9 +61,9 @@ onMounted(() => {
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide">
+          <div class="swiper-slide h-full">
             <div
-              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+              class="scrollBlock overflow-scroll-y scrollerBlock rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.title") }}
             </div>
@@ -78,9 +78,9 @@ onMounted(() => {
           </div>
 
           <!-- Favorite -->
-          <div class="swiper-slide">
+          <div class="swiper-slide h-full">
             <div
-              class="scrollBlock overflow-scroll-y scrollerBlock text-item-base bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+              class="scrollBlock overflow-scroll-y scrollerBlock rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.favoriteTitle") }}
             </div>
@@ -123,24 +123,3 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<style lang="stylus" scoped>
-.contentWrap
-  overflow hidden
-  position relative
-
-  &__box
-    overflow hidden
-    height 100%
-
-  .swiper-container
-  .swiper-container .swiper-slide
-    height 100%
-
-.scrollBlock
-  overflow hidden
-  display grid
-  align-items flex-end
-  width 100%
-  height 100%
-</style>

@@ -1,13 +1,14 @@
 export function usePageScroll() {
-  const scroll = ref(0)
+  const route = useRoute()
+  const scroll = ref<Record<string, number>>({})
 
-  onActivated(() => {
+  onUpdated(() => {
     setTimeout(() => {
-      document.getElementById('pageScroll')?.scrollTo(scroll.value, scroll.value)
-    }, 5)
+      document.getElementById('pageScroll')?.scrollTo(0, scroll.value[route.path] ?? 0)
+    }, 10)
   })
 
-  onBeforeRouteLeave(() => {
-    scroll.value = document.getElementById('pageScroll')?.scrollTop ?? 0
+  onBeforeUpdate(() => {
+    scroll.value[route.path] = document.getElementById('pageScroll')?.scrollTop ?? 0
   })
 }

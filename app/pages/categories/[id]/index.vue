@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineOptions({ name: 'CategoriesId' })
-usePageScroll()
+// usePageScroll()
 </script>
 
 <template>

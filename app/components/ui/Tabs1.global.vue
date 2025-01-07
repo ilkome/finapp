@@ -1,14 +1,5 @@
 <template>
-  <div
-    class="
-      bg-item-4
-      flex
-      grow items-center
-      overflow-hidden
-      overflow-x-auto
-      rounded-md
-    "
-  >
+  <div class="@container/tabs flex grow items-center overflow-hidden overflow-x-auto rounded-md bg-item-4">
     <slot />
   </div>
 </template>

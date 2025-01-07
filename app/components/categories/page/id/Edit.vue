@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+
 import { getPreparedFormData } from '~/components/categories/getForm'
-import { getParentCategory } from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const { t } = useI18n()

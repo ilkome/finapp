@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import '~/assets/css/tailwind.css'
+import '~/assets/css/theme.css'
+
 // TODO: Add locale
 defineProps<{
   error: unknown

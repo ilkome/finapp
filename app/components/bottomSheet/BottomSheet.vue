@@ -221,13 +221,15 @@ function onDragging(event: Event): void {
   ) {
     drug.value
       ?.querySelector('.scrollerBlock')
-      ?.classList.add('pointer-events-none')
+      ?.classList
+      .add('pointer-events-none')
     drug.value.style.height = `${initialHeight.value - nextCurrentY.value}px`
   }
   else {
     drug.value
       ?.querySelector('.scrollerBlock')
-      ?.classList.remove('pointer-events-none')
+      ?.classList
+      .remove('pointer-events-none')
   }
 
   if (isHasScroll && !isHandler.value) {

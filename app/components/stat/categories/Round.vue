@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { onLongPress } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
 import type { CategoryWithData } from '~/components/stat/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -63,7 +65,7 @@ onLongPress(
     v-if="category"
     ref="longPressRef"
     :class="{ 'opacity-60': props.item.value === 0 }"
-    class="text-2 hocus:bg-item-5 bg-item-4 hover:bg-item-5 relative flex items-center gap-2 overflow-hidden rounded-full p-1 pr-2"
+    class="relative flex items-center gap-2 overflow-hidden rounded-full bg-item-4 p-1 pr-2 text-2 hover:bg-item-5 hocus:bg-item-5"
   >
     <div
       :style="{ backgroundColor: category?.color }"

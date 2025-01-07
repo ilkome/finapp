@@ -10,38 +10,25 @@ const { t } = useI18n()
 
     <div class="flex gap-8 pb-3">
       <div>
-        <div class="subTitle pb-4">
+        <div class="text-font-4 pb-4 text-xs">
           {{ t('author') }}
         </div>
-        <div class="name">
+        <div class="text-font-2 font-secondary text-sm leading-none">
           ilkome
         </div>
       </div>
 
       <div>
-        <div class="subTitle pb-4">
+        <div class="text-font-4 pb-4 text-xs">
           {{ t('thanks') }}
         </div>
-        <div class="name">
+        <div class="text-font-2 font-secondary text-sm leading-none">
           TheCarolissy, TihomirovPro
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style lang="stylus" scoped>
-.subTitle
-  padding-bottom 4px
-  color var(--c-font-4)
-  font-size 12px
-
-.name
-  color var(--c-font-2)
-  font-size 14px
-  line-height 18px
-  font-family var(--font-secondary)
-</style>
 
 <i18n lang="yaml">
 en:

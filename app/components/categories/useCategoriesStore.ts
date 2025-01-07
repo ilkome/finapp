@@ -1,7 +1,7 @@
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import localforage from 'localforage'
-import { type ComputedRef, type ShallowRef, computed, shallowRef } from 'vue'
+import { computed, type ComputedRef, type ShallowRef, shallowRef } from 'vue'
 import { deepUnref } from 'vue-deepunref'
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem, CategoryItemWithId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'

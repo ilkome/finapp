@@ -1,5 +1,5 @@
-import { generateId } from '~~/utils/generateId'
 import { defineStore } from 'pinia'
+import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { TrnFormUi } from '~/components/trnForm/types'

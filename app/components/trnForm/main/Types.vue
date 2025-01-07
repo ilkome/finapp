@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import type { TrnType } from '~/components/trns/types'
+
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const trnsFormStore = useTrnsFormStore()

@@ -3,6 +3,7 @@ import { usePointer, useWindowSize } from '@vueuse/core'
 
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
+  drugClassesCustom?: string
   isOpen?: boolean
   placement?: string
   title: string
@@ -49,7 +50,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         <BottomSheet
           v-if="props.isOpen"
           isShow
-          drugClassesCustom="bottomSheetDrugClassesCustom"
+          :drugClassesCustom="`${props.drugClassesCustom ?? ''}`"
           :drugStyle="props.bottomSheetStyle"
           @closed="emit('onCloseModal')"
         >

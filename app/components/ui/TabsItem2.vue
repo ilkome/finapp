@@ -10,16 +10,10 @@ const emit = defineEmits(['click'])
 
 <template>
   <div
-    :class="[
-      getStyles('item', ['link', 'rounded', 'minh2', '_minw2']),
-      { '!bg-item-3 !text-1': isActive },
-    ]"
-    class="
-      border-1 text-2 flex items-center
-      justify-center gap-1
-      rounded-md
-      px-2 text-sm leading-none
-    "
+    :class="[getStyles('item', ['link', 'rounded', 'minh2', '_minw2']), {
+      '!bg-item-3 !text-1': isActive,
+    }]"
+    class="flex items-center justify-center gap-1 rounded-md border-1 px-2 text-sm leading-none text-2"
     @click="emit('click')"
   >
     <slot />

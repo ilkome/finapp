@@ -5,14 +5,14 @@ import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 export const seriesOptions: Record<MoneyTypeSlugNew, { color: string, colorLine?: string, localeKey: string, type: ChartType }> = {
   expense: {
-    color: 'var(--text-expense-1)',
-    colorLine: 'var(--text-expense-line)',
+    color: 'var(--expense-1)',
+    colorLine: 'var(--expense-line)',
     localeKey: 'money.expense',
     type: 'bar',
   },
   income: {
-    color: 'var(--text-income-1)',
-    colorLine: 'var(--text-income-line)',
+    color: 'var(--income-1)',
+    colorLine: 'var(--income-line)',
     localeKey: 'money.expense',
     type: 'bar',
   },

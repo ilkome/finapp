@@ -24,7 +24,6 @@ export default <Partial<Config>>{
       aspectRatio: {
         auto: 'auto',
         square: '1 / 1',
-        video: '16 / 9',
       },
       colors: {
         '1': 'rgb(var(--text-1))',
@@ -38,22 +37,17 @@ export default <Partial<Config>>{
           3: 'rgb(var(--accent-3))',
           4: 'var(--accent-4)',
         },
-        'alert-primary': 'var(--text-alert-primary)',
+        'alert-primary': 'var(--alert-primary)',
         'expense': {
-          1: 'var(--text-expense-1)',
-          2: 'var(--text-expense-2)',
+          1: 'var(--expense-1)',
         },
         'foreground': {
           1: 'rgb(var(--foreground-1))',
           2: 'rgb(var(--foreground-2))',
-          3: 'rgb(var(--foreground-3))',
-          4: 'rgb(var(--foreground-4))',
-          5: 'rgb(var(--foreground-5))',
         },
         'icon-primary': 'var(--text-icon-primary)',
         'income': {
-          1: 'var(--text-income-1)',
-          2: 'var(--text-income-2)',
+          1: 'var(--income-1)',
         },
         'item': {
           1: 'var(--c-item-1)',
@@ -65,6 +59,7 @@ export default <Partial<Config>>{
           8: 'rgba(var(--item-8))',
           9: 'rgba(var(--item-9))',
           10: 'rgba(var(--item-10))',
+          11: 'var(--item-11)',
         },
       },
       fontFamily: {

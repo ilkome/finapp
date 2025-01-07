@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineOptions({ name: 'WalletsId' })
-usePageScroll()
+// usePageScroll()
 </script>
 
 <template>

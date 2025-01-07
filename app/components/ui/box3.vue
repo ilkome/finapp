@@ -9,7 +9,7 @@ const emit = defineEmits<{
 <template>
   <div
     :class="[getStyles('item', ['link', 'alt', 'padding3', 'center', 'minh1', 'minw1', 'rounded'])]"
-    class="text-1 grid grow gap-1 px-3 py-2"
+    class="grid grow gap-1 px-3 py-2 text-1"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

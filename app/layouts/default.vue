@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import '~/assets/stylus/index.styl'
+import '~/assets/css/theme.css'
+import '~/assets/css/tailwind.css'
 
 import { useStorage, useWindowSize } from '@vueuse/core'
 
@@ -67,10 +68,15 @@ useSeoMeta({
   ogTitle: (chunk?: string) => chunk ? `${chunk} - ${t('appName')}` : t('appName'),
   titleTemplate: (chunk?: string) => chunk ? `${chunk} - ${t('appName')}` : t('appName'),
 })
+
+usePageScroll()
 </script>
 
 <template>
-  <div>
+  <div
+    :class="{ 'md:translate-x-20': isShowTrnForm && isShowSidebar && width >= 767 }"
+    class="layoutBase @container/main overflow-hidden transition-all duration-300 ease-in-out"
+  >
     <NuxtPwaManifest />
 
     <div v-if="status === 'error'">
@@ -81,35 +87,35 @@ useSeoMeta({
       {{ t('base.loading') }}
     </div>
 
-    <div v-else-if="status === 'success'" class="layoutBase">
-      <!-- Content -->
-      <div class="grid h-full grid-cols-[auto_1fr]">
-        <LayoutSidebar
-          :isShowTrnForm
-          :isShowSidebar
-          @toggleSidebar="isShowSidebar = !isShowSidebar"
-        />
+    <template v-else-if="status === 'success'">
+      <LayoutSidebar
+        :isShowTrnForm
+        :isShowSidebar
+        @toggleSidebar="isShowSidebar = !isShowSidebar"
+      />
 
-        <div
-          :class="{ 'md:translate-x-20': isShowTrnForm }"
-          class="@container/main _pb-[42px] grid h-full overflow-hidden transition-all duration-300 ease-in-out sm:pb-0 md:pb-0"
-        >
-          <NuxtPage :keepalive="{ include: keepalive }" />
-        </div>
-      </div>
+      <main
+        id="pageScroll"
+        :class="{
+          'sm:pl-72': isShowSidebar && width >= 767,
+        }"
+        class="grid h-full overflow-hidden overflow-y-auto sm:p-2 sm:pl-12"
+      >
+        <NuxtPage :keepalive="{ include: keepalive }" />
+      </main>
 
       <!-- Menu -->
       <LayoutMenuBottom />
       <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
       <TrnFormFloatOpener />
-    </div>
+    </template>
 
     <Teleport
       v-if="categoriesStore.hasItems && walletsStore.hasItems"
       to="body"
     >
       <TrnFormBottom v-if="width < 767" />
-      <TrnFormSidebar v-if="width >= 767" />
+      <TrnFormSidebar v-if="width > 767" />
     </Teleport>
   </div>
 </template>
