@@ -7,7 +7,6 @@ import { errorEmo, random } from '~/assets/js/emo'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { icons, types } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { normalizeWalletItem } from '~/components/wallets/utils'
 
 const props = defineProps<{
   walletForm: WalletForm

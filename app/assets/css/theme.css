@@ -1,0 +1,129 @@
+html {
+  --hue: 220deg;
+  --c-blue-1: hsl(220, 100%, 61%);
+  --alert-primary: #b81414;
+
+  --expense-1: #f92134;
+  --expense-line: oklch(0.37 0.09 20.05);
+
+  --income-1: #2cad22;
+  --income-line: oklch(55.43% 0.13485 122.48);
+}
+
+/*
+  * Light Theme
+*/
+html {
+  --text-1: 64 64 64;
+  --text-2: 0 0 0;
+  --text-2: 0 0 0;
+  --text-3: 64 64 64;
+  --text-4: 0 0 0;
+  --text-icon-primary: theme('colors.neutral.50');
+
+  --foreground-1: 255 255 255;
+  --foreground-2: 245 245 245;
+
+  --accent-1: 0 122 255;
+  --accent-2: 58 125 255;
+  --accent-3: 255 255 255;
+  --accent-4: var(--hue) 100% 61%;
+
+  /* Item */
+  --c-item-1: theme('colors.neutral.700');
+  --c-item-2: theme('colors.neutral.500');
+  --c-item-3: #edeef0;
+  --c-item-4: theme('colors.neutral.100');
+  --c-item-5: theme('colors.gray.200');
+  --c-item-base: theme('colors.neutral.600');
+  --item-6: 237 239 240;
+  --item-8: 25 25 25;
+  --item-9: 245 245 245;
+  --item-10: 28 28 28;
+  --item-11: rgba(190, 190, 190, 1);
+  --item-active: 216 216 220;
+
+  /* Colors */
+  --c-red-1: #b81414;
+  --c-blue-3: #2c74ff;
+  --c-income-1: rgba(44, 173, 34, 1);
+
+  /* Backgrounds */
+  --c-bg-10: rgba(230, 230, 230, 1);
+  --c-bg-11: rgba(0, 0, 0, 0.04);
+  --c-bg-12: rgba(100, 100, 100, 1);
+  --c-bg-13: rgba(120, 120, 120, 1);
+  --c-bg-14: rgba(0, 0, 0, 0.6);
+
+  --c-font-1: #fafafa;
+  --c-font-2: #505050;
+  --c-font-3: #323232;
+  --c-font-4: #6e6e6e;
+  --c-font-5: #969696;
+
+  /* Chart */
+  --chart-bg: var(--c-item-4);
+  --chart-label: var(--c-font-5);
+  --chart-line: var(--c-item-5);
+  --chart-selected: var(--c-item-3);
+  --chart-splitLine: var(--item-3);
+  --chart-tooltip: theme('colors.neutral.800');
+}
+
+/*
+  * Dark Theme
+*/
+html.dark {
+  /* Text */
+  --text-1: 220 220 220;
+  --text-2: 160 160 160;
+  --text-3: 200 200 200;
+  --text-4: 130 130 130;
+  --text-5: 120 120 120;
+
+  --text-icon-primary: theme('colors.neutral.50');
+
+  --foreground-1: 19 19 19;
+  --foreground-2: 22 22 22;
+
+  --accent-1: 56 148 2451;
+  --accent-2: 58 125 255;
+  --accent-3: 255 255 255;
+  --accent-4: var(--hue) 100% 61%;
+
+  /* Item */
+  --c-item-1: theme('colors.neutral.100');
+  --c-item-2: theme('colors.neutral.400');
+  --c-item-3: #232323;
+  --c-item-4: #1c1c1c;
+  --c-item-5: theme('colors.neutral.800');
+  --c-item-base: theme('colors.neutral.200');
+  --item-6: 44 44 44;
+  --item-8: 25 25 25;
+  --item-9: 23 23 23;
+  --item-11: #878787;
+  --item-10: 28 28 28;
+
+  /* Colors */
+  --c-red-1: #b81414;
+  --c-blue-3: #2c74ff;
+  --c-income-1: #2cad22;
+
+  /* Backgrounds */
+  --c-bg-10: #dcdcdc;
+  --c-bg-14: #000000cc;
+
+  --c-font-1: #fafafa;
+  --c-font-2: #dcdcdc;
+  --c-font-3: #bebebe;
+  --c-font-4: #969696;
+  --c-font-5: #646464;
+
+  /* Chart */
+  --chart-bg: var(--c-item-5);
+  --chart-label: var(--c-font-5);
+  --chart-line: var(--c-item-5);
+  --chart-selected: var(--c-item-5);
+  --chart-splitLine: theme('colors.neutral.700');
+  --chart-tooltip: theme('colors.neutral.400');
+}

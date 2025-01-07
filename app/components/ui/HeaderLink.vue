@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
-
 const props = defineProps<{
   icon?: string
 }>()

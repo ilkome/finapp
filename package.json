@@ -15,8 +15,10 @@
     "node": ">=v20.0.0"
   },
   "scripts": {
-    "dev": "nuxt dev -p 3050 --host",
     "build": "nuxt generate",
+    "dev": "nuxt dev -p 3050 --host",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "nuxt generate && nuxt preview",
     "test": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -60,7 +62,6 @@
     "nuxt": "^3.15.0",
     "nuxt-icon": "^0.6.10",
     "nuxt-vuefire": "^1.0.5",
-    "stylus": "^0.64.0",
     "supports-color": "8.1.1",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "^3.4.17",

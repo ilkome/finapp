@@ -12,8 +12,6 @@ useSeoMeta({
   ogTitle: t('stat.title'),
   titleTemplate: t('stat.title'),
 })
-
-usePageScroll()
 </script>
 
 <template>

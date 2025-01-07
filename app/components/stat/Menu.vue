@@ -32,7 +32,7 @@ const menu = computed(() => {
     name: t('money.income'),
   })
 
-  if (width.value > 1024) {
+  if (width.value > 766) {
     all.push({
       id: 'summary',
       name: t('money.split'),
@@ -61,7 +61,7 @@ watch(() => props.active, () => {
 
 <template>
   <UiTabs2>
-    <UiTabsItem5
+    <UiTabsItem4
       v-for="item in menu"
       :key="item.id"
       :isActive="item.id === props.active"
@@ -69,6 +69,6 @@ watch(() => props.active, () => {
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}
-    </UiTabsItem5>
+    </UiTabsItem4>
   </UiTabs2>
 </template>

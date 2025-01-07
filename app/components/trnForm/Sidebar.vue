@@ -47,46 +47,48 @@ watch(isShow, (v) => {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="trnForm bg-foreground-1 border-item-5 absolute left-0 top-0 z-50 h-full w-96 overflow-hidden border-r-2 shadow-2xl"
+      class="@container/trnForm trnForm absolute inset-y-0 z-50 h-full w-[360px] py-2"
     >
-      <div class="absolute right-2 top-2">
-        <BottomSheetClose @onClick="trnsFormStore.onClose()" />
-      </div>
+      <div class="relative h-full overflow-hidden rounded-r-xl border border-item-6 border-l-foreground-2 bg-foreground-2 shadow-2xl">
+        <div class="absolute right-2 top-2">
+          <BottomSheetClose @onClick="trnsFormStore.onClose()" />
+        </div>
 
-      <div ref="sliderRef2" class="swiper-container h-full">
-        <div class="swiper-wrapper">
-          <!-- Main -->
-          <div class="swiper-slide bg-foreground-1 h-full">
-            <div class="scroll scrollerBlock grid grid-rows-[auto,1fr] gap-4">
-              <TrnFormMain maxHeight="100vh" class="!pb-0" />
+        <div ref="sliderRef2" class="swiper-container h-full">
+          <div class="swiper-wrapper">
+            <!-- Main -->
+            <div class="swiper-slide h-full bg-foreground-1">
+              <div class="scroll scrollerBlock grid grid-rows-[auto,1fr] gap-4">
+                <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
-              <!-- History -->
-              <TrnFormTrnsSlide
-                :slider="sliderObj"
-                :mainSlideIdx="0"
-                class="px-2 pb-6"
-              />
-            </div>
-          </div>
-
-          <!-- Quick selector -->
-          <div
-            class="swiper-slide bg-foreground-1"
-            :style="{ height: '100%' }"
-          >
-            <div class="scroll scrollerBlock">
-              <div class="py-4">
-                <TrnFormSelectionWalletsFast class="pb-6" />
-                <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="id => trnsFormStore.values.categoryId = id"
+                <!-- History -->
+                <TrnFormTrnsSlide
+                  :slider="sliderObj"
+                  :mainSlideIdx="0"
+                  class="px-2 pb-6"
                 />
+              </div>
+            </div>
+
+            <!-- Quick selector -->
+            <div
+              class="swiper-slide bg-foreground-1"
+              :style="{ height: '100%' }"
+            >
+              <div class="scroll scrollerBlock">
+                <div class="py-4">
+                  <TrnFormSelectionWalletsFast class="pb-6" />
+                  <TrnFormSelectionCategoriesFast
+                    @onSelectCategory="id => trnsFormStore.values.categoryId = id"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="trnForm__pagination" />
+        <div class="trnForm__pagination" />
+      </div>
     </div>
   </Transition>
 

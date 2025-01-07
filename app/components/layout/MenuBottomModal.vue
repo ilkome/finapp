@@ -21,7 +21,7 @@ const { isDemo } = useDemo()
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="bg-foreground-1 grid gap-3 px-1 py-3">
+      <div class="grid gap-3 bg-foreground-1 px-1 py-3">
         <!-- User -->
         <div
           v-if="userStore.user"
@@ -35,7 +35,7 @@ const { isDemo } = useDemo()
           </div>
         </div>
 
-        <LayoutMenuSidebar />
+        <LayoutSidebarMenu />
 
         <div class="pl-2">
           <AppThemeSwitcher isShowSystem />

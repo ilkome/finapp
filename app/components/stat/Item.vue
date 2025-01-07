@@ -113,6 +113,7 @@ const averageTotal = computed(() => {
 
   const items = {
     month: 0,
+    // eslint-disable-next-line perfectionist/sort-objects
     week: 0,
     // eslint-disable-next-line perfectionist/sort-objects
     day: 0,
@@ -238,7 +239,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       @click="onClickSumItem"
     />
 
-    <div class="grid gap-2 pt-3">
+    <div class="grid w-full gap-2 pt-3">
       <StatCategoriesSection
         v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
         :isOneCategory="props.isOneCategory"

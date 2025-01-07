@@ -19,15 +19,12 @@ export type AmountProps = {
   variant?: '2xs' | '3xl' | 'base' | 'sm' | 'xl'
 }
 
-const props = withDefaults(
-  defineProps<AmountProps>(),
-  {
-    align: 'right',
-    isShowBaseRate: true,
-    isShowSymbol: true,
-    variant: 'base',
-  },
-)
+const props = withDefaults(defineProps<AmountProps>(), {
+  align: 'right',
+  isShowBaseRate: true,
+  isShowSymbol: true,
+  variant: 'base',
+})
 
 const emit = defineEmits<{
   click: [e: Event]
@@ -47,7 +44,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       'text-xl': props.variant === 'xl',
       'text-base': props.variant === 'base',
     }"
-    class="font-secondary text-1 grid gap-1 leading-none"
+    class="grid gap-1 font-secondary leading-none text-1 "
     @click="(e: Event) => emit('click', e)"
   >
     <AmountItem
@@ -61,7 +58,9 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     <template v-if="amount !== 0">
       <AmountItem
         :align="props.align"
-        :amount="formatAmount(amount, currencyCode, { precision: props.precision })"
+        :amount="
+          formatAmount(amount, currencyCode, { precision: props.precision })
+        "
         :isShowMinus="props.isShowMinus"
         :isShowPlus="props.isShowPlus"
         :isShowSymbol="props.isShowSymbol"

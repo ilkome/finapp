@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { sortCategoriesByAmount } from '~/components/stat/utils'
+
 import type { CategoryWithData } from '~/components/stat/types'
+
+import { sortCategoriesByAmount } from '~/components/stat/utils'
 
 describe('sortCategoriesByAmount', () => {
   it('sort multiple values in correct order', () => {

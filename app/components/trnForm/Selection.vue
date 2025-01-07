@@ -116,7 +116,7 @@ async function onSelectParentCategory(id: CategoryId) {
             >
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <UiTitle3
-                  class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
+                  class="sticky top-0 z-10 bg-foreground-1 px-3 pb-3 pt-4"
                   @click="trnsFormStore.ui.catsRootModal = true"
                 >
                   {{ $t("categories.title") }}
@@ -140,27 +140,12 @@ async function onSelectParentCategory(id: CategoryId) {
 }
 </style>
 
-<style lang="stylus">
-.trnFormSelectionPagination
-  &.swiper-pagination-horizontal
-    z-index 2
-    position absolute
-    left 50%
-    bottom 1px
-    display flex
-    align-items center
-    justify-content center
-    width auto
-    padding 6px
-    background alpha(#171717, .9)
-    border-radius 6px
-    transform translateX(-50%)
+<style>
+.trnFormSelectionPagination.swiper-pagination-horizontal {
+  @apply absolute bottom-[1px] left-1/2 z-[2] flex w-auto -translate-x-1/2 items-center justify-center rounded-md bg-[rgba(23,23,23,0.9)] p-1.5;
+}
 
-    .swiper-pagination-bullet
-      opacity 1
-      width 6px
-      height 6px
-      margin 0 4px
-      background var(--c-bg-9)
-      border-radius 50%
+.trnFormSelectionPagination.swiper-pagination-horizontal .swiper-pagination-bullet {
+  @apply m-1 size-1.5 rounded-full bg-item-11 opacity-100;
+}
 </style>

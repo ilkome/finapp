@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 
-import { getParentCategory } from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
@@ -67,9 +66,9 @@ onMounted(() => {
       :key="categoryId"
       class="group"
       :class="{
-        'bg-item-4 relative mb-2 rounded-md': opened.includes(categoryId),
-        'bg-item-4 rounded-md': isChildsSelected(categoryId),
-        '!border-accent-1/60 border': isEveryChildsSelected(categoryId),
+        'relative mb-2 rounded-md bg-item-4': opened.includes(categoryId),
+        'rounded-md bg-item-4': isChildsSelected(categoryId),
+        'border !border-accent-1/60': isEveryChildsSelected(categoryId),
       }"
     >
       <CategoriesItem

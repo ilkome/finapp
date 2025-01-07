@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { getTrnsIds } from '~/components/trns/getTrns'
 import { trnsItems } from '~~/mocks/trns'
+
+import { getTrnsIds } from '~/components/trns/getTrns'
 
 describe('get Transactions IDs', () => {
   it('get Transactions IDs in Wallet Cash USD', () => {

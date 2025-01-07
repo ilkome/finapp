@@ -2,9 +2,9 @@
 import useMenuData from '~/components/layout/useMenuData'
 
 withDefaults(defineProps<{
-  isShowTitle?: boolean
+  isShowText?: boolean
 }>(), {
-  isShowTitle: true,
+  isShowText: true,
 })
 
 const { items } = useMenuData()
@@ -12,12 +12,12 @@ const { items } = useMenuData()
 
 <template>
   <div>
-    <LayoutMenuSidebarItem
+    <LayoutSidebarMenuItem
       v-for="(item, menuId) in items"
       :key="menuId"
       :item
       :menuId
-      :isShowTitle
+      :isShowText
     />
   </div>
 </template>

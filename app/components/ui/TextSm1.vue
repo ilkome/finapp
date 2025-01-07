@@ -6,7 +6,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="text-2 font-primary text-xs leading-none"
+    class="font-primary text-xs leading-none text-2"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

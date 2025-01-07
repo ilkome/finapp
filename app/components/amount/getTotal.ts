@@ -1,8 +1,9 @@
 import type { CategoryId } from '~/components/categories/types'
+import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId, WalletItem } from '~/components/wallets/types'
+
 import { TrnType } from '~/components/trns/types'
-import type { CurrencyCode, Rates } from '~/components/currencies/types'
 
 export function getAmountInRate({
   amount,

@@ -23,7 +23,7 @@ const emit = defineEmits<{
     :class="{
       [cn('rounded-full w-7 p-1.5', props.class)]: props.invert,
     }"
-    class="flex-center text-icon-primary aspect-square overflow-hidden"
+    class="flex-center aspect-square overflow-hidden text-icon-primary"
     @click="(e: Event) => emit('click', e)"
   >
     <Icon

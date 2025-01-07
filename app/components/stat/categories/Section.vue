@@ -189,15 +189,17 @@ function updateState(
     <template v-if="categoriesWithData.length > 0">
       <div
         v-if="statConfig.config.value.vertical.isShow && verticalCategories.length > 1"
-        class="flex overflow-y-auto pb-2 pl-1 pt-4"
+        class="grid"
       >
-        <StatCategoriesVertical
-          v-for="item in verticalCategories.filter(c => c.value !== 0)"
-          :key="item.id"
-          :item="item"
-          :biggestCatNumber="verticalBiggestCatNumber"
-          @click="$emit('clickCategory', item.id)"
-        />
+        <div class="flex overflow-hidden overflow-x-auto pb-2 pl-1 pt-4">
+          <StatCategoriesVertical
+            v-for="item in verticalCategories.filter(c => c.value !== 0)"
+            :key="item.id"
+            :item="item"
+            :biggestCatNumber="verticalBiggestCatNumber"
+            @click="$emit('clickCategory', item.id)"
+          />
+        </div>
       </div>
 
       <!-- Lines -->
@@ -246,7 +248,7 @@ function updateState(
           </template>
 
           <!-- Inside -->
-          <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-3">
+          <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-5 pl-3">
             <div
               v-if="!item.categories || item.categories.length === 0"
               class="mb-3 ml-11"
@@ -311,7 +313,7 @@ function updateState(
                 </template>
 
                 <!-- Inside -->
-                <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-14">
+                <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-5 pl-14">
                   <TrnsList
                     :trnsIds="itemInside.trnsIds"
                     :size="5"

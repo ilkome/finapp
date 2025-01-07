@@ -12,9 +12,7 @@
   }
 
   .absolute-center {
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    @apply absolute top-1/2 left-1/2;
     transform: translate(-50%, -50%);
   }
 
@@ -24,63 +22,62 @@
   }
 }
 
-html,
-body {
-  overscroll-behavior-y: none;
-  user-select: none;
-
-  @apply bg-foreground-1 font-primary text-1 leading-none antialiased h-dvh;
+@layer base {
+  html,
+  body {
+    @apply bg-foreground-1 font-primary text-1 leading-none antialiased h-dvh select-none;
+    overscroll-behavior-y: none;
+  }
 }
 
-.layoutBase {
-  @apply overflow-hidden relative h-dvh;
-}
+@layer components {
+  .layoutBase {
+    @apply overflow-hidden relative h-dvh bg-foreground-2;
+  }
 
-.pageWrapper {
-  @apply max-w-xl grow px-2 lg:px-4 2xl:px-8;
-}
+  .pageWrapper {
+    @apply max-w-xl grow px-2 lg:px-4 2xl:px-8;
+  }
 
-.bottomSheetDrugClassesCustom {
-  @apply bg-foreground-1 max-w-md rounded-xl;
-}
+  .bottomSheetDrugClassesCustom {
+    @apply bg-foreground-1 max-w-md rounded-xl;
+  }
 
-.bottomSheetContent {
-  @apply grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden;
-}
+  .bottomSheetContent {
+    @apply grid h-full max-h-[90vh] grid-rows-[auto,1fr,auto] overflow-hidden;
+  }
 
-.bottomSheetContentInside {
-  @apply grid h-full gap-1 overflow-hidden overflow-y-auto px-2 py-px;
-}
+  .bottomSheetContentInside {
+    @apply grid h-full bg-foreground-1 gap-1 overflow-hidden overflow-y-auto px-2 py-px;
+  }
 
-.bottomSheetContentBottom {
-  @apply flex items-center justify-center p-2;
-}
+  .bottomSheetContentBottom {
+    @apply flex items-center justify-center p-2;
+  }
 
-.trnForm .trnForm__pagination {
-  z-index: 2;
-  position: absolute;
-  left: 50%;
-  bottom: 1px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: auto;
-  padding: 6px;
-  border-radius: 6px;
-  transform: translateX(-50%);
-  @apply bg-foreground-1;
-}
+  /* Scrollbar styles */
+  .scroll,
+  .scrollbar {
+    @apply h-full overflow-hidden overflow-y-auto;
+  }
 
-.trnForm .swiper-pagination-bullet {
-  display: block;
-  opacity: 1;
-  width: 6px;
-  height: 6px;
-  margin: 0 4px;
-  border-radius: 50%;
-  @apply bg-item-3;
-}
+  .scroll::-webkit-scrollbar,
+  .scrollbar::-webkit-scrollbar {
+    @apply w-1.5 h-1.5;
+  }
 
-.trnForm .swiper-pagination-bullet-active {
-  @apply bg-accent-1;
+  .scroll::-webkit-scrollbar-track,
+  .scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent rounded-[10px];
+  }
+
+  .scroll::-webkit-scrollbar-thumb,
+  .scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gray-500 rounded-[10px];
+  }
+
+  .scroll::-webkit-scrollbar-thumb:hover,
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-600;
+  }
 }

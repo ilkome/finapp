@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { WalletId, WalletItem } from '~/components/wallets/types'
+
 import { normalizeWalletItem } from '~/components/wallets/utils'
 
 const { t } = useI18n()

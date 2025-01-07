@@ -16,7 +16,7 @@ const formattedDate = computed(() => formatDate(props.date, 'full'))
     </div>
 
     <div class="text-2">
-      <div class="text-2xs pb-[2px] leading-none">
+      <div class="pb-[2px] text-2xs leading-none">
         {{ formattedDate.weekday }}
       </div>
 

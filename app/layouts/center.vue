@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import '~/assets/stylus/index.styl'
+import '~/assets/css/theme.css'
+import '~/assets/css/tailwind.css'
 import { usePointerClass } from '~/components/layout/usePointerClass'
 import { useGuard } from '~/components/user/useGuard'
 

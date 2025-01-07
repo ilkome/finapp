@@ -1,6 +1,5 @@
 import type { DeepPartial } from '~~/utils/types'
 
-import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CurrencyCode } from '~/components/currencies/types'
 
 export const types = [

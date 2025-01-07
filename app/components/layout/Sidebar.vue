@@ -4,7 +4,6 @@ import { useWindowSize } from '@vueuse/core'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useDemo } from '~/components/demo/useDemo'
-import { getStyles } from '~/components/ui/getStyles'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
@@ -25,27 +24,22 @@ const { width } = useWindowSize()
 
 <template>
   <div
-    :class="{ 'translate-x-20': props.isShowTrnForm }"
-    class="bg-foreground-3 relative h-full overflow-hidden transition-all duration-300 ease-in-out"
+    :class="{
+      '': props.isShowTrnForm && props.isShowSidebar && width >= 767,
+      'block w-72': props.isShowSidebar && width >= 767,
+    }"
+    class="fixed inset-y-0 left-0 z-10 hidden h-full w-12 overflow-hidden sm:block"
   >
-    <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
-      <UiItem1
-        class="text-4 bg-foreground-3 z-10"
-        @click="emit('toggleSidebar')"
-      >
-        <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
-      </UiItem1>
-    </div>
-
-    <LayoutMenuSidebar
-      :isShowTitle="false"
+    <!-- Small menu -->
+    <LayoutSidebarMenu
+      :isShowText="false"
+      :class="{ 'md:hidden': props.isShowSidebar }"
       class="sm:align-center hidden h-full flex-col justify-center gap-1 sm:flex"
-      :class="{ 'md:hidden': props.isShowSidebar, '!': !props.isShowSidebar }"
     />
 
     <div
       v-if="width >= 768 && props.isShowSidebar"
-      class="grid h-full min-w-72 content-start gap-6 overflow-hidden overflow-y-auto"
+      class="grid h-full content-start gap-6 overflow-hidden overflow-y-auto"
     >
       <div class="flex items-center justify-between pl-4 pr-2 pt-5">
         <NuxtLink to="/dashboard" class="block cursor-default">
@@ -77,7 +71,7 @@ const { width } = useWindowSize()
         </UiButtonBlue>
       </div>
 
-      <LayoutMenuSidebar class="px-2 pb-2" />
+      <LayoutSidebarMenu class="px-2 pb-2" />
 
       <div class="px-2 pb-6">
         <UiTitle3 class="pb-2 pl-3">
@@ -96,7 +90,7 @@ const { width } = useWindowSize()
               :walletId
               :lineWidth="1"
               :wallet="walletItem"
-              :activeItemId="route.params.id as string"
+              :activeItemId="(route.params.id as string)"
               class="group"
               isShowIcon
               @click="() => walletId === route.params.id ? router.push('/dashboard') : router.push(`/wallets/${walletId}`)"
@@ -113,6 +107,15 @@ const { width } = useWindowSize()
           </template>
         </WalletsList>
       </div>
+    </div>
+
+    <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
+      <UiItem1
+        class="z-10 bg-foreground-2 text-4"
+        @click="emit('toggleSidebar')"
+      >
+        <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
+      </UiItem1>
     </div>
   </div>
 </template>

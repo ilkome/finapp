@@ -77,7 +77,7 @@ onMounted(init)
       <BottomSheetClose @onClick="close" />
     </template>
 
-    <div class="trnForm bg-foreground-1">
+    <div class="trnForm @container/trnForm bg-foreground-1">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->

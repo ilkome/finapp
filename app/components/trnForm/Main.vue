@@ -96,7 +96,7 @@ const actions = computed(() => ({
     />
 
     <UiTitle3
-      class="bg-foreground-1 sticky top-0 z-10 px-3 pb-3 pt-4"
+      class="sticky top-0 z-10 bg-foreground-1 px-3 pb-3 pt-4 md:text-xl"
       @click="trnsFormStore.values.trnId = null"
     >
       {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
@@ -108,7 +108,7 @@ const actions = computed(() => ({
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
-        class="bg-item-4 group rounded-lg"
+        class="group rounded-lg bg-item-4"
         @click="trnsFormStore.values.trnId = null"
       />
 
@@ -116,7 +116,7 @@ const actions = computed(() => ({
         v-if="showModalConfirm"
         class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="text-1 bg-foreground-4 border-accent-1 z-10 grid h-full content-center gap-4 rounded-lg border p-3">
+        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-foreground-1 p-3 text-1">
           {{ t('base.sure') }}
 
           <div class="flex gap-2">
@@ -134,7 +134,7 @@ const actions = computed(() => ({
                 />
               </template>
 
-              <div class="text-2 leading-none">
+              <div class="leading-none text-2">
                 {{ t(item.localeKey) }}
               </div>
             </UiElement>
@@ -156,7 +156,7 @@ const actions = computed(() => ({
             />
           </template>
 
-          <div class="text-2 leading-none">
+          <div class="leading-none text-2">
             {{ t(item.localeKey) }}
           </div>
         </DateLinkItem>
@@ -214,6 +214,24 @@ const actions = computed(() => ({
     </div>
   </div>
 </template>
+
+<style>
+.trnForm {
+  .trnForm__pagination {
+    @apply absolute left-1/2 bottom-[1px] z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-foreground-1;
+    transform: translateX(-50%);
+  }
+
+  .swiper-pagination-bullet {
+    @apply block w-1.5 h-1.5 mx-1 rounded-full bg-item-3;
+    opacity: 1;
+  }
+
+  .swiper-pagination-bullet-active {
+    @apply bg-accent-1;
+  }
+}
+</style>
 
 <i18n lang="yaml">
   en:

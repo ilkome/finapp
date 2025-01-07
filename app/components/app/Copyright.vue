@@ -19,20 +19,27 @@ const { t } = useI18n()
   </a>
 </template>
 
-<style lang="stylus">
-@keyframes heartbeat
-  0%
-    transform scale(.75)
-  20%
-    transform scale(1)
-  40%
-    transform scale(.75)
-  60%
-    transform scale(1.1)
-  80%
-    transform scale(.75)
-  100%
-    transform scale(.75)
+<style>
+@keyframes heartbeat {
+  0% {
+    transform: scale(0.75);
+  }
+  20% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(0.75);
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  80% {
+    transform: scale(0.75);
+  }
+  100% {
+    transform: scale(0.75);
+  }
+}
 </style>
 
 <i18n lang="yaml">

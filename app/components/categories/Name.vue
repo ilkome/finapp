@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { cn } from '~~/lib/cn'
+
 import type { CategoryItem } from '~/components/categories/types'
 
 const props = defineProps<{
@@ -19,18 +20,18 @@ const props = defineProps<{
   >
     <!-- Parent category name -->
     <template v-if="alt && isShowParent && !props.hasChildren && props.category?.parentId">
-      <div class="text-2xs text-4 leading-none">
+      <div class="text-2xs leading-none text-4">
         {{ props.parentCategory?.name }}
       </div>
     </template>
 
     <!-- Base name -->
-    <div class="text-3 flex items-center gap-2 text-nowrap text-sm leading-none">
+    <div class="flex items-center gap-2 text-nowrap text-sm leading-none text-3">
       {{ props.category?.name }}
       <!-- Has childs -->
       <div
         v-if="props.isShowDots && props.hasChildren"
-        class="text-4 text-sm leading-none"
+        class="text-sm leading-none text-4"
       >
         ...
       </div>
@@ -45,11 +46,11 @@ const props = defineProps<{
 
     <!-- Parent category name -->
     <template v-if="!alt && isShowParent && !props.hasChildren && props.category?.parentId">
-      <div class="text-2xs text-4 text-nowrap leading-none">
+      <div class="text-nowrap text-2xs leading-none text-4">
         •
       </div>
 
-      <div class="text-2xs text-4 leading-none">
+      <div class="text-2xs leading-none text-4">
         {{ props.parentCategory?.name }}
       </div>
     </template>

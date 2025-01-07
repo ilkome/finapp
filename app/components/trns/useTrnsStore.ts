@@ -1,6 +1,6 @@
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
+import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 
 import type { Range } from '~/components/date/types'
 import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps,

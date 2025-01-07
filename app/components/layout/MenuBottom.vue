@@ -6,12 +6,12 @@ const { itemsBottom } = useMenuData()
 
 <template>
   <div
-    class="sm:bottom-inherit bg-foreground-3/80 absolute bottom-0 left-0 z-20 mx-auto flex w-full items-stretch backdrop-blur sm:hidden lg:hidden"
+    class="sm:bottom-inherit absolute bottom-0 left-0 z-20 mx-auto flex w-full items-stretch bg-foreground-2/80 backdrop-blur sm:hidden lg:hidden"
   >
-    <LayoutMenuSidebarItem
+    <LayoutSidebarMenuItem
       v-for="(item, menuId) in itemsBottom"
       :key="menuId"
-      :isShowTitle="false"
+      :isShowText="false"
       :item
       :menuId
       class="flex-center is-bigger grow"

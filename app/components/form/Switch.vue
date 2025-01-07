@@ -10,44 +10,19 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="checkboxBlock" @click="emit('click', !value)">
-    <div v-if="title" class="checkbox__title">
+  <div class="flex items-center" @click="emit('click', !value)">
+    <div v-if="title" class="grow pr-4">
       {{ title }}
     </div>
 
-    <div :class="{ _active: value }" class="checkbox rounded-xl transition ease-in-out">
-      <div class="checkbox__in rounded-xl transition ease-in-out" />
+    <div
+      :class="{ 'bg-blue-500': value, 'bg-item-11': !value }"
+      class="relative h-6 w-11 rounded-xl transition-colors ease-in-out"
+    >
+      <div
+        :class="{ 'translate-x-[18px]': value }"
+        class="absolute left-[3px] top-[2px] size-5 rounded-xl bg-white shadow-md transition-transform ease-in-out"
+      />
     </div>
   </div>
 </template>
-
-<style lang="stylus" scoped>
-.checkboxBlock
-  display flex
-  align-items center
-
-.checkbox
-  position relative
-  width 44px
-  height 24px
-  background var(--c-bg-9)
-
-  &._active
-    background var(--c-blue-3)
-
-  &__in
-    position absolute
-    top 2px
-    left 3px
-    width 20px
-    height 20px
-    background var(--c-font-2)
-    box-shadow 0 0 4px rgba(0, 0, 0, .25)
-
-    ^[0]._active &
-      transform translateX(18px)
-
-  &__title
-    flex-grow 1
-    padding-right 16px
-</style>
