@@ -1,5 +1,5 @@
 <template>
-  <div class="@lg:py-3 max-w-7xl px-2 py-1 lg:px-4 2xl:px-8">
+  <div class="@lg:py-3 max-w-7xl px-2 pb-2 pt-1 lg:px-4 2xl:px-8">
     <div class="flex items-center gap-2">
       <slot />
 

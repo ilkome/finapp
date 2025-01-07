@@ -10,13 +10,13 @@ const props = defineProps<{
 <template>
   <UiHeaderTitle>
     <div class="flex items-center gap-2">
-      <div class="text-lg font-semibold">
+      <div class="@lg:text-xl text-lg font-semibold">
         {{ props.category.name }}
       </div>
 
       <div
         v-if="props.parentCategory"
-        class="flex items-center gap-2 pt-[2px] text-xs font-medium leading-none text-item-2"
+        class="text-item-2 @lg:text-base flex items-center gap-2 pt-[3px] text-xs font-medium leading-none"
       >
         <div class="text-2xs text-4">
           •
