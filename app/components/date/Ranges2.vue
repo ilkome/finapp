@@ -31,7 +31,7 @@ const intervalGroups = computed<IntervalGroupedLabel[]>(() => [
     rangeDuration: 30,
   },
   {
-    intervalsBy: 'month',
+    intervalsBy: 'week',
     intervalsDuration: 1,
     label: `3${t('dates.month.short')}`,
     rangeBy: 'month',
