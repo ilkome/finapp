@@ -35,17 +35,17 @@ function onClick(type: MoneyTypeSlugNew) {
 </script>
 
 <template>
-  <div class="rounded-md md:max-w-lg">
+  <div class="rounded-md md:max-w-lg pb-4">
     <div
       v-if="props.type === 'netIncome'"
-      class="flex flex-wrap justify-stretch"
+      class="flex flex-wrap _justify-stretch"
     >
       <StatSumItem
         v-if="props.isShowExpense"
         :amount="-total.expense"
         :isActive="selectedType === 'expense'"
         :class="classes"
-        class="grow"
+        class="_grow"
         type="expense"
         @click="onClick('expense')"
       />
@@ -55,7 +55,7 @@ function onClick(type: MoneyTypeSlugNew) {
         :amount="total.income"
         :isActive="selectedType === 'income'"
         :class="classes"
-        class="grow"
+        class="_grow"
         type="income"
         @click="onClick('income')"
       />
@@ -64,7 +64,7 @@ function onClick(type: MoneyTypeSlugNew) {
         v-if="props.isShowIncome && props.isShowExpense"
         :amount="total.sum"
         :class="classes"
-        class="grow"
+        class="_grow"
         type="summary"
         @click="onClick('summary')"
       />
