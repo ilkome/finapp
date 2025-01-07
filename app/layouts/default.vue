@@ -2,6 +2,7 @@
 import '~/assets/css/theme.css'
 import '~/assets/css/tailwind.css'
 
+import { SpeedInsights } from '@vercel/speed-insights/vue'
 import { useStorage, useWindowSize } from '@vueuse/core'
 
 import { useAppNav } from '~/components/app/useAppNav'
@@ -79,6 +80,7 @@ usePageScroll()
     style="margin-left: env(safe-area-inset-left)"
   >
     <NuxtPwaManifest />
+    <SpeedInsights />
 
     <div v-if="status === 'error'">
       <pre>{{ error }}</pre>
