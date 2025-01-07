@@ -35,10 +35,10 @@ function onClick(type: MoneyTypeSlugNew) {
 </script>
 
 <template>
-  <div class="rounded-md md:max-w-lg pb-4">
+  <div class="rounded-md pb-4 md:max-w-lg">
     <div
       v-if="props.type === 'netIncome'"
-      class="flex flex-wrap _justify-stretch"
+      class="_justify-stretch flex flex-wrap"
     >
       <StatSumItem
         v-if="props.isShowExpense"
