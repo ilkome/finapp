@@ -66,7 +66,7 @@ watch(
         <div class="flex items-center gap-2 whitespace-nowrap">
           <div
             :class="getStyles('item', ['link', 'rounded'])"
-            class=" text-1/70 flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm lg:min-h-[42px]"
+            class=" flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm text-1/70 lg:min-h-[42px]"
           >
             {{ t(slug) }}
           </div>
