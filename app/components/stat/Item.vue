@@ -221,7 +221,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :xAxisLabels="chart.xAxisLabels.value"
     />
 
-    <div class="grid gap-1 pb-5 md:max-w-lg">
+    <div class="grid pb-5 md:max-w-lg">
       <StatDateNavigation :maxRange="statDate.maxRange.value" />
       <StatDateQuick
         v-if="statConfig.config.value.date.isShowQuick"

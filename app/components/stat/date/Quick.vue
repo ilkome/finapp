@@ -33,8 +33,7 @@ onMounted(() => {
     observeParents: true,
     observer: true,
     shortSwipes: false,
-    slidesPerView: 'auto',
-    spaceBetween: 16,
+    slidesPerView: '1',
     touchStartPreventDefault: false,
   })
 })
@@ -57,11 +56,14 @@ function setMaxRange(isSkipEmpty = false) {
 </script>
 
 <template>
-  <div class="relative ml-1 overflow-hidden rounded-lg bg-foreground-2">
+  <div class="relative ml-1 overflow-hidden">
     <div ref="sliderRef" class="swiper-container">
       <div class="swiper-wrapper">
         <!-- Recent -->
-        <div class="swiper-slide !w-auto">
+        <div class="swiper-slide">
+          <slot />
+        </div>
+        <div class="swiper-slide">
           <div class="flex flex-wrap">
             <DateRanges @onClose="emit('onClose')" />
 
@@ -79,13 +81,13 @@ function setMaxRange(isSkipEmpty = false) {
           </div>
         </div>
 
-        <div class="swiper-slide !w-auto">
+        <div class="swiper-slide">
           <div class="flex flex-wrap">
             <DateRanges2 @onClose="emit('onClose')" />
           </div>
         </div>
 
-        <div class="swiper-slide !w-auto">
+        <div class="swiper-slide">
           <div class="flex flex-wrap">
             <DateLinkItem
               :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"

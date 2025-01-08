@@ -40,7 +40,7 @@ function onClickChart(idx: number) {
 }
 
 const isShowChart = computed(() => {
-  return statConfig.config.value?.chartShow && (statDate.params.value.rangeDuration !== 1 || statDate.params.value.rangeBy !== 'day') && statDate.intervalsInRange.value.length > 1
+  return statConfig.config.value?.chartShow
 })
 
 function onChangePeriod(period: Period) {

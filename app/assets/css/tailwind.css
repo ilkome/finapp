@@ -15,11 +15,6 @@
     @apply absolute top-1/2 left-1/2;
     transform: translate(-50%, -50%);
   }
-
-  .overflow-scroll-y {
-    @apply overflow-hidden overflow-y-auto;
-    -webkit-overflow-scrolling: touch;
-  }
 }
 
 @layer base {
@@ -57,27 +52,22 @@
   }
 
   /* Scrollbar styles */
-  .scroll,
   .scrollbar {
     @apply h-full overflow-hidden overflow-y-auto;
   }
 
-  .scroll::-webkit-scrollbar,
   .scrollbar::-webkit-scrollbar {
     @apply w-1.5 h-1.5;
   }
 
-  .scroll::-webkit-scrollbar-track,
   .scrollbar::-webkit-scrollbar-track {
     @apply bg-transparent rounded-[10px];
   }
 
-  .scroll::-webkit-scrollbar-thumb,
   .scrollbar::-webkit-scrollbar-thumb {
     @apply bg-gray-500 rounded-[10px];
   }
 
-  .scroll::-webkit-scrollbar-thumb:hover,
   .scrollbar::-webkit-scrollbar-thumb:hover {
     @apply bg-gray-600;
   }
