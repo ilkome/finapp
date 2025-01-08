@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { TrnItemFull } from '~/components/trns/types'
 
+import { TrnType } from '~/components/trns/types'
+
 const props = defineProps<{
   alt?: boolean
   date?: string
@@ -33,7 +35,7 @@ const emit = defineEmits<{
         <template v-if="alt">
           <div
             v-if="date"
-            class="min-w-10 truncate text-2xs leading-none"
+            class="text-2xs min-w-10 truncate leading-none"
           >
             {{ date }}
           </div>
@@ -47,7 +49,7 @@ const emit = defineEmits<{
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="flex items-center gap-2 text-xs leading-none text-2">
+            <div class="text-2 flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>
@@ -56,9 +58,10 @@ const emit = defineEmits<{
         <div class="grid grow gap-1">
           <div
             v-if="!alt"
-            class="grid grow gap-0.5 text-3"
+            class="text-3 grid grow gap-0.5"
           >
             <CategoriesName
+              v-if="trnItem.type !== TrnType.Transfer"
               :category="trnItem.category"
               :parentCategory="trnItem.categoryParent"
               isShowDots
@@ -69,7 +72,7 @@ const emit = defineEmits<{
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-xs leading-none text-4">
+            <div class="text-4 text-xs leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>

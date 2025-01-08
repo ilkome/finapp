@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { MoneyTypeNumber } from '~/components/stat/types'
-import type { TrnId, TrnType } from '~/components/trns/types'
+import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
 import useAmount from '~/components/amount/useAmount'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { getStartOf } from '~/components/date/utils'
+import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = withDefaults(
   defineProps<{
     alt?: boolean
-    initTrnType?: TrnType | MoneyTypeNumber | undefined
+    initTrnType?: TrnsViewType
     isHideDates?: boolean
     isShowDates?: boolean
     isShowExpense?: boolean
@@ -36,15 +37,24 @@ const emit = defineEmits<{
 }>()
 
 const currenciesStore = useCurrenciesStore()
+const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
 const { formatDate } = useDateFormats()
 const isShowWithDesc = ref(false)
-const filterBy = ref(props.initTrnType)
+const filterBy = ref<TrnsViewType>(props.initTrnType)
 const pageNumber = ref(1)
 
-const typeFilters = computed(() => {
+type TypeFilter = {
+  count: number
+  isShow: boolean
+  name: string
+  slug: TrnsViewType | 'all'
+  type: TrnType | undefined
+}
+
+const typeFilters = computed<TypeFilter[]>(() => {
   const all = {
     count: props.trnsIds.length,
     isShow: true,
@@ -54,57 +64,61 @@ const typeFilters = computed(() => {
   }
 
   const transfers = {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === 2).length,
+    count: props.trnsIds.filter(id => trnsStore.items[id]?.type === TrnType.Transfer).length,
     isShow: props.isShowTransfers,
     name: t('transfer.titleMoney'),
     slug: 'transfer',
-    type: 2,
+    type: TrnType.Transfer,
   }
 
   const expense = {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === 0).length,
+    count: props.trnsIds.filter(id => trnsStore.items[id].type === TrnType.Expense).length,
     isShow: props.isShowExpense,
     name: t('money.expense'),
     slug: 'expense',
-    type: 0,
+    type: TrnType.Expense,
   }
 
   const income = {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === 1).length,
+    count: props.trnsIds.filter(id => trnsStore.items[id].type === TrnType.Income).length,
     isShow: props.isShowIncome,
     name: t('money.income'),
     slug: 'income',
-    type: 1,
+    type: TrnType.Income,
   }
 
   return [all, expense, income, transfers].filter(item => item.isShow)
+})
+
+const selectedTypeFilter = computed(() => {
+  return typeFilters.value.find(item => item.slug === filterBy.value)
 })
 
 const isTrnsWithDesc = computed(() => {
   let ids = props.trnsIds ?? []
 
   if (filterBy.value !== 'all') {
-    const typeFilter = typeFilters.value.find(item => item.slug === filterBy.value)
-
-    ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilter.type)
+    ids = props.trnsIds.filter(id => trnsStore.items[id].type === selectedTypeFilter.value?.type)
   }
 
-  return (ids).some(
-    id => trnsStore.items[id].desc,
-  )
+  return (ids).some(id => trnsStore.items[id]?.desc)
 })
 
 const selectedIds = computed(() => {
   let ids = props.trnsIds ?? []
 
   if (filterBy.value !== 'all') {
-    ids = props.trnsIds.filter(id => trnsStore.items[id].type === typeFilters.value.find(item => item.slug === filterBy.value)?.type)
+    ids = props.trnsIds.filter((id) => {
+      if (filterBy.value === 'transfer') {
+        return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || categoriesStore.transferCategoriesIds.includes(trnsStore.items[id]?.categoryId)
+      }
+
+      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
+    })
   }
 
   if (isShowWithDesc.value && isTrnsWithDesc.value) {
-    ids = ids.filter(
-      id => trnsStore.items[id].desc,
-    )
+    ids = ids.filter(id => trnsStore.items[id].desc)
   }
 
   return ids
@@ -114,7 +128,7 @@ const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.va
 
 const isShowedAllTrns = computed(() => paginatedTrnsIds.value.length === selectedIds.value.length)
 
-function setFilterBy(type: TrnType | undefined) {
+function setFilterBy(type: TrnsViewType | 'all') {
   if (filterBy.value === type) {
     filterBy.value = 'all'
     return
@@ -123,24 +137,20 @@ function setFilterBy(type: TrnType | undefined) {
   filterBy.value = type ?? 'all'
 }
 
-const groupedTrns = computed(() => {
-  return paginatedTrnsIds.value.reduce(
-    (acc, trnId) => {
-      if (!trnsStore.items?.[trnId]) {
-        return acc
-      }
-      const date = getStartOf(new Date(trnsStore.items[trnId].date), 'day').getTime()
-      if (!acc[date]) {
-        acc[date] = [trnId]
-      }
-      else {
-        acc[date].push(trnId)
-      }
+const groupedTrns = computed(() => paginatedTrnsIds.value
+  .reduce((acc, trnId) => {
+    if (!trnsStore.items?.[trnId]) {
       return acc
-    },
-    {} as Record<string, TrnId[]>,
-  )
-})
+    }
+    const date = getStartOf(new Date(trnsStore.items[trnId]?.date), 'day').getTime()
+    if (!acc[date]) {
+      acc[date] = [trnId]
+    }
+    else {
+      acc[date].push(trnId)
+    }
+    return acc
+  }, {} as Record<string, TrnId[]>))
 </script>
 
 <template>
@@ -199,7 +209,7 @@ const groupedTrns = computed(() => {
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-b border-item-5 pb-2 pr-3"
+        class="border-item-5 border-b pb-2 pr-3"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -242,7 +252,7 @@ const groupedTrns = computed(() => {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="overflow-hidden rounded-lg bg-item-9"
+        class="bg-item-9 overflow-hidden rounded-lg"
       >
         <div
           :class="{ 'border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
@@ -301,7 +311,7 @@ const groupedTrns = computed(() => {
       class="flex-center pt-1"
     >
       <div
-        class="flex-center rounded-full bg-item-5 px-5 py-2 text-sm text-2 hocus:bg-item-6"
+        class="flex-center bg-item-5 text-2 hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /
