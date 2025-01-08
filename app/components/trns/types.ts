@@ -9,6 +9,8 @@ export enum TrnType {
   Transfer,
 }
 
+export type TrnsViewType = 'all' | 'expense' | 'income' | 'transfer'
+
 export enum TransferType {
   Expense,
   Income,

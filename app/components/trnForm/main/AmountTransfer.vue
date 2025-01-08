@@ -20,15 +20,7 @@ const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 const { t } = useI18n()
 
-const items = ref<
-  Record<
-    MoneyTypeSlug,
-    {
-      amountsIdx: 1 | 2
-      transferType: TransferType
-    }
-  >
->({
+const items = ref<Record<MoneyTypeSlug, { amountsIdx: 1 | 2, transferType: TransferType }>>({
   expense: {
     amountsIdx: 1,
     transferType: 0,
@@ -74,7 +66,7 @@ watch(
         <div class="flex items-center gap-2 whitespace-nowrap">
           <div
             :class="getStyles('item', ['link', 'rounded'])"
-            class=" flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm text-1/70 lg:min-h-[42px]"
+            class=" text-1/70 flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm lg:min-h-[42px]"
           >
             {{ t(slug) }}
           </div>

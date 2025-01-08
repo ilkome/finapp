@@ -60,6 +60,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return false
   })
+
   const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value))
 
   const categoriesIds = computed(() => {
@@ -99,7 +100,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     const filteredCategories = Object.keys(items.value)
-      .filter(id => items.value[id].showInQuickSelector)
+      .filter(id => items.value[id]?.showInQuickSelector)
       .map(id => ({ id, ...items.value[id] }))
 
     return filteredCategories

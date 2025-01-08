@@ -61,11 +61,8 @@ export const useTrnsStore = defineStore('trns', () => {
     return (
       Object.keys(items.value)
         .sort((a, b) => items.value[b].date - items.value[a].date)
-        .find(
-          trnId =>
-            !categoriesStore.transferCategoriesIds.includes(
-              items.value[trnId].categoryId,
-            ) && items.value[trnId].type !== 2,
+        .find(trnId =>
+          !categoriesStore.transferCategoriesIds.includes(items.value[trnId].categoryId) && items.value[trnId]?.type !== 2,
         ) ?? false
     )
   })
