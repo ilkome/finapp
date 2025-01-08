@@ -40,7 +40,7 @@ const items = computed(() => {
 </script>
 
 <template>
-  <div class="flex gap-0 min-h-8">
+  <div class="flex min-h-8 gap-0">
     <StatChartButton
       v-for="item in items"
       :key="item.value"

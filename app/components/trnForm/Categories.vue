@@ -46,7 +46,7 @@ onMounted(() => {
           <!-- Recent -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollbar scrollerBlock bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+              class="scrollbar scrollerBlock rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.lastUsedTitle") }}
             </div>
@@ -63,7 +63,7 @@ onMounted(() => {
           <!-- Main -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollbar scrollerBlock bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+              class="scrollbar scrollerBlock rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.title") }}
             </div>
@@ -80,7 +80,7 @@ onMounted(() => {
           <!-- Favorite -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollbar scrollerBlock bg-foreground-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
+              class="scrollbar scrollerBlock rounded-t-2xl bg-foreground-1 px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.favoriteTitle") }}
             </div>

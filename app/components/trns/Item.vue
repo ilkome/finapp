@@ -35,7 +35,7 @@ const emit = defineEmits<{
         <template v-if="alt">
           <div
             v-if="date"
-            class="text-2xs min-w-10 truncate leading-none"
+            class="min-w-10 truncate text-2xs leading-none"
           >
             {{ date }}
           </div>
@@ -49,7 +49,7 @@ const emit = defineEmits<{
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="text-2 flex items-center gap-2 text-xs leading-none">
+            <div class="flex items-center gap-2 text-xs leading-none text-2">
               {{ trnItem.category.name }}
             </div>
           </div>
@@ -58,7 +58,7 @@ const emit = defineEmits<{
         <div class="grid grow gap-1">
           <div
             v-if="!alt"
-            class="text-3 grid grow gap-0.5"
+            class="grid grow gap-0.5 text-3"
           >
             <CategoriesName
               v-if="trnItem.type !== TrnType.Transfer"
@@ -72,7 +72,7 @@ const emit = defineEmits<{
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-4 text-xs leading-none">
+            <div class="text-xs leading-none text-4">
               {{ trnItem.wallet.name }}
             </div>
           </div>
