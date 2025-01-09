@@ -12,6 +12,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: []
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -35,7 +37,7 @@ const emit = defineEmits<{
         <template v-if="alt">
           <div
             v-if="date"
-            class="min-w-10 truncate text-2xs leading-none"
+            class="text-2xs min-w-10 truncate leading-none"
           >
             {{ date }}
           </div>
@@ -45,20 +47,25 @@ const emit = defineEmits<{
             class="flex items-center gap-2"
           >
             <Icon
-              :name="props.trnItem.category?.icon?.replace('mdi:', 'mdi:')"
+              :name="props.trnItem.category?.icon"
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="flex items-center gap-2 text-xs leading-none text-2">
+            <div class="text-2 flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>
         </template>
 
-        <div class="grid grow gap-1">
+        <div
+          class="grid gap-1"
+          :class="{
+            grow: trnItem.type !== TrnType.Transfer,
+          }"
+        >
           <div
             v-if="!alt"
-            class="grid grow gap-0.5 text-3"
+            class="text-3 grid grow gap-0.5"
           >
             <CategoriesName
               v-if="trnItem.type !== TrnType.Transfer"
@@ -72,7 +79,7 @@ const emit = defineEmits<{
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-xs leading-none text-4">
+            <div class="text-4 text-xs leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>
@@ -91,42 +98,39 @@ const emit = defineEmits<{
           colorize="income"
         />
 
+        <!-- Transfer -->
         <div
           v-if="trnItem.type === 2"
-          class="grid"
-          :class="{
-            'gap-2': trnItem.incomeAmount !== trnItem.expenseAmount,
-          }"
+          class="grid gap-2"
         >
-          <div class="flex justify-end gap-3">
-            <div class="text-xs">
-              {{ $t("trnForm.transfer.from") }} {{ trnItem.expenseWallet.name }}
-            </div>
-
-            <Amount
-              :amount="trnItem.expenseAmount || trnItem.amount"
-              :currencyCode="trnItem.expenseWallet.currency"
-              :type="0"
-              :colorize="trnItem.incomeAmount === trnItem.expenseAmount ? '' : 'expense'"
-            />
+          <div class="flex gap-1 text-sm leading-none">
+            {{ t('transfer.from') }} <span class="font-bold">{{ trnItem.expenseWallet.name }}</span>
+            {{ t('transfer.to') }} <span class="font-bold">{{ trnItem.incomeWallet.name }}</span>
           </div>
 
-          <div
-            class="flex justify-end gap-3"
-          >
-            <div class="text-xs">
-              {{ $t("trnForm.transfer.to") }} {{ trnItem.incomeWallet.name }}
-            </div>
-
+          <div class="flex flex-wrap gap-2">
             <Amount
-              :amount="trnItem.incomeAmount || trnItem.amount"
-              :class="{
-                'opacity-0': trnItem.incomeAmount === trnItem.expenseAmount,
-              }"
-              :currencyCode="trnItem.incomeWallet.currency"
-              :type="1"
-              colorize="income"
+              :amount="trnItem.expenseAmount || trnItem.amount"
+              :colorize="trnItem.incomeAmount === trnItem.expenseAmount ? '' : 'expense'"
+              :currencyCode="trnItem.expenseWallet.currency"
+              :type="0"
+              class="!flex items-center gap-2"
             />
+
+            <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
+              <Icon name="lucide:move-right" size="16" />
+
+              <Amount
+                :amount="trnItem.incomeAmount || trnItem.amount"
+                :class="{
+                  'opacity-0': trnItem.incomeAmount === trnItem.expenseAmount,
+                }"
+                :currencyCode="trnItem.incomeWallet.currency"
+                :type="1"
+                colorize="income"
+                class="!flex items-center gap-2"
+              />
+            </template>
           </div>
         </div>
       </div>
@@ -140,3 +144,15 @@ const emit = defineEmits<{
     </div>
   </UiElement>
 </template>
+
+<i18n lang="yaml">
+en:
+  transfer:
+    from: 'From'
+    to: 'to'
+
+ru:
+  transfer:
+    from: 'Из'
+    to: 'В'
+</i18n>

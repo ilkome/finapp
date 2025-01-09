@@ -82,7 +82,7 @@ useHead({ title: wallet.value?.name })
           <Icon
             :name="icons[wallet.type]"
             :style="{ color: wallet.color }"
-            class="-mt-px size-5"
+            class="mt-[-2px] size-5"
           />
           {{ wallet.name }}
         </UiHeaderTitle>

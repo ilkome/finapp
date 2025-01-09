@@ -14,7 +14,9 @@ const emit = defineEmits<{
       {{ props.title }}
     </UiTitleModal>
 
-    <BottomSheetClose @onClick="emit('close')" />
+    <BottomSheetClose
+      @onClick="emit('close')"
+    />
 
     <div class="scroller overflow-y-auto pb-2 pt-px">
       <slot />

@@ -40,13 +40,13 @@ function isItActive(theme: Theme) {
 
 <template>
   <Component :is="props.component">
-    <UiTabsItem2
+    <UiTabsItem4
       v-for="locale in locales"
       :key="locale.slug"
       :isActive="isItActive(locale.slug)"
       @click="setTheme(locale.slug)"
     >
       {{ t(locale.localeKey) }}
-    </UiTabsItem2>
+    </UiTabsItem4>
   </Component>
 </template>

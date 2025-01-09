@@ -27,14 +27,14 @@ function changeLocale(locale: LocaleSlug) {
 </script>
 
 <template>
-  <UiTabs3>
-    <UiTabsItem2
+  <UiTabs2>
+    <UiTabsItem4
       v-for="item in locales"
       :key="item.slug"
       :isActive="item.slug === locale"
       @click="changeLocale(item.slug)"
     >
       {{ t(item.localeKey) }}
-    </UiTabsItem2>
-  </UiTabs3>
+    </UiTabsItem4>
+  </UiTabs2>
 </template>

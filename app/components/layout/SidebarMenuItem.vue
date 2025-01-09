@@ -17,13 +17,13 @@ const { checkIsActive, onClick } = useMenuData()
 <template>
   <div
     :class="[
-      getStyles('item', ['center', 'link', 'minh1', 'rounded', 'padding1']),
+      getStyles('item', ['center', 'link', 'minh2', 'rounded', 'padding1']),
       {
         '!text-1': checkIsActive(props.menuId),
         'gap-3': props.isShowText,
       },
     ]"
-    class="group"
+    class="text-2 group"
     @click="onClick(props.menuId)"
   >
     <div class="flex min-w-8 items-center justify-center">
@@ -36,7 +36,7 @@ const { checkIsActive, onClick } = useMenuData()
 
     <div
       v-if="props.isShowText"
-      class="text-sm"
+      class="text-sm font-medium"
     >
       {{ item.name }}
     </div>

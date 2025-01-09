@@ -10,7 +10,6 @@ export const classes = {
     gap1: 'gap-3',
     link: `
       select-none
-      text-2
       hocus:bg-item-5
     `,
     minh1: 'min-h-[42px]',
@@ -22,6 +21,7 @@ export const classes = {
     minw1: 'min-w-[42px]',
     minw2: 'min-w-[60px]',
     minw3: 'min-w-[32px]',
+    minw4: 'min-w-[38px]',
 
     padding1: 'px-2 py-1.5',
     padding2: 'px-2',

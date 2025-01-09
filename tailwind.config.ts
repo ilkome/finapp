@@ -63,9 +63,9 @@ export default <Partial<Config>>{
         },
       },
       fontFamily: {
-        primary: 'Roboto, sans-serif',
-        secondary: 'Unica One, Roboto, sans-serif',
-        tertiary: 'Nunito, Roboto, sans-serif',
+        primary: 'Inter, sans-serif',
+        secondary: 'Unica One, Inter, sans-serif',
+        tertiary: 'Nunito, Inter, sans-serif',
       },
       fontSize: {
         '2xs': '10px',

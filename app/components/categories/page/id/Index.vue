@@ -92,9 +92,11 @@ useHead({ title: category.value?.name })
         />
       </template>
 
-      <template #popover>
+      <template
+        v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
+        #popover
+      >
         <UiHeaderLink
-          v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
           icon="mdi:pencil-outline"
           @click="onEditClick"
         >
