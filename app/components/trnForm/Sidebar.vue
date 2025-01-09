@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import Swiper, { Pagination } from 'swiper'
+import Swiper from 'swiper'
+import { Pagination } from 'swiper/modules'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -58,7 +59,7 @@ watch(isShow, (v) => {
           <div class="swiper-wrapper">
             <!-- Main -->
             <div class="swiper-slide h-full bg-foreground-1">
-              <div class="scroll scrollerBlock grid grid-rows-[auto,1fr] gap-4">
+              <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-4 overflow-y-auto">
                 <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
                 <!-- History -->
@@ -75,7 +76,7 @@ watch(isShow, (v) => {
               class="swiper-slide bg-foreground-1"
               :style="{ height: '100%' }"
             >
-              <div class="scroll scrollerBlock">
+              <div class="scrollerBlock h-full overflow-y-auto">
                 <div class="py-4">
                   <TrnFormSelectionWalletsFast class="pb-6" />
                   <TrnFormSelectionCategoriesFast

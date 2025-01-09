@@ -36,8 +36,8 @@ importers:
         specifier: ^2.3.0
         version: 2.3.0(typescript@5.7.3)(vue@3.5.13(typescript@5.7.3))
       swiper:
-        specifier: 8.4.7
-        version: 8.4.7
+        specifier: 11.2.0
+        version: 11.2.0
       v-calendar:
         specifier: ^3.1.2
         version: 3.1.2(@popperjs/core@2.11.8)(vue@3.5.13(typescript@5.7.3))
@@ -3168,9 +3168,6 @@ packages:
   dom-serializer@2.0.0:
     resolution: {integrity: sha512-wIkAryiqt/nV5EQKqQpo3SToSOV9J0DnbJqwK7Wv/Trc92zIAYZ4FlMu+JPFW1DfGFt81ZTCGgDEabffXeLyJg==}
 
-  dom7@4.0.6:
-    resolution: {integrity: sha512-emjdpPLhpNubapLFdjNL9tP06Sr+GZkrIHEXLWvOGsytACUrkbeIdjO5g77m00BrHTznnlcNqgmn7pCN192TBA==}
-
   domelementtype@2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
 
@@ -5632,9 +5629,6 @@ packages:
     resolution: {integrity: sha512-1POYv7uv2gXoyGFpBCmpDVSNV74IfsWlDW216UPjbWufNf+bSU6GdbDsxdcxtfwb4xlI3yxzOTKClUosxARYrQ==}
     engines: {node: '>=0.10.0'}
 
-  ssr-window@4.0.2:
-    resolution: {integrity: sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==}
-
   stable-hash@0.0.4:
     resolution: {integrity: sha512-LjdcbuBeLcdETCrPn9i8AYAZ1eCtu4ECAWtP7UleOiZ9LzVxRzzUZEoZ8zB24nhkQnDWyET0I+3sWokSDS3E7g==}
 
@@ -5763,8 +5757,8 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
-  swiper@8.4.7:
-    resolution: {integrity: sha512-VwO/KU3i9IV2Sf+W2NqyzwWob4yX9Qdedq6vBtS0rFqJ6Fa5iLUJwxQkuD4I38w0WDJwmFl8ojkdcRFPHWD+2g==}
+  swiper@11.2.0:
+    resolution: {integrity: sha512-rjjAKgDEs+grR2eQshVDCcE4KNPC7CI294nfcbV9gE8WCsLdvOYXDeZKUYevqAZZp8j5hE7kpT3dAGVKFBWlxQ==}
     engines: {node: '>= 4.7.0'}
 
   synckit@0.6.2:
@@ -10265,10 +10259,6 @@ snapshots:
       domhandler: 5.0.3
       entities: 4.5.0
 
-  dom7@4.0.6:
-    dependencies:
-      ssr-window: 4.0.2
-
   domelementtype@2.3.0: {}
 
   domhandler@5.0.3:
@@ -13375,8 +13365,6 @@ snapshots:
 
   speakingurl@14.0.1: {}
 
-  ssr-window@4.0.2: {}
-
   stable-hash@0.0.4: {}
 
   stackback@0.0.2: {}
@@ -13537,10 +13525,7 @@ snapshots:
       csso: 5.0.5
       picocolors: 1.1.1
 
-  swiper@8.4.7:
-    dependencies:
-      dom7: 4.0.6
-      ssr-window: 4.0.2
+  swiper@11.2.0: {}
 
   synckit@0.6.2:
     dependencies:
