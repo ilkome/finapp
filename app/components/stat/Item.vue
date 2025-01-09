@@ -11,6 +11,7 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import useAmount from '~/components/amount/useAmount'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import StatTrnsSection from '~/components/stat/trns/Section.vue'
@@ -32,7 +33,9 @@ const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
+const categoryId = computed(() => props.isOneCategory ? route.params.id : undefined)
 
+const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const { addMarkArea, createSeriesItem } = useStatChart()
@@ -106,9 +109,9 @@ const averageTotal = computed(() => {
     : statDate.range.value
 
   const dif = {
-    day: differenceInDays(date.end, date.start) + 1,
-    month: differenceInMonths(date.end, date.start) + 1,
-    week: differenceInWeeks(date.end, date.start) + 1,
+    day: differenceInDays(date?.end, date?.start) + 1,
+    month: differenceInMonths(date?.end, date?.start) + 1,
+    week: differenceInWeeks(date?.end, date?.start) + 1,
   }
 
   const items = {
@@ -217,19 +220,22 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 <template>
   <div class="@container/stat">
     <StatChartWrap
+      v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
-    />
-
-    <div class="grid pb-5 md:max-w-lg">
-      <StatDateNavigation :maxRange="statDate.maxRange.value" />
+    >
       <StatDateQuick
         v-if="statConfig.config.value.date.isShowQuick"
         :maxRange="statDate.maxRange.value"
       />
+    </StatChartWrap>
+
+    <div class="grid pb-5 md:max-w-lg">
+      <StatDateNavigation :maxRange="statDate.maxRange.value" />
     </div>
 
     <StatSumWrap
+      v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
       :isShowExpense="statTypeShow.expense"
       :isShowIncome="statTypeShow.income"
       :selectedType="selectedType"

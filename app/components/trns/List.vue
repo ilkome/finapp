@@ -172,7 +172,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     <!-- Filter by type -->
     <UiTabs2
       v-if="isShowFilterByType && typeFilters.length > 2"
-      class="mb-2 ml-2"
+      class="mb-2 ml-1"
     >
       <UiTabsItem4
         v-for="filterItem in typeFilters"
@@ -209,7 +209,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-b border-item-5 pb-2 pr-3"
+        class="border-item-5 border-b pb-2 pr-3"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -252,7 +252,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="overflow-hidden rounded-lg bg-item-9"
+        class="bg-item-9 overflow-hidden rounded-lg"
       >
         <div
           :class="{ 'border-item-5': isShowGroupSum && groupTrnsIds.length > 1 }"
@@ -311,7 +311,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       class="flex-center pt-1"
     >
       <div
-        class="flex-center rounded-full bg-item-5 px-5 py-2 text-sm text-2 hocus:bg-item-6"
+        class="flex-center bg-item-5 text-2 hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

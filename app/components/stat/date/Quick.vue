@@ -56,7 +56,7 @@ function setMaxRange(isSkipEmpty = false) {
 </script>
 
 <template>
-  <div class="relative ml-1 overflow-hidden">
+  <div class="relative overflow-hidden">
     <div ref="sliderRef" class="swiper-container">
       <div class="swiper-wrapper">
         <!-- Recent -->

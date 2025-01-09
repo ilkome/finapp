@@ -278,7 +278,7 @@ export default {
       },
       date: {
         quick: {
-          label: 'Quick select date',
+          label: 'Date selector slider',
         },
       },
       menu: {
@@ -320,12 +320,6 @@ export default {
     saveTrnButton: 'Save transaction',
     title: 'Transaction form',
     titleEditTrn: 'Edit transaction',
-    transfer: {
-      from: 'From',
-      fromLong: 'From wallet',
-      to: 'To',
-      toLong: 'To wallet',
-    },
     transferTitle: 'Transfer',
   },
 

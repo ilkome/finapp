@@ -4,6 +4,7 @@ import { useWindowSize } from '@vueuse/core'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useDemo } from '~/components/demo/useDemo'
+import { getStyles } from '~/components/ui/getStyles'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
@@ -13,13 +14,14 @@ const props = defineProps<{
 
 const emit = defineEmits(['toggleSidebar'])
 
-const colorMode = useColorMode()
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 const { isDemo } = useDemo()
 const { t } = useI18n()
 const { width } = useWindowSize()
+
+const isShowLogoMenu = ref(false)
 </script>
 
 <template>
@@ -39,27 +41,37 @@ const { width } = useWindowSize()
 
     <div
       v-if="width >= 768 && props.isShowSidebar"
-      class="grid h-full content-start gap-6 overflow-hidden overflow-y-auto"
+      class="grid h-full content-start gap-8 overflow-hidden overflow-y-auto"
     >
-      <div class="flex items-center justify-between pl-4 pr-2 pt-5">
-        <NuxtLink to="/dashboard" class="block cursor-default">
-          <UiLogo class="w-16" />
-        </NuxtLink>
-
-        <UiItem1
-          @click="() => colorMode.preference = colorMode.preference === 'dark' ? 'light' : 'dark'"
+      <div class="px-2 pt-5">
+        <BottomSheetOrDropdown
+          :isOpen="isShowLogoMenu"
+          title=""
+          @onOpenModal="isShowLogoMenu = true"
+          @onCloseModal="isShowLogoMenu = false"
         >
-          <Icon
-            v-if="colorMode.preference !== 'dark'"
-            name="carbon:light"
-            size="18"
-          />
-          <Icon
-            v-if="colorMode.preference === 'dark'"
-            name="carbon:moon"
-            size="18"
-          />
-        </UiItem1>
+          <template #trigger>
+            <div
+              :class="getStyles('item', ['link', 'bg', 'rounded'])"
+              class="block cursor-default px-3 py-2"
+            >
+              <UiLogo class="w-16" />
+            </div>
+          </template>
+
+          <template #content="{ close }">
+            <div class="grid gap-2 px-1 py-3 md:px-3 md:!pb-0">
+              <AppLocaleSwitcher />
+
+              <div class="bg-item-3 h-px" />
+
+              <AppThemeSwitcher
+                isShowSystem
+                component="UiTabs2"
+              />
+            </div>
+          </template>
+        </BottomSheetOrDropdown>
       </div>
 
       <div
@@ -74,7 +86,7 @@ const { width } = useWindowSize()
       <LayoutSidebarMenu class="px-2 pb-2" />
 
       <div class="px-2 pb-6">
-        <UiTitle3 class="pb-2 pl-3">
+        <UiTitle3 class="!text-4 pb-2 pl-3">
           {{ t('wallets.title') }}
         </UiTitle3>
 
@@ -111,7 +123,7 @@ const { width } = useWindowSize()
 
     <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
       <UiItem1
-        class="z-10 bg-foreground-2 text-4"
+        class="bg-foreground-2 text-4 z-10"
         @click="emit('toggleSidebar')"
       >
         <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

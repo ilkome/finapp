@@ -39,7 +39,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t("settings.title") }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper rounded-xl bg-foreground-1 pt-4">
+    <div class="pageWrapper bg-foreground-1 rounded-xl pt-4">
       <div>
         <!-- Locale -->
         <div class="pb-12">
@@ -58,7 +58,7 @@ function onGenerateDemoData() {
           </UiTitle3>
           <AppThemeSwitcher
             isShowSystem
-            component="UiTabs3"
+            component="UiTabs2"
           />
         </div>
 
@@ -82,7 +82,7 @@ function onGenerateDemoData() {
           </UiTitle3>
           <div
             v-if="userStore.user"
-            class="pb-4 text-item-2"
+            class="text-item-2 pb-4"
           >
             {{ userStore.user?.email }}
           </div>
@@ -102,7 +102,7 @@ function onGenerateDemoData() {
           <UiTitle3 class="pb-2">
             {{ t("settings.caution") }}
           </UiTitle3>
-          <div class="pb-4 text-xs leading-none text-item-2">
+          <div class="text-item-2 pb-4 text-xs leading-none">
             {{ t("alerts.willDeleteEverything") }}
           </div>
 
@@ -138,7 +138,7 @@ function onGenerateDemoData() {
       <!-- About -->
       <div class="pb-12">
         {{ t("app.about") }}
-        <div class="pt-4 text-xs text-item-2">
+        <div class="text-item-2 pt-4 text-xs">
           {{ t("app.version") }} {{ version }}
         </div>
       </div>

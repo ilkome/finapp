@@ -65,8 +65,10 @@ watch(
       >
         <div class="flex items-center gap-2 whitespace-nowrap">
           <div
-            :class="getStyles('item', ['link', 'rounded'])"
-            class=" flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm text-1/70 lg:min-h-[42px]"
+            :class="[getStyles('item', ['bg2', 'link', 'rounded']), {
+              'bg-item-5': trnsFormStore.values.transferType === item.transferType,
+            }]"
+            class=" text-1/70 flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm lg:min-h-[42px]"
           >
             {{ t(slug) }}
           </div>
@@ -93,17 +95,16 @@ watch(
         </div>
 
         <!-- Input -->
-        <div class="p-2 pt-1">
-          <TrnFormMainInput
-            :key="item.amountsIdx"
-            :amount="trnsFormStore.values.amount[item.amountsIdx]"
-            :amountRaw="trnsFormStore.values.amountRaw[item.amountsIdx]"
-            :highlight="item.transferType === 1 ? 'expense' : 'income'"
-            :isShowSum="trnsFormStore.getIsShowSum()"
-            isTransfer
-            @onChange="trnsFormStore.onChangeAmount"
-          />
-        </div>
+        <TrnFormMainInput
+          :key="item.amountsIdx"
+          :amount="trnsFormStore.values.amount[item.amountsIdx]"
+          :amountRaw="trnsFormStore.values.amountRaw[item.amountsIdx]"
+          :highlight="item.transferType === 1 ? 'expense' : 'income'"
+          :isShowSum="trnsFormStore.getIsShowSum()"
+          isTransfer
+          class="pb-2 pt-1"
+          @onChange="trnsFormStore.onChangeAmount"
+        />
       </div>
     </div>
   </div>
@@ -113,6 +114,7 @@ watch(
 en:
   expense: Transfer from
   income: Transfer to
+
 ru:
   expense: Перевод из
   income: Перевод в

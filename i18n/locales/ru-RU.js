@@ -279,7 +279,7 @@ export default {
       },
       date: {
         quick: {
-          label: 'Быстрый выбор даты',
+          label: 'Слайдер быстрого выбора даты',
         },
       },
 
@@ -324,12 +324,6 @@ export default {
     saveTrnButton: 'Сохранить',
     title: 'Создание транзакции',
     titleEditTrn: 'Редактирование транзакции',
-    transfer: {
-      from: 'Из',
-      fromLong: 'Из кошелька',
-      to: 'В',
-      toLong: 'В кошелек',
-    },
     transferTitle: 'Перевод',
   },
 

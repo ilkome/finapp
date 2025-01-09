@@ -61,6 +61,7 @@ function onChangePeriod(period: Period) {
       class="pb-2"
     >
       <div class="flex justify-end">
+        <slot />
         <!-- <StatChartTypeSelector
           :chartType="statConfig.config.value?.chartType"
           @click="(value: ChartType) => statConfig.updateConfig('chartType', value)"

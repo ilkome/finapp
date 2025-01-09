@@ -5,23 +5,45 @@ const props = defineProps<{
   category: CategoryItem
   parentCategory?: CategoryItem
 }>()
+
+const router = useRouter()
+
+function onParentClick() {
+  router.push(`/categories/${props.category.parentId}`)
+}
 </script>
 
 <template>
   <UiHeaderTitle>
-    <div class="flex items-center gap-2">
-      <div class="@lg:text-xl text-lg font-semibold">
-        {{ props.category.name }}
+    <div class="-mx-3 flex items-center">
+      <div
+        class="_hocus:bg-item-5 flex items-center gap-2 rounded-lg px-3 py-1"
+      >
+        <Icon
+          :name="props.category.icon"
+          :style="{ color: props.category.color }"
+          class="mt-[-2px] size-5"
+        />
+
+        <div class="@lg:text-xl text-lg font-semibold">
+          {{ props.category.name }}
+        </div>
       </div>
 
       <div
         v-if="props.parentCategory"
-        class="@lg:text-base flex items-center gap-2 pt-[3px] text-xs font-medium leading-none text-item-2"
+        class="@lg:text-base text-item-2 flex items-center pt-[3px] text-xs font-medium leading-none"
       >
         <div class="text-2xs text-4">
           •
         </div>
-        {{ props.parentCategory.name }}
+
+        <div
+          class="hocus:bg-item-5 flex items-center gap-2 rounded-lg px-3 py-1"
+          @click="onParentClick"
+        >
+          {{ props.parentCategory.name }}
+        </div>
       </div>
     </div>
   </UiHeaderTitle>
