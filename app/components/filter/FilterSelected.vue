@@ -17,7 +17,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
 </script>
 
 <template>
-  <div class="scrollbar flex gap-2 overflow-hidden overflow-x-auto">
+  <div class="flex gap-2 overflow-hidden overflow-x-auto">
     <!-- Wallets -->
     <template v-if="props.isShowWallets">
       <WalletsItem
