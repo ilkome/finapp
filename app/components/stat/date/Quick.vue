@@ -61,9 +61,6 @@ function setMaxRange(isSkipEmpty = false) {
       <div class="swiper-wrapper">
         <!-- Recent -->
         <div class="swiper-slide">
-          <slot />
-        </div>
-        <div class="swiper-slide">
           <div class="flex flex-wrap">
             <DateRanges @onClose="emit('onClose')" />
 
