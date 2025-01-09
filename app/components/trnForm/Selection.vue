@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import Swiper, { Pagination } from 'swiper'
+import Swiper from 'swiper'
+import { Pagination } from 'swiper/modules'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
