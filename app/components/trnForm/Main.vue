@@ -223,7 +223,7 @@ const actions = computed(() => ({
   .trnForm__pagination {
     @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-foreground-1;
     transform: translateX(-50%);
-    bottom: calc(1px + env(safe-area-inset-bottom) - 16px);
+    bottom: calc(1px + env(safe-area-inset-bottom));
   }
 
   .swiper-pagination-bullet {

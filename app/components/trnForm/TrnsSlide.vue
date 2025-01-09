@@ -72,7 +72,7 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[1fr,auto] gap-2">
+  <div class="grid-rows-[1fr,auto] gap-2">
     <TrnsList
       :trnsIds="trnsIds"
       isHideDates
