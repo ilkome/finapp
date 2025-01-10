@@ -4,10 +4,11 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
-defineProps<{
+const props = defineProps<{
   activeItemId?: string | 0 | false | null
   categoriesItemProps?: Partial<CategoryItemProps>
   ids: CategoryId[]
+  insideClasses?: string
   slider?: object
 }>()
 
@@ -28,6 +29,7 @@ const categoriesStore = useCategoriesStore()
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :slider="slider"
+      :insideClasses="props.insideClasses"
       :lineWidth="1"
       isShowDots
       v-bind="categoriesItemProps"

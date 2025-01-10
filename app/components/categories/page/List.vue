@@ -9,6 +9,8 @@ useHead({
 })
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
+
+const categoriesView = ref<'list' | 'grid'>('list')
 </script>
 
 <template>
@@ -16,6 +18,13 @@ const categoriesStore = useCategoriesStore()
     <UiHeader>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
+        <UiItem3 @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
+          <Icon
+            :name="categoriesView === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
+            size="20"
+          />
+        </UiItem3>
+
         <UiItem3 @click="router.push('/categories/new')">
           <Icon name="lucide:plus" size="24" />
         </UiItem3>
@@ -39,13 +48,18 @@ const categoriesStore = useCategoriesStore()
     <!-- List -->
     <div
       v-else
-      class="pageWrapper"
+      class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
           class: 'group',
+          lineWidth: categoriesView === 'list' ? 1 : 0,
         }"
+        :class="{
+          '@2xl/page:grid-cols-3 @sm:grid-cols-2 grid gap-1.5': categoriesView === 'grid',
+        }"
+        :insideClasses="categoriesView === 'grid' ? 'bg-item-9' : ''"
         @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
       />
     </div>

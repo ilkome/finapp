@@ -66,7 +66,7 @@ function findWalletWithColor(color: string) {
       </template>
       <input
         :value="activeColor"
-        class="h-12 w-full rounded-lg border border-solid border-item-5 p-0 transition ease-in-out focus:border-accent-4 focus:bg-item-5 focus:text-item-1 focus:outline-none"
+        class="h-12 w-full rounded-lg border border-solid border-item-5 p-0 transition ease-in-out focus:border-accent-4 focus:bg-item-5 focus:text-1 focus:outline-none"
         type="color"
         @input="(event: HTMLInputEvent) => emit('click', event.target.value)"
       >

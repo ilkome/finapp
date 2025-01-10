@@ -9,6 +9,7 @@ export type CategoryItemProps = {
   category: CategoryItem
   categoryId: CategoryId
   class?: string
+  insideClasses?: string
   isShowDots?: boolean
   isShowParent?: boolean
   lineWidth?: number
@@ -34,7 +35,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
     :isActive="props.activeItemId === props.categoryId"
     :class="props.class"
     :lineWidth="props.lineWidth"
-    insideClasses="min-h-[46px]"
+    :insideClasses="`min-h-[46px] ${props.insideClasses}`"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>

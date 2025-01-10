@@ -32,14 +32,14 @@ function onParentClick() {
 
       <div
         v-if="props.parentCategory"
-        class="@lg:text-base text-item-2 flex items-center pt-[3px] text-xs font-medium leading-none"
+        class="@lg:text-base flex items-center pt-[3px] text-xs font-medium leading-none text-item-2"
       >
         <div class="text-2xs text-4">
           •
         </div>
 
         <div
-          class="hocus:bg-item-5 flex items-center gap-2 rounded-lg px-3 py-1"
+          class="flex items-center gap-2 rounded-lg px-3 py-1 hocus:bg-item-5"
           @click="onParentClick"
         >
           {{ props.parentCategory.name }}

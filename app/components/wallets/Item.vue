@@ -80,7 +80,7 @@ if (!props.isSort) {
     <!-- Main -->
     <template v-if="!props.alt">
       <div class="grid grow gap-1">
-        <div class="text-3 text-sm leading-none">
+        <div class="text-sm leading-none text-3">
           {{ wallet.name }}
         </div>
         <div
@@ -145,14 +145,14 @@ if (!props.isSort) {
           />
         </div>
 
-        <div class="text-3 whitespace-nowrap text-sm leading-none">
+        <div class="whitespace-nowrap text-sm leading-none text-3">
           {{ wallet.name }}
         </div>
       </div>
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center group-hocus:bg-item-5 absolute right-0 h-full rounded-md px-3"
+        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hocus:bg-item-5"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

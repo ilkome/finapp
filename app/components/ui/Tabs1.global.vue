@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-item-4 flex grow items-center overflow-hidden overflow-x-auto rounded-md">
+  <div class="flex grow items-center overflow-hidden overflow-x-auto rounded-md bg-item-9">
     <slot />
   </div>
 </template>

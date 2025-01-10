@@ -252,7 +252,7 @@ function updateState(
           </template>
 
           <!-- Inside -->
-          <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-3">
+          <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-5 pl-3">
             <div
               v-if="!item.categories || item.categories.length === 0"
               class="mb-3 ml-11"
@@ -317,7 +317,7 @@ function updateState(
                 </template>
 
                 <!-- Inside -->
-                <div class="border-item-5 ml-5 mt-[-2px] -translate-x-px border-l pl-14">
+                <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-5 pl-14">
                   <TrnsList
                     :trnsIds="itemInside.trnsIds"
                     :size="5"

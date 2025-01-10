@@ -333,7 +333,7 @@ const counts = computed(() => ({
       v-else
       class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
-      <div class="@xl/page:grid-cols-2 @xl/page:gap-12 grid max-w-3xl">
+      <div class="@xl/page:grid-cols-2 @xl/page:gap-12 grid">
         <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 @md/page:pb-2 grid content-start pb-1">
           <div
             v-if="walletsStore.currenciesUsed.length > 1"
@@ -438,7 +438,7 @@ const counts = computed(() => ({
         </div>
 
         <div>
-          <div class="mb-2 flex items-center gap-2">
+          <div class="mb-2 flex items-center gap-2 md:pt-2">
             <UiTabs2>
               <UiTabsItem4
                 :isActive="groupedBy === 'list'"
@@ -544,7 +544,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
+              <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
                 <template v-if="groupedOptions.currencies === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -586,7 +586,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
+                    <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
@@ -634,7 +634,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
+              <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
                 <template v-if="groupedOptions.type === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -685,7 +685,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
+                    <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
