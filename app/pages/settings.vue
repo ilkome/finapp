@@ -36,7 +36,7 @@ function onGenerateDemoData() {
 <template>
   <UiPage>
     <UiHeader>
-      <UiHeaderTitle>{{ t("settings.title") }}</UiHeaderTitle>
+      <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
     <div class="pageWrapper bg-foreground-1 rounded-xl pt-4">
@@ -45,7 +45,7 @@ function onGenerateDemoData() {
         <div class="pb-12">
           <div class="grid gap-3">
             <UiTitle3 class="pb-2">
-              {{ t("settings.lang") }}
+              {{ t('settings.lang') }}
             </UiTitle3>
             <AppLocaleSwitcher />
           </div>
@@ -54,7 +54,7 @@ function onGenerateDemoData() {
         <!-- Theme -->
         <div class="pb-12">
           <UiTitle3 class="pb-2">
-            {{ t("theme.title") }}
+            {{ t('theme.title') }}
           </UiTitle3>
           <AppThemeSwitcher
             isShowSystem
@@ -78,7 +78,7 @@ function onGenerateDemoData() {
         <!-- User -->
         <div class="pb-12">
           <UiTitle3 class="pb-2">
-            {{ t("user") }}
+            {{ t('user') }}
           </UiTitle3>
           <div
             v-if="userStore.user"
@@ -87,7 +87,7 @@ function onGenerateDemoData() {
             {{ userStore.user?.email }}
           </div>
           <UiElement
-            insideClasses="bg-item-3 min-h-[44px]"
+            insideClasses="bg-item-4 min-h-[44px]"
             @click="userStore.signOut"
           >
             <template #leftIcon>
@@ -100,10 +100,10 @@ function onGenerateDemoData() {
         <!-- Delete -->
         <div class="pb-12">
           <UiTitle3 class="pb-2">
-            {{ t("settings.caution") }}
+            {{ t('settings.caution') }}
           </UiTitle3>
           <div class="text-item-2 pb-4 text-xs leading-none">
-            {{ t("alerts.willDeleteEverything") }}
+            {{ t('alerts.willDeleteEverything') }}
           </div>
 
           <div class="grid gap-2 pb-4">
@@ -111,7 +111,7 @@ function onGenerateDemoData() {
               v-if="isDemo"
               :lineWidth="1"
               class="group"
-              insideClasses="min-h-[44px] bg-item-3"
+              insideClasses="min-h-[44px] bg-item-4"
               @click="onGenerateDemoData"
             >
               <template #leftIcon>
@@ -123,7 +123,7 @@ function onGenerateDemoData() {
             <UiElement
               :lineWidth="1"
               class="group"
-              insideClasses="min-h-[44px] bg-item-3"
+              insideClasses="min-h-[44px] bg-item-4"
               @click="confirmRemoveUserData = true"
             >
               <template #leftIcon>
@@ -137,9 +137,9 @@ function onGenerateDemoData() {
 
       <!-- About -->
       <div class="pb-12">
-        {{ t("app.about") }}
+        {{ t('app.about') }}
         <div class="text-item-2 pt-4 text-xs">
-          {{ t("app.version") }} {{ version }}
+          {{ t('app.version') }} {{ version }}
         </div>
       </div>
     </div>

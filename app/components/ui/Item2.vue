@@ -7,20 +7,20 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div
-    :class="getStyles('item', ['link', 'center', 'minh2', 'minw1', 'rounded'])"
-    class="flex items-center justify-between border border-item-5 bg-item-4 px-4 py-2.5"
+  <UiElement
+    insideClasses="w-full !min-h-[44px] bg-item-4 px-2 @xl/page:px-4 block @xl/page:flex @xl/page:flex-wrap gap-0 gap-x-2"
     @click="(e: Event) => emit('click', e)"
   >
-    <div class="text-sm">
+    <div class="text-2 text-sm">
       <slot name="label" />
     </div>
-    <div class="flex items-center gap-1 text-base">
+
+    <div class="@xl/page:ml-auto flex items-center gap-1 text-base">
       <slot name="value" />
       <Icon
         name="lucide:chevron-down"
         class="text-item-2"
       />
     </div>
-  </div>
+  </UiElement>
 </template>

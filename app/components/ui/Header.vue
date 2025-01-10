@@ -1,9 +1,9 @@
 <template>
-  <div class="@lg:pt-3 max-w-7xl px-2 pb-2 pt-1 lg:px-4 2xl:px-8">
-    <div class="flex items-center gap-2">
+  <div class="border-item-3 mb-2 flex min-h-12 max-w-7xl items-center border-b px-2 py-1 sm:min-h-14 lg:px-4 2xl:px-8">
+    <div class="flex grow items-center gap-2">
       <slot />
 
-      <div v-if="$slots.actions" class="ml-auto flex items-center gap-1">
+      <div v-if="$slots.actions" class="ml-auto flex items-center">
         <slot name="actions" />
       </div>
     </div>
