@@ -24,7 +24,10 @@ const classes = computed(() => cn(
 </script>
 
 <template>
-  <div @click="(e: Event) => emit('click', e)">
+  <div
+    class="@container/element"
+    @click="(e: Event) => emit('click', e)"
+  >
     <div :class="classes">
       <div
         v-if="slots.leftIcon"
@@ -46,7 +49,7 @@ const classes = computed(() => cn(
         'ml-[48px] group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
-      class="mx-2 h-px bg-item-5"
+      class="bg-item-5 mx-2 h-px"
     />
   </div>
 </template>

@@ -298,7 +298,7 @@ const counts = computed(() => ({
 </script>
 
 <template>
-  <UiPage class="@container/page">
+  <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
       <template #actions>
@@ -334,22 +334,30 @@ const counts = computed(() => ({
       class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
       <div class="@xl/page:grid-cols-2 @xl/page:gap-12 grid max-w-3xl">
-        <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 grid content-start pt-2">
+        <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 @md/page:pb-2 grid content-start pb-1">
           <div
             v-if="walletsStore.currenciesUsed.length > 1"
             class="@xl/page:hidden grid grid-cols-2 gap-2 pb-2"
           >
             <!-- Currencies -->
-            <UiBox3 @click="isShowCurrencyFilter = true">
-              <UiTitle6>{{ t('filterByCurrency') }}</UiTitle6>
-              {{ currencyFiltered === 'all' ? t('all') : currencyFiltered }}
-            </UiBox3>
+            <UiItem2 @click="isShowCurrencyFilter = true">
+              <template #label>
+                {{ t('filterByCurrency') }}
+              </template>
+              <template #value>
+                {{ currencyFiltered === 'all' ? t('all') : currencyFiltered }}
+              </template>
+            </UiItem2>
 
             <!-- Base -->
-            <UiBox3 @click="isShowBaseCurrencyModal = true">
-              <UiTitle6>{{ t('currencies.base') }}</UiTitle6>
-              {{ currenciesStore.base }}
-            </UiBox3>
+            <UiItem2 @click="isShowBaseCurrencyModal = true">
+              <template #label>
+                {{ t('currencies.base') }}
+              </template>
+              <template #value>
+                {{ currenciesStore.base }}
+              </template>
+            </UiItem2>
           </div>
 
           <!-- Wallets Currencies -->
@@ -416,49 +424,53 @@ const counts = computed(() => ({
             />
           </UiToggle2>
 
-          <UiBox3
-            class="@xl/page:grid hidden"
+          <UiItem2
+            class="@xl/page:grid hidden grow"
             @click="isShowBaseCurrencyModal = true"
           >
-            <UiTitle6>{{ t('currencies.base') }}</UiTitle6>
-            {{ currenciesStore.base }}
-          </UiBox3>
+            <template #label>
+              {{ t('currencies.base') }}
+            </template>
+            <template #value>
+              {{ currenciesStore.base }}
+            </template>
+          </UiItem2>
         </div>
 
         <div>
-          <div class="@xl/page:pt-2 mb-2 flex items-center gap-2">
-            <UiTabs1>
-              <UiTabsItem1
+          <div class="mb-2 flex items-center gap-2">
+            <UiTabs2>
+              <UiTabsItem4
                 :isActive="groupedBy === 'list'"
                 @click="groupedBy = 'list'"
               >
                 {{ t('list') }}
-              </UiTabsItem1>
-              <UiTabsItem1
+              </UiTabsItem4>
+              <UiTabsItem4
                 :isActive="groupedBy === 'type'"
                 @click="groupedBy = 'type'"
               >
                 {{ t('type') }}
-              </UiTabsItem1>
+              </UiTabsItem4>
 
-              <UiTabsItem1
+              <UiTabsItem4
                 v-if="walletsStore.currenciesUsed.length > 1"
                 :isActive="groupedBy === 'currencies'"
                 @click="groupedBy = 'currencies'"
               >
                 {{ t('currencies') }}
-              </UiTabsItem1>
-            </UiTabs1>
-            <UiItem1
-              v-if="groupedBy !== 'list'"
-              class="grow-0 px-5"
-              @click="groupedOptions[groupedBy] = groupedOptions[groupedBy] === 0 ? 1 : 0"
-            >
-              <Icon
-                :name="groupedOptions[groupedBy] === 0 ? 'lucide:folder-tree' : 'lucide:network'"
-                size="18"
-              />
-            </UiItem1>
+              </UiTabsItem4>
+              <UiTabsItem4
+                v-if="groupedBy !== 'list'"
+                class="ml-auto grow-0 px-5"
+                @click="groupedOptions[groupedBy] = groupedOptions[groupedBy] === 0 ? 1 : 0"
+              >
+                <Icon
+                  :name="groupedOptions[groupedBy] === 0 ? 'lucide:folder-tree' : 'lucide:network'"
+                  size="18"
+                />
+              </UiTabsItem4>
+            </UiTabs2>
           </div>
 
           <!-- Statistics -->
@@ -532,7 +544,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+              <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                 <template v-if="groupedOptions.currencies === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -574,7 +586,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+                    <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
@@ -622,7 +634,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+              <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                 <template v-if="groupedOptions.type === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -673,7 +685,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+                    <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"

@@ -12,7 +12,7 @@ export default defineAppConfig({
         placement: 'bottom-start',
       },
       ring: '!ring-2 !ring-item-3',
-      trigger: 'w-full',
+      trigger: 'w-full cursor-default',
     },
     strategy: 'override',
   },

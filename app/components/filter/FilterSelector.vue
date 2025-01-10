@@ -21,10 +21,12 @@ const modals = ref({
 </script>
 
 <template>
-  <div class="_bg-item-4 flex gap-2 rounded-md p-px">
+  <div class="flex">
     <template v-if="props.isShowCategories">
       <!-- Categories -->
-      <UPopover v-if="isLaptop">
+      <UPopover
+        v-if="isLaptop"
+      >
         <UiItem3>
           <Icon name="hugeicons:folder-library" size="20" />
         </UiItem3>

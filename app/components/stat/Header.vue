@@ -52,7 +52,7 @@ function onClickWallet(walletId: WalletId) {
     <template #actions>
       <div
         v-if="props.filter || props.config"
-        class="ml-auto flex items-center gap-1"
+        class="ml-auto flex items-center"
       >
         <FilterSelector
           v-if="props.filter"
@@ -75,7 +75,7 @@ function onClickWallet(walletId: WalletId) {
     <template #after>
       <div
         v-if="props.menu"
-        class="px-2 pt-1 sm:pb-4 md:pt-2 lg:px-4 2xl:px-8"
+        class="px-2 sm:pb-4 md:pt-2 lg:px-4 2xl:px-8"
       >
         <StatMenu
           :active="props.menu.active"
