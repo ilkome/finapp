@@ -75,7 +75,7 @@ function onClickWallet(walletId: WalletId) {
     <template #after>
       <div
         v-if="props.menu"
-        class="px-2 sm:pb-4 md:pt-2 lg:px-4 2xl:px-8"
+        class="px-2 sm:pb-1 md:pt-2 lg:px-4 2xl:px-8"
       >
         <StatMenu
           :active="props.menu.active"

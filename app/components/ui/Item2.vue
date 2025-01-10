@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
-
 const emit = defineEmits<{
   click: [e: Event]
 }>()
@@ -11,7 +9,7 @@ const emit = defineEmits<{
     insideClasses="w-full !min-h-[44px] bg-item-4 px-2 @xl/page:px-4 block @xl/page:flex @xl/page:flex-wrap gap-0 gap-x-2"
     @click="(e: Event) => emit('click', e)"
   >
-    <div class="text-2 text-sm">
+    <div class="text-sm text-2">
       <slot name="label" />
     </div>
 

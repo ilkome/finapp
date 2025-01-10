@@ -59,11 +59,11 @@ const isShowLogoMenu = ref(false)
             </div>
           </template>
 
-          <template #content="{ close }">
+          <template #content>
             <div class="grid gap-2 px-1 py-3 md:px-3 md:!pb-0">
               <AppLocaleSwitcher />
 
-              <div class="bg-item-3 h-px" />
+              <div class="h-px bg-item-3" />
 
               <AppThemeSwitcher
                 isShowSystem
@@ -86,7 +86,7 @@ const isShowLogoMenu = ref(false)
       <LayoutSidebarMenu class="px-2 pb-2" />
 
       <div class="px-2 pb-6">
-        <UiTitle3 class="!text-4 pb-2 pl-3">
+        <UiTitle3 class="pb-2 pl-3 !text-4">
           {{ t('wallets.title') }}
         </UiTitle3>
 
@@ -123,7 +123,7 @@ const isShowLogoMenu = ref(false)
 
     <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
       <UiItem1
-        class="bg-foreground-2 text-4 z-10"
+        class="z-10 bg-foreground-2 text-4"
         @click="emit('toggleSidebar')"
       >
         <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

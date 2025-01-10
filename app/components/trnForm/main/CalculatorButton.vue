@@ -8,17 +8,17 @@ const emit = defineEmits<{
   <div
     class="
       @xs/trnForm:w-14 @sm/trnForm:w-16
-      bg-item-4 font-secondary text-2
-      hocus:scale-[1.02]
-      hocus:border-item-6
-      hocus:bg-item-5
       flex aspect-square w-12
       items-center
       justify-center
-      rounded-full p-1
+      rounded-full
+      bg-item-4 p-1 font-secondary
       text-2xl
       font-normal
-      transition
+      text-2 transition
+      hocus:scale-[1.02]
+      hocus:border-item-6
+      hocus:bg-item-5
     "
     tabindex="0"
     @click="() => emit('click')"

@@ -31,7 +31,7 @@
   }
 
   .pageWrapper {
-    @apply max-w-xl grow px-2 lg:px-4 2xl:px-8;
+    @apply @xl/page:max-w-2xl grow px-2 lg:px-4 2xl:px-8;
   }
 
   .bottomSheetDrugClassesCustom {

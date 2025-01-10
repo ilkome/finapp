@@ -68,7 +68,7 @@ watch(
             :class="[getStyles('item', ['bg2', 'link', 'rounded']), {
               'bg-item-5': trnsFormStore.values.transferType === item.transferType,
             }]"
-            class=" text-1/70 flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm lg:min-h-[42px]"
+            class=" flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm text-1/70 lg:min-h-[42px]"
           >
             {{ t(slug) }}
           </div>
