@@ -9,7 +9,7 @@ const emit = defineEmits<{
     insideClasses="max-w-lg w-full !min-h-[44px] bg-item-4 px-2 @xs/element:pl-4 @xs/element:pr-3 block @xs/element:flex @xs/element:flex-wrap gap-0 gap-x-2"
     @click="(e: Event) => emit('click', e)"
   >
-    <div class="text-2 text-sm">
+    <div class="text-sm text-2">
       <slot name="label" />
     </div>
 

@@ -49,7 +49,7 @@ const classes = computed(() => cn(
         'ml-[48px] group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
-      class="bg-item-5 mx-2 h-px"
+      class="mx-2 h-px bg-item-5"
     />
   </div>
 </template>
