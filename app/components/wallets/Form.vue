@@ -162,17 +162,11 @@ async function onSave() {
           {{ t('money.type') }}
         </UiTitle3>
 
-        <div class="px-1">
-          <USelect
-            :options="walletType"
-            :value="props.walletForm.type"
-            color="blue"
-            optionAttribute="label"
-            size="lg"
-            variant="outline"
-            @change="(value: WalletType) => emit('updateValue', 'type', value)"
-          />
-        </div>
+        <FormSelect
+          :options="walletType"
+          :value="props.walletForm.type ?? 'cash'"
+          @change="(value: WalletType) => emit('updateValue', 'type', value)"
+        />
       </div>
 
       <!-- Credit Limit -->

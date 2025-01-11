@@ -11,6 +11,10 @@ const props = defineProps<{
   walletId: WalletId
 }>()
 
+const emit = defineEmits<{
+  close: []
+}>()
+
 const router = useRouter()
 const trnsStore = useTrnsStore()
 const walletStore = useWalletsStore()
@@ -34,6 +38,8 @@ function onClickDelete() {
 }
 
 async function onDeleteConfirm() {
+  emit('close')
+
   const trnsIdsS: TrnId[] = JSON.parse(JSON.stringify(trnsIds.value))
   router.push('/wallets')
   await walletStore.deleteWallet(JSON.parse(JSON.stringify(props.walletId)), trnsIdsS)

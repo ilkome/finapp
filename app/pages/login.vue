@@ -66,10 +66,10 @@ async function openDemo() {
 </script>
 
 <template>
-  <div class="mx-auto grid size-full max-w-xl grid-rows-[auto,1fr,auto] p-2 py-4 md:p-6">
-    <div class="flex flex-wrap items-start justify-between gap-2">
+  <div class="mx-auto grid size-full max-w-xl grid-rows-[auto,1fr,auto] px-2 py-3 md:p-6">
+    <div class="flex flex-wrap items-center justify-between gap-2">
       <AppLocaleSwitcher />
-      <AppThemeSwitcher class="justify-end" />
+      <AppThemeSwitcherSelect class="justify-end" />
     </div>
 
     <div

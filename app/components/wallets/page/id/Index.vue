@@ -62,8 +62,9 @@ onMounted(() => {
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 
-function onEditClick() {
+function onEditClick(close: () => void) {
   router.push(`/wallets/${walletId.value}/edit`)
+  close()
 }
 
 useHead({ title: wallet.value?.name })
@@ -88,15 +89,15 @@ useHead({ title: wallet.value?.name })
         </UiHeaderTitle>
       </template>
 
-      <template #popover>
+      <template #popover="{ close }">
         <UiHeaderLink
           icon="mdi:pencil-outline"
-          @click="onEditClick"
+          @click="onEditClick(close)"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
 
-        <WalletsDelete :walletId />
+        <WalletsDelete :walletId @close="close" />
       </template>
 
       <template #summary>

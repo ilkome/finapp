@@ -99,7 +99,7 @@ useHead({ title: category.value?.name })
       >
         <UiHeaderLink
           icon="mdi:pencil-outline"
-          @click="() => onEditClick(close)"
+          @click="onEditClick(close)"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
