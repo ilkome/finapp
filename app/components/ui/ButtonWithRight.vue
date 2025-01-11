@@ -6,6 +6,7 @@ const emit = defineEmits<{
 
 <template>
   <UiElement
+    class="@container/element"
     insideClasses="max-w-lg w-full !min-h-[44px] bg-item-4 px-2 @xs/element:pl-4 @xs/element:pr-3 block @xs/element:flex @xs/element:flex-wrap gap-0 gap-x-2"
     @click="(e: Event) => emit('click', e)"
   >

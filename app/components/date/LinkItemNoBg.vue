@@ -16,7 +16,7 @@ const emit = defineEmits<{
         'bg-item-hover text-accent-1': props.isActive,
       },
     ]"
-    class="font-primary text-2xs text-2 text-nowrap rounded-full leading-none"
+    class="text-nowrap rounded-full font-primary text-2xs leading-none text-2"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

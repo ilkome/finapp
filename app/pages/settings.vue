@@ -39,7 +39,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper bg-foreground-1 rounded-xl pt-4">
+    <div class="pageWrapper rounded-xl bg-foreground-1 pt-4">
       <div>
         <!-- Locale -->
         <div class="pb-12">
@@ -90,7 +90,7 @@ function onGenerateDemoData() {
           <UiTitle3 class="pb-2">
             {{ t('settings.caution') }}
           </UiTitle3>
-          <div class="text-item-2 pb-4 text-xs leading-none">
+          <div class="pb-4 text-xs leading-none text-item-2">
             {{ t('alerts.willDeleteEverything') }}
           </div>
 
@@ -124,7 +124,7 @@ function onGenerateDemoData() {
       <!-- About -->
       <div class="pb-12">
         {{ t('app.about') }}
-        <div class="text-item-2 pt-4 text-xs">
+        <div class="pt-4 text-xs text-item-2">
           {{ t('app.version') }} {{ version }}
         </div>
       </div>

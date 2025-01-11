@@ -24,10 +24,7 @@ const classes = computed(() => cn(
 </script>
 
 <template>
-  <div
-    class="@container/element"
-    @click="(e: Event) => emit('click', e)"
-  >
+  <div @click="(e: Event) => emit('click', e)">
     <div :class="classes">
       <div
         v-if="slots.leftIcon"
