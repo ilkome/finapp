@@ -20,6 +20,7 @@ export default {
 
   base: {
     add: 'Create',
+    apply: 'Apply',
     delete: 'Delete',
     duplicate: 'Duplicate',
     edit: 'Edit',

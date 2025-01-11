@@ -16,7 +16,7 @@ const emit = defineEmits<{
     </div>
 
     <div
-      :class="{ 'bg-blue-500': value, 'bg-item-11': !value }"
+      :class="{ 'bg-accent-1': value, 'bg-item-11': !value }"
       class="relative h-6 w-11 rounded-xl transition-colors ease-in-out"
     >
       <div

@@ -20,6 +20,7 @@ export default {
 
   base: {
     add: 'Создать',
+    apply: 'Применить',
     delete: 'Удалить',
     duplicate: 'Дублировать',
     edit: 'Редактировать',

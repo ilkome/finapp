@@ -260,7 +260,7 @@ async function onSave() {
               rounded
               @click="close"
             >
-              {{ t('base.save') }}
+              {{ t('base.apply') }}
             </UiButtonAccent>
           </div>
         </div>
