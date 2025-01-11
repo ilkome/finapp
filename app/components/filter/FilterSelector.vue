@@ -87,7 +87,7 @@ const modals = ref({
                     rounded
                     @click="close"
                   >
-                    {{ t('base.save') }}
+                    {{ t('base.apply') }}
                   </UiButtonAccent>
                 </div>
               </div>
@@ -160,7 +160,7 @@ const modals = ref({
                     rounded
                     @click="close"
                   >
-                    {{ t('base.save') }}
+                    {{ t('base.apply') }}
                   </UiButtonAccent>
                 </div>
               </div>

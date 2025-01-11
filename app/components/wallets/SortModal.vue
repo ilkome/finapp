@@ -67,7 +67,7 @@ async function saveWalletsOrder(close: () => void) {
           <div class="bottomSheetContentBottom">
             <UiButtonAccent
               rounded
-              @click="() => saveWalletsOrder(close)"
+              @click="saveWalletsOrder(close)"
             >
               {{ t('base.save') }}
             </UiButtonAccent>

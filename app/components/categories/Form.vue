@@ -254,7 +254,7 @@ async function onSave() {
               rounded
               @click="close"
             >
-              {{ t('base.save') }}
+              {{ t('base.apply') }}
             </UiButtonAccent>
           </div>
         </div>
@@ -311,7 +311,7 @@ async function onSave() {
                 :key="icon"
                 :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent text-icon-primary"
+                class="flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent"
                 @click="emit('updateValue', 'icon', icon)"
               >
                 <Icon :name="icon" size="20" />
@@ -324,7 +324,7 @@ async function onSave() {
               rounded
               @click="close"
             >
-              {{ t('base.save') }}
+              {{ t('base.apply') }}
             </UiButtonAccent>
           </div>
         </div>
@@ -372,7 +372,7 @@ async function onSave() {
               rounded
               @click="close"
             >
-              {{ t('base.save') }}
+              {{ t('base.apply') }}
             </UiButtonAccent>
           </div>
         </div>
