@@ -69,6 +69,8 @@ const isShowLogoMenu = ref(false)
                 isShowSystem
                 component="UiTabs2"
               />
+
+              <UserViewLogout class="mt-6" />
             </div>
           </template>
         </BottomSheetOrDropdown>

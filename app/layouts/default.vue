@@ -44,7 +44,7 @@ const { error, status } = await useAsyncData(
     if (isDemo.value) {
       await loadDataFromCache()
     }
-    else if (userStore.user || localAuthUid.value) {
+    else if (userStore.currentUser || localAuthUid.value) {
       await loadDataFromCache()
       loadDataFromDB()
     }
