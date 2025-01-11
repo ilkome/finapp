@@ -7,17 +7,17 @@ const { trnFormCreate } = useTrnsFormStore()
 <template>
   <div
     class="
-      hover:bg-item-hover group absolute bottom-0 right-0 z-20 hidden h-dvh items-end justify-center
-      transition 2xl:flex
+      group absolute bottom-0 right-0 z-20 hidden h-dvh items-end justify-center transition
+      hover:bg-item-hover 2xl:flex
     "
     @click="trnFormCreate"
   >
     <div
       class="
         _group-hover:bg-accent-1
-        text-icon-primary flex items-center
-        justify-center rounded-full
-        px-3 py-4 text-2xl
+        flex items-center justify-center
+        rounded-full px-3
+        py-4 text-2xl text-icon-primary
         transition
         group-hover:scale-125
       "
