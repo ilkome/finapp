@@ -1,7 +1,7 @@
 {
   "name": "@ilkome/finapp",
   "type": "module",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "packageManager": "pnpm@9.4.0",
   "description": "Finapp helps you to control personal finances easily and efficiently.",
   "author": "Ilya Komichev @ilkome",
