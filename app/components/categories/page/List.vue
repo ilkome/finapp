@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -10,7 +12,7 @@ useHead({
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
-const categoriesView = ref<'list' | 'grid'>('list')
+const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'list')
 </script>
 
 <template>
