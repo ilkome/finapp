@@ -14,13 +14,6 @@ export default {
       en: 'English',
       ru: 'Русский',
     },
-    theme: {
-      change: 'Change style',
-      dark: 'Dark',
-      light: 'Light',
-      select: 'Choose style',
-      system: 'System',
-    },
   },
 
   appName: 'Finapp',

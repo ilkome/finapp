@@ -19,29 +19,29 @@ const trnsFormStore = useTrnsFormStore()
         {{ t('intro') }}
       </UiTitle3>
 
-      <UiButtonBlue
+      <UiButtonAccent
         v-if="!walletsStore.hasItems"
         rounded
         @click="router.push('/wallets/new')"
       >
         {{ t("wallets.new") }}
-      </UiButtonBlue>
+      </UiButtonAccent>
 
-      <UiButtonBlue
+      <UiButtonAccent
         v-else-if="!categoriesStore.hasItems"
         rounded
         @click="router.push('/categories/new')"
       >
         {{ t("categories.new") }}
-      </UiButtonBlue>
+      </UiButtonAccent>
 
-      <UiButtonBlue
+      <UiButtonAccent
         v-else
         rounded
         @click="trnsFormStore.trnFormCreate()"
       >
         {{ t("createTrn") }}
-      </UiButtonBlue>
+      </UiButtonAccent>
     </div>
   </div>
 </template>

@@ -37,11 +37,11 @@ const categoriesView = ref<'list' | 'grid'>('list')
       class="pageWrapper"
     >
       <div class="md:max-w-xs">
-        <UiButtonBlue
+        <UiButtonAccent
           @click="router.push('/categories/new')"
         >
           {{ t("categories.new") }}
-        </UiButtonBlue>
+        </UiButtonAccent>
       </div>
     </div>
 

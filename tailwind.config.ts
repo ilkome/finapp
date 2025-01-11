@@ -33,9 +33,7 @@ export default <Partial<Config>>{
         '5': 'rgb(var(--text-5))',
         'accent': {
           1: 'rgb(var(--accent-1))',
-          2: 'rgb(var(--accent-2))',
-          3: 'rgb(var(--accent-3))',
-          4: 'var(--accent-4)',
+          2: 'var(--accent-2)',
         },
         'alert-primary': 'var(--alert-primary)',
         'expense': {
@@ -54,12 +52,12 @@ export default <Partial<Config>>{
           2: 'var(--c-item-2)',
           3: 'var(--c-item-3)',
           4: 'var(--c-item-4)',
-          5: 'var(--c-item-5)',
           6: 'rgba(var(--item-6))',
           8: 'rgba(var(--item-8))',
           9: 'rgba(var(--item-9))',
           10: 'rgba(var(--item-10))',
           11: 'var(--item-11)',
+          hover: 'var(--item-hover)',
         },
       },
       fontFamily: {

@@ -65,12 +65,12 @@ async function saveWalletsOrder(close: () => void) {
           </div>
 
           <div class="bottomSheetContentBottom">
-            <UiButtonBlue
+            <UiButtonAccent
               rounded
               @click="() => saveWalletsOrder(close)"
             >
               {{ t('base.save') }}
-            </UiButtonBlue>
+            </UiButtonAccent>
           </div>
         </div>
       </template>

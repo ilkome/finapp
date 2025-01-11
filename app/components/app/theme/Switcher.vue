@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   component?: 'UiTabs3' | 'UiTabs2'
+  isShowPink?: boolean
   isShowSystem?: boolean
 }>(), {
   component: 'UiTabs3',
@@ -15,16 +16,23 @@ const locales: {
   localeKey: string
   slug: Theme
 }[] = [{
-  localeKey: 'app.theme.light',
+  localeKey: 'theme.light',
   slug: 'light',
 }, {
-  localeKey: 'app.theme.dark',
+  localeKey: 'theme.dark',
   slug: 'dark',
 }] as const
 
+if (props.isShowPink) {
+  locales.push({
+    localeKey: 'theme.pink',
+    slug: 'pink',
+  })
+}
+
 if (props.isShowSystem) {
   locales.unshift({
-    localeKey: 'app.theme.system',
+    localeKey: 'theme.system',
     slug: 'system',
   })
 }
@@ -50,3 +58,23 @@ function isItActive(theme: Theme) {
     </UiTabsItem4>
   </Component>
 </template>
+
+<i18n lang="yaml">
+en:
+  theme:
+    change: 'Change theme'
+    dark: 'Dark'
+    light: 'Light'
+    pink: 'Pink'
+    select: 'Select theme'
+    system: 'System'
+
+ru:
+  theme:
+    change: 'Сменить тему'
+    dark: 'Темная'
+    light: 'Светлая'
+    pink: 'Розовая'
+    select: 'Выберите тему'
+    system: 'Авто'
+</i18n>

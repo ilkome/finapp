@@ -13,10 +13,10 @@ const emit = defineEmits<{
   <div
     :class="[
       getStyles('item', ['center2', 'padding4', 'minh3']), {
-        'bg-item-5 text-accent-1': props.isActive,
+        'bg-item-hover text-accent-1': props.isActive,
       },
     ]"
-    class="text-nowrap rounded-full font-primary text-2xs leading-none text-2"
+    class="font-primary text-2xs text-2 text-nowrap rounded-full leading-none"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

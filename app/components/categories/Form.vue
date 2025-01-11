@@ -208,12 +208,12 @@ async function onSave() {
     </div>
 
     <div class="flex-center">
-      <UiButtonBlue
+      <UiButtonAccent
         rounded
         @click="onSave"
       >
         {{ t('base.save') }}
-      </UiButtonBlue>
+      </UiButtonAccent>
     </div>
   </div>
 
@@ -250,12 +250,12 @@ async function onSave() {
           </div>
 
           <div class="flex-center p-2">
-            <UiButtonBlue
+            <UiButtonAccent
               rounded
               @click="close"
             >
               {{ t('base.save') }}
-            </UiButtonBlue>
+            </UiButtonAccent>
           </div>
         </div>
       </template>
@@ -320,12 +320,12 @@ async function onSave() {
           </div>
 
           <div class="bottomSheetContentBottom">
-            <UiButtonBlue
+            <UiButtonAccent
               rounded
               @click="close"
             >
               {{ t('base.save') }}
-            </UiButtonBlue>
+            </UiButtonAccent>
           </div>
         </div>
       </template>
@@ -368,12 +368,12 @@ async function onSave() {
           </div>
 
           <div class="bottomSheetContentBottom">
-            <UiButtonBlue
+            <UiButtonAccent
               rounded
               @click="close"
             >
               {{ t('base.save') }}
-            </UiButtonBlue>
+            </UiButtonAccent>
           </div>
         </div>
       </template>

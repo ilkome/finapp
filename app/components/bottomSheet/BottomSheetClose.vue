@@ -6,7 +6,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="absolute right-1 top-1 z-30 flex size-8 items-center justify-center rounded-full bg-item-5 transition ease-in-out hover:bg-item-6"
+    class="bg-item-4 hover:bg-item-hover absolute right-1 top-1 z-30 flex size-8 items-center justify-center rounded-full transition ease-in-out"
     @click="(e: Event) => emit('onClick', e)"
   >
     <Icon

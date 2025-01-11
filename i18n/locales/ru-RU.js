@@ -14,13 +14,6 @@ export default {
       en: 'English',
       ru: 'Русский',
     },
-    theme: {
-      change: 'Сменить тему',
-      dark: 'Темная',
-      light: 'Светлая',
-      select: 'Выберите тему',
-      system: 'Авто',
-    },
   },
 
   appName: 'Финапка',
