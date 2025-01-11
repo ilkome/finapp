@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Range } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { MoneyTypeSlugNew, StatConfigModal } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -43,6 +43,12 @@ function onClickWallet(walletId: WalletId) {
   filter.toggleWalletId(walletId)
   trnsFormStore.values.walletId = walletId
 }
+
+const statConfigModal: Ref<StatConfigModal> = ref({
+  close: () => statConfigModal.value.isShow = false,
+  isShow: false,
+  show: () => statConfigModal.value.isShow = true,
+})
 </script>
 
 <template>
@@ -62,11 +68,12 @@ function onClickWallet(walletId: WalletId) {
 
         <StatConfig
           v-if="props.config"
-          :isShowWallets="!!props.config.isShowWallets"
           :isShowCategories="!!props.config.isShowCategories"
+          :isShowWallets="!!props.config.isShowWallets"
+          :statConfigModal
         >
           <div v-if="$slots.popover">
-            <slot name="popover" />
+            <slot name="popover" :close="statConfigModal.close" />
           </div>
         </StatConfig>
       </div>

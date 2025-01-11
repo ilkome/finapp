@@ -1,9 +1,13 @@
+.Toastify__toast-container {
+  @apply p-2;
+}
+
 .Toastify__toast {
   @apply cursor-default bg-foreground-1 !ring-2 !ring-item-3 text-1 p-0 min-h-6 rounded-lg hover:bg-item-3;
 }
 
 .Toastify__toast-body {
-  @apply p-5 py-5;
+  @apply p-5 py-5 text-2;
 }
 
 .Toastify__close-button {
@@ -12,4 +16,8 @@
 
 .Toastify__progress-bar {
   @apply hidden;
+}
+
+.Toastify__toast-container--top-left {
+  @apply left-1 top-1;
 }
