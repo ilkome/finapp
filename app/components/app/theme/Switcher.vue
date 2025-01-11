@@ -4,7 +4,7 @@ const props = withDefaults(defineProps<{
   isShowPink?: boolean
   isShowSystem?: boolean
 }>(), {
-  component: 'UiTabs3',
+  component: 'UiTabs2',
 })
 
 const colorMode = useColorMode()
