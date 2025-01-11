@@ -12,6 +12,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 export type User = {
   displayName?: string | null
   email?: string | null
+  photoURL?: string | null
   uid: string
 }
 
@@ -29,6 +30,8 @@ export const useUserStore = defineStore('user', () => {
   const isDevUser = computed(() => !!$config.public.ratesApiKey.includes(user.value?.email ?? ''))
   const uid = computed<string | null>(() => currentUser.value?.uid || user.value?.uid || null)
 
+  watch(() => currentUser.value, user => setUser(user))
+
   function setUser(values: User | null) {
     if (!values || values === null) {
       user.value = null
@@ -37,6 +40,7 @@ export const useUserStore = defineStore('user', () => {
       user.value = {
         displayName: values?.displayName,
         email: values?.email,
+        photoURL: values?.photoURL,
         uid: values.uid,
       }
     }
@@ -88,6 +92,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   return {
+    currentUser,
     isDevUser,
     removeUserData,
     setUser,

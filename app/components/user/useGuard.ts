@@ -10,7 +10,7 @@ export function useGuard() {
   const { clearLocalData } = useInitApp()
 
   onMounted(() => {
-    watch(() => userStore.user, (user, prevUser) => {
+    watch(() => userStore.currentUser, (user, prevUser) => {
       if (user?.uid && user?.uid !== localAuthUid.value) {
         clearLocalData()
       }

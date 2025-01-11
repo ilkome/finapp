@@ -10,7 +10,7 @@ definePageMeta({
   layout: 'center',
 })
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 
 useSeoMeta({
   description: t('app.desc'),
@@ -60,7 +60,7 @@ onMounted(() => {
 
 async function openDemo() {
   isDemo.value = 'true'
-  await generateDemoData()
+  await generateDemoData(locale.value)
   router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard')
 }
 </script>
