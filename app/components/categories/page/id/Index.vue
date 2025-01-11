@@ -70,8 +70,9 @@ onMounted(() => {
     trnsFormStore.values.categoryId = categoryId.value
 })
 
-function onEditClick() {
+function onEditClick(close: () => void) {
   router.push(`/categories/${categoryId.value}/edit`)
+  close()
 }
 
 useHead({ title: category.value?.name })
@@ -94,16 +95,16 @@ useHead({ title: category.value?.name })
 
       <template
         v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
-        #popover
+        #popover="{ close }"
       >
         <UiHeaderLink
           icon="mdi:pencil-outline"
-          @click="onEditClick"
+          @click="() => onEditClick(close)"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
 
-        <CategoriesDelete :categoryId />
+        <CategoriesDelete :categoryId @close="close" />
       </template>
     </StatHeader>
 

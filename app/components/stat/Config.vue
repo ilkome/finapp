@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { StatConfigModal } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 import { useStatChart } from '~/components/stat/chart/useStatChart'
@@ -7,6 +8,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isShowWallets?: boolean
+  statConfigModal: StatConfigModal
 }>()
 
 const statConfig = inject('statConfig') as StatConfigProvider
@@ -18,16 +20,14 @@ function updateWalletsLimit(value: number) {
   if (value <= walletsStore.sortedIds.length && value > 0)
     statConfig.updateConfig('wallets', { count: value })
 }
-
-const isShow = ref(false)
 </script>
 
 <template>
   <BottomSheetOrDropdown
     :title="t('stat.config.menu.label')"
-    :isOpen="isShow"
-    @onOpenModal="isShow = true"
-    @onCloseModal="isShow = false"
+    :isOpen="props.statConfigModal.isShow"
+    @onOpenModal="props.statConfigModal.show"
+    @onCloseModal="props.statConfigModal.close"
   >
     <template #trigger>
       <UiItem1>
@@ -40,7 +40,7 @@ const isShow = ref(false)
         <BottomSheetClose @click="close" />
 
         <!-- Chart -->
-        <div class="border-b border-item-3 pb-3">
+        <div class="border-item-3 border-b pb-3">
           <UiTitleOption class="pb-2">
             {{ t('stat.config.chartShow.title') }}
           </UiTitleOption>
@@ -108,7 +108,7 @@ const isShow = ref(false)
         <!-- Showed wallets -->
         <div
           v-if="props.isShowWallets"
-          class="border-b border-item-3 pb-3"
+          class="border-item-3 border-b pb-3"
         >
           <UiTitleOption class="pb-2">
             {{ t('stat.config.wallets.title') }}

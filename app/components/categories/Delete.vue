@@ -10,6 +10,10 @@ const props = defineProps<{
   categoryId: CategoryId
 }>()
 
+const emit = defineEmits<{
+  close: []
+}>()
+
 const categoriesStore = useCategoriesStore()
 const router = useRouter()
 const trnsStore = useTrnsStore()
@@ -28,7 +32,10 @@ const deleteDescText = computed(() => {
 })
 
 const isShowDeleteConfirm = ref(false)
+
 function onClickDelete() {
+  emit('close')
+
   for (const id in categoriesStore.items) {
     if (categoriesStore.items[id]?.parentId === props.categoryId) {
       $toast(UiToastContent, {

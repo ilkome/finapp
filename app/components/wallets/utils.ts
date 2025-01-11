@@ -12,7 +12,7 @@ export function normalizeWalletItem(wallet?: WalletItemDirty | WalletForm) {
     isArchived: wallet?.isArchived ?? wallet?.archived ?? false,
     isExcludeInTotal: wallet?.isExcludeInTotal ?? false,
     isWithdrawal: wallet?.isWithdrawal ?? wallet?.withdrawal ?? false,
-    name: wallet?.name ?? 'Wallet name',
+    name: wallet?.name ?? '',
     order: wallet?.order ?? 1,
   }
 

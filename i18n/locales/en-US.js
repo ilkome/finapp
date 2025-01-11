@@ -73,7 +73,7 @@ export default {
         error: 'Write category name',
         exist: 'Category with same name is exist',
         label: 'Category name',
-        placeholder: 'Write category name...',
+        placeholder: 'Write...',
       },
       parent: {
         label: 'Parent category',
@@ -310,7 +310,7 @@ export default {
     calcTrnButton: 'Calculate',
     createTrn: 'Add transaction',
     description: {
-      placeholder: 'Write description...',
+      placeholder: 'Write...',
       title: 'Description',
     },
     filterAll: 'All',
