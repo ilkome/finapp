@@ -23,13 +23,14 @@ const modals = ref({
 <template>
   <div class="flex">
     <template v-if="props.isShowCategories">
-      <!-- Categories -->
+      <!-- Categories: PC -->
       <UPopover
         v-if="isLaptop"
+        class="group"
       >
-        <UiItem3>
+        <UiItem1>
           <Icon name="hugeicons:folder-library" size="20" />
-        </UiItem3>
+        </UiItem1>
 
         <template #panel="{ close }">
           <UiPopoverWrap
@@ -47,13 +48,13 @@ const modals = ref({
         </template>
       </UPopover>
 
-      <!-- Mobile -->
+      <!-- Categories: Mobile -->
       <template v-else>
-        <UiItem3
+        <UiItem1
           @click="modals.categories = true"
         >
           <Icon name="hugeicons:folder-library" size="20" />
-        </UiItem3>
+        </UiItem1>
 
         <Teleport to="body">
           <BottomSheet
@@ -96,12 +97,15 @@ const modals = ref({
       </template>
     </template>
 
-    <!-- Wallets -->
     <template v-if=" props.isShowWallets">
-      <UPopover v-if="isLaptop">
-        <UiItem3>
+      <!-- Wallets: PC -->
+      <UPopover
+        v-if="isLaptop"
+        class="group"
+      >
+        <UiItem1>
           <Icon name="hugeicons:wallet-01" />
-        </UiItem3>
+        </UiItem1>
 
         <template #panel="{ close }">
           <UiPopoverWrap
@@ -117,13 +121,13 @@ const modals = ref({
         </template>
       </UPopover>
 
-      <!-- Mobile -->
+      <!-- Wallets: Mobile -->
       <template v-else>
-        <UiItem3
+        <UiItem1
           @click="modals.wallets = true"
         >
           <Icon name="hugeicons:wallet-01" />
-        </UiItem3>
+        </UiItem1>
 
         <Teleport to="body">
           <BottomSheet

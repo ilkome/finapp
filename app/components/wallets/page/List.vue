@@ -340,24 +340,30 @@ const counts = computed(() => ({
             class="@xl/page:hidden grid grid-cols-2 gap-2 pb-2"
           >
             <!-- Currencies -->
-            <UiItem2 @click="isShowCurrencyFilter = true">
+            <UiButtonWithRight
+              isShort
+              @click="isShowCurrencyFilter = true"
+            >
               <template #label>
                 {{ t('filterByCurrency') }}
               </template>
               <template #value>
                 {{ currencyFiltered === 'all' ? t('all') : currencyFiltered }}
               </template>
-            </UiItem2>
+            </UiButtonWithRight>
 
             <!-- Base -->
-            <UiItem2 @click="isShowBaseCurrencyModal = true">
+            <UiButtonWithRight
+              isShort
+              @click="isShowBaseCurrencyModal = true"
+            >
               <template #label>
                 {{ t('currencies.base') }}
               </template>
               <template #value>
                 {{ currenciesStore.base }}
               </template>
-            </UiItem2>
+            </UiButtonWithRight>
           </div>
 
           <!-- Wallets Currencies -->
@@ -424,7 +430,7 @@ const counts = computed(() => ({
             />
           </UiToggle2>
 
-          <UiItem2
+          <UiButtonWithRight
             class="@xl/page:grid hidden grow"
             @click="isShowBaseCurrencyModal = true"
           >
@@ -434,7 +440,7 @@ const counts = computed(() => ({
             <template #value>
               {{ currenciesStore.base }}
             </template>
-          </UiItem2>
+          </UiButtonWithRight>
         </div>
 
         <div>
@@ -544,7 +550,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+              <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                 <template v-if="groupedOptions.currencies === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -586,7 +592,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+                    <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
@@ -634,7 +640,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+              <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                 <template v-if="groupedOptions.type === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -685,7 +691,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="ml-5 -translate-x-px border-l border-item-5 pl-3">
+                    <div class="border-item-5 ml-5 -translate-x-px border-l pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
