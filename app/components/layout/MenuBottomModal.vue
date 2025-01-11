@@ -21,24 +21,19 @@ const { isDemo } = useDemo()
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="grid gap-3 bg-foreground-1 px-1 py-3">
-        <!-- User -->
-        <div
-          v-if="userStore.user"
-          class="px-4 pb-2"
-        >
-          <div class="font-primary text-xl font-semibold">
-            {{ userStore.user?.displayName }}
-          </div>
-          <div class="text-sm">
-            {{ userStore.user?.email }}
-          </div>
-        </div>
-
+      <div class="bg-foreground-1 grid gap-3 px-1 py-3">
         <LayoutSidebarMenu />
 
-        <div class="pl-2">
-          <AppThemeSwitcher isShowSystem isShowPink />
+        <div class="pl-2 pt-2">
+          <AppThemeSwitcherSelect isShowTitle />
+        </div>
+
+        <!-- User -->
+        <div
+          v-if="!isDemo"
+          class="border-item-6 border-t px-2 pt-3"
+        >
+          <UserViewLogout />
         </div>
 
         <div

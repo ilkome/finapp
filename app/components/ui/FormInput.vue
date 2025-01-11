@@ -16,9 +16,9 @@ const emit = defineEmits<{
   <input
     :placeholder="props.placeholder"
     :value="props.value"
-    :class="getStyles('item', ['link'])"
+    :class="getStyles('item', ['link', 'rounded'])"
     :type="props.type ?? 'text'"
-    class="m-0 w-full rounded-lg border border-solid border-item-3 bg-item-4 px-4 py-2.5 text-base font-normal placeholder:text-item-2 focus:border-accent-2 focus:bg-item-hover focus:text-item-1 focus:outline-none"
+    class="border-item-6 bg-item-4 placeholder:text-item-2 focus:border-accent-2 focus:bg-item-hover focus:text-item-1 m-0 w-full border border-solid px-3 py-2 text-base font-normal focus:outline-none"
     @input="(event: HTMLInputEvent) => emit('updateValue', event.target.value)"
   >
 </template>
