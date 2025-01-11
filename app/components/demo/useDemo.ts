@@ -1,14 +1,15 @@
 import { startOfYear, subYears } from 'date-fns'
 import localforage from 'localforage'
 
-import type { AddCategoryParams, CategoryId } from '~/components/categories/types'
+import type { LocaleSlug } from '~/components/app/locale/types'
+import type { AddCategoryParams, Categories, CategoryId } from '~/components/categories/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import currencies from '~/components/demo/currencies.json'
-import data from '~/components/demo/data'
+import { data } from '~/components/demo/data'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -25,13 +26,27 @@ export function useDemo() {
   const walletsStore = useWalletsStore()
   const trnsStore = useTrnsStore()
 
-  async function generateDemoData() {
+  async function generateDemoData(locale: LocaleSlug) {
     localforage.clear()
+
+    const translatedData: {
+      categories: Categories
+      wallets: Wallets
+    } = {
+      categories: Object.entries(data.categories).reduce((acc, [id, category]) => {
+        acc[id] = { ...category, name: category.name[locale] }
+        return acc
+      }, {} as Categories),
+      wallets: Object.entries(data.wallets).reduce((acc, [id, wallet]) => {
+        acc[id] = { ...wallet, desc: wallet.desc[locale], name: wallet.name[locale] }
+        return acc
+      }, {} as Wallets),
+    }
 
     currenciesStore.setBase('USD')
     currenciesStore.setRates(currencies)
-    categoriesStore.setCategories(data.categories)
-    walletsStore.setWallets(data.wallets)
+    categoriesStore.setCategories(translatedData.categories)
+    walletsStore.setWallets(translatedData.wallets)
 
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
     const endDate = new Date().getTime()
