@@ -23,7 +23,7 @@ const { checkIsActive, onClick } = useMenuData()
         'gap-3': props.isShowText,
       },
     ]"
-    class="group text-2"
+    class="group min-h-[44px] text-2 md:min-h-[38px]"
     @click="onClick(props.menuId)"
   >
     <div class="flex min-w-8 items-center justify-center">
