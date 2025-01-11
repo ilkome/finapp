@@ -27,16 +27,15 @@ html {
   --foreground-2: 245 245 245;
 
   --accent-1: 0 122 255;
-  --accent-2: 58 125 255;
-  --accent-3: 255 255 255;
-  --accent-4: var(--hue) 100% 61%;
+  --accent-2: var(--hue) 100% 61%;
 
   /* Item */
+  --item-hover: theme('colors.gray.200');
+
   --c-item-1: theme('colors.neutral.700');
   --c-item-2: theme('colors.neutral.500');
   --c-item-3: #edeef0;
   --c-item-4: theme('colors.neutral.100');
-  --c-item-5: theme('colors.gray.200');
   --c-item-base: theme('colors.neutral.600');
   --item-6: 237 239 240;
   --item-8: 25 25 25;
@@ -66,7 +65,7 @@ html {
   /* Chart */
   --chart-bg: var(--c-item-4);
   --chart-label: var(--c-font-5);
-  --chart-line: var(--c-item-5);
+  --chart-line: var(--item-hover);
   --chart-selected: var(--c-item-3);
   --chart-splitLine: var(--item-3);
   --chart-tooltip: theme('colors.neutral.800');
@@ -75,6 +74,7 @@ html {
 /*
   * Dark Theme
 */
+html.pink,
 html.dark {
   /* Text */
   --text-1: 220 220 220;
@@ -89,16 +89,15 @@ html.dark {
   --foreground-2: 22 22 22;
 
   --accent-1: 56 148 2451;
-  --accent-2: 58 125 255;
-  --accent-3: 255 255 255;
-  --accent-4: var(--hue) 100% 61%;
+  --accent-2: var(--hue) 100% 61%;
 
   /* Item */
+  --item-hover: theme('colors.neutral.800');
+
   --c-item-1: theme('colors.neutral.100');
   --c-item-2: theme('colors.neutral.400');
   --c-item-3: #232323;
   --c-item-4: #1c1c1c;
-  --c-item-5: theme('colors.neutral.800');
   --c-item-base: theme('colors.neutral.200');
   --item-6: 44 44 44;
   --item-8: 25 25 25;
@@ -122,10 +121,25 @@ html.dark {
   --c-font-5: #646464;
 
   /* Chart */
-  --chart-bg: var(--c-item-5);
+  --chart-bg: var(--item-hover);
   --chart-label: var(--c-font-5);
-  --chart-line: var(--c-item-5);
-  --chart-selected: var(--c-item-5);
+  --chart-line: var(--item-hover);
+  --chart-selected: var(--item-hover);
   --chart-splitLine: theme('colors.neutral.700');
   --chart-tooltip: theme('colors.neutral.400');
+}
+
+/*
+  * Pink Theme
+*/
+html.pink {
+  /* --foreground-1: 23 23 23; */
+  --foreground-2: 24 24 24;
+
+  --c-blue-1: #FF69B4;
+  --accent-1: 219 39 119;
+  --accent-2: #FF1493;
+
+  /* --item-hover: #2a161e; */
+  /* --c-item-4: #29161d; */
 }

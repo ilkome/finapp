@@ -24,9 +24,9 @@ const { t } = useI18n()
         'left-1/2 -translate-x-1/2': !isTransfer,
       }]"
       class="
-        pointer-events-none
-        absolute top-2
-        text-center text-sm text-1/60
+        text-1/60
+        pointer-events-none absolute
+        top-2 text-center text-sm
       "
       tabindex="0"
     >
@@ -41,7 +41,7 @@ const { t } = useI18n()
       }"
       :placeholder="t('enterAmount')"
       :value="amountRaw"
-      class="swiper-no-swiping border-transparent bg-item-9 pb-2 pt-6 text-center font-secondary !text-3xl placeholder:text-3xl focus:!border-accent-3"
+      class="swiper-no-swiping bg-item-9 font-secondary focus:!border-accent-2 border-transparent pb-2 pt-6 text-center !text-3xl placeholder:text-3xl"
       inputmode="tel"
       @updateValue="(value: string) => emit('onChange', value || '')"
     />

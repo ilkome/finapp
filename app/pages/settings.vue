@@ -39,7 +39,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper rounded-xl bg-foreground-1 pt-4">
+    <div class="pageWrapper bg-foreground-1 rounded-xl pt-4">
       <div>
         <!-- Locale -->
         <div class="pb-12">
@@ -57,8 +57,9 @@ function onGenerateDemoData() {
             {{ t('theme.title') }}
           </UiTitle3>
           <AppThemeSwitcher
-            isShowSystem
             component="UiTabs2"
+            isShowPink
+            isShowSystem
           />
         </div>
 
@@ -89,14 +90,13 @@ function onGenerateDemoData() {
           <UiTitle3 class="pb-2">
             {{ t('settings.caution') }}
           </UiTitle3>
-          <div class="pb-4 text-xs leading-none text-item-2">
+          <div class="text-item-2 pb-4 text-xs leading-none">
             {{ t('alerts.willDeleteEverything') }}
           </div>
 
           <div class="grid gap-2 pb-4">
             <UiElement
               v-if="isDemo"
-              :lineWidth="1"
               class="group"
               insideClasses="min-h-[44px] bg-item-4 max-w-lg"
               @click="onGenerateDemoData"
@@ -108,7 +108,6 @@ function onGenerateDemoData() {
             </UiElement>
 
             <UiElement
-              :lineWidth="1"
               class="group"
               insideClasses="min-h-[44px] bg-item-4 max-w-lg"
               @click="confirmRemoveUserData = true"
@@ -125,7 +124,7 @@ function onGenerateDemoData() {
       <!-- About -->
       <div class="pb-12">
         {{ t('app.about') }}
-        <div class="pt-4 text-xs text-item-2">
+        <div class="text-item-2 pt-4 text-xs">
           {{ t('app.version') }} {{ version }}
         </div>
       </div>

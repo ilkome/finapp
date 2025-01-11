@@ -41,7 +41,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
     <div
       v-if="lineWidth && !isShown"
-      class="mx-2 h-px bg-item-5 group-last:hidden"
+      class="bg-item-hover mx-2 h-px group-last:hidden"
       :class="{ 'ml-12': lineWidth === 3, 'ml-11': lineWidth === 2 }"
     />
   </div>

@@ -83,12 +83,12 @@ const modals = ref({
                 </div>
 
                 <div class="bottomSheetContentBottom">
-                  <UiButtonBlue
+                  <UiButtonAccent
                     rounded
                     @click="close"
                   >
                     {{ t('base.save') }}
-                  </UiButtonBlue>
+                  </UiButtonAccent>
                 </div>
               </div>
             </template>
@@ -156,12 +156,12 @@ const modals = ref({
                 </div>
 
                 <div class="bottomSheetContentBottom">
-                  <UiButtonBlue
+                  <UiButtonAccent
                     rounded
                     @click="close"
                   >
                     {{ t('base.save') }}
-                  </UiButtonBlue>
+                  </UiButtonAccent>
                 </div>
               </div>
             </template>

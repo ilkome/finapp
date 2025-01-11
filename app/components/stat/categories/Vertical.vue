@@ -93,9 +93,9 @@ onLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="rounded p-1 hocus:bg-item-5"
+    class="hocus:bg-item-hover rounded p-1"
   >
-    <div class="flex h-28 items-end rounded bg-item-4">
+    <div class="bg-item-4 flex h-28 items-end rounded">
       <div
         class="relative w-7 rounded-t"
         :style="getBarStyle()"
@@ -104,7 +104,7 @@ onLongPress(
           :class="{
             'text-income-1': props.item.value > 0,
           }"
-          class="absolute top-[-14px] w-full text-center font-secondary text-xs leading-none"
+          class="font-secondary absolute top-[-14px] w-full text-center text-xs leading-none"
         >
           {{ amount }}
         </div>

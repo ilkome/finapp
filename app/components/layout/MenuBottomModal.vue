@@ -21,7 +21,7 @@ const { isDemo } = useDemo()
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="grid gap-3 bg-foreground-1 px-1 py-3">
+      <div class="bg-foreground-1 grid gap-3 px-1 py-3">
         <!-- User -->
         <div
           v-if="userStore.user"
@@ -38,7 +38,7 @@ const { isDemo } = useDemo()
         <LayoutSidebarMenu />
 
         <div class="pl-2">
-          <AppThemeSwitcher isShowSystem />
+          <AppThemeSwitcher isShowSystem isShowPink />
         </div>
 
         <div
@@ -46,9 +46,12 @@ const { isDemo } = useDemo()
           class="px-3 py-2"
           @click="userStore.signOut"
         >
-          <UiButtonBlue @click="userStore.signOut">
+          <UiButtonAccent
+            rounded
+            @click="userStore.signOut"
+          >
             {{ t("demo.exit") }}
-          </UiButtonBlue>
+          </UiButtonAccent>
         </div>
       </div>
     </LazyBottomSheet>

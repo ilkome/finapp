@@ -52,7 +52,7 @@ const isShowLogoMenu = ref(false)
         >
           <template #trigger>
             <div
-              :class="getStyles('item', ['link', 'bg', 'rounded'])"
+              :class="getStyles('item', ['link', 'rounded'])"
               class="block cursor-default px-3 py-2"
             >
               <UiLogo class="w-16" />
@@ -63,7 +63,7 @@ const isShowLogoMenu = ref(false)
             <div class="grid gap-2 px-1 py-3 md:px-3 md:!pb-0">
               <AppLocaleSwitcher />
 
-              <div class="h-px bg-item-3" />
+              <div class="bg-item-3 h-px" />
 
               <AppThemeSwitcher
                 isShowSystem
@@ -80,15 +80,15 @@ const isShowLogoMenu = ref(false)
         v-if="isDemo"
         class="px-4"
       >
-        <UiButtonBlue @click="userStore.signOut">
+        <UiButtonAccent @click="userStore.signOut">
           {{ t("demo.exit") }}
-        </UiButtonBlue>
+        </UiButtonAccent>
       </div>
 
       <LayoutSidebarMenu class="px-2 pb-2" />
 
       <div class="px-2 pb-6">
-        <UiTitle3 class="pb-2 pl-3 !text-4">
+        <UiTitle3 class="!text-4 pb-2 pl-3">
           {{ t('wallets.title') }}
         </UiTitle3>
 
@@ -114,9 +114,9 @@ const isShowLogoMenu = ref(false)
               v-if="walletsIdsSorted.length === 0"
               class="px-2"
             >
-              <UiButtonBlue @click="router.push('/wallets/new')">
+              <UiButtonAccent @click="router.push('/wallets/new')">
                 {{ t("wallets.new") }}
-              </UiButtonBlue>
+              </UiButtonAccent>
             </div>
           </template>
         </WalletsList>
@@ -125,7 +125,7 @@ const isShowLogoMenu = ref(false)
 
     <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
       <UiItem1
-        class="z-10 bg-foreground-2 text-4"
+        class="bg-foreground-2 text-4 z-10"
         @click="emit('toggleSidebar')"
       >
         <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

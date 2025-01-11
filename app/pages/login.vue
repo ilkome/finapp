@@ -79,23 +79,23 @@ async function openDemo() {
         <UiLogo class="pb-0 !text-5xl !font-extrabold" />
 
         <div class="grid min-w-[280px] items-center gap-5 px-3 py-8">
-          <UiButtonBlue
+          <UiButtonAccent
             :loading="isLoading"
             size="xl"
             rounded
             @click="signInWithGoogle"
           >
             {{ t("loginWithGoogle") }}
-          </UiButtonBlue>
+          </UiButtonAccent>
 
-          <UiButtonBlue
+          <UiButtonAccent
             size="xl"
             variant="outline"
             rounded
             @click="openDemo"
           >
             {{ t("openDemo") }}
-          </UiButtonBlue>
+          </UiButtonAccent>
         </div>
       </div>
     </div>
