@@ -35,13 +35,13 @@ const grouping = {
 
   toggle: () => {
     if (statConfig.config.value.catsView === 'list') {
-      statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsList.isGrouped })
+      // statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsList.isGrouped })
       statConfig.updateConfig('catsList', { isGrouped: !statConfig.config.value.catsList.isGrouped })
       return
     }
 
     if (statConfig.config.value.catsView === 'round') {
-      statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsRound.isGrouped })
+      // statConfig.updateConfig('vertical', { isGrouped: !statConfig.config.value.catsRound.isGrouped })
       statConfig.updateConfig('catsRound', { isGrouped: !statConfig.config.value.catsRound.isGrouped })
     }
   },
@@ -58,14 +58,11 @@ const favorites = computed(() => ({
     return false
   }),
   toggle: () => {
-    if (statConfig.config.value.catsView === 'list') {
-      statConfig.updateConfig('catsList', { isShowFavorites: !statConfig.config.value.catsList.isShowFavorites,
-      })
-    }
+    if (statConfig.config.value.catsView === 'list')
+      statConfig.updateConfig('catsList', { isShowFavorites: !statConfig.config.value.catsList.isShowFavorites })
 
-    if (statConfig.config.value.catsView === 'round') {
+    if (statConfig.config.value.catsView === 'round')
       statConfig.updateConfig('catsRound', { isShowFavorites: !statConfig.config.value.catsRound.isShowFavorites })
-    }
   },
 }))
 
@@ -142,17 +139,6 @@ const isShow = ref(false)
 
 <template>
   <div class="relative flex rounded-md">
-    <!-- Vertical -->
-    <UiItem1
-      v-if="props.catsLength > 1"
-      @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
-    >
-      <Icon
-        name="lucide:chart-no-axes-column-decreasing"
-        size="18"
-      />
-    </UiItem1>
-
     <UiItem1
       v-if="statConfig.config.value.catsView === 'list'"
       @click="emit('toggleOpened')"
@@ -200,9 +186,7 @@ const isShow = ref(false)
       @onCloseModal="isShow = false"
     >
       <template #trigger>
-        <UiItem1
-          class="border border-transparent group-data-[headlessui-state='open']:!border-accent-1"
-        >
+        <UiItem1>
           <Icon name="lucide:circle-ellipsis" size="20" />
         </UiItem1>
       </template>
@@ -210,7 +194,7 @@ const isShow = ref(false)
       <template #content="{ close }">
         <div class="grid min-w-80 gap-4 px-1 pt-3 md:px-3">
           <BottomSheetClose @click="close" />
-          <div class="grid gap-4 border-b border-item-3 pb-3">
+          <div class="border-item-3 grid gap-4 border-b pb-3">
             <!-- Grouping -->
             <div class="grid gap-3">
               <UiTitleOption>
@@ -280,7 +264,7 @@ const isShow = ref(false)
           <!-- List -->
           <div
             v-if="statConfig.config.value.catsView === 'list'"
-            class="grid gap-3 border-b border-item-3 pb-2 last:border-0"
+            class="border-item-3 grid gap-3 border-b pb-2 last:border-0"
           >
             <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
             <div class="flex gap-1">
@@ -362,7 +346,7 @@ const isShow = ref(false)
           <!-- Vertical -->
           <div
             v-if="props.catsLength > 1"
-            class="grid border-b border-item-3 pb-2 last:border-0 md:pb-0"
+            class="border-item-3 grid border-b pb-2 last:border-0 md:pb-0"
           >
             <UiTitleOption class="pb-2">
               {{ t('stat.config.categories.vertical.label') }}
@@ -418,7 +402,7 @@ const isShow = ref(false)
           <!-- TODO: use StatConfig -->
           <div
             v-if="false"
-            class="border-b border-item-3 pb-2 last:border-0 last:pb-0"
+            class="border-item-3 border-b pb-2 last:border-0 last:pb-0"
           >
             <!-- Favorite -->
             <UiElement

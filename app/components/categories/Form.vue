@@ -136,7 +136,7 @@ async function onSave() {
       </UiFormElement>
 
       <!-- Parent -->
-      <UiItem2
+      <UiButtonWithRight
         v-if="isAllowChangeParent"
         @click="modals.parent = true"
       >
@@ -147,10 +147,10 @@ async function onSave() {
         <template #value>
           {{ props.categoryForm.parentId === 0 ? t('categories.form.parent.no') : categoriesStore.items[props.categoryForm.parentId]?.name }}
         </template>
-      </UiItem2>
+      </UiButtonWithRight>
 
       <!-- Icon -->
-      <UiItem2 @click="modals.icon = true">
+      <UiButtonWithRight @click="modals.icon = true">
         <template #label>
           {{ t('categories.form.icon.label') }}
         </template>
@@ -162,10 +162,10 @@ async function onSave() {
             invert
           />
         </template>
-      </UiItem2>
+      </UiButtonWithRight>
 
       <!-- Color -->
-      <UiItem2 @click="modals.colors = true">
+      <UiButtonWithRight @click="modals.colors = true">
         <template #label>
           {{ t('color.label') }}
         </template>
@@ -177,7 +177,7 @@ async function onSave() {
             invert
           />
         </template>
-      </UiItem2>
+      </UiButtonWithRight>
 
       <!-- Options -->
       <div>

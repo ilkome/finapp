@@ -30,9 +30,9 @@ const isShow = ref(false)
     @onCloseModal="isShow = false"
   >
     <template #trigger>
-      <UiItem3>
+      <UiItem1>
         <Icon name="lucide:settings-2" size="20" />
-      </UiItem3>
+      </UiItem1>
     </template>
 
     <template #content="{ close }">
@@ -40,9 +40,9 @@ const isShow = ref(false)
         <BottomSheetClose @click="close" />
 
         <!-- Chart -->
-        <div class="border-b border-item-3 pb-3">
+        <div class="border-item-3 border-b pb-3">
           <UiTitleOption class="pb-2">
-            {{ t("stat.config.chartShow.title") }}
+            {{ t('stat.config.chartShow.title') }}
           </UiTitleOption>
 
           <UiCheckbox
@@ -65,7 +65,7 @@ const isShow = ref(false)
             <!-- Chart: view -->
             <div class="hidden gap-3 md:grid">
               <UiTitleOption>
-                {{ t("stat.config.chartView.label") }}
+                {{ t('stat.config.chartView.label') }}
               </UiTitleOption>
 
               <UiTabs1>
@@ -83,7 +83,7 @@ const isShow = ref(false)
             <!-- Chart: type -->
             <div class="grid gap-3">
               <UiTitleOption>
-                {{ t("stat.config.chart.type.label") }}
+                {{ t('stat.config.chart.type.label') }}
               </UiTitleOption>
 
               <UiTabs1>
@@ -108,10 +108,10 @@ const isShow = ref(false)
         <!-- Showed wallets -->
         <div
           v-if="props.isShowWallets"
-          class="border-b border-item-3 pb-3"
+          class="border-item-3 border-b pb-3"
         >
           <UiTitleOption class="pb-2">
-            {{ t("stat.config.wallets.title") }}
+            {{ t('stat.config.wallets.title') }}
           </UiTitleOption>
           <UiCheckbox
             :checkboxValue="statConfig.config.value.wallets.isShow"
@@ -155,7 +155,7 @@ const isShow = ref(false)
         <!-- Statistics -->
         <div>
           <UiTitleOption class="pb-2">
-            {{ t("statistics.title") }}
+            {{ t('statistics.title') }}
           </UiTitleOption>
 
           <UiCheckbox

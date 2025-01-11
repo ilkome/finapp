@@ -52,15 +52,15 @@ onMounted(() => stateLimit.value = props.limit)
     >
       <div
         :class="getStyles('item', ['rounded', 'minh1', 'link', 'padding1', 'center3'])"
-        class="-mt-px text-xs"
+        class="text-2 -mt-px text-xs"
         @click="toggle"
       >
         <template v-if="stateLimit > 0">
-          {{ t("showAll") }}
+          {{ t('showAll') }}
         </template>
 
         <template v-else-if="stateLimit !== limit">
-          {{ t("wallets.showOnly") }} {{ limit }}
+          {{ t('wallets.showOnly') }} {{ limit }}
         </template>
       </div>
     </slot>

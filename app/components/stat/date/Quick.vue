@@ -61,7 +61,7 @@ function setMaxRange(isSkipEmpty = false) {
       <div class="swiper-wrapper">
         <!-- Recent -->
         <div class="swiper-slide">
-          <div class="flex flex-wrap">
+          <div class="flex overflow-hidden">
             <DateRanges @onClose="emit('onClose')" />
 
             <div class="flex">
@@ -79,13 +79,13 @@ function setMaxRange(isSkipEmpty = false) {
         </div>
 
         <div class="swiper-slide">
-          <div class="flex flex-wrap">
+          <div class="flex overflow-hidden">
             <DateRanges2 @onClose="emit('onClose')" />
           </div>
         </div>
 
         <div class="swiper-slide">
-          <div class="flex flex-wrap">
+          <div class="flex overflow-hidden">
             <DateLinkItem
               :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"
               @click="() => setMaxRange(false)"

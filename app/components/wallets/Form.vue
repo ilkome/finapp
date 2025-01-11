@@ -119,7 +119,7 @@ async function onSave() {
       </UiFormElement>
 
       <!-- Currencies -->
-      <UiItem2 @click="modals.currencies = true">
+      <UiButtonWithRight @click="modals.currencies = true">
         <template #label>
           {{ t('wallets.form.currencies.label') }}
         </template>
@@ -127,10 +127,10 @@ async function onSave() {
         <template #value>
           {{ props.walletForm.currency }}
         </template>
-      </UiItem2>
+      </UiButtonWithRight>
 
       <!-- Color -->
-      <UiItem2 @click="modals.colors = true">
+      <UiButtonWithRight @click="modals.colors = true">
         <template #label>
           {{ t('color.label') }}
         </template>
@@ -142,7 +142,7 @@ async function onSave() {
             class="size-6"
           />
         </template>
-      </UiItem2>
+      </UiButtonWithRight>
 
       <!-- Description -->
       <UiFormElement>
