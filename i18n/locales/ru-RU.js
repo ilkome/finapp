@@ -10,10 +10,6 @@ export default {
 
   app: {
     desc: 'Приложение для учета личных финансов',
-    locale: {
-      en: 'English',
-      ru: 'Русский',
-    },
   },
 
   appName: 'Финапка',

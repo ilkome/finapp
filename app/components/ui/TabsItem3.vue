@@ -13,7 +13,7 @@ const emit = defineEmits(['click'])
     :class="[getStyles('item', ['minh2']), {
       '!bg-item-3 !text-accent-1': isActive,
     }]"
-    class="flex grow select-none items-center justify-center gap-1 px-2 text-sm text-3 hocus:bg-item-hover"
+    class="flex grow select-none items-center justify-center gap-1 px-2 text-sm leading-none text-2 hocus:bg-item-hover"
     @click="emit('click')"
   >
     <slot />

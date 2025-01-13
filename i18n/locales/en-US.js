@@ -10,10 +10,6 @@ export default {
 
   app: {
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
-    locale: {
-      en: 'English',
-      ru: 'Русский',
-    },
   },
 
   appName: 'Finapp',

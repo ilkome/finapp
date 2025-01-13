@@ -1,80 +1,66 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
-  component?: 'UiTabs3' | 'UiTabs2'
-  isShowPink?: boolean
-  isShowSystem?: boolean
-}>(), {
-  component: 'UiTabs2',
-})
+const props = defineProps<{
+  isShowTitle?: boolean
+}>()
 
 const colorMode = useColorMode()
 const { t } = useI18n()
 
-type Theme = 'system' | 'light' | 'dark'
+type Theme = 'system' | 'light' | 'dark' | 'pink'
 
-const locales: {
-  localeKey: string
-  slug: Theme
+const options: {
+  label: string
+  value: Theme
 }[] = [{
-  localeKey: 'theme.light',
-  slug: 'light',
+  label: t('theme.system'),
+  value: 'system',
 }, {
-  localeKey: 'theme.dark',
-  slug: 'dark',
+  label: t('theme.light'),
+  value: 'light',
+}, {
+  label: t('theme.dark'),
+  value: 'dark',
+}, {
+  label: t('theme.pink'),
+  value: 'pink',
 }] as const
-
-if (props.isShowPink) {
-  locales.push({
-    localeKey: 'theme.pink',
-    slug: 'pink',
-  })
-}
-
-if (props.isShowSystem) {
-  locales.unshift({
-    localeKey: 'theme.system',
-    slug: 'system',
-  })
-}
 
 function setTheme(theme: Theme) {
   colorMode.preference = theme
 }
-
-function isItActive(theme: Theme) {
-  return colorMode.preference === theme
-}
 </script>
 
 <template>
-  <Component :is="props.component">
-    <UiTabsItem4
-      v-for="locale in locales"
-      :key="locale.slug"
-      :isActive="isItActive(locale.slug)"
-      @click="setTheme(locale.slug)"
+  <div>
+    <UiTitle3
+      v-if="props.isShowTitle"
+      class="pb-2"
     >
-      {{ t(locale.localeKey) }}
-    </UiTabsItem4>
-  </Component>
+      {{ t('theme.title') }}
+    </UiTitle3>
+
+    <FormSelect
+      :options
+      :value="colorMode.preference"
+      @change="(theme: Theme) => setTheme(theme)"
+    />
+  </div>
 </template>
 
 <i18n lang="yaml">
 en:
   theme:
-    change: 'Change theme'
     dark: 'Dark'
     light: 'Light'
     pink: 'Pink'
-    select: 'Select theme'
+    title: 'Theme'
     system: 'System'
 
 ru:
   theme:
-    change: 'Сменить тему'
     dark: 'Темная'
     light: 'Светлая'
     pink: 'Розовая'
-    select: 'Выберите тему'
+    title: 'Тема'
     system: 'Авто'
 </i18n>

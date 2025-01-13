@@ -156,15 +156,14 @@ function selectInterval(grouped: Grouped) {
 
     <DatePicker
       v-if="tabs.selected.value === 'calendar'"
-      expanded
-      color="blue"
+      mode="range"
+      :rows="2"
       :value="statDate.range.value"
-      @update:modelValue="
-        (v: Range) => {
-          statDate.setRangeByCalendar(v);
-          close();
-        }
-      "
+      @update:modelValue="(v: Range) => {
+        console.log('v', v)
+        statDate.setRangeByCalendar(v);
+        close();
+      }"
     />
   </div>
 </template>

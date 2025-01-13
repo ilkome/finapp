@@ -21,7 +21,9 @@ const categoriesStore = useCategoriesStore()
 
 const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
-const isAllowChangeParent = computed(() => categoriesStore.getChildsIds(props.categoryId).length === 0)
+const isAllowChangeParent = computed(() =>
+  categoriesStore.getChildsIds(props.categoryId).length === 0 && categoriesStore.categoriesForBeParent.length > 0,
+)
 
 const modals = ref({
   colors: false,
@@ -123,17 +125,17 @@ async function onSave() {
   >
     <div class="grid content-start gap-6 overflow-y-auto py-4">
       <!-- Name -->
-      <UiFormElement>
+      <FormElement>
         <template #label>
           {{ t('categories.form.name.label') }}
         </template>
 
-        <UiFormInput
+        <FormInput
           :placeholder="t('categories.form.name.placeholder')"
           :value="categoryForm.name"
           @updateValue="(value: string) => emit('updateValue', 'name', value)"
         />
-      </UiFormElement>
+      </FormElement>
 
       <!-- Parent -->
       <UiButtonWithRight
@@ -181,10 +183,6 @@ async function onSave() {
 
       <!-- Options -->
       <div>
-        <UiTitle3 class="pb-2">
-          {{ t('settings.options') }}
-        </UiTitle3>
-
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(props.categoryId).length > 0"
           :checkboxValue="isUpdateChildCategoriesColor"
@@ -284,7 +282,7 @@ async function onSave() {
           </div>
 
           <div class="scrollerBlock bottomSheetContentInside">
-            <UiFormElement class="pb-4 pt-2">
+            <FormElement class="pb-4 pt-2">
               <template #label>
                 {{ t('categories.form.icon.desc') }}
                 <a
@@ -294,12 +292,12 @@ async function onSave() {
                 >Material Design Icons</a>
               </template>
 
-              <UiFormInput
+              <FormInput
                 :placeholder="t('categories.form.icon.placeholder')"
                 :value="categoryForm.icon"
                 @updateValue="(value: string) => emit('updateValue', 'icon', value)"
               />
-            </UiFormElement>
+            </FormElement>
 
             <div
               v-for="iconGroup in icons"
@@ -311,7 +309,7 @@ async function onSave() {
                 :key="icon"
                 :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent"
+                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent text-icon-primary"
                 @click="emit('updateValue', 'icon', icon)"
               >
                 <Icon :name="icon" size="20" />
@@ -348,12 +346,12 @@ async function onSave() {
           <UiTitleModal>{{ t('selectParent') }}</UiTitleModal>
 
           <div class="scrollerBlock bottomSheetContentInside">
-            <UiBox3
+            <UiItem2
               :isActive="props.categoryForm.parentId === 0"
               @click="onParentSelect(false, close)"
             >
               {{ t('categories.form.parent.no') }}
-            </UiBox3>
+            </UiItem2>
 
             <CategoriesList
               :activeItemId="props.categoryForm.parentId"

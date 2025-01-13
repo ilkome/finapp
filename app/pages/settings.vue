@@ -40,44 +40,28 @@ function onGenerateDemoData() {
     </UiHeader>
 
     <div class="pageWrapper rounded-xl bg-foreground-1 pt-4">
-      <div>
-        <!-- Locale -->
-        <div class="pb-12">
-          <div class="grid gap-3">
-            <UiTitle3 class="pb-2">
-              {{ t('settings.lang') }}
-            </UiTitle3>
-            <AppLocaleSwitcher />
-          </div>
-        </div>
-
-        <!-- Theme -->
-        <div class="pb-12">
-          <UiTitle3 class="pb-2">
-            {{ t('theme.title') }}
-          </UiTitle3>
-          <AppThemeSwitcher
-            component="UiTabs2"
-            isShowPink
-            isShowSystem
-          />
-        </div>
+      <div class="grid gap-8">
+        <AppLocaleSwitcher isShowTitle />
+        <AppThemeSwitcher
+          isShowTitle
+        />
 
         <!-- Currency -->
-        <div class="pb-12">
-          <UiButtonWithRight @click="isShowBaseCurrencyModal = true">
-            <template #label>
-              {{ t('currencies.base') }}
-            </template>
+        <UiButtonWithRight
+          isShowTitle
+          @click="isShowBaseCurrencyModal = true"
+        >
+          <template #label>
+            {{ t('currencies.base') }}
+          </template>
 
-            <template #value>
-              {{ currenciesStore.base }}
-            </template>
-          </UiButtonWithRight>
-        </div>
+          <template #value>
+            {{ currenciesStore.base }}
+          </template>
+        </UiButtonWithRight>
 
         <!-- User -->
-        <div class="pb-12">
+        <div class="pb-8">
           <UiTitle3 class="pb-2">
             {{ t('user') }}
           </UiTitle3>
@@ -86,7 +70,7 @@ function onGenerateDemoData() {
         </div>
 
         <!-- Delete -->
-        <div class="pb-12">
+        <div class="pb-8">
           <UiTitle3 class="pb-2">
             {{ t('settings.caution') }}
           </UiTitle3>

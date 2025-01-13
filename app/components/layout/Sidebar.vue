@@ -67,10 +67,9 @@ const isShowLogoMenu = ref(false)
 
               <AppThemeSwitcher
                 isShowSystem
-                component="UiTabs2"
               />
 
-              <UserViewLogout class="mt-6" />
+              <UserViewLogout class="mt-3" />
             </div>
           </template>
         </BottomSheetOrDropdown>
@@ -125,7 +124,7 @@ const isShowLogoMenu = ref(false)
 
     <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
       <UiItem1
-        class="z-10 bg-foreground-2 text-4"
+        class="z-10 text-4"
         @click="emit('toggleSidebar')"
       >
         <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

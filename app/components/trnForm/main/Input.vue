@@ -33,7 +33,7 @@ const { t } = useI18n()
       {{ amount }}
     </div>
 
-    <UiFormInput
+    <FormInput
       :class="{
         '!text-[#f92134] placeholder:!text-red-700/80': highlight === 'income',
         '!text-[#2cad22] placeholder:!text-green-700/80': highlight === 'expense',
@@ -41,7 +41,7 @@ const { t } = useI18n()
       }"
       :placeholder="t('enterAmount')"
       :value="amountRaw"
-      class="swiper-no-swiping border-transparent bg-item-9 pb-2 pt-6 text-center font-secondary !text-3xl placeholder:text-3xl focus:!border-accent-2"
+      class="swiper-no-swiping border-transparent bg-item-9 pb-2 pt-6 text-center font-secondary !text-3xl placeholder:text-3xl"
       inputmode="tel"
       @updateValue="(value: string) => emit('onChange', value || '')"
     />

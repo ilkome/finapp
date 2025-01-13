@@ -18,11 +18,17 @@ function isItActive(amountType: TrnType) {
 
 <template>
   <UiTabs1 class="!gap-0">
-    <UiTabsItem3 :isActive="isItActive(0)" @click="setAmountType(0)">
+    <UiTabsItem3
+      :isActive="isItActive(0)"
+      @click="setAmountType(0)"
+    >
       {{ $t('money.expense') }}
     </UiTabsItem3>
 
-    <UiTabsItem3 :isActive="isItActive(1)" @click="setAmountType(1)">
+    <UiTabsItem3
+      :isActive="isItActive(1)"
+      @click="setAmountType(1)"
+    >
       {{ $t('money.income') }}
     </UiTabsItem3>
 

@@ -5,15 +5,19 @@ import type { LocaleSlug } from '~/components/app/locale/types'
 
 import { useUserStore } from '~/components/user/useUserStore'
 
+const props = defineProps<{
+  isShowTitle?: boolean
+}>()
+
 const { locale, setLocale, t } = useI18n()
 const userStore = useUserStore()
 
-const locales: { localeKey: string, slug: LocaleSlug }[] = [{
-  localeKey: 'app.locale.ru',
-  slug: 'ru',
+const options = [{
+  label: t('locale.ru'),
+  value: 'ru',
 }, {
-  localeKey: 'app.locale.en',
-  slug: 'en',
+  label: t('locale.en'),
+  value: 'en',
 }]
 
 function changeLocale(locale: LocaleSlug) {
@@ -27,14 +31,31 @@ function changeLocale(locale: LocaleSlug) {
 </script>
 
 <template>
-  <UiTabs2>
-    <UiTabsItem4
-      v-for="item in locales"
-      :key="item.slug"
-      :isActive="item.slug === locale"
-      @click="changeLocale(item.slug)"
+  <div>
+    <UiTitle3
+      v-if="props.isShowTitle"
+      class="pb-2"
     >
-      {{ t(item.localeKey) }}
-    </UiTabsItem4>
-  </UiTabs2>
+      {{ t('locale.title') }}
+    </UiTitle3>
+
+    <FormSelect
+      :options
+      :value="locale"
+      @change="(locale: LocaleSlug) => changeLocale(locale)"
+    />
+  </div>
 </template>
+
+<i18n lang="yaml">
+en:
+  locale:
+    en: 'English'
+    ru: 'Русский'
+    title: 'Language'
+ru:
+  locale:
+    en: 'English'
+    ru: 'Русский'
+    title: 'Язык'
+</i18n>

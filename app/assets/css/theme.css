@@ -3,7 +3,7 @@
 html {
   --hue: 220deg;
   --c-blue-1: hsl(220, 100%, 61%);
-  --alert-primary: #b81414;
+  --alert-1: #b81414;
 
   --expense-1: #f92134;
   --expense-line: oklch(0.37 0.09 20.05);
@@ -16,31 +16,28 @@ html {
   * Light Theme
 */
 html {
+  color-scheme: light;
+
   --text-1: 64 64 64;
   --text-2: 0 0 0;
-  --text-2: 0 0 0;
   --text-3: 64 64 64;
-  --text-4: 0 0 0;
+  --text-4: 100 100 100;
+  --text-5: 200 200 200;
   --text-icon-primary: theme('colors.neutral.50');
 
   --foreground-1: 255 255 255;
-  --foreground-2: 245 245 245;
 
   --accent-1: 0 122 255;
-  --accent-2: var(--hue) 100% 61%;
 
   /* Item */
   --item-hover: theme('colors.gray.200');
 
-  --c-item-1: theme('colors.neutral.700');
   --c-item-2: theme('colors.neutral.500');
   --c-item-3: #edeef0;
   --c-item-4: theme('colors.neutral.100');
   --c-item-base: theme('colors.neutral.600');
   --item-6: 237 239 240;
-  --item-8: 25 25 25;
   --item-9: 245 245 245;
-  --item-10: 28 28 28;
   --item-11: rgba(190, 190, 190, 1);
   --item-active: 216 216 220;
 
@@ -76,34 +73,31 @@ html {
 */
 html.pink,
 html.dark {
+  color-scheme: dark;
+
   /* Text */
   --text-1: 220 220 220;
   --text-2: 160 160 160;
   --text-3: 200 200 200;
   --text-4: 130 130 130;
-  --text-5: 120 120 120;
+  --text-5: 90 90 90;
 
   --text-icon-primary: theme('colors.neutral.50');
 
   --foreground-1: 19 19 19;
-  --foreground-2: 22 22 22;
 
   --accent-1: 56 148 2451;
-  --accent-2: var(--hue) 100% 61%;
 
   /* Item */
   --item-hover: theme('colors.neutral.800');
 
-  --c-item-1: theme('colors.neutral.100');
   --c-item-2: theme('colors.neutral.400');
   --c-item-3: #232323;
   --c-item-4: #1c1c1c;
   --c-item-base: theme('colors.neutral.200');
   --item-6: 44 44 44;
-  --item-8: 25 25 25;
   --item-9: 23 23 23;
   --item-11: #878787;
-  --item-10: 28 28 28;
 
   /* Colors */
   --c-red-1: #b81414;
@@ -133,13 +127,9 @@ html.dark {
   * Pink Theme
 */
 html.pink {
-  /* --foreground-1: 23 23 23; */
-  --foreground-2: 24 24 24;
+  color-scheme: dark;
 
-  --c-blue-1: #ff69b4;
+  --accent-1: 255, 105, 180;
+  --c-blue-1: #ff1493;
   --accent-1: 219 39 119;
-  --accent-2: #ff1493;
-
-  /* --item-hover: #2a161e; */
-  /* --c-item-4: #29161d; */
 }
