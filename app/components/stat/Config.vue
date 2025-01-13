@@ -40,7 +40,7 @@ function updateWalletsLimit(value: number) {
         <BottomSheetClose @click="close" />
 
         <!-- Chart -->
-        <div class="border-b border-item-3 pb-3">
+        <div class="border-item-3 border-b pb-3">
           <UiTitleOption class="pb-2">
             {{ t('stat.config.chartShow.title') }}
           </UiTitleOption>
@@ -109,7 +109,7 @@ function updateWalletsLimit(value: number) {
         <!-- Showed wallets -->
         <div
           v-if="props.isShowWallets"
-          class="border-b border-item-3 pb-3"
+          class="border-item-3 border-b pb-3"
         >
           <UiTitleOption class="pb-2">
             {{ t('stat.config.wallets.title') }}
@@ -125,14 +125,14 @@ function updateWalletsLimit(value: number) {
             class="flex gap-4 pt-2"
           >
             <div class="flex gap-1">
-              <UiItem4
+              <UiItem2
                 :class="[{
                   '!hocus:transparent opacity-30': statConfig.config.value.wallets.count === 1,
                 }]"
                 @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
               >
                 <Icon name="lucide:minus" />
-              </UiItem4>
+              </UiItem2>
               <FormInput
                 :placeholder="t('stat.config.showedWallets.placeholder')"
                 :value="statConfig.config.value.wallets.count"
@@ -143,12 +143,12 @@ function updateWalletsLimit(value: number) {
                 @updateValue="value => statConfig.updateConfig('wallets', { count: +value })"
               />
 
-              <UiItem4
+              <UiItem2
                 :class="{ '!hocus:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
                 @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
               >
                 <Icon name="lucide:plus" />
-              </UiItem4>
+              </UiItem2>
             </div>
           </div>
         </div>
