@@ -119,7 +119,10 @@ export function useStatDate({
 
   function setRangeByCalendar(r: Range) {
     resetCustomAndMaxRangeParams()
-    params.value.customDate = r
+    params.value.customDate = {
+      end: new Date(r.end).getTime(),
+      start: new Date(r.start).getTime(),
+    }
     params.value.rangeOffset = 0
 
     params.value.intervalsBy = 'day'

@@ -27,7 +27,7 @@
 
 @layer components {
   .layoutBase {
-    @apply overflow-hidden relative h-dvh bg-foreground-2;
+    @apply overflow-hidden relative h-dvh bg-item-9;
   }
 
   .pageWrapper {

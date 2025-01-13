@@ -52,7 +52,7 @@ const items = computed(() => ({
           <div class="scrollerBlock bottomSheetContentInside !px-3">
             <div
               v-if="description"
-              class="text-alert-primary"
+              class="text-alert-1"
             >
               {{ description }}
             </div>

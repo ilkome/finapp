@@ -21,17 +21,17 @@ const { isDemo } = useDemo()
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="bg-foreground-1 grid gap-3 px-1 py-3">
+      <div class="grid gap-3 bg-foreground-1 px-1 py-3">
         <LayoutSidebarMenu />
 
         <div class="pl-2 pt-2">
-          <AppThemeSwitcherSelect isShowTitle />
+          <AppThemeSwitcher isShowTitle />
         </div>
 
         <!-- User -->
         <div
           v-if="!isDemo"
-          class="border-item-6 border-t px-2 pt-3"
+          class="border-t border-item-6 px-2 pt-3"
         >
           <UserViewLogout />
         </div>

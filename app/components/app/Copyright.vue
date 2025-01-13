@@ -6,13 +6,13 @@ const { t } = useI18n()
 
 <template>
   <a
-    :class="getStyles('item', ['link', 'rounded'])"
-    class="flex-center px-5 py-2"
+    :class="getStyles('item', ['center3', 'link', 'rounded'])"
+    class="px-5 py-2"
     href="https://ilko.me"
   >
     {{ t('madeBy.text') }}
     <Icon
-      class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[rgb(210,0,20)]"
+      class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-alert-1"
       name="mdi:heart"
     />
     {{ t('madeBy.name') }}

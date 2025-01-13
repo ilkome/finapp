@@ -33,7 +33,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
       <template v-if="filter.isShow.value" #selected>
         <FilterSelected
-          class="sticky top-[40px] z-20 bg-foreground-2"
+          class="sticky top-[40px] z-20 bg-item-9"
           isShowCategories
           isShowWallets
         />

@@ -50,7 +50,7 @@ watch(isShow, (v) => {
       v-if="isShow"
       class="@container/trnForm trnForm absolute inset-y-0 z-50 h-full w-[360px] py-2"
     >
-      <div class="relative h-full overflow-hidden rounded-r-xl border border-item-6 border-l-foreground-2 bg-foreground-2 shadow-2xl">
+      <div class="border-left relative h-full overflow-hidden rounded-r-xl border-item-6 bg-item-9 shadow-2xl">
         <div class="absolute right-2 top-2">
           <BottomSheetClose @onClick="trnsFormStore.onClose()" />
         </div>

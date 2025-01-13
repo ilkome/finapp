@@ -1,17 +1,20 @@
 <script setup lang="ts">
-import type { DatePickerDate, DatePickerRangeObject } from 'v-calendar/dist/types/src/use/datePicker'
-
 import { DatePicker as VCalendarDatePicker } from 'v-calendar'
-import 'v-calendar/dist/style.css'
+import 'v-calendar/style.css'
 
-const props = defineProps({
-  value: {
-    default: null,
-    type: [Date, Object] as PropType<DatePickerDate | DatePickerRangeObject | null>,
-  },
-})
+type DatePickerDate = number | string | Date | null | {
+  end?: number | string | Date | null
+  start?: number | string | Date | null
+}
+
+const props = defineProps<{
+  mode?: 'date' | 'range'
+  rows?: number
+  value: DatePickerDate
+}>()
 
 const emit = defineEmits(['update:model-value', 'close'])
+const colorMode = useColorMode()
 
 const date = computed({
   get: () => props.value,
@@ -23,41 +26,67 @@ const date = computed({
 
 const attrs = {
   'borderless': true,
-  'color': 'primary',
   'first-day-of-week': 2,
-  'is-dark': { darkClass: 'dark', selector: 'html' },
   'transparent': true,
+}
+
+const matchTheme = {
+  dark: {
+    color: 'blue',
+    isDark: true,
+  },
+  light: {
+    color: 'blue',
+    isDark: false,
+  },
+  pink: {
+    color: 'pink',
+    isDark: true,
+  },
+  system: {
+    color: 'blue',
+    isDark: colorMode.value === 'dark',
+  },
 }
 </script>
 
 <template>
-  <VCalendarDatePicker v-model.range="date" :rows="2" v-bind="{ ...attrs, ...$attrs }" />
+  <VCalendarDatePicker
+    v-if="props.mode === 'range'"
+    v-model.range="date"
+    class="datePicker"
+    :rows="props.rows ?? 1"
+    v-bind="{ ...attrs, ...$attrs, ...matchTheme[colorMode.preference] }"
+  />
+  <VCalendarDatePicker
+    v-else
+    v-model="date"
+    :rows="1"
+    class="datePicker"
+    mode="date"
+    v-bind="{ ...attrs, ...$attrs, ...matchTheme[colorMode.preference] }"
+  />
 </template>
 
 <style>
-:root {
-  --vc-gray-50: rgb(var(--color-gray-50));
-  --vc-gray-100: rgb(var(--color-gray-100));
-  --vc-gray-200: rgb(var(--color-gray-200));
-  --vc-gray-300: rgb(var(--color-gray-300));
-  --vc-gray-400: rgb(var(--color-gray-400));
-  --vc-gray-500: rgb(var(--color-gray-500));
-  --vc-gray-600: rgb(var(--color-gray-600));
-  --vc-gray-700: rgb(var(--color-gray-700));
-  --vc-gray-800: rgb(var(--color-gray-800));
-  --vc-gray-900: rgb(var(--color-gray-900));
+html .vc-dark,
+html .vc-light {
+  --vc-popover-content-bg: theme('colors.foreground.1');
+  --vc-accent-500: theme('colors.accent.1');
+  --vc-focus-ring: theme('colors.accent.1');
+  --vc-nav-item-active-bg: theme('colors.accent.1');
+  --vc-nav-hover-bg: theme('colors.item.hover');
+  --vc-color: theme('colors.1');
+  --vc-day-content-disabled-color: theme('colors.5');
+  --vc-weekday-color: theme('colors.2');
+  --vc-header-title-color: theme('colors.3');
+  --vc-popover-content-color: theme('colors.2');
+  --vc-nav-title-color: theme('colors.3');
+  --vc-nav-item-current-color: theme('colors.accent.1');
+  --vc-highlight-solid-bg: theme('colors.accent.1');
 }
 
-.vc-primary {
-  --vc-accent-50: rgb(var(--color-primary-50));
-  --vc-accent-100: rgb(var(--color-primary-100));
-  --vc-accent-200: rgb(var(--color-primary-200));
-  --vc-accent-300: rgb(var(--color-primary-300));
-  --vc-accent-400: rgb(var(--color-primary-400));
-  --vc-accent-500: rgb(var(--color-primary-500));
-  --vc-accent-600: rgb(var(--color-primary-600));
-  --vc-accent-700: rgb(var(--color-primary-700));
-  --vc-accent-800: rgb(var(--color-primary-800));
-  --vc-accent-900: rgb(var(--color-primary-900));
+.vc-popover-content {
+  @apply border-2 border-item-3;
 }
 </style>

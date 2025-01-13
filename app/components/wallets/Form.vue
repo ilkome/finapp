@@ -106,17 +106,17 @@ async function onSave() {
   >
     <div class="grid content-start gap-6 overflow-y-auto py-4">
       <!-- Name -->
-      <UiFormElement>
+      <FormElement>
         <template #label>
           {{ t('wallets.form.name.label') }}
         </template>
 
-        <UiFormInput
+        <FormInput
           :placeholder="t('wallets.form.name.placeholder')"
           :value="props.walletForm.name ?? ''"
           @updateValue="(value: string) => emit('updateValue', 'name', value)"
         />
-      </UiFormElement>
+      </FormElement>
 
       <!-- Currencies -->
       <UiButtonWithRight @click="modals.currencies = true">
@@ -145,16 +145,16 @@ async function onSave() {
       </UiButtonWithRight>
 
       <!-- Description -->
-      <UiFormElement>
+      <FormElement>
         <template #label>
           {{ t('wallets.form.description.label') }}
         </template>
-        <UiFormInput
+        <FormTextarea
           :placeholder="t('wallets.form.description.placeholder')"
           :value="props.walletForm.desc ?? ''"
           @updateValue="(value: string) => emit('updateValue', 'desc', value)"
         />
-      </UiFormElement>
+      </FormElement>
 
       <!-- Type -->
       <div>
@@ -170,22 +170,23 @@ async function onSave() {
       </div>
 
       <!-- Credit Limit -->
-      <UiFormElement v-if="props.walletForm.type === 'credit'">
+      <FormElement v-if="props.walletForm.type === 'credit'">
         <template #label>
           {{ t('wallets.form.credit.limit') }}
         </template>
-        <UiFormInput
+        <FormInput
           :placeholder="t('wallets.form.credit.limit')"
           :value="props.walletForm.creditLimit ?? 0"
           @updateValue="(value: string) => emit('updateValue', 'creditLimit', value)"
         />
-      </UiFormElement>
+      </FormElement>
 
       <!-- Options -->
       <div class="grid gap-1">
-        <UiTitle3>
+        <!-- <UiTitle3>
           {{ t('settings.options') }}
         </UiTitle3>
+         -->
         <div>
           <UiCheckbox
             :checkboxValue="props.walletForm.isWithdrawal ?? false"

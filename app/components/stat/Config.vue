@@ -69,14 +69,15 @@ function updateWalletsLimit(value: number) {
               </UiTitleOption>
 
               <UiTabs1>
-                <UiTabsItem1
+                <UiTabsItem4
                   v-for="view in chartViewOptions"
                   :key="view"
                   :isActive="statConfig.config.value.chartView === view"
+                  class="grow"
                   @click="statConfig.updateConfig('chartView', view)"
                 >
                   {{ t(`stat.config.chartView.${view}`) }}
-                </UiTabsItem1>
+                </UiTabsItem4>
               </UiTabs1>
             </div>
 
@@ -87,11 +88,11 @@ function updateWalletsLimit(value: number) {
               </UiTitleOption>
 
               <UiTabs1>
-                <UiTabsItem1
+                <UiTabsItem4
                   v-for="item in chartTypes"
                   :key="item.value"
                   :isActive="statConfig.config.value.chartType === item.value"
-                  class="flex gap-1"
+                  class="flex grow gap-1"
                   @click="statConfig.updateConfig('chartType', item.value)"
                 >
                   <Icon
@@ -99,7 +100,7 @@ function updateWalletsLimit(value: number) {
                     :size="16"
                   />
                   {{ item.label }}
-                </UiTabsItem1>
+                </UiTabsItem4>
               </UiTabs1>
             </div>
           </div>
@@ -132,7 +133,7 @@ function updateWalletsLimit(value: number) {
               >
                 <Icon name="lucide:minus" />
               </UiItem4>
-              <UiFormInput
+              <FormInput
                 :placeholder="t('stat.config.showedWallets.placeholder')"
                 :value="statConfig.config.value.wallets.count"
                 :max="walletsStore.sortedIds.length"

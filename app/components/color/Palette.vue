@@ -61,16 +61,15 @@ function findWalletWithColor(color: string) {
       </div>
     </div>
 
-    <UiFormElement>
+    <FormElement>
       <template #label>
         {{ t('color.custom') }}
       </template>
-      <input
+      <FormInput
         :value="activeColor"
-        class="h-12 w-full rounded-lg border border-solid border-item-3 p-0 transition ease-in-out focus:border-accent-2 focus:bg-item-hover focus:text-1 focus:outline-none"
         type="color"
-        @input="(event: HTMLInputEvent) => emit('click', event.target.value)"
-      >
-    </UiFormElement>
+        @updateValue="(event: HTMLInputEvent) => emit('click', event.target.value)"
+      />
+    </FormElement>
   </div>
 </template>

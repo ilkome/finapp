@@ -67,9 +67,9 @@ async function openDemo() {
 
 <template>
   <div class="mx-auto grid size-full max-w-xl grid-rows-[auto,1fr,auto] px-2 py-3 md:p-6">
-    <div class="flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center justify-between gap-2">
       <AppLocaleSwitcher />
-      <AppThemeSwitcherSelect class="justify-end" />
+      <AppThemeSwitcher />
     </div>
 
     <div

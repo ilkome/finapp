@@ -32,7 +32,7 @@ const list = computed(() => {
 <template>
   <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden px-2">
     <div>
-      <UiFormInput
+      <FormInput
         :value="searchInput"
         :placeholder="`${t('search')}...`"
         @updateValue="(value: string) => searchInput = value"
