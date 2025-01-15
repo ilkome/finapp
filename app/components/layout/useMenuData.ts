@@ -17,32 +17,43 @@ export default function useMenuData() {
   const route = useRoute()
   const { closeAllModals, openModal } = useAppNav()
 
-  const items = computed<Record<string, MenuItem>>(() => ({
-    trnForm: {
-      icon: 'hugeicons:plus-sign-square',
-      name: t('trnForm.createTrn'),
-    },
-    dashboard: {
-      icon: 'lucide:chart-no-axes-combined',
-      name: t('stat.title'),
-    },
-    wallets: {
-      icon: 'hugeicons:wallet-01',
-      name: t('wallets.name'),
-    },
-    categories: {
-      icon: 'hugeicons:folder-library',
-      name: t('categories.name'),
-    },
-    history: {
-      icon: 'hugeicons:archive-01',
-      name: t('trns.history'),
-    },
-    settings: {
-      icon: 'hugeicons:settings-01',
-      name: t('settings.title'),
-    },
-  }))
+  const items = computed<Record<string, MenuItem>>(() => {
+    const list = {
+      trnForm: {
+        icon: 'hugeicons:plus-sign-square',
+        name: t('trnForm.createTrn'),
+      },
+      dashboard: {
+        icon: 'lucide:chart-no-axes-combined',
+        name: t('stat.title'),
+      },
+      wallets: {
+        icon: 'hugeicons:wallet-01',
+        name: t('wallets.name'),
+      },
+      categories: {
+        icon: 'hugeicons:folder-library',
+        name: t('categories.name'),
+      },
+      history: {
+        icon: 'hugeicons:archive-01',
+        name: t('trns.history'),
+      },
+      settings: {
+        icon: 'hugeicons:settings-01',
+        name: t('settings.title'),
+      },
+    }
+
+    if (process.env.NODE_ENV === 'development') {
+      list.dev = {
+        icon: 'hugeicons:laptop-programming',
+        name: t('dev.menu.title'),
+      }
+    }
+
+    return list
+  })
 
   const itemsBottom = computed<Record<string, MenuItem>>(() => ({
     wallets: items.value.wallets!,

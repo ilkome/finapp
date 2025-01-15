@@ -105,10 +105,10 @@ export default {
     in: 'в',
     open: 'Открыть',
   },
+
   create: {
     title: 'Создать',
   },
-
   currencies: {
     base: 'Основная валюта',
   },
@@ -163,6 +163,12 @@ export default {
     loaded: 'Данные загружены',
     update: 'Обновить демо данные',
     updated: 'Данные обновлены',
+  },
+
+  dev: {
+    menu: {
+      title: 'Разработка',
+    },
   },
 
   locale: {

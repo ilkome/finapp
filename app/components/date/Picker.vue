@@ -31,19 +31,23 @@ const attrs = {
 }
 
 const matchTheme = {
-  dark: {
+  'dark-blue': {
     color: 'blue',
     isDark: true,
   },
-  light: {
-    color: 'blue',
-    isDark: false,
-  },
-  pink: {
+  'dark-pink': {
     color: 'pink',
     isDark: true,
   },
-  system: {
+  'light-blue': {
+    color: 'blue',
+    isDark: false,
+  },
+  'light-pink': {
+    color: 'pink',
+    isDark: false,
+  },
+  'system': {
     color: 'blue',
     isDark: colorMode.value === 'dark',
   },
@@ -71,7 +75,7 @@ const matchTheme = {
 <style>
 html .vc-dark,
 html .vc-light {
-  --vc-popover-content-bg: theme('colors.foreground.1');
+  --vc-popover-content-bg: theme('colors.item.5');
   --vc-accent-500: theme('colors.accent.1');
   --vc-focus-ring: theme('colors.accent.1');
   --vc-nav-item-active-bg: theme('colors.accent.1');

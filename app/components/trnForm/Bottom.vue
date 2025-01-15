@@ -78,12 +78,12 @@ onMounted(init)
       <BottomSheetClose @onClick="close" />
     </template>
 
-    <div class="trnForm @container/trnForm bg-foreground-1">
+    <div class="trnForm @container/trnForm bg-item-5">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide h-full overflow-y-auto bg-foreground-1"
+            class="swiper-slide h-full overflow-y-auto bg-item-5"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
@@ -94,7 +94,7 @@ onMounted(init)
           </div>
 
           <!-- Main -->
-          <div class="swiper-slide getHeight bg-foreground-1">
+          <div class="swiper-slide getHeight bg-item-5">
             <div class="scrollerBlock h-full overflow-y-auto">
               <div class="max-h-[98dvh]">
                 <TrnFormMain :maxHeight />
@@ -104,7 +104,7 @@ onMounted(init)
 
           <!-- Quick selector -->
           <div
-            class="swiper-slide bg-foreground-1"
+            class="swiper-slide bg-item-5"
             :style="{ height: maxHeight }"
           >
             <div class="scrollerBlock h-full overflow-y-auto">

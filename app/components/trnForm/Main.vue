@@ -96,7 +96,7 @@ const actions = computed(() => ({
     />
 
     <UiTitle3
-      class="sticky top-0 z-10 bg-foreground-1 px-3 pb-3 pt-4 md:text-xl"
+      class="sticky top-0 z-10 bg-item-5 px-3 pb-3 pt-4 md:text-xl"
       @click="trnsFormStore.values.trnId = null"
     >
       {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
@@ -116,7 +116,7 @@ const actions = computed(() => ({
         v-if="showModalConfirm"
         class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-foreground-1 p-3 text-1">
+        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-item-5 p-3 text-1">
           {{ t('base.sure') }}
 
           <div class="flex gap-2">
@@ -221,7 +221,7 @@ const actions = computed(() => ({
   padding-bottom: calc(env(safe-area-inset-bottom) - 16px);
 
   .trnForm__pagination {
-    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-foreground-1;
+    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-item-5;
     transform: translateX(-50%);
     bottom: 1px;
   }

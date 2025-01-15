@@ -165,6 +165,12 @@ export default {
     updated: 'Data updated',
   },
 
+  dev: {
+    menu: {
+      title: 'Development',
+    },
+  },
+
   locale: {
     toggle: 'Toggle locale',
   },

@@ -12,7 +12,7 @@ const colorMode = useColorMode()
 
 <template>
   <UButton
-    v-if="colorMode.preference === 'pink'"
+    v-if="colorMode.preference === 'dark-pink' || colorMode.preference === 'light-pink'"
     :loading="props.loading"
     :size="props.size || 'lg'"
     :ui="{ rounded: props.rounded ? 'rounded-full' : 'rounded-lg' }"

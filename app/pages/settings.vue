@@ -39,7 +39,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper rounded-xl bg-foreground-1 pt-4">
+    <div class="pageWrapper rounded-xl bg-item-5 pt-4">
       <div class="grid gap-8">
         <AppLocaleSwitcher isShowTitle />
         <AppThemeSwitcher

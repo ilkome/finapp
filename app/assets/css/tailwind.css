@@ -20,7 +20,7 @@
 @layer base {
   html,
   body {
-    @apply bg-foreground-1 font-primary text-1 leading-none antialiased select-none;
+    @apply bg-item-5 font-primary text-1 leading-none antialiased select-none;
     overscroll-behavior-y: none;
   }
 }
@@ -35,7 +35,7 @@
   }
 
   .bottomSheetDrugClassesCustom {
-    @apply bg-foreground-1 max-w-md rounded-xl;
+    @apply bg-item-5 max-w-md rounded-xl;
   }
 
   .bottomSheetContent {
@@ -44,7 +44,7 @@
   }
 
   .bottomSheetContentInside {
-    @apply grid h-full bg-foreground-1 gap-1 overflow-hidden overflow-y-auto px-2 py-px;
+    @apply grid h-full bg-item-5 gap-1 overflow-hidden overflow-y-auto px-2 py-px;
   }
 
   .bottomSheetContentBottom {
