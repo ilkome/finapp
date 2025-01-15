@@ -1,33 +1,14 @@
 <script setup lang="ts">
+import type { Theme } from '~/components/app/theme/types'
+
+import { useTheme } from '~/components/app/theme/useTheme'
+
 const props = defineProps<{
   isShowTitle?: boolean
 }>()
 
-const colorMode = useColorMode()
 const { t } = useI18n()
-
-type Theme = 'system' | 'light' | 'dark' | 'pink'
-
-const options: {
-  label: string
-  value: Theme
-}[] = [{
-  label: t('theme.system'),
-  value: 'system',
-}, {
-  label: t('theme.light'),
-  value: 'light',
-}, {
-  label: t('theme.dark'),
-  value: 'dark',
-}, {
-  label: t('theme.pink'),
-  value: 'pink',
-}] as const
-
-function setTheme(theme: Theme) {
-  colorMode.preference = theme
-}
+const { options, preference, setTheme } = useTheme()
 </script>
 
 <template>
@@ -41,26 +22,10 @@ function setTheme(theme: Theme) {
 
     <FormSelect
       :options
-      :value="colorMode.preference"
+      :value="preference"
       @change="(theme: Theme) => setTheme(theme)"
     />
   </div>
 </template>
 
-<i18n lang="yaml">
-en:
-  theme:
-    dark: 'Dark'
-    light: 'Light'
-    pink: 'Pink'
-    title: 'Theme'
-    system: 'System'
-
-ru:
-  theme:
-    dark: 'Темная'
-    light: 'Светлая'
-    pink: 'Розовая'
-    title: 'Тема'
-    system: 'Авто'
-</i18n>
+<i18n lang="yaml" src="./locale.yaml" />

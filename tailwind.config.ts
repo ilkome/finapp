@@ -40,9 +40,6 @@ export default <Partial<Config>>{
         'expense': {
           1: 'var(--expense-1)',
         },
-        'foreground': {
-          1: 'rgb(var(--foreground-1))',
-        },
         'icon-primary': 'var(--text-icon-primary)',
         'income': {
           1: 'var(--income-1)',
@@ -51,9 +48,10 @@ export default <Partial<Config>>{
           2: 'var(--c-item-2)',
           3: 'var(--c-item-3)',
           4: 'var(--c-item-4)',
+          5: 'rgb(var(--item-5))',
           6: 'rgba(var(--item-6))',
+          7: 'var(--item-7)',
           9: 'rgba(var(--item-9))',
-          11: 'var(--item-11)',
           hover: 'var(--item-hover)',
         },
       },

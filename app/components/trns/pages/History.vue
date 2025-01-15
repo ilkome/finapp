@@ -40,7 +40,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
       </template>
     </UiHeader>
 
-    <div class="pageWrapper mb-4 rounded-xl bg-foreground-1 pb-4 pt-3">
+    <div class="pageWrapper mb-4 rounded-xl bg-item-5 pb-4 pt-3">
       <div class="grid gap-3">
         <TrnsList
           :trnsIds

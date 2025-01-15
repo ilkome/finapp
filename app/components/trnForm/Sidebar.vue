@@ -58,7 +58,7 @@ watch(isShow, (v) => {
         <div ref="sliderRef2" class="swiper-container h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
-            <div class="swiper-slide h-full bg-foreground-1">
+            <div class="swiper-slide h-full bg-item-5">
               <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-4 overflow-y-auto">
                 <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
@@ -73,7 +73,7 @@ watch(isShow, (v) => {
 
             <!-- Quick selector -->
             <div
-              class="swiper-slide bg-foreground-1"
+              class="swiper-slide bg-item-5"
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto">

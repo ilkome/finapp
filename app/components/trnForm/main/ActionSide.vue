@@ -30,7 +30,7 @@ async function onClickSubmit() {
 <template>
   <div
     :class="{
-      '!border-transparent !bg-accent-1/80 hocus:!bg-accent-1': !isMath && isSubmittable,
+      '!border-transparent !bg-accent-1/80 !text-icon-primary hocus:!bg-accent-1': !isMath && isSubmittable,
       '!border-item-4 !text-2': !isSubmittable,
       '!text-2': isMath,
     }"

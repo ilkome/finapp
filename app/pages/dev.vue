@@ -1,10 +1,12 @@
 <script lang="ts" setup>
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
+const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
   <UiPage>
-    <AppThemeSwitcherTabs isShowPink isShowSystem />
+    <AppThemeSwitcherTabs />
 
     <div class="grid grid-cols-[1fr,auto] items-start gap-8 p-3">
       <div class="grid gap-12">
@@ -21,13 +23,13 @@
               </div>
               <div class="flex flex-wrap gap-0">
                 <div class="size-20 bg-item-2" />
-                <div class="size-20 bg-item-11" />
+                <div class="size-20 bg-item-7" />
                 <div class="size-20 bg-item-6" />
                 <div class="size-20 bg-item-hover" />
                 <div class="size-20 bg-item-3" />
                 <div class="size-20 bg-item-4" />
                 <div class="size-20 bg-item-9" />
-                <div class="size-20 bg-foreground-1" />
+                <div class="size-20 bg-item-5" />
               </div>
             </div>
 
@@ -247,6 +249,25 @@
               :rows="2"
             />
           </div>
+        </div>
+
+        <div>
+          <h1 class="mb-2 border-b border-item-6 pb-1">
+            StatCategoriesLine
+          </h1>
+
+          <!-- <StatCategoriesLine
+            isShowParent
+            :item="{
+              id: categoriesStore.items[Object.keys(categoriesStore.items)[0]].id,
+              name: 'test',
+              trnsIds: [],
+              value: 1,
+            }"
+            :biggestCatNumber="{ income: 1, expense: 1 }"
+            :lineWidth="1"
+            class="grow"
+          /> -->
         </div>
       </div>
     </div>

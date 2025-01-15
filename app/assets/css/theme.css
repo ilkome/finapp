@@ -1,7 +1,7 @@
 @import 'others.css';
 
 html {
-  --hue: 220deg;
+  --hue: 220;
   --c-blue-1: hsl(220, 100%, 61%);
   --alert-1: #b81414;
 
@@ -18,28 +18,26 @@ html {
 html {
   color-scheme: light;
 
-  --text-1: 64 64 64;
-  --text-2: 0 0 0;
+  --text-1: 0 0 0;
+  --text-2: 64 64 64;
   --text-3: 64 64 64;
   --text-4: 100 100 100;
   --text-5: 200 200 200;
+
   --text-icon-primary: theme('colors.neutral.50');
-
-  --foreground-1: 255 255 255;
-
   --accent-1: 0 122 255;
+  --item-5: 255 255 255;
 
   /* Item */
-  --item-hover: theme('colors.gray.200');
-
   --c-item-2: theme('colors.neutral.500');
   --c-item-3: #edeef0;
   --c-item-4: theme('colors.neutral.100');
   --c-item-base: theme('colors.neutral.600');
   --item-6: 237 239 240;
-  --item-9: 245 245 245;
-  --item-11: rgba(190, 190, 190, 1);
+  --item-7: rgba(190, 190, 190, 1);
+  --item-9: 250 250 250;
   --item-active: 216 216 220;
+  --item-hover: #ebecef;
 
   /* Colors */
   --c-red-1: #b81414;
@@ -71,8 +69,8 @@ html {
 /*
   * Dark Theme
 */
-html.pink,
-html.dark {
+html.dark-pink,
+html.dark-blue {
   color-scheme: dark;
 
   /* Text */
@@ -83,21 +81,18 @@ html.dark {
   --text-5: 90 90 90;
 
   --text-icon-primary: theme('colors.neutral.50');
-
-  --foreground-1: 19 19 19;
-
   --accent-1: 56 148 2451;
 
   /* Item */
-  --item-hover: theme('colors.neutral.800');
-
-  --c-item-2: theme('colors.neutral.400');
+  --c-item-2: #a3a3a3;
   --c-item-3: #232323;
   --c-item-4: #1c1c1c;
-  --c-item-base: theme('colors.neutral.200');
+  --c-item-base: #e5e5e5;
+  --item-5: 19 19 19;
   --item-6: 44 44 44;
+  --item-7: #878787;
   --item-9: 23 23 23;
-  --item-11: #878787;
+  --item-hover: #262626;
 
   /* Colors */
   --c-red-1: #b81414;
@@ -126,10 +121,14 @@ html.dark {
 /*
   * Pink Theme
 */
-html.pink {
-  color-scheme: dark;
+html.light-pink {
+  --item-hover: #f3eff2;
+  --item-3: #f0edef;
+  --item-6: 240 237 240;
+}
 
-  --accent-1: 255, 105, 180;
-  --c-blue-1: #ff1493;
+html.light-pink,
+html.dark-pink {
   --accent-1: 219 39 119;
+  --c-blue-1: #ff1493;
 }

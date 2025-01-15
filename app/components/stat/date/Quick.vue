@@ -33,7 +33,7 @@ onMounted(() => {
     observeParents: true,
     observer: true,
     shortSwipes: false,
-    slidesPerView: '1',
+    slidesPerView: 1,
     touchStartPreventDefault: false,
   })
 })
