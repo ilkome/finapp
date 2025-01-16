@@ -75,8 +75,12 @@ usePageScroll()
 const { ctrl_d, ctrl_s, escape } = useMagicKeys()
 
 watch(ctrl_s!, (v) => {
-  if (v)
-    trnsFormStore.ui.isShow = !trnsFormStore.ui.isShow
+  if (v) {
+    if (trnsFormStore.ui.isShow)
+      trnsFormStore.ui.isShow = false
+    else
+      trnsFormStore.trnFormCreate()
+  }
 })
 
 watch(escape!, (v) => {
