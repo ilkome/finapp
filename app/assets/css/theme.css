@@ -1,74 +1,9 @@
 @import 'others.css';
 
-html {
-  --hue: 220;
-  --c-blue-1: hsl(220, 100%, 61%);
-  --alert-1: #b81414;
-
-  --expense-1: #f92134;
-  --expense-line: oklch(0.37 0.09 20.05);
-
-  --income-1: #2cad22;
-  --income-line: oklch(55.43% 0.13485 122.48);
-}
-
-/*
-  * Light Theme
-*/
-html {
-  color-scheme: light;
-
-  --text-1: 0 0 0;
-  --text-2: 64 64 64;
-  --text-3: 64 64 64;
-  --text-4: 100 100 100;
-  --text-5: 200 200 200;
-
-  --text-icon-primary: theme('colors.neutral.50');
-  --accent-1: 0 122 255;
-  --item-5: 255 255 255;
-
-  /* Item */
-  --c-item-2: theme('colors.neutral.500');
-  --c-item-3: #edeef0;
-  --c-item-4: theme('colors.neutral.100');
-  --c-item-base: theme('colors.neutral.600');
-  --item-6: 237 239 240;
-  --item-7: rgba(190, 190, 190, 1);
-  --item-9: 250 250 250;
-  --item-active: 216 216 220;
-  --item-hover: #ebecef;
-
-  /* Colors */
-  --c-red-1: #b81414;
-  --c-blue-3: #2c74ff;
-  --c-income-1: rgba(44, 173, 34, 1);
-
-  /* Backgrounds */
-  --c-bg-10: rgba(230, 230, 230, 1);
-  --c-bg-11: rgba(0, 0, 0, 0.04);
-  --c-bg-12: rgba(100, 100, 100, 1);
-  --c-bg-13: rgba(120, 120, 120, 1);
-  --c-bg-14: rgba(0, 0, 0, 0.6);
-
-  --c-font-1: #fafafa;
-  --c-font-2: #505050;
-  --c-font-3: #323232;
-  --c-font-4: #6e6e6e;
-  --c-font-5: #969696;
-
-  /* Chart */
-  --chart-bg: var(--c-item-4);
-  --chart-label: var(--c-font-5);
-  --chart-line: var(--item-hover);
-  --chart-selected: var(--c-item-3);
-  --chart-splitLine: var(--item-3);
-  --chart-tooltip: theme('colors.neutral.800');
-}
-
 /*
   * Dark Theme
 */
+html.dark,
 html.dark-pink,
 html.dark-blue {
   color-scheme: dark;
@@ -78,12 +13,10 @@ html.dark-blue {
   --text-2: 160 160 160;
   --text-3: 200 200 200;
   --text-4: 130 130 130;
-  --text-5: 90 90 90;
 
   --text-icon-primary: theme('colors.neutral.50');
-  --accent-1: 56 148 2451;
+  --accent-1: 219 39 119;
 
-  /* Item */
   --c-item-2: #a3a3a3;
   --c-item-3: #232323;
   --c-item-4: #1c1c1c;
@@ -93,42 +26,67 @@ html.dark-blue {
   --item-7: #878787;
   --item-9: 23 23 23;
   --item-hover: #262626;
-
-  /* Colors */
-  --c-red-1: #b81414;
-  --c-blue-3: #2c74ff;
-  --c-income-1: #2cad22;
-
-  /* Backgrounds */
-  --c-bg-10: #dcdcdc;
-  --c-bg-14: #000000cc;
-
-  --c-font-1: #fafafa;
-  --c-font-2: #dcdcdc;
-  --c-font-3: #bebebe;
-  --c-font-4: #969696;
-  --c-font-5: #646464;
-
-  /* Chart */
-  --chart-bg: var(--item-hover);
-  --chart-label: var(--c-font-5);
-  --chart-line: var(--item-hover);
-  --chart-selected: var(--item-hover);
-  --chart-splitLine: theme('colors.neutral.700');
-  --chart-tooltip: theme('colors.neutral.400');
+  --overlay: #000000cc;
 }
 
 /*
-  * Pink Theme
+* Light Theme
 */
-html.light-pink {
-  --item-hover: #f3eff2;
+html.light,
+html.light-pink,
+html.light-blue {
+  color-scheme: light;
+
+  --accent-1: 219 39 119;
+  --c-item-2: theme('colors.neutral.500');
+  --c-item-4: theme('colors.neutral.100');
+  --c-item-base: theme('colors.neutral.600');
   --item-3: #f0edef;
+  --item-5: 255 255 255;
   --item-6: 240 237 240;
+  --item-7: rgba(190, 190, 190, 1);
+  --c-item-3: #f0edf0;
+  --item-9: 250 250 250;
+  --item-active: 216 216 220;
+  --item-hover: #f3eff2;
+  --overlay: #00000099;
+  --text-1: 0 0 0;
+  --text-2: 80 80 80;
+  --text-3: 64 64 64;
+  --text-4: 100 100 100;
+  --text-icon-primary: theme('colors.neutral.50');
 }
 
-html.light-pink,
-html.dark-pink {
-  --accent-1: 219 39 119;
-  --c-blue-1: #ff1493;
+/*
+  * Blue Theme
+*/
+html.light,
+html.light-blue {
+  --c-item-3: #f0edf0;
+  --item-6: 237 239 240;
+  --item-hover: #ebecef;
+}
+
+html.light-blue,
+html.dark-blue {
+  --accent-1: 0 122 255;
+}
+
+/*
+  Common
+*/
+html {
+  --expense-1: #f92134;
+  --expense-2: oklch(0.37 0.09 20.05);
+  --income-1: #2cad22;
+  --income-2: oklch(55.43% 0.13485 122.48);
+
+  --text-alert-1: #b81414;
+
+  /* Chart */
+  --chart-label: rgb(var(--text-4));
+  --chart-line: var(--item-hover);
+  --chart-splitLine: rgb(var(--item-6));
+  --chart-tooltip: rgb(var(--text-2));
+  --chart-axisLabel: rgb(var(--text-1));
 }

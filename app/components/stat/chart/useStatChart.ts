@@ -1,7 +1,7 @@
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { DateUTC } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { ChartSeries, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { ChartSeries, StatTabSlug } from '~/components/stat/types'
 
 import { seriesOptions } from '~/components/stat/chart/config'
 import { markArea } from '~/components/stat/chart/utils'
@@ -19,7 +19,7 @@ export function useStatChart() {
     value: 'line',
   }])
 
-  function createSeriesItem(typeItem: MoneyTypeSlugNew, data: TotalReturns[], average?: number | false): ChartSeries {
+  function createSeriesItem(typeItem: StatTabSlug, data: TotalReturns[], average?: number | false): ChartSeries {
     let markLine = {}
     if (average) {
       markLine = {

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
-  activeTab: MoneyTypeSlugNew
+  activeTab: StatTabSlug
   hasChildren?: boolean
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]

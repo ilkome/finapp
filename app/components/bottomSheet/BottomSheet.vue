@@ -450,7 +450,7 @@ const wrapClasses = computed(() => ({
     <div
       :class="overflowClasses"
       :style="overlayStyles"
-      class="absolute inset-0 z-10 size-full bg-[var(--c-bg-14)]"
+      class="absolute inset-0 z-10 size-full bg-[var(--overlay)]"
       @click="close()"
     />
 

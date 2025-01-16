@@ -33,6 +33,7 @@ export default defineNuxtConfig({
 
   colorMode: {
     classSuffix: '',
+    fallback: 'dark-pink',
     preference: 'system',
   },
 
@@ -209,11 +210,6 @@ export default defineNuxtConfig({
   },
 
   telemetry: false,
-
-  ui: {
-    gray: 'neutral',
-    primary: 'blue',
-  },
 
   vuefire: {
     auth: {

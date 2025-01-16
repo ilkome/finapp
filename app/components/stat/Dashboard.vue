@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
@@ -15,7 +15,7 @@ const trnsStore = useTrnsStore()
 const filter = useFilter()
 provide('filter', filter)
 
-const activeTab = useStorage<MoneyTypeSlugNew>(`dashboard-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>(`dashboard-tab`, 'netIncome')
 const storageKey = computed(() => `dashboard-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({

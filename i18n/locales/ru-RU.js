@@ -225,6 +225,10 @@ export default {
     wallets: 'Кошельки',
   },
 
+  periods: {
+    menu: 'Периоды',
+  },
+
   settings: {
     app: 'Приложение',
     caution: 'C осторожностью',
@@ -289,7 +293,6 @@ export default {
       },
     },
     empty: 'Статистики по выбранным параметрам нет :)',
-    periods: 'Периоды',
     title: 'Статистика',
   },
 

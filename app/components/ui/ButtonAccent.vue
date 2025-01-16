@@ -12,14 +12,14 @@ const colorMode = useColorMode()
 
 <template>
   <UButton
-    v-if="colorMode.preference === 'dark-pink' || colorMode.preference === 'light-pink'"
+    v-if="colorMode.preference === 'dark-blue' || colorMode.preference === 'light-blue'"
     :loading="props.loading"
     :size="props.size || 'lg'"
     :ui="{ rounded: props.rounded ? 'rounded-full' : 'rounded-lg' }"
     :variant="props.variant"
     block
     class="transition-all duration-150 ease-in-out"
-    color="pink"
+    color="blue"
     @click="emit('click')"
   >
     <slot />
@@ -33,7 +33,7 @@ const colorMode = useColorMode()
     :variant="props.variant"
     block
     class="transition-all duration-150 ease-in-out"
-    color="blue"
+    color="pink"
     @click="emit('click')"
   >
     <slot />

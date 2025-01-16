@@ -1,18 +1,18 @@
 import type { ChartType } from '~/components/stat/chart/types'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
-export const seriesOptions: Record<MoneyTypeSlugNew, { color: string, colorLine?: string, localeKey: string, type: ChartType }> = {
+export const seriesOptions: Record<StatTabSlug, { color: string, colorLine?: string, localeKey: string, type: ChartType }> = {
   expense: {
     color: 'var(--expense-1)',
-    colorLine: 'var(--expense-line)',
+    colorLine: 'var(--expense-2)',
     localeKey: 'money.expense',
     type: 'bar',
   },
   income: {
     color: 'var(--income-1)',
-    colorLine: 'var(--income-line)',
+    colorLine: 'var(--income-2)',
     localeKey: 'money.expense',
     type: 'bar',
   },
@@ -45,11 +45,10 @@ export const config = {
       type: 'cross',
     },
 
-    backgroundColor: 'var(--chart-bg)',
+    backgroundColor: 'var(--chart-line)',
     borderWidth: 0,
-    // formatter: '{b0}: {c0}<br />{b1}: {c1}',
     label: {
-      backgroundColor: 'var(--chart-bg)',
+      backgroundColor: 'var(--chart-line)',
       color: 'red',
     },
     padding: 8,
@@ -69,20 +68,17 @@ export const config = {
     axisLine: {
       lineStyle: {
         color: 'var(--chart-splitLine)',
-        // color: 'transparent',
       },
     },
 
     axisPointer: {
-      label: {},
+      label: {
+        color: 'var(--chart-axisLabel)',
+      },
     },
     axisTick: {
       interval: 0,
-      lineStyle: {
-        // color: 'transparent',
-      },
     },
-    // boundaryGap: false,
     type: 'category',
   },
 
@@ -93,15 +89,21 @@ export const config = {
       formatter: n => getCompactAmount(n),
       // show: false,
     },
+
+    axisLine: {
+      lineStyle: {
+        color: 'var(--chart-splitLine)',
+      },
+    },
     axisPointer: {
       label: {
+        color: 'var(--chart-axisLabel)',
         formatter: props => getLocalAmount(props?.value),
       },
       snap: true,
     },
     minInterval: 1,
 
-    // position: 'left',
     position: 'right',
     splitLine: {
       lineStyle: {

@@ -30,19 +30,20 @@ export default <Partial<Config>>{
         '2': 'rgb(var(--text-2))',
         '3': 'rgb(var(--text-3))',
         '4': 'rgb(var(--text-4))',
-        '5': 'rgb(var(--text-5))',
         'accent': {
           1: 'rgb(var(--accent-1))',
         },
         'alert': {
-          1: 'var(--alert-1)',
+          1: 'var(--text-alert-1)',
         },
         'expense': {
           1: 'var(--expense-1)',
+          2: 'var(--expense-2)',
         },
         'icon-primary': 'var(--text-icon-primary)',
         'income': {
           1: 'var(--income-1)',
+          2: 'var(--income-2)',
         },
         'item': {
           2: 'var(--c-item-2)',

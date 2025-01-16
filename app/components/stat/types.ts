@@ -5,7 +5,7 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { TrnId } from '~/components/trns/types'
 
 export type MoneyTypeSlug = 'expense' | 'income'
-export type MoneyTypeSlugNew = 'income' | 'expense' | 'netIncome' | 'summary'
+export type StatTabSlug = 'income' | 'expense' | 'netIncome' | 'summary' | 'periods'
 export type MoneyTypeNumber = 0 | 1 | 3
 
 export type TotalCategories = {
