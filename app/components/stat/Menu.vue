@@ -27,9 +27,6 @@ const menu = computed(() => {
   }, {
     id: 'income',
     name: t('money.income'),
-  }, {
-    id: 'periods',
-    name: t('periods.menu'),
   }]
 
   if (width.value > 766) {
