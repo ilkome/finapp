@@ -14,7 +14,7 @@ import { useUserStore } from '~/components/user/useUserStore'
 
 const transfer: CategoryItem = {
   childIds: [],
-  color: 'var(--c-blue-1)',
+  color: 'rgb(var(--accent-1))',
   icon: 'mdi:repeat',
   name: 'Transfer',
   order: 9999,

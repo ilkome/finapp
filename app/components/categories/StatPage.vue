@@ -2,7 +2,7 @@
 import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
@@ -26,7 +26,7 @@ const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = ref(categoriesStore.items[categoryId.value])
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
 
-const activeTab = useStorage<MoneyTypeSlugNew>(`${categoryId.value}-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>(`${categoryId.value}-tab`, 'netIncome')
 const storageKey = computed(() => `${categoryId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => {

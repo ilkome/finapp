@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 
 import { getStyles } from '~/components/ui/getStyles'
 
@@ -8,13 +8,13 @@ const props = defineProps<{
   averageTotal?: Record<string, number>
   isShowExpense: boolean
   isShowIncome: boolean
-  selectedType: MoneyTypeSlugNew
+  selectedType: StatTabSlug
   total: TotalReturns
-  type: MoneyTypeSlugNew
+  type: StatTabSlug
 }>()
 
 const emit = defineEmits<{
-  click: [type: MoneyTypeSlugNew]
+  click: [type: StatTabSlug]
 }>()
 
 const classes = computed(() => {
@@ -27,7 +27,7 @@ const classes = computed(() => {
   return getStyles('item', params)
 })
 
-function onClick(type: MoneyTypeSlugNew) {
+function onClick(type: StatTabSlug) {
   if (props.isShowIncome && props.isShowExpense) {
     emit('click', type)
   }

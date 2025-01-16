@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
 
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 
 const props = defineProps<{
-  active: MoneyTypeSlugNew
+  active: StatTabSlug
 }>()
 
 const emit = defineEmits<{
-  click: [id: MoneyTypeSlugNew]
+  click: [id: StatTabSlug]
 }>()
 
 const { t } = useI18n()
@@ -16,21 +16,21 @@ const { width } = useWindowSize()
 
 const menu = computed(() => {
   const all: {
-    id: MoneyTypeSlugNew
+    id: StatTabSlug
     name: string | unknown
   }[] = [{
     id: 'netIncome',
     name: t('money.netIncome'),
-  }]
-
-  all.push({
+  }, {
     id: 'expense',
     name: t('money.expense'),
-  })
-  all.push({
+  }, {
     id: 'income',
     name: t('money.income'),
-  })
+  }, {
+    id: 'periods',
+    name: t('periods.menu'),
+  }]
 
   if (width.value > 766) {
     all.push({
@@ -42,7 +42,7 @@ const menu = computed(() => {
   return all
 })
 
-function onClickStatMenu(tabName: MoneyTypeSlugNew) {
+function onClickStatMenu(tabName: StatTabSlug) {
   emit('click', tabName)
 }
 

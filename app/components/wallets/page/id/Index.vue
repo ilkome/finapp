@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useStatDate } from '~/components/date/useStatDate'
@@ -26,7 +26,7 @@ provide('filter', filter)
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 
-const activeTab = useStorage<MoneyTypeSlugNew>(`${walletId.value}-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>(`${walletId.value}-tab`, 'netIncome')
 const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({

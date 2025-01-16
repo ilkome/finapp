@@ -1,7 +1,7 @@
 export function markArea(value: number) {
   return {
     data: [[{ xAxis: `${value}` }, { xAxis: `${value}` }]],
-    itemStyle: { color: 'var(--chart-selected)', opacity: 1 },
+    itemStyle: { color: 'var(--chart-line)', opacity: 1 },
   }
 }
 

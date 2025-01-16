@@ -31,6 +31,10 @@ const attrs = {
 }
 
 const matchTheme = {
+  'dark': {
+    color: 'pink',
+    isDark: true,
+  },
   'dark-blue': {
     color: 'blue',
     isDark: true,
@@ -38,6 +42,10 @@ const matchTheme = {
   'dark-pink': {
     color: 'pink',
     isDark: true,
+  },
+  'light': {
+    color: 'pink',
+    isDark: false,
   },
   'light-blue': {
     color: 'blue',
@@ -48,7 +56,7 @@ const matchTheme = {
     isDark: false,
   },
   'system': {
-    color: 'blue',
+    color: 'pink',
     isDark: colorMode.value === 'dark',
   },
 }
@@ -81,7 +89,7 @@ html .vc-light {
   --vc-nav-item-active-bg: theme('colors.accent.1');
   --vc-nav-hover-bg: theme('colors.item.hover');
   --vc-color: theme('colors.1');
-  --vc-day-content-disabled-color: theme('colors.5');
+  --vc-day-content-disabled-color: theme('colors.1/.40');
   --vc-weekday-color: theme('colors.2');
   --vc-header-title-color: theme('colors.3');
   --vc-popover-content-color: theme('colors.2');

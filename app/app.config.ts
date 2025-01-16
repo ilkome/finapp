@@ -6,6 +6,20 @@ export default defineAppConfig({
     },
   },
   ui: {
+    button: {
+      color: {
+        blue: {
+          outline: 'border border-accent-1 hover:border-accent-1 hover:bg-accent-1/10 text-accent-1/90',
+          solid: 'bg-accent-1 hover:bg-accent-1/80 text-icon-primary',
+        },
+        pink: {
+          outline: 'border border-accent-1 hover:border-accent-1 hover:bg-accent-1/10 text-accent-1/90',
+          solid: 'bg-accent-1 hover:bg-accent-1/80 text-icon-primary',
+        },
+      },
+    },
+    gray: 'cool',
+
     popover: {
       background: 'bg-item-5 min-w-64',
       popper: {
@@ -14,6 +28,7 @@ export default defineAppConfig({
       ring: '!ring-2 !ring-item-3',
       trigger: 'w-full cursor-default',
     },
-    strategy: 'override',
+    primary: 'pink',
+    strategy: 'merge',
   },
 })

@@ -174,9 +174,9 @@ export default {
   locale: {
     toggle: 'Toggle locale',
   },
+
   loginWithGithub: 'Login with Github',
   loginWithGoogle: 'Login with Google',
-
   money: {
     all: 'Total',
     also: 'Also',
@@ -222,6 +222,10 @@ export default {
       withdrawal: 'Withdrawal',
     },
     wallets: 'Wallets',
+  },
+
+  periods: {
+    menu: 'Periods',
   },
 
   settings: {
@@ -285,7 +289,6 @@ export default {
         title: 'Wallets',
       },
     },
-    periods: 'Periods',
     title: 'Dashboard',
   },
 

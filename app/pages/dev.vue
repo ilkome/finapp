@@ -1,7 +1,4 @@
 <script lang="ts" setup>
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-
-const categoriesStore = useCategoriesStore()
 </script>
 
 <template>
@@ -42,7 +39,6 @@ const categoriesStore = useCategoriesStore()
                 <div class="size-20 bg-3" />
                 <div class="size-20 bg-2" />
                 <div class="size-20 bg-4" />
-                <div class="size-20 bg-5" />
               </div>
             </div>
 
@@ -71,8 +67,23 @@ const categoriesStore = useCategoriesStore()
                 </div>
                 <div class="flex flex-wrap gap-0">
                   <div class="size-20 bg-income-1" />
+                  <div class="size-20 bg-income-2" />
                   <div class="size-20 bg-expense-1" />
+                  <div class="size-20 bg-expense-2" />
                 </div>
+              </div>
+            </div>
+
+            <div>
+              <h1 class="mb-2 border-b border-item-6 pb-1">
+                Chart
+              </h1>
+
+              <div class="flex flex-wrap">
+                <div class="size-20 bg-[var(--chart-line)]" />
+                <div class="size-20 bg-[var(--chart-splitLine)]" />
+                <div class="size-20 bg-[var(--chart-label)]" />
+                <div class="size-20 bg-[var(--chart-tooltip)]" />
               </div>
             </div>
           </div>
@@ -238,36 +249,19 @@ const categoriesStore = useCategoriesStore()
           <div class="grid gap-4">
             <DatePicker
               :value="new Date().getTime()"
+              :maxDate="new Date()"
               mode="date"
             />
             <DatePicker
               :value="{
-                end: new Date().getTime(),
+                end: new Date().getTime() - 1000 * 60 * 60 * 24 * 4,
                 start: new Date().getTime() - 1000 * 60 * 60 * 24 * 14,
               }"
               mode="range"
+              :maxDate="new Date()"
               :rows="2"
             />
           </div>
-        </div>
-
-        <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
-            StatCategoriesLine
-          </h1>
-
-          <!-- <StatCategoriesLine
-            isShowParent
-            :item="{
-              id: categoriesStore.items[Object.keys(categoriesStore.items)[0]].id,
-              name: 'test',
-              trnsIds: [],
-              value: 1,
-            }"
-            :biggestCatNumber="{ income: 1, expense: 1 }"
-            :lineWidth="1"
-            class="grow"
-          /> -->
         </div>
       </div>
     </div>

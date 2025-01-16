@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Range } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { MoneyTypeSlugNew, StatConfigModal } from '~/components/stat/types'
+import type { StatConfigModal, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -21,8 +21,8 @@ const props = defineProps<{
   }
   maxRange?: Range
   menu?: {
-    active: MoneyTypeSlugNew
-    click: (id: MoneyTypeSlugNew) => void
+    active: StatTabSlug
+    click: (id: StatTabSlug) => void
   }
 }>()
 

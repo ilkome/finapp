@@ -14,14 +14,14 @@ export function useTheme() {
     label: t('theme.dark-pink'),
     value: 'dark-pink',
   }, {
+    label: t('theme.dark-blue'),
+    value: 'dark-blue',
+  }, {
     label: t('theme.light-pink'),
     value: 'light-pink',
   }, {
     label: t('theme.light-blue'),
     value: 'light-blue',
-  }, {
-    label: t('theme.dark-blue'),
-    value: 'dark-blue',
   }] as const
 
   function setTheme(theme: Theme) {

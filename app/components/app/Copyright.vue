@@ -7,7 +7,7 @@ const { t } = useI18n()
 <template>
   <a
     :class="getStyles('item', ['center3', 'link', 'rounded'])"
-    class="px-5 py-2"
+    class="px-5 py-2 text-2"
     href="https://ilko.me"
   >
     {{ t('madeBy.text') }}

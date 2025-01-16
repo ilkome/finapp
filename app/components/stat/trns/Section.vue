@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 defineProps<{
   isPeriodOneDay: boolean
   selectedTrnsIds: TrnId[]
   storageKey: string
-  type: MoneyTypeSlugNew
+  type: StatTabSlug
 }>()
 </script>
 

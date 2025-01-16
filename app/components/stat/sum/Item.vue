@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AmountProps } from '~/components/amount/Amount.vue'
-import type { MoneyTypeSlugNew } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
@@ -11,7 +11,7 @@ const props = defineProps<{
   currencyCode?: string
   isActive?: boolean
   isTotal?: boolean
-  type: MoneyTypeSlugNew
+  type: StatTabSlug
 }>()
 
 const emit = defineEmits<{

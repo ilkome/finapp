@@ -1,4 +1,4 @@
-import type { CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { CategoryWithData, StatTabSlug } from '~/components/stat/types'
 
 export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData) {
   if (!a || !b)
@@ -19,7 +19,7 @@ export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData)
   return a.value > 0 ? -1 : 1
 }
 
-export function getTypesMapping(slug: MoneyTypeSlugNew) {
+export function getTypesMapping(slug: StatTabSlug) {
   const typeMapping = {
     expense: [0, 2],
     income: [1, 2],

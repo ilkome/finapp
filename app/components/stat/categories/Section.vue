@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 import defu from 'defu'
 
 import type { Categories, CategoryId } from '~/components/categories/types'
-import type { CategoryWithData, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { CategoryWithData, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
@@ -15,7 +15,7 @@ const props = defineProps<{
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
-  type: MoneyTypeSlugNew
+  type: StatTabSlug
 }>()
 
 defineEmits<{

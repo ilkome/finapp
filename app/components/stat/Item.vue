@@ -5,7 +5,7 @@ import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fn
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { ChartSeries, IntervalData, MoneyTypeSlugNew } from '~/components/stat/types'
+import type { ChartSeries, IntervalData, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -24,7 +24,7 @@ const props = defineProps<{
   preCategoriesIds?: CategoryId[]
   storageKey: string
   trnsIds: TrnId[]
-  type: MoneyTypeSlugNew
+  type: StatTabSlug
   walletId?: WalletId
 }>()
 
@@ -42,7 +42,7 @@ const { addMarkArea, createSeriesItem } = useStatChart()
 
 const isShowTrns = ref(false)
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
-const selectedType = useStorage<MoneyTypeSlugNew>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
+const selectedType = useStorage<StatTabSlug>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
 
 const selectedTypesMapping = computed(() => {
   const typeMapping = {
@@ -142,11 +142,11 @@ const chart = {
       hasIncome: rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1),
     }
 
-    const typesToShow = props.type === 'netIncome'
+    const typesToShow = props.type === 'netIncome' || props.type === 'periods'
       ? [
           ...(transactionTypes.hasIncome ? ['income'] : []),
           ...(transactionTypes.hasExpense ? ['expense'] : []),
-        ] as MoneyTypeSlugNew[]
+        ] as StatTabSlug[]
       : [props.type]
 
     const intervalTotals = intervalsChartData.map(g => g.total)
@@ -190,7 +190,7 @@ function onClickCategory(categoryId: CategoryId) {
   }
 }
 
-function onClickSumItem(type: MoneyTypeSlugNew) {
+function onClickSumItem(type: StatTabSlug) {
   if (type === 'summary') {
     isShowTrns.value = !isShowTrns.value
     return

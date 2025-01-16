@@ -19,7 +19,7 @@ const { checkIsActive, onClick } = useMenuData()
     :class="[
       getStyles('item', ['center', 'link', 'minh2', 'rounded', 'padding1']),
       {
-        '!text-1': checkIsActive(props.menuId),
+        '!text-accent-1/90': checkIsActive(props.menuId),
         'gap-3': props.isShowText,
       },
     ]"
