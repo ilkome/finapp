@@ -32,7 +32,7 @@ function onParentClick() {
 
       <div
         v-if="props.parentCategory"
-        class="@lg:text-base flex items-center pt-[3px] text-xs font-medium leading-none text-item-2"
+        class="@lg:text-base flex items-center pt-[3px] text-xs font-medium leading-none text-2"
       >
         <div class="text-2xs text-4">
           •

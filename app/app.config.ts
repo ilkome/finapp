@@ -26,7 +26,7 @@ export default defineAppConfig({
         placement: 'bottom-start',
       },
       ring: '!ring-2 !ring-item-3',
-      trigger: 'w-full cursor-default',
+      trigger: '!w-full !block !cursor-default',
     },
     primary: 'pink',
     strategy: 'merge',

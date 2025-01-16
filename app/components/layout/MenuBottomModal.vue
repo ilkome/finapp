@@ -33,7 +33,7 @@ const { isDemo } = useDemo()
           v-if="!isDemo"
           class="border-t border-item-6 px-2 pt-3"
         >
-          <UserViewLogout />
+          <UserViewLogout isShowSignOut />
         </div>
 
         <div
