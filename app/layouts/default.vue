@@ -4,7 +4,7 @@ import '~/assets/css/tailwind.css'
 
 import { Analytics } from '@vercel/analytics/nuxt'
 import { SpeedInsights } from '@vercel/speed-insights/nuxt'
-import { useStorage, useWindowSize } from '@vueuse/core'
+import { useMagicKeys, useStorage, useWindowSize } from '@vueuse/core'
 
 import { useAppNav } from '~/components/app/useAppNav'
 import { useInitApp } from '~/components/app/useInitApp'
@@ -31,7 +31,6 @@ const { locale, t } = useI18n()
 const { pointerClasses } = usePointerClass()
 const { width } = useWindowSize()
 
-const isShowTrnForm = computed(() => trnsFormStore.ui.isShow)
 const isShowSidebar = useStorage('isShowSidebar', true)
 
 useGuard()
@@ -72,11 +71,28 @@ useSeoMeta({
 })
 
 usePageScroll()
+
+const { ctrl_d, ctrl_s, escape } = useMagicKeys()
+
+watch(ctrl_s!, (v) => {
+  if (v)
+    trnsFormStore.ui.isShow = !trnsFormStore.ui.isShow
+})
+
+watch(escape!, (v) => {
+  if (trnsFormStore.ui.isShow && v)
+    trnsFormStore.ui.isShow = false
+})
+
+watch(ctrl_d!, (v) => {
+  if (v)
+    isShowSidebar.value = !isShowSidebar.value
+})
 </script>
 
 <template>
   <div
-    :class="{ 'md:translate-x-20': isShowTrnForm && isShowSidebar && width >= 767 }"
+    :class="{ 'md:translate-x-20': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
     class="layoutBase @container/main overflow-hidden transition-all duration-300 ease-in-out"
     style="margin-left: env(safe-area-inset-left)"
   >
@@ -94,7 +110,7 @@ usePageScroll()
 
     <template v-else-if="status === 'success'">
       <LayoutSidebar
-        :isShowTrnForm
+        :isShowTrnForm="trnsFormStore.ui.isShow"
         :isShowSidebar
         @toggleSidebar="isShowSidebar = !isShowSidebar"
       />
