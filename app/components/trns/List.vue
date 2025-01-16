@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
-import useAmount from '~/components/amount/useAmount'
+import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDateFormats } from '~/components/date/useDateFormats'

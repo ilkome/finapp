@@ -8,7 +8,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-export default function useAmount() {
+export function useAmount() {
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()

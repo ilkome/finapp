@@ -10,7 +10,7 @@ import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import useAmount from '~/components/amount/useAmount'
+import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
@@ -224,14 +224,11 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
     >
-      <StatDateQuick
-        v-if="statConfig.config.value.date.isShowQuick"
-        :maxRange="statDate.maxRange.value"
-      />
+      <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
     </StatChartWrap>
 
     <div class="grid pb-5 md:max-w-lg">
-      <StatDateNavigation :maxRange="statDate.maxRange.value" />
+      <StatDateNavigation />
     </div>
 
     <StatSumWrap
@@ -243,6 +240,13 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :averageTotal
       :type="props.type"
       @click="onClickSumItem"
+    />
+
+    <!-- StatAverage -->
+    <StatAverage
+      :trnsIds
+      :statDate
+      :filter
     />
 
     <div class="grid w-full gap-2">

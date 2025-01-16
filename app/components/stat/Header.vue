@@ -19,7 +19,6 @@ const props = defineProps<{
     isShowSelected?: boolean
     isShowWallets?: boolean
   }
-  maxRange?: Range
   menu?: {
     active: StatTabSlug
     click: (id: StatTabSlug) => void
