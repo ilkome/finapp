@@ -21,7 +21,7 @@ export default defineAppConfig({
     gray: 'cool',
 
     popover: {
-      background: 'bg-item-5 min-w-64',
+      background: '!bg-item-5 min-w-64',
       popper: {
         placement: 'bottom-start',
       },
