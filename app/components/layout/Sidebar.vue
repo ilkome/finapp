@@ -53,23 +53,17 @@ const isShowLogoMenu = ref(false)
           <template #trigger>
             <div
               :class="getStyles('item', ['link', 'rounded'])"
-              class="block cursor-default px-3 py-2"
+              class="block cursor-default px-3 py-2 group-data-[headlessui-state='open']:!bg-item-3"
             >
-              <UiLogo class="w-16" />
+              <UiLogo />
             </div>
           </template>
 
           <template #content>
             <div class="grid gap-2 px-1 py-3 md:px-3 md:!pb-0">
+              <UserViewLogout />
               <AppLocaleSwitcher />
-
-              <div class="h-px bg-item-3" />
-
-              <AppThemeSwitcher
-                isShowSystem
-              />
-
-              <UserViewLogout class="mt-3" />
+              <AppThemeSwitcher />
             </div>
           </template>
         </BottomSheetOrDropdown>

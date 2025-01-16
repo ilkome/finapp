@@ -72,9 +72,9 @@ useSeoMeta({
 
 usePageScroll()
 
-const { ctrl_d, ctrl_s, escape } = useMagicKeys()
+const { escape, shift_d, shift_s } = useMagicKeys()
 
-watch(ctrl_s!, (v) => {
+watch(shift_s!, (v) => {
   if (v) {
     if (trnsFormStore.ui.isShow)
       trnsFormStore.ui.isShow = false
@@ -88,7 +88,7 @@ watch(escape!, (v) => {
     trnsFormStore.ui.isShow = false
 })
 
-watch(ctrl_d!, (v) => {
+watch(shift_d!, (v) => {
   if (v)
     isShowSidebar.value = !isShowSidebar.value
 })

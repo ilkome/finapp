@@ -41,6 +41,11 @@ function onGenerateDemoData() {
 
     <div class="pageWrapper rounded-xl bg-item-5 pt-4">
       <div class="grid gap-8">
+        <!-- User -->
+        <div class="pb-6">
+          <UserViewLogout isShowSignOut />
+        </div>
+
         <AppLocaleSwitcher isShowTitle />
         <AppThemeSwitcher
           isShowTitle
@@ -60,21 +65,12 @@ function onGenerateDemoData() {
           </template>
         </UiButtonWithRight>
 
-        <!-- User -->
-        <div class="pb-8">
-          <UiTitle3 class="pb-2">
-            {{ t('user') }}
-          </UiTitle3>
-
-          <UserViewLogout />
-        </div>
-
         <!-- Delete -->
-        <div class="pb-8">
+        <div class="py-8">
           <UiTitle3 class="pb-2">
             {{ t('settings.caution') }}
           </UiTitle3>
-          <div class="pb-4 text-xs leading-none text-item-2">
+          <div class="pb-4 text-xs leading-none text-alert-1">
             {{ t('alerts.willDeleteEverything') }}
           </div>
 
@@ -103,13 +99,13 @@ function onGenerateDemoData() {
             </UiElement>
           </div>
         </div>
-      </div>
 
-      <!-- About -->
-      <div class="pb-12">
-        {{ t('app.about') }}
-        <div class="pt-4 text-xs text-item-2">
-          {{ t('app.version') }} {{ version }}
+        <!-- About -->
+        <div class="pb-12">
+          {{ t('app.about') }}
+          <div class="pt-4 text-xs text-2">
+            {{ t('app.version') }} {{ version }}
+          </div>
         </div>
       </div>
     </div>

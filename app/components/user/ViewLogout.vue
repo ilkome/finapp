@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import { useUserStore } from '~/components/user/useUserStore'
 
+const props = defineProps<{
+  isShowSignOut?: boolean
+}>()
+
 const userStore = useUserStore()
 const { t } = useI18n()
 </script>
@@ -9,18 +13,24 @@ const { t } = useI18n()
   <div>
     <div
       v-if="userStore.currentUser"
-      class="flex items-center gap-3 pb-4 text-sm text-item-2"
+      class="flex items-center gap-3 pb-4 text-sm text-2"
     >
       <img
         :src="userStore.currentUser?.photoURL"
         class="size-10 rounded-full"
       >
+      <div>
+        <div class="text-1">
+          {{ userStore.currentUser?.displayName }}
+        </div>
 
-      {{ userStore.currentUser?.displayName }}<br>
-      {{ userStore.currentUser?.email }}
+        {{ userStore.currentUser?.email }}
+      </div>
     </div>
+
     <UiElement
-      insideClasses="bg-item-4 min-h-[44px] max-w-lg"
+      v-if="props.isShowSignOut"
+      insideClasses="bg-item-9 min-h-[44px] max-w-lg"
       @click="userStore.signOut"
     >
       <template #leftIcon>
