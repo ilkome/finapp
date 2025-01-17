@@ -2,7 +2,7 @@
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 
-import useAmount from '~/components/amount/useAmount'
+import { useAmount } from '~/components/amount/useAmount'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
 
 export type AmountProps = {
@@ -36,7 +36,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
 <template>
   <div
     :class="{
-      '': props.colorize === 'expense' && props.type === 0,
+      '!text-expense-1': props.colorize === 'expense' && props.type === 0,
       '!text-income-1': props.colorize === 'income' && props.type === 1,
       'text-2xs': props.variant === '2xs',
       'text-xs': props.variant === 'sm',

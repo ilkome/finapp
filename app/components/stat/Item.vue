@@ -10,7 +10,7 @@ import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import useAmount from '~/components/amount/useAmount'
+import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
@@ -33,7 +33,7 @@ const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
-const categoryId = computed(() => props.isOneCategory ? route.params.id : undefined)
+const categoryId = computed(() => props.isOneCategory ? route.params.id as CategoryId : undefined)
 
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -67,13 +67,7 @@ const statTypeShow = computed(() => ({
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
 
-const rangeTrnsIds = computed(() => {
-  const params = {
-    trnsIds: props.trnsIds,
-  }
-
-  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
-})
+const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({ trnsIds: props.trnsIds }, { includesChildCategories: false }))
 
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
@@ -224,14 +218,11 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
     >
-      <StatDateQuick
-        v-if="statConfig.config.value.date.isShowQuick"
-        :maxRange="statDate.maxRange.value"
-      />
+      <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
     </StatChartWrap>
 
     <div class="grid pb-5 md:max-w-lg">
-      <StatDateNavigation :maxRange="statDate.maxRange.value" />
+      <StatDateNavigation />
     </div>
 
     <StatSumWrap
@@ -243,6 +234,14 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :averageTotal
       :type="props.type"
       @click="onClickSumItem"
+    />
+
+    <StatAverage
+      :trnsIds
+      :statDate
+      :filter
+      :categoryId
+      :walletId
     />
 
     <div class="grid w-full gap-2">

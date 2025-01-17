@@ -5,7 +5,7 @@ import { groupBy } from 'es-toolkit'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletViewTypes, WalletViewTypesObj } from '~/components/wallets/types'
 
-import useAmount from '~/components/amount/useAmount'
+import { useAmount } from '~/components/amount/useAmount'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { viewTypes } from '~/components/wallets/types'

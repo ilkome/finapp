@@ -1,8 +1,9 @@
 import { useStorage } from '@vueuse/core'
+import { differenceInDays } from 'date-fns'
 
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
 
-import { calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
+import { calculateBestIntervalsBy, calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
 
 export function useStatDate({
   key,
@@ -129,6 +130,20 @@ export function useStatDate({
     params.value.intervalsDuration = 1
   }
 
+  function setMaxRange(isSkipEmpty = false) {
+    const rangeDuration = differenceInDays(maxRange.value.end, maxRange.value.start)
+    const intervalsBy = calculateBestIntervalsBy(maxRange.value)
+
+    setRangeByPeriod({
+      intervalsBy,
+      intervalsDuration: 1,
+      isShowMaxRange: true,
+      isSkipEmpty,
+      rangeBy: 'day',
+      rangeDuration,
+    })
+  }
+
   function addInterval() {
     resetCustomAndMaxRangeParams()
     ++params.value.intervalsDuration
@@ -168,6 +183,7 @@ export function useStatDate({
     range,
     selectedInterval,
     setInterval,
+    setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,
   }

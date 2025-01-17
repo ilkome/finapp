@@ -2,7 +2,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { CategoriesWithData, CategoryWithData } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
-import useAmount from '~/components/amount/useAmount'
+import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'

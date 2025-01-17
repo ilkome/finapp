@@ -1,20 +1,19 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
 
-import type { Range, StatDateProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/date/types'
 
 import { getEndOf, getStartOf } from '~/components/date/utils'
-
-const props = defineProps<{
-  maxRange: Range
-}>()
 
 const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
 
-const isShowNav = computed(() => {
-  return !statDate.params.value.isShowMaxRange && (statDate.range.value.start < new Date().getTime() || (statDate.range.value.start !== props.maxRange.start && statDate.range.value.end !== props.maxRange.end))
-})
+const isShowNav = computed(() =>
+  !statDate.params.value.isShowMaxRange
+  && (statDate.range.value.start < new Date().getTime()
+    || (
+      statDate.range.value.start !== statDate.maxRange.value.start
+      && statDate.range.value.end !== statDate.maxRange.value.end)))
 
 const isDayToday = computed(() => statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1 && statDate.range.value.end < getEndOf(new Date(), 'day').getTime())
 
@@ -26,7 +25,7 @@ const isEnd = computed(() => {
 })
 
 const isStart = computed(() => {
-  if (statDate.range.value.start <= props.maxRange.start)
+  if (statDate.range.value.start <= statDate.maxRange.value.start)
     return true
 
   return false
@@ -74,7 +73,6 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       <template #content="{ close }">
         <StatDateSelector
           class="min-w-[362px] pb-2 md:px-3 md:pb-0"
-          :maxRange
           @onClose="close"
         />
       </template>

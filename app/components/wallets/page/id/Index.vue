@@ -74,7 +74,6 @@ useHead({ title: wallet.value?.name })
   <UiPage v-if="wallet">
     <StatHeader
       :menu="{ active: activeTab, click: id => activeTab = id }"
-      :maxRange="maxRange"
       :filter="{ isShowCategories: true }"
       :config="{ isShowCategories: true }"
     >
