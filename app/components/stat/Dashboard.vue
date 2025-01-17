@@ -7,6 +7,7 @@ import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useUserStore } from '~/components/user/useUserStore'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -36,6 +37,10 @@ provide('statDate', statDate)
 watch(filter.categoriesIds, () => {
   statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
 })
+
+const userStore = useUserStore()
+const { $config } = useNuxtApp()
+const devId = $config.public.devId
 </script>
 
 <template>
@@ -54,7 +59,7 @@ watch(filter.categoriesIds, () => {
       }"
     >
       <template #title>
-        <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>
+        <UiHeaderTitle>{{ devId && devId === userStore.uid ? 'ДосикДоска' : t('stat.title') }}</UiHeaderTitle>
       </template>
     </StatHeader>
 

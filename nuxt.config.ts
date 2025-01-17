@@ -199,6 +199,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      devId: process.env.DEVID,
       ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
     },
   },

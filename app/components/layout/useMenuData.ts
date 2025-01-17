@@ -2,6 +2,7 @@
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type MenuItem = {
@@ -10,12 +11,16 @@ export type MenuItem = {
 }
 
 export default function useMenuData() {
+  const userStore = useUserStore()
+  const { $config } = useNuxtApp()
   const { t } = useI18n()
   const { trnFormCreate } = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const route = useRoute()
   const { closeAllModals, openModal } = useAppNav()
+
+  const devId = $config.public.devId
 
   const items = computed<Record<string, MenuItem>>(() => {
     const list = {
@@ -25,7 +30,7 @@ export default function useMenuData() {
       },
       dashboard: {
         icon: 'lucide:chart-no-axes-combined',
-        name: t('stat.title'),
+        name: (devId && devId === userStore.uid) ? 'ДосикДоска' : t('stat.title'),
       },
       wallets: {
         icon: 'hugeicons:wallet-01',
