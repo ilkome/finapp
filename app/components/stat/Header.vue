@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { Range } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { StatConfigModal, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'

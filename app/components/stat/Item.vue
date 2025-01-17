@@ -33,7 +33,7 @@ const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
 const statConfig = inject('statConfig') as StatConfigProvider
-const categoryId = computed(() => props.isOneCategory ? route.params.id : undefined)
+const categoryId = computed(() => props.isOneCategory ? route.params.id as CategoryId : undefined)
 
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -67,13 +67,7 @@ const statTypeShow = computed(() => ({
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
 
-const rangeTrnsIds = computed(() => {
-  const params = {
-    trnsIds: props.trnsIds,
-  }
-
-  return trnsStore.getStoreTrnsIds(params, { includesChildCategories: false })
-})
+const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({ trnsIds: props.trnsIds }, { includesChildCategories: false }))
 
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
@@ -242,11 +236,12 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       @click="onClickSumItem"
     />
 
-    <!-- StatAverage -->
     <StatAverage
       :trnsIds
       :statDate
       :filter
+      :categoryId
+      :walletId
     />
 
     <div class="grid w-full gap-2">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
 
-import type { Range, StatDateProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/date/types'
 
 import { getEndOf, getStartOf } from '~/components/date/utils'
 
