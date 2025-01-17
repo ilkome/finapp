@@ -31,6 +31,7 @@ export function useDateFormats() {
       case 'full':
         return {
           day: formatByLocale(date, 'd', locale.value),
+          full: formatByLocale(date, 'dd.MM.yyyy HH:mm', locale.value),
           month: formatByLocale(date, 'MMM', locale.value),
           week: formatByLocale(date, 'dd.MM', locale.value),
           weekday: `${diff < 2 ? `${calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,

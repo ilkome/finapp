@@ -84,7 +84,6 @@ useHead({ title: category.value?.name })
         isShow: true,
         isShowSelected: filter.isShow?.value && filter.categoriesIds.value.length > 0,
       }"
-      :maxRange
       :config="{
         isShowWallets: true,
       }"

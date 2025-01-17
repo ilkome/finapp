@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import { differenceInDays } from 'date-fns'
 import Swiper from 'swiper'
 import 'swiper/css'
 
-import type { Range, StatDateProvider } from '~/components/date/types'
-
-import { calculateBestIntervalsBy } from '~/components/date/utils'
-
-const props = defineProps<{
-  maxRange: Range
-}>()
+import type { StatDateProvider } from '~/components/date/types'
 
 const emit = defineEmits<{
   onClose: []
-
 }>()
 
 const { t } = useI18n()
@@ -40,18 +32,7 @@ onMounted(() => {
 
 function setMaxRange(isSkipEmpty = false) {
   emit('onClose')
-
-  const rangeDuration = differenceInDays(props.maxRange.end, props.maxRange.start)
-  const intervalsBy = calculateBestIntervalsBy(props.maxRange)
-
-  statDate.setRangeByPeriod({
-    intervalsBy,
-    intervalsDuration: 1,
-    isShowMaxRange: true,
-    isSkipEmpty,
-    rangeBy: 'day',
-    rangeDuration,
-  })
+  statDate.setMaxRange(isSkipEmpty)
 }
 </script>
 

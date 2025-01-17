@@ -81,7 +81,6 @@ useHead({ title: category.value?.name })
 <template>
   <UiPage v-if="category">
     <StatHeader
-      :maxRange="maxRange"
       :filter="{ isShow: true, isShowCategories: true }"
       :config="{ isShowCategories: true }"
       :menu="{ active: activeTab, click: id => activeTab = id }"

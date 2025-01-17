@@ -45,7 +45,6 @@ watch(filter.categoriesIds, () => {
         active: activeTab,
         click: id => activeTab = id,
       }"
-      :maxRange
       :filter="{
         isShowCategories: true,
         isShowWallets: true,
