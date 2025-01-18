@@ -50,7 +50,7 @@ watch(isShow, (v) => {
       v-if="isShow"
       class="@container/trnForm trnForm absolute inset-y-0 z-50 h-full w-[360px] py-2"
     >
-      <div class="border-left relative h-full overflow-hidden rounded-r-xl border-item-6 bg-item-9 shadow-2xl">
+      <div class="border-left relative h-full overflow-hidden rounded-r-xl border-item-6 bg-item-2 shadow-2xl">
         <div class="absolute right-2 top-2">
           <BottomSheetClose @onClick="trnsFormStore.onClose()" />
         </div>
@@ -58,7 +58,7 @@ watch(isShow, (v) => {
         <div ref="sliderRef2" class="swiper-container h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
-            <div class="swiper-slide h-full bg-item-5">
+            <div class="swiper-slide h-full bg-item-1">
               <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-4 overflow-y-auto">
                 <TrnFormMain maxHeight="100vh" class="!pb-0" />
 
@@ -73,7 +73,7 @@ watch(isShow, (v) => {
 
             <!-- Quick selector -->
             <div
-              class="swiper-slide bg-item-5"
+              class="swiper-slide bg-item-1"
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto">

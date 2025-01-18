@@ -96,7 +96,7 @@ const actions = computed(() => ({
     />
 
     <UiTitle3
-      class="sticky top-0 z-10 bg-item-5 px-3 pb-3 pt-4 md:text-xl"
+      class="sticky top-0 z-10 bg-item-1 px-3 pb-3 pt-4 md:text-xl"
       @click="trnsFormStore.values.trnId = null"
     >
       {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
@@ -108,7 +108,7 @@ const actions = computed(() => ({
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
-        class="group rounded-lg bg-item-4"
+        class="group rounded-lg bg-item-3"
         @click="trnsFormStore.values.trnId = null"
       />
 
@@ -116,7 +116,7 @@ const actions = computed(() => ({
         v-if="showModalConfirm"
         class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-item-5 p-3 text-1">
+        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-item-1 p-3 text-1">
           {{ t('base.sure') }}
 
           <div class="flex gap-2">
@@ -124,7 +124,7 @@ const actions = computed(() => ({
               v-for="(item, slug) in actions"
               :key="slug"
               class="grow"
-              insideClasses="!min-h-[44px] bg-item-4"
+              insideClasses="!min-h-[44px] bg-item-3"
               @click="item.click"
             >
               <template #leftIcon>
@@ -221,13 +221,13 @@ const actions = computed(() => ({
   padding-bottom: calc(env(safe-area-inset-bottom) - 16px);
 
   .trnForm__pagination {
-    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-item-5;
+    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-item-1;
     transform: translateX(-50%);
     bottom: 1px;
   }
 
   .swiper-pagination-bullet {
-    @apply block w-1.5 h-1.5 mx-1 rounded-full bg-item-3;
+    @apply block w-1.5 h-1.5 mx-1 rounded-full bg-item-4;
     opacity: 1;
   }
 

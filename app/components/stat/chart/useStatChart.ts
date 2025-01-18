@@ -49,20 +49,20 @@ export function useStatChart() {
     }
   }
 
-  function addMarkArea(series: ChartSeries[], selectedDate: DateUTC, chartType?: ChartType) {
-    if (!selectedDate)
+  function addMarkArea(series: ChartSeries[], markedDate: DateUTC, chartType?: ChartType) {
+    if (!markedDate)
       return series
 
     if (chartType === 'bar') {
       if (series[0])
-        series[0].markArea = markArea(selectedDate)
+        series[0].markArea = markArea(markedDate)
       return series
     }
 
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
     const markAreaSeries: ChartSeries = {
       data: [],
-      markArea: markArea(selectedDate),
+      markArea: markArea(markedDate),
       markedArea: 'markedArea',
       name: 'markArea',
       type: 'bar',

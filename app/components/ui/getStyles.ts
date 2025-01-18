@@ -1,16 +1,16 @@
 export const classes = {
   item: {
-    alt: 'bg-item-4',
+    alt: 'bg-item-3',
     base: '',
-    bg: 'bg-item-9',
-    bg2: 'bg-item-4',
+    bg: 'bg-item-2',
+    bg2: 'bg-item-3',
     center: 'flex items-center',
     center2: 'flex items-center justify-center',
     center3: 'flex-center',
     gap1: 'gap-3',
     link: `
       select-none
-      hocus:bg-item-hover
+      hocus:bg-item-5
     `,
     minh1: 'min-h-[42px]',
     minh2: 'min-h-[38px]',
@@ -38,7 +38,7 @@ export const classes = {
   },
 
   modal: {
-    bg: 'bg-item-4',
+    bg: 'bg-item-3',
     padding1: 'px-2 pt-6 !pb-2',
     rounded: 'rounded-xl',
   },

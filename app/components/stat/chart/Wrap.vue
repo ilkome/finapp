@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { Period, StatDateProvider } from '~/components/date/types'
 import type { ChartSeries } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import type { MiniItemConfig, StatConfigProvider } from '~/components/stat/useStatConfig'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
+  chartView: MiniItemConfig['chartView']
   series: ChartSeries[]
   xAxisLabels: number[]
 }>()
@@ -52,8 +53,7 @@ function onChangePeriod(period: Period) {
 <template>
   <div
     :class="{
-      '': statConfig.config.value?.chartView === 'full',
-      'md:max-w-lg': statConfig.config.value?.chartView === 'half',
+      'md:max-w-lg': props.chartView === 'half',
     }"
   >
     <div
@@ -64,9 +64,7 @@ function onChangePeriod(period: Period) {
         <slot />
 
         <StatChartIntervals
-          :class="{
-            'border-l border-item-3': statConfig.config.value?.date.isShowQuick,
-          }"
+          :class="{ 'border-l border-item-4': statConfig.config.value?.date.isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
           @onChangePeriod="onChangePeriod"
@@ -74,7 +72,7 @@ function onChangePeriod(period: Period) {
       </div>
 
       <StatChartView
-        :xAxisLabels
+        :xAxisLabels="props.xAxisLabels"
         :chartType="statConfig.config.value?.chartType"
         :period="statDate.params.value.intervalsBy"
         :series="props.series"

@@ -139,6 +139,7 @@ useHead({ title: wallet.value?.name })
 
     <StatItemWrap
       :activeTab
+      :range="statDate.range.value"
       :storageKey
       :trnsIds
       :walletId

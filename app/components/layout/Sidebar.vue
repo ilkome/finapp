@@ -53,7 +53,7 @@ const isShowLogoMenu = ref(false)
           <template #trigger>
             <div
               :class="getStyles('item', ['link', 'rounded'])"
-              class="block cursor-default px-3 py-2 group-data-[headlessui-state='open']:!bg-item-3"
+              class="block cursor-default px-3 py-2 group-data-[headlessui-state='open']:!bg-item-4"
             >
               <UiLogo />
             </div>

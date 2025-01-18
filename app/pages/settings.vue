@@ -39,7 +39,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper rounded-xl bg-item-5 pt-4">
+    <div class="pageWrapper rounded-xl bg-item-1 pt-4">
       <div class="grid gap-8">
         <!-- User -->
         <div class="pb-6">
@@ -78,7 +78,7 @@ function onGenerateDemoData() {
             <UiElement
               v-if="isDemo"
               class="group"
-              insideClasses="min-h-[44px] bg-item-4 max-w-lg"
+              insideClasses="min-h-[44px] bg-item-3 max-w-lg"
               @click="onGenerateDemoData"
             >
               <template #leftIcon>
@@ -89,7 +89,7 @@ function onGenerateDemoData() {
 
             <UiElement
               class="group"
-              insideClasses="min-h-[44px] bg-item-4 max-w-lg"
+              insideClasses="min-h-[44px] bg-item-3 max-w-lg"
               @click="confirmRemoveUserData = true"
             >
               <template #leftIcon>
@@ -105,6 +105,7 @@ function onGenerateDemoData() {
           {{ t('app.about') }}
           <div class="pt-4 text-xs text-2">
             {{ t('app.version') }} {{ version }}
+            <!-- <About /> -->
           </div>
         </div>
       </div>

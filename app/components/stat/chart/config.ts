@@ -5,13 +5,13 @@ import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 export const seriesOptions: Record<StatTabSlug, { color: string, colorLine?: string, localeKey: string, type: ChartType }> = {
   expense: {
-    color: 'var(--expense-1)',
+    color: 'oklch(var(--expense-1))',
     colorLine: 'var(--expense-2)',
     localeKey: 'money.expense',
     type: 'bar',
   },
   income: {
-    color: 'var(--income-1)',
+    color: 'oklch(var(--income-1))',
     colorLine: 'var(--income-2)',
     localeKey: 'money.expense',
     type: 'bar',

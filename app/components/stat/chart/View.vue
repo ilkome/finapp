@@ -8,7 +8,6 @@ import VChart from 'vue-echarts'
 
 import type { Period } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 import { formatByLocale, getFormatForChart } from '~/components/date/utils'
 import { config, lineConfig } from '~/components/stat/chart/config'
@@ -58,14 +57,11 @@ use([
 ])
 
 const { locale } = useI18n()
-const statConfig = inject('statConfig') as StatConfigProvider
 const chartRef = ref()
 
 const option = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
-    xAxis: setChartXAxis(props.xAxisLabels),
-    ...statConfig.config.value,
     tooltip: {
       ...config.tooltip,
       formatter(params: ChartParams[]) {
@@ -95,6 +91,7 @@ const option = computed(() => {
         return `${content}</div></div>`
       },
     },
+    xAxis: setChartXAxis(props.xAxisLabels),
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {

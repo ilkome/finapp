@@ -34,6 +34,6 @@ select {
   background-position: right 0.7rem center;
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
-  @apply hocus:bg-item-hover bg-item-4 focus:outline-none border border-transparent focus:border-accent-1 -my-px block min-h-[42px] w-full max-w-lg grow items-center gap-0 gap-x-2 overflow-hidden rounded-md px-4 pr-10 py-2 ring-0;
+  @apply hocus:bg-item-5 bg-item-3 focus:outline-none border border-transparent focus:border-accent-1 -my-px block min-h-[42px] w-full max-w-lg grow items-center gap-0 gap-x-2 overflow-hidden rounded-md px-4 pr-10 py-2 ring-0;
 }
 </style>

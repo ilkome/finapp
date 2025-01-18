@@ -73,7 +73,7 @@ async function onSelectParentCategory(id: CategoryId) {
   <Teleport to="body">
     <BottomSheet
       :isShow="isShow"
-      drugClassesCustom="bg-item-5 max-w-md"
+      drugClassesCustom="bg-item-1 max-w-md"
       @closed="isShow = false"
     >
       <template #handler="{ close }">
@@ -117,7 +117,7 @@ async function onSelectParentCategory(id: CategoryId) {
             >
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <UiTitle3
-                  class="sticky top-0 z-10 bg-item-5 px-3 pb-3 pt-4"
+                  class="sticky top-0 z-10 bg-item-1 px-3 pb-3 pt-4"
                   @click="trnsFormStore.ui.catsRootModal = true"
                 >
                   {{ $t("categories.title") }}

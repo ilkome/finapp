@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { StatDateProvider } from '~/components/date/types'
+import type { Range } from '~/components/date/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -12,18 +12,18 @@ const props = defineProps<{
   hasChildren?: boolean
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
+  range: Range
   storageKey: string
   trnsIds: TrnId[]
   walletId?: WalletId
 }>()
 
 const trnsStore = useTrnsStore()
-const statDate = inject('statDate') as StatDateProvider
 
 const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   dates: {
-    from: statDate.range.value.start,
-    until: statDate.range.value.end,
+    from: props.range.start,
+    until: props.range.end,
   },
   trnsIds: props.trnsIds,
 }))

@@ -550,7 +550,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-3 pl-3">
+              <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
                 <template v-if="groupedOptions.currencies === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -592,7 +592,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="ml-5 -translate-x-px border-l border-item-3 pl-3">
+                    <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"
@@ -640,7 +640,7 @@ const counts = computed(() => ({
                 </div>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-3 pl-3">
+              <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
                 <template v-if="groupedOptions.type === 0">
                   <WalletsItem
                     v-for="walletId in walletsIds"
@@ -691,7 +691,7 @@ const counts = computed(() => ({
                       </div>
                     </template>
 
-                    <div class="ml-5 -translate-x-px border-l border-item-3 pl-3">
+                    <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
                       <WalletsItem
                         v-for="walletId in groupedWalletsIds"
                         :key="walletId"

@@ -31,10 +31,10 @@ async function onClickSubmit() {
   <div
     :class="{
       '!border-transparent !bg-accent-1/80 !text-icon-primary hocus:!bg-accent-1': !isMath && isSubmittable,
-      '!border-item-4 !text-2': !isSubmittable,
+      '!border-item-3 !text-2': !isSubmittable,
       '!text-2': isMath,
     }"
-    class="flex size-full items-center justify-center rounded-xl border border-item-3 p-1 py-4 text-center text-4xl text-1 transition hocus:scale-[1.02] hocus:bg-item-hover"
+    class="flex size-full items-center justify-center rounded-xl border border-item-4 p-1 py-4 text-center text-4xl text-1 transition hocus:scale-[1.02] hocus:bg-item-5"
     @click="onClickSubmit"
   >
     <Icon v-if="!isMath && isSubmittable" name="mdi:check" />

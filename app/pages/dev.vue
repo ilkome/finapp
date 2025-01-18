@@ -19,14 +19,27 @@
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="size-20 bg-item-2" />
-                <div class="size-20 bg-item-7" />
-                <div class="size-20 bg-item-6" />
-                <div class="size-20 bg-item-hover" />
-                <div class="size-20 bg-item-3" />
-                <div class="size-20 bg-item-4" />
-                <div class="size-20 bg-item-9" />
-                <div class="size-20 bg-item-5" />
+                <div class="flex-center size-20 bg-item-1">
+                  1
+                </div>
+                <div class="flex-center size-20 bg-item-2">
+                  2
+                </div>
+                <div class="flex-center size-20 bg-item-3">
+                  3
+                </div>
+                <div class="flex-center size-20 bg-item-4">
+                  4
+                </div>
+                <div class="flex-center size-20 bg-item-5">
+                  5
+                </div>
+                <div class="flex-center size-20 bg-item-6">
+                  6
+                </div>
+                <div class="flex-center size-20 bg-item-7">
+                  7
+                </div>
               </div>
             </div>
 
@@ -35,10 +48,18 @@
                 Texts
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="size-20 bg-1" />
-                <div class="size-20 bg-3" />
-                <div class="size-20 bg-2" />
-                <div class="size-20 bg-4" />
+                <div class="flex-center size-20 bg-1 text-icon-primary">
+                  1
+                </div>
+                <div class="flex-center size-20 bg-3">
+                  3
+                </div>
+                <div class="flex-center size-20 bg-2">
+                  2
+                </div>
+                <div class="flex-center size-20 bg-4">
+                  4
+                </div>
               </div>
             </div>
 
@@ -49,6 +70,17 @@
                 </div>
                 <div class="flex flex-wrap gap-0">
                   <div class="size-20 bg-accent-1" />
+                </div>
+              </div>
+
+              <div class="grid gap-2">
+                <div class="text-sm text-2">
+                  Icon primary
+                </div>
+                <div class="flex flex-wrap gap-0">
+                  <div class="flex-center size-20 bg-icon-primary">
+                    1
+                  </div>
                 </div>
               </div>
 

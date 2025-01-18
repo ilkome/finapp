@@ -109,10 +109,11 @@ useHead({ title: category.value?.name })
 
     <StatItemWrap
       :activeTab
-      :trnsIds
-      :storageKey
-      :preCategoriesIds
       :hasChildren="categoriesIdsOrParent.length > 1"
+      :preCategoriesIds
+      :range="statDate.range.value"
+      :storageKey
+      :trnsIds
       isOneCategory
     />
   </UiPage>

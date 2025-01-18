@@ -20,14 +20,14 @@
 @layer base {
   html,
   body {
-    @apply bg-item-5 font-primary text-1 leading-none antialiased select-none;
+    @apply bg-item-1 font-primary text-1 leading-none antialiased select-none;
     overscroll-behavior-y: none;
   }
 }
 
 @layer components {
   .layoutBase {
-    @apply overflow-hidden relative h-dvh bg-item-9;
+    @apply overflow-hidden relative h-dvh bg-item-2;
   }
 
   .pageWrapper {
@@ -35,7 +35,7 @@
   }
 
   .bottomSheetDrugClassesCustom {
-    @apply bg-item-5 max-w-md rounded-xl;
+    @apply bg-item-1 max-w-md rounded-xl;
   }
 
   .bottomSheetContent {
@@ -44,7 +44,7 @@
   }
 
   .bottomSheetContentInside {
-    @apply grid h-full bg-item-5 gap-1 overflow-hidden overflow-y-auto px-2 py-px;
+    @apply grid h-full bg-item-1 gap-1 overflow-hidden overflow-y-auto px-2 py-px;
   }
 
   .bottomSheetContentBottom {

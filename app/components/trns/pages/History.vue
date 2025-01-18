@@ -33,14 +33,14 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
       <template v-if="filter.isShow.value" #selected>
         <FilterSelected
-          class="sticky top-[40px] z-20 bg-item-9"
+          class="sticky top-[40px] z-20 bg-item-2"
           isShowCategories
           isShowWallets
         />
       </template>
     </UiHeader>
 
-    <div class="pageWrapper mb-4 rounded-xl bg-item-5 pb-4 pt-3">
+    <div class="pageWrapper mb-4 rounded-xl bg-item-1 pb-4 pt-3">
       <div class="grid gap-3">
         <TrnsList
           :trnsIds
