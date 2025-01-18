@@ -30,7 +30,7 @@ const date = computed(() => {
     {{ date }}
     <data
       v-if="statDate.params.value.isShowMaxRange && statDate.params.value.intervalSelected === -1"
-      class="flex items-center rounded bg-item-3 px-1 py-px text-2xs leading-none text-4"
+      class="flex items-center rounded bg-item-4 px-1 py-px text-2xs leading-none text-4"
     >max</data>
   </div>
 </template>

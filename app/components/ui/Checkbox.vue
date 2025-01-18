@@ -17,7 +17,7 @@ function handleClick() {
 
 <template>
   <div
-    class="flex grow items-center gap-3 rounded-lg p-2 text-sm hocus:bg-item-hover"
+    class="flex grow items-center gap-3 rounded-lg p-2 text-sm hocus:bg-item-5"
     @click="handleClick"
   >
     <FormSwitch

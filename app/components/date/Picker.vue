@@ -83,11 +83,11 @@ const matchTheme = {
 <style>
 html .vc-dark,
 html .vc-light {
-  --vc-popover-content-bg: theme('colors.item.5');
+  --vc-popover-content-bg: theme('colors.item.1');
   --vc-accent-500: theme('colors.accent.1');
   --vc-focus-ring: theme('colors.accent.1');
   --vc-nav-item-active-bg: theme('colors.accent.1');
-  --vc-nav-hover-bg: theme('colors.item.hover');
+  --vc-nav-hover-bg: theme('colors.item.5');
   --vc-color: theme('colors.1');
   --vc-day-content-disabled-color: theme('colors.1/.40');
   --vc-weekday-color: theme('colors.2');
@@ -99,6 +99,6 @@ html .vc-light {
 }
 
 .vc-popover-content {
-  @apply border-2 border-item-3;
+  @apply border-2 border-item-4;
 }
 </style>

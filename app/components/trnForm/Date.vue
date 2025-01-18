@@ -33,7 +33,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
   <div class="-ml-1 flex gap-1">
     <UPopover class="grow">
       <div
-        class="grid gap-1 rounded-md p-2 text-sm font-medium leading-none text-3 hocus:bg-item-hover"
+        class="grid gap-1 rounded-md p-2 text-sm font-medium leading-none text-3 hocus:bg-item-5"
         v-html="formattedDate"
       />
 

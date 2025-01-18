@@ -60,8 +60,9 @@ watch(filter.categoriesIds, () => {
 
     <StatItemWrap
       :activeTab
-      :trnsIds
+      :range="statDate.range.value"
       :storageKey
+      :trnsIds
       hasChildren
     />
   </UiPage>

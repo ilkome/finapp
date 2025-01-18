@@ -12,13 +12,13 @@ const emit = defineEmits<{
       items-center
       justify-center
       rounded-full
-      bg-item-4 p-1 font-secondary
+      bg-item-3 p-1 font-secondary
       text-2xl
       font-normal
       text-2 transition
       hocus:scale-[1.02]
       hocus:border-item-6
-      hocus:bg-item-hover
+      hocus:bg-item-5
     "
     tabindex="0"
     @click="() => emit('click')"

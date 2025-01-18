@@ -31,7 +31,7 @@ const isShow = ref(false)
         :category="props.category"
         :categoryId="props.categoryId"
         alt
-        insideClasses="bg-item-4 min-h-[42px] py-2"
+        insideClasses="bg-item-3 min-h-[42px] py-2"
       />
     </template>
 

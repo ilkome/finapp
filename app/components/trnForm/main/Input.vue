@@ -41,7 +41,7 @@ const { t } = useI18n()
       }"
       :placeholder="t('enterAmount')"
       :value="amountRaw"
-      class="swiper-no-swiping border-transparent bg-item-9 pb-2 pt-6 text-center font-secondary !text-3xl placeholder:text-3xl"
+      class="swiper-no-swiping border-transparent bg-item-2 pb-2 pt-6 text-center font-secondary !text-3xl placeholder:text-3xl"
       inputmode="tel"
       @updateValue="(value: string) => emit('onChange', value || '')"
     />

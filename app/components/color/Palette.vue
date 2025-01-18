@@ -53,7 +53,7 @@ function findWalletWithColor(color: string) {
 
               <div
                 v-if="props.isWallet && findWalletWithColor(color)"
-                class="size-3 rounded-full bg-item-3"
+                class="size-3 rounded-full bg-item-4"
               />
             </div>
           </div>

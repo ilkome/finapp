@@ -128,34 +128,28 @@ const averageTotal = computed(() => {
   return Object.fromEntries(Object.entries(items).filter(([_, value]) => value !== 0))
 })
 
+const typesToShow = computed(() => {
+  const isAnyExpense = rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0)
+  const isAnyIncome = rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1)
+
+  return props.type === 'netIncome' || props.type === 'periods'
+    ? [
+        ...(isAnyIncome ? ['income'] : []),
+        ...(isAnyExpense ? ['expense'] : []),
+      ] as StatTabSlug[]
+    : [props.type]
+})
+
 const chart = {
   series: computed<ChartSeries[]>(() => {
-    const intervalsChartData = getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value)
-    const transactionTypes = {
-      hasExpense: rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0),
-      hasIncome: rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1),
-    }
+    const intervalTotals = intervalsData.value.map(g => g.total)
+    const baseSeries = typesToShow.value.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? intervalsData.value.reduce((acc, i) => acc + i.total[type], 0) / (intervalsData.value.length) : false))
 
-    const typesToShow = props.type === 'netIncome' || props.type === 'periods'
-      ? [
-          ...(transactionTypes.hasIncome ? ['income'] : []),
-          ...(transactionTypes.hasExpense ? ['expense'] : []),
-        ] as StatTabSlug[]
-      : [props.type]
-
-    const intervalTotals = intervalsChartData.map(g => g.total)
-    const baseSeries = typesToShow.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? intervalsData.value.reduce((acc, i) => acc + i.total[type], 0) / (intervalsData.value.length) : false))
-
-    const selectedInterval = intervalsChartData?.[statDate.params.value.intervalSelected]
-    if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0) {
+    const selectedInterval = intervalsData.value?.[statDate.params.value.intervalSelected]
+    if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0)
       return baseSeries
-    }
 
-    return addMarkArea(
-      baseSeries,
-      selectedInterval.range.start,
-      statConfig.config.value?.chartType,
-    )
+    return addMarkArea(baseSeries, selectedInterval.range.start, statConfig.config.value?.chartType)
   }),
   xAxisLabels: computed(() => intervalsData.value.map(i => +i.range.start) ?? []),
 }
@@ -215,6 +209,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
+      :chartView="statConfig.config.value.chartView"
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
     >

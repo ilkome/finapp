@@ -8,7 +8,7 @@ const { t } = useI18n()
       {{ t('title') }}
     </UiTitle3>
 
-    <div class="flex gap-8 pb-3">
+    <div class="grid gap-8 pb-3">
       <div>
         <div class="text-font-4 pb-4 text-xs">
           {{ t('author') }}

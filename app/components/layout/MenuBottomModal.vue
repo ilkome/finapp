@@ -21,7 +21,7 @@ const { isDemo } = useDemo()
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="grid gap-3 bg-item-5 px-1 py-3">
+      <div class="grid gap-3 bg-item-1 px-1 py-3">
         <LayoutSidebarMenu />
 
         <div class="pl-2 pt-2">

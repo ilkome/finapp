@@ -30,7 +30,7 @@ const { t } = useI18n()
 
     <UiElement
       v-if="props.isShowSignOut"
-      insideClasses="bg-item-9 min-h-[44px] max-w-lg"
+      insideClasses="bg-item-2 min-h-[44px] max-w-lg"
       @click="userStore.signOut"
     >
       <template #leftIcon>
