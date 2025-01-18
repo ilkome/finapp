@@ -35,8 +35,8 @@ const { t } = useI18n()
 
     <FormInput
       :class="{
-        '!text-[#f92134] placeholder:!text-red-700/80': highlight === 'income',
-        '!text-[#2cad22] placeholder:!text-green-700/80': highlight === 'expense',
+        '!text-income-1 placeholder:!text-income-1': highlight === 'income',
+        '!text-expense-1 placeholder:!text-expense-1': highlight === 'expense',
         'text-center': !isTransfer,
       }"
       :placeholder="t('enterAmount')"
