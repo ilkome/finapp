@@ -83,7 +83,7 @@ const matchTheme = {
 <style>
 html .vc-dark,
 html .vc-light {
-  --vc-popover-content-bg: theme('colors.item.5');
+  --vc-popover-content-bg: theme('colors.item.1');
   --vc-accent-500: theme('colors.accent.1');
   --vc-focus-ring: theme('colors.accent.1');
   --vc-nav-item-active-bg: theme('colors.accent.1');
@@ -99,6 +99,6 @@ html .vc-light {
 }
 
 .vc-popover-content {
-  @apply border-2 border-item-3;
+  @apply border-2 border-item-4;
 }
 </style>

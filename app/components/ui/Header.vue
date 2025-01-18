@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 flex min-h-12 max-w-7xl items-center border-b border-item-3 px-2 sm:min-h-14 lg:px-4 2xl:px-8">
+  <div class="mb-2 flex min-h-12 max-w-7xl items-center border-b border-item-4 px-2 sm:min-h-14 lg:px-4 2xl:px-8">
     <div class="flex grow items-center gap-2">
       <slot />
 

@@ -9,73 +9,72 @@
       <div class="grid gap-12">
         <div>
           <!-- Colors -->
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             Colors
           </h1>
 
           <div class="grid gap-4">
             <div class="grid gap-2">
-              <div class="text-sm text-2">
+              <div class="text-2 text-sm">
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="size-20 bg-item-2" />
-                <div class="size-20 bg-item-7" />
-                <div class="size-20 bg-item-6" />
-                <div class="size-20 bg-item-hover" />
-                <div class="size-20 bg-item-3" />
-                <div class="size-20 bg-item-4" />
-                <div class="size-20 bg-item-9" />
-                <div class="size-20 bg-item-5" />
+                <div class="bg-item-1 size-20" />
+                <div class="bg-item-2 size-20" />
+                <div class="bg-item-3 size-20" />
+                <div class="bg-item-4 size-20" />
+                <div class="bg-item-hover size-20" />
+                <div class="bg-item-6 size-20" />
+                <div class="bg-item-7 size-20" />
               </div>
             </div>
 
             <div class="grid gap-2">
-              <div class="text-sm text-2">
+              <div class="text-2 text-sm">
                 Texts
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="size-20 bg-1" />
-                <div class="size-20 bg-3" />
-                <div class="size-20 bg-2" />
-                <div class="size-20 bg-4" />
+                <div class="bg-1 size-20" />
+                <div class="bg-3 size-20" />
+                <div class="bg-2 size-20" />
+                <div class="bg-4 size-20" />
               </div>
             </div>
 
             <div class="flex flex-wrap gap-4">
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-2 text-sm">
                   Accent
                 </div>
                 <div class="flex flex-wrap gap-0">
-                  <div class="size-20 bg-accent-1" />
+                  <div class="bg-accent-1 size-20" />
                 </div>
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-2 text-sm">
                   Alert
                 </div>
                 <div class="flex flex-wrap gap-0">
-                  <div class="size-20 bg-alert-1" />
+                  <div class="bg-alert-1 size-20" />
                 </div>
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-2 text-sm">
                   Money
                 </div>
                 <div class="flex flex-wrap gap-0">
-                  <div class="size-20 bg-income-1" />
-                  <div class="size-20 bg-income-2" />
-                  <div class="size-20 bg-expense-1" />
-                  <div class="size-20 bg-expense-2" />
+                  <div class="bg-income-1 size-20" />
+                  <div class="bg-income-2 size-20" />
+                  <div class="bg-expense-1 size-20" />
+                  <div class="bg-expense-2 size-20" />
                 </div>
               </div>
             </div>
 
             <div>
-              <h1 class="mb-2 border-b border-item-6 pb-1">
+              <h1 class="border-item-6 mb-2 border-b pb-1">
                 Chart
               </h1>
 
@@ -91,7 +90,7 @@
 
         <!-- UiTitle -->
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             UiTitle
           </h1>
 
@@ -123,7 +122,7 @@
         </div>
 
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             UiText
           </h1>
 
@@ -139,7 +138,7 @@
         </div>
 
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             UiToggle
           </h1>
 
@@ -163,7 +162,7 @@
         </div>
 
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             UiItem
           </h1>
 
@@ -183,7 +182,7 @@
         </div>
 
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             UiTabs
           </h1>
 
@@ -203,7 +202,7 @@
         </div>
 
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             UiTabsItem
           </h1>
 
@@ -242,7 +241,7 @@
       <div>
         <!-- Calendar -->
         <div>
-          <h1 class="mb-2 border-b border-item-6 pb-1">
+          <h1 class="border-item-6 mb-2 border-b pb-1">
             Calendar
           </h1>
 

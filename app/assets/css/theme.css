@@ -17,14 +17,13 @@ html.dark-blue {
   --text-icon-primary: theme('colors.neutral.50');
   --accent-1: 219 39 119;
 
-  --c-item-2: #a3a3a3;
-  --c-item-3: #232323;
-  --c-item-4: #1c1c1c;
+  --c-item-4: #232323;
+  --c-item-3: #1c1c1c;
   --c-item-base: #e5e5e5;
-  --item-5: 19 19 19;
+  --item-1: 19 19 19;
   --item-6: 44 44 44;
   --item-7: #878787;
-  --item-9: 23 23 23;
+  --item-2: 23 23 23;
   --item-hover: #262626;
   --overlay: #000000cc;
 }
@@ -38,15 +37,14 @@ html.light-blue {
   color-scheme: light;
 
   --accent-1: 219 39 119;
-  --c-item-2: theme('colors.neutral.500');
-  --c-item-4: theme('colors.neutral.100');
+  --c-item-3: theme('colors.neutral.100');
   --c-item-base: theme('colors.neutral.600');
-  --item-3: #f0edef;
-  --item-5: 255 255 255;
+  --item-4: #f0edef;
+  --item-1: 255 255 255;
   --item-6: 240 237 240;
   --item-7: rgba(190, 190, 190, 1);
-  --c-item-3: #f0edf0;
-  --item-9: 250 250 250;
+  --c-item-4: #f0edf0;
+  --item-2: 250 250 250;
   --item-active: 216 216 220;
   --item-hover: #f3eff2;
   --overlay: #00000099;
@@ -62,7 +60,7 @@ html.light-blue {
 */
 html.light,
 html.light-blue {
-  --c-item-3: #f0edf0;
+  --c-item-4: #f0edf0;
   --item-6: 237 239 240;
   --item-hover: #ebecef;
 }

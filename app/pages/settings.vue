@@ -39,7 +39,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper rounded-xl bg-item-5 pt-4">
+    <div class="pageWrapper bg-item-1 rounded-xl pt-4">
       <div class="grid gap-8">
         <!-- User -->
         <div class="pb-6">
@@ -70,7 +70,7 @@ function onGenerateDemoData() {
           <UiTitle3 class="pb-2">
             {{ t('settings.caution') }}
           </UiTitle3>
-          <div class="pb-4 text-xs leading-none text-alert-1">
+          <div class="text-alert-1 pb-4 text-xs leading-none">
             {{ t('alerts.willDeleteEverything') }}
           </div>
 
@@ -78,7 +78,7 @@ function onGenerateDemoData() {
             <UiElement
               v-if="isDemo"
               class="group"
-              insideClasses="min-h-[44px] bg-item-4 max-w-lg"
+              insideClasses="min-h-[44px] bg-item-3 max-w-lg"
               @click="onGenerateDemoData"
             >
               <template #leftIcon>
@@ -89,7 +89,7 @@ function onGenerateDemoData() {
 
             <UiElement
               class="group"
-              insideClasses="min-h-[44px] bg-item-4 max-w-lg"
+              insideClasses="min-h-[44px] bg-item-3 max-w-lg"
               @click="confirmRemoveUserData = true"
             >
               <template #leftIcon>
@@ -103,8 +103,9 @@ function onGenerateDemoData() {
         <!-- About -->
         <div class="pb-12">
           {{ t('app.about') }}
-          <div class="pt-4 text-xs text-2">
+          <div class="text-2 pt-4 text-xs">
             {{ t('app.version') }} {{ version }}
+            <!-- <About /> -->
           </div>
         </div>
       </div>

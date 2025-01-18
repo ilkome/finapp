@@ -91,8 +91,8 @@ onLongPress(
     v-if="category"
     ref="longPressRef"
     :class="[props.insideClass, {
-      '-bg-item-4 ': props.isActive,
-      'rounded-lg bg-item-9': statConfig.config.value.catsList.isItemsBg,
+      '-bg-item-3 ': props.isActive,
+      'rounded-lg bg-item-2': statConfig.config.value.catsList.isItemsBg,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -109,7 +109,7 @@ onLongPress(
           v-if="statConfig.config.value.catsList.isLines"
           class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pl-[52px] pr-3"
         >
-          <div class="overflow-hidden rounded-lg bg-item-3">
+          <div class="overflow-hidden rounded-lg bg-item-4">
             <div
               :style="getBarStyle()"
               class="h-1 opacity-60"

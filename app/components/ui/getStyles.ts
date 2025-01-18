@@ -1,9 +1,9 @@
 export const classes = {
   item: {
-    alt: 'bg-item-4',
+    alt: 'bg-item-3',
     base: '',
-    bg: 'bg-item-9',
-    bg2: 'bg-item-4',
+    bg: 'bg-item-2',
+    bg2: 'bg-item-3',
     center: 'flex items-center',
     center2: 'flex items-center justify-center',
     center3: 'flex-center',
@@ -38,7 +38,7 @@ export const classes = {
   },
 
   modal: {
-    bg: 'bg-item-4',
+    bg: 'bg-item-3',
     padding1: 'px-2 pt-6 !pb-2',
     rounded: 'rounded-xl',
   },

@@ -65,7 +65,7 @@ function onChangePeriod(period: Period) {
 
         <StatChartIntervals
           :class="{
-            'border-l border-item-3': statConfig.config.value?.date.isShowQuick,
+            'border-l border-item-4': statConfig.config.value?.date.isShowQuick,
           }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"

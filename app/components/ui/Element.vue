@@ -53,6 +53,6 @@ const classes = computed(() => cn(
 
 <style>
 .v-popper--shown .uiElement {
-  @apply !bg-item-3;
+  @apply !bg-item-4;
 }
 </style>

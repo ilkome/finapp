@@ -21,11 +21,11 @@ export default defineAppConfig({
     gray: 'cool',
 
     popover: {
-      background: '!bg-item-5 min-w-64',
+      background: '!bg-item-1 min-w-64',
       popper: {
         placement: 'bottom-start',
       },
-      ring: '!ring-2 !ring-item-3',
+      ring: '!ring-2 !ring-item-4',
       trigger: '!w-full !block !cursor-default',
     },
     primary: 'pink',

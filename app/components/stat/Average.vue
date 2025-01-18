@@ -27,7 +27,7 @@ const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 
 const averageConfig = useStorage('averageConfig', {
-  count: 1,
+  count: 10,
 })
 
 const untilDate = computed(() => getEndOf(sub(new Date(), { [`${props.statDate.params.value.rangeBy}s`]: props.statDate.params.value.rangeDuration }), props.statDate.params.value.rangeBy))
@@ -55,22 +55,8 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
 
 const last = computed(() => {
   const rangeBy = props.statDate.params.value.rangeBy
-  const rangeDuration = props.statDate.params.value.rangeDuration
-  const count = averageConfig.value.count
-
-  const getCount = () => {
-    const value = count * rangeDuration
-    return `${value} ${t(`dates.${rangeBy}.plural`, value)}`
-  }
-
-  const periods = {
-    day: { count: getCount() },
-    month: { count: getCount() },
-    week: { count: getCount() },
-    year: { count: getCount() },
-  }
-
-  return periods[rangeBy]
+  const value = averageConfig.value.count * props.statDate.params.value.rangeDuration
+  return `${value} ${t(`dates.${rangeBy}.plural`, value)}`
 })
 </script>
 
@@ -79,7 +65,7 @@ const last = computed(() => {
     <div class="grid w-full grow gap-1 pb-[2px]">
       <UiTitle6 class="text-nowrap !leading-3">
         {{ t('money.average') }}
-        <br>{{ t('for') }} ~{{ last.count }}
+        <br>{{ t('for') }} {{ last }}
         <br>{{ getStringDateRange(dates, props.statDate.params.value.rangeBy, props.statDate.params.value.rangeDuration) }}
       </UiTitle6>
 
