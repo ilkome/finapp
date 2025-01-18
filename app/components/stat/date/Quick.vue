@@ -29,89 +29,39 @@ onMounted(() => {
     touchStartPreventDefault: false,
   })
 })
-
-function setMaxRange(isSkipEmpty = false) {
-  emit('onClose')
-  statDate.setMaxRange(isSkipEmpty)
-}
 </script>
 
 <template>
   <div class="relative overflow-hidden">
     <div ref="sliderRef" class="swiper-container">
       <div class="swiper-wrapper">
-        <!-- Recent -->
         <div class="swiper-slide">
-          <div class="flex overflow-hidden">
-            <DateRanges @onClose="emit('onClose')" />
-
-            <div class="flex">
-              <DateLinkItem @click="statDate.minusRange">
-                -
-              </DateLinkItem>
-              <DateLinkItemNoBg>
-                {{ statDate.params.value.rangeDuration }}
-              </DateLinkItemNoBg>
-              <DateLinkItem @click="statDate.plusRange">
-                +
-              </DateLinkItem>
-            </div>
-          </div>
+          <DateRanges
+            :itemProps="{ variant: 'small' }"
+            :statDate
+            view="periods"
+            @onClose="emit('onClose')"
+          />
         </div>
 
         <div class="swiper-slide">
-          <div class="flex overflow-hidden">
-            <DateRanges2 @onClose="emit('onClose')" />
-          </div>
+          <DateRanges
+            :itemProps="{ variant: 'small' }"
+            :statDate
+            view="presets"
+            @onClose="emit('onClose')"
+          />
         </div>
 
         <div class="swiper-slide">
-          <div class="flex overflow-hidden">
-            <DateLinkItem
-              :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"
-              @click="() => setMaxRange(false)"
-            >
-              {{ t('all') }}
-            </DateLinkItem>
-            <DateLinkItem
-              :isActive="statDate.params.value.isShowMaxRange && statDate.params.value.isSkipEmpty"
-              @click="() => setMaxRange(true)"
-            >
-              {{ t('allSkipEmpty') }}
-            </DateLinkItem>
-          </div>
+          <DateRanges
+            :itemProps="{ variant: 'small' }"
+            :statDate
+            view="maximum"
+            @onClose="emit('onClose')"
+          />
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  all: All
-  allSkipEmpty: Maximum
-  calendar: Calendar
-  intervalsGrouped: Grouped by
-  ranges: Ranges
-  presets: Presets
-  last: Last
-  7Days: 7d
-  14Days: 14d
-  30Days: 30d
-  12Months: 12m
-  mini: mini
-
-ru:
-  all: Все
-  allSkipEmpty: Максимально
-  calendar: Календарь
-  intervalsGrouped: Группировка по
-  ranges: Диапазоны
-  presets: Пресеты
-  last: Последние
-  7Days: 7д
-  14Days: 14д
-  30Days: 30д
-  12Months: 12м
-  mini: мини
-</i18n>

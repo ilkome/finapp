@@ -55,60 +55,45 @@ function selectInterval(grouped: Grouped) {
       </UiTabsItem1>
     </UiTabs1>
 
-    <div v-if="tabs.selected.value === 'presets'">
-      <div class="pb-4 pt-1">
-        <!-- Presets -->
-        <div class="grid gap-2">
-          <div class="flex flex-wrap gap-1">
-            <DateRanges @onClose="emit('onClose')" />
+    <div
+      v-if="tabs.selected.value === 'presets'"
+      class="grid gap-6"
+    >
+      <!-- Presets -->
+      <div class="grid gap-2">
+        <div class="flex flex-wrap gap-1">
+          <DateRanges
+            :statDate
+            view="periods"
+            isShowRangeAdjust
+            @onClose="emit('onClose')"
+          />
+        </div>
 
-            <div class="flex">
-              <DateLinkItem @click="statDate.minusRange">
-                -
-              </DateLinkItem>
-              <DateLinkItemNoBg>
-                {{ statDate.params.value.rangeDuration }}
-              </DateLinkItemNoBg>
-              <DateLinkItem @click="statDate.plusRange">
-                +
-              </DateLinkItem>
-            </div>
-          </div>
+        <div class="flex flex-wrap gap-1">
+          <DateRanges
+            :statDate
+            view="presets"
+            @onClose="emit('onClose')"
+          />
+        </div>
 
-          <div class="flex flex-wrap gap-1">
-            <DateRanges2 @onClose="emit('onClose')" />
-          </div>
-
-          <div class="flex flex-wrap gap-1">
-            <DateLinkItem
-              :isActive="statDate.params.value.isShowMaxRange && !statDate.params.value.isSkipEmpty"
-              @click="() => setMaxRange(false)"
-            >
-              {{ t('all') }}
-            </DateLinkItem>
-            <DateLinkItem
-              :isActive="statDate.params.value.isShowMaxRange && statDate.params.value.isSkipEmpty"
-              @click="() => setMaxRange(true)"
-            >
-              {{ t('allSkipEmpty') }}
-            </DateLinkItem>
-          </div>
+        <div class="flex flex-wrap gap-1">
+          <DateRanges
+            :statDate
+            view="maximum"
+            @onClose="emit('onClose')"
+          />
         </div>
       </div>
 
       <!-- Grouped by -->
-      <UiToggle2
-        storageKey="finapp-date-modal-grouped"
-        :initStatus="false"
-        :lineWidth="1"
-      >
-        <template #header="{ toggle, isShown }">
-          <UiTitleDropRight :isShown @click="toggle">
-            {{ t('intervalsGrouped') }}
-          </UiTitleDropRight>
-        </template>
+      <div class="grid gap-3">
+        <UiTitleOption class="px-1">
+          {{ t('intervalsGrouped') }}
+        </UiTitleOption>
 
-        <div class="grid gap-2 px-2">
+        <div class="grid gap-2">
           <div class="flex flex-wrap gap-1">
             <DateLinkItem
               v-for="item in intervals"
@@ -118,6 +103,7 @@ function selectInterval(grouped: Grouped) {
             >
               {{ t(`dates.${item.intervalsBy}.simple`) }}
             </DateLinkItem>
+
             <div class="flex">
               <DateLinkItem @click="statDate.delInterval">
                 -
@@ -131,7 +117,7 @@ function selectInterval(grouped: Grouped) {
             </div>
           </div>
         </div>
-      </UiToggle2>
+      </div>
     </div>
 
     <DatePicker
@@ -167,7 +153,7 @@ ru:
   all: Все
   allSkipEmpty: Максимально
   calendar: Календарь
-  intervalsGrouped: Группировка по
+  intervalsGrouped: Группировка
   ranges: Диапазоны
   presets: Пресеты
   last: Последние

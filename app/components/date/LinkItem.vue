@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 
-const props = defineProps<{
+export type DateLinkItemProps = {
   isActive?: boolean
-}>()
+  variant?: 'small'
+}
+
+const props = defineProps<DateLinkItemProps>()
 const emit = defineEmits<{
   click: [e: Event]
 }>()
@@ -12,10 +15,10 @@ const emit = defineEmits<{
 <template>
   <div
     :class="[
-      getStyles('item', ['link', '_bg', 'padding2', 'center2', 'minh3', 'minw4', 'rounded3']),
-      {
-        'text-accent-1': props.isActive,
-      },
+      getStyles('item', ['link', props.variant === 'small' ? '' : 'alt', 'center2', 'minh3', 'rounded4']),
+      { 'text-accent-1': props.isActive },
+      { 'px-2 text-2xs': props.variant === 'small' },
+      { 'px-3': props.variant !== 'small' },
     ]"
     class="text-nowrap rounded-full font-primary text-xs leading-none"
     @click="(e: Event) => emit('click', e)"
