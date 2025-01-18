@@ -54,7 +54,7 @@ const items = computed(() => ({
       }
     },
     icon: 'mdi:content-copy',
-    localeKey: 'base.duplicate',
+    label: t('base.duplicate'),
   },
   // eslint-disable-next-line perfectionist/sort-objects
   delete: {
@@ -62,7 +62,7 @@ const items = computed(() => ({
       showModalConfirm.value = true
     },
     icon: 'mdi:delete-empty-outline',
-    localeKey: 'base.delete',
+    label: t('base.delete'),
   },
 }))
 
@@ -72,7 +72,7 @@ const actions = computed(() => ({
       showModalConfirm.value = false
     },
     icon: 'mdi:close',
-    localeKey: 'base.no',
+    label: t('base.no'),
   },
 
   yes: {
@@ -81,7 +81,7 @@ const actions = computed(() => ({
       trnsFormStore.onClose()
     },
     icon: 'mdi:check',
-    localeKey: 'base.yes',
+    label: t('base.yes'),
   },
 }))
 </script>
@@ -135,7 +135,7 @@ const actions = computed(() => ({
               </template>
 
               <div class="leading-none text-2">
-                {{ t(item.localeKey) }}
+                {{ item.label }}
               </div>
             </UiElement>
           </div>
@@ -143,10 +143,11 @@ const actions = computed(() => ({
       </div>
 
       <!-- Trn actions -->
-      <div class="flex gap-2 pt-2">
-        <DateLinkItem
+      <div class="flex pt-2">
+        <UiItem1
           v-for="(item, slug) in items"
           :key="slug"
+          variant="text"
           @click="item.click"
         >
           <template #leftIcon>
@@ -157,9 +158,9 @@ const actions = computed(() => ({
           </template>
 
           <div class="leading-none text-2">
-            {{ t(item.localeKey) }}
+            {{ t(item.label) }}
           </div>
-        </DateLinkItem>
+        </UiItem1>
       </div>
     </div>
 

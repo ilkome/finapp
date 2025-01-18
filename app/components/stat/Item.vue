@@ -216,7 +216,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
     </StatChartWrap>
 
-    <div class="grid pb-5 md:max-w-lg">
+    <div class="grid pb-3 md:max-w-lg">
       <StatDateNavigation />
     </div>
 
