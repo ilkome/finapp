@@ -10,7 +10,7 @@ export const classes = {
     gap1: 'gap-3',
     link: `
       select-none
-      hocus:bg-item-hover
+      hocus:bg-item-5
     `,
     minh1: 'min-h-[42px]',
     minh2: 'min-h-[38px]',

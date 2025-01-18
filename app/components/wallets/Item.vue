@@ -152,7 +152,7 @@ if (!props.isSort) {
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hocus:bg-item-hover"
+        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hocus:bg-item-5"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

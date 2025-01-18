@@ -65,8 +65,9 @@ const devId = $config.public.devId
 
     <StatItemWrap
       :activeTab
-      :trnsIds
+      :range="statDate.range.value"
       :storageKey
+      :trnsIds
       hasChildren
     />
   </UiPage>

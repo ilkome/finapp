@@ -18,7 +18,7 @@ const emit = defineEmits<{
       text-2 transition
       hocus:scale-[1.02]
       hocus:border-item-6
-      hocus:bg-item-hover
+      hocus:bg-item-5
     "
     tabindex="0"
     @click="() => emit('click')"

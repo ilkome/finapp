@@ -311,7 +311,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       class="flex-center pt-1"
     >
       <div
-        class="flex-center rounded-full bg-item-hover px-5 py-2 text-sm text-2 hocus:bg-item-6"
+        class="flex-center rounded-full bg-item-5 px-5 py-2 text-sm text-2 hocus:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

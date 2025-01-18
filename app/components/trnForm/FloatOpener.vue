@@ -8,7 +8,7 @@ const { trnFormCreate } = useTrnsFormStore()
   <div
     class="
       group absolute bottom-0 right-0 z-20 hidden h-dvh items-end justify-center transition
-      hover:bg-item-hover 2xl:flex
+      hover:bg-item-5 2xl:flex
     "
     @click="trnFormCreate"
   >

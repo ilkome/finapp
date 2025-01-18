@@ -87,7 +87,7 @@ html .vc-light {
   --vc-accent-500: theme('colors.accent.1');
   --vc-focus-ring: theme('colors.accent.1');
   --vc-nav-item-active-bg: theme('colors.accent.1');
-  --vc-nav-hover-bg: theme('colors.item.hover');
+  --vc-nav-hover-bg: theme('colors.item.5');
   --vc-color: theme('colors.1');
   --vc-day-content-disabled-color: theme('colors.1/.40');
   --vc-weekday-color: theme('colors.2');

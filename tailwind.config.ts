@@ -37,22 +37,22 @@ export default <Partial<Config>>{
           1: 'var(--text-alert-1)',
         },
         'expense': {
-          1: 'var(--expense-1)',
+          1: 'oklch(var(--expense-1) / <alpha-value>)',
           2: 'var(--expense-2)',
         },
         'icon-primary': 'var(--text-icon-primary)',
         'income': {
-          1: 'var(--income-1)',
+          1: 'oklch(var(--income-1) / <alpha-value>)',
           2: 'var(--income-2)',
         },
         'item': {
           1: 'rgb(var(--item-1))',
           2: 'rgba(var(--item-2))',
-          3: 'var(--c-item-3)',
-          4: 'var(--c-item-4)',
+          3: 'var(--item-3)',
+          4: 'var(--item-4)',
+          5: 'var(--item-5)',
           6: 'rgba(var(--item-6))',
           7: 'var(--item-7)',
-          hover: 'var(--item-hover)',
         },
       },
       fontFamily: {
