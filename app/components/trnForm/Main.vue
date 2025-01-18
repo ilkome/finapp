@@ -169,7 +169,7 @@ const actions = computed(() => ({
       v-if="trnsFormStore.values.trnType !== 2"
       :amount="trnsFormStore.values.amount[trnsFormStore.activeAmountIdx]"
       :amountRaw="trnsFormStore.values.amountRaw[trnsFormStore.activeAmountIdx]"
-      :highlight="trnsFormStore.values.trnType === 0 ? 'income' : 'expense'"
+      :highlight="trnsFormStore.values.trnType === 0 ? 'expense' : 'income'"
       :isShowSum="trnsFormStore.getIsShowSum()"
       class="px-3 pb-2"
       @onChange="trnsFormStore.onChangeAmount"
