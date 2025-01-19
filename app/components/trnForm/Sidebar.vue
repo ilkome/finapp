@@ -92,9 +92,6 @@ watch(isShow, (v) => {
       </div>
     </div>
   </Transition>
-
-  <!-- Modals -->
-  <LazyTrnFormModalDescription v-if="trnsFormStore.modal.description" />
 </template>
 
 <style scoped>

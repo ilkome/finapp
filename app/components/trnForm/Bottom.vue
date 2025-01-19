@@ -124,7 +124,4 @@ onMounted(init)
       <div class="trnForm__pagination" />
     </div>
   </BottomSheet>
-
-  <!-- Modals -->
-  <LazyTrnFormModalDescription v-if="trnsFormStore.modal.description" />
 </template>

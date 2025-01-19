@@ -90,19 +90,7 @@ onLongPress(
     </div>
 
     <div class="grid grid-rows-[auto,1fr] gap-3">
-      <!-- Description -->
-      <TrnFormMainCalculatorButton
-        class="relative"
-        @click="trnsFormStore.openTrnFormModal('description')"
-      >
-        <Icon name="mdi:comment-text-outline" />
-        <div
-          v-if="!!trnsFormStore.values.desc"
-          class="absolute right-1 top-1 aspect-square w-2 rounded-full bg-accent-1"
-        />
-      </TrnFormMainCalculatorButton>
-
-      <!-- Action -->
+      <TrnFormMainDescription />
       <TrnFormMainActionSide />
     </div>
   </div>

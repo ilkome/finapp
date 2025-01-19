@@ -77,17 +77,19 @@ const statConfigModal: Ref<StatConfigModal> = ref({
       </div>
     </template>
 
-    <template #after>
+    <template #selected>
       <div
         v-if="props.menu"
-        class="px-2 sm:pb-1 md:py-1 lg:px-4 2xl:px-8"
+        class=""
       >
         <StatMenu
           :active="props.menu.active"
           @click="props.menu.click"
         />
       </div>
+    </template>
 
+    <template #after>
       <div
         v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow || $slots.summary"
         class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8"

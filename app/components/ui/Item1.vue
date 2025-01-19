@@ -2,7 +2,7 @@
 import { getStyles } from '~/components/ui/getStyles'
 
 const { variant = 'icon' } = defineProps<{
-  variant: 'icon' | 'text'
+  variant?: 'icon' | 'text'
 }>()
 
 const emit = defineEmits<{

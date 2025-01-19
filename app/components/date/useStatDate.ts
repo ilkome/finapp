@@ -157,12 +157,14 @@ export function useStatDate({
 
   function modifyRange(modification: number) {
     resetCustomAndMaxRangeParams()
-    params.value.rangeDuration += modification
+    if (params.value.rangeDuration > 1)
+      params.value.rangeDuration += modification
+
     params.value.rangeOffset = 0
   }
 
   const plusRange = () => modifyRange(1)
-  const minusRange = () => params.value.rangeDuration > 1 && modifyRange(-1)
+  const minusRange = () => modifyRange(-1)
 
   function setInterval({ intervalsBy, intervalsDuration }: Grouped) {
     resetCustomAndMaxRangeParams()

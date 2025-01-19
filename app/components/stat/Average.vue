@@ -61,7 +61,7 @@ const last = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-start gap-4 pb-2 pl-3 md:max-w-lg">
+  <div class="grid gap-4 pb-2 pl-3 md:max-w-lg">
     <div class="grid w-full grow gap-1 pb-[2px]">
       <UiTitle6 class="text-nowrap !leading-3">
         {{ t('money.average') }}

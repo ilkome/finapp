@@ -313,7 +313,7 @@ export default {
     calcTrnButton: 'Посчитать результат',
     createTrn: 'Создать транзакцию',
     description: {
-      placeholder: 'Напишите описание...',
+      placeholder: 'Напишите...',
       title: 'Описание',
     },
     filterAll: 'Все',

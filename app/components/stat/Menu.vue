@@ -57,15 +57,19 @@ watch(() => props.active, () => {
 </script>
 
 <template>
-  <UiTabs2>
-    <UiTabsItem4
+  <div class="flex gap-2">
+    <div
       v-for="item in menu"
       :key="item.id"
-      :isActive="item.id === props.active"
-      class="text-nowrap"
+      class="text-nowrap rounded-lg px-3 py-1.5 text-sm font-medium"
+      :class="[{
+        'rounded-none border-b-2 !border-accent-1 text-1': item.id === props.active,
+        'text-2 hover:bg-item-5': item.id !== props.active,
+      },
+      ]"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}
-    </UiTabsItem4>
-  </UiTabs2>
+    </div>
+  </div>
 </template>

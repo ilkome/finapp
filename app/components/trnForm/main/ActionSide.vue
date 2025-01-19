@@ -30,15 +30,12 @@ async function onClickSubmit() {
 <template>
   <div
     :class="{
-      '!border-transparent !bg-accent-1/80 !text-icon-primary hocus:!bg-accent-1': !isMath && isSubmittable,
-      '!border-item-3 !text-2': !isSubmittable,
-      '!text-2': isMath,
+      '!hocus:bg-accent-1 !bg-accent-1/80 text-icon-primary': !isMath && isSubmittable,
+      'text-2': !isSubmittable || isMath,
     }"
-    class="flex size-full items-center justify-center rounded-xl border border-item-4 p-1 py-4 text-center text-4xl text-1 transition hocus:scale-[1.02] hocus:bg-item-5"
+    class="flex size-full items-center justify-center rounded-xl bg-item-4 p-1 py-4 text-center text-4xl text-1 transition hocus:scale-[1.02] hocus:bg-item-5"
     @click="onClickSubmit"
   >
-    <Icon v-if="!isMath && isSubmittable" name="mdi:check" />
-    <Icon v-else-if="isMath" name="mdi:equal" />
-    <Icon v-else name="mdi:palm-tree" />
+    <Icon :name="isMath ? 'lucide:equal' : 'lucide:check'" size="40" />
   </div>
 </template>

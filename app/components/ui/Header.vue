@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 flex min-h-12 max-w-7xl items-center border-b border-item-4 px-2 sm:min-h-14 lg:px-4 2xl:px-8">
+  <div class="mb-2 grid min-h-12 max-w-7xl items-center border-b border-item-4 px-2 sm:min-h-14 lg:px-4 2xl:px-8">
     <div class="flex grow items-center gap-2">
       <slot />
 
@@ -7,10 +7,9 @@
         <slot name="actions" />
       </div>
     </div>
-
     <div
       v-if="$slots.selected"
-      class="py-1"
+      class=""
     >
       <slot name="selected" />
     </div>
@@ -18,7 +17,7 @@
 
   <div
     v-if="$slots.after"
-    class="grid gap-2 pb-1"
+    class="grid gap-2 pb-2 pt-1"
   >
     <slot name="after" />
   </div>
