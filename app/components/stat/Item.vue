@@ -231,13 +231,13 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       @click="onClickSumItem"
     />
 
-    <StatAverage
+    <!-- <StatAverage
       :trnsIds
       :statDate
       :filter
       :categoryId
       :walletId
-    />
+    /> -->
 
     <div class="grid w-full gap-2">
       <StatCategoriesSection
