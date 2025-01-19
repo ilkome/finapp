@@ -43,24 +43,57 @@ watch(
   () => trnsFormStore.values.trnType,
   (trnType) => {
     if (trnType === TrnType.Transfer) {
-      incomeWalletId.value && (trnsFormStore.values.incomeWalletId = incomeWalletId.value)
-      expenseWalletId.value && (trnsFormStore.values.expenseWalletId = expenseWalletId.value)
+      if (!trnsFormStore.values.incomeWalletId)
+        incomeWalletId.value && (trnsFormStore.values.incomeWalletId = incomeWalletId.value)
+
+      if (!trnsFormStore.values.expenseWalletId)
+        expenseWalletId.value && (trnsFormStore.values.expenseWalletId = expenseWalletId.value)
+
+      if (trnsFormStore.values.amount[1] === 0) {
+        trnsFormStore.values.amount[1] = trnsFormStore.values.amount[0]
+        trnsFormStore.values.amountRaw[1] = trnsFormStore.values.amountRaw[0]
+      }
     }
   },
   { immediate: true },
 )
+
+function switchWallets() {
+  const incomeWalletId = trnsFormStore.values.incomeWalletId
+  const expenseWalletId = trnsFormStore.values.expenseWalletId
+  const incomeAmount = trnsFormStore.values.amount[1]
+  const incomeAmountRaw = trnsFormStore.values.amountRaw[1]
+  const expenseAmount = trnsFormStore.values.amount[2]
+  const expenseAmountRaw = trnsFormStore.values.amountRaw[2]
+
+  trnsFormStore.values.incomeWalletId = expenseWalletId
+  trnsFormStore.values.expenseWalletId = incomeWalletId
+  trnsFormStore.values.amount[1] = expenseAmount
+  trnsFormStore.values.amountRaw[1] = expenseAmountRaw
+  trnsFormStore.values.amount[2] = incomeAmount
+  trnsFormStore.values.amountRaw[2] = incomeAmountRaw
+}
+
+function copyAmount() {
+  const incomeAmount = trnsFormStore.values.amount[1]
+  const incomeAmountRaw = trnsFormStore.values.amountRaw[1]
+
+  trnsFormStore.values.amount[2] = incomeAmount
+  trnsFormStore.values.amountRaw[2] = incomeAmountRaw
+}
 </script>
 
 <template>
-  <div class="pb-2">
-    <div class="flex flex-col">
+  <div class="">
+    <template
+      v-for="(item, slug) in items"
+      :key="slug"
+    >
       <div
-        v-for="(item, slug) in items"
-        :key="slug"
         :class="[{
-          'border-accent-1': trnsFormStore.values.transferType === item.transferType,
+          '!border-accent-1/50': trnsFormStore.values.transferType === item.transferType,
         }, getStyles('item', ['rounded'])]"
-        class="overflow-hidden border border-transparent"
+        class="-m-1 grid gap-2 overflow-hidden border border-transparent p-2"
         @click="trnsFormStore.onChangeTransferType(item.transferType)"
       >
         <div class="flex items-center gap-2 whitespace-nowrap">
@@ -99,14 +132,27 @@ watch(
           :key="item.amountsIdx"
           :amount="trnsFormStore.values.amount[item.amountsIdx]"
           :amountRaw="trnsFormStore.values.amountRaw[item.amountsIdx]"
-          :highlight="item.transferType === 1 ? 'expense' : 'income'"
+          :highlight="item.transferType === 0 ? 'expense' : 'income'"
           :isShowSum="trnsFormStore.getIsShowSum()"
           isTransfer
-          class="pb-2 pt-1"
           @onChange="trnsFormStore.onChangeAmount"
         />
       </div>
-    </div>
+
+      <!-- Actions -->
+      <div
+        v-if="item.transferType === 0"
+        class="flex justify-center gap-1 pb-1 pt-3"
+      >
+        <UiItem1 @click="switchWallets">
+          <Icon name="lucide:arrow-up-down" size="24" />
+        </UiItem1>
+
+        <UiItem1 @click="copyAmount">
+          <Icon name="lucide:clipboard-paste" size="24" />
+        </UiItem1>
+      </div>
+    </template>
   </div>
 </template>
 

@@ -4,13 +4,11 @@ import { addDays, isSameDay, subDays } from 'date-fns'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const { formatDate } = useDateFormats()
 
-const formattedDate = computed(() => {
-  const date = formatDate(trnsFormStore.values.date, 'full')
-  return `${date.day} ${date.month} <div class="text-2xs font-regular leading-none">${date.weekday}</div>`
-})
+const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full'))
 
 const isToday = computed(() => {
   return isSameDay(new Date(trnsFormStore.values.date), new Date())
@@ -27,20 +25,38 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
   trnsFormStore.values.date = newDate
 }
+
+const isShow = ref(false)
 </script>
 
 <template>
-  <div class="-ml-1 flex gap-1">
-    <UPopover class="grow">
-      <div
-        class="grid gap-1 rounded-md p-2 text-sm font-medium leading-none text-3 hocus:bg-item-5"
-        v-html="formattedDate"
-      />
-
-      <template #panel="{ close }">
-        <TrnFormCalendar :hide="close" />
+  <div class="flex gap-1">
+    <BottomSheetOrDropdown
+      :title="t('common.date')"
+      :isOpen="isShow"
+      class="grow"
+      placement="bottom-end"
+      drugClassesCustom="max-w-xs"
+      @onOpenModal="isShow = true"
+      @onCloseModal="isShow = false"
+    >
+      <template #trigger>
+        <UiItem1 class="grid grow !justify-start p-2 text-2">
+          <div class="text-sm text-1">
+            {{ formattedDate.day }} {{ formattedDate.month }}
+          </div>
+          <div class="font-regular text-2xs leading-none">
+            {{ formattedDate.weekday }}
+          </div>
+        </UiItem1>
       </template>
-    </UPopover>
+
+      <template #content="{ close }">
+        <div class="min-w-80">
+          <TrnFormCalendar :hide="close" />
+        </div>
+      </template>
+    </BottomSheetOrDropdown>
 
     <StatDateNav
       :isShowNavHome="!isToday"

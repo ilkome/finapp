@@ -44,13 +44,14 @@ const items = computed(() => {
     v-if="items.length > 1"
     class="flex min-h-8 gap-0 pl-2"
   >
-    <StatChartButton
+    <DateLinkItem
       v-for="item in items"
       :key="item.value"
       :isActive="props.period === item.value"
+      variant="small"
       @click="emit('onChangePeriod', item.value)"
     >
       {{ item.label }}
-    </StatChartButton>
+    </DateLinkItem>
   </div>
 </template>

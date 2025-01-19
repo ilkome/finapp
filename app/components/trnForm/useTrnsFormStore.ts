@@ -56,12 +56,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   })
 
   const modal = ref({
-    categories: false,
     description: false,
-    transferFrom: false,
-    transferTo: false,
-    trn: false,
-    wallets: false,
   })
 
   function closeTrnFormModal(name: keyof typeof modal.value) {

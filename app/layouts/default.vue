@@ -140,7 +140,7 @@ watch(shift_d!, (v) => {
       to="body"
     >
       <TrnFormBottom v-if="width < 767" />
-      <TrnFormSidebar v-if="width > 767" />
+      <TrnFormSidebar v-if="width >= 767" />
     </Teleport>
   </div>
 </template>
