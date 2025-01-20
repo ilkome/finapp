@@ -37,39 +37,45 @@ function onClick(type: StatTabSlug) {
 </script>
 
 <template>
-  <div>
+  <div class="overflow-x-auto">
     <div
       v-if="props.type === 'netIncome'"
-      class="flex flex-wrap justify-stretch md:max-w-lg"
+      class="@2xl/page:justify-start @2xl/page:gap-x-4 flex flex-wrap justify-stretch"
     >
       <StatSumItem
         v-if="props.isShowExpense"
         :amount="-total.expense"
         :isActive="selectedType === 'expense'"
         :class="classes"
-        class="grow"
+        class="grow md:grow-0"
         type="expense"
         @click="onClick('expense')"
-      />
+      >
+        <slot v-if="props.isShowAverage" name="expense" />
+      </StatSumItem>
 
       <StatSumItem
         v-if="props.isShowIncome"
         :amount="total.income"
         :isActive="selectedType === 'income'"
         :class="classes"
-        class="grow"
+        class="grow md:grow-0"
         type="income"
         @click="onClick('income')"
-      />
+      >
+        <slot v-if="props.isShowAverage" name="income" />
+      </StatSumItem>
 
       <StatSumItem
         v-if="props.isShowIncome && props.isShowExpense"
         :amount="total.sum"
         :class="classes"
-        class="grow"
+        class="grow md:grow-0"
         type="summary"
         @click="onClick('summary')"
-      />
+      >
+        <slot v-if="props.isShowAverage" name="summary" />
+      </StatSumItem>
     </div>
 
     <div
