@@ -3,7 +3,6 @@ import { ru } from 'date-fns/locale'
 
 import type { LocaleSlug } from '~/components/app/locale/types'
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
-import type { PeriodNameWithAll } from '~/components/filter/types'
 
 export function formatByLocale(date: Date, formatter: string, locale?: LocaleSlug) {
   const formatOptions = locale === 'ru' ? { locale: ru } : {}
@@ -92,20 +91,5 @@ export function getEndOf(date: Date, intervalType: string): Date {
       return endOfWeek(date, { weekStartsOn: 1 })
     default:
       return endOfDay(date)
-  }
-}
-
-export function getFormatForChart(periodName: PeriodNameWithAll) {
-  switch (periodName) {
-    case 'day':
-      return 'd MMM'
-    case 'week':
-      return 'd MMM'
-    case 'month':
-      return 'MMM'
-    case 'year':
-      return 'yyyy'
-    default:
-      return 'MM'
   }
 }

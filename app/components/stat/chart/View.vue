@@ -7,11 +7,13 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { Period } from '~/components/date/types'
+import type { PeriodNameWithAll } from '~/components/filter/types'
 import type { ChartType } from '~/components/stat/chart/types'
 
-import { formatByLocale, getFormatForChart } from '~/components/date/utils'
+import { formatByLocale } from '~/components/date/utils'
 import { config, lineConfig } from '~/components/stat/chart/config'
-import { getLocalAmount, setChartXAxis } from '~/components/stat/chart/utils'
+import { getLocalAmount } from '~/components/stat/chart/utils'
+import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 type ChartParams = {
   color?: string
@@ -56,8 +58,24 @@ use([
   TooltipComponent,
 ])
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
+const { getStringDateRange } = useGetDateRange(t, locale.value)
 const chartRef = ref()
+
+function getFormatForChart(periodName: PeriodNameWithAll) {
+  switch (periodName) {
+    case 'day':
+      return 'd MMM'
+    case 'week':
+      return 'd MMM'
+    case 'month':
+      return 'MMM'
+    case 'year':
+      return 'yyyy'
+    default:
+      return 'MM'
+  }
+}
 
 const option = computed(() => {
   const data = defu(config, {
@@ -91,14 +109,24 @@ const option = computed(() => {
         return `${content}</div></div>`
       },
     },
-    xAxis: setChartXAxis(props.xAxisLabels),
+    xAxis: {
+      data: props.xAxisLabels,
+      type: 'category',
+    },
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return formatByLocale(new Date(+date), getFormatForChart(props.period), locale.value)
+    if (props.period === 'day') {
+      return getStringDateRange({
+        end: new Date(+date).getTime(),
+        start: new Date(+date).getTime(),
+      }, 'day', 1)
+    }
+
+    return formatByLocale(new Date(+date), getFormatForChart(props.period, new Date(+date)), locale.value)
   }
   data.xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
-    return formatByLocale(new Date(+value), getFormatForChart(props.period), locale.value)
+    return formatByLocale(new Date(+value), getFormatForChart(props.period, new Date(+value)), locale.value)
   }
 
   return data
