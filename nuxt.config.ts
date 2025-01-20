@@ -138,7 +138,7 @@ export default defineNuxtConfig({
       globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
     },
     manifest: {
-      background_color: '#131313',
+      background_color: '#171717',
       display: 'fullscreen',
       display_override: ['standalone', 'minimal-ui'],
       icons: [{
@@ -175,7 +175,7 @@ export default defineNuxtConfig({
       }],
       short_name: 'Finapp',
       start_url: '/dashboard',
-      theme_color: '#131313',
+      theme_color: '#171717',
     },
     registerType: 'autoUpdate',
     srcDir: sw ? 'service-worker' : undefined,
