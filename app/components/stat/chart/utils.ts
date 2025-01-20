@@ -5,13 +5,6 @@ export function markArea(value: number) {
   }
 }
 
-export function setChartXAxis(categories: number[]) {
-  return {
-    data: categories,
-    type: 'category',
-  }
-}
-
 export function getCompactAmount(amount: number) {
   return Intl.NumberFormat('en', { notation: 'compact' }).format(amount)
 }
