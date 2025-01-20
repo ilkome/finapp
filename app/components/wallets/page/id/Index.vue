@@ -56,9 +56,7 @@ watch(filter.categoriesIds, () => {
   statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
 })
 
-onMounted(() => {
-  trnsFormStore.values.walletId = walletId.value
-})
+onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 

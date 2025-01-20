@@ -62,7 +62,7 @@ const statDate = useStatDate({
 })
 provide('statDate', statDate)
 
-onMounted(() => {
+onActivated(() => {
   statConfig.updateConfig('catsList', { isGrouped: false })
   statConfig.updateConfig('catsRound', { isGrouped: false })
 
