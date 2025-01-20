@@ -83,7 +83,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     chartView: 'full',
 
     date: {
-      isShowQuick: false,
+      isShowQuick: true,
     },
 
     isShowEmptyCategories: false,
