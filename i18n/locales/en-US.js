@@ -286,8 +286,7 @@ export default {
       },
       statAverage: {
         count: {
-          label: 'Count of wallets',
-          placeholder: 'Select count of wallets',
+          label: 'Show average values',
         },
         title: 'Average values',
       },
