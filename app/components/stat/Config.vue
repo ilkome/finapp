@@ -174,7 +174,7 @@ function updateStatAverage(value: number) {
 
           <UiCheckbox
             :checkboxValue="statConfig.config.value.statAverage.isShow"
-            :title="t('stat.config.statAverage.label')"
+            :title="t('stat.config.statAverage.count.label')"
             @click="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
           />
 
