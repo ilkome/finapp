@@ -20,14 +20,14 @@
 @layer base {
   html,
   body {
-    @apply bg-item-1 font-primary text-1 leading-none antialiased select-none;
+    @apply bg-item-2 font-primary text-1 leading-none antialiased select-none;
     overscroll-behavior-y: none;
   }
 }
 
 @layer components {
   .layoutBase {
-    @apply overflow-hidden relative h-dvh bg-item-2;
+    @apply overflow-hidden relative h-dvh;
   }
 
   .pageWrapper {
