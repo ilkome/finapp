@@ -67,9 +67,7 @@ const statTypeShow = computed(() => ({
 }))
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
-
 const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({ trnsIds: props.trnsIds }, { includesChildCategories: false }))
-
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
 
 const selectedTrnsIds = computed(() => {
@@ -230,10 +228,43 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :total="rangeTotal"
       :type="props.type"
       :isShowAverage="statConfig.config.value.statAverage.isShow"
-      class="pb-2"
+      class="@2xl/page:bg-item-2 @2xl/page:my-2 @2xl/page:rounded-xl @2xl/page:p-2 mb-2"
       @click="onClickSumItem"
       @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
     >
+      <template #income>
+        <StatAverage
+          :averageConfig="statConfig.config.value.statAverage.count"
+          :categoryId
+          :filter
+          :statDate
+          :trnsIds
+          :walletId
+          statTabSlug="income"
+        />
+      </template>
+      <template #expense>
+        <StatAverage
+          :averageConfig="statConfig.config.value.statAverage.count"
+          :categoryId
+          :filter
+          :statDate
+          :trnsIds
+          :walletId
+          statTabSlug="expense"
+        />
+      </template>
+      <template #summary>
+        <StatAverage
+          :averageConfig="statConfig.config.value.statAverage.count"
+          :categoryId
+          :filter
+          :statDate
+          :trnsIds
+          :walletId
+          statTabSlug="netIncome"
+        />
+      </template>
       <template #average>
         <StatAverage
           :averageConfig="statConfig.config.value.statAverage.count"
