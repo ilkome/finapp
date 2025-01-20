@@ -18,6 +18,7 @@ import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
+  activeTab: StatTabSlug
   hasChildren?: boolean
   isOneCategory?: boolean
   isQuickModal?: boolean
@@ -209,7 +210,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
-      :chartView="statConfig.config.value.chartView"
+      :chartView="activeTab === 'summary' ? 'half' : statConfig.config.value.chartView"
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
     >
@@ -222,24 +223,36 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
     <StatSumWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
+      :averageTotal
       :isShowExpense="statTypeShow.expense"
       :isShowIncome="statTypeShow.income"
       :selectedType="selectedType"
       :total="rangeTotal"
-      :averageTotal
       :type="props.type"
+      :isShowAverage="statConfig.config.value.statAverage.isShow"
+      class="pb-2"
       @click="onClickSumItem"
-    />
+      @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
+    >
+      <template #average>
+        <StatAverage
+          :averageConfig="statConfig.config.value.statAverage.count"
+          :categoryId
+          :filter
+          :statDate
+          :statTabSlug="props.type"
+          :trnsIds
+          :walletId
+        />
+      </template>
+    </StatSumWrap>
 
-    <!-- <StatAverage
-      :trnsIds
-      :statDate
-      :filter
-      :categoryId
-      :walletId
-    /> -->
-
-    <div class="grid w-full gap-2">
+    <div
+      class="grid w-full gap-2"
+      :class="{
+        '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-8': props.activeTab !== 'summary',
+      }"
+    >
       <StatCategoriesSection
         v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
         :isOneCategory="props.isOneCategory"

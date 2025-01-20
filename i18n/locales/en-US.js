@@ -284,6 +284,13 @@ export default {
       menu: {
         label: 'Page Settings',
       },
+      statAverage: {
+        count: {
+          label: 'Count of wallets',
+          placeholder: 'Select count of wallets',
+        },
+        title: 'Average values',
+      },
       wallets: {
         label: 'Show wallets',
         title: 'Wallets',

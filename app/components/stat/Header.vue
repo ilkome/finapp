@@ -89,11 +89,11 @@ const statConfigModal: Ref<StatConfigModal> = ref({
       </div>
     </template>
 
-    <template #after>
-      <div
-        v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow || $slots.summary"
-        class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8"
-      >
+    <template
+      v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow || $slots.summary"
+      #after
+    >
+      <div class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8">
         <template v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow">
           <FilterSelected
             v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0 || (filter.walletsIds.value.length > 0 && !statConfig.config.value.wallets.isShow)"

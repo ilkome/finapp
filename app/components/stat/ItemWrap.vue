@@ -50,6 +50,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     class="grid max-w-7xl gap-8 px-2 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2 2xl:px-8"
   >
     <StatItem
+      :activeTab="props.activeTab"
       :hasChildren="props.hasChildren"
       :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
@@ -60,6 +61,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     />
 
     <StatItem
+      :activeTab="props.activeTab"
       :hasChildren="props.hasChildren"
       :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
@@ -75,6 +77,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     class="min-h-dvh max-w-7xl px-2 lg:px-4 xl:py-2 2xl:px-8"
   >
     <StatItem
+      :activeTab="props.activeTab"
       :hasChildren="props.hasChildren"
       :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"

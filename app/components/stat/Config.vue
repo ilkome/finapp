@@ -20,6 +20,13 @@ function updateWalletsLimit(value: number) {
   if (value <= walletsStore.sortedIds.length && value > 0)
     statConfig.updateConfig('wallets', { count: value })
 }
+
+function updateStatAverage(value: number) {
+  if (value <= 0)
+    return
+
+  statConfig.updateConfig('statAverage', { count: value })
+}
 </script>
 
 <template>
@@ -154,7 +161,7 @@ function updateWalletsLimit(value: number) {
         </div>
 
         <!-- Statistics -->
-        <div>
+        <div class="pb-0">
           <UiTitleOption class="pb-2">
             {{ t('statistics.title') }}
           </UiTitleOption>
@@ -164,6 +171,44 @@ function updateWalletsLimit(value: number) {
             :title="t('stat.config.date.quick.label')"
             @click="statConfig.updateConfig('date', { isShowQuick: !statConfig.config.value.date.isShowQuick })"
           />
+
+          <UiCheckbox
+            :checkboxValue="statConfig.config.value.statAverage.isShow"
+            :title="t('stat.config.statAverage.label')"
+            @click="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
+          />
+
+          <div
+            v-if="statConfig.config.value.statAverage.isShow"
+            class="flex gap-4 pt-2"
+          >
+            <div class="flex gap-1">
+              <UiItem2
+                :class="[{
+                  '!hocus:transparent opacity-30': statConfig.config.value.statAverage.count === 1,
+                }]"
+                @click="updateStatAverage(statConfig.config.value.statAverage.count - 1)"
+              >
+                <Icon name="lucide:minus" />
+              </UiItem2>
+              <FormInput
+                :placeholder="t('stat.config.showedWallets.placeholder')"
+                :value="statConfig.config.value.statAverage.count"
+                :max="walletsStore.sortedIds.length"
+                min="1"
+                class="max-w-20 !px-2 text-center"
+                type="number"
+                @updateValue="value => statConfig.updateConfig('statAverage', { count: +value })"
+              />
+
+              <UiItem2
+                :class="{ '!hocus:transparent opacity-30': statConfig.config.value.statAverage.count >= walletsStore.sortedIds.length }"
+                @click="updateStatAverage(statConfig.config.value.statAverage.count + 1)"
+              >
+                <Icon name="lucide:plus" />
+              </UiItem2>
+            </div>
+          </div>
         </div>
 
         <slot />

@@ -57,7 +57,7 @@ watch(() => props.active, () => {
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="-mb-px flex gap-2">
     <div
       v-for="item in menu"
       :key="item.id"

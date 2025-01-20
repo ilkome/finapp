@@ -33,16 +33,11 @@ function onClickChart(idx: number) {
 
     if (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1) {
       const day = statDate.intervalsInRange.value[statDate.params.value.intervalSelected]?.start
-      if (day) {
+      if (day)
         trnsFormStore.values.date = day
-      }
     }
   }
 }
-
-const isShowChart = computed(() => {
-  return statConfig.config.value?.chartShow
-})
 
 function onChangePeriod(period: Period) {
   statDate.params.value.intervalSelected = -1
@@ -57,7 +52,7 @@ function onChangePeriod(period: Period) {
     }"
   >
     <div
-      v-if="isShowChart"
+      v-if="statConfig.config.value?.chartShow"
       class="pb-2"
     >
       <div class="flex justify-end">
@@ -72,10 +67,10 @@ function onChangePeriod(period: Period) {
       </div>
 
       <StatChartView
-        :xAxisLabels="props.xAxisLabels"
         :chartType="statConfig.config.value?.chartType"
         :period="statDate.params.value.intervalsBy"
         :series="props.series"
+        :xAxisLabels="props.xAxisLabels"
         @click="onClickChart"
       />
     </div>

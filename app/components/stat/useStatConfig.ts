@@ -18,31 +18,30 @@ export const ConfigSchema = z.object({
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
   }),
-
   catsRound: z.object({
     isGrouped: z.boolean(),
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
   }),
   catsView: z.enum(['list', 'round']),
-
   chart: z.object({
     isShowAverage: z.boolean(),
   }),
-
   chartShow: z.boolean(),
-
   chartType: z.enum(chartTypes),
   chartView: z.enum(chartViewOptions),
   date: z.object({
     isShowQuick: z.boolean(),
   }),
   isShowEmptyCategories: z.boolean(),
+  statAverage: z.object({
+    count: z.number(),
+    isShow: z.boolean(),
+  }),
   vertical: z.object({
     isGrouped: z.boolean(),
     isShow: z.boolean(),
   }),
-
   wallets: z.object({
     count: z.number(),
     isShow: z.boolean(),
@@ -81,13 +80,18 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     },
     chartShow: true,
     chartType: 'bar',
-    chartView: 'half',
+    chartView: 'full',
 
     date: {
       isShowQuick: false,
     },
 
     isShowEmptyCategories: false,
+
+    statAverage: {
+      count: 10,
+      isShow: true,
+    },
 
     vertical: {
       isGrouped: false,
