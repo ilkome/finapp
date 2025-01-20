@@ -30,23 +30,27 @@ const currenciesStore = useCurrenciesStore()
     }"
     @click="(e: Event) => emit('click', e)"
   >
-    <UiTextSm1>
-      {{ props.isTotal ? $t('money.all') : '' }}
-      {{ $t(`money.${props.type}`) }}
-    </UiTextSm1>
-
     <div class="flex items-end gap-5 overflow-hidden overflow-x-auto pb-2">
-      <Amount
-        :amount="props.amount"
-        :currencyCode="props.currencyCode || currenciesStore.base"
-        :class="{
-          '!text-income-1': props.amount > 0 && type !== 'summary',
-          '!text-expense-1': props.amount < 0 && type !== 'summary',
-        }"
-        align="left"
-        variant="xl"
-        v-bind="props.amountProps"
-      />
+      <div class="grid gap-2">
+        <UiTitleOption>
+          {{ props.isTotal ? $t('money.all') : '' }}
+          {{ $t(`money.${props.type}`) }}
+        </UiTitleOption>
+
+        <Amount
+          :amount="props.amount"
+          :currencyCode="props.currencyCode || currenciesStore.base"
+          :class="{
+            '!text-income-1': props.amount > 0 && type !== 'summary',
+            '!text-expense-1': props.amount < 0 && type !== 'summary',
+          }"
+          align="left"
+          variant="xl"
+          v-bind="props.amountProps"
+        />
+      </div>
+
+      <slot />
 
       <div
         v-if="props.averageTotal"

@@ -26,7 +26,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       :popper="{
         placement: props.placement ?? 'bottom-start',
       }"
-      class="group"
+      class="group grow"
     >
       <slot name="trigger" />
 

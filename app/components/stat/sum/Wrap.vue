@@ -6,6 +6,7 @@ import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   averageTotal?: Record<string, number>
+  isShowAverage: boolean
   isShowExpense: boolean
   isShowIncome: boolean
   selectedType: StatTabSlug
@@ -15,6 +16,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [type: StatTabSlug]
+  clickAverage: []
 }>()
 
 const classes = computed(() => {
@@ -35,17 +37,17 @@ function onClick(type: StatTabSlug) {
 </script>
 
 <template>
-  <div class="rounded-md pb-4 md:max-w-lg">
+  <div>
     <div
       v-if="props.type === 'netIncome'"
-      class="_justify-stretch flex flex-wrap"
+      class="flex flex-wrap justify-stretch md:max-w-lg"
     >
       <StatSumItem
         v-if="props.isShowExpense"
         :amount="-total.expense"
         :isActive="selectedType === 'expense'"
         :class="classes"
-        class="_grow"
+        class="grow"
         type="expense"
         @click="onClick('expense')"
       />
@@ -55,7 +57,7 @@ function onClick(type: StatTabSlug) {
         :amount="total.income"
         :isActive="selectedType === 'income'"
         :class="classes"
-        class="_grow"
+        class="grow"
         type="income"
         @click="onClick('income')"
       />
@@ -64,7 +66,7 @@ function onClick(type: StatTabSlug) {
         v-if="props.isShowIncome && props.isShowExpense"
         :amount="total.sum"
         :class="classes"
-        class="_grow"
+        class="grow"
         type="summary"
         @click="onClick('summary')"
       />
@@ -78,11 +80,14 @@ function onClick(type: StatTabSlug) {
         :amount="props.type === 'income' ? total[props.type] : -total[props.type]"
         :class="classes"
         :type="props.type"
-        :averageTotal="props.averageTotal"
+        :averageTotal="props.isShowAverage ? props.averageTotal : undefined"
         :amountProps="{
           variant: '3xl',
         }"
-      />
+        @click="emit('clickAverage')"
+      >
+        <slot v-if="props.isShowAverage" name="average" />
+      </StatSumItem>
     </div>
   </div>
 </template>

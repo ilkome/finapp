@@ -16,6 +16,7 @@ const emit = defineEmits<{
   <div class="flex items-center gap-1">
     <UiItem3
       v-if="props.isShowNavHome"
+      class="@xl/page:order-3"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />
