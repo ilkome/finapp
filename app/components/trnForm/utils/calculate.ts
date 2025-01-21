@@ -1,7 +1,7 @@
 import { formatByCurrency } from '~/components/amount/utils'
 
 const config = {
-  decimalPlaces: 2,
+  decimalPlaces: 8,
   maxIntegerLength: 999,
   separator: ' ',
 } as const
@@ -114,12 +114,13 @@ export function formatInput(value: CalculatorInput): string {
       if (isOperator(part))
         return ` ${part} `
 
+      const isDecimal = part.at(-1) === '.'
       const [integerPart, decimalPart] = sanitizeInput(part).split('.')
       const formattedInteger = formatByCurrency(integerPart || '', config.separator)
 
       return decimalPart
         ? `${formattedInteger}.${decimalPart}`
-        : formattedInteger
+        : `${formattedInteger}${isDecimal ? '.' : ''}`
     })
     .join('')
 }
