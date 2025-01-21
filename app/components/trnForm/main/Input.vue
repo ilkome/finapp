@@ -23,11 +23,7 @@ const { t } = useI18n()
         'left-3': isTransfer,
         'left-1/2 -translate-x-1/2': !isTransfer,
       }]"
-      class="
-        pointer-events-none
-        absolute top-2
-        text-center text-sm text-1/60
-      "
+      class="pointer-events-none absolute top-2 text-center text-sm text-1/60"
       tabindex="0"
     >
       {{ amount }}

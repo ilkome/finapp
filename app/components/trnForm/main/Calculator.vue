@@ -13,10 +13,6 @@ const buttons = [
   ['1', '2', '3'],
 ]
 
-function onClick(key: CalculatorKey) {
-  trnsFormStore.onClickCalculator(key)
-}
-
 const deleteBtnRef = ref<HTMLElement | null>(null)
 
 onLongPress(
@@ -35,28 +31,21 @@ onLongPress(
 </script>
 
 <template>
-  <div
-    class="
-    _@sm/trnForm:bg-blue-500
-    _@md/trnForm:bg-red-500
-    _@lg/trnForm:bg-green-500
-    _@xs/trnForm:bg-yellow-500
-    grid grid-cols-[auto,1fr,auto] justify-between gap-0"
-  >
+  <div class="grid grid-cols-[auto,1fr,auto] justify-between gap-0">
     <div class="flex flex-col gap-1">
-      <TrnFormMainCalculatorButton @click="onClick('*')">
+      <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('*')">
         <Icon
           name="mdi:plus"
           class="rotate-45"
         />
       </TrnFormMainCalculatorButton>
-      <TrnFormMainCalculatorButton @click="onClick('-')">
+      <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('-')">
         <Icon name="mdi:minus" />
       </TrnFormMainCalculatorButton>
-      <TrnFormMainCalculatorButton @click="onClick('+')">
+      <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('+')">
         <Icon name="mdi:plus" />
       </TrnFormMainCalculatorButton>
-      <TrnFormMainCalculatorButton @click="onClick('/')">
+      <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('/')">
         <Icon name="mdi:slash-forward" />
       </TrnFormMainCalculatorButton>
     </div>
@@ -70,20 +59,20 @@ onLongPress(
         <TrnFormMainCalculatorButton
           v-for="btn in row"
           :key="btn"
-          @click="() => onClick(btn as CalculatorKey)"
+          @click="() => trnsFormStore.onClickCalculator(btn as CalculatorKey)"
         >
           {{ btn }}
         </TrnFormMainCalculatorButton>
       </div>
 
       <div class="flex justify-center gap-1">
-        <TrnFormMainCalculatorButton @click="onClick('.')">
+        <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('.')">
           .
         </TrnFormMainCalculatorButton>
-        <TrnFormMainCalculatorButton @click="onClick('0')">
+        <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('0')">
           0
         </TrnFormMainCalculatorButton>
-        <TrnFormMainCalculatorButton ref="deleteBtnRef" @click="onClick('c')">
+        <TrnFormMainCalculatorButton ref="deleteBtnRef" @click="trnsFormStore.onClickCalculator('c')">
           c
         </TrnFormMainCalculatorButton>
       </div>
