@@ -313,7 +313,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
         <div class="bottomSheetContent">
           <UiTitleModal>{{ t('trns.title') }} {{ selectedTrnsIds.length }}</UiTitleModal>
 
-          <div class="bottomSheetContentInside">
+          <div class="scrollerBlock bottomSheetContentInside">
             <TrnsList
               :trnsIds="selectedTrnsIds"
               class="py-2"
