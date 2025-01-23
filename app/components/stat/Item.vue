@@ -7,7 +7,7 @@ import type { Range, StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { ChartSeries, IntervalData, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnType } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
@@ -46,24 +46,24 @@ const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.interva
 const selectedType = useStorage<StatTabSlug>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
 
 const selectedTypesMapping = computed(() => {
-  const typeMapping = {
+  const typeMapping: Partial<Record<StatTabSlug, TrnType[]>> = {
     expense: [0, 2],
     income: [1, 2],
+    netIncome: [0, 1, 2],
     summary: [0, 1, 2],
   } as const
 
-  const trnsTypes = typeMapping[props.type !== 'netIncome' ? props.type : selectedType.value]
+  const trnsTypes = typeMapping[props.type === 'netIncome' ? selectedType.value : props.type]
 
-  if (trnsTypes) {
+  if (trnsTypes)
     return trnsTypes
-  }
 
   return undefined
 })
 
 const statTypeShow = computed(() => ({
-  expense: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 0),
-  income: props.trnsIds.some(id => trnsStore.items?.[id]?.type === 1),
+  expense: props.trnsIds.some(id => trnsStore.items && id in trnsStore.items && trnsStore.items[id]?.type === 0),
+  income: props.trnsIds.some(id => trnsStore.items && id in trnsStore.items && trnsStore.items[id]?.type === 1),
 }))
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
