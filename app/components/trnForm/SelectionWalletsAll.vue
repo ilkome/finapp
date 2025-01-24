@@ -22,7 +22,7 @@ const trnsFormStore = useTrnsFormStore()
 
     <WalletsSelector
       :activeItemId="trnsFormStore.values.walletId ?? undefined"
-      class="min-w-72 px-2 py-px"
+      class="min-w-80 px-2 py-px"
       @onSelected="id => emit('onSelectWallet', id)"
     />
   </div>

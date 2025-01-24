@@ -192,15 +192,15 @@ async function onSave() {
 
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
-          :checkboxValue="props.categoryForm.showInLastUsed"
-          :title="t('categories.form.lastUsed')"
-          @click="emit('updateValue', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
+          :checkboxValue="props.categoryForm.showInQuickSelector"
+          :title="t('categories.form.favoriteCategory')"
+          @click="emit('updateValue', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
         />
         <UiCheckbox
           v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
-          :checkboxValue="props.categoryForm.showInQuickSelector"
-          :title="t('categories.form.quickSelector')"
-          @click="emit('updateValue', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
+          :checkboxValue="props.categoryForm.showInLastUsed"
+          :title="t('categories.form.recentCategory')"
+          @click="emit('updateValue', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
       </div>
     </div>
@@ -309,7 +309,7 @@ async function onSave() {
                 :key="icon"
                 :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent text-icon-primary"
+                class="flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent"
                 @click="emit('updateValue', 'icon', icon)"
               >
                 <Icon :name="icon" size="20" />

@@ -20,13 +20,13 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 </script>
 
 <template>
-  <div>
+  <div class="grow">
     <UPopover
       v-if="isLaptop"
       :popper="{
         placement: props.placement ?? 'bottom-start',
       }"
-      class="group grow"
+      class="popoverGroup grow"
     >
       <slot name="trigger" />
 
@@ -41,10 +41,12 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       </template>
     </UPopover>
 
-    <template v-else>
-      <div @click="emit('onOpenModal')">
-        <slot name="trigger" />
-      </div>
+    <div
+      v-else
+      class="grow"
+      @click="emit('onOpenModal')"
+    >
+      <slot name="trigger" />
 
       <Teleport to="body">
         <BottomSheet
@@ -72,6 +74,6 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
           </template>
         </BottomSheet>
       </Teleport>
-    </template>
+    </div>
   </div>
 </template>

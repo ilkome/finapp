@@ -31,8 +31,8 @@ function onClickWallet(walletId: WalletId) {
       :activeItemId="props.activeItemId || (props.selectedIds?.includes(walletId) ? walletId : null)"
       :walletId
       :wallet
-      :lineWidth="2"
-      class="group"
+      :lineWidth="4"
+      class="group/item"
       isShowIcon
       @click="onClickWallet(walletId)"
     />

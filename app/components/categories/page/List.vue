@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import defu from 'defu'
 
 import type { CategoryId } from '~/components/categories/types'
 
@@ -12,7 +13,9 @@ useHead({
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
-const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'list')
+const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'list', localStorage, {
+  mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
+})
 </script>
 
 <template>
