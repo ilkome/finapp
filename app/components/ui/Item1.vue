@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { getStyles } from '~/components/ui/getStyles'
 
-const { variant = 'icon' } = defineProps<{
+const { isActive = false, variant = 'icon' } = defineProps<{
+  isActive?: boolean
   variant?: 'icon' | 'text'
 }>()
 
@@ -12,13 +13,16 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="justify-center group-data-[headlessui-state=open]:!bg-item-4" :class="[
+    class="group-data-[headlessui-state=open]:!bg-item-4 justify-center" :class="[
       getStyles('item', ['link', 'center', 'minh2', 'minw1', 'rounded']),
       {
-        'text-xl': variant === 'icon',
+        'text-2 text-xl': variant === 'icon',
       },
       {
-        'px-3 text-sm text-1': variant === 'text',
+        'text-1 px-3 text-sm': variant === 'text',
+      },
+      {
+        '!bg-item-3': isActive,
       },
     ]"
     @click="(e: Event) => emit('click', e)"

@@ -46,9 +46,9 @@ onMounted(() => {
           <!-- Recent -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollerBlock rounded-t-2xl bg-item-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollerBlock bg-item-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
             >
-              {{ $t("categories.lastUsedTitle") }}
+              {{ $t('categories.recentCategories') }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -63,7 +63,7 @@ onMounted(() => {
           <!-- Main -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollerBlock rounded-t-2xl bg-item-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollerBlock bg-item-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold"
             >
               {{ $t("categories.title") }}
             </div>
@@ -79,8 +79,8 @@ onMounted(() => {
 
           <!-- Favorite -->
           <div class="swiper-slide h-full">
-            <div class="scrollerBlock rounded-t-2xl bg-item-1 px-3 py-4 text-center font-primary text-xl font-semibold">
-              {{ $t("categories.favoriteTitle") }}
+            <div class="scrollerBlock bg-item-1 font-primary rounded-t-2xl px-3 py-4 text-center text-xl font-semibold">
+              {{ $t('categories.favoriteCategories') }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -101,7 +101,7 @@ onMounted(() => {
           :isActive="sliderObj.activeIndex === 0"
           @click="sliderObj.slideTo(0)"
         >
-          {{ $t("categories.lastUsedTitle") }}
+          {{ $t('categories.recentCategories') }}
         </UiTabsItem1>
 
         <UiTabsItem1
@@ -115,7 +115,7 @@ onMounted(() => {
           :isActive="sliderObj.activeIndex === 2"
           @click="sliderObj.slideTo(2)"
         >
-          {{ $t("categories.favoriteTitle") }}
+          {{ $t('categories.favoriteCategories') }}
         </UiTabsItem1>
       </UiTabs1>
     </div>

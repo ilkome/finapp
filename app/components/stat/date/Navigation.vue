@@ -57,18 +57,16 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="items-top @xl/page:pl-2 @xl/page:grid-cols-[auto,1fr] grid grid-cols-[1fr,auto] gap-2 md:max-w-lg">
+  <div class="items-top @xl/page:pl-2 @xl/page:grid-cols-[auto,1fr] grid grow grid-cols-[1fr,auto] gap-2">
     <BottomSheetOrDropdown
       :title="t('dates.select')"
       :isOpen="statDate.modals.value.dateSelector"
-      class="@xl/page:order-2 flex gap-1"
+      class="@xl/page:order-2 flex grow gap-1"
       @onOpenModal="statDate.modals.value.dateSelector = true"
       @onCloseModal="statDate.modals.value.dateSelector = false"
     >
       <template #trigger>
-        <UiTitle8
-          isShown
-        >
+        <UiTitle8 isShown>
           <StatDateRange />
         </UiTitle8>
       </template>

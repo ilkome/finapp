@@ -64,8 +64,8 @@ function selectInterval(grouped: Grouped) {
         <div class="flex flex-wrap gap-1">
           <DateRanges
             :statDate
-            view="periods"
             isShowRangeAdjust
+            view="periods"
             @onClose="emit('onClose')"
           />
         </div>
@@ -122,11 +122,10 @@ function selectInterval(grouped: Grouped) {
 
     <DatePicker
       v-if="tabs.selected.value === 'calendar'"
-      mode="range"
       :rows="2"
       :value="statDate.range.value"
+      mode="range"
       @update:modelValue="(v: Range) => {
-        console.log('v', v)
         statDate.setRangeByCalendar(v);
         close();
       }"
@@ -136,30 +135,30 @@ function selectInterval(grouped: Grouped) {
 
 <i18n lang="yaml">
 en:
+  12Months: 12m
+  14Days: 14d
+  30Days: 30d
+  7Days: 7d
   all: All
   allSkipEmpty: Maximum
   calendar: Calendar
   intervalsGrouped: Grouped by
-  ranges: Ranges
-  presets: Presets
   last: Last
-  7Days: 7d
-  14Days: 14d
-  30Days: 30d
-  12Months: 12m
   mini: mini
+  presets: Presets
+  ranges: Ranges
 
 ru:
+  12Months: 12м
+  14Days: 14д
+  30Days: 30д
+  7Days: 7д
   all: Все
   allSkipEmpty: Максимально
   calendar: Календарь
   intervalsGrouped: Группировка
-  ranges: Диапазоны
-  presets: Пресеты
   last: Последние
-  7Days: 7д
-  14Days: 14д
-  30Days: 30д
-  12Months: 12м
   mini: мини
+  presets: Пресеты
+  ranges: Диапазоны
 </i18n>

@@ -215,7 +215,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
     </StatChartWrap>
 
-    <div class="grid pb-3 md:max-w-lg">
+    <div class="grid pb-3">
       <StatDateNavigation />
     </div>
 
@@ -279,7 +279,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     </StatSumWrap>
 
     <div
-      class="grid w-full gap-2"
+      class="@3xl/page:pt-3 grid w-full gap-2 pt-1"
       :class="{
         '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-8': props.activeTab !== 'summary',
       }"

@@ -38,11 +38,11 @@ const modals = ref({
             @close="close"
           >
             <CategoriesSelector
-              class="min-w-72"
               :selectedIds="filter?.categoriesIds.value"
+              class="min-w-80"
+              @filter="filter.toggleCategoryId"
               @onSelected="filter.toggleCategoryId"
               @setCategories="filter.setCategories"
-              @filter="filter.toggleCategoryId"
             />
           </UiPopoverWrap>
         </template>
@@ -114,7 +114,7 @@ const modals = ref({
           >
             <WalletsSelector
               :selectedIds="filter?.walletsIds.value"
-              class="min-w-72 px-2"
+              class="min-w-80 px-2"
               @onSelected="filter.toggleWalletId"
             />
           </UiPopoverWrap>
@@ -149,8 +149,8 @@ const modals = ref({
 
                 <div class="scrollerBlock bottomSheetContentInside">
                   <WalletsSelector
-                    class="min-w-72"
                     :selectedIds="filter?.walletsIds.value"
+                    class="min-w-80"
                     @onSelected="filter.toggleWalletId"
                   />
                 </div>

@@ -43,8 +43,7 @@ export default {
     allTitle: 'Все',
     childs: 'Дочерние категории',
     createNewTitle: 'Добавить категорию',
-    favoriteTitle: 'Избранные категории',
-
+    favoriteCategories: 'Избранные категории',
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
       delete: {
@@ -53,12 +52,12 @@ export default {
         okWithoutTrns: 'Категория удалена',
         okWithTrns: `Категория удалена и {trns}`,
       },
+      favoriteCategory: 'Избранная категория',
       icon: {
         desc: 'Используйте любую иконку из набора',
         label: 'Иконка',
         link: 'Ссылка',
       },
-      lastUsed: 'Показывать в списке недавних категорий',
       name: {
         error: 'Напишите название категории',
         exist: 'Категория с таким именем уже существует',
@@ -69,13 +68,12 @@ export default {
         label: 'Родительская категория',
         no: 'Без родителя',
       },
-      quickSelector: 'Показывать в быстром выборе',
+      recentCategory: 'Показывать в недавно использованных',
       save: 'Сохранить',
     },
-
-    lastUsedTitle: 'Недавние категории',
     name: 'Категории',
     new: 'Новая категория',
+    recentCategories: 'Недавние категории',
     title: 'Категории',
   },
 
@@ -248,10 +246,17 @@ export default {
           label: 'Группировка',
           ungrouped: 'Не группировать',
         },
+        list: {
+          title: 'Список категорий',
+        },
+        rounds: {
+          title: 'Круглые категории',
+        },
         title: 'Настройки категорий',
         vertical: {
           grouped: 'Группировать',
           label: 'Вертикальный график',
+          title: 'Вертикальный график',
           ungrouped: 'Не группировать',
         },
         view: {

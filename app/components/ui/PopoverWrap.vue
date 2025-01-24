@@ -9,7 +9,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="grid max-h-[60dvh] grid-rows-[auto,1fr] gap-0">
+  <div class="grid max-h-[60dvh] grid-rows-[auto,1fr] gap-0 ">
     <UiTitleModal v-if="props.title">
       {{ props.title }}
     </UiTitleModal>

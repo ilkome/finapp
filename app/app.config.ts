@@ -28,6 +28,7 @@ export default defineAppConfig({
       ring: '!ring-2 !ring-item-4',
       trigger: '!w-full !block !cursor-default',
     },
+
     primary: 'pink',
     strategy: 'merge',
   },

@@ -18,10 +18,11 @@ const props = defineProps<{
   type: StatTabSlug
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   clickCategory: [categoryId: CategoryId]
 }>()
 
+const { t } = useI18n()
 const { getCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject('statConfig') as StatConfigProvider
@@ -37,8 +38,18 @@ const categoriesWithData = computed<CategoryWithData[]>(() => {
   return getCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, cats)
 })
 
-const verticalCategories = computed<CategoryWithData[]>(() => getCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.vertical.isGrouped))
+const categoriesStat = computed<{ grouped: CategoryWithData[], ungrouped: CategoryWithData[] }>(() => ({
+  grouped: getCategoriesWithData(props.selectedTrnsIds ?? [], true),
+  ungrouped: getCategoriesWithData(props.selectedTrnsIds ?? [], false),
+}))
+
+const verticalCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.vertical.isGrouped ? 'grouped' : 'ungrouped'])
 const verticalBiggestCatNumber = computed(() => getBiggestCatNumber(verticalCategories.value))
+
+const linesCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsList.isGrouped ? 'grouped' : 'ungrouped'])
+const linesBiggestCatNumber = computed(() => getBiggestCatNumber(linesCategories.value))
+
+const roundCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsRound.isGrouped ? 'grouped' : 'ungrouped'])
 const biggestCatNumber = computed(() => getBiggestCatNumber(categoriesWithData.value))
 
 function getBiggestCatNumber(categories: CategoryWithData[]) {
@@ -51,7 +62,6 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
   }
 }
 
-// Simplified type definitions
 type CategoryState = {
   categories?: CategoryStateInside
   show: boolean
@@ -164,188 +174,398 @@ function updateState(
 </script>
 
 <template>
-  <UiToggle
-    :storageKey="`${storageKey}-${type}-cats`"
-    :initStatus="true"
-    openPadding="pb-3"
-    class="md:max-w-lg"
-  >
-    <template #header="{ toggle, isShown }">
-      <div class="flex items-center justify-between md:max-w-lg">
-        <UiTitle8 :isShown @click="toggle">
-          {{ $t('categories.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
-        </UiTitle8>
+  <div v-if="categoriesWithData.length > 0">
+    <!-- Vertical -->
+    <UiToggle
+      v-if="statConfig.config.value.vertical.isShow"
+      :storageKey="`${storageKey}-${type}-vertical`"
+      :initStatus="true"
+      class="bg-item-2 @3xl/page:p-3 mb-4 rounded-xl p-2 md:max-w-lg"
+    >
+      <template #header="{ toggle, isShown }">
+        <div class="flex items-center justify-between md:max-w-lg">
+          <UiTitle8 :isShown @click="toggle">
+            {{ t('stat.config.categories.vertical.title') }} {{ (!isShown && verticalCategories.filter(c => c.value !== 0).length > 0) ? verticalCategories.filter(c => c.value !== 0).length : '' }}
+          </UiTitle8>
 
-        <StatCategoriesButtons
+          <div
+            v-if="isShown"
+            class="flex items-center"
+          >
+            <UiTabs1>
+              <UiItem1
+                :isActive="statConfig.config.value.vertical.isGrouped"
+                @click="statConfig.config.value.vertical.isGrouped = true"
+              >
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+              </UiItem1>
+
+              <UiItem1
+                :isActive="!statConfig.config.value.vertical.isGrouped"
+                @click="statConfig.config.value.vertical.isGrouped = false"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+              </UiItem1>
+            </UiTabs1>
+
+            <!-- <UiTabs1>
+              <UiTabsItem4
+                :isActive="statConfig.config.value.vertical.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.config.value.vertical.isGrouped = true"
+              >
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.grouped') }}
+              </UiTabsItem4>
+
+              <UiTabsItem4
+                :isActive="!statConfig.config.value.vertical.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.config.value.vertical.isGrouped = false"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.ungrouped') }}
+              </UiTabsItem4>
+            </UiTabs1> -->
+          </div>
+
+          <!-- <StatCategoriesButtons
+            v-if="isShown"
+            :catsLength="categoriesWithData.length"
+            :isShowGrouped="!props.isOneCategory"
+            :openedStatus
+            @toggleOpened="toggleOpened"
+          /> -->
+        </div>
+
+        <div v-if="isShown" class="grid pt-3">
+          <div class="flex overflow-hidden overflow-x-auto pl-1 pt-2">
+            <StatCategoriesVertical
+              v-for="item in verticalCategories.filter(c => c.value !== 0)"
+              :key="item.id"
+              :item="item"
+              :biggestCatNumber="verticalBiggestCatNumber"
+              @click="emit('clickCategory', item.id)"
+            />
+          </div>
+        </div>
+      </template>
+    </UiToggle>
+
+    <!-- Rounds -->
+    <UiToggle
+      v-if="statConfig.config.value.catsRound.isShow"
+      :storageKey="`${storageKey}-${type}-rounds`"
+      :initStatus="true"
+      class="bg-item-2 @3xl/page:p-3 mb-4 rounded-xl p-2 md:max-w-lg"
+    >
+      <template #header="{ toggle, isShown }">
+        <div class="flex items-center justify-between md:max-w-lg">
+          <UiTitle8 :isShown @click="toggle">
+            {{ t('stat.config.categories.rounds.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
+          </UiTitle8>
+
+          <div
+            v-if="isShown"
+            class="flex items-center"
+          >
+            <UiTabs1>
+              <UiItem1
+                :isActive="statConfig.config.value.catsRound.isGrouped"
+                @click="statConfig.config.value.catsRound.isGrouped = true"
+              >
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+              </UiItem1>
+
+              <UiItem1
+                :isActive="!statConfig.config.value.catsRound.isGrouped"
+                @click="statConfig.config.value.catsRound.isGrouped = false"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+              </UiItem1>
+            </UiTabs1>
+
+            <!-- <UiTabs1>
+              <UiTabsItem4
+                :isActive="statConfig.config.value.catsRound.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.config.value.catsRound.isGrouped = true"
+              >
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.grouped') }}
+              </UiTabsItem4>
+
+              <UiTabsItem4
+                :isActive="!statConfig.config.value.catsRound.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.config.value.catsRound.isGrouped = false"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.ungrouped') }}
+              </UiTabsItem4>
+            </UiTabs1> -->
+          </div>
+        </div>
+
+        <div
           v-if="isShown"
-          :catsLength="categoriesWithData.length"
-          :isShowGrouped="!props.isOneCategory"
-          :openedStatus
-          @toggleOpened="toggleOpened"
-        />
-      </div>
-    </template>
-
-    <template v-if="categoriesWithData.length > 0">
-      <!-- Vertical -->
-      <div
-        v-if="statConfig.config.value.vertical.isShow && verticalCategories.length > 1"
-        class="grid"
-      >
-        <div class="flex overflow-hidden overflow-x-auto pb-2 pl-1 pt-4">
-          <StatCategoriesVertical
-            v-for="item in verticalCategories.filter(c => c.value !== 0)"
+          class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-3 md:max-w-lg"
+        >
+          <StatCategoriesRound
+            v-for="item in roundCategories"
             :key="item.id"
             :item="item"
-            :biggestCatNumber="verticalBiggestCatNumber"
-            @click="$emit('clickCategory', item.id)"
+            isShowAmount
+            @click="emit('clickCategory', item.id)"
           />
         </div>
-      </div>
+      </template>
+    </UiToggle>
 
-      <!-- Lines -->
-      <div
-        v-if="statConfig.config.value.catsView === 'list'"
-        :class="{
-          'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
-          'grid gap-1': statConfig.config.value.catsList.isItemsBg,
-        }"
-        class="pt-2"
-      >
-        <UiToggle3
-          v-for="item in categoriesWithData"
-          :key="item.id"
-          :class="{
-            group: !statConfig.config.value.catsList.isItemsBg,
-          }"
-          :isShown="categoriesOpened[item.id]?.show ?? false"
-          :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
-          @click="toggleRoot(item.id)"
-        >
-          <template #header="{ toggle, isShown }">
-            <div class="-mt-px flex items-stretch justify-between">
-              <UiToggleAction
-                v-if="item.trnsIds.length > 0"
-                :isShown="isShown"
-                :class="{
-                  '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
-                }"
-                @click="toggle"
-              />
-              <div
-                v-else
-                :class="{
-                  'mr-2 pr-[3px]': statConfig.config.value.catsList.isItemsBg,
-                }"
-                class="w-8"
-              />
+    <!-- List -->
+    <UiToggle
+      v-if="statConfig.config.value.catsList.isShow"
+      :storageKey="`${storageKey}-${type}-list`"
+      :initStatus="true"
+      class="bg-item-2 @3xl/page:p-3 mb-4 rounded-xl p-2 md:max-w-lg"
+    >
+      <template #header="{ toggle, isShown }">
+        <div class="flex items-center justify-between md:max-w-lg">
+          <UiTitle8 :isShown @click="toggle">
+            {{ t('stat.config.categories.list.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
+          </UiTitle8>
 
-              <StatCategoriesLine
-                :isShowParent="props.isOneCategory ? false : !statConfig.config.value.catsList.isGrouped"
-                :item="item"
-                :biggestCatNumber="biggestCatNumber"
-                :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
-                class="grow"
-                @click="$emit('clickCategory', item.id)"
-              />
-            </div>
-          </template>
-
-          <!-- Inside -->
-          <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-4 pl-3">
-            <div
-              v-if="!item.categories || item.categories.length === 0"
-              class="mb-3 ml-11"
+          <div
+            v-if="isShown"
+            class="flex items-center gap-1"
+          >
+            <UiItem1
+              v-if="statConfig.config.value.catsView === 'list'"
+              @click="toggleOpened"
             >
-              <TrnsList
-                :trnsIds="item.trnsIds"
-                :size="5"
-                alt
-                isShowExpense
-                isShowIncome
-                isShowTransfers
+              <Icon
+                v-if="openedStatus.isAllRootOpen && !openedStatus.isAllChildOpen"
+                name="lucide:folder-open"
               />
-            </div>
-
-            <div
-              v-if="item.categories && statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
-              class="flex flex-wrap gap-1 pl-3"
-            >
-              <StatCategoriesRound
-                v-for="itemInside in item.categories"
-                :key="itemInside.id"
-                :item="itemInside"
-                isShowAmount
-                @click="$emit('clickCategory', itemInside.id)"
+              <Icon
+                v-if="openedStatus.isAllRootOpen && openedStatus.isAllChildOpen"
+                name="lucide:folder-kanban"
               />
-            </div>
+              <Icon
+                v-if="!openedStatus.isAllRootOpen"
+                name="lucide:folder"
+              />
+            </UiItem1>
 
-            <div
-              v-if="!statConfig.config.value.catsList.isOpened"
-              class="_gap-1 grid"
-            >
-              <UiToggle3
-                v-for="itemInside in item.categories"
-                :key="itemInside.id"
-                :class="{
-                  group: !statConfig.config.value.catsList.isItemsBg,
-                }"
-                :isShown="categoriesOpened[item.id]?.categories[itemInside.id]?.show ?? false"
-                :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
-                @click="toggleChild(item.id, itemInside.id)"
+            <UiTabs1>
+              <UiItem1
+                :isActive="statConfig.config.value.catsList.isGrouped"
+                @click="statConfig.config.value.catsList.isGrouped = true"
               >
-                <template #header="{ toggle: toggleInside, isShown: isShownInside }">
-                  <div class="flex items-stretch justify-between">
-                    <UiToggleAction
-                      v-if="statConfig.config.value.catsList.isGrouped"
-                      :isShown="isShownInside"
-                      :class="{
-                        '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
-                      }"
-                      @click="toggleInside"
-                    />
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+              </UiItem1>
 
-                    <StatCategoriesLine
-                      :isShowParent="!statConfig.config.value.catsList.isGrouped"
-                      :item="itemInside"
-                      :biggestCatNumber="biggestCatNumber"
-                      :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
-                      class="grow"
-                      @click="$emit('clickCategory', itemInside.id)"
+              <UiItem1
+                :isActive="!statConfig.config.value.catsList.isGrouped"
+                @click="statConfig.config.value.catsList.isGrouped = false"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+              </UiItem1>
+            </UiTabs1>
+
+            <!-- <UiTabs1>
+              <UiTabsItem4
+                :isActive="statConfig.config.value.catsList.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.config.value.catsList.isGrouped = true"
+              >
+                <Icon
+                  name="lucide:network"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.grouped') }}
+              </UiTabsItem4>
+
+              <UiTabsItem4
+                :isActive="!statConfig.config.value.catsList.isGrouped"
+                class="flex gap-1"
+                @click="statConfig.config.value.catsList.isGrouped = false"
+              >
+                <Icon
+                  name="lucide:folder-tree"
+                  :size="16"
+                />
+                {{ t('stat.config.categories.grouping.ungrouped') }}
+              </UiTabsItem4>
+            </UiTabs1> -->
+          </div>
+        </div>
+
+        <div
+          v-if="isShown"
+          :class="{
+            'md:max-w-lg': !statConfig.config.value.catsList.isGrouped || !statConfig.config.value.catsList.isOpened,
+            'grid gap-1': statConfig.config.value.catsList.isItemsBg,
+          }"
+          class="pt-2"
+        >
+          <UiToggle3
+            v-for="item in linesCategories"
+            :key="item.id"
+            :class="{
+              group: !statConfig.config.value.catsList.isItemsBg,
+            }"
+            :isShown="categoriesOpened[item.id]?.show ?? false"
+            :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
+            @click="toggleRoot(item.id)"
+          >
+            <template #header="{ toggle: toggle2, isShown: isShownRoot }">
+              <div class="-mt-px flex items-stretch justify-between">
+                <UiToggleAction
+                  v-if="item.trnsIds.length > 0"
+                  :isShown="isShownRoot"
+                  :class="{
+                    '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
+                  }"
+                  @click="toggle2"
+                />
+                <div
+                  v-else
+                  :class="{
+                    'mr-2 pr-[3px]': statConfig.config.value.catsList.isItemsBg,
+                  }"
+                  class="w-8"
+                />
+
+                <StatCategoriesLine
+                  :isShowParent="props.isOneCategory ? false : !statConfig.config.value.catsList.isGrouped"
+                  :item="item"
+                  :biggestCatNumber="linesBiggestCatNumber"
+                  :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
+                  class="grow"
+                  @click="emit('clickCategory', item.id)"
+                />
+              </div>
+            </template>
+
+            <!-- Inside -->
+            <div class="border-item-4 ml-5 mt-[-2px] -translate-x-px border-l pl-3">
+              <div
+                v-if="!item.categories || item.categories.length === 0"
+                class="mb-3 ml-11"
+              >
+                <TrnsList
+                  :trnsIds="item.trnsIds"
+                  :size="5"
+                  alt
+                  isShowExpense
+                  isShowIncome
+                  isShowTransfers
+                />
+              </div>
+
+              <div
+                v-if="item.categories && statConfig.config.value.catsList.isGrouped && statConfig.config.value.catsList.isOpened"
+                class="flex flex-wrap gap-1 pl-12 pt-2"
+              >
+                <StatCategoriesRound
+                  v-for="itemInside in item.categories"
+                  :key="itemInside.id"
+                  :item="itemInside"
+                  isShowAmount
+                  @click="emit('clickCategory', itemInside.id)"
+                />
+              </div>
+
+              <div
+                v-if="!statConfig.config.value.catsList.isOpened"
+                :class="{
+                  'mt-1': statConfig.config.value.catsList.isItemsBg,
+                }"
+                class="_gap-1 grid"
+              >
+                <UiToggle3
+                  v-for="itemInside in item.categories"
+                  :key="itemInside.id"
+                  :class="{
+                    group: !statConfig.config.value.catsList.isItemsBg,
+                  }"
+                  :isShown="categoriesOpened[item.id]?.categories[itemInside.id]?.show ?? false"
+                  :openPadding="statConfig.config.value.catsList.isGrouped ? '!pb-3' : ''"
+                  @click="toggleChild(item.id, itemInside.id)"
+                >
+                  <template #header="{ toggle: toggleInside, isShown: isShownInside }">
+                    <div class="flex items-stretch justify-between">
+                      <UiToggleAction
+                        v-if="statConfig.config.value.catsList.isGrouped"
+                        :isShown="isShownInside"
+                        :class="{
+                          '-mr-2.5': !statConfig.config.value.catsList.isItemsBg,
+                        }"
+                        @click="toggleInside"
+                      />
+
+                      <StatCategoriesLine
+                        :isShowParent="!statConfig.config.value.catsList.isGrouped"
+                        :item="itemInside"
+                        :biggestCatNumber="biggestCatNumber"
+                        :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
+                        class="grow"
+                        :class="{
+                          'my-px': statConfig.config.value.catsList.isItemsBg,
+                        }"
+                        @click="emit('clickCategory', itemInside.id)"
+                      />
+                    </div>
+                  </template>
+
+                  <!-- Inside -->
+                  <div class="border-item-4 ml-5 mt-[-2px] -translate-x-px border-l pl-14">
+                    <TrnsList
+                      :trnsIds="itemInside.trnsIds"
+                      :size="5"
+                      alt
+                      isShowExpense
+                      isShowIncome
+                      isShowTransfers
                     />
                   </div>
-                </template>
-
-                <!-- Inside -->
-                <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-4 pl-14">
-                  <TrnsList
-                    :trnsIds="itemInside.trnsIds"
-                    :size="5"
-                    alt
-                    isShowExpense
-                    isShowIncome
-                    isShowTransfers
-                  />
-                </div>
-              </UiToggle3>
+                </UiToggle3>
+              </div>
             </div>
-          </div>
-        </UiToggle3>
-      </div>
-
-      <!-- Rounds -->
-      <div
-        v-if="statConfig.config.value.catsView === 'round'"
-        class="@3xl/stat:gap-2 flex flex-wrap gap-1 gap-y-2 pl-1 pt-2 md:max-w-lg"
-      >
-        <StatCategoriesRound
-          v-for="item in categoriesWithData"
-          :key="item.id"
-          :item="item"
-          isShowAmount
-          @click="$emit('clickCategory', item.id)"
-        />
-      </div>
-    </template>
-  </UiToggle>
+          </UiToggle3>
+        </div>
+      </template>
+    </UiToggle>
+  </div>
 </template>

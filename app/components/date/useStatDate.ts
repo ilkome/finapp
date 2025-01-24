@@ -1,5 +1,6 @@
 import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
+import defu from 'defu'
 
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
 
@@ -26,7 +27,7 @@ export function useStatDate({
     rangeDuration: 3,
     rangeOffset: 0,
   }, localStorage, {
-    mergeDefaults: true,
+    mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
   })
 
   const modals = ref({

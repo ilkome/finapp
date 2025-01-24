@@ -43,8 +43,7 @@ export default {
     allTitle: 'All',
     childs: 'Child categories',
     createNewTitle: 'Add category',
-    favoriteTitle: 'Favorite categories',
-
+    favoriteCategories: 'Favorite categories',
     form: {
       childColor: 'Apply color to all child categories',
       delete: {
@@ -53,12 +52,12 @@ export default {
         okWithoutTrns: 'Category deleted',
         okWithTrns: `Category deleted and {trns}`,
       },
+      favoriteCategory: 'Favorite category',
       icon: {
         desc: 'Use any icon from',
         label: 'Icon',
         link: 'Link',
       },
-      lastUsed: 'Show in last used categories',
       name: {
         error: 'Write category name',
         exist: 'Category with same name is exist',
@@ -69,12 +68,13 @@ export default {
         label: 'Parent category',
         no: 'Without parent',
       },
-      quickSelector: 'Show in quick selector',
+      quickSelector: 'Favorite category',
+      recentCategory: 'Recent category',
       save: 'Save',
     },
-    lastUsedTitle: 'Recent categories',
     name: 'Categories',
     new: 'New category',
+    recentCategories: 'Recent categories',
     title: 'Categories',
   },
 
@@ -247,10 +247,17 @@ export default {
           label: 'Grouping',
           ungrouped: 'Not grouped',
         },
+        list: {
+          title: 'List categories',
+        },
+        rounds: {
+          title: 'Rounds categories',
+        },
         title: 'Categories config',
         vertical: {
           grouped: 'Grouped',
           label: 'Vertical chart',
+          title: 'Vertical chart',
           ungrouped: 'Not grouped',
         },
         view: {

@@ -64,16 +64,16 @@ onMounted(() => {
     <div
       v-for="categoryId in categoriesStore.categoriesRootIds"
       :key="categoryId"
-      class="group"
+      class="group/item"
       :class="{
-        'relative mb-2 rounded-md bg-item-3': opened.includes(categoryId),
-        'rounded-md bg-item-3': isChildsSelected(categoryId),
-        'border !border-accent-1/60': isEveryChildsSelected(categoryId),
+        'bg-item-3 relative mb-2 rounded-md': opened.includes(categoryId),
+        'bg-item-3 rounded-md': isChildsSelected(categoryId),
+        '!border-accent-1/60 border': isEveryChildsSelected(categoryId),
       }"
     >
       <CategoriesItem
         :categoryId
-        :lineWidth="1"
+        :lineWidth="4"
         :category="categoriesStore.items[categoryId]"
         :activeItemId="props.selectedIds?.includes(categoryId) ? categoryId : null"
         @click="select(categoryId, false)"

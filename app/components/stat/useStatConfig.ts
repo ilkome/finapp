@@ -15,11 +15,13 @@ export const ConfigSchema = z.object({
     isLines: z.boolean(),
     isOpened: z.boolean(),
     isRoundIcon: z.boolean(),
+    isShow: z.boolean(),
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
   }),
   catsRound: z.object({
     isGrouped: z.boolean(),
+    isShow: z.boolean(),
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
   }),
@@ -66,11 +68,13 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isLines: true,
       isOpened: false,
       isRoundIcon: true,
+      isShow: false,
       isShowFavorites: false,
       isShowRecent: false,
     },
     catsRound: {
       isGrouped: false,
+      isShow: false,
       isShowFavorites: false,
       isShowRecent: false,
     },
@@ -103,7 +107,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isShow: false,
     },
   }, localStorage, {
-    mergeDefaults: true,
+    mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
   })
 
   if (props) {

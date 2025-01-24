@@ -96,7 +96,7 @@ const actions = computed(() => ({
     />
 
     <UiTitle3
-      class="sticky top-0 z-10 bg-item-1 px-3 pb-3 pt-4 md:text-xl"
+      class="bg-item-1 sticky top-0 z-10 px-3 pb-3 pt-4 md:text-xl"
       @click="trnsFormStore.values.trnId = null"
     >
       {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
@@ -108,7 +108,7 @@ const actions = computed(() => ({
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
-        class="group rounded-lg bg-item-3"
+        class="bg-item-3 group rounded-lg"
         @click="trnsFormStore.values.trnId = null"
       />
 
@@ -116,7 +116,7 @@ const actions = computed(() => ({
         v-if="showModalConfirm"
         class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-item-1 p-3 text-1">
+        <div class="border-accent-1 bg-item-1 text-1 z-10 grid h-full content-center gap-4 rounded-lg border p-3">
           {{ t('base.sure') }}
 
           <div class="flex gap-2">
@@ -134,7 +134,7 @@ const actions = computed(() => ({
                 />
               </template>
 
-              <div class="leading-none text-2">
+              <div class="text-2 leading-none">
                 {{ item.label }}
               </div>
             </UiElement>
@@ -157,7 +157,7 @@ const actions = computed(() => ({
             />
           </template>
 
-          <div class="leading-none text-2">
+          <div class="text-2 leading-none">
             {{ t(item.label) }}
           </div>
         </UiItem1>
