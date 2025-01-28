@@ -41,7 +41,6 @@ const trnsStore = useTrnsStore()
 const { getTotalOfTrnsIds } = useAmount()
 const { addMarkArea, createSeriesItem } = useStatChart()
 
-const isShowTrns = ref(false)
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 const selectedType = useStorage<StatTabSlug>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
 
@@ -179,11 +178,6 @@ function onClickCategory(categoryId: CategoryId) {
 }
 
 function onClickSumItem(type: StatTabSlug) {
-  if (type === 'summary') {
-    isShowTrns.value = !isShowTrns.value
-    return
-  }
-
   selectedType.value = type === selectedType.value ? 'summary' : type
 }
 
@@ -281,7 +275,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     <div
       class="@3xl/page:pt-3 grid w-full items-start gap-2 pt-1"
       :class="{
-        '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-8': props.activeTab !== 'summary',
+        '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-4': props.activeTab !== 'summary',
       }"
     >
       <StatCategoriesSection
@@ -301,32 +295,5 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
         :isPeriodOneDay="isPeriodOneDay"
       />
     </div>
-
-    <!-- Trns -->
-    <Teleport to="body">
-      <BottomSheet
-        v-if="selectedTrnsIds && selectedTrnsIds?.length > 0 && isShowTrns"
-        isShow
-        drugClassesCustom="bottomSheetDrugClassesCustom"
-        @closed="isShowTrns = false"
-      >
-        <div class="bottomSheetContent">
-          <UiTitleModal>{{ t('trns.title') }} {{ selectedTrnsIds.length }}</UiTitleModal>
-
-          <div class="scrollerBlock bottomSheetContentInside">
-            <TrnsList
-              :trnsIds="selectedTrnsIds"
-              class="py-2"
-              isShowDates
-              isShowExpense
-              isShowFilterByDesc
-              isShowFilterByType
-              isShowGroupSum
-              isShowIncome
-            />
-          </div>
-        </div>
-      </BottomSheet>
-    </Teleport>
   </div>
 </template>

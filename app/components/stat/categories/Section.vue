@@ -183,7 +183,7 @@ function updateState(
       v-if="statConfig.config.value.vertical.isShow"
       :storageKey="`${storageKey}-${type}-vertical`"
       :initStatus="true"
-      class="@3xl/page:p-3 mb-4 rounded-xl bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -272,7 +272,7 @@ function updateState(
       v-if="statConfig.config.value.catsRound.isShow"
       :storageKey="`${storageKey}-${type}-rounds`"
       :initStatus="true"
-      class="@3xl/page:p-3 mb-4 rounded-xl bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -354,7 +354,7 @@ function updateState(
       v-if="statConfig.config.value.catsList.isShow"
       :storageKey="`${storageKey}-${type}-list`"
       :initStatus="true"
-      class="@3xl/page:p-3 mb-4 rounded-xl bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -482,7 +482,7 @@ function updateState(
             </template>
 
             <!-- Inside -->
-            <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-4 pl-3">
+            <div class="ml-5 mt-[-2px] -translate-x-px pl-3">
               <div
                 v-if="!item.categories || item.categories.length === 0"
                 class="mb-3 ml-11"
@@ -553,7 +553,7 @@ function updateState(
                   </template>
 
                   <!-- Inside -->
-                  <div class="ml-5 mt-[-2px] -translate-x-px border-l border-item-4 pl-14">
+                  <div class="ml-5 mt-[-2px] -translate-x-px pl-14">
                     <TrnsList
                       :trnsIds="itemInside.trnsIds"
                       :size="5"

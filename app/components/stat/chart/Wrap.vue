@@ -50,7 +50,7 @@ function onChangePeriod(period: Period) {
     :class="{
       'md:max-w-lg': props.chartView === 'half',
     }"
-    class="mb-3 rounded-xl bg-item-2 p-2"
+    class="mb-3 rounded-xl border border-item-4 bg-item-2 p-2"
   >
     <div
       v-if="statConfig.config.value?.chartShow"

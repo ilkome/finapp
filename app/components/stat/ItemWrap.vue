@@ -47,7 +47,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   <!-- Summary -->
   <div
     v-if="props.activeTab === 'summary'"
-    class="grid max-w-7xl gap-8 px-2 pb-24 md:grid-cols-2 lg:gap-8 lg:px-4 xl:py-2 2xl:px-8"
+    class="grid max-w-7xl gap-8 px-2 pb-24 md:grid-cols-2 lg:gap-2 lg:px-4 xl:py-2 2xl:px-8"
   >
     <StatItem
       :activeTab="props.activeTab"
