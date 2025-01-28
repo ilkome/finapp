@@ -98,7 +98,7 @@ function onChangeViewOptions(newViewOptions: any) {
 <template>
   <div class="">
     <!-- List -->
-    <div class="border-item-4 grid gap-3 border-b pb-2 last:border-0">
+    <div class="grid gap-3 border-b border-item-4 pb-2 last:border-0">
       <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
       <div class="flex gap-1">
         <UiItem2
@@ -152,7 +152,7 @@ function onChangeViewOptions(newViewOptions: any) {
     <!-- TODO: use StatConfig -->
     <div
       v-if="false"
-      class="border-item-4 border-b pb-2 last:border-0 last:pb-0"
+      class="border-b border-item-4 pb-2 last:border-0 last:pb-0"
     >
       <!-- Favorite -->
       <UiElement
@@ -190,7 +190,7 @@ function onChangeViewOptions(newViewOptions: any) {
     </div>
 
     <div
-      class="border-item-4 grid gap-3 border-b pb-2 pt-3 last:border-0"
+      class="grid gap-3 border-b border-item-4 pb-2 pt-3 last:border-0"
     >
       <UiTitleOption>{{ t('elements') }}</UiTitleOption>
       <div class="">

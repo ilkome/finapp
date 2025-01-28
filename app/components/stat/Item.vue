@@ -51,9 +51,10 @@ const selectedTypesMapping = computed(() => {
     income: [1, 2],
     netIncome: [0, 1, 2],
     summary: [0, 1, 2],
+    trns: [0, 1, 2],
   } as const
 
-  const trnsTypes = typeMapping[props.type === 'netIncome' ? selectedType.value : props.type]
+  const trnsTypes = typeMapping[(props.type === 'netIncome' || props.type === 'trns') ? selectedType.value : props.type]
 
   if (trnsTypes)
     return trnsTypes
@@ -131,7 +132,7 @@ const typesToShow = computed(() => {
   const isAnyExpense = rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0)
   const isAnyIncome = rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1)
 
-  return props.type === 'netIncome' || props.type === 'periods'
+  return props.type === 'netIncome' || props.type === 'periods' || props.type === 'trns'
     ? [
         ...(isAnyIncome ? ['income'] : []),
         ...(isAnyExpense ? ['expense'] : []),
@@ -228,7 +229,6 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       :total="rangeTotal"
       :type="props.type"
       :isShowAverage="statConfig.config.value.statAverage.isShow"
-      class="@2xl/page:bg-item-2 @2xl/page:my-2 @2xl/page:rounded-xl @2xl/page:p-2 mb-2"
       @click="onClickSumItem"
       @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
     >
@@ -279,13 +279,13 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     </StatSumWrap>
 
     <div
-      class="@3xl/page:pt-3 grid w-full gap-2 pt-1"
+      class="@3xl/page:pt-3 grid w-full items-start gap-2 pt-1"
       :class="{
         '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-8': props.activeTab !== 'summary',
       }"
     >
       <StatCategoriesSection
-        v-if="props.hasChildren || (props.preCategoriesIds ?? []).length > 0"
+        v-if="(props.hasChildren || (props.preCategoriesIds ?? []).length > 0) && props.type !== 'trns'"
         :isOneCategory="props.isOneCategory"
         :preCategoriesIds="props.preCategoriesIds"
         :selectedTrnsIds

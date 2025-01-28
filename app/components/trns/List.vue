@@ -208,7 +208,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-item-4 border-b pb-2 pr-3"
+        class="border-b border-item-4 pb-2 pr-3"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -246,12 +246,12 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     <!-- With dates -->
     <div
       v-if="isShowDates"
-      class="grid gap-3"
+      class="grid gap-1"
     >
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="bg-item-2 overflow-hidden rounded-lg"
+        class="_bg-item-2 _rounded-lg overflow-hidden border-b border-item-4 pb-2"
       >
         <div
           :class="{ 'border-item-4': isShowGroupSum && groupTrnsIds.length > 1 }"
@@ -310,7 +310,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       class="flex-center pt-1"
     >
       <div
-        class="flex-center bg-item-5 text-2 hocus:bg-item-6 rounded-full px-5 py-2 text-sm"
+        class="flex-center rounded-full bg-item-5 px-5 py-2 text-sm text-2 hocus:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

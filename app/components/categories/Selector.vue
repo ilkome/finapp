@@ -66,9 +66,9 @@ onMounted(() => {
       :key="categoryId"
       class="group/item"
       :class="{
-        'bg-item-3 relative mb-2 rounded-md': opened.includes(categoryId),
-        'bg-item-3 rounded-md': isChildsSelected(categoryId),
-        '!border-accent-1/60 border': isEveryChildsSelected(categoryId),
+        'relative mb-2 rounded-md bg-item-3': opened.includes(categoryId),
+        'rounded-md bg-item-3': isChildsSelected(categoryId),
+        'border !border-accent-1/60': isEveryChildsSelected(categoryId),
       }"
     >
       <CategoriesItem

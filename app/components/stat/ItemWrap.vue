@@ -74,7 +74,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
   <div
     v-else
-    class="min-h-dvh max-w-7xl px-2 lg:px-4 xl:py-2 2xl:px-8"
+    class="min-h-dvh max-w-7xl p-2 lg:px-4 2xl:px-8"
   >
     <StatItem
       :activeTab="props.activeTab"
