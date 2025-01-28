@@ -17,7 +17,7 @@ const emit = defineEmits<{
     :class="[
       getStyles('item', ['link', props.variant === 'small' ? '' : 'alt', 'center2', 'minh3', 'rounded4']),
       { 'text-accent-1': props.isActive },
-      { 'px-2 text-2xs': props.variant === 'small' },
+      { 'px-2 text-2xs text-2': props.variant === 'small' },
       { 'px-3': props.variant !== 'small' },
     ]"
     class="text-nowrap rounded-full font-primary text-xs leading-none"

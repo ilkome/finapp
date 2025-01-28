@@ -24,7 +24,7 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="@2xl/page:px-4 @2xl/page:pt-3 @2xl/page:pb-2 grid gap-1 border border-transparent bg-item-2 px-3 pt-2"
+    class="@2xl/page:px-4 @2xl/page:pt-3 @2xl/page:pb-2 grid gap-1 rounded-lg border border-item-4 bg-item-2 px-3 pt-2"
     :class="{
       '!border-accent-1/40 !bg-item-2': props.isActive,
     }"
