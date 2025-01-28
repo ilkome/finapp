@@ -8,7 +8,6 @@ const emit = defineEmits<{
   onClose: []
 }>()
 
-const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
 
 const sliderRef = ref<any>(null)

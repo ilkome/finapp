@@ -13,13 +13,13 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="group-data-[headlessui-state=open]:!bg-item-4 justify-center" :class="[
+    class="justify-center group-data-[headlessui-state=open]:!bg-item-4" :class="[
       getStyles('item', ['link', 'center', 'minh2', 'minw1', 'rounded']),
       {
-        'text-2 text-xl': variant === 'icon',
+        'text-xl text-2': variant === 'icon',
       },
       {
-        'text-1 px-3 text-sm': variant === 'text',
+        'px-3 text-sm text-1': variant === 'text',
       },
       {
         '!bg-item-3': isActive,

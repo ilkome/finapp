@@ -309,7 +309,7 @@ async function onSave() {
                 :key="icon"
                 :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent"
+                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent text-icon-primary"
                 @click="emit('updateValue', 'icon', icon)"
               >
                 <Icon :name="icon" size="20" />

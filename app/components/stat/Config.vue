@@ -47,7 +47,7 @@ function updateStatAverage(value: number) {
         <BottomSheetClose @click="close" />
 
         <!-- Chart -->
-        <div class="border-item-3 border-b pb-3">
+        <div class="border-b border-item-3 pb-3">
           <UiTitleOption class="pb-2">
             {{ t('stat.config.chartShow.title') }}
           </UiTitleOption>
@@ -116,7 +116,7 @@ function updateStatAverage(value: number) {
         <!-- Showed wallets -->
         <div
           v-if="props.isShowWallets"
-          class="border-item-3 border-b pb-3"
+          class="border-b border-item-3 pb-3"
         >
           <UiTitleOption class="pb-2">
             {{ t('stat.config.wallets.title') }}
@@ -163,7 +163,7 @@ function updateStatAverage(value: number) {
 
         <!-- Statistics -->
         <div
-          class="border-item-3 border-b pb-3"
+          class="border-b border-item-3 pb-3"
         >
           <UiTitleOption class="pb-2">
             {{ t('statistics.title') }}

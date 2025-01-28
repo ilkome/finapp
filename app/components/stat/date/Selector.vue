@@ -17,11 +17,6 @@ const tabs = {
   selected: ref('presets'),
 }
 
-function setMaxRange(isSkipEmpty = false) {
-  emit('onClose')
-  statDate.setMaxRange(isSkipEmpty)
-}
-
 const intervals = computed<Grouped[]>(() => [{
   intervalsBy: 'day',
   intervalsDuration: 1,

@@ -27,6 +27,9 @@ const menu = computed(() => {
   }, {
     id: 'income',
     name: t('money.income'),
+  }, {
+    id: 'trns',
+    name: t('trns.history'),
   }]
 
   if (width.value > 766) {
@@ -43,17 +46,18 @@ function onClickStatMenu(tabName: StatTabSlug) {
   emit('click', tabName)
 }
 
-onMounted(() => {
-  if (!menu.value.find(i => i.id === props.active)) {
-    onClickStatMenu(menu.value[0].id)
-  }
-})
-
 watch(() => props.active, () => {
   if (!menu.value.find(i => i.id === props.active)) {
     onClickStatMenu(menu.value[0].id)
   }
-})
+}, { immediate: true })
+
+function getClasses(id?: StatTabSlug) {
+  return [{
+    '!border-accent-1 text-1 rounded-none border-b-2': id === props.active,
+    'text-2 hover:bg-item-5': id !== props.active,
+  }, 'text-nowrap rounded-lg px-3 py-1.5 text-sm font-medium']
+}
 </script>
 
 <template>
@@ -61,12 +65,7 @@ watch(() => props.active, () => {
     <div
       v-for="item in menu"
       :key="item.id"
-      class="text-nowrap rounded-lg px-3 py-1.5 text-sm font-medium"
-      :class="[{
-        'rounded-none border-b-2 !border-accent-1 text-1': item.id === props.active,
-        'text-2 hover:bg-item-5': item.id !== props.active,
-      },
-      ]"
+      :class="getClasses(item.id)"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}

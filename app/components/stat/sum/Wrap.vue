@@ -37,10 +37,10 @@ function onClick(type: StatTabSlug) {
 </script>
 
 <template>
-  <div class="overflow-x-auto">
+  <div class="@2xl/page:my-2 mb-2 overflow-x-auto">
     <div
-      v-if="props.type === 'netIncome'"
-      class="@2xl/page:justify-start @2xl/page:gap-x-4 flex flex-wrap justify-stretch"
+      v-if="props.type === 'netIncome' || props.type === 'trns'"
+      class="@2xl/page:justify-start @2xl/page:gap-x-4 flex flex-wrap justify-stretch gap-2"
     >
       <StatSumItem
         v-if="props.isShowExpense"
