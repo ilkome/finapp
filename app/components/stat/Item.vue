@@ -29,7 +29,6 @@ const props = defineProps<{
   walletId?: WalletId
 }>()
 
-const { t } = useI18n()
 const route = useRoute()
 const filter = inject('filter') as FilterProvider
 const statDate = inject('statDate') as StatDateProvider
