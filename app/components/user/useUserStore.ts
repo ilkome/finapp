@@ -59,6 +59,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     try {
+      await localforage.clear()
       trnsStore.unsubscribeTrns()
       categoriesStore.unsubscribeCategories()
       walletsStore.unsubscribeWallets()
