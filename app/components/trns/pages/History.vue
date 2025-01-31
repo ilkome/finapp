@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
+import type { CategoryId } from '~/components/categories/types'
+import type { WalletId } from '~/components/wallets/types'
+
 import { useFilter } from '~/components/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -17,6 +22,26 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 }, {
   includesChildCategories: true,
 }))
+
+const lastFilter = useStorage<{
+  categoriesIds: CategoryId[]
+  walletsIds: WalletId[]
+}>('finapp.history.lastFilter2', {
+  categoriesIds: [],
+  walletsIds: [],
+}, localStorage, {
+  mergeDefaults: true,
+})
+
+onMounted(() => {
+  filter.setCategories(lastFilter.value.categoriesIds ?? [])
+  filter.setWallets(lastFilter.value.walletsIds ?? [])
+})
+
+watch([filter.categoriesIds, filter.walletsIds], () => {
+  lastFilter.value.categoriesIds = filter.categoriesIds.value
+  lastFilter.value.walletsIds = filter.walletsIds.value
+})
 </script>
 
 <template>
@@ -33,7 +58,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
       <template v-if="filter.isShow.value" #selected>
         <FilterSelected
-          class="sticky top-[40px] z-20 bg-item-2"
+          class="pb-2"
           isShowCategories
           isShowWallets
         />

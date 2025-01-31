@@ -251,7 +251,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="_bg-item-2 _rounded-lg overflow-hidden border-b border-item-4 pb-2"
+        class="_bg-item-2 _rounded-lg overflow-hidden border-b border-item-4 pb-2 last:border-b-0 last:pb-px"
       >
         <div
           :class="{ 'border-item-4': isShowGroupSum && groupTrnsIds.length > 1 }"
