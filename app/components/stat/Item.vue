@@ -7,7 +7,7 @@ import type { Range, StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { ChartSeries, IntervalData, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { TrnId, TrnType } from '~/components/trns/types'
+import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
@@ -15,6 +15,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import StatTrnsSection from '~/components/stat/trns/Section.vue'
+import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -43,22 +44,7 @@ const { addMarkArea, createSeriesItem } = useStatChart()
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
 const selectedType = useStorage<StatTabSlug>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
 
-const selectedTypesMapping = computed(() => {
-  const typeMapping: Partial<Record<StatTabSlug, TrnType[]>> = {
-    expense: [0, 2],
-    income: [1, 2],
-    netIncome: [0, 1, 2],
-    summary: [0, 1, 2],
-    trns: [0, 1, 2],
-  } as const
-
-  const trnsTypes = typeMapping[(props.type === 'netIncome' || props.type === 'trns') ? selectedType.value : props.type]
-
-  if (trnsTypes)
-    return trnsTypes
-
-  return undefined
-})
+const selectedTypesMapping = computed(() => getTypesMapping((props.type === 'netIncome' || props.type === 'trns') ? selectedType.value : props.type))
 
 const statTypeShow = computed(() => ({
   expense: props.trnsIds.some(id => trnsStore.items && id in trnsStore.items && trnsStore.items[id]?.type === 0),
@@ -94,7 +80,7 @@ const averageTotal = computed(() => {
   if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
     return
 
-  const sum = selectedType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[props.type]
+  const sum = (selectedType.value === 'netIncome' || selectedType.value === 'trns') ? rangeTotal.value.sum : rangeTotal.value[props.type]
 
   const date = statDate.params.value.intervalSelected !== -1
     ? statDate.selectedInterval.value
@@ -202,7 +188,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
-      :chartView="activeTab === 'summary' ? 'half' : statConfig.config.value.chartView"
+      :chartView="statConfig.config.value.chartView"
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
     >
@@ -215,6 +201,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
     <StatSumWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
+      class="pb-4"
       :averageTotal
       :isShowExpense="statTypeShow.expense"
       :isShowIncome="statTypeShow.income"
@@ -272,7 +259,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
     </StatSumWrap>
 
     <div
-      class="@3xl/page:pt-3 grid w-full items-start gap-2 pt-1"
+      class="_w-full grid items-start gap-4"
       :class="{
         '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-4': props.activeTab !== 'summary',
       }"
