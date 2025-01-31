@@ -176,14 +176,14 @@ function updateState(
 <template>
   <div
     v-if="categoriesWithData.length > 0"
-    class="@3xl/page:gap-4 grid"
+    class="@3xl/page:gap-4 grid gap-4"
   >
     <!-- Vertical -->
     <UiToggle
       v-if="statConfig.config.value.vertical.isShow"
       :storageKey="`${storageKey}-${type}-vertical`"
       :initStatus="true"
-      class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -192,7 +192,7 @@ function updateState(
           </UiTitle8>
 
           <div
-            v-if="isShown"
+            v-if="isShown && !props.isOneCategory"
             class="flex items-center"
           >
             <UiTabs1>
@@ -253,7 +253,10 @@ function updateState(
           /> -->
         </div>
 
-        <div v-if="isShown" class="grid pt-3">
+        <div
+          v-if="isShown"
+          class="grid pt-3"
+        >
           <div class="flex overflow-hidden overflow-x-auto pl-1 pt-2">
             <StatCategoriesVertical
               v-for="item in verticalCategories.filter(c => c.value !== 0)"
@@ -272,7 +275,7 @@ function updateState(
       v-if="statConfig.config.value.catsRound.isShow"
       :storageKey="`${storageKey}-${type}-rounds`"
       :initStatus="true"
-      class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -281,7 +284,7 @@ function updateState(
           </UiTitle8>
 
           <div
-            v-if="isShown"
+            v-if="isShown && !props.isOneCategory"
             class="flex items-center"
           >
             <UiTabs1>
@@ -354,7 +357,7 @@ function updateState(
       v-if="statConfig.config.value.catsList.isShow"
       :storageKey="`${storageKey}-${type}-list`"
       :initStatus="true"
-      class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -384,7 +387,7 @@ function updateState(
               />
             </UiItem1>
 
-            <UiTabs1>
+            <UiTabs1 v-if="!props.isOneCategory">
               <UiItem1
                 :isActive="statConfig.config.value.catsList.isGrouped"
                 @click="statConfig.config.value.catsList.isGrouped = true"
