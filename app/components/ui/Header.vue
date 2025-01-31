@@ -9,7 +9,7 @@
     </div>
     <div
       v-if="$slots.selected"
-      class=""
+      class="grid"
     >
       <slot name="selected" />
     </div>

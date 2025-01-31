@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import defu from 'defu'
 
 import type { CategoryId } from '~/components/categories/types'
 

@@ -67,9 +67,8 @@ export default function useMenuData() {
     closeAllModals()
 
     if (menuId === 'trnForm') {
-      if (walletsStore.hasItems && categoriesStore.hasItems) {
+      if (walletsStore.hasItems && categoriesStore.hasItems)
         trnFormCreate()
-      }
       return
     }
 
