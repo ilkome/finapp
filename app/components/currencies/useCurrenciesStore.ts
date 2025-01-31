@@ -4,22 +4,24 @@ import { getDataOnce, saveData } from '~~/services/firebase/api'
 
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 
-import { currencies as all } from '~/components/currencies/currencies'
+import { currencies as allCurrencies } from '~/components/currencies/currencies'
+import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const serviceUrlBase = `https://openexchangerates.org/api/latest.json?app_id=`
-export const currencies = all
+export const currencies = allCurrencies
 
 export const useCurrenciesStore = defineStore('currencies', () => {
   const { $config } = useNuxtApp()
   const userStore = useUserStore()
+  const { isDemo } = useDemo()
 
   const base = ref<CurrencyCode>('USD')
   const rates = ref<Rates>({})
 
   async function getRatesOfUSD(apiKey: string) {
     try {
-      const { rates } = await $fetch<Rates>(`${serviceUrlBase}${apiKey}`)
+      const { rates }: { rates: Rates } = await $fetch(`${serviceUrlBase}${apiKey}`)
       return rates
     }
     catch (e) {
@@ -30,12 +32,12 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   async function initCurrencies() {
     // User base currency in DB
-    const userBaseCurrency = await getDataOnce(`users/${userStore.uid}/settings/baseCurrency`) || 'USD'
+    const userBaseCurrency: CurrencyCode = await getDataOnce(`users/${userStore.uid}/settings/baseCurrency`) || 'USD'
 
     // Rates for today
     const today = startOfDay(new Date()).getTime()
 
-    let ratesBasedOnUsd = await getDataOnce(`ratesUsd/history/${today}`)
+    let ratesBasedOnUsd: Rates | false = await getDataOnce(`ratesUsd/history/${today}`)
 
     if (!ratesBasedOnUsd) {
       ratesBasedOnUsd = await getRatesOfUSD($config.public.ratesApiKey)
@@ -63,9 +65,10 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     base.value = value
   }
 
-  function updateBase(code: CurrencyCode) {
-    saveData(`users/${userStore.uid}/settings/baseCurrency`, code)
-    // initCurrencies()
+  function updateBase(value: CurrencyCode) {
+    setBase(value)
+    if (!isDemo)
+      saveData(`users/${userStore.uid}/settings/baseCurrency`, value)
   }
 
   return {
