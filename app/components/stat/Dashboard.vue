@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
+import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
+import type { WalletId } from '~/components/wallets/types'
 
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
@@ -35,6 +37,26 @@ provide('statDate', statDate)
 
 watch(filter.categoriesIds, () => {
   statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
+})
+
+const lastFilter = useStorage<{
+  categoriesIds: CategoryId[]
+  walletsIds: WalletId[]
+}>('finapp.dashboard.lastFilter', {
+  categoriesIds: [],
+  walletsIds: [],
+}, localStorage, {
+  mergeDefaults: true,
+})
+
+onActivated(() => {
+  filter.setCategories(lastFilter.value.categoriesIds ?? [])
+  filter.setWallets(lastFilter.value.walletsIds ?? [])
+})
+
+onDeactivated(() => {
+  lastFilter.value.categoriesIds = filter.categoriesIds.value
+  lastFilter.value.walletsIds = filter.walletsIds.value
 })
 </script>
 
