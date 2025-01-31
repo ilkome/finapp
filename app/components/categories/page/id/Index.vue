@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import { differenceInDays } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
+import { calculateBestIntervalsBy } from '~/components/date/utils'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
@@ -27,8 +29,8 @@ const category = computed(() => categoriesStore.items[categoryId.value])
 const preCategoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
 
-const activeTab = useStorage<StatTabSlug>(`${categoryId.value}-tab`, 'netIncome')
-const storageKey = computed(() => `${categoryId.value}-${activeTab.value}`)
+const activeTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'netIncome')
+const storageKey = computed(() => `page-${categoryId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: [...filter.categoriesIds.value, ...categoriesIdsOrParent.value],
@@ -56,6 +58,14 @@ const statConfig = useStatConfig({
 provide('statConfig', statConfig)
 
 const statDate = useStatDate({
+  initParams: {
+    intervalsBy: calculateBestIntervalsBy(maxRange.value),
+    intervalsDuration: 1,
+    isShowMaxRange: true,
+    isSkipEmpty: true,
+    rangeBy: 'day',
+    rangeDuration: differenceInDays(maxRange.value.end, maxRange.value.start),
+  },
   key: storageKey.value,
   maxRange,
   queryParams: route.query,

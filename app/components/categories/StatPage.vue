@@ -26,8 +26,8 @@ const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = ref(categoriesStore.items[categoryId.value])
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
 
-const activeTab = useStorage<StatTabSlug>(`${categoryId.value}-tab`, 'netIncome')
-const storageKey = computed(() => `${categoryId.value}-${activeTab.value}`)
+const activeTab = useStorage<StatTabSlug>(`stat-${categoryId.value}-tab`, 'netIncome')
+const storageKey = computed(() => `stat-${categoryId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => {
   const categoriesIds = [...filter.categoriesIds.value, ...categoriesIdsOrParent.value]
