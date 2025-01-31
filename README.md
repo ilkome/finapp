@@ -1,4 +1,4 @@
-<p align="center"><img align="center" style="width:320px" src="https://finapp.ilko.me/icon.png"/></p><br/>
+<p align="center"><img align="center" style="width:320px" src="https://finapp.ilko.me/logo.png"/></p><br/>
 
 # Open source finance application
 Finapp helps you to control personal finances easily and efficiently.
