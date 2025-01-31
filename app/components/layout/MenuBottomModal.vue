@@ -22,18 +22,18 @@ const { isDemo } = useDemo()
       </template>
 
       <div class="grid gap-3 bg-item-1 px-1 py-3">
-        <LayoutSidebarMenu />
-
-        <div class="pl-2 pt-2">
-          <AppThemeSwitcher isShowTitle />
-        </div>
-
         <!-- User -->
         <div
           v-if="!isDemo"
-          class="border-t border-item-6 px-2 pt-3"
+          class="mx-2"
         >
           <UserViewLogout isShowSignOut />
+        </div>
+
+        <LayoutSidebarMenu class="py-4" />
+
+        <div class="pl-2 pt-2">
+          <AppThemeSwitcher isShowTitle />
         </div>
 
         <div
