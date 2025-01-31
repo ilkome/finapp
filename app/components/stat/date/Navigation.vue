@@ -57,7 +57,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="items-top @xl/page:pl-2 @xl/page:grid-cols-[auto,1fr] grid grow grid-cols-[1fr,auto] gap-2">
+  <div class="items-top @xl/page:grid-cols-[auto,1fr] grid grow grid-cols-[1fr,auto] gap-2">
     <BottomSheetOrDropdown
       :title="t('dates.select')"
       :isOpen="statDate.modals.value.dateSelector"
