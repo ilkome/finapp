@@ -157,7 +157,7 @@ function setChartSeries(series: unknown[]) {
 
 <template>
   <div
-    class="h-40 px-2"
+    class="@3xl/page:h-52 h-40 px-2"
     @click="onClickChart"
   >
     <VChart
