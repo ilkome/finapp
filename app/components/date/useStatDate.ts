@@ -6,7 +6,20 @@ import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDatePara
 
 import { calculateBestIntervalsBy, calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
 
+const defaultParams: StatDateParams = {
+  customDate: false,
+  intervalsBy: 'week',
+  intervalsDuration: 1,
+  intervalSelected: -1,
+  isShowMaxRange: false,
+  isSkipEmpty: false,
+  rangeBy: 'month',
+  rangeDuration: 3,
+  rangeOffset: 0,
+}
+
 export function useStatDate({
+  initParams,
   key,
   maxRange,
   queryParams,
@@ -16,19 +29,13 @@ export function useStatDate({
   maxRange: ComputedRef<Range>
   queryParams?: Partial<StatDateParamsQuery>
 }) {
-  const params = useStorage<StatDateParams>(`${key}-params2`, {
-    customDate: false,
-    intervalsBy: 'week',
-    intervalsDuration: 1,
-    intervalSelected: -1,
-    isShowMaxRange: false,
-    isSkipEmpty: false,
-    rangeBy: 'month',
-    rangeDuration: 3,
-    rangeOffset: 0,
-  }, localStorage, {
+  const params = useStorage<StatDateParams>(`${key}-params`, {} as StatDateParams, localStorage, {
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
   })
+
+  if (Object.keys(params.value).length === 0) {
+    params.value = defu(initParams ?? {}, defaultParams)
+  }
 
   const modals = ref({
     dateSelector: false,
