@@ -68,13 +68,13 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isLines: true,
       isOpened: false,
       isRoundIcon: true,
-      isShow: false,
+      isShow: true,
       isShowFavorites: false,
       isShowRecent: false,
     },
     catsRound: {
       isGrouped: false,
-      isShow: false,
+      isShow: true,
       isShowFavorites: false,
       isShowRecent: false,
     },
@@ -99,12 +99,12 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
 
     vertical: {
       isGrouped: false,
-      isShow: false,
+      isShow: true,
     },
 
     wallets: {
       count: 3,
-      isShow: false,
+      isShow: true,
     },
   }, localStorage, {
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
