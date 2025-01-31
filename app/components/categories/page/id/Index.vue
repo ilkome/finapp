@@ -30,14 +30,11 @@ const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParen
 const activeTab = useStorage<StatTabSlug>(`${categoryId.value}-tab`, 'netIncome')
 const storageKey = computed(() => `${categoryId.value}-${activeTab.value}`)
 
-const trnsIds = computed(() => {
-  const categoriesIds = [...filter.categoriesIds.value, ...categoriesIdsOrParent.value]
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds,
-    trnsTypes: getTypesMapping(activeTab.value),
-    walletsIds: filter?.walletsIds?.value ?? [],
-  })
-})
+const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: [...filter.categoriesIds.value, ...categoriesIdsOrParent.value],
+  trnsTypes: getTypesMapping(activeTab.value),
+  walletsIds: filter?.walletsIds?.value ?? [],
+}))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
@@ -50,6 +47,9 @@ const statConfig = useStatConfig({
       isGrouped: false,
     },
     isShowEmptyCategories: true,
+    vertical: {
+      isGrouped: false,
+    },
   },
   storageKey: storageKey.value,
 })
@@ -65,6 +65,7 @@ provide('statDate', statDate)
 onActivated(() => {
   statConfig.updateConfig('catsList', { isGrouped: false })
   statConfig.updateConfig('catsRound', { isGrouped: false })
+  statConfig.updateConfig('vertical', { isGrouped: false })
 
   if (categoriesStore.isItTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
@@ -81,8 +82,8 @@ useHead({ title: category.value?.name })
 <template>
   <UiPage v-if="category">
     <StatHeader
-      :filter="{ isShow: true, isShowCategories: true }"
       :config="{ isShowCategories: true }"
+      :filter="{ isShow: true, isShowCategories: true }"
       :menu="{ active: activeTab, click: id => activeTab = id }"
     >
       <template #title>
