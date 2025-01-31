@@ -42,19 +42,10 @@ export function useFilter() {
   }
 
   function setWallets(newWalletsIds: WalletId[]) {
-    let uniqueWalletsIds: WalletId[] = []
-
-    if (newWalletsIds.every(id => walletsIds.value.includes(id))) {
-      uniqueWalletsIds = walletsIds.value.filter(id => !newWalletsIds.includes(id))
-    }
-    else {
-      uniqueWalletsIds = [...new Set([...walletsIds.value, ...newWalletsIds])]
-    }
-
     router.push({
       query: {
         ...route.query,
-        filterWallets: uniqueWalletsIds,
+        filterWallets: [...new Set([...walletsIds.value, ...newWalletsIds])],
       },
     })
   }
@@ -91,19 +82,10 @@ export function useFilter() {
   }
 
   function setCategories(newCategoriesIds: CategoryId[]) {
-    let uniqueCategoriesIds: CategoryId[] = []
-
-    if (newCategoriesIds.every(id => categoriesIds.value.includes(id))) {
-      uniqueCategoriesIds = categoriesIds.value.filter(id => !newCategoriesIds.includes(id))
-    }
-    else {
-      uniqueCategoriesIds = [...new Set([...categoriesIds.value, ...newCategoriesIds])]
-    }
-
     router.push({
       query: {
         ...route.query,
-        filterCategories: uniqueCategoriesIds,
+        filterCategories: [...new Set([...categoriesIds.value, ...newCategoriesIds])],
       },
     })
   }
