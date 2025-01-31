@@ -7,14 +7,13 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const { t } = useI18n()
-useHead({
-  title: t('categories.title'),
-})
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
+useHead({ title: t('categories.title') })
+
 const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'list', localStorage, {
-  mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
+  mergeDefaults: true,
 })
 </script>
 
