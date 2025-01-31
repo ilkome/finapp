@@ -1,4 +1,5 @@
 import type { CategoryWithData, StatTabSlug } from '~/components/stat/types'
+import type { TrnType } from '~/components/trns/types'
 
 export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData) {
   if (!a || !b)
@@ -19,14 +20,16 @@ export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData)
   return a.value > 0 ? -1 : 1
 }
 
-export function getTypesMapping(slug: StatTabSlug) {
-  const typeMapping = {
+export function getTypesMapping(slug: StatTabSlug): TrnType[] | undefined {
+  const typeMapping: Record<StatTabSlug, TrnType[]> = {
     expense: [0, 2],
     income: [1, 2],
     netIncome: [0, 1, 2],
+    periods: [0, 1, 2],
     summary: [0, 1, 2],
+    trns: [0, 1, 2],
   }
   const trnsTypes = typeMapping[slug]
 
-  return trnsTypes ?? []
+  return trnsTypes ?? undefined
 }
