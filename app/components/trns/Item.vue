@@ -37,7 +37,7 @@ const { t } = useI18n()
         <template v-if="alt">
           <div
             v-if="date"
-            class="min-w-10 truncate text-2xs leading-none"
+            class="text-2xs min-w-10 truncate leading-none"
           >
             {{ date }}
           </div>
@@ -51,21 +51,19 @@ const { t } = useI18n()
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="flex items-center gap-2 text-xs leading-none text-2">
+            <div class="text-2 flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>
         </template>
 
         <div
-          class="grid gap-1"
-          :class="{
-            grow: trnItem.type !== TrnType.Transfer,
-          }"
+          v-if="trnItem.type !== TrnType.Transfer"
+          class="grid grow gap-1"
         >
           <div
             v-if="!alt"
-            class="grid grow gap-0.5 text-3"
+            class="text-3 grid grow gap-0.5"
           >
             <CategoriesName
               v-if="trnItem.type !== TrnType.Transfer"
@@ -79,7 +77,7 @@ const { t } = useI18n()
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-xs leading-none text-4">
+            <div class="text-4 text-xs leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>
@@ -101,11 +99,11 @@ const { t } = useI18n()
         <!-- Transfer -->
         <div
           v-if="trnItem.type === 2"
-          class="grid gap-2"
+          class="grid gap-1"
         >
-          <div class="flex gap-1 text-sm leading-none">
-            {{ t('transfer.from') }} <span class="font-bold">{{ trnItem.expenseWallet.name }}</span>
-            {{ t('transfer.to') }} <span class="font-bold">{{ trnItem.incomeWallet.name }}</span>
+          <div class="text-3 flex gap-1 text-sm leading-none">
+            {{ t('transfer.from') }} <span class="font-semibold">{{ trnItem.expenseWallet.name }}</span>
+            {{ t('transfer.to') }} <span class="font-semibold">{{ trnItem.incomeWallet.name }}</span>
           </div>
 
           <div class="flex flex-wrap gap-2">
