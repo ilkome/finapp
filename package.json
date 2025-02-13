@@ -35,7 +35,7 @@
     "pinia": "^2.3.0",
     "swiper": "11.2.0",
     "v-calendar": "^3.1.2",
-    "vite": "^6.0.7",
+    "vite": "^6.0.9",
     "vue-deepunref": "^1.0.1",
     "vue-echarts": "^7.0.3",
     "vue3-toastify": "^0.2.8"
