@@ -40,6 +40,9 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const statConfig = useStatConfig({
   props: {
     isShowEmptyCategories: true,
+    wallets: {
+      isShow: false,
+    },
   },
   storageKey: storageKey.value,
 })

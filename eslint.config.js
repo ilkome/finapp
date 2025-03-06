@@ -16,7 +16,6 @@ export default [
         '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
         'import/order': 'off',
         'no-console': 'off',
-        'no-extra-semi': 'error',
         'perfectionist/sort-array-includes': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-enums': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-exports': ['error', { order: 'asc', type: 'natural' }],

@@ -12,6 +12,7 @@ const props = defineProps<{
   alt?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
+  isShowCreditLimit?: boolean
   isShowIcon?: boolean
   isShowRate?: boolean
   isSort?: boolean
@@ -80,9 +81,11 @@ if (!props.isSort) {
     <!-- Main -->
     <template v-if="!props.alt">
       <div class="grid grow gap-1">
-        <div class="text-sm leading-none text-3">
+        <div class="text-3 text-sm leading-none">
           {{ wallet.name }}
         </div>
+
+        <!-- Rate -->
         <div
           v-if="props.isShowRate && wallet.currency !== currenciesStore.base && wallet.rate"
           class="opacity-90"
@@ -95,6 +98,33 @@ if (!props.isSort) {
             align="left"
             variant="2xs"
             class="text-xs opacity-70"
+          />
+        </div>
+
+        <div
+          v-if="props.isShowCreditLimit && wallet.type === 'credit' && wallet.creditLimit"
+          class="flex items-center gap-0.5"
+        >
+          <Amount
+            :amount="wallet.creditLimit - Math.abs(wallet.amount)"
+            :currencyCode="wallet.currency"
+            :isShowBaseRate="false"
+            :isShowSymbol="false"
+            align="left"
+            variant="2xs"
+          />
+
+          <div class="text-2xs opacity-70">
+            /
+          </div>
+
+          <Amount
+            :amount="wallet.creditLimit"
+            :currencyCode="wallet.currency"
+            :isShowBaseRate="false"
+            :isShowSymbol="false"
+            align="left"
+            variant="2xs"
           />
         </div>
       </div>
@@ -124,6 +154,10 @@ if (!props.isSort) {
     <!-- Alternative -->
     <template v-if="props.alt">
       <div class="grid grow gap-0.5">
+        <div class="text-3 whitespace-nowrap text-sm leading-none">
+          {{ wallet.name }}
+        </div>
+
         <div v-if="!isSort">
           <Amount
             v-if="wallet.creditLimit"
@@ -144,15 +178,11 @@ if (!props.isSort) {
             variant="2xs"
           />
         </div>
-
-        <div class="whitespace-nowrap text-sm leading-none text-3">
-          {{ wallet.name }}
-        </div>
       </div>
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hocus:bg-item-5"
+        class="sortHandle flex-center group-hocus:bg-item-5 absolute right-0 h-full rounded-md px-3"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

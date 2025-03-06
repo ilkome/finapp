@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { groupBy } from 'es-toolkit'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletId, WalletItem, WalletViewTypes, WalletViewTypesObj } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletsCurrencyFiltered, WalletsGroupedBy, WalletType, WalletViewTypes } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useAppNav } from '~/components/app/useAppNav'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { viewTypes } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
@@ -25,58 +23,49 @@ const { isModalOpen, openModal } = useAppNav()
 const { getAmountInBaseRate } = useAmount()
 
 const isShowBaseCurrencyModal = ref(false)
+const currencyFiltered = useStorage<WalletsCurrencyFiltered>('finapp-wallets-active-currency', 'all')
+const walletViewType = useStorage<WalletViewTypes | 'all'>('finapp-wallets-active-type', 'all')
 
-const currencyFiltered = useStorage('finapp-wallets-active-currency', 'all')
-const activeType = useStorage<WalletViewTypes | 'all'>(
-  'finapp-wallets-active-type',
-  'all',
-)
-const groupedBy = useStorage<'list' | 'currencies' | 'type'>(
-  'finapp-wallets-groupedBy',
-  'list',
-)
-
-function setActiveType(v: WalletViewTypes | 'all') {
-  activeType.value = v
+function setWalletViewType(v: WalletType | 'all') {
+  walletViewType.value = v
 }
 
-const groupedOptions = useStorage('finapp-wallets-groupedOptions', {
-  currencies: 0,
-  type: 0,
+const groupedBy = useStorage<WalletsGroupedBy>('finapp-wallets-groupedBy', 'none')
+const groupedBySecondary = useStorage('finapp-wallets-groupedBySecondary', {
+  currency: false,
+  type: false,
 })
 
-const selectedWallets = computed(() => {
-  return Object.fromEntries(
-    Object.entries(walletsStore.itemsComputed).filter(([_key, wallet]) => {
-      const isCurrencyMatch = currencyFiltered.value === 'all' || currencyFiltered.value === wallet.currency
-      if (!isCurrencyMatch)
-        return false
+const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
+  return Object.keys(walletsStore.itemsComputed).filter((id) => {
+    const wallet = walletsStore.itemsComputed[id]
+    if (groupedBy.value === 'currency')
+      return true
+    return currencyFiltered.value === 'all' || currencyFiltered.value === wallet?.currency
+  })
+})
 
-      if (activeType.value === 'all')
-        return !wallet.isArchived
+const selectedWalletsIds = computed<WalletId[]>(() => {
+  return selectedWalletsIdsWithCurrency.value.filter((id) => {
+    const wallet = walletsStore.itemsComputed[id]!
 
-      const typeChecks: WalletViewTypesObj = {
-        archived: wallet.isArchived ?? false,
-        available: (checkIsAvailable(wallet) && !wallet.isArchived) ?? false,
-        cash: wallet.type === 'cash' && !wallet.isArchived,
-        cashless: wallet.type === 'cashless' && !wallet.isArchived,
-        credit: wallet.type === 'credit' && !wallet.isArchived,
-        creditPossible: wallet.type === 'credit' && wallet.creditLimit > 0,
-        crypto: wallet.type === 'crypto' && !wallet.isArchived,
-        debt: wallet.type === 'debt' && !wallet.isArchived,
-        deposit: wallet.type === 'deposit' && !wallet.isArchived,
-        withdrawal: (wallet.isWithdrawal ?? false) && !wallet.isArchived,
-      }
+    if (walletViewType.value === 'isWithdrawal')
+      return wallet.isWithdrawal && !wallet.isArchived
 
-      if (activeType.value === 'available')
-        return checkIsAvailable(wallet) && !wallet.isArchived
+    if (walletViewType.value === 'isExcludeInTotal')
+      return wallet.isExcludeInTotal && !wallet.isArchived
 
-      if (activeType.value === 'archived' && wallet.isArchived)
-        return true
+    if (walletViewType.value === 'isArchived')
+      return wallet.isArchived
 
-      return typeChecks[activeType.value]
-    }),
-  )
+    if (walletViewType.value === 'isAvailable')
+      return (wallet.type === 'credit' || wallet.isWithdrawal) && !wallet.isArchived
+
+    if (walletViewType.value === 'all')
+      return !wallet.isArchived
+
+    return wallet.type === walletViewType.value && !wallet.isArchived
+  })
 })
 
 const isShowCurrencyFilter = ref(false)
@@ -85,66 +74,28 @@ function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
   if (currencyFiltered.value === code && toggle)
     toggle()
 
-  activeType.value = 'all'
+  walletViewType.value = 'all'
   currencyFiltered.value = code
   isShowCurrencyFilter.value = false
 }
 
-const groupedWalletsByCurrency = computed(() => {
-  const grouped: Record<string, WalletId[]> = Object.fromEntries(
-    walletsStore.currenciesUsed.map(currency => [currency, []]),
-  )
-
-  return walletsStore.sortedIds.reduce((grouped, id) => {
-    const wallet = walletsStore.items?.[id]
-    if (wallet?.currency && !wallet.isArchived)
-      grouped[wallet.currency]?.push(id)
-    return grouped
-  }, grouped)
-})
-
-const groupedWalletsByType = computed(() => {
-  return viewTypes.reduce((acc, type) => {
-    acc[type] = walletsStore.sortedIds.filter((id) => {
-      const wallet = walletsStore.items?.[id]
-      if (!wallet)
-        return false
-
-      const isCurrencyFiltered = currencyFiltered.value === 'all' || wallet.currency === currencyFiltered.value
-      const isAvailable = checkIsAvailable(wallet)
-
-      switch (type) {
-        case 'available':
-          return isAvailable && isCurrencyFiltered && !wallet.isArchived
-        case 'archived':
-          return isCurrencyFiltered && wallet.isArchived
-        default:
-          return wallet.type === type && isCurrencyFiltered && !wallet.isArchived
-      }
-    })
-
-    return acc
-  }, {} as Record<CurrencyCode, WalletId[]>)
-})
-
-const groupedWalletsByTypeOnly = computed(() => {
-  return Object.fromEntries(Object.entries(groupedWalletsByType.value).filter(([_, walletsIds]) => walletsIds.length > 0))
-})
-
-const totalInWallets = computed(() => {
+const counts = computed(() => {
   const sum = {
     archived: 0,
+    available: 0,
     cash: 0,
     cashless: 0,
     credit: 0,
     creditPossible: 0,
+    crypto: 0,
     debt: 0,
     deposit: 0,
+    excludeInTotal: 0,
     total: 0,
     withdrawal: 0,
   }
 
-  for (const walletId in walletsStore.itemsComputed) {
+  for (const walletId of selectedWalletsIdsWithCurrency.value) {
     const wallet = walletsStore.itemsComputed[walletId]
     if (!wallet)
       continue
@@ -158,11 +109,10 @@ const totalInWallets = computed(() => {
             noFormat: true,
           })
 
-    if (currencyFiltered.value !== 'all' && wallet.currency !== currencyFiltered.value) {
-      continue
+    if (wallet.isExcludeInTotal) {
+      sum.excludeInTotal += itemValue
     }
-
-    if (!wallet.isExcludeInTotal) {
+    else {
       sum.total += itemValue
     }
 
@@ -171,6 +121,8 @@ const totalInWallets = computed(() => {
 
     if (wallet.type === 'cashless')
       sum.cashless += itemValue
+    if (wallet.type === 'crypto')
+      sum.crypto += itemValue
 
     if (wallet.type === 'deposit')
       sum.deposit += itemValue
@@ -181,14 +133,12 @@ const totalInWallets = computed(() => {
     if (wallet.type === 'credit')
       sum.credit += itemValue
 
-    if (wallet.creditLimit) {
-      sum.creditPossible
-        = sum.creditPossible
-        + +getAmountInBaseRate({
-          amount: wallet.creditLimit ?? 0,
-          currencyCode: wallet.currency ?? 'USD',
-          noFormat: true,
-        })
+    if (wallet.type === 'credit' && wallet.creditLimit) {
+      sum.creditPossible = sum.creditPossible + +getAmountInBaseRate({
+        amount: wallet.creditLimit ?? 0,
+        currencyCode: wallet.currency ?? 'USD',
+        noFormat: true,
+      })
     }
 
     if (wallet.isWithdrawal)
@@ -199,22 +149,324 @@ const totalInWallets = computed(() => {
     }
   }
 
-  return sum
+  return {
+    all: {
+      id: 'all',
+      isShow: true,
+      value: sum.total,
+    },
+    available: {
+      id: 'isAvailable',
+      isShow: sum.withdrawal !== 0,
+      value: sum.withdrawal - Math.abs(sum.credit),
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    cash: {
+      id: 'cash',
+      isShow: Object.keys(walletsStore.itemsComputed).length > 1 && sum.cash !== 0,
+      value: sum.cash,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    cashless: {
+      id: 'cashless',
+      isShow: sum.cashless !== 0,
+      value: sum.cashless,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    credit: {
+      id: 'credit',
+      isShow: sum.credit !== 0,
+      secondValue: sum.creditPossible,
+      value: sum.credit,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    crypto: {
+      id: 'crypto',
+      isShow: sum.crypto !== 0,
+      value: sum.crypto,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    debt: {
+      id: 'debt',
+      isShow: sum.debt !== 0,
+      value: sum.debt,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    deposit: {
+      id: 'deposit',
+      isShow: sum.deposit !== 0,
+      value: sum.deposit,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    withdrawal: {
+      id: 'isWithdrawal',
+      isShow: sum.withdrawal !== 0,
+      value: sum.withdrawal,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    excludeInTotal: {
+      id: 'isExcludeInTotal',
+      isShow: sum.excludeInTotal !== 0,
+      value: sum.excludeInTotal,
+    },
+    // eslint-disable-next-line perfectionist/sort-objects
+    archived: {
+      id: 'isArchived',
+      isShow: selectedWalletsIdsWithCurrency.value.some(wallet => walletsStore.itemsComputed[wallet]?.isArchived),
+      value: sum.archived,
+    },
+  }
 })
 
-function groupByWalletType(id: WalletId) {
-  return walletsStore.items?.[id]?.type
+type WalletsGroupedByExcludedNone = Exclude<WalletsGroupedBy, 'none'>
+type WalletGroup = {
+  groups?: Record<string, WalletId[]>
+  ids: WalletId[]
+}
+type GroupToggleState = {
+  groups?: Record<string, boolean>
+  show?: boolean
+}
+type ToggleMapByGroup = Record<string, GroupToggleState>
+type WalletsToggleMap = Partial<Record<WalletsGroupedByExcludedNone, ToggleMapByGroup>>
+type GroupedWallets = Record<string, WalletGroup>
+
+// Update the storage definition with proper type and default value
+const walletsToggledMap = useStorage<WalletsToggleMap>('finapp-wallets-toggle-map', {} as WalletsToggleMap, localStorage, {
+  mergeDefaults: true,
+})
+
+// Helper functions to improve readability
+function groupWalletsByStrategy(ids: WalletId[], strategy: keyof WalletItem): Record<string, WalletId[]> {
+  return Object.groupBy(ids, (id) => {
+    const wallet = walletsStore.itemsComputed[id]
+    return wallet ? String(wallet[strategy] || '') : ''
+  }) as Record<string, WalletId[]>
 }
 
-function groupByWalletCurrency(id: WalletId) {
-  const wallet = walletsStore.items?.[id]
-  return wallet?.currency
+function createPrimaryGroups(grouped: Record<string, WalletId[]>): GroupedWallets {
+  return Object.entries(grouped).reduce<GroupedWallets>((acc, [key, ids]) => {
+    acc[key] = { groups: {}, ids }
+    return acc
+  }, {})
 }
+
+function createSecondaryGroups(grouped: Record<string, WalletId[]>, secondaryStrategy: keyof WalletItem): GroupedWallets {
+  return Object.entries(grouped).reduce<GroupedWallets>((acc, [key, ids]) => {
+    acc[key] = {
+      groups: groupWalletsByStrategy(ids, secondaryStrategy),
+      ids,
+    }
+    return acc
+  }, {})
+}
+
+const groupedWalletsWithIds = computed<GroupedWallets | false>(() => {
+  if (groupedBy.value === 'none')
+    return false
+
+  const groupingStrategies = {
+    currency: {
+      primary: 'currency',
+      secondary: 'type',
+    },
+    type: {
+      primary: 'type',
+      secondary: 'currency',
+    },
+  } as const
+
+  const strategy = groupingStrategies[groupedBy.value as WalletsGroupedByExcludedNone]
+  if (!strategy)
+    return false
+
+  const ids = selectedWalletsIds.value
+  const primaryGrouped = groupWalletsByStrategy(ids, strategy.primary)
+
+  let useSecondaryGrouping = false
+  if (groupedBy.value === 'currency') {
+    useSecondaryGrouping = !!groupedBySecondary.value.currency
+  }
+  else if (groupedBy.value === 'type') {
+    useSecondaryGrouping = !!groupedBySecondary.value.type
+  }
+
+  return useSecondaryGrouping
+    ? createSecondaryGroups(primaryGrouped, strategy.secondary)
+    : createPrimaryGroups(primaryGrouped)
+})
+
+function toggleMap(groupPrimary: string, groupSecondary?: string) {
+  const currentGroup = groupedBy.value
+  if (currentGroup === 'none')
+    return
+
+  const currentToggleMap = { ...walletsToggledMap.value }
+  currentToggleMap[currentGroup] ??= {}
+
+  if (!currentToggleMap[currentGroup]![groupPrimary])
+    currentToggleMap[currentGroup]![groupPrimary] = { groups: {} }
+
+  if (groupSecondary) {
+    const primaryGroup = currentToggleMap[currentGroup]![groupPrimary]
+    primaryGroup.groups ??= {}
+
+    // Toggle the secondary group
+    const currentValue = primaryGroup.groups[groupSecondary]
+    primaryGroup.groups[groupSecondary] = currentValue === undefined ? false : !currentValue
+  }
+  // Handle primary group toggle
+  else {
+    const primaryGroup = currentToggleMap[currentGroup]![groupPrimary]
+    primaryGroup.groups ??= {}
+    primaryGroup.show = primaryGroup.show === undefined ? false : !primaryGroup.show
+  }
+
+  walletsToggledMap.value = currentToggleMap
+}
+
+const typeGroupsStatus = computed(() => {
+  const currentGroup = groupedBy.value
+  if (currentGroup === 'none' || !walletsToggledMap.value[currentGroup])
+    return { isAllOpen: false, isAllOpenInside: false, isAnyOpen: false, isAnyOpenInside: false }
+
+  const groups = walletsToggledMap.value[currentGroup] || {}
+
+  return {
+    isAllOpen: Object.values(groups).every(group => !!group.show),
+    isAllOpenInside: Object.values(groups).every(group =>
+      Object.values(group.groups || {}).every(isOpen => !!isOpen),
+    ),
+    isAnyOpen: Object.values(groups).some(group => !!group.show),
+    isAnyOpenInside: Object.values(groups).some(group =>
+      Object.values(group.groups || {}).some(isOpen => !!isOpen),
+    ),
+  }
+})
+
+function toggleOpened() {
+  const currentGroup = groupedBy.value
+  if (currentGroup === 'none' || !groupedWalletsWithIds.value)
+    return
+
+  const currentToggleMap = { ...walletsToggledMap.value }
+  currentToggleMap[currentGroup] ??= {}
+
+  const { isAllOpen, isAllOpenInside } = typeGroupsStatus.value
+  const groupPrimaries = Object.keys(groupedWalletsWithIds.value)
+
+  // We know groupedWalletsWithIds.value is not false at this point
+  const groupedWallets = groupedWalletsWithIds.value as GroupedWallets
+
+  // Check if we're using secondary grouping
+  let hasSecondaryGrouping = false
+  if (currentGroup === 'currency') {
+    hasSecondaryGrouping = !!groupedBySecondary.value.currency
+  }
+  else if (currentGroup === 'type') {
+    hasSecondaryGrouping = !!groupedBySecondary.value.type
+  }
+
+  // If we don't have secondary grouping, just toggle the primary groups' show property
+  if (!hasSecondaryGrouping) {
+    // If all primary groups are open, close them all
+    // Otherwise, open them all
+    const newShowState = !isAllOpen
+
+    groupPrimaries.forEach((groupPrimary) => {
+      const primaryGroup = currentToggleMap[currentGroup]![groupPrimary] || { groups: {} }
+
+      currentToggleMap[currentGroup]![groupPrimary] = {
+        ...primaryGroup,
+        show: newShowState,
+      }
+    })
+  }
+  // If we have secondary grouping, handle the three cases as before
+  else {
+    // Case 1: All primary groups are open but not all inner groups are open
+    // Set all inner groups to true
+    if (isAllOpen && !isAllOpenInside) {
+      groupPrimaries.forEach((groupPrimary) => {
+        const primaryGroup = currentToggleMap[currentGroup]![groupPrimary] || { groups: {}, show: true }
+
+        // Get all secondary groups for this primary group
+        const walletGroup = groupedWallets[groupPrimary]
+        const secondaryGroups = walletGroup && walletGroup.groups ? walletGroup.groups : {}
+
+        // Set all inner groups to true
+        currentToggleMap[currentGroup]![groupPrimary] = {
+          ...primaryGroup,
+          groups: Object.keys(secondaryGroups).reduce((acc, groupSecondary) => {
+            acc[groupSecondary] = true
+            return acc
+          }, { ...primaryGroup.groups }),
+          show: true,
+        }
+      })
+    }
+    // Case 2: All primary groups and all inner groups are open
+    // Set everything to false
+    else if (isAllOpen && isAllOpenInside) {
+      groupPrimaries.forEach((groupPrimary) => {
+        const primaryGroup = currentToggleMap[currentGroup]![groupPrimary] || { groups: {}, show: false }
+
+        // Get all secondary groups for this primary group
+        const walletGroup = groupedWallets[groupPrimary]
+        const secondaryGroups = walletGroup && walletGroup.groups ? walletGroup.groups : {}
+
+        // Set primary show to false and all inner groups to false
+        currentToggleMap[currentGroup]![groupPrimary] = {
+          ...primaryGroup,
+          groups: Object.keys(secondaryGroups).reduce((acc, groupSecondary) => {
+            acc[groupSecondary] = false
+            return acc
+          }, { ...primaryGroup.groups }),
+          show: false,
+        }
+      })
+    }
+    // Case 3: Not all primary groups are open
+    else {
+      groupPrimaries.forEach((groupPrimary) => {
+        const primaryGroup = currentToggleMap[currentGroup]![groupPrimary] || { groups: {} }
+
+        currentToggleMap[currentGroup]![groupPrimary] = {
+          ...primaryGroup,
+          show: true,
+        }
+      })
+    }
+  }
+
+  walletsToggledMap.value = currentToggleMap
+}
+
+const groupTabs = computed(() => {
+  const items: {
+    id: WalletsGroupedBy
+    label: string
+  }[] = [{
+    id: 'none',
+    label: t('none'),
+  }, {
+    id: 'type',
+    label: t('type'),
+  }]
+
+  if (walletsStore.currenciesUsed.length > 1) {
+    items.push({
+      id: 'currency',
+      label: t('currencies'),
+    })
+  }
+
+  return items
+})
 
 function countWalletsSum(
   walletsIds: WalletId[],
   isConvert = true,
-  isExcludeInTotal = false,
 ) {
   return walletsIds.reduce((acc, id) => {
     const wallet = walletsStore.itemsComputed[id]
@@ -232,73 +484,16 @@ function countWalletsSum(
       )
     }
 
-    if (isExcludeInTotal && wallet.isExcludeInTotal)
+    if (wallet.isExcludeInTotal)
       return acc
     return acc + wallet.amount
   }, 0)
 }
-
-function checkIsAvailable(wallet: WalletItem) {
-  return wallet.type === 'credit' || wallet.isWithdrawal
-}
-
-const counts = computed(() => ({
-  all: {
-    id: 'all',
-    isShow: true,
-    value: totalInWallets.value.total - totalInWallets.value.credit - totalInWallets.value.debt,
-  },
-  cashless: {
-    id: 'cashless',
-    isShow: groupedBy.value === 'list' && totalInWallets.value.cashless !== 0,
-    value: totalInWallets.value.cashless,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  cash: {
-    id: 'cash',
-    isShow: Object.keys(walletsStore.items ?? {}).length > 1 && groupedBy.value === 'list' && totalInWallets.value.cash !== 0,
-    value: totalInWallets.value.cash,
-  },
-  credit: {
-    id: 'credit',
-    isShow: groupedBy.value === 'list' && totalInWallets.value.credit !== 0,
-    value: totalInWallets.value.credit,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  creditPossible: {
-    id: 'creditPossible',
-    isShow: totalInWallets.value.creditPossible !== 0,
-    value: totalInWallets.value.creditPossible + totalInWallets.value.credit,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  debt: {
-    id: 'debt',
-    isShow: groupedBy.value === 'list' && totalInWallets.value.debt !== 0,
-    value: totalInWallets.value.debt,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  deposit: {
-    id: 'deposit',
-    isShow: groupedBy.value === 'list' && totalInWallets.value.deposit !== 0,
-    value: totalInWallets.value.deposit,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  withdrawal: {
-    id: 'withdrawal',
-    isShow: groupedBy.value === 'list' && totalInWallets.value.withdrawal !== 0,
-    value: totalInWallets.value.withdrawal,
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  archived: {
-    id: 'archived',
-    isShow: Object.values(walletsStore.items ?? {}).some(wallet => wallet.isArchived),
-    value: totalInWallets.value.archived,
-  },
-}))
 </script>
 
 <template>
   <UiPage>
+    <!-- Header -->
     <UiHeader>
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
       <template #actions>
@@ -323,7 +518,7 @@ const counts = computed(() => ({
         <UiButtonAccent
           @click="router.push('/wallets/new')"
         >
-          {{ t("wallets.new") }}
+          {{ t('wallets.new') }}
         </UiButtonAccent>
       </div>
     </div>
@@ -331,393 +526,236 @@ const counts = computed(() => ({
     <!-- Content -->
     <div
       v-else
-      class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
+      class="@xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12 grid max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
-      <div class="@xl/page:grid-cols-2 @xl/page:gap-12 grid">
-        <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 @md/page:pb-2 grid content-start pb-1">
+      <!-- Right -->
+      <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 grid content-start gap-3">
+        <!-- Wallets Currencies -->
+        <WalletsCurrencies
+          v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
+          :currencyFiltered
+          @onSelectFilterCurrency="code => currencyFiltered = code"
+        />
+
+        <!-- Total -->
+        <WalletsStatistics
+          :storageKey="`finapp-wallets-total-${groupedBy}`"
+          :activeType="walletViewType"
+          :currencyCode="currenciesStore.base"
+          :counts="counts"
+          @click="setWalletViewType"
+        />
+
+        <UiButtonWithRight
+          class="@xl/page:grid hidden grow"
+          @click="isShowBaseCurrencyModal = true"
+        >
+          <template #label>
+            {{ t('currencies.base') }}
+          </template>
+          <template #value>
+            {{ currenciesStore.base }}
+          </template>
+        </UiButtonWithRight>
+      </div>
+
+      <!-- Left content -->
+      <div>
+        <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2">
+          <UiTabs2>
+            <UiTabsItem4
+              v-for="item in groupTabs"
+              :key="item.id"
+              :isActive="item.id === groupedBy"
+              @click="groupedBy = item.id"
+            >
+              {{ item.label }}
+            </UiTabsItem4>
+          </UiTabs2>
+
           <div
-            v-if="walletsStore.currenciesUsed.length > 1"
-            class="@xl/page:hidden grid grid-cols-2 gap-2 pb-2"
+            v-if="groupedBy !== 'none'"
+            class="ml-auto flex items-center gap-1"
           >
-            <!-- Currencies -->
-            <UiButtonWithRight
-              isShort
-              @click="isShowCurrencyFilter = true"
+            <UiItem1
+              @click="
+                groupedBy === 'currency'
+                  ? groupedBySecondary.currency = !groupedBySecondary.currency
+                  : groupedBy === 'type'
+                    ? groupedBySecondary.type = !groupedBySecondary.type
+                    : null
+              "
             >
-              <template #label>
-                {{ t('filterByCurrency') }}
-              </template>
-              <template #value>
-                {{ currencyFiltered === 'all' ? t('all') : currencyFiltered }}
-              </template>
-            </UiButtonWithRight>
+              <Icon
+                :name="
+                  (groupedBy === 'currency' && groupedBySecondary.currency)
+                    || (groupedBy === 'type' && groupedBySecondary.type)
+                    ? 'lucide:network'
+                    : 'lucide:folder-tree'
+                "
+                size="18"
+              />
+            </UiItem1>
 
-            <!-- Base -->
-            <UiButtonWithRight
-              isShort
-              @click="isShowBaseCurrencyModal = true"
-            >
-              <template #label>
-                {{ t('currencies.base') }}
-              </template>
-              <template #value>
-                {{ currenciesStore.base }}
-              </template>
-            </UiButtonWithRight>
+            <UiItem1 @click="toggleOpened">
+              <Icon
+                v-if="typeGroupsStatus.isAllOpen"
+                name="lucide:folder-open"
+              />
+              <Icon
+                v-else-if="typeGroupsStatus.isAnyOpen"
+                name="lucide:folder-open-dot"
+              />
+              <Icon
+                v-else
+                name="lucide:folder"
+              />
+            </UiItem1>
           </div>
-
-          <!-- Wallets Currencies -->
-          <UiToggle2
-            v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currencies'"
-            :initStatus="true"
-            :lineWidth="0"
-            class="@xl/page:grid @xl/page:max-w-xl hidden"
-            openPadding="!pb-0"
-            storageKey="finapp-wallets-currencies"
-          >
-            <template #header="{ toggle, isShown }">
-              <UiTitle8
-                :isShown
-                @click="toggle"
-              >
-                {{ t('filterByCurrency') }}
-                {{ (currencyFiltered !== 'all' && !isShown) ? currencyFiltered : '' }}
-              </UiTitle8>
-            </template>
-
-            <template #default="{ toggle }">
-              <UiTabs2 class="@xl/page:px-0 flex gap-1 px-2">
-                <DateLinkItem
-                  :isActive="currencyFiltered === 'all'"
-                  @click="onSelectFilterCurrency('all', toggle)"
-                >
-                  {{ t('common.all') }}
-                </DateLinkItem>
-
-                <DateLinkItem
-                  v-for="currency in walletsStore.currenciesUsed"
-                  :key="currency"
-                  :isActive="currencyFiltered === currency"
-                  @click="onSelectFilterCurrency(currency, toggle)"
-                >
-                  {{ currency }}
-                </DateLinkItem>
-              </UiTabs2>
-            </template>
-          </UiToggle2>
-
-          <!-- Total -->
-          <UiToggle2
-            :initStatus="true"
-            :lineWidth="0"
-            :storageKey="`finapp-wallets-total-${groupedBy}`"
-            class="@xl/page:grid hidden pb-3"
-            openPadding="!pb-4"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex grow items-center justify-between">
-                <UiTitle8 :isShown @click="toggle">
-                  {{ t('statistics.title') }}
-                </UiTitle8>
-              </div>
-            </template>
-
-            <WalletsTotal
-              :activeType="groupedBy === 'list' ? activeType : false"
-              :currencyCode="currenciesStore.base"
-              :items="Object.values(counts).filter((item) => item.isShow)"
-              @click="setActiveType"
-            />
-          </UiToggle2>
-
-          <UiButtonWithRight
-            class="@xl/page:grid hidden grow"
-            @click="isShowBaseCurrencyModal = true"
-          >
-            <template #label>
-              {{ t('currencies.base') }}
-            </template>
-            <template #value>
-              {{ currenciesStore.base }}
-            </template>
-          </UiButtonWithRight>
         </div>
 
-        <div>
-          <div class="mb-2 flex items-center gap-2 md:pt-2">
-            <UiTabs2>
-              <UiTabsItem4
-                :isActive="groupedBy === 'list'"
-                @click="groupedBy = 'list'"
-              >
-                {{ t('list') }}
-              </UiTabsItem4>
-              <UiTabsItem4
-                :isActive="groupedBy === 'type'"
-                @click="groupedBy = 'type'"
-              >
-                {{ t('type') }}
-              </UiTabsItem4>
-
-              <UiTabsItem4
-                v-if="walletsStore.currenciesUsed.length > 1"
-                :isActive="groupedBy === 'currencies'"
-                @click="groupedBy = 'currencies'"
-              >
-                {{ t('currencies') }}
-              </UiTabsItem4>
-              <UiTabsItem4
-                v-if="groupedBy !== 'list'"
-                class="ml-auto grow-0 px-5"
-                @click="groupedOptions[groupedBy] = groupedOptions[groupedBy] === 0 ? 1 : 0"
-              >
-                <Icon
-                  :name="groupedOptions[groupedBy] === 0 ? 'lucide:folder-tree' : 'lucide:network'"
-                  size="18"
-                />
-              </UiTabsItem4>
-            </UiTabs2>
-          </div>
-
-          <!-- Statistics -->
-          <UiToggle2
-            :initStatus="true"
-            :lineWidth="0"
-            :storageKey="`finapp-wallets-total-${groupedBy}`"
-            class="@xl/page:hidden pb-3"
-            openPadding="!pb-4"
-          >
-            <template #header="{ toggle, isShown }">
-              <div class="flex grow items-center justify-between">
-                <UiTitle8 :isShown @click="toggle">
-                  {{ t('statistics.title') }}
-                </UiTitle8>
-              </div>
-            </template>
-
-            <WalletsTotal
-              :activeType="groupedBy === 'list' ? activeType : false"
-              :currencyCode="currenciesStore.base"
-              :items="Object.values(counts).filter((item) => item.isShow)"
-              @click="setActiveType"
-            />
-          </UiToggle2>
-
-          <!-- List -->
+        <!-- Wallets List -->
+        <div class="@xl/page:max-w-lg md:max-w-lg">
+          <!-- No grouping -->
           <div
-            v-if="groupedBy === 'list'"
-            class="@xl/page:max-w-lg"
+            v-if="groupedBy === 'none'"
+            class="border-item-4 bg-item-2 rounded-xl md:max-w-lg"
           >
             <WalletsItem
-              v-for="(walletItem, walletId) in selectedWallets"
+              v-for="walletId in selectedWalletsIds"
               :key="walletId"
-              :wallet="walletItem"
+              :wallet="walletsStore.itemsComputed[walletId]!"
               :walletId
               :lineWidth="2"
               class="group"
               isShowBaseRate
               isShowIcon
               isShowRate
+              isShowCreditLimit
               @click="router.push(`/wallets/${walletId}`)"
             />
           </div>
 
-          <!-- By currencies -->
-          <template v-if="groupedBy === 'currencies'">
-            <UiToggle2
-              v-for="(walletsIds, currency) in groupedWalletsByCurrency"
-              :key="currency"
-              :storageKey="`finapp-wallets-show-${currency}`"
-              :initStatus="true"
-              :lineWidth="1"
-              openPadding="!pb-3"
+          <!-- Grouping -->
+          <div
+            v-if="groupedBy !== 'none' && groupedWalletsWithIds"
+            class="grid gap-4"
+          >
+            <UiToggle3
+              v-for="(content, groupPrimary) in groupedWalletsWithIds"
+              :key="groupPrimary"
+              :class="{
+                'bg-item-2 rounded': Object.keys(content.groups ?? {}).length === 0,
+              }"
+              :isShown="
+                walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
+              "
             >
-              <template #header="{ toggle, isShown }">
-                <div
-                  class="flex grow items-center justify-between pr-3"
-                  @click="toggle"
+              <template #header="{ isShown }">
+                <UiTitleDropRight
+                  :isShown
+                  @click="toggleMap(groupPrimary)"
                 >
-                  <UiTitleDropRight :isShown>
-                    {{ currency }} {{ !isShown ? walletsIds.length : '' }}
-                  </UiTitleDropRight>
-
-                  <div class="py-2">
-                    <Amount
-                      :amount="countWalletsSum(walletsIds, false, true)"
-                      :currencyCode="currency"
-                    />
+                  <div class="font-tertiary !text-3 text-base font-semibold leading-none">
+                    {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
-                </div>
-              </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
-                <template v-if="groupedOptions.currencies === 0">
-                  <WalletsItem
-                    v-for="walletId in walletsIds"
-                    :key="walletId"
-                    :wallet="walletsStore.itemsComputed[walletId]"
-                    :walletId
-                    :lineWidth="2"
-                    isShowBaseRate
-                    isShowIcon
-                    isShowRate
-                    class="group"
-                    @click="router.push(`/wallets/${walletId}`)"
-                  />
-                </template>
-
-                <template v-if="groupedOptions.currencies === 1">
-                  <UiToggle2
-                    v-for="(groupedWalletsIds, grouped) in groupBy(walletsIds, groupByWalletType)"
-                    :key="grouped"
-                    :initStatus="true"
-                    :lineWidth="1"
-                    :storageKey="`finapp-wallets-show-${currency}-${grouped}`"
-                    openPadding="!pb-3"
-                  >
-                    <template #header="{ isShown, toggle }">
-                      <div
-                        class="flex grow items-center justify-between pr-3"
-                        @click="toggle"
-                      >
-                        <UiTitleDropRight :isShown>
-                          {{ t(`money.types.${grouped}`) }}
-                        </UiTitleDropRight>
-                        <div class="py-2">
-                          <Amount
-                            :amount="countWalletsSum(groupedWalletsIds, false)"
-                            :currencyCode="currency"
-                          />
-                        </div>
-                      </div>
-                    </template>
-
-                    <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
-                      <WalletsItem
-                        v-for="walletId in groupedWalletsIds"
-                        :key="walletId"
-                        :lineWidth="2"
-                        :wallet="walletsStore.itemsComputed[walletId]"
-                        :walletId
-                        class="group"
-                        isShowBaseRate
-                        isShowIcon
-                        isShowRate
-                        @click="router.push(`/wallets/${walletId}`)"
-                      />
-                    </div>
-                  </UiToggle2>
-                </template>
-              </div>
-            </UiToggle2>
-          </template>
-
-          <!-- By Type -->
-          <template v-if="groupedBy === 'type'">
-            <UiToggle2
-              v-for="(walletsIds, type) in groupedWalletsByTypeOnly"
-              :key="type"
-              :storageKey="`finapp-wallets-show-${type}`"
-              :initStatus="true"
-              :lineWidth="1"
-              openPadding="!pb-3"
-            >
-              <template #header="{ toggle, isShown }">
-                <div
-                  class="flex grow items-center justify-between pr-3"
-                  @click="toggle"
-                >
-                  <UiTitleDropRight :isShown>
-                    {{ t(`money.types.${type}`) }} {{ walletsIds.length }}
-                  </UiTitleDropRight>
-
-                  <div class="py-2">
+                  <div class="ml-auto">
                     <Amount
-                      :amount="countWalletsSum(walletsIds)"
+                      :amount="countWalletsSum(content.ids)"
                       :currencyCode="currenciesStore.base"
+                      :isShowBaseRate="false"
+                    />
+                    <Amount
+                      v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                      :amount="countWalletsSum(content.ids, false)"
+                      :currencyCode="groupPrimary"
+                      :isShowBaseRate="false"
+                      variant="2xs"
                     />
                   </div>
-                </div>
+                </UiTitleDropRight>
               </template>
 
-              <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
-                <template v-if="groupedOptions.type === 0">
+              <div
+                v-if="Object.keys(content.groups ?? {}).length > 0"
+                class="grid gap-2"
+              >
+                <UiToggle3
+                  v-for="(ids, groupSecondary) in content.groups"
+                  :key="groupSecondary"
+                  :isShown="
+                    walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
+                  "
+                  class="border-item-4 bg-item-2 _border group grid gap-1 rounded-xl"
+                >
+                  <template #header="{ isShown }">
+                    <UiTitleDropRight
+                      :isShown
+                      @click="toggleMap(groupPrimary, groupSecondary)"
+                    >
+                      <div class="font-tertiary !text-3 text-base font-semibold leading-none">
+                        {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
+                      </div>
+                      <div class="ml-auto">
+                        <Amount
+                          :amount="countWalletsSum(ids)"
+                          :currencyCode="currenciesStore.base"
+                          :isShowBaseRate="false"
+                        />
+                        <Amount
+                          v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                          :amount="countWalletsSum(ids, false)"
+                          :currencyCode="groupPrimary"
+                          :isShowBaseRate="false"
+                          variant="2xs"
+                        />
+                      </div>
+                    </UiTitleDropRight>
+                  </template>
+
                   <WalletsItem
-                    v-for="walletId in walletsIds"
+                    v-for="walletId in ids"
                     :key="walletId"
                     :lineWidth="2"
-                    :wallet="walletsStore.itemsComputed[walletId]"
+                    :wallet="walletsStore.itemsComputed[walletId]!"
                     :walletId
                     class="group"
                     isShowBaseRate
+                    isShowCreditLimit
                     isShowIcon
                     isShowRate
                     @click="router.push(`/wallets/${walletId}`)"
                   />
-                </template>
-
-                <template v-if="groupedOptions.type === 1">
-                  <UiToggle2
-                    v-for="(groupedWalletsIds, currency) in groupBy(walletsIds, groupByWalletCurrency)"
-                    :key="currency"
-                    :storageKey="`finapp-wallets-show-${type}-${currency}`"
-                    :initStatus="true"
-                    :lineWidth="1"
-                    openPadding="!pb-3"
-                  >
-                    <template #header="{ toggle, isShown }">
-                      <div
-                        class="flex grow items-center justify-between pr-3"
-                        @click="toggle"
-                      >
-                        <UiTitleDropRight :isShown>
-                          {{ currency }}
-                        </UiTitleDropRight>
-
-                        <div class="py-2">
-                          <Amount
-                            :amount="countWalletsSum(groupedWalletsIds)"
-                            :currencyCode="currenciesStore.base"
-                            :isShowBaseRate="false"
-                          />
-                          <Amount
-                            v-if="currenciesStore.base !== currency"
-                            :amount="countWalletsSum(groupedWalletsIds, false)"
-                            :currencyCode="currency"
-                            :isShowBaseRate="false"
-                            variant="2xs"
-                          />
-                        </div>
-                      </div>
-                    </template>
-
-                    <div class="ml-5 -translate-x-px border-l border-item-4 pl-3">
-                      <WalletsItem
-                        v-for="walletId in groupedWalletsIds"
-                        :key="walletId"
-                        :lineWidth="2"
-                        :wallet="walletsStore.itemsComputed[walletId]"
-                        :walletId
-                        class="group"
-                        isShowBaseRate
-                        isShowIcon
-                        isShowRate
-                        @click="router.push(`/wallets/${walletId}`)"
-                      />
-                    </div>
-                  </UiToggle2>
-                </template>
+                </UiToggle3>
               </div>
-            </UiToggle2>
-          </template>
+
+              <template v-else>
+                <WalletsItem
+                  v-for="walletId in content.ids"
+                  :key="walletId"
+                  :lineWidth="2"
+                  :wallet="walletsStore.itemsComputed[walletId]!"
+                  :walletId
+                  class="group"
+                  isShowBaseRate
+                  isShowCreditLimit
+                  isShowIcon
+                  isShowRate
+                  @click="router.push(`/wallets/${walletId}`)"
+                />
+              </template>
+            </UiToggle3>
+          </div>
         </div>
       </div>
     </div>
   </UiPage>
 
-  <!-- Sort -->
+  <!-- Sort Modal -->
   <WalletsSortModal v-if="isModalOpen('walletsSort')" />
 
+  <!-- Base Currency Modal -->
   <CurrenciesModal
     v-if="isShowBaseCurrencyModal"
     :activeCode="currenciesStore.base"
@@ -725,6 +763,7 @@ const counts = computed(() => ({
     @onClose="isShowBaseCurrencyModal = false"
   />
 
+  <!-- Currency Filter Modal -->
   <CurrenciesModal
     v-if="walletsStore.currenciesUsed.length > 1 && isShowCurrencyFilter"
     :activeCode="currencyFiltered"
@@ -738,13 +777,11 @@ const counts = computed(() => ({
 <i18n lang="yaml">
 en:
   currencies: Currencies
-  filterByCurrency: Filter by
-  list: List
+  none: List
   type: Type
 
 ru:
   currencies: Валюты
-  filterByCurrency: Валюты кошельков
-  list: Список
+  none: Список
   type: Тип
 </i18n>

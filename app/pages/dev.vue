@@ -180,9 +180,9 @@
               UiToggle
             </UiToggle>
 
-            <UiToggle2>
-              UiToggle2
-            </UiToggle2>
+            <UiToggleWithStorage>
+              UiToggleWithStorage
+            </UiToggleWithStorage>
 
             <UiToggle3 isShown>
               UiToggle3

@@ -278,7 +278,7 @@ async function onDragEnd() {
 
   const isNeedClose
     = nextCurrentY.value >= settings.pixelsNeedToDrugForClose
-    && direction.value === 'down'
+      && direction.value === 'down'
 
   if (isNeedClose) {
     close()

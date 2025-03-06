@@ -12,20 +12,17 @@ export const types = [
 ] as const
 
 export const viewTypes = [
-  'available',
   ...types,
-  'creditPossible',
-  'withdrawal',
-  'archived',
+  'isAvailable',
+  'isWithdrawal',
+  'isArchived',
+  'isExcludeInTotal',
 ] as const
 
 export type WalletId = string
 export type WalletType = typeof types[number]
 
 export type WalletViewTypes = typeof viewTypes[number]
-export type WalletViewTypesObj = {
-  [K in WalletViewTypes]: boolean
-}
 
 export const icons: Record<WalletType, string> = {
   cash: 'lucide:banknote',
@@ -87,3 +84,6 @@ export type WalletItemComputed = WalletItem & {
 }
 
 export type WalletsComputed = Record<WalletId, WalletItemComputed>
+
+export type WalletsGroupedBy = 'type' | 'currency' | 'none'
+export type WalletsCurrencyFiltered = 'all' | CurrencyCode
