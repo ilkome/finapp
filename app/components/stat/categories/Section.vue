@@ -62,21 +62,21 @@ function getBiggestCatNumber(categories: CategoryWithData[]) {
   }
 }
 
-type CategoryState = {
-  categories?: CategoryStateInside
-  show: boolean
-}
-
 type CategoryStateInside = Record<CategoryId, { show: boolean }>
+type CategoryState = { categories?: CategoryStateInside, show: boolean }
 type CategoriesState = Record<CategoryId, CategoryState>
+
+function createInitialChildState(childIds?: CategoryId[]): CategoryStateInside {
+  return (childIds ?? []).reduce((acc, childId) => {
+    acc[childId] = { show: false }
+    return acc
+  }, {} as CategoryStateInside)
+}
 
 function createInitialState(storeCategories: Categories): CategoriesState {
   return Object.entries(storeCategories).reduce((acc, [id, cat]) => {
     acc[id] = {
-      categories: (cat.childIds ?? []).reduce((childAcc, childId) => {
-        childAcc[childId] = { show: false }
-        return childAcc
-      }, {} as CategoryStateInside),
+      categories: createInitialChildState(cat.childIds),
       show: false,
     }
     return acc
@@ -88,28 +88,32 @@ const categoriesOpened = useStorage<CategoriesState>(
   createInitialState(categoriesStore.items ?? {}),
 )
 
+function getChildState(cat: CategoryWithData): CategoryStateInside {
+  return Object.values(cat.categories ?? {}).reduce((acc, child) => {
+    acc[child.id] = { show: categoriesOpened.value[cat.id]?.categories?.[child.id]?.show ?? false }
+    return acc
+  }, {} as CategoryStateInside)
+}
+
 function getCurrentState(categories: CategoryWithData[]): CategoriesState {
-  return Object.values(categories).reduce((acc, cat) => {
+  return categories.reduce((acc, cat) => {
     acc[cat.id] = {
-      categories: Object.values(cat.categories ?? {}).reduce((childAcc, child) => {
-        childAcc[child.id] = { show: categoriesOpened.value[cat.id]?.categories?.[child.id]?.show ?? false }
-        return childAcc
-      }, {} as CategoryStateInside),
+      categories: getChildState(cat),
       show: categoriesOpened.value[cat.id]?.show ?? false,
     }
-
     return acc
   }, {} as CategoriesState)
 }
 
 const currentState = computed(() => getCurrentState(categoriesWithData.value))
+
 const openedStatus = computed(() => {
-  const categories = Object.values(currentState.value)
+  const cats = Object.values(currentState.value)
   return {
-    isAllChildOpen: categories.every(cat => Object.values(cat.categories ?? {}).every(c => c.show)),
-    isAllRootOpen: categories.every(cat => cat.show),
-    isAnyChildOpen: categories.some(cat => Object.values(cat.categories ?? {}).some(c => c.show)),
-    isAnyRootOpen: categories.some(cat => cat.show),
+    isAllChildOpen: cats.every(cat => Object.values(cat.categories ?? {}).every(c => c.show)),
+    isAllRootOpen: cats.every(cat => cat.show),
+    isAnyChildOpen: cats.some(cat => Object.values(cat.categories ?? {}).some(c => c.show)),
+    isAnyRootOpen: cats.some(cat => cat.show),
   }
 })
 
@@ -118,28 +122,23 @@ function toggleOpened() {
     updateState(currentState.value, { childShow: true })
     return
   }
-
   if (openedStatus.value.isAnyRootOpen) {
     updateState(currentState.value, { childShow: false, parentShow: false })
     return
   }
-
   updateState(currentState.value, { parentShow: true })
 }
 
 function toggleRoot(id: CategoryId) {
   const root = currentState.value[id]
   const allOpen = Object.values(root?.categories ?? {}).some(c => c.show)
-
   if (root?.show && allOpen) {
     categoriesOpened.value[id].categories = Object.keys(currentState.value[id]?.categories ?? {}).reduce((childAcc, childId) => {
       childAcc[childId] = { show: false }
       return childAcc
     }, {} as CategoryStateInside)
-
     return
   }
-
   categoriesOpened.value[id].show = !categoriesOpened.value[id]?.show
 }
 
@@ -147,29 +146,21 @@ function toggleChild(id: CategoryId, childId: CategoryId) {
   categoriesOpened.value[id].categories[childId].show = !categoriesOpened.value[id]?.categories?.[childId]?.show
 }
 
-// Combined update function
-function updateState(
-  state: CategoriesState,
-  options: { childShow?: boolean, parentShow?: boolean },
-) {
+function updateState(state: CategoriesState, options: { childShow?: boolean, parentShow?: boolean }) {
   const { childShow, parentShow } = options
-
-  categoriesOpened.value = defu(
-    Object.entries(state).reduce((acc, [id, cat]) => {
-      acc[id] = {
-        ...cat,
-        ...(parentShow !== undefined && { show: parentShow }),
-        ...(childShow !== undefined && {
-          categories: Object.fromEntries(
-            Object.keys(cat.categories ?? {})
-              .map(childId => [childId, { show: childShow }]),
-          ),
-        }),
-      }
-      return acc
-    }, {} as CategoriesState),
-    categoriesOpened.value,
-  )
+  const newState = Object.entries(state).reduce((acc, [id, cat]) => {
+    acc[id] = { ...cat }
+    if (parentShow !== undefined) {
+      acc[id].show = parentShow
+    }
+    if (childShow !== undefined) {
+      acc[id].categories = Object.fromEntries(
+        Object.keys(cat.categories ?? {}).map(childId => [childId, { show: childShow }]),
+      )
+    }
+    return acc
+  }, {} as CategoriesState)
+  categoriesOpened.value = defu(newState, categoriesOpened.value)
 }
 </script>
 
@@ -183,7 +174,7 @@ function updateState(
       v-if="statConfig.config.value.vertical.isShow"
       :storageKey="`${storageKey}-${type}-vertical`"
       :initStatus="true"
-      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 border-item-4 bg-item-2 rounded-xl border p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -275,7 +266,7 @@ function updateState(
       v-if="statConfig.config.value.catsRound.isShow"
       :storageKey="`${storageKey}-${type}-rounds`"
       :initStatus="true"
-      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 border-item-4 bg-item-2 rounded-xl border p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -357,7 +348,7 @@ function updateState(
       v-if="statConfig.config.value.catsList.isShow"
       :storageKey="`${storageKey}-${type}-list`"
       :initStatus="true"
-      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="@3xl/page:p-3 border-item-4 bg-item-2 rounded-xl border p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -374,15 +365,15 @@ function updateState(
               @click="toggleOpened"
             >
               <Icon
-                v-if="openedStatus.isAllRootOpen && !openedStatus.isAllChildOpen"
+                v-if="openedStatus.isAnyRootOpen && !openedStatus.isAllChildOpen"
                 name="lucide:folder-open"
               />
               <Icon
-                v-if="openedStatus.isAllRootOpen && openedStatus.isAllChildOpen"
+                v-if="openedStatus.isAnyRootOpen && openedStatus.isAllChildOpen"
                 name="lucide:folder-kanban"
               />
               <Icon
-                v-if="!openedStatus.isAllRootOpen"
+                v-if="!openedStatus.isAnyRootOpen && !openedStatus.isAllRootOpen"
                 name="lucide:folder"
               />
             </UiItem1>

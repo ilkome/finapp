@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   isShown: boolean
+  lineWidth?: number
   openPadding?: string
 }>()
 
@@ -27,5 +28,11 @@ const emit = defineEmits<{
         :toggle="() => emit('click', !props.isShown)"
       />
     </div>
+
+    <div
+      v-if="lineWidth && !isShown"
+      class="mx-2 h-px bg-item-5 group-last:hidden"
+      :class="{ 'ml-12': lineWidth === 3, 'ml-11': lineWidth === 2 }"
+    />
   </div>
 </template>
