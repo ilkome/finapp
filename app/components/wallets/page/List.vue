@@ -619,7 +619,7 @@ function countWalletsSum(
           <!-- No grouping -->
           <div
             v-if="groupedBy === 'none'"
-            class="border-item-4 bg-item-2 rounded-xl md:max-w-lg"
+            class="rounded-xl border-item-4 bg-item-2 md:max-w-lg"
           >
             <WalletsItem
               v-for="walletId in selectedWalletsIds"
@@ -645,7 +645,7 @@ function countWalletsSum(
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'bg-item-2 rounded': Object.keys(content.groups ?? {}).length === 0,
+                'rounded bg-item-2': Object.keys(content.groups ?? {}).length === 0,
               }"
               :isShown="
                 walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
@@ -656,7 +656,7 @@ function countWalletsSum(
                   :isShown
                   @click="toggleMap(groupPrimary)"
                 >
-                  <div class="font-tertiary !text-3 text-base font-semibold leading-none">
+                  <div class="font-tertiary text-base font-semibold leading-none !text-3">
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 
@@ -687,14 +687,14 @@ function countWalletsSum(
                   :isShown="
                     walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
                   "
-                  class="border-item-4 bg-item-2 _border group grid gap-1 rounded-xl"
+                  class="_border group grid gap-1 rounded-xl border-item-4 bg-item-2"
                 >
                   <template #header="{ isShown }">
                     <UiTitleDropRight
                       :isShown
                       @click="toggleMap(groupPrimary, groupSecondary)"
                     >
-                      <div class="font-tertiary !text-3 text-base font-semibold leading-none">
+                      <div class="font-tertiary text-base font-semibold leading-none !text-3">
                         {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
                       </div>
                       <div class="ml-auto">
