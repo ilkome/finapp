@@ -20,7 +20,7 @@ const walletsStore = useWalletsStore()
   <UiToggleWithStorage
     :initStatus="true"
     :lineWidth="0"
-    class="@xl/page:grid @xl/page:max-w-xl @3xl/page:p-3 _border border-item-4 bg-item-2 rounded-xl p-2 md:max-w-lg"
+    class="@xl/page:max-w-xl grid md:max-w-lg"
     storageKey="finapp-wallets-currencies"
   >
     <template #header="{ toggle, isShown }">

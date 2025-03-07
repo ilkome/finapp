@@ -174,7 +174,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
       v-if="statConfig.config.value.vertical.isShow"
       :storageKey="`${storageKey}-${type}-vertical`"
       :initStatus="true"
-      class="@3xl/page:p-3 border-item-4 bg-item-2 rounded-xl border p-2 md:max-w-lg"
+      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -266,7 +266,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
       v-if="statConfig.config.value.catsRound.isShow"
       :storageKey="`${storageKey}-${type}-rounds`"
       :initStatus="true"
-      class="@3xl/page:p-3 border-item-4 bg-item-2 rounded-xl border p-2 md:max-w-lg"
+      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -348,7 +348,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
       v-if="statConfig.config.value.catsList.isShow"
       :storageKey="`${storageKey}-${type}-list`"
       :initStatus="true"
-      class="@3xl/page:p-3 border-item-4 bg-item-2 rounded-xl border p-2 md:max-w-lg"
+      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
