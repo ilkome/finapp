@@ -56,7 +56,7 @@ function getClasses(id?: StatTabSlug) {
   return [{
     '!border-accent-1 text-1 rounded-none border-b-2': id === props.active,
     'text-2 hover:bg-item-5': id !== props.active,
-  }, 'text-nowrap rounded-lg px-3 py-1.5 text-sm font-medium']
+  }, 'text-nowrap rounded-lg px-3 py-1.5 text-xs lg:text-sm tracking-wide']
 }
 </script>
 

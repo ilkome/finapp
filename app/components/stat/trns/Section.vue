@@ -15,7 +15,7 @@ defineProps<{
     v-if="selectedTrnsIds.length > 0"
     :storageKey="`${storageKey}-${type}trns-all`"
     :initStatus="true"
-    class="@3xl/page:p-3 mb-4 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+    class="mb-4 md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
       <div class="flex items-center justify-between">
