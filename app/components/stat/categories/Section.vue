@@ -167,14 +167,14 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
 <template>
   <div
     v-if="categoriesWithData.length > 0"
-    class="@3xl/page:gap-4 grid gap-4"
+    class="@3xl/page:gap-4 grid gap-6"
   >
     <!-- Vertical -->
     <UiToggle
       v-if="statConfig.config.value.vertical.isShow"
       :storageKey="`${storageKey}-${type}-vertical`"
       :initStatus="true"
-      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -207,41 +207,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
                 />
               </UiItem1>
             </UiTabs1>
-
-            <!-- <UiTabs1>
-              <UiTabsItem4
-                :isActive="statConfig.config.value.vertical.isGrouped"
-                class="flex gap-1"
-                @click="statConfig.config.value.vertical.isGrouped = true"
-              >
-                <Icon
-                  name="lucide:network"
-                  :size="16"
-                />
-                {{ t('stat.config.categories.grouping.grouped') }}
-              </UiTabsItem4>
-
-              <UiTabsItem4
-                :isActive="!statConfig.config.value.vertical.isGrouped"
-                class="flex gap-1"
-                @click="statConfig.config.value.vertical.isGrouped = false"
-              >
-                <Icon
-                  name="lucide:folder-tree"
-                  :size="16"
-                />
-                {{ t('stat.config.categories.grouping.ungrouped') }}
-              </UiTabsItem4>
-            </UiTabs1> -->
           </div>
-
-          <!-- <StatCategoriesButtons
-            v-if="isShown"
-            :catsLength="categoriesWithData.length"
-            :isShowGrouped="!props.isOneCategory"
-            :openedStatus
-            @toggleOpened="toggleOpened"
-          /> -->
         </div>
 
         <div
@@ -266,7 +232,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
       v-if="statConfig.config.value.catsRound.isShow"
       :storageKey="`${storageKey}-${type}-rounds`"
       :initStatus="true"
-      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -299,32 +265,6 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
                 />
               </UiItem1>
             </UiTabs1>
-
-            <!-- <UiTabs1>
-              <UiTabsItem4
-                :isActive="statConfig.config.value.catsRound.isGrouped"
-                class="flex gap-1"
-                @click="statConfig.config.value.catsRound.isGrouped = true"
-              >
-                <Icon
-                  name="lucide:network"
-                  :size="16"
-                />
-                {{ t('stat.config.categories.grouping.grouped') }}
-              </UiTabsItem4>
-
-              <UiTabsItem4
-                :isActive="!statConfig.config.value.catsRound.isGrouped"
-                class="flex gap-1"
-                @click="statConfig.config.value.catsRound.isGrouped = false"
-              >
-                <Icon
-                  name="lucide:folder-tree"
-                  :size="16"
-                />
-                {{ t('stat.config.categories.grouping.ungrouped') }}
-              </UiTabsItem4>
-            </UiTabs1> -->
           </div>
         </div>
 
@@ -348,7 +288,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
       v-if="statConfig.config.value.catsList.isShow"
       :storageKey="`${storageKey}-${type}-list`"
       :initStatus="true"
-      class="@3xl/page:p-3 rounded-xl border border-item-4 bg-item-2 p-2 md:max-w-lg"
+      class="md:max-w-lg"
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between md:max-w-lg">
@@ -399,32 +339,6 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
                 />
               </UiItem1>
             </UiTabs1>
-
-            <!-- <UiTabs1>
-              <UiTabsItem4
-                :isActive="statConfig.config.value.catsList.isGrouped"
-                class="flex gap-1"
-                @click="statConfig.config.value.catsList.isGrouped = true"
-              >
-                <Icon
-                  name="lucide:network"
-                  :size="16"
-                />
-                {{ t('stat.config.categories.grouping.grouped') }}
-              </UiTabsItem4>
-
-              <UiTabsItem4
-                :isActive="!statConfig.config.value.catsList.isGrouped"
-                class="flex gap-1"
-                @click="statConfig.config.value.catsList.isGrouped = false"
-              >
-                <Icon
-                  name="lucide:folder-tree"
-                  :size="16"
-                />
-                {{ t('stat.config.categories.grouping.ungrouped') }}
-              </UiTabsItem4>
-            </UiTabs1> -->
           </div>
         </div>
 
