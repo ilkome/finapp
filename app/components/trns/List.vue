@@ -208,7 +208,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-b border-item-4 pb-2 pr-3"
+        class="border-b border-item-4 pb-2 pr-3 opacity-60"
       >
         <Amount
           v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
@@ -217,7 +217,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
           :isShowBaseRate="false"
           :type="1"
           colorize="income"
-          variant="base"
+          variant="sm"
         />
 
         <Amount
@@ -227,7 +227,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
           :isShowBaseRate="false"
           :type="0"
           isShowMinus
-          variant="base"
+          variant="sm"
         />
       </div>
 
@@ -251,11 +251,11 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="_bg-item-2 _rounded-lg overflow-hidden border-b border-item-4 pb-2 last:border-b-0 last:pb-px"
+        class="_bg-item-2 _rounded-lg _border-b overflow-hidden border-item-4 pb-2 last:border-b-0 last:pb-px"
       >
         <div
           :class="{ 'border-item-4': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="flex items-end gap-2 px-3 py-2 pb-1"
+          class="flex items-end gap-2 px-3 py-1"
         >
           <DateTrns
             :date="+date"
@@ -265,7 +265,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
           <!-- Group Sum -->
           <div
             v-if="isShowGroupSum && groupTrnsIds.length > 1"
-            class="pb-2"
+            class="pb-2 opacity-60"
           >
             <Amount
               v-if="getTotalOfTrnsIds(groupTrnsIds).income !== 0"
@@ -274,7 +274,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
               :isShowBaseRate="false"
               :type="1"
               colorize="income"
-              class="text-4"
+              variant="sm"
             />
 
             <Amount
@@ -284,7 +284,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
               :isShowBaseRate="false"
               :type="0"
               isShowMinus
-              class="text-4"
+              variant="sm"
             />
           </div>
         </div>

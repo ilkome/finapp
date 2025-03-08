@@ -26,12 +26,12 @@ const props = defineProps<{
     </template>
 
     <!-- Base name -->
-    <div class="flex items-center gap-2 text-nowrap text-sm leading-none text-3">
+    <div class="flex items-center gap-2 text-nowrap text-xs font-semibold leading-none tracking-wide text-3">
       {{ props.category?.name }}
       <!-- Has childs -->
       <div
         v-if="props.isShowDots && props.hasChildren"
-        class="text-sm leading-none text-4"
+        class="text-xs leading-none text-4"
       >
         ...
       </div>

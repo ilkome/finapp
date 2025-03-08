@@ -26,7 +26,7 @@ const date = computed(() => {
 </script>
 
 <template>
-  <div class="flex items-center gap-1 leading-none">
+  <div class="flex items-center gap-1 leading-none tracking-wide">
     {{ date }}
     <data
       v-if="statDate.params.value.isShowMaxRange && statDate.params.value.intervalSelected === -1"

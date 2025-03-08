@@ -96,7 +96,7 @@ onLongPress(
         :isShowBaseRate="false"
         :isShowSymbol="false"
         align="left"
-        variant="sm"
+        variant="xs"
         colorize="income"
       />
     </div>

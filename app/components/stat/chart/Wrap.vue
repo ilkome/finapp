@@ -50,7 +50,7 @@ function onChangePeriod(period: Period) {
     :class="{
       'md:max-w-lg': props.chartView === 'half',
     }"
-    class="bg-item-2 mb-3 rounded-xl p-2"
+    class="mb-3 rounded-xl bg-item-2 p-2"
   >
     <div
       v-if="statConfig.config.value?.chartShow"
@@ -60,7 +60,7 @@ function onChangePeriod(period: Period) {
         <slot />
 
         <StatChartIntervals
-          :class="{ 'border-item-4 border-l': statConfig.config.value?.date.isShowQuick }"
+          :class="{ 'border-l border-item-4': statConfig.config.value?.date.isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
           @onChangePeriod="onChangePeriod"

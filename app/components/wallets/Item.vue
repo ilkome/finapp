@@ -81,7 +81,7 @@ if (!props.isSort) {
     <!-- Main -->
     <template v-if="!props.alt">
       <div class="grid grow gap-1">
-        <div class="text-3 text-sm leading-none">
+        <div class="text-sm leading-none text-3">
           {{ wallet.name }}
         </div>
 
@@ -130,7 +130,7 @@ if (!props.isSort) {
       </div>
 
       <div
-        class="pr-1 opacity-90"
+        class="pr-1"
         :class="{
           'text-accent-2': creditAmount > 0,
           'text-accent-1': creditAmount < 0,
@@ -141,12 +141,14 @@ if (!props.isSort) {
           :amount="creditAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
+          variant="sm"
         />
         <Amount
           v-else
           :amount="wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
+          variant="sm"
         />
       </div>
     </template>
@@ -154,7 +156,7 @@ if (!props.isSort) {
     <!-- Alternative -->
     <template v-if="props.alt">
       <div class="grid grow gap-0.5">
-        <div class="text-2 whitespace-nowrap text-xs leading-none">
+        <div class="whitespace-nowrap text-xs leading-none text-2">
           {{ wallet.name }}
         </div>
 
@@ -182,7 +184,7 @@ if (!props.isSort) {
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center group-hocus:bg-item-5 absolute right-0 h-full rounded-md px-3"
+        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hocus:bg-item-5"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>
