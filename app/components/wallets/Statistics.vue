@@ -30,7 +30,7 @@ const itemsGrouped = computed(() => [
     :initStatus="true"
     :lineWidth="0"
     :storageKey="props.storageKey"
-    class="_border mb-2 rounded-xl border-item-4 bg-item-2 md:max-w-lg"
+    class="mb-2 rounded-xl bg-item-2 md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
       <div class="flex grow items-center justify-between">
@@ -67,11 +67,13 @@ const itemsGrouped = computed(() => [
               <Amount
                 :amount="item.secondValue - Math.abs(item.value)"
                 :currencyCode="currencyCode"
+                variant="2xs"
               />
               <div>/</div>
               <Amount
                 :amount="item.secondValue"
                 :currencyCode="currencyCode"
+                variant="2xs"
               />
             </div>
           </div>
@@ -80,6 +82,7 @@ const itemsGrouped = computed(() => [
             <Amount
               :amount="item.value"
               :currencyCode="currencyCode"
+              variant="sm"
             />
           </div>
         </UiElement>

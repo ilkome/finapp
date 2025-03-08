@@ -13,7 +13,7 @@ const emit = defineEmits<{
 <template>
   <div
     :class="getStyles('item', ['link', 'center', 'padding3', 'minh2', 'minw1', 'rounded'])"
-    class="flex grow items-center gap-2 pb-0 !font-tertiary !text-base font-semibold leading-none !text-1"
+    class="flex grow items-center gap-2 pb-0 !font-tertiary !text-base font-semibold leading-none tracking-wide !text-1"
     @click="emit('click')"
   >
     <div><slot /></div>

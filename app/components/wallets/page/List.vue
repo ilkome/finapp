@@ -660,11 +660,12 @@ function countWalletsSum(
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 
-                  <div class="ml-auto">
+                  <div class="ml-auto opacity-60">
                     <Amount
                       :amount="countWalletsSum(content.ids)"
                       :currencyCode="currenciesStore.base"
                       :isShowBaseRate="false"
+                      variant="sm"
                     />
                     <Amount
                       v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"

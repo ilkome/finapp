@@ -16,7 +16,7 @@ export type AmountProps = {
   isShowSymbol?: boolean
   precision?: number
   type?: MoneyTypeNumber
-  variant?: '2xs' | '3xl' | 'base' | 'sm' | 'xl'
+  variant?: '2xs' | '3xl' | 'base' | 'xs' | 'sm' | 'xl'
 }
 
 const props = withDefaults(defineProps<AmountProps>(), {
@@ -39,7 +39,8 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       '!text-expense-1': props.colorize === 'expense' && props.type === 0,
       '!text-income-1': props.colorize === 'income' && props.type === 1,
       'text-2xs': props.variant === '2xs',
-      'text-xs': props.variant === 'sm',
+      'text-xs': props.variant === 'xs',
+      'text-sm': props.variant === 'sm',
       'text-3xl': props.variant === '3xl',
       'text-xl': props.variant === 'xl',
       'text-base': props.variant === 'base',

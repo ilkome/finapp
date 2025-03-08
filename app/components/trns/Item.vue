@@ -77,7 +77,7 @@ const { t } = useI18n()
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-xs leading-none text-4">
+            <div class="text-2xs leading-none text-4">
               {{ trnItem.wallet.name }}
             </div>
           </div>
@@ -90,10 +90,10 @@ const { t } = useI18n()
           :isShowMinus="trnItem.type === 0"
           :isShowPlus="trnItem.type === 1"
           :type="trnItem.type"
-          :variant="props.alt ? 'sm' : 'base'"
           align="right"
           class="grow"
           colorize="income"
+          variant="sm"
         />
 
         <!-- Transfer -->
@@ -113,6 +113,7 @@ const { t } = useI18n()
               :currencyCode="trnItem.expenseWallet.currency"
               :type="0"
               class="!flex items-center gap-2"
+              variant="sm"
             />
 
             <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
@@ -127,6 +128,7 @@ const { t } = useI18n()
                 :type="1"
                 colorize="income"
                 class="!flex items-center gap-2"
+                variant="sm"
               />
             </template>
           </div>

@@ -11,7 +11,7 @@ const formattedDate = computed(() => formatDate(props.date, 'full'))
 
 <template>
   <div class="flex items-center gap-2">
-    <div class="_w-10 _text-center font-secondary text-3xl">
+    <div class="_w-10 _text-center font-secondary text-3xl font-semibold">
       {{ formattedDate.day }}
     </div>
 
@@ -20,7 +20,7 @@ const formattedDate = computed(() => formatDate(props.date, 'full'))
         {{ formattedDate.weekday }}
       </div>
 
-      <div class="flex gap-1 text-xs leading-none">
+      <div class="flex gap-1 text-sm font-medium leading-none text-1">
         <div>{{ formattedDate.month }}</div>
         <div>{{ formattedDate.year }}</div>
       </div>
