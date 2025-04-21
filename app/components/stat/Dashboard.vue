@@ -80,7 +80,7 @@ onDeactivated(() => {
       </template>
     </StatHeader>
 
-    <StatItemWrap
+    <StatWrap
       :activeTab
       :range="statDate.range.value"
       :storageKey

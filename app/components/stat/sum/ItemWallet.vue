@@ -28,7 +28,7 @@ const currenciesStore = useCurrenciesStore()
       :amount="props.amount"
       :currencyCode="props.currencyCode || currenciesStore.base"
       align="left"
-      variant="3xl"
+      variant="xl"
     />
   </div>
 </template>

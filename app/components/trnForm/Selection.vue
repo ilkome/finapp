@@ -73,7 +73,7 @@ async function onSelectParentCategory(id: CategoryId) {
   <Teleport to="body">
     <BottomSheet
       :isShow="isShow"
-      drugClassesCustom="bg-item-1 max-w-md"
+      drugClassesCustom="bg-[var(--item-1)] max-w-md"
       @closed="isShow = false"
     >
       <template #handler="{ close }">
@@ -102,7 +102,7 @@ async function onSelectParentCategory(id: CategoryId) {
               :style="{ height: props.maxHeight }"
               class="swiper-slide"
             >
-              <div class="scrollerBlock h-full overflow-y-auto pb-3">
+              <div class="scrollerBlock h-full overflow-y-auto pb-3 grid gap-4">
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => onSelectCategory(id, close)"
                   @onSelectParentCategory="id => onSelectParentCategory(id)"
@@ -117,7 +117,7 @@ async function onSelectParentCategory(id: CategoryId) {
             >
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <UiTitle3
-                  class="sticky top-0 z-10 bg-item-1 px-3 pb-3 pt-4"
+                  class="sticky top-0 z-10 bg-[var(--item-1)] px-3 pb-3 pt-4"
                   @click="trnsFormStore.ui.catsRootModal = true"
                 >
                   {{ $t("categories.title") }}
@@ -136,12 +136,12 @@ async function onSelectParentCategory(id: CategoryId) {
 </template>
 
 <style>
+@reference '~/assets/css/main.css';
+
 .trnFormSelectionPagination.swiper-pagination-horizontal .swiper-pagination-bullet-active {
   @apply !bg-neutral-600 dark:!bg-white/80;
 }
-</style>
 
-<style>
 .trnFormSelectionPagination.swiper-pagination-horizontal {
   @apply absolute bottom-[1px] left-1/2 z-[2] flex w-auto -translate-x-1/2 items-center justify-center rounded-md bg-[rgba(23,23,23,0.9)] p-1.5;
 }

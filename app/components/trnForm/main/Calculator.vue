@@ -31,7 +31,7 @@ onLongPress(
 </script>
 
 <template>
-  <div class="grid grid-cols-[auto,1fr,auto] justify-between gap-0">
+  <div class="grid grid-cols-[auto_1fr_auto] justify-between gap-0">
     <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('*')">
         <Icon
@@ -78,7 +78,7 @@ onLongPress(
       </div>
     </div>
 
-    <div class="grid grid-rows-[auto,1fr] gap-3">
+    <div class="grid grid-rows-[auto_1fr] gap-3">
       <TrnFormMainDescription />
       <TrnFormMainActionSide />
     </div>

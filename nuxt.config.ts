@@ -5,35 +5,9 @@ import { config } from './services/firebase/config'
 const sw = process.env.SW === 'true'
 
 export default defineNuxtConfig({
-  app: {
-    head: {
-      link: [{
-        href: '/favicon.png',
-        rel: 'icon',
-        type: 'image/png',
-      }, {
-        href: '/favicon.svg',
-        rel: 'icon',
-        type: 'image/svg+xml',
-      }],
-      meta: [
-        { charset: 'utf-8' },
-        { content: 'width=device-width, initial-scale=1, viewport-fit=cover', name: 'viewport' },
-        {
-          content: process.env.npm_package_description || '',
-          hid: 'description',
-          name: 'description',
-        },
-      ],
-
-      noscript: [{ innerHTML: 'This website requires JavaScript.' }],
-      titleTemplate: '%s - Finapp',
-    },
-  },
-
   colorMode: {
     classSuffix: '',
-    fallback: 'dark-pink',
+    fallback: 'dark',
     preference: 'system',
   },
 
@@ -42,10 +16,11 @@ export default defineNuxtConfig({
   components: [
     {
       extensions: ['vue'],
-      // global: true,
       path: '~/components/',
     },
   ],
+
+  css: ['~/assets/css/main.css', '~/assets/css/vars.css'],
 
   devtools: {
     timeline: {
@@ -115,7 +90,6 @@ export default defineNuxtConfig({
     '@vite-pwa/nuxt',
     'nuxt-icon',
     '@nuxt/ui',
-    '@nuxt/fonts',
     'nuxt-vuefire',
     '@nuxt/eslint',
   ],
@@ -204,10 +178,6 @@ export default defineNuxtConfig({
   },
 
   ssr: false,
-
-  tailwindcss: {
-    viewer: false,
-  },
 
   telemetry: false,
 

@@ -22,12 +22,13 @@ const isShow = ref(false)
 
 <template>
   <BottomSheetOrDropdown
-    :title="props.title"
-    :isOpen="isShow"
     :bottomSheetStyle="props.bottomSheetStyle"
+    :isOpen="isShow"
+    :title="props.title"
     drugClassesCustom="h-full max-w-md"
-    @onOpenModal="isShow = true"
+    isShowCloseBtn
     @onCloseModal="isShow = false"
+    @onOpenModal="isShow = true"
   >
     <template #trigger>
       <WalletsItem

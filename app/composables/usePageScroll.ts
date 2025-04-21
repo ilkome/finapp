@@ -5,7 +5,7 @@ export function usePageScroll() {
   onUpdated(() => {
     setTimeout(() => {
       document.getElementById('pageScroll')?.scrollTo(0, scroll.value[route.path] ?? 0)
-    }, 10)
+    }, 1)
   })
 
   onBeforeUpdate(() => {

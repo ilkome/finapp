@@ -24,12 +24,10 @@ export function getTypesMapping(slug: StatTabSlug): TrnType[] | undefined {
   const typeMapping: Record<StatTabSlug, TrnType[]> = {
     expense: [0, 2],
     income: [1, 2],
-    netIncome: [0, 1, 2],
-    periods: [0, 1, 2],
+    split: [0, 1, 2],
     summary: [0, 1, 2],
-    trns: [0, 1, 2],
   }
   const trnsTypes = typeMapping[slug]
 
-  return trnsTypes ?? undefined
+  return trnsTypes ?? [0, 1, 2]
 }

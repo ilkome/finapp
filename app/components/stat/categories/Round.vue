@@ -65,18 +65,19 @@ onLongPress(
     v-if="category"
     ref="longPressRef"
     :class="{ 'opacity-60': props.item.value === 0 }"
-    class="relative flex items-center gap-2 overflow-hidden rounded-full bg-item-3 p-1 pr-2 text-2 hover:bg-item-5 hocus:bg-item-5"
+    class="relative flex items-center gap-2 overflow-hidden rounded-full dark:bg-item-3 p-1 pr-2 hover:bg-[var(--item-5)]"
   >
     <div
       :style="{ backgroundColor: category?.color }"
       class="absolute inset-0 size-full opacity-10"
     />
 
-    <div class="size-5">
+    <div class="size-6">
       <UiIconBase
         :name="category?.icon"
         :color="category?.color"
-        class="!w-5 p-1"
+        :size="14"
+        class="!w-6 p-1"
         invert
       />
     </div>

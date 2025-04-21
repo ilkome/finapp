@@ -26,7 +26,7 @@ const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = ref(categoriesStore.items[categoryId.value])
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
 
-const activeTab = useStorage<StatTabSlug>(`stat-${categoryId.value}-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>(`stat-${categoryId.value}-tab`, 'summary')
 const storageKey = computed(() => `stat-${categoryId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => {
@@ -110,7 +110,7 @@ useHead({ title: category.value?.name })
       </template>
     </StatHeader>
 
-    <StatItemWrap
+    <StatWrap
       :activeTab
       :hasChildren="categoriesIdsOrParent.length > 1"
       :range="statDate.range.value"

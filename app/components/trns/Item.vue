@@ -63,7 +63,7 @@ const { t } = useI18n()
         >
           <div
             v-if="!alt"
-            class="grid grow gap-0.5 text-3"
+            class="grid grow gap-0.5"
           >
             <CategoriesName
               v-if="trnItem.type !== TrnType.Transfer"

@@ -21,32 +21,30 @@ const { isDemo } = useDemo()
         <BottomSheetClose @onClick="close" />
       </template>
 
-      <div class="grid gap-3 bg-item-1 px-1 py-3">
-        <!-- User -->
-        <div
-          v-if="!isDemo"
-          class="mx-2"
-        >
-          <UserViewLogout isShowSignOut />
-        </div>
+      <div class="bottomSheetContent">
+        <div class="bottomSheetContentInside grid gap-3 px-3 pb-2 pt-4">
+          <!-- User -->
+          <div
+            v-if="!isDemo"
+            class="mx-2"
+          >
+            <UserViewLogout isShowSignOut />
+          </div>
 
-        <LayoutSidebarMenu class="py-4" />
+          <LayoutSidebarMenu class="py-4" />
 
-        <div class="pl-2 pt-2">
-          <AppThemeSwitcher isShowTitle />
-        </div>
-
-        <div
-          v-if="isDemo"
-          class="px-3 py-2"
-          @click="userStore.signOut"
-        >
-          <UiButtonAccent
-            rounded
+          <div
+            v-if="isDemo"
+            class="px-3 py-2"
             @click="userStore.signOut"
           >
-            {{ t("demo.exit") }}
-          </UiButtonAccent>
+            <UiButtonAccent
+              rounded
+              @click="userStore.signOut"
+            >
+              {{ t("demo.exit") }}
+            </UiButtonAccent>
+          </div>
         </div>
       </div>
     </LazyBottomSheet>

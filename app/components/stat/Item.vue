@@ -5,7 +5,7 @@ import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fn
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { ChartSeries, IntervalData, StatTabSlug } from '~/components/stat/types'
+import type { ChartSeries, IntervalData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -14,19 +14,18 @@ import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import StatCategoriesSection from '~/components/stat/categories/Section.vue'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
-import StatTrnsSection from '~/components/stat/trns/Section.vue'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
-  activeTab: StatTabSlug
   hasChildren?: boolean
   isOneCategory?: boolean
   isQuickModal?: boolean
   preCategoriesIds?: CategoryId[]
+  statTab: StatTabSlug
   storageKey: string
   trnsIds: TrnId[]
-  type: StatTabSlug
+  type?: SeriesSlugSelected
   walletId?: WalletId
 }>()
 
@@ -42,24 +41,55 @@ const { getTotalOfTrnsIds } = useAmount()
 const { addMarkArea, createSeriesItem } = useStatChart()
 
 const newBaseStorageKey = computed(() => `finapp-${statDate.params.value.intervalsBy}-${props.storageKey}-${JSON.stringify(filter?.categoriesIds?.value)}`)
-const selectedType = useStorage<StatTabSlug>(`selectedType-${props.type}-${newBaseStorageKey.value}`, 'summary')
+const filteredType = useStorage<SeriesSlugSelected>(`finapp-filtered-type-${props.type}-${newBaseStorageKey.value}`, 'netIncome')
+const filteredCategoriesIds = ref<CategoryId[]>([])
 
-const selectedTypesMapping = computed(() => getTypesMapping((props.type === 'netIncome' || props.type === 'trns') ? selectedType.value : props.type))
+const selectedType2 = computed(() => {
+  if (props.statTab === 'summary')
+    return filteredType.value
+
+  if (props.statTab === 'split')
+    return props.type
+
+  return props.statTab
+})
+
+const selectedType3 = computed(() => {
+  if (props.statTab === 'summary')
+    return 'summary'
+
+  if (props.statTab === 'split')
+    return props.type
+
+  return props.statTab
+})
+
+const selectedTypesMapping = computed(() => getTypesMapping(selectedType2.value))
 
 const statTypeShow = computed(() => ({
-  expense: props.trnsIds.some(id => trnsStore.items && id in trnsStore.items && trnsStore.items[id]?.type === 0),
-  income: props.trnsIds.some(id => trnsStore.items && id in trnsStore.items && trnsStore.items[id]?.type === 1),
+  expense: true,
+  income: true,
 }))
 
 const isPeriodOneDay = computed(() => (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1) || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1))
-const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({ trnsIds: props.trnsIds }, { includesChildCategories: false }))
+
+const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  trnsIds: props.trnsIds,
+}, {
+  includesChildCategories: false,
+}))
+
+const rangeTrnsIdsWithFilteredCategories = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: filteredCategoriesIds.value,
+  trnsIds: props.trnsIds,
+}, {
+  includesChildCategories: true,
+}))
+
 const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
+const intervalsDataWithFilteredCategories = computed(() => getIntervalsData(rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value))
 
 const selectedTrnsIds = computed(() => {
-  if (!selectedTypesMapping.value) {
-    return rangeTrnsIds.value
-  }
-
   return trnsStore.getStoreTrnsIds({
     trnsIds: statDate.params.value.intervalSelected !== -1
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
@@ -68,10 +98,34 @@ const selectedTrnsIds = computed(() => {
   }, { includesChildCategories: false })
 })
 
+const selectedAndFilteredTrnsIds = computed(() => {
+  return trnsStore.getStoreTrnsIds({
+    categoriesIds: filteredCategoriesIds.value,
+    trnsIds: statDate.params.value.intervalSelected !== -1
+      ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
+      : rangeTrnsIds.value,
+    trnsTypes: selectedTypesMapping.value,
+  }, { includesChildCategories: true })
+})
+
+function onSetCategoryFilter(categoryId: CategoryId) {
+  if (filteredCategoriesIds.value.includes(categoryId))
+    return filteredCategoriesIds.value = []
+
+  // if (filteredCategoriesIds.value.includes(categoryId)) {
+  //   return filteredCategoriesIds.value = [...filteredCategoriesIds.value.filter(id => id !== categoryId)]
+  // }
+
+  // if (filteredCategoriesIds.value.includes(categoryId))
+  //   return
+
+  filteredCategoriesIds.value = [categoryId]
+}
+
 const rangeTotal = computed(() => {
   const trnsIds = statDate.params.value.intervalSelected !== -1
-    ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
-    : rangeTrnsIds.value
+    ? intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]?.trnsIds
+    : rangeTrnsIdsWithFilteredCategories.value
 
   return getTotalOfTrnsIds(trnsIds)
 })
@@ -80,7 +134,7 @@ const averageTotal = computed(() => {
   if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
     return
 
-  const sum = (selectedType.value === 'netIncome' || selectedType.value === 'trns') ? rangeTotal.value.sum : rangeTotal.value[props.type]
+  const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[props.type]
 
   const date = statDate.params.value.intervalSelected !== -1
     ? statDate.selectedInterval.value
@@ -113,29 +167,39 @@ const averageTotal = computed(() => {
 })
 
 const typesToShow = computed(() => {
-  const isAnyExpense = rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 0)
-  const isAnyIncome = rangeTrnsIds.value.some(id => trnsStore.items?.[id]?.type === 1)
+  if (props.statTab === 'summary') {
+    if (filteredType.value === 'netIncome') {
+      return ['income', 'expense']
+    }
 
-  return props.type === 'netIncome' || props.type === 'periods' || props.type === 'trns'
-    ? [
-        ...(isAnyIncome ? ['income'] : []),
-        ...(isAnyExpense ? ['expense'] : []),
-      ] as StatTabSlug[]
-    : [props.type]
+    if (filteredType.value === 'income') {
+      return ['income']
+    }
+
+    if (filteredType.value === 'expense') {
+      return ['expense']
+    }
+  }
+
+  if (props.statTab === 'expense' || props.statTab === 'income') {
+    return [props.statTab]
+  }
+
+  return [props.type]
 })
 
 const chart = {
   series: computed<ChartSeries[]>(() => {
-    const intervalTotals = intervalsData.value.map(g => g.total)
-    const baseSeries = typesToShow.value.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? intervalsData.value.reduce((acc, i) => acc + i.total[type], 0) / (intervalsData.value.length) : false))
+    const intervalTotals = intervalsDataWithFilteredCategories.value.map(g => g.total)
+    const baseSeries = typesToShow.value.map(type => createSeriesItem(type, intervalTotals, statConfig.config.value.chart.isShowAverage ? intervalsDataWithFilteredCategories.value.reduce((acc, i) => acc + i.total[type], 0) / (intervalsData.value.length) : false))
 
-    const selectedInterval = intervalsData.value?.[statDate.params.value.intervalSelected]
+    const selectedInterval = intervalsDataWithFilteredCategories.value?.[statDate.params.value.intervalSelected]
     if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0)
       return baseSeries
 
     return addMarkArea(baseSeries, selectedInterval.range.start, statConfig.config.value?.chartType)
   }),
-  xAxisLabels: computed(() => intervalsData.value.map(i => +i.range.start) ?? []),
+  xAxisLabels: computed(() => intervalsDataWithFilteredCategories.value.map(i => +i.range.start) ?? []),
 }
 
 function onClickCategory(categoryId: CategoryId) {
@@ -162,8 +226,13 @@ function onClickCategory(categoryId: CategoryId) {
   }
 }
 
-function onClickSumItem(type: StatTabSlug) {
-  selectedType.value = type === selectedType.value ? 'summary' : type
+const isShowTrns = ref(false)
+function onClickSumItem(type: SeriesSlugSelected) {
+  if (type === 'netIncome') {
+    isShowTrns.value = true
+  }
+
+  filteredType.value = type === filteredType.value ? 'netIncome' : type
 }
 
 function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
@@ -188,6 +257,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
+      class="pb-3"
       :chartView="statConfig.config.value.chartView"
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
@@ -195,91 +265,99 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
     </StatChartWrap>
 
-    <div class="grid pb-3">
+    <div class="grid content-start gap-3">
       <StatDateNavigation />
-    </div>
 
-    <StatSumWrap
-      v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
-      class="pb-4"
-      :averageTotal
-      :isShowExpense="statTypeShow.expense"
-      :isShowIncome="statTypeShow.income"
-      :selectedType="selectedType"
-      :total="rangeTotal"
-      :type="props.type"
-      :isShowAverage="statConfig.config.value.statAverage.isShow"
-      @click="onClickSumItem"
-      @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
-    >
-      <template #income>
-        <StatAverage
-          :averageConfig="statConfig.config.value.statAverage.count"
-          :categoryId
-          :filter
-          :statDate
-          :trnsIds
-          :walletId
-          statTabSlug="income"
-        />
-      </template>
-      <template #expense>
-        <StatAverage
-          :averageConfig="statConfig.config.value.statAverage.count"
-          :categoryId
-          :filter
-          :statDate
-          :trnsIds
-          :walletId
-          statTabSlug="expense"
-        />
-      </template>
-      <template #summary>
-        <StatAverage
-          :averageConfig="statConfig.config.value.statAverage.count"
-          :categoryId
-          :filter
-          :statDate
-          :trnsIds
-          :walletId
-          statTabSlug="netIncome"
-        />
-      </template>
-      <template #average>
-        <StatAverage
-          :averageConfig="statConfig.config.value.statAverage.count"
-          :categoryId
-          :filter
-          :statDate
-          :statTabSlug="props.type"
-          :trnsIds
-          :walletId
-        />
-      </template>
-    </StatSumWrap>
-
-    <div
-      class="_w-full grid items-start gap-4"
-      :class="{
-        '@3xl/page:grid-cols-[1.2fr,1fr] @3xl/page:gap-4': props.activeTab !== 'summary',
-      }"
-    >
-      <StatCategoriesSection
-        v-if="(props.hasChildren || (props.preCategoriesIds ?? []).length > 0) && props.type !== 'trns'"
-        :isOneCategory="props.isOneCategory"
-        :preCategoriesIds="props.preCategoriesIds"
-        :selectedTrnsIds
-        :storageKey="newBaseStorageKey"
-        :type="props.type"
-        @clickCategory="onClickCategory"
+      <StatSumWrap
+        v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
+        :averageTotal
+        :isShowExpense="statTypeShow.expense"
+        :isShowIncome="statTypeShow.income"
+        :filteredType="filteredType"
+        :total="rangeTotal"
+        :type="selectedType3"
+        :categoryId
+        :filter
+        :statDate
+        :trnsIds
+        :walletId
+        :averageConfig="statConfig.config.value.statAverage.count"
+        :isShowAverage="statConfig.config.value.statAverage.isShow"
+        @click="onClickSumItem"
+        @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
       />
 
-      <StatTrnsSection
-        :selectedTrnsIds
-        :storageKey="newBaseStorageKey"
-        :type="props.type"
-        :isPeriodOneDay="isPeriodOneDay"
-      />
+      <div class="grid items-start gap-4 content-start min-h-dvh">
+        <StatCategoriesSection
+          v-if="statConfig.config.value.catsRound.isShow && (props.hasChildren || (props.preCategoriesIds ?? []).length > 0)"
+          :isOneCategory="props.isOneCategory"
+          :preCategoriesIds="props.preCategoriesIds || categoriesStore.favoriteCategoriesIds"
+          :selectedTrnsIds
+          :filteredCategoriesIds
+          @clickCategory="onClickCategory"
+          @onSetCategoryFilter="onSetCategoryFilter"
+        />
+
+        <div
+          :class="{
+            'grid @3xl/page:grid-cols-2 @3xl/page:gap-6 gap-3': props.statTab !== 'split' && statConfig.config.value.catsList.isShow,
+          }"
+        >
+          <StatCategoriesSection2
+            v-if="(statConfig.config.value.catsList.isShow || statConfig.config.value.vertical.isShow) && (props.hasChildren || (props.preCategoriesIds ?? []).length > 0)"
+            :isOneCategory="props.isOneCategory"
+            :preCategoriesIds="props.preCategoriesIds"
+            :selectedTrnsIds="selectedAndFilteredTrnsIds"
+            :storageKey="newBaseStorageKey"
+            :type="props.type ?? 'netIncome'"
+            class="@3xl/page:order-2"
+            @clickCategory="onClickCategory"
+            @onSetCategoryFilter="onSetCategoryFilter"
+          />
+
+          <StatTrns
+            class="@3xl/page:order-1"
+            :selectedTrnsIds="selectedAndFilteredTrnsIds"
+            :storageKey="newBaseStorageKey"
+            :type="props.type ?? 'netIncome'"
+            :isPeriodOneDay="isPeriodOneDay"
+          />
+        </div>
+      </div>
     </div>
+
+    <Teleport to="body">
+      <BottomSheet
+        v-if="isShowTrns"
+        isShow
+        drugClassesCustom="bottomSheetDrugClassesCustom"
+        @closed="isShowTrns = false"
+      >
+        <template #handler="{ close }">
+          <BottomSheetHandler />
+          <BottomSheetClose @onClick="close" />
+        </template>
+
+        <div class="bottomSheetContent">
+          <UiTitleModal>
+            {{ $t('trns.title') }} {{ selectedAndFilteredTrnsIds.length > 0 ? selectedAndFilteredTrnsIds.length : '' }}
+          </UiTitleModal>
+
+          <div class="scrollerBlock bottomSheetContentInside">
+            <TrnsList
+              :isShowDates="!isPeriodOneDay"
+              :isShowGroupSum="!isPeriodOneDay"
+              :size="50"
+              :trnsIds="selectedAndFilteredTrnsIds"
+              isShowExpense
+              isShowFilterByDesc
+              isShowFilterByType
+              isShowIncome
+              isShowTransfers
+            />
+          </div>
+        </div>
+      </BottomSheet>
+    </Teleport>
   </div>
 </template>

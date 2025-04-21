@@ -29,7 +29,7 @@ const category = computed(() => categoriesStore.items[categoryId.value])
 const preCategoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
 
-const activeTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'summary')
 const storageKey = computed(() => `page-${categoryId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -118,7 +118,7 @@ useHead({ title: category.value?.name })
       </template>
     </StatHeader>
 
-    <StatItemWrap
+    <StatWrap
       :activeTab
       :hasChildren="categoriesIdsOrParent.length > 1"
       :preCategoriesIds

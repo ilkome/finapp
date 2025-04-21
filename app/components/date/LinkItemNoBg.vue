@@ -13,7 +13,7 @@ const emit = defineEmits<{
   <div
     :class="[
       getStyles('item', ['center2', 'padding4', 'minh3']), {
-        'bg-item-5 text-accent-1': props.isActive,
+        'bg-[var(--item-5)] text-(--ui-primary)': props.isActive,
       },
     ]"
     class="text-nowrap rounded-full font-primary text-2xs leading-none text-2"

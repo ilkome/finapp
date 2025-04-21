@@ -39,8 +39,8 @@ function findWalletWithColor(color: string) {
           <div
             v-for="(color, idx) in colorsGroup"
             :key="idx"
-            class="w-full overflow-hidden rounded border-2 border-transparent"
-            :class="[{ '!border-accent-1 !shadow': color === props.activeColor, 'pointer-events-none': !color }]"
+            class="w-full overflow-hidden rounded-sm border-2 border-transparent"
+            :class="[{ '!border-(--ui-primary) !shadow': color === props.activeColor, 'pointer-events-none': !color }]"
             @click="emit('click', color)"
           >
             <div class="flex-center h-10" :style="{ background: color }">
@@ -53,7 +53,7 @@ function findWalletWithColor(color: string) {
 
               <div
                 v-if="props.isWallet && findWalletWithColor(color)"
-                class="size-3 rounded-full bg-item-4"
+                class="bg-item-4 size-3 rounded-full"
               />
             </div>
           </div>

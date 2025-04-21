@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import '~/assets/css/tailwind.css'
-import '~/assets/css/theme.css'
-
 // TODO: Add locale
 defineProps<{
   error: unknown
@@ -12,15 +9,6 @@ const router = useRouter()
 
 if (Object.keys(route.query).length > 0)
   router.replace({ query: undefined })
-
-useHead({
-  bodyAttrs: {
-    class: '',
-  },
-  htmlAttrs: {
-    lang: useI18n().locale.value,
-  },
-})
 </script>
 
 <template>

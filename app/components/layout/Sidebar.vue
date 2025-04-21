@@ -25,7 +25,7 @@ const isShowLogoMenu = ref(false)
 </script>
 
 <template>
-  <div
+  <aside
     :class="{
       '': props.isShowTrnForm && props.isShowSidebar && width >= 767,
       'block w-72': props.isShowSidebar && width >= 767,
@@ -46,24 +46,28 @@ const isShowLogoMenu = ref(false)
       <div class="px-2 pt-5">
         <BottomSheetOrDropdown
           :isOpen="isShowLogoMenu"
-          title=""
+          isShowCloseBtn
           @onOpenModal="isShowLogoMenu = true"
           @onCloseModal="isShowLogoMenu = false"
         >
           <template #trigger>
             <div
               :class="getStyles('item', ['link', 'rounded'])"
-              class="block cursor-default px-3 py-2 group-data-[headlessui-state='open']:!bg-item-4"
+              class="block cursor-default px-3 py-2 group-data-[state='open']:!bg-item-4"
             >
               <UiLogo />
             </div>
           </template>
 
           <template #content>
-            <div class="grid gap-2 px-1 py-3 md:px-3 md:!pb-0">
+            <div class="grid gap-2 px-1 py-3 md:px-3">
               <UserViewLogout />
-              <AppLocaleSwitcher />
-              <AppThemeSwitcher />
+
+              <div class="flex items-center gap-2">
+                <LocaleSwitcher />
+                <ThemeSwitcher />
+                <ThemePicker />
+              </div>
             </div>
           </template>
         </BottomSheetOrDropdown>
@@ -94,11 +98,12 @@ const isShowLogoMenu = ref(false)
             <WalletsItem
               v-for="(walletItem, walletId) in walletsItemsLimited"
               :key="walletId"
-              :walletId
+              :activeItemId="(route.params.id as string)"
               :lineWidth="1"
               :wallet="walletItem"
-              :activeItemId="(route.params.id as string)"
+              :walletId
               class="group"
+              isShowCreditLimit
               isShowIcon
               @click="() => walletId === route.params.id ? router.push('/dashboard') : router.push(`/wallets/${walletId}`)"
             />
@@ -124,5 +129,5 @@ const isShowLogoMenu = ref(false)
         <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
       </UiItem1>
     </div>
-  </div>
+  </aside>
 </template>

@@ -1,0 +1,15 @@
+en:
+  theme:
+    change: Change theme
+    dark: Dark
+    light: Light
+    select: Select theme
+    system: System
+
+ru:
+  theme:
+    change: Сменить тему
+    dark: Темная
+    light: Светлая
+    select: Выберите тему
+    system: Авто

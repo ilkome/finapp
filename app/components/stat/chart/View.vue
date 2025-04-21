@@ -24,7 +24,7 @@ type ChartParams = {
 
 const props = withDefaults(
   defineProps<{
-    chartType: ChartType
+    chartType?: ChartType
     isShowDataLabels?: boolean
     isShowExpense?: boolean
     isShowIncome?: boolean
@@ -85,7 +85,7 @@ const option = computed(() => {
       formatter(params: ChartParams[]) {
         let content = '<div class="px-1">'
         content = `${content}
-          <div class="text-md pb-2 text-2 text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
+          <div class="text-md pb-2 text-(--ui-text-muted) text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
           <div class="grid gap-1">
         `
 
@@ -157,7 +157,7 @@ function setChartSeries(series: unknown[]) {
 
 <template>
   <div
-    class="@3xl/page:h-52 h-40 px-2"
+    class="@3xl/page:h-52 h-40"
     @click="onClickChart"
   >
     <VChart

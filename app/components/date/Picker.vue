@@ -66,36 +66,40 @@ const matchTheme = {
   <VCalendarDatePicker
     v-if="props.mode === 'range'"
     v-model.range="date"
-    class="datePicker"
+    class="datePicker w-full"
     :rows="props.rows ?? 1"
+    style="width: 100%;"
     v-bind="{ ...attrs, ...$attrs, ...matchTheme[colorMode.preference] }"
   />
   <VCalendarDatePicker
     v-else
     v-model="date"
     :rows="1"
-    class="datePicker"
+    class="datePicker w-full"
     mode="date"
+    style="width: 100%;"
     v-bind="{ ...attrs, ...$attrs, ...matchTheme[colorMode.preference] }"
   />
 </template>
 
 <style>
+@import '~/assets/css/main.css';
+
 html .vc-dark,
 html .vc-light {
-  --vc-popover-content-bg: theme('colors.item.1');
-  --vc-accent-500: theme('colors.accent.1');
-  --vc-focus-ring: theme('colors.accent.1');
-  --vc-nav-item-active-bg: theme('colors.accent.1');
-  --vc-nav-hover-bg: theme('colors.item.5');
-  --vc-color: theme('colors.1');
-  --vc-day-content-disabled-color: theme('colors.1/.40');
-  --vc-weekday-color: theme('colors.2');
-  --vc-header-title-color: theme('colors.3');
-  --vc-popover-content-color: theme('colors.2');
-  --vc-nav-title-color: theme('colors.3');
-  --vc-nav-item-current-color: theme('colors.accent.1');
-  --vc-highlight-solid-bg: theme('colors.accent.1');
+  --vc-popover-content-bg: var(--item-1);
+  --vc-accent-500: var(--ui-primary);
+  --vc-focus-ring: var(--ui-primary);
+  --vc-nav-item-active-bg: var(--ui-primary);
+  --vc-nav-hover-bg: var(--item-5);
+  --vc-color: var(--text-1);
+  --vc-day-content-disabled-color: var(--text-1/.40);
+  --vc-weekday-color: var(--text-(--ui-text-muted));
+  --vc-header-title-color: var(--text-3);
+  --vc-popover-content-color: var(--text-(--ui-text-muted));
+  --vc-nav-title-color: var(--text-3);
+  --vc-nav-item-current-color: var(--ui-primary);
+  --vc-highlight-solid-bg: var(--ui-primary);
 }
 
 .vc-popover-content {

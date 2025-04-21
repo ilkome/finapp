@@ -15,20 +15,20 @@ function onSave(close: () => void) {
 
 <template>
   <BottomSheetOrDropdown
-    :title="t('trnForm.description.title')"
     :isOpen="trnsFormStore.modal.description"
+    :title="t('trnForm.description.title')"
     class="grow"
-    placement="bottom-end"
     drugClassesCustom="max-w-md"
-    @onOpenModal="trnsFormStore.openTrnFormModal('description')"
+    isShowCloseBtn
     @onCloseModal="trnsFormStore.closeTrnFormModal('description')"
+    @onOpenModal="trnsFormStore.openTrnFormModal('description')"
   >
     <template #trigger>
       <TrnFormMainCalculatorButton class="relative">
         <Icon name="lucide:message-square" size="26" />
         <div
           v-if="!!trnsFormStore.values.desc"
-          class="absolute right-1 top-1 aspect-square w-2 rounded-full bg-accent-1"
+          class="absolute right-1 top-1 aspect-square w-2 rounded-full bg-(--ui-primary)"
         />
       </TrnFormMainCalculatorButton>
     </template>

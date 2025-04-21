@@ -39,7 +39,7 @@ function onParentClick() {
         </div>
 
         <div
-          class="flex items-center gap-2 rounded-lg px-3 py-1 hocus:bg-item-5"
+          class="flex items-center gap-2 rounded-lg px-3 py-1 hover:bg-[var(--item-5)]"
           @click="onParentClick"
         >
           {{ props.parentCategory.name }}

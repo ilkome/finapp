@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import useMenuData, { type MenuItem } from '~/components/layout/useMenuData'
+import type { MenuItem } from '~/components/layout/useMenuData'
+
+import useMenuData from '~/components/layout/useMenuData'
 import { getStyles } from '~/components/ui/getStyles'
 
 const props = withDefaults(defineProps<{
@@ -19,11 +21,11 @@ const { checkIsActive, onClick } = useMenuData()
     :class="[
       getStyles('item', ['center', 'link', 'minh2', 'rounded', 'padding1']),
       {
-        '!text-accent-1/90': checkIsActive(props.menuId),
+        '!text-(--ui-primary)': checkIsActive(props.menuId),
         'gap-3': props.isShowText,
       },
     ]"
-    class="group min-h-[44px] text-2 md:min-h-[38px]"
+    class="group min-h-[44px] text-(--ui-text-muted) md:min-h-[38px]"
     @click="onClick(props.menuId)"
   >
     <div class="flex min-w-8 items-center justify-center">

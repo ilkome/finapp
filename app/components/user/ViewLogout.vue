@@ -13,14 +13,14 @@ const { t } = useI18n()
   <div>
     <div
       v-if="userStore.currentUser"
-      class="flex items-center gap-3 pb-4 text-sm text-2"
+      class="flex items-center gap-3 pb-4 text-sm"
     >
       <img
         :src="userStore.currentUser?.photoURL"
         class="size-10 rounded-full"
       >
       <div>
-        <div class="text-1">
+        <div class="font-semibold">
           {{ userStore.currentUser?.displayName }}
         </div>
 
@@ -28,15 +28,13 @@ const { t } = useI18n()
       </div>
     </div>
 
-    <UiElement
+    <UButton
       v-if="props.isShowSignOut"
-      insideClasses="bg-item-2 min-h-[44px] max-w-lg"
+      class="px-4"
+      icon="lucide:log-out"
       @click="userStore.signOut"
     >
-      <template #leftIcon>
-        <Icon name="lucide:log-out" size="20" />
-      </template>
-      <div>{{ t('userLogout') }}</div>
-    </UiElement>
+      {{ t('userLogout') }}
+    </UButton>
   </div>
 </template>

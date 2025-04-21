@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useTheme } from '~/components/app/theme/useTheme'
+import { useTheme } from '~/components/theme/useTheme'
 
 const { options, preference, setTheme } = useTheme()
 </script>

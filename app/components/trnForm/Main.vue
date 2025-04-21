@@ -10,7 +10,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(defineProps<{
-  maxHeight: string
+  maxHeight?: string
 }>(), {
   maxHeight: '60vh',
 })
@@ -95,12 +95,9 @@ const actions = computed(() => ({
       :initialSlide
     />
 
-    <UiTitle3
-      class="sticky top-0 z-10 bg-item-1 px-3 pb-3 pt-4 md:text-xl"
-      @click="trnsFormStore.values.trnId = null"
-    >
+    <UiTitleModal @click="trnsFormStore.values.trnId = null">
       {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
-    </UiTitle3>
+    </UiTitleModal>
 
     <div
       v-if="trnsFormStore.values.trnId"
@@ -116,7 +113,7 @@ const actions = computed(() => ({
         v-if="showModalConfirm"
         class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-accent-1 bg-item-1 p-3 text-1">
+        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-(--ui-primary) bg-[var(--item-1)] p-3 text-1">
           {{ t('base.sure') }}
 
           <div class="flex gap-2">
@@ -134,7 +131,7 @@ const actions = computed(() => ({
                 />
               </template>
 
-              <div class="leading-none text-2">
+              <div class="leading-none text-(--ui-text-muted)">
                 {{ item.label }}
               </div>
             </UiElement>
@@ -157,7 +154,7 @@ const actions = computed(() => ({
             />
           </template>
 
-          <div class="leading-none text-2">
+          <div class="leading-none text-(--ui-text-muted)">
             {{ t(item.label) }}
           </div>
         </UiItem1>
@@ -165,6 +162,10 @@ const actions = computed(() => ({
     </div>
 
     <TrnFormDate class="px-3 pb-0 " />
+
+    <div class="px-3 pb-2">
+      <TrnFormMainTypes />
+    </div>
 
     <TrnFormMainInput
       v-if="trnsFormStore.values.trnType !== 2"
@@ -176,7 +177,7 @@ const actions = computed(() => ({
       @onChange="trnsFormStore.onChangeAmount"
     />
 
-    <div class="grid gap-3 px-3 pb-6 ">
+    <div class="grid gap-3 px-3 pb-6">
       <!-- Selected -->
       <div
         v-if="trnsFormStore.values.trnType !== 2"
@@ -212,17 +213,18 @@ const actions = computed(() => ({
       />
 
       <TrnFormMainCalculator />
-      <TrnFormMainTypes />
     </div>
   </div>
 </template>
 
-<style>
+<style lang="css">
+@reference '~/assets/css/main.css';
+
 .trnForm {
   padding-bottom: calc(env(safe-area-inset-bottom) - 16px);
 
   .trnForm__pagination {
-    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-item-1;
+    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-[var(--item-1)];
     transform: translateX(-50%);
     bottom: 1px;
   }
@@ -233,7 +235,7 @@ const actions = computed(() => ({
   }
 
   .swiper-pagination-bullet-active {
-    @apply bg-accent-1;
+    @apply bg-(--ui-primary);
   }
 }
 </style>

@@ -10,7 +10,7 @@ export const classes = {
     gap1: 'gap-3',
     link: `
       select-none
-      hocus:bg-item-5
+      hover:bg-(--ui-bg-elevated)
     `,
     minh1: 'min-h-[42px]',
     minh2: 'min-h-[38px]',
@@ -28,12 +28,9 @@ export const classes = {
     padding3: 'px-3',
     padding4: 'px-1',
 
-    rounded: 'rounded-md',
+    rounded: 'rounded-(--ui-radius)',
     rounded2: 'rounded-lg',
     rounded3: 'rounded-xl',
-    shadow: `
-      shadow hocus:shadow-lg
-    `,
     simple: '',
   },
 

@@ -5,8 +5,9 @@ const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
   drugClassesCustom?: string
   isOpen?: boolean
+  isShowCloseBtn?: boolean
   placement?: string
-  title: string
+  title?: string
 }>()
 
 const emit = defineEmits<{
@@ -17,26 +18,43 @@ const emit = defineEmits<{
 const { width } = useWindowSize()
 const { pointerType } = usePointer()
 const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+
+const open = ref(false)
 </script>
 
 <template>
   <div class="grow">
     <UPopover
       v-if="isLaptop"
+      v-model:open="open"
       :popper="{
         placement: props.placement ?? 'bottom-start',
       }"
-      class="popoverGroup grow"
+      :content="{
+        align: 'center',
+        side: 'bottom',
+      }"
+      :ui="{
+        content: 'z-50 overflow-hidden',
+      }"
+      class="popoverGroup grow overflow-hidden"
     >
       <slot name="trigger" />
 
-      <template #panel="{ close }">
+      <template #content>
         <UiPopoverWrap
           :title="props.title"
-          class="pb-1"
-          @close="close"
+          :isShowCloseBtn="props.isShowCloseBtn"
+          @close="() => open = false"
         >
-          <slot name="content" :close />
+          <slot
+            name="content"
+            :close="() => open = false"
+          />
+          <slot
+            name="custom"
+            :close="() => open = false"
+          />
         </UiPopoverWrap>
       </template>
     </UPopover>
@@ -52,24 +70,33 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         <BottomSheet
           v-if="props.isOpen"
           isShow
-          :drugClassesCustom="`${props.drugClassesCustom ?? ''}`"
+          :drugClassesCustom="`${props.drugClassesCustom ?? ''} bottomSheetDrugClassesCustom`"
           :drugStyle="props.bottomSheetStyle"
           @closed="emit('onCloseModal')"
         >
-          <template #handler="{ close }">
+          <!-- <template #handler="{ close }">
             <BottomSheetHandler />
             <BottomSheetClose @onClick="close" />
-          </template>
+          </template> -->
 
           <template #default="{ close }">
             <div class="bottomSheetContent">
-              <UiTitleModal>
+              <UiTitleModal v-if="props.title">
                 {{ props.title }}
               </UiTitleModal>
 
-              <div class="scrollerBlock bottomSheetContentInside">
+              <div
+                v-if="$slots.content"
+                class="scrollerBlock bottomSheetContentInside"
+              >
                 <slot name="content" :close />
               </div>
+
+              <slot
+                v-if="$slots.custom"
+                name="custom"
+                :close
+              />
             </div>
           </template>
         </BottomSheet>

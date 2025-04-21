@@ -7,14 +7,12 @@ import UiToastContent from '~/components/ui/ToastContent.vue'
 const auth = useFirebaseAuth()!
 
 definePageMeta({
-  layout: 'center',
+  layout: 'empty',
 })
 
 const { locale, t } = useI18n()
 
 useSeoMeta({
-  description: t('app.desc'),
-  ogDescription: t('app.desc'),
   ogTitle: t('title'),
   title: t('title'),
 })
@@ -66,32 +64,51 @@ async function openDemo() {
 </script>
 
 <template>
-  <div class="mx-auto grid size-full max-w-xl grid-rows-[auto,1fr,auto] px-2 py-3 md:p-6">
-    <div class="flex items-center justify-between gap-2">
-      <AppLocaleSwitcher />
-      <AppThemeSwitcher />
+  <div class="h-dvh mx-auto grid size-full max-w-xl grid-rows-[auto_1fr_auto] px-2 py-3">
+    <div class="flex items-center justify-end gap-3">
+      <LocaleSwitcher />
+      <ThemeSwitcher />
+      <ThemePicker />
+      <UButton
+        icon="mdi:github"
+        color="neutral"
+        variant="ghost"
+        square
+        aria-label="GitHub"
+        to="https://github.com/ilkome/finapp"
+        target="_blank"
+        size="lg"
+      />
     </div>
 
     <div
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
       <div class="flex flex-col items-center justify-center pb-10">
-        <UiLogo class="pb-0 !text-5xl !font-extrabold" />
+        <UiLogo class="pb-0 !text-6xl !font-extrabold" />
+        <div class="pt-1 text-sm text-(--ui-text-muted)">
+          {{ t('description') }}
+        </div>
 
-        <div class="grid min-w-[280px] items-center gap-5 px-3 py-8">
+        <div class="grid min-w-[320px] items-center gap-2 py-14">
           <UiButtonAccent
             :loading="isLoading"
-            size="xl"
             rounded
+            size="xl"
             @click="signInWithGoogle"
           >
             {{ t("loginWithGoogle") }}
           </UiButtonAccent>
 
+          <USeparator
+            label="or"
+            class="pt-3 px-3"
+          />
+
           <UiButtonAccent
-            size="xl"
-            variant="outline"
             rounded
+            size="xl"
+            variant="ghost"
             @click="openDemo"
           >
             {{ t("openDemo") }}
@@ -110,8 +127,10 @@ async function openDemo() {
 en:
   title: "Login"
   openDemo: "Open Demo"
+  description: Powerful open-source finance application
 
 ru:
   title: "Вход"
   openDemo: "Открыть демо"
+  description: Персональный финансовый ассистент
 </i18n>

@@ -12,7 +12,7 @@ const emit = defineEmits<{
   <UiElement
     class="group/item"
     :lineWidth="4"
-    insideClasses="min-h-[44px]"
+    insideClasses="min-h-[44px] pr-3"
     @click="e => emit('click', e)"
   >
     <template #leftIcon>
@@ -20,7 +20,7 @@ const emit = defineEmits<{
         v-if="props.icon"
         :name="props.icon"
         size="20"
-        class="text-2"
+        class="text-(--ui-text-muted)"
       />
     </template>
 

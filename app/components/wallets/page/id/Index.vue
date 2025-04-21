@@ -26,7 +26,7 @@ provide('filter', filter)
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 
-const activeTab = useStorage<StatTabSlug>(`${walletId.value}-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>(`${walletId.value}-tab`, 'summary')
 const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -74,9 +74,9 @@ useHead({ title: wallet.value?.name })
 <template>
   <UiPage v-if="wallet">
     <StatHeader
-      :menu="{ active: activeTab, click: id => activeTab = id }"
-      :filter="{ isShowCategories: true }"
       :config="{ isShowCategories: true }"
+      :filter="{ isShowCategories: true }"
+      :menu="{ active: activeTab, click: id => activeTab = id }"
     >
       <template #title>
         <UiHeaderTitle>
@@ -99,46 +99,44 @@ useHead({ title: wallet.value?.name })
 
         <WalletsDelete :walletId @close="close" />
       </template>
-
-      <template #summary>
-        <div class="px-3 pb-2 lg:gap-8 lg:px-2">
-          <div
-            v-if="wallet.type !== 'credit'"
-            class="pt-2 md:max-w-lg"
-          >
-            <StatSumItemWallet
-              :amount="total"
-              :currencyCode="wallet.currency"
-              :title="t('money.balance')"
-            />
-          </div>
-
-          <div v-if="wallet.creditLimit" class="flex flex-wrap gap-x-8 gap-y-2 pt-2 md:max-w-lg">
-            <StatSumItemWallet
-              :amount="total"
-              :currencyCode="wallet.currency"
-              :title="t('wallets.form.credit.debt')"
-            />
-            <StatSumItemWallet
-              :amount="wallet.creditLimit - (-total)"
-              :currencyCode="wallet.currency"
-              :title="t('wallets.form.credit.available')"
-            />
-            <StatSumItemWallet
-              :amount="wallet.creditLimit"
-              :currencyCode="wallet.currency"
-              :title="t('wallets.form.credit.limit')"
-            />
-          </div>
-
-          <UiTextSm2 v-if="wallet.desc" class="pt-2">
-            {{ wallet.desc }}
-          </UiTextSm2>
-        </div>
-      </template>
     </StatHeader>
 
-    <StatItemWrap
+    <div class="px-3 pb-2 lg:gap-8 lg:px-2">
+      <div
+        v-if="wallet.type !== 'credit'"
+        class="md:max-w-lg"
+      >
+        <StatSumItemWallet
+          :amount="total"
+          :currencyCode="wallet.currency"
+          :title="t('money.balance')"
+        />
+      </div>
+
+      <div v-if="wallet.creditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
+        <StatSumItemWallet
+          :amount="total"
+          :currencyCode="wallet.currency"
+          :title="t('wallets.form.credit.debt')"
+        />
+        <StatSumItemWallet
+          :amount="wallet.creditLimit - (-total)"
+          :currencyCode="wallet.currency"
+          :title="t('wallets.form.credit.available')"
+        />
+        <StatSumItemWallet
+          :amount="wallet.creditLimit"
+          :currencyCode="wallet.currency"
+          :title="t('wallets.form.credit.limit')"
+        />
+      </div>
+
+      <UiTextSm2 v-if="wallet.desc" class="pt-2">
+        {{ wallet.desc }}
+      </UiTextSm2>
+    </div>
+
+    <StatWrap
       :activeTab
       :range="statDate.range.value"
       :storageKey

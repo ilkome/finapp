@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { MoneyTypeSlug } from '~/components/stat/types'
+import type { TransferType } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { type TransferType, TrnType } from '~/components/trns/types'
+import { TrnType } from '~/components/trns/types'
 import { getStyles } from '~/components/ui/getStyles'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -91,7 +92,7 @@ function copyAmount() {
     >
       <div
         :class="[{
-          '!border-accent-1/50': trnsFormStore.values.transferType === item.transferType,
+          '!border-(--ui-primary)/50': trnsFormStore.values.transferType === item.transferType,
         }, getStyles('item', ['rounded'])]"
         class="-m-1 grid gap-2 overflow-hidden border border-transparent p-2"
         @click="trnsFormStore.onChangeTransferType(item.transferType)"
@@ -99,7 +100,7 @@ function copyAmount() {
         <div class="flex items-center gap-2 whitespace-nowrap">
           <div
             :class="[getStyles('item', ['bg2', 'link', 'rounded']), {
-              'bg-item-5': trnsFormStore.values.transferType === item.transferType,
+              'bg-[var(--item-5)]': trnsFormStore.values.transferType === item.transferType,
             }]"
             class="flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm text-1/70 lg:min-h-[42px]"
           >

@@ -5,14 +5,13 @@ import { sub } from 'date-fns'
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
-// import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -20,7 +19,7 @@ const props = defineProps<{
   categoryId?: CategoryId
   filter: FilterProvider
   statDate: StatDateProvider
-  statTabSlug: StatTabSlug
+  statTabSlug: SeriesSlugSelected
   trnsIds: TrnId[]
   walletId?: WalletId
 }>()
@@ -48,27 +47,12 @@ const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   includesChildCategories: true,
 }))
 
-// const { locale, t } = useI18n()
-// const { getStringDateRange } = useGetDateRange(t, locale.value)
-
 const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
-
-// const last = computed(() => {
-//   const rangeBy = props.statDate.params.value.rangeBy
-//   const value = props.averageConfig * props.statDate.params.value.rangeDuration
-//   return `${value} ${t(`dates.${rangeBy}.plural`, value)}`
-// })
 </script>
 
 <template>
   <div class="grid gap-4">
     <div class="grid w-full grow gap-1">
-      <!-- <UiTitle6 class="text-nowrap !leading-3">
-        {{ t('money.average') }}
-        <br>{{ t('forLast') }} {{ last }}
-        <br>{{ getStringDateRange(dates, props.statDate.params.value.rangeBy, props.statDate.params.value.rangeDuration) }}
-      </UiTitle6> -->
-
       <UiTitle6 class="text-nowrap !leading-3">
         {{ t('money.average') }}
         <br>{{ t('forLast') }}
@@ -104,31 +88,6 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
         />
       </div>
     </div>
-
-    <!-- <div class="flex gap-1">
-      <UiItem2
-        :class="[{
-          '!hocus:transparent opacity-30': props.averageConfig === 1,
-        }]"
-        @click="props.averageConfig = props.averageConfig - 1"
-      >
-        <Icon name="lucide:minus" />
-      </UiItem2>
-      <FormInput
-        :value="props.averageConfig"
-        :max="100"
-        min="1"
-        class="min-w-16 max-w-20 !px-2 text-center"
-        type="number"
-        @updateValue="value => props.averageConfig = Number(value)"
-      />
-      <UiItem2
-        :class="{ '!hocus:transparent opacity-30': props.averageConfig >= 100 }"
-        @click="props.averageConfig = props.averageConfig + 1"
-      >
-        <Icon name="lucide:plus" />
-      </UiItem2>
-    </div> -->
   </div>
 </template>
 

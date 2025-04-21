@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AmountProps } from '~/components/amount/Amount.vue'
-import type { StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlugSelected } from '~/components/stat/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
@@ -11,7 +11,8 @@ const props = defineProps<{
   currencyCode?: string
   isActive?: boolean
   isTotal?: boolean
-  type: StatTabSlug
+  title?: string
+  type: SeriesSlugSelected
 }>()
 
 const emit = defineEmits<{
@@ -24,25 +25,29 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="@2xl/page:px-4 @2xl/page:pt-3 @2xl/page:pb-2 grid gap-1 rounded-lg border border-item-4 bg-item-2 px-3 pt-2"
+    class="@2xl/page:px-4 @2xl/page:py-2 rounded-(--ui-radius) border border-transparent bg-[var(--item-3)] px-2 py-2 grow flex-1 flex-wrap @2xl/page:max-w-max"
     :class="{
-      '!border-accent-1/40 !bg-item-2': props.isActive,
+      '!border-(--ui-primary)/40 !bg-item-2': props.isActive,
     }"
     @click="(e: Event) => emit('click', e)"
   >
-    <div class="flex items-end gap-5 overflow-hidden overflow-x-auto pb-2">
-      <div class="grid gap-2">
-        <UiTitleOption>
+    <div class="flex items-end gap-5">
+      <div class="grid gap-1">
+        <UiTitle6 v-if="props.title">
+          {{ props.title }}
+        </UiTitle6>
+
+        <UiTitle6 v-if="!props.title">
           {{ props.isTotal ? $t('money.all') : '' }}
           {{ $t(`money.${props.type}`) }}
-        </UiTitleOption>
+        </UiTitle6>
 
         <Amount
           :amount="props.amount"
           :currencyCode="props.currencyCode || currenciesStore.base"
           :class="{
-            '!text-income-1': props.amount > 0 && type !== 'summary',
-            '!text-expense-1': props.amount < 0 && type !== 'summary',
+            '!text-income-1': props.amount > 0 && props.type !== 'netIncome',
+            '!text-expense-1': props.amount < 0 && props.type !== 'netIncome',
           }"
           align="left"
           variant="xl"

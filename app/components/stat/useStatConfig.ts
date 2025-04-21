@@ -13,7 +13,6 @@ export const ConfigSchema = z.object({
     isGrouped: z.boolean(),
     isItemsBg: z.boolean(),
     isLines: z.boolean(),
-    isOpened: z.boolean(),
     isRoundIcon: z.boolean(),
     isShow: z.boolean(),
     isShowFavorites: z.boolean(),
@@ -66,7 +65,6 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isGrouped: true,
       isItemsBg: false,
       isLines: true,
-      isOpened: false,
       isRoundIcon: true,
       isShow: true,
       isShowFavorites: false,
@@ -80,31 +78,31 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     },
     catsView: 'list',
     chart: {
-      isShowAverage: true,
+      isShowAverage: false,
     },
     chartShow: true,
     chartType: 'bar',
     chartView: 'full',
 
     date: {
-      isShowQuick: true,
+      isShowQuick: false,
     },
 
     isShowEmptyCategories: false,
 
     statAverage: {
       count: 10,
-      isShow: true,
+      isShow: false,
     },
 
     vertical: {
       isGrouped: false,
-      isShow: true,
+      isShow: false,
     },
 
     wallets: {
-      count: 3,
-      isShow: true,
+      count: 6,
+      isShow: false,
     },
   }, localStorage, {
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),

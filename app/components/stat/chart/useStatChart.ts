@@ -32,7 +32,7 @@ export function useStatChart() {
           show: false,
         },
         lineStyle: {
-          color: seriesOptions[typeItem].colorLine ?? seriesOptions[typeItem].color,
+          color: seriesOptions[typeItem]?.colorLine ?? seriesOptions[typeItem]?.color,
           type: 'solid',
         },
         silent: false,
@@ -41,11 +41,11 @@ export function useStatChart() {
     }
 
     return {
-      color: seriesOptions[typeItem].color,
+      color: seriesOptions[typeItem]?.color,
       data: data.map(i => typeItem !== 'summary' ? Math.abs(i[typeItem]) : i[typeItem]),
       markLine,
       name: t(`money.${typeItem}`),
-      type: seriesOptions[typeItem].type,
+      type: seriesOptions[typeItem]?.type,
     }
   }
 

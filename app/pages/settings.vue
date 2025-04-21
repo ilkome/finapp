@@ -37,19 +37,21 @@ function onGenerateDemoData() {
   <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
+
+      <div class="flex items-center gap-3">
+        <ThemeSwitcher />
+        <ThemePicker />
+      </div>
     </UiHeader>
 
-    <div class="pageWrapper rounded-xl bg-item-1 pt-4">
-      <div class="grid gap-8">
+    <div class="pageWrapper">
+      <div class="grid gap-8 @3xl/main:max-w-md">
         <!-- User -->
         <div class="pb-6">
           <UserViewLogout isShowSignOut />
         </div>
 
-        <AppLocaleSwitcher isShowTitle />
-        <AppThemeSwitcher
-          isShowTitle
-        />
+        <LocaleSwitcher isShowTitle />
 
         <!-- Currency -->
         <UiButtonWithRight
@@ -103,7 +105,7 @@ function onGenerateDemoData() {
         <!-- About -->
         <div class="pb-12">
           {{ t('app.about') }}
-          <div class="pt-4 text-xs text-2">
+          <div class="pt-4 text-xs text-(--ui-text-muted)">
             {{ t('app.version') }} {{ version }}
             <!-- <About /> -->
           </div>

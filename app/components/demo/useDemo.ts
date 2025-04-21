@@ -1,8 +1,8 @@
 import { startOfYear, subYears } from 'date-fns'
 import localforage from 'localforage'
 
-import type { LocaleSlug } from '~/components/app/locale/types'
 import type { AddCategoryParams, Categories, CategoryId } from '~/components/categories/types'
+import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 

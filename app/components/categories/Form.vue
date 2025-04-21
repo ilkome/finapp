@@ -121,7 +121,7 @@ async function onSave() {
 <template>
   <div
     v-if="props.categoryForm"
-    class="grid h-full max-w-lg grid-rows-[1fr,auto] overflow-hidden px-3 md:h-auto lg:px-4"
+    class="grid h-full max-w-lg grid-rows-[1fr_auto] overflow-hidden px-3 md:h-auto lg:px-4"
   >
     <div class="grid content-start gap-6 overflow-y-auto py-4">
       <!-- Name -->
@@ -288,7 +288,7 @@ async function onSave() {
                 <a
                   href="https://icones.js.org/collection/mdi"
                   target="_blank"
-                  class="text-accent-1 hover:underline"
+                  class="text-(--ui-primary) hover:underline"
                 >Material Design Icons</a>
               </template>
 
@@ -307,7 +307,7 @@ async function onSave() {
               <div
                 v-for="icon in iconGroup"
                 :key="icon"
-                :class="[{ '!border-accent-1': icon === props.categoryForm.icon }]"
+                :class="[{ '!border-(--ui-primary)': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
                 class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent text-icon-primary"
                 @click="emit('updateValue', 'icon', icon)"
@@ -355,12 +355,10 @@ async function onSave() {
 
             <CategoriesList
               :activeItemId="props.categoryForm.parentId"
+              :categoriesItemProps="{ class: 'group' }"
               :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
               :slider="() => ({})"
               class="!gap-x-1"
-              :categoriesItemProps="{
-                class: 'group',
-              }"
               @click="id => onParentSelect(id, close)"
             />
           </div>

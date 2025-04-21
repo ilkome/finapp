@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
+import { classes } from '~/components/ui/getStyles'
 
 const { t } = useI18n()
 </script>
 
 <template>
   <a
-    :class="getStyles('item', ['center3', 'link', 'rounded'])"
-    class="px-5 py-2 text-2"
+    :class="[classes.item.rounded, classes.item.link, classes.item.center3]"
+    class="px-5 py-2 text-sm text-(--ui-text-muted)"
     href="https://ilko.me"
   >
     {{ t('madeBy.text') }}
