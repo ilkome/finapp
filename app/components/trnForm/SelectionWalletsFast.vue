@@ -7,14 +7,14 @@ const trnsFormStore = useTrnsFormStore()
 
 <template>
   <div>
-    <UiTitleModal @click="trnsFormStore.openTrnFormModal('wallets')">
-      {{ t("wallets.title") }}
+    <UiTitleModal>
+      {{ t('wallets.title') }}
     </UiTitleModal>
 
     <WalletsList
       v-slot="{ walletsItemsLimited }"
       :limit="5"
-      class="px-3 pt-1"
+      class="grid grid-cols-2 gap-1 px-3 pt-1"
     >
       <WalletsItem
         v-for="(wallet, walletId) in walletsItemsLimited"
@@ -22,8 +22,8 @@ const trnsFormStore = useTrnsFormStore()
         :activeItemId="trnsFormStore.values.walletId"
         :walletId
         :wallet
-        :lineWidth="1"
         isShowIcon
+        alt
         @click="trnsFormStore.values.walletId = walletId"
       />
     </WalletsList>

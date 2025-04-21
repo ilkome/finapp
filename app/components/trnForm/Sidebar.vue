@@ -6,6 +6,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 import 'swiper/css'
 
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const isShow = computed(() => trnsFormStore.ui.isShow)
 
@@ -50,7 +51,7 @@ watch(isShow, (v) => {
       v-if="isShow"
       class="@container/trnForm trnForm absolute inset-y-0 z-50 h-full w-[360px] py-2"
     >
-      <div class="border-left relative h-full overflow-hidden rounded-r-xl border-item-6 bg-item-2 shadow-2xl">
+      <div class="border-left relative h-full overflow-hidden rounded-r-xl border-item-6 border border-item-4 bg-item-2 shadow-2xl">
         <div class="absolute right-2 top-2">
           <BottomSheetClose @onClick="trnsFormStore.onClose()" />
         </div>
@@ -58,31 +59,36 @@ watch(isShow, (v) => {
         <div ref="sliderRef2" class="swiper-container h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
-            <div class="swiper-slide h-full bg-item-1">
-              <div class="scrollerBlock grid h-full grid-rows-[auto,1fr] gap-4 overflow-y-auto">
-                <TrnFormMain maxHeight="100vh" class="!pb-0" />
-
-                <!-- History -->
-                <TrnFormTrnsSlide
-                  :slider="sliderObj"
-                  :mainSlideIdx="0"
-                  class="px-2 pb-6"
+            <div class="swiper-slide h-full bg-[var(--ui-bg)]">
+              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] gap-4 overflow-y-auto items-start">
+                <TrnFormMain
+                  maxHeight="100vh"
+                  class="!pb-0"
+                  typesPosition="top"
                 />
+                <div class="-mt-6 grid gap-2">
+                  <TrnFormSelectionCategoriesFast
+                    @onSelectCategory="id => trnsFormStore.values.categoryId = id"
+                  />
+                </div>
               </div>
             </div>
 
             <!-- Quick selector -->
             <div
-              class="swiper-slide bg-item-1"
+              class="swiper-slide bg-[var(--bg-)]"
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto">
-                <div class="py-4">
-                  <TrnFormSelectionWalletsFast class="pb-6" />
-                  <TrnFormSelectionCategoriesFast
-                    @onSelectCategory="id => trnsFormStore.values.categoryId = id"
-                  />
-                </div>
+                <UiTitle3 class="sticky top-0 z-10 bg-[var(--ui-bg)] px-4 pb-3 pt-5 md:text-xl">
+                  {{ t('trns.history') }}
+                </UiTitle3>
+
+                <TrnFormTrnsSlide
+                  :slider="sliderObj"
+                  :mainSlideIdx="0"
+                  class="px-2 pb-6"
+                />
               </div>
             </div>
           </div>
@@ -94,16 +100,16 @@ watch(isShow, (v) => {
   </Transition>
 </template>
 
-<style scoped>
-.fadeIn {
-  &-enter-active,
-  &-leave-active {
-    @apply opacity-100 translate-x-0 transition-all duration-300 ease-in-out;
-  }
+<style>
+@reference '~/assets/css/main.css';
 
-  &-enter-from,
-  &-leave-to {
-    @apply opacity-0 -translate-x-12;
-  }
+.fadeIn-enter-active,
+.fadeIn-leave-active {
+  @apply opacity-100 translate-x-0 transition-all duration-300 ease-in-out;
+}
+
+.fadeIn-enter-from,
+.fadeIn-leave-to {
+  @apply opacity-0 -translate-x-12;
 }
 </style>

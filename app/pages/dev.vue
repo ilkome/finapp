@@ -3,9 +3,9 @@
 
 <template>
   <UiPage>
-    <AppThemeSwitcherTabs />
+    <ThemeSwitcherTabs />
 
-    <div class="grid grid-cols-[1fr,auto] items-start gap-8 p-3">
+    <div class="grid grid-cols-[1fr_auto] items-start gap-8 p-3">
       <div class="grid gap-12">
         <div>
           <!-- Colors -->
@@ -15,11 +15,11 @@
 
           <div class="grid gap-4">
             <div class="grid gap-2">
-              <div class="text-sm text-2">
+              <div class="text-sm text-(--ui-text-muted)">
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex-center size-20 bg-item-1">
+                <div class="flex-center size-20 bg-[var(--item-1)]">
                   1
                 </div>
                 <div class="flex-center size-20 bg-item-2">
@@ -31,7 +31,7 @@
                 <div class="flex-center size-20 bg-item-4">
                   4
                 </div>
-                <div class="flex-center size-20 bg-item-5">
+                <div class="flex-center size-20 bg-[var(--item-5)]">
                   5
                 </div>
                 <div class="flex-center size-20 bg-item-6">
@@ -44,7 +44,7 @@
             </div>
 
             <div class="grid gap-2">
-              <div class="text-sm text-2">
+              <div class="text-sm text-(--ui-text-muted)">
                 Texts
               </div>
               <div class="flex flex-wrap gap-0">
@@ -65,16 +65,16 @@
 
             <div class="flex flex-wrap gap-4">
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-sm text-(--ui-text-muted)">
                   Accent
                 </div>
                 <div class="flex flex-wrap gap-0">
-                  <div class="size-20 bg-accent-1" />
+                  <div class="size-20 bg-(--ui-primary)" />
                 </div>
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-sm text-(--ui-text-muted)">
                   Icon primary
                 </div>
                 <div class="flex flex-wrap gap-0">
@@ -85,7 +85,7 @@
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-sm text-(--ui-text-muted)">
                   Alert
                 </div>
                 <div class="flex flex-wrap gap-0">
@@ -94,7 +94,7 @@
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-2">
+                <div class="text-sm text-(--ui-text-muted)">
                   Money
                 </div>
                 <div class="flex flex-wrap gap-0">
@@ -227,10 +227,6 @@
             <UiTabs2>
               UiTabs2
             </UiTabs2>
-
-            <UiTabs3>
-              UiTabs3
-            </UiTabs3>
           </div>
         </div>
 

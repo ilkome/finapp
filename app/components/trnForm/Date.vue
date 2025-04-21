@@ -35,8 +35,7 @@ const isShow = ref(false)
       :title="t('common.date')"
       :isOpen="isShow"
       class="grow"
-      placement="bottom-end"
-      drugClassesCustom="max-w-xs"
+      isShowCloseBtn
       @onOpenModal="isShow = true"
       @onCloseModal="isShow = false"
     >

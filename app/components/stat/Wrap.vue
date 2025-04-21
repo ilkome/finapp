@@ -44,13 +44,13 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
 </script>
 
 <template>
-  <!-- Summary -->
+  <!-- Split -->
   <div
-    v-if="props.activeTab === 'summary'"
+    v-if="props.activeTab === 'split'"
     class="@3xl/page:gap-8 @3xl/page:grid-cols-2 grid max-w-7xl gap-8 px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
   >
     <StatItem
-      :activeTab="props.activeTab"
+      :statTab="props.activeTab"
       :hasChildren="props.hasChildren"
       :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
@@ -61,7 +61,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     />
 
     <StatItem
-      :activeTab="props.activeTab"
+      :statTab="props.activeTab"
       :hasChildren="props.hasChildren"
       :isOneCategory="props.isOneCategory"
       :preCategoriesIds="props.preCategoriesIds"
@@ -72,19 +72,16 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     />
   </div>
 
-  <div
+  <!-- Net income, income, expense -->
+  <StatItem
     v-else
-    class="min-h-dvh max-w-7xl p-2 lg:px-4 2xl:px-8"
-  >
-    <StatItem
-      :activeTab="props.activeTab"
-      :hasChildren="props.hasChildren"
-      :isOneCategory="props.isOneCategory"
-      :preCategoriesIds="props.preCategoriesIds"
-      :storageKey="props.storageKey"
-      :trnsIds="datedTrnsIds"
-      :type="props.activeTab"
-      :walletId="props.walletId"
-    />
-  </div>
+    :hasChildren="props.hasChildren"
+    :isOneCategory="props.isOneCategory"
+    :preCategoriesIds="props.preCategoriesIds"
+    :statTab="props.activeTab"
+    :storageKey="props.storageKey"
+    :trnsIds="datedTrnsIds"
+    :walletId="props.walletId"
+    class="max-w-7xl p-2 pt-0 lg:px-4 2xl:px-8"
+  />
 </template>

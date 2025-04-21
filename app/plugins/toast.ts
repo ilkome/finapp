@@ -1,6 +1,6 @@
 import Vue3Toastify, { toast } from 'vue3-toastify'
 
-import BottomSheetClose from '~/components/bottomSheet/BottomSheetClose'
+import BottomSheetClose from '~/components/bottomSheet/BottomSheetClose.vue'
 
 import 'vue3-toastify/dist/index.css'
 

@@ -52,18 +52,16 @@ function selectInterval(grouped: Grouped) {
 
     <div
       v-if="tabs.selected.value === 'presets'"
-      class="grid gap-6"
+      class="grid gap-6 pt-4"
     >
       <!-- Presets -->
-      <div class="grid gap-2">
-        <div class="flex flex-wrap gap-1">
-          <DateRanges
-            :statDate
-            isShowRangeAdjust
-            view="periods"
-            @onClose="emit('onClose')"
-          />
-        </div>
+      <div class="grid gap-4">
+        <DateRanges
+          :statDate
+          isShowRangeAdjust
+          view="periods"
+          @onClose="emit('onClose')"
+        />
 
         <div class="flex flex-wrap gap-1">
           <DateRanges

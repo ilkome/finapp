@@ -68,7 +68,7 @@ onMounted(() => {
       :class="{
         'relative mb-2 rounded-md bg-item-3': opened.includes(categoryId),
         'rounded-md bg-item-3': isChildsSelected(categoryId),
-        'border !border-accent-1/60': isEveryChildsSelected(categoryId),
+        'border !border-(--ui-primary)/60': isEveryChildsSelected(categoryId),
       }"
     >
       <CategoriesItem

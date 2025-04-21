@@ -190,7 +190,7 @@ export default {
       withdrawal: 'Withdrawal',
     },
     split: 'Split',
-    summary: 'Total',
+    summary: 'Summary',
     totals: {
       all: 'Total',
       archived: 'Archived',
@@ -222,6 +222,7 @@ export default {
       isAvailable: 'Available with credits',
       isExcludeInTotal: 'Not included in total',
       isWithdrawal: 'Withdrawal',
+      total: 'Total',
     },
     wallets: 'Wallets',
   },

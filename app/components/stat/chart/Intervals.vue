@@ -37,21 +37,19 @@ const items = computed(() => {
 
   return items.filter(i => i.isShow)
 })
+
+const value = ref(props.period)
 </script>
 
 <template>
-  <div
-    v-if="items.length > 1"
-    class="flex min-h-8 gap-0 pl-2"
-  >
-    <DateLinkItem
-      v-for="item in items"
-      :key="item.value"
-      :isActive="props.period === item.value"
-      variant="small"
-      @click="emit('onChangePeriod', item.value)"
-    >
-      {{ item.label }}
-    </DateLinkItem>
-  </div>
+  <USelect
+    v-model="value"
+    :items="items"
+    :ui="{
+      base: 'ring-0 text-(--ui-text-muted) text-2xs hover:bg-[var(--item-5)]',
+      trailingIcon: 'size-4',
+      content: 'w-24',
+    }"
+    @change="emit('onChangePeriod', value)"
+  />
 </template>

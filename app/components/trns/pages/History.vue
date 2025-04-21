@@ -65,8 +65,8 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
       </template>
     </UiHeader>
 
-    <div class="pageWrapper mb-4 rounded-xl bg-item-1 pb-4 pt-3">
-      <div class="grid gap-3">
+    <div class="pageWrapper mb-4 rounded-xl bg-[var(--ui-bg)] pb-4 pt-3">
+      <div class="grid gap-3 @3xl/main:max-w-md">
         <TrnsList
           :trnsIds
           isShowDates

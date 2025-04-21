@@ -17,7 +17,7 @@ function handleClick() {
 
 <template>
   <div
-    class="flex grow items-center gap-3 rounded-lg p-2 text-sm hocus:bg-item-5"
+    class="flex grow items-center gap-3 rounded-lg p-2 text-sm hover:bg-[var(--item-5)]"
     @click="handleClick"
   >
     <FormSwitch
@@ -25,7 +25,7 @@ function handleClick() {
       :value="checkboxValue"
     />
 
-    <div class="grow text-2">
+    <div class="grow text-(--ui-text-muted)">
       {{ title }}
     </div>
   </div>

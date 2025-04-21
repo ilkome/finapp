@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 
 const itemsGrouped = computed(() => [
-  [props.counts.all, props.counts.withdrawal, props.counts.available, props.counts.excludeInTotal, props.counts.archived].filter(i => i.isShow),
+  [props.counts.total, props.counts.withdrawal, props.counts.available, props.counts.excludeInTotal, props.counts.archived].filter(i => i.isShow),
   [props.counts.cash, props.counts.cashless, props.counts.deposit, props.counts.credit, props.counts.crypto, props.counts.debt].filter(i => i.isShow),
 ])
 </script>
@@ -50,12 +50,12 @@ const itemsGrouped = computed(() => [
           v-for="item in items"
           :key="item.id"
           :isActive="props.activeType === item.id"
-          :lineWidth="5"
+          :lineWidth="3"
           class="group"
           insideClasses="!min-h-[44px]"
           @click="emit('click', item.id)"
         >
-          <div class="grow pl-1 text-sm leading-none text-2">
+          <div class="grow pl-1 text-sm leading-none text-(--ui-text-muted)">
             <div>
               {{ $t(`money.types.${item.id}`) }}
             </div>
@@ -69,7 +69,9 @@ const itemsGrouped = computed(() => [
                 :currencyCode="currencyCode"
                 variant="2xs"
               />
-              <div>/</div>
+              <div class="text-2xs opacity-70 leading-none">
+                /
+              </div>
               <Amount
                 :amount="item.secondValue"
                 :currencyCode="currencyCode"

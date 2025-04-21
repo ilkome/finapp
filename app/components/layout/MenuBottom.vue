@@ -6,7 +6,7 @@ const { itemsBottom } = useMenuData()
 
 <template>
   <div
-    class="sm:bottom-inherit sticky bottom-0 left-0 z-20 mx-auto flex w-full items-stretch bg-item-2/80 backdrop-blur sm:hidden lg:hidden"
+    class="sm:bottom-inherit sticky bottom-0 left-0 z-20 mx-auto flex w-full items-stretch bg-(--ui-bg)/90 backdrop-blur sm:hidden lg:hidden"
     style="padding-bottom: calc(env(safe-area-inset-bottom) - 16px)"
   >
     <LayoutSidebarMenuItem
