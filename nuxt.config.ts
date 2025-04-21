@@ -95,6 +95,11 @@ export default defineNuxtConfig({
         file: 'ru-RU.js',
         language: 'ru-RU',
       },
+      {
+        code: 'zh',
+        file: 'zh-CN.js',
+        language: 'zh-CN',
+      },
     ],
     strategy: 'no_prefix',
     vueI18n: './i18n/i18n.config.ts',

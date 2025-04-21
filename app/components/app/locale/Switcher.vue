@@ -18,6 +18,9 @@ const options = [{
 }, {
   label: t('locale.en'),
   value: 'en',
+}, {
+  label: t('locale.zh'),
+  value: 'zh',
 }]
 
 function changeLocale(locale: LocaleSlug) {
@@ -52,10 +55,19 @@ en:
   locale:
     en: 'English'
     ru: 'Русский'
+    zh: '中文'
     title: 'Language'
 ru:
   locale:
     en: 'English'
     ru: 'Русский'
+    zh: '中文'
     title: 'Язык'
+
+zh:
+  locale:
+    en: 'English'
+    ru: 'Русский'
+    zh: '中文'
+    title: '语言'
 </i18n>
