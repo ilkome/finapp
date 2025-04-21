@@ -63,7 +63,6 @@ ru:
     ru: 'Русский'
     zh: '中文'
     title: 'Язык'
-
 zh:
   locale:
     en: 'English'
