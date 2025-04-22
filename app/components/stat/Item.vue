@@ -306,7 +306,6 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
             :storageKey="newBaseStorageKey"
             :type="props.type ?? 'netIncome'"
-            class="@3xl/page:order-2"
             @clickCategory="onClickCategory"
             @onSetCategoryFilter="onSetCategoryFilter"
           />

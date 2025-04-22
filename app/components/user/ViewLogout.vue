@@ -16,6 +16,7 @@ const { t } = useI18n()
       class="flex items-center gap-3 pb-4 text-sm"
     >
       <img
+        v-if="userStore.currentUser?.photoURL"
         :src="userStore.currentUser?.photoURL"
         class="size-10 rounded-full"
       >

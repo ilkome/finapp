@@ -61,7 +61,7 @@ const isShowLogoMenu = ref(false)
 
           <template #content>
             <div class="grid gap-2 px-1 py-3 md:px-3">
-              <UserViewLogout />
+              <UserViewLogout isShowSignOut />
 
               <div class="flex items-center gap-2">
                 <LocaleSwitcher />
