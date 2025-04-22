@@ -20,7 +20,7 @@ export default defineNuxtConfig({
     },
   ],
 
-  css: ['~/assets/css/main.css', '~/assets/css/vars.css'],
+  css: ['~/assets/css/main.css'],
 
   devtools: {
     timeline: {
