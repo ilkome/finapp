@@ -7,6 +7,10 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 export type MenuItem = {
   icon: string
   name: string
+  tooltip?: {
+    kbds: string[]
+    text: string
+  }
 }
 
 export default function useMenuData() {
@@ -22,6 +26,10 @@ export default function useMenuData() {
       trnForm: {
         icon: 'hugeicons:plus-sign-square',
         name: t('trnForm.createTrn'),
+        tooltip: {
+          text: t('trnForm.createTrn'),
+          kbds: ['meta', 'G'],
+        },
       },
       dashboard: {
         icon: 'lucide:chart-no-axes-combined',

@@ -12,12 +12,18 @@ const { items } = useMenuData()
 
 <template>
   <div>
-    <LayoutSidebarMenuItem
+    <UTooltip
       v-for="(item, menuId) in items"
       :key="menuId"
-      :item
-      :menuId
-      :isShowText
-    />
+      :disabled="!item.tooltip"
+      :text="item.tooltip?.text"
+      :kbds="item.tooltip?.kbds"
+    >
+      <LayoutSidebarMenuItem
+        :item
+        :menuId
+        :isShowText
+      />
+    </UTooltip>
   </div>
 </template>
