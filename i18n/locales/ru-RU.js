@@ -18,6 +18,7 @@ export default {
   base: {
     add: 'Создать',
     apply: 'Применить',
+    close: 'Закрыть',
     delete: 'Удалить',
     duplicate: 'Дублировать',
     edit: 'Редактировать',
@@ -45,6 +46,7 @@ export default {
     childs: 'Дочерние категории',
     createNewTitle: 'Добавить категорию',
     favoriteCategories: 'Избранные категории',
+    filter: 'Фильтр по категориям',
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
       delete: {
@@ -360,6 +362,7 @@ export default {
 
   wallets: {
     createNewTitle: 'Добавить кошелек',
+    filter: 'Фильтровать кошельки',
     form: {
       credit: {
         available: 'Доступно',
