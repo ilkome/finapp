@@ -28,7 +28,6 @@ const emit = defineEmits<{
       <Icon name="lucide:chevron-left" size="24" class="rotate-180" />
     </UiItem3>
 
-    <!-- class="@xl/page:order-3" -->
     <UiItem3
       v-if="props.isShowNavHome"
       @click="emit('changeDate', 'today')"

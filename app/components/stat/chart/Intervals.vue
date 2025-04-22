@@ -43,6 +43,7 @@ const value = ref(props.period)
 
 <template>
   <USelect
+    v-if="items.length > 1"
     v-model="value"
     :items="items"
     :ui="{
