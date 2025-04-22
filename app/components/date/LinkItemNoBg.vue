@@ -16,7 +16,7 @@ const emit = defineEmits<{
         'bg-[var(--item-5)] text-(--ui-primary)': props.isActive,
       },
     ]"
-    class="text-nowrap rounded-full font-primary text-2xs leading-none text-2"
+    class="text-nowrap rounded-full text-xs leading-none text-(--ui-text)"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

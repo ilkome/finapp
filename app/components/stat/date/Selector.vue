@@ -97,7 +97,7 @@ function selectInterval(grouped: Grouped) {
               {{ t(`dates.${item.intervalsBy}.simple`) }}
             </DateLinkItem>
 
-            <div class="flex">
+            <div class="flex border border-(--ui-border) rounded-(--ui-radius) bg-(--ui-bg) p-px gap-1">
               <DateLinkItem @click="statDate.delInterval">
                 -
               </DateLinkItem>

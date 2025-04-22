@@ -59,7 +59,6 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <!-- grid @xl/page:grid-cols-[auto_1fr] grid-cols-[1fr_auto] -->
   <div class="items-top flex items-center grow gap-2 sticky top-[77px] lg:top-[89px] py-2 -my-2 sticky z-20 bg-(--ui-bg)/90 backdrop-blur overflow-x-auto">
     <div
       v-if="!statDate.params.value.customDate"
@@ -74,7 +73,6 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       />
     </div>
 
-    <!-- @xl/page:order-2 -->
     <BottomSheetOrDropdown
       :title="t('dates.select')"
       :isOpen="statDate.modals.value.dateSelector"
@@ -91,7 +89,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
       <template #content="{ close }">
         <StatDateSelector
-          class="min-w-[362px] pb-2 md:px-3 md:pb-0"
+          class="min-w-[362px] pb-2 md:px-3"
           @onClose="close"
         />
       </template>

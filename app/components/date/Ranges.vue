@@ -124,21 +124,23 @@ function selectMaxRange(isSkipEmpty = false) {
     </template>
 
     <template v-if="props.isShowRangeAdjust">
-      <DateLinkItem
-        v-bind="props.itemProps"
-        @click="props.statDate.minusRange"
-      >
-        -
-      </DateLinkItem>
-      <DateLinkItemNoBg>
-        {{ props.statDate.params.value.rangeDuration }}
-      </DateLinkItemNoBg>
-      <DateLinkItem
-        v-bind="props.itemProps"
-        @click="props.statDate.plusRange"
-      >
-        +
-      </DateLinkItem>
+      <div class="flex border border-(--ui-border) rounded-(--ui-radius) bg-(--ui-bg) p-px gap-1">
+        <DateLinkItem
+          v-bind="props.itemProps"
+          @click="props.statDate.minusRange"
+        >
+          -
+        </DateLinkItem>
+        <DateLinkItemNoBg>
+          {{ props.statDate.params.value.rangeDuration }}
+        </DateLinkItemNoBg>
+        <DateLinkItem
+          v-bind="props.itemProps"
+          @click="props.statDate.plusRange"
+        >
+          +
+        </DateLinkItem>
+      </div>
     </template>
 
     <template v-if="props.view === 'maximum'">
