@@ -18,6 +18,7 @@ export default {
   base: {
     add: 'Create',
     apply: 'Apply',
+    close: 'Close',
     delete: 'Delete',
     duplicate: 'Duplicate',
     edit: 'Edit',
@@ -45,6 +46,7 @@ export default {
     childs: 'Child categories',
     createNewTitle: 'Add category',
     favoriteCategories: 'Favorite categories',
+    filter: 'Filter categories',
     form: {
       childColor: 'Apply color to all child categories',
       delete: {
@@ -358,6 +360,7 @@ export default {
 
   wallets: {
     createNewTitle: 'Add wallet',
+    filter: 'Filter wallets',
     form: {
       credit: {
         available: 'Available',

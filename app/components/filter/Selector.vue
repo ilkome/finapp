@@ -19,7 +19,7 @@ const modals = ref({
   <div class="flex">
     <BottomSheetOrDropdown
       v-if="props.isShowCategories"
-      :title="t('categories.title')"
+      :title="t('categories.filter')"
       :isOpen="modals.categories"
       isShowCloseBtn
       @onOpenModal="modals.categories = true"
@@ -45,7 +45,7 @@ const modals = ref({
 
           <div class="px-3 py-2">
             <UiButtonAccent @click="close">
-              {{ t('base.apply') }}
+              {{ t('base.close') }}
             </UiButtonAccent>
           </div>
         </div>
@@ -54,7 +54,7 @@ const modals = ref({
 
     <BottomSheetOrDropdown
       v-if="props.isShowWallets"
-      :title="t('wallets.title')"
+      :title="t('wallets.filter')"
       :isOpen="modals.wallets"
       isShowCloseBtn
       @onOpenModal="modals.wallets = true"
