@@ -1,5 +1,6 @@
 @import 'tailwindcss' theme(static);
 @import '@nuxt/ui';
+@import './vars.css';
 @import './others.css';
 @import './theme.css';
 
