@@ -141,30 +141,25 @@ function updateStatAverage(value: number) {
             class="flex gap-4 pt-2"
           >
             <div class="flex gap-1">
-              <UiItem2
-                :class="[{
-                  '!hover:transparent opacity-30': statConfig.config.value.wallets.count === 1,
-                }]"
-                @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
-              >
-                <Icon name="lucide:minus" />
-              </UiItem2>
-              <FormInput
-                :placeholder="t('stat.config.showedWallets.placeholder')"
-                :value="statConfig.config.value.wallets.count"
-                :max="walletsStore.sortedIds.length"
-                min="1"
-                class="max-w-20 !px-2 text-center"
-                type="number"
-                @updateValue="value => statConfig.updateConfig('wallets', { count: +value })"
-              />
-
-              <UiItem2
-                :class="{ '!hover:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
-                @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
-              >
-                <Icon name="lucide:plus" />
-              </UiItem2>
+              <div class="flex border border-(--ui-border) rounded-(--ui-radius) bg-(--ui-bg) p-px gap-1">
+                <DateLinkItem
+                  :class="[{
+                    '!hover:transparent opacity-30': statConfig.config.value.wallets.count === 1,
+                  }]"
+                  @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
+                >
+                  -
+                </DateLinkItem>
+                <DateLinkItemNoBg>
+                  {{ statConfig.config.value.wallets.count }}
+                </DateLinkItemNoBg>
+                <DateLinkItem
+                  :class="{ '!hover:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
+                  @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
+                >
+                  +
+                </DateLinkItem>
+              </div>
             </div>
           </div>
         </div>

@@ -36,6 +36,7 @@ const visibleCategories = computed(() => isExpanded.value ? roundCategories.valu
       :class="{
         'opacity-60': props.filteredCategoriesIds?.length > 0 && !props.filteredCategoriesIds?.includes(item.id),
         'opacity-50': !props.filteredCategoriesIds?.includes(item.id) && item.value === 0,
+        '!border-(--ui-primary)': props.filteredCategoriesIds?.includes(item.id),
       }"
       class="transition-opacity"
       isShowAmount

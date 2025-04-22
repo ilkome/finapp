@@ -148,7 +148,7 @@ const averageTotal = computed(() => {
 
   const items = {
     month: 0,
-    // eslint-disable-next-line perfectionist/sort-objects
+
     week: 0,
     // eslint-disable-next-line perfectionist/sort-objects
     day: 0,
@@ -168,22 +168,18 @@ const averageTotal = computed(() => {
 
 const typesToShow = computed(() => {
   if (props.statTab === 'summary') {
-    if (filteredType.value === 'netIncome') {
+    if (filteredType.value === 'netIncome')
       return ['income', 'expense']
-    }
 
-    if (filteredType.value === 'income') {
+    if (filteredType.value === 'income')
       return ['income']
-    }
 
-    if (filteredType.value === 'expense') {
+    if (filteredType.value === 'expense')
       return ['expense']
-    }
   }
 
-  if (props.statTab === 'expense' || props.statTab === 'income') {
+  if (props.statTab === 'expense' || props.statTab === 'income')
     return [props.statTab]
-  }
 
   return [props.type]
 })

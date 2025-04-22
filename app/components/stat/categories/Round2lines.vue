@@ -64,7 +64,7 @@ onLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="relative flex items-center gap-2 overflow-hidden rounded-2xl dark:bg-item-3 p-1 pr-3 hover:bg-[var(--item-5)]"
+    class="relative flex items-center gap-2 overflow-hidden rounded-2xl dark:bg-item-3 p-1 pr-3 border border-transparent hover:bg-[var(--item-5)]"
   >
     <div
       :style="{ backgroundColor: category?.color }"
