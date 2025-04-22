@@ -32,6 +32,9 @@ const classes = computed(() => ([
   {
     [getStyles('item', ['bg2', 'rounded'])]: props.alt,
   },
+  {
+    group: props.isSort,
+  },
 ]))
 
 const creditViews = ['dept', 'summary'] as const
@@ -81,7 +84,7 @@ if (!props.isSort) {
     <!-- Main -->
     <template v-if="!props.alt">
       <div class="grid grow gap-1">
-        <div class="text-sm leading-none text-3">
+        <div class="text-sm leading-none text-(--ui-text-muted)">
           {{ wallet.name }}
         </div>
 
@@ -129,13 +132,7 @@ if (!props.isSort) {
         </div>
       </div>
 
-      <div
-        class="pr-1"
-        :class="{
-          'text-accent-2': creditAmount > 0,
-          'text-accent-1': creditAmount < 0,
-        }"
-      >
+      <div class="pr-1">
         <Amount
           v-if="wallet.creditLimit"
           :amount="creditAmount"
@@ -184,7 +181,7 @@ if (!props.isSort) {
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hocus:bg-item-5"
+        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hover:bg-[var(--item-6)]"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

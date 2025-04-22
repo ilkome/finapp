@@ -1,87 +1,117 @@
-@import 'others.css';
+:root {
+  --ui-primary: var(--ui-color-primary-500);
+  --ui-secondary: var(--ui-color-secondary-500);
+  --ui-success: var(--ui-color-success-500);
+  --ui-info: var(--ui-color-info-500);
+  --ui-warning: var(--ui-color-warning-500);
+  --ui-error: var(--ui-color-error-500);
+
+  --color-neutral-400: var(--ui-color-neutral-400);
+  --color-neutral-500: var(--ui-color-neutral-500);
+
+  --ui-radius: var(--radius-sm);
+
+  --expense-1: oklch(0.63 0.24 24.81);
+  --expense-2: oklch(0.63 0.24 24.81 / 0.5);
+  --income-1: oklch(0.65 0.2 142.06);
+  --income-2: oklch(0.65 0.2 142.06 / 0.5);
+
+  --text-alert-1: oklch(0.63 0.24 24.81);
+
+  --chart-label: var(--text-4);
+  --chart-line: var(--item-5);
+  --chart-splitLine: var(--item-6);
+  --chart-tooltip: var(--ui-text-muted);
+  --chart-axisLabel: var(--text-1);
+}
+
+.dark {
+  --ui-primary: var(--ui-color-primary-400);
+  --ui-secondary: var(--ui-color-secondary-400);
+  --ui-success: var(--ui-color-success-400);
+  --ui-info: var(--ui-color-info-400);
+  --ui-warning: var(--ui-color-warning-400);
+  --ui-error: var(--ui-color-error-400);
+}
 
 /*
  * Dark Theme
 */
-html.dark,
-html.dark-pink,
-html.dark-blue {
+.dark {
   color-scheme: dark;
 
-  --accent-1: 219 39 119;
-
-  --item-1: 19 19 19;
-  --item-2: 23 23 23;
+  --item-1: rgb(19 19 19);
+  --item-2: rgb(23 23 23);
   --item-3: #1c1c1c;
   --item-4: #232323;
   --item-5: #262626;
-  --item-6: 44 44 44;
+  --item-6: rgb(44 44 44);
   --item-7: #878787;
 
   --overlay: #000000cc;
 
-  --text-1: 220 220 220;
-  --text-2: 160 160 160;
-  --text-3: 200 200 200;
-  --text-4: 130 130 130;
-  --text-icon-primary: theme('colors.neutral.50');
+  --text-1: rgb(220 220 220);
+  --text-2: rgb(160 160 160);
+  --text-3: rgb(200 200 200);
+  --text-4: rgb(130 130 130);
 }
 
 /*
  * Light Theme
 */
-html.light,
-html.light-pink,
-html.light-blue {
+.light {
   color-scheme: light;
 
-  --accent-1: 219 39 119;
-
-  --item-1: 255 255 255;
-  --item-2: 250 250 250;
+  --item-1: rgb(255 255 255);
+  --item-2: rgb(250 250 250);
   --item-3: #f5f5f5;
   --item-4: #f3eff2;
   --item-5: #f0edf0;
-  --item-6: 225 225 225;
+  --item-6: rgb(225 225 225);
   --item-7: #bebebe;
 
   --overlay: #00000099;
 
-  --text-1: 0 0 0;
-  --text-2: 80 80 80;
-  --text-3: 64 64 64;
-  --text-4: 100 100 100;
-  --text-icon-primary: theme('colors.neutral.50');
+  --text-1: rgb(0 0 0);
+  --text-2: rgb(80 80 80);
+  --text-3: rgb(64 64 64);
+  --text-4: rgb(100 100 100);
 }
 
-/*
- * Blue
-*/
-html.light,
-html.light-blue {
-  --item-4: rgb(237 238 240);
-  --item-5: rgb(235, 236, 239);
-}
+@theme static {
+  --aspect-auto: auto;
+  --aspect-square: 1 / 1;
 
-html.light-blue,
-html.dark-blue {
-  --accent-1: 0 122 255;
-}
+  --color-1: oklch(0.87 0 0);
+  --color-2: oklch(0.67 0 0);
+  --color-3: oklch(0.81 0 0);
+  --color-4: oklch(0.54 0 0);
 
-/*
- * Common
-*/
-html {
-  --expense-1: 0.63 0.24 24.81;
-  --expense-2: oklch(0.63 0.24 24.81 / 0.5);
-  --income-1: 0.65 0.2 142.06;
-  --income-2: oklch(0.65 0.2 142.06 / 0.5);
+  --color-alert-1: oklch(0.63 0.24 24.81);
 
-  --text-alert-1: oklch(0.63 0.24 24.81);
+  --color-expense-1: oklch(0.63 0.24 24.81);
+  --color-expense-2: oklch(0.63 0.24 24.81 / 0.5);
 
-  --chart-label: rgb(var(--text-4));
-  --chart-line: var(--item-5);
-  --chart-splitLine: rgb(var(--item-6));
-  --chart-tooltip: rgb(var(--text-2));
-  --chart-axisLabel: rgb(var(--text-1));
+  --color-income-1: oklch(0.65 0.2 142.06);
+  --color-income-2: oklch(0.65 0.2 142.06 / 0.5);
+
+  --color-icon-primary: var(--color-neutral-50);
+
+  --color-item-1: var(--item-1);
+  --color-item-2: var(--item-2);
+  --color-item-3: var(--item-3);
+  --color-item-4: var(--item-4);
+  --color-item-5: var(--item-5);
+  --color-item-6: var(--item-6);
+  --color-item-7: var(--item-7);
+
+  --font-brand: Nunito, Roboto, sans-serif;
+  --font-primary: Roboto, sans-serif;
+  --font-secondary: Unica One, Roboto, sans-serif;
+  --font-tertiary: Roboto, sans-serif;
+
+  --text-2xs: 10px;
+
+  --breakpoint-2sm: 320px;
+  --breakpoint-3sm: 360px;
 }

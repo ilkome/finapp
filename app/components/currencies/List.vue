@@ -30,7 +30,7 @@ const list = computed(() => {
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto,1fr] overflow-hidden px-2">
+  <div class="grid h-full grid-rows-[auto_1fr] overflow-hidden px-2">
     <div>
       <FormInput
         :value="searchInput"

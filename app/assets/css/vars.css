@@ -1,0 +1,15 @@
+:root {
+  --chart-label: var(--text-4);
+  --chart-line: var(--item-5);
+  --chart-splitLine: var(--item-6);
+  --chart-tooltip: var(--ui-text-muted);
+  --chart-axisLabel: var(--text-1);
+
+  --expense-1: oklch(0.63 0.24 24.81);
+  --expense-2: oklch(0.63 0.24 24.81 / 0.5);
+  --income-1: oklch(0.65 0.2 142.06);
+  --income-2: oklch(0.65 0.2 142.06 / 0.5);
+
+  --text-alert-1: oklch(0.63 0.24 24.81);
+
+}

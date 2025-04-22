@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { onLongPress } from '@vueuse/core'
+
 import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
@@ -6,6 +8,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { getStartOf } from '~/components/date/utils'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -23,7 +26,7 @@ const props = withDefaults(
     isShowIncome?: boolean
     isShowTransfers?: boolean
     size?: number
-    trnsIds: TrnId[]
+    trnsIds?: TrnId[]
   }>(),
   {
     initTrnType: 'all',
@@ -39,6 +42,8 @@ const emit = defineEmits<{
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
+const trnsFormStore = useTrnsFormStore()
+
 const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
 const { formatDate } = useDateFormats()
@@ -151,6 +156,13 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     }
     return acc
   }, {} as Record<string, TrnId[]>))
+
+function onOpenTrnForm(date: number) {
+  trnsFormStore.trnFormCreate()
+  trnsFormStore.$patch((state) => {
+    state.values.date = date
+  })
+}
 </script>
 
 <template>
@@ -190,7 +202,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     <!-- With Description -->
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
-      class="relative pb-2"
+      class="relative"
     >
       <UiCheckbox
         :checkboxValue="isShowWithDesc"
@@ -255,17 +267,18 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
       >
         <div
           :class="{ 'border-item-4': isShowGroupSum && groupTrnsIds.length > 1 }"
-          class="flex items-end gap-2 px-3 py-1"
+          class="flex items-center gap-2 px-3 py-1"
         >
           <DateTrns
             :date="+date"
-            class="grow "
+            class="grow"
+            @click="onOpenTrnForm(+date)"
           />
 
           <!-- Group Sum -->
           <div
             v-if="isShowGroupSum && groupTrnsIds.length > 1"
-            class="pb-2 opacity-60"
+            class="opacity-60"
           >
             <Amount
               v-if="getTotalOfTrnsIds(groupTrnsIds).income !== 0"
@@ -307,10 +320,10 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     <!-- Show all -->
     <div
       v-if="!isShowedAllTrns"
-      class="flex-center pt-1"
+      class="pt-1 px-2"
     >
       <div
-        class="flex-center rounded-full bg-item-5 px-5 py-2 text-sm text-2 hocus:bg-item-6"
+        class="flex-center rounded-[var(--ui-radius)] bg-[var(--item-5)] px-5 py-2 text-sm text-(--ui-text-muted) hover:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

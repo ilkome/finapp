@@ -2,11 +2,13 @@
 import { sub } from 'date-fns'
 
 import type { StatDateProvider } from '~/components/date/types'
+import type { FilterProvider } from '~/components/filter/types'
 
 import { getEndOf, getStartOf } from '~/components/date/utils'
 
 const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
+const filter = inject('filter') as FilterProvider
 
 const isShowNav = computed(() =>
   !statDate.params.value.isShowMaxRange
@@ -57,28 +59,8 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="items-top @xl/page:grid-cols-[auto,1fr] grid grow grid-cols-[1fr,auto] gap-2">
-    <BottomSheetOrDropdown
-      :title="t('dates.select')"
-      :isOpen="statDate.modals.value.dateSelector"
-      class="@xl/page:order-2 flex grow gap-1"
-      @onOpenModal="statDate.modals.value.dateSelector = true"
-      @onCloseModal="statDate.modals.value.dateSelector = false"
-    >
-      <template #trigger>
-        <UiTitle8 isShown>
-          <StatDateRange />
-        </UiTitle8>
-      </template>
-
-      <template #content="{ close }">
-        <StatDateSelector
-          class="min-w-[362px] pb-2 md:px-3 md:pb-0"
-          @onClose="close"
-        />
-      </template>
-    </BottomSheetOrDropdown>
-
+  <!-- grid @xl/page:grid-cols-[auto_1fr] grid-cols-[1fr_auto] -->
+  <div class="items-top flex items-center grow gap-2 sticky top-[77px] lg:top-[89px] py-2 -my-2 sticky z-20 bg-(--ui-bg)/90 backdrop-blur overflow-x-auto">
     <div
       v-if="!statDate.params.value.customDate"
       class="flex gap-1"
@@ -91,5 +73,34 @@ function changeDate(way: 'next' | 'prev' | 'today') {
         @changeDate="changeDate"
       />
     </div>
+
+    <!-- @xl/page:order-2 -->
+    <BottomSheetOrDropdown
+      :title="t('dates.select')"
+      :isOpen="statDate.modals.value.dateSelector"
+      class="flex grow-0 gap-1"
+      isShowCloseBtn
+      @onOpenModal="statDate.modals.value.dateSelector = true"
+      @onCloseModal="statDate.modals.value.dateSelector = false"
+    >
+      <template #trigger>
+        <UiTitle8 isShown class="!grow-0">
+          <StatDateRange />
+        </UiTitle8>
+      </template>
+
+      <template #content="{ close }">
+        <StatDateSelector
+          class="min-w-[362px] pb-2 md:px-3 md:pb-0"
+          @onClose="close"
+        />
+      </template>
+    </BottomSheetOrDropdown>
+
+    <FilterSelected
+      v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0 || filter.walletsIds.value.length > 0"
+      isShowCategories
+      isShowWallets
+    />
   </div>
 </template>

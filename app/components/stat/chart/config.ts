@@ -1,32 +1,29 @@
 import type { ChartType } from '~/components/stat/chart/types'
-import type { StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlug } from '~/components/stat/types'
 
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
-export const seriesOptions: Record<StatTabSlug, { color: string, colorLine?: string, localeKey: string, type: ChartType }> = {
+type SeriesOption = {
+  color: string
+  colorLine?: string
+  localeKey: string
+  type: ChartType
+}
+
+export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
   expense: {
-    color: 'oklch(var(--expense-1))',
+    color: 'var(--expense-1)',
     colorLine: 'var(--expense-2)',
     localeKey: 'money.expense',
     type: 'bar',
   },
   income: {
-    color: 'oklch(var(--income-1))',
+    color: 'var(--income-1)',
     colorLine: 'var(--income-2)',
     localeKey: 'money.expense',
     type: 'bar',
   },
-  netIncome: {
-    color: 'grey',
-    localeKey: 'money.netIncome',
-    type: 'line',
-  },
-  summary: {
-    color: 'grey',
-    localeKey: 'money.netIncome',
-    type: 'line',
-  },
-} as const
+}
 
 export const config = {
   // Grid
@@ -49,9 +46,8 @@ export const config = {
     borderWidth: 0,
     label: {
       backgroundColor: 'var(--chart-line)',
-      color: 'red',
     },
-    padding: 8,
+    padding: 4,
     textStyle: {
       color: 'var(--chart-tooltip)',
     },
@@ -67,7 +63,7 @@ export const config = {
     },
     axisLine: {
       lineStyle: {
-        color: 'var(--chart-splitLine)',
+        color: 'var(--chart-line)',
       },
     },
 
@@ -86,8 +82,8 @@ export const config = {
   yAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
-      formatter: n => getCompactAmount(n),
-      // show: false,
+      formatter: (n: number) => getCompactAmount(n),
+      show: false, // TODO: config
     },
 
     axisLine: {
@@ -98,7 +94,7 @@ export const config = {
     axisPointer: {
       label: {
         color: 'var(--chart-axisLabel)',
-        formatter: props => getLocalAmount(props?.value),
+        formatter: (props: { value: number } | undefined) => props ? getLocalAmount(props.value) : '',
       },
       snap: true,
     },
@@ -109,6 +105,7 @@ export const config = {
       lineStyle: {
         color: 'var(--chart-line)',
       },
+      show: false,
     },
     type: 'value',
 

@@ -98,7 +98,7 @@ function onChangeViewOptions(newViewOptions: any) {
 <template>
   <div class="">
     <!-- List -->
-    <div class="grid gap-3 border-b border-item-4 pb-2 last:border-0">
+    <div class="border-item-4 grid gap-3 border-b pb-2 last:border-0">
       <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
       <div class="flex gap-1">
         <UiItem2
@@ -141,18 +141,12 @@ function onChangeViewOptions(newViewOptions: any) {
           @click="statConfig.updateConfig('catsList', { isRoundIcon: !statConfig.config.value.catsList.isRoundIcon })"
         />
       </div>
-
-      <UiCheckbox
-        :checkboxValue="statConfig.config.value.catsList.isOpened"
-        :title="t('categories.list.showAsRounded')"
-        @click="statConfig.updateConfig('catsList', { isOpened: !statConfig.config.value.catsList.isOpened })"
-      />
     </div>
 
     <!-- TODO: use StatConfig -->
     <div
       v-if="false"
-      class="border-b border-item-4 pb-2 last:border-0 last:pb-0"
+      class="border-item-4 border-b pb-2 last:border-0 last:pb-0"
     >
       <!-- Favorite -->
       <UiElement
@@ -190,7 +184,7 @@ function onChangeViewOptions(newViewOptions: any) {
     </div>
 
     <div
-      class="grid gap-3 border-b border-item-4 pb-2 pt-3 last:border-0"
+      class="border-item-4 grid gap-3 border-b pb-2 pt-3 last:border-0"
     >
       <UiTitleOption>{{ t('elements') }}</UiTitleOption>
       <div class="">
@@ -219,7 +213,7 @@ en:
   elements: Elements
   isItemsBg: Items background
   isLines: Amount lines
-  isRoundIcon: Rounded categories
+  isRoundIcon: rounded-sm categories
   vertical:
     show: Vertical categories
     grouping: Grouping
@@ -227,9 +221,6 @@ en:
   minimal: Minimal
   standard: Standard
   alt: Alternative
-  categories:
-    list:
-      showAsRounded: Show as rounded
 
 ru:
   elements: Элементы
@@ -243,7 +234,4 @@ ru:
   minimal: Легкий
   standard: Стандартный
   alt: Альтернативный
-  categories:
-    list:
-      showAsRounded: Показать как скруглённые
 </i18n>

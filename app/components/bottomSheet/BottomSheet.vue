@@ -6,6 +6,7 @@ type Event = TouchEvent | MouseEvent
 const props = defineProps<{
   drugClassesCustom?: string
   drugStyle?: Record<string, string>
+  isHideOverflow?: boolean
   isShow?: boolean
 }>()
 
@@ -118,7 +119,7 @@ const drugStyles = computed(() => {
     return {
       ...props.drugStyle,
       opacity: 0,
-      transform: 'translateX(-50%) translateY(30px)',
+      transform: 'translateY(30px)',
     }
   }
 
@@ -132,7 +133,7 @@ const drugStyles = computed(() => {
 
   return {
     ...props.drugStyle,
-    transform: `translateX(-50%) translateY(${nextCurrentY.value - debounce.value}px)`,
+    transform: `translateY(${nextCurrentY.value - debounce.value}px)`,
   }
 })
 
@@ -436,6 +437,7 @@ const overflowClasses = computed(() => ({
 }))
 
 const wrapClasses = computed(() => ({
+  'pointer-events-none': props.isHideOverflow,
   'pointer-events-none invisible opacity-0': !opened.value,
 }))
 </script>
@@ -448,6 +450,7 @@ const wrapClasses = computed(() => ({
   >
     <!-- Overlay -->
     <div
+      v-if="!isHideOverflow"
       :class="overflowClasses"
       :style="overlayStyles"
       class="absolute inset-0 z-10 size-full bg-[var(--overlay)]"
@@ -469,88 +472,7 @@ const wrapClasses = computed(() => ({
         </slot>
       </div>
 
-      <slot :close="close">
-        <div
-          class="scrollerBlock grid h-full select-none overflow-hidden overflow-y-auto"
-        >
-          <div ref="contentInside" class="flex flex-col gap-3">
-            <div>initialHeight: {{ initialHeight }}</div>
-            <div>Status: {{ debug.status }}</div>
-            <div>Direction: {{ debug.direction }}</div>
-            <div>DiffHeight: {{ diffHeight }}</div>
-            <div>
-              DiffHeightWithDebounce: {{ debug.diffHeightWithDebounce }}
-            </div>
-            <div>NextCurrentY: {{ debug.nextCurrentY }}</div>
-            <div>drugStyles: {{ drugStyles }}</div>
-            <div>overlayStyles: {{ overlayStyles }}</div>
-
-            <div class="border-y text-sm">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis
-              alias similique delectus sequi iusto aspernatur harum natus
-              quaerat tempora aut commodi maxime, praesentium itaque soluta
-              reprehenderit velit odio qui perspiciatis? Dolorum impedit
-              distinctio illum nisi optio ipsum accusantium delectus corporis,
-              expedita officia consequatur quidem aut architecto earum suscipit,
-              aspernatur omnis accusamus ut exercitationem, harum facere
-              repellat eligendi asperiores et? Nihil provident doloremque vitae
-              illo dignissimos qui error rerum quo praesentium minus quaerat
-              cum, esse, nostrum, blanditiis quas! Nihil quae possimus ipsam
-              aliquam autem amet corporis, totam officia enim libero vel rem,
-              laborum sint aspernatur numquam veniam tempora fugiat doloremque?
-              Quae adipisci doloremque porro libero nisi voluptatum vitae,
-              perspiciatis magnam nulla, deserunt nam molestiae, eligendi iusto
-              cum aliquam. Itaque id earum, natus culpa impedit ex possimus nisi
-              ipsam inventore aut voluptas recusandae, nobis pariatur similique
-              et? Non voluptates consequuntur pariatur odio est ex inventore
-              quisquam sunt libero sequi sint aliquam adipisci velit officiis,
-              assumenda praesentium ea quia, itaque eos autem nostrum! Quaerat
-              sit, accusantium modi sint impedit cum consequatur excepturi
-              aliquam expedita omnis, quos saepe eos, autem itaque explicabo
-              ipsam illum. Voluptatibus facere laboriosam molestias aliquam
-              delectus ipsam earum possimus temporibus, tempora ratione
-              molestiae. Aperiam officia voluptates perspiciatis ea rerum
-              mollitia eius autem, nostrum esse ipsum beatae ipsam vero
-              aspernatur quaerat labore iusto quisquam cumque quos possimus
-              tempore quidem accusantium? Totam debitis dignissimos asperiores,
-              nemo magnam perferendis voluptate fugit ipsa modi! Unde
-              consequuntur a adipisci dolorum. Id numquam sint, enim esse eos
-              fugit. Libero eos obcaecati cum est quae optio architecto.
-              Officiis facere iste illo reprehenderit officia et voluptatem non
-              soluta molestias aliquam doloremque, dolores aspernatur, eligendi
-              veritatis consequuntur cum possimus. Mollitia, quidem perferendis
-              non sint assumenda quae deserunt ratione tempore blanditiis neque
-              ex asperiores, tempora veritatis pariatur dolorum laborum
-              molestias amet necessitatibus nemo saepe voluptatum dolor ipsum
-              cum qui. Eaque laudantium enim ipsam ad eum dolores obcaecati
-              magni dolor architecto sapiente asperiores labore molestiae
-              consequuntur exercitationem dolorum ratione voluptatem veniam,
-              nesciunt explicabo qui at sunt. Nemo quidem a nihil dignissimos
-              voluptates eos culpa, laborum ratione sapiente cupiditate
-              perferendis magni voluptatum hic qui quae non impedit nam numquam
-              eaque, rem suscipit omnis tenetur. Numquam earum omnis suscipit
-              officiis magnam. Eligendi recusandae quam impedit reiciendis
-              voluptatem vitae, facilis omnis assumenda commodi nihil
-              exercitationem, unde nostrum numquam inventore iste accusamus
-              laborum quo illum repudiandae dolorem nesciunt, nemo eum hic.
-              Repellendus, eligendi magnam quidem at ipsam, dolore esse corporis
-              nulla excepturi officia labore exercitationem recusandae id eos
-              modi dicta iste nobis sequi reprehenderit quasi ad sint eum ut.
-              Error dolore cupiditate blanditiis maiores voluptatum consequuntur
-              consectetur qui iste veniam amet quae sunt cum rem quos,
-              dignissimos deserunt, voluptates aut excepturi labore modi animi
-              vero suscipit nesciunt! Eaque explicabo magnam rerum accusamus
-              nesciunt numquam a laboriosam molestiae perspiciatis nemo.
-              Consequuntur quia aperiam a labore aliquam eligendi, quo nobis
-              placeat corrupti ratione, inventore fugit tempore rerum facilis
-              nam dignissimos laudantium vitae minima iusto suscipit odit ullam
-              veniam. Sequi voluptatibus quaerat assumenda reprehenderit maiores
-              ex inventore placeat accusantium doloremque aliquam. Rerum soluta
-              ullam aperiam assumenda consequatur voluptatem.
-            </div>
-          </div>
-        </div>
-      </slot>
+      <slot :close="close" />
     </div>
   </div>
 </template>

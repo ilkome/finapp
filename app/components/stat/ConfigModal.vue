@@ -33,6 +33,7 @@ function updateStatAverage(value: number) {
   <BottomSheetOrDropdown
     :title="t('stat.config.menu.label')"
     :isOpen="props.statConfigModal.isShow"
+    isShowCloseBtn
     @onOpenModal="props.statConfigModal.show"
     @onCloseModal="props.statConfigModal.close"
   >
@@ -56,6 +57,13 @@ function updateStatAverage(value: number) {
             :checkboxValue="statConfig.config.value.chartShow"
             :title="t('stat.config.chartShow.label')"
             @click="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
+          />
+
+          <UiCheckbox
+            v-if="statConfig.config.value.chartShow"
+            :checkboxValue="statConfig.config.value.date.isShowQuick"
+            :title="t('stat.config.date.quick.label')"
+            @click="statConfig.updateConfig('date', { isShowQuick: !statConfig.config.value.date.isShowQuick })"
           />
 
           <!-- Chart: showed -->
@@ -135,7 +143,7 @@ function updateStatAverage(value: number) {
             <div class="flex gap-1">
               <UiItem2
                 :class="[{
-                  '!hocus:transparent opacity-30': statConfig.config.value.wallets.count === 1,
+                  '!hover:transparent opacity-30': statConfig.config.value.wallets.count === 1,
                 }]"
                 @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
               >
@@ -152,7 +160,7 @@ function updateStatAverage(value: number) {
               />
 
               <UiItem2
-                :class="{ '!hocus:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
+                :class="{ '!hover:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
                 @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
               >
                 <Icon name="lucide:plus" />
@@ -170,12 +178,6 @@ function updateStatAverage(value: number) {
           </UiTitleOption>
 
           <UiCheckbox
-            :checkboxValue="statConfig.config.value.date.isShowQuick"
-            :title="t('stat.config.date.quick.label')"
-            @click="statConfig.updateConfig('date', { isShowQuick: !statConfig.config.value.date.isShowQuick })"
-          />
-
-          <UiCheckbox
             :checkboxValue="statConfig.config.value.statAverage.isShow"
             :title="t('stat.config.statAverage.count.label')"
             @click="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
@@ -188,7 +190,7 @@ function updateStatAverage(value: number) {
             <div class="flex gap-1">
               <UiItem2
                 :class="[{
-                  '!hocus:transparent opacity-30': statConfig.config.value.statAverage.count === 1,
+                  '!hover:transparent opacity-30': statConfig.config.value.statAverage.count === 1,
                 }]"
                 @click="updateStatAverage(statConfig.config.value.statAverage.count - 1)"
               >
@@ -205,7 +207,7 @@ function updateStatAverage(value: number) {
               />
 
               <UiItem2
-                :class="{ '!hocus:transparent opacity-30': statConfig.config.value.statAverage.count >= walletsStore.sortedIds.length }"
+                :class="{ '!hover:transparent opacity-30': statConfig.config.value.statAverage.count >= walletsStore.sortedIds.length }"
                 @click="updateStatAverage(statConfig.config.value.statAverage.count + 1)"
               >
                 <Icon name="lucide:plus" />

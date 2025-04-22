@@ -19,7 +19,7 @@ const classes = computed(() => cn(
   getStyles('item', ['rounded', 'padding1', 'minh1', 'link']),
   'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent',
   props.insideClasses,
-  { 'relative border-accent-1/60 z-10': props.isActive },
+  { 'relative border-(--ui-primary)/60 z-10': props.isActive },
 ))
 </script>
 
@@ -46,12 +46,14 @@ const classes = computed(() => cn(
         'ml-[48px] group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
-      class="mx-2 h-px bg-item-5"
+      class="mx-2 h-px bg-[var(--item-5)]"
     />
   </div>
 </template>
 
 <style>
+@reference '~/assets/css/main.css';
+
 .v-popper--shown .uiElement {
   @apply !bg-item-4;
 }

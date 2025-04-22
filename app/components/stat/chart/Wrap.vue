@@ -47,33 +47,28 @@ function onChangePeriod(period: Period) {
 
 <template>
   <div
+    v-if="statConfig.config.value?.chartShow"
     :class="{
-      'md:max-w-lg': props.chartView === 'half',
+      '@3xl/main:max-w-xl': props.chartView === 'half',
     }"
-    class="mb-3 rounded-xl bg-item-2 p-2"
   >
-    <div
-      v-if="statConfig.config.value?.chartShow"
-      class="pb-2"
-    >
-      <div class="flex justify-end">
-        <slot />
+    <div class="flex justify-end -mb-1">
+      <slot />
 
-        <StatChartIntervals
-          :class="{ 'border-l border-item-4': statConfig.config.value?.date.isShowQuick }"
-          :period="statDate.params.value.intervalsBy"
-          :range="statDate.range.value"
-          @onChangePeriod="onChangePeriod"
-        />
-      </div>
-
-      <StatChartView
-        :chartType="statConfig.config.value?.chartType"
+      <StatChartIntervals
+        :class="{ 'border-l border-item-4': statConfig.config.value?.date.isShowQuick }"
         :period="statDate.params.value.intervalsBy"
-        :series="props.series"
-        :xAxisLabels="props.xAxisLabels"
-        @click="onClickChart"
+        :range="statDate.range.value"
+        @onChangePeriod="onChangePeriod"
       />
     </div>
+
+    <StatChartView
+      :chartType="statConfig.config.value?.chartType"
+      :period="statDate.params.value.intervalsBy"
+      :series="props.series"
+      :xAxisLabels="props.xAxisLabels"
+      @click="onClickChart"
+    />
   </div>
 </template>

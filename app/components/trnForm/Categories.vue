@@ -39,14 +39,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="relative grid h-full grid-rows-[1fr,auto] overflow-hidden">
+  <div class="relative grid h-full grid-rows-[1fr_auto] overflow-hidden">
     <div class="h-full overflow-hidden">
       <div ref="sliderRef" class="swiper-container h-full">
         <div class="swiper-wrapper">
           <!-- Recent -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollerBlock rounded-t-2xl bg-item-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollerBlock rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t('categories.recentCategories') }}
             </div>
@@ -63,7 +63,7 @@ onMounted(() => {
           <!-- Main -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollerBlock rounded-t-2xl bg-item-1 px-3 py-4 text-center font-primary text-xl font-semibold"
+              class="scrollerBlock rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center font-primary text-xl font-semibold"
             >
               {{ $t("categories.title") }}
             </div>
@@ -79,7 +79,7 @@ onMounted(() => {
 
           <!-- Favorite -->
           <div class="swiper-slide h-full">
-            <div class="scrollerBlock rounded-t-2xl bg-item-1 px-3 py-4 text-center font-primary text-xl font-semibold">
+            <div class="scrollerBlock rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center font-primary text-xl font-semibold">
               {{ $t('categories.favoriteCategories') }}
             </div>
             <div class="px-3 pb-1">

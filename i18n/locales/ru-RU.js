@@ -189,7 +189,7 @@ export default {
       withdrawal: 'Доступные для снятия',
     },
     split: 'Раздельно',
-    summary: 'Сумма',
+    summary: 'Общее',
     totals: {
       all: 'Всего',
       archived: 'Архивный',
@@ -208,7 +208,7 @@ export default {
     transfer: 'Перевод',
     type: 'Тип кошельки',
     types: {
-      all: 'Общий',
+      all: 'Всего',
       available: 'Доступные для снятия',
       cash: 'Наличные',
       cashless: 'Безнал',
@@ -221,6 +221,7 @@ export default {
       isAvailable: 'Доступные с учетом кредитов',
       isExcludeInTotal: 'Не учитываемые в общем балансе',
       isWithdrawal: 'Доступные для снятия',
+      total: 'Всего',
     },
     wallets: 'Кошельки',
   },
@@ -396,9 +397,5 @@ export default {
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
     title: 'Кошельки',
-  },
-
-  welcome: {
-    intro: 'Добро пожаловать в Финапку!',
   },
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { saveData } from '~~/services/firebase/api'
 
-import type { LocaleSlug } from '~/components/app/locale/types'
+import type { LocaleSlug } from '~/components/locale/types'
 
 import { useUserStore } from '~/components/user/useUserStore'
 
@@ -35,17 +35,29 @@ function changeLocale(locale: LocaleSlug) {
 
 <template>
   <div>
-    <UiTitle3
-      v-if="props.isShowTitle"
-      class="pb-2"
-    >
-      {{ t('locale.title') }}
-    </UiTitle3>
+    <template v-if="props.isShowTitle">
+      <UiTitle3
+        class="pb-2"
+      >
+        {{ t('locale.title') }}
+      </UiTitle3>
 
-    <FormSelect
-      :options
-      :value="locale"
-      @change="(locale: LocaleSlug) => changeLocale(locale)"
+      <FormSelect
+        :options
+        :value="locale"
+        @change="(locale: LocaleSlug) => changeLocale(locale)"
+      />
+    </template>
+
+    <UButton
+      v-else
+      icon="lucide:languages"
+      color="neutral"
+      variant="ghost"
+      square
+      aria-label="Locale switcher"
+      size="lg"
+      @click="changeLocale(locale === 'ru' ? 'en' : 'ru')"
     />
   </div>
 </template>

@@ -19,22 +19,19 @@ const menu = computed(() => {
     id: StatTabSlug
     name: string | unknown
   }[] = [{
-    id: 'netIncome',
-    name: t('money.netIncome'),
+    id: 'summary',
+    name: t('money.summary'),
   }, {
     id: 'expense',
     name: t('money.expense'),
   }, {
     id: 'income',
     name: t('money.income'),
-  }, {
-    id: 'trns',
-    name: t('trns.history'),
   }]
 
   if (width.value > 766) {
     all.push({
-      id: 'summary',
+      id: 'split',
       name: t('money.split'),
     })
   }
@@ -43,21 +40,14 @@ const menu = computed(() => {
 })
 
 function onClickStatMenu(tabName: StatTabSlug) {
+  document.getElementById('pageScroll')?.scrollTo(0, 0)
   emit('click', tabName)
 }
 
 watch(() => props.active, () => {
-  if (!menu.value.find(i => i.id === props.active)) {
-    onClickStatMenu(menu.value[0].id)
-  }
+  if (!menu.value.find(i => i.id === props.active))
+    onClickStatMenu(menu.value[0]!.id)
 }, { immediate: true })
-
-function getClasses(id?: StatTabSlug) {
-  return [{
-    '!border-accent-1 text-1 rounded-none border-b-2': id === props.active,
-    'text-2 hover:bg-item-5': id !== props.active,
-  }, 'text-nowrap rounded-lg px-3 py-1.5 text-xs lg:text-sm tracking-wide']
-}
 </script>
 
 <template>
@@ -65,7 +55,11 @@ function getClasses(id?: StatTabSlug) {
     <div
       v-for="item in menu"
       :key="item.id"
-      :class="getClasses(item.id)"
+      :class="[{
+        '!border-(--ui-primary) rounded-none border-b border-b-1': item.id === props.active,
+        'text-(--ui-text-muted) hover:pb-1 hover:mb-1 hover:bg-[var(--item-5)]': item.id !== props.active,
+      }]"
+      class="text-nowrap rounded-lg px-3 py-1.5 pb-2 text-xs lg:text-sm tracking-wide"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}

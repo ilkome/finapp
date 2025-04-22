@@ -24,9 +24,9 @@ const { getAmountInBaseRate } = useAmount()
 
 const isShowBaseCurrencyModal = ref(false)
 const currencyFiltered = useStorage<WalletsCurrencyFiltered>('finapp-wallets-active-currency', 'all')
-const walletViewType = useStorage<WalletViewTypes | 'all'>('finapp-wallets-active-type', 'all')
+const walletViewType = useStorage<WalletViewTypes | 'total'>('finapp-wallets-active-type', 'total')
 
-function setWalletViewType(v: WalletType | 'all') {
+function setWalletViewType(v: WalletType | 'total') {
   walletViewType.value = v
 }
 
@@ -53,7 +53,7 @@ const selectedWalletsIds = computed<WalletId[]>(() => {
       return wallet.isWithdrawal && !wallet.isArchived
 
     if (walletViewType.value === 'isExcludeInTotal')
-      return wallet.isExcludeInTotal && !wallet.isArchived
+      return wallet.isExcludeInTotal
 
     if (walletViewType.value === 'isArchived')
       return wallet.isArchived
@@ -61,8 +61,8 @@ const selectedWalletsIds = computed<WalletId[]>(() => {
     if (walletViewType.value === 'isAvailable')
       return (wallet.type === 'credit' || wallet.isWithdrawal) && !wallet.isArchived
 
-    if (walletViewType.value === 'all')
-      return !wallet.isArchived
+    if (walletViewType.value === 'total')
+      return !wallet.isArchived && !wallet.isExcludeInTotal
 
     return wallet.type === walletViewType.value && !wallet.isArchived
   })
@@ -74,7 +74,7 @@ function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
   if (currencyFiltered.value === code && toggle)
     toggle()
 
-  walletViewType.value = 'all'
+  walletViewType.value = 'total'
   currencyFiltered.value = code
   isShowCurrencyFilter.value = false
 }
@@ -112,7 +112,7 @@ const counts = computed(() => {
     if (wallet.isExcludeInTotal) {
       sum.excludeInTotal += itemValue
     }
-    else {
+    else if (wallet.type !== 'credit') {
       sum.total += itemValue
     }
 
@@ -150,54 +150,55 @@ const counts = computed(() => {
   }
 
   return {
-    all: {
-      id: 'all',
-      isShow: true,
-      value: sum.total,
-    },
-    available: {
-      id: 'isAvailable',
-      isShow: sum.withdrawal !== 0,
-      value: sum.withdrawal - Math.abs(sum.credit),
-    },
-    // eslint-disable-next-line perfectionist/sort-objects
     cash: {
       id: 'cash',
       isShow: Object.keys(walletsStore.itemsComputed).length > 1 && sum.cash !== 0,
       value: sum.cash,
     },
     // eslint-disable-next-line perfectionist/sort-objects
+    available: {
+      id: 'isAvailable',
+      isShow: sum.withdrawal !== 0,
+      value: sum.withdrawal - Math.abs(sum.credit),
+    },
+
     cashless: {
       id: 'cashless',
       isShow: sum.cashless !== 0,
       value: sum.cashless,
     },
-    // eslint-disable-next-line perfectionist/sort-objects
+
     credit: {
       id: 'credit',
       isShow: sum.credit !== 0,
       secondValue: sum.creditPossible,
       value: sum.credit,
     },
-    // eslint-disable-next-line perfectionist/sort-objects
+
     crypto: {
       id: 'crypto',
       isShow: sum.crypto !== 0,
       value: sum.crypto,
     },
-    // eslint-disable-next-line perfectionist/sort-objects
+
     debt: {
       id: 'debt',
       isShow: sum.debt !== 0,
       value: sum.debt,
     },
-    // eslint-disable-next-line perfectionist/sort-objects
+
     deposit: {
       id: 'deposit',
       isShow: sum.deposit !== 0,
       value: sum.deposit,
     },
-    // eslint-disable-next-line perfectionist/sort-objects
+
+    total: {
+      id: 'total',
+      isShow: true,
+      value: sum.total,
+    },
+
     withdrawal: {
       id: 'isWithdrawal',
       isShow: sum.withdrawal !== 0,
@@ -489,6 +490,8 @@ function countWalletsSum(
     return acc + wallet.amount
   }, 0)
 }
+
+const isOpen = ref(false)
 </script>
 
 <template>
@@ -496,16 +499,39 @@ function countWalletsSum(
     <!-- Header -->
     <UiHeader>
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
+
       <template #actions>
-        <UiItem3
-          v-if="walletsStore.sortedIds.length > 1"
-          @click="openModal('walletsSort')"
+        <BottomSheetOrDropdown
+          :isOpen="isOpen"
+          isShowCloseBtn
+          @onCloseModal="isOpen = false"
+          @onOpenModal="isOpen = true"
         >
-          <Icon name="lucide:arrow-down-up" size="20" />
-        </UiItem3>
-        <UiItem3 @click="router.push('/wallets/new')">
-          <Icon name="lucide:plus" size="24" />
-        </UiItem3>
+          <template #trigger>
+            <UiItem1>
+              <Icon name="lucide:ellipsis-vertical" size="20" />
+            </UiItem1>
+          </template>
+
+          <template #content>
+            <div class="p-1 pb-3 pt-4">
+              <UiHeaderLink
+                v-if="walletsStore.sortedIds.length > 1"
+                icon="lucide:arrow-down-up"
+                @click="openModal('walletsSort')"
+              >
+                {{ t('wallets.sortTitle') }}
+              </UiHeaderLink>
+
+              <UiHeaderLink
+                icon="lucide:plus"
+                @click="router.push('/wallets/new')"
+              >
+                {{ t('wallets.new') }}
+              </UiHeaderLink>
+            </div>
+          </template>
+        </BottomSheetOrDropdown>
       </template>
     </UiHeader>
 
@@ -526,10 +552,10 @@ function countWalletsSum(
     <!-- Content -->
     <div
       v-else
-      class="@xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12 grid max-w-4xl grow px-2 lg:px-4 2xl:px-8"
+      class="@xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12 grid max-w-5xl grow px-2 lg:px-4 2xl:px-8"
     >
       <!-- Right -->
-      <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 grid content-start gap-3">
+      <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 grid content-start gap-3 @3xl/main:max-w-sm">
         <!-- Wallets Currencies -->
         <WalletsCurrencies
           v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
@@ -538,6 +564,22 @@ function countWalletsSum(
         />
 
         <!-- Total -->
+        <div class="flex flex-wrap justify-stretch gap-2 @2xl/page:justify-start">
+          <StatSumItem
+            :title="t('money.types.total')"
+            :amount="counts.total.value"
+            type="netIncome"
+            @click="setWalletViewType(counts.total.id)"
+          />
+          <StatSumItem
+            v-if="counts.available.value !== 0 && counts.available.value !== counts.total.value"
+            :title="t('money.types.available')"
+            :amount="counts.available.value"
+            type="netIncome"
+            @click="setWalletViewType(counts.available.id)"
+          />
+        </div>
+
         <WalletsStatistics
           :storageKey="`finapp-wallets-total-${groupedBy}`"
           :activeType="walletViewType"
@@ -545,23 +587,11 @@ function countWalletsSum(
           :counts="counts"
           @click="setWalletViewType"
         />
-
-        <UiButtonWithRight
-          class="@xl/page:grid hidden grow"
-          @click="isShowBaseCurrencyModal = true"
-        >
-          <template #label>
-            {{ t('currencies.base') }}
-          </template>
-          <template #value>
-            {{ currenciesStore.base }}
-          </template>
-        </UiButtonWithRight>
       </div>
 
       <!-- Left content -->
-      <div>
-        <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2">
+      <div class="@3xl/main:max-w-sm">
+        <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2 ">
           <UiTabs2>
             <UiTabsItem4
               v-for="item in groupTabs"
@@ -619,7 +649,7 @@ function countWalletsSum(
           <!-- No grouping -->
           <div
             v-if="groupedBy === 'none'"
-            class="rounded-xl border-item-4 bg-item-2 md:max-w-lg"
+            class="border-item-4 bg-item-2 rounded-xl md:max-w-lg"
           >
             <WalletsItem
               v-for="walletId in selectedWalletsIds"
@@ -645,7 +675,7 @@ function countWalletsSum(
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'rounded bg-item-2': Object.keys(content.groups ?? {}).length === 0,
+                'bg-item-2 rounded-sm': Object.keys(content.groups ?? {}).length === 0,
               }"
               :isShown="
                 walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
@@ -656,7 +686,7 @@ function countWalletsSum(
                   :isShown
                   @click="toggleMap(groupPrimary)"
                 >
-                  <div class="font-tertiary text-base font-semibold leading-none !text-3">
+                  <div class="font-tertiary !text-3 text-base font-semibold leading-none">
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 
@@ -688,14 +718,14 @@ function countWalletsSum(
                   :isShown="
                     walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
                   "
-                  class="_border group grid gap-1 rounded-xl border-item-4 bg-item-2"
+                  class="_border border-item-4 bg-item-2 group grid gap-1 rounded-xl"
                 >
                   <template #header="{ isShown }">
                     <UiTitleDropRight
                       :isShown
                       @click="toggleMap(groupPrimary, groupSecondary)"
                     >
-                      <div class="font-tertiary text-base font-semibold leading-none !text-3">
+                      <div class="font-tertiary text-base font-semibold leading-none">
                         {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
                       </div>
                       <div class="ml-auto">

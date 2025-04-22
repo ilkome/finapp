@@ -24,19 +24,19 @@ export const mockCategories: Categories = {
     parentId: 0,
   },
   transfer: {
-    color: 'rgb(var(--accent-1))',
+    color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
     name: 'Transfer',
     parentId: 0,
   },
   transfer2: {
-    color: 'rgb(var(--accent-1))',
+    color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
     name: 'перевод',
     parentId: 0,
   },
   transfer3: {
-    color: 'rgb(var(--accent-1))',
+    color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
     name: 'transfer',
     parentId: 0,
@@ -83,7 +83,7 @@ const mockCategories2: Categories = {
   },
   'transfer': {
     childIds: [],
-    color: 'rgb(var(--accent-1))',
+    color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
     name: 'Transfer',
     order: 9999,

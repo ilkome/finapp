@@ -1,5 +1,7 @@
+import type { ComputedRef, ShallowRef } from 'vue'
+
 import localforage from 'localforage'
-import { computed, type ComputedRef, type ShallowRef, shallowRef } from 'vue'
+import { computed, shallowRef } from 'vue'
 import { deepUnref } from 'vue-deepunref'
 import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
 
@@ -14,7 +16,7 @@ import { useUserStore } from '~/components/user/useUserStore'
 
 const transfer: CategoryItem = {
   childIds: [],
-  color: 'rgb(var(--accent-1))',
+  color: 'var(--ui-primary)',
   icon: 'mdi:repeat',
   name: 'Transfer',
   order: 9999,

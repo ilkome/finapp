@@ -1,4 +1,4 @@
-import type { Theme } from '~/components/app/theme/types'
+import type { Theme } from '~/components/theme/types'
 
 export function useTheme() {
   const { t } = useI18n()
@@ -11,17 +11,11 @@ export function useTheme() {
     label: t('theme.system'),
     value: 'system',
   }, {
-    label: t('theme.dark-pink'),
-    value: 'dark-pink',
+    label: t('theme.dark'),
+    value: 'dark',
   }, {
-    label: t('theme.dark-blue'),
-    value: 'dark-blue',
-  }, {
-    label: t('theme.light-pink'),
-    value: 'light-pink',
-  }, {
-    label: t('theme.light-blue'),
-    value: 'light-blue',
+    label: t('theme.light'),
+    value: 'light',
   }] as const
 
   function setTheme(theme: Theme) {

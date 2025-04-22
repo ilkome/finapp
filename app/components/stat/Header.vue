@@ -64,7 +64,7 @@ const statConfigModal: Ref<StatConfigModal> = ref({
           :isShowWallets="!!props.filter.isShowWallets"
         />
 
-        <StatConfig
+        <StatConfigModal
           v-if="props.config"
           :isShowCategories="!!props.config.isShowCategories"
           :isShowWallets="!!props.config.isShowWallets"
@@ -73,15 +73,12 @@ const statConfigModal: Ref<StatConfigModal> = ref({
           <div v-if="$slots.popover">
             <slot name="popover" :close="statConfigModal.close" />
           </div>
-        </StatConfig>
+        </StatConfigModal>
       </div>
     </template>
 
     <template #selected>
-      <div
-        v-if="props.menu"
-        class=""
-      >
+      <div v-if="props.menu">
         <StatMenu
           :active="props.menu.active"
           @click="props.menu.click"
@@ -90,17 +87,11 @@ const statConfigModal: Ref<StatConfigModal> = ref({
     </template>
 
     <template
-      v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow || $slots.summary"
+      v-if="statConfig.config.value.wallets.isShow || $slots.summary"
       #after
     >
       <div class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8">
-        <template v-if="filter.isShow?.value || statConfig.config.value.wallets.isShow">
-          <FilterSelected
-            v-if="props.filter && filter.isShow?.value && filter.categoriesIds.value.length > 0 || (filter.walletsIds.value.length > 0 && !statConfig.config.value.wallets.isShow)"
-            :isShowCategories="props.filter?.isShowCategories"
-            :isShowWallets="props.filter?.isShowWallets && !statConfig.config.value.wallets.isShow"
-          />
-
+        <template v-if="statConfig.config.value.wallets.isShow">
           <div
             v-if="statConfig.config.value.wallets.isShow"
             class="flex max-w-6xl gap-1 overflow-x-auto py-px"
@@ -117,8 +108,6 @@ const statConfigModal: Ref<StatConfigModal> = ref({
             />
           </div>
         </template>
-
-        <slot name="summary" />
       </div>
     </template>
   </UiHeader>

@@ -1,7 +1,7 @@
 export default {
   alerts: {
     removedUserData: 'All data removed.',
-    willDeleteEverything: 'This will delete all your wallets, categories and trns',
+    willDeleteEverything: 'This will delete all your wallets, categories and transactions',
   },
 
   analytics: {
@@ -29,7 +29,7 @@ export default {
     save: 'Save',
     setFilter: 'Filter by',
     sort: 'Sort',
-    sure: 'Are you sure?',
+    sure: 'Confirm action',
     yes: 'Yes',
   },
 
@@ -48,19 +48,19 @@ export default {
       childColor: 'Apply color to all child categories',
       delete: {
         alertWithTrns: `This will delete {trns} transactions`,
-        errorChilds: 'You can not delete category with child categories. Delete child categories first.',
+        errorChilds: 'You cannot delete a category with child categories. Delete the child categories first.',
         okWithoutTrns: 'Category deleted',
-        okWithTrns: `Category deleted and {trns}`,
+        okWithTrns: `Category and {trns} transactions deleted`,
       },
       favoriteCategory: 'Favorite category',
       icon: {
-        desc: 'Use any icon from',
+        desc: 'Choose any icon from',
         label: 'Icon',
         link: 'Link',
       },
       name: {
-        error: 'Write category name',
-        exist: 'Category with same name is exist',
+        error: 'Please enter a category name',
+        exist: 'A category with this name already exists',
         label: 'Category name',
         placeholder: 'Write...',
       },
@@ -186,11 +186,11 @@ export default {
     income: 'Income',
     netIncome: 'Net income',
     options: {
-      isExcludeInTotal: 'Do not include in total',
+      isExcludeInTotal: 'Excluded from totals',
       withdrawal: 'Withdrawal',
     },
     split: 'Split',
-    summary: 'Total',
+    summary: 'Summary',
     totals: {
       all: 'Total',
       archived: 'Archived',
@@ -201,7 +201,7 @@ export default {
       isCredit: 'Credits',
       isDebt: 'Debts',
       isDeposit: 'Deposit',
-      isExcludeTotal: 'Do not include in total',
+      isExcludeTotal: 'Excluded from totals',
       other: 'Other',
       withCredit: 'Total without credit',
       withdrawal: 'Withdrawal',
@@ -222,6 +222,7 @@ export default {
       isAvailable: 'Available with credits',
       isExcludeInTotal: 'Not included in total',
       isWithdrawal: 'Withdrawal',
+      total: 'Total',
     },
     wallets: 'Wallets',
   },
@@ -343,7 +344,7 @@ export default {
     },
     history: 'History',
     more: 'Show more',
-    noTrns: 'No transactions',
+    noTrns: 'No transactions yet',
     plural: '0 transactions | {n} transaction | {n} transactions | {n} transactions',
     title: 'Transactions',
   },
@@ -378,14 +379,14 @@ export default {
         placeholder: 'Write...',
       },
       name: {
-        error: 'Write wallet name',
-        exist: 'Wallet with same name is exist',
+        error: 'Please enter a wallet name',
+        exist: 'A wallet with this name already exists',
         label: 'Wallet name',
         placeholder: 'Write...',
       },
       save: 'Save',
       total: {
-        placeholder: 'Сash withdrawal',
+        placeholder: 'Cash withdrawal',
       },
     },
     name: 'Wallets',
@@ -394,9 +395,5 @@ export default {
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
     title: 'Wallets',
-  },
-
-  welcome: {
-    intro: 'Welcome to Finapp!',
   },
 }

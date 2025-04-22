@@ -17,16 +17,10 @@ const trnsFormStore = useTrnsFormStore()
 
 <template>
   <!-- Favorite categories -->
-  <div
-    v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-    class="pb-6"
-  >
-    <UiTitle3
-      class="sticky top-0 z-20 bg-item-1 px-3 pb-3 pt-4"
-      @click="trnsFormStore.ui.catsRootModal = true"
-    >
+  <div v-if="categoriesStore.favoriteCategoriesIds.length > 0">
+    <UiTitleModal>
       {{ t('categories.favoriteCategories') }}
-    </UiTitle3>
+    </UiTitleModal>
 
     <CategoriesSelector2
       :activeItemId="trnsFormStore.values.categoryId"
@@ -39,12 +33,9 @@ const trnsFormStore = useTrnsFormStore()
 
   <!-- Recent categories -->
   <div v-if="categoriesStore.recentCategoriesIds.length > 0">
-    <UiTitle3
-      class="sticky top-0 z-20 bg-item-1 px-3 pb-3 pt-4"
-      @click="trnsFormStore.ui.catsRootModal = true"
-    >
+    <UiTitleModal>
       {{ t('categories.recentCategories') }}
-    </UiTitle3>
+    </UiTitleModal>
 
     <CategoriesSelector2
       :activeItemId="trnsFormStore.values.categoryId"

@@ -164,11 +164,15 @@ export function useStatDate({
   }
 
   function modifyRange(modification: number) {
+    console.log('modifyRange', modification)
+
     resetCustomAndMaxRangeParams()
     if (params.value.rangeDuration > 1)
       params.value.rangeDuration += modification
 
     params.value.rangeOffset = 0
+
+    console.log('params.value.rangeDuration', params.value.rangeDuration)
   }
 
   const plusRange = () => modifyRange(1)

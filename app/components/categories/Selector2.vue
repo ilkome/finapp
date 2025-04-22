@@ -2,6 +2,7 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   activeItemId?: CategoryId
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 }>()
 
 const categoriesStore = useCategoriesStore()
+const itemClasses = getStyles('item', ['alt', 'rounded'])
 
 function select(id: CategoryId) {
   if (categoriesStore.hasChildren(id)) {
@@ -36,14 +38,14 @@ function onFilter(id: CategoryId) {
 </script>
 
 <template>
-  <div class="grid p-2 pt-1 3sm:grid-cols-2">
+  <div class="grid pt-1 px-3 gap-1 3sm:grid-cols-2">
     <CategoriesItem
       v-for="categoryId in props.ids"
       :key="categoryId"
       :activeItemId="props.activeItemId"
       :categoryId="categoryId"
+      :class="itemClasses"
       :category="categoriesStore.items[categoryId]"
-      :lineWidth="1"
       isShowParent
       alt
       @click="select(categoryId)"
