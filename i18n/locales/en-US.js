@@ -10,6 +10,7 @@ export default {
 
   app: {
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
+    toggleSidebar: 'Toggle sidebar',
   },
 
   appName: 'Finapp',

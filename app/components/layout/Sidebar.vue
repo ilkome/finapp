@@ -122,12 +122,17 @@ const isShowLogoMenu = ref(false)
     </div>
 
     <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
-      <UiItem1
-        class="z-10 text-4"
-        @click="emit('toggleSidebar')"
+      <UTooltip
+        :text="t('app.toggleSidebar')"
+        :kbds="['Shift', 'D']"
       >
-        <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
-      </UiItem1>
+        <UiItem1
+          class="z-10 text-4"
+          @click="emit('toggleSidebar')"
+        >
+          <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
+        </UiItem1>
+      </UTooltip>
     </div>
   </aside>
 </template>
