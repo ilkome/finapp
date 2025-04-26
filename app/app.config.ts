@@ -7,7 +7,7 @@ export default defineAppConfig({
   },
   theme: {
     blackAsPrimary: true,
-    radius: 0.5,
+    radius: 0.375,
   },
   ui: {
     colors: {
