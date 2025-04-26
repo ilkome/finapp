@@ -1,51 +1,68 @@
-<p align="center"><img align="center" style="width:320px" src="https://finapp.ilko.me/logo.png"/></p><br/>
+<p align="center">
+  <img src="https://finapp.ilko.me/logo.png" alt="Finapp Logo" width="320" />
+</p>
 
-# Open source finance application
-Finapp helps you to control personal finances easily and efficiently.
+# Finapp — Open Source Finance App
+> Your money, your control — anywhere, anytime.
 
-# 🕹 Demo
-[finapp.ilko.me](https://finapp.ilko.me/)
+**Finapp** helps you easily track and manage personal finances.
 
-# 🏞 Screenshots
+<br/>
+
+## ✨ Why Finapp?
+
+- **Simple**: No clutter, no distractions — just your transactions and balances.
+- **Fast**: Works offline and syncs instantly across devices.
+- **Private**: You own your data — securely stored via Firebase.
+- **Flexible**: Supports multiple currencies with automatic exchange rates.
+- **Portable**: Optimized for mobile and desktop, installable as a PWA.
+
+<br/>
+
+## 🕹 Live Demo
+➡️ [finapp.ilko.me](https://finapp.ilko.me/)
+
+<br/>
+
+## 🏞 Screenshots
 ![Finapp 2.0.0](https://firebasestorage.googleapis.com/v0/b/finapp-17474.appspot.com/o/2.0.0%2Ffinapp-2.0.0-promo.png?alt=media&token=bce821da-f5fa-4e8a-be7a-8fc0ebfaf260)
 
-# 🚀 Features
-- Works offline on all devices (Service Worker): you can see all your data. Create, edit and delete transactions.
-- Instant synchronization between all device (Firebase).
-- Optimized for mobile and PC.
-- Themes: dark and light.
-- Support multiple currencies with auto conversion.
+<br/>
 
-# 🦄 Technologies
-- Vue
-- Nuxt
-- Tailwind
+## 🚀 Features
+- Offline-first (PWA) with full CRUD support.
+- Instant real-time sync across devices (Firebase).
+- Mobile-first, but optimized for desktop.
+- Dark and Light theme support.
+- Multi-currency with automatic exchange rates.
+
+<br/>
+
+## 🦄 Tech Stack
+- Vue 3
+- Nuxt 3
+- TailwindCSS 4
 - Firebase
-- PWA
+- Progressive Web App
 
-# 📦 Setup
+<br/>
 
-### Project setup
+## 📦 Getting Started
 
-``` bash
-# clone the repo
+### 1. Clone and Install
+
+```bash
 git clone https://github.com/ilkome/finapp.git finapp
-
-# go into app's directory
 cd finapp
-
-# install dependencies
-pnpm i
+pnpm install
 ```
 
-### Firebase setup
+### 2. Setup Firebase
+- Create a project in [Firebase Console](https://console.firebase.google.com/).
+- Enable **Realtime Database**.
+- Set Database Rules:
 
-- Create a Firebase project in the [Firebase console](https://console.firebase.google.com/)
-- Create Realtime Database
-- Open Realtime Database and go to Rules tab.
-- Change rules to:
-
-``` json
+```json
 {
   "rules": {
     "users": {
@@ -66,59 +83,59 @@ pnpm i
 }
 ```
 
-- Go to the Project Overview and find `Get started by adding Firebase to your app` click to `web`.
-- Register an app and you will get your config.
-- You need to replace config in app's directory `services/firebase/config.js` with your config.
+- Register a **Web App** in Firebase and copy the config.
+- Replace the contents of `services/firebase/config.js` with your config:
 
-``` bash
-apiKey: 'YOUR_CONFIG',
-authDomain: 'YOUR_CONFIG',
-databaseURL: 'YOUR_CONFIG',
-projectId: 'YOUR_CONFIG',
-storageBucket: 'YOUR_CONFIG',
-messagingSenderId: 'YOUR_CONFIG'
+```js
+export const firebaseConfig = {
+  apiKey: 'YOUR_API_KEY',
+  authDomain: 'YOUR_AUTH_DOMAIN',
+  databaseURL: 'YOUR_DATABASE_URL',
+  messagingSenderId: 'YOUR_MESSAGING_SENDER_ID',
+  projectId: 'YOUR_PROJECT_ID',
+  storageBucket: 'YOUR_STORAGE_BUCKET'
+}
 ```
 
-### Enable Google Auth
-- Go to `Authentication` page
-- Click `Sign-in method` tab
-- Add `Add new provider` and select Google
+### 3. Enable Google Authentication
+- In Firebase Console → Authentication → Sign-in method → Enable **Google** provider.
 
-### Add your domain to Firebase Authorized domains
-- Go to `Authentication` page
-- Click `Sign-in method` tab
-- Scroll to `Authorized domains` and click `Add domain`
-- Add your domain name
+### 4. Authorize Your Domain (optional)
+- Add your domain under Authentication → Sign-in method → Authorized domains.
 
-### Open exchange rates setup
-- Get your App ID at [openexchangerates.org](https://openexchangerates.org/signup/free)
-- Rename `.env.example` to `.env`
-- Set your App ID in `.env`
+### 5. Setup Open Exchange Rates
+- Sign up at [openexchangerates.org](https://openexchangerates.org/signup/free) and get an **App ID**.
+- Rename `.env.example` to `.env` and set your App ID:
 
-``` bash
-OPEN_EXCHANGE_RATES=app_id
+```bash
+OPEN_EXCHANGE_RATES=your_app_id
 ```
 
-If you use netlify or similar services you need to add OPEN_EXCHANGE_RATES env.
+<br/>
 
-## Development
+## 🛠 Development
 
-### Compiles and hot-reloads
+Run local server with hot reload:
 
-``` bash
+```bash
 pnpm dev
 ```
 
-## Production
+<br/>
 
-### Generate for static server
+## 🚀 Production
 
-``` bash
+Generate static files for deployment:
+
+```bash
 pnpm generate
 ```
 
-Upload `.output/public` folder to any shared hosting.
+Then upload everything in .output/public to any static hosting.
 
-# 🤪 Stay In Touch
+<br/>
 
-- [My Telegram](https://t.me/ilkome)
+> **Tip**: Use services like Vercel or Netlify for automatic deployments.
+
+## 🤝 Stay Connected
+- Telegram: [@ilkome](https://t.me/ilkome)
