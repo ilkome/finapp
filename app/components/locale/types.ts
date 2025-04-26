@@ -1,1 +1,1 @@
-export type LocaleSlug = 'en' | 'ru'
+export type LocaleSlug = 'en' | 'ru' | 'zh'
