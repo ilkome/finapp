@@ -23,6 +23,7 @@ const trnsFormStore = useTrnsFormStore()
         :walletId
         :wallet
         isShowIcon
+        isShowCreditLimit
         alt
         @click="trnsFormStore.values.walletId = walletId"
       />

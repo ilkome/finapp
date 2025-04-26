@@ -28,6 +28,7 @@ const itemClasses = getStyles('item', ['alt', 'rounded'])
         :wallet="walletsStore.itemsComputed[walletId]"
         insideClasses="!min-h-[38px]"
         alt
+        isShowCreditLimit
         @click="filter.removeWalletId(walletId)"
       />
     </template>

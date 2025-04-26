@@ -57,6 +57,7 @@ function onClickWallet(walletId: WalletId) {
         :lineWidth="4"
         class="group/item"
         isShowIcon
+        isShowCreditLimit
         @click="onClickWallet(walletId)"
       />
     </div>

@@ -36,6 +36,7 @@ const isShow = ref(false)
         :wallet="walletsStore.itemsComputed[walletId]"
         insideClasses="!min-h-[46px]"
         isShowIcon
+        isShowCreditLimit
         alt
       />
     </template>
