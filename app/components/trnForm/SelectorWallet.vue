@@ -40,12 +40,12 @@ const isShow = ref(false)
       />
     </template>
 
-    <template #content="{ close }">
+    <template #custom="{ close }">
       <WalletsSelector
         :hide="close"
         :activeItemId="props.walletId"
         class="min-w-80 md:px-2"
-        @onSelected="id => emit('onSelected', id)"
+        @onSelected="(id: WalletId) => emit('onSelected', id)"
       />
     </template>
   </BottomSheetOrDropdown>
