@@ -13,8 +13,8 @@ import 'swiper/css'
 
 const props = withDefaults(
   defineProps<{
-    initialSlide: number
-    maxHeight: string
+    initialSlide?: number
+    maxHeight?: string
   }>(),
   {
     initialSlide: 0,

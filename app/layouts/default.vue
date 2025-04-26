@@ -70,8 +70,7 @@ usePageScroll()
 
 <template>
   <div
-    data-vaul-drawer-wrapper
-    :class="{ 'md:translate-x-20': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
+    :class="{ 'md:pl-20': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
     class="h-dvh overflow-hidden transition-all duration-300 ease-in-out"
     style="margin-left: env(safe-area-inset-left)"
   >
