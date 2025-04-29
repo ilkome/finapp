@@ -21,12 +21,15 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   async function getRatesOfUSD(apiKey: string) {
     try {
-      const { rates }: { rates: Rates } = await $fetch(`${serviceUrlBase}${apiKey}`)
-      return rates
+      const { data } = await useAsyncData<Rates>(
+        'rates',
+        () => $fetch(`${serviceUrlBase}${apiKey}`),
+      )
+      return data.value
     }
     catch (e) {
       console.error('Currencies api are unavailable', e)
-      return false
+      return undefined
     }
   }
 
@@ -37,7 +40,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     // Rates for today
     const today = startOfDay(new Date()).getTime()
 
-    let ratesBasedOnUsd: Rates | false = await getDataOnce(`ratesUsd/history/${today}`)
+    let ratesBasedOnUsd: Rates | undefined = await getDataOnce(`ratesUsd/history/${today}`)
 
     if (!ratesBasedOnUsd) {
       ratesBasedOnUsd = await getRatesOfUSD($config.public.ratesApiKey)
