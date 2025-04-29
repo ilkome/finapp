@@ -65,7 +65,7 @@ usePageScroll()
 <template>
   <div
     :class="{ 'md:pl-20': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
-    class="h-dvh overflow-hidden transition-all duration-300 ease-in-out"
+    class="h-dvh overflow-hidden transition-all duration-300 ease-in-out bg-[var(--item-1)]"
     style="margin-left: env(safe-area-inset-left)"
   >
     <div v-if="status === 'error'">
