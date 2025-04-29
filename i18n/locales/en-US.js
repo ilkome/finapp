@@ -78,6 +78,9 @@ export default {
     name: 'Categories',
     new: 'New category',
     recentCategories: 'Recent categories',
+    search: {
+      placeholder: 'Search categories...',
+    },
     title: 'Categories',
   },
 
@@ -326,6 +329,9 @@ export default {
 
   trnForm: {
     calcTrnButton: 'Calculate',
+    category: {
+      select: 'Select category',
+    },
     createTrn: 'Add transaction',
     description: {
       placeholder: 'Write...',
@@ -339,6 +345,9 @@ export default {
     title: 'Transaction form',
     titleEditTrn: 'Edit transaction',
     transferTitle: 'Transfer',
+    wallet: {
+      select: 'Select wallet',
+    },
   },
 
   trns: {
