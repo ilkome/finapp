@@ -106,7 +106,7 @@ if (!props.isSort) {
 
         <div
           v-if="props.isShowCreditLimit && wallet.type === 'credit' && wallet.creditLimit"
-          class="flex items-center gap-0.5"
+          class="flex items-center gap-0.5 opacity-70"
         >
           <Amount
             :amount="wallet.creditLimit - Math.abs(wallet.amount)"
@@ -117,11 +117,15 @@ if (!props.isSort) {
             variant="2xs"
           />
 
-          <div class="text-2xs opacity-70">
+          <div
+            v-if="wallet.amount !== 0"
+            class="text-2xs leading-none opacity-70"
+          >
             /
           </div>
 
           <Amount
+            v-if="wallet.amount !== 0"
             :amount="wallet.creditLimit"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
