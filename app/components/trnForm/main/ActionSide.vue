@@ -33,7 +33,7 @@ async function onClickSubmit() {
       '!hover:bg-(--ui-primary) !bg-(--ui-primary)/60 text-icon-primary': !isMath && isSubmittable,
       'text-(--ui-text-muted)': !isSubmittable || isMath,
     }"
-    class="flex size-full items-center justify-center rounded-xl bg-item-4 p-1 py-4 text-center text-4xl text-1 transition hover:scale-[1.02] hover:bg-[var(--item-5)]"
+    class="flex size-full items-center justify-center rounded-[var(--ui-radius)] bg-item-4 p-1 py-4 text-center text-4xl text-1 transition hover:scale-[1.02] hover:bg-[var(--item-5)]"
     @click="onClickSubmit"
   >
     <Icon :name="isMath ? 'lucide:equal' : 'lucide:check'" size="40" />
