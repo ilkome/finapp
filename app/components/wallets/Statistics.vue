@@ -55,7 +55,7 @@ const itemsGrouped = computed(() => [
           insideClasses="!min-h-[44px]"
           @click="emit('click', item.id)"
         >
-          <div class="grow pl-1 text-sm leading-none text-(--ui-text-muted)">
+          <div class="grow pl-1 text-sm leading-none text-muted">
             <div>
               {{ $t(`money.types.${item.id}`) }}
             </div>

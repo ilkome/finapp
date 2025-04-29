@@ -288,7 +288,7 @@ async function onSave() {
                 <a
                   href="https://icones.js.org/collection/mdi"
                   target="_blank"
-                  class="text-(--ui-primary) hover:underline"
+                  class="text-primary hover:underline"
                 >Material Design Icons</a>
               </template>
 

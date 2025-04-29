@@ -15,7 +15,7 @@
 
           <div class="grid gap-4">
             <div class="grid gap-2">
-              <div class="text-sm text-(--ui-text-muted)">
+              <div class="text-sm text-muted">
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
@@ -44,7 +44,7 @@
             </div>
 
             <div class="grid gap-2">
-              <div class="text-sm text-(--ui-text-muted)">
+              <div class="text-sm text-muted">
                 Texts
               </div>
               <div class="flex flex-wrap gap-0">
@@ -65,7 +65,7 @@
 
             <div class="flex flex-wrap gap-4">
               <div class="grid gap-2">
-                <div class="text-sm text-(--ui-text-muted)">
+                <div class="text-sm text-muted">
                   Accent
                 </div>
                 <div class="flex flex-wrap gap-0">
@@ -74,7 +74,7 @@
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-(--ui-text-muted)">
+                <div class="text-sm text-muted">
                   Icon primary
                 </div>
                 <div class="flex flex-wrap gap-0">
@@ -85,7 +85,7 @@
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-(--ui-text-muted)">
+                <div class="text-sm text-muted">
                   Alert
                 </div>
                 <div class="flex flex-wrap gap-0">
@@ -94,7 +94,7 @@
               </div>
 
               <div class="grid gap-2">
-                <div class="text-sm text-(--ui-text-muted)">
+                <div class="text-sm text-muted">
                   Money
                 </div>
                 <div class="flex flex-wrap gap-0">

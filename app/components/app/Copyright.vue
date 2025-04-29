@@ -7,7 +7,7 @@ const { t } = useI18n()
 <template>
   <a
     :class="[classes.item.rounded, classes.item.link, classes.item.center3]"
-    class="px-5 py-2 text-sm text-(--ui-text-muted)"
+    class="px-5 py-2 text-sm text-muted"
     href="https://ilko.me"
   >
     {{ t('madeBy.text') }}

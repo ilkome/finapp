@@ -16,7 +16,7 @@ const emit = defineEmits<{
     class="justify-center data-[state=open]:!bg-item-4" :class="[
       getStyles('item', ['link', 'center', 'minh2', 'minw1', 'rounded']),
       {
-        'text-xl text-(--ui-text-muted)': variant === 'icon',
+        'text-xl text-muted': variant === 'icon',
       },
       {
         'px-3 text-sm text-1': variant === 'text',

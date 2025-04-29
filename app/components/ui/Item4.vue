@@ -21,7 +21,7 @@ const emit = defineEmits<{
       classes.item.center,
       classes.item.minw1,
       classes.item.rounded,
-      variant === 'icon' ? 'text-xl text-(--ui-text-muted)' : '',
+      variant === 'icon' ? 'text-xl text-muted' : '',
       variant === 'text' ? 'px-3 text-sm text-1' : '',
       isActive ? '!bg-item-3' : '',
     )"

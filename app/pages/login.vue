@@ -86,7 +86,7 @@ async function openDemo() {
     >
       <div class="flex flex-col items-center justify-center pb-10">
         <UiLogo class="pb-0 !text-6xl !font-extrabold" />
-        <div class="pt-1 text-sm text-(--ui-text-muted)">
+        <div class="pt-1 text-sm text-muted">
           {{ t('description') }}
         </div>
 

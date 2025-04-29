@@ -89,7 +89,7 @@ usePageScroll()
           'sm:pl-74 md:pl-74': isShowSidebar && width >= 767,
         }"
       >
-        <div class="relative h-full overflow-hidden sm:rounded-2xl bg-[var(--ui-bg)] sm:border sm:border-item-4 max-w-5xl">
+        <div class="relative h-full overflow-hidden sm:rounded-2xl bg-default sm:border sm:border-item-4 max-w-5xl">
           <main
             id="pageScroll"
             style="padding-bottom: calc(50px + env(safe-area-inset-bottom))"

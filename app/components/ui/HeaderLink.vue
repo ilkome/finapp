@@ -20,7 +20,7 @@ const emit = defineEmits<{
         v-if="props.icon"
         :name="props.icon"
         size="20"
-        class="text-(--ui-text-muted)"
+        class="text-muted"
       />
     </template>
 

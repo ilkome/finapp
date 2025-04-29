@@ -94,9 +94,9 @@ html .vc-light {
   --vc-nav-hover-bg: var(--item-5);
   --vc-color: var(--text-1);
   --vc-day-content-disabled-color: var(--text-1/.40);
-  --vc-weekday-color: var(--text-(--ui-text-muted));
+  --vc-weekday-color: var(--text-muted);
   --vc-header-title-color: var(--text-3);
-  --vc-popover-content-color: var(--text-(--ui-text-muted));
+  --vc-popover-content-color: var(--text-muted);
   --vc-nav-title-color: var(--text-3);
   --vc-nav-item-current-color: var(--ui-primary);
   --vc-highlight-solid-bg: var(--ui-primary);

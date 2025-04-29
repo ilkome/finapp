@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 top-0 sticky z-20 bg-(--ui-bg)/90 backdrop-blur">
+  <div class="mb-2 top-0 sticky z-20 bg-default/90 backdrop-blur">
     <div class="py-2 grid max-w-7xl items-center border-b border-item-4 min-h-12 px-2 lg:px-4 2xl:px-8 lg:py-4">
       <div class="flex grow items-center gap-2">
         <slot />

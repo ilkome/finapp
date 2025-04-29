@@ -59,7 +59,7 @@ watch(isShow, (v) => {
         <div ref="sliderRef2" class="swiper-container h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
-            <div class="swiper-slide h-full bg-[var(--ui-bg)]">
+            <div class="swiper-slide h-full bg-default">
               <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] gap-4 overflow-y-auto items-start">
                 <TrnFormMain
                   maxHeight="100vh"
@@ -80,7 +80,7 @@ watch(isShow, (v) => {
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto">
-                <UiTitle3 class="sticky top-0 z-10 bg-[var(--ui-bg)] px-4 pb-3 pt-5 md:text-xl">
+                <UiTitle3 class="sticky top-0 z-10 bg-default px-4 pb-3 pt-5 md:text-xl">
                   {{ t('trns.history') }}
                 </UiTitle3>
 

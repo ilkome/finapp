@@ -105,7 +105,7 @@ function onGenerateDemoData() {
         <!-- About -->
         <div class="pb-12">
           {{ t('app.about') }}
-          <div class="pt-4 text-xs text-(--ui-text-muted)">
+          <div class="pt-4 text-xs text-muted">
             {{ t('app.version') }} {{ version }}
             <!-- <About /> -->
           </div>

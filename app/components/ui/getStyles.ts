@@ -10,7 +10,7 @@ export const classes = {
     gap1: 'gap-3',
     link: `
       select-none
-      hover:bg-(--ui-bg-elevated)
+      hover:bg-elevated
     `,
     minh1: 'min-h-[42px]',
     minh2: 'min-h-[38px]',
@@ -28,7 +28,7 @@ export const classes = {
     padding3: 'px-3',
     padding4: 'px-1',
 
-    rounded: 'rounded-(--ui-radius)',
+    rounded: 'rounded-sm',
     rounded2: 'rounded-lg',
     rounded3: 'rounded-xl',
     simple: '',

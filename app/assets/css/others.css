@@ -7,7 +7,7 @@
 }
 
 .Toastify__toast-body {
-  @apply p-5 py-5 text-(--ui-text-muted);
+  @apply p-5 py-5 text-muted;
 }
 
 .Toastify__close-button {

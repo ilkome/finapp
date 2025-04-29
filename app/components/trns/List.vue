@@ -323,7 +323,7 @@ function onOpenTrnForm(date: number) {
       class="pt-1 px-2"
     >
       <div
-        class="flex-center rounded-[var(--ui-radius)] bg-[var(--item-5)] px-5 py-2 text-sm text-(--ui-text-muted) hover:bg-item-6"
+        class="flex-center rounded-[var(--ui-radius)] bg-[var(--item-5)] px-5 py-2 text-sm text-muted hover:bg-item-6"
         @click="pageNumber = ++pageNumber"
       >
         {{ t("trns.more") }} {{ paginatedTrnsIds.length }} /

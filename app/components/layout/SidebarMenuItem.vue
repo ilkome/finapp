@@ -21,11 +21,11 @@ const { checkIsActive, onClick } = useMenuData()
     :class="[
       getStyles('item', ['center', 'link', 'minh2', 'rounded', 'padding1']),
       {
-        '!text-(--ui-primary)': checkIsActive(props.menuId),
+        '!text-primary': checkIsActive(props.menuId),
         'gap-3': props.isShowText,
       },
     ]"
-    class="group min-h-[44px] text-(--ui-text-muted) md:min-h-[38px]"
+    class="group min-h-[44px] text-muted md:min-h-[38px]"
     @click="onClick(props.menuId)"
   >
     <div class="flex min-w-8 items-center justify-center">

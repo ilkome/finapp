@@ -11,7 +11,7 @@ const emit = defineEmits<{
   >
     <Icon
       name="lucide:x"
-      color="text-(--ui-text-muted)"
+      color="text-muted"
       size="22"
     />
   </div>

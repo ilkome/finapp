@@ -85,7 +85,7 @@ const option = computed(() => {
       formatter(params: ChartParams[]) {
         let content = '<div class="px-1">'
         content = `${content}
-          <div class="text-md pb-2 text-(--ui-text-muted) text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
+          <div class="text-md pb-2 text-muted text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
           <div class="grid gap-1">
         `
 
