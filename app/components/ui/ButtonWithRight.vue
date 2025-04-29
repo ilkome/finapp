@@ -24,7 +24,7 @@ const emit = defineEmits<{
     >
       <div
         v-if="!props.isShowTitle"
-        class="text-sm text-(--ui-text-muted)"
+        class="text-sm text-muted"
       >
         <slot name="label" />
       </div>

@@ -21,7 +21,7 @@ const emit = defineEmits<{
     >
       <div
         :class="{ 'translate-x-4.5': value }"
-        class="size-4.5 rounded-xl bg-(--ui-bg) shadow-md transition-transform ease-in-out"
+        class="size-4.5 rounded-xl bg-default shadow-md transition-transform ease-in-out"
       />
     </div>
   </div>

@@ -40,7 +40,7 @@
 }
 
 @utility bottomSheetDrugClassesCustom {
-  @apply bg-[var(--ui-bg)] max-w-md rounded-xl;
+  @apply bg-default max-w-md rounded-xl;
 }
 
 @utility bottomSheetContent {
@@ -49,7 +49,7 @@
 }
 
 @utility bottomSheetContentInside {
-  @apply grid h-full bg-[var(--ui-bg)] gap-1 overflow-hidden overflow-y-auto px-2 py-px;
+  @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-2 py-px;
 }
 
 @utility bottomSheetContentBottom {
@@ -79,7 +79,7 @@
 @layer base {
   html,
   body {
-    @apply antialiased text-(--ui-text) bg-[var(--item-1)] select-none;
+    @apply antialiased text-default bg-[var(--item-1)] select-none;
     overscroll-behavior-y: none;
   }
 }

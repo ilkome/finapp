@@ -84,7 +84,7 @@ if (!props.isSort) {
     <!-- Main -->
     <template v-if="!props.alt">
       <div class="grid grow gap-1">
-        <div class="text-sm leading-none text-(--ui-text-muted)">
+        <div class="text-sm leading-none text-muted">
           {{ wallet.name }}
         </div>
 

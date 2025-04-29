@@ -17,10 +17,10 @@ const emit = defineEmits<{
 <template>
   <div
     :class="cn(
-      'flex items-center text-nowrap rounded-(--ui-radius) text-xs leading-none px-3',
+      'flex items-center text-nowrap rounded-sm text-xs leading-none px-3',
       [classes.item.link, classes.item.minh3, classes.item.center2],
-      props.variant === 'small' ? 'px-2 text-2xs text-(--ui-text-muted)' : 'bg-[var(--item-4)]',
-      props.isActive ? 'text-(--ui-primary)' : '',
+      props.variant === 'small' ? 'px-2 text-2xs text-muted' : 'bg-[var(--item-4)]',
+      props.isActive ? 'text-primary' : '',
     )"
     @click="(e: Event) => emit('click', e)"
   >

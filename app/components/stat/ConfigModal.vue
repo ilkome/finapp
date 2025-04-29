@@ -141,7 +141,7 @@ function updateStatAverage(value: number) {
             class="flex gap-4 pt-2"
           >
             <div class="flex gap-1">
-              <div class="flex border border-(--ui-border) rounded-(--ui-radius) bg-(--ui-bg) p-px gap-1">
+              <div class="flex border border-default rounded-sm bg-default p-px gap-1">
                 <DateLinkItem
                   :class="[{
                     '!hover:transparent opacity-30': statConfig.config.value.wallets.count === 1,

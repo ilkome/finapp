@@ -47,7 +47,7 @@ const value = ref(props.period)
     v-model="value"
     :items="items"
     :ui="{
-      base: 'ring-0 text-(--ui-text-muted) text-2xs hover:bg-[var(--item-5)]',
+      base: 'ring-0 text-muted text-2xs hover:bg-[var(--item-5)]',
       trailingIcon: 'size-4',
       content: 'w-24',
     }"

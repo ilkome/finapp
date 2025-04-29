@@ -165,10 +165,10 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     try {
       const validateStatus = validate(data)
 
-      if (validateStatus.error) {
+      if (validateStatus.error || !data) {
         $toast(UiToastContent, {
           data: {
-            description: validateStatus.error,
+            description: validateStatus.error ?? 'No data',
             title: random(errorEmo),
           },
           toastId: 'trn-form-error',
@@ -236,7 +236,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function trnFormDuplicate(trnId: TrnId) {
-    const trn = trnsStore.items?.[trnId]
+    const trn = trnsStore.items?.[trnId] as TrnItem
 
     if (!trn)
       return

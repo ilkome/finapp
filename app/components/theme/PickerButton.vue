@@ -15,7 +15,7 @@ defineProps<{
     :icon="icon"
     :label="label"
     class="capitalize ring-(--ui-border) rounded-[calc(var(--ui-radius))] text-[11px]"
-    :class="[selected ? 'bg-(--ui-bg-elevated)' : 'hover:bg-(--ui-bg-elevated)/50']"
+    :class="[selected ? 'bg-elevated' : 'hover:bg-elevated/50']"
   >
     <template v-if="chip" #leading>
       <slot name="leading">

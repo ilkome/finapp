@@ -25,7 +25,7 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="@2xl/page:px-4 @2xl/page:py-2 rounded-(--ui-radius) border border-transparent bg-[var(--item-3)] px-2 py-2 grow flex-1 flex-wrap @2xl/page:max-w-max"
+    class="@2xl/page:px-4 @2xl/page:py-2 rounded-sm border border-transparent bg-[var(--item-3)] px-2 py-2 grow flex-1 flex-wrap @2xl/page:max-w-max"
     :class="{
       '!border-(--ui-primary)/40 !bg-item-2': props.isActive,
     }"

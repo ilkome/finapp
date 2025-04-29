@@ -131,7 +131,7 @@ const actions = computed(() => ({
                 />
               </template>
 
-              <div class="leading-none text-(--ui-text-muted)">
+              <div class="leading-none text-muted">
                 {{ item.label }}
               </div>
             </UiElement>
@@ -154,7 +154,7 @@ const actions = computed(() => ({
             />
           </template>
 
-          <div class="leading-none text-(--ui-text-muted)">
+          <div class="leading-none text-muted">
             {{ t(item.label) }}
           </div>
         </UiItem1>
