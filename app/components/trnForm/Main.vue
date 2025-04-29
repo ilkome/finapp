@@ -239,19 +239,3 @@ const actions = computed(() => ({
   }
 }
 </style>
-
-<i18n lang="yaml">
-  en:
-    trnForm:
-      wallet:
-        select: Select wallet
-      category:
-        select: Select category
-
-  ru:
-    trnForm:
-      wallet:
-        select: Выбрать кошелек
-      category:
-        select: Выбрать категорию
-</i18n>

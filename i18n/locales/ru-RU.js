@@ -51,7 +51,7 @@ export default {
       childColor: 'Применить цвет ко всем дочерним категориям',
       delete: {
         alertWithTrns: `Так же будут удалены {trns}`,
-        errorChilds: 'Вы не можете удалить категорию с дочерними категориями. Сначала удалите дочерние категории.',
+        errorChilds: 'Вы не можете удалить категорию с дочерними категориям. Сначала удалите дочерние категории.',
         okWithoutTrns: 'Категория удалена',
         okWithTrns: `Категория удалена и {trns}`,
       },
@@ -77,6 +77,9 @@ export default {
     name: 'Категории',
     new: 'Новая категория',
     recentCategories: 'Недавние категории',
+    search: {
+      placeholder: 'Поиск категорий...',
+    },
     title: 'Категории',
   },
 
@@ -328,6 +331,9 @@ export default {
 
   trnForm: {
     calcTrnButton: 'Посчитать результат',
+    category: {
+      select: 'Выбрать категорию',
+    },
     createTrn: 'Создать транзакцию',
     description: {
       placeholder: 'Напишите...',
@@ -341,6 +347,9 @@ export default {
     title: 'Создание транзакции',
     titleEditTrn: 'Редактирование транзакции',
     transferTitle: 'Перевод',
+    wallet: {
+      select: 'Выбрать кошелек',
+    },
   },
 
   trns: {
