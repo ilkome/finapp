@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useMagicKeys, useStorage, useWindowSize } from '@vueuse/core'
+import { useStorage, useWindowSize } from '@vueuse/core'
 
 import { useAppNav } from '~/components/app/useAppNav'
 import { useInitApp } from '~/components/app/useInitApp'
@@ -25,7 +25,7 @@ const { width } = useWindowSize()
 
 const isShowSidebar = useStorage('isShowSidebar', true)
 
-const { error, status } = await useAsyncData(
+const { error, status } = useAsyncData(
   'app',
   async () => {
     const localAuthUid = await useCookie('finapp.localAuthUid')
@@ -44,25 +44,19 @@ const { error, status } = await useAsyncData(
   },
 )
 
-const { escape, shift_d, shift_s } = useMagicKeys()
-
-watch(shift_s!, (v) => {
-  if (v) {
+defineShortcuts({
+  escape: () => {
     if (trnsFormStore.ui.isShow)
       trnsFormStore.ui.isShow = false
-    else
-      trnsFormStore.trnFormCreate()
-  }
-})
-
-watch(escape!, (v) => {
-  if (trnsFormStore.ui.isShow && v)
-    trnsFormStore.ui.isShow = false
-})
-
-watch(shift_d!, (v) => {
-  if (v)
+  },
+  meta_g: () => {
+    trnsFormStore.ui.isShow
+      ? trnsFormStore.ui.isShow = false
+      : trnsFormStore.trnFormCreate()
+  },
+  shift_d: () => {
     isShowSidebar.value = !isShowSidebar.value
+  },
 })
 
 usePageScroll()
