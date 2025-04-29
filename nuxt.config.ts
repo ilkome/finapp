@@ -178,7 +178,6 @@ export default defineNuxtConfig({
   },
 
   ssr: false,
-
   telemetry: false,
 
   vuefire: {
