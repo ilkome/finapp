@@ -104,6 +104,7 @@ const isShowLogoMenu = ref(false)
               :walletId
               class="group"
               isShowCreditLimit
+              isShowRate
               isShowIcon
               @click="() => walletId === route.params.id ? router.push('/dashboard') : router.push(`/wallets/${walletId}`)"
             />

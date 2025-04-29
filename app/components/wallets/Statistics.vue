@@ -69,7 +69,7 @@ const itemsGrouped = computed(() => [
                 :currencyCode="currencyCode"
                 variant="2xs"
               />
-              <div class="text-2xs opacity-70 leading-none">
+              <div class="text-2xs leading-none opacity-70 leading-none">
                 /
               </div>
               <Amount
