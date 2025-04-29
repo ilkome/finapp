@@ -16,8 +16,8 @@ const emit = defineEmits<{
 const slots = useSlots()
 
 const classes = computed(() => cn(
-  getStyles('item', ['rounded', 'padding1', 'minh1', 'link']),
-  'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent',
+  getStyles('item', ['padding1', 'minh1', 'link']),
+  'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent rounded-(--ui-radius)',
   props.insideClasses,
   { 'relative border-(--ui-primary)/60 z-10': props.isActive },
 ))

@@ -14,5 +14,13 @@ export default defineAppConfig({
       neutral: 'neutral',
       primary: 'black',
     },
+    commandPalette: {
+      slots: {
+        group: 'p-0 py-1 first:pt-0',
+        item: 'p-0',
+        label: 'z-10 sticky top-0 bg-[var(--ui-bg)]',
+        viewport: 'scrollerBlock',
+      },
+    },
   },
 })

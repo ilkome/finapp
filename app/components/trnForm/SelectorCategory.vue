@@ -36,11 +36,12 @@ const isShow = ref(false)
       />
     </template>
 
-    <template #content="{ close }">
-      <CategoriesSelector
+    <template #custom="{ close }">
+      <CategoriesCommandPalette
         :hide="close"
-        class="min-w-72 md:px-2"
-        @onSelected="id => { emit('onSelected', id); close() }"
+        :activeItemId="props.categoryId"
+        class="min-w-72 -mt-2 bottomSheetContentInside"
+        @onSelected="(id: CategoryId) => { emit('onSelected', id); close() }"
       />
     </template>
   </BottomSheetOrDropdown>
