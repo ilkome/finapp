@@ -21,11 +21,11 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
   async function getRatesOfUSD(apiKey: string) {
     try {
-      const { data } = await useAsyncData<Rates>(
+      const { data } = await useAsyncData<{ rates: Rates }>(
         'rates',
         () => $fetch(`${serviceUrlBase}${apiKey}`),
       )
-      return data.value
+      return data.value?.rates
     }
     catch (e) {
       console.error('Currencies api are unavailable', e)
