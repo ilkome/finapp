@@ -77,8 +77,9 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function setTrns(values: Trns | null) {
-    items.value = values
-    localforage.setItem('finapp.trns', deepUnref(values))
+    const trns = normalizeTrns(values || {})
+    items.value = trns
+    localforage.setItem('finapp.trns', deepUnref(trns))
   }
 
   function addTrn({ id, values }: { id: TrnId, values: TrnItem }) {
@@ -232,6 +233,23 @@ export const useTrnsStore = defineStore('trns', () => {
     }
 
     return 'Trn type not found'
+  }
+
+  function normalizeTrns(trns: Trns) {
+    const normTrns: Trns = {}
+
+    for (const trnId in trns) {
+      const trn = trns[trnId]!
+      const desc = trn.desc || trn.description || ''
+      delete trn.description
+
+      normTrns[trnId] = {
+        ...trn,
+        desc,
+      }
+    }
+
+    return normTrns
   }
 
   return {
