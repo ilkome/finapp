@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onLongPress } from '@vueuse/core'
-
 import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
