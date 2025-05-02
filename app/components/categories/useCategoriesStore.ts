@@ -214,8 +214,9 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   function setCategories(values: Categories | null) {
-    items.value = values ? formatCategories({ ...values, transfer }) : { transfer }
-    localforage.setItem('finapp.categories', deepUnref(items.value))
+    const categories = values ? formatCategories({ ...values, transfer }) : { transfer }
+    items.value = categories
+    localforage.setItem('finapp.categories', deepUnref(categories))
   }
 
   function unsubscribeCategories() {
