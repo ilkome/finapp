@@ -5,7 +5,13 @@ const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 
 const desc = ref('')
-onMounted(() => desc.value = trnsFormStore.values.desc ?? '')
+watch(
+  () => trnsFormStore.values.desc,
+  (value) => {
+    desc.value = value ?? ''
+  },
+  { immediate: true },
+)
 
 function onSave(close: () => void) {
   trnsFormStore.values.desc = desc.value
