@@ -77,7 +77,9 @@ export default defineNuxtConfig({
 
   icon: {
     clientBundle: {
+      collections: ['lucide', 'mdi'],
       scan: true,
+      ssr: true,
     },
     serverBundle: {
       collections: ['lucide', 'mdi'],
@@ -88,7 +90,6 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
-    'nuxt-icon',
     '@nuxt/ui',
     'nuxt-vuefire',
     '@nuxt/eslint',
