@@ -18,7 +18,7 @@ export default defineAppConfig({
       slots: {
         group: 'p-0 py-1 first:pt-0',
         item: 'p-0',
-        label: 'z-10 sticky top-0 bg-default',
+        label: 'z-20 mb-px sticky top-0 bg-default',
         viewport: 'scrollerBlock',
       },
     },
