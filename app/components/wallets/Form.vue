@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { generateId } from '~~/utils/generateId'
 
-import type { WalletForm, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
+import type { CurrencyCode } from '~/components/currencies/types'
+import type { WalletForm, WalletId, WalletType } from '~/components/wallets/types'
 
 import { errorEmo, random } from '~/assets/js/emo'
 import UiToastContent from '~/components/ui/ToastContent.vue'
@@ -15,7 +16,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   afterSave: []
-  updateValue: [key: keyof WalletItem, value: string | number | boolean]
+  updateValue: [key: keyof WalletForm, value: string | number | boolean]
 }>()
 
 const { $toast } = useNuxtApp()
@@ -220,7 +221,7 @@ async function onSave() {
   <CurrenciesModal
     v-if="modals.currencies"
     :activeCode="props.walletForm.currency"
-    @onSelect="c => emit('updateValue', 'currency', c)"
+    @onSelect="(c: CurrencyCode) => emit('updateValue', 'currency', c)"
     @onClose="modals.currencies = false"
   />
 
@@ -252,7 +253,7 @@ async function onSave() {
             <ColorPalette
               :activeColor="props.walletForm.color"
               isWallet
-              @click="color => emit('updateValue', 'color', color)"
+              @click="(color: string) => emit('updateValue', 'color', color)"
             />
           </div>
 
