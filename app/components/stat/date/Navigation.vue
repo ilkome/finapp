@@ -69,6 +69,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
         :isEnd
         :isShowNavHome
         :isStart
+        position="right"
         @changeDate="changeDate"
       />
     </div>
