@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WalletItem } from '~/components/wallets/types'
+import type { WalletForm, WalletId } from '~/components/wallets/types'
 
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { normalizeWalletItem } from '~/components/wallets/utils'
@@ -9,25 +9,11 @@ const route = useRoute()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 
-const walletId = computed(() => route.params.id)
+const walletId = computed(() => route.params.id) as Ref<WalletId>
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 const walletForm = ref(normalizeWalletItem(wallet.value))
 
-function updateValue(id: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
-  walletForm.value[id] = value
-}
-
-function afterSave() {
-  return router.replace(`/wallets/${walletId.value}`)
-}
-
-useHead({
-  title: `${t('base.edit')}: ${
-    walletForm.value?.name
-      ? walletForm.value?.name
-      : t('wallets.form.name.label')
-  }`,
-})
+useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}` })
 </script>
 
 <template>
@@ -43,10 +29,10 @@ useHead({
     </UiHeader>
 
     <WalletsForm
-      :walletId="walletId"
-      :walletForm="walletForm"
-      @afterSave="afterSave"
-      @updateValue="updateValue"
+      :walletId
+      :walletForm
+      @afterSave="() => router.replace(`/wallets/${walletId}`)"
+      @updateValue="(key: keyof WalletForm, newValue: any) => walletForm[key] = newValue"
     />
   </UiPage>
 </template>

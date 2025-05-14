@@ -70,7 +70,7 @@ export type WalletItemDirty = WalletItem & Partial<{
   withdrawal: boolean
 }>
 
-export type WalletForm = DeepPartial<WalletItemDirty> & {
+export type WalletForm = DeepPartial<WalletItem> & {
   creditLimit?: number | null
   description?: string | null
 }
