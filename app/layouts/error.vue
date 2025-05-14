@@ -18,6 +18,6 @@ if (Object.keys(route.query).length > 0)
     <h1 @click="router.push('/')">
       Go to home
     </h1>
-    <NuxtPage />
+    <slot />
   </div>
 </template>
