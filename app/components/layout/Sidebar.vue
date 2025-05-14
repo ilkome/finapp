@@ -125,7 +125,7 @@ const isShowLogoMenu = ref(false)
     <div class="absolute bottom-1 left-1 hidden w-full items-center md:flex">
       <UTooltip
         :text="t('app.toggleSidebar')"
-        :kbds="['Shift', 'D']"
+        :kbds="['Meta', '\\']"
       >
         <UiItem1
           class="z-10 text-4"
