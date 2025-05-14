@@ -2,21 +2,22 @@
 import { generateId } from '~~/utils/generateId'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletForm, WalletId, WalletType } from '~/components/wallets/types'
+import type { WalletForm, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
 import { errorEmo, random } from '~/assets/js/emo'
 import UiToastContent from '~/components/ui/ToastContent.vue'
 import { icons, types } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { normalizeWalletItem } from '~/components/wallets/utils'
 
 const props = defineProps<{
-  walletForm: WalletForm
+  walletForm: WalletItem
   walletId?: WalletId
 }>()
 
 const emit = defineEmits<{
   afterSave: []
-  updateValue: [key: keyof WalletForm, value: string | number | boolean]
+  updateValue: [key: keyof WalletItem, value: WalletItem[keyof WalletItem]]
 }>()
 
 const { $toast } = useNuxtApp()
@@ -95,7 +96,10 @@ async function onSave() {
   if (!validate(props.walletForm))
     return
 
-  await walletsStore.addWallet({ id: editWalletId, values: props.walletForm })
+  await walletsStore.createOrUpdateWallet({
+    id: editWalletId,
+    values: normalizeWalletItem(props.walletForm),
+  })
   emit('afterSave')
 }
 </script>
@@ -177,17 +181,13 @@ async function onSave() {
         </template>
         <FormInput
           :placeholder="t('wallets.form.credit.limit')"
-          :value="props.walletForm.creditLimit ?? 0"
+          :value="props.walletForm.creditLimit ?? ''"
           @updateValue="(value: string) => emit('updateValue', 'creditLimit', value)"
         />
       </FormElement>
 
       <!-- Options -->
       <div class="grid gap-1">
-        <!-- <UiTitle3>
-          {{ t('settings.options') }}
-        </UiTitle3>
-         -->
         <div>
           <UiCheckbox
             :checkboxValue="props.walletForm.isWithdrawal ?? false"

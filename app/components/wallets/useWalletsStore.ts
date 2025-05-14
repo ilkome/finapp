@@ -5,14 +5,14 @@ import { uniqueElementsBy } from '~~/utils/simple'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
-import type { WalletForm, WalletId, WalletItemComputed, Wallets, WalletsComputed } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed } from '~/components/wallets/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { normalizeWalletItem, normalizeWallets } from '~/components/wallets/utils'
+import { normalizeWallets } from '~/components/wallets/utils'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -33,16 +33,15 @@ export const useWalletsStore = defineStore('wallets', () => {
     localforage.setItem('finapp.wallets', deepUnref(wallets))
   }
 
-  async function addWallet({ id, values }: { id: WalletId, values: WalletForm }) {
-    const walletValues = normalizeWalletItem(values)
+  async function createOrUpdateWallet({ id, values }: { id: WalletId, values: WalletItem }) {
     // Set default currency based on first created wallet
     if (!hasItems.value)
-      currenciesStore.updateBase(walletValues.currency)
+      currenciesStore.updateBase(values.currency)
 
     if (isDemo.value) {
       items.value = {
         ...items.value,
-        [id]: walletValues,
+        [id]: values,
       }
       localforage.setItem('finapp.wallets', deepUnref(items.value))
       return
@@ -132,7 +131,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   return {
-    addWallet,
+    createOrUpdateWallet,
     currenciesUsed,
     deleteWallet,
     getWalletTotal,

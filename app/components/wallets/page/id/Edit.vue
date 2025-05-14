@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WalletForm, WalletId } from '~/components/wallets/types'
+import type { WalletForm, WalletId, WalletItem } from '~/components/wallets/types'
 
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { normalizeWalletItem } from '~/components/wallets/utils'
@@ -32,7 +32,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
       :walletId
       :walletForm
       @afterSave="() => router.replace(`/wallets/${walletId}`)"
-      @updateValue="(key: keyof WalletForm, newValue: any) => walletForm[key] = newValue"
+      @updateValue="(key: keyof WalletForm, value: WalletItem[keyof WalletItem]) => walletForm[key] = value"
     />
   </UiPage>
 </template>

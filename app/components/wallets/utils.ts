@@ -23,11 +23,11 @@ export function normalizeWalletItem(wallet?: WalletItemDirty | WalletForm) {
   // Set type based on the wallet type property
   if (wallet?.type === 'cash' || wallet?.isCash)
     walletItem.type = 'cash'
-  if (wallet?.type === 'cashless' || wallet?.isCashless)
+  else if (wallet?.type === 'cashless' || wallet?.isCashless)
     walletItem.type = 'cashless'
-  if (wallet?.type === 'debt' || wallet?.isDebt)
+  else if (wallet?.type === 'debt' || wallet?.isDebt)
     walletItem.type = 'debt'
-  if (wallet?.type === 'deposit' || wallet?.isDeposit)
+  else if (wallet?.type === 'deposit' || wallet?.isDeposit)
     walletItem.type = 'deposit'
 
   return walletItem
