@@ -45,17 +45,17 @@ const { error, status } = useAsyncData(
 )
 
 defineShortcuts({
-  escape: () => {
+  'escape': () => {
     if (trnsFormStore.ui.isShow)
       trnsFormStore.ui.isShow = false
   },
-  meta_g: () => {
+  'meta_\\': () => {
+    isShowSidebar.value = !isShowSidebar.value
+  },
+  'meta_g': () => {
     trnsFormStore.ui.isShow
       ? trnsFormStore.ui.isShow = false
       : trnsFormStore.trnFormCreate()
-  },
-  shift_d: () => {
-    isShowSidebar.value = !isShowSidebar.value
   },
 })
 
