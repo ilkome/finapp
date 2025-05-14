@@ -95,7 +95,7 @@ usePageScroll()
             style="padding-bottom: calc(50px + env(safe-area-inset-bottom))"
             class="@container/main grid h-full overflow-hidden overflow-y-auto"
           >
-            <NuxtPage :keepalive="{ include: keepalive }" />
+            <slot :keepalive="{ include: keepalive }" />
           </main>
 
           <TrnFormFloatOpener />
