@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { Grouped, Range, StatDateProvider } from '~/components/date/types'
 
+import { getUCalendarTimedDate, getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
+
 const emit = defineEmits<{
   onClose: []
 }>()
-
-function close() {
-  emit('onClose')
-}
 
 const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
@@ -34,6 +32,21 @@ const intervals = computed<Grouped[]>(() => [{
 function selectInterval(grouped: Grouped) {
   statDate.setInterval(grouped)
 }
+
+const dateRange = ref({
+  end: parseUCalendarDate(statDate.range.value.end),
+  start: parseUCalendarDate(statDate.range.value.start),
+})
+
+function onSelectRange(value: unknown) {
+  const range = {
+    end: value.end,
+    start: value.start,
+  } as Range
+
+  statDate.setRangeByCalendar(range)
+  emit('onClose')
+}
 </script>
 
 <template>
@@ -46,7 +59,7 @@ function selectInterval(grouped: Grouped) {
         :isActive="tabs.selected.value === tab"
         @click="tabs.selected.value = tab"
       >
-        {{ t(tab) }}
+        {{ t(`dates.calendar.${tab}`) }}
       </UiTabsItem1>
     </UiTabs1>
 
@@ -83,7 +96,7 @@ function selectInterval(grouped: Grouped) {
       <!-- Grouped by -->
       <div class="grid gap-3">
         <UiTitleOption class="px-1">
-          {{ t('intervalsGrouped') }}
+          {{ t('dates.calendar.intervalsGrouped') }}
         </UiTitleOption>
 
         <div class="grid gap-2">
@@ -113,45 +126,13 @@ function selectInterval(grouped: Grouped) {
       </div>
     </div>
 
-    <DatePicker
+    <UCalendar
       v-if="tabs.selected.value === 'calendar'"
-      :rows="2"
-      :value="statDate.range.value"
-      mode="range"
-      @update:modelValue="(v: Range) => {
-        statDate.setRangeByCalendar(v);
-        close();
-      }"
+      v-model="dateRange"
+      :maxValue="getUCalendarToday()"
+      :numberOfMonths="2"
+      range
+      @update:modelValue="onSelectRange"
     />
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  12Months: 12m
-  14Days: 14d
-  30Days: 30d
-  7Days: 7d
-  all: All
-  allSkipEmpty: Maximum
-  calendar: Calendar
-  intervalsGrouped: Grouped by
-  last: Last
-  mini: mini
-  presets: Presets
-  ranges: Ranges
-
-ru:
-  12Months: 12м
-  14Days: 14д
-  30Days: 30д
-  7Days: 7д
-  all: Все
-  allSkipEmpty: Максимально
-  calendar: Календарь
-  intervalsGrouped: Группировка
-  last: Последние
-  mini: мини
-  presets: Пресеты
-  ranges: Диапазоны
-</i18n>

@@ -122,6 +122,11 @@ export default {
   },
 
   dates: {
+    calendar: {
+      calendar: 'Календарь',
+      intervalsGrouped: 'Группировка',
+      presets: 'Пресеты',
+    },
     day: {
       current: 'Сегодня',
       last: 'Вчера',

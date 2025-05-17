@@ -10,6 +10,13 @@ export default defineAppConfig({
     radius: 0.375,
   },
   ui: {
+    calendar: {
+      slots: {
+        body: '!flex-col !space-y-8',
+        cellTrigger: 'data-[disabled]:hover:bg-transparent data-today:bg-primary/10',
+        root: 'p-2 pt-0',
+      },
+    },
     colors: {
       neutral: 'neutral',
       primary: 'black',

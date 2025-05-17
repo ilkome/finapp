@@ -1,4 +1,5 @@
-import { differenceInDays, endOfDay, endOfMonth, endOfWeek, endOfYear, format, startOfDay, startOfMonth, startOfWeek, startOfYear, sub } from 'date-fns'
+import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import { differenceInDays, endOfDay, endOfMonth, endOfWeek, endOfYear, format, formatISO, startOfDay, startOfMonth, startOfWeek, startOfYear, sub } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 import type { IntervalsInRangeProps, Range } from '~/components/date/types'
@@ -92,4 +93,18 @@ export function getEndOf(date: Date, intervalType: string): Date {
     default:
       return endOfDay(date)
   }
+}
+
+export function getUCalendarToday() {
+  return today(getLocalTimeZone())
+}
+
+export function parseUCalendarDate(date: number) {
+  return parseDate(formatISO(date, { representation: 'date' }))
+}
+
+export function getUCalendarTimedDate(date: any) {
+  const now = new Date()
+  const selectedDate = date.toString()
+  return new Date(selectedDate).setHours(now.getHours(), now.getMinutes())
 }

@@ -1,28 +1,33 @@
 <script setup lang="ts">
+/*
+ * UCalendar has bad type definitions
+ */
+import { getUCalendarTimedDate, getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
-  hide: () => void
+  onClose: () => void
 }>()
 
 const trnsFormStore = useTrnsFormStore()
-const date = ref(new Date(trnsFormStore.values.date).toISOString())
-const maxDate = new Date()
+const date = ref(parseUCalendarDate(trnsFormStore.values.date))
+const maxDate = getUCalendarToday()
 
-watch(date, (value) => {
-  if (value) {
-    trnsFormStore.values.date = new Date(+value).getTime()
-    props.hide()
-  }
-})
+function onUpdate(date: unknown) {
+  props.onClose()
+
+  if (!date)
+    return
+
+  trnsFormStore.values.date = getUCalendarTimedDate(date)
+}
 </script>
 
 <template>
-  <DatePicker
-    :value="date"
-    :maxDate="maxDate"
-    expanded
-    mode="date"
-    @update:modelValue="value => date = value"
+  <UCalendar
+    v-model="date"
+    :maxValue="maxDate"
+    class="p-10"
+    @update:modelValue="onUpdate"
   />
 </template>

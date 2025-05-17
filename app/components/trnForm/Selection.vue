@@ -5,8 +5,8 @@ import { Pagination } from 'swiper/modules'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { getParentCategoryId } from '~/components/categories/getCategories'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getParentCategoryIdOrReturnSame } from '~/components/categories/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 import 'swiper/css'
@@ -49,7 +49,7 @@ onMounted(() => {
   }
 })
 
-const parentCategoryId = ref<CategoryId | null>(getParentCategoryId(categoriesStore.items, trnsFormStore.values.categoryId) || trnsFormStore.values.categoryId)
+const parentCategoryId = ref<CategoryId | null>(getParentCategoryIdOrReturnSame(categoriesStore.items, trnsFormStore.values.categoryId))
 
 function onSelectWallet(id: WalletId, close: () => void) {
   trnsFormStore.values.walletId = id
