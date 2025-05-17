@@ -16,7 +16,7 @@ const modals = ref({
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex gap-1">
     <BottomSheetOrDropdown
       v-if="props.isShowCategories"
       :title="t('categories.filter')"
@@ -26,9 +26,17 @@ const modals = ref({
       @onCloseModal="modals.categories = false"
     >
       <template #trigger>
-        <UiItem1>
-          <Icon name="hugeicons:folder-library" size="20" />
-        </UiItem1>
+        <UTooltip :text="t('categories.filter')">
+          <UButton
+            :aria-label="t('categories.filter')"
+            class="text-muted"
+            color="neutral"
+            icon="hugeicons:folder-library"
+            size="lg"
+            square
+            variant="ghost"
+          />
+        </UTooltip>
       </template>
 
       <template #custom="{ close }">
@@ -61,9 +69,17 @@ const modals = ref({
       @onCloseModal="modals.wallets = false"
     >
       <template #trigger>
-        <UiItem1>
-          <Icon name="hugeicons:wallet-01" size="20" />
-        </UiItem1>
+        <UTooltip :text="t('wallets.filter')">
+          <UButton
+            :aria-label="t('wallets.filter')"
+            class="text-muted"
+            color="neutral"
+            icon="hugeicons:wallet-01"
+            size="lg"
+            square
+            variant="ghost"
+          />
+        </UTooltip>
       </template>
 
       <template #custom="{ close }">

@@ -46,28 +46,19 @@ function changeLocale(locale: LocaleSlug) {
       />
     </template>
 
-    <UButton
-      v-else
-      icon="lucide:languages"
-      color="neutral"
-      variant="ghost"
-      square
-      aria-label="Locale switcher"
-      size="lg"
-      @click="changeLocale(locale === 'ru' ? 'en' : 'ru')"
-    />
+    <template v-else>
+      <UTooltip :text="t('locale.title')">
+        <UButton
+          :aria-label="t('locale.title')"
+          class="text-muted"
+          color="neutral"
+          icon="lucide:languages"
+          size="lg"
+          square
+          variant="ghost"
+          @click="changeLocale(locale === 'ru' ? 'en' : 'ru')"
+        />
+      </UTooltip>
+    </template>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  locale:
-    en: 'English'
-    ru: 'Русский'
-    title: 'Language'
-ru:
-  locale:
-    en: 'English'
-    ru: 'Русский'
-    title: 'Язык'
-</i18n>

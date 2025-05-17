@@ -296,7 +296,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
         <div
           :class="{
-            'grid @3xl/page:grid-cols-2 @3xl/page:gap-6 gap-3': props.statTab !== 'split' && statConfig.config.value.catsList.isShow,
+            'grid @3xl/page:grid-cols-2 @3xl/page:gap-6 gap-5': props.statTab !== 'split' && statConfig.config.value.catsList.isShow,
           }"
         >
           <StatCategoriesSection2
@@ -311,11 +311,11 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
           />
 
           <StatTrns
-            class="@3xl/page:order-1"
+            :isPeriodOneDay="isPeriodOneDay"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
             :storageKey="newBaseStorageKey"
             :type="props.type ?? 'netIncome'"
-            :isPeriodOneDay="isPeriodOneDay"
+            class="@3xl/page:order-1"
           />
         </div>
       </div>

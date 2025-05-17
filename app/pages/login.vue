@@ -69,16 +69,19 @@ async function openDemo() {
       <LocaleSwitcher />
       <ThemeSwitcher />
       <ThemePicker />
-      <UButton
-        icon="mdi:github"
-        color="neutral"
-        variant="ghost"
-        square
-        aria-label="GitHub"
-        to="https://github.com/ilkome/finapp"
-        target="_blank"
-        size="lg"
-      />
+      <UTooltip text="GitHub">
+        <UButton
+          aria-label="GitHub"
+          class="text-muted"
+          color="neutral"
+          icon="mdi:github"
+          size="lg"
+          square
+          target="_blank"
+          to="https://github.com/ilkome/finapp"
+          variant="ghost"
+        />
+      </UTooltip>
     </div>
 
     <div

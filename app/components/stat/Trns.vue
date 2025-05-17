@@ -20,6 +20,7 @@ defineProps<{
       isShowExpense
       isShowFilterByDesc
       isShowIncome
+      isShowHeader
       isShowTransfers
     />
 
