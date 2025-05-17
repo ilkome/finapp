@@ -9,10 +9,8 @@ const trnsFormStore = useTrnsFormStore()
 const { formatDate } = useDateFormats()
 
 const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full'))
-
-const isToday = computed(() => {
-  return isSameDay(new Date(trnsFormStore.values.date), new Date())
-})
+const isToday = computed(() => isSameDay(new Date(trnsFormStore.values.date), new Date()))
+const isShow = ref(false)
 
 function changeDate(way: 'prev' | 'next' | 'today') {
   let newDate: number = new Date().getTime()
@@ -25,8 +23,6 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 
   trnsFormStore.values.date = newDate
 }
-
-const isShow = ref(false)
 </script>
 
 <template>
@@ -52,7 +48,7 @@ const isShow = ref(false)
 
       <template #content="{ close }">
         <div class="min-w-80">
-          <TrnFormCalendar :hide="close" />
+          <TrnFormCalendar :onClose="close" />
         </div>
       </template>
     </BottomSheetOrDropdown>

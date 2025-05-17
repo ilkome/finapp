@@ -124,6 +124,11 @@ export default {
   },
 
   dates: {
+    calendar: {
+      calendar: 'Calendar',
+      intervalsGrouped: 'Grouped by',
+      presets: 'Presets',
+    },
     day: {
       current: 'Today',
       last: 'Yesterday',

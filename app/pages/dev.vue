@@ -3,8 +3,6 @@
 
 <template>
   <UiPage>
-    <ThemeSwitcherTabs />
-
     <div class="grid grid-cols-[1fr_auto] items-start gap-8 p-3">
       <div class="grid gap-12">
         <div>
@@ -275,19 +273,12 @@
           </h1>
 
           <div class="grid gap-4">
-            <DatePicker
-              :value="new Date().getTime()"
-              :maxDate="new Date()"
-              mode="date"
-            />
-            <DatePicker
-              :value="{
-                end: new Date().getTime() - 1000 * 60 * 60 * 24 * 4,
-                start: new Date().getTime() - 1000 * 60 * 60 * 24 * 14,
-              }"
-              mode="range"
-              :maxDate="new Date()"
-              :rows="2"
+            <UCalendar />
+            <div class="h-px bg-muted" />
+            <UCalendar
+              class="@container/calendar"
+              :numberOfMonths="2"
+              range
             />
           </div>
         </div>
