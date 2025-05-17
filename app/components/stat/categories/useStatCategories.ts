@@ -4,6 +4,7 @@ import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getParentCategoryId2 } from '~/components/categories/utils'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -11,11 +12,6 @@ export function useStatCategories() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const { getTotalOfTrnsIds } = useAmount()
-
-  function getParentCategoryId(categoryId: CategoryId): CategoryId | undefined {
-    const category = categoriesStore.items[categoryId]
-    return category?.parentId === 0 ? undefined : category?.parentId
-  }
 
   function collectCategoriesByTrns(trnsIds: TrnId[], preCategoriesIds?: CategoryId[]): CategoriesWithData {
     const categoriesByTrns = trnsIds.reduce((acc, trnId) => {
@@ -65,7 +61,7 @@ export function useStatCategories() {
 
   function groupCategories(categoriesByTrns: CategoriesWithData): CategoryWithData[] {
     const groupedCategories = Object.values(categoriesByTrns).reduce((acc, cat) => {
-      const parentId = getParentCategoryId(cat.id)
+      const parentId = getParentCategoryId2(categoriesStore.items, cat.id)
       const parentCategory = parentId && categoriesStore.items[parentId]
 
       if (!parentId || !parentCategory) {
@@ -112,6 +108,5 @@ export function useStatCategories() {
 
   return {
     getCategoriesWithData,
-    getParentCategoryId,
   }
 }

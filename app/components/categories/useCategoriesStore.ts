@@ -8,8 +8,7 @@ import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } fr
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem, CategoryItemWithId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { getPreparedFormData } from '~/components/categories/getForm'
-import { compareCategoriesByParentAndName, getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
+import { compareCategoriesByParentAndName, getPreparedFormData, getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
