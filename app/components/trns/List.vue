@@ -172,9 +172,9 @@ function onOpenTrnForm(date: number) {
       :paginatedTrnsIds
       :selectedIds
     >
-      <UiTitle3 class="pb-2 pl-1">
+      <UiTitle8 isHideArrow>
         {{ t('trns.title') }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}
-      </UiTitle3>
+      </UiTitle8>
     </slot>
 
     <slot name="contentBefore" />

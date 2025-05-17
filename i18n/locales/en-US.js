@@ -183,7 +183,9 @@ export default {
   },
 
   locale: {
-    toggle: 'Toggle locale',
+    en: 'English',
+    ru: 'Russian',
+    title: 'Language',
   },
 
   loginWithGithub: 'Login with Github',
@@ -324,7 +326,11 @@ export default {
   },
 
   theme: {
-    change: 'Change theme',
+    color: 'Change theme color',
+    dark: 'Dark',
+    light: 'Light',
+    select: 'Select theme',
+    system: 'System',
     title: 'Theme',
   },
 

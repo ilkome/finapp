@@ -28,17 +28,19 @@ const { options, preference, setTheme } = useTheme()
       />
     </template>
 
-    <UButton
-      v-else
-      :icon="colorMode.value === 'light' ? 'lucide:sun' : 'lucide:moon'"
-      color="neutral"
-      variant="ghost"
-      square
-      aria-label="Theme switcher"
-      size="lg"
-      @click="setTheme(colorMode.value === 'light' ? 'dark' : 'light')"
-    />
+    <template v-else>
+      <UTooltip :text="t('theme.title')">
+        <UButton
+          :aria-label="t('theme.title')"
+          :icon="colorMode.value === 'light' ? 'lucide:sun' : 'lucide:moon'"
+          class="text-muted"
+          color="neutral"
+          size="lg"
+          square
+          variant="ghost"
+          @click="setTheme(colorMode.value === 'light' ? 'dark' : 'light')"
+        />
+      </UTooltip>
+    </template>
   </div>
 </template>
-
-<i18n lang="yaml" src="./locale.yaml" />

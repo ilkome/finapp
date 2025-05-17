@@ -65,14 +65,17 @@ function setBlackAsPrimary(value: boolean) {
     :ui="{ content: 'w-72 px-6 py-4 flex flex-col gap-4' }"
   >
     <template #default="{ open }">
-      <UButton
-        icon="i-lucide-swatch-book"
-        color="neutral"
-        :variant="open ? 'soft' : 'ghost'"
-        square
-        aria-label="Theme picker"
-        size="lg"
-      />
+      <UTooltip :text="t('theme.color')">
+        <UButton
+          :aria-label="t('theme.color')"
+          :variant="open ? 'soft' : 'ghost'"
+          color="neutral"
+          class="text-muted"
+          icon="i-lucide-swatch-book"
+          size="lg"
+          square
+        />
+      </UTooltip>
     </template>
 
     <template #content>
@@ -157,22 +160,24 @@ function setBlackAsPrimary(value: boolean) {
   </UPopover>
 </template>
 
-<i18n yaml>
+<i18n lang="yaml">
 en:
-  light: Light
   dark: Dark
-  system: System
-  primary: Primary color
+  light: Light
   neutral: Neutral color
+  picker: Theme picker
+  primary: Primary color
   radius: Radius
+  system: System
   theme: Theme
 
 ru:
-  light: Светлая
   dark: Темная
-  system: Системная
-  primary: Основной цвет
+  light: Светлая
   neutral: Нейтральный цвет
+  picker: Выбор темы
+  primary: Основной цвет
   radius: Радиус
+  system: Системная
   theme: Тема
 </i18n>

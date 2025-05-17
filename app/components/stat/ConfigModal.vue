@@ -38,9 +38,17 @@ function updateStatAverage(value: number) {
     @onCloseModal="props.statConfigModal.close"
   >
     <template #trigger>
-      <UiItem1>
-        <Icon name="lucide:settings-2" size="20" />
-      </UiItem1>
+      <UTooltip :text="t('stat.config.menu.label')">
+        <UButton
+          :aria-label="t('stat.config.menu.label')"
+          class="text-muted"
+          color="neutral"
+          icon="lucide:settings-2"
+          size="lg"
+          square
+          variant="ghost"
+        />
+      </UTooltip>
     </template>
 
     <template #content="{ close }">

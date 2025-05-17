@@ -181,7 +181,9 @@ export default {
   },
 
   locale: {
-    toggle: 'Сменить язык',
+    en: 'Английский',
+    ru: 'Русский',
+    title: 'Язык',
   },
 
   loginWithGithub: 'Войти через Github',
@@ -326,7 +328,11 @@ export default {
   },
 
   theme: {
-    change: 'Сменить цвет оформления',
+    color: 'Сменить цвет оформления',
+    dark: 'Темная',
+    light: 'Светлая',
+    select: 'Выберите тему',
+    system: 'Авто',
     title: 'Тема',
   },
 

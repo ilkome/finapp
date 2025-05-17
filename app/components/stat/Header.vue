@@ -56,7 +56,7 @@ const statConfigModal: Ref<StatConfigModal> = ref({
     <template #actions>
       <div
         v-if="props.filter || props.config"
-        class="ml-auto flex items-center"
+        class="ml-auto flex items-center gap-1"
       >
         <FilterSelector
           v-if="props.filter"

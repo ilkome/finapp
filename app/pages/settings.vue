@@ -38,14 +38,14 @@ function onGenerateDemoData() {
     <UiHeader>
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
 
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1">
         <ThemeSwitcher />
         <ThemePicker />
       </div>
     </UiHeader>
 
     <div class="pageWrapper">
-      <div class="grid gap-8 @3xl/main:max-w-md">
+      <div class="grid gap-8 @3xl/main:max-w-md pt-2">
         <!-- User -->
         <div class="pb-6">
           <UserViewLogout isShowSignOut />
