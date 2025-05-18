@@ -134,6 +134,8 @@ export function useStatDate({
     }
     params.value.rangeOffset = 0
 
+    params.value.rangeBy = 'day'
+    params.value.rangeDuration = differenceInDays(r.end, r.start) + 1
     params.value.intervalsBy = 'day'
     params.value.intervalsDuration = 1
   }
