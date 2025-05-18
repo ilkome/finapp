@@ -53,7 +53,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       </template>
     </BottomSheetOrDropdown>
 
-    <StatDateNav
+    <DateNav
       :isShowNavHome="!isToday"
       :isEnd="isToday"
       :isStart="false"
