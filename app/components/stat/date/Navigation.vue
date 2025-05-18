@@ -64,7 +64,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       v-if="!statDate.params.value.customDate"
       class="flex gap-1"
     >
-      <StatDateNav
+      <DateNav
         v-if="isShowNav"
         :isEnd
         :isShowNavHome
