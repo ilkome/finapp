@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { WalletForm, WalletId, WalletItem } from '~/components/wallets/types'
+import type { WalletId, WalletItem } from '~/components/wallets/types'
 
+import { walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { normalizeWalletItem } from '~/components/wallets/utils'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -11,7 +11,7 @@ const walletsStore = useWalletsStore()
 
 const walletId = computed(() => route.params.id) as Ref<WalletId>
 const wallet = computed(() => walletsStore.items?.[walletId.value])
-const walletForm = ref(normalizeWalletItem(wallet.value))
+const walletForm = ref(walletItemSchema.parse(wallet.value))
 
 useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}` })
 </script>
@@ -32,7 +32,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
       :walletId
       :walletForm
       @afterSave="() => router.replace(`/wallets/${walletId}`)"
-      @updateValue="(key: keyof WalletForm, value: WalletItem[keyof WalletItem]) => walletForm[key] = value"
+      @updateValue="(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) => walletForm[key] = value"
     />
   </UiPage>
 </template>

@@ -64,7 +64,7 @@ const selectedWalletsIds = computed<WalletId[]>(() => {
     if (walletViewType.value === 'total')
       return !wallet.isArchived && !wallet.isExcludeInTotal
 
-    return wallet.type === walletViewType.value && !wallet.isArchived
+    return wallet.type === walletViewType.value
   })
 })
 
