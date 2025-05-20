@@ -1,41 +1,70 @@
-import type { WalletForm, WalletItem, WalletItemBase, WalletItemDirty, Wallets, WalletsDirty } from '~/components/wallets/types'
+import type { WalletItemDirty } from '~/components/wallets/types'
 
-import { random } from '~/assets/js/emo'
-import { colorsArray } from '~/components/color/colors'
+import { walletBaseSchema, walletDirtySchema, walletItemSchema } from '~/components/wallets/types'
 
-export function normalizeWalletItem(wallet?: WalletItemDirty | WalletForm) {
-  const walletBase: WalletItemBase = {
-    color: wallet?.color ?? random(colorsArray),
-    currency: wallet?.currency ?? 'USD',
-    desc: wallet?.desc ?? wallet?.description ?? '',
-    editedAt: wallet?.editedAt ?? wallet?.edited ?? new Date().getTime(),
-    isArchived: wallet?.isArchived ?? wallet?.archived ?? false,
-    isExcludeInTotal: wallet?.isExcludeInTotal ?? false,
-    isWithdrawal: wallet?.isWithdrawal ?? wallet?.withdrawal ?? false,
-    name: wallet?.name ?? '',
-    order: wallet?.order ?? 1,
+export function normalizeWalletItem(wallet: WalletItemDirty) {
+  const parsedGood = walletItemSchema.safeParse(wallet)
+  const parsed = walletDirtySchema.safeParse(wallet)
+
+  if (parsedGood.success) {
+    return {
+      error: false,
+      values: wallet,
+    }
   }
 
-  const walletItem: WalletItem = (wallet?.isCredit || wallet?.type === 'credit')
-    ? { ...walletBase, creditLimit: +(wallet?.creditLimit ?? 0), type: 'credit' }
-    : { ...walletBase, type: wallet?.type ?? 'cash' }
+  if (!parsed.success) {
+    return {
+      error: false,
+      values: walletItemSchema.parse({ type: 'cash' }),
+    }
+  }
 
-  // Set type based on the wallet type property
-  if (wallet?.type === 'cash' || wallet?.isCash)
-    walletItem.type = 'cash'
-  else if (wallet?.type === 'cashless' || wallet?.isCashless)
-    walletItem.type = 'cashless'
-  else if (wallet?.type === 'debt' || wallet?.isDebt)
-    walletItem.type = 'debt'
-  else if (wallet?.type === 'deposit' || wallet?.isDeposit)
-    walletItem.type = 'deposit'
+  const data = parsed.data
+  const base = walletBaseSchema.parse({
+    color: data.color,
+    currency: data.currency,
+    desc: data.desc ?? data.description,
+    editedAt: data.editedAt ?? data.edited,
+    isArchived: data.isArchived ?? data.archived,
+    isExcludeInTotal: data.isExcludeInTotal,
+    isWithdrawal: data.isWithdrawal ?? data.withdrawal,
+    name: data.name,
+    order: data.order,
+  })
 
-  return walletItem
-}
+  let type = data.type
+  if (!type) {
+    if (data.isCredit)
+      type = 'credit'
+    else if (data.isCash)
+      type = 'cash'
+    else if (data.isCashless)
+      type = 'cashless'
+    else if (data.isDebt)
+      type = 'debt'
+    else if (data.isDeposit)
+      type = 'deposit'
+    else type = 'cash'
+  }
 
-export function normalizeWallets(items: WalletsDirty): Wallets {
-  return Object.entries(items).reduce((acc, [walletId, wallet]) => {
-    acc[walletId] = normalizeWalletItem(wallet)
-    return acc
-  }, {} as Wallets)
+  const normalizeWalletItem = walletItemSchema.parse({
+    ...base,
+    ...(type === 'credit'
+      ? { creditLimit: +(data.creditLimit ?? 0) }
+      : { type }
+    ),
+  })
+
+  if (!parsedGood.success) {
+    return {
+      error: true,
+      values: normalizeWalletItem,
+    }
+  }
+
+  return {
+    error: false,
+    values: normalizeWalletItem,
+  }
 }

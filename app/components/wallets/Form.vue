@@ -2,13 +2,12 @@
 import { generateId } from '~~/utils/generateId'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletForm, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
 import { errorEmo, random } from '~/assets/js/emo'
 import UiToastContent from '~/components/ui/ToastContent.vue'
-import { icons, types } from '~/components/wallets/types'
+import { icons, types, walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { normalizeWalletItem } from '~/components/wallets/utils'
 
 const props = defineProps<{
   walletForm: WalletItem
@@ -44,7 +43,7 @@ const walletPlaceholder = computed(() => ({
 /**
  * Validate
  */
-function validate(values: WalletForm) {
+function validate(values: WalletItem) {
   // name
   if (!values.name) {
     $toast(UiToastContent, {
@@ -98,7 +97,7 @@ async function onSave() {
 
   await walletsStore.createOrUpdateWallet({
     id: editWalletId,
-    values: normalizeWalletItem(props.walletForm),
+    values: walletItemSchema.parse(props.walletForm),
   })
   emit('afterSave')
 }

@@ -5,14 +5,14 @@ import { uniqueElementsBy } from '~~/utils/simple'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
-import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed, WalletsDirty } from '~/components/wallets/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { normalizeWallets } from '~/components/wallets/utils'
+import { normalizeWalletItem } from '~/components/wallets/utils'
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -28,6 +28,20 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   function setWallets(values: Wallets | null) {
+    const normalizeWallets = (items: WalletsDirty): Wallets => {
+      return Object.entries(items).reduce((acc, [walletId, wallet]) => {
+        const normalizedWallet = normalizeWalletItem(wallet)
+        acc[walletId] = normalizedWallet.values
+        if (normalizedWallet.error && !isDemo) {
+          createOrUpdateWallet({
+            id: walletId,
+            values: normalizedWallet.values as WalletItem,
+          })
+        }
+        return acc
+      }, {} as Wallets)
+    }
+
     const wallets = values ? normalizeWallets(values) : null
     items.value = wallets
     localforage.setItem('finapp.wallets', deepUnref(wallets))
@@ -52,7 +66,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   async function saveWalletsOrder(ids: WalletId[]) {
     if (isDemo.value) {
-      return await sortDemoWallets(ids, items.value ?? {})
+      return await sortDemoWallets(ids, items.value || {})
     }
 
     const updates = ids.reduce(
@@ -79,9 +93,9 @@ export const useWalletsStore = defineStore('wallets', () => {
 
     const { sum, sumTransfers } = getTotal({
       trnsIds,
-      trnsItems: trnsStore.items ?? {},
+      trnsItems: trnsStore.items || {},
       walletsIds: [walletId],
-      walletsItems: items.value ?? {},
+      walletsItems: items.value || {},
     })
 
     return sum + sumTransfers
