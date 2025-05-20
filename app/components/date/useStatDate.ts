@@ -1,10 +1,23 @@
 import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 import defu from 'defu'
+import { z } from 'zod/v4'
 
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
 
+import { periods } from '~/components/date/types'
 import { calculateBestIntervalsBy, calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
+
+const queryParamsSchema = z.object({
+  intervalsBy: z.enum(periods).optional(),
+  intervalsDuration: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
+  intervalSelected: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
+  isShowMaxRange: z.string().transform(val => val === 'true').optional(),
+  isSkipEmpty: z.string().transform(val => val === 'true').optional(),
+  rangeBy: z.enum(periods).optional(),
+  rangeDuration: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
+  rangeOffset: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
+})
 
 const defaultParams: StatDateParams = {
   customDate: false,
@@ -42,29 +55,28 @@ export function useStatDate({
   })
 
   if (queryParams) {
-    if (queryParams.intervalsBy)
-      params.value.intervalsBy = queryParams.intervalsBy
+    const parsed = queryParamsSchema.safeParse(queryParams)
 
-    if (Number.isInteger(+queryParams.intervalsDuration))
-      params.value.intervalsDuration = +queryParams.intervalsDuration
+    if (!parsed.success)
+      return
 
-    if (Number.isInteger(+queryParams.intervalSelected))
-      params.value.intervalSelected = +queryParams.intervalSelected
-
-    if (queryParams.rangeBy)
-      params.value.rangeBy = queryParams.rangeBy
-
-    if (Number.isInteger(+queryParams.rangeDuration))
-      params.value.rangeDuration = +queryParams.rangeDuration
-
-    if (Number.isInteger(+queryParams.rangeOffset))
-      params.value.rangeOffset = +queryParams.rangeOffset
-
-    if (queryParams.isShowMaxRange)
-      params.value.isShowMaxRange = queryParams.isShowMaxRange === 'true'
-
-    if (queryParams.isSkipEmpty)
-      params.value.isSkipEmpty = queryParams.isSkipEmpty === 'true'
+    const data = parsed.data
+    if (data.intervalsBy)
+      params.value.intervalsBy = data.intervalsBy
+    if (data.intervalsDuration)
+      params.value.intervalsDuration = data.intervalsDuration
+    if (data.intervalSelected)
+      params.value.intervalSelected = data.intervalSelected
+    if (data.rangeBy)
+      params.value.rangeBy = data.rangeBy
+    if (data.rangeDuration)
+      params.value.rangeDuration = data.rangeDuration
+    if (data.rangeOffset)
+      params.value.rangeOffset = data.rangeOffset
+    if (data.isShowMaxRange !== undefined)
+      params.value.isShowMaxRange = data.isShowMaxRange
+    if (data.isSkipEmpty !== undefined)
+      params.value.isSkipEmpty = data.isSkipEmpty
   }
 
   const range = computed<Range>(() => {

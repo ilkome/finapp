@@ -2,7 +2,7 @@ import type { DeepPartial } from '~~/utils/types'
 
 import { useStorage } from '@vueuse/core'
 import defu from 'defu'
-import { z } from 'zod'
+import { z } from 'zod/v4'
 
 import { chartTypes } from '~/components/stat/chart/types'
 
