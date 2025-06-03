@@ -1,79 +1,14 @@
 @import 'tailwindcss' theme(static);
 @import '@nuxt/ui';
-@import './vars.css';
-@import './others.css';
 @import './theme.css';
+@import './toastify.css';
+@import './utility.css';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @custom-variant hover {
-  @media (hover: hover) and (pointer: fine) {
-    &:hover {
-      @slot;
-    }
-  }
-
-  &:active {
-    @slot;
-  }
-}
-
-@utility flex-center {
-  @apply flex items-center justify-center;
-}
-
-@utility flex-center-col {
-  @apply flex flex-col items-center justify-center;
-}
-
-@utility absolute-center {
-  @apply absolute top-1/2 left-1/2;
-  transform: translate(-50%, -50%);
-}
-
-@utility layoutBase {
-  @apply h-dvh;
-}
-
-@utility pageWrapper {
-  @apply @xl/page:max-w-2xl grow px-2 lg:px-4 2xl:px-8;
-}
-
-@utility bottomSheetDrugClassesCustom {
-  @apply bg-default max-w-md rounded-xl;
-}
-
-@utility bottomSheetContent {
-  @apply grid h-full max-h-[98dvh] grid-rows-[auto_1fr_auto] overflow-hidden;
-  padding-bottom: calc(env(safe-area-inset-bottom) - 22px);
-}
-
-@utility bottomSheetContentInside {
-  @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-2 py-px;
-}
-
-@utility bottomSheetContentBottom {
-  @apply flex items-center justify-center p-2;
-}
-
-@utility scrollbar {
-  @apply h-full overflow-hidden overflow-y-auto;
-
-  &::-webkit-scrollbar {
-    @apply w-1.5 h-1.5;
-  }
-
-  &::-webkit-scrollbar-track {
-    @apply bg-transparent rounded-[10px];
-  }
-
-  &::-webkit-scrollbar-thumb {
-    @apply bg-gray-500 rounded-[10px];
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-600;
-  }
+  @media (hover: hover) and (pointer: fine) { &:hover { @slot; } }
+  &:active { @slot; }
 }
 
 @layer base {
