@@ -12,14 +12,16 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2024-07-07',
-
   components: [
     {
-      extensions: ['vue'],
       path: '~/components/',
     },
+    {
+      path: '~/pages',
+      pathPrefix: false,
+      pattern: '**/components/**',
+    },
   ],
-
   css: ['~/assets/css/main.css'],
 
   devtools: {
@@ -93,6 +95,10 @@ export default defineNuxtConfig({
     'nuxt-vuefire',
     '@nuxt/eslint',
   ],
+
+  pages: {
+    pattern: ['**/*.vue', '!**/components/**'],
+  },
 
   plugins: [{ src: '~/plugins/toast' }],
 
