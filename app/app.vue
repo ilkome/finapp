@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Analytics } from '@vercel/analytics/nuxt'
-import { SpeedInsights } from '@vercel/speed-insights/nuxt'
 import colors from 'tailwindcss/colors'
 
 import { useGuard } from '~/components/user/useGuard'
@@ -47,8 +45,6 @@ useGuard()
   <UApp>
     <NuxtLoadingIndicator :height="2" color="var(--ui-primary)" />
     <NuxtPwaManifest />
-    <SpeedInsights />
-    <Analytics />
 
     <NuxtLayout>
       <NuxtPage />
