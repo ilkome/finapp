@@ -101,7 +101,7 @@ useHead({ title: wallet.value?.name })
       </template>
     </StatHeader>
 
-    <div class="px-3 pb-2 lg:gap-8 lg:px-2">
+    <div class="px-3 pb-2 lg:gap-8 lg:px-4 2xl:px-8">
       <div
         v-if="wallet.type !== 'credit'"
         class="md:max-w-lg"
