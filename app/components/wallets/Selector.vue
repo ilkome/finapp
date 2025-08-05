@@ -39,9 +39,11 @@ function onClickWallet(walletId: WalletId) {
     class="grid gap-2 h-full overflow-hidden"
     :class="{ 'grid-rows-[auto_1fr]': walletsStore.currenciesUsed.length > 1 }"
   >
-    <div class="grid md:max-w-xs">
+    <div
+      v-if="walletsStore.currenciesUsed.length > 1"
+      class="grid md:max-w-xs"
+    >
       <WalletsCurrencies
-        v-if="walletsStore.currenciesUsed.length > 1"
         :currencyFiltered
         @onSelectFilterCurrency="code => currencyFiltered = code"
       />

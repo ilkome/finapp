@@ -29,9 +29,5 @@ const emit = defineEmits<{
     >
       <slot />
     </div>
-
-    <!-- <div v-if="$slots.custom">
-      <slot name="custom" />
-    </div> -->
   </div>
 </template>

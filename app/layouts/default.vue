@@ -64,7 +64,7 @@ usePageScroll()
 
 <template>
   <div
-    :class="{ 'md:pl-20': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
+    :class="{ 'md:pr-[360px]': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
     class="h-dvh overflow-hidden transition-all duration-300 ease-in-out bg-[var(--item-1)]"
     style="margin-left: env(safe-area-inset-left)"
   >
