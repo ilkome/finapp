@@ -19,7 +19,7 @@ export default defineNuxtConfig({
     {
       path: '~/pages',
       pathPrefix: false,
-      pattern: '**/components/**',
+      pattern: '**/_/**',
     },
   ],
   css: ['~/assets/css/main.css'],
@@ -97,7 +97,7 @@ export default defineNuxtConfig({
   ],
 
   pages: {
-    pattern: ['**/*.vue', '!**/components/**'],
+    pattern: ['**/*.vue', '!**/_/**'],
   },
 
   plugins: [{ src: '~/plugins/toast' }],
