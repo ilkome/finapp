@@ -14,6 +14,7 @@
       "deepunref",
       "defu"
     ],
-    "typescript.tsdk": "finapp/node_modules/typescript/lib"
+    "typescript.tsdk": "finapp/node_modules/typescript/lib",
+    "references.preferredLocation": "view"
   },
 }
