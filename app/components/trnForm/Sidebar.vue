@@ -13,12 +13,12 @@ const isShow = computed(() => trnsFormStore.ui.isShow)
 /**
  * Slider
  */
-const sliderRef2 = ref<any>(null)
+const sliderRef = ref<any>(null)
 const sliderObj = ref<any>(null)
 
 function init() {
   if (!sliderObj.value) {
-    sliderObj.value = new Swiper(sliderRef2.value, {
+    sliderObj.value = new Swiper(sliderRef.value, {
       init: true,
       initialSlide: 0,
       longSwipesMs: 60,
@@ -49,14 +49,14 @@ watch(isShow, (v) => {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="@container/trnForm trnForm absolute inset-y-0 z-50 h-full w-[360px] py-2"
+      class="@container/trnForm trnForm absolute inset-y-0 z-50 right-0 h-full w-[360px] py-2"
     >
-      <div class="border-left relative h-full overflow-hidden rounded-r-xl border-item-6 border border-l-0 border-item-4 bg-item-2 shadow-2xl">
+      <div class="border-left relative h-full overflow-hidden rounded-l-xl border-item-6 border border-r-0 border-item-4 bg-item-2 shadow-2xl">
         <div class="absolute right-2 top-2">
           <BottomSheetClose @onClick="trnsFormStore.onClose()" />
         </div>
 
-        <div ref="sliderRef2" class="swiper-container h-full">
+        <div ref="sliderRef" class="swiper-container h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
             <div class="swiper-slide h-full bg-default">
@@ -66,7 +66,10 @@ watch(isShow, (v) => {
                   class="!pb-0"
                   typesPosition="top"
                 />
-                <div class="-mt-6 grid gap-2">
+                <div
+                  v-if="trnsFormStore.values.trnType !== 2"
+                  class="-mt-6 grid gap-2"
+                >
                   <TrnFormSelectionCategoriesFast
                     @onSelectCategory="id => trnsFormStore.values.categoryId = id"
                   />
@@ -110,6 +113,6 @@ watch(isShow, (v) => {
 
 .fadeIn-enter-from,
 .fadeIn-leave-to {
-  @apply opacity-0 -translate-x-12;
+  @apply opacity-0 translate-x-full;
 }
 </style>
