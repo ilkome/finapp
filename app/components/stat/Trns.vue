@@ -22,6 +22,7 @@ defineProps<{
       isShowIncome
       isShowHeader
       isShowTransfers
+      isShowFilterByType
     />
 
     <TrnsNoTrns v-else />

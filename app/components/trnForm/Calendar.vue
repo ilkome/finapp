@@ -27,7 +27,7 @@ function onUpdate(date: unknown) {
   <UCalendar
     v-model="date"
     :maxValue="maxDate"
-    class="p-10"
+    class="p-3"
     @update:modelValue="onUpdate"
   />
 </template>
