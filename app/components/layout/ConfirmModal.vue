@@ -33,7 +33,6 @@ const items = computed(() => ({
 <template>
   <Teleport to="body">
     <BottomSheet
-      :isScrollerBlock="false"
       drugClassesCustom="bottomSheetDrugClassesCustom"
       isShow
       @closed="emit('closed')"
