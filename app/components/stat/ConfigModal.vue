@@ -52,7 +52,7 @@ function updateStatAverage(value: number) {
     </template>
 
     <template #content="{ close }">
-      <div class="grid gap-4 px-1 py-3 md:px-3 md:!pb-0">
+      <div class="grid gap-4 px-1 py-3 md:px-3 md:!pb-2">
         <BottomSheetClose @click="close" />
 
         <!-- Chart -->
@@ -221,7 +221,7 @@ function updateStatAverage(value: number) {
 
         <StatCategoriesButtons />
 
-        <slot />
+        <slot :close="close" />
       </div>
     </template>
   </BottomSheetOrDropdown>

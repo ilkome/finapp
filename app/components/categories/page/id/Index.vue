@@ -5,6 +5,7 @@ import { differenceInDays } from 'date-fns'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 
+import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
@@ -13,15 +14,17 @@ import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 
+const { $toast } = useNuxtApp()
 const { t } = useI18n()
-const trnsStore = useTrnsStore()
-const trnsFormStore = useTrnsFormStore()
-const router = useRouter()
-const route = useRoute()
 const categoriesStore = useCategoriesStore()
-
+const route = useRoute()
+const router = useRouter()
+const trnsFormStore = useTrnsFormStore()
+const trnsStore = useTrnsStore()
 const filter = useFilter()
+
 provide('filter', filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
@@ -87,6 +90,60 @@ function onEditClick(close: () => void) {
 }
 
 useHead({ title: category.value?.name })
+
+// TODO: translate
+const deleteDescText = computed(() => {
+  if (trnsIds.value && trnsIds.value.length > 0)
+    return t('categories.form.delete.alertWithTrns', { trns: t('trns.plural', trnsIds.value.length) })
+  return undefined
+})
+
+const isShowDeleteConfirm = ref(false)
+function onClickDelete(close: () => void) {
+  close()
+
+  for (const id in categoriesStore.items) {
+    if (categoriesStore.items[id]?.parentId === categoryId.value) {
+      $toast(UiToastContent, {
+        data: {
+          description: t('categories.form.delete.errorChilds'),
+          title: random(errorEmo),
+        },
+        toastId: 'delete-category-with-child-error',
+        type: 'error',
+      })
+
+      return false
+    }
+  }
+
+  isShowDeleteConfirm.value = true
+}
+
+async function onDeleteConfirm() {
+  const trnsIdsS = JSON.parse(JSON.stringify(
+    trnsStore.getStoreTrnsIds({
+      categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
+    }),
+  ))
+
+  router.push('/categories')
+  await categoriesStore.deleteCategory(JSON.parse(JSON.stringify(categoryId.value), trnsIdsS))
+
+  // Give some time to complete redirect
+  setTimeout(async () => {
+    $toast(UiToastContent, {
+      data: {
+        description: trnsIdsS?.length > 0
+          ? t('categories.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
+          : t('categories.form.delete.okWithoutTrns'),
+        title: random(successEmo),
+      },
+      toastId: 'delete-category-with-child-success',
+      type: 'success',
+    })
+  }, 300)
+}
 </script>
 
 <template>
@@ -114,9 +171,21 @@ useHead({ title: category.value?.name })
           {{ t('base.edit') }}
         </UiHeaderLink>
 
-        <CategoriesDelete :categoryId @close="close" />
+        <UiHeaderLink
+          icon="mdi:delete-empty-outline"
+          @click="onClickDelete(close)"
+        >
+          {{ t('base.delete') }}
+        </UiHeaderLink>
       </template>
     </StatHeader>
+
+    <LayoutConfirmModal
+      v-if="isShowDeleteConfirm"
+      :description="deleteDescText"
+      @closed="isShowDeleteConfirm = false"
+      @onConfirm="onDeleteConfirm"
+    />
 
     <StatWrap
       :activeTab
