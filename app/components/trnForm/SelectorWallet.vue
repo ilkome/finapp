@@ -45,7 +45,7 @@ const isShow = ref(false)
       <WalletsSelector
         :hide="close"
         :activeItemId="props.walletId"
-        class="min-w-80 md:px-2"
+        class="min-w-80 px-2"
         @onSelected="(id: WalletId) => emit('onSelected', id)"
       />
     </template>
