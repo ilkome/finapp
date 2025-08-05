@@ -74,11 +74,6 @@ const open = ref(false)
           :drugStyle="props.bottomSheetStyle"
           @closed="emit('onCloseModal')"
         >
-          <!-- <template #handler="{ close }">
-            <BottomSheetHandler />
-            <BottomSheetClose @onClick="close" />
-          </template> -->
-
           <template #default="{ close }">
             <div class="bottomSheetContent">
               <UiTitleModal v-if="props.title">
