@@ -2,23 +2,28 @@
 import { useStorage } from '@vueuse/core'
 
 import type { StatTabSlug } from '~/components/stat/types'
+import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
+import { random, successEmo } from '~/assets/js/emo'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import UiToastContent from '~/components/ui/ToastContent.vue'
 import { icons } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
+const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
+const walletStore = useWalletsStore()
 
 const filter = useFilter()
 provide('filter', filter)
@@ -59,16 +64,55 @@ watch(filter.categoriesIds, () => {
   statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
 })
 
+useHead({ title: wallet.value?.name })
+
 onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 
-function onEditClick(close: () => void) {
+function onClickEdit() {
   router.push(`/wallets/${walletId.value}/edit`)
-  close()
 }
 
-useHead({ title: wallet.value?.name })
+// TODO: translate
+const deleteDescText = computed(() => {
+  if (trnsIds.value.length > 0)
+    return `This action will delete ${trnsIds.value.length} trns in this wallet`
+  return undefined
+})
+
+const isShowDeleteConfirm = ref(false)
+function onClickDelete(close: () => void) {
+  close()
+  isShowDeleteConfirm.value = true
+}
+
+async function onDeleteConfirm() {
+  console.log('onDeleteConfirm')
+
+  const trnsIdsS: TrnId[] = JSON.parse(JSON.stringify(
+    trnsStore.getStoreTrnsIds({
+      walletsIds: [walletId.value],
+    }),
+  ))
+
+  router.push('/wallets')
+  await walletStore.deleteWallet(JSON.parse(JSON.stringify(walletId.value)), trnsIdsS)
+
+  // Give some time to complete redirect
+  setTimeout(async () => {
+    $toast(UiToastContent, {
+      data: {
+        description: trnsIdsS?.length > 0
+          ? t('wallets.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
+          : t('wallets.form.delete.okWithoutTrns'),
+        title: random(successEmo),
+      },
+      toastId: 'delete-wallet',
+      type: 'success',
+    })
+  }, 300)
+}
 </script>
 
 <template>
@@ -92,14 +136,26 @@ useHead({ title: wallet.value?.name })
       <template #popover="{ close }">
         <UiHeaderLink
           icon="mdi:pencil-outline"
-          @click="onEditClick(close)"
+          @click="onClickEdit"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
 
-        <WalletsDelete :walletId @close="close" />
+        <UiHeaderLink
+          icon="mdi:delete-empty-outline"
+          @click="onClickDelete(close)"
+        >
+          {{ t('base.delete') }}
+        </UiHeaderLink>
       </template>
     </StatHeader>
+
+    <LayoutConfirmModal
+      v-if="isShowDeleteConfirm"
+      :description="deleteDescText"
+      @closed="isShowDeleteConfirm = false"
+      @onConfirm="onDeleteConfirm"
+    />
 
     <div class="px-3 pb-2 lg:gap-8 lg:px-4 2xl:px-8">
       <div
