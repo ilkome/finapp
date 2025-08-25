@@ -100,8 +100,6 @@ export default defineNuxtConfig({
     pattern: ['**/*.vue', '!**/_/**'],
   },
 
-  plugins: [{ src: '~/plugins/toast' }],
-
   pwa: {
     client: {
       installPrompt: true,

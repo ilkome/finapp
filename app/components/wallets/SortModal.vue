@@ -3,14 +3,13 @@ import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 
 import { errorEmo, random } from '~/assets/js/emo'
 import { useAppNav } from '~/components/app/useAppNav'
-import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { closeAllModals, isModalOpen } = useAppNav()
 
 const walletsStore = useWalletsStore()
-const { $toast } = useNuxtApp()
 const { t } = useI18n()
+const toast = useToast()
 
 const [parent, sortedWalletsIds] = useDragAndDrop([...walletsStore.sortedIds], {
   dragHandle: '.sortHandle',
@@ -20,13 +19,10 @@ async function saveWalletsOrder(close: () => void) {
   const result = await walletsStore.saveWalletsOrder(sortedWalletsIds.value)
 
   if (result !== 'ok') {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: 'Error',
-        title: random(errorEmo),
-      },
-      type: 'error',
+    toast.add({
+      color: 'error',
+      description: 'Error',
+      title: random(errorEmo),
     })
     return
   }

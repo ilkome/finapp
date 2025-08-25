@@ -5,13 +5,13 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 
-const { $toast } = useNuxtApp()
 const { locale, t } = useI18n()
 const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
 const { generateDemoData } = useDemo()
 const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
+const toast = useToast()
 
 useSeoMeta({
   ogTitle: t('settings.title'),
@@ -24,12 +24,12 @@ const confirmRemoveUserData = ref(false)
 function removeUserData() {
   confirmRemoveUserData.value = false
   userStore.removeUserData()
-  $toast.success(t('alerts.removedUserData'))
+  toast.add({ color: 'success', description: t('alerts.removedUserData') })
 }
 
 function onGenerateDemoData() {
   generateDemoData(locale.value)
-  $toast.success(t('demo.updated'))
+  toast.add({ color: 'success', description: t('demo.updated') })
 }
 </script>
 

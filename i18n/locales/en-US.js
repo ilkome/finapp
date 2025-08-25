@@ -190,6 +190,7 @@ export default {
 
   loginWithGithub: 'Login with Github',
   loginWithGoogle: 'Login with Google',
+
   money: {
     all: 'Total',
     also: 'Also',
@@ -347,6 +348,15 @@ export default {
     description: {
       placeholder: 'Write...',
       title: 'Description',
+    },
+    errors: {
+      amountEmpty: 'Amount can not be empty',
+      amountNegative: 'Amount can not be negative number',
+      amountZero: 'Amount can not be equal Zero',
+      selectCategory: 'Please select category',
+      selectWallet: 'Please select wallet',
+      transferAmountEmpty: 'Transfer amounts can not be empty',
+      transferSameWallet: 'Transfer in same wallet',
     },
     filterAll: 'All',
     filterWallet: 'Wallet',

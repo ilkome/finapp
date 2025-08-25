@@ -1,7 +1,6 @@
 @import 'tailwindcss' theme(static);
 @import '@nuxt/ui';
 @import './theme.css';
-@import './toastify.css';
 @import './utility.css';
 
 @custom-variant dark (&:where(.dark, .dark *));

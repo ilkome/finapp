@@ -6,7 +6,6 @@ import type { CategoryForm, CategoryId } from '~/components/categories/types'
 import { errorEmo, random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import UiToastContent from '~/components/ui/ToastContent.vue'
 
 const props = defineProps<{
   categoryForm: CategoryForm
@@ -15,14 +14,14 @@ const props = defineProps<{
 
 const emit = defineEmits(['updateValue', 'afterSave'])
 
-const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
+const toast = useToast()
 
 const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
 const isAllowChangeParent = computed(() =>
-  categoriesStore.getChildsIds(props.categoryId).length === 0 && categoriesStore.categoriesForBeParent.length > 0,
+  categoriesStore.getChildsIds(props.categoryId!).length === 0 && categoriesStore.categoriesForBeParent.length > 0,
 )
 
 const modals = ref({
@@ -60,13 +59,10 @@ function onParentSelect(parentId: CategoryId | false, close: () => void) {
  */
 function validate(values: CategoryForm) {
   if (!values.name) {
-    $toast(UiToastContent, {
-      data: {
-        description: t('categories.form.name.error'),
-        title: random(errorEmo),
-      },
-      toastId: 'validate',
-      type: 'error',
+    toast.add({
+      color: 'error',
+      description: t('categories.form.name.error'),
+      title: random(errorEmo),
     })
 
     return
@@ -77,25 +73,19 @@ function validate(values: CategoryForm) {
     if (categoriesStore.items[id].name === values.name && categoriesStore.items[id].parentId === values.parentId) {
       if (editCategoryId) {
         if (editCategoryId !== id) {
-          $toast(UiToastContent, {
-            data: {
-              description: t('categories.form.name.exist'),
-              title: random(errorEmo),
-            },
-            toastId: 'validate',
-            type: 'error',
+          toast.add({
+            color: 'error',
+            description: t('categories.form.name.exist'),
+            title: random(errorEmo),
           })
           return
         }
       }
       else {
-        $toast(UiToastContent, {
-          data: {
-            description: t('categories.form.name.exist'),
-            title: random(errorEmo),
-          },
-          toastId: 'validate',
-          type: 'error',
+        toast.add({
+          color: 'error',
+          description: t('categories.form.name.exist'),
+          title: random(errorEmo),
         })
         return
       }

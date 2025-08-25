@@ -29,5 +29,10 @@ export default defineAppConfig({
         viewport: 'scrollerBlock',
       },
     },
+    toast: {
+      slots: {
+        title: 'text-5xl',
+      },
+    },
   },
 })

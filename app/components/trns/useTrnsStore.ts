@@ -92,6 +92,10 @@ export const useTrnsStore = defineStore('trns', () => {
     localforage.setItem('finapp.trns', deepUnref({ ...items.value, [id]: valuesWithEditDate }))
     setTrns({ ...items.value, [id]: valuesWithEditDate })
 
+    if (isDemo.value) {
+      return
+    }
+
     saveData(`users/${userStore.uid}/trns/${id}`, valuesWithEditDate).then(() => {
       isTrnSavedOnline = true
       removeTrnToAddLaterLocal(id)
