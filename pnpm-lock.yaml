@@ -53,9 +53,6 @@ importers:
       vue-echarts:
         specifier: ^7.0.3
         version: 7.0.3(@vue/runtime-core@3.5.18)(echarts@5.6.0)(vue@3.5.18(typescript@5.9.2))
-      vue3-toastify:
-        specifier: ^0.2.8
-        version: 0.2.8(vue@3.5.18(typescript@5.9.2))
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^5.1.0
@@ -7286,15 +7283,6 @@ packages:
     resolution: {integrity: sha512-ogAF3P97NPm8fJsE4by9dwSYtDwXIY1nFY9T6DyQnGHd1E2Da94w9JIolpe42LJGIl0DwOHBi8TcRPlPGwbTtw==}
     peerDependencies:
       vue: ^3.2.0
-
-  vue3-toastify@0.2.8:
-    resolution: {integrity: sha512-8jDOqsJaBZEbGpCbhWDETJc11D1lZefvgFPq/IPdM+U7+qyXoVPDvK6uq/FIgyV7qV0NcNzvGBMEzjsLQqGROw==}
-    engines: {node: '>=20', npm: '>=9.0.0'}
-    peerDependencies:
-      vue: '>=3.2.0'
-    peerDependenciesMeta:
-      vue:
-        optional: true
 
   vue@3.5.18:
     resolution: {integrity: sha512-7W4Y4ZbMiQ3SEo+m9lnoNpV9xG7QVMLa+/0RFwwiAVkeYoyGXqWE85jabU4pllJNUzqfLShJ5YLptewhCWUgNA==}
@@ -15918,10 +15906,6 @@ snapshots:
   vue-router@4.5.1(vue@3.5.18(typescript@5.9.2)):
     dependencies:
       '@vue/devtools-api': 6.6.4
-      vue: 3.5.18(typescript@5.9.2)
-
-  vue3-toastify@0.2.8(vue@3.5.18(typescript@5.9.2)):
-    optionalDependencies:
       vue: 3.5.18(typescript@5.9.2)
 
   vue@3.5.18(typescript@5.9.2):
