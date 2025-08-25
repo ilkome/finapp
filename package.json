@@ -37,8 +37,7 @@
     "vaul-vue": "^0.4.1",
     "vite": "^7.0.6",
     "vue-deepunref": "^1.0.1",
-    "vue-echarts": "^7.0.3",
-    "vue3-toastify": "^0.2.8"
+    "vue-echarts": "^7.0.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^5.1.0",

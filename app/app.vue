@@ -6,6 +6,10 @@ import { useGuard } from '~/components/user/useGuard'
 const appConfig = useAppConfig()
 const colorMode = useColorMode()
 const { t } = useI18n()
+const toaster = {
+  position: 'top-left',
+  progress: false,
+}
 
 const color = computed(() => colorMode.value === 'dark' ? (colors as any)[appConfig.ui.colors.neutral][900] : 'white')
 const blackAsPrimary = computed(() => appConfig.theme.blackAsPrimary ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}')
@@ -42,7 +46,7 @@ useGuard()
 </script>
 
 <template>
-  <UApp>
+  <UApp :toaster="toaster">
     <NuxtLoadingIndicator :height="2" color="var(--ui-primary)" />
     <NuxtPwaManifest />
 

@@ -14,9 +14,7 @@ import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import UiToastContent from '~/components/ui/ToastContent.vue'
 
-const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const route = useRoute()
@@ -24,6 +22,7 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
+const toast = useToast()
 
 provide('filter', filter)
 
@@ -104,13 +103,10 @@ function onClickDelete(close: () => void) {
 
   for (const id in categoriesStore.items) {
     if (categoriesStore.items[id]?.parentId === categoryId.value) {
-      $toast(UiToastContent, {
-        data: {
-          description: t('categories.form.delete.errorChilds'),
-          title: random(errorEmo),
-        },
-        toastId: 'delete-category-with-child-error',
-        type: 'error',
+      toast.add({
+        color: 'error',
+        description: t('categories.form.delete.errorChilds'),
+        title: random(errorEmo),
       })
 
       return false
@@ -132,15 +128,12 @@ async function onDeleteConfirm() {
 
   // Give some time to complete redirect
   setTimeout(async () => {
-    $toast(UiToastContent, {
-      data: {
-        description: trnsIdsS?.length > 0
-          ? t('categories.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
-          : t('categories.form.delete.okWithoutTrns'),
-        title: random(successEmo),
-      },
-      toastId: 'delete-category-with-child-success',
-      type: 'success',
+    toast.add({
+      color: 'success',
+      description: trnsIdsS?.length > 0
+        ? t('categories.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
+        : t('categories.form.delete.okWithoutTrns'),
+      title: random(successEmo),
     })
   }, 300)
 }

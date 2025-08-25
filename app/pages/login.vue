@@ -2,9 +2,9 @@
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 
 import { useDemo } from '~/components/demo/useDemo'
-import UiToastContent from '~/components/ui/ToastContent.vue'
 
 const auth = useFirebaseAuth()!
+const toast = useToast()
 
 definePageMeta({
   layout: 'empty',
@@ -17,7 +17,6 @@ useSeoMeta({
   title: t('title'),
 })
 
-const { $toast } = useNuxtApp()
 const { generateDemoData } = useDemo()
 const route = useRoute()
 const router = useRouter()
@@ -33,13 +32,10 @@ function signInWithGoogle() {
   isLoading.value = true
 
   signInWithPopup(auth, new GoogleAuthProvider()).catch((e) => {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: e.message,
-        title: 'Error',
-      },
-      type: 'error',
+    toast.add({
+      color: 'error',
+      description: e.message,
+      title: 'Error',
     })
 
     isLoading.value = false

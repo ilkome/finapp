@@ -14,7 +14,6 @@ import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/fo
 import { validate } from '~/components/trnForm/utils/validate'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import UiToastContent from '~/components/ui/ToastContent.vue'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 type Values = {
@@ -30,11 +29,12 @@ type Values = {
 })
 
 export const useTrnsFormStore = defineStore('trnForm', () => {
-  const { $toast } = useNuxtApp()
-  const trnsFormStore = useTrnsFormStore()
-  const walletsStore = useWalletsStore()
+  const { t } = useI18n()
   const categoriesStore = useCategoriesStore()
+  const trnsFormStore = useTrnsFormStore()
   const trnsStore = useTrnsStore()
+  const walletsStore = useWalletsStore()
+  const toast = useToast()
 
   const values = reactive<TrnFormValues>({
     amount: [0, 0, 0],
@@ -166,13 +166,10 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       const validateStatus = validate(data)
 
       if (validateStatus.error || !data) {
-        $toast(UiToastContent, {
-          data: {
-            description: validateStatus.error ?? 'No data',
-            title: random(errorEmo),
-          },
-          toastId: 'trn-form-error',
-          type: 'error',
+        toast.add({
+          color: 'error',
+          description: t(validateStatus.error!) ?? 'No data',
+          title: random(errorEmo),
         })
         return
       }

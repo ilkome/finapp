@@ -1,31 +1,31 @@
 export function validate(values: any) {
   if (!values.amount && values.type !== 2) {
     return {
-      error: 'Amount can not be empty',
+      error: 'trnForm.errors.amountEmpty',
     }
   }
 
   if (values.amount <= 0 && values.type !== 2) {
     return {
-      error: 'Amount can not be negative number',
+      error: 'trnForm.errors.amountNegative',
     }
   }
 
   if (values.amount === 0 && values.type !== 2) {
     return {
-      error: 'Amount can not be equal Zero',
+      error: 'trnForm.errors.amountZero',
     }
   }
 
   if (!values.walletId && values.type !== 2) {
     return {
-      error: 'Please select wallet',
+      error: 'trnForm.errors.selectWallet',
     }
   }
 
   if (!values.categoryId && values.type !== 2) {
     return {
-      error: 'Please select category',
+      error: 'trnForm.errors.selectCategory',
     }
   }
 
@@ -33,13 +33,13 @@ export function validate(values: any) {
   if (values.type === 2) {
     if (Number(values.incomeAmount) === 0 || Number(values.expenseAmount) === 0) {
       return {
-        error: 'Transfer amounts can not be empty',
+        error: 'trnForm.errors.transferAmountEmpty',
       }
     }
 
     if (values.incomeWalletId === values.expenseWalletId) {
       return {
-        error: 'Transfer in same wallet',
+        error: 'trnForm.errors.transferSameWallet',
       }
     }
   }

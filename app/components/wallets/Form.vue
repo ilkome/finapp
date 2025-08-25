@@ -5,7 +5,6 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
 import { errorEmo, random } from '~/assets/js/emo'
-import UiToastContent from '~/components/ui/ToastContent.vue'
 import { icons, types, walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -19,9 +18,9 @@ const emit = defineEmits<{
   updateValue: [key: keyof WalletItem, value: WalletItem[keyof WalletItem]]
 }>()
 
-const { $toast } = useNuxtApp()
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
+const toast = useToast()
 
 const editWalletId = props.walletId ?? generateId()
 const walletType = types.map(value => ({
@@ -46,13 +45,10 @@ const walletPlaceholder = computed(() => ({
 function validate(values: WalletItem) {
   // name
   if (!values.name) {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: t('wallets.form.name.error'),
-        title: random(errorEmo),
-      },
-      type: 'error',
+    toast.add({
+      color: 'error',
+      description: t('wallets.form.name.error'),
+      title: random(errorEmo),
     })
 
     return false
@@ -60,13 +56,10 @@ function validate(values: WalletItem) {
 
   // currency
   if (!values.currency) {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: t('wallets.form.currency.error'),
-        title: random(errorEmo),
-      },
-      type: 'error',
+    toast.add({
+      color: 'error',
+      description: t('wallets.form.currency.error'),
+      title: random(errorEmo),
     })
 
     return false
@@ -77,13 +70,10 @@ function validate(values: WalletItem) {
     .find(([id, wallet]) => wallet.name === values.name && id !== editWalletId)
 
   if (existingWallet) {
-    $toast(UiToastContent, {
-      autoClose: 6000,
-      data: {
-        description: t('wallets.form.name.exist'),
-        title: random(errorEmo),
-      },
-      type: 'error',
+    toast.add({
+      color: 'error',
+      description: t('wallets.form.name.exist'),
+      title: random(errorEmo),
     })
     return false
   }
