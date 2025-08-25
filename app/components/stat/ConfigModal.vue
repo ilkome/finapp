@@ -129,7 +129,7 @@ function updateStatAverage(value: number) {
           </div>
         </div>
 
-        <!-- Showed wallets -->
+        <!-- Wallets -->
         <div
           v-if="props.isShowWallets"
           class="border-b border-item-3 pb-3"
@@ -144,30 +144,35 @@ function updateStatAverage(value: number) {
             @click="statConfig.updateConfig('wallets', { isShow: !statConfig.config.value.wallets.isShow })"
           />
 
+          <!-- Wallets: form -->
           <div
             v-if="statConfig.config.value.wallets.isShow"
             class="flex gap-4 pt-2"
           >
             <div class="flex gap-1">
-              <div class="flex border border-default rounded-sm bg-default p-px gap-1">
-                <DateLinkItem
-                  :class="[{
-                    '!hover:transparent opacity-30': statConfig.config.value.wallets.count === 1,
-                  }]"
-                  @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
-                >
-                  -
-                </DateLinkItem>
-                <DateLinkItemNoBg>
-                  {{ statConfig.config.value.wallets.count }}
-                </DateLinkItemNoBg>
-                <DateLinkItem
-                  :class="{ '!hover:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
-                  @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
-                >
-                  +
-                </DateLinkItem>
-              </div>
+              <UiItem2
+                :class="[{
+                  '!hover:transparent opacity-30': statConfig.config.value.wallets.count === 1,
+                }]"
+                @click="updateWalletsLimit(statConfig.config.value.wallets.count - 1)"
+              >
+                <Icon name="lucide:minus" />
+              </UiItem2>
+              <FormInput
+                :placeholder="t('stat.config.showedWallets.placeholder')"
+                :value="statConfig.config.value.wallets.count"
+                min="1"
+                class="!w-16 max-w-24 !px-2 text-center"
+                type="number"
+                @updateValue="value => statConfig.updateConfig('wallets', { count: +value })"
+              />
+
+              <UiItem2
+                :class="{ '!hover:transparent opacity-30': statConfig.config.value.wallets.count >= walletsStore.sortedIds.length }"
+                @click="updateWalletsLimit(statConfig.config.value.wallets.count + 1)"
+              >
+                <Icon name="lucide:plus" />
+              </UiItem2>
             </div>
           </div>
         </div>
@@ -186,6 +191,7 @@ function updateStatAverage(value: number) {
             @click="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
           />
 
+          <!-- Average -->
           <div
             v-if="statConfig.config.value.statAverage.isShow"
             class="flex gap-4 pt-2"
@@ -202,15 +208,13 @@ function updateStatAverage(value: number) {
               <FormInput
                 :placeholder="t('stat.config.showedWallets.placeholder')"
                 :value="statConfig.config.value.statAverage.count"
-                :max="walletsStore.sortedIds.length"
                 min="1"
-                class="max-w-20 !px-2 text-center"
+                class="!w-16 max-w-24 !px-2 text-center"
                 type="number"
                 @updateValue="value => statConfig.updateConfig('statAverage', { count: +value })"
               />
 
               <UiItem2
-                :class="{ '!hover:transparent opacity-30': statConfig.config.value.statAverage.count >= walletsStore.sortedIds.length }"
                 @click="updateStatAverage(statConfig.config.value.statAverage.count + 1)"
               >
                 <Icon name="lucide:plus" />
