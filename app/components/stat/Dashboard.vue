@@ -17,7 +17,7 @@ const trnsStore = useTrnsStore()
 const filter = useFilter()
 provide('filter', filter)
 
-const activeTab = useStorage<StatTabSlug>(`dashboard-tab`, 'netIncome')
+const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
 const storageKey = computed(() => `dashboard-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
