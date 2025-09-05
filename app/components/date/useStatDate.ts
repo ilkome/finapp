@@ -21,13 +21,13 @@ const queryParamsSchema = z.object({
 
 const defaultParams: StatDateParams = {
   customDate: false,
-  intervalsBy: 'week',
+  intervalsBy: 'day',
   intervalsDuration: 1,
   intervalSelected: -1,
   isShowMaxRange: false,
   isSkipEmpty: false,
-  rangeBy: 'month',
-  rangeDuration: 3,
+  rangeBy: 'day',
+  rangeDuration: 14,
   rangeOffset: 0,
 }
 
