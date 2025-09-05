@@ -1,11 +1,11 @@
 import antfu from '@antfu/eslint-config'
 import { extend } from 'eslint-flat-config-utils'
-// import tailwind from 'eslint-plugin-tailwindcss'
+import tailwind from 'eslint-plugin-tailwindcss'
 
 import withNuxt from './.nuxt/eslint.config.mjs'
 
 export default [
-  // ...tailwind.configs['flat/recommended'],
+  ...tailwind.configs['flat/recommended'],
   ...await extend(withNuxt(
     antfu({
       formatters: {
