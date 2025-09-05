@@ -53,7 +53,7 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
 <template>
   <div class="grid gap-4">
     <div class="grid w-full grow gap-1">
-      <UiTitle6 class="text-nowrap !leading-3">
+      <UiTitle6 class="!leading-3 text-nowrap">
         {{ t('money.average') }}
         <br>{{ t('forLast') }}
       </UiTitle6>
