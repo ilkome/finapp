@@ -41,18 +41,10 @@ export const config = {
       animation: false,
       type: 'cross',
     },
-
-    backgroundColor: 'var(--chart-line)',
+    backgroundColor: 'transparent',
     borderWidth: 0,
-    label: {
-      backgroundColor: 'var(--chart-line)',
-    },
-    padding: 4,
-    textStyle: {
-      color: 'var(--chart-tooltip)',
-    },
+    padding: 0,
     trigger: 'axis',
-    valueFormatter: getLocalAmount,
   },
 
   // xAxis
@@ -66,7 +58,6 @@ export const config = {
         color: 'var(--chart-line)',
       },
     },
-
     axisPointer: {
       label: {
         color: 'var(--chart-axisLabel)',
