@@ -80,35 +80,6 @@ function getFormatForChart(periodName: PeriodNameWithAll) {
 const option = computed(() => {
   const data = defu(config, {
     series: setChartSeries(props.series),
-    tooltip: {
-      ...config.tooltip,
-      formatter(params: ChartParams[]) {
-        let content = '<div class="px-1">'
-        content = `${content}
-          <div class="text-md pb-2 text-muted text-right">${formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale.value)}</div>
-          <div class="grid gap-1">
-        `
-
-        for (const param of params) {
-          const value = `
-
-          <div class="flex justify-between items-center gap-4 border-b border-item-6 pb-1 last:border-b-0">
-            <div class="flex items-center gap-2">
-              <div class="size-3 rounded-full" style="background: ${param.color}"></div>
-              <div>${param.seriesName}</div>
-            </div>
-
-            <div class="text-lg text-right font-secondary text-1">
-              ${getLocalAmount(param.value)}
-            </div>
-          </div>
-          `
-          content = content + value
-        }
-
-        return `${content}</div></div>`
-      },
-    },
     xAxis: {
       data: props.xAxisLabels,
       type: 'category',
@@ -157,13 +128,39 @@ function setChartSeries(series: unknown[]) {
 
 <template>
   <div
-    class="@3xl/page:h-52 h-40"
+    class="h-40 @3xl/page:h-52"
     @click="onClickChart"
   >
     <VChart
       ref="chartRef"
       :option
       autoresize
-    />
+    >
+      <template #tooltip="params">
+        <div class="rounded-md bg-[var(--item-5)] px-2 pt-2">
+          <div class="text-muted pb-2 text-xs">
+            {{ formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale) }}
+          </div>
+
+          <div class="grid gap-0">
+            <div
+              v-for="(param, i) in params" :key="i"
+              class="border-item-6 flex items-center justify-between gap-4 border-b pb-1 last:border-b-0"
+            >
+              <div class="flex items-center gap-2">
+                <div class="size-2.5 rounded-full" :style="`background: ${param.color}`" />
+                <div class="text-muted text-sm">
+                  {{ param.seriesName }}
+                </div>
+              </div>
+
+              <div class="font-secondary text-1 text-right text-lg">
+                {{ getLocalAmount(param.value) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </VChart>
   </div>
 </template>

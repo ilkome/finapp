@@ -21,7 +21,6 @@
   --chart-label: var(--text-4);
   --chart-line: var(--item-5);
   --chart-splitLine: var(--item-6);
-  --chart-tooltip: var(--ui-text-muted);
   --chart-axisLabel: var(--text-1);
 }
 
