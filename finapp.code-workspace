@@ -8,13 +8,5 @@
       "name": "finapp",
       "path": "."
     }
-  ],
-  "settings": {
-    "cSpell.words": [
-      "deepunref",
-      "defu"
-    ],
-    "typescript.tsdk": "finapp/node_modules/typescript/lib",
-    "references.preferredLocation": "view"
-  },
+  ]
 }
