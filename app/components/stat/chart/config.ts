@@ -1,31 +1,39 @@
-import type { ChartType } from '~/components/stat/chart/types'
+import type { GridComponentOption } from 'echarts'
+import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
+import type { TooltipComponentOption } from 'echarts/components'
+import type { ComposeOption } from 'echarts/core'
+
 import type { SeriesSlug } from '~/components/stat/types'
 
 import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
-type SeriesOption = {
-  color: string
-  colorLine?: string
+type EChartsOption = ComposeOption<
+  | TooltipComponentOption
+  | PieSeriesOption
+  | GridComponentOption
+>
+
+type SeriesOption = (BarSeriesOption | LineSeriesOption) & {
   localeKey: string
-  type: ChartType
+  markLineColor?: string
 }
 
 export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
   expense: {
     color: 'var(--expense-1)',
-    colorLine: 'var(--expense-2)',
     localeKey: 'money.expense',
+    markLineColor: 'var(--expense-2)',
     type: 'bar',
   },
   income: {
     color: 'var(--income-1)',
-    colorLine: 'var(--income-2)',
     localeKey: 'money.expense',
+    markLineColor: 'var(--income-2)',
     type: 'bar',
   },
 }
 
-export const config = {
+export const config: EChartsOption['baseOption'] = {
   // Grid
   grid: {
     bottom: '0',
@@ -60,7 +68,9 @@ export const config = {
     },
     axisPointer: {
       label: {
+        backgroundColor: 'var(--chart-line)',
         color: 'var(--chart-axisLabel)',
+        margin: 10,
       },
     },
     axisTick: {
@@ -76,7 +86,6 @@ export const config = {
       formatter: (n: number) => getCompactAmount(n),
       show: false, // TODO: config
     },
-
     axisLine: {
       lineStyle: {
         color: 'var(--chart-splitLine)',
@@ -84,8 +93,9 @@ export const config = {
     },
     axisPointer: {
       label: {
+        backgroundColor: 'var(--chart-line)',
         color: 'var(--chart-axisLabel)',
-        formatter: (props: { value: number } | undefined) => props ? getLocalAmount(props.value) : '',
+        formatter: props => getLocalAmount(+props.value) ?? '',
       },
       snap: true,
     },
@@ -99,7 +109,6 @@ export const config = {
       show: false,
     },
     type: 'value',
-
   },
 }
 

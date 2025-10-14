@@ -32,7 +32,7 @@ export function useStatChart() {
           show: false,
         },
         lineStyle: {
-          color: seriesOptions[typeItem]?.colorLine ?? seriesOptions[typeItem]?.color,
+          color: seriesOptions[typeItem]?.markLineColor ?? seriesOptions[typeItem]?.color,
           type: 'solid',
         },
         silent: false,

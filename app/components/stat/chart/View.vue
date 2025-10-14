@@ -15,13 +15,6 @@ import { config, lineConfig } from '~/components/stat/chart/config'
 import { getLocalAmount } from '~/components/stat/chart/utils'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
-type ChartParams = {
-  color?: string
-  name: string
-  seriesName: string
-  value: number
-}
-
 const props = withDefaults(
   defineProps<{
     chartType?: ChartType
