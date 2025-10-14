@@ -70,10 +70,14 @@ const statConfigModal: Ref<StatConfigModal> = ref({
           :isShowWallets="!!props.config.isShowWallets"
           :statConfigModal
         >
-          <template v-if="$slots.popover" #default="{ close }">
+          <template
+            v-if="$slots.popover"
+            #default="{ close }"
+          >
             <div>
               <slot
-                name="popover" :close="() => {
+                name="popover"
+                :close="() => {
                   statConfigModal.close()
                   close()
                 }"
@@ -85,12 +89,10 @@ const statConfigModal: Ref<StatConfigModal> = ref({
     </template>
 
     <template #selected>
-      <div v-if="props.menu">
-        <StatMenu
-          :active="props.menu.active"
-          @click="props.menu.click"
-        />
-      </div>
+      <slot
+        v-if="$slots.selected"
+        name="selected"
+      />
     </template>
 
     <template
