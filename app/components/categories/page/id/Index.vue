@@ -142,14 +142,25 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="category">
     <StatHeader
-      :config="{ isShowCategories: true }"
-      :filter="{ isShow: true, isShowCategories: true }"
-      :menu="{ active: activeTab, click: id => activeTab = id }"
+      :config="{
+        isShowCategories: true,
+      }"
+      :filter="{
+        isShow: true,
+        isShowCategories: true,
+      }"
     >
       <template #title>
         <CategoriesHeader
           :category="category"
           :parentCategory="categoriesStore.items[category.parentId]"
+        />
+      </template>
+
+      <template #selected>
+        <StatMenu
+          :active="activeTab"
+          @click="(id: StatTabSlug) => activeTab = id"
         />
       </template>
 

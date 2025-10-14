@@ -89,7 +89,7 @@ useHead({ title: category.value?.name })
       }"
       :menu="{
         active: activeTab,
-        click: id => activeTab = id,
+        click: (id: StatTabSlug) => activeTab = id,
       }"
     >
       <template #title>

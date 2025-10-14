@@ -56,10 +56,10 @@ watch(() => props.active, () => {
       v-for="item in menu"
       :key="item.id"
       :class="[{
-        '!border-(--ui-primary) rounded-none border-b border-b-1': item.id === props.active,
-        'text-muted hover:pb-1 hover:mb-1 hover:bg-[var(--item-5)]': item.id !== props.active,
+        'rounded-none border-b border-b-1 !border-(--ui-primary)': item.id === props.active,
+        'text-muted hover:mb-1 hover:bg-[var(--item-5)] hover:pb-1': item.id !== props.active,
       }]"
-      class="text-nowrap rounded-lg px-3 py-1.5 pb-2 text-xs lg:text-sm tracking-wide"
+      class="rounded-lg px-3 py-1.5 pb-2 text-xs tracking-wide text-nowrap lg:text-sm"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}

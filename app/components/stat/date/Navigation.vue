@@ -59,7 +59,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="items-top flex items-center grow gap-2 sticky top-[75px] lg:top-[89px] py-2 -my-2 sticky z-20 bg-default/90 backdrop-blur overflow-x-auto">
+  <div class="items-top bg-default/90 sticky top-0 z-20 -my-2 flex grow items-center gap-2 overflow-x-auto py-2 backdrop-blur lg:top-[87px]">
     <div
       v-if="!statDate.params.value.customDate"
       class="flex gap-1"
