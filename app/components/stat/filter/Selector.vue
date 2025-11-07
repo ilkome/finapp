@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FilterProvider } from '~/components/filter/types'
+import type { FilterProvider } from '~/components/stat/filter/types'
 
 const props = defineProps<{
   isShowCategories?: boolean

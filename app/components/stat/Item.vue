@@ -4,7 +4,7 @@ import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fn
 
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
-import type { FilterProvider } from '~/components/filter/types'
+import type { FilterProvider } from '~/components/stat/filter/types'
 import type { ChartSeries, IntervalData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
@@ -244,32 +244,38 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
-      class="pb-3"
       :chartView="statConfig.config.value.chartView"
       :series="chart.series.value"
       :xAxisLabels="chart.xAxisLabels.value"
+      class="pb-3"
     >
       <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
     </StatChartWrap>
 
     <div class="grid content-start gap-3">
-      <StatDateNavigation />
+      <StatDateNavigation>
+        <StatFilterSelected
+          v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0 || filter.walletsIds.value.length > 0"
+          isShowCategories
+          isShowWallets
+        />
+      </StatDateNavigation>
 
       <StatSumWrap
         v-if="!props.isOneCategory || (props.isOneCategory && !categoriesStore.transferCategoriesIds.includes(categoryId))"
+        :averageConfig="statConfig.config.value.statAverage.count"
         :averageTotal
-        :isShowExpense="statTypeShow.expense"
-        :isShowIncome="statTypeShow.income"
-        :filteredType="filteredType"
-        :total="rangeTotal"
-        :type="selectedType3"
         :categoryId
         :filter
-        :statDate
-        :trnsIds
-        :walletId
-        :averageConfig="statConfig.config.value.statAverage.count"
+        :filteredType="filteredType"
         :isShowAverage="statConfig.config.value.statAverage.isShow"
+        :isShowExpense="statTypeShow.expense"
+        :isShowIncome="statTypeShow.income"
+        :statDate
+        :total="rangeTotal"
+        :trnsIds
+        :type="selectedType3"
+        :walletId
         @click="onClickSumItem"
         @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
       />
@@ -277,10 +283,10 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
       <div class="_min-h-dvh grid content-start items-start gap-4">
         <StatCategoriesSection
           v-if="statConfig.config.value.catsRound.isShow && (props.hasChildren || (props.preCategoriesIds ?? []).length > 0)"
+          :filteredCategoriesIds
           :isOneCategory="props.isOneCategory"
           :preCategoriesIds="props.preCategoriesIds || categoriesStore.favoriteCategoriesIds"
           :selectedTrnsIds
-          :filteredCategoriesIds
           @clickCategory="onClickCategory"
           @onSetCategoryFilter="onSetCategoryFilter"
         />

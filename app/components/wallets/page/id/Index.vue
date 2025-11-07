@@ -7,7 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { random, successEmo } from '~/assets/js/emo'
 import { useStatDate } from '~/components/date/useStatDate'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilter } from '~/components/stat/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'

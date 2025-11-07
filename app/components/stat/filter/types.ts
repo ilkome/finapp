@@ -1,4 +1,4 @@
-import type { useFilter } from '~/components/filter/useFilter'
+import type { useFilter } from '~/components/stat/filter/useFilter'
 
 export type PeriodSchema = {
   date: number

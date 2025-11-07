@@ -4,7 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilter } from '~/components/stat/filter/useFilter'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
@@ -49,7 +49,7 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
     <UiHeader>
       <UiHeaderTitle>{{ t("trns.history") }}</UiHeaderTitle>
       <template #actions>
-        <FilterSelector
+        <StatFilterSelector
           class="flex gap-1"
           isShowCategories
           isShowWallets
@@ -57,7 +57,7 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
       </template>
 
       <template v-if="filter.isShow.value" #selected>
-        <FilterSelected
+        <StatFilterSelected
           class="pb-2"
           isShowCategories
           isShowWallets
@@ -65,7 +65,7 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
       </template>
     </UiHeader>
 
-    <div class="pageWrapper mb-4 rounded-xl bg-default pb-4 pt-1">
+    <div class="pageWrapper bg-default mb-4 rounded-xl pt-1 pb-4">
       <div class="grid gap-3 @3xl/main:max-w-md">
         <TrnsList
           :trnsIds

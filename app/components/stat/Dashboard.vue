@@ -6,7 +6,7 @@ import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useStatDate } from '~/components/date/useStatDate'
-import { useFilter } from '~/components/filter/useFilter'
+import { useFilter } from '~/components/stat/filter/useFilter'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
