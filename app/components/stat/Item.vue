@@ -190,28 +190,27 @@ const chart = {
   xAxisLabels: computed(() => intervalsDataWithFilteredCategories.value.map(i => +i.range.start) ?? []),
 }
 
+const quickViewTrns = ref<TrnId[]>([])
+
 function onClickCategory(categoryId: CategoryId) {
-  filter.setCategoryId(categoryId)
-
-  const baseParams = {
-    filterCategories: filter?.categoriesIds?.value.join(','),
-    filterWallets: props.walletId ? props.walletId : filter?.walletsIds?.value.join(','),
-    storageKey: props.storageKey ?? '',
-  }
-
   if (route.name === 'categories-id') {
-    const queryParams = new URLSearchParams({
-      ...baseParams,
-    }).toString()
-    useRouter().push(`/categories/${categoryId}?${queryParams}`)
+    filter.setCategoryId(categoryId)
+
+    const baseParams = {
+      filterCategories: filter?.categoriesIds?.value.join(','),
+      filterWallets: props.walletId ? props.walletId : filter?.walletsIds?.value.join(','),
+      storageKey: props.storageKey ?? '',
+    }
+
+    const queryParams = new URLSearchParams({ ...baseParams }).toString()
+    return useRouter().push(`/categories/${categoryId}?${queryParams}`)
   }
-  else {
-    const queryParams = new URLSearchParams({
-      ...baseParams,
-      ...Object.fromEntries(Object.entries(statDate.params.value)),
-    }).toString()
-    useRouter().push(`/stat/categories/${categoryId}?${queryParams}`)
-  }
+
+  // Show quick view
+  quickViewTrns.value = trnsStore.getStoreTrnsIds({
+    categoriesIds: [categoryId],
+    trnsIds: selectedAndFilteredTrnsIds.value,
+  }, { includesChildCategories: true })
 }
 
 const isShowTrns = ref(false)
@@ -312,6 +311,44 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
         </div>
       </div>
     </div>
+
+    <!-- Quick View Trns -->
+    <Teleport
+      v-if="quickViewTrns?.length > 0"
+      to="#pageScroll"
+    >
+      <BottomSheet
+        v-if="quickViewTrns?.length > 0"
+        isShow
+        drugClassesCustom="bottomSheetDrugClassesCustom"
+        @closed="quickViewTrns = []"
+      >
+        <template #handler="{ close }">
+          <BottomSheetHandler />
+          <BottomSheetClose @onClick="close" />
+        </template>
+
+        <div class="bottomSheetContent">
+          <UiTitleModal>
+            {{ $t('trns.title') }} {{ quickViewTrns.length > 0 ? quickViewTrns.length : '' }}
+          </UiTitleModal>
+
+          <div class="scrollerBlock bottomSheetContentInside pb-2">
+            <TrnsList
+              :isShowDates="!isPeriodOneDay"
+              :isShowGroupSum="!isPeriodOneDay"
+              :size="50"
+              :trnsIds="quickViewTrns"
+              isShowExpense
+              isShowFilterByDesc
+              isShowFilterByType
+              isShowIncome
+              isShowTransfers
+            />
+          </div>
+        </div>
+      </BottomSheet>
+    </Teleport>
 
     <Teleport to="body">
       <BottomSheet
