@@ -63,10 +63,6 @@ onDeactivated(() => {
 <template>
   <UiPage>
     <StatHeader
-      :menu="{
-        active: activeTab,
-        click: id => activeTab = id,
-      }"
       :filter="{
         isShowCategories: true,
         isShowWallets: true,
@@ -77,6 +73,13 @@ onDeactivated(() => {
     >
       <template #title>
         <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>
+      </template>
+
+      <template #selected>
+        <StatMenu
+          :active="activeTab"
+          @click="(id: StatTabSlug) => activeTab = id"
+        />
       </template>
     </StatHeader>
 

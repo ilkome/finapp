@@ -60,7 +60,7 @@ async function openDemo() {
 </script>
 
 <template>
-  <div class="h-dvh mx-auto grid size-full max-w-xl grid-rows-[auto_1fr_auto] px-2 py-3">
+  <div class="mx-auto grid size-full h-dvh max-w-xl grid-rows-[auto_1fr_auto] px-2 py-3">
     <div class="flex items-center justify-end gap-3">
       <LocaleSwitcher />
       <ThemeSwitcher />
@@ -85,7 +85,7 @@ async function openDemo() {
     >
       <div class="flex flex-col items-center justify-center pb-10">
         <UiLogo class="pb-0 !text-6xl !font-extrabold" />
-        <div class="pt-1 text-sm text-muted">
+        <div class="text-muted pt-1 text-sm">
           {{ t('description') }}
         </div>
 
@@ -96,12 +96,12 @@ async function openDemo() {
             size="xl"
             @click="signInWithGoogle"
           >
-            {{ t("loginWithGoogle") }}
+            {{ t('loginWithGoogle') }}
           </UiButtonAccent>
 
           <USeparator
-            label="or"
-            class="pt-3 px-3"
+            :label="t('ore')"
+            class="!text-muted px-3 pt-3"
           />
 
           <UiButtonAccent
@@ -110,7 +110,7 @@ async function openDemo() {
             variant="ghost"
             @click="openDemo"
           >
-            {{ t("openDemo") }}
+            {{ t('openDemo') }}
           </UiButtonAccent>
         </div>
       </div>
@@ -126,10 +126,12 @@ async function openDemo() {
 en:
   title: "Login"
   openDemo: "Open Demo"
+  or: "or"
   description: Powerful open-source finance application
 
 ru:
   title: "Вход"
   openDemo: "Открыть демо"
+  or: "или"
   description: Персональный финансовый ассистент
 </i18n>

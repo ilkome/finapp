@@ -47,7 +47,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   <!-- Split -->
   <div
     v-if="props.activeTab === 'split'"
-    class="@3xl/page:gap-8 @3xl/page:grid-cols-2 grid max-w-7xl gap-8 px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8"
+    class="grid max-w-7xl gap-8 px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8 @3xl/page:grid-cols-2 @3xl/page:gap-8"
   >
     <StatItem
       :statTab="props.activeTab"

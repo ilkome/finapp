@@ -53,7 +53,7 @@ const isShowLogoMenu = ref(false)
           <template #trigger>
             <div
               :class="getStyles('item', ['link', 'rounded'])"
-              class="block cursor-default px-3 py-2 group-data-[state='open']:!bg-item-4"
+              class="group-data-[state='open']:!bg-item-4 block cursor-default px-3 py-2"
             >
               <UiLogo />
             </div>
@@ -85,7 +85,7 @@ const isShowLogoMenu = ref(false)
       <LayoutSidebarMenu class="px-2 pb-2" />
 
       <div class="px-2 pb-6">
-        <UiTitle3 class="pb-2 pl-3 !text-4">
+        <UiTitle3 class="!text-4 pb-2 pl-3">
           {{ t('wallets.title') }}
         </UiTitle3>
 
@@ -128,7 +128,7 @@ const isShowLogoMenu = ref(false)
         :kbds="['Meta', '\\']"
       >
         <UiItem1
-          class="z-10 text-4"
+          class="text-4 z-10"
           @click="emit('toggleSidebar')"
         >
           <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

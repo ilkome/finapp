@@ -64,8 +64,8 @@ usePageScroll()
 
 <template>
   <div
-    :class="{ 'md:pr-[360px]': trnsFormStore.ui.isShow && isShowSidebar && width >= 767 }"
-    class="h-dvh overflow-hidden transition-all duration-300 ease-in-out bg-[var(--item-1)]"
+    :class="{ 'md:pr-[360px]': trnsFormStore.ui.isShow && width >= 767 }"
+    class="h-dvh bg-[var(--item-1)] transition-all duration-300 ease-in-out"
     style="margin-left: env(safe-area-inset-left)"
   >
     <div v-if="status === 'error'">
@@ -84,12 +84,12 @@ usePageScroll()
       />
 
       <div
-        class="grid h-full overflow-hidden md:p-4 sm:pl-12 md:pl-12"
+        class="grid h-full overflow-hidden sm:pl-12 md:p-4 md:pl-12"
         :class="{
           'sm:pl-74 md:pl-74': isShowSidebar && width >= 767,
         }"
       >
-        <div class="relative h-full overflow-hidden sm:rounded-md lg:rounded-2xl bg-default sm:border sm:border-item-4 max-w-5xl">
+        <div class="bg-default sm:border-item-4 relative h-full max-w-5xl overflow-hidden sm:rounded-md sm:border lg:rounded-2xl">
           <main
             id="pageScroll"
             style="padding-bottom: calc(50px + env(safe-area-inset-bottom))"

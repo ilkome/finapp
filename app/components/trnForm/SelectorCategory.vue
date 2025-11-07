@@ -40,7 +40,7 @@ const isShow = ref(false)
       <CategoriesCommandPalette
         :hide="close"
         :activeItemId="props.categoryId"
-        class="min-w-72 -mt-2 bottomSheetContentInside"
+        class="bottomSheetContentInside -mt-2 min-w-72"
         @onSelected="(id: CategoryId) => { emit('onSelected', id); close() }"
       />
     </template>
