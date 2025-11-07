@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FilterProvider } from '~/components/filter/types'
+import type { FilterProvider } from '~/components/stat/filter/types'
 import type { StatConfigModal, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { WalletId } from '~/components/wallets/types'
@@ -58,7 +58,7 @@ const statConfigModal: Ref<StatConfigModal> = ref({
         v-if="props.filter || props.config"
         class="ml-auto flex items-center gap-1"
       >
-        <FilterSelector
+        <StatFilterSelector
           v-if="props.filter"
           :isShowCategories="!!props.filter.isShowCategories"
           :isShowWallets="!!props.filter.isShowWallets"

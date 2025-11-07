@@ -1,6 +1,6 @@
 import { differenceInDays } from 'date-fns'
 
-import type { PeriodNameWithAll } from '~/components/filter/types'
+import type { PeriodNameWithAll } from '~/components/stat/filter/types'
 
 import { formatByLocale, getEndOf, getStartOf } from '~/components/date/utils'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'

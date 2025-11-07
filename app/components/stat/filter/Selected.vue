@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FilterProvider } from '~/components/filter/types'
+import type { FilterProvider } from '~/components/stat/filter/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getStyles } from '~/components/ui/getStyles'

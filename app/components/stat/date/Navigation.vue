@@ -2,7 +2,7 @@
 import { sub } from 'date-fns'
 
 import type { StatDateProvider } from '~/components/date/types'
-import type { FilterProvider } from '~/components/filter/types'
+import type { FilterProvider } from '~/components/stat/filter/types'
 
 import { getEndOf, getStartOf } from '~/components/date/utils'
 
@@ -96,10 +96,6 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       </template>
     </BottomSheetOrDropdown>
 
-    <FilterSelected
-      v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0 || filter.walletsIds.value.length > 0"
-      isShowCategories
-      isShowWallets
-    />
+    <slot />
   </div>
 </template>

@@ -4,7 +4,7 @@ import { sub } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
-import type { FilterProvider } from '~/components/filter/types'
+import type { FilterProvider } from '~/components/stat/filter/types'
 import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
