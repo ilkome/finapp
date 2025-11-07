@@ -13,7 +13,7 @@
 @layer base {
   html,
   body {
-    @apply antialiased text-default bg-default select-none;
+    @apply antialiased text-default bg-default select-none overflow-hidden;
     overscroll-behavior-y: none;
   }
 }

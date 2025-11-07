@@ -49,18 +49,18 @@ watch(isShow, (v) => {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="@container/trnForm trnForm absolute inset-y-0 z-50 right-0 h-full w-[360px] py-2"
+      class="trnForm @container/trnForm absolute inset-y-0 right-0 z-50 h-full w-[360px] py-2"
     >
-      <div class="border-left relative h-full overflow-hidden rounded-l-xl border-item-6 border border-r-0 border-item-4 bg-item-2 shadow-2xl">
-        <div class="absolute right-2 top-2">
+      <div class="border-left border-item-6 border-item-4 bg-item-2 relative h-full overflow-hidden rounded-l-xl border border-r-0 shadow-2xl">
+        <div class="absolute top-2 right-2">
           <BottomSheetClose @onClick="trnsFormStore.onClose()" />
         </div>
 
         <div ref="sliderRef" class="swiper-container h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
-            <div class="swiper-slide h-full bg-default">
-              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] gap-4 overflow-y-auto items-start">
+            <div class="swiper-slide bg-default h-full">
+              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto">
                 <TrnFormMain
                   maxHeight="100vh"
                   class="!pb-0"
@@ -68,7 +68,7 @@ watch(isShow, (v) => {
                 />
                 <div
                   v-if="trnsFormStore.values.trnType !== 2"
-                  class="-mt-6 grid gap-2"
+                  class="-mt-6 grid gap-2 pb-6"
                 >
                   <TrnFormSelectionCategoriesFast
                     @onSelectCategory="id => trnsFormStore.values.categoryId = id"
@@ -83,7 +83,7 @@ watch(isShow, (v) => {
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto">
-                <UiTitle3 class="sticky top-0 z-10 bg-default px-4 pb-3 pt-5 md:text-xl">
+                <UiTitle3 class="bg-default sticky top-0 z-10 px-4 pt-5 pb-3 md:text-xl">
                   {{ t('trns.history') }}
                 </UiTitle3>
 

@@ -30,10 +30,10 @@ async function onClickSubmit() {
 <template>
   <div
     :class="{
-      '!hover:bg-(--ui-primary) !bg-(--ui-primary)/60 text-icon-primary': !isMath && isSubmittable,
+      '!hover:bg-(--ui-primary) text-icon-primary !bg-(--ui-primary)/60': !isMath && isSubmittable,
       'text-muted': !isSubmittable || isMath,
     }"
-    class="flex size-full items-center justify-center rounded-[var(--ui-radius)] bg-item-4 p-1 py-4 text-center text-4xl text-1 transition hover:scale-[1.02] hover:bg-[var(--item-5)]"
+    class="bg-item-4 text-1 flex size-full items-center justify-center rounded-[var(--ui-radius)] p-1 py-4 text-center transition hover:scale-[1.02] hover:bg-[var(--item-5)]"
     @click="onClickSubmit"
   >
     <Icon :name="isMath ? 'lucide:equal' : 'lucide:check'" size="40" />

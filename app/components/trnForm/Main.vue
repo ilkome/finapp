@@ -105,7 +105,7 @@ const actions = computed(() => ({
     >
       <TrnsItem
         :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
-        class="group rounded-lg bg-item-3"
+        class="group bg-item-3 rounded-lg"
         @click="trnsFormStore.values.trnId = null"
       />
 
@@ -113,7 +113,7 @@ const actions = computed(() => ({
         v-if="showModalConfirm"
         class="absolute -bottom-4 left-0 z-10 w-full px-4"
       >
-        <div class="z-10 grid h-full content-center gap-4 rounded-lg border border-(--ui-primary) bg-[var(--item-1)] p-3 text-1">
+        <div class="text-1 z-10 grid h-full content-center gap-4 rounded-lg border border-(--ui-primary) bg-[var(--item-1)] p-3">
           {{ t('base.sure') }}
 
           <div class="flex gap-2">
@@ -131,7 +131,7 @@ const actions = computed(() => ({
                 />
               </template>
 
-              <div class="leading-none text-muted">
+              <div class="text-muted leading-none">
                 {{ item.label }}
               </div>
             </UiElement>
@@ -154,7 +154,7 @@ const actions = computed(() => ({
             />
           </template>
 
-          <div class="leading-none text-muted">
+          <div class="text-muted leading-none">
             {{ t(item.label) }}
           </div>
         </UiItem1>

@@ -112,13 +112,6 @@ function onSetCategoryFilter(categoryId: CategoryId) {
   if (filteredCategoriesIds.value.includes(categoryId))
     return filteredCategoriesIds.value = []
 
-  // if (filteredCategoriesIds.value.includes(categoryId)) {
-  //   return filteredCategoriesIds.value = [...filteredCategoriesIds.value.filter(id => id !== categoryId)]
-  // }
-
-  // if (filteredCategoriesIds.value.includes(categoryId))
-  //   return
-
   filteredCategoriesIds.value = [categoryId]
 }
 
@@ -148,7 +141,6 @@ const averageTotal = computed(() => {
 
   const items = {
     month: 0,
-
     week: 0,
     // eslint-disable-next-line perfectionist/sort-objects
     day: 0,
@@ -283,7 +275,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
         @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
       />
 
-      <div class="grid items-start gap-4 content-start min-h-dvh">
+      <div class="_min-h-dvh grid content-start items-start gap-4">
         <StatCategoriesSection
           v-if="statConfig.config.value.catsRound.isShow && (props.hasChildren || (props.preCategoriesIds ?? []).length > 0)"
           :isOneCategory="props.isOneCategory"
@@ -296,7 +288,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
         <div
           :class="{
-            'grid @3xl/page:grid-cols-2 @3xl/page:gap-6 gap-5': props.statTab !== 'split' && statConfig.config.value.catsList.isShow,
+            'grid gap-5 @3xl/page:grid-cols-2 @3xl/page:gap-6': props.statTab !== 'split' && statConfig.config.value.catsList.isShow,
           }"
         >
           <StatCategoriesSection2
