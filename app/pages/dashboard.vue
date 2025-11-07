@@ -13,6 +13,6 @@ useSeoMeta({
 </script>
 
 <template>
-  <StatDashboard v-if="trnsStore.hasItems" />
+  <StatPage v-if="trnsStore.hasItems" />
   <LazyAppWelcome v-else />
 </template>
