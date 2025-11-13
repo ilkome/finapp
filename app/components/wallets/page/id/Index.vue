@@ -12,7 +12,6 @@ import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { icons } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
@@ -73,10 +72,9 @@ function onClickEdit() {
   router.push(`/wallets/${walletId.value}/edit`)
 }
 
-// TODO: translate
 const deleteDescText = computed(() => {
   if (trnsIds.value.length > 0)
-    return `This action will delete ${trnsIds.value.length} trns in this wallet`
+    return t('wallets.form.delete.alertWithTrns', { trns: t('trns.plural', trnsIds.value.length) })
   return undefined
 })
 
@@ -114,18 +112,15 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="wallet">
     <StatHeader
-      :config="{
-        isShowCategories: true,
-      }"
-      :filter="{ isShowCategories: true,
-      }"
+      :config="{ isShowCategories: true }"
+      :filter="{ isShowCategories: true }"
     >
       <template #title>
         <UiHeaderTitle>
-          <Icon
-            :name="icons[wallet.type]"
-            :style="{ color: wallet.color }"
-            class="mt-[-2px] size-5"
+          <WalletsIcon
+            :color="wallet.color"
+            :name="wallet.name"
+            class="mt-[-2px] mr-1"
           />
           {{ wallet.name }}
         </UiHeaderTitle>
@@ -192,7 +187,10 @@ async function onDeleteConfirm() {
         />
       </div>
 
-      <UiTextSm2 v-if="wallet.desc" class="pt-2">
+      <UiTextSm2
+        v-if="wallet.desc"
+        class="pt-2 whitespace-pre"
+      >
         {{ wallet.desc }}
       </UiTextSm2>
     </div>

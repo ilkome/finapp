@@ -5,7 +5,6 @@ import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getStyles } from '~/components/ui/getStyles'
-import { icons } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -74,17 +73,16 @@ if (!props.isSort) {
   >
     <!-- Icon -->
     <template v-if="props.isShowIcon" #leftIcon>
-      <Icon
-        :name="icons[wallet.type]"
-        :style="{ color: wallet.color }"
-        size="20"
+      <WalletsIcon
+        :name="wallet.name"
+        :color="wallet.color"
       />
     </template>
 
     <!-- Main -->
     <template v-if="!props.alt">
       <div class="grid grow gap-1">
-        <div class="text-sm leading-none text-muted">
+        <div class="text-muted text-sm leading-none font-medium tracking-wide text-nowrap">
           {{ wallet.name }}
         </div>
 
@@ -157,7 +155,7 @@ if (!props.isSort) {
     <!-- Alternative -->
     <template v-if="props.alt">
       <div class="grid grow gap-0.5">
-        <div class="whitespace-nowrap text-xs leading-none text-2">
+        <div class="text-2 text-xs leading-none whitespace-nowrap">
           {{ wallet.name }}
         </div>
 

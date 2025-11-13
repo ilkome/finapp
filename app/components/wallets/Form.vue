@@ -82,12 +82,20 @@ function validate(values: WalletItem) {
 }
 
 async function onSave() {
-  if (!validate(props.walletForm))
+  const values = walletItemSchema.safeParse(props.walletForm)
+
+  if (!values.success) {
+    toast.add({
+      color: 'error',
+      description: t('categories.form.name.error'),
+      title: random(errorEmo),
+    })
     return
+  }
 
   await walletsStore.createOrUpdateWallet({
     id: editWalletId,
-    values: walletItemSchema.parse(props.walletForm),
+    values: values.data,
   })
   emit('afterSave')
 }
@@ -130,10 +138,9 @@ async function onSave() {
         </template>
 
         <template #value>
-          <Icon
-            :name="icons[props.walletForm.type ?? 'cash']"
-            :style="{ color: props.walletForm.color }"
-            class="size-6"
+          <WalletsIcon
+            :color="props.walletForm.color"
+            :name="props.walletForm.name"
           />
         </template>
       </UiButtonWithRight>
@@ -171,7 +178,7 @@ async function onSave() {
         <FormInput
           :placeholder="t('wallets.form.credit.limit')"
           :value="props.walletForm.creditLimit ?? ''"
-          @updateValue="(value: string) => emit('updateValue', 'creditLimit', value)"
+          @updateValue="(value: string) => emit('updateValue', 'creditLimit', +value)"
         />
       </FormElement>
 
