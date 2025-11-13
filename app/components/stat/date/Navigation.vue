@@ -7,7 +7,6 @@ import { getEndOf, getStartOf } from '~/components/date/utils'
 
 const { t } = useI18n()
 const statDate = inject('statDate') as StatDateProvider
-const filter = inject('filter') as FilterProvider
 
 const isShowNav = computed(() =>
   !statDate.params.value.isShowMaxRange

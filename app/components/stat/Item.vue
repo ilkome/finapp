@@ -350,6 +350,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
               isShowFilterByType
               isShowIncome
               isShowTransfers
+              @click="() => quickViewTrns = []"
             />
           </div>
         </div>

@@ -6,7 +6,6 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(defineProps<{
@@ -36,54 +35,6 @@ function show(slide: number) {
   isShow.value = true
   initialSlide.value = slide
 }
-
-const trnsStore = useTrnsStore()
-const showModalConfirm = ref(false)
-
-function handleDeleteConfirm() {
-  trnsStore.deleteTrn(JSON.parse(JSON.stringify(trnsFormStore.values.trnId)))
-  showModalConfirm.value = false
-}
-
-const items = computed(() => ({
-  duplicate: {
-    click: () => {
-      if (trnsFormStore.values.trnId) {
-        trnsFormStore.trnFormDuplicate(trnsFormStore.values.trnId)
-        trnsFormStore.values.trnId = null
-      }
-    },
-    icon: 'mdi:content-copy',
-    label: t('base.duplicate'),
-  },
-  // eslint-disable-next-line perfectionist/sort-objects
-  delete: {
-    click: () => {
-      showModalConfirm.value = true
-    },
-    icon: 'mdi:delete-empty-outline',
-    label: t('base.delete'),
-  },
-}))
-
-const actions = computed(() => ({
-  no: {
-    click: () => {
-      showModalConfirm.value = false
-    },
-    icon: 'mdi:close',
-    label: t('base.no'),
-  },
-
-  yes: {
-    click: () => {
-      handleDeleteConfirm()
-      trnsFormStore.onClose()
-    },
-    icon: 'mdi:check',
-    label: t('base.yes'),
-  },
-}))
 </script>
 
 <template>
@@ -99,68 +50,7 @@ const actions = computed(() => ({
       {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
     </UiTitleModal>
 
-    <div
-      v-if="trnsFormStore.values.trnId"
-      class="relative mb-2 px-3"
-    >
-      <TrnsItem
-        :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
-        class="group bg-item-3 rounded-lg"
-        @click="trnsFormStore.values.trnId = null"
-      />
-
-      <div
-        v-if="showModalConfirm"
-        class="absolute -bottom-4 left-0 z-10 w-full px-4"
-      >
-        <div class="text-1 z-10 grid h-full content-center gap-4 rounded-lg border border-(--ui-primary) bg-[var(--item-1)] p-3">
-          {{ t('base.sure') }}
-
-          <div class="flex gap-2">
-            <UiElement
-              v-for="(item, slug) in actions"
-              :key="slug"
-              class="grow"
-              insideClasses="!min-h-[44px] bg-item-3"
-              @click="item.click"
-            >
-              <template #leftIcon>
-                <Icon
-                  :name="item.icon"
-                  size="22"
-                />
-              </template>
-
-              <div class="text-muted leading-none">
-                {{ item.label }}
-              </div>
-            </UiElement>
-          </div>
-        </div>
-      </div>
-
-      <!-- Trn actions -->
-      <div class="flex pt-2">
-        <UiItem1
-          v-for="(item, slug) in items"
-          :key="slug"
-          variant="text"
-          @click="item.click"
-        >
-          <template #leftIcon>
-            <Icon
-              :name="item.icon"
-              size="22"
-            />
-          </template>
-
-          <div class="text-muted leading-none">
-            {{ t(item.label) }}
-          </div>
-        </UiItem1>
-      </div>
-    </div>
-
+    <TrnFormEditedTrn v-if="trnsFormStore.values.trnId" />
     <TrnFormDate class="px-3 pb-0 " />
 
     <div class="px-3 pb-2">
