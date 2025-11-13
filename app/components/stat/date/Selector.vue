@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Grouped, Range, StatDateProvider } from '~/components/date/types'
 
-import { getUCalendarTimedDate, getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
+import { getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
 
 const emit = defineEmits<{
   onClose: []
@@ -110,7 +110,7 @@ function onSelectRange(value: unknown) {
               {{ t(`dates.${item.intervalsBy}.simple`) }}
             </DateLinkItem>
 
-            <div class="flex border border-default rounded-sm bg-default p-px gap-1">
+            <div class="border-default bg-default flex gap-1 rounded-sm border p-px">
               <DateLinkItem @click="statDate.delInterval">
                 -
               </DateLinkItem>

@@ -7,8 +7,8 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { Period } from '~/components/date/types'
-import type { PeriodNameWithAll } from '~/components/stat/filter/types'
 import type { ChartType } from '~/components/stat/chart/types'
+import type { PeriodNameWithAll } from '~/components/stat/filter/types'
 
 import { formatByLocale } from '~/components/date/utils'
 import { config, lineConfig } from '~/components/stat/chart/config'

@@ -50,7 +50,7 @@ export default {
     form: {
       childColor: 'Apply color to all child categories',
       delete: {
-        alertWithTrns: `This will delete {trns} transactions`,
+        alertWithTrns: `This will delete {trns}`,
         errorChilds: 'You cannot delete a category with child categories. Delete the child categories first.',
         okWithoutTrns: 'Category deleted',
         okWithTrns: `Category and {trns} transactions deleted`,
@@ -81,6 +81,9 @@ export default {
     search: {
       placeholder: 'Search categories...',
     },
+    selectColor: 'Category color',
+    selectIcon: 'Category icon',
+    selectParent: 'Parent category',
     title: 'Categories',
   },
 
@@ -340,11 +343,15 @@ export default {
   },
 
   trnForm: {
-    calcTrnButton: 'Calculate',
+    btnCalculate: 'Calculate',
+    btnSave: 'Save',
     category: {
       select: 'Select category',
     },
     createTrn: 'Add transaction',
+    delete: {
+      alert: 'Are you sure you want to delete this transaction?',
+    },
     description: {
       placeholder: 'Write...',
       title: 'Description',
@@ -403,7 +410,7 @@ export default {
         placeholder: 'Select currency',
       },
       delete: {
-        alertWithTrns: `This will delete {trns} transactions`,
+        alertWithTrns: `This will delete {trns}`,
         errorChilds: 'You can not delete wallet with child categories. Delete child categories first.',
         okWithoutTrns: 'Wallet deleted',
         okWithTrns: `Wallet deleted and {trns}`,

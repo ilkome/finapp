@@ -221,7 +221,7 @@ async function onSave() {
       <template #default="{ close }">
         <div class="bottomSheetContent">
           <div>
-            <UiTitleModal>{{ t('selectColor') }}</UiTitleModal>
+            <UiTitleModal>{{ t('categories.form.selectColor') }}</UiTitleModal>
             <CategoriesItem
               :categoryId="props.categoryId"
               :category="categoryPlaceholder"
@@ -263,8 +263,8 @@ async function onSave() {
 
       <template #default="{ close }">
         <div class="bottomSheetContent">
-          <div class="grid gap-3 pb-1 pt-3">
-            <UiTitleModal>{{ t("selectIcon") }}</UiTitleModal>
+          <div class="grid gap-3 pt-3 pb-1">
+            <UiTitleModal>{{ t('categories.form.selectIcon') }}</UiTitleModal>
             <CategoriesItem
               :categoryId="props.categoryId"
               :category="categoryPlaceholder"
@@ -272,7 +272,7 @@ async function onSave() {
           </div>
 
           <div class="scrollerBlock bottomSheetContentInside">
-            <FormElement class="pb-4 pt-2">
+            <FormElement class="pt-2 pb-4">
               <template #label>
                 {{ t('categories.form.icon.desc') }}
                 <a
@@ -299,7 +299,7 @@ async function onSave() {
                 :key="icon"
                 :class="[{ '!border-(--ui-primary)': icon === props.categoryForm.icon }]"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center size-10 cursor-pointer rounded-full border-2 border-transparent text-icon-primary"
+                class="flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent"
                 @click="emit('updateValue', 'icon', icon)"
               >
                 <Icon :name="icon" size="20" />
@@ -333,7 +333,7 @@ async function onSave() {
 
       <template #default="{ close }">
         <div class="bottomSheetContent">
-          <UiTitleModal>{{ t('selectParent') }}</UiTitleModal>
+          <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
 
           <div class="scrollerBlock bottomSheetContentInside">
             <UiItem2
@@ -366,15 +366,3 @@ async function onSave() {
     </BottomSheet>
   </Teleport>
 </template>
-
-<i18n lang="yaml">
-en:
-  selectIcon: Category icon
-  selectColor: Category color
-  selectParent: Parent category
-
-ru:
-  selectIcon: Иконка категории
-  selectColor: Цвет категории
-  selectParent: Родительская категория
-</i18n>

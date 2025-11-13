@@ -25,14 +25,14 @@ function onParentClick() {
           class="mt-[-2px] size-5"
         />
 
-        <div class="@lg:text-xl text-lg font-semibold">
+        <div class="text-lg font-semibold @lg:text-xl">
           {{ props.category.name }}
         </div>
       </div>
 
       <div
         v-if="props.parentCategory"
-        class="@lg:text-base flex items-center pt-[3px] text-xs font-medium leading-none text-2"
+        class="text-2 flex items-center pt-[3px] text-xs leading-none font-medium @lg:text-base"
       >
         <div class="text-2xs text-4">
           •

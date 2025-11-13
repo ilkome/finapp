@@ -102,7 +102,7 @@ async function onSelectParentCategory(id: CategoryId) {
               :style="{ height: props.maxHeight }"
               class="swiper-slide"
             >
-              <div class="scrollerBlock h-full overflow-y-auto pb-3 grid gap-4">
+              <div class="scrollerBlock grid h-full gap-4 overflow-y-auto pb-3">
                 <TrnFormSelectionCategoriesFast
                   @onSelectCategory="id => onSelectCategory(id, close)"
                   @onSelectParentCategory="id => onSelectParentCategory(id)"
@@ -117,7 +117,7 @@ async function onSelectParentCategory(id: CategoryId) {
             >
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <UiTitle3
-                  class="sticky top-0 z-10 bg-[var(--item-1)] px-3 pb-3 pt-4"
+                  class="sticky top-0 z-10 bg-[var(--item-1)] px-3 pt-4 pb-3"
                   @click="trnsFormStore.ui.catsRootModal = true"
                 >
                   {{ $t("categories.title") }}

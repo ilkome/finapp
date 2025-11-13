@@ -90,7 +90,6 @@ function onEditClick(close: () => void) {
 
 useHead({ title: category.value?.name })
 
-// TODO: translate
 const deleteDescText = computed(() => {
   if (trnsIds.value && trnsIds.value.length > 0)
     return t('categories.form.delete.alertWithTrns', { trns: t('trns.plural', trnsIds.value.length) })
@@ -147,7 +146,7 @@ async function onDeleteConfirm() {
       }"
       :filter="{
         isShow: true,
-        isShowCategories: true,
+        isShowWallets: true,
       }"
     >
       <template #title>
