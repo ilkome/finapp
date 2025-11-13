@@ -12,8 +12,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: []
 }>()
-
-const { t } = useI18n()
 </script>
 
 <template>
@@ -37,7 +35,7 @@ const { t } = useI18n()
         <template v-if="alt">
           <div
             v-if="date"
-            class="min-w-10 truncate text-2xs leading-none"
+            class="text-2xs min-w-10 truncate leading-none"
           >
             {{ date }}
           </div>
@@ -51,7 +49,7 @@ const { t } = useI18n()
               :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="flex items-center gap-2 text-xs leading-none text-2">
+            <div class="text-2 flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>
@@ -77,7 +75,7 @@ const { t } = useI18n()
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-2xs leading-none text-4">
+            <div class="text-2xs text-4 leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>
@@ -101,9 +99,10 @@ const { t } = useI18n()
           v-if="trnItem.type === 2"
           class="grid gap-1"
         >
-          <div class="flex gap-1 text-sm leading-none text-3">
-            {{ t('transfer.from') }} <span class="font-semibold">{{ trnItem.expenseWallet.name }}</span>
-            {{ t('transfer.to') }} <span class="font-semibold">{{ trnItem.incomeWallet.name }}</span>
+          <div class="text-3 flex items-center gap-1 text-sm leading-none">
+            <span class="font-semibold">{{ trnItem.expenseWallet.name }}</span>
+            <Icon name="lucide:move-right" size="16" />
+            <span class="font-semibold">{{ trnItem.incomeWallet.name }}</span>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -117,7 +116,7 @@ const { t } = useI18n()
             />
 
             <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
-              <Icon name="lucide:move-right" size="16" />
+              <Icon name="lucide:" size="16" />
 
               <Amount
                 :amount="trnItem.incomeAmount || trnItem.amount"
@@ -144,15 +143,3 @@ const { t } = useI18n()
     </div>
   </UiElement>
 </template>
-
-<i18n lang="yaml">
-en:
-  transfer:
-    from: 'From'
-    to: 'to'
-
-ru:
-  transfer:
-    from: 'Из'
-    to: 'В'
-</i18n>
