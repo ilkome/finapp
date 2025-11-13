@@ -2,7 +2,6 @@
 import { sub } from 'date-fns'
 
 import type { StatDateProvider } from '~/components/date/types'
-import type { FilterProvider } from '~/components/stat/filter/types'
 
 import { getEndOf, getStartOf } from '~/components/date/utils'
 
@@ -83,7 +82,10 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       @onCloseModal="statDate.modals.value.dateSelector = false"
     >
       <template #trigger>
-        <UiTitle8 isShown class="!grow-0">
+        <UiTitle8
+          class="_bg-item-4 text-md !grow-0"
+          isShown
+        >
           <StatDateRange />
         </UiTitle8>
       </template>
