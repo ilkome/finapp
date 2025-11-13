@@ -93,7 +93,7 @@ onLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="rounded-sm p-1 hover:bg-[var(--item-5)]"
+    class="rounded-sm p-1 pb-4 hover:bg-[var(--item-5)]"
   >
     <div class="bg-item-3 flex h-28 items-end rounded-sm">
       <div
