@@ -18,6 +18,52 @@ const modals = ref({
 <template>
   <div class="flex gap-1">
     <BottomSheetOrDropdown
+      v-if="props.isShowWallets"
+      :title="t('wallets.filter')"
+      :isOpen="modals.wallets"
+      isShowCloseBtn
+      @onOpenModal="modals.wallets = true"
+      @onCloseModal="modals.wallets = false"
+    >
+      <template #trigger>
+        <UTooltip :text="t('wallets.filter')">
+          <UChip
+            :show="filter?.walletsIds.value.length > 0"
+            color="secondary"
+            inset
+            size="xs"
+          >
+            <UButton
+              :aria-label="t('wallets.filter')"
+              class="text-muted"
+              color="neutral"
+              icon="hugeicons:wallet-01"
+              size="lg"
+              square
+              variant="ghost"
+            />
+          </UChip>
+        </UTooltip>
+      </template>
+
+      <template #custom="{ close }">
+        <div class="grid h-full max-h-[60dvh] grid-rows-[1fr_auto] overflow-hidden">
+          <WalletsSelector
+            :selectedIds="filter?.walletsIds.value"
+            class="min-w-80 px-3"
+            @onSelected="filter.toggleWalletId"
+          />
+
+          <div class="px-3 py-2">
+            <UiButtonAccent @click="close">
+              {{ t('base.apply') }}
+            </UiButtonAccent>
+          </div>
+        </div>
+      </template>
+    </BottomSheetOrDropdown>
+
+    <BottomSheetOrDropdown
       v-if="props.isShowCategories"
       :title="t('categories.filter')"
       :isOpen="modals.categories"
@@ -61,52 +107,6 @@ const modals = ref({
           <div class="px-3 py-2">
             <UiButtonAccent @click="close">
               {{ t('base.close') }}
-            </UiButtonAccent>
-          </div>
-        </div>
-      </template>
-    </BottomSheetOrDropdown>
-
-    <BottomSheetOrDropdown
-      v-if="props.isShowWallets"
-      :title="t('wallets.filter')"
-      :isOpen="modals.wallets"
-      isShowCloseBtn
-      @onOpenModal="modals.wallets = true"
-      @onCloseModal="modals.wallets = false"
-    >
-      <template #trigger>
-        <UTooltip :text="t('wallets.filter')">
-          <UChip
-            :show="filter?.walletsIds.value.length > 0"
-            color="secondary"
-            inset
-            size="xs"
-          >
-            <UButton
-              :aria-label="t('wallets.filter')"
-              class="text-muted"
-              color="neutral"
-              icon="hugeicons:wallet-01"
-              size="lg"
-              square
-              variant="ghost"
-            />
-          </UChip>
-        </UTooltip>
-      </template>
-
-      <template #custom="{ close }">
-        <div class="grid h-full max-h-[60dvh] grid-rows-[1fr_auto] overflow-hidden">
-          <WalletsSelector
-            :selectedIds="filter?.walletsIds.value"
-            class="min-w-80 px-3"
-            @onSelected="filter.toggleWalletId"
-          />
-
-          <div class="px-3 py-2">
-            <UiButtonAccent @click="close">
-              {{ t('base.apply') }}
             </UiButtonAccent>
           </div>
         </div>
