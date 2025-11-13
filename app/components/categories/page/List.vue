@@ -60,7 +60,7 @@ const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'lis
           lineWidth: categoriesView === 'list' ? 1 : 0,
         }"
         :class="{
-          '@2xl/page:grid-cols-3 @sm:grid-cols-2 grid gap-1.5': categoriesView === 'grid',
+          'grid gap-1.5 @sm:grid-cols-2 @2xl/page:grid-cols-3': categoriesView === 'grid',
         }"
         :insideClasses="categoriesView === 'grid' ? 'bg-item-2' : ''"
         @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"

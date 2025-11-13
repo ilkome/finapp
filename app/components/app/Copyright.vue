@@ -7,12 +7,12 @@ const { t } = useI18n()
 <template>
   <a
     :class="[classes.item.rounded, classes.item.link, classes.item.center3]"
-    class="px-5 py-2 text-sm text-muted"
+    class="text-muted px-5 py-2 text-sm"
     href="https://ilko.me"
   >
     {{ t('madeBy.text') }}
     <Icon
-      class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-alert-1"
+      class="text-alert-1 mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl"
       name="mdi:heart"
     />
     {{ t('madeBy.name') }}

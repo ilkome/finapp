@@ -73,6 +73,9 @@ export default {
       },
       recentCategory: 'Показывать в недавно использованных',
       save: 'Сохранить',
+      selectColor: 'Цвет категории',
+      selectIcon: 'Иконка категории',
+      selectParent: 'Родительская категория',
     },
     name: 'Категории',
     new: 'Новая категория',
@@ -341,11 +344,15 @@ export default {
   },
 
   trnForm: {
-    calcTrnButton: 'Посчитать результат',
+    btnCalculate: 'Посчитать результат',
+    btnSave: 'Сохранить',
     category: {
       select: 'Выбрать категорию',
     },
     createTrn: 'Создать транзакцию',
+    delete: {
+      alert: 'Вы уверены, что хотите удалить эту транзакцию?',
+    },
     description: {
       placeholder: 'Напишите...',
       title: 'Описание',

@@ -25,9 +25,9 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="@2xl/page:px-4 @2xl/page:py-2 rounded-sm border border-transparent bg-[var(--item-3)] px-2 py-2 grow flex-1 flex-wrap @2xl/page:max-w-max"
+    class="flex-1 grow flex-wrap rounded-sm border border-transparent bg-[var(--item-3)] px-2 py-2 @2xl/page:max-w-max @2xl/page:px-4 @2xl/page:py-2"
     :class="{
-      '!border-(--ui-primary)/40 !bg-item-2': props.isActive,
+      '!bg-item-2 !border-(--ui-primary)/40': props.isActive,
     }"
     @click="(e: Event) => emit('click', e)"
   >
