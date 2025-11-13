@@ -68,7 +68,7 @@ watch(isShow, (v) => {
                 />
                 <div
                   v-if="trnsFormStore.values.trnType !== 2"
-                  class="-mt-6 grid gap-2 pb-6"
+                  class="-mt-8 grid gap-2 pb-6"
                 >
                   <TrnFormSelectionCategoriesFast
                     @onSelectCategory="id => trnsFormStore.values.categoryId = id"
