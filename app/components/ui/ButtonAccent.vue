@@ -3,7 +3,7 @@ const props = defineProps<{
   loading?: boolean
   rounded?: boolean
   size?: 'lg' | 'xl'
-  variant?: 'outline' | 'ghost'
+  variant?: 'outline' | 'ghost' | 'solid'
 }>()
 
 const emit = defineEmits(['click'])
