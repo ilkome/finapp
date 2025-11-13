@@ -38,7 +38,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
   function formatMonthRange({ duration, end, start, type }: DateFormatParams): string {
     if (isSameYear(start, today)) {
       if (isSameMonth(start, today) || duration === 1)
-        return type === 'start' ? formatByLocale(start, 'MMM', locale) : ''
+        return type === 'start' ? formatByLocale(start, 'MMMM', locale) : ''
       return type === 'start' ? formatByLocale(start, 'MMM', locale) : ` - ${formatByLocale(end, 'MMM', locale)}`
     }
 
