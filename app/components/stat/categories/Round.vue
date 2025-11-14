@@ -65,7 +65,7 @@ onLongPress(
     v-if="category"
     ref="longPressRef"
     :class="{ 'opacity-60': props.item.value === 0 }"
-    class="relative flex items-center gap-2 overflow-hidden rounded-full dark:bg-item-3 p-1 pr-2 hover:bg-[var(--item-5)]"
+    class="dark:bg-item-3 relative flex items-center gap-2 overflow-hidden rounded-full p-1 pr-2 hover:bg-[var(--item-5)]"
   >
     <div
       :style="{ backgroundColor: category?.color }"
