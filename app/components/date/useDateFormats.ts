@@ -7,7 +7,7 @@ import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 export function useDateFormats() {
   const { locale, t } = useI18n()
-  const { calculateDate } = useGetDateRange(t, locale.value)
+  const { formatDateToStringWithLast } = useGetDateRange(t, locale.value)
 
   function getDates(periodName: PeriodNameWithAll, date: number) {
     if (periodName === 'all')
@@ -34,14 +34,14 @@ export function useDateFormats() {
           full: formatByLocale(date, 'dd.MM.yyyy HH:mm', locale.value),
           month: formatByLocale(date, 'MMM', locale.value),
           week: formatByLocale(date, 'dd.MM', locale.value),
-          weekday: `${diff < 2 ? `${calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,
+          weekday: `${diff < 2 ? `${formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,
         }
 
       case 'trnItem':
-        return calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
+        return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
 
       default:
-        return calculateDate({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
+        return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
     }
   }
 
