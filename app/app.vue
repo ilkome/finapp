@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ToasterProps } from '@nuxt/ui'
+
 import colors from 'tailwindcss/colors'
 
 import { useGuard } from '~/components/user/useGuard'
@@ -6,7 +8,7 @@ import { useGuard } from '~/components/user/useGuard'
 const appConfig = useAppConfig()
 const colorMode = useColorMode()
 const { t } = useI18n()
-const toaster = {
+const toaster: ToasterProps = {
   position: 'top-left',
   progress: false,
 }
