@@ -85,7 +85,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     return type === 'start' ? formatByLocale(start, 'd MMM yyyy', locale) : ` - ${formatByLocale(end, 'd MMM yyyy', locale)}`
   }
 
-  function calculateDate(params: DateFormatParams, isShowMaxRange?: boolean): string {
+  function formatDateToStringWithLast(params: DateFormatParams, isShowMaxRange?: boolean): string {
     const { by, duration, end, start, type } = params
 
     // Single duration cases
@@ -119,13 +119,11 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
 
       // Special case for single day in current year/month
       if (by === 'day' && isSameYear(start, today)) {
-        if (isSameMonth(start, today))
-          return type === 'start' ? formatByLocale(start, 'd MMM') : ''
-        return type === 'start' ? formatByLocale(start, 'd MMM') : ''
+        return type === 'start' ? formatByLocale(start, 'd MMMM') : ''
       }
     }
 
-    // Last N periods case
+    // Last N periods
     const isCurrentPeriod = (() => {
       switch (by) {
         case 'year': return isSameYear(end, today)
@@ -147,25 +145,57 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     }
   }
 
-  function getStringDateRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration'], isShowMaxRange: boolean = false) {
-    const yearStart = calculateDate({
+  /**
+   * Calculates and formats a date range string based on the provided parameters.
+   *
+   * - If the duration is 1 day and the start date is in the current year, returns a localized date string for the start date (if `type` is `'start'`).
+   * - Otherwise, formats the date range according to the specified granularity (`by`), which can be `'year'`, `'month'`, `'week'`, or `'day'`.
+   *
+   * @param params
+   *   - `by`: The granularity of the date range ('year', 'month', 'week', or 'day').
+   *   - `duration`: The length of the date range.
+   *   - `start`: The start date of the range.
+   *   - `type`: The type of date to format ('start' or other).
+   * @returns A formatted date range string based on the input parameters.
+   */
+  function formatDateToString(params: DateFormatParams): string {
+    const { by, duration, start, type } = params
+
+    if (duration === 1 && by === 'day' && isSameYear(start, today)) {
+      return type === 'start' ? formatByLocale(start, 'd MMMM') : ''
+    }
+
+    switch (by) {
+      case 'year': return formatYearRange(params)
+      case 'month': return formatMonthRange(params)
+      case 'week': return formatWeekRange(params)
+      case 'day': return formatDayRange(params)
+    }
+  }
+
+  function getStringDateRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration']) {
+    const yearStart = formatDateToString({
       by,
       duration,
       end: new Date(range.end),
       start: new Date(range.start),
       type: 'start',
-    }, isShowMaxRange)
+    })
 
-    const yearEnd = calculateDate({
+    const yearEnd = formatDateToString({
       by,
       duration,
       end: new Date(range.end),
       start: new Date(range.start),
       type: 'end',
-    }, isShowMaxRange)
+    })
 
     return `${yearStart}${yearEnd}`
   }
 
-  return { calculateDate, getStringDateRange }
+  return {
+    formatDateToString,
+    formatDateToStringWithLast,
+    getStringDateRange,
+  }
 }

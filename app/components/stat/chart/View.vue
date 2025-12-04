@@ -13,7 +13,6 @@ import type { PeriodNameWithAll } from '~/components/stat/filter/types'
 import { formatByLocale } from '~/components/date/utils'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { getLocalAmount } from '~/components/stat/chart/utils'
-import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 const props = withDefaults(
   defineProps<{
@@ -51,8 +50,7 @@ use([
   TooltipComponent,
 ])
 
-const { locale, t } = useI18n()
-const { getStringDateRange } = useGetDateRange(t, locale.value)
+const { locale } = useI18n()
 const chartRef = ref()
 
 function getFormatForChart(periodName: PeriodNameWithAll) {
@@ -80,15 +78,9 @@ const option = computed(() => {
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    if (props.period === 'day') {
-      return getStringDateRange({
-        end: new Date(+date).getTime(),
-        start: new Date(+date).getTime(),
-      }, 'day', 1)
-    }
-
     return formatByLocale(new Date(+date), getFormatForChart(props.period, new Date(+date)), locale.value)
   }
+
   data.xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
     return formatByLocale(new Date(+value), getFormatForChart(props.period, new Date(+value)), locale.value)
   }
