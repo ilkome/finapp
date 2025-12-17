@@ -89,7 +89,7 @@ usePageScroll()
           'sm:pl-74 md:pl-74': isShowSidebar && width >= 767,
         }"
       >
-        <div class="bg-default sm:border-item-4 relative h-full max-w-5xl overflow-hidden sm:rounded-md sm:border lg:rounded-2xl">
+        <div class="bg-default sm:border-item-4 relative z-10 h-full max-w-5xl overflow-hidden sm:rounded-md sm:border lg:rounded-2xl">
           <main
             id="pageScroll"
             style="padding-bottom: calc(50px + env(safe-area-inset-bottom))"
@@ -97,10 +97,10 @@ usePageScroll()
           >
             <slot :keepalive="{ include: keepalive }" />
           </main>
-
-          <TrnFormFloatOpener />
         </div>
       </div>
+
+      <TrnFormFloatOpener />
 
       <!-- Menu -->
       <LayoutMenuBottom />
