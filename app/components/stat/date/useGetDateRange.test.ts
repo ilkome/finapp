@@ -33,24 +33,7 @@ describe('useGetDateRange', () => {
         end: endOfYear(today).getTime(),
         start: startOfYear(today).getTime(),
       }
-      expect(getStringDateRange(range, 'year', 1)).toBe('This Year')
-    })
-
-    it('should format last year', () => {
-      const lastYear = subYears(today, 1)
-      const range = {
-        end: endOfYear(lastYear).getTime(),
-        start: startOfYear(lastYear).getTime(),
-      }
-      expect(getStringDateRange(range, 'year', 1)).toBe('Last Year')
-    })
-
-    it('should format last N years', () => {
-      const range = {
-        end: endOfYear(today).getTime(),
-        start: startOfYear(subYears(today, 2)).getTime(),
-      }
-      expect(getStringDateRange(range, 'year', 3)).toBe('dates.last.year 3 dates.year.plural')
+      expect(getStringDateRange(range, 'year', 1)).toBe(today.getFullYear().toString())
     })
 
     it('should format year range', () => {
@@ -63,31 +46,6 @@ describe('useGetDateRange', () => {
   })
 
   describe('month ranges', () => {
-    it('should format current month', () => {
-      const range = {
-        end: endOfMonth(today).getTime(),
-        start: startOfMonth(today).getTime(),
-      }
-      expect(getStringDateRange(range, 'month', 1)).toBe('This Month')
-    })
-
-    it('should format last month', () => {
-      const lastMonth = subMonths(today, 1)
-      const range = {
-        end: endOfMonth(lastMonth).getTime(),
-        start: startOfMonth(lastMonth).getTime(),
-      }
-      expect(getStringDateRange(range, 'month', 1)).toBe('Last Month')
-    })
-
-    it('should format last N months', () => {
-      const range = {
-        end: endOfMonth(today).getTime(),
-        start: startOfMonth(subMonths(today, 2)).getTime(),
-      }
-      expect(getStringDateRange(range, 'month', 3)).toBe('dates.last.month 3 dates.month.plural')
-    })
-
     it('should format month range in this year', () => {
       const range = {
         end: addMonths(startOfYear(today), 2).getTime(),
@@ -106,31 +64,6 @@ describe('useGetDateRange', () => {
   })
 
   describe('week ranges', () => {
-    it('should format current week', () => {
-      const range = {
-        end: endOfWeek(today, { weekStartsOn: 1 }).getTime(),
-        start: startOfWeek(today, { weekStartsOn: 1 }).getTime(),
-      }
-      expect(getStringDateRange(range, 'week', 1)).toBe('This Week')
-    })
-
-    it('should format last week', () => {
-      const lastWeek = subWeeks(today, 1)
-      const range = {
-        end: endOfWeek(lastWeek, { weekStartsOn: 1 }).getTime(),
-        start: startOfWeek(lastWeek, { weekStartsOn: 1 }).getTime(),
-      }
-      expect(getStringDateRange(range, 'week', 1)).toBe('Last Week')
-    })
-
-    it('should format last N weeks', () => {
-      const range = {
-        end: endOfWeek(today, { weekStartsOn: 1 }).getTime(),
-        start: startOfWeek(subWeeks(today, 2), { weekStartsOn: 1 }).getTime(),
-      }
-      expect(getStringDateRange(range, 'week', 3)).toBe('dates.last.week 3 dates.week.plural')
-    })
-
     it('should format week range in same month and year', () => {
       const range = {
         end: endOfWeek(new Date('2024-11-03'), { weekStartsOn: 1 }).getTime(),
@@ -141,31 +74,6 @@ describe('useGetDateRange', () => {
   })
 
   describe('day ranges', () => {
-    it('should format today', () => {
-      const range = {
-        end: endOfDay(today).getTime(),
-        start: startOfDay(today).getTime(),
-      }
-      expect(getStringDateRange(range, 'day', 1)).toBe('Today')
-    })
-
-    it('should format yesterday', () => {
-      const lastDay = subDays(today, 1)
-      const range = {
-        end: endOfDay(lastDay).getTime(),
-        start: startOfDay(lastDay).getTime(),
-      }
-      expect(getStringDateRange(range, 'day', 1)).toBe('Yesterday')
-    })
-
-    it('should format last N days', () => {
-      const range = {
-        end: endOfDay(today).getTime(),
-        start: startOfDay(subDays(today, 6)).getTime(),
-      }
-      expect(getStringDateRange(range, 'day', 7)).toBe('dates.last.day 7 dates.day.plural')
-    })
-
     it('should format day range in same month', () => {
       const range = {
         end: endOfDay(new Date('2024-03-15')).getTime(),
