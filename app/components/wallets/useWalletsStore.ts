@@ -28,20 +28,6 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   function setWallets(values: Wallets | null) {
-    const normalizeWallets = (items: WalletsDirty): Wallets => {
-      return Object.entries(items).reduce((acc, [walletId, wallet]) => {
-        const normalizedWallet = normalizeWalletItem(wallet)
-        acc[walletId] = normalizedWallet.values
-        if (normalizedWallet.error && !isDemo) {
-          createOrUpdateWallet({
-            id: walletId,
-            values: normalizedWallet.values as WalletItem,
-          })
-        }
-        return acc
-      }, {} as Wallets)
-    }
-
     const wallets = values ? normalizeWallets(values) : null
     items.value = wallets
     localforage.setItem('finapp.wallets', deepUnref(wallets))
@@ -142,6 +128,20 @@ export const useWalletsStore = defineStore('wallets', () => {
       if (trnsIds)
         await trnsStore.deleteTrnsByIds(trnsIds)
     }
+  }
+
+  function normalizeWallets(items: WalletsDirty): Wallets {
+    return Object.entries(items).reduce((acc, [walletId, wallet]) => {
+      const normalizedWallet = normalizeWalletItem(wallet)
+      acc[walletId] = normalizedWallet.values
+      if (normalizedWallet.error && !isDemo) {
+        createOrUpdateWallet({
+          id: walletId,
+          values: normalizedWallet.values as WalletItem,
+        })
+      }
+      return acc
+    }, {} as Wallets)
   }
 
   return {
