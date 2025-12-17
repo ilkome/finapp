@@ -73,7 +73,6 @@ export type TrnItemFull = (Transaction | Transfer)
 export type TrnItemDirty = Transaction | Transfer | TransferDeprecated
 
 export type Trns = Record<TrnId, TrnItem>
-export type TrnsDirty = Record<TrnId, TrnItemDirty>
 
 export type TrnsGetterProps = {
   categoriesIds?: CategoryId[]

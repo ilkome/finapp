@@ -32,7 +32,6 @@ type CategoriesStore = {
   categoriesRootIds: ComputedRef<CategoryId[]>
   deleteCategory: (id: CategoryId, trnsIds?: TrnId[]) => Promise<void>
   favoriteCategoriesIds: ComputedRef<CategoryId[]>
-  formatCategories: (items: Categories) => Categories
   getChildsIds: (categoryId: CategoryId) => CategoryId[]
   getChildsIdsOrParent: (categoryId: CategoryId) => CategoryId[]
   getTransactibleIds: (ids?: CategoryId[]) => CategoryId[]
@@ -167,44 +166,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     })
   })
 
-  function formatCategories(items: Categories): Categories {
-    const formattedItems = { ...items }
-
-    // Step 1: Build parent-child relationships
-    for (const categoryId in formattedItems) {
-      const category = formattedItems[categoryId]
-      const parentId = category?.parentId
-
-      if (!parentId || !formattedItems[parentId])
-        continue
-
-      const parent = formattedItems[parentId]
-      parent.childIds = parent.childIds || []
-
-      if (!parent.childIds.includes(categoryId))
-        parent.childIds.push(categoryId)
-    }
-
-    // Step 2: Set default values and clean up invalid child references
-    for (const categoryId in formattedItems) {
-      const category = formattedItems[categoryId]!
-
-      // Set default values for optional properties
-      formattedItems[categoryId] = {
-        ...category,
-        icon: category.icon.replace('mdi mdi-', 'mdi:'),
-        showInLastUsed: category.showInLastUsed ?? false,
-        showInQuickSelector: category.showInQuickSelector ?? false,
-      }
-
-      // Remove references to non-existent child categories
-      if (category.childIds?.length)
-        formattedItems[categoryId].childIds = category.childIds.filter(childId => formattedItems[childId])
-    }
-
-    return formattedItems
-  }
-
   function initCategories() {
     getDataAndWatch(
       `users/${userStore.uid}/categories`,
@@ -303,6 +264,44 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     }
   }
 
+  function formatCategories(items: Categories): Categories {
+    const formattedItems = { ...items }
+
+    // Step 1: Build parent-child relationships
+    for (const categoryId in formattedItems) {
+      const category = formattedItems[categoryId]
+      const parentId = category?.parentId
+
+      if (!parentId || !formattedItems[parentId])
+        continue
+
+      const parent = formattedItems[parentId]
+      parent.childIds = parent.childIds || []
+
+      if (!parent.childIds.includes(categoryId))
+        parent.childIds.push(categoryId)
+    }
+
+    // Step 2: Set default values and clean up invalid child references
+    for (const categoryId in formattedItems) {
+      const category = formattedItems[categoryId]!
+
+      // Set default values for optional properties
+      formattedItems[categoryId] = {
+        ...category,
+        icon: category.icon.replace('mdi mdi-', 'mdi:'),
+        showInLastUsed: category.showInLastUsed ?? false,
+        showInQuickSelector: category.showInQuickSelector ?? false,
+      }
+
+      // Remove references to non-existent child categories
+      if (category.childIds?.length)
+        formattedItems[categoryId].childIds = category.childIds.filter(childId => formattedItems[childId])
+    }
+
+    return formattedItems
+  }
+
   return {
     addCategory,
     categoriesForBeParent,
@@ -311,7 +310,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     categoriesRootIds,
     deleteCategory,
     favoriteCategoriesIds,
-    formatCategories,
     getChildsIds,
     getChildsIdsOrParent,
     getTransactibleIds,

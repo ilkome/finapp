@@ -67,9 +67,7 @@ export const useTrnsStore = defineStore('trns', () => {
     )
   })
 
-  const lastCreatedTrnItem = computed<TrnItem | false>(
-    () => items.value?.[lastCreatedTrnId.value],
-  )
+  const lastCreatedTrnItem = computed<TrnItem | false>(() => items.value?.[lastCreatedTrnId.value])
 
   function initTrns() {
     const path = `users/${userStore.uid}/trns`
@@ -77,7 +75,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function setTrns(values: Trns | null) {
-    const trns = normalizeTrns(values || {})
+    const trns = values ? normalizeTrns(values) : null
     items.value = trns
     localforage.setItem('finapp.trns', deepUnref(trns))
   }
