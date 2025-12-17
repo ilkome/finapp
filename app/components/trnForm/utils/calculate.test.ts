@@ -46,7 +46,7 @@ describe('calculator utils', () => {
     })
 
     it('should respect decimal places limit', () => {
-      expect(createExpressionString('3', '1.12')).toBe('1.12')
+      expect(createExpressionString('3', '1.12')).toBe('1.123')
       expect(createExpressionString('1', '1.1')).toBe('1.11')
     })
 

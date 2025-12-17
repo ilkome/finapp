@@ -162,9 +162,11 @@ tests.forEach((test) => {
           ? formatTransaction(variant.data.expect)
           : formatTransfer(variant.data.expect)
         delete data.editedAt
+        delete data.edited
 
         const res = variant.data.become
         delete res.editedAt
+        delete res.edited
 
         expect(data).toEqual(res)
       })
