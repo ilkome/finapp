@@ -12,7 +12,7 @@
     "vue, nuxt, firebase, tailwind, pwa, echarts, swiper"
   ],
   "engines": {
-    "node": ">=v23.1.0"
+    "node": ">=v24.12.0"
   },
   "scripts": {
     "build": "nuxt generate",
