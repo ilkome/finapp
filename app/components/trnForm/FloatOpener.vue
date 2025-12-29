@@ -7,9 +7,10 @@ const { onClose, trnFormCreate, ui } = useTrnsFormStore()
 <template>
   <div
     class="
-      group absolute right-0 bottom-0 hidden h-full w-[300px] items-end justify-end
-      transition hover:bg-[var(--item-5)] xl:flex
-    "
+        group absolute right-0 bottom-0 hidden h-full w-[300px] items-end
+        justify-end from-transparent to-[var(--item-5)]
+        transition hover:bg-gradient-to-r xl:flex
+      "
     @click="ui.isShow ? onClose() : trnFormCreate()"
   >
     <div
