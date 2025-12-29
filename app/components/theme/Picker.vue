@@ -80,11 +80,11 @@ function setBlackAsPrimary(value: boolean) {
 
     <template #content>
       <fieldset>
-        <legend class="text-[11px] leading-none font-semibold mb-2">
+        <legend class="mb-2 text-[11px] leading-none font-semibold">
           {{ t('primary') }}
         </legend>
 
-        <div class="grid grid-cols-3 gap-1 -mx-2">
+        <div class="-mx-2 grid grid-cols-3 gap-1">
           <ThemePickerButton
             chip="primary"
             label="Black"
@@ -92,7 +92,7 @@ function setBlackAsPrimary(value: boolean) {
             @click="setBlackAsPrimary(true)"
           >
             <template #leading>
-              <span class="inline-block w-2 h-2 rounded-full bg-black dark:bg-white" />
+              <span class="inline-block h-2 w-2 rounded-full bg-black dark:bg-white" />
             </template>
           </ThemePickerButton>
 
@@ -108,11 +108,11 @@ function setBlackAsPrimary(value: boolean) {
       </fieldset>
 
       <fieldset>
-        <legend class="text-[11px] leading-none font-semibold mb-2">
+        <legend class="mb-2 text-[11px] leading-none font-semibold">
           {{ t('neutral') }}
         </legend>
 
-        <div class="grid grid-cols-3 gap-1 -mx-2">
+        <div class="-mx-2 grid grid-cols-3 gap-1">
           <ThemePickerButton
             v-for="color in neutralColors"
             :key="color"
@@ -125,11 +125,11 @@ function setBlackAsPrimary(value: boolean) {
       </fieldset>
 
       <fieldset>
-        <legend class="text-[11px] leading-none font-semibold mb-2">
+        <legend class="mb-2 text-[11px] leading-none font-semibold">
           {{ t('radius') }}
         </legend>
 
-        <div class="grid grid-cols-5 gap-1 -mx-2">
+        <div class="-mx-2 grid grid-cols-5 gap-1">
           <ThemePickerButton
             v-for="r in radiuses"
             :key="r"
@@ -142,11 +142,11 @@ function setBlackAsPrimary(value: boolean) {
       </fieldset>
 
       <fieldset>
-        <legend class="text-[11px] leading-none font-semibold mb-2">
+        <legend class="mb-2 text-[11px] leading-none font-semibold">
           {{ t('theme') }}
         </legend>
 
-        <div class="grid grid-cols-3 gap-1 -mx-2">
+        <div class="-mx-2 grid grid-cols-3 gap-1">
           <ThemePickerButton
             v-for="m in modes"
             :key="m.label"

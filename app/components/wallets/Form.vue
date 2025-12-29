@@ -5,7 +5,7 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
 import { errorEmo, random } from '~/assets/js/emo'
-import { icons, types, walletItemSchema } from '~/components/wallets/types'
+import { types, walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -42,44 +42,44 @@ const walletPlaceholder = computed(() => ({
 /**
  * Validate
  */
-function validate(values: WalletItem) {
-  // name
-  if (!values.name) {
-    toast.add({
-      color: 'error',
-      description: t('wallets.form.name.error'),
-      title: random(errorEmo),
-    })
+// function validate(values: WalletItem) {
+//   // name
+//   if (!values.name) {
+//     toast.add({
+//       color: 'error',
+//       description: t('wallets.form.name.error'),
+//       title: random(errorEmo),
+//     })
 
-    return false
-  }
+//     return false
+//   }
 
-  // currency
-  if (!values.currency) {
-    toast.add({
-      color: 'error',
-      description: t('wallets.form.currency.error'),
-      title: random(errorEmo),
-    })
+//   // currency
+//   if (!values.currency) {
+//     toast.add({
+//       color: 'error',
+//       description: t('wallets.form.currency.error'),
+//       title: random(errorEmo),
+//     })
 
-    return false
-  }
+//     return false
+//   }
 
-  // Check for duplicate wallet names
-  const existingWallet = Object.entries(walletsStore.items ?? {})
-    .find(([id, wallet]) => wallet.name === values.name && id !== editWalletId)
+//   // Check for duplicate wallet names
+//   const existingWallet = Object.entries(walletsStore.items ?? {})
+//     .find(([id, wallet]) => wallet.name === values.name && id !== editWalletId)
 
-  if (existingWallet) {
-    toast.add({
-      color: 'error',
-      description: t('wallets.form.name.exist'),
-      title: random(errorEmo),
-    })
-    return false
-  }
+//   if (existingWallet) {
+//     toast.add({
+//       color: 'error',
+//       description: t('wallets.form.name.exist'),
+//       title: random(errorEmo),
+//     })
+//     return false
+//   }
 
-  return true
-}
+//   return true
+// }
 
 async function onSave() {
   const values = walletItemSchema.safeParse(props.walletForm)

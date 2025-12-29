@@ -113,7 +113,7 @@ function toggleRoot(id: CategoryId) {
 <template>
   <div
     v-if="categoriesWithData.length > 0"
-    class="@3xl/main:max-w-lg grid gap-3 content-start"
+    class="grid content-start gap-3 @3xl/main:max-w-lg"
   >
     <!-- Vertical -->
     <UiToggle
@@ -147,7 +147,7 @@ function toggleRoot(id: CategoryId) {
           v-if="isShown"
           class="grid pt-3"
         >
-          <div class="flex overflow-hidden overflow-x-auto pl-1 pt-2">
+          <div class="flex overflow-hidden overflow-x-auto pt-2 pl-1">
             <StatCategoriesVertical
               v-for="item in verticalCategories.filter(c => c.value !== 0)"
               :key="item.id"
@@ -243,7 +243,7 @@ function toggleRoot(id: CategoryId) {
             <!-- Inside -->
             <div
               v-if="categoriesOpened[item.id]?.show && item.categories && item.categories?.length >= 1"
-              class="ml-5 mt-[-2px] -translate-x-px pl-3 pb-3"
+              class="mt-[-2px] ml-5 -translate-x-px pb-3 pl-3"
             >
               <div
                 :class="{

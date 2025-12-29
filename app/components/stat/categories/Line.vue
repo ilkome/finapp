@@ -92,7 +92,7 @@ onLongPress(
     ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-3 ': props.isActive,
-      'rounded-lg bg-item-2': statConfig.config.value.catsList.isItemsBg,
+      'bg-item-2 rounded-lg': statConfig.config.value.catsList.isItemsBg,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -107,9 +107,9 @@ onLongPress(
       <template #line>
         <div
           v-if="statConfig.config.value.catsList.isLines"
-          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pl-[52px] pr-3"
+          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-[52px]"
         >
-          <div class="overflow-hidden rounded-lg bg-item-4">
+          <div class="bg-item-4 overflow-hidden rounded-lg">
             <div
               :style="getBarStyle()"
               class="h-1 opacity-60"

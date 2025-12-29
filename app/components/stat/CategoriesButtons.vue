@@ -184,7 +184,7 @@ function onChangeViewOptions(newViewOptions: any) {
     </div>
 
     <div
-      class="border-item-4 grid gap-3 border-b pb-2 pt-3 last:border-0"
+      class="border-item-4 grid gap-3 border-b pt-3 pb-2 last:border-0"
     >
       <UiTitleOption>{{ t('elements') }}</UiTitleOption>
       <div class="">
