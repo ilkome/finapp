@@ -1,10 +1,10 @@
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { WalletId, WalletItem } from '~/components/wallets/types'
 
-  type LocaleString = {
-    en: string
-    ru: string
-  }
+type LocaleString = {
+  en: string
+  ru: string
+}
 
 export const data: {
   categories: Record<CategoryId, Omit<CategoryItem, 'name'> & { name: LocaleString }>

@@ -66,8 +66,8 @@ onMounted(() => {
       :key="categoryId"
       class="group/item"
       :class="{
-        'relative mb-2 rounded-md bg-item-3': opened.includes(categoryId),
-        'rounded-md bg-item-3': isChildsSelected(categoryId),
+        'bg-item-3 relative mb-2 rounded-md': opened.includes(categoryId),
+        'bg-item-3 rounded-md': isChildsSelected(categoryId),
         'border !border-(--ui-primary)/60': isEveryChildsSelected(categoryId),
       }"
     >
@@ -82,7 +82,7 @@ onMounted(() => {
 
       <div
         v-if="opened.includes(categoryId) && categoriesStore.hasChildren(categoryId)"
-        class="pb-2 pl-4 pr-2"
+        class="pr-2 pb-2 pl-4"
       >
         <CategoriesItem
           v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"

@@ -1,4 +1,4 @@
-@import "tailwindcss" theme(static);
+@import 'tailwindcss' theme(static);
 @import '@nuxt/ui';
 @import './theme.css';
 @import './utility.css';
@@ -6,8 +6,15 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @custom-variant hover {
-  @media (hover: hover) and (pointer: fine) { &:hover { @slot; } }
-  &:active { @slot; }
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+
+  &:active {
+    @slot;
+  }
 }
 
 @layer base {

@@ -446,7 +446,7 @@ const wrapClasses = computed(() => ({
   <div
     ref="containerRef"
     :class="wrapClasses"
-    class="absolute inset-0 z-50 size-full select-none overflow-hidden"
+    class="absolute inset-0 z-50 size-full overflow-hidden select-none"
   >
     <!-- Overlay -->
     <div

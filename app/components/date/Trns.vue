@@ -16,11 +16,11 @@ const formattedDate = computed(() => formatDate(props.date, 'full'))
     </div>
 
     <div class="text-2">
-      <div class="pb-[2px] text-2xs leading-none">
+      <div class="text-2xs pb-[2px] leading-none">
         {{ formattedDate.weekday }}
       </div>
 
-      <div class="flex gap-1 text-sm font-medium leading-none text-1">
+      <div class="text-1 flex gap-1 text-sm leading-none font-medium">
         <div>{{ formattedDate.month }}</div>
         <div>{{ formattedDate.year }}</div>
       </div>

@@ -78,18 +78,18 @@ onMounted(init)
       <BottomSheetClose @onClick="close" />
     </template>
 
-    <div class="trnForm @container/trnForm bg-default">
+    <div class="trnForm bg-default @container/trnForm">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide h-full overflow-y-auto bg-default"
+            class="swiper-slide bg-default h-full overflow-y-auto"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
               :slider="sliderObj"
               :mainSlideIdx="1"
-              class="overflow-hidden px-2 pb-6 pt-4"
+              class="overflow-hidden px-2 pt-4 pb-6"
             />
           </div>
 

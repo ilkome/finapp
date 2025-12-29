@@ -22,7 +22,7 @@ const { isDemo } = useDemo()
       </template>
 
       <div class="bottomSheetContent">
-        <div class="bottomSheetContentInside grid gap-3 px-3 pb-2 pt-4">
+        <div class="bottomSheetContentInside grid gap-3 px-3 pt-4 pb-2">
           <!-- User -->
           <div
             v-if="!isDemo"

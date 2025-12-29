@@ -17,11 +17,11 @@ const emit = defineEmits<{
 
     <div
       :class="{ 'bg-(--ui-primary)': value, 'bg-(--ui-bg-accented)': !value }"
-      class="relative p-px px-[2px] w-10 h-5 rounded-xl transition-colors ease-in-out"
+      class="relative h-5 w-10 rounded-xl p-px px-[2px] transition-colors ease-in-out"
     >
       <div
         :class="{ 'translate-x-4.5': value }"
-        class="size-4.5 rounded-xl bg-default shadow-md transition-transform ease-in-out"
+        class="bg-default size-4.5 rounded-xl shadow-md transition-transform ease-in-out"
       />
     </div>
   </div>

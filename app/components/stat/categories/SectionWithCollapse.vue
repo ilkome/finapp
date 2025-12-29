@@ -51,7 +51,7 @@ const verticalBiggestCatNumber = computed(() => getBiggestCatNumber(verticalCate
 const linesCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsList.isGrouped ? 'grouped' : 'ungrouped'])
 const linesBiggestCatNumber = computed(() => getBiggestCatNumber(linesCategories.value))
 
-const roundCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsRound.isGrouped ? 'grouped' : 'ungrouped'])
+// const roundCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsRound.isGrouped ? 'grouped' : 'ungrouped'])
 const biggestCatNumber = computed(() => getBiggestCatNumber(categoriesWithData.value))
 
 function getBiggestCatNumber(categories: CategoryWithData[]) {
@@ -215,7 +215,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
           v-if="isShown"
           class="grid pt-3"
         >
-          <div class="flex overflow-hidden overflow-x-auto pl-1 pt-2">
+          <div class="flex overflow-hidden overflow-x-auto pt-2 pl-1">
             <StatCategoriesVertical
               v-for="item in verticalCategories.filter(c => c.value !== 0)"
               :key="item.id"
@@ -335,7 +335,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
             </template>
 
             <!-- Inside -->
-            <div class="ml-5 mt-[-2px] -translate-x-px pl-3">
+            <div class="mt-[-2px] ml-5 -translate-x-px pl-3">
               <div
                 v-if="!item.categories || item.categories.length === 0"
                 class="mb-3 ml-11"
@@ -352,7 +352,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
 
               <div
                 v-if="item.categories && statConfig.config.value.catsList.isGrouped"
-                class="flex flex-wrap gap-1 pl-12 pt-2"
+                class="flex flex-wrap gap-1 pt-2 pl-12"
               >
                 <StatCategoriesRound
                   v-for="itemInside in item.categories"
@@ -405,7 +405,7 @@ function updateState(state: CategoriesState, options: { childShow?: boolean, par
                   </template>
 
                   <!-- Inside -->
-                  <div class="ml-5 mt-[-2px] -translate-x-px pl-14">
+                  <div class="mt-[-2px] ml-5 -translate-x-px pl-14">
                     <TrnsList
                       :trnsIds="itemInside.trnsIds"
                       :size="5"

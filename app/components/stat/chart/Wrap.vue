@@ -52,12 +52,12 @@ function onChangePeriod(period: Period) {
       '@3xl/main:max-w-xl': props.chartView === 'half',
     }"
   >
-    <div class="flex justify-end -mb-1">
+    <div class="-mb-1 flex justify-end">
       <slot />
 
       <div class="h-7">
         <StatChartIntervals
-          :class="{ 'border-l border-item-4': statConfig.config.value?.date.isShowQuick }"
+          :class="{ 'border-item-4 border-l': statConfig.config.value?.date.isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
           @onChangePeriod="onChangePeriod"
