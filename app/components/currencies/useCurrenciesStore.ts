@@ -1,5 +1,6 @@
 import { startOfDay } from 'date-fns'
 import localforage from 'localforage'
+import { deepUnref } from 'vue-deepunref'
 import { getDataOnce, saveData } from '~~/services/firebase/api'
 
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
@@ -53,24 +54,30 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
     setBase(userBaseCurrency)
     setRates(ratesBasedOnUsd)
-
-    await localforage.setItem('finapp.currencies', {
-      base: userBaseCurrency,
-      rates: ratesBasedOnUsd,
-    })
   }
 
   function setRates(values: Rates) {
     rates.value = values
+
+    localforage.setItem('finapp.currencies', {
+      base: base.value,
+      rates: values,
+    })
   }
 
   function setBase(value: CurrencyCode) {
     base.value = value
+
+    localforage.setItem('finapp.currencies', {
+      base: value,
+      rates: deepUnref(rates.value),
+    })
   }
 
   function updateBase(value: CurrencyCode) {
     setBase(value)
-    if (!isDemo)
+
+    if (!isDemo.value)
       saveData(`users/${userStore.uid}/settings/baseCurrency`, value)
   }
 
