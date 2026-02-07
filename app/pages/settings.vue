@@ -123,7 +123,7 @@ function onGenerateDemoData() {
     <CurrenciesModal
       v-if="isShowBaseCurrencyModal"
       :activeCode="currenciesStore.base"
-      @onSelect="currenciesStore.setBase"
+      @onSelect="currenciesStore.updateBase"
       @onClose="isShowBaseCurrencyModal = false"
     />
   </UiPage>
