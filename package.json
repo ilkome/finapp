@@ -1,8 +1,8 @@
 {
   "name": "@ilkome/finapp",
   "type": "module",
-  "version": "6.6.1",
-  "packageManager": "pnpm@10.26.1",
+  "version": "6.6.2",
+  "packageManager": "pnpm@10.28.2",
   "description": "Finapp helps you easily track and manage personal finances.",
   "author": "Ilya Komichev @ilkome",
   "license": "MIT",
