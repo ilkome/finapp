@@ -17,7 +17,7 @@ const walletsStore = useWalletsStore()
 </script>
 
 <template>
-  <UiTabs2 class="@xl/page:px-0 flex gap-1">
+  <UiTabs2 class="flex gap-1 @xl/page:px-0">
     <UiTabsItem1
       :isActive="currencyFiltered === 'all'"
       @click="emit('onSelectFilterCurrency', 'all')"
