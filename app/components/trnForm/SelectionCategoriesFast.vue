@@ -17,10 +17,13 @@ const trnsFormStore = useTrnsFormStore()
 
 <template>
   <!-- Favorite categories -->
-  <div v-if="categoriesStore.favoriteCategoriesIds.length > 0">
-    <UiTitleModal>
+  <div
+    v-if="categoriesStore.favoriteCategoriesIds.length > 0"
+    class="pt-2"
+  >
+    <UiTitle7 class="mx-2">
       {{ t('categories.favoriteCategories') }}
-    </UiTitleModal>
+    </UiTitle7>
 
     <CategoriesSelector2
       :activeItemId="trnsFormStore.values.categoryId"

@@ -45,7 +45,7 @@ function onGenerateDemoData() {
     </UiHeader>
 
     <div class="pageWrapper">
-      <div class="grid gap-8 @3xl/main:max-w-md pt-2">
+      <div class="grid gap-8 pt-2 @3xl/main:max-w-md">
         <!-- User -->
         <div class="pb-6">
           <UserViewLogout isShowSignOut />
@@ -72,7 +72,7 @@ function onGenerateDemoData() {
           <UiTitle3 class="pb-2">
             {{ t('settings.caution') }}
           </UiTitle3>
-          <div class="pb-4 text-xs leading-none text-alert-1">
+          <div class="text-alert-1 pb-4 text-xs leading-none">
             {{ t('alerts.willDeleteEverything') }}
           </div>
 
@@ -105,7 +105,7 @@ function onGenerateDemoData() {
         <!-- About -->
         <div class="pb-12">
           {{ t('app.about') }}
-          <div class="pt-4 text-xs text-muted">
+          <div class="text-muted pt-4 text-xs">
             {{ t('app.version') }} {{ version }}
             <!-- <About /> -->
           </div>
