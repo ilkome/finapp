@@ -35,7 +35,7 @@ const { t } = useI18n()
         '!text-expense-1 placeholder:!text-expense-1': highlight === 'expense',
         'text-center': !isTransfer,
       }"
-      :placeholder="t('enterAmount')"
+      :placeholder="t('trnForm.enterAmount')"
       :value="amountRaw"
       class="swiper-no-swiping bg-item-2 font-secondary border-transparent pt-6 pb-2 text-center !text-3xl placeholder:text-3xl"
       inputmode="tel"
@@ -43,11 +43,3 @@ const { t } = useI18n()
     />
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  enterAmount: '0'
-
-ru:
-  enterAmount: '0'
-</i18n>

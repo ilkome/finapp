@@ -56,7 +56,7 @@ onMounted(() => stateLimit.value = props.limit)
         @click="toggle"
       >
         <template v-if="stateLimit > 0">
-          {{ t('showAll') }}
+          {{ t('wallets.showAll') }}
         </template>
 
         <template v-else-if="stateLimit !== limit">
@@ -66,11 +66,3 @@ onMounted(() => stateLimit.value = props.limit)
     </slot>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  showAll: "Show all"
-
-ru:
-  showAll: "Показать все"
-</i18n>

@@ -28,7 +28,7 @@ const walletsStore = useWalletsStore()
         :isShown
         @click="toggle"
       >
-        {{ t('filterByCurrency') }}
+        {{ t('wallets.filterByCurrency') }}
         {{ (currencyFiltered !== 'all' && !isShown) ? currencyFiltered : '' }}
       </UiTitle8>
     </template>
@@ -52,11 +52,3 @@ const walletsStore = useWalletsStore()
     </UiTabs2>
   </UiToggleWithStorage>
 </template>
-
-<i18n lang="yaml">
-  en:
-    filterByCurrency: Filter by
-
-  ru:
-    filterByCurrency: Валюты кошельков
-  </i18n>

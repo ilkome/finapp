@@ -55,7 +55,7 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
     <div class="grid w-full grow gap-1">
       <UiTitle6 class="!leading-3 text-nowrap">
         {{ t('money.average') }}
-        <br>{{ t('forLast') }}
+        <br>{{ t('stat.average.forLast') }}
       </UiTitle6>
 
       <div class="flex gap-4">
@@ -90,10 +90,3 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  forLast: for the last periods
-ru:
-  forLast: за прошлые периоды
-</i18n>

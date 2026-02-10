@@ -128,19 +128,3 @@ function onGenerateDemoData() {
     />
   </UiPage>
 </template>
-
-<i18n lang="yaml">
-en:
-  app:
-    about: About
-    version: 'Version'
-  user: User
-  currencyDesc: Transactions in different currencies will be converted to this currency.
-
-ru:
-  app:
-    about: О приложении
-    version: 'Версия'
-  user: Пользователь
-  currencyDesc: "Основная валюта, в которую будут конвертироваться транзакции в других валютах."
-</i18n>

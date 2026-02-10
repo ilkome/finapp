@@ -102,16 +102,16 @@ function copyAmount() {
             :class="[getStyles('item', ['bg2', 'link', 'rounded']), {
               'bg-[var(--item-5)]': trnsFormStore.values.transferType === item.transferType,
             }]"
-            class="flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm text-1/70 lg:min-h-[42px]"
+            class="text-1/70 flex min-h-[44px] w-1/2 grow items-center px-3 py-2 text-sm lg:min-h-[42px]"
           >
-            {{ t(slug) }}
+            {{ t(`trnForm.transfer.${slug}`) }}
           </div>
 
           <TrnFormSelectorWallet
             v-if="slug === 'income' && incomeWalletId"
             :bottomSheetStyle="props.bottomSheetStyle"
             :isLaptop
-            :title="t(slug)"
+            :title="t(`trnForm.transfer.${slug}`)"
             :walletId="incomeWalletId"
             @onOpen="n => emit('onOpen', n)"
             @onSelected="id => trnsFormStore.values.incomeWalletId = id"
@@ -121,7 +121,7 @@ function copyAmount() {
             v-if="slug === 'expense' && expenseWalletId"
             :bottomSheetStyle="props.bottomSheetStyle"
             :isLaptop
-            :title="t(slug)"
+            :title="t(`trnForm.transfer.${slug}`)"
             :walletId="expenseWalletId"
             @onOpen="n => emit('onOpen', n)"
             @onSelected="id => trnsFormStore.values.expenseWalletId = id"
@@ -143,7 +143,7 @@ function copyAmount() {
       <!-- Actions -->
       <div
         v-if="item.transferType === 0"
-        class="flex justify-center gap-1 pb-1 pt-3"
+        class="flex justify-center gap-1 pt-3 pb-1"
       >
         <UiItem1 @click="switchWallets">
           <Icon name="lucide:arrow-up-down" size="24" />
@@ -156,13 +156,3 @@ function copyAmount() {
     </template>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  expense: Transfer from
-  income: Transfer to
-
-ru:
-  expense: Перевод из
-  income: Перевод в
-</i18n>

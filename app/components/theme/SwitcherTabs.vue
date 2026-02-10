@@ -16,5 +16,3 @@ const { options, preference, setTheme } = useTheme()
     </UiTabsItem4>
   </UiTabs2>
 </template>
-
-<i18n lang="yaml" src="./locale.yaml" />

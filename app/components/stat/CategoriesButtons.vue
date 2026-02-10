@@ -61,7 +61,7 @@ const viewPresets = computed(() => ({
         isRoundIcon: false,
       },
     },
-    title: t('minimal'),
+    title: t('stat.catButtons.minimal'),
   },
   // eslint-disable-next-line perfectionist/sort-objects
   alt: {
@@ -72,7 +72,7 @@ const viewPresets = computed(() => ({
         isRoundIcon: false,
       },
     },
-    title: t('alt'),
+    title: t('stat.catButtons.alt'),
   },
 
   standard: {
@@ -83,7 +83,7 @@ const viewPresets = computed(() => ({
         isRoundIcon: true,
       },
     },
-    title: t('standard'),
+    title: t('stat.catButtons.standard'),
   },
 }))
 
@@ -99,7 +99,7 @@ function onChangeViewOptions(newViewOptions: any) {
   <div class="">
     <!-- List -->
     <div class="border-item-4 grid gap-3 border-b pb-2 last:border-0">
-      <UiTitleOption>{{ t('listItemsOptions') }}</UiTitleOption>
+      <UiTitleOption>{{ t('stat.catButtons.listItemsOptions') }}</UiTitleOption>
       <div class="flex gap-1">
         <UiItem2
           v-for="view in viewPresets"
@@ -123,21 +123,21 @@ function onChangeViewOptions(newViewOptions: any) {
       <div v-if="isShowMorePresets">
         <UiCheckbox
           :checkboxValue="statConfig.config.value.catsList.isItemsBg"
-          :title="t('isItemsBg')"
+          :title="t('stat.catButtons.isItemsBg')"
           @click="statConfig.updateConfig('catsList', { isItemsBg: !statConfig.config.value.catsList.isItemsBg })"
         />
 
         <!-- Lines -->
         <UiCheckbox
           :checkboxValue="statConfig.config.value.catsList.isLines"
-          :title="t('isLines')"
+          :title="t('stat.catButtons.isLines')"
           @click="statConfig.updateConfig('catsList', { isLines: !statConfig.config.value.catsList.isLines })"
         />
 
         <!-- Round icons -->
         <UiCheckbox
           :checkboxValue="statConfig.config.value.catsList.isRoundIcon"
-          :title="t('isRoundIcon')"
+          :title="t('stat.catButtons.isRoundIcon')"
           @click="statConfig.updateConfig('catsList', { isRoundIcon: !statConfig.config.value.catsList.isRoundIcon })"
         />
       </div>
@@ -186,7 +186,7 @@ function onChangeViewOptions(newViewOptions: any) {
     <div
       class="border-item-4 grid gap-3 border-b pt-3 pb-2 last:border-0"
     >
-      <UiTitleOption>{{ t('elements') }}</UiTitleOption>
+      <UiTitleOption>{{ t('stat.catButtons.elements') }}</UiTitleOption>
       <div class="">
         <UiCheckbox
           :checkboxValue="statConfig.config.value.vertical.isShow"
@@ -207,31 +207,3 @@ function onChangeViewOptions(newViewOptions: any) {
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  elements: Elements
-  isItemsBg: Items background
-  isLines: Amount lines
-  isRoundIcon: rounded-sm categories
-  vertical:
-    show: Vertical categories
-    grouping: Grouping
-  listItemsOptions: List items options
-  minimal: Minimal
-  standard: Standard
-  alt: Alternative
-
-ru:
-  elements: Элементы
-  isItemsBg: Фон категорий
-  isLines: Линии сумм
-  isRoundIcon: Скруглённые категории
-  vertical:
-    show: Вертикальные категории
-    grouping: Группировать
-  listItemsOptions: Настройки списка категорий
-  minimal: Легкий
-  standard: Стандартный
-  alt: Альтернативный
-</i18n>

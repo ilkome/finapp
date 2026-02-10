@@ -13,8 +13,8 @@ definePageMeta({
 const { locale, t } = useI18n()
 
 useSeoMeta({
-  ogTitle: t('title'),
-  title: t('title'),
+  ogTitle: t('login.title'),
+  title: t('login.title'),
 })
 
 const { generateDemoData } = useDemo()
@@ -86,7 +86,7 @@ async function openDemo() {
       <div class="flex flex-col items-center justify-center pb-10">
         <UiLogo class="pb-0 !text-6xl !font-extrabold" />
         <div class="text-muted pt-1 text-sm">
-          {{ t('description') }}
+          {{ t('login.description') }}
         </div>
 
         <div class="grid min-w-[320px] items-center gap-2 py-14">
@@ -100,7 +100,7 @@ async function openDemo() {
           </UiButtonAccent>
 
           <USeparator
-            :label="t('ore')"
+            :label="t('login.or')"
             class="!text-muted px-3 pt-3"
           />
 
@@ -110,7 +110,7 @@ async function openDemo() {
             variant="ghost"
             @click="openDemo"
           >
-            {{ t('openDemo') }}
+            {{ t('login.openDemo') }}
           </UiButtonAccent>
         </div>
       </div>
@@ -121,17 +121,3 @@ async function openDemo() {
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  title: "Login"
-  openDemo: "Open Demo"
-  or: "or"
-  description: Powerful open-source finance application
-
-ru:
-  title: "Вход"
-  openDemo: "Открыть демо"
-  or: "или"
-  description: Персональный финансовый ассистент
-</i18n>

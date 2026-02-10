@@ -35,11 +35,3 @@ const walletsStore = useWalletsStore()
     </UiTabsItem1>
   </UiTabs2>
 </template>
-
-<i18n lang="yaml">
-  en:
-    filterByCurrency: Filter by
-
-  ru:
-    filterByCurrency: Валюты кошельков
-  </i18n>

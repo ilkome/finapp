@@ -1,4 +1,10 @@
 export default {
+  about: {
+    author: 'Author',
+    thanks: 'Thanks for support',
+    title: 'Creators',
+  },
+
   alerts: {
     removedUserData: 'All data removed.',
     willDeleteEverything: 'This will delete all your wallets, categories and transactions',
@@ -9,8 +15,14 @@ export default {
   },
 
   app: {
+    about: 'About',
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
+    madeBy: {
+      name: 'by Ilya Komichev',
+      text: 'Made with',
+    },
     toggleSidebar: 'Toggle sidebar',
+    version: 'Version',
   },
 
   appName: 'Finapp',
@@ -120,6 +132,13 @@ export default {
 
   currencies: {
     base: 'Base currency',
+    list: {
+      all: 'All',
+      notFound: 'Currency not found...',
+      search: 'Search',
+      showAll: 'Show all wallets',
+    },
+    select: 'Select currency',
   },
 
   currency: {
@@ -155,6 +174,10 @@ export default {
       simple: 'Month',
     },
     period: 'Period',
+    ranges: {
+      all: 'All',
+      allSkipEmpty: 'Maximum',
+    },
     select: 'Select period',
     week: {
       current: 'This week',
@@ -189,6 +212,13 @@ export default {
     en: 'English',
     ru: 'Russian',
     title: 'Language',
+  },
+
+  login: {
+    description: 'Powerful open-source finance application',
+    openDemo: 'Open Demo',
+    or: 'or',
+    title: 'Login',
   },
 
   loginWithGithub: 'Login with Github',
@@ -251,15 +281,34 @@ export default {
   settings: {
     app: 'Application',
     caution: 'With caution',
+    currencyDesc: 'Transactions in different currencies will be converted to this currency.',
     deleteButton: 'Delete my data',
     lang: 'Language',
     open: 'Open settings',
     options: 'Options',
     title: 'Settings',
+    user: 'User',
   },
 
   stat: {
+    average: {
+      forLast: 'for the last periods',
+    },
     balanceTitle: 'Balance',
+    catButtons: {
+      alt: 'Alternative',
+      elements: 'Elements',
+      isItemsBg: 'Items background',
+      isLines: 'Amount lines',
+      isRoundIcon: 'rounded-sm categories',
+      listItemsOptions: 'List items options',
+      minimal: 'Minimal',
+      standard: 'Standard',
+      vertical: {
+        grouping: 'Grouping',
+        show: 'Vertical categories',
+      },
+    },
     config: {
       categories: {
         grouping: {
@@ -333,6 +382,13 @@ export default {
     color: 'Change theme color',
     dark: 'Dark',
     light: 'Light',
+    picker: {
+      neutral: 'Neutral color',
+      primary: 'Primary color',
+      radius: 'Radius',
+      theme: 'Theme',
+      title: 'Theme picker',
+    },
     select: 'Select theme',
     system: 'System',
     title: 'Theme',
@@ -356,6 +412,7 @@ export default {
       placeholder: 'Write...',
       title: 'Description',
     },
+    enterAmount: '0',
     errors: {
       amountEmpty: 'Amount can not be empty',
       amountNegative: 'Amount can not be negative number',
@@ -372,6 +429,10 @@ export default {
     saveTrnButton: 'Save transaction',
     title: 'Transaction form',
     titleEditTrn: 'Edit transaction',
+    transfer: {
+      expense: 'Transfer from',
+      income: 'Transfer to',
+    },
     transferTitle: 'Transfer',
     wallet: {
       select: 'Select wallet',
@@ -398,6 +459,7 @@ export default {
   wallets: {
     createNewTitle: 'Add wallet',
     filter: 'Filter wallets',
+    filterByCurrency: 'Filter by',
     form: {
       credit: {
         available: 'Available',
@@ -432,9 +494,23 @@ export default {
     },
     name: 'Wallets',
     new: 'New wallet',
+    page: {
+      currencies: 'Currencies',
+      none: 'List',
+      type: 'Type',
+    },
     properties: 'Properties',
+    showAll: 'Show all',
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
     title: 'Wallets',
+  },
+
+  welcome: {
+    createTrn: 'Create your first Transaction',
+    intro: 'To see statistics',
+    introCategories: 'To see statistics add your first Category',
+    introWallets: 'To see statistics add your first Wallet',
+    start: 'Start creating',
   },
 }

@@ -82,11 +82,3 @@ const currenciesStore = useCurrenciesStore()
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-  en:
-    in: in
-
-  ru:
-    in: в
-  </i18n>

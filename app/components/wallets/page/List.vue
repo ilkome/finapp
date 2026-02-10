@@ -449,16 +449,16 @@ const groupTabs = computed(() => {
     label: string
   }[] = [{
     id: 'none',
-    label: t('none'),
+    label: t('wallets.page.none'),
   }, {
     id: 'type',
-    label: t('type'),
+    label: t('wallets.page.type'),
   }]
 
   if (walletsStore.currenciesUsed.length > 1) {
     items.push({
       id: 'currency',
-      label: t('currencies'),
+      label: t('wallets.page.currencies'),
     })
   }
 
@@ -801,15 +801,4 @@ const isOpen = ref(false)
     @onClose="isShowCurrencyFilter = false"
   />
 </template>
-
-<i18n lang="yaml">
-en:
-  currencies: Currencies
-  none: List
-  type: Type
-
-ru:
-  currencies: Валюты
-  none: Список
-  type: Тип
 </i18n>

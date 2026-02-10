@@ -149,25 +149,15 @@ function selectMaxRange(isSkipEmpty = false) {
         :isActive="props.statDate.params.value.isShowMaxRange && !props.statDate.params.value.isSkipEmpty"
         @click="selectMaxRange(false)"
       >
-        {{ t('all') }}
+        {{ t('dates.ranges.all') }}
       </DateLinkItem>
       <DateLinkItem
         v-bind="props.itemProps"
         :isActive="props.statDate.params.value.isShowMaxRange && props.statDate.params.value.isSkipEmpty"
         @click="selectMaxRange(true)"
       >
-        {{ t('allSkipEmpty') }}
+        {{ t('dates.ranges.allSkipEmpty') }}
       </DateLinkItem>
     </template>
   </div>
 </template>
-
-<i18n lang="yaml">
-  en:
-    all: All
-    allSkipEmpty: Maximum
-
-  ru:
-    all: Все
-    allSkipEmpty: Максимально
-</i18n>

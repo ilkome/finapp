@@ -34,7 +34,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
 
       <template #default="{ close }">
         <div class="bottomSheetContent">
-          <UiTitleModal>{{ t('select') }}</UiTitleModal>
+          <UiTitleModal>{{ t('currencies.select') }}</UiTitleModal>
 
           <CurrenciesList
             :active="props.activeCode"
@@ -47,11 +47,3 @@ function onSelect(code: CurrencyCode, close: () => void) {
     </BottomSheet>
   </Teleport>
 </template>
-
-<i18n lang="yaml">
-  en:
-    select: Select currency
-
-  ru:
-    select: Выбрать валюту
-</i18n>

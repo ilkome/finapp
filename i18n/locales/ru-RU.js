@@ -1,4 +1,10 @@
 export default {
+  about: {
+    author: 'Автор',
+    thanks: 'Спасибо за поддержку',
+    title: 'Создатели',
+  },
+
   alerts: {
     removedUserData: 'Все данные удалены.',
     willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены',
@@ -9,8 +15,14 @@ export default {
   },
 
   app: {
+    about: 'О приложении',
     desc: 'Приложение для учета личных финансов',
+    madeBy: {
+      name: 'Илья Комичев',
+      text: 'Разработал',
+    },
     toggleSidebar: 'Скрыть/показать боковую панель',
+    version: 'Версия',
   },
 
   appName: 'Финапка',
@@ -116,8 +128,16 @@ export default {
   create: {
     title: 'Создать',
   },
+
   currencies: {
     base: 'Основная валюта',
+    list: {
+      all: 'Все',
+      notFound: 'Валюта не найдена...',
+      search: 'Поиск',
+      showAll: 'Показать все кошельки',
+    },
+    select: 'Выбрать валюту',
   },
 
   currency: {
@@ -153,6 +173,10 @@ export default {
       simple: 'Месяц',
     },
     period: 'Период',
+    ranges: {
+      all: 'Все',
+      allSkipEmpty: 'Максимально',
+    },
     select: 'Период',
     week: {
       current: 'Текущая неделя',
@@ -187,6 +211,13 @@ export default {
     en: 'Английский',
     ru: 'Русский',
     title: 'Язык',
+  },
+
+  login: {
+    description: 'Персональный финансовый ассистент',
+    openDemo: 'Открыть демо',
+    or: 'или',
+    title: 'Вход',
   },
 
   loginWithGithub: 'Войти через Github',
@@ -249,15 +280,34 @@ export default {
   settings: {
     app: 'Приложение',
     caution: 'C осторожностью',
+    currencyDesc: 'Основная валюта, в которую будут конвертироваться транзакции в других валютах.',
     deleteButton: 'Удалить все мои данные',
     lang: 'Язык приложения',
     open: 'Открыть настройки',
     options: 'Опции',
     title: 'Настройки',
+    user: 'Пользователь',
   },
 
   stat: {
+    average: {
+      forLast: 'за прошлые периоды',
+    },
     balanceTitle: 'Баланс',
+    catButtons: {
+      alt: 'Альтернативный',
+      elements: 'Элементы',
+      isItemsBg: 'Фон категорий',
+      isLines: 'Линии сумм',
+      isRoundIcon: 'Скруглённые категории',
+      listItemsOptions: 'Настройки списка категорий',
+      minimal: 'Легкий',
+      standard: 'Стандартный',
+      vertical: {
+        grouping: 'Группировать',
+        show: 'Вертикальные категории',
+      },
+    },
     config: {
       categories: {
         grouping: {
@@ -334,6 +384,13 @@ export default {
     color: 'Сменить цвет оформления',
     dark: 'Темная',
     light: 'Светлая',
+    picker: {
+      neutral: 'Нейтральный цвет',
+      primary: 'Основной цвет',
+      radius: 'Радиус',
+      theme: 'Тема',
+      title: 'Выбор темы',
+    },
     select: 'Выберите тему',
     system: 'Авто',
     title: 'Тема',
@@ -357,6 +414,7 @@ export default {
       placeholder: 'Напишите...',
       title: 'Описание',
     },
+    enterAmount: '0',
     errors: {
       amountEmpty: 'Сумма не может быть пустой',
       amountNegative: 'Сумма не может быть отрицательной',
@@ -373,6 +431,10 @@ export default {
     saveTrnButton: 'Сохранить',
     title: 'Создание транзакции',
     titleEditTrn: 'Редактирование транзакции',
+    transfer: {
+      expense: 'Перевод из',
+      income: 'Перевод в',
+    },
     transferTitle: 'Перевод',
     wallet: {
       select: 'Выбрать кошелек',
@@ -399,6 +461,7 @@ export default {
   wallets: {
     createNewTitle: 'Добавить кошелек',
     filter: 'Фильтровать кошельки',
+    filterByCurrency: 'Валюты кошельков',
     form: {
       credit: {
         available: 'Доступно',
@@ -433,9 +496,23 @@ export default {
     },
     name: 'Кошельки',
     new: 'Новый кошелек',
+    page: {
+      currencies: 'Валюты',
+      none: 'Список',
+      type: 'Тип',
+    },
     properties: 'Свойства кошелька',
+    showAll: 'Показать все',
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
     title: 'Кошельки',
+  },
+
+  welcome: {
+    createTrn: 'Создайте свою первую Транзакцию',
+    intro: 'Чтобы увидеть статистику',
+    introCategories: 'Чтобы увидеть статистику добавьте первую категорию',
+    introWallets: 'Чтобы увидеть статистику добавьте первый кошелек',
+    start: 'Начать создание',
   },
 }

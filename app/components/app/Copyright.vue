@@ -10,12 +10,12 @@ const { t } = useI18n()
     class="text-muted px-5 py-2 text-sm"
     href="https://ilko.me"
   >
-    {{ t('madeBy.text') }}
+    {{ t('app.madeBy.text') }}
     <Icon
       class="text-alert-1 mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl"
       name="mdi:heart"
     />
-    {{ t('madeBy.name') }}
+    {{ t('app.madeBy.name') }}
   </a>
 </template>
 
@@ -41,14 +41,3 @@ const { t } = useI18n()
   }
 }
 </style>
-
-<i18n lang="yaml">
-en:
-  madeBy:
-    text: Made with
-    name: by Ilya Komichev
-ru:
-  madeBy:
-    text: Разработал
-    name: Илья Комичев
-</i18n>

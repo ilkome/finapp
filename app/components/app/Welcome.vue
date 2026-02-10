@@ -11,14 +11,14 @@ const trnsFormStore = useTrnsFormStore()
 
 const introText = computed(() => {
   if (!walletsStore.hasItems) {
-    return t('introWallets')
+    return t('welcome.introWallets')
   }
 
   if (!categoriesStore.hasItems) {
-    return t('introCategories')
+    return t('welcome.introCategories')
   }
 
-  return t('intro')
+  return t('welcome.intro')
 })
 </script>
 
@@ -52,24 +52,8 @@ const introText = computed(() => {
         rounded
         @click="trnsFormStore.trnFormCreate()"
       >
-        {{ t('createTrn') }}
+        {{ t('welcome.createTrn') }}
       </UiButtonAccent>
     </div>
   </UiPage>
 </template>
-
-<i18n lang="yaml">
-en:
-  intro: To see statistics
-  introWallets: To see statistics add your first Wallet
-  introCategories: To see statistics add your first Category
-  createTrn: Create your first Transaction
-  welcome: Start creating
-
-ru:
-  intro: Чтобы увидеть статистику
-  introWallets: Чтобы увидеть статистику добавьте первый кошелек
-  introCategories: Чтобы увидеть статистику добавьте первую категорию
-  createTrn: Создайте свою первую Транзакцию
-  welcome: Начать создание
-</i18n>

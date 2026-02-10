@@ -34,7 +34,7 @@ const list = computed(() => {
     <div>
       <FormInput
         :value="searchInput"
-        :placeholder="`${t('search')}...`"
+        :placeholder="`${t('currencies.list.search')}...`"
         @updateValue="(value: string) => searchInput = value"
       />
     </div>
@@ -42,7 +42,7 @@ const list = computed(() => {
     <div class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto py-px pb-3">
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
-          {{ t('notFound') }}
+          {{ t('currencies.list.notFound') }}
         </div>
       </template>
 
@@ -56,11 +56,11 @@ const list = computed(() => {
         >
           <div class="flex items-center">
             <div class="w-14 pl-1">
-              {{ t('all') }}
+              {{ t('currencies.list.all') }}
             </div>
 
             <div class="text-sm">
-              {{ t('showAll') }}
+              {{ t('currencies.list.showAll') }}
             </div>
           </div>
         </UiElement>
@@ -113,17 +113,3 @@ const list = computed(() => {
     </div>
   </div>
 </template>
-
-<i18n lang="yaml">
-en:
-  all: All
-  notFound: Currency not found...
-  search: Search
-  showAll: Show all wallets
-
-ru:
-  all: Все
-  notFound: Валюта не найдена...
-  search: Поиск
-  showAll: Показать все кошельки
-</i18n>

@@ -81,7 +81,7 @@ function setBlackAsPrimary(value: boolean) {
     <template #content>
       <fieldset>
         <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('primary') }}
+          {{ t('theme.picker.primary') }}
         </legend>
 
         <div class="-mx-2 grid grid-cols-3 gap-1">
@@ -109,7 +109,7 @@ function setBlackAsPrimary(value: boolean) {
 
       <fieldset>
         <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('neutral') }}
+          {{ t('theme.picker.neutral') }}
         </legend>
 
         <div class="-mx-2 grid grid-cols-3 gap-1">
@@ -126,7 +126,7 @@ function setBlackAsPrimary(value: boolean) {
 
       <fieldset>
         <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('radius') }}
+          {{ t('theme.picker.radius') }}
         </legend>
 
         <div class="-mx-2 grid grid-cols-5 gap-1">
@@ -143,7 +143,7 @@ function setBlackAsPrimary(value: boolean) {
 
       <fieldset>
         <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('theme') }}
+          {{ t('theme.picker.theme') }}
         </legend>
 
         <div class="-mx-2 grid grid-cols-3 gap-1">
@@ -159,25 +159,3 @@ function setBlackAsPrimary(value: boolean) {
     </template>
   </UPopover>
 </template>
-
-<i18n lang="yaml">
-en:
-  dark: Dark
-  light: Light
-  neutral: Neutral color
-  picker: Theme picker
-  primary: Primary color
-  radius: Radius
-  system: System
-  theme: Theme
-
-ru:
-  dark: Темная
-  light: Светлая
-  neutral: Нейтральный цвет
-  picker: Выбор темы
-  primary: Основной цвет
-  radius: Радиус
-  system: Системная
-  theme: Тема
-</i18n>
