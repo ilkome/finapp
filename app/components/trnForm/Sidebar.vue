@@ -49,7 +49,7 @@ watch(isShow, (v) => {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="trnForm @container/trnForm absolute inset-y-0 right-0 z-50 h-full w-[360px] py-2"
+      class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-[360px] py-4"
     >
       <div class="border-left border-item-6 border-item-4 bg-item-2 relative h-full overflow-hidden rounded-l-xl border border-r-0 shadow-2xl">
         <div class="absolute top-2 right-2">
@@ -60,7 +60,7 @@ watch(isShow, (v) => {
           <div class="swiper-wrapper">
             <!-- Main -->
             <div class="swiper-slide bg-default h-full">
-              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto">
+              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
                   class="!pb-0"
@@ -82,7 +82,7 @@ watch(isShow, (v) => {
               class="swiper-slide bg-[var(--bg-)]"
               :style="{ height: '100%' }"
             >
-              <div class="scrollerBlock h-full overflow-y-auto">
+              <div class="scrollerBlock h-full overflow-y-auto overscroll-contain">
                 <UiTitle3 class="bg-default sticky top-0 z-10 px-4 pt-5 pb-3 md:text-xl">
                   {{ t('trns.history') }}
                 </UiTitle3>

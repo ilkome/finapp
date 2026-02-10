@@ -136,6 +136,8 @@ async function onDeleteConfirm() {
     })
   }, 300)
 }
+
+const categoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
 </script>
 
 <template>
@@ -189,6 +191,18 @@ async function onDeleteConfirm() {
       @closed="isShowDeleteConfirm = false"
       @onConfirm="onDeleteConfirm"
     />
+
+    <div
+      class="grow px-2 lg:px-4 2xl:px-8"
+    >
+      <CategoriesList
+        :ids="categoriesIds"
+        :categoriesItemProps="{
+          class: 'group',
+        }"
+        @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
+      />
+    </div>
 
     <StatWrap
       :activeTab

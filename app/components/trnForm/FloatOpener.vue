@@ -6,16 +6,18 @@ const { onClose, trnFormCreate, ui } = useTrnsFormStore()
 
 <template>
   <div
+    v-if="!ui.isShow"
     class="
-        group absolute right-0 bottom-0 hidden h-full w-[300px] items-end
-        justify-end from-transparent to-[var(--item-5)]
-        transition hover:bg-gradient-to-r xl:flex
-      "
+      group fixed top-0 right-0 h-full w-[300px] items-end
+      justify-end from-transparent to-[var(--item-5)]
+      transition hover:bg-gradient-to-r xl:flex
+    "
     @click="ui.isShow ? onClose() : trnFormCreate()"
   >
     <div
       class="
-        text-icon-primary flex items-center
+        text-icon-primary sticky right-0
+        bottom-0 flex items-center
         justify-center rounded-full
         px-4 py-5 text-2xl
         opacity-70

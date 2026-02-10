@@ -46,7 +46,7 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
 
 <template>
   <UiPage>
-    <UiHeader sticky>
+    <UiHeader>
       <UiHeaderTitle>{{ t('trns.history') }}</UiHeaderTitle>
       <template #actions>
         <StatFilterSelector

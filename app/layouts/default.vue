@@ -58,21 +58,22 @@ defineShortcuts({
       : trnsFormStore.trnFormCreate()
   },
 })
-
-usePageScroll()
 </script>
 
 <template>
   <div
-    :class="{ 'md:pr-[360px]': trnsFormStore.ui.isShow && width >= 767 }"
-    class="h-dvh bg-[var(--item-1)] transition-all duration-300 ease-in-out"
+    class="min-h-dvh transition-all duration-300 ease-in-out sm:pl-12"
+    :class="{
+      'md:pl-72': isShowSidebar && width >= 767,
+      'md:pr-[360px]': trnsFormStore.ui.isShow && width >= 767,
+    }"
     style="margin-left: env(safe-area-inset-left)"
   >
-    <div v-if="status === 'error'">
+    <div v-if="status === 'error'" class="p-4">
       <pre>{{ error }}</pre>
     </div>
 
-    <div v-else-if="status === 'pending' || trnsStore.items === false || walletsStore.items === false">
+    <div v-else-if="status === 'pending' || trnsStore.items === false || walletsStore.items === false" class="p-4">
       {{ t('base.loading') }}
     </div>
 
@@ -83,17 +84,12 @@ usePageScroll()
         @toggleSidebar="isShowSidebar = !isShowSidebar"
       />
 
-      <div
-        class="grid h-full overflow-hidden sm:pl-12 md:p-4 md:pl-12"
-        :class="{
-          'sm:pl-74 md:pl-74': isShowSidebar && width >= 767,
-        }"
-      >
-        <div class="bg-default sm:border-item-4 relative z-10 h-full max-w-5xl overflow-hidden sm:rounded-md sm:border lg:rounded-2xl">
+      <div class="md:py-4 md:pr-4">
+        <div class="bg-default sm:border-item-4 relative z-10 max-w-5xl contain-paint sm:rounded-md sm:border lg:rounded-2xl">
           <main
             id="pageScroll"
             style="padding-bottom: calc(50px + env(safe-area-inset-bottom))"
-            class="@container/main grid h-full overflow-hidden overflow-y-auto"
+            class="@container/main contain-paint"
           >
             <slot :keepalive="{ include: keepalive }" />
           </main>
@@ -102,7 +98,6 @@ usePageScroll()
 
       <TrnFormFloatOpener />
 
-      <!-- Menu -->
       <LayoutMenuBottom />
       <LayoutMenuBottomModal v-if="isModalOpen('menu')" />
     </template>

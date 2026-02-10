@@ -501,6 +501,10 @@ const isOpen = ref(false)
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
 
       <template #actions>
+        <UiItem3 @click="router.push('/wallets/new')">
+          <Icon name="lucide:plus" size="24" />
+        </UiItem3>
+
         <BottomSheetOrDropdown
           :isOpen="isOpen"
           isShowCloseBtn
@@ -514,20 +518,13 @@ const isOpen = ref(false)
           </template>
 
           <template #content>
-            <div class="p-1 pb-3 pt-4">
+            <div class="p-1 pt-4 pb-3">
               <UiHeaderLink
                 v-if="walletsStore.sortedIds.length > 1"
                 icon="lucide:arrow-down-up"
                 @click="openModal('walletsSort')"
               >
                 {{ t('wallets.sortTitle') }}
-              </UiHeaderLink>
-
-              <UiHeaderLink
-                icon="lucide:plus"
-                @click="router.push('/wallets/new')"
-              >
-                {{ t('wallets.new') }}
               </UiHeaderLink>
             </div>
           </template>
@@ -552,10 +549,10 @@ const isOpen = ref(false)
     <!-- Content -->
     <div
       v-else
-      class="@xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12 grid max-w-5xl grow px-2 lg:px-4 2xl:px-8"
+      class="grid max-w-5xl grow px-2 lg:px-4 2xl:px-8 @xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12"
     >
       <!-- Right -->
-      <div class="@xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 grid content-start gap-3 @3xl/main:max-w-sm">
+      <div class="grid content-start gap-3 @xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 @3xl/main:max-w-sm">
         <!-- Wallets Currencies -->
         <WalletsCurrencies
           v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
@@ -645,7 +642,7 @@ const isOpen = ref(false)
         </div>
 
         <!-- Wallets List -->
-        <div class="@xl/page:max-w-lg md:max-w-lg">
+        <div class="md:max-w-lg @xl/page:max-w-lg">
           <!-- No grouping -->
           <div
             v-if="groupedBy === 'none'"
@@ -686,7 +683,7 @@ const isOpen = ref(false)
                   :isShown
                   @click="toggleMap(groupPrimary)"
                 >
-                  <div class="font-tertiary !text-3 text-base font-semibold leading-none">
+                  <div class="font-tertiary !text-3 text-base leading-none font-semibold">
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 
@@ -725,7 +722,7 @@ const isOpen = ref(false)
                       :isShown
                       @click="toggleMap(groupPrimary, groupSecondary)"
                     >
-                      <div class="font-tertiary text-base font-semibold leading-none">
+                      <div class="font-tertiary text-base leading-none font-semibold">
                         {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
                       </div>
                       <div class="ml-auto">
