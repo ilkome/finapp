@@ -42,7 +42,7 @@ const { isDemo } = useDemo()
               rounded
               @click="userStore.signOut"
             >
-              {{ t("demo.exit") }}
+              {{ t('demo.exit') }}
             </UiButtonAccent>
           </div>
         </div>

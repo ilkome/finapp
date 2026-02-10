@@ -43,7 +43,7 @@ const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'lis
         <UiButtonAccent
           @click="router.push('/categories/new')"
         >
-          {{ t("categories.new") }}
+          {{ t('categories.new') }}
         </UiButtonAccent>
       </div>
     </div>

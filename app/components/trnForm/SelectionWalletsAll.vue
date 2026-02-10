@@ -17,7 +17,7 @@ const trnsFormStore = useTrnsFormStore()
 <template>
   <div>
     <UiTitleModal @click="trnsFormStore.ui.walletsModal = true">
-      {{ $t("wallets.title") }}
+      {{ $t('wallets.title') }}
     </UiTitleModal>
 
     <WalletsSelector

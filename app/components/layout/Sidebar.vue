@@ -79,7 +79,7 @@ const isShowLogoMenu = ref(false)
           class="px-4"
         >
           <UiButtonAccent @click="userStore.signOut">
-            {{ t("demo.exit") }}
+            {{ t('demo.exit') }}
           </UiButtonAccent>
         </div>
 
@@ -115,7 +115,7 @@ const isShowLogoMenu = ref(false)
                 class="px-2"
               >
                 <UiButtonAccent @click="router.push('/wallets/new')">
-                  {{ t("wallets.new") }}
+                  {{ t('wallets.new') }}
                 </UiButtonAccent>
               </div>
             </template>

@@ -42,7 +42,7 @@ const list = computed(() => {
     <div class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto py-px pb-3">
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
-          {{ t("notFound") }}
+          {{ t('notFound') }}
         </div>
       </template>
 
@@ -56,11 +56,11 @@ const list = computed(() => {
         >
           <div class="flex items-center">
             <div class="w-14 pl-1">
-              {{ t("all") }}
+              {{ t('all') }}
             </div>
 
             <div class="text-sm">
-              {{ t("showAll") }}
+              {{ t('showAll') }}
             </div>
           </div>
         </UiElement>

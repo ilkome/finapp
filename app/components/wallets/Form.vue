@@ -237,7 +237,7 @@ async function onSave() {
       <template #default="{ close }">
         <div class="bottomSheetContent">
           <div>
-            <UiTitleModal>{{ t("color.label") }}</UiTitleModal>
+            <UiTitleModal>{{ t('color.label') }}</UiTitleModal>
             <WalletsItem
               :walletId="props.walletId ?? 'editWalletId'"
               :wallet="walletPlaceholder"

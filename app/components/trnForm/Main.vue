@@ -47,7 +47,7 @@ function show(slide: number) {
     />
 
     <UiTitleModal @click="trnsFormStore.values.trnId = null">
-      {{ trnsFormStore.values.trnId ? t("trnForm.titleEditTrn") : t("trnForm.createTrn") }}
+      {{ trnsFormStore.values.trnId ? t('trnForm.titleEditTrn') : t('trnForm.createTrn') }}
     </UiTitleModal>
 
     <TrnFormEditedTrn v-if="trnsFormStore.values.trnId" />

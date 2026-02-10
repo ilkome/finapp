@@ -65,7 +65,7 @@ onMounted(() => {
             <div
               class="scrollerBlock rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center font-primary text-xl font-semibold"
             >
-              {{ $t("categories.title") }}
+              {{ $t('categories.title') }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -108,7 +108,7 @@ onMounted(() => {
           :isActive="sliderObj.activeIndex === 1"
           @click="sliderObj.slideTo(1)"
         >
-          {{ $t("categories.allTitle") }}
+          {{ $t('categories.allTitle') }}
         </UiTabsItem1>
 
         <UiTabsItem1
