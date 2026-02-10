@@ -4,6 +4,7 @@ import type { TrnType } from '~/components/trns/types'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 
@@ -22,14 +23,14 @@ function isItActive(amountType: TrnType) {
       :isActive="isItActive(0)"
       @click="setAmountType(0)"
     >
-      {{ $t('money.expense') }}
+      {{ t('money.expense') }}
     </UiTabsItem3>
 
     <UiTabsItem3
       :isActive="isItActive(1)"
       @click="setAmountType(1)"
     >
-      {{ $t('money.income') }}
+      {{ t('money.income') }}
     </UiTabsItem3>
 
     <UiTabsItem3
@@ -37,7 +38,7 @@ function isItActive(amountType: TrnType) {
       :isActive="isItActive(2)"
       @click="setAmountType(2)"
     >
-      {{ $t('trnForm.transferTitle') }}
+      {{ t('trnForm.transferTitle') }}
     </UiTabsItem3>
   </UiTabs1>
 </template>

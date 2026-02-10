@@ -57,7 +57,7 @@ const itemsGrouped = computed(() => [
         >
           <div class="text-muted grow pl-1 text-sm leading-none">
             <div>
-              {{ $t(`money.types.${item.id}`) }}
+              {{ t(`money.types.${item.id}`) }}
             </div>
 
             <div

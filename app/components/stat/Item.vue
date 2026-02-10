@@ -336,7 +336,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
         <div class="bottomSheetContent">
           <UiTitleModal>
-            {{ $t('trns.title') }} {{ quickViewTrns.length > 0 ? quickViewTrns.length : '' }}
+            {{ t('trns.title') }} {{ quickViewTrns.length > 0 ? quickViewTrns.length : '' }}
           </UiTitleModal>
 
           <div class="scrollerBlock bottomSheetContentInside pb-2">
@@ -371,7 +371,7 @@ function getIntervalsData(trnsIds: TrnId[], intervalsInRange: Range[]) {
 
         <div class="bottomSheetContent">
           <UiTitleModal>
-            {{ $t('trns.title') }} {{ selectedAndFilteredTrnsIds.length > 0 ? selectedAndFilteredTrnsIds.length : '' }}
+            {{ t('trns.title') }} {{ selectedAndFilteredTrnsIds.length > 0 ? selectedAndFilteredTrnsIds.length : '' }}
           </UiTitleModal>
 
           <div class="scrollerBlock bottomSheetContentInside">

@@ -11,6 +11,7 @@ const emit = defineEmits<{
   (e: 'click', id: CategoryId): void
 }>()
 
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 
@@ -48,7 +49,7 @@ onMounted(() => {
             <div
               class="scrollerBlock font-primary rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center text-xl font-semibold"
             >
-              {{ $t('categories.recentCategories') }}
+              {{ t('categories.recentCategories') }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -65,7 +66,7 @@ onMounted(() => {
             <div
               class="scrollerBlock font-primary rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center text-xl font-semibold"
             >
-              {{ $t('categories.title') }}
+              {{ t('categories.title') }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -80,7 +81,7 @@ onMounted(() => {
           <!-- Favorite -->
           <div class="swiper-slide h-full">
             <div class="scrollerBlock font-primary rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center text-xl font-semibold">
-              {{ $t('categories.favoriteCategories') }}
+              {{ t('categories.favoriteCategories') }}
             </div>
             <div class="px-3 pb-1">
               <CategoriesList
@@ -101,21 +102,21 @@ onMounted(() => {
           :isActive="sliderObj.activeIndex === 0"
           @click="sliderObj.slideTo(0)"
         >
-          {{ $t('categories.recentCategories') }}
+          {{ t('categories.recentCategories') }}
         </UiTabsItem1>
 
         <UiTabsItem1
           :isActive="sliderObj.activeIndex === 1"
           @click="sliderObj.slideTo(1)"
         >
-          {{ $t('categories.allTitle') }}
+          {{ t('categories.allTitle') }}
         </UiTabsItem1>
 
         <UiTabsItem1
           :isActive="sliderObj.activeIndex === 2"
           @click="sliderObj.slideTo(2)"
         >
-          {{ $t('categories.favoriteCategories') }}
+          {{ t('categories.favoriteCategories') }}
         </UiTabsItem1>
       </UiTabs1>
     </div>

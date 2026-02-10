@@ -71,7 +71,7 @@ const items = computed(() => ({
                   />
                 </template>
 
-                {{ $t(item.localeKey) }}
+                {{ t(item.localeKey) }}
               </UiElement>
             </div>
           </div>

@@ -38,8 +38,8 @@ const currenciesStore = useCurrenciesStore()
         </UiTitle6>
 
         <UiTitle6 v-if="!props.title">
-          {{ props.isTotal ? $t('money.all') : '' }}
-          {{ $t(`money.${props.type}`) }}
+          {{ props.isTotal ? t('money.all') : '' }}
+          {{ t(`money.${props.type}`) }}
         </UiTitle6>
 
         <Amount

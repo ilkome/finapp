@@ -11,13 +11,14 @@ const emit = defineEmits<{
   onSelectWallet: [id: WalletId]
 }>()
 
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 </script>
 
 <template>
   <div>
     <UiTitleModal @click="trnsFormStore.ui.walletsModal = true">
-      {{ $t('wallets.title') }}
+      {{ t('wallets.title') }}
     </UiTitleModal>
 
     <WalletsSelector

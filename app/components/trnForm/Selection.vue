@@ -26,6 +26,7 @@ const isShow = defineModel('isShow', {
   default: false,
 })
 
+const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 
@@ -120,7 +121,7 @@ async function onSelectParentCategory(id: CategoryId) {
                   class="sticky top-0 z-10 bg-[var(--item-1)] px-3 pt-4 pb-3"
                   @click="trnsFormStore.ui.catsRootModal = true"
                 >
-                  {{ $t('categories.title') }}
+                  {{ t('categories.title') }}
                 </UiTitle3>
                 <CategoriesSelector
                   @onSelected="id => onSelectCategory(id, close)"
