@@ -24,6 +24,7 @@ export default [
         'perfectionist/sort-named-exports': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-object-types': ['error', { order: 'asc', type: 'natural' }],
         'perfectionist/sort-objects': ['error', { order: 'asc', type: 'natural' }],
+        'pnpm/json-valid-catalog': 'off',
         'tailwindcss/no-custom-classname': 'off',
         'vue/attribute-hyphenation': ['error', 'never'],
         'vue/v-on-event-hyphenation': ['error', 'never'],
