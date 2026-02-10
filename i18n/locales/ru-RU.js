@@ -10,10 +10,6 @@ export default {
     willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены',
   },
 
-  analytics: {
-    title: 'Аналитика',
-  },
-
   app: {
     about: 'О приложении',
     desc: 'Приложение для учета личных финансов',
@@ -34,28 +30,15 @@ export default {
     delete: 'Удалить',
     duplicate: 'Дублировать',
     edit: 'Редактировать',
-    filter: 'Фильтр',
     loading: 'Загрузка...',
     no: 'Нет',
-    off: 'Нет',
-    ok: 'Хорошо',
-    on: 'Да',
     save: 'Сохранить',
-    setFilter: 'Фильтр',
-    sort: 'Сортировка',
     sure: 'Удалить?',
     yes: 'Да',
   },
 
-  buttons: {
-    nextStep: 'Далее',
-    nextTitle: 'Следующий',
-    prevTitle: 'Прошлый',
-  },
-
   categories: {
     allTitle: 'Все',
-    childs: 'Дочерние категории',
     createNewTitle: 'Добавить категорию',
     favoriteCategories: 'Избранные категории',
     filter: 'Фильтр по категориям',
@@ -72,6 +55,7 @@ export default {
         desc: 'Используйте любую иконку из набора',
         label: 'Иконка',
         link: 'Ссылка',
+        placeholder: 'Название иконки...',
       },
       name: {
         error: 'Напишите название категории',
@@ -84,7 +68,6 @@ export default {
         no: 'Без родителя',
       },
       recentCategory: 'Показывать в недавно использованных',
-      save: 'Сохранить',
       selectColor: 'Цвет категории',
       selectIcon: 'Иконка категории',
       selectParent: 'Родительская категория',
@@ -99,34 +82,20 @@ export default {
   },
 
   chart: {
-    options: 'Настройки графика',
-    title: 'График',
     types: {
       bar: 'Колонки',
       line: 'Линии',
     },
   },
 
-  close: 'Закрыть',
-
   color: {
     custom: 'Произвольный цвет',
-    error: 'Выберите цвет',
     label: 'Цвет',
-    placeholder: 'Выберите цвет',
   },
-
-  colors: 'Цвета',
 
   common: {
     all: 'Все',
     date: 'Дата',
-    in: 'в',
-    open: 'Открыть',
-  },
-
-  create: {
-    title: 'Создать',
   },
 
   currencies: {
@@ -140,10 +109,6 @@ export default {
     select: 'Выбрать валюту',
   },
 
-  currency: {
-    title: 'Валюта',
-  },
-
   dates: {
     calendar: {
       calendar: 'Календарь',
@@ -153,11 +118,9 @@ export default {
     day: {
       current: 'Сегодня',
       last: 'Вчера',
-      next: 'Завтра',
       plural: 'дней | день | дня | дней',
       short: 'д',
       simple: 'День',
-      today: 'Сегодня',
     },
     last: {
       day: 'Последних | Последний | Последние | Последние',
@@ -172,7 +135,6 @@ export default {
       short: 'м',
       simple: 'Месяц',
     },
-    period: 'Период',
     ranges: {
       all: 'Все',
       allSkipEmpty: 'Максимально',
@@ -196,7 +158,6 @@ export default {
 
   demo: {
     exit: 'Выйти из демо режима',
-    loaded: 'Данные загружены',
     update: 'Обновить демо данные',
     updated: 'Данные обновлены',
   },
@@ -220,12 +181,10 @@ export default {
     title: 'Вход',
   },
 
-  loginWithGithub: 'Войти через Github',
   loginWithGoogle: 'Войти через Google',
 
   money: {
     all: 'Всего',
-    also: 'Еще',
     average: 'Среднее',
     balance: 'Баланс',
     expense: 'Расход',
@@ -238,29 +197,14 @@ export default {
     split: 'Раздельно',
     summary: 'Общее',
     totals: {
-      all: 'Всего',
       archived: 'Архивный',
-      available: 'Доступные',
-      creditPossible: 'Доступный кредитный лимит',
-      isCash: 'Наличные',
-      isCashless: 'Безнал',
-      isCredit: 'Кредиты',
-      isDebt: 'Долги',
-      isDeposit: 'Вклады',
-      isExcludeTotal: 'Не считать в общем балансе',
-      other: 'Другое',
-      withCredit: 'Без учета кредита',
-      withdrawal: 'Доступные',
     },
-    transfer: 'Перевод',
     type: 'Тип кошельки',
     types: {
-      all: 'Всего',
       available: 'Доступные для снятия',
       cash: 'Наличные',
       cashless: 'Безнал',
       credit: 'Кредит',
-      creditPossible: 'Доступный кредитный лимит',
       crypto: 'Крипта',
       debt: 'Долги',
       deposit: 'Вклады',
@@ -270,30 +214,18 @@ export default {
       isWithdrawal: 'Доступные для снятия',
       total: 'Всего',
     },
-    wallets: 'Кошельки',
-  },
-
-  periods: {
-    menu: 'Периоды',
   },
 
   settings: {
-    app: 'Приложение',
     caution: 'C осторожностью',
-    currencyDesc: 'Основная валюта, в которую будут конвертироваться транзакции в других валютах.',
     deleteButton: 'Удалить все мои данные',
-    lang: 'Язык приложения',
-    open: 'Открыть настройки',
-    options: 'Опции',
     title: 'Настройки',
-    user: 'Пользователь',
   },
 
   stat: {
     average: {
       forLast: 'за прошлые периоды',
     },
-    balanceTitle: 'Баланс',
     catButtons: {
       alt: 'Альтернативный',
       elements: 'Элементы',
@@ -303,35 +235,17 @@ export default {
       listItemsOptions: 'Настройки списка категорий',
       minimal: 'Легкий',
       standard: 'Стандартный',
-      vertical: {
-        grouping: 'Группировать',
-        show: 'Вертикальные категории',
-      },
     },
     config: {
       categories: {
-        grouping: {
-          grouped: 'Группировать',
-          label: 'Группировка',
-          ungrouped: 'Не группировать',
-        },
         list: {
           title: 'Список категорий',
         },
         rounds: {
           title: 'Круглые категории',
         },
-        title: 'Настройки категорий',
         vertical: {
-          grouped: 'Группировать',
-          label: 'Вертикальный график',
           title: 'Вертикальный график',
-          ungrouped: 'Не группировать',
-        },
-        view: {
-          label: 'Вид категорий',
-          list: 'Список',
-          round: 'Круглые',
         },
       },
       chart: {
@@ -359,20 +273,19 @@ export default {
       menu: {
         label: 'Настройки страницы',
       },
-
+      showedWallets: {
+        placeholder: 'Количество',
+      },
       statAverage: {
         count: {
           label: 'Показывать средние значения',
         },
-        title: 'Средние значения',
       },
-
       wallets: {
         label: 'Показывать кошельки',
         title: 'Кошельки',
       },
     },
-    empty: 'Статистики по выбранным параметрам нет :)',
     title: 'Статистика',
   },
 
@@ -389,9 +302,7 @@ export default {
       primary: 'Основной цвет',
       radius: 'Радиус',
       theme: 'Тема',
-      title: 'Выбор темы',
     },
-    select: 'Выберите тему',
     system: 'Авто',
     title: 'Тема',
   },
@@ -401,8 +312,6 @@ export default {
   },
 
   trnForm: {
-    btnCalculate: 'Посчитать результат',
-    btnSave: 'Сохранить',
     category: {
       select: 'Выбрать категорию',
     },
@@ -427,9 +336,6 @@ export default {
     filterAll: 'Все',
     filterWallet: 'Кошелек',
     filterWalletAndCategory: 'Кошелек и Категория',
-    lastUsedCats: 'Показывать последние использованные категории',
-    saveTrnButton: 'Сохранить',
-    title: 'Создание транзакции',
     titleEditTrn: 'Редактирование транзакции',
     transfer: {
       expense: 'Перевод из',
@@ -454,10 +360,6 @@ export default {
 
   userLogout: 'Выход',
 
-  users: {
-    title: 'Пользователи',
-  },
-
   wallets: {
     createNewTitle: 'Добавить кошелек',
     filter: 'Фильтровать кошельки',
@@ -469,13 +371,10 @@ export default {
         limit: 'Лимит',
       },
       currencies: {
-        error: 'Выберите валюту',
         label: 'Валюта',
-        placeholder: 'Выберите валюту',
       },
       delete: {
         alertWithTrns: `Так же будут удалены {trns}`,
-        errorChilds: 'Вы не можете удалить кошелек с транзакциями. Сначала удалите транзакции.',
         okWithoutTrns: 'Кошелек удален',
         okWithTrns: `Кошелек удален и {trns}`,
       },
@@ -484,14 +383,8 @@ export default {
         placeholder: 'Напишите...',
       },
       name: {
-        error: 'Напишите название кошелька',
-        exist: 'Кошелек с таким именем уже существует',
         label: 'Название кошелька',
         placeholder: 'Напишите...',
-      },
-      save: 'Сохранить',
-      total: {
-        placeholder: 'Деньги доступны для снятия',
       },
     },
     name: 'Кошельки',
@@ -501,7 +394,6 @@ export default {
       none: 'Список',
       type: 'Тип',
     },
-    properties: 'Свойства кошелька',
     showAll: 'Показать все',
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
@@ -513,6 +405,5 @@ export default {
     intro: 'Чтобы увидеть статистику',
     introCategories: 'Чтобы увидеть статистику добавьте первую категорию',
     introWallets: 'Чтобы увидеть статистику добавьте первый кошелек',
-    start: 'Начать создание',
   },
 }

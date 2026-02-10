@@ -10,10 +10,6 @@ export default {
     willDeleteEverything: 'This will delete all your wallets, categories and transactions',
   },
 
-  analytics: {
-    title: 'Analytics',
-  },
-
   app: {
     about: 'About',
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
@@ -34,28 +30,15 @@ export default {
     delete: 'Delete',
     duplicate: 'Duplicate',
     edit: 'Edit',
-    filter: 'Filter',
     loading: 'Loading...',
     no: 'No',
-    off: 'Off',
-    ok: 'Ok',
-    on: 'On',
     save: 'Save',
-    setFilter: 'Filter by',
-    sort: 'Sort',
     sure: 'Confirm action',
     yes: 'Yes',
   },
 
-  buttons: {
-    nextStep: 'Continue',
-    nextTitle: 'Next',
-    prevTitle: 'Prev',
-  },
-
   categories: {
     allTitle: 'All',
-    childs: 'Child categories',
     createNewTitle: 'Add category',
     favoriteCategories: 'Favorite categories',
     filter: 'Filter categories',
@@ -72,6 +55,7 @@ export default {
         desc: 'Choose any icon from',
         label: 'Icon',
         link: 'Link',
+        placeholder: 'Icon name...',
       },
       name: {
         error: 'Please enter a category name',
@@ -83,9 +67,10 @@ export default {
         label: 'Parent category',
         no: 'Without parent',
       },
-      quickSelector: 'Favorite category',
       recentCategory: 'Recent category',
-      save: 'Save',
+      selectColor: 'Category color',
+      selectIcon: 'Category icon',
+      selectParent: 'Parent category',
     },
     name: 'Categories',
     new: 'New category',
@@ -93,41 +78,24 @@ export default {
     search: {
       placeholder: 'Search categories...',
     },
-    selectColor: 'Category color',
-    selectIcon: 'Category icon',
-    selectParent: 'Parent category',
     title: 'Categories',
   },
 
   chart: {
-    options: 'Chart options',
-    title: 'Chart',
     types: {
       bar: 'Bars',
       line: 'Lines',
     },
   },
 
-  close: 'Close',
-
   color: {
     custom: 'Custom color',
-    error: 'Select color',
     label: 'Color',
-    placeholder: 'Select color',
   },
-
-  colors: 'Colors',
 
   common: {
     all: 'All',
     date: 'Date',
-    in: 'in',
-    open: 'Open',
-  },
-
-  create: {
-    title: 'Create',
   },
 
   currencies: {
@@ -141,10 +109,6 @@ export default {
     select: 'Select currency',
   },
 
-  currency: {
-    title: 'Currency',
-  },
-
   dates: {
     calendar: {
       calendar: 'Calendar',
@@ -154,11 +118,9 @@ export default {
     day: {
       current: 'Today',
       last: 'Yesterday',
-      next: 'Tomorrow',
       plural: 'days | day | days | days',
       short: 'd',
       simple: 'Day',
-      today: 'Today',
     },
     last: {
       day: 'Last',
@@ -173,7 +135,6 @@ export default {
       short: 'm',
       simple: 'Month',
     },
-    period: 'Period',
     ranges: {
       all: 'All',
       allSkipEmpty: 'Maximum',
@@ -197,7 +158,6 @@ export default {
 
   demo: {
     exit: 'Exit demo mode',
-    loaded: 'Data loaded',
     update: 'Update demo data',
     updated: 'Data updated',
   },
@@ -221,12 +181,10 @@ export default {
     title: 'Login',
   },
 
-  loginWithGithub: 'Login with Github',
   loginWithGoogle: 'Login with Google',
 
   money: {
     all: 'Total',
-    also: 'Also',
     average: 'Average',
     balance: 'Balance',
     expense: 'Expense',
@@ -239,29 +197,14 @@ export default {
     split: 'Split',
     summary: 'Summary',
     totals: {
-      all: 'Total',
       archived: 'Archived',
-      available: 'Available',
-      creditPossible: 'Credit limits',
-      isCash: 'Cash',
-      isCashless: 'Cashless',
-      isCredit: 'Credits',
-      isDebt: 'Debts',
-      isDeposit: 'Deposit',
-      isExcludeTotal: 'Excluded from totals',
-      other: 'Other',
-      withCredit: 'Total without credit',
-      withdrawal: 'Withdrawal',
     },
-    transfer: 'Transfer',
     type: 'Wallet type',
     types: {
-      all: 'Total',
       available: 'Available',
       cash: 'Cash',
       cashless: 'Cashless',
       credit: 'Credit',
-      creditPossible: 'Credit limits',
       crypto: 'Crypto',
       debt: 'Debt',
       deposit: 'Deposit',
@@ -271,30 +214,18 @@ export default {
       isWithdrawal: 'Withdrawal',
       total: 'Total',
     },
-    wallets: 'Wallets',
-  },
-
-  periods: {
-    menu: 'Periods',
   },
 
   settings: {
-    app: 'Application',
     caution: 'With caution',
-    currencyDesc: 'Transactions in different currencies will be converted to this currency.',
     deleteButton: 'Delete my data',
-    lang: 'Language',
-    open: 'Open settings',
-    options: 'Options',
     title: 'Settings',
-    user: 'User',
   },
 
   stat: {
     average: {
       forLast: 'for the last periods',
     },
-    balanceTitle: 'Balance',
     catButtons: {
       alt: 'Alternative',
       elements: 'Elements',
@@ -304,35 +235,17 @@ export default {
       listItemsOptions: 'List items options',
       minimal: 'Minimal',
       standard: 'Standard',
-      vertical: {
-        grouping: 'Grouping',
-        show: 'Vertical categories',
-      },
     },
     config: {
       categories: {
-        grouping: {
-          grouped: 'Grouped',
-          label: 'Grouping',
-          ungrouped: 'Not grouped',
-        },
         list: {
           title: 'List categories',
         },
         rounds: {
           title: 'Rounds categories',
         },
-        title: 'Categories config',
         vertical: {
-          grouped: 'Grouped',
-          label: 'Vertical chart',
           title: 'Vertical chart',
-          ungrouped: 'Not grouped',
-        },
-        view: {
-          label: 'View as',
-          list: 'List',
-          round: 'Round',
         },
       },
       chart: {
@@ -360,11 +273,13 @@ export default {
       menu: {
         label: 'Page Settings',
       },
+      showedWallets: {
+        placeholder: 'Count',
+      },
       statAverage: {
         count: {
           label: 'Show average values',
         },
-        title: 'Average values',
       },
       wallets: {
         label: 'Show wallets',
@@ -387,9 +302,7 @@ export default {
       primary: 'Primary color',
       radius: 'Radius',
       theme: 'Theme',
-      title: 'Theme picker',
     },
-    select: 'Select theme',
     system: 'System',
     title: 'Theme',
   },
@@ -399,8 +312,6 @@ export default {
   },
 
   trnForm: {
-    btnCalculate: 'Calculate',
-    btnSave: 'Save',
     category: {
       select: 'Select category',
     },
@@ -425,9 +336,6 @@ export default {
     filterAll: 'All',
     filterWallet: 'Wallet',
     filterWalletAndCategory: 'Wallet & Category',
-    lastUsedCats: 'Show last used categories',
-    saveTrnButton: 'Save transaction',
-    title: 'Transaction form',
     titleEditTrn: 'Edit transaction',
     transfer: {
       expense: 'Transfer from',
@@ -452,10 +360,6 @@ export default {
 
   userLogout: 'Logout',
 
-  users: {
-    title: 'Users',
-  },
-
   wallets: {
     createNewTitle: 'Add wallet',
     filter: 'Filter wallets',
@@ -467,13 +371,10 @@ export default {
         limit: 'Limit',
       },
       currencies: {
-        error: 'Select currency',
         label: 'Currency',
-        placeholder: 'Select currency',
       },
       delete: {
         alertWithTrns: `This will delete {trns}`,
-        errorChilds: 'You can not delete wallet with child categories. Delete child categories first.',
         okWithoutTrns: 'Wallet deleted',
         okWithTrns: `Wallet deleted and {trns}`,
       },
@@ -482,14 +383,8 @@ export default {
         placeholder: 'Write...',
       },
       name: {
-        error: 'Please enter a wallet name',
-        exist: 'A wallet with this name already exists',
         label: 'Wallet name',
         placeholder: 'Write...',
-      },
-      save: 'Save',
-      total: {
-        placeholder: 'Cash withdrawal',
       },
     },
     name: 'Wallets',
@@ -499,7 +394,6 @@ export default {
       none: 'List',
       type: 'Type',
     },
-    properties: 'Properties',
     showAll: 'Show all',
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
@@ -511,6 +405,5 @@ export default {
     intro: 'To see statistics',
     introCategories: 'To see statistics add your first Category',
     introWallets: 'To see statistics add your first Wallet',
-    start: 'Start creating',
   },
 }
