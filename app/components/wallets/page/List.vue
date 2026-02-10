@@ -801,4 +801,3 @@ const isOpen = ref(false)
     @onClose="isShowCurrencyFilter = false"
   />
 </template>
-</i18n>
