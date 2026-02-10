@@ -36,8 +36,8 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       @onCloseModal="isShow = false"
     >
       <template #trigger>
-        <UiItem1 class="grid grow !justify-start p-2 text-2">
-          <div class="text-sm text-1">
+        <UiItem1 class="text-2 grid grow !justify-start p-2">
+          <div class="text-1 text-sm">
             {{ formattedDate.day }} {{ formattedDate.month }}
           </div>
           <div class="font-regular text-2xs leading-none">

@@ -1,5 +1,5 @@
 <template>
-  <div class="font-brand text-2xl font-bold first-letter:text-primary">
+  <div class="font-brand first-letter:text-primary text-2xl font-bold">
     {{ $t('appName') }}
   </div>
 </template>

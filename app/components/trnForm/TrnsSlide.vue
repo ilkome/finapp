@@ -93,7 +93,7 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
           <UiTabsItem1
             v-for="tab in tabs"
             :key="tab.id"
-            class="whitespace-nowrap text-xs"
+            class="text-xs whitespace-nowrap"
             :isActive="tab.id === filterBy"
             @click="changeFilter(tab.id)"
           >

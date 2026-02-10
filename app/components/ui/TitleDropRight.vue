@@ -18,7 +18,7 @@ const emit = defineEmits<{
     <Icon
       :name="props.isShown ? 'lucide:chevron-down' : 'lucide:chevron-right'"
       size="22"
-      class="-ml-1 !text-4"
+      class="!text-4 -ml-1"
     />
     <slot />
   </div>

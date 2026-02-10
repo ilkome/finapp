@@ -124,7 +124,7 @@ function selectMaxRange(isSkipEmpty = false) {
     </template>
 
     <template v-if="props.isShowRangeAdjust">
-      <div class="flex border border-default rounded-sm bg-default p-px gap-1">
+      <div class="border-default bg-default flex gap-1 rounded-sm border p-px">
         <DateLinkItem
           v-bind="props.itemProps"
           @click="props.statDate.minusRange"

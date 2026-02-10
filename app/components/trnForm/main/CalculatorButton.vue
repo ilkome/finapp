@@ -7,18 +7,18 @@ const emit = defineEmits<{
 <template>
   <div
     class="
-      @xs/trnForm:w-14 @sm/trnForm:w-16
-      flex aspect-square w-12
+      bg-item-3 font-secondary
+      text-2 hover:border-item-6 flex
+      aspect-square
+      w-12
       items-center
-      justify-center
-      rounded-full
-      bg-item-3 p-1 font-secondary
+      justify-center rounded-full p-1
       text-2xl
       font-normal
-      text-2 transition
-      hover:scale-[1.02]
-      hover:border-item-6
+      transition hover:scale-[1.02]
       hover:bg-[var(--item-5)]
+      @xs/trnForm:w-14
+      @sm/trnForm:w-16
     "
     tabindex="0"
     @click="() => emit('click')"

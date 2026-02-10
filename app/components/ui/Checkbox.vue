@@ -25,7 +25,7 @@ function handleClick() {
       :value="checkboxValue"
     />
 
-    <div class="grow text-muted">
+    <div class="text-muted grow">
       {{ title }}
     </div>
   </div>

@@ -30,7 +30,7 @@ const itemsGrouped = computed(() => [
     :initStatus="true"
     :lineWidth="0"
     :storageKey="props.storageKey"
-    class="mb-2 rounded-xl bg-item-2 md:max-w-lg"
+    class="bg-item-2 mb-2 rounded-xl md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
       <div class="flex grow items-center justify-between">
@@ -55,7 +55,7 @@ const itemsGrouped = computed(() => [
           insideClasses="!min-h-[44px]"
           @click="emit('click', item.id)"
         >
-          <div class="grow pl-1 text-sm leading-none text-muted">
+          <div class="text-muted grow pl-1 text-sm leading-none">
             <div>
               {{ $t(`money.types.${item.id}`) }}
             </div>
@@ -69,7 +69,7 @@ const itemsGrouped = computed(() => [
                 :currencyCode="currencyCode"
                 variant="2xs"
               />
-              <div class="text-2xs leading-none opacity-70 leading-none">
+              <div class="text-2xs leading-none opacity-70">
                 /
               </div>
               <Amount

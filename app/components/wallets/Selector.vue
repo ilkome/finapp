@@ -36,7 +36,7 @@ function onClickWallet(walletId: WalletId) {
 
 <template>
   <div
-    class="grid gap-2 h-full overflow-hidden"
+    class="grid h-full gap-2 overflow-hidden"
     :class="{ 'grid-rows-[auto_1fr]': walletsStore.currenciesUsed.length > 1 }"
   >
     <div
@@ -49,7 +49,7 @@ function onClickWallet(walletId: WalletId) {
       />
     </div>
 
-    <div class="overflow-y-auto scrollerBlock h-full py-px">
+    <div class="scrollerBlock h-full overflow-y-auto py-px">
       <WalletsItem
         v-for="walletId in selectedWalletsIdsWithCurrency"
         :key="walletId"

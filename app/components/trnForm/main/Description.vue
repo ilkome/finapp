@@ -34,7 +34,7 @@ function onSave(close: () => void) {
         <Icon name="lucide:message-square" size="26" />
         <div
           v-if="!!trnsFormStore.values.desc"
-          class="absolute right-1 top-1 aspect-square w-2 rounded-full bg-(--ui-primary)"
+          class="absolute top-1 right-1 aspect-square w-2 rounded-full bg-(--ui-primary)"
         />
       </TrnFormMainCalculatorButton>
     </template>

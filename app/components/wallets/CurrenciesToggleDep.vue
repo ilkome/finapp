@@ -20,7 +20,7 @@ const walletsStore = useWalletsStore()
   <UiToggleWithStorage
     :initStatus="true"
     :lineWidth="0"
-    class="@xl/page:max-w-xl grid md:max-w-lg"
+    class="grid md:max-w-lg @xl/page:max-w-xl"
     storageKey="finapp-wallets-currencies"
   >
     <template #header="{ toggle, isShown }">
@@ -33,7 +33,7 @@ const walletsStore = useWalletsStore()
       </UiTitle8>
     </template>
 
-    <UiTabs2 class="@xl/page:px-0 flex gap-1 px-2">
+    <UiTabs2 class="flex gap-1 px-2 @xl/page:px-0">
       <UiTabsItem1
         :isActive="currencyFiltered === 'all'"
         @click="emit('onSelectFilterCurrency', 'all')"
