@@ -1,43 +1,36 @@
 <script setup lang="ts">
 import type { MenuItem } from '~/components/layout/useMenuData'
 
-import useMenuData from '~/components/layout/useMenuData'
-import { getStyles } from '~/components/ui/getStyles'
+import { useMenuData } from '~/components/layout/useMenuData'
 
-const props = withDefaults(defineProps<{
+const { isShowText = true, item, menuId, position } = defineProps<{
   isShowText?: boolean
   item: MenuItem
   menuId: string
   position?: 'bottom'
-}>(), {
-  isShowText: true,
-})
+}>()
 
 const { checkIsActive, onClick } = useMenuData()
 </script>
 
 <template>
   <div
-    :class="[
-      getStyles('item', ['center', 'link', 'minh2', 'rounded', 'padding1']),
-      {
-        '!text-primary': checkIsActive(props.menuId),
-        'gap-3': props.isShowText,
-      },
-    ]"
-    class="group text-muted min-h-[44px] md:min-h-[38px]"
-    @click="onClick(props.menuId)"
+    :class="cn('group interactive flex min-h-[44px] items-center rounded-sm px-2 py-1.5 md:min-h-[38px]',
+               checkIsActive(menuId) ? 'text-primary' : 'text-muted',
+               isShowText && 'gap-3',
+    )"
+    @click="onClick(menuId)"
   >
     <div class="flex min-w-8 items-center justify-center">
       <Icon
-        :name="props.item.icon"
+        :name="item.icon"
         :size="position === 'bottom' ? '26' : '22'"
         class="text-lg leading-none"
       />
     </div>
 
     <div
-      v-if="props.isShowText"
+      v-if="isShowText"
       class="text-sm font-medium"
     >
       {{ item.name }}

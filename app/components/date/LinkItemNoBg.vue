@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
-
 const props = defineProps<{
   isActive?: boolean
 }>()
@@ -11,12 +9,9 @@ const emit = defineEmits<{
 
 <template>
   <div
-    :class="[
-      getStyles('item', ['center2', 'padding4', 'minh3']), {
-        'text-primary bg-[var(--item-5)]': props.isActive,
-      },
-    ]"
-    class="rounded-full text-xs leading-none text-nowrap text-(--ui-text)"
+    :class="cn('flex min-h-[32px] items-center justify-center rounded-full px-1 text-xs leading-none text-nowrap text-(--ui-text)',
+               props.isActive && 'text-primary bg-(--item-5)',
+    )"
     @click="(e: Event) => emit('click', e)"
   >
     <slot />

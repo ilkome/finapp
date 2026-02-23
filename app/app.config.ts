@@ -29,9 +29,19 @@ export default defineAppConfig({
         viewport: 'scrollerBlock',
       },
     },
-    toast: {
+    modal: {
       slots: {
-        title: 'text-5xl',
+        overlay: '!bg-(--overlay)',
+      },
+    },
+    toast: {
+      props: {
+        close: false,
+      },
+      slots: {
+        description: 'text-1',
+        title: 'text-3xl',
+        wrapper: 'flex-row items-center gap-3',
       },
     },
   },

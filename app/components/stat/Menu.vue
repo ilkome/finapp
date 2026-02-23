@@ -57,7 +57,7 @@ watch(() => props.active, () => {
       :key="item.id"
       :class="[{
         'rounded-none border-b border-b-1 !border-(--ui-primary)': item.id === props.active,
-        'text-muted hover:mb-1 hover:bg-[var(--item-5)] hover:pb-1': item.id !== props.active,
+        'text-muted hover:mb-1 hover:bg-(--item-5) hover:pb-1': item.id !== props.active,
       }]"
       class="rounded-lg px-3 py-1.5 pb-2 text-xs tracking-wide text-nowrap lg:text-sm"
       @click="onClickStatMenu(item.id)"

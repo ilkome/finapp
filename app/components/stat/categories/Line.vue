@@ -2,12 +2,11 @@
 import { onLongPress } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatDateProvider } from '~/components/date/types'
 import type { CategoryWithData } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -26,11 +25,11 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
-  onClickIcon: [id: CategoryId]
+  clickIcon: [id: CategoryId]
 }>()
 
-const statDate = inject('statDate') as StatDateProvider
-const statConfig = inject('statConfig') as StatConfigProvider
+const statDate = inject(statDateKey)!
+const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
@@ -124,14 +123,14 @@ onLongPress(
           :color="category?.color"
           :name="category?.icon"
           invert
-          @click="emit('onClickIcon', props.item.id)"
+          @click="emit('clickIcon', props.item.id)"
         />
         <UiIconBase
           v-else
           :color="category?.color"
           :name="category?.icon"
           class="ml-1 !w-6"
-          @click="emit('onClickIcon', props.item.id)"
+          @click="emit('clickIcon', props.item.id)"
         />
       </template>
 

@@ -1,0 +1,55 @@
+import type { GenericCtx } from '@convex-dev/better-auth'
+
+import { createClient } from '@convex-dev/better-auth'
+import { convex, crossDomain } from '@convex-dev/better-auth/plugins'
+import { betterAuth } from 'better-auth'
+
+import type { DataModel } from './_generated/dataModel'
+
+import { components } from './_generated/api'
+import { query } from './_generated/server'
+import authConfig from './auth.config'
+
+const siteUrl = process.env.SITE_URL!
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3050'
+
+const trustedOrigins = [
+  'https://finapp.ilko.me',
+  'https://finapp-git-convex-ilkome2.vercel.app',
+  'https://main-git-convex-ilkome2.vercel.app',
+  'http://localhost:3050',
+]
+
+export const authComponent = createClient<DataModel>(components.betterAuth)
+
+function createAuth(ctx: GenericCtx<DataModel>) {
+  return betterAuth({
+    baseURL: siteUrl,
+    database: authComponent.adapter(ctx),
+    plugins: [
+      convex({
+        authConfig,
+        jwksRotateOnTokenGenerationError: true,
+      }),
+      crossDomain({
+        siteUrl: frontendUrl,
+      }),
+    ],
+    socialProviders: {
+      google: {
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      },
+    },
+    trustedOrigins,
+  })
+}
+
+export { createAuth }
+
+export const getCurrentUser = query({
+  args: {},
+  handler: async (ctx) => {
+    return await authComponent.safeGetAuthUser(ctx)
+  },
+})

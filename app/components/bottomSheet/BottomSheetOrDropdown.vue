@@ -11,8 +11,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onCloseModal: []
-  onOpenModal: []
+  closeModal: []
+  openModal: []
 }>()
 
 const { width } = useWindowSize()
@@ -62,7 +62,7 @@ const open = ref(false)
     <div
       v-else
       class="grow"
-      @click="emit('onOpenModal')"
+      @click="emit('openModal')"
     >
       <slot name="trigger" />
 
@@ -72,7 +72,7 @@ const open = ref(false)
           isShow
           :drugClassesCustom="`${props.drugClassesCustom ?? ''} bottomSheetDrugClassesCustom`"
           :drugStyle="props.bottomSheetStyle"
-          @closed="emit('onCloseModal')"
+          @closed="emit('closeModal')"
         >
           <template #default="{ close }">
             <div class="bottomSheetContent">

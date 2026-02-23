@@ -1,50 +1,28 @@
-export function validate(values: any) {
-  if (!values.amount && values.type !== 2) {
-    return {
-      error: 'trnForm.errors.amountEmpty',
-    }
+import type { Transaction, Transfer } from '~/components/trns/types'
+
+import { trnItemSchema, TrnType } from '~/components/trns/types'
+
+export function validate(values: Transaction | Transfer): string | null {
+  const result = trnItemSchema.safeParse(values)
+
+  if (!result.success) {
+    const issue = result.error.issues[0]
+
+    if (values.type === TrnType.Transfer)
+      return 'trnForm.errors.transferAmountEmpty'
+
+    if (issue?.path?.includes('amount'))
+      return 'trnForm.errors.amountEmpty'
+    if (issue?.path?.includes('walletId'))
+      return 'trnForm.errors.selectWallet'
+    if (issue?.path?.includes('categoryId'))
+      return 'trnForm.errors.selectCategory'
+
+    return 'trnForm.errors.amountEmpty'
   }
 
-  if (values.amount <= 0 && values.type !== 2) {
-    return {
-      error: 'trnForm.errors.amountNegative',
-    }
-  }
+  if (values.type === TrnType.Transfer && values.incomeWalletId === values.expenseWalletId)
+    return 'trnForm.errors.transferSameWallet'
 
-  if (values.amount === 0 && values.type !== 2) {
-    return {
-      error: 'trnForm.errors.amountZero',
-    }
-  }
-
-  if (!values.walletId && values.type !== 2) {
-    return {
-      error: 'trnForm.errors.selectWallet',
-    }
-  }
-
-  if (!values.categoryId && values.type !== 2) {
-    return {
-      error: 'trnForm.errors.selectCategory',
-    }
-  }
-
-  // Transfer
-  if (values.type === 2) {
-    if (Number(values.incomeAmount) === 0 || Number(values.expenseAmount) === 0) {
-      return {
-        error: 'trnForm.errors.transferAmountEmpty',
-      }
-    }
-
-    if (values.incomeWalletId === values.expenseWalletId) {
-      return {
-        error: 'trnForm.errors.transferSameWallet',
-      }
-    }
-  }
-
-  return {
-    valid: true,
-  }
+  return null
 }

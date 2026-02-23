@@ -7,7 +7,7 @@ export default {
 
   alerts: {
     removedUserData: 'Все данные удалены.',
-    willDeleteEverything: 'Все кошельки, категории и транзакции будут удалены',
+    willDeleteEverything: 'Все данные будут безвозвратно удалены, включая кошельки, категории и транзакции',
   },
 
   app: {
@@ -26,12 +26,14 @@ export default {
   base: {
     add: 'Создать',
     apply: 'Применить',
+    cancel: 'Отмена',
     close: 'Закрыть',
     delete: 'Удалить',
     duplicate: 'Дублировать',
     edit: 'Редактировать',
     loading: 'Загрузка...',
     no: 'Нет',
+    noData: 'Нет данных',
     save: 'Сохранить',
     sure: 'Удалить?',
     yes: 'Да',
@@ -39,7 +41,11 @@ export default {
 
   categories: {
     allTitle: 'Все',
-    createNewTitle: 'Добавить категорию',
+    createNewTitle: 'Добавление категории',
+    errors: {
+      deleteFailed: 'Не удалось удалить категорию',
+      saveFailed: 'Не удалось сохранить категорию',
+    },
     favoriteCategories: 'Избранные категории',
     filter: 'Фильтр по категориям',
     form: {
@@ -58,9 +64,9 @@ export default {
         placeholder: 'Название иконки...',
       },
       name: {
-        error: 'Напишите название категории',
+        error: 'Напишите название',
         exist: 'Категория с таким именем уже существует',
-        label: 'Название категории',
+        label: 'Название',
         placeholder: 'Напишите...',
       },
       parent: {
@@ -68,8 +74,8 @@ export default {
         no: 'Без родителя',
       },
       recentCategory: 'Показывать в недавно использованных',
-      selectColor: 'Цвет категории',
-      selectIcon: 'Иконка категории',
+      selectColor: 'Цвет',
+      selectIcon: 'Иконка',
       selectParent: 'Родительская категория',
     },
     name: 'Категории',
@@ -176,6 +182,7 @@ export default {
 
   login: {
     description: 'Персональный финансовый ассистент',
+    error: 'Ошибка входа. Попробуйте ещё раз.',
     openDemo: 'Открыть демо',
     or: 'или',
     title: 'Вход',
@@ -219,6 +226,9 @@ export default {
   settings: {
     caution: 'C осторожностью',
     deleteButton: 'Удалить все мои данные',
+    errors: {
+      saveFailed: 'Не удалось сохранить настройки',
+    },
     title: 'Настройки',
   },
 
@@ -298,13 +308,13 @@ export default {
     dark: 'Темная',
     light: 'Светлая',
     picker: {
-      neutral: 'Нейтральный цвет',
+      neutral: 'Фоновый цвет',
       primary: 'Основной цвет',
-      radius: 'Радиус',
+      radius: 'Скругление',
       theme: 'Тема',
     },
     system: 'Авто',
-    title: 'Тема',
+    title: 'Оформление',
   },
 
   transfer: {
@@ -312,6 +322,7 @@ export default {
   },
 
   trnForm: {
+    adjustmentTitle: 'Корректировка',
     category: {
       select: 'Выбрать категорию',
     },
@@ -348,6 +359,11 @@ export default {
   },
 
   trns: {
+    errors: {
+      deleteFailed: 'Не удалось удалить транзакцию',
+      orphanedSkipped: '{count} транзакций пропущено (кошелёк или категория были удалены)',
+      saveFailed: 'Не удалось сохранить транзакцию',
+    },
     filter: {
       showTrnsWithDesc: 'Только с описанием',
     },
@@ -358,10 +374,15 @@ export default {
     title: 'Транзакции',
   },
 
-  userLogout: 'Выход',
+  userLogout: 'Выйти из аккаунта',
 
   wallets: {
-    createNewTitle: 'Добавить кошелек',
+    createNewTitle: 'Добавление кошелька',
+    errors: {
+      deleteFailed: 'Не удалось удалить кошелек',
+      orderFailed: 'Не удалось сохранить порядок кошельков',
+      saveFailed: 'Не удалось сохранить кошелек',
+    },
     filter: 'Фильтровать кошельки',
     filterByCurrency: 'Валюты кошельков',
     form: {
@@ -379,11 +400,12 @@ export default {
         okWithTrns: `Кошелек удален и {trns}`,
       },
       description: {
-        label: 'Описание кошелька (не обязательно)',
+        label: 'Описание (не обязательно)',
         placeholder: 'Напишите...',
       },
       name: {
-        label: 'Название кошелька',
+        error: 'Напишите название',
+        label: 'Название',
         placeholder: 'Напишите...',
       },
     },
@@ -400,10 +422,12 @@ export default {
     title: 'Кошельки',
   },
 
-  welcome: {
-    createTrn: 'Создайте свою первую Транзакцию',
-    intro: 'Чтобы увидеть статистику',
-    introCategories: 'Чтобы увидеть статистику добавьте первую категорию',
-    introWallets: 'Чтобы увидеть статистику добавьте первый кошелек',
+  onboarding: {
+    actionCategory: 'Добавить категорию',
+    actionTrn: 'Добавить транзакцию',
+    actionWallet: 'Добавить кошелек',
+    intro: 'Добавьте свой первый доход или расход',
+    introCategories: 'Добавьте категорию, например, «Еда» или «Зарплата»',
+    introWallets: 'Начните учёт финансов, добавив первый кошелёк',
   },
 }

@@ -9,29 +9,28 @@ import VChart from 'vue-echarts'
 import type { Period } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { PeriodNameWithAll } from '~/components/stat/filter/types'
+import type { ChartSeries } from '~/components/stat/types'
 
 import { formatByLocale } from '~/components/date/utils'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { getLocalAmount } from '~/components/stat/chart/utils'
 
-const props = withDefaults(
-  defineProps<{
-    chartType?: ChartType
-    isShowDataLabels?: boolean
-    isShowExpense?: boolean
-    isShowIncome?: boolean
-    isShowSummary?: boolean
-    period: Period
-    series: unknown[]
-    xAxisLabels: number[]
-  }>(),
-  {
-    chartType: 'line',
-    config: () => ({}),
-    isShowExpense: true,
-    isShowIncome: true,
-  },
-)
+const {
+  chartType = 'line',
+  isShowDataLabels,
+  period,
+  series,
+  xAxisLabels,
+} = defineProps<{
+  chartType?: ChartType
+  isShowDataLabels?: boolean
+  isShowExpense?: boolean
+  isShowIncome?: boolean
+  isShowSummary?: boolean
+  period: Period
+  series: ChartSeries[]
+  xAxisLabels: number[]
+}>()
 
 const emit = defineEmits<{
   click: [idx: number]
@@ -70,19 +69,19 @@ function getFormatForChart(periodName: PeriodNameWithAll) {
 
 const option = computed(() => {
   const data = defu(config, {
-    series: setChartSeries(props.series),
+    series: setChartSeries(series),
     xAxis: {
-      data: props.xAxisLabels,
+      data: xAxisLabels,
       type: 'category',
     },
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return formatByLocale(new Date(+date), getFormatForChart(props.period, new Date(+date)), locale.value)
+    return formatByLocale(new Date(+date), getFormatForChart(period, new Date(+date)), locale.value)
   }
 
   data.xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
-    return formatByLocale(new Date(+value), getFormatForChart(props.period, new Date(+value)), locale.value)
+    return formatByLocale(new Date(+value), getFormatForChart(period, new Date(+value)), locale.value)
   }
 
   return data
@@ -97,16 +96,16 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
   emit('click', index)
 }
 
-function setChartSeries(series: unknown[]) {
+function setChartSeries(series: ChartSeries[]) {
   return series
-    .map((item: any) => ({
+    .map((item: ChartSeries) => ({
       ...defu(lineConfig, item),
       label: {
         ...lineConfig.label,
-        show: props.isShowDataLabels,
+        show: isShowDataLabels,
       },
-      stack: (props.chartType || item.type) === 'bar' ? 'b' : false,
-      type: item.markedArea ? 'bar' : (props.chartType || item.type),
+      stack: (chartType || item.type) === 'bar' ? 'b' : false,
+      type: item.markedArea ? 'bar' : (chartType || item.type),
     }))
 }
 </script>
@@ -122,9 +121,9 @@ function setChartSeries(series: unknown[]) {
       autoresize
     >
       <template #tooltip="params">
-        <div class="rounded-md bg-[var(--item-5)] px-2 pt-2">
+        <div class="rounded-md bg-(--item-5) px-2 pt-2">
           <div class="text-muted pb-2 text-xs">
-            {{ formatByLocale(new Date(+params[0].name), getFormatForChart(props.period), locale) }}
+            {{ formatByLocale(new Date(+params[0].name), getFormatForChart(period), locale) }}
           </div>
 
           <div class="grid gap-0">

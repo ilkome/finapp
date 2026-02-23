@@ -5,14 +5,15 @@ import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { random, successEmo } from '~/assets/js/emo'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/stat/filter/useFilter'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -20,11 +21,8 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
-const walletStore = useWalletsStore()
-const toast = useToast()
-
 const filter = useFilter()
-provide('filter', filter)
+provide(filterKey, filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
@@ -49,14 +47,14 @@ const statConfig = useStatConfig({
   },
   storageKey: storageKey.value,
 })
-provide('statConfig', statConfig)
+provide(statConfigKey, statConfig)
 
 const statDate = useStatDate({
   key: storageKey.value,
   maxRange,
   queryParams: route.query,
 })
-provide('statDate', statDate)
+provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
   statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
@@ -85,26 +83,20 @@ function onClickDelete(close: () => void) {
 }
 
 async function onDeleteConfirm() {
-  console.log('onDeleteConfirm')
-
-  const trnsIdsS: TrnId[] = JSON.parse(JSON.stringify(
-    trnsStore.getStoreTrnsIds({
-      walletsIds: [walletId.value],
-    }),
-  ))
+  const trnsIdsS: TrnId[] = [...trnsStore.getStoreTrnsIds({
+    walletsIds: [walletId.value],
+  })]
 
   router.push('/wallets')
-  await walletStore.deleteWallet(JSON.parse(JSON.stringify(walletId.value)), trnsIdsS)
+  await walletsStore.deleteWallet(walletId.value, trnsIdsS)
 
   // Give some time to complete redirect
-  setTimeout(async () => {
-    toast.add({
-      color: 'success',
-      description: trnsIdsS?.length > 0
-        ? t('wallets.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
-        : t('wallets.form.delete.okWithoutTrns'),
-      title: random(successEmo),
-    })
+  setTimeout(() => {
+    showSuccessToast(trnsIdsS?.length > 0
+      ? 'wallets.form.delete.okWithTrns'
+      : 'wallets.form.delete.okWithoutTrns', trnsIdsS?.length > 0
+      ? { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) }
+      : undefined)
   }, 300)
 }
 </script>
@@ -154,7 +146,7 @@ async function onDeleteConfirm() {
       v-if="isShowDeleteConfirm"
       :description="deleteDescText"
       @closed="isShowDeleteConfirm = false"
-      @onConfirm="onDeleteConfirm"
+      @confirm="onDeleteConfirm"
     />
 
     <div class="px-3 pb-2 lg:gap-8 lg:px-4 2xl:px-8">
@@ -187,12 +179,13 @@ async function onDeleteConfirm() {
         />
       </div>
 
-      <UiTextSm2
+      <UiTextMuted
         v-if="wallet.desc"
+        size="sm"
         class="pt-2 whitespace-pre"
       >
         {{ wallet.desc }}
-      </UiTextSm2>
+      </UiTextMuted>
     </div>
 
     <StatWrap

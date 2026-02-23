@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import type { DeepPartial } from '~~/utils/types'
+
 import defu from 'defu'
 
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
+import type { MiniItemConfig } from '~/components/stat/useStatConfig'
+
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
-const statConfig = inject('statConfig') as StatConfigProvider
+const statConfig = inject(statConfigKey)!
 
 const favorites = computed(() => ({
   isShow: computed(() => {
@@ -89,27 +93,29 @@ const viewPresets = computed(() => ({
 
 const isShowMorePresets = ref(false)
 
-function onChangeViewOptions(newViewOptions: any) {
+function onChangeViewOptions(newViewOptions: Pick<DeepPartial<MiniItemConfig>, 'catsList'>) {
   const c = defu(newViewOptions.catsList, statConfig.config.value.catsList)
   statConfig.updateConfig('catsList', c)
 }
 </script>
 
 <template>
-  <div class="">
+  <div>
     <!-- List -->
     <div class="border-item-4 grid gap-3 border-b pb-2 last:border-0">
-      <UiTitleOption>{{ t('stat.catButtons.listItemsOptions') }}</UiTitleOption>
+      <UiTitleSection size="sm">
+        {{ t('stat.catButtons.listItemsOptions') }}
+      </UiTitleSection>
       <div class="flex gap-1">
-        <UiItem2
+        <UiChipButton
           v-for="view in viewPresets"
           :key="view.title"
           @click="onChangeViewOptions(view.props)"
         >
           {{ view.title }}
-        </UiItem2>
+        </UiChipButton>
 
-        <UiItem2
+        <UiChipButton
           class="!grow-0"
           @click="isShowMorePresets = !isShowMorePresets"
         >
@@ -117,25 +123,25 @@ function onChangeViewOptions(newViewOptions: any) {
             :name="isShowMorePresets ? 'lucide:chevron-up' : 'lucide:chevron-down'"
             size="18"
           />
-        </UiItem2>
+        </UiChipButton>
       </div>
 
       <div v-if="isShowMorePresets">
-        <UiCheckbox
+        <UiSwitchItem
           :checkboxValue="statConfig.config.value.catsList.isItemsBg"
           :title="t('stat.catButtons.isItemsBg')"
           @click="statConfig.updateConfig('catsList', { isItemsBg: !statConfig.config.value.catsList.isItemsBg })"
         />
 
         <!-- Lines -->
-        <UiCheckbox
+        <UiSwitchItem
           :checkboxValue="statConfig.config.value.catsList.isLines"
           :title="t('stat.catButtons.isLines')"
           @click="statConfig.updateConfig('catsList', { isLines: !statConfig.config.value.catsList.isLines })"
         />
 
         <!-- Round icons -->
-        <UiCheckbox
+        <UiSwitchItem
           :checkboxValue="statConfig.config.value.catsList.isRoundIcon"
           :title="t('stat.catButtons.isRoundIcon')"
           @click="statConfig.updateConfig('catsList', { isRoundIcon: !statConfig.config.value.catsList.isRoundIcon })"
@@ -186,19 +192,21 @@ function onChangeViewOptions(newViewOptions: any) {
     <div
       class="border-item-4 grid gap-3 border-b pt-3 pb-2 last:border-0"
     >
-      <UiTitleOption>{{ t('stat.catButtons.elements') }}</UiTitleOption>
-      <div class="">
-        <UiCheckbox
+      <UiTitleSection size="sm">
+        {{ t('stat.catButtons.elements') }}
+      </UiTitleSection>
+      <div>
+        <UiSwitchItem
           :checkboxValue="statConfig.config.value.vertical.isShow"
           :title="t('stat.config.categories.vertical.title')"
           @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
         />
-        <UiCheckbox
+        <UiSwitchItem
           :checkboxValue="statConfig.config.value.catsRound.isShow"
           :title="t('stat.config.categories.rounds.title')"
           @click="statConfig.updateConfig('catsRound', { isShow: !statConfig.config.value.catsRound.isShow })"
         />
-        <UiCheckbox
+        <UiSwitchItem
           :checkboxValue="statConfig.config.value.catsList.isShow"
           :title="t('stat.config.categories.list.title')"
           @click="statConfig.updateConfig('catsList', { isShow: !statConfig.config.value.catsList.isShow })"

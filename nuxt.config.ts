@@ -1,7 +1,5 @@
 import process from 'node:process'
 
-import { config } from './services/firebase/config'
-
 const sw = process.env.SW === 'true'
 
 export default defineNuxtConfig({
@@ -92,7 +90,6 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
     '@nuxt/ui',
-    'nuxt-vuefire',
     '@nuxt/eslint',
   ],
 
@@ -103,6 +100,7 @@ export default defineNuxtConfig({
   pwa: {
     client: {
       installPrompt: true,
+      registerPlugin: true,
     },
     devOptions: {
       enabled: false,
@@ -161,7 +159,9 @@ export default defineNuxtConfig({
 
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}'],
+      navigateFallback: null,
+      navigateFallbackDenylist: [/^\/auth/, /^\/login/],
       runtimeCaching: [{
         handler: 'CacheFirst',
         urlPattern: 'https://api.iconify.design/',
@@ -177,17 +177,11 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      ratesApiKey: process.env.OPEN_EXCHANGE_RATES,
+      convexSiteUrl: process.env.VITE_CONVEX_SITE_URL,
+      convexUrl: process.env.VITE_CONVEX_URL,
     },
   },
 
-  ssr: false,
+  ssr: true,
   telemetry: false,
-
-  vuefire: {
-    auth: {
-      enabled: true,
-    },
-    config,
-  },
 })

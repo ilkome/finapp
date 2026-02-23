@@ -13,7 +13,7 @@ export function getAmountInRate({
 }: {
   amount: number
   baseCurrencyCode?: CurrencyCode
-  currencyCode: string
+  currencyCode: CurrencyCode
   rates?: Rates
 }): number {
   if (!baseCurrencyCode || !rates)
@@ -38,6 +38,7 @@ type TotalProps = {
 export type DateString = string
 
 export type TotalReturns = {
+  adjustment: number
   expense: number
   expenseTransfers: number
   income: number
@@ -49,7 +50,7 @@ export type TotalReturns = {
 export function getTotal(props: TotalProps): TotalReturns {
   const { baseCurrencyCode, rates, transferCategoriesIds, trnsIds, trnsItems, walletsIds, walletsItems } = props
 
-  function getAmount(amount: number, currencyCode: string) {
+  function getAmount(amount: number, currencyCode: CurrencyCode) {
     return getAmountInRate({
       amount,
       baseCurrencyCode,
@@ -62,6 +63,7 @@ export function getTotal(props: TotalProps): TotalReturns {
   let expense = 0
   let incomeTransfers = 0
   let expenseTransfers = 0
+  let adjustment = 0
 
   for (const trnId of trnsIds || []) {
     const trn = trnsItems[trnId]
@@ -70,6 +72,12 @@ export function getTotal(props: TotalProps): TotalReturns {
 
     // Transaction
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
+      // Adjustment: affects wallet balance but not income/expense statistics
+      if (trn.categoryId === 'adjustment') {
+        const wallet = walletsItems[trn.walletId]
+        adjustment += getAmount(trn.amount, wallet?.currency || 'USD')
+        continue
+      }
       const isTransferCategory = transferCategoriesIds?.includes(trn.categoryId || '')
       const wallet = walletsItems[trn.walletId]
       const sum = getAmount(trn.amount, wallet?.currency || 'USD')
@@ -116,37 +124,6 @@ export function getTotal(props: TotalProps): TotalReturns {
         expenseTransfers += expenseAmount
       }
     }
-
-    // Transfer @deprecated
-    else if (trn.type === TrnType.Transfer && 'walletFromId' in trn && 'walletToId' in trn) {
-      const incomeWalletId = trn.walletToId as WalletId
-      const expenseWalletId = trn.walletFromId as WalletId
-      if (!incomeWalletId || !expenseWalletId)
-        continue
-
-      const incomeWallet = walletsItems[incomeWalletId]
-      const expenseWallet = walletsItems[expenseWalletId]
-      if (!incomeWallet || !expenseWallet)
-        continue
-
-      const incomeAmount = getAmount(trn.amountTo as number, incomeWallet.currency)
-      const expenseAmount = getAmount(trn.amountFrom as number, expenseWallet.currency)
-
-      // Include only selected wallets
-      if (walletsIds && walletsIds.length > 0) {
-        // Income
-        if (walletsIds.includes(incomeWalletId))
-          incomeTransfers += incomeAmount
-
-        // Expense
-        if (walletsIds.includes(expenseWalletId))
-          expenseTransfers += expenseAmount
-      }
-      else {
-        incomeTransfers += incomeAmount
-        expenseTransfers += expenseAmount
-      }
-    }
   }
 
   // Total
@@ -154,6 +131,7 @@ export function getTotal(props: TotalProps): TotalReturns {
   const sumTransfers = incomeTransfers - expenseTransfers
 
   return {
+    adjustment,
     expense,
     expenseTransfers,
     income,

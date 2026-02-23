@@ -14,7 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [id: CategoryId]
-  onClickIcon: [id: CategoryId]
+  clickIcon: [id: CategoryId]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -34,7 +34,7 @@ const categoriesStore = useCategoriesStore()
       isShowDots
       v-bind="categoriesItemProps"
       @click="emit('click', categoryId)"
-      @onClickIcon="emit('onClickIcon', categoryId)"
+      @clickIcon="emit('clickIcon', categoryId)"
     />
   </div>
 </template>

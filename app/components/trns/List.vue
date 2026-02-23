@@ -10,28 +10,34 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const props = withDefaults(
-  defineProps<{
-    alt?: boolean
-    initTrnType?: TrnsViewType
-    isHideDates?: boolean
-    isShowDates?: boolean
-    isShowExpense?: boolean
-    isShowFilterByDesc?: boolean
-    isShowFilterByType?: boolean
-    isShowGroupSum?: boolean
-    isShowHeader?: boolean
-    isShowIncome?: boolean
-    isShowTransfers?: boolean
-    size?: number
-    trnsIds?: TrnId[]
-  }>(),
-  {
-    initTrnType: 'all',
-    size: 30,
-    trnsIds: () => [],
-  },
-)
+const {
+  alt,
+  initTrnType = 'all',
+  isShowDates,
+  isShowExpense,
+  isShowFilterByDesc,
+  isShowFilterByType,
+  isShowGroupSum,
+  isShowHeader,
+  isShowIncome,
+  isShowTransfers,
+  size = 30,
+  trnsIds = [],
+} = defineProps<{
+  alt?: boolean
+  initTrnType?: TrnsViewType
+  isHideDates?: boolean
+  isShowDates?: boolean
+  isShowExpense?: boolean
+  isShowFilterByDesc?: boolean
+  isShowFilterByType?: boolean
+  isShowGroupSum?: boolean
+  isShowHeader?: boolean
+  isShowIncome?: boolean
+  isShowTransfers?: boolean
+  size?: number
+  trnsIds?: TrnId[]
+}>()
 
 const emit = defineEmits<{
   click: []
@@ -46,7 +52,7 @@ const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
 const { formatDate } = useDateFormats()
 const isShowWithDesc = ref(false)
-const filterBy = ref<TrnsViewType>(props.initTrnType)
+const filterBy = ref<TrnsViewType>(initTrnType)
 const pageNumber = ref(1)
 
 type TypeFilter = {
@@ -58,39 +64,30 @@ type TypeFilter = {
 }
 
 const typeFilters = computed<TypeFilter[]>(() => {
-  const all = {
-    count: props.trnsIds.length,
-    isShow: true,
-    name: t('common.all'),
-    slug: 'all',
-    type: undefined,
+  const counts = { adjustment: 0, expense: 0, income: 0, transfer: 0 }
+  for (const id of trnsIds) {
+    const trn = trnsStore.items[id]
+    if (!trn)
+      continue
+    if (trn.categoryId === 'adjustment') {
+      counts.adjustment++
+      continue
+    }
+    if (trn.type === TrnType.Expense)
+      counts.expense++
+    else if (trn.type === TrnType.Income)
+      counts.income++
+    else if (trn.type === TrnType.Transfer)
+      counts.transfer++
   }
 
-  const transfers = {
-    count: props.trnsIds.filter(id => trnsStore.items[id]?.type === TrnType.Transfer).length,
-    isShow: props.isShowTransfers,
-    name: t('transfer.titleMoney'),
-    slug: 'transfer',
-    type: TrnType.Transfer,
-  }
-
-  const expense = {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === TrnType.Expense).length,
-    isShow: props.isShowExpense,
-    name: t('money.expense'),
-    slug: 'expense',
-    type: TrnType.Expense,
-  }
-
-  const income = {
-    count: props.trnsIds.filter(id => trnsStore.items[id].type === TrnType.Income).length,
-    isShow: props.isShowIncome,
-    name: t('money.income'),
-    slug: 'income',
-    type: TrnType.Income,
-  }
-
-  return [all, expense, income, transfers].filter(item => item.isShow)
+  return [
+    { count: trnsIds.length, isShow: true, name: t('common.all'), slug: 'all', type: undefined },
+    { count: counts.expense, isShow: isShowExpense, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
+    { count: counts.income, isShow: isShowIncome, name: t('money.income'), slug: 'income', type: TrnType.Income },
+    { count: counts.transfer, isShow: isShowTransfers, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
+    { count: counts.adjustment, isShow: counts.adjustment > 0, name: t('trnForm.adjustmentTitle'), slug: 'adjustment', type: undefined },
+  ].filter(item => item.isShow)
 })
 
 const selectedTypeFilter = computed(() => {
@@ -98,20 +95,27 @@ const selectedTypeFilter = computed(() => {
 })
 
 const isTrnsWithDesc = computed(() => {
-  let ids = props.trnsIds ?? []
+  let ids = trnsIds ?? []
 
   if (filterBy.value !== 'all') {
-    ids = props.trnsIds.filter(id => trnsStore.items[id].type === selectedTypeFilter.value?.type)
+    ids = trnsIds.filter((id) => {
+      if (filterBy.value === 'adjustment')
+        return trnsStore.items[id]?.categoryId === 'adjustment'
+      return trnsStore.items[id].type === selectedTypeFilter.value?.type
+    })
   }
 
   return (ids).some(id => trnsStore.items[id]?.desc)
 })
 
 const selectedIds = computed(() => {
-  let ids = props.trnsIds ?? []
+  let ids = trnsIds ?? []
 
   if (filterBy.value !== 'all') {
-    ids = props.trnsIds.filter((id) => {
+    ids = trnsIds.filter((id) => {
+      if (filterBy.value === 'adjustment')
+        return trnsStore.items[id]?.categoryId === 'adjustment'
+
       if (filterBy.value === 'transfer') {
         return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || categoriesStore.transferCategoriesIds.includes(trnsStore.items[id]?.categoryId)
       }
@@ -127,7 +131,7 @@ const selectedIds = computed(() => {
   return ids
 })
 
-const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.value * props.size))
+const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.value * size))
 
 const isShowedAllTrns = computed(() => paginatedTrnsIds.value.length === selectedIds.value.length)
 
@@ -136,6 +140,9 @@ function setFilterBy(type: TrnsViewType | 'all') {
     filterBy.value = 'all'
     return
   }
+
+  if (type !== 'all' && typeFilters.value.find(f => f.slug === type)?.count === 0)
+    return
 
   filterBy.value = type ?? 'all'
 }
@@ -164,7 +171,7 @@ function onOpenTrnForm(date: number) {
 </script>
 
 <template>
-  <div>
+  <div class="min-w-0">
     <!-- Header -->
     <slot
       v-if="isShowHeader"
@@ -172,37 +179,38 @@ function onOpenTrnForm(date: number) {
       :paginatedTrnsIds
       :selectedIds
     >
-      <UiTitle8 isHideArrow>
+      <UiTitleCollapse isHideArrow>
         {{ t('trns.title') }} {{ selectedIds.length > 0 ? selectedIds.length : '' }}
-      </UiTitle8>
+      </UiTitleCollapse>
     </slot>
 
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UiTabs2
+    <UiTabsScroll
       v-if="isShowFilterByType && typeFilters.length > 2"
       class="mb-2"
     >
-      <UiTabsItem4
+      <UiTabsItemPill
         v-for="filterItem in typeFilters"
         :key="filterItem.slug"
+        variant="outline"
         :isActive="filterBy === filterItem.slug"
         :class="{
-          'opacity-50': filterItem.count === 0,
+          'pointer-events-none opacity-50': filterItem.count === 0,
         }"
         @click="setFilterBy(filterItem.slug)"
       >
         {{ filterItem.name }}
-      </UiTabsItem4>
-    </UiTabs2>
+      </UiTabsItemPill>
+    </UiTabsScroll>
 
     <!-- With Description -->
     <div
       v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
       class="relative"
     >
-      <UiCheckbox
+      <UiSwitchItem
         :checkboxValue="isShowWithDesc"
         :title="t('trns.filter.showTrnsWithDesc')"
         showCheckbox
@@ -211,7 +219,7 @@ function onOpenTrnForm(date: number) {
     </div>
 
     <!-- No Trns -->
-    <TrnsNoTrns v-if="props.isShowDates && selectedIds.length === 0" />
+    <TrnsNoTrns v-if="isShowDates && selectedIds.length === 0" />
 
     <!-- Hide dates -->
     <div v-if="!isShowDates">
@@ -241,16 +249,17 @@ function onOpenTrnForm(date: number) {
         />
       </div>
 
-      <TrnsItemWrap
-        v-for="trnId in paginatedTrnsIds"
-        :key="trnId"
-        :alt="props.alt"
-        :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
-        :trnId="trnId"
-        :trnItem="trnsStore.computeTrnItem(trnId)"
-        class="group/trn group"
-        @click="emit('click')"
-      />
+      <template v-for="trnId in paginatedTrnsIds" :key="trnId">
+        <TrnsItemWrap
+          v-if="trnsStore.computeTrnItem(trnId)"
+          :alt="alt"
+          :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
+          :trnId="trnId"
+          :trnItem="trnsStore.computeTrnItem(trnId)"
+          class="group/trn group"
+          @click="emit('click')"
+        />
+      </template>
     </div>
 
     <!-- With dates -->
@@ -301,16 +310,17 @@ function onOpenTrnForm(date: number) {
         </div>
 
         <div>
-          <TrnsItemWrap
-            v-for="trnId in groupTrnsIds"
-            :key="trnId"
-            :alt="props.alt"
-            :trnId="trnId"
-            :trnItem="trnsStore.computeTrnItem(trnId)"
-            :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
-            class="group"
-            @click="emit('click')"
-          />
+          <template v-for="trnId in groupTrnsIds" :key="trnId">
+            <TrnsItemWrap
+              v-if="trnsStore.computeTrnItem(trnId)"
+              :alt="alt"
+              :trnId="trnId"
+              :trnItem="trnsStore.computeTrnItem(trnId)"
+              :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
+              class="group"
+              @click="emit('click')"
+            />
+          </template>
         </div>
       </div>
     </div>
@@ -321,7 +331,7 @@ function onOpenTrnForm(date: number) {
       class="px-2 pt-1"
     >
       <div
-        class="flex-center text-muted hover:bg-item-6 rounded-[var(--ui-radius)] bg-[var(--item-5)] px-5 py-2 text-sm"
+        class="flex-center text-muted hover:bg-item-6 rounded-(--ui-radius) bg-(--item-5) px-5 py-2 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ t('trns.more') }} {{ paginatedTrnsIds.length }} /

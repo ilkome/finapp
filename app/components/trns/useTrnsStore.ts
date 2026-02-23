@@ -1,30 +1,62 @@
+import type { ConvexClient } from 'convex/browser'
+import type { FunctionReference } from 'convex/server'
+
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
-import { getDataAndWatch, removeData, saveData, unsubscribeData, updateData } from '~~/services/firebase/api'
+import { convexTrnsToMap } from '~~/services/convex/api'
+import { xorIdsHash } from '~~/utils/fnv1a'
 
 import type { Range } from '~/components/date/types'
-import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps,
-} from '~/components/trns/types'
+import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
+import { pushOfflineOp, removeOfflineOps } from '~/components/offline/helpers'
+import { isReplaying } from '~/components/offline/replay'
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { getTrnsIds } from '~/components/trns/getTrns'
-import { removeTrnToAddLaterLocal, removeTrnToDeleteLaterLocal, saveTrnIdForDeleteWhenClientOnline, saveTrnToAddLaterLocal } from '~/components/trns/helpers'
-import { useUserStore } from '~/components/user/useUserStore'
+import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { createDebouncedPersist, handleMutationResult, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
+import { createLogger } from '~/utils/logger'
 
 type TrnsGetterParams = {
   includesChildCategories?: boolean
 }
 
+const logger = createLogger('trns')
+
+async function fetchAllPages<T>(
+  client: ConvexClient,
+  queryFn: FunctionReference<'query'>,
+  args: Record<string, unknown>,
+  pageSize = 5000,
+): Promise<T[]> {
+  const allItems: T[] = []
+  let cursor: string | null = null
+  let isDone = false
+
+  while (!isDone) {
+    const result = await client.query(queryFn, {
+      ...args,
+      paginationOpts: { cursor, numItems: pageSize },
+    })
+    if (!result)
+      return allItems
+    allItems.push(...result.page)
+    isDone = result.isDone
+    cursor = result.continueCursor
+  }
+
+  return allItems
+}
+
 export const useTrnsStore = defineStore('trns', () => {
-  const userStore = useUserStore()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
-  const { deleteDemoTrns, isDemo } = useDemo()
+  const { isDemo } = useDemo()
 
-  const items = shallowRef<Trns | null | false>(false)
+  const items = shallowRef<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
     const categoriesIds = params?.includesChildCategories
@@ -34,7 +66,7 @@ export const useTrnsStore = defineStore('trns', () => {
     return getTrnsIds({
       ...props,
       categoriesIds,
-      trnsItems: items.value,
+      trnsItems: items.value ?? undefined,
     })
   }
 
@@ -58,171 +90,305 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!hasItems.value)
       return false
 
-    return (
-      Object.keys(items.value)
-        .sort((a, b) => items.value[b].date - items.value[a].date)
-        .find(trnId =>
-          !categoriesStore.transferCategoriesIds.includes(items.value[trnId].categoryId) && items.value[trnId]?.type !== 2,
-        ) ?? false
-    )
+    const transferIds = new Set(categoriesStore.transferCategoriesIds)
+    let latestId: TrnId | false = false
+    let latestDate = -1
+
+    for (const trnId in items.value) {
+      const trn = items.value[trnId]
+      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment' || transferIds.has(trn.categoryId))
+        continue
+      if (trn.date > latestDate) {
+        latestDate = trn.date
+        latestId = trnId
+      }
+    }
+
+    return latestId
   })
 
   const lastCreatedTrnItem = computed<TrnItem | false>(() => items.value?.[lastCreatedTrnId.value])
 
-  function initTrns() {
-    const path = `users/${userStore.uid}/trns`
-    getDataAndWatch(path, (values: Trns | null) => setTrns(values))
+  type TrnsSyncMeta = {
+    idsHash: string
+    lastSyncedAt: number
   }
 
-  function setTrns(values: Trns | null) {
-    const trns = values ? normalizeTrns(values) : null
-    items.value = trns
-    localforage.setItem('finapp.trns', deepUnref(trns))
-  }
+  async function fullSync(retried = false): Promise<void> {
+    const { api, client } = useConvexClientWithApi()
+    const trns = await fetchAllPages(client, api.trns.list, {})
+    let data: Trns | null = trns.length ? convexTrnsToMap(trns) : null
 
-  function addTrn({ id, values }: { id: TrnId, values: TrnItem }) {
-    let isTrnSavedOnline = false
-    const valuesWithEditDate = {
-      ...values,
-      edited: new Date().getTime(),
+    // Verify local hash against server + get server timestamp
+    const hashResult = await client.query(api.trns.idsHash, {})
+    const localHash = xorIdsHash(trns.map((t: { _id: string }) => t._id))
+
+    if (hashResult && localHash !== hashResult.hash) {
+      if (!retried) {
+        logger.log('fullSync hash mismatch, retrying')
+        return fullSync(true)
+      }
+      logger.log('fullSync hash still mismatched after retry, proceeding')
     }
 
-    localforage.setItem('finapp.trns', deepUnref({ ...items.value, [id]: valuesWithEditDate }))
-    setTrns({ ...items.value, [id]: valuesWithEditDate })
+    const lastSyncedAt = hashResult?.serverTime ?? Date.now()
 
-    if (isDemo.value) {
+    if (data)
+      data = await mergeOfflineOps(data, 'trns')
+
+    setTrns(data)
+
+    const syncMeta: TrnsSyncMeta = {
+      idsHash: hashResult?.hash ?? localHash,
+      lastSyncedAt,
+    }
+    if (!isPersistBlocked())
+      await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, syncMeta)
+    logger.log(`full sync: ${trns.length} trns`)
+  }
+
+  async function deltaSync(syncMeta: TrnsSyncMeta, cachedTrns: Trns): Promise<void> {
+    const { api, client } = useConvexClientWithApi()
+
+    // Fetch delta changes and current hash in parallel
+    const [changedTrns, hashResult] = await Promise.all([
+      fetchAllPages(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
+      client.query(api.trns.idsHash, {}),
+    ])
+
+    if (hashResult === null) {
+      setTrns(null)
+      await localforage.removeItem(STORAGE_KEYS.trnsSyncMeta)
       return
     }
 
-    saveData(`users/${userStore.uid}/trns/${id}`, valuesWithEditDate).then(() => {
-      isTrnSavedOnline = true
-      removeTrnToAddLaterLocal(id)
-    })
+    const { hash: currentHash, serverTime } = hashResult
 
-    setTimeout(() => {
-      if (!isTrnSavedOnline)
-        saveTrnToAddLaterLocal({ id, values })
-    }, 1000)
+    // Start with cached data and apply delta
+    let data: Trns = { ...cachedTrns }
+    if (changedTrns.length > 0) {
+      const changedMap = convexTrnsToMap(changedTrns)
+      data = { ...data, ...changedMap }
+    }
+
+    // Check if hash matches after applying delta
+    const localHash = xorIdsHash(Object.keys(data).filter(id => !isLocalId(id)))
+    if (localHash !== currentHash) {
+      // Hash mismatch = deletions or missed changes → fallback to fullSync
+      logger.log('hash mismatch after delta, falling back to fullSync')
+      throw new Error('hash mismatch')
+    }
+
+    data = await mergeOfflineOps(data, 'trns')
+
+    setTrns(Object.keys(data).length > 0 ? data : null)
+
+    // Update sync metadata (use server time to avoid client clock skew)
+    const newSyncMeta: TrnsSyncMeta = {
+      idsHash: currentHash,
+      lastSyncedAt: serverTime,
+    }
+    if (!isPersistBlocked())
+      await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, newSyncMeta)
+    logger.log(`delta sync: ${changedTrns.length} changed`)
+  }
+
+  async function initTrns() {
+    try {
+      const syncMeta = await localforage.getItem<TrnsSyncMeta>(STORAGE_KEYS.trnsSyncMeta)
+      const cachedTrns = await localforage.getItem<Trns>(STORAGE_KEYS.trns)
+
+      if (syncMeta && cachedTrns) {
+        try {
+          await deltaSync(syncMeta, cachedTrns)
+          return
+        }
+        catch (e) {
+          logger.log('delta sync failed, falling back to full sync', e)
+        }
+      }
+
+      // Ensure syncMeta row exists before fullSync so subsequent idsHash queries are O(1)
+      // Fire-and-forget: don't block fullSync if auth token isn't ready yet
+      const { api, client } = useConvexClientWithApi()
+      client.mutation(api.trns.ensureSyncMeta, {}).catch(() => {})
+
+      await fullSync()
+    }
+    catch (e) {
+      logger.error('init failed', e)
+    }
+  }
+
+  const debouncedPersist = createDebouncedPersist<Trns | null>(STORAGE_KEYS.trns)
+
+  function setTrns(values: Trns | null) {
+    items.value = values
+    debouncedPersist(values)
+  }
+
+  function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
+    const valuesWithEditDate = {
+      ...values,
+      updatedAt: new Date().getTime(),
+    }
+
+    // Check before setTrns so the new id isn't already in the store
+    // Frontend IDs are always treated as new creates (server generates real ID)
+    const isExisting = !isLocalId(id) && items.value && id in items.value
+
+    // Optimistic UI
+    setTrns({ ...items.value, [id]: valuesWithEditDate })
+
+    if (!pushSaveOp({ entity: 'trns', id, isDemo: isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+      return
+
+    const { api, client } = useConvexClientWithApi()
+    const action = isExisting ? 'update' : 'create'
+
+    const base = {
+      date: valuesWithEditDate.date,
+      desc: valuesWithEditDate.desc || undefined,
+      type: valuesWithEditDate.type,
+    }
+
+    const trnData = values.type === TrnType.Transfer
+      ? {
+          ...base,
+          categoryId: 'transfer',
+          expenseAmount: values.expenseAmount,
+          expenseWalletId: values.expenseWalletId,
+          incomeAmount: values.incomeAmount,
+          incomeWalletId: values.incomeWalletId,
+        }
+      : {
+          ...base,
+          amount: values.amount,
+          categoryId: values.categoryId,
+          walletId: values.walletId,
+        }
+
+    // Fire-and-forget mutation, cleanup on success
+    const mutation = isExisting
+      ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData })
+      : client.mutation(api.trns.create, trnData)
+
+    return handleMutationResult({
+      action,
+      entity: 'trns',
+      errorMessage: 'trns.errors.saveFailed',
+      id,
+      items,
+      mutation,
+
+    })
   }
 
   function deleteTrn(id: TrnId) {
+    // Optimistic UI
     const trns = { ...items.value }
-
     delete trns[id]
     setTrns(trns)
 
-    localforage.setItem('finapp.trns', deepUnref(trns))
-    saveTrnIdForDeleteWhenClientOnline(id)
-
-    removeData(`users/${userStore.uid}/trns/${id}`).then(() =>
-      removeTrnToDeleteLaterLocal(id),
-    )
-  }
-
-  function deleteTrnsByIds(trnsIds: TrnId[]) {
-    const trnsForDelete: Trns = {}
-    if (isDemo.value) {
-      deleteDemoTrns(trnsIds)
+    if (!pushDeleteOp({ entity: 'trns', id, isDemo: isDemo.value }))
       return
-    }
 
-    for (const trnId of trnsIds) trnsForDelete[trnId] = null
+    // Fire-and-forget mutation, cleanup on success
+    const { api, client } = useConvexClientWithApi()
+    return handleMutationResult({
+      action: 'delete',
+      entity: 'trns',
+      errorMessage: 'trns.errors.deleteFailed',
+      id,
+      items,
+      mutation: client.mutation(api.trns.remove, { id: asConvexId<'trns'>(id) }),
 
-    updateData(`users/${userStore.uid}/trns`, trnsForDelete)
-  }
-
-  function unsubscribeTrns() {
-    unsubscribeData(`users/${userStore.uid}/trns`)
-    setTrns(null)
-  }
-
-  function uploadOfflineTrns() {
-    getDataAndWatch('.info/connected', async (isConnected: boolean) => {
-      const walletsStore = useWalletsStore()
-
-      if (isConnected) {
-        const trnsArrayForDelete = (await localforage.getItem('finapp.trns.offline.delete')) || []
-        const trnsItemsForUpdate = (await localforage.getItem('finapp.trns.offline.update')) || {}
-
-        // delete trns
-        for (const trnId of trnsArrayForDelete) {
-          deleteTrn(trnId)
-          delete trnsItemsForUpdate[trnId]
-        }
-
-        await localforage.setItem('finapp.trns.offline.update', deepUnref(trnsItemsForUpdate))
-
-        // add trns
-        for (const trnId in trnsItemsForUpdate) {
-          const wallet = walletsStore.items[trnsItemsForUpdate[trnId].walletId]
-          const category = categoriesStore.items[trnsItemsForUpdate[trnId].categoryId]
-
-          // delete trn from local storage if no wallet or category
-          if (!wallet || !category) {
-            delete trnsItemsForUpdate[trnId]
-            await localforage.setItem('finapp.trns.offline.update', deepUnref(trnsItemsForUpdate))
-          }
-
-          // add
-          else if (trnsItemsForUpdate[trnId] && trnsItemsForUpdate[trnId].amount) {
-            addTrn({
-              id: trnId,
-              values: trnsItemsForUpdate[trnId],
-            })
-          }
-        }
-      }
     })
   }
 
-  function computeTrnItem(id: TrnId): TrnItemFull | string {
+  function deleteTrnsByIds(trnsIds: TrnId[]) {
+    if (trnsIds.length === 0)
+      return
+
+    // Single optimistic update
+    const trns = { ...items.value }
+    for (const id of trnsIds)
+      delete trns[id]
+    setTrns(trns)
+
+    if (isDemo.value)
+      return
+
+    // Batch offline queue
+    logger.log(`optimistic batch delete: ${trnsIds.length} trns`)
+    if (!isReplaying()) {
+      for (const id of trnsIds)
+        pushOfflineOp({ entity: 'trns', id, type: 'delete' })
+    }
+
+    const { api, client } = useConvexClientWithApi()
+    const convexIds = trnsIds.filter(id => !isLocalId(id)).map(id => asConvexId<'trns'>(id))
+
+    if (convexIds.length > 0) {
+      return handleMutationResult({
+        action: 'delete',
+        entity: 'trns',
+        errorMessage: 'trns.errors.deleteFailed',
+        id: trnsIds,
+        mutation: client.mutation(api.trns.removeBatch, { ids: convexIds }),
+      })
+    }
+    else {
+      // All frontend IDs — just clean up offline queue
+      removeOfflineOps('trns', trnsIds)
+    }
+  }
+
+  /**
+   * Remove trns from store only (optimistic UI cleanup).
+   * Does NOT fire mutations or push to offline queue.
+   */
+  function removeTrnsFromStore(trnsIds: TrnId[]) {
+    if (!items.value)
+      return
+
+    const trns = { ...items.value }
+    for (const id of trnsIds)
+      delete trns[id]
+    setTrns(trns)
+  }
+
+  function computeTrnItem(id: TrnId): TrnItemFull | null {
     if (!items.value || !walletsStore?.items || !categoriesStore?.items)
-      return 'Something missing'
+      return null
 
     // Trn
     const trn = items.value[id]
     if (!trn)
-      return 'Trn not found'
+      return null
 
     // Category
     const category = categoriesStore.items[trn.categoryId]
     if (!category)
-      return 'Category not found'
+      return null
 
     // Parent category
     let categoryParent
     if (category.parentId) {
       categoryParent = categoriesStore.items[category.parentId]
       if (!categoryParent)
-        return 'Parent Category not found'
+        return null
     }
 
-    // Transaction
-    if (trn.type !== 2) {
-      // Wallet
-      const wallet = walletsStore.items[trn.walletId]
-      if (!wallet)
-        return 'Wallet not found'
-
-      return {
-        id,
-        ...trn,
-        category,
-        categoryParent,
-        wallet,
-      }
-    }
-
-    if (trn.type === 2) {
-      const expenseWalletId = trn.expenseWalletId || trn.walletFromId
-      const expenseWallet = walletsStore.items[expenseWalletId]
+    // Transfer
+    if (trn.type === TrnType.Transfer) {
+      const expenseWallet = walletsStore.items[trn.expenseWalletId]
       if (!expenseWallet)
-        return 'Transfer expense Wallet not found'
+        return null
 
-      const incomeWalletId = trn.incomeWalletId || trn.walletToId
-      const incomeWallet = walletsStore.items[incomeWalletId]
+      const incomeWallet = walletsStore.items[trn.incomeWalletId]
       if (!incomeWallet)
-        return 'Transfer income Wallet not found'
+        return null
 
       return {
         id,
@@ -234,28 +400,22 @@ export const useTrnsStore = defineStore('trns', () => {
       }
     }
 
-    return 'Trn type not found'
-  }
+    // Regular transaction
+    const wallet = walletsStore.items[trn.walletId]
+    if (!wallet)
+      return null
 
-  function normalizeTrns(trns: Trns) {
-    const normTrns: Trns = {}
-
-    for (const trnId in trns) {
-      const trn = trns[trnId]!
-      const desc = trn.desc || trn.description || ''
-      delete trn.description
-
-      normTrns[trnId] = {
-        ...trn,
-        desc,
-      }
+    return {
+      id,
+      ...trn,
+      category,
+      categoryParent,
+      wallet,
     }
-
-    return normTrns
   }
 
   return {
-    addTrn,
+    cancelPersist: () => debouncedPersist.cancel?.(),
     computeTrnItem,
     deleteTrn,
     deleteTrnsByIds,
@@ -266,8 +426,8 @@ export const useTrnsStore = defineStore('trns', () => {
     items,
     lastCreatedTrnId,
     lastCreatedTrnItem,
+    removeTrnsFromStore,
+    saveTrn,
     setTrns,
-    unsubscribeTrns,
-    uploadOfflineTrns,
   }
 })

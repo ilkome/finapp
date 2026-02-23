@@ -5,15 +5,16 @@ import { differenceInDays } from 'date-fns'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 
-import { errorEmo, random, successEmo } from '~/assets/js/emo'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
 import { useFilter } from '~/components/stat/filter/useFilter'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
@@ -22,9 +23,8 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
-const toast = useToast()
 
-provide('filter', filter)
+provide(filterKey, filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
@@ -57,7 +57,7 @@ const statConfig = useStatConfig({
   },
   storageKey: storageKey.value,
 })
-provide('statConfig', statConfig)
+provide(statConfigKey, statConfig)
 
 const statDate = useStatDate({
   initParams: {
@@ -72,7 +72,7 @@ const statDate = useStatDate({
   maxRange,
   queryParams: route.query,
 })
-provide('statDate', statDate)
+provide(statDateKey, statDate)
 
 onActivated(() => {
   statConfig.updateConfig('catsList', { isGrouped: false })
@@ -102,11 +102,7 @@ function onClickDelete(close: () => void) {
 
   for (const id in categoriesStore.items) {
     if (categoriesStore.items[id]?.parentId === categoryId.value) {
-      toast.add({
-        color: 'error',
-        description: t('categories.form.delete.errorChilds'),
-        title: random(errorEmo),
-      })
+      showErrorToast('categories.form.delete.errorChilds')
 
       return false
     }
@@ -116,24 +112,20 @@ function onClickDelete(close: () => void) {
 }
 
 async function onDeleteConfirm() {
-  const trnsIdsS = JSON.parse(JSON.stringify(
-    trnsStore.getStoreTrnsIds({
-      categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
-    }),
-  ))
+  const trnsIdsS = [...trnsStore.getStoreTrnsIds({
+    categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
+  })]
 
   router.push('/categories')
-  await categoriesStore.deleteCategory(JSON.parse(JSON.stringify(categoryId.value), trnsIdsS))
+  await categoriesStore.deleteCategory(categoryId.value, trnsIdsS)
 
   // Give some time to complete redirect
-  setTimeout(async () => {
-    toast.add({
-      color: 'success',
-      description: trnsIdsS?.length > 0
-        ? t('categories.form.delete.okWithTrns', { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) })
-        : t('categories.form.delete.okWithoutTrns'),
-      title: random(successEmo),
-    })
+  setTimeout(() => {
+    showSuccessToast(trnsIdsS?.length > 0
+      ? 'categories.form.delete.okWithTrns'
+      : 'categories.form.delete.okWithoutTrns', trnsIdsS?.length > 0
+      ? { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) }
+      : undefined)
   }, 300)
 }
 
@@ -189,7 +181,7 @@ const categoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.val
       v-if="isShowDeleteConfirm"
       :description="deleteDescText"
       @closed="isShowDeleteConfirm = false"
-      @onConfirm="onDeleteConfirm"
+      @confirm="onDeleteConfirm"
     />
 
     <div

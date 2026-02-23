@@ -11,7 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onClose: []
+  close: []
 }>()
 
 const { t } = useI18n()
@@ -95,12 +95,12 @@ function isRangeSelected(rd: IntervalGroupedLabel) {
 
 function selectRange(igl: IntervalGroupedLabel) {
   props.statDate.setRangeByPeriod(igl)
-  emit('onClose')
+  emit('close')
 }
 
 function selectMaxRange(isSkipEmpty = false) {
   props.statDate.setMaxRange(isSkipEmpty)
-  emit('onClose')
+  emit('close')
 }
 </script>
 

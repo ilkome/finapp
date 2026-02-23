@@ -1,92 +1,62 @@
-import { startOfDay } from 'date-fns'
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
-import { getDataOnce, saveData } from '~~/services/firebase/api'
+import { defineStore } from 'pinia'
 
-import type { CurrencyCode, Rates } from '~/components/currencies/types'
+import type { Rates } from '~/components/currencies/types'
 
 import { currencies as allCurrencies } from '~/components/currencies/currencies'
-import { useDemo } from '~/components/demo/useDemo'
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
+import { isPersistBlocked } from '~/composables/useStoreSync'
+import { createLogger } from '~/utils/logger'
 
-const serviceUrlBase = `https://openexchangerates.org/api/latest.json?app_id=`
+const logger = createLogger('currencies')
+
 export const currencies = allCurrencies
 
 export const useCurrenciesStore = defineStore('currencies', () => {
-  const { $config } = useNuxtApp()
   const userStore = useUserStore()
-  const { isDemo } = useDemo()
 
-  const base = ref<CurrencyCode>('USD')
+  const base = computed(() => userStore.baseCurrency)
   const rates = ref<Rates>({})
 
-  async function getRatesOfUSD(apiKey: string) {
+  async function initCurrencies() {
     try {
-      const { data } = await useAsyncData<{ rates: Rates }>(
-        'rates',
-        () => $fetch(`${serviceUrlBase}${apiKey}`),
-      )
-      return data.value?.rates
+      const { api, client } = useConvexClientWithApi()
+
+      // Get latest rates from Convex
+      const latestRates = await client.query(api.rates.getLatest, {})
+
+      if (latestRates?.rates) {
+        setRates(latestRates.rates as Rates)
+      }
+      else {
+        // If no rates exist, try to refresh them via action
+        await client.action(api.rates.refreshRates, {})
+        const freshRates = await client.query(api.rates.getLatest, {})
+        if (freshRates?.rates)
+          setRates(freshRates.rates as Rates)
+      }
     }
     catch (e) {
-      console.error('Currencies api are unavailable', e)
-      return undefined
+      logger.error('init failed', e)
     }
-  }
-
-  async function initCurrencies() {
-    // User base currency in DB
-    const userBaseCurrency: CurrencyCode = await getDataOnce(`users/${userStore.uid}/settings/baseCurrency`) || 'USD'
-
-    // Rates for today
-    const today = startOfDay(new Date()).getTime()
-
-    let ratesBasedOnUsd: Rates | undefined = await getDataOnce(`ratesUsd/history/${today}`)
-
-    if (!ratesBasedOnUsd) {
-      ratesBasedOnUsd = await getRatesOfUSD($config.public.ratesApiKey)
-      if (!ratesBasedOnUsd)
-        return
-
-      await saveData('ratesUsd/latest', ratesBasedOnUsd)
-      await saveData(`ratesUsd/history/${today}`, ratesBasedOnUsd)
-    }
-
-    setBase(userBaseCurrency)
-    setRates(ratesBasedOnUsd)
   }
 
   function setRates(values: Rates) {
     rates.value = values
 
-    localforage.setItem('finapp.currencies', {
-      base: base.value,
+    if (isPersistBlocked())
+      return
+
+    localforage.setItem(STORAGE_KEYS.currencies, {
       rates: values,
     })
-  }
-
-  function setBase(value: CurrencyCode) {
-    base.value = value
-
-    localforage.setItem('finapp.currencies', {
-      base: value,
-      rates: deepUnref(rates.value),
-    })
-  }
-
-  function updateBase(value: CurrencyCode) {
-    setBase(value)
-
-    if (!isDemo.value)
-      saveData(`users/${userStore.uid}/settings/baseCurrency`, value)
   }
 
   return {
     base,
     initCurrencies,
     rates,
-    setBase,
     setRates,
-    updateBase,
   }
 })

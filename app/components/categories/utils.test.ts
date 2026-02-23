@@ -55,7 +55,6 @@ const mockCategories2: Categories = {
     color: '#701a75',
     icon: 'mdi:paper-roll-outline',
     name: 'Gas',
-    order: 1,
     parentId: '241120_k27ehb',
     showInLastUsed: true,
     showInQuickSelector: false,
@@ -64,7 +63,6 @@ const mockCategories2: Categories = {
     color: '#52525b',
     icon: 'mdi:mushroom',
     name: 'Просто категория',
-    order: 1,
     parentId: 0,
     showInLastUsed: true,
     showInQuickSelector: false,
@@ -76,7 +74,6 @@ const mockCategories2: Categories = {
     color: '#701a75',
     icon: 'mdi:truck-delivery',
     name: 'Auto',
-    order: 1,
     parentId: 0,
     showInLastUsed: true,
     showInQuickSelector: false,
@@ -86,7 +83,6 @@ const mockCategories2: Categories = {
     color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
     name: 'Transfer',
-    order: 9999,
     parentId: 0,
     showInLastUsed: false,
     showInQuickSelector: false,
@@ -123,9 +119,34 @@ describe('getTransactibleCategoriesIds', () => {
 })
 
 describe('getTransferCategoriesIds', () => {
-  it('returns transfer categories ids', () => {
+  it('returns only the reserved transfer ID', () => {
     const result = getTransferCategoriesIds(mockCategories)
-    expect(result).toEqual(['transfer', 'transfer2', 'transfer3'])
+    expect(result).toEqual(['transfer'])
+  })
+
+  it('does not match user categories named "transfer" or "перевод"', () => {
+    const items: Categories = {
+      myTransfer: {
+        color: '#000',
+        icon: 'mdi:repeat',
+        name: 'transfer',
+        parentId: 0,
+      },
+      transfer: {
+        color: 'var(--ui-primary)',
+        icon: 'mdi:repeat',
+        name: 'Transfer',
+        parentId: 0,
+      },
+      перевод: {
+        color: '#000',
+        icon: 'mdi:repeat',
+        name: 'перевод',
+        parentId: 0,
+      },
+    }
+    const result = getTransferCategoriesIds(items)
+    expect(result).toEqual(['transfer'])
   })
 
   it('empty categories object', () => {

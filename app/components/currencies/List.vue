@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { CurrencyCode } from '~/components/currencies/types'
+
 import { currencies } from '~/components/currencies/currencies'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -7,7 +9,9 @@ const props = defineProps<{
   isHideUnused?: boolean
   isShowAllButton?: boolean
 }>()
-const emit = defineEmits(['onSelect'])
+const emit = defineEmits<{
+  select: [code: CurrencyCode]
+}>()
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
@@ -33,9 +37,8 @@ const list = computed(() => {
   <div class="grid h-full grid-rows-[auto_1fr] overflow-hidden px-2">
     <div>
       <FormInput
-        :value="searchInput"
+        v-model="searchInput"
         :placeholder="`${t('currencies.list.search')}...`"
-        @updateValue="(value: string) => searchInput = value"
       />
     </div>
 
@@ -52,7 +55,7 @@ const list = computed(() => {
           :lineWidth="6"
           class="group"
           insideClasses="!min-h-[44px]"
-          @click="emit('onSelect', 'all')"
+          @click="emit('select', 'all')"
         >
           <div class="flex items-center">
             <div class="w-14 pl-1">
@@ -74,7 +77,7 @@ const list = computed(() => {
           :lineWidth="6"
           class="group"
           insideClasses="!min-h-[44px]"
-          @click="emit('onSelect', currencyCode)"
+          @click="emit('select', currencyCode)"
         >
           <div class="flex items-center">
             <div class="w-14 pl-1">
@@ -98,7 +101,7 @@ const list = computed(() => {
           :isActive="currency.code === active"
           :lineWidth="6"
           class="group"
-          @click="emit('onSelect', currency.code)"
+          @click="emit('select', currency.code)"
         >
           <div class="flex items-center">
             <div class="w-14 pl-1">

@@ -21,31 +21,33 @@ const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'lis
     <UiHeader>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UiItem3 @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
+        <UiActionButton @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
           <Icon
             :name="categoriesView === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
             size="20"
           />
-        </UiItem3>
+        </UiActionButton>
 
-        <UiItem3 @click="router.push('/categories/new')">
+        <UiActionButton @click="router.push('/categories/new')">
           <Icon name="lucide:plus" size="24" />
-        </UiItem3>
+        </UiActionButton>
       </template>
     </UiHeader>
 
     <!-- Empty -->
     <div
       v-if="categoriesStore.categoriesRootIds.length === 0"
-      class="pageWrapper"
+      class="flex-center grow flex-col"
     >
-      <div class="md:max-w-xs">
-        <UiButtonAccent
-          @click="router.push('/categories/new')"
-        >
-          {{ t('categories.new') }}
-        </UiButtonAccent>
-      </div>
+      <UiTitleSection class="pb-4">
+        {{ t('categories.new') }}
+      </UiTitleSection>
+      <UiButtonAccent
+        rounded
+        @click="router.push('/categories/new')"
+      >
+        {{ t('categories.new') }}
+      </UiButtonAccent>
     </div>
 
     <!-- List -->

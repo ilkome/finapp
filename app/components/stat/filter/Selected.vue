@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import type { FilterProvider } from '~/components/stat/filter/types'
-
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { getStyles } from '~/components/ui/getStyles'
+import { filterKey } from '~/components/stat/injectionKeys'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -10,10 +8,10 @@ const props = defineProps<{
   isShowWallets?: boolean
 }>()
 
-const filter = inject('filter') as FilterProvider
+const filter = inject(filterKey)!
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
-const itemClasses = getStyles('item', ['alt', 'rounded'])
+const itemClasses = 'bg-item-3 rounded-sm'
 </script>
 
 <template>

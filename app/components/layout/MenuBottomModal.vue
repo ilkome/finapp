@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useAppNav } from '~/components/app/useAppNav'
 import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 
-const { closeAllModals, isModalOpen } = useAppNav()
+const emit = defineEmits<{ close: [] }>()
 const { t } = useI18n()
 const userStore = useUserStore()
 const { isDemo } = useDemo()
@@ -12,13 +11,12 @@ const { isDemo } = useDemo()
 <template>
   <Teleport to="body">
     <LazyBottomSheet
-      v-if="isModalOpen('menu')"
       isShow
-      @closed="closeAllModals"
+      @closed="emit('close')"
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <div class="bottomSheetContent">

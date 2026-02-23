@@ -26,8 +26,8 @@ function onSave(close: () => void) {
     class="grow"
     drugClassesCustom="max-w-md"
     isShowCloseBtn
-    @onCloseModal="trnsFormStore.closeTrnFormModal('description')"
-    @onOpenModal="trnsFormStore.openTrnFormModal('description')"
+    @closeModal="trnsFormStore.closeTrnFormModal('description')"
+    @openModal="trnsFormStore.openTrnFormModal('description')"
   >
     <template #trigger>
       <TrnFormMainCalculatorButton class="relative">
@@ -43,9 +43,8 @@ function onSave(close: () => void) {
       <div class="grid min-w-80 gap-4">
         <div class="px-2">
           <FormTextarea
-            :value="desc"
+            v-model="desc"
             :placeholder="t('trnForm.description.placeholder')"
-            @updateValue="(value: string) => desc = value"
           />
         </div>
 

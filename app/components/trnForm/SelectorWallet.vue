@@ -11,8 +11,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onOpen: [slide: number]
-  onSelected: [id: WalletId]
+  open: [slide: number]
+  selected: [id: WalletId]
 }>()
 
 const walletsStore = useWalletsStore()
@@ -27,8 +27,8 @@ const isShow = ref(false)
     :title="props.title"
     drugClassesCustom="h-full max-w-md"
     isShowCloseBtn
-    @onCloseModal="isShow = false"
-    @onOpenModal="isShow = true"
+    @closeModal="isShow = false"
+    @openModal="isShow = true"
   >
     <template #trigger>
       <WalletsItem
@@ -46,7 +46,7 @@ const isShow = ref(false)
         :hide="close"
         :activeItemId="props.walletId"
         class="min-w-80 px-2"
-        @onSelected="(id: WalletId) => emit('onSelected', id)"
+        @selected="(id: WalletId) => emit('selected', id)"
       />
     </template>
   </BottomSheetOrDropdown>

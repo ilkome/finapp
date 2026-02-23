@@ -1,82 +1,65 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   description?: string
+  title?: string
 }>()
 
 const emit = defineEmits<{
-  (e: 'closed'): void
-  (e: 'onConfirm'): void
+  closed: []
+  confirm: []
 }>()
 
 const { t } = useI18n()
 
-const items = computed(() => ({
-  no: {
-    click: (close: () => void) => {
-      close()
-    },
-    icon: 'mdi:close',
-    localeKey: 'base.no',
-  },
+const isOpen = ref(true)
 
-  yes: {
-    click: (close: () => void) => {
-      emit('onConfirm')
-      close()
-    },
-    icon: 'mdi:check',
-    localeKey: 'base.yes',
-  },
-}))
+function onConfirm(close: () => void) {
+  emit('confirm')
+  close()
+}
+
+function onClosed() {
+  isOpen.value = false
+  emit('closed')
+}
 </script>
 
 <template>
-  <Teleport to="body">
-    <BottomSheet
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      isShow
-      @closed="emit('closed')"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
-      </template>
+  <UModal
+    v-model:open="isOpen"
+    :title="props.title || t('base.sure')"
+    :ui="{ content: 'max-w-sm', footer: 'justify-between' }"
+    @update:open="(val: boolean) => { if (!val) onClosed() }"
+  >
+    <template #body>
+      <div
+        v-if="description"
+        class="text-muted"
+      >
+        {{ description }}
+      </div>
+    </template>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <UiTitleModal>
-            {{ t('base.sure') }}
-          </UiTitleModal>
+    <template #footer="{ close }">
+      <UButton
+        variant="outline"
+        color="neutral"
+        size="xl"
+        class="px-6 text-sm"
+        @click="close"
+      >
+        {{ t('base.cancel') }}
+      </UButton>
 
-          <div class="scrollerBlock bottomSheetContentInside !px-3">
-            <div
-              v-if="description"
-              class="text-alert-1"
-            >
-              {{ description }}
-            </div>
-
-            <div class="flex gap-3 py-4">
-              <UiElement
-                v-for="(item, slug) in items"
-                :key="slug"
-                class="grow"
-                insideClasses="!min-h-[44px] bg-item-3"
-                @click="item.click(close)"
-              >
-                <template #leftIcon>
-                  <Icon
-                    :name="item.icon"
-                    size="22"
-                  />
-                </template>
-
-                {{ t(item.localeKey) }}
-              </UiElement>
-            </div>
-          </div>
-        </div>
-      </template>
-    </BottomSheet>
-  </Teleport>
+      <UButton
+        variant="soft"
+        color="error"
+        size="xl"
+        class="px-6"
+        @click="onConfirm(close)"
+      >
+        {{ t('base.delete') }}
+      </UButton>
+    </template>
+  </UModal>
 </template>

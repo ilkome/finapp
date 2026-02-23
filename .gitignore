@@ -25,4 +25,7 @@ logs
 !.env.example
 
 
+# Migration data
+utils/migrate/data.json
+
 ftp.config.js

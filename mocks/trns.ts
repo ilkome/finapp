@@ -1,14 +1,14 @@
-import type { TrnId, TrnItemDirty } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
 
-export const trnsItems: Record<TrnId, TrnItemDirty> = {
+export const trnsItems: Record<TrnId, TrnItem> = {
   transactionExpenseWalletCashUSD400: {
     amount: 400,
     categoryId: 'expense',
     date: 123456,
-    edited: 12,
     type: TrnType.Expense,
+    updatedAt: 12,
     walletId: 'walletCashUSD',
   },
 
@@ -16,8 +16,8 @@ export const trnsItems: Record<TrnId, TrnItemDirty> = {
     amount: 900,
     categoryId: 'category1',
     date: 123456,
-    edited: 12,
     type: TrnType.Expense,
+    updatedAt: 12,
     walletId: 'walletOneRUB',
   },
 
@@ -25,8 +25,8 @@ export const trnsItems: Record<TrnId, TrnItemDirty> = {
     amount: 1000,
     categoryId: 'income',
     date: 123456,
-    edited: 12,
     type: TrnType.Income,
+    updatedAt: 12,
     walletId: 'walletCashUSD',
   },
 
@@ -34,8 +34,8 @@ export const trnsItems: Record<TrnId, TrnItemDirty> = {
     amount: 700,
     categoryId: 'category1',
     date: 123456,
-    edited: 12,
     type: TrnType.Income,
+    updatedAt: 12,
     walletId: 'walletOneRUB',
   },
 
@@ -43,62 +43,51 @@ export const trnsItems: Record<TrnId, TrnItemDirty> = {
     amount: 30,
     categoryId: 'transfer',
     date: 123456,
-    edited: 12,
     type: TrnType.Expense,
+    updatedAt: 12,
     walletId: 'walletCashUSD',
   },
 
-  transferCategoryNameIncomeWalletCashUSD30: {
+  transferCategoryIncomeWalletCashUSD30: {
     amount: 30,
-    categoryId: 'transfer3',
+    categoryId: 'transfer',
     date: 123456,
-    edited: 12,
     type: TrnType.Income,
+    updatedAt: 12,
     walletId: 'walletCashUSD',
   },
 
   transferExpenseWalletCashUSD10IncomeWalletRUB700: {
     categoryId: 'transfer',
     date: 123456,
-    edited: 12,
     expenseAmount: 10,
     expenseWalletId: 'walletCashUSD',
     incomeAmount: 700,
     incomeWalletId: 'walletRUB',
     type: TrnType.Transfer,
+    updatedAt: 12,
   },
 
   transferExpenseWalletCreditUSD40IncomeWalletCashUSD40: {
     categoryId: 'transfer',
     date: 123456,
-    edited: 12,
     expenseAmount: 40,
     expenseWalletId: 'walletCreditUSD',
     incomeAmount: 40,
     incomeWalletId: 'walletCashUSD',
     type: TrnType.Transfer,
+    updatedAt: 12,
   },
 
   transferExpenseWalletRUB300IncomeWalletCreditUSD10: {
     categoryId: 'transfer',
     date: 123456,
-    edited: 12,
     expenseAmount: 300,
     expenseWalletId: 'walletRUB',
     incomeAmount: 10,
     incomeWalletId: 'walletCreditUSD',
     type: TrnType.Transfer,
+    updatedAt: 12,
   },
 
-  // @deprecated: use New Transaction type instead or Transfer CategoryId
-  transferOLDExpense2500Income3500: {
-    amountFrom: 2500,
-    amountTo: 3500,
-    categoryId: 'transfer',
-    date: 123456,
-    edited: 12,
-    type: TrnType.Transfer,
-    walletFromId: 'walletDeprecatedTransferExpense',
-    walletToId: 'walletDeprecatedTransferIncome',
-  },
 }

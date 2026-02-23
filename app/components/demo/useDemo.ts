@@ -1,16 +1,17 @@
 import { startOfYear, subYears } from 'date-fns'
 import localforage from 'localforage'
 
-import type { AddCategoryParams, Categories, CategoryId } from '~/components/categories/types'
+import type { Categories } from '~/components/categories/types'
 import type { LocaleSlug } from '~/components/locale/types'
-import type { TrnId, Trns } from '~/components/trns/types'
-import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
+import type { Trns } from '~/components/trns/types'
+import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import currencies from '~/components/demo/currencies.json'
 import { data } from '~/components/demo/data'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const config = {
@@ -27,7 +28,7 @@ export function useDemo() {
   const trnsStore = useTrnsStore()
 
   async function generateDemoData(locale: LocaleSlug) {
-    localforage.clear()
+    await localforage.clear()
 
     const translatedData: {
       categories: Categories
@@ -43,7 +44,7 @@ export function useDemo() {
       }, {} as Wallets),
     }
 
-    currenciesStore.setBase('USD')
+    useUserStore().setUserBaseCurrency('USD')
     currenciesStore.setRates(currencies)
     categoriesStore.setCategories(translatedData.categories)
     walletsStore.setWallets(translatedData.wallets)
@@ -51,7 +52,7 @@ export function useDemo() {
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
     const endDate = new Date().getTime()
 
-    const trns: Trns = [...Array.from({ length: config.trnsCount })].reduce((acc, _, i) => {
+    const trns: Trns = Array.from({ length: config.trnsCount }).reduce((acc, _, i) => {
       return {
         ...acc,
         [i]: {
@@ -68,69 +69,8 @@ export function useDemo() {
     trnsStore.setTrns(trns)
   }
 
-  function addDemoCategory({ childIds, id, isUpdateChildCategoriesColor, values }: AddCategoryParams) {
-    const items = {
-      ...categoriesStore.items,
-      [id]: values,
-    }
-
-    if (isUpdateChildCategoriesColor && childIds) {
-      for (const childId of childIds) {
-        if (items[childId]) {
-          items[childId].color = values.color
-        }
-      }
-    }
-    categoriesStore.setCategories(items)
-  }
-
-  async function deleteDemoCategory(id: CategoryId, trnsIds?: TrnId[]) {
-    if (trnsIds)
-      await deleteDemoTrns(trnsIds)
-
-    const items = { ...categoriesStore.items }
-    delete items[id]
-
-    categoriesStore.setCategories(items)
-  }
-
-  async function deleteDemoTrns(ids: TrnId[]) {
-    const trns = { ...trnsStore.items }
-    for (const id of ids)
-      delete trns[id]
-
-    await trnsStore.setTrns(trns)
-  }
-
-  async function sortDemoWallets(ids: WalletId[], wallets: Wallets) {
-    const sortedWallets = ids.reduce((acc, walletId, index) => {
-      const wallet = wallets[walletId]
-      acc[walletId] = wallet
-      acc[walletId].order = index
-      return acc
-    }, {} as Record<WalletId, WalletItem>)
-
-    walletsStore.setWallets(sortedWallets)
-    return 'ok'
-  }
-
-  async function deleteDemoWallet(id: WalletId, trnsIds?: TrnId[]) {
-    if (trnsIds)
-      await deleteDemoTrns(trnsIds)
-
-    const items = { ...walletsStore.items }
-    delete items[id]
-
-    walletsStore.setWallets(items)
-  }
-
   return {
-    addDemoCategory,
-    deleteDemoCategory,
-    deleteDemoTrns,
-    deleteDemoWallet,
     generateDemoData,
     isDemo,
-    sortDemoWallets,
   }
 }

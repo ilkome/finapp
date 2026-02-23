@@ -5,14 +5,15 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'close'): void
+  close: []
 }>()
 </script>
 
 <template>
   <div
-    class="grid max-h-[60dvh]"
-    :class="{ 'grid-rows-[auto_1fr]': props.title || props.isShowCloseBtn }"
+    :class="cn('grid max-h-[60dvh]',
+               (props.title || props.isShowCloseBtn) && 'grid-rows-[auto_1fr]',
+    )"
   >
     <UiTitleModal v-if="props.title">
       {{ props.title }}
@@ -20,7 +21,7 @@ const emit = defineEmits<{
 
     <BottomSheetClose
       v-if="props.isShowCloseBtn"
-      @onClick="emit('close')"
+      @click="emit('close')"
     />
 
     <div

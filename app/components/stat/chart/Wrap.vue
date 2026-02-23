@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { Period, StatDateProvider } from '~/components/date/types'
+import type { Period } from '~/components/date/types'
 import type { ChartSeries } from '~/components/stat/types'
-import type { MiniItemConfig, StatConfigProvider } from '~/components/stat/useStatConfig'
+import type { MiniItemConfig } from '~/components/stat/useStatConfig'
 
+import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -11,8 +12,8 @@ const props = defineProps<{
   xAxisLabels: number[]
 }>()
 
-const statDate = inject('statDate') as StatDateProvider
-const statConfig = inject('statConfig') as StatConfigProvider
+const statDate = inject(statDateKey)!
+const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
 
 function onClickChart(idx: number) {
@@ -60,7 +61,7 @@ function onChangePeriod(period: Period) {
           :class="{ 'border-item-4 border-l': statConfig.config.value?.date.isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
-          @onChangePeriod="onChangePeriod"
+          @changePeriod="onChangePeriod"
         />
       </div>
     </div>

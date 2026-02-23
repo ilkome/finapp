@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   filteredCategoriesIds: CategoryId[]
@@ -14,13 +14,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   clickCategory: [categoryId: CategoryId]
-  onSetCategoryFilter: [categoryId: CategoryId]
+  setCategoryFilter: [categoryId: CategoryId]
 }>()
 
 const visibleCategoriesLimit = 12
 
 const { getCategoriesWithData } = useStatCategories()
-const statConfig = inject('statConfig') as StatConfigProvider
+const statConfig = inject(statConfigKey)!
 const isExpanded = ref(false)
 
 const roundCategories = computed(() => getCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.catsRound.isGrouped, props.preCategoriesIds))
@@ -40,33 +40,35 @@ const visibleCategories = computed(() => isExpanded.value ? roundCategories.valu
       }"
       class="transition-opacity"
       isShowAmount
-      @click="emit('onSetCategoryFilter', item.id)"
+      @click="emit('setCategoryFilter', item.id)"
     />
 
     <div
       v-if="!props.isOneCategory"
       class="flex items-center"
     >
-      <UiTabs1>
-        <UiItem4
+      <UiTabsBar>
+        <UiActionButton
           v-if="roundCategories.length > visibleCategoriesLimit"
+          size="sm"
           @click="isExpanded = !isExpanded"
         >
           <Icon
             :name="isExpanded ? 'lucide:chevron-up' : 'lucide:chevron-down'"
             :size="20"
           />
-        </UiItem4>
+        </UiActionButton>
 
-        <UiItem4
+        <UiActionButton
+          size="sm"
           @click="statConfig.config.value.catsRound.isGrouped = !statConfig.config.value.catsRound.isGrouped"
         >
           <Icon
             :name="statConfig.config.value.catsRound.isGrouped ? 'lucide:network' : 'lucide:folder-tree'"
             :size="20"
           />
-        </UiItem4>
-      </UiTabs1>
+        </UiActionButton>
+      </UiTabsBar>
     </div>
   </div>
 </template>

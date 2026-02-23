@@ -2,13 +2,13 @@
 import Swiper from 'swiper'
 import 'swiper/css'
 
-import type { StatDateProvider } from '~/components/date/types'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
 const emit = defineEmits<{
-  onClose: []
+  close: []
 }>()
 
-const statDate = inject('statDate') as StatDateProvider
+const statDate = inject(statDateKey)!
 
 const sliderRef = ref<any>(null)
 const sliderObj = ref<any>(null)
@@ -39,7 +39,7 @@ onMounted(() => {
             :itemProps="{ variant: 'small' }"
             :statDate
             view="periods"
-            @onClose="emit('onClose')"
+            @close="emit('close')"
           />
         </div>
 
@@ -48,7 +48,7 @@ onMounted(() => {
             :itemProps="{ variant: 'small' }"
             :statDate
             view="presets"
-            @onClose="emit('onClose')"
+            @close="emit('close')"
           />
         </div>
 
@@ -57,7 +57,7 @@ onMounted(() => {
             :itemProps="{ variant: 'small' }"
             :statDate
             view="maximum"
-            @onClose="emit('onClose')"
+            @close="emit('close')"
           />
         </div>
       </div>

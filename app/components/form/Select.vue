@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 const props = defineProps<{
   options: {
     label: string
@@ -36,6 +36,6 @@ select {
   background-position: right 0.7rem center;
   background-repeat: no-repeat;
   background-size: 1.25em 1.25em;
-  @apply hover:bg-[var(--item-5)] bg-item-3 hover:outline-none border border-transparent hover:border-(--ui-primary) -my-px block min-h-[42px] w-full max-w-lg grow items-center gap-0 gap-x-2 overflow-hidden rounded-md px-4 pr-10 py-2 ring-0;
+  @apply bg-item-3 border border-transparent outline-none -my-px block min-h-[42px] w-full grow items-center gap-0 gap-x-2 overflow-hidden rounded-md px-4 pr-10 py-2 ring-0 hover:bg-(--item-5) focus:border-(--ui-primary);
 }
 </style>

@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
-
 import { useDemo } from '~/components/demo/useDemo'
+import { showErrorToast } from '~/composables/useStoreSync'
 
-const auth = useFirebaseAuth()!
-const toast = useToast()
+const { signIn } = useAuth()
+const logger = createLogger('login')
 
 definePageMeta({
   layout: 'empty',
@@ -21,41 +20,56 @@ const { generateDemoData } = useDemo()
 const route = useRoute()
 const router = useRouter()
 const { isDemo } = useDemo()
+
 const isLoading = ref(false)
 
-if (route.query?.loading)
+async function signInWithGoogle() {
+  isDemo.value = null
   isLoading.value = true
 
-function signInWithGoogle() {
-  isDemo.value = 'false'
-  router.push({ query: { loading: 'true' } })
-  isLoading.value = true
-
-  signInWithPopup(auth, new GoogleAuthProvider()).catch((e) => {
-    toast.add({
-      color: 'error',
-      description: e.message,
-      title: 'Error',
-    })
-
-    isLoading.value = false
-  })
-}
-
-onMounted(() => {
-  if (route.query?.loading) {
-    isLoading.value = true
-    const newRoute = { ...route }
-    delete newRoute.query?.loading
-    router.replace(newRoute)
-    setTimeout(() => (isLoading.value = false), 10000)
+  // Unregister service workers before OAuth flow.
+  // A stale SW with navigateFallback intercepts the callback page navigation
+  // at the network level and serves cached content instead of the real page.
+  // Our OTT verification code never runs → auth fails on re-login.
+  if ('serviceWorker' in navigator) {
+    const registrations = await navigator.serviceWorker.getRegistrations()
+    for (const reg of registrations)
+      await reg.unregister()
   }
-})
+
+  // Remember where user wanted to go, so callback page can redirect back.
+  // Using localStorage (synchronous) instead of cookie — cookie may not flush
+  // before signIn.social() triggers full-page navigation to Google.
+  const redirectTo = getSafeRedirectPath(route.query.redirect)
+  localStorage.setItem('finapp.authRedirect', redirectTo)
+
+  // Clear stale cross-domain cookies before initiating OAuth.
+  // After signOut, background responses (getSession, atom refetch) can race
+  // with localStorage.removeItem and re-write stale cookies. The stale
+  // __Secure-better-auth.state confuses the OAuth flow.
+  localStorage.removeItem('better-auth_cookie')
+  localStorage.removeItem('better-auth_session_data')
+
+  try {
+    const result = await signIn.social({ callbackURL: `${window.location.origin}/auth/callback`, provider: 'google' })
+
+    // crossDomainClient returns {url, redirect: true} instead of auto-redirecting.
+    // Manually redirect to the Google OAuth URL.
+    if (result.data?.url) {
+      window.location.href = result.data.url
+    }
+  }
+  catch (e: unknown) {
+    logger.error('signIn.social error:', e)
+    showErrorToast('login.error')
+    isLoading.value = false
+  }
+}
 
 async function openDemo() {
   isDemo.value = 'true'
   await generateDemoData(locale.value)
-  router.push(typeof route.query.redirect === 'string' ? route.query.redirect : '/dashboard')
+  router.push(getSafeRedirectPath(route.query.redirect))
 }
 </script>
 

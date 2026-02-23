@@ -6,6 +6,10 @@ export function getTrnsIds(props: TrnsGetterProps) {
 
   const trnsIds: TrnId[] = props.trnsIds || Object.keys(props.trnsItems ?? {})
 
+  const walletsSet = props.walletsIds?.length ? new Set(props.walletsIds) : null
+  const categoriesSet = props.categoriesIds?.length ? new Set(props.categoriesIds) : null
+  const typesSet = Array.isArray(props.trnsTypes) ? new Set(props.trnsTypes) : null
+
   const filters: Array<(ids: TrnId[]) => TrnId[]> = [
     // Type filter
     ids => props.trnType != null
@@ -13,8 +17,8 @@ export function getTrnsIds(props: TrnsGetterProps) {
       : ids,
 
     // Types filter
-    ids => Array.isArray(props.trnsTypes)
-      ? ids.filter(id => props.trnsTypes?.includes(props.trnsItems?.[id]?.type))
+    ids => typesSet
+      ? ids.filter(id => typesSet.has(props.trnsItems?.[id]?.type))
       : ids,
 
     // Date filters
@@ -26,23 +30,18 @@ export function getTrnsIds(props: TrnsGetterProps) {
       : ids,
 
     // Wallet filter
-    ids => props.walletsIds?.length
+    ids => walletsSet
       ? ids.filter((id) => {
           const trn = props.trnsItems?.[id]
-          const walletIds = [
-            trn?.walletId,
-            trn?.expenseWalletId,
-            trn?.incomeWalletId,
-            trn?.walletToId,
-            trn?.walletFromId,
-          ]
-          return walletIds.some(walletId => props.walletsIds?.includes(walletId))
+          return walletsSet.has(trn?.walletId)
+            || walletsSet.has(trn?.expenseWalletId)
+            || walletsSet.has(trn?.incomeWalletId)
         })
       : ids,
 
     // Category filter
-    ids => props.categoriesIds?.length
-      ? ids.filter(id => props.categoriesIds?.includes(props.trnsItems?.[id]?.categoryId))
+    ids => categoriesSet
+      ? ids.filter(id => categoriesSet.has(props.trnsItems?.[id]?.categoryId))
       : ids,
   ]
 

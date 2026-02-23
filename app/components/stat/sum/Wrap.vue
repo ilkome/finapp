@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { cn } from '~~/lib/cn'
-
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
-import type { StatDateProvider } from '~/components/date/types'
-import type { FilterProvider } from '~/components/stat/filter/types'
 import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { classes } from '~/components/ui/getStyles'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   averageTotal?: Record<string, number>
@@ -31,17 +26,16 @@ const emit = defineEmits<{
   clickAverage: []
 }>()
 
-const statConfig = inject('statConfig') as StatConfigProvider
-const filter = inject('filter') as FilterProvider
-const statDate = inject('statDate') as StatDateProvider
+const statConfig = inject(statConfigKey)!
+const filter = inject(filterKey)!
+const statDate = inject(statDateKey)!
 
-const className = computed(() => cn([
-  'min-w-min',
-  [classes.item.rounded, classes.item.minh1, classes.item.center, classes.item.padding3],
+const className = computed(() => cn(
+  'min-w-min rounded-sm min-h-[42px] flex items-center px-3',
   {
-    [classes.item.link]: props.isShowIncome && props.isShowExpense && props.type === 'summary',
+    interactive: props.isShowIncome && props.isShowExpense && props.type === 'summary',
   },
-]))
+))
 
 function onClick(type: SeriesSlugSelected) {
   if (props.isShowIncome && props.isShowExpense) {

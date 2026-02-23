@@ -4,7 +4,7 @@ import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { getParentCategoryId2 } from '~/components/categories/utils'
+import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { sortCategoriesByAmount } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -14,11 +14,12 @@ export function useStatCategories() {
   const { getTotalOfTrnsIds } = useAmount()
 
   function collectCategoriesByTrns(trnsIds: TrnId[], preCategoriesIds?: CategoryId[]): CategoriesWithData {
+    const transferIds = new Set(categoriesStore.transferCategoriesIds)
     const categoriesByTrns = trnsIds.reduce((acc, trnId) => {
       const categoryId = trnsStore.items?.[trnId]?.categoryId
       const category = categoryId && categoriesStore.items[categoryId]
 
-      if (!categoryId || !category || categoriesStore.transferCategoriesIds.includes(categoryId))
+      if (!categoryId || !category || transferIds.has(categoryId))
         return acc
 
       acc[categoryId] ??= {
@@ -61,8 +62,9 @@ export function useStatCategories() {
 
   function groupCategories(categoriesByTrns: CategoriesWithData): CategoryWithData[] {
     const groupedCategories = Object.values(categoriesByTrns).reduce((acc, cat) => {
-      const parentId = getParentCategoryId2(categoriesStore.items, cat.id)
+      const parentId = getParentCategoryIdOrUndefined(categoriesStore.items, cat.id)
       const parentCategory = parentId && categoriesStore.items[parentId]
+      const catTotal = getTotalOfTrnsIds(cat.trnsIds).sum
 
       if (!parentId || !parentCategory) {
         acc[cat.id] ??= {
@@ -70,7 +72,7 @@ export function useStatCategories() {
           id: cat.id,
           name: cat.name,
           trnsIds: cat.trnsIds,
-          value: getTotalOfTrnsIds(cat.trnsIds).sum,
+          value: catTotal,
         }
         return acc
       }
@@ -86,14 +88,19 @@ export function useStatCategories() {
       acc[parentId].categories ??= []
       acc[parentId].categories.push({
         ...cat,
-        value: getTotalOfTrnsIds(cat.trnsIds).sum,
+        value: catTotal,
       })
       acc[parentId].trnsIds.push(...cat.trnsIds)
-      acc[parentId].value += getTotalOfTrnsIds(cat.trnsIds).sum
-      acc[parentId].categories.sort(sortCategoriesByAmount)
+      acc[parentId].value += catTotal
 
       return acc
     }, {} as CategoriesWithData)
+
+    // Sort child categories after grouping (not inside the loop)
+    for (const group of Object.values(groupedCategories)) {
+      if (group.categories?.length > 1)
+        group.categories.sort(sortCategoriesByAmount)
+    }
 
     return Object.values(groupedCategories).sort(sortCategoriesByAmount)
   }

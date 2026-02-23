@@ -32,4 +32,19 @@ export default [
       },
     }),
   )),
+  {
+    ignores: ['convex/_generated/**', 'docs/**'],
+  },
+  {
+    files: ['convex/**/*.ts', 'scripts/**/*.mjs'],
+    rules: {
+      'node/prefer-global/process': 'off',
+    },
+  },
+  {
+    files: ['app/layouts/**/*.vue'],
+    rules: {
+      'vue/no-multiple-template-root': 'off',
+    },
+  },
 ]

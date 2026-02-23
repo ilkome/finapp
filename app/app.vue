@@ -13,9 +13,20 @@ const toaster: ToasterProps = {
   progress: false,
 }
 
-const color = computed(() => colorMode.value === 'dark' ? (colors as any)[appConfig.ui.colors.neutral][900] : 'white')
+onMounted(() => {
+  document.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement
+    const toast = target.closest('li[role="alert"][data-slot="base"]')
+    if (!toast)
+      return
+    const closeBtn = toast.querySelector<HTMLButtonElement>('[data-reka-toast-announce-exclude]')
+    closeBtn?.click()
+  })
+})
+
+const color = computed(() => colorMode.value === 'dark' ? (colors as Record<string, Record<string, string>>)[appConfig.ui.colors.neutral][900] : 'white')
 const blackAsPrimary = computed(() => appConfig.theme.blackAsPrimary ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}')
-const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius || '0.375'}rem; }`)
+const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius ?? 0.375}rem; }`)
 
 useHead({
   htmlAttrs: {

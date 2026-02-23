@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   amount: number
@@ -18,11 +17,10 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    :class="[getStyles('item', ['center', 'minh1', 'minw1'])]"
-    class="grid grow-0 gap-1 py-1 lg:gap-1"
+    class="flex grid min-h-[42px] min-w-[42px] grow-0 items-center gap-1 py-1 lg:gap-1"
     @click="(e: Event) => emit('click', e)"
   >
-    <UiTitle6>{{ props.title }}</UiTitle6>
+    <UiTextSubtitle>{{ props.title }}</UiTextSubtitle>
 
     <Amount
       :amount="props.amount"

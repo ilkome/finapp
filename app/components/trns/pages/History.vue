@@ -5,12 +5,13 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/stat/filter/useFilter'
+import { filterKey } from '~/components/stat/injectionKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
 const filter = useFilter()
 const trnsStore = useTrnsStore()
-provide('filter', filter)
+provide(filterKey, filter)
 
 useHead({
   title: t('trns.history'),
@@ -66,7 +67,7 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
     </UiHeader>
 
     <div class="pageWrapper bg-default mb-4 rounded-xl pt-1 pb-4">
-      <div class="grid gap-3 @3xl/main:max-w-md">
+      <div class="grid min-w-0 gap-3 @3xl/main:max-w-md">
         <TrnsList
           :trnsIds
           isShowDates

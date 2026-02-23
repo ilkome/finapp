@@ -1,14 +1,15 @@
 <script setup lang="ts">
-import type { Grouped, Range, StatDateProvider } from '~/components/date/types'
+import type { Grouped, Range } from '~/components/date/types'
 
 import { getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
 const emit = defineEmits<{
-  onClose: []
+  close: []
 }>()
 
 const { t } = useI18n()
-const statDate = inject('statDate') as StatDateProvider
+const statDate = inject(statDateKey)!
 
 const tabs = {
   items: ref(['presets', 'calendar']),
@@ -45,14 +46,14 @@ function onSelectRange(value: unknown) {
   } as Range
 
   statDate.setRangeByCalendar(range)
-  emit('onClose')
+  emit('close')
 }
 </script>
 
 <template>
   <div>
-    <UiTabs1 class="mb-2">
-      <UiTabsItem1
+    <UiTabsBar class="mb-2">
+      <UiTabsItemFill
         v-for="tab in tabs.items.value"
         :key="tab"
         :title="t(tab)"
@@ -60,8 +61,8 @@ function onSelectRange(value: unknown) {
         @click="tabs.selected.value = tab"
       >
         {{ t(`dates.calendar.${tab}`) }}
-      </UiTabsItem1>
-    </UiTabs1>
+      </UiTabsItemFill>
+    </UiTabsBar>
 
     <div
       v-if="tabs.selected.value === 'presets'"
@@ -73,14 +74,14 @@ function onSelectRange(value: unknown) {
           :statDate
           isShowRangeAdjust
           view="periods"
-          @onClose="emit('onClose')"
+          @close="emit('close')"
         />
 
         <div class="flex flex-wrap gap-1">
           <DateRanges
             :statDate
             view="presets"
-            @onClose="emit('onClose')"
+            @close="emit('close')"
           />
         </div>
 
@@ -88,16 +89,16 @@ function onSelectRange(value: unknown) {
           <DateRanges
             :statDate
             view="maximum"
-            @onClose="emit('onClose')"
+            @close="emit('close')"
           />
         </div>
       </div>
 
       <!-- Grouped by -->
       <div class="grid gap-3">
-        <UiTitleOption class="px-1">
+        <UiTitleSection size="sm" class="px-1">
           {{ t('dates.calendar.intervalsGrouped') }}
-        </UiTitleOption>
+        </UiTitleSection>
 
         <div class="grid gap-2">
           <div class="flex flex-wrap gap-1">

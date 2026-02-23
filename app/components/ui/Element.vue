@@ -1,8 +1,4 @@
 <script setup lang="ts">
-import { cn } from '~~/lib/cn'
-
-import { getStyles } from '~/components/ui/getStyles'
-
 const props = defineProps<{
   insideClasses?: string
   isActive?: boolean
@@ -15,9 +11,8 @@ const emit = defineEmits<{
 
 const slots = useSlots()
 
-const classes = computed(() => cn(
-  getStyles('item', ['padding1', 'minh1', 'link']),
-  'uiElement flex grow items-center gap-3 overflow-hidden -my-[1px] border border-transparent rounded-sm',
+const elementClasses = computed(() => cn(
+  'interactive uiElement flex grow items-center gap-3 overflow-hidden rounded-sm px-2 py-1.5 min-h-[42px] -my-[1px] border border-transparent',
   props.insideClasses,
   { 'relative border-(--ui-primary)/60 z-10': props.isActive },
 ))
@@ -25,7 +20,7 @@ const classes = computed(() => cn(
 
 <template>
   <div @click="(e: Event) => emit('click', e)">
-    <div :class="classes">
+    <div :class="elementClasses">
       <div
         v-if="slots.leftIcon"
         class="flex-center min-w-8"
@@ -46,7 +41,7 @@ const classes = computed(() => cn(
         'ml-[48px] group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
-      class="mx-2 h-px bg-[var(--item-5)]"
+      class="mx-2 h-px bg-(--item-5)"
     />
   </div>
 </template>

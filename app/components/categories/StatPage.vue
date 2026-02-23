@@ -7,6 +7,7 @@ import type { StatTabSlug } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/stat/filter/useFilter'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -20,7 +21,7 @@ const route = useRoute()
 const categoriesStore = useCategoriesStore()
 
 const filter = useFilter()
-provide('filter', filter)
+provide(filterKey, filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = ref(categoriesStore.items[categoryId.value])
@@ -52,14 +53,14 @@ const statConfig = useStatConfig({
   },
   storageKey: storageKey.value,
 })
-provide('statConfig', statConfig)
+provide(statConfigKey, statConfig)
 
 const statDate = useStatDate({
   key: storageKey.value,
   maxRange,
   queryParams: route.query,
 })
-provide('statDate', statDate)
+provide(statDateKey, statDate)
 
 if (!category.value)
   router.replace('/dashboard')

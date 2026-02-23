@@ -1,5 +1,4 @@
 /* eslint-disable perfectionist/sort-objects */
-import { useAppNav } from '~/components/app/useAppNav'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -13,13 +12,14 @@ export type MenuItem = {
   }
 }
 
-export default function useMenuData() {
+const isMenuOpen = ref(false)
+
+export function useMenuData() {
   const { t } = useI18n()
   const { trnFormCreate } = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const route = useRoute()
-  const { closeAllModals, openModal } = useAppNav()
 
   const items = computed<Record<string, MenuItem>>(() => {
     const list = {
@@ -53,7 +53,7 @@ export default function useMenuData() {
       },
     }
 
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.dev) {
       list.dev = {
         icon: 'hugeicons:laptop-programming',
         name: t('dev.menu.title'),
@@ -72,7 +72,7 @@ export default function useMenuData() {
   }))
 
   function onClick(menuId: string) {
-    closeAllModals()
+    isMenuOpen.value = false
 
     if (menuId === 'trnForm') {
       if (walletsStore.hasItems && categoriesStore.hasItems)
@@ -81,7 +81,7 @@ export default function useMenuData() {
     }
 
     if (menuId === 'menu') {
-      openModal('menu')
+      isMenuOpen.value = true
       return
     }
 
@@ -97,5 +97,6 @@ export default function useMenuData() {
     itemsBottom,
     onClick,
     checkIsActive,
+    isMenuOpen,
   }
 }

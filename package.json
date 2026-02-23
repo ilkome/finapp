@@ -1,7 +1,7 @@
 {
   "name": "@ilkome/finapp",
   "type": "module",
-  "version": "6.6.4",
+  "version": "7.0.0-alpha.2",
   "packageManager": "pnpm@10.28.2",
   "description": "Finapp helps you easily track and manage personal finances.",
   "author": "Ilya Komichev @ilkome",
@@ -9,28 +9,35 @@
   "homepage": "https://ilko.me",
   "repository": "ilkome/finapp",
   "keywords": [
-    "vue, nuxt, firebase, tailwind, pwa, echarts, swiper"
+    "vue, nuxt, convex, tailwind, pwa, echarts, swiper"
   ],
   "engines": {
     "node": ">=v24.12.0"
   },
   "scripts": {
-    "build": "nuxt generate",
+    "build": "nuxt build",
+    "dev:convex": "npx convex dev",
     "dev": "nuxt dev -p 3050 --public",
+    "dev:prod": "nuxt dev -p 3050 --public --dotenv .env.prod",
+    "generate": "nuxt generate",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "nuxt generate && nuxt preview",
     "test": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "docs:dev": "pnpm --dir docs dev",
+    "docs:build": "pnpm --dir docs build"
   },
   "dependencies": {
+    "@convex-dev/better-auth": "^0.10.10",
     "@formkit/drag-and-drop": "^0.5.3",
     "@iconify-json/mdi": "^1.2.3",
     "@internationalized/date": "^3.10.0",
     "@pinia/nuxt": "^0.11.3",
-    "currency.js": "^2.0.4",
+    "better-auth": "^1.4.9",
+    "convex": "^1.22.0",
+    "convex-helpers": "^0.1.111",
     "echarts": "^6.0.0",
-    "firebase": "^12.6.0",
     "fuse.js": "^7.1.0",
     "localforage": "^1.10.0",
     "pinia": "^3.0.4",
@@ -47,6 +54,7 @@
     "@nuxt/eslint": "^1.11.0",
     "@nuxt/ui": "^4.2.1",
     "@nuxtjs/i18n": "^10.2.1",
+    "@types/node": "^25.2.3",
     "@vite-pwa/nuxt": "^1.1.0",
     "@vitest/coverage-v8": "^4.0.15",
     "@vueuse/core": "^13.9.0",
@@ -62,7 +70,6 @@
     "eslint-plugin-perfectionist": "^4.15.1",
     "eslint-plugin-tailwindcss": "4.0.0-beta.0",
     "nuxt": "^4.2.1",
-    "nuxt-vuefire": "^1.1.0",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwind-merge": "^3.4.0",

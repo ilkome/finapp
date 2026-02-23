@@ -119,7 +119,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
 
       // Special case for single day in current year/month
       if (by === 'day' && isSameYear(start, today)) {
-        return type === 'start' ? formatByLocale(start, 'd MMMM') : ''
+        return type === 'start' ? formatByLocale(start, 'd MMMM', locale) : ''
       }
     }
 
@@ -162,7 +162,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     const { by, duration, start, type } = params
 
     if (duration === 1 && by === 'day' && isSameYear(start, today)) {
-      return type === 'start' ? formatByLocale(start, 'd MMMM') : ''
+      return type === 'start' ? formatByLocale(start, 'd MMMM', locale) : ''
     }
 
     switch (by) {

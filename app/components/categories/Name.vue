@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { cn } from '~~/lib/cn'
-
 import type { CategoryItem } from '~/components/categories/types'
 
 const props = defineProps<{
@@ -15,7 +13,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div :class="cn('flex gap-3 items-baseline pt-0', { 'flex-col !gap-0.5': props.alt })">
+  <div :class="cn('flex gap-3 items-baseline pt-0', props.alt && 'flex-col gap-0.5')">
     <!-- Parent category name -->
     <template v-if="alt && isShowParent && !props.hasChildren && props.category?.parentId">
       <div class="text-2xs text-4 leading-none">

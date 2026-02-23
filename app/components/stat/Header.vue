@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { FilterProvider } from '~/components/stat/filter/types'
 import type { StatConfigModal, StatTabSlug } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { WalletId } from '~/components/wallets/types'
 
+import { filterKey, statConfigKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -24,8 +23,8 @@ const props = defineProps<{
   }
 }>()
 
-const filter = inject('filter') as FilterProvider
-const statConfig = inject('statConfig') as StatConfigProvider
+const filter = inject(filterKey)!
+const statConfig = inject(statConfigKey)!
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
 

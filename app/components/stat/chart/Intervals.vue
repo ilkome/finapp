@@ -9,7 +9,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onChangePeriod: [value: Period]
+  changePeriod: [value: Period]
 }>()
 
 const { t } = useI18n()
@@ -47,10 +47,10 @@ const value = ref(props.period)
     v-model="value"
     :items="items"
     :ui="{
-      base: 'ring-0 text-muted text-2xs hover:bg-[var(--item-5)]',
+      base: 'ring-0 text-muted text-2xs hover:bg-(--item-5)',
       trailingIcon: 'size-4',
       content: 'w-24',
     }"
-    @change="emit('onChangePeriod', value)"
+    @change="emit('changePeriod', value)"
   />
 </template>

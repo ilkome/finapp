@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useMenuData from '~/components/layout/useMenuData'
+import { useMenuData } from '~/components/layout/useMenuData'
 
 const { itemsBottom } = useMenuData()
 </script>

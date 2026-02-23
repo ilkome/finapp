@@ -10,12 +10,12 @@ const emit = defineEmits<{
 
 <template>
   <div>
-    <UiTitle3
+    <UiTitleSection
       v-if="props.isShowTitle"
       class="pb-2"
     >
       <slot name="label" />
-    </UiTitle3>
+    </UiTitleSection>
 
     <UiElement
       class="@container/element"

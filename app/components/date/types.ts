@@ -34,15 +34,11 @@ export type StatDateParamsQuery = {
   rangeOffset: string
 }
 
-export type GroupBy = 'period' | 'all' | 'daySelector'
-
 export type IntervalsInRangeProps = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'> & {
   range: Range
 } & Pick<StatDateParams, 'rangeOffset'>
 
-export type CalculateRangeParams = Pick<StatDateParams, 'rangeDuration' | 'rangeBy' | 'rangeOffset'>
-
-export type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
+type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
 export type Grouped = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'>
 
 export type IntervalGroupedLabel = Grouped & Interval & {

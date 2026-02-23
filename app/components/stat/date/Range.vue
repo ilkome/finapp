@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import type { Range, StatDateProvider } from '~/components/date/types'
+import type { Range } from '~/components/date/types'
 
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
-const statDate = inject('statDate') as StatDateProvider
+const statDate = inject(statDateKey)!
 const { locale, t } = useI18n()
 
 const { getStringDateRange } = useGetDateRange(t, locale.value)

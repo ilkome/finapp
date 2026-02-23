@@ -11,7 +11,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="mb-4 @3xl/main:max-w-md">
+  <div class="mb-4 min-w-0 @3xl/main:max-w-md">
     <TrnsList
       v-if="selectedTrnsIds.length > 0"
       :isShowDates="!isPeriodOneDay"

@@ -13,7 +13,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onSelected: [id: WalletId]
+  selected: [id: WalletId]
 }>()
 
 const walletsStore = useWalletsStore()
@@ -27,7 +27,7 @@ const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
 })
 
 function onClickWallet(walletId: WalletId) {
-  emit('onSelected', walletId)
+  emit('selected', walletId)
 
   if (props.hide)
     props.hide()
@@ -36,8 +36,9 @@ function onClickWallet(walletId: WalletId) {
 
 <template>
   <div
-    class="grid h-full gap-2 overflow-hidden"
-    :class="{ 'grid-rows-[auto_1fr]': walletsStore.currenciesUsed.length > 1 }"
+    :class="cn('grid h-full gap-2 overflow-hidden',
+               walletsStore.currenciesUsed.length > 1 && 'grid-rows-[auto_1fr]',
+    )"
   >
     <div
       v-if="walletsStore.currenciesUsed.length > 1"
@@ -45,7 +46,7 @@ function onClickWallet(walletId: WalletId) {
     >
       <WalletsCurrencies
         :currencyFiltered
-        @onSelectFilterCurrency="code => currencyFiltered = code"
+        @selectFilterCurrency="code => currencyFiltered = code"
       />
     </div>
 

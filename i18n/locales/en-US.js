@@ -7,7 +7,7 @@ export default {
 
   alerts: {
     removedUserData: 'All data removed.',
-    willDeleteEverything: 'This will delete all your wallets, categories and transactions',
+    willDeleteEverything: 'All data will be permanently deleted, including wallets, categories and transactions',
   },
 
   app: {
@@ -26,12 +26,14 @@ export default {
   base: {
     add: 'Create',
     apply: 'Apply',
+    cancel: 'Cancel',
     close: 'Close',
     delete: 'Delete',
     duplicate: 'Duplicate',
     edit: 'Edit',
     loading: 'Loading...',
     no: 'No',
+    noData: 'No data',
     save: 'Save',
     sure: 'Confirm action',
     yes: 'Yes',
@@ -39,7 +41,11 @@ export default {
 
   categories: {
     allTitle: 'All',
-    createNewTitle: 'Add category',
+    createNewTitle: 'New category',
+    errors: {
+      deleteFailed: 'Failed to delete category',
+      saveFailed: 'Failed to save category',
+    },
     favoriteCategories: 'Favorite categories',
     filter: 'Filter categories',
     form: {
@@ -58,9 +64,9 @@ export default {
         placeholder: 'Icon name...',
       },
       name: {
-        error: 'Please enter a category name',
+        error: 'Please enter a name',
         exist: 'A category with this name already exists',
-        label: 'Category name',
+        label: 'Name',
         placeholder: 'Write...',
       },
       parent: {
@@ -68,8 +74,8 @@ export default {
         no: 'Without parent',
       },
       recentCategory: 'Recent category',
-      selectColor: 'Category color',
-      selectIcon: 'Category icon',
+      selectColor: 'Color',
+      selectIcon: 'Icon',
       selectParent: 'Parent category',
     },
     name: 'Categories',
@@ -176,6 +182,7 @@ export default {
 
   login: {
     description: 'Powerful open-source finance application',
+    error: 'Login failed. Please try again.',
     openDemo: 'Open Demo',
     or: 'or',
     title: 'Login',
@@ -219,6 +226,9 @@ export default {
   settings: {
     caution: 'With caution',
     deleteButton: 'Delete my data',
+    errors: {
+      saveFailed: 'Failed to save settings',
+    },
     title: 'Settings',
   },
 
@@ -298,13 +308,13 @@ export default {
     dark: 'Dark',
     light: 'Light',
     picker: {
-      neutral: 'Neutral color',
+      neutral: 'Background color',
       primary: 'Primary color',
-      radius: 'Radius',
+      radius: 'Rounding',
       theme: 'Theme',
     },
     system: 'System',
-    title: 'Theme',
+    title: 'Appearance',
   },
 
   transfer: {
@@ -312,6 +322,7 @@ export default {
   },
 
   trnForm: {
+    adjustmentTitle: 'Adjustment',
     category: {
       select: 'Select category',
     },
@@ -348,6 +359,11 @@ export default {
   },
 
   trns: {
+    errors: {
+      deleteFailed: 'Failed to delete transaction',
+      orphanedSkipped: '{count} transactions skipped (wallet or category was deleted)',
+      saveFailed: 'Failed to save transaction',
+    },
     filter: {
       showTrnsWithDesc: 'Only with description',
     },
@@ -361,7 +377,12 @@ export default {
   userLogout: 'Logout',
 
   wallets: {
-    createNewTitle: 'Add wallet',
+    createNewTitle: 'New wallet',
+    errors: {
+      deleteFailed: 'Failed to delete wallet',
+      orderFailed: 'Failed to save wallet order',
+      saveFailed: 'Failed to save wallet',
+    },
     filter: 'Filter wallets',
     filterByCurrency: 'Filter by',
     form: {
@@ -379,11 +400,12 @@ export default {
         okWithTrns: `Wallet deleted and {trns}`,
       },
       description: {
-        label: 'Wallet description (optional)',
+        label: 'Description (optional)',
         placeholder: 'Write...',
       },
       name: {
-        label: 'Wallet name',
+        error: 'Please enter a name',
+        label: 'Name',
         placeholder: 'Write...',
       },
     },
@@ -400,10 +422,12 @@ export default {
     title: 'Wallets',
   },
 
-  welcome: {
-    createTrn: 'Create your first Transaction',
-    intro: 'To see statistics',
-    introCategories: 'To see statistics add your first Category',
-    introWallets: 'To see statistics add your first Wallet',
+  onboarding: {
+    actionCategory: 'Add category',
+    actionTrn: 'Add transaction',
+    actionWallet: 'Add wallet',
+    intro: 'Add your first income or expense',
+    introCategories: 'Add a category, for example, "Food" or "Salary"',
+    introWallets: 'Start tracking your finances by adding your first wallet',
   },
 }
