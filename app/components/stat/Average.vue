@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// import { useStorage } from '@vueuse/core'
 import { sub } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -53,10 +52,10 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
 <template>
   <div class="grid gap-4">
     <div class="grid w-full grow gap-1">
-      <UiTitle6 class="!leading-3 text-nowrap">
+      <UiTextSubtitle class="!leading-3 text-nowrap">
         {{ t('money.average') }}
         <br>{{ t('stat.average.forLast') }}
-      </UiTitle6>
+      </UiTextSubtitle>
 
       <div class="flex gap-4">
         <Amount

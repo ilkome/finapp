@@ -1,15 +1,25 @@
-export type CategoryId = string | 'transfer'
+import { z } from 'zod/v4'
 
-export type CategoryItem = {
+import { random } from '~/assets/js/emo'
+import icons from '~/assets/js/icons'
+import { colorsArray } from '~/components/color/colors'
+
+export type CategoryId = string
+
+export const categoryFormSchema = z.object({
+  color: z.string().default(() => random(colorsArray)),
+  icon: z.string().trim().min(1).default(() => random(random(icons))),
+  name: z.string().trim().min(1).default(''),
+  parentId: z.union([z.string(), z.literal(0)]).default(0),
+  showInLastUsed: z.boolean().default(true),
+  showInQuickSelector: z.boolean().default(false),
+})
+
+export type CategoryForm = z.infer<typeof categoryFormSchema>
+
+export type CategoryItem = CategoryForm & {
   childIds?: CategoryId[]
-  color: string
-  editedAt?: number
-  icon: string
-  name: string
-  order?: number
-  parentId: CategoryId | 0
-  showInLastUsed?: boolean
-  showInQuickSelector?: boolean
+  updatedAt?: number
 }
 
 export type CategoryItemWithId = CategoryItem & {
@@ -18,20 +28,8 @@ export type CategoryItemWithId = CategoryItem & {
 
 export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', CategoryItem>
 
-export type CategoryForm = {
-  color: string
-  icon: string
-  name: string
-  order: number
-  parentId: string | 0
-  showInLastUsed: boolean
-  showInQuickSelector: boolean
-}
-
 export type AddCategoryParams = {
   id: CategoryId
-  values: CategoryItem
-} & {
-  childIds?: CategoryId[]
   isUpdateChildCategoriesColor: boolean
+  values: CategoryItem
 }

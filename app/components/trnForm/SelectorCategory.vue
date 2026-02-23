@@ -10,8 +10,8 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onOpen: [slide: number]
-  onSelected: [id: CategoryId]
+  open: [slide: number]
+  selected: [id: CategoryId]
 }>()
 
 const isShow = ref(false)
@@ -24,8 +24,8 @@ const isShow = ref(false)
     :bottomSheetStyle="props.bottomSheetStyle"
     drugClassesCustom="h-full max-w-md"
     isShowCloseBtn
-    @onOpenModal="isShow = true"
-    @onCloseModal="isShow = false"
+    @openModal="isShow = true"
+    @closeModal="isShow = false"
   >
     <template #trigger>
       <CategoriesItem
@@ -41,7 +41,7 @@ const isShow = ref(false)
         :hide="close"
         :activeItemId="props.categoryId"
         class="bottomSheetContentInside -mt-2 min-w-72"
-        @onSelected="(id: CategoryId) => { emit('onSelected', id); close() }"
+        @selected="(id: CategoryId) => { emit('selected', id); close() }"
       />
     </template>
   </BottomSheetOrDropdown>

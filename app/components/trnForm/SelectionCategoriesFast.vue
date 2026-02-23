@@ -6,8 +6,8 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const emit = defineEmits<{
   close: []
-  onSelectCategory: [id: CategoryId]
-  onSelectParentCategory: [id: CategoryId]
+  selectCategory: [id: CategoryId]
+  selectParentCategory: [id: CategoryId]
 }>()
 
 const { t } = useI18n()
@@ -21,16 +21,16 @@ const trnsFormStore = useTrnsFormStore()
     v-if="categoriesStore.favoriteCategoriesIds.length > 0"
     class="pt-2"
   >
-    <UiTitle7 class="mx-2">
+    <UiTitleCollapse arrow="right" class="mx-2">
       {{ t('categories.favoriteCategories') }}
-    </UiTitle7>
+    </UiTitleCollapse>
 
-    <CategoriesSelector2
+    <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
       :hide="emit('close')"
       :ids="categoriesStore.favoriteCategoriesIds"
-      @onClickParent="id => emit('onSelectParentCategory', id)"
-      @onSelected="id => emit('onSelectCategory', id)"
+      @clickParent="id => emit('selectParentCategory', id)"
+      @selected="id => emit('selectCategory', id)"
     />
   </div>
 
@@ -40,12 +40,23 @@ const trnsFormStore = useTrnsFormStore()
       {{ t('categories.recentCategories') }}
     </UiTitleModal>
 
-    <CategoriesSelector2
+    <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
       :hide="emit('close')"
       :ids="categoriesStore.recentCategoriesIds"
-      @onClickParent="id => emit('onSelectParentCategory', id)"
-      @onSelected="id => emit('onSelectCategory', id)"
+      @clickParent="id => emit('selectParentCategory', id)"
+      @selected="id => emit('selectCategory', id)"
+    />
+  </div>
+
+  <!-- All categories fallback when no favorites and no recent -->
+  <div v-if="categoriesStore.favoriteCategoriesIds.length === 0 && categoriesStore.recentCategoriesIds.length === 0 && categoriesStore.categoriesIdsForTrnValues.length > 0">
+    <CategoriesSelectorGrid
+      :activeItemId="trnsFormStore.values.categoryId"
+      :hide="emit('close')"
+      :ids="categoriesStore.categoriesIdsForTrnValues"
+      @clickParent="id => emit('selectParentCategory', id)"
+      @selected="id => emit('selectCategory', id)"
     />
   </div>
 </template>

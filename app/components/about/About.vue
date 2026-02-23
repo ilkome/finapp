@@ -4,9 +4,9 @@ const { t } = useI18n()
 
 <template>
   <div>
-    <UiTitle3 class="pb-4">
+    <UiTitleSection class="pb-4">
       {{ t('about.title') }}
-    </UiTitle3>
+    </UiTitleSection>
 
     <div class="grid gap-8 pb-3">
       <div>

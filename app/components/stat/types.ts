@@ -8,14 +8,9 @@ export type MoneyTypeSlug = 'expense' | 'income'
 export type StatTabSlug = 'income' | 'expense' | 'summary' | 'split'
 export type SeriesSlug = 'income' | 'expense'
 export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
-export type MoneyTypeNumber = 0 | 1 | 3
+export type MoneyTypeNumber = 0 | 1 | 2
 
-export type TotalCategories = {
-  expense: CategoryWithData[]
-  income: CategoryWithData[]
-}
-
-export type CategoryWithDataBase = {
+type CategoryWithDataBase = {
   id: CategoryId
   name: CategoryItem['name']
   trnsIds: TrnId[]
@@ -28,12 +23,13 @@ export type CategoryWithData = CategoryWithDataBase & {
 
 export type CategoriesWithData = Record<CategoryId, CategoryWithData>
 
-export type CategoriesWithTrns = Record<CategoryId, TrnId[]>
-
 export type ChartSeries = {
   color?: string
   data: number[]
-  markArea?: any
+  markArea?: {
+    data: [{ xAxis: string }, { xAxis: string }][]
+    itemStyle: { color: string, opacity: number }
+  }
   markedArea?: 'markedArea'
   markLine?: Record<string, unknown>
   name: string

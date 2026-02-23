@@ -3,11 +3,11 @@ import { useStorage } from '@vueuse/core'
 
 import type { Categories, CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, StatTabSlug } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   isOneCategory?: boolean
@@ -20,13 +20,13 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   clickCategory: [categoryId: CategoryId]
-  onSetCategoryFilter: [categoryId: CategoryId]
+  setCategoryFilter: [categoryId: CategoryId]
 }>()
 
 const { t } = useI18n()
 const { getCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
-const statConfig = inject('statConfig') as StatConfigProvider
+const statConfig = inject(statConfigKey)!
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
   const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
@@ -123,15 +123,15 @@ function toggleRoot(id: CategoryId) {
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between">
-          <UiTitle8 :isShown @click="toggle">
+          <UiTitleCollapse :isShown @click="toggle">
             {{ t('stat.config.categories.vertical.title') }} {{ (!isShown && verticalCategories.filter(c => c.value !== 0).length > 0) ? verticalCategories.filter(c => c.value !== 0).length : '' }}
-          </UiTitle8>
+          </UiTitleCollapse>
 
           <div
             v-if="isShown && !props.isOneCategory"
             class="flex items-center"
           >
-            <UiItem1
+            <UiActionButton
               :isActive="statConfig.config.value.vertical.isGrouped"
               @click="statConfig.config.value.vertical.isGrouped = !statConfig.config.value.vertical.isGrouped"
             >
@@ -139,7 +139,7 @@ function toggleRoot(id: CategoryId) {
                 :name="statConfig.config.value.vertical.isGrouped ? 'lucide:network' : 'lucide:folder-tree'"
                 :size="20"
               />
-            </UiItem1>
+            </UiActionButton>
           </div>
         </div>
 
@@ -169,15 +169,15 @@ function toggleRoot(id: CategoryId) {
     >
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between">
-          <UiTitle8 :isShown @click="toggle">
+          <UiTitleCollapse :isShown @click="toggle">
             {{ t('stat.config.categories.list.title') }} {{ (!isShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
-          </UiTitle8>
+          </UiTitleCollapse>
 
           <div
             v-if="isShown"
             class="flex items-center gap-1"
           >
-            <UiItem1
+            <UiActionButton
               v-if="statConfig.config.value.catsView === 'list' && !props.isOneCategory && statConfig.config.value.catsList.isGrouped"
               @click="toggleOpened"
             >
@@ -196,9 +196,9 @@ function toggleRoot(id: CategoryId) {
                 name="lucide:folder"
                 size="20"
               />
-            </UiItem1>
+            </UiActionButton>
 
-            <UiItem1
+            <UiActionButton
               v-if="!props.isOneCategory"
               :isActive="statConfig.config.value.catsList.isGrouped"
               @click="statConfig.config.value.catsList.isGrouped = !statConfig.config.value.catsList.isGrouped"
@@ -207,7 +207,7 @@ function toggleRoot(id: CategoryId) {
                 :name="statConfig.config.value.catsList.isGrouped ? 'lucide:network' : 'lucide:folder-tree'"
                 :size="20"
               />
-            </UiItem1>
+            </UiActionButton>
           </div>
         </div>
 
@@ -219,7 +219,7 @@ function toggleRoot(id: CategoryId) {
           }"
           class="pt-2"
         >
-          <UiToggle3
+          <UiToggleControlled
             v-for="item in linesCategories"
             :key="item.id"
             :class="{
@@ -266,7 +266,7 @@ function toggleRoot(id: CategoryId) {
                 />
               </div>
             </div>
-          </UiToggle3>
+          </UiToggleControlled>
         </div>
       </template>
     </UiToggle>

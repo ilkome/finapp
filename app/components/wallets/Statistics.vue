@@ -34,9 +34,9 @@ const itemsGrouped = computed(() => [
   >
     <template #header="{ toggle, isShown }">
       <div class="flex grow items-center justify-between">
-        <UiTitle8 :isShown @click="toggle">
+        <UiTitleCollapse :isShown @click="toggle">
           {{ t('statistics.title') }}
-        </UiTitle8>
+        </UiTitleCollapse>
       </div>
     </template>
 

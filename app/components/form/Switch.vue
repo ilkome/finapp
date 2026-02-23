@@ -5,7 +5,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'click', value: boolean): void
+  click: [value: boolean]
 }>()
 </script>
 
@@ -16,12 +16,14 @@ const emit = defineEmits<{
     </div>
 
     <div
-      :class="{ 'bg-(--ui-primary)': value, 'bg-(--ui-bg-accented)': !value }"
-      class="relative h-5 w-10 rounded-xl p-px px-[2px] transition-colors ease-in-out"
+      :class="cn('relative h-5 w-10 rounded-xl py-px px-[2px] transition-colors ease-in-out',
+                 value ? 'bg-(--ui-primary)' : 'bg-(--ui-bg-accented)',
+      )"
     >
       <div
-        :class="{ 'translate-x-4.5': value }"
-        class="bg-default size-4.5 rounded-xl shadow-md transition-transform ease-in-out"
+        :class="cn('bg-default size-4.5 rounded-xl shadow-md transition-transform ease-in-out',
+                   value && 'translate-x-4.5',
+        )"
       />
     </div>
   </div>

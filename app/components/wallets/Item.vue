@@ -4,7 +4,6 @@ import { onLongPress, useStorage } from '@vueuse/core'
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { getStyles } from '~/components/ui/getStyles'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -29,7 +28,7 @@ const currenciesStore = useCurrenciesStore()
 const classes = computed(() => ([
   'relative',
   {
-    [getStyles('item', ['bg2', 'rounded'])]: props.alt,
+    'bg-item-3 rounded-sm': props.alt,
   },
   {
     group: props.isSort,
@@ -183,7 +182,7 @@ if (!props.isSort) {
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hover:bg-[var(--item-6)]"
+        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hover:bg-(--item-6)"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

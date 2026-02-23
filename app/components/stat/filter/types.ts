@@ -1,12 +1,12 @@
 import type { useFilter } from '~/components/stat/filter/useFilter'
 
-export type PeriodSchema = {
+type PeriodSchema = {
   date: number
   showedPeriods: number
   type: 'line' | 'bar'
 }
 
-export type Periods = {
+type Periods = {
   day: PeriodSchema
   month: PeriodSchema
   week: PeriodSchema

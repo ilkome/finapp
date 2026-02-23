@@ -8,7 +8,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onSelectWallet: [id: WalletId]
+  selectWallet: [id: WalletId]
 }>()
 
 const { t } = useI18n()
@@ -24,7 +24,7 @@ const trnsFormStore = useTrnsFormStore()
     <WalletsSelector
       :activeItemId="trnsFormStore.values.walletId ?? undefined"
       class="min-w-80 px-2 py-px"
-      @onSelected="id => emit('onSelectWallet', id)"
+      @selected="id => emit('selectWallet', id)"
     />
   </div>
 </template>

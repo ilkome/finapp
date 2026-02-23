@@ -8,14 +8,14 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onClose: []
-  onSelect: [code: CurrencyCode]
+  close: []
+  select: [code: CurrencyCode]
 }>()
 
 const { t } = useI18n()
 
-function onSelect(code: CurrencyCode, close: () => void) {
-  emit('onSelect', code)
+function select(code: CurrencyCode, close: () => void) {
+  emit('select', code)
   close()
 }
 </script>
@@ -25,11 +25,11 @@ function onSelect(code: CurrencyCode, close: () => void) {
     <BottomSheet
       isShow
       drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="emit('onClose')"
+      @closed="emit('close')"
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">
@@ -40,7 +40,7 @@ function onSelect(code: CurrencyCode, close: () => void) {
             :active="props.activeCode"
             :isShowAllButton="props.isShowAllButton"
             :isHideUnused="props.isHideUnused"
-            @onSelect="(c: CurrencyCode) => onSelect(c, close)"
+            @select="(c: CurrencyCode) => select(c, close)"
           />
         </div>
       </template>

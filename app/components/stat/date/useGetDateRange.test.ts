@@ -1,5 +1,5 @@
 import { addMonths, endOfDay, endOfMonth, endOfWeek, endOfYear, startOfDay, startOfMonth, startOfWeek, startOfYear } from 'date-fns'
-import { describe, expect, it } from 'vitest'
+import { afterAll, describe, expect, it, vi } from 'vitest'
 
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
@@ -23,9 +23,20 @@ function t(key: string) {
   return translations[key] || key
 }
 
+// Fix "today" to June 15 2025 so tests don't depend on the current date
+const fixedDate = new Date('2025-06-15T12:00:00')
+
+// Must set fake timers before useGetDateRange captures `new Date()` internally
+vi.useFakeTimers()
+vi.setSystemTime(fixedDate)
+
 describe('useGetDateRange', () => {
   const { getStringDateRange } = useGetDateRange(t)
-  const today = new Date()
+  const today = fixedDate
+
+  afterAll(() => {
+    vi.useRealTimers()
+  })
 
   describe('year ranges', () => {
     it('should format current year', () => {
@@ -33,7 +44,7 @@ describe('useGetDateRange', () => {
         end: endOfYear(today).getTime(),
         start: startOfYear(today).getTime(),
       }
-      expect(getStringDateRange(range, 'year', 1)).toBe(today.getFullYear().toString())
+      expect(getStringDateRange(range, 'year', 1)).toBe('2025')
     })
 
     it('should format year range', () => {

@@ -4,9 +4,9 @@ import { generateId } from '~~/utils/generateId'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
-import { errorEmo, random } from '~/assets/js/emo'
-import { types, walletItemSchema } from '~/components/wallets/types'
+import { walletItemSchema, walletTypes } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { showErrorToast } from '~/composables/useStoreSync'
 
 const props = defineProps<{
   walletForm: WalletItem
@@ -15,15 +15,14 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   afterSave: []
-  updateValue: [key: keyof WalletItem, value: WalletItem[keyof WalletItem]]
+  update: [key: keyof WalletItem, value: WalletItem[keyof WalletItem]]
 }>()
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
-const toast = useToast()
 
 const editWalletId = props.walletId ?? generateId()
-const walletType = types.map(value => ({
+const walletType = walletTypes.map(value => ({
   label: t(`money.types.${value}`),
   value,
 }))
@@ -39,61 +38,15 @@ const walletPlaceholder = computed(() => ({
   name: props.walletForm.name ? props.walletForm.name : t('wallets.form.name.label'),
 }))
 
-/**
- * Validate
- */
-// function validate(values: WalletItem) {
-//   // name
-//   if (!values.name) {
-//     toast.add({
-//       color: 'error',
-//       description: t('wallets.form.name.error'),
-//       title: random(errorEmo),
-//     })
-
-//     return false
-//   }
-
-//   // currency
-//   if (!values.currency) {
-//     toast.add({
-//       color: 'error',
-//       description: t('wallets.form.currency.error'),
-//       title: random(errorEmo),
-//     })
-
-//     return false
-//   }
-
-//   // Check for duplicate wallet names
-//   const existingWallet = Object.entries(walletsStore.items ?? {})
-//     .find(([id, wallet]) => wallet.name === values.name && id !== editWalletId)
-
-//   if (existingWallet) {
-//     toast.add({
-//       color: 'error',
-//       description: t('wallets.form.name.exist'),
-//       title: random(errorEmo),
-//     })
-//     return false
-//   }
-
-//   return true
-// }
-
 async function onSave() {
   const values = walletItemSchema.safeParse(props.walletForm)
 
   if (!values.success) {
-    toast.add({
-      color: 'error',
-      description: t('categories.form.name.error'),
-      title: random(errorEmo),
-    })
+    showErrorToast('wallets.form.name.error')
     return
   }
 
-  await walletsStore.createOrUpdateWallet({
+  await walletsStore.saveWallet({
     id: editWalletId,
     values: values.data,
   })
@@ -115,8 +68,8 @@ async function onSave() {
 
         <FormInput
           :placeholder="t('wallets.form.name.placeholder')"
-          :value="props.walletForm.name ?? ''"
-          @updateValue="(value: string) => emit('updateValue', 'name', value)"
+          :modelValue="props.walletForm.name ?? ''"
+          @update:modelValue="(value: string) => emit('update', 'name', value)"
         />
       </FormElement>
 
@@ -152,21 +105,21 @@ async function onSave() {
         </template>
         <FormTextarea
           :placeholder="t('wallets.form.description.placeholder')"
-          :value="props.walletForm.desc ?? ''"
-          @updateValue="(value: string) => emit('updateValue', 'desc', value)"
+          :modelValue="props.walletForm.desc ?? ''"
+          @update:modelValue="(value: string) => emit('update', 'desc', value)"
         />
       </FormElement>
 
       <!-- Type -->
       <div>
-        <UiTitle3 class="pb-2">
+        <UiTitleSection class="pb-2">
           {{ t('money.type') }}
-        </UiTitle3>
+        </UiTitleSection>
 
         <FormSelect
           :options="walletType"
           :value="props.walletForm.type ?? 'cash'"
-          @change="(value: WalletType) => emit('updateValue', 'type', value)"
+          @change="(value: WalletType) => emit('update', 'type', value)"
         />
       </div>
 
@@ -177,28 +130,28 @@ async function onSave() {
         </template>
         <FormInput
           :placeholder="t('wallets.form.credit.limit')"
-          :value="props.walletForm.creditLimit ?? ''"
-          @updateValue="(value: string) => emit('updateValue', 'creditLimit', +value)"
+          :modelValue="props.walletForm.creditLimit ?? ''"
+          @update:modelValue="(value: string) => emit('update', 'creditLimit', +value)"
         />
       </FormElement>
 
       <!-- Options -->
       <div class="grid gap-1">
         <div>
-          <UiCheckbox
+          <UiSwitchItem
             :checkboxValue="props.walletForm.isWithdrawal ?? false"
             :title="t('money.options.withdrawal')"
-            @click="emit('updateValue', 'isWithdrawal', !props.walletForm.isWithdrawal)"
+            @click="emit('update', 'isWithdrawal', !props.walletForm.isWithdrawal)"
           />
-          <UiCheckbox
+          <UiSwitchItem
             :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
             :title="t('money.options.isExcludeInTotal')"
-            @click="emit('updateValue', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
+            @click="emit('update', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
           />
-          <UiCheckbox
+          <UiSwitchItem
             :checkboxValue="props.walletForm.isArchived ?? false"
             :title="t('money.totals.archived')"
-            @click="emit('updateValue', 'isArchived', !props.walletForm.isArchived)"
+            @click="emit('update', 'isArchived', !props.walletForm.isArchived)"
           />
         </div>
       </div>
@@ -206,6 +159,7 @@ async function onSave() {
 
     <div class="flex-center">
       <UiButtonAccent
+        class="sm:max-w-xs"
         rounded
         @click="onSave"
       >
@@ -217,11 +171,11 @@ async function onSave() {
   <CurrenciesModal
     v-if="modals.currencies"
     :activeCode="props.walletForm.currency"
-    @onSelect="(c: CurrencyCode) => emit('updateValue', 'currency', c)"
-    @onClose="modals.currencies = false"
+    @select="(c: CurrencyCode) => emit('update', 'currency', c)"
+    @close="modals.currencies = false"
   />
 
-  <Teleport to="#teleports">
+  <Teleport to="body">
     <!-- Colors  -->
     <BottomSheet
       v-if="modals.colors"
@@ -231,7 +185,7 @@ async function onSave() {
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">
@@ -249,7 +203,7 @@ async function onSave() {
             <ColorPalette
               :activeColor="props.walletForm.color"
               isWallet
-              @click="(color: string) => emit('updateValue', 'color', color)"
+              @click="(color: string) => emit('update', 'color', color)"
             />
           </div>
 

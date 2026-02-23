@@ -8,7 +8,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'onChange', value: string): void
+  change: [value: string]
 }>()
 
 const { t } = useI18n()
@@ -36,10 +36,10 @@ const { t } = useI18n()
         'text-center': !isTransfer,
       }"
       :placeholder="t('trnForm.enterAmount')"
-      :value="amountRaw"
+      :modelValue="amountRaw"
       class="swiper-no-swiping bg-item-2 font-secondary border-transparent pt-6 pb-2 text-center !text-3xl placeholder:text-3xl"
       inputmode="tel"
-      @updateValue="(value: string) => emit('onChange', value || '')"
+      @update:modelValue="(value: string) => emit('change', value || '')"
     />
   </div>
 </template>

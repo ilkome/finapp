@@ -3,25 +3,30 @@ import { generateId } from '~~/utils/generateId'
 
 import type { CategoryForm, CategoryId } from '~/components/categories/types'
 
-import { errorEmo, random } from '~/assets/js/emo'
 import icons from '~/assets/js/icons'
+import { categoryFormSchema } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { showErrorToast } from '~/composables/useStoreSync'
 
 const props = defineProps<{
   categoryForm: CategoryForm
   categoryId?: CategoryId
 }>()
 
-const emit = defineEmits(['updateValue', 'afterSave'])
+const emit = defineEmits<{
+  afterSave: []
+  update: [key: keyof CategoryForm, value: CategoryForm[keyof CategoryForm]]
+}>()
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const toast = useToast()
 
 const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
+const childIds = computed(() => categoriesStore.getChildsIds(props.categoryId!))
+const hasChildren = computed(() => childIds.value.length > 0)
 const isAllowChangeParent = computed(() =>
-  categoriesStore.getChildsIds(props.categoryId!).length === 0 && categoriesStore.categoriesForBeParent.length > 0,
+  !hasChildren.value && categoriesStore.categoriesForBeParent.length > 0,
 )
 
 const modals = ref({
@@ -40,69 +45,39 @@ const categoryPlaceholder = computed(() => ({
  */
 function onParentSelect(parentId: CategoryId | false, close: () => void) {
   if (!parentId) {
-    emit('updateValue', 'parentId', 0)
+    emit('update', 'parentId', 0)
     close()
     return
   }
 
-  emit('updateValue', 'parentId', parentId)
+  emit('update', 'parentId', parentId)
   // Change category color when patent category changed
   const parentCategoryColor = categoriesStore.items?.[parentId]?.color
   if (parentCategoryColor)
-    emit('updateValue', 'color', parentCategoryColor)
+    emit('update', 'color', parentCategoryColor)
 
   close()
 }
 
-/**
- * Validate
- */
-function validate(values: CategoryForm) {
-  if (!values.name) {
-    toast.add({
-      color: 'error',
-      description: t('categories.form.name.error'),
-      title: random(errorEmo),
-    })
+async function onSave() {
+  const parsed = categoryFormSchema.safeParse(props.categoryForm)
 
+  if (!parsed.success) {
+    showErrorToast('categories.form.name.error')
     return
   }
 
-  // TODO: refactor
   for (const id in categoriesStore.items) {
-    if (categoriesStore.items[id].name === values.name && categoriesStore.items[id].parentId === values.parentId) {
-      if (editCategoryId) {
-        if (editCategoryId !== id) {
-          toast.add({
-            color: 'error',
-            description: t('categories.form.name.exist'),
-            title: random(errorEmo),
-          })
-          return
-        }
-      }
-      else {
-        toast.add({
-          color: 'error',
-          description: t('categories.form.name.exist'),
-          title: random(errorEmo),
-        })
-        return
-      }
+    if (categoriesStore.items[id].name === parsed.data.name && categoriesStore.items[id].parentId === parsed.data.parentId && id !== editCategoryId) {
+      showErrorToast('categories.form.name.exist')
+      return
     }
   }
 
-  return true
-}
-
-async function onSave() {
-  if (!validate(props.categoryForm))
-    return
-
-  await categoriesStore.addCategory({
+  await categoriesStore.saveCategory({
     id: editCategoryId,
     isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value,
-    values: { ...props.categoryForm },
+    values: parsed.data,
   })
   emit('afterSave')
 }
@@ -122,8 +97,8 @@ async function onSave() {
 
         <FormInput
           :placeholder="t('categories.form.name.placeholder')"
-          :value="categoryForm.name"
-          @updateValue="(value: string) => emit('updateValue', 'name', value)"
+          :modelValue="categoryForm.name"
+          @update:modelValue="(value: string) => emit('update', 'name', value)"
         />
       </FormElement>
 
@@ -173,30 +148,31 @@ async function onSave() {
 
       <!-- Options -->
       <div>
-        <UiCheckbox
-          v-if="categoriesStore.getChildsIds(props.categoryId).length > 0"
+        <UiSwitchItem
+          v-if="hasChildren"
           :checkboxValue="isUpdateChildCategoriesColor"
           :title="t('categories.form.childColor')"
           @click="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
         />
 
-        <UiCheckbox
-          v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
+        <UiSwitchItem
+          v-if="!hasChildren"
           :checkboxValue="props.categoryForm.showInQuickSelector"
           :title="t('categories.form.favoriteCategory')"
-          @click="emit('updateValue', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
+          @click="emit('update', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
         />
-        <UiCheckbox
-          v-if="categoriesStore.getChildsIds(props.categoryId).length === 0"
+        <UiSwitchItem
+          v-if="!hasChildren"
           :checkboxValue="props.categoryForm.showInLastUsed"
           :title="t('categories.form.recentCategory')"
-          @click="emit('updateValue', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
+          @click="emit('update', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
       </div>
     </div>
 
     <div class="flex-center">
       <UiButtonAccent
+        class="sm:max-w-xs"
         rounded
         @click="onSave"
       >
@@ -215,7 +191,7 @@ async function onSave() {
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">
@@ -233,7 +209,7 @@ async function onSave() {
               :activeColor="props.categoryForm.color"
               :icon="props.categoryForm.icon"
               isCategory
-              @click="color => emit('updateValue', 'color', color)"
+              @click="color => emit('update', 'color', color)"
             />
           </div>
 
@@ -258,7 +234,7 @@ async function onSave() {
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">
@@ -284,8 +260,8 @@ async function onSave() {
 
               <FormInput
                 :placeholder="t('categories.form.icon.placeholder')"
-                :value="categoryForm.icon"
-                @updateValue="(value: string) => emit('updateValue', 'icon', value)"
+                :modelValue="categoryForm.icon"
+                @update:modelValue="(value: string) => emit('update', 'icon', value)"
               />
             </FormElement>
 
@@ -297,10 +273,11 @@ async function onSave() {
               <div
                 v-for="icon in iconGroup"
                 :key="icon"
-                :class="[{ '!border-(--ui-primary)': icon === props.categoryForm.icon }]"
+                :class="cn('flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent',
+                           icon === props.categoryForm.icon && 'border-(--ui-primary)',
+                )"
                 :style="{ background: props.categoryForm.color }"
-                class="flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent"
-                @click="emit('updateValue', 'icon', icon)"
+                @click="emit('update', 'icon', icon)"
               >
                 <Icon :name="icon" size="20" />
               </div>
@@ -328,7 +305,7 @@ async function onSave() {
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">
@@ -336,12 +313,12 @@ async function onSave() {
           <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
 
           <div class="scrollerBlock bottomSheetContentInside">
-            <UiItem2
+            <UiChipButton
               :isActive="props.categoryForm.parentId === 0"
               @click="onParentSelect(false, close)"
             >
               {{ t('categories.form.parent.no') }}
-            </UiItem2>
+            </UiChipButton>
 
             <CategoriesList
               :activeItemId="props.categoryForm.parentId"

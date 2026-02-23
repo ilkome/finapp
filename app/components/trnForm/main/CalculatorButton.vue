@@ -16,7 +16,7 @@ const emit = defineEmits<{
       text-2xl
       font-normal
       transition hover:scale-[1.02]
-      hover:bg-[var(--item-5)]
+      hover:bg-(--item-5)
       @xs/trnForm:w-14
       @sm/trnForm:w-16
     "

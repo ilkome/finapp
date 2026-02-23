@@ -11,12 +11,11 @@ const props = defineProps<{
 
 <template>
   <div
-    class="flex items-baseline gap-1 leading-none whitespace-nowrap"
-    :class="{
-      'justify-center': props.align === 'center',
-      'justify-end': props.align === 'right',
-      'justify-start': props.align === 'left',
-    }"
+    :class="cn('flex items-baseline gap-1 leading-none whitespace-nowrap',
+               props.align === 'center' && 'justify-center',
+               props.align === 'right' && 'justify-end',
+               props.align === 'left' && 'justify-start',
+    )"
   >
     <div v-if="isShowMinus">
       -

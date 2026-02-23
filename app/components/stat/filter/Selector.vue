@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { FilterProvider } from '~/components/stat/filter/types'
+import { filterKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   isShowCategories?: boolean
   isShowWallets?: boolean
 }>()
 
-const filter = inject('filter') as FilterProvider
+const filter = inject(filterKey)!
 const { t } = useI18n()
 
 const modals = ref({
@@ -22,8 +22,8 @@ const modals = ref({
       :title="t('wallets.filter')"
       :isOpen="modals.wallets"
       isShowCloseBtn
-      @onOpenModal="modals.wallets = true"
-      @onCloseModal="modals.wallets = false"
+      @openModal="modals.wallets = true"
+      @closeModal="modals.wallets = false"
     >
       <template #trigger>
         <UTooltip :text="t('wallets.filter')">
@@ -51,7 +51,7 @@ const modals = ref({
           <WalletsSelector
             :selectedIds="filter?.walletsIds.value"
             class="min-w-80 px-3"
-            @onSelected="filter.toggleWalletId"
+            @selected="filter.toggleWalletId"
           />
 
           <div class="px-3 py-2">
@@ -68,8 +68,8 @@ const modals = ref({
       :title="t('categories.filter')"
       :isOpen="modals.categories"
       isShowCloseBtn
-      @onOpenModal="modals.categories = true"
-      @onCloseModal="modals.categories = false"
+      @openModal="modals.categories = true"
+      @closeModal="modals.categories = false"
     >
       <template #trigger>
         <UTooltip :text="t('categories.filter')">
@@ -95,11 +95,11 @@ const modals = ref({
       <template #custom="{ close }">
         <div class="grid h-full max-h-[60dvh] grid-rows-[1fr_auto] overflow-hidden">
           <div class="scrollerBlock overflow-y-auto">
-            <CategoriesSelector
+            <CategoriesSelectorTree
               :selectedIds="filter?.categoriesIds.value"
               class="min-w-80 px-3"
               @filter="filter.toggleCategoryId"
-              @onSelected="filter.toggleCategoryId"
+              @selected="filter.toggleCategoryId"
               @setCategories="filter.setCategories"
             />
           </div>

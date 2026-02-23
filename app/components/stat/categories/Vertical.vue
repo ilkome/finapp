@@ -2,10 +2,10 @@
 import { onLongPress } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatDateProvider } from '~/components/date/types'
 import type { CategoryWithData } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -18,10 +18,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
-  onClickIcon: [id: CategoryId]
+  clickIcon: [id: CategoryId]
 }>()
 
-const statDate = inject('statDate') as StatDateProvider
+const statDate = inject(statDateKey)!
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 
@@ -93,7 +93,7 @@ onLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="rounded-sm p-1 pb-4 hover:bg-[var(--item-5)]"
+    class="rounded-sm p-1 pb-4 hover:bg-(--item-5)"
   >
     <div class="bg-item-3 flex h-28 items-end rounded-sm">
       <div
@@ -101,10 +101,9 @@ onLongPress(
         :style="getBarStyle()"
       >
         <div
-          :class="{
-            'text-income-1': props.item.value > 0,
-          }"
-          class="font-secondary absolute top-[-14px] w-full text-center text-xs leading-none"
+          :class="cn('font-secondary absolute top-[-14px] w-full text-center text-xs leading-none',
+                     props.item.value > 0 && 'text-income-1',
+          )"
         >
           {{ amount }}
         </div>

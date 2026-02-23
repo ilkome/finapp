@@ -1,6 +1,3 @@
-<script lang="ts" setup>
-</script>
-
 <template>
   <UiPage>
     <div class="grid grid-cols-[1fr_auto] items-start gap-8 p-3">
@@ -17,7 +14,7 @@
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex-center size-20 bg-[var(--item-1)]">
+                <div class="flex-center size-20 bg-(--item-1)">
                   1
                 </div>
                 <div class="flex-center bg-item-2 size-20">
@@ -29,7 +26,7 @@
                 <div class="flex-center bg-item-4 size-20">
                   4
                 </div>
-                <div class="flex-center size-20 bg-[var(--item-5)]">
+                <div class="flex-center size-20 bg-(--item-5)">
                   5
                 </div>
                 <div class="flex-center bg-item-6 size-20">
@@ -110,10 +107,10 @@
               </h1>
 
               <div class="flex flex-wrap">
-                <div class="size-20 bg-[var(--chart-line)]" />
-                <div class="size-20 bg-[var(--chart-splitLine)]" />
-                <div class="size-20 bg-[var(--chart-label)]" />
-                <div class="size-20 bg-[var(--chart-tooltip)]" />
+                <div class="size-20 bg-(--chart-line)" />
+                <div class="size-20 bg-(--chart-splitLine)" />
+                <div class="size-20 bg-(--chart-label)" />
+                <div class="size-20 bg-(--chart-tooltip)" />
               </div>
             </div>
           </div>
@@ -126,17 +123,17 @@
           </h1>
 
           <div class="grid gap-4">
-            <UiTitle3>
-              UiTitle3
-            </UiTitle3>
+            <UiTitleSection>
+              UiTitleSection
+            </UiTitleSection>
 
-            <UiTitle6>
-              UiTitle6
-            </UiTitle6>
+            <UiTextSubtitle>
+              UiTextSubtitle
+            </UiTextSubtitle>
 
-            <UiTitle8>
-              UiTitle8
-            </UiTitle8>
+            <UiTitleCollapse>
+              UiTitleCollapse
+            </UiTitleCollapse>
 
             <UiTitleDropRight>
               UiTitleDropRight
@@ -146,9 +143,9 @@
               UiTitleModal
             </UiTitleModal>
 
-            <UiTitleOption>
-              UiTitleOption
-            </UiTitleOption>
+            <UiTitleSection size="sm">
+              UiTitleSection sm
+            </UiTitleSection>
           </div>
         </div>
 
@@ -158,13 +155,13 @@
           </h1>
 
           <div class="grid gap-4">
-            <UiTextSm1>
-              UiTextSm1
-            </UiTextSm1>
+            <UiTextMuted>
+              UiTextMuted
+            </UiTextMuted>
 
-            <UiTextSm2>
-              UiTextSm2
-            </UiTextSm2>
+            <UiTextMuted size="sm">
+              UiTextMuted sm
+            </UiTextMuted>
           </div>
         </div>
 
@@ -182,13 +179,9 @@
               UiToggleWithStorage
             </UiToggleWithStorage>
 
-            <UiToggle3 isShown>
-              UiToggle3
-            </UiToggle3>
-
-            <UiToggleAction isShown>
-              UiToggleAction
-            </UiToggleAction>
+            <UiToggleControlled isShown>
+              UiToggleControlled
+            </UiToggleControlled>
           </div>
         </div>
 
@@ -198,17 +191,17 @@
           </h1>
 
           <div class="grid gap-4">
-            <UiItem1>
-              UiItem1
-            </UiItem1>
+            <UiActionButton>
+              UiActionButton
+            </UiActionButton>
 
-            <UiItem2>
-              UiItem2
-            </UiItem2>
+            <UiChipButton>
+              UiChipButton
+            </UiChipButton>
 
-            <UiItem3>
-              UiItem3
-            </UiItem3>
+            <UiActionButton>
+              UiActionButton
+            </UiActionButton>
           </div>
         </div>
 
@@ -218,13 +211,13 @@
           </h1>
 
           <div class="grid gap-4">
-            <UiTabs1>
-              UiTabs1
-            </UiTabs1>
+            <UiTabsBar>
+              UiTabsBar
+            </UiTabsBar>
 
-            <UiTabs2>
-              UiTabs2
-            </UiTabs2>
+            <UiTabsScroll>
+              UiTabsScroll
+            </UiTabsScroll>
           </div>
         </div>
 
@@ -235,31 +228,34 @@
 
           <div class="grid grid-cols-2 gap-2">
             <div class="grid gap-4">
-              <UiTabsItem1>
-                UiTabsItem1
-              </UiTabsItem1>
+              <UiTabsItemFill>
+                UiTabsItemFill
+              </UiTabsItemFill>
 
-              <UiTabsItem3>
-                UiTabsItem3
-              </UiTabsItem3>
+              <UiTabsItemPill>
+                UiTabsItemPill
+              </UiTabsItemPill>
 
-              <UiTabsItem4>
-                UiTabsItem4
-              </UiTabsItem4>
+              <UiTabsItemPill variant="outline">
+                UiTabsItemPill outline
+              </UiTabsItemPill>
             </div>
 
             <div class="grid gap-4">
-              <UiTabsItem1 isActive>
-                UiTabsItem1
-              </UiTabsItem1>
+              <UiTabsItemFill isActive>
+                UiTabsItemFill
+              </UiTabsItemFill>
 
-              <UiTabsItem3 isActive>
-                UiTabsItem3
-              </UiTabsItem3>
+              <UiTabsItemPill isActive>
+                UiTabsItemPill
+              </UiTabsItemPill>
 
-              <UiTabsItem4 isActive>
-                UiTabsItem4
-              </UiTabsItem4>
+              <UiTabsItemPill
+                variant="outline"
+                isActive
+              >
+                UiTabsItemPill outline
+              </UiTabsItemPill>
             </div>
           </div>
         </div>

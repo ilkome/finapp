@@ -7,6 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/stat/filter/useFilter'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -15,7 +16,7 @@ const route = useRoute()
 const trnsStore = useTrnsStore()
 
 const filter = useFilter()
-provide('filter', filter)
+provide(filterKey, filter)
 
 const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
 const storageKey = computed(() => `dashboard-${activeTab.value}`)
@@ -30,10 +31,10 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const statConfig = useStatConfig({
   storageKey: storageKey.value,
 })
-provide('statConfig', statConfig)
+provide(statConfigKey, statConfig)
 
 const statDate = useStatDate({ key: storageKey.value, maxRange, queryParams: route.query })
-provide('statDate', statDate)
+provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
   statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0

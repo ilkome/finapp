@@ -18,7 +18,7 @@ const emit = defineEmits<{
   <UiElement
     v-if="props.trnItem"
     :lineWidth="props.alt ? 3 : 0"
-    :insideClasses="`${props.alt ? 'py-2 min-h-[32px]' : 'py-3 !min-h-[38px]'}`"
+    :insideClasses="props.alt ? 'py-2 min-h-[32px]' : 'py-3 min-h-[38px]'"
     @click="emit('click')"
   >
     <template v-if="!alt" #leftIcon>
@@ -41,7 +41,7 @@ const emit = defineEmits<{
           </div>
 
           <div
-            v-if="trnItem.type === 2"
+            v-if="trnItem.type === TrnType.Transfer"
             class="flex items-center gap-2"
           >
             <Icon
@@ -82,11 +82,11 @@ const emit = defineEmits<{
         </div>
 
         <Amount
-          v-if="trnItem.type !== 2"
+          v-if="trnItem.type !== TrnType.Transfer"
           :amount="trnItem.amount"
           :currencyCode="trnItem.wallet?.currency"
-          :isShowMinus="trnItem.type === 0"
-          :isShowPlus="trnItem.type === 1"
+          :isShowMinus="trnItem.type === TrnType.Expense"
+          :isShowPlus="trnItem.type === TrnType.Income"
           :type="trnItem.type"
           align="right"
           class="grow"
@@ -96,7 +96,7 @@ const emit = defineEmits<{
 
         <!-- Transfer -->
         <div
-          v-if="trnItem.type === 2"
+          v-if="trnItem.type === TrnType.Transfer"
           class="grid gap-1"
         >
           <div class="text-3 flex items-center gap-1 text-sm leading-none">
@@ -116,8 +116,6 @@ const emit = defineEmits<{
             />
 
             <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
-              <Icon name="lucide:" size="16" />
-
               <Amount
                 :amount="trnItem.incomeAmount || trnItem.amount"
                 :class="{

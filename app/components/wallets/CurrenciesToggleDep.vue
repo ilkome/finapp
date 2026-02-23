@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletsCurrencyFiltered } from '~/components/wallets/types'
 
@@ -9,7 +9,7 @@ defineProps<{
 }>()
 
 const emit = defineEmits<{
-  onSelectFilterCurrency: [code: CurrencyCode]
+  selectFilterCurrency: [code: CurrencyCode]
 }>()
 
 const { t } = useI18n()
@@ -24,31 +24,31 @@ const walletsStore = useWalletsStore()
     storageKey="finapp-wallets-currencies"
   >
     <template #header="{ toggle, isShown }">
-      <UiTitle8
+      <UiTitleCollapse
         :isShown
         @click="toggle"
       >
         {{ t('wallets.filterByCurrency') }}
         {{ (currencyFiltered !== 'all' && !isShown) ? currencyFiltered : '' }}
-      </UiTitle8>
+      </UiTitleCollapse>
     </template>
 
-    <UiTabs2 class="flex gap-1 px-2 @xl/page:px-0">
-      <UiTabsItem1
+    <UiTabsScroll class="flex gap-1 px-2 @xl/page:px-0">
+      <UiTabsItemFill
         :isActive="currencyFiltered === 'all'"
-        @click="emit('onSelectFilterCurrency', 'all')"
+        @click="emit('selectFilterCurrency', 'all')"
       >
         {{ t('common.all') }}
-      </UiTabsItem1>
+      </UiTabsItemFill>
 
-      <UiTabsItem1
+      <UiTabsItemFill
         v-for="currency in walletsStore.currenciesUsed"
         :key="currency"
         :isActive="currencyFiltered === currency"
-        @click="emit('onSelectFilterCurrency', currency)"
+        @click="emit('selectFilterCurrency', currency)"
       >
         {{ currency }}
-      </UiTabsItem1>
-    </UiTabs2>
+      </UiTabsItemFill>
+    </UiTabsScroll>
   </UiToggleWithStorage>
 </template>

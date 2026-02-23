@@ -19,7 +19,7 @@ async function onClickSubmit() {
   if (!trnFormData)
     return
 
-  await trnsStore.addTrn({
+  await trnsStore.saveTrn({
     id: trnFormData.id,
     values: trnFormData.values,
   })
@@ -29,11 +29,13 @@ async function onClickSubmit() {
 
 <template>
   <div
-    :class="{
-      '!hover:bg-(--ui-primary) text-icon-primary !bg-(--ui-primary)/60': !isMath && isSubmittable,
-      'text-muted': !isSubmittable || isMath,
-    }"
-    class="bg-item-4 text-1 flex size-full items-center justify-center rounded-[var(--ui-radius)] p-1 py-4 text-center transition hover:scale-[1.02] hover:bg-[var(--item-5)]"
+    :class="cn(
+      'flex size-full items-center justify-center rounded-(--ui-radius) p-1 py-4 text-center transition hover:scale-[1.02]',
+      !isMath && isSubmittable
+        ? 'bg-(--ui-primary)/60 hover:bg-(--ui-primary) text-icon-primary'
+        : 'bg-item-4 text-1 hover:bg-(--item-5)',
+      (!isSubmittable || isMath) && 'text-muted',
+    )"
     @click="onClickSubmit"
   >
     <Icon :name="isMath ? 'lucide:equal' : 'lucide:check'" size="40" />

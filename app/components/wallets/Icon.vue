@@ -27,7 +27,3 @@ function getWalletIconName(name: string) {
     {{ getWalletIconName(props.name) }}
   </div>
 </template>
-
-<style scoped>
-
-</style>

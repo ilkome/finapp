@@ -45,7 +45,7 @@ export function useFilter() {
     router.push({
       query: {
         ...route.query,
-        filterWallets: [...new Set([...walletsIds.value, ...newWalletsIds])],
+        filterWallets: [...new Set(walletsIds.value.concat(newWalletsIds))],
       },
     })
   }
@@ -85,7 +85,7 @@ export function useFilter() {
     router.push({
       query: {
         ...route.query,
-        filterCategories: [...new Set([...categoriesIds.value, ...newCategoriesIds])],
+        filterCategories: [...new Set(categoriesIds.value.concat(newCategoriesIds))],
       },
     })
   }
@@ -94,7 +94,7 @@ export function useFilter() {
     router.push({
       query: {
         ...route.query,
-        filterCategories: [...new Set([...newCategoriesIds])],
+        filterCategories: newCategoriesIds,
       },
     })
   }

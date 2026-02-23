@@ -1,18 +1,15 @@
 <script setup lang="ts">
-import { getStyles } from '~/components/ui/getStyles'
-
 const props = defineProps<{
   isShown?: boolean
 }>()
 const emit = defineEmits<{
-  (e: 'click'): void
+  click: []
 }>()
 </script>
 
 <template>
   <div
-    :class="getStyles('item', ['link', 'center', 'padding3', 'minh2', 'minw1', 'rounded'])"
-    class="flex grow items-center gap-2 pb-0"
+    class="interactive flex min-h-[38px] min-w-[42px] grow items-center gap-2 rounded-sm px-3 pb-0"
     @click="emit('click')"
   >
     <Icon

@@ -89,8 +89,8 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
           <TrnFormDate />
         </div>
 
-        <UiTabs1 class="mb-4">
-          <UiTabsItem1
+        <UiTabsBar class="mb-4">
+          <UiTabsItemFill
             v-for="tab in tabs"
             :key="tab.id"
             class="text-xs whitespace-nowrap"
@@ -98,8 +98,8 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
             @click="changeFilter(tab.id)"
           >
             {{ tab.name }}
-          </UiTabsItem1>
-        </UiTabs1>
+          </UiTabsItemFill>
+        </UiTabsBar>
       </template>
     </TrnsList>
   </div>

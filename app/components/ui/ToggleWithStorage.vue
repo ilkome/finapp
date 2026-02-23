@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import { getStyles } from '~/components/ui/getStyles'
-
 const props = defineProps<{
   initStatus?: boolean
   lineWidth?: number
@@ -22,7 +20,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
   >
     <div class="-my-px overflow-hidden">
       <div
-        :class="getStyles('item', ['link', 'center', 'rounded', 'minh1'])"
+        class="interactive flex min-h-[42px] items-center rounded-sm"
       >
         <slot
           name="header"
@@ -31,7 +29,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
         />
       </div>
 
-      <div v-if="isShown" class="">
+      <div v-if="isShown">
         <slot
           :toggle="() => isShown = !isShown"
           :close="() => isShown = false"
@@ -41,8 +39,10 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 
     <div
       v-if="lineWidth && !isShown"
-      class="mx-2 h-px bg-[var(--item-5)] group-last:hidden"
-      :class="{ 'ml-12': lineWidth === 3, 'ml-11': lineWidth === 2 }"
+      :class="cn('mx-2 h-px bg-(--item-5) group-last:hidden',
+                 lineWidth === 3 && 'ml-12',
+                 lineWidth === 2 && 'ml-11',
+      )"
     />
   </div>
 </template>

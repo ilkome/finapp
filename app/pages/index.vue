@@ -1,5 +1,7 @@
 <script setup lang="ts">
-useRouter().replace('/dashboard')
+definePageMeta({
+  redirect: '/dashboard',
+})
 </script>
 
 <template>

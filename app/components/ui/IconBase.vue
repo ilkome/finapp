@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { cn } from '~~/lib/cn'
-
 const props = defineProps<{
   class?: string
   color?: string

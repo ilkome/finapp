@@ -1,13 +1,11 @@
-import { defineStore } from 'pinia'
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { TrnFormUi } from '~/components/trnForm/types'
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
-import type { TransferType, TrnFormValues, TrnId, TrnItem } from '~/components/trns/types'
+import type { TransferSide, TrnFormValues, TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { errorEmo, random } from '~/assets/js/emo'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
@@ -15,6 +13,7 @@ import { validate } from '~/components/trnForm/utils/validate'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { showErrorToast } from '~/composables/useStoreSync'
 
 type Values = {
   categoriesIds: CategoryId[]
@@ -29,12 +28,9 @@ type Values = {
 })
 
 export const useTrnsFormStore = defineStore('trnForm', () => {
-  const { t } = useI18n()
   const categoriesStore = useCategoriesStore()
-  const trnsFormStore = useTrnsFormStore()
   const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
-  const toast = useToast()
 
   const values = reactive<TrnFormValues>({
     amount: [0, 0, 0],
@@ -44,7 +40,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     desc: undefined,
     expenseWalletId: null,
     incomeWalletId: null,
-    transferType: 0,
+    transferType: 'expense',
     trnId: null,
     trnType: 0,
     walletId: null,
@@ -71,7 +67,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   const activeAmountIdx = computed(() =>
     values.trnType !== TrnType.Transfer
       ? 0
-      : 1 + values.transferType,
+      : values.transferType === 'expense' ? 1 : 2,
   )
 
   function onChangeAmount(amountRaw: string) {
@@ -85,7 +81,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function getIsShowSum() {
-    if (values.trnType === 2) {
+    if (values.trnType === TrnType.Transfer) {
       const expense = values.amount[1] !== 0
         && formatInput(values.amount[1]) !== values.amountRaw[1]
       const income = values.amount[2] !== 0
@@ -101,7 +97,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.trnType = trnType
   }
 
-  function onChangeTransferType(transferType: TransferType) {
+  function onChangeTransferType(transferType: TransferSide) {
     values.transferType = transferType
   }
 
@@ -110,6 +106,29 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amountRaw = ['', '', '']
     values.desc = undefined
     values.trnId = null
+  }
+
+  function $reset() {
+    values.amount = [0, 0, 0]
+    values.amountRaw = ['', '', '']
+    values.categoryId = null
+    values.date = new Date().getTime()
+    values.desc = undefined
+    values.expenseWalletId = null
+    values.incomeWalletId = null
+    values.transferType = 'expense'
+    values.trnId = null
+    values.trnType = 0
+    values.walletId = null
+
+    ui.value = {
+      catsRootModal: false,
+      isShow: false,
+      walletsModal: false,
+    }
+    modal.value = {
+      description: false,
+    }
   }
 
   function onClose() {
@@ -124,9 +143,9 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
 
     if (props.action === 'create') {
       values.trnType = 0
-      if (!values.walletId)
+      if (!values.walletId || !props.walletsIds.includes(values.walletId))
         values.walletId = props.walletId ?? props.trn?.walletId ?? props.walletsIds[0]
-      if (!values.categoryId)
+      if (!values.categoryId || !props.categoriesIds.includes(values.categoryId as CategoryId))
         values.categoryId = props.trn?.categoryId ?? props.categoriesIds[0]
 
       values.incomeWalletId = props.walletsIds[0]
@@ -158,36 +177,42 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   async function onSubmit() {
-    const data = values.trnType !== 2
+    // Validate wallet/category exist before formatting
+    if (values.trnType !== TrnType.Transfer) {
+      if (!values.walletId || !walletsStore.items?.[values.walletId]) {
+        showErrorToast('trnForm.errors.selectWallet')
+        return
+      }
+      if (!values.categoryId || !categoriesStore.items?.[values.categoryId]) {
+        showErrorToast('trnForm.errors.selectCategory')
+        return
+      }
+    }
+
+    const data = values.trnType !== TrnType.Transfer
       ? formatTransaction(values)
       : formatTransfer(values)
 
-    try {
-      const validateStatus = validate(data)
-
-      if (validateStatus.error || !data) {
-        toast.add({
-          color: 'error',
-          description: t(validateStatus.error!) ?? 'No data',
-          title: random(errorEmo),
-        })
-        return
-      }
-
-      return {
-        id: values.trnId ?? generateId(),
-        values: data,
-      }
+    if (!data) {
+      showErrorToast('base.noData')
+      return
     }
-    catch (e) {
-      console.error(e)
-      return false
+
+    const error = validate(data)
+    if (error) {
+      showErrorToast(error)
+      return
+    }
+
+    return {
+      id: values.trnId ?? generateId(),
+      values: data,
     }
   }
 
   function onChangeCountSum() {
     // Transfer
-    if (values.trnType === 2) {
+    if (values.trnType === TrnType.Transfer) {
       values.amountRaw[1] = formatInput(values.amount[1])
       values.amountRaw[2] = formatInput(values.amount[2])
       return
@@ -213,7 +238,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       trnId,
       walletsIds: walletsStore.sortedIds,
     })
-    trnsFormStore.ui.isShow = true
+    ui.value.isShow = true
   }
 
   function trnFormCreate(props?: { categoryId?: CategoryId, walletId?: WalletId }) {
@@ -224,11 +249,11 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       walletId: props?.walletId ?? walletsStore.sortedIds[0],
       walletsIds: walletsStore.sortedIds,
     })
-    trnsFormStore.ui.isShow = true
+    ui.value.isShow = true
 
     if (props) {
       if (props.categoryId)
-        trnsFormStore.values.categoryId = props.categoryId
+        values.categoryId = props.categoryId
     }
   }
 
@@ -238,21 +263,19 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     if (!trn)
       return
 
-    if (trn.type !== TrnType.Transfer) {
-      setValues({
-        action: 'duplicate',
-        amount: trn.amount,
-        categoriesIds: categoriesStore.categoriesIdsForTrnValues,
-        trn,
-        trnId,
-        walletsIds: walletsStore.sortedIds,
-      })
-    }
+    setValues({
+      action: 'duplicate',
+      categoriesIds: categoriesStore.categoriesIdsForTrnValues,
+      trn,
+      trnId,
+      walletsIds: walletsStore.sortedIds,
+    })
 
-    trnsFormStore.ui.isShow = true
+    ui.value.isShow = true
   }
 
   return {
+    $reset,
     activeAmountIdx,
     closeTrnFormModal,
     getIsShowSum,

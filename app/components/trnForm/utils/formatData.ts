@@ -1,7 +1,9 @@
 import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
 
+import { TrnType } from '~/components/trns/types'
+
 function formatTransaction(props: TrnFormValues): Transaction | false {
-  if (props.trnType === 2 || !props.categoryId || !props.walletId) {
+  if (props.trnType === TrnType.Transfer || !props.categoryId || !props.walletId) {
     return false
   }
 
@@ -10,9 +12,9 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
     categoryId: props.categoryId,
 
     date: props.date || new Date().getTime(),
-    edited: new Date().getTime(),
-
     type: props.trnType,
+
+    updatedAt: new Date().getTime(),
     walletId: props.walletId,
   }
 
@@ -23,7 +25,7 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
 }
 
 function formatTransfer(props: TrnFormValues): Transfer | false {
-  if (props.trnType !== 2 || !props.expenseWalletId || !props.incomeWalletId) {
+  if (props.trnType !== TrnType.Transfer || !props.expenseWalletId || !props.incomeWalletId) {
     return false
   }
 
@@ -31,15 +33,15 @@ function formatTransfer(props: TrnFormValues): Transfer | false {
     categoryId: 'transfer' as const,
 
     date: props.date,
-    edited: new Date().getTime(),
-
     expenseAmount: props.amount[1],
+
     expenseWalletId: props.expenseWalletId,
-
     incomeAmount: props.amount[2],
-    incomeWalletId: props.incomeWalletId,
 
+    incomeWalletId: props.incomeWalletId,
     type: props.trnType,
+
+    updatedAt: new Date().getTime(),
   }
 
   if (props.desc)

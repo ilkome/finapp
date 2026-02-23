@@ -5,14 +5,15 @@ const { options, preference, setTheme } = useTheme()
 </script>
 
 <template>
-  <UiTabs2>
-    <UiTabsItem4
+  <UiTabsScroll>
+    <UiTabsItemPill
       v-for="theme in options"
       :key="theme.value"
+      variant="outline"
       :isActive="preference === theme.value"
       @click="setTheme(theme.value)"
     >
       {{ theme.label }}
-    </UiTabsItem4>
-  </UiTabs2>
+    </UiTabsItemPill>
+  </UiTabsScroll>
 </template>

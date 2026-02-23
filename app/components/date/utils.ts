@@ -1,3 +1,5 @@
+import type { CalendarDate } from '@internationalized/date'
+
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
 import { differenceInDays, endOfDay, endOfMonth, endOfWeek, endOfYear, format, formatISO, startOfDay, startOfMonth, startOfWeek, startOfYear, sub } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -103,7 +105,7 @@ export function parseUCalendarDate(date: number) {
   return parseDate(formatISO(date, { representation: 'date' }))
 }
 
-export function getUCalendarTimedDate(date: any) {
+export function getUCalendarTimedDate(date: CalendarDate) {
   const now = new Date()
   const selectedDate = date.toString()
   return new Date(selectedDate).setHours(now.getHours(), now.getMinutes())

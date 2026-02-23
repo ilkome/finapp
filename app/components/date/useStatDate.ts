@@ -213,5 +213,3 @@ export function useStatDate({
     setRangeByPeriod,
   }
 }
-
-export type statDate = ReturnType<typeof useStatDate>

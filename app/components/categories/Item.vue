@@ -13,7 +13,7 @@ export type CategoryItemProps = {
   isShowDots?: boolean
   isShowParent?: boolean
   lineWidth?: number
-  slider?: any
+  slider?: object
 }
 
 const props = defineProps<CategoryItemProps>()

@@ -23,6 +23,7 @@ describe('total of Transactions', () => {
     })
 
     expect(total).toEqual({
+      adjustment: 0,
       expense: 0,
       expenseTransfers: 0,
       income: 0,
@@ -129,7 +130,7 @@ describe('total of Transactions', () => {
       'transactionExpenseWalletCashUSD400',
       'transferExpenseWalletCashUSD10IncomeWalletRUB700',
       'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
-      'transferCategoryNameIncomeWalletCashUSD30',
+      'transferCategoryIncomeWalletCashUSD30',
       'transferCategoryIdExpenseWalletCashUSD30',
     ]
 
@@ -154,7 +155,7 @@ describe('total of Transactions', () => {
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
       'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
-      'transferCategoryNameIncomeWalletCashUSD30',
+      'transferCategoryIncomeWalletCashUSD30',
       'transferCategoryIdExpenseWalletCashUSD30',
     ]
 
@@ -171,37 +172,5 @@ describe('total of Transactions', () => {
     expect(total.incomeTransfers).toEqual(70)
     expect(total.expenseTransfers).toEqual(70)
     expect(total.sumTransfers).toEqual(0)
-  })
-
-  it('total of Transfers with deprecated Transfer type when no Wallets provided', () => {
-    const trnsIds = ['transferOLDExpense2500Income3500']
-
-    const total = getTotal({
-      transferCategoriesIds,
-      trnsIds,
-      trnsItems,
-      walletsItems,
-    })
-
-    expect(total.incomeTransfers).toEqual(3500)
-    expect(total.expenseTransfers).toEqual(2500)
-    expect(total.sumTransfers).toEqual(1000)
-  })
-
-  it('total of Transfers with deprecated Transfer type', () => {
-    const walletsIds = ['walletDeprecatedTransferIncome', 'walletDeprecatedTransferExpense']
-    const trnsIds = ['transferOLDExpense2500Income3500']
-
-    const total = getTotal({
-      transferCategoriesIds,
-      trnsIds,
-      trnsItems,
-      walletsIds,
-      walletsItems,
-    })
-
-    expect(total.incomeTransfers).toEqual(3500)
-    expect(total.expenseTransfers).toEqual(2500)
-    expect(total.sumTransfers).toEqual(1000)
   })
 })

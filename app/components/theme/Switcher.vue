@@ -15,11 +15,11 @@ const { options, preference, setTheme } = useTheme()
 <template>
   <div>
     <template v-if="props.isShowTitle">
-      <UiTitle3
+      <UiTitleSection
         class="pb-2"
       >
         {{ t('theme.title') }}
-      </UiTitle3>
+      </UiTitleSection>
 
       <FormSelect
         :options

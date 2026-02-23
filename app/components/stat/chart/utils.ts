@@ -6,14 +6,12 @@ export function markArea(value: number) {
 }
 
 export function getCompactAmount(amount: number) {
-  return Intl.NumberFormat('en', { notation: 'compact' }).format(amount)
+  return new Intl.NumberFormat('en', { notation: 'compact' }).format(amount)
 }
 
 export function getLocalAmount(amount: number) {
-  return amount.toLocaleString('ru', {
-    currency: 'RUB',
+  return new Intl.NumberFormat('ru', {
     maximumFractionDigits: 0,
     minimumFractionDigits: 0,
-    style: 'decimal',
-  })
+  }).format(amount)
 }

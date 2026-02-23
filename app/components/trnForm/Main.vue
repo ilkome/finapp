@@ -8,11 +8,9 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = withDefaults(defineProps<{
+const { maxHeight = '60vh' } = defineProps<{
   maxHeight?: string
-}>(), {
-  maxHeight: '60vh',
-})
+}>()
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
@@ -42,7 +40,7 @@ function show(slide: number) {
     <TrnFormSelection
       v-if="isShow"
       v-model:isShow="isShow"
-      :maxHeight="props.maxHeight"
+      :maxHeight="maxHeight"
       :initialSlide
     />
 
@@ -64,7 +62,7 @@ function show(slide: number) {
       :highlight="trnsFormStore.values.trnType === 0 ? 'expense' : 'income'"
       :isShowSum="trnsFormStore.getIsShowSum()"
       class="px-3 pb-2"
-      @onChange="trnsFormStore.onChangeAmount"
+      @change="trnsFormStore.onChangeAmount"
     />
 
     <div class="grid gap-3 px-3 pb-6">
@@ -75,31 +73,31 @@ function show(slide: number) {
       >
         <TrnFormSelectorWallet
           v-if="walletId"
-          :bottomSheetStyle="{ maxHeight: props.maxHeight }"
+          :bottomSheetStyle="{ maxHeight }"
           :isLaptop
           :title="t('trnForm.wallet.select')"
           :walletId="walletId"
-          @onOpen="show(0)"
-          @onSelected="(id: WalletId) => trnsFormStore.values.walletId = id"
+          @open="show(0)"
+          @selected="(id: WalletId) => trnsFormStore.values.walletId = id"
         />
 
         <TrnFormSelectorCategory
-          v-if="trnsFormStore.values.categoryId"
-          :bottomSheetStyle="{ maxHeight: props.maxHeight }"
+          v-if="trnsFormStore.values.categoryId || categoriesStore.categoriesIdsForTrnValues[0]"
+          :bottomSheetStyle="{ maxHeight }"
           :category="categoriesStore.items[trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
           :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
           :isLaptop
           :title="t('trnForm.category.select')"
-          @onOpen="show(2)"
-          @onSelected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
+          @open="show(2)"
+          @selected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
         />
       </div>
 
       <TrnFormMainAmountTransfer
         v-if="trnsFormStore.values.trnType === 2"
-        :bottomSheetStyle="{ maxHeight: props.maxHeight }"
+        :bottomSheetStyle="{ maxHeight }"
         isLaptop
-        @onOpen="show(0)"
+        @open="show(0)"
       />
 
       <TrnFormMainCalculator />
@@ -114,7 +112,7 @@ function show(slide: number) {
   padding-bottom: calc(env(safe-area-inset-bottom) - 16px);
 
   .trnForm__pagination {
-    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-[var(--item-1)];
+    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-(--item-1);
     transform: translateX(-50%);
     bottom: 1px;
   }

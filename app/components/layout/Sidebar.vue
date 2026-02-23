@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { useWindowSize } from '@vueuse/core'
 
-import type { WalletId } from '~/components/wallets/types'
-
 import { useDemo } from '~/components/demo/useDemo'
-import { getStyles } from '~/components/ui/getStyles'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isShowSidebar?: boolean
@@ -20,6 +18,7 @@ const userStore = useUserStore()
 const { isDemo } = useDemo()
 const { t } = useI18n()
 const { width } = useWindowSize()
+const walletsStore = useWalletsStore()
 
 const isShowLogoMenu = ref(false)
 </script>
@@ -48,13 +47,12 @@ const isShowLogoMenu = ref(false)
           <BottomSheetOrDropdown
             :isOpen="isShowLogoMenu"
             isShowCloseBtn
-            @onOpenModal="isShowLogoMenu = true"
-            @onCloseModal="isShowLogoMenu = false"
+            @openModal="isShowLogoMenu = true"
+            @closeModal="isShowLogoMenu = false"
           >
             <template #trigger>
               <div
-                :class="getStyles('item', ['link', 'rounded'])"
-                class="group-data-[state='open']:!bg-item-4 block cursor-default px-3 py-2"
+                class="interactive group-data-[state='open']:!bg-item-4 block cursor-default rounded-sm px-3 py-2"
               >
                 <UiLogo />
               </div>
@@ -74,26 +72,16 @@ const isShowLogoMenu = ref(false)
           </BottomSheetOrDropdown>
         </div>
 
-        <div
-          v-if="isDemo"
-          class="px-4"
-        >
-          <UiButtonAccent @click="userStore.signOut">
-            {{ t('demo.exit') }}
-          </UiButtonAccent>
-        </div>
-
         <LayoutSidebarMenu class="px-2 pb-2" />
 
-        <div class="px-2 pb-6">
-          <UiTitle3 class="!text-4 pb-2 pl-3">
+        <div v-if="walletsStore.sortedIds.length > 0" class="px-2 pb-6">
+          <UiTitleSection class="!text-4 pb-2 pl-3">
             {{ t('wallets.title') }}
-          </UiTitle3>
+          </UiTitleSection>
 
           <WalletsList
             :limit="10"
             isShowToggle
-            @onClick="(id: WalletId) => router.push(`/wallets/${id}`)"
           >
             <template #default="{ walletsIdsSorted, walletsItemsLimited }">
               <WalletsItem
@@ -112,9 +100,12 @@ const isShowLogoMenu = ref(false)
 
               <div
                 v-if="walletsIdsSorted.length === 0"
-                class="px-2"
+                class="flex-center flex-col py-4"
               >
-                <UiButtonAccent @click="router.push('/wallets/new')">
+                <UiButtonAccent
+                  rounded
+                  @click="router.push('/wallets/new')"
+                >
                   {{ t('wallets.new') }}
                 </UiButtonAccent>
               </div>
@@ -123,17 +114,26 @@ const isShowLogoMenu = ref(false)
         </div>
       </div>
 
-      <div class="absolute bottom-1 left-0 hidden w-full items-center md:flex">
+      <div class="absolute bottom-0 left-0 hidden w-full flex-col gap-2 md:flex">
+        <div
+          v-if="isDemo && props.isShowSidebar"
+          class="px-4"
+        >
+          <UiButtonAccent @click="userStore.signOut">
+            {{ t('demo.exit') }}
+          </UiButtonAccent>
+        </div>
+
         <UTooltip
           :text="t('app.toggleSidebar')"
           :kbds="['Meta', '\\']"
         >
-          <UiItem1
+          <UiActionButton
             class="text-4 z-10"
             @click="emit('toggleSidebar')"
           >
             <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
-          </UiItem1>
+          </UiActionButton>
         </UTooltip>
       </div>
     </div>

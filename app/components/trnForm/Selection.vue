@@ -11,16 +11,10 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 import 'swiper/css'
 
-const props = withDefaults(
-  defineProps<{
-    initialSlide?: number
-    maxHeight?: string
-  }>(),
-  {
-    initialSlide: 0,
-    maxHeight: '60vh',
-  },
-)
+const { initialSlide = 0, maxHeight = '60vh' } = defineProps<{
+  initialSlide?: number
+  maxHeight?: string
+}>()
 
 const isShow = defineModel('isShow', {
   default: false,
@@ -36,7 +30,7 @@ onMounted(() => {
   if (!sliderObj.value) {
     sliderObj.value = new Swiper(sliderRef.value, {
       init: false,
-      initialSlide: props.initialSlide,
+      initialSlide,
       longSwipesMs: 60,
       longSwipesRatio: 0.1,
       modules: [Pagination],
@@ -74,12 +68,12 @@ async function onSelectParentCategory(id: CategoryId) {
   <Teleport to="body">
     <BottomSheet
       :isShow="isShow"
-      drugClassesCustom="bg-[var(--item-1)] max-w-md"
+      drugClassesCustom="bg-(--item-1) max-w-md"
       @closed="isShow = false"
     >
       <template #handler="{ close }">
         <BottomSheetHandler />
-        <BottomSheetClose @onClick="close" />
+        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">
@@ -87,44 +81,44 @@ async function onSelectParentCategory(id: CategoryId) {
           <div class="swiper-wrapper">
             <!-- Wallets -->
             <div
-              :style="{ height: props.maxHeight }"
+              :style="{ height: maxHeight }"
               class="swiper-slide"
             >
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
                 <TrnFormSelectionWalletsAll
                   :maxHeight="maxHeight"
-                  @onSelectWallet="id => onSelectWallet(id, close)"
+                  @selectWallet="id => onSelectWallet(id, close)"
                 />
               </div>
             </div>
 
             <!-- Categories fast -->
             <div
-              :style="{ height: props.maxHeight }"
+              :style="{ height: maxHeight }"
               class="swiper-slide"
             >
               <div class="scrollerBlock grid h-full gap-4 overflow-y-auto pb-3">
                 <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="id => onSelectCategory(id, close)"
-                  @onSelectParentCategory="id => onSelectParentCategory(id)"
+                  @selectCategory="id => onSelectCategory(id, close)"
+                  @selectParentCategory="id => onSelectParentCategory(id)"
                 />
               </div>
             </div>
 
             <!-- Categories -->
             <div
-              :style="{ height: props.maxHeight }"
+              :style="{ height: maxHeight }"
               class="swiper-slide"
             >
               <div class="scrollerBlock h-full overflow-y-auto pb-3">
-                <UiTitle3
-                  class="sticky top-0 z-10 bg-[var(--item-1)] px-3 pt-4 pb-3"
+                <UiTitleSection
+                  class="sticky top-0 z-10 bg-(--item-1) px-3 pt-4 pb-3"
                   @click="trnsFormStore.ui.catsRootModal = true"
                 >
                   {{ t('categories.title') }}
-                </UiTitle3>
-                <CategoriesSelector
-                  @onSelected="id => onSelectCategory(id, close)"
+                </UiTitleSection>
+                <CategoriesSelectorTree
+                  @selected="id => onSelectCategory(id, close)"
                 />
               </div>
             </div>

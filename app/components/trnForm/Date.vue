@@ -32,18 +32,18 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       :isOpen="isShow"
       class="grow"
       isShowCloseBtn
-      @onOpenModal="isShow = true"
-      @onCloseModal="isShow = false"
+      @openModal="isShow = true"
+      @closeModal="isShow = false"
     >
       <template #trigger>
-        <UiItem1 class="text-2 grid grow !justify-start p-2">
+        <UiActionButton class="text-2 grid grow !justify-start p-2">
           <div class="text-1 text-sm">
             {{ formattedDate.day }} {{ formattedDate.month }}
           </div>
           <div class="font-regular text-2xs leading-none">
             {{ formattedDate.weekday }}
           </div>
-        </UiItem1>
+        </UiActionButton>
       </template>
 
       <template #content="{ close }">

@@ -4,9 +4,9 @@
 
 <template>
   <div>
-    <UiTitle3 class="pb-2">
+    <UiTitleSection class="pb-2">
       <slot name="label" />
-    </UiTitle3>
+    </UiTitleSection>
 
     <slot />
   </div>

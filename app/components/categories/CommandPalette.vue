@@ -9,42 +9,59 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  clickParent: [id: CategoryId]
+  close: []
   filter: [id: CategoryId]
-  onClickParent: [id: CategoryId]
-  onClose: []
-  onSelected: [id: CategoryId]
+  selected: [id: CategoryId]
 }>()
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 
-const cats = computed(() => categoriesStore.categoriesRootIds.map((id) => {
-  const category = categoriesStore.items[id]!
-
-  const items = category?.childIds?.length
-    ? categoriesStore.getChildsIds(id).map(childId => ({
-        id: childId,
-        ...categoriesStore.items[childId],
-        suffix: category.name,
-      }))
-    : [{
-        id,
-        ...category,
-        suffix: category.name,
-      }]
-
-  return {
-    ...category,
+const cats = computed(() => {
+  const adjustmentCategory = categoriesStore.items.adjustment
+  const adjustmentGroup = {
+    ...adjustmentCategory,
     childIds: undefined,
-    id,
-    items,
+    id: 'adjustment',
+    items: [{
+      id: 'adjustment',
+      ...adjustmentCategory,
+      suffix: adjustmentCategory.name,
+    }],
     slot: 'category',
   }
-}))
+
+  const rootGroups = categoriesStore.categoriesRootIds.map((id) => {
+    const category = categoriesStore.items[id]!
+
+    const items = category?.childIds?.length
+      ? categoriesStore.getChildsIds(id).map(childId => ({
+          id: childId,
+          ...categoriesStore.items[childId],
+          suffix: category.name,
+        }))
+      : [{
+          id,
+          ...category,
+          suffix: category.name,
+        }]
+
+    return {
+      ...category,
+      childIds: undefined,
+      id,
+      items,
+      slot: 'category',
+    }
+  })
+
+  return [adjustmentGroup, ...rootGroups]
+})
 
 function onSelect(item: CategoryItemWithId) {
-  emit('onSelected', item.id)
-  emit('onClose')
+  emit('selected', item.id)
+  emit('close')
   if (props.hide)
     props.hide()
 }

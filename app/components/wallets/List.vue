@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import type { WalletsComputed } from '~/components/wallets/types'
 
-import { getStyles } from '~/components/ui/getStyles'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = withDefaults(defineProps<{
+const { isShowToggle, limit = 0 } = defineProps<{
   isShowToggle?: boolean
   limit?: number
-}>(), {
-  limit: 0,
-})
+}>()
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
@@ -30,10 +27,10 @@ const walletsItemsLimited = computed<WalletsComputed>(() => {
 function toggle() {
   stateLimit.value = stateLimit.value > 0
     ? 0
-    : props.limit
+    : limit
 }
 
-onMounted(() => stateLimit.value = props.limit)
+onMounted(() => stateLimit.value = limit)
 </script>
 
 <template>
@@ -51,8 +48,7 @@ onMounted(() => stateLimit.value = props.limit)
       name="toggle"
     >
       <div
-        :class="getStyles('item', ['rounded', 'minh1', 'link', 'padding1', 'center3'])"
-        class="text-muted -mt-px text-xs"
+        class="interactive flex-center text-muted -mt-px min-h-[42px] rounded-sm px-2 py-1.5 text-xs"
         @click="toggle"
       >
         <template v-if="stateLimit > 0">

@@ -53,7 +53,7 @@ watch(isShow, (v) => {
     >
       <div class="border-left border-item-6 border-item-4 bg-item-2 relative h-full overflow-hidden rounded-l-xl border border-r-0 shadow-2xl">
         <div class="absolute top-2 right-2">
-          <BottomSheetClose @onClick="trnsFormStore.onClose()" />
+          <BottomSheetClose @click="trnsFormStore.onClose()" />
         </div>
 
         <div ref="sliderRef" class="swiper-container h-full">
@@ -71,7 +71,7 @@ watch(isShow, (v) => {
                   class="-mt-8 grid gap-2 pb-6"
                 >
                   <TrnFormSelectionCategoriesFast
-                    @onSelectCategory="id => trnsFormStore.values.categoryId = id"
+                    @selectCategory="id => trnsFormStore.values.categoryId = id"
                   />
                 </div>
               </div>
@@ -79,13 +79,13 @@ watch(isShow, (v) => {
 
             <!-- Quick selector -->
             <div
-              class="swiper-slide bg-[var(--bg-)]"
+              class="swiper-slide bg-(--bg-)"
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto overscroll-contain">
-                <UiTitle3 class="bg-default sticky top-0 z-10 px-4 pt-5 pb-3 md:text-xl">
+                <UiTitleSection class="bg-default sticky top-0 z-10 px-4 pt-5 pb-3 md:text-xl">
                   {{ t('trns.history') }}
-                </UiTitle3>
+                </UiTitleSection>
 
                 <TrnFormTrnsSlide
                   :slider="sliderObj"

@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import useMenuData from '~/components/layout/useMenuData'
+import { useMenuData } from '~/components/layout/useMenuData'
 
-withDefaults(defineProps<{
+const { isShowText = true } = defineProps<{
   isShowText?: boolean
-}>(), {
-  isShowText: true,
-})
+}>()
 
 const { items } = useMenuData()
 </script>

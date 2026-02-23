@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import pkg from '~~/package.json'
 
+import type { LocaleSlug } from '~/components/locale/types'
+
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
 const { locale, t } = useI18n()
 const userStore = useUserStore()
@@ -11,7 +14,6 @@ const currenciesStore = useCurrenciesStore()
 const { generateDemoData } = useDemo()
 const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
-const toast = useToast()
 
 useSeoMeta({
   ogTitle: t('settings.title'),
@@ -21,15 +23,18 @@ useSeoMeta({
 const version = pkg.version
 
 const confirmRemoveUserData = ref(false)
-function removeUserData() {
+const router = useRouter()
+
+function removeAllUserData() {
   confirmRemoveUserData.value = false
-  userStore.removeUserData()
-  toast.add({ color: 'success', description: t('alerts.removedUserData') })
+  userStore.removeAllUserData()
+  showSuccessToast('alerts.removedUserData')
+  router.replace('/dashboard')
 }
 
 function onGenerateDemoData() {
   generateDemoData(locale.value)
-  toast.add({ color: 'success', description: t('demo.updated') })
+  showSuccessToast('demo.updated')
 }
 </script>
 
@@ -37,94 +42,96 @@ function onGenerateDemoData() {
   <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
-
-      <div class="flex items-center gap-1">
-        <ThemeSwitcher />
-        <ThemePicker />
-      </div>
     </UiHeader>
 
     <div class="pageWrapper">
-      <div class="grid gap-8 pt-2 @3xl/main:max-w-md">
+      <div class="grid gap-4 pt-2 pb-12 @3xl/main:max-w-lg">
+        <!-- Theme -->
+        <ThemePicker inline />
+
+        <!-- Language -->
+        <UiSettingsCard :title="t('locale.title')">
+          <FormSelect
+            :options="[
+              { label: t('locale.ru'), value: 'ru' },
+              { label: t('locale.en'), value: 'en' },
+            ]"
+            :value="locale"
+            @change="(loc: string) => userStore.saveUserLocale(loc as LocaleSlug)"
+          />
+        </UiSettingsCard>
+
+        <!-- Currency -->
+        <UiSettingsCard :title="t('currencies.base')">
+          <button
+            class="bg-item-3 block min-h-[42px] w-full cursor-pointer items-center overflow-hidden rounded-md border border-transparent px-4 py-2 pr-10 text-left outline-none hover:bg-(--item-5) focus:border-(--ui-primary)"
+            style="appearance: none; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb25zLXVwLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48cGF0aCBkPSJtNyA5IDUtNSA1IDUiLz48L3N2Zz4='); background-position: right 0.7rem center; background-repeat: no-repeat; background-size: 1.25em 1.25em;"
+            @click="isShowBaseCurrencyModal = true"
+          >
+            {{ currenciesStore.base }}
+          </button>
+        </UiSettingsCard>
+
+        <!-- Demo -->
+        <UiSettingsCard
+          v-if="isDemo"
+          :title="t('demo.update')"
+        >
+          <template #content>
+            <UButton
+              variant="outline"
+              color="secondary"
+              size="md"
+              @click="onGenerateDemoData"
+            >
+              {{ t('demo.update') }}
+            </UButton>
+          </template>
+        </UiSettingsCard>
+
+        <!-- Delete -->
+        <UiSettingsCard
+          danger
+          :title="t('settings.deleteButton')"
+          :description="t('alerts.willDeleteEverything')"
+        >
+          <template #footer>
+            <UButton
+              variant="soft"
+              color="error"
+              size="md"
+              @click="confirmRemoveUserData = true"
+            >
+              {{ t('settings.deleteButton') }}
+            </UButton>
+          </template>
+        </UiSettingsCard>
+
         <!-- User -->
-        <div class="pb-6">
+        <div class="py-4">
           <UserViewLogout isShowSignOut />
         </div>
 
-        <LocaleSwitcher isShowTitle />
-
-        <!-- Currency -->
-        <UiButtonWithRight
-          isShowTitle
-          @click="isShowBaseCurrencyModal = true"
-        >
-          <template #label>
-            {{ t('currencies.base') }}
-          </template>
-
-          <template #value>
-            {{ currenciesStore.base }}
-          </template>
-        </UiButtonWithRight>
-
-        <!-- Delete -->
-        <div class="py-8">
-          <UiTitle3 class="pb-2">
-            {{ t('settings.caution') }}
-          </UiTitle3>
-          <div class="text-alert-1 pb-4 text-xs leading-none">
-            {{ t('alerts.willDeleteEverything') }}
-          </div>
-
-          <div class="grid gap-2 pb-4">
-            <UiElement
-              v-if="isDemo"
-              class="group"
-              insideClasses="min-h-[44px] bg-item-3 max-w-lg"
-              @click="onGenerateDemoData"
-            >
-              <template #leftIcon>
-                <Icon name="lucide:database-backup" size="20" />
-              </template>
-              <div>{{ t('demo.update') }}</div>
-            </UiElement>
-
-            <UiElement
-              class="group"
-              insideClasses="min-h-[44px] bg-item-3 max-w-lg"
-              @click="confirmRemoveUserData = true"
-            >
-              <template #leftIcon>
-                <Icon name="lucide:trash" size="20" />
-              </template>
-              <div>{{ t('settings.deleteButton') }}</div>
-            </UiElement>
-          </div>
-        </div>
-
         <!-- About -->
-        <div class="pb-12">
-          {{ t('app.about') }}
-          <div class="text-muted pt-4 text-xs">
-            {{ t('app.version') }} {{ version }}
-            <!-- <About /> -->
-          </div>
+        <div class="text-muted pt-4 text-xs">
+          {{ t('app.version') }} {{ version }}
         </div>
       </div>
     </div>
 
     <LayoutConfirmModal
       v-if="confirmRemoveUserData"
+      :title="t('settings.deleteButton')"
       :description="t('alerts.willDeleteEverything')"
       @closed="confirmRemoveUserData = false"
-      @onConfirm="removeUserData"
+      @confirm="removeAllUserData"
     />
 
     <CurrenciesModal
       v-if="isShowBaseCurrencyModal"
       :activeCode="currenciesStore.base"
-      @onSelect="currenciesStore.updateBase"
-      @onClose="isShowBaseCurrencyModal = false"
+      @select="userStore.saveUserBaseCurrency"
+      @close="isShowBaseCurrencyModal = false"
     />
   </UiPage>
 </template>

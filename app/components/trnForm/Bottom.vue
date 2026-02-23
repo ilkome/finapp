@@ -75,7 +75,7 @@ onMounted(init)
   >
     <template #handler="{ close }">
       <BottomSheetHandler />
-      <BottomSheetClose @onClick="close" />
+      <BottomSheetClose @click="close" />
     </template>
 
     <div class="trnForm bg-default @container/trnForm">
@@ -113,7 +113,7 @@ onMounted(init)
               <div class="grid gap-4 pb-4">
                 <TrnFormSelectionWalletsFast />
                 <TrnFormSelectionCategoriesFast
-                  @onSelectCategory="id => trnsFormStore.values.categoryId = id"
+                  @selectCategory="id => trnsFormStore.values.categoryId = id"
                 />
               </div>
             </div>

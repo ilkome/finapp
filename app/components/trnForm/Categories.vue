@@ -8,7 +8,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const emit = defineEmits<{
-  (e: 'click', id: CategoryId): void
+  click: [id: CategoryId]
 }>()
 
 const { t } = useI18n()
@@ -47,7 +47,7 @@ onMounted(() => {
           <!-- Recent -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollerBlock font-primary rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center text-xl font-semibold"
+              class="scrollerBlock font-primary rounded-t-2xl bg-(--item-1) px-3 py-4 text-center text-xl font-semibold"
             >
               {{ t('categories.recentCategories') }}
             </div>
@@ -64,7 +64,7 @@ onMounted(() => {
           <!-- Main -->
           <div class="swiper-slide h-full">
             <div
-              class="scrollerBlock font-primary rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center text-xl font-semibold"
+              class="scrollerBlock font-primary rounded-t-2xl bg-(--item-1) px-3 py-4 text-center text-xl font-semibold"
             >
               {{ t('categories.title') }}
             </div>
@@ -80,7 +80,7 @@ onMounted(() => {
 
           <!-- Favorite -->
           <div class="swiper-slide h-full">
-            <div class="scrollerBlock font-primary rounded-t-2xl bg-[var(--item-1)] px-3 py-4 text-center text-xl font-semibold">
+            <div class="scrollerBlock font-primary rounded-t-2xl bg-(--item-1) px-3 py-4 text-center text-xl font-semibold">
               {{ t('categories.favoriteCategories') }}
             </div>
             <div class="px-3 pb-1">
@@ -97,28 +97,28 @@ onMounted(() => {
     </div>
 
     <div v-if="sliderObj" class="px-3 py-2">
-      <UiTabs1>
-        <UiTabsItem1
+      <UiTabsBar>
+        <UiTabsItemFill
           :isActive="sliderObj.activeIndex === 0"
           @click="sliderObj.slideTo(0)"
         >
           {{ t('categories.recentCategories') }}
-        </UiTabsItem1>
+        </UiTabsItemFill>
 
-        <UiTabsItem1
+        <UiTabsItemFill
           :isActive="sliderObj.activeIndex === 1"
           @click="sliderObj.slideTo(1)"
         >
           {{ t('categories.allTitle') }}
-        </UiTabsItem1>
+        </UiTabsItemFill>
 
-        <UiTabsItem1
+        <UiTabsItemFill
           :isActive="sliderObj.activeIndex === 2"
           @click="sliderObj.slideTo(2)"
         >
           {{ t('categories.favoriteCategories') }}
-        </UiTabsItem1>
-      </UiTabs1>
+        </UiTabsItemFill>
+      </UiTabsBar>
     </div>
   </div>
 </template>

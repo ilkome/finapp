@@ -2,11 +2,11 @@
 import { onLongPress } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatDateProvider } from '~/components/date/types'
 import type { CategoryWithData } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -18,7 +18,7 @@ const emit = defineEmits<{
   click: [categoryId: CategoryId]
 }>()
 
-const statDate = inject('statDate') as StatDateProvider
+const statDate = inject(statDateKey)!
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const trnsFormStore = useTrnsFormStore()
@@ -64,8 +64,9 @@ onLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    :class="{ 'opacity-60': props.item.value === 0 }"
-    class="dark:bg-item-3 relative flex items-center gap-2 overflow-hidden rounded-full p-1 pr-2 hover:bg-[var(--item-5)]"
+    :class="cn('dark:bg-item-3 relative flex items-center gap-2 overflow-hidden rounded-full p-1 pr-2 hover:bg-(--item-5)',
+               props.item.value === 0 && 'opacity-60',
+    )"
   >
     <div
       :style="{ backgroundColor: category?.color }"

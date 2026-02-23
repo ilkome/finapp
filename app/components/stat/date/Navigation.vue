@@ -1,12 +1,11 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
 
-import type { StatDateProvider } from '~/components/date/types'
-
 import { getEndOf, getStartOf } from '~/components/date/utils'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
-const statDate = inject('statDate') as StatDateProvider
+const statDate = inject(statDateKey)!
 
 const isShowNav = computed(() =>
   !statDate.params.value.isShowMaxRange
@@ -77,22 +76,22 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       :isOpen="statDate.modals.value.dateSelector"
       class="flex grow-0 gap-1"
       isShowCloseBtn
-      @onOpenModal="statDate.modals.value.dateSelector = true"
-      @onCloseModal="statDate.modals.value.dateSelector = false"
+      @openModal="statDate.modals.value.dateSelector = true"
+      @closeModal="statDate.modals.value.dateSelector = false"
     >
       <template #trigger>
-        <UiTitle8
+        <UiTitleCollapse
           class="_bg-item-4 text-md !grow-0"
           isShown
         >
           <StatDateRange />
-        </UiTitle8>
+        </UiTitleCollapse>
       </template>
 
       <template #content="{ close }">
         <StatDateSelector
           class="min-w-[362px] pb-2 md:px-3"
-          @onClose="close"
+          @close="close"
         />
       </template>
     </BottomSheetOrDropdown>

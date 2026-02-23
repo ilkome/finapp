@@ -1,0 +1,76 @@
+import { v } from 'convex/values'
+
+import { internal } from './_generated/api'
+import { action, internalAction, internalMutation, query } from './_generated/server'
+
+const appId = process.env.OPENEXCHANGERATES_APP_ID
+
+export const getLatest = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query('rates')
+      .withIndex('by_date')
+      .order('desc')
+      .first()
+  },
+})
+
+export const getByDate = query({
+  args: { date: v.string() },
+  handler: async (ctx, { date }) => {
+    return await ctx.db
+      .query('rates')
+      .withIndex('by_date', q => q.eq('date', date))
+      .first()
+  },
+})
+
+export const saveRates = internalMutation({
+  args: {
+    date: v.string(),
+    rates: v.any(),
+  },
+  handler: async (ctx, { date, rates }) => {
+    const existing = await ctx.db
+      .query('rates')
+      .withIndex('by_date', q => q.eq('date', date))
+      .first()
+
+    if (existing) {
+      await ctx.db.patch(existing._id, { rates, updatedAt: Date.now() })
+    }
+    else {
+      await ctx.db.insert('rates', { date, rates, updatedAt: Date.now() })
+    }
+  },
+})
+
+export const refreshRates = action({
+  args: {},
+  handler: async (ctx) => {
+    await ctx.runAction(internal.rates.fetchAndSaveRates, {})
+  },
+})
+
+export const fetchAndSaveRates = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    if (!appId) {
+      console.error('OPENEXCHANGERATES_APP_ID not set')
+      return
+    }
+
+    const res = await fetch(
+      `https://openexchangerates.org/api/latest.json?app_id=${appId}`,
+    )
+    const data = await res.json()
+
+    const today = new Date().toISOString().slice(0, 10)
+
+    await ctx.runMutation(internal.rates.saveRates, {
+      date: today,
+      rates: data.rates,
+    })
+  },
+})

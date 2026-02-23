@@ -11,7 +11,7 @@ const valuesBase: TrnFormValues = {
   date: 99999,
   expenseWalletId: 'expenseWalletId',
   incomeWalletId: 'incomeWalletId',
-  transferType: 1,
+  transferType: 'income',
   trnId: 'id',
   trnType: 2,
   walletId: 'WalletId',
@@ -25,13 +25,13 @@ const transaction: {
     amount: 10,
     categoryId: 'CategoryId',
     date: 99999,
-    edited: 1690711427451,
     type: 0,
+    updatedAt: 1690711427451,
     walletId: 'WalletId',
   },
   raw: {
     ...valuesBase,
-    transferType: 1,
+    transferType: 'income',
     trnType: 0,
   },
 }
@@ -43,16 +43,16 @@ const transfer: {
   generated: {
     categoryId: 'transfer',
     date: 99999,
-    edited: 1690711427451,
     expenseAmount: 20,
     expenseWalletId: 'expenseWalletId',
     incomeAmount: 30,
     incomeWalletId: 'incomeWalletId',
     type: 2,
+    updatedAt: 1690711427451,
   },
   raw: {
     ...valuesBase,
-    transferType: 1,
+    transferType: 'income',
     trnType: 2,
   },
 }
@@ -161,12 +161,10 @@ tests.forEach((test) => {
         const data = test.id === 'transactions'
           ? formatTransaction(variant.data.expect)
           : formatTransfer(variant.data.expect)
-        delete data.editedAt
-        delete data.edited
+        delete data.updatedAt
 
         const res = variant.data.become
-        delete res.editedAt
-        delete res.edited
+        delete res.updatedAt
 
         expect(data).toEqual(res)
       })

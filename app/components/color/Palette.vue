@@ -39,8 +39,10 @@ function findWalletWithColor(color: string) {
           <div
             v-for="(color, idx) in colorsGroup"
             :key="idx"
-            class="w-full overflow-hidden rounded-sm border-2 border-transparent"
-            :class="[{ '!border-(--ui-primary) !shadow': color === props.activeColor, 'pointer-events-none': !color }]"
+            :class="cn('w-full overflow-hidden rounded-sm border-2 border-transparent',
+                       color === props.activeColor && 'border-(--ui-primary) shadow',
+                       !color && 'pointer-events-none',
+            )"
             @click="emit('click', color)"
           >
             <div class="flex-center h-10" :style="{ background: color }">
@@ -66,9 +68,9 @@ function findWalletWithColor(color: string) {
         {{ t('color.custom') }}
       </template>
       <FormInput
-        :value="activeColor"
+        :modelValue="activeColor"
         type="color"
-        @updateValue="(event: HTMLInputEvent) => emit('click', event.target.value)"
+        @update:modelValue="(value: string) => emit('click', value)"
       />
     </FormElement>
   </div>
