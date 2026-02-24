@@ -1,5 +1,5 @@
 import { useDemo } from '~/components/demo/useDemo'
-import { clearAuthCookie, hasAuthCookie, setAuthCookie, useAuthCookieSSR } from '~/composables/useAuthCookie'
+import { hasAuthCookie, setAuthCookie, useAuthCookieSSR } from '~/composables/useAuthCookie'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('auth/middleware')

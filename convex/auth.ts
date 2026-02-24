@@ -3,6 +3,7 @@ import type { GenericCtx } from '@convex-dev/better-auth'
 import { createClient } from '@convex-dev/better-auth'
 import { convex, crossDomain } from '@convex-dev/better-auth/plugins'
 import { betterAuth } from 'better-auth'
+import { createAuthMiddleware } from 'better-auth/plugins'
 
 import type { DataModel } from './_generated/dataModel'
 
@@ -26,6 +27,18 @@ function createAuth(ctx: GenericCtx<DataModel>) {
   return betterAuth({
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        // The convex plugin only sets disableRefresh for /get-session.
+        // /convex/token also uses sessionMiddleware → getSession() internally,
+        // but without disableRefresh the session refresh can fail in cross-domain
+        // context (HTTP action can't reliably persist refreshed cookies) → 401.
+        if (ctx.path === '/convex/token') {
+          ctx.query = { ...ctx.query, disableRefresh: 'true' }
+        }
+        return { context: ctx }
+      }),
+    },
     plugins: [
       convex({
         authConfig,
