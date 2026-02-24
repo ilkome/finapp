@@ -20,8 +20,6 @@ useSeoMeta({
   title: t('settings.title'),
 })
 
-const version = pkg.version
-
 const confirmRemoveUserData = ref(false)
 const router = useRouter()
 
@@ -114,7 +112,7 @@ function onGenerateDemoData() {
 
         <!-- About -->
         <div class="text-muted pt-4 text-xs">
-          {{ t('app.version') }} {{ version }}
+          {{ t('app.version') }} {{ pkg.version }}
         </div>
       </div>
     </div>

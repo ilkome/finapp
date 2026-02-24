@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import pkg from '~~/package.json'
+
 import { useDemo } from '~/components/demo/useDemo'
 import { showErrorToast } from '~/composables/useStoreSync'
 
@@ -132,6 +134,9 @@ async function openDemo() {
 
     <div class="flex-center">
       <AppCopyright />
+      <div class="text-muted pt-4 text-xs">
+        {{ t('app.version') }} {{ pkg.version }}
+      </div>
     </div>
   </div>
 </template>

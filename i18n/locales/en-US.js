@@ -112,6 +112,13 @@ export default {
       search: 'Search',
       showAll: 'Show all wallets',
     },
+    page: {
+      rate: 'Rate',
+      setBase: 'Set as base currency',
+      showAll: 'Show all currencies',
+      showUsed: 'Show wallet currencies',
+      title: 'Currencies',
+    },
     select: 'Select currency',
   },
 
@@ -221,6 +228,15 @@ export default {
       isWithdrawal: 'Withdrawal',
       total: 'Total',
     },
+  },
+
+  onboarding: {
+    actionCategory: 'Add category',
+    actionTrn: 'Add transaction',
+    actionWallet: 'Add wallet',
+    intro: 'Add your first income or expense',
+    introCategories: 'Add a category, for example, "Food" or "Salary"',
+    introWallets: 'Start tracking your finances by adding your first wallet',
   },
 
   settings: {
@@ -420,14 +436,5 @@ export default {
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',
     title: 'Wallets',
-  },
-
-  onboarding: {
-    actionCategory: 'Add category',
-    actionTrn: 'Add transaction',
-    actionWallet: 'Add wallet',
-    intro: 'Add your first income or expense',
-    introCategories: 'Add a category, for example, "Food" or "Salary"',
-    introWallets: 'Start tracking your finances by adding your first wallet',
   },
 }
