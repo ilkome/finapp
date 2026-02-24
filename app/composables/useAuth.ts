@@ -1,14 +1,16 @@
 import { crossDomainClient } from '@convex-dev/better-auth/client/plugins'
 import { createAuthClient } from 'better-auth/vue'
 
-let authClient: ReturnType<typeof createAuthClient> | null = null
+type AuthClient = ReturnType<typeof createAuthClient>
 
-export function useAuth() {
-  if (!authClient) {
+export function useAuth(): AuthClient {
+  const nuxtApp = useNuxtApp() as { _authClient?: AuthClient } & ReturnType<typeof useNuxtApp>
+
+  if (!nuxtApp._authClient) {
     const config = useRuntimeConfig()
     const siteUrl = config.public.convexSiteUrl as string
 
-    authClient = createAuthClient({
+    nuxtApp._authClient = createAuthClient({
       baseURL: siteUrl,
       plugins: [
         crossDomainClient(),
@@ -16,5 +18,5 @@ export function useAuth() {
     })
   }
 
-  return authClient
+  return nuxtApp._authClient
 }

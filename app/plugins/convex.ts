@@ -61,12 +61,9 @@ export default defineNuxtPlugin(() => {
         if (!cookieStr)
           return null
 
+        // disableRefresh is set server-side by the before hook in convex/auth.ts
+        // for /convex/token — no need to set it here.
         const url = new URL('/api/auth/convex/token', siteUrl)
-        // Prevent session refresh during token fetch — the convex plugin's
-        // before hook only sets disableRefresh for /get-session, not /convex/token.
-        // Without this, getSession() inside sessionMiddleware may attempt a
-        // session refresh that fails in cross-domain context → 401.
-        url.searchParams.set('disableRefresh', 'true')
         if (forceRefreshToken)
           url.searchParams.set('forceRefresh', 'true')
 
