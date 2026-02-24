@@ -15,23 +15,12 @@ onMounted(async () => {
     return
   }
 
-  // Guard against double callback (e.g., service worker replaying the navigation).
-  // The first callback clears localStorage and verifies the OTT. If a second callback
-  // fires with the same OTT, skip it — the first one already handled auth and started
-  // a hard navigation. Without this guard, the second callback would clear the cookies
-  // written by the first one, leaving Convex unable to authenticate.
-  const ottKey = 'finapp.ottProcessing'
-  if (sessionStorage.getItem(ottKey) === ott) {
-    return
-  }
-  sessionStorage.setItem(ottKey, ott)
-
   const authClient = useAuth()
 
-  // Clear stale cookies left by signIn.social (e.g., empty convex_jwt, state).
-  // OTT verify's onSuccess hook will write fresh cookies from the server response.
-  localStorage.removeItem('better-auth_cookie')
-  localStorage.removeItem('better-auth_session_data')
+  // Do NOT clear localStorage here — the cross-domain client's onSuccess hook
+  // will overwrite stale cookies with fresh ones from the verify response.
+  // Clearing here is dangerous because service worker can replay the callback
+  // navigation, and the second run would delete cookies written by the first.
 
   try {
     const result = await authClient.$fetch<{
@@ -61,7 +50,6 @@ onMounted(async () => {
 
       const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
       localStorage.removeItem('finapp.authRedirect')
-      sessionStorage.removeItem(ottKey)
 
       // Hard navigation creates a fresh app with the cookie already set.
       // This ensures Convex plugin initializes with auth from the start.
@@ -75,7 +63,6 @@ onMounted(async () => {
   }
 
   localStorage.removeItem('finapp.authRedirect')
-  sessionStorage.removeItem(ottKey)
   navigateTo('/login', { replace: true })
 })
 </script>
