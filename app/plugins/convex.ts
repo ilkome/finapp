@@ -48,10 +48,8 @@ export default defineNuxtPlugin(() => {
     }
 
     const fetchToken = async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
-      if (!hasAuthCookie()) {
-        authClient.getSession().catch(() => {})
+      if (!hasAuthCookie())
         return null
-      }
 
       try {
         return await fetchConvexToken(forceRefreshToken)
@@ -64,15 +62,17 @@ export default defineNuxtPlugin(() => {
         }
         catch {
           logger.error('fetchToken retry failed')
-          authClient.getSession().catch(() => {})
           return null
         }
       }
     }
 
     // Only set auth when user is logged in to avoid 401 in console
-    if (hasAuthCookie())
+    let authSet = false
+    if (hasAuthCookie()) {
       client.setAuth(fetchToken)
+      authSet = true
+    }
 
     // Watch session state for auth transitions
     watch(
@@ -82,9 +82,17 @@ export default defineNuxtPlugin(() => {
       (resolvedUid) => {
         if (resolvedUid === undefined)
           return // still pending
-        if (resolvedUid)
-          client.setAuth(fetchToken)
-        else client.client.clearAuth()
+        if (resolvedUid) {
+          // Only call setAuth on actual transition (login), not on every session refresh
+          if (!authSet) {
+            client.setAuth(fetchToken)
+            authSet = true
+          }
+        }
+        else {
+          client.client.clearAuth()
+          authSet = false
+        }
       },
     )
 
