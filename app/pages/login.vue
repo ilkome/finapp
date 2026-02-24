@@ -132,7 +132,7 @@ async function openDemo() {
       </div>
     </div>
 
-    <div class="flex-center">
+    <div class="flex-center flex-col">
       <AppCopyright />
       <div class="text-muted pt-4 text-xs">
         {{ t('app.version') }} {{ pkg.version }}
