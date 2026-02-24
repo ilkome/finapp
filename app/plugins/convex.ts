@@ -30,43 +30,58 @@ export default defineNuxtPlugin(() => {
     const authClient = useAuth()
     const session = authClient.useSession()
 
-    /**
-     * Read the signed session token from cross-domain client's localStorage.
-     * We send it as Authorization: Bearer to bypass the Better-Auth-Cookie
-     * flow which fails for /convex/token (cross-domain before-hook doesn't
-     * inject cookies into the Cookie header reliably for this endpoint).
-     */
-    function getSessionToken(): string | null {
-      try {
-        const raw = localStorage.getItem('better-auth_cookie')
-        if (!raw)
-          return null
-        const cookies = JSON.parse(raw) as Record<string, { value?: string }>
-        for (const [key, val] of Object.entries(cookies)) {
-          if (key.includes('session_token') && val?.value) {
-            return val.value
-          }
-        }
-        return null
-      }
-      catch {
-        return null
-      }
-    }
+    const siteUrl = config.public.convexSiteUrl as string
 
     const fetchConvexToken = async (forceRefreshToken: boolean) => {
       const controller = new AbortController()
       const timeout = setTimeout(() => controller.abort(), 5000)
 
       try {
-        const sessionToken = getSessionToken()
-        const { data } = await authClient.$fetch<{ token: string }>('/convex/token', {
-          headers: sessionToken ? { Authorization: `Bearer ${sessionToken}` } : undefined,
+        // Use raw fetch with explicit cookie forwarding — bypasses
+        // authClient.$fetch pipeline to isolate the issue.
+        const raw = localStorage.getItem('better-auth_cookie')
+        if (!raw)
+          return null
+
+        const parsed = JSON.parse(raw) as Record<string, { value?: string }>
+        const cookieStr = Object.entries(parsed)
+          .filter(([, val]) => val?.value)
+          .map(([key, val]) => `${key}=${val!.value}`)
+          .join('; ')
+
+        if (!cookieStr)
+          return null
+
+        const url = new URL('/api/auth/convex/token', siteUrl)
+        // Prevent session refresh during token fetch — the convex plugin's
+        // before hook only sets disableRefresh for /get-session, not /convex/token.
+        // Without this, getSession() inside sessionMiddleware may attempt a
+        // session refresh that fails in cross-domain context → 401.
+        url.searchParams.set('disableRefresh', 'true')
+        if (forceRefreshToken)
+          url.searchParams.set('forceRefresh', 'true')
+
+        const res = await fetch(url.toString(), {
+          credentials: 'omit',
+          headers: {
+            'Better-Auth-Cookie': cookieStr,
+            'Origin': window.location.origin,
+          },
           method: 'GET',
-          query: forceRefreshToken ? { forceRefresh: 'true' } : undefined,
           signal: controller.signal,
         })
+
+        if (!res.ok) {
+          logger.error(`convex/token ${res.status}`, { cookieKeys: Object.keys(parsed), hasCookie: !!cookieStr })
+          return null
+        }
+
+        const data = await res.json()
         return data?.token ?? null
+      }
+      catch (error) {
+        logger.error('fetchConvexToken error:', error)
+        return null
       }
       finally {
         clearTimeout(timeout)
