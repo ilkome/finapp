@@ -71,7 +71,6 @@ export default defineNuxtPlugin(() => {
           credentials: 'omit',
           headers: {
             'Better-Auth-Cookie': cookieStr,
-            'Origin': window.location.origin,
           },
           method: 'GET',
           signal: controller.signal,
