@@ -13,6 +13,7 @@ import type * as categories from "../categories.js";
 import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as migrate from "../migrate.js";
+import type * as origins from "../origins.js";
 import type * as rates from "../rates.js";
 import type * as shared from "../shared.js";
 import type * as trns from "../trns.js";
@@ -33,6 +34,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   http: typeof http;
   migrate: typeof migrate;
+  origins: typeof origins;
   rates: typeof rates;
   shared: typeof shared;
   trns: typeof trns;

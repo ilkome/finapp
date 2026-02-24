@@ -81,6 +81,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
   }
 
+  // No cached auth on login page — nothing to verify, let user through.
+  if (isLoginPage)
+    return
+
   // No cached auth: must verify (blocking)
   try {
     const session = await authClient.getSession()
@@ -88,21 +92,16 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
     if (user) {
       setAuthCookie(user.id)
-      if (isLoginPage) {
-        return navigateTo('/dashboard')
-      }
       return
     }
   }
   catch (error) {
-    logger.error(' getSession failed (no cached auth):', error)
+    logger.error('getSession failed (no cached auth):', error)
   }
 
-  if (!isLoginPage) {
-    const redirect = to.fullPath === '/' ? undefined : { redirect: to.fullPath }
-    return navigateTo({
-      path: '/login',
-      query: redirect,
-    })
-  }
+  const redirect = to.fullPath === '/' ? undefined : { redirect: to.fullPath }
+  return navigateTo({
+    path: '/login',
+    query: redirect,
+  })
 })

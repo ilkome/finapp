@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { hasAuthCookie } from '~/composables/useAuthCookie'
 import { showErrorToast } from '~/composables/useStoreSync'
 
 definePageMeta({
@@ -15,12 +16,17 @@ onMounted(async () => {
     return
   }
 
-  const authClient = useAuth()
+  // Service worker can replay callback navigation after the first run already
+  // succeeded. If auth cookie is set, the first callback already completed —
+  // skip verify and redirect to the app.
+  if (hasAuthCookie()) {
+    const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
+    localStorage.removeItem('finapp.authRedirect')
+    window.location.href = redirectTo
+    return
+  }
 
-  // Do NOT clear localStorage here — the cross-domain client's onSuccess hook
-  // will overwrite stale cookies with fresh ones from the verify response.
-  // Clearing here is dangerous because service worker can replay the callback
-  // navigation, and the second run would delete cookies written by the first.
+  const authClient = useAuth()
 
   try {
     const result = await authClient.$fetch<{

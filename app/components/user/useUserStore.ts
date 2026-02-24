@@ -222,10 +222,6 @@ export const useUserStore = defineStore('user', () => {
     walletsStore.setWallets(null)
     useTrnsFormStore().$reset()
 
-    categoriesStore.cancelPersist()
-    trnsStore.cancelPersist()
-    walletsStore.cancelPersist()
-
     const { clearOfflineQueue, setOfflineQueueUserId } = await import('~/components/offline/helpers')
     await clearOfflineQueue()
 

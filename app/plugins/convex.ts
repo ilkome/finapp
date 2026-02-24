@@ -37,13 +37,22 @@ export default defineNuxtPlugin(() => {
       const timeout = setTimeout(() => controller.abort(), 5000)
 
       try {
-        // Use raw fetch with explicit cookie forwarding — bypasses
-        // authClient.$fetch pipeline to isolate the issue.
+        // Use raw fetch with explicit cookie forwarding — cross-domain
+        // client stores cookies in localStorage, not document.cookie.
         const raw = localStorage.getItem('better-auth_cookie')
         if (!raw)
           return null
 
-        const parsed = JSON.parse(raw) as Record<string, { value?: string }>
+        let parsed: Record<string, { value?: string }>
+        try {
+          parsed = JSON.parse(raw)
+        }
+        catch {
+          return null
+        }
+
+        if (!parsed || typeof parsed !== 'object')
+          return null
         const cookieStr = Object.entries(parsed)
           .filter(([, val]) => val?.value)
           .map(([key, val]) => `${key}=${val!.value}`)
@@ -61,7 +70,7 @@ export default defineNuxtPlugin(() => {
         if (forceRefreshToken)
           url.searchParams.set('forceRefresh', 'true')
 
-        const res = await fetch(url.toString(), {
+        const res = await fetch(url, {
           credentials: 'omit',
           headers: {
             'Better-Auth-Cookie': cookieStr,
@@ -92,20 +101,7 @@ export default defineNuxtPlugin(() => {
       if (!hasAuthCookie())
         return null
 
-      try {
-        return await fetchConvexToken(forceRefreshToken)
-      }
-      catch (error) {
-        logger.error('fetchToken failed, retrying:', error)
-        try {
-          await new Promise(r => setTimeout(r, 1000))
-          return await fetchConvexToken(forceRefreshToken)
-        }
-        catch {
-          logger.error('fetchToken retry failed')
-          return null
-        }
-      }
+      return fetchConvexToken(forceRefreshToken)
     }
 
     // Only set auth when user is logged in to avoid 401 in console
