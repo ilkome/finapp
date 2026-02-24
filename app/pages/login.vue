@@ -18,10 +18,9 @@ useSeoMeta({
   title: t('login.title'),
 })
 
-const { generateDemoData } = useDemo()
+const { generateDemoData, isDemo } = useDemo()
 const route = useRoute()
 const router = useRouter()
-const { isDemo } = useDemo()
 
 const isLoading = ref(false)
 
