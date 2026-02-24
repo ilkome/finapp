@@ -4,6 +4,11 @@ import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('auth/middleware')
 
+// Track whether we've already initialized the cross-domain session
+// to avoid calling getSession() on every navigation (which triggers
+// $sessionSignal → useSession refetch → get-session → signal → loop)
+let sessionInitialized = false
+
 export default defineNuxtRouteMiddleware(async (to) => {
   // Skip auth during static prerender — no session context available
   if (import.meta.prerender)
@@ -56,15 +61,19 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const isLoginPage = to.path === '/login'
 
   // Has cached auth: let user through immediately, initialize session in background.
-  // The getSession() call is needed to establish the cross-domain session
+  // The getSession() call is needed once to establish the cross-domain session
   // so that useSession() reactive ref updates in the app.
-  // On network errors (offline) — do nothing, let the user work with cached data.
-  // On invalid session (server says no user) — clear cookie and redirect to login.
+  // Only call once per page load — repeated calls trigger $sessionSignal loop
+  // in the cross-domain client (each response sets a cookie → signal → refetch).
   if (hasAuthCookie()) {
-    authClient.getSession()
-      .catch((error) => {
-        logger.error('Background getSession failed:', error)
-      })
+    if (!sessionInitialized) {
+      sessionInitialized = true
+      authClient.getSession()
+        .catch((error) => {
+          logger.error('Background getSession failed:', error)
+          sessionInitialized = false
+        })
+    }
 
     if (isLoginPage) {
       return navigateTo('/dashboard')
