@@ -61,25 +61,9 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // On network errors (offline) — do nothing, let the user work with cached data.
   // On invalid session (server says no user) — clear cookie and redirect to login.
   if (hasAuthCookie()) {
-    const handleSessionResult = (session: { data?: { user?: unknown } | null }) => {
-      if (!session.data?.user) {
-        logger.error('Session invalid, clearing auth')
-        clearAuthCookie()
-        navigateTo('/login')
-      }
-    }
-
     authClient.getSession()
-      .then(handleSessionResult)
       .catch((error) => {
-        logger.error('Background getSession failed, retrying:', error)
-        setTimeout(() => {
-          authClient.getSession()
-            .then(handleSessionResult)
-            .catch((retryError) => {
-              logger.error('Background getSession retry failed (offline?):', retryError)
-            })
-        }, 2000)
+        logger.error('Background getSession failed:', error)
       })
 
     if (isLoginPage) {
