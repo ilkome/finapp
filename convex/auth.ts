@@ -33,10 +33,13 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         // /convex/token also uses sessionMiddleware → getSession() internally,
         // but without disableRefresh the session refresh can fail in cross-domain
         // context (HTTP action can't reliably persist refreshed cookies) → 401.
+        // IMPORTANT: only return { context } for /convex/token — returning it
+        // for all paths would interfere with the convex plugin's own disableRefresh
+        // hook for /get-session (defu merge conflict).
         if (ctx.path === '/convex/token') {
           ctx.query = { ...ctx.query, disableRefresh: 'true' }
+          return { context: ctx }
         }
-        return { context: ctx }
       }),
     },
     plugins: [

@@ -15,6 +15,17 @@ onMounted(async () => {
     return
   }
 
+  // Guard against double callback (e.g., service worker replaying the navigation).
+  // The first callback clears localStorage and verifies the OTT. If a second callback
+  // fires with the same OTT, skip it — the first one already handled auth and started
+  // a hard navigation. Without this guard, the second callback would clear the cookies
+  // written by the first one, leaving Convex unable to authenticate.
+  const ottKey = 'finapp.ottProcessing'
+  if (sessionStorage.getItem(ottKey) === ott) {
+    return
+  }
+  sessionStorage.setItem(ottKey, ott)
+
   const authClient = useAuth()
 
   // Clear stale cookies left by signIn.social (e.g., empty convex_jwt, state).
@@ -36,36 +47,12 @@ onMounted(async () => {
     }
 
     // crossDomainClient's onSuccess hook already processed Set-Better-Auth-Cookie
-    // from the OTT verify response and wrote cookies to localStorage (including
-    // convex_jwt and session_token). Only add session_token if it's missing —
-    // don't overwrite the entire localStorage as that would wipe convex_jwt.
-    const cookieKey = 'better-auth_cookie'
-    let afterOtt: Record<string, { expires?: string, value?: string }> = {}
-    try {
-      afterOtt = JSON.parse(localStorage.getItem(cookieKey) || '{}')
-    }
-    catch {
-      localStorage.removeItem(cookieKey)
-    }
-
-    if (!afterOtt['__Secure-better-auth.session_token']?.value) {
-      afterOtt['__Secure-better-auth.session_token'] = {
-        expires: new Date(result.data.session.expiresAt).toISOString(),
-        value: result.data.session.token,
-      }
-      localStorage.setItem(cookieKey, JSON.stringify(afterOtt))
-    }
-
-    // Call getSession with Authorization header first.
-    // crossDomainClient's onSuccess hook will process Set-Better-Auth-Cookie
-    // from the response and update localStorage with server-issued cookies.
-    // Do NOT call $store.notify before this — it triggers a background refetch
-    // that races with this call and can overwrite localStorage with empty values.
-    const session = await authClient.getSession({
-      fetchOptions: {
-        headers: { Authorization: `Bearer ${result.data.session.token}` },
-      },
-    })
+    // from the OTT verify response and wrote the SIGNED session token to localStorage.
+    // Call getSession WITHOUT Authorization header — let the cross-domain client
+    // send the signed token via Better-Auth-Cookie. Using Authorization: Bearer
+    // with the raw (unsigned) token causes the server to skip cookie injection
+    // and the bearer plugin can't verify an unsigned token.
+    const session = await authClient.getSession()
 
     if (session.data?.user) {
       const uid = session.data.user.id
@@ -74,6 +61,7 @@ onMounted(async () => {
 
       const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
       localStorage.removeItem('finapp.authRedirect')
+      sessionStorage.removeItem(ottKey)
 
       // Hard navigation creates a fresh app with the cookie already set.
       // This ensures Convex plugin initializes with auth from the start.
@@ -87,6 +75,7 @@ onMounted(async () => {
   }
 
   localStorage.removeItem('finapp.authRedirect')
+  sessionStorage.removeItem(ottKey)
   navigateTo('/login', { replace: true })
 })
 </script>
