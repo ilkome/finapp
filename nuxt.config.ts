@@ -1,7 +1,5 @@
 import process from 'node:process'
 
-const sw = process.env.SW === 'true'
-
 export default defineNuxtConfig({
   colorMode: {
     classSuffix: '',
@@ -109,9 +107,10 @@ export default defineNuxtConfig({
       suppressWarnings: false,
       type: 'module',
     },
-    filename: sw ? 'sw.ts' : undefined,
+    filename: 'sw.ts',
     injectManifest: {
-      globPatterns: ['**/*.{js,css,html,png,svg,ico}'],
+      globIgnores: ['**/200*', '**/404*'],
+      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}'],
     },
     manifest: {
       background_color: '#171717',
@@ -154,25 +153,8 @@ export default defineNuxtConfig({
       theme_color: '#171717',
     },
     registerType: 'autoUpdate',
-    srcDir: sw ? 'service-worker' : undefined,
-    strategies: sw ? 'injectManifest' : 'generateSW',
-
-    workbox: {
-      globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}'],
-      navigateFallback: null,
-      navigateFallbackDenylist: [/^\/auth/, /^\/login/],
-      runtimeCaching: [{
-        handler: 'CacheFirst',
-        urlPattern: 'https://api.iconify.design/',
-      }, {
-        handler: 'CacheFirst',
-        urlPattern: 'https://fonts.googleapis.com/',
-      }, {
-        handler: 'CacheFirst',
-        urlPattern: 'https://fonts.gstatic.com/',
-      }],
-    },
+    srcDir: 'service-worker',
+    strategies: 'injectManifest',
   },
 
   runtimeConfig: {
