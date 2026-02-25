@@ -38,12 +38,22 @@ const { error, status } = useAsyncData(
       await loadDataFromCache()
       loadDataFromDB()
     }
+
+    triggerServiceWorkerPrecache()
   },
   {
     lazy: true,
     server: false,
   },
 )
+
+function triggerServiceWorkerPrecache() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then((reg) => {
+      reg.active?.postMessage({ type: 'PRECACHE_APP' })
+    })
+  }
+}
 
 defineShortcuts({
   'escape': () => {

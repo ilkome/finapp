@@ -5,7 +5,8 @@
 .nitro
 .cache
 dist
-sw.*
+# Generated service worker output (not the source in service-worker/)
+/sw.*
 
 # Node dependencies
 node_modules
