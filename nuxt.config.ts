@@ -153,7 +153,7 @@ export default defineNuxtConfig({
       theme_color: '#171717',
     },
     registerType: 'autoUpdate',
-    srcDir: 'service-worker',
+    srcDir: '.',
     strategies: 'injectManifest',
   },
 
