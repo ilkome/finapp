@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 

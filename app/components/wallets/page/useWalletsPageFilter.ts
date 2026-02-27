@@ -1,5 +1,7 @@
 import type { Ref } from 'vue'
 
+import { useStorage } from '@vueuse/core'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletsCurrencyFiltered, WalletsGroupedBy, WalletType, WalletViewTypes } from '~/components/wallets/types'
 

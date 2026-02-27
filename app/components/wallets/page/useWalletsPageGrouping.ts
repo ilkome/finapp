@@ -1,5 +1,7 @@
 import type { ComputedRef, Ref } from 'vue'
 
+import { useStorage } from '@vueuse/core'
+
 import type { WalletId, WalletItem, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
