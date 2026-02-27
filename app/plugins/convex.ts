@@ -2,7 +2,7 @@ import type { ConvexClient, ConvexHttpClient } from 'convex/browser'
 
 import { createConvexClient, createConvexHttpClient } from '~~/services/convex/client'
 
-import { hasAuthCookie } from '~/composables/useAuthCookie'
+import { clearAuthCookie, hasAuthCookie } from '~/composables/useAuthCookie'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('convex')
@@ -34,7 +34,7 @@ export default defineNuxtPlugin(() => {
 
     const fetchConvexToken = async (forceRefreshToken: boolean) => {
       const controller = new AbortController()
-      const timeout = setTimeout(() => controller.abort(), 5000)
+      const timeout = setTimeout(() => controller.abort(), 10000)
 
       try {
         // Use raw fetch with explicit cookie forwarding — cross-domain
@@ -125,6 +125,7 @@ export default defineNuxtPlugin(() => {
         else {
           client.client.clearAuth()
           authSet = false
+          clearAuthCookie()
         }
       },
     )

@@ -1,5 +1,5 @@
 import { useDemo } from '~/components/demo/useDemo'
-import { hasAuthCookie, setAuthCookie, useAuthCookieSSR } from '~/composables/useAuthCookie'
+import { clearAuthCookie, hasAuthCookie, setAuthCookie, useAuthCookieSSR } from '~/composables/useAuthCookie'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('auth/middleware')
@@ -69,6 +69,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
     if (!sessionInitialized) {
       sessionInitialized = true
       authClient.getSession()
+        .then((session) => {
+          const user = session.data?.user || null
+          if (!user) {
+            logger.error('Background getSession: session expired, redirecting to login')
+            clearAuthCookie()
+            navigateTo('/login')
+          }
+        })
         .catch((error) => {
           logger.error('Background getSession failed:', error)
           sessionInitialized = false
