@@ -31,7 +31,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
 </script>
 
 <template>
-  <component :is="props.contextMenuItems ? resolveComponent('UContextMenu') : 'div'" v-bind="props.contextMenuItems ? { items: props.contextMenuItems } : {}">
+  <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <UiElement
       v-if="props.category"
       :isActive="props.activeItemId === props.categoryId"
@@ -60,5 +60,34 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
         />
       </div>
     </UiElement>
-  </component>
+  </UContextMenu>
+
+  <UiElement
+    v-else-if="props.category"
+    :isActive="props.activeItemId === props.categoryId"
+    :class="props.class"
+    :lineWidth="props.lineWidth"
+    :insideClasses="`min-h-[46px] ${props.insideClasses}`"
+    @click="(e: Event) => emit('click', e)"
+  >
+    <template #leftIcon>
+      <UiIconBase
+        :color="props.category.color"
+        :name="props.category.icon"
+        invert
+        @click="emit('filter', props.categoryId ?? '')"
+      />
+    </template>
+
+    <div class="grid grow gap-0.5">
+      <CategoriesName
+        :alt="props.alt"
+        :category="props.category"
+        :parentCategory="parentCategory"
+        :hasChildren="childCategoriesIds.length > 0"
+        :showChildrenCount="childCategoriesIds.length"
+        :isShowParent="props.isShowParent"
+      />
+    </div>
+  </UiElement>
 </template>

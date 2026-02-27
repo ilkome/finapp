@@ -49,7 +49,7 @@ const elementClasses = computed(() => cn(
 <style>
 @reference '~/assets/css/main.css';
 
-.v-popper--shown .uiElement {
+[data-state='open'] > .uiElement {
   @apply !bg-item-4;
 }
 </style>
