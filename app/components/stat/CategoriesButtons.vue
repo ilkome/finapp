@@ -10,51 +10,6 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
-const favorites = computed(() => ({
-  isShow: computed(() => {
-    if (statConfig.config.value.catsView === 'list')
-      return statConfig.config.value.catsList.isShowFavorites
-
-    if (statConfig.config.value.catsView === 'round')
-      return statConfig.config.value.catsRound.isShowFavorites
-
-    return false
-  }),
-  toggle: () => {
-    if (statConfig.config.value.catsView === 'list')
-      statConfig.updateConfig('catsList', { isShowFavorites: !statConfig.config.value.catsList.isShowFavorites })
-
-    if (statConfig.config.value.catsView === 'round')
-      statConfig.updateConfig('catsRound', { isShowFavorites: !statConfig.config.value.catsRound.isShowFavorites })
-  },
-}))
-
-const recent = {
-  isShow: computed(() => {
-    if (statConfig.config.value.catsView === 'list')
-      return statConfig.config.value.catsList.isShowRecent
-
-    if (statConfig.config.value.catsView === 'round')
-      return statConfig.config.value.catsRound.isShowRecent
-
-    return false
-  }),
-  toggle: () => {
-    if (statConfig.config.value.catsView === 'list') {
-      statConfig.updateConfig('catsList', {
-        isShowRecent: !statConfig.config.value.catsList.isShowRecent,
-      })
-    }
-
-    if (statConfig.config.value.catsView === 'round') {
-      statConfig.updateConfig('catsRound', {
-        ...statConfig.config.value.catsRound,
-        isShowRecent: !statConfig.config.value.catsRound.isShowRecent,
-      })
-    }
-  },
-}
-
 const viewPresets = computed(() => ({
   minimal: {
     props: {
@@ -147,46 +102,6 @@ function onChangeViewOptions(newViewOptions: Pick<DeepPartial<MiniItemConfig>, '
           @click="statConfig.updateConfig('catsList', { isRoundIcon: !statConfig.config.value.catsList.isRoundIcon })"
         />
       </div>
-    </div>
-
-    <!-- TODO: use StatConfig -->
-    <div
-      v-if="false"
-      class="border-item-4 border-b pb-2 last:border-0 last:pb-0"
-    >
-      <!-- Favorite -->
-      <UiElement
-        class="text-sm"
-        @click="favorites.toggle"
-      >
-        <template #leftIcon>
-          <Icon
-            name="lucide:heart"
-            size="18"
-          />
-        </template>
-        <div class="grow">
-          {{ t('isShowFavorites') }}
-        </div>
-        <FormSwitch :value="favorites.isShow.value" />
-      </UiElement>
-
-      <!-- Recent -->
-      <UiElement
-        class="text-sm"
-        @click="recent.toggle"
-      >
-        <template #leftIcon>
-          <Icon
-            name="lucide:history"
-            size="18"
-          />
-        </template>
-        <div class="grow">
-          {{ t('isShowRecent') }}
-        </div>
-        <FormSwitch :value="recent.isShow.value" />
-      </UiElement>
     </div>
 
     <div

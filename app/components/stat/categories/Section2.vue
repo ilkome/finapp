@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { Categories, CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
@@ -32,7 +30,7 @@ const categoriesWithData = computed<CategoryWithData[]>(() => {
   const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
 
   const cats: CategoryId[] = []
-  if (statConfig.config.value?.isShowEmptyCategories && props.preCategoriesIds) {
+  if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds) {
     cats.push(...props.preCategoriesIds)
   }
 
@@ -45,6 +43,7 @@ const categoriesStat = computed<{ grouped: CategoryWithData[], ungrouped: Catego
 }))
 
 const verticalCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.vertical.isGrouped ? 'grouped' : 'ungrouped'])
+const visibleVerticalCategories = computed(() => verticalCategories.value.filter(c => c.value !== 0))
 const verticalBiggestCatNumber = computed(() => getBiggestCatNumber(verticalCategories.value))
 
 const linesCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsList.isGrouped ? 'grouped' : 'ungrouped'])
@@ -53,8 +52,8 @@ const linesBiggestCatNumber = computed(() => getBiggestCatNumber(linesCategories
 const biggestCatNumber = computed(() => getBiggestCatNumber(categoriesWithData.value))
 
 function getBiggestCatNumber(categories: CategoryWithData[]) {
-  const income = categories.filter(c => c.value > 0).at(0)?.value ?? 0
-  const expense = categories.filter(c => c.value < 0).at(0)?.value ?? 0
+  const income = categories.find(c => c.value > 0)?.value ?? 0
+  const expense = categories.find(c => c.value < 0)?.value ?? 0
 
   return {
     expense: Math.abs(expense),
@@ -124,7 +123,7 @@ function toggleRoot(id: CategoryId) {
       <template #header="{ toggle, isShown }">
         <div class="flex items-center justify-between">
           <UiTitleCollapse :isShown @click="toggle">
-            {{ t('stat.config.categories.vertical.title') }} {{ (!isShown && verticalCategories.filter(c => c.value !== 0).length > 0) ? verticalCategories.filter(c => c.value !== 0).length : '' }}
+            {{ t('stat.config.categories.vertical.title') }} {{ (!isShown && visibleVerticalCategories.length > 0) ? visibleVerticalCategories.length : '' }}
           </UiTitleCollapse>
 
           <div
@@ -149,7 +148,7 @@ function toggleRoot(id: CategoryId) {
         >
           <div class="flex overflow-hidden overflow-x-auto pt-2 pl-1">
             <StatCategoriesVertical
-              v-for="item in verticalCategories.filter(c => c.value !== 0)"
+              v-for="item in visibleVerticalCategories"
               :key="item.id"
               :item="item"
               :biggestCatNumber="verticalBiggestCatNumber"

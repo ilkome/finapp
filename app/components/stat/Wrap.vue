@@ -5,6 +5,7 @@ import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
+import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -30,14 +31,14 @@ const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   trnsIds: datedTrnsIds.value,
-  trnsTypes: [0, 2],
+  trnsTypes: [TrnType.Expense, TrnType.Transfer],
 }, {
   includesChildCategories: true,
 }))
 
 const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   trnsIds: datedTrnsIds.value,
-  trnsTypes: [1, 2],
+  trnsTypes: [TrnType.Income, TrnType.Transfer],
 }, {
   includesChildCategories: true,
 }))

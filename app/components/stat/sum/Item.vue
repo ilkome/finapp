@@ -62,7 +62,7 @@ const currenciesStore = useCurrenciesStore()
       >
         <div
           v-for="(averageItem, slug) in props.averageTotal"
-          :key="averageItem"
+          :key="slug"
           class="grid gap-1 pb-[2px]"
         >
           <UiTextSubtitle>{{ t('money.average') }} <br> {{ t(`dates.${slug}.simple`) }}</UiTextSubtitle>

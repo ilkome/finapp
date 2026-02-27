@@ -5,6 +5,11 @@ export default {
     title: 'Создатели',
   },
 
+  actionError: {
+    goHome: 'На главную',
+    title: 'Ошибка',
+  },
+
   alerts: {
     removedUserData: 'Все данные удалены.',
     willDeleteEverything: 'Все данные будут безвозвратно удалены, включая кошельки, категории и транзакции',
@@ -51,10 +56,11 @@ export default {
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
       delete: {
-        alertWithTrns: `Так же будут удалены {trns}`,
-        errorChilds: 'Вы не можете удалить категорию с дочерними категориям. Сначала удалите дочерние категории.',
+        alertWithTrns: 'Также будут удалены',
+        errorChildren: 'Вы не можете удалить категорию с дочерними категориям. Сначала удалите дочерние категории.',
         okWithoutTrns: 'Категория удалена',
         okWithTrns: `Категория удалена и {trns}`,
+        title: 'Удалить категорию?',
       },
       favoriteCategory: 'Избранная категория',
       icon: {
@@ -344,7 +350,7 @@ export default {
     },
     createTrn: 'Создать транзакцию',
     delete: {
-      alert: 'Вы уверены, что хотите удалить эту транзакцию?',
+      alert: 'Удалить транзакцию?',
     },
     description: {
       placeholder: 'Напишите...',
@@ -411,9 +417,10 @@ export default {
         label: 'Валюта',
       },
       delete: {
-        alertWithTrns: `Так же будут удалены {trns}`,
+        alertWithTrns: 'Также будут удалены',
         okWithoutTrns: 'Кошелек удален',
         okWithTrns: `Кошелек удален и {trns}`,
+        title: 'Удалить кошелёк?',
       },
       description: {
         label: 'Описание (не обязательно)',

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { usePointer, useWindowSize } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -23,8 +21,8 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 
 const walletId = computed(() => {
   const walletsIds = Object.keys(walletsStore.items ?? {})
-  const walletId = walletsIds[0]
-  return trnsFormStore.values.walletId ?? walletId
+  const firstWalletId = walletsIds[0]
+  return trnsFormStore.values.walletId ?? firstWalletId
 })
 
 const isShow = ref(false)

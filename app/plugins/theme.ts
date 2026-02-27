@@ -74,6 +74,8 @@ export default defineNuxtPlugin({
               document.querySelector('style#nuxt-ui-black-as-primary').innerHTML = '';
             }
           `.replace(/\s+/g, ' '),
+          tagPriority: -1,
+          type: 'text/javascript',
         }],
       })
     }

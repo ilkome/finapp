@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
-
 import type { StatTabSlug } from '~/components/stat/types'
 
 const props = defineProps<{
@@ -17,7 +15,7 @@ const { width } = useWindowSize()
 const menu = computed(() => {
   const all: {
     id: StatTabSlug
-    name: string | unknown
+    name: string
   }[] = [{
     id: 'summary',
     name: t('money.summary'),

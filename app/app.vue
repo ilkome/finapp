@@ -13,15 +13,13 @@ const toaster: ToasterProps = {
   progress: false,
 }
 
-onMounted(() => {
-  document.addEventListener('click', (e) => {
-    const target = e.target as HTMLElement
-    const toast = target.closest('li[role="alert"][data-slot="base"]')
-    if (!toast)
-      return
-    const closeBtn = toast.querySelector<HTMLButtonElement>('[data-reka-toast-announce-exclude]')
-    closeBtn?.click()
-  })
+useEventListener(document, 'click', (e) => {
+  const target = e.target as HTMLElement
+  const toast = target.closest('li[role="alert"][data-slot="base"]')
+  if (!toast)
+    return
+  const closeBtn = toast.querySelector<HTMLButtonElement>('[data-reka-toast-announce-exclude]')
+  closeBtn?.click()
 })
 
 const color = computed(() => colorMode.value === 'dark' ? (colors as Record<string, Record<string, string>>)[appConfig.ui.colors.neutral][900] : 'white')

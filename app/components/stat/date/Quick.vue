@@ -10,8 +10,8 @@ const emit = defineEmits<{
 
 const statDate = inject(statDateKey)!
 
-const sliderRef = ref<any>(null)
-const sliderObj = ref<any>(null)
+const sliderRef = ref<HTMLElement | null>(null)
+const sliderObj = ref<Swiper | null>(null)
 
 onMounted(() => {
   const initialSlide = 1

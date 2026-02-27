@@ -6,12 +6,10 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [e: boolean]
-  close: []
 }>()
 
 function handleClick() {
   emit('click', props.checkboxValue)
-  emit('close')
 }
 </script>
 

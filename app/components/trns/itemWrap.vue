@@ -2,6 +2,7 @@
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   alt?: boolean
@@ -14,19 +15,57 @@ const emit = defineEmits<{
   click: []
 }>()
 
-const { trnFormEdit } = useTrnsFormStore()
+const { t } = useI18n()
+const trnsStore = useTrnsStore()
+const { trnFormDuplicate, trnFormEdit } = useTrnsFormStore()
+
+const showDeleteConfirm = ref(false)
+
+const contextMenuItems = computed(() => [[
+  {
+    icon: 'lucide:pencil',
+    label: t('base.edit'),
+    onSelect: () => click(),
+  },
+  {
+    icon: 'lucide:copy',
+    label: t('base.duplicate'),
+    onSelect: () => trnFormDuplicate(props.trnId),
+  },
+], [
+  {
+    color: 'error' as const,
+    icon: 'lucide:trash-2',
+    label: t('base.delete'),
+    onSelect: () => { showDeleteConfirm.value = true },
+  },
+]])
 
 function click() {
   emit('click')
   trnFormEdit(props.trnId)
 }
+
+function handleDeleteConfirm() {
+  trnsStore.deleteTrn(props.trnId)
+  showDeleteConfirm.value = false
+}
 </script>
 
 <template>
-  <TrnsItem
-    :alt="props.alt"
-    :trnItem
-    :date
-    @click="click"
+  <UContextMenu :items="contextMenuItems">
+    <TrnsItem
+      :alt="props.alt"
+      :trnItem
+      :date
+      @click="click"
+    />
+  </UContextMenu>
+
+  <LayoutConfirmModal
+    v-if="showDeleteConfirm"
+    :title="t('trnForm.delete.alert')"
+    @closed="showDeleteConfirm = false"
+    @confirm="handleDeleteConfirm"
   />
 </template>

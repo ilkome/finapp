@@ -12,9 +12,8 @@ export type MenuItem = {
   }
 }
 
-const isMenuOpen = ref(false)
-
 export function useMenuData() {
+  const isMenuOpen = ref(false)
   const { t } = useI18n()
   const { trnFormCreate } = useTrnsFormStore()
   const walletsStore = useWalletsStore()
@@ -42,6 +41,10 @@ export function useMenuData() {
       categories: {
         icon: 'hugeicons:folder-library',
         name: t('categories.name'),
+      },
+      currencies: {
+        icon: 'hugeicons:money-exchange-01',
+        name: t('currencies.page.title'),
       },
       history: {
         icon: 'hugeicons:archive-01',

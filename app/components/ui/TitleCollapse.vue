@@ -2,7 +2,6 @@
 const props = defineProps<{
   arrow?: 'left' | 'right'
   isHideArrow?: boolean
-  isOpen?: boolean
   isShown?: boolean
 }>()
 const emit = defineEmits<{
@@ -13,8 +12,7 @@ const emit = defineEmits<{
 <template>
   <div
     :class="cn(
-      'flex items-center rounded-sm min-h-[38px] min-w-[42px]',
-      'flex grow items-center gap-2 pb-0 !font-tertiary !text-base font-semibold leading-none tracking-wide',
+      'flex grow items-center gap-2 rounded-sm min-h-[38px] min-w-[42px] pb-0 !font-tertiary !text-base font-semibold leading-none tracking-wide',
       props.arrow === 'right' ? 'justify-between px-4' : 'px-3',
       !props.isHideArrow && 'interactive',
     )"

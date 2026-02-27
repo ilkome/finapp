@@ -20,14 +20,16 @@ const isShow = computed(() =>
 /**
  * Slider
  */
-const sliderRef = ref<any>(null)
-const sliderObj = ref<any>(null)
+const sliderRef = ref<HTMLElement | null>(null)
+const sliderObj = ref<Swiper | null>(null)
 const maxHeight = ref('550px')
+
+let resizeObserver: ResizeObserver | null = null
 
 function setTrnFormHeight() {
   const el = document.querySelector('.getHeight')
 
-  const observer = new ResizeObserver((entries) => {
+  resizeObserver = new ResizeObserver((entries) => {
     for (const entry of entries) {
       const height = entry.contentRect.height
       maxHeight.value = `${height}px`
@@ -35,8 +37,12 @@ function setTrnFormHeight() {
   })
 
   if (el)
-    observer.observe(el)
+    resizeObserver.observe(el)
 }
+
+onBeforeUnmount(() => {
+  resizeObserver?.disconnect()
+})
 
 function init() {
   if (!sliderObj.value) {

@@ -110,7 +110,7 @@ const emit = defineEmits<{
               :amount="trnItem.expenseAmount || trnItem.amount"
               :colorize="trnItem.incomeAmount === trnItem.expenseAmount ? '' : 'expense'"
               :currencyCode="trnItem.expenseWallet.currency"
-              :type="0"
+              :type="TrnType.Expense"
               class="!flex items-center gap-2"
               variant="sm"
             />
@@ -122,7 +122,7 @@ const emit = defineEmits<{
                   'opacity-0': trnItem.incomeAmount === trnItem.expenseAmount,
                 }"
                 :currencyCode="trnItem.incomeWallet.currency"
-                :type="1"
+                :type="TrnType.Income"
                 colorize="income"
                 class="!flex items-center gap-2"
                 variant="sm"

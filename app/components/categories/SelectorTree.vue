@@ -4,7 +4,7 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
-  hide?: () => null
+  hide?: () => void
   selectedIds?: CategoryId[]
 }>()
 
@@ -36,19 +36,19 @@ function select(categoryId: CategoryId, isForce: boolean) {
 }
 
 function onFilter(id: CategoryId) {
-  const childs = categoriesStore.getChildsIds(id)
+  const childs = categoriesStore.getChildrenIds(id)
   emit('setCategories', childs)
 }
 
 function isChildsSelected(categoryId: CategoryId) {
-  return categoriesStore.getChildsIds(categoryId).some(id => props.selectedIds?.includes(id))
+  return categoriesStore.getChildrenIds(categoryId).some(id => props.selectedIds?.includes(id))
 }
 
 function isEveryChildsSelected(categoryId: CategoryId) {
-  if (!categoriesStore.getChildsIds(categoryId).length)
+  if (!categoriesStore.getChildrenIds(categoryId).length)
     return false
 
-  return categoriesStore.getChildsIds(categoryId).every(id => props.selectedIds?.includes(id))
+  return categoriesStore.getChildrenIds(categoryId).every(id => props.selectedIds?.includes(id))
 }
 
 onMounted(() => {
@@ -85,7 +85,7 @@ onMounted(() => {
         class="pr-2 pb-2 pl-4"
       >
         <CategoriesItem
-          v-for="childCategoryId in categoriesStore.getChildsIds(categoryId)"
+          v-for="childCategoryId in categoriesStore.getChildrenIds(categoryId)"
           :key="childCategoryId"
           :activeItemId="props.selectedIds?.includes(childCategoryId) ? childCategoryId : null"
           :category="categoriesStore.items[childCategoryId]"

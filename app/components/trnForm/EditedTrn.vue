@@ -29,7 +29,7 @@ const items = computed(() => ({
     click: () => {
       showModalConfirm.value = true
     },
-    icon: 'mdi:delete-empty-outline',
+    icon: 'lucide:trash-2',
     label: t('base.delete'),
   },
 }))

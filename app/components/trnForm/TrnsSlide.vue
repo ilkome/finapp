@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -37,7 +35,7 @@ const trnsIds = computed(() => {
     if (trnsFormStore.values.walletId)
       walletsIds.push(trnsFormStore.values.walletId)
 
-    categoriesIds = categoriesStore.getChildsIdsOrParent(trnsFormStore.values.categoryId!)
+    categoriesIds = categoriesStore.getChildrenIdsOrParent(trnsFormStore.values.categoryId!)
   }
 
   return trnsStore.getStoreTrnsIds({
@@ -75,7 +73,6 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
   <div class="grid-rows-[1fr_auto] gap-2">
     <TrnsList
       :trnsIds="trnsIds"
-      isHideDates
       isShowDates
       isShowExpense
       isShowFilterByDesc

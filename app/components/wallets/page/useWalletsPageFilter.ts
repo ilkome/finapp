@@ -1,7 +1,5 @@
 import type { Ref } from 'vue'
 
-import { useStorage } from '@vueuse/core'
-
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletsCurrencyFiltered, WalletsGroupedBy, WalletType, WalletViewTypes } from '~/components/wallets/types'
 
@@ -19,10 +17,7 @@ export function useWalletsPageFilter(groupedBy: Ref<WalletsGroupedBy>) {
 
   const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
     return Object.keys(walletsStore.itemsComputed).filter((id) => {
-      const wallet = walletsStore.itemsComputed[id]
-      if (groupedBy.value === 'currency')
-        return true
-      return currencyFiltered.value === 'all' || currencyFiltered.value === wallet?.currency
+      return groupedBy.value === 'currency' || currencyFiltered.value === 'all' || currencyFiltered.value === walletsStore.itemsComputed[id]?.currency
     })
   })
 

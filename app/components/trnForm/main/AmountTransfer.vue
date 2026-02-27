@@ -36,7 +36,7 @@ const incomeWalletId = computed<WalletId | undefined>(
 )
 
 const expenseWalletId = computed<WalletId | undefined>(
-  () => trnsFormStore.values.expenseWalletId ?? walletsStore.sortedIds[1],
+  () => trnsFormStore.values.expenseWalletId ?? walletsStore.sortedIds[1] ?? walletsStore.sortedIds[0],
 )
 
 watch(

@@ -7,6 +7,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
   categoriesItemProps?: Partial<CategoryItemProps>
+  getContextMenuItems?: (categoryId: CategoryId) => any[][] | undefined
   ids: CategoryId[]
   insideClasses?: string
   slider?: object
@@ -28,13 +29,14 @@ const categoriesStore = useCategoriesStore()
       :activeItemId="activeItemId"
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
+      :contextMenuItems="props.getContextMenuItems?.(categoryId)"
       :slider="slider"
       :insideClasses="props.insideClasses"
       :lineWidth="1"
       isShowDots
       v-bind="categoriesItemProps"
       @click="emit('click', categoryId)"
-      @clickIcon="emit('clickIcon', categoryId)"
+      @filter="emit('clickIcon', categoryId)"
     />
   </div>
 </template>

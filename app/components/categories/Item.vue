@@ -9,6 +9,7 @@ export type CategoryItemProps = {
   category: CategoryItem
   categoryId: CategoryId
   class?: string
+  contextMenuItems?: any[][]
   insideClasses?: string
   isShowDots?: boolean
   isShowParent?: boolean
@@ -25,37 +26,39 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 
-const childCategoriesIds = computed(() => categoriesStore.getChildsIds(props.categoryId))
+const childCategoriesIds = computed(() => categoriesStore.getChildrenIds(props.categoryId))
 const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
 </script>
 
 <template>
-  <UiElement
-    v-if="props.category"
-    :isActive="props.activeItemId === props.categoryId"
-    :class="props.class"
-    :lineWidth="props.lineWidth"
-    :insideClasses="`min-h-[46px] ${props.insideClasses}`"
-    @click="(e: Event) => emit('click', e)"
-  >
-    <template #leftIcon>
-      <UiIconBase
-        :color="props.category.color"
-        :name="props.category.icon"
-        invert
-        @click="emit('filter', props.categoryId ?? '')"
-      />
-    </template>
+  <component :is="props.contextMenuItems ? resolveComponent('UContextMenu') : 'div'" v-bind="props.contextMenuItems ? { items: props.contextMenuItems } : {}">
+    <UiElement
+      v-if="props.category"
+      :isActive="props.activeItemId === props.categoryId"
+      :class="props.class"
+      :lineWidth="props.lineWidth"
+      :insideClasses="`min-h-[46px] ${props.insideClasses}`"
+      @click="(e: Event) => emit('click', e)"
+    >
+      <template #leftIcon>
+        <UiIconBase
+          :color="props.category.color"
+          :name="props.category.icon"
+          invert
+          @click="emit('filter', props.categoryId ?? '')"
+        />
+      </template>
 
-    <div class="grid grow gap-0.5">
-      <CategoriesName
-        :alt="props.alt"
-        :category="props.category"
-        :parentCategory="parentCategory"
-        :hasChildren="childCategoriesIds.length > 0"
-        :showChildrenCount="childCategoriesIds.length"
-        :isShowParent="props.isShowParent"
-      />
-    </div>
-  </UiElement>
+      <div class="grid grow gap-0.5">
+        <CategoriesName
+          :alt="props.alt"
+          :category="props.category"
+          :parentCategory="parentCategory"
+          :hasChildren="childCategoriesIds.length > 0"
+          :showChildrenCount="childCategoriesIds.length"
+          :isShowParent="props.isShowParent"
+        />
+      </div>
+    </UiElement>
+  </component>
 </template>

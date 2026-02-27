@@ -79,11 +79,9 @@ export type TrnsGetterProps = {
 }
 
 export type TrnFormValues = {
-  // ['Transaction', 'expenseTransfer', 'incomeTransfer']
+  // [transaction, expenseTransfer, incomeTransfer]
   amount: [number, number, number]
-  // TODO: is better way to show array meaning?
-  // TODO: is better way to show array meaning?
-  // ['Transaction', 'expenseTransfer', 'incomeTransfer']
+  // [transaction, expenseTransfer, incomeTransfer]
   amountRaw: [string, string, string]
 
   categoryId: CategoryId | null

@@ -90,15 +90,6 @@ export function useFilter() {
     })
   }
 
-  function setCategoriesIds(newCategoriesIds: CategoryId[]) {
-    router.push({
-      query: {
-        ...route.query,
-        filterCategories: newCategoriesIds,
-      },
-    })
-  }
-
   function removeCategoryId(categoryId: CategoryId) {
     router.push({
       query: {
@@ -133,9 +124,7 @@ export function useFilter() {
     removeCategoryId,
     removeWalletId,
     setCategories,
-    setCategoriesIds,
     setCategoryId,
-    setWalletId,
     setWallets,
     toggleCategoryId,
     toggleWalletId,

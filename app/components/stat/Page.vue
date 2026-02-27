@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'

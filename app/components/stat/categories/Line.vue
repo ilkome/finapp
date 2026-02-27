@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onLongPress } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData } from '~/components/stat/types'
 
@@ -50,7 +48,6 @@ function getBarStyle() {
   }
 }
 
-// TODO: addTrnFromSelectedInterval
 const longPressRef = ref(null)
 onLongPress(
   longPressRef,
@@ -137,7 +134,7 @@ onLongPress(
       <CategoriesName
         :category
         :class="{ '!pb-2': statConfig.config.value.catsList.isLines }"
-        :hasChildren="categoriesStore.getChildsIds(props.item.id).length > 0"
+        :hasChildren="categoriesStore.getChildrenIds(props.item.id).length > 0"
         :isShowParent="props.isShowParent"
         :parentCategory
         :showChildrenCount="props.item.categories?.length"

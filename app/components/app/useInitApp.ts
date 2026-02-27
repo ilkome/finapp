@@ -13,9 +13,8 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { blockPersist, unblockPersist } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
-const isDbLoading = ref(false)
-
 export function useInitApp() {
+  const isDbLoading = ref(false)
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useElementSize, useScrollLock, useWindowSize } from '@vueuse/core'
-
 import { useBottomSheetDrag } from './useBottomSheetDrag'
 
 const props = defineProps<{

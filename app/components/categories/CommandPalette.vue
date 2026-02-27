@@ -5,7 +5,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   activeItemId?: CategoryId
-  hide?: () => null
+  hide?: () => void
 }>()
 
 const emit = defineEmits<{
@@ -36,7 +36,7 @@ const cats = computed(() => {
     const category = categoriesStore.items[id]!
 
     const items = category?.childIds?.length
-      ? categoriesStore.getChildsIds(id).map(childId => ({
+      ? categoriesStore.getChildrenIds(id).map(childId => ({
           id: childId,
           ...categoriesStore.items[childId],
           suffix: category.name,

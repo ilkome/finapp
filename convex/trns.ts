@@ -159,8 +159,7 @@ export const update = mutation({
   handler: async (ctx, { id, ...args }) => {
     const user = await requireAuthUser(ctx)
     const trn = await getOwnEntity(ctx, id, user._id)
-    if (args.type !== undefined)
-      await validateTrnFields(ctx, { ...trn, ...args }, user._id)
+    await validateTrnFields(ctx, { ...trn, ...args }, user._id)
     await ctx.db.patch(id, { ...args, updatedAt: Date.now() })
   },
 })

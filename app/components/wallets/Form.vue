@@ -193,7 +193,7 @@ async function onSave() {
           <div>
             <UiTitleModal>{{ t('color.label') }}</UiTitleModal>
             <WalletsItem
-              :walletId="props.walletId ?? 'editWalletId'"
+              :walletId="props.walletId ?? editWalletId"
               :wallet="walletPlaceholder"
               isShowIcon
             />

@@ -87,6 +87,7 @@ export default defineNuxtConfig({
     '@nuxtjs/i18n',
     '@pinia/nuxt',
     '@vite-pwa/nuxt',
+    '@vueuse/nuxt',
     '@nuxt/ui',
     '@nuxt/eslint',
   ],
