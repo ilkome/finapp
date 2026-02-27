@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId } from '~/components/wallets/types'
 
