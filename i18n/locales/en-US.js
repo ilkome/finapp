@@ -5,6 +5,11 @@ export default {
     title: 'Creators',
   },
 
+  actionError: {
+    goHome: 'Go to home',
+    title: 'Error',
+  },
+
   alerts: {
     removedUserData: 'All data removed.',
     willDeleteEverything: 'All data will be permanently deleted, including wallets, categories and transactions',
@@ -51,10 +56,11 @@ export default {
     form: {
       childColor: 'Apply color to all child categories',
       delete: {
-        alertWithTrns: `This will delete {trns}`,
-        errorChilds: 'You cannot delete a category with child categories. Delete the child categories first.',
+        alertWithTrns: 'This will also delete',
+        errorChildren: 'You cannot delete a category with child categories. Delete the child categories first.',
         okWithoutTrns: 'Category deleted',
         okWithTrns: `Category and {trns} transactions deleted`,
+        title: 'Delete category?',
       },
       favoriteCategory: 'Favorite category',
       icon: {
@@ -344,7 +350,7 @@ export default {
     },
     createTrn: 'Add transaction',
     delete: {
-      alert: 'Are you sure you want to delete this transaction?',
+      alert: 'Delete transaction?',
     },
     description: {
       placeholder: 'Write...',
@@ -411,9 +417,10 @@ export default {
         label: 'Currency',
       },
       delete: {
-        alertWithTrns: `This will delete {trns}`,
+        alertWithTrns: 'This will also delete',
         okWithoutTrns: 'Wallet deleted',
         okWithTrns: `Wallet deleted and {trns}`,
+        title: 'Delete wallet?',
       },
       description: {
         label: 'Description (optional)',

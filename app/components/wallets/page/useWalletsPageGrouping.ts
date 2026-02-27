@@ -1,7 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
 
-import { useStorage } from '@vueuse/core'
-
 import type { WalletId, WalletItem, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -157,11 +155,11 @@ export function useWalletsPageGrouping(
     const newShow = !hasSecondaryGrouping ? !isAllOpen : !(isAllOpen && isAllOpenInside)
     const updateSecondary = hasSecondaryGrouping && isAllOpen && !isAllOpenInside
 
-    for (const groupPrimary of Object.keys(groupedWallets)) {
+    for (const [groupPrimary, walletGroup] of Object.entries(groupedWallets)) {
       const primaryGroup = currentToggleMap[currentGroup]![groupPrimary] || { groups: {} }
 
       if (updateSecondary) {
-        const secondaryKeys = Object.keys(groupedWallets[groupPrimary]?.groups ?? {})
+        const secondaryKeys = Object.keys(walletGroup.groups ?? {})
         currentToggleMap[currentGroup]![groupPrimary] = {
           ...primaryGroup,
           groups: Object.fromEntries(secondaryKeys.map(k => [k, true])),
@@ -169,7 +167,7 @@ export function useWalletsPageGrouping(
         }
       }
       else if (hasSecondaryGrouping && !newShow) {
-        const secondaryKeys = Object.keys(groupedWallets[groupPrimary]?.groups ?? {})
+        const secondaryKeys = Object.keys(walletGroup.groups ?? {})
         currentToggleMap[currentGroup]![groupPrimary] = {
           ...primaryGroup,
           groups: Object.fromEntries(secondaryKeys.map(k => [k, false])),

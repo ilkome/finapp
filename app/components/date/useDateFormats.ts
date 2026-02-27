@@ -22,7 +22,7 @@ export function useDateFormats() {
 
   function formatDate(value: number, type: 'trnItem' | 'full') {
     if (!value)
-      return false
+      return undefined
 
     const date = new Date(value)
     const diff = differenceInDays(new Date(), date)
@@ -38,8 +38,6 @@ export function useDateFormats() {
         }
 
       case 'trnItem':
-        return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
-
       default:
         return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
     }

@@ -24,9 +24,6 @@ const {
 } = defineProps<{
   chartType?: ChartType
   isShowDataLabels?: boolean
-  isShowExpense?: boolean
-  isShowIncome?: boolean
-  isShowSummary?: boolean
   period: Period
   series: ChartSeries[]
   xAxisLabels: number[]

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
-import type { WalletsGroupedBy } from '~/components/wallets/types'
+import type { TrnId } from '~/components/trns/types'
+import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
 import { useWalletsPageCounts } from './useWalletsPageCounts'
 import { useWalletsPageFilter } from './useWalletsPageFilter'
@@ -22,10 +23,67 @@ useSeoMeta({
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const userStore = useUserStore()
+const trnsStore = useTrnsStore()
 const isSortModalOpen = ref(false)
 
 const isShowBaseCurrencyModal = ref(false)
 const isOpen = ref(false)
+
+const deleteWalletId = ref<WalletId | null>(null)
+
+const deleteTrnsCount = computed(() => {
+  if (!deleteWalletId.value)
+    return 0
+  return trnsStore.getStoreTrnsIds({
+    walletsIds: [deleteWalletId.value],
+  }).length
+})
+
+const deleteDescText = computed(() =>
+  deleteTrnsCount.value > 0 ? t('wallets.form.delete.alertWithTrns') : undefined,
+)
+
+const deleteHighlight = computed(() =>
+  deleteTrnsCount.value > 0 ? t('trns.plural', deleteTrnsCount.value) : undefined,
+)
+
+async function onDeleteConfirm() {
+  if (!deleteWalletId.value)
+    return
+
+  const walletId = deleteWalletId.value
+  const trnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({
+    walletsIds: [walletId],
+  })]
+
+  deleteWalletId.value = null
+  await walletsStore.deleteWallet(walletId, trnsIds)
+
+  setTimeout(() => {
+    showSuccessToast(trnsIds.length > 0
+      ? 'wallets.form.delete.okWithTrns'
+      : 'wallets.form.delete.okWithoutTrns', trnsIds.length > 0
+      ? { length: trnsIds.length, trns: t('trns.plural', trnsIds.length) }
+      : undefined)
+  }, 300)
+}
+
+function getWalletContextMenuItems(walletId: WalletId) {
+  return [[
+    {
+      icon: 'lucide:pencil',
+      label: t('base.edit'),
+      onSelect: () => router.push(`/wallets/${walletId}/edit`),
+    },
+  ], [
+    {
+      color: 'error' as const,
+      icon: 'lucide:trash-2',
+      label: t('base.delete'),
+      onSelect: () => { deleteWalletId.value = walletId },
+    },
+  ]]
+}
 
 const groupedBy = useStorage<WalletsGroupedBy>('finapp-wallets-groupedBy', 'none')
 
@@ -53,6 +111,18 @@ const {
   typeGroupsStatus,
   walletsToggledMap,
 } = useWalletsPageGrouping(selectedWalletsIds, groupedBy)
+
+function toggleSecondaryGrouping() {
+  if (groupedBy.value === 'currency')
+    groupedBySecondary.currency = !groupedBySecondary.currency
+  else if (groupedBy.value === 'type')
+    groupedBySecondary.type = !groupedBySecondary.type
+}
+
+const isSecondaryGroupingActive = computed(() =>
+  (groupedBy.value === 'currency' && groupedBySecondary.currency)
+  || (groupedBy.value === 'type' && groupedBySecondary.type),
+)
 </script>
 
 <template>
@@ -169,21 +239,10 @@ const {
             class="ml-auto flex items-center gap-1"
           >
             <UiActionButton
-              @click="
-                groupedBy === 'currency'
-                  ? groupedBySecondary.currency = !groupedBySecondary.currency
-                  : groupedBy === 'type'
-                    ? groupedBySecondary.type = !groupedBySecondary.type
-                    : null
-              "
+              @click="toggleSecondaryGrouping"
             >
               <Icon
-                :name="
-                  (groupedBy === 'currency' && groupedBySecondary.currency)
-                    || (groupedBy === 'type' && groupedBySecondary.type)
-                    ? 'lucide:network'
-                    : 'lucide:folder-tree'
-                "
+                :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
                 size="18"
               />
             </UiActionButton>
@@ -217,6 +276,7 @@ const {
               :key="walletId"
               :wallet="walletsStore.itemsComputed[walletId]!"
               :walletId
+              :contextMenuItems="getWalletContextMenuItems(walletId)"
               :lineWidth="2"
               class="group"
               isShowBaseRate
@@ -309,6 +369,7 @@ const {
                   <WalletsItem
                     v-for="walletId in ids"
                     :key="walletId"
+                    :contextMenuItems="getWalletContextMenuItems(walletId)"
                     :lineWidth="2"
                     :wallet="walletsStore.itemsComputed[walletId]!"
                     :walletId
@@ -326,6 +387,7 @@ const {
                 <WalletsItem
                   v-for="walletId in content.ids"
                   :key="walletId"
+                  :contextMenuItems="getWalletContextMenuItems(walletId)"
                   :lineWidth="2"
                   :wallet="walletsStore.itemsComputed[walletId]!"
                   :walletId
@@ -343,6 +405,15 @@ const {
       </div>
     </div>
   </UiPage>
+
+  <LayoutConfirmModal
+    v-if="deleteWalletId"
+    :title="t('wallets.form.delete.title')"
+    :description="deleteDescText"
+    :highlight="deleteHighlight"
+    @closed="deleteWalletId = null"
+    @confirm="onDeleteConfirm"
+  />
 
   <!-- Sort Modal -->
   <WalletsSortModal v-if="isSortModalOpen" @close="isSortModalOpen = false" />

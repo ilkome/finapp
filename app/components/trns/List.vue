@@ -26,7 +26,6 @@ const {
 } = defineProps<{
   alt?: boolean
   initTrnType?: TrnsViewType
-  isHideDates?: boolean
   isShowDates?: boolean
   isShowExpense?: boolean
   isShowFilterByDesc?: boolean
@@ -94,41 +93,28 @@ const selectedTypeFilter = computed(() => {
   return typeFilters.value.find(item => item.slug === filterBy.value)
 })
 
-const isTrnsWithDesc = computed(() => {
-  let ids = trnsIds ?? []
+const filteredByTypeIds = computed(() => {
+  if (filterBy.value === 'all')
+    return trnsIds ?? []
 
-  if (filterBy.value !== 'all') {
-    ids = trnsIds.filter((id) => {
-      if (filterBy.value === 'adjustment')
-        return trnsStore.items[id]?.categoryId === 'adjustment'
-      return trnsStore.items[id].type === selectedTypeFilter.value?.type
-    })
-  }
+  return (trnsIds ?? []).filter((id) => {
+    if (filterBy.value === 'adjustment')
+      return trnsStore.items[id]?.categoryId === 'adjustment'
 
-  return (ids).some(id => trnsStore.items[id]?.desc)
+    if (filterBy.value === 'transfer')
+      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || categoriesStore.transferCategoriesIds.includes(trnsStore.items[id]?.categoryId)
+
+    return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
+  })
 })
 
+const isTrnsWithDesc = computed(() => filteredByTypeIds.value.some(id => trnsStore.items[id]?.desc))
+
 const selectedIds = computed(() => {
-  let ids = trnsIds ?? []
+  if (isShowWithDesc.value && isTrnsWithDesc.value)
+    return filteredByTypeIds.value.filter(id => trnsStore.items[id]?.desc)
 
-  if (filterBy.value !== 'all') {
-    ids = trnsIds.filter((id) => {
-      if (filterBy.value === 'adjustment')
-        return trnsStore.items[id]?.categoryId === 'adjustment'
-
-      if (filterBy.value === 'transfer') {
-        return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || categoriesStore.transferCategoriesIds.includes(trnsStore.items[id]?.categoryId)
-      }
-
-      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
-    })
-  }
-
-  if (isShowWithDesc.value && isTrnsWithDesc.value) {
-    ids = ids.filter(id => trnsStore.items[id].desc)
-  }
-
-  return ids
+  return filteredByTypeIds.value
 })
 
 const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.value * size))
@@ -161,6 +147,16 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     }
     return acc
   }, {} as Record<string, TrnId[]>))
+
+const paginatedTotal = computed(() => getTotalOfTrnsIds(paginatedTrnsIds.value))
+
+const trnItemsMap = computed(() => {
+  const map = new Map<TrnId, ReturnType<typeof trnsStore.computeTrnItem>>()
+  for (const trnId of paginatedTrnsIds.value) {
+    map.set(trnId, trnsStore.computeTrnItem(trnId))
+  }
+  return map
+})
 
 function onOpenTrnForm(date: number) {
   trnsFormStore.trnFormCreate()
@@ -229,21 +225,21 @@ function onOpenTrnForm(date: number) {
         class="border-item-4 border-b pr-3 pb-2 opacity-60"
       >
         <Amount
-          v-if="getTotalOfTrnsIds(paginatedTrnsIds).income !== 0"
-          :amount="getTotalOfTrnsIds(paginatedTrnsIds).income"
+          v-if="paginatedTotal.income !== 0"
+          :amount="paginatedTotal.income"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
-          :type="1"
+          :type="TrnType.Income"
           colorize="income"
           variant="sm"
         />
 
         <Amount
-          v-if="getTotalOfTrnsIds(paginatedTrnsIds).expense !== 0"
-          :amount="getTotalOfTrnsIds(paginatedTrnsIds).expense"
+          v-if="paginatedTotal.expense !== 0"
+          :amount="paginatedTotal.expense"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
-          :type="0"
+          :type="TrnType.Expense"
           isShowMinus
           variant="sm"
         />
@@ -251,11 +247,11 @@ function onOpenTrnForm(date: number) {
 
       <template v-for="trnId in paginatedTrnsIds" :key="trnId">
         <TrnsItemWrap
-          v-if="trnsStore.computeTrnItem(trnId)"
+          v-if="trnItemsMap.get(trnId)"
           :alt="alt"
-          :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
+          :date="formatDate(trnItemsMap.get(trnId)?.date, 'trnItem')"
           :trnId="trnId"
-          :trnItem="trnsStore.computeTrnItem(trnId)"
+          :trnItem="trnItemsMap.get(trnId)"
           class="group/trn group"
           @click="emit('click')"
         />
@@ -292,7 +288,7 @@ function onOpenTrnForm(date: number) {
               :amount="getTotalOfTrnsIds(groupTrnsIds).income"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
-              :type="1"
+              :type="TrnType.Income"
               colorize="income"
               variant="sm"
             />
@@ -302,7 +298,7 @@ function onOpenTrnForm(date: number) {
               :amount="getTotalOfTrnsIds(groupTrnsIds).expense"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
-              :type="0"
+              :type="TrnType.Expense"
               isShowMinus
               variant="sm"
             />
@@ -312,11 +308,11 @@ function onOpenTrnForm(date: number) {
         <div>
           <template v-for="trnId in groupTrnsIds" :key="trnId">
             <TrnsItemWrap
-              v-if="trnsStore.computeTrnItem(trnId)"
+              v-if="trnItemsMap.get(trnId)"
               :alt="alt"
               :trnId="trnId"
-              :trnItem="trnsStore.computeTrnItem(trnId)"
-              :date="formatDate(trnsStore.computeTrnItem(trnId)?.date, 'trnItem')"
+              :trnItem="trnItemsMap.get(trnId)"
+              :date="formatDate(trnItemsMap.get(trnId)?.date, 'trnItem')"
               class="group"
               @click="emit('click')"
             />

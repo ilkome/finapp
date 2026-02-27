@@ -86,15 +86,15 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
-  const lastCreatedTrnId = computed(() => {
+  const lastCreatedTrnId = computed<TrnId | undefined>(() => {
     if (!hasItems.value)
-      return false
+      return undefined
 
     const transferIds = new Set(categoriesStore.transferCategoriesIds)
-    let latestId: TrnId | false = false
+    let latestId: TrnId | undefined
     let latestDate = -1
 
-    for (const trnId in items.value) {
+    for (const trnId of Object.keys(items.value)) {
       const trn = items.value[trnId]
       if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment' || transferIds.has(trn.categoryId))
         continue
@@ -107,7 +107,7 @@ export const useTrnsStore = defineStore('trns', () => {
     return latestId
   })
 
-  const lastCreatedTrnItem = computed<TrnItem | false>(() => items.value?.[lastCreatedTrnId.value])
+  const lastCreatedTrnItem = computed<TrnItem | undefined>(() => lastCreatedTrnId.value ? items.value?.[lastCreatedTrnId.value] : undefined)
 
   type TrnsSyncMeta = {
     idsHash: string
@@ -238,7 +238,7 @@ export const useTrnsStore = defineStore('trns', () => {
     const isExisting = !isLocalId(id) && items.value && id in items.value
 
     // Optimistic UI
-    setTrns({ ...items.value, [id]: valuesWithEditDate })
+    setTrns({ ...(items.value ?? {}), [id]: valuesWithEditDate })
 
     if (!pushSaveOp({ entity: 'trns', id, isDemo: isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
       return
@@ -286,7 +286,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
   function deleteTrn(id: TrnId) {
     // Optimistic UI
-    const trns = { ...items.value }
+    const trns = { ...(items.value ?? {}) }
     delete trns[id]
     setTrns(trns)
 
@@ -311,7 +311,7 @@ export const useTrnsStore = defineStore('trns', () => {
       return
 
     // Single optimistic update
-    const trns = { ...items.value }
+    const trns = { ...(items.value ?? {}) }
     for (const id of trnsIds)
       delete trns[id]
     setTrns(trns)
@@ -359,7 +359,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function computeTrnItem(id: TrnId): TrnItemFull | null {
-    if (!items.value || !walletsStore?.items || !categoriesStore?.items)
+    if (!items.value || !walletsStore.items || !categoriesStore.items)
       return null
 
     // Trn

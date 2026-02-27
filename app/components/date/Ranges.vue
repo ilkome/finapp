@@ -18,7 +18,7 @@ const { t } = useI18n()
 
 const items = computed(() => {
   if (props.view === 'maximum')
-    return false
+    return undefined
 
   const elements: Record<Exclude<typeof props.view, 'maximum'>, IntervalGroupedLabel[]> = {
     periods: [{

@@ -1,6 +1,5 @@
 import type { ShallowRef } from 'vue'
 
-import { useDebounceFn } from '@vueuse/core'
 import localforage from 'localforage'
 import { deepUnref } from 'vue-deepunref'
 
@@ -99,7 +98,7 @@ export async function mergeOfflineOps<T>(
 
   if (hasUpdates || hasDeletes) {
     const merged = { ...data }
-    for (const id in pendingUpdates)
+    for (const id of Object.keys(pendingUpdates))
       merged[id] = pendingUpdates[id]
     for (const id of pendingDeleteIds)
       delete merged[id]

@@ -1,5 +1,5 @@
 import { clientsClaim } from 'workbox-core'
-import { PrecacheController, PrecacheRoute, cleanupOutdatedCaches } from 'workbox-precaching'
+import { cleanupOutdatedCaches, PrecacheController, PrecacheRoute } from 'workbox-precaching'
 import { registerRoute } from 'workbox-routing'
 import { CacheFirst } from 'workbox-strategies'
 

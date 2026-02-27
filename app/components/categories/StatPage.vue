@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 
@@ -25,7 +23,7 @@ provide(filterKey, filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = ref(categoriesStore.items[categoryId.value])
-const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
+const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
 
 const activeTab = useStorage<StatTabSlug>(`stat-${categoryId.value}-tab`, 'summary')
 const storageKey = computed(() => `stat-${categoryId.value}-${activeTab.value}`)
@@ -88,10 +86,6 @@ useHead({ title: category.value?.name })
       :config="{
         isShowWallets: true,
       }"
-      :menu="{
-        active: activeTab,
-        click: (id: StatTabSlug) => activeTab = id,
-      }"
     >
       <template #title>
         <CategoriesHeader
@@ -103,7 +97,7 @@ useHead({ title: category.value?.name })
       <template #popover>
         <UiHeaderLink
           v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
-          icon="mdi:pencil-outline"
+          icon="lucide:pencil"
           @click="router.push(`/categories/${categoryId}/edit`)"
         >
           {{ t('base.edit') }}

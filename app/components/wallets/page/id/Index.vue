@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -72,7 +70,13 @@ function onClickEdit() {
 
 const deleteDescText = computed(() => {
   if (trnsIds.value.length > 0)
-    return t('wallets.form.delete.alertWithTrns', { trns: t('trns.plural', trnsIds.value.length) })
+    return t('wallets.form.delete.alertWithTrns')
+  return undefined
+})
+
+const deleteHighlight = computed(() => {
+  if (trnsIds.value.length > 0)
+    return t('trns.plural', trnsIds.value.length)
   return undefined
 })
 
@@ -83,19 +87,19 @@ function onClickDelete(close: () => void) {
 }
 
 async function onDeleteConfirm() {
-  const trnsIdsS: TrnId[] = [...trnsStore.getStoreTrnsIds({
+  const deleteTrnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({
     walletsIds: [walletId.value],
   })]
 
   router.push('/wallets')
-  await walletsStore.deleteWallet(walletId.value, trnsIdsS)
+  await walletsStore.deleteWallet(walletId.value, deleteTrnsIds)
 
   // Give some time to complete redirect
   setTimeout(() => {
-    showSuccessToast(trnsIdsS?.length > 0
+    showSuccessToast(deleteTrnsIds.length > 0
       ? 'wallets.form.delete.okWithTrns'
-      : 'wallets.form.delete.okWithoutTrns', trnsIdsS?.length > 0
-      ? { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) }
+      : 'wallets.form.delete.okWithoutTrns', deleteTrnsIds.length > 0
+      ? { length: deleteTrnsIds.length, trns: t('trns.plural', deleteTrnsIds.length) }
       : undefined)
   }, 300)
 }
@@ -127,14 +131,14 @@ async function onDeleteConfirm() {
 
       <template #popover="{ close }">
         <UiHeaderLink
-          icon="mdi:pencil-outline"
+          icon="lucide:pencil"
           @click="onClickEdit"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
 
         <UiHeaderLink
-          icon="mdi:delete-empty-outline"
+          icon="lucide:trash-2"
           @click="onClickDelete(close)"
         >
           {{ t('base.delete') }}
@@ -144,7 +148,9 @@ async function onDeleteConfirm() {
 
     <LayoutConfirmModal
       v-if="isShowDeleteConfirm"
+      :title="t('wallets.form.delete.title')"
       :description="deleteDescText"
+      :highlight="deleteHighlight"
       @closed="isShowDeleteConfirm = false"
       @confirm="onDeleteConfirm"
     />

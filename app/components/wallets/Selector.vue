@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -8,7 +6,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   activeItemId?: WalletId
-  hide?: () => null
+  hide?: () => void
   selectedIds?: WalletId[]
 }>()
 

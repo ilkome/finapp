@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onLongPress } from '@vueuse/core'
-
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'

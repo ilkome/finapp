@@ -40,8 +40,8 @@ type CategoriesStore = {
   categoriesRootIds: ComputedRef<CategoryId[]>
   deleteCategory: (id: CategoryId, trnsIds?: TrnId[]) => Promise<RemapInfo | void> | void
   favoriteCategoriesIds: ComputedRef<CategoryId[]>
-  getChildsIds: (categoryId: CategoryId) => CategoryId[]
-  getChildsIdsOrParent: (categoryId: CategoryId) => CategoryId[]
+  getChildrenIds: (categoryId: CategoryId) => CategoryId[]
+  getChildrenIdsOrParent: (categoryId: CategoryId) => CategoryId[]
   getTransactibleIds: (ids?: CategoryId[]) => CategoryId[]
   hasChildren: (categoryId: CategoryId) => boolean
   hasItems: ComputedRef<boolean>
@@ -132,7 +132,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     // Track most recent date per category (single pass)
     const latestDateByCategory = new Map<CategoryId, number>()
-    for (const trnId in trnsItems) {
+    for (const trnId of Object.keys(trnsItems)) {
       const trn = trnsItems[trnId]
       if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
         continue
@@ -206,7 +206,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return !!category.childIds?.length
   }
 
-  function getChildsIds(categoryId: CategoryId) {
+  function getChildrenIds(categoryId: CategoryId) {
     if (!hasItems.value)
       return []
 
@@ -218,7 +218,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   }
 
-  function getChildsIdsOrParent(categoryId: CategoryId) {
+  function getChildrenIdsOrParent(categoryId: CategoryId) {
     if (!hasItems.value)
       return []
 
@@ -258,7 +258,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   function applyOptimisticUpdate(id: CategoryId, categoryValues: CategoryItem, isUpdateChildCategoriesColor: boolean, categoryChildIds: CategoryId[]) {
     const existingChildIds = items.value?.[id]?.childIds
     const updatedItems: Categories = {
-      ...items.value,
+      ...(items.value ?? {}),
       [id]: existingChildIds ? { ...categoryValues, childIds: existingChildIds } : categoryValues,
     }
 
@@ -278,7 +278,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (id === 'transfer' || id === 'adjustment')
       return
 
-    const categoryChildIds = getChildsIds(id)
+    const categoryChildIds = getChildrenIds(id)
 
     // Frontend IDs are always treated as new creates (server generates real ID)
     const isExisting = !isLocalId(id) && items.value && id in items.value
@@ -327,7 +327,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return
 
     // Optimistic UI
-    const categories = { ...items.value }
+    const categories = { ...(items.value ?? {}) }
     const category = categories[id]
     if (category?.parentId && category.parentId !== 0) {
       const pId = String(category.parentId)
@@ -368,8 +368,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     categoriesRootIds,
     deleteCategory,
     favoriteCategoriesIds,
-    getChildsIds,
-    getChildsIdsOrParent,
+    getChildrenIds,
+    getChildrenIdsOrParent,
     getTransactibleIds,
     hasChildren,
     hasItems,

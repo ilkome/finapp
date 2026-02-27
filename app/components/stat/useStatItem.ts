@@ -1,6 +1,5 @@
 import type { ComputedRef } from 'vue'
 
-import { useStorage } from '@vueuse/core'
 import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -196,8 +195,10 @@ export function useStatItem({
   )
 
   function onSetCategoryFilter(categoryId: CategoryId) {
-    if (filteredCategoriesIds.value.includes(categoryId))
-      return filteredCategoriesIds.value = []
+    if (filteredCategoriesIds.value.includes(categoryId)) {
+      filteredCategoriesIds.value = []
+      return
+    }
     filteredCategoriesIds.value = [categoryId]
   }
 

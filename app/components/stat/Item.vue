@@ -57,14 +57,15 @@ const {
 
 const quickViewTrns = ref<TrnId[]>([])
 const isShowTrns = ref(false)
+const hasCategoriesData = computed(() => props.hasChildren || (props.preCategoriesIds ?? []).length > 0)
 
 function onClickCategory(clickedCategoryId: CategoryId) {
   if (route.name === 'categories-id') {
     filter.setCategoryId(clickedCategoryId)
 
     const baseParams = {
-      filterCategories: filter?.categoriesIds?.value.join(','),
-      filterWallets: props.walletId ? props.walletId : filter?.walletsIds?.value.join(','),
+      filterCategories: filter.categoriesIds.value.join(','),
+      filterWallets: props.walletId ? props.walletId : filter.walletsIds.value.join(','),
       storageKey: props.storageKey ?? '',
     }
 
@@ -79,7 +80,7 @@ function onClickCategory(clickedCategoryId: CategoryId) {
   }, { includesChildCategories: true })
 }
 
-function handleClickSumItem(type: SeriesSlugSelected) {
+function onClickSumItemWrap(type: SeriesSlugSelected) {
   if (type === 'netIncome')
     isShowTrns.value = true
 
@@ -102,7 +103,7 @@ function handleClickSumItem(type: SeriesSlugSelected) {
     <div class="grid min-w-0 content-start gap-3">
       <StatDateNavigation>
         <StatFilterSelected
-          v-if="filter.isShow?.value && filter.categoriesIds.value.length > 0 || filter.walletsIds.value.length > 0"
+          v-if="filter.isShow.value"
           isShowCategories
           isShowWallets
         />
@@ -123,13 +124,13 @@ function handleClickSumItem(type: SeriesSlugSelected) {
         :trnsIds
         :type="selectedTypeForSum"
         :walletId
-        @click="handleClickSumItem"
+        @click="onClickSumItemWrap"
         @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
       />
 
       <div class="_min-h-dvh grid min-w-0 content-start items-start gap-4">
         <StatCategoriesSection
-          v-if="statConfig.config.value.catsRound.isShow && (props.hasChildren || (props.preCategoriesIds ?? []).length > 0)"
+          v-if="statConfig.config.value.catsRound.isShow && hasCategoriesData"
           :filteredCategoriesIds
           :isOneCategory="props.isOneCategory"
           :preCategoriesIds="props.preCategoriesIds || categoriesStore.favoriteCategoriesIds"
@@ -144,7 +145,7 @@ function handleClickSumItem(type: SeriesSlugSelected) {
           }"
         >
           <StatCategoriesSection2
-            v-if="(statConfig.config.value.catsList.isShow || statConfig.config.value.vertical.isShow) && (props.hasChildren || (props.preCategoriesIds ?? []).length > 0)"
+            v-if="(statConfig.config.value.catsList.isShow || statConfig.config.value.vertical.isShow) && hasCategoriesData"
             :isOneCategory="props.isOneCategory"
             :preCategoriesIds="props.preCategoriesIds"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"

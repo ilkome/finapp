@@ -13,8 +13,8 @@ const isShow = computed(() => trnsFormStore.ui.isShow)
 /**
  * Slider
  */
-const sliderRef = ref<any>(null)
-const sliderObj = ref<any>(null)
+const sliderRef = ref<HTMLElement | null>(null)
+const sliderObj = ref<Swiper | null>(null)
 
 function init() {
   if (!sliderObj.value) {
@@ -34,9 +34,10 @@ function init() {
   }
 }
 
-watch(isShow, (v) => {
+watch(isShow, async (v) => {
   if (v) {
-    setTimeout(() => init(), 10)
+    await nextTick()
+    init()
   }
   else {
     sliderObj.value?.destroy()

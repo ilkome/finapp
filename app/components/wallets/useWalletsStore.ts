@@ -69,7 +69,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
     // Optimistic UI
     setWallets({
-      ...items.value,
+      ...(items.value ?? {}),
       [id]: values,
     })
 
@@ -110,7 +110,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   function saveWalletsOrder(ids: WalletId[]) {
     // Optimistic update
-    const updated = { ...items.value } as Wallets
+    const updated = { ...(items.value ?? {}) } as Wallets
     for (let i = 0; i < ids.length; i++) {
       if (updated[ids[i]])
         updated[ids[i]] = { ...updated[ids[i]], order: i }
@@ -189,7 +189,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
     // Optimistic UI
-    const wallets = { ...items.value }
+    const wallets = { ...(items.value ?? {}) }
     delete wallets[id]
     setWallets(wallets)
 

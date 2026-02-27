@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 const props = defineProps<{
   initStatus?: boolean
   openPadding?: string

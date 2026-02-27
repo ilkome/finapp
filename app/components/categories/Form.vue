@@ -23,7 +23,7 @@ const categoriesStore = useCategoriesStore()
 
 const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
-const childIds = computed(() => categoriesStore.getChildsIds(props.categoryId!))
+const childIds = computed(() => categoriesStore.getChildrenIds(props.categoryId!))
 const hasChildren = computed(() => childIds.value.length > 0)
 const isAllowChangeParent = computed(() =>
   !hasChildren.value && categoriesStore.categoriesForBeParent.length > 0,
@@ -51,7 +51,7 @@ function onParentSelect(parentId: CategoryId | false, close: () => void) {
   }
 
   emit('update', 'parentId', parentId)
-  // Change category color when patent category changed
+  // Change category color when parent category changed
   const parentCategoryColor = categoriesStore.items?.[parentId]?.color
   if (parentCategoryColor)
     emit('update', 'color', parentCategoryColor)
@@ -67,7 +67,7 @@ async function onSave() {
     return
   }
 
-  for (const id in categoriesStore.items) {
+  for (const id of Object.keys(categoriesStore.items)) {
     if (categoriesStore.items[id].name === parsed.data.name && categoriesStore.items[id].parentId === parsed.data.parentId && id !== editCategoryId) {
       showErrorToast('categories.form.name.exist')
       return

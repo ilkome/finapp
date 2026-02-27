@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { usePointer, useWindowSize } from '@vueuse/core'
-
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
   drugClassesCustom?: string

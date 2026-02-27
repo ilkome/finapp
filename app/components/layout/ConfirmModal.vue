@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   description?: string
+  highlight?: string
   title?: string
 }>()
 
@@ -31,12 +32,12 @@ function onClosed() {
     :ui="{ content: 'max-w-sm', footer: 'justify-between' }"
     @update:open="(val: boolean) => { if (!val) onClosed() }"
   >
-    <template #body>
-      <div
-        v-if="description"
-        class="text-muted"
-      >
+    <template v-if="description || highlight" #body>
+      <div class="text-muted">
         {{ description }}
+        <span v-if="highlight" class="font-medium text-(--ui-error)">
+          {{ highlight }}
+        </span>
       </div>
     </template>
 

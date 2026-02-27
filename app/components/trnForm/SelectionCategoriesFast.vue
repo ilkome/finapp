@@ -13,6 +13,12 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
+
+const isShowAllCategoriesFallback = computed(() =>
+  categoriesStore.favoriteCategoriesIds.length === 0
+  && categoriesStore.recentCategoriesIds.length === 0
+  && categoriesStore.categoriesIdsForTrnValues.length > 0,
+)
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const trnsFormStore = useTrnsFormStore()
 
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
-      :hide="emit('close')"
+      :hide="() => emit('close')"
       :ids="categoriesStore.favoriteCategoriesIds"
       @clickParent="id => emit('selectParentCategory', id)"
       @selected="id => emit('selectCategory', id)"
@@ -42,7 +48,7 @@ const trnsFormStore = useTrnsFormStore()
 
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
-      :hide="emit('close')"
+      :hide="() => emit('close')"
       :ids="categoriesStore.recentCategoriesIds"
       @clickParent="id => emit('selectParentCategory', id)"
       @selected="id => emit('selectCategory', id)"
@@ -50,10 +56,10 @@ const trnsFormStore = useTrnsFormStore()
   </div>
 
   <!-- All categories fallback when no favorites and no recent -->
-  <div v-if="categoriesStore.favoriteCategoriesIds.length === 0 && categoriesStore.recentCategoriesIds.length === 0 && categoriesStore.categoriesIdsForTrnValues.length > 0">
+  <div v-if="isShowAllCategoriesFallback">
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
-      :hide="emit('close')"
+      :hide="() => emit('close')"
       :ids="categoriesStore.categoriesIdsForTrnValues"
       @clickParent="id => emit('selectParentCategory', id)"
       @selected="id => emit('selectCategory', id)"

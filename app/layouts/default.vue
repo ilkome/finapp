@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
-
 import { useInitApp } from '~/components/app/useInitApp'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDemo } from '~/components/demo/useDemo'
@@ -20,7 +18,6 @@ const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()
 const { isMenuOpen } = useMenuData()
 const { loadDataFromCache, loadDataFromDB } = useInitApp()
-const { t } = useI18n()
 const { width } = useWindowSize()
 
 const isShowSidebar = useCookie('finapp.isShowSidebar', { default: () => true })
@@ -88,7 +85,6 @@ defineShortcuts({
     <template v-else-if="status === 'success'">
       <template v-if="isOnboarded">
         <LayoutSidebar
-          :isShowTrnForm="trnsFormStore.ui.isShow"
           :isShowSidebar
           @toggleSidebar="isShowSidebar = !isShowSidebar"
         />

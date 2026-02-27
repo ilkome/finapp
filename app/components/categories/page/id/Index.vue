@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -28,8 +27,8 @@ provide(filterKey, filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
-const preCategoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
-const categoriesIdsOrParent = computed(() => categoriesStore.getChildsIdsOrParent(categoryId.value))
+const preCategoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
+const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
 
 const activeTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'summary')
 const storageKey = computed(() => `page-${categoryId.value}-${activeTab.value}`)
@@ -90,21 +89,23 @@ function onEditClick(close: () => void) {
 
 useHead({ title: category.value?.name })
 
-const deleteDescText = computed(() => {
-  if (trnsIds.value && trnsIds.value.length > 0)
-    return t('categories.form.delete.alertWithTrns', { trns: t('trns.plural', trnsIds.value.length) })
-  return undefined
-})
+const deleteDescText = computed(() =>
+  trnsIds.value.length > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
+)
+
+const deleteHighlight = computed(() =>
+  trnsIds.value.length > 0 ? t('trns.plural', trnsIds.value.length) : undefined,
+)
 
 const isShowDeleteConfirm = ref(false)
 function onClickDelete(close: () => void) {
   close()
 
-  for (const id in categoriesStore.items) {
+  for (const id of Object.keys(categoriesStore.items)) {
     if (categoriesStore.items[id]?.parentId === categoryId.value) {
-      showErrorToast('categories.form.delete.errorChilds')
+      showErrorToast('categories.form.delete.errorChildren')
 
-      return false
+      return
     }
   }
 
@@ -112,24 +113,24 @@ function onClickDelete(close: () => void) {
 }
 
 async function onDeleteConfirm() {
-  const trnsIdsS = [...trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildsIdsOrParent(categoryId.value),
+  const deleteTrnsIds = [...trnsStore.getStoreTrnsIds({
+    categoriesIds: categoriesStore.getChildrenIdsOrParent(categoryId.value),
   })]
 
   router.push('/categories')
-  await categoriesStore.deleteCategory(categoryId.value, trnsIdsS)
+  await categoriesStore.deleteCategory(categoryId.value, deleteTrnsIds)
 
   // Give some time to complete redirect
   setTimeout(() => {
-    showSuccessToast(trnsIdsS?.length > 0
+    showSuccessToast(deleteTrnsIds.length > 0
       ? 'categories.form.delete.okWithTrns'
-      : 'categories.form.delete.okWithoutTrns', trnsIdsS?.length > 0
-      ? { length: trnsIdsS.length, trns: t('trns.plural', trnsIdsS.length) }
+      : 'categories.form.delete.okWithoutTrns', deleteTrnsIds.length > 0
+      ? { length: deleteTrnsIds.length, trns: t('trns.plural', deleteTrnsIds.length) }
       : undefined)
   }, 300)
 }
 
-const categoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.value))
+const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
 </script>
 
 <template>
@@ -162,14 +163,14 @@ const categoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.val
         #popover="{ close }"
       >
         <UiHeaderLink
-          icon="mdi:pencil-outline"
+          icon="lucide:pencil"
           @click="onEditClick(close)"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
 
         <UiHeaderLink
-          icon="mdi:delete-empty-outline"
+          icon="lucide:trash-2"
           @click="onClickDelete(close)"
         >
           {{ t('base.delete') }}
@@ -179,7 +180,9 @@ const categoriesIds = computed(() => categoriesStore.getChildsIds(categoryId.val
 
     <LayoutConfirmModal
       v-if="isShowDeleteConfirm"
+      :title="t('categories.form.delete.title')"
       :description="deleteDescText"
+      :highlight="deleteHighlight"
       @closed="isShowDeleteConfirm = false"
       @confirm="onDeleteConfirm"
     />

@@ -11,6 +11,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
+import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
@@ -62,7 +63,7 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
           v-if="statTabSlug === 'income'"
           :amount="total.income / props.averageConfig"
           :currencyCode="currenciesStore.base"
-          :type="1"
+          :type="TrnType.Income"
           align="left"
           colorize="income"
           variant="base"
@@ -71,7 +72,7 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
           v-if="statTabSlug === 'expense'"
           :amount="total.expense / props.averageConfig"
           :currencyCode="currenciesStore.base"
-          :type="0"
+          :type="TrnType.Expense"
           align="left"
           colorize="expense"
           variant="base"
@@ -81,7 +82,7 @@ const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
           :amount="total.sum / props.averageConfig"
           :colorize="total.sum > 0 ? 'income' : 'expense'"
           :currencyCode="currenciesStore.base"
-          :type="total.sum > 0 ? 1 : 0"
+          :type="total.sum > 0 ? TrnType.Income : TrnType.Expense"
           align="left"
           variant="base"
         />

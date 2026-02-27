@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onLongPress } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData } from '~/components/stat/types'
 
@@ -25,7 +23,6 @@ const trnsFormStore = useTrnsFormStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
 
-// TODO: addTrnFromSelectedInterval
 const longPressRef = ref(null)
 onLongPress(
   longPressRef,

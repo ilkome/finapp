@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onLongPress } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData } from '~/components/stat/types'
 
@@ -54,7 +52,6 @@ const amount = computed(() => {
   return `${props.item.value.toFixed()}`
 })
 
-// TODO: addTrnFromSelectedInterval
 const longPressRef = ref(null)
 onLongPress(
   longPressRef,

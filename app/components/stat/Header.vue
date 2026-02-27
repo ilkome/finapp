@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatConfigModal, StatTabSlug } from '~/components/stat/types'
+import type { StatConfigModal } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey, statConfigKey } from '~/components/stat/injectionKeys'
@@ -16,10 +16,6 @@ const props = defineProps<{
     isShowCategories?: boolean
     isShowSelected?: boolean
     isShowWallets?: boolean
-  }
-  menu?: {
-    active: StatTabSlug
-    click: (id: StatTabSlug) => void
   }
 }>()
 

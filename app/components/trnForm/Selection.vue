@@ -24,8 +24,8 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 
-const sliderRef = ref<any>(null)
-const sliderObj = ref<any>(null)
+const sliderRef = ref<HTMLElement | null>(null)
+const sliderObj = ref<Swiper | null>(null)
 onMounted(() => {
   if (!sliderObj.value) {
     sliderObj.value = new Swiper(sliderRef.value, {

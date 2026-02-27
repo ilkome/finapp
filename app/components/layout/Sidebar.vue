@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { useWindowSize } from '@vueuse/core'
-
 import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isShowSidebar?: boolean
-  isShowTrnForm?: boolean
 }>()
 
 const emit = defineEmits(['toggleSidebar'])

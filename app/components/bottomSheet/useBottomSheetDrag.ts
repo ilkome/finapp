@@ -1,7 +1,5 @@
 import type { Ref } from 'vue'
 
-import { useEventListener } from '@vueuse/core'
-
 type Event = TouchEvent | MouseEvent
 
 const PERCENT_BASE = 100

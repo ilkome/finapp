@@ -16,19 +16,13 @@ const isShowNav = computed(() =>
 
 const isDayToday = computed(() => statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1 && statDate.range.value.end < getEndOf(new Date(), 'day').getTime())
 
-const isEnd = computed(() => {
-  if (statDate.range.value.end >= getEndOf(new Date(), statDate.params.value.rangeBy).getTime() && !isDayToday.value)
-    return true
+const isEnd = computed(() =>
+  statDate.range.value.end >= getEndOf(new Date(), statDate.params.value.rangeBy).getTime() && !isDayToday.value,
+)
 
-  return false
-})
-
-const isStart = computed(() => {
-  if (statDate.range.value.start <= statDate.maxRange.value.start)
-    return true
-
-  return false
-})
+const isStart = computed(() =>
+  statDate.range.value.start <= statDate.maxRange.value.start,
+)
 
 const isShowNavHome = computed(() => {
   const start = getStartOf(sub(new Date(), { [`${statDate.params.value.rangeBy}s`]: statDate.params.value.rangeDuration - 1 }), statDate.params.value.rangeBy).getTime()

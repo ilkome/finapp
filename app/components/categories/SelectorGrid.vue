@@ -5,7 +5,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   activeItemId?: CategoryId
-  hide?: () => null
+  hide?: () => void
   ids: CategoryId[]
 }>()
 
