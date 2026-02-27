@@ -45,9 +45,9 @@ const radius = computed({
 })
 
 const modes = [
-  { label: 'light' },
-  { label: 'dark' },
-  { label: 'system' },
+  { icon: 'i-lucide-sun', label: 'light' },
+  { icon: 'i-lucide-moon', label: 'dark' },
+  { icon: 'i-lucide-monitor', label: 'system' },
 ]
 const mode = computed({
   get() {
@@ -63,20 +63,11 @@ function setBlackAsPrimary(value: boolean) {
   window.localStorage.setItem('nuxt-ui-black-as-primary', String(value))
 }
 
-const currentPrimaryLabel = computed(() => {
-  if (appConfig.theme.blackAsPrimary)
-    return 'Black'
-  return primary.value
-})
-
-const openMode = ref(false)
-const openPrimary = ref(false)
-const openNeutral = ref(false)
-const openRadius = ref(false)
+const activeTab = ref('mode')
 </script>
 
 <template>
-  <!-- Inline mode: collapsible items -->
+  <!-- Inline mode: tabs -->
   <div
     v-if="props.inline"
     class="border-item-6 overflow-hidden rounded-lg border"
@@ -84,122 +75,121 @@ const openRadius = ref(false)
     <div class="px-4 pt-4 pb-2 text-lg font-semibold">
       {{ t('theme.title') }}
     </div>
-    <!-- Theme mode -->
-    <UCollapsible v-model:open="openMode" class="border-item-6 border-b">
-      <button class="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm font-semibold">
-        {{ t('theme.picker.theme') }}
-        <span class="text-muted text-xs font-normal capitalize">{{ colorMode.preference }}</span>
-        <UIcon name="i-lucide-chevron-down" :class="cn('text-muted ml-auto size-4 transition-transform', openMode && 'rotate-180')" />
-      </button>
 
-      <template #content>
-        <div class="grid grid-cols-3 gap-1 px-4 pb-4">
-          <ThemePickerButton
-            v-for="m in modes"
-            :key="m.label"
-            v-bind="m"
-            :selected="colorMode.preference === m.label"
-            @click="mode = m.label"
-          />
-        </div>
-      </template>
-    </UCollapsible>
+    <div class="px-4 pb-2">
+      <UiTabsScroll>
+        <UiTabsItemPill
+          :isActive="activeTab === 'mode'"
+          variant="outline"
+          @click="activeTab = 'mode'"
+        >
+          {{ t('theme.picker.theme') }}
+        </UiTabsItemPill>
+        <UiTabsItemPill
+          variant="outline"
+          :isActive="activeTab === 'primary'"
+          @click="activeTab = 'primary'"
+        >
+          {{ t('theme.picker.primary') }}
+        </UiTabsItemPill>
+        <UiTabsItemPill
+          variant="outline"
+          :isActive="activeTab === 'neutral'"
+          @click="activeTab = 'neutral'"
+        >
+          {{ t('theme.picker.neutral') }}
+        </UiTabsItemPill>
+        <UiTabsItemPill
+          variant="outline"
+          :isActive="activeTab === 'radius'"
+          @click="activeTab = 'radius'"
+        >
+          {{ t('theme.picker.radius') }}
+        </UiTabsItemPill>
+      </UiTabsScroll>
+    </div>
+
+    <!-- Theme mode -->
+    <div v-if="activeTab === 'mode'" class="grid grid-cols-3 px-4 pb-4">
+      <UiElement
+        v-for="m in modes"
+        :key="m.label"
+        :isActive="colorMode.preference === m.label"
+        @click="mode = m.label"
+      >
+        <template #leftIcon>
+          <UIcon :name="m.icon" class="text-muted size-5" />
+        </template>
+        <span class="text-sm capitalize">{{ m.label }}</span>
+      </UiElement>
+    </div>
 
     <!-- Primary color -->
-    <UCollapsible v-model:open="openPrimary" class="border-item-6 border-b">
-      <button class="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm font-semibold">
-        <span
-          v-if="appConfig.theme.blackAsPrimary"
-          class="inline-block size-2 rounded-full bg-black dark:bg-white"
-        />
-        <span
-          v-else
-          class="inline-block size-2 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-          :style="{
-            '--color-light': `var(--color-${primary}-500)`,
-            '--color-dark': `var(--color-${primary}-400)`,
-          }"
-        />
-        {{ t('theme.picker.primary') }}
-        <span class="text-muted text-xs font-normal capitalize">{{ currentPrimaryLabel }}</span>
-        <UIcon name="i-lucide-chevron-down" :class="cn('text-muted ml-auto size-4 transition-transform', openPrimary && 'rotate-180')" />
-      </button>
+    <div v-if="activeTab === 'primary'" class="grid grid-cols-3 px-4 pb-4">
+      <UiElement
+        :isActive="appConfig.theme.blackAsPrimary"
+        @click="setBlackAsPrimary(true)"
+      >
+        <template #leftIcon>
+          <span class="inline-block size-5 rounded-full bg-black dark:bg-white" />
+        </template>
+        <span class="text-sm capitalize">Black</span>
+      </UiElement>
 
-      <template #content>
-        <div class="grid grid-cols-3 gap-1 px-4 pb-4">
-          <ThemePickerButton
-            chip="primary"
-            label="Black"
-            :selected="appConfig.theme.blackAsPrimary"
-            @click="setBlackAsPrimary(true)"
-          >
-            <template #leading>
-              <span class="inline-block h-2 w-2 rounded-full bg-black dark:bg-white" />
-            </template>
-          </ThemePickerButton>
-
-          <ThemePickerButton
-            v-for="color in primaryColors"
-            :key="color"
-            :label="color"
-            :chip="color"
-            :selected="!appConfig.theme.blackAsPrimary && primary === color"
-            @click="primary = color"
+      <UiElement
+        v-for="color in primaryColors"
+        :key="color"
+        :isActive="!appConfig.theme.blackAsPrimary && primary === color"
+        @click="primary = color"
+      >
+        <template #leftIcon>
+          <span
+            class="inline-block size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+            :style="{
+              '--color-light': `var(--color-${color}-500)`,
+              '--color-dark': `var(--color-${color}-400)`,
+            }"
           />
-        </div>
-      </template>
-    </UCollapsible>
+        </template>
+        <span class="text-sm capitalize">{{ color }}</span>
+      </UiElement>
+    </div>
 
     <!-- Neutral color -->
-    <UCollapsible v-model:open="openNeutral" class="border-item-6 border-b">
-      <button class="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm font-semibold">
-        <span
-          class="inline-block size-2 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-          :style="{
-            '--color-light': `var(--color-${neutral}-500)`,
-            '--color-dark': `var(--color-${neutral}-400)`,
-          }"
-        />
-        {{ t('theme.picker.neutral') }}
-        <span class="text-muted text-xs font-normal capitalize">{{ neutral }}</span>
-        <UIcon name="i-lucide-chevron-down" :class="cn('text-muted ml-auto size-4 transition-transform', openNeutral && 'rotate-180')" />
-      </button>
-
-      <template #content>
-        <div class="grid grid-cols-3 gap-1 px-4 pb-4">
-          <ThemePickerButton
-            v-for="color in neutralColors"
-            :key="color"
-            :label="color"
-            :chip="color"
-            :selected="neutral === color"
-            @click="neutral = color"
+    <div v-if="activeTab === 'neutral'" class="grid grid-cols-3 px-4 pb-4">
+      <UiElement
+        v-for="color in neutralColors"
+        :key="color"
+        :isActive="neutral === color"
+        @click="neutral = color"
+      >
+        <template #leftIcon>
+          <span
+            class="inline-block size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+            :style="{
+              '--color-light': `var(--color-${color}-500)`,
+              '--color-dark': `var(--color-${color}-400)`,
+            }"
           />
-        </div>
-      </template>
-    </UCollapsible>
+        </template>
+        <span class="text-sm capitalize">{{ color }}</span>
+      </UiElement>
+    </div>
 
     <!-- Radius -->
-    <UCollapsible v-model:open="openRadius">
-      <button class="flex w-full cursor-pointer items-center gap-2 px-4 py-3 text-left text-sm font-semibold">
-        {{ t('theme.picker.radius') }}
-        <span class="text-muted text-xs font-normal">{{ radius }}</span>
-        <UIcon name="i-lucide-chevron-down" :class="cn('text-muted ml-auto size-4 transition-transform', openRadius && 'rotate-180')" />
-      </button>
-
-      <template #content>
-        <div class="grid grid-cols-5 gap-1 px-4 pb-4">
-          <ThemePickerButton
-            v-for="r in radiuses"
-            :key="r"
-            :label="String(r)"
-            class="justify-center px-0"
-            :selected="radius === r"
-            @click="radius = r"
-          />
-        </div>
-      </template>
-    </UCollapsible>
+    <div v-if="activeTab === 'radius'" class="grid grid-cols-3 px-4 pb-4">
+      <UiElement
+        v-for="r in radiuses"
+        :key="r"
+        :isActive="radius === r"
+        @click="radius = r"
+      >
+        <template #leftIcon>
+          <UIcon name="i-lucide-square" class="text-muted size-5" :style="{ borderRadius: `${r * 4}px` }" />
+        </template>
+        <span class="text-sm">{{ r }}</span>
+      </UiElement>
+    </div>
   </div>
 
   <!-- Popover mode: button with popover -->
