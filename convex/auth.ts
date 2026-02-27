@@ -45,6 +45,10 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         siteUrl: frontendUrl,
       }),
     ],
+    session: {
+      expiresIn: 60 * 60 * 24 * 90, // 90 days
+      updateAge: 60 * 60 * 24, // 1 day (refresh on each visit)
+    },
     socialProviders: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID!,
