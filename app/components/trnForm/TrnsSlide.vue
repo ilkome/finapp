@@ -43,6 +43,7 @@ const trnsIds = computed(() => {
   return trnsStore.getStoreTrnsIds({
     categoriesIds,
     dates,
+    sort: true,
     walletsIds,
   })
 })

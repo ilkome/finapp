@@ -76,6 +76,7 @@ function onClickCategory(clickedCategoryId: CategoryId) {
   // Show quick view
   quickViewTrns.value = trnsStore.getStoreTrnsIds({
     categoriesIds: [clickedCategoryId],
+    sort: true,
     trnsIds: selectedAndFilteredTrnsIds.value,
   })
 }

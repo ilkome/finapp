@@ -63,16 +63,28 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function getRange(trnsIds: TrnId[]): Range {
-    if (!items.value) {
+    if (!items.value || !trnsIds.length) {
       return {
         end: getEndOf(new Date(), 'day').getTime(),
         start: getStartOf(new Date(), 'day').getTime(),
       }
     }
 
+    let min = Infinity
+    let max = -Infinity
+    for (const id of trnsIds) {
+      const date = items.value[id]?.date
+      if (date != null) {
+        if (date < min)
+          min = date
+        if (date > max)
+          max = date
+      }
+    }
+
     return {
-      end: items.value[trnsIds.at(0)!]?.date ?? getEndOf(new Date(), 'day').getTime(),
-      start: items.value[trnsIds.at(-1)!]?.date ?? getStartOf(new Date(), 'day').getTime(),
+      end: max !== -Infinity ? max : getEndOf(new Date(), 'day').getTime(),
+      start: min !== Infinity ? min : getStartOf(new Date(), 'day').getTime(),
     }
   }
 

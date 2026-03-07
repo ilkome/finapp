@@ -6,7 +6,7 @@ import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fn
 import type { CategoryId } from '~/components/categories/types'
 import type { Range, StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/stat/filter/types'
-import type { ChartSeries, IntervalData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { ChartSeries, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
@@ -82,26 +82,47 @@ export function useStatItem({
   }))
 
   function getIntervalsData(ids: TrnId[], intervalsInRange: Range[]) {
-    return intervalsInRange.reduce((acc, range) => {
-      const trnsIdsInRange = ids.filter((id) => {
-        const trnDate = trnsStore.items?.[id]?.date
-        return trnDate != null && trnDate >= range.start && trnDate <= range.end
-      })
+    if (!intervalsInRange.length)
+      return []
 
-      acc.push({
-        range,
-        total: getTotalOfTrnsIds(trnsIdsInRange),
-        trnsIds: trnsIdsInRange,
-      })
+    // Pre-allocate one bucket per interval
+    const buckets: TrnId[][] = intervalsInRange.map(() => [])
 
-      return acc
-    }, [] as IntervalData[])
+    // Single pass over trns — binary search for the matching interval
+    for (const id of ids) {
+      const trnDate = trnsStore.items?.[id]?.date
+      if (trnDate == null)
+        continue
+
+      let lo = 0
+      let hi = intervalsInRange.length - 1
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1
+        if (trnDate < intervalsInRange[mid].start) {
+          hi = mid - 1
+        }
+        else if (trnDate > intervalsInRange[mid].end) {
+          lo = mid + 1
+        }
+        else {
+          buckets[mid].push(id)
+          break
+        }
+      }
+    }
+
+    return intervalsInRange.map((range, i) => ({
+      range,
+      total: getTotalOfTrnsIds(buckets[i]),
+      trnsIds: buckets[i],
+    }))
   }
 
   const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
   const intervalsDataWithFilteredCategories = computed(() => getIntervalsData(rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value))
 
   const selectedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+    sort: true,
     trnsIds: statDate.params.value.intervalSelected !== -1
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
@@ -110,6 +131,7 @@ export function useStatItem({
 
   const selectedAndFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     categoriesIds: filteredCategoriesIds.value,
+    sort: true,
     trnsIds: statDate.params.value.intervalSelected !== -1
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
