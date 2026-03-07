@@ -7,7 +7,7 @@ import type { MutationCtx } from './_generated/server'
 import { internal } from './_generated/api'
 import { mutation, query } from './_generated/server'
 import { getAuthUser, getOwnEntity, requireAuthUser, TrnType } from './shared'
-import { addTrnToHash, fnv1aNum, removeTrnFromHash, removeTrnsFromHash } from './trnsHash'
+import { addTrnToHash, fnv1aNum, removeTrnFromHash } from './trnsHash'
 
 async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
   if (args.type === TrnType.Transfer) {
@@ -204,22 +204,3 @@ export const remove = mutation({
   },
 })
 
-const BATCH_LIMIT = 500
-
-export const removeBatch = mutation({
-  args: { ids: v.array(v.id('trns')) },
-  handler: async (ctx, { ids }) => {
-    if (ids.length > BATCH_LIMIT)
-      throw new Error(`Batch size exceeds limit of ${BATCH_LIMIT}`)
-
-    const user = await requireAuthUser(ctx)
-    const deletedIds: string[] = []
-    for (const id of ids) {
-      const deleted = await removeUserTrn(ctx, id, user._id)
-      if (deleted)
-        deletedIds.push(id)
-    }
-    if (deletedIds.length)
-      await removeTrnsFromHash(ctx, user._id, deletedIds)
-  },
-})

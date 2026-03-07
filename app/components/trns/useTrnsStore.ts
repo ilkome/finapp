@@ -11,7 +11,7 @@ import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/compo
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
-import { pushOfflineOp, removeOfflineOps } from '~/components/offline/helpers'
+import { pushOfflineOp } from '~/components/offline/helpers'
 import { isReplaying } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { getTrnsIds } from '~/components/trns/getTrns'
@@ -299,44 +299,6 @@ export const useTrnsStore = defineStore('trns', () => {
     })
   }
 
-  function deleteTrnsByIds(trnsIds: TrnId[]) {
-    if (trnsIds.length === 0)
-      return
-
-    // Single optimistic update
-    const trns = { ...(items.value ?? {}) }
-    for (const id of trnsIds)
-      delete trns[id]
-    setTrns(trns)
-
-    if (isDemo.value)
-      return
-
-    // Batch offline queue
-    logger.log(`optimistic batch delete: ${trnsIds.length} trns`)
-    if (!isReplaying()) {
-      for (const id of trnsIds)
-        pushOfflineOp({ entity: 'trns', id, type: 'delete' })
-    }
-
-    const { api, client } = useConvexClientWithApi()
-    const convexIds = trnsIds.filter(id => !isLocalId(id)).map(id => asConvexId<'trns'>(id))
-
-    if (convexIds.length > 0) {
-      return handleMutationResult({
-        action: 'delete',
-        entity: 'trns',
-        errorMessage: 'trns.errors.deleteFailed',
-        id: trnsIds,
-        mutation: client.mutation(api.trns.removeBatch, { ids: convexIds }),
-      })
-    }
-    else {
-      // All frontend IDs — just clean up offline queue
-      removeOfflineOps('trns', trnsIds)
-    }
-  }
-
   /**
    * Remove trns from store only (optimistic UI cleanup).
    * Does NOT fire mutations or push to offline queue.
@@ -418,7 +380,6 @@ export const useTrnsStore = defineStore('trns', () => {
     cancelPersist: () => debouncedPersist.cancel?.(),
     computeTrnItem,
     deleteTrn,
-    deleteTrnsByIds,
     getRange,
     getStoreTrnsIds,
     hasItems,

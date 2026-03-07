@@ -256,24 +256,6 @@ describe('useTrnsStore', () => {
     })
   })
 
-  describe('deleteTrnsByIds', () => {
-    it('batch deletes all trns in single mutation', () => {
-      const store = useTrnsStore()
-      store.items = {
-        trn1: makeTrn(),
-        trn2: makeTrn(),
-        trn3: makeTrn(),
-      }
-
-      store.deleteTrnsByIds(['trn1', 'trn3'])
-
-      expect(store.items).not.toHaveProperty('trn1')
-      expect(store.items).toHaveProperty('trn2')
-      expect(store.items).not.toHaveProperty('trn3')
-      expect(mutationMock).toHaveBeenCalledTimes(1)
-    })
-  })
-
   describe('removeTrnsFromStore', () => {
     it('removes trns from store without mutations or queue', () => {
       const store = useTrnsStore()
