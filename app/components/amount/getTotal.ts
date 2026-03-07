@@ -1,6 +1,6 @@
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
-import type { TrnId, TrnItem } from '~/components/trns/types'
-import type { WalletId, WalletItem } from '~/components/wallets/types'
+import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
+import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 
 import { TrnType } from '~/components/trns/types'
 
@@ -124,4 +124,50 @@ export function getTotal(props: TotalProps): TotalReturns {
     sum,
     sumTransfers,
   }
+}
+
+/**
+ * Single-pass wallet balance computation. O(N) instead of O(W×N).
+ * For each wallet, returns: income - expense + transfers + adjustments.
+ */
+export function getWalletsTotals(props: {
+  baseCurrencyCode?: string
+  rates?: Rates
+  trnsItems: Trns
+  walletsItems: Wallets
+}): Map<WalletId, number> {
+  const { baseCurrencyCode, rates, trnsItems, walletsItems } = props
+  const totals = new Map<WalletId, number>()
+
+  function addToWallet(walletId: WalletId, amount: number) {
+    totals.set(walletId, (totals.get(walletId) ?? 0) + amount)
+  }
+
+  function convert(amount: number, currencyCode: CurrencyCode): number {
+    return getAmountInRate({ amount, baseCurrencyCode, currencyCode, rates })
+  }
+
+  for (const trnId of Object.keys(trnsItems)) {
+    const trn = trnsItems[trnId]
+    if (!trn)
+      continue
+
+    if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
+      const wallet = walletsItems[trn.walletId]
+      if (!wallet)
+        continue
+      const amount = convert(trn.amount, wallet.currency)
+      addToWallet(trn.walletId, trn.type === TrnType.Income ? amount : -amount)
+    }
+    else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
+      const incomeWallet = walletsItems[trn.incomeWalletId]
+      const expenseWallet = walletsItems[trn.expenseWalletId]
+      if (!incomeWallet || !expenseWallet)
+        continue
+      addToWallet(trn.incomeWalletId, convert(trn.incomeAmount, incomeWallet.currency))
+      addToWallet(trn.expenseWalletId, -convert(trn.expenseAmount, expenseWallet.currency))
+    }
+  }
+
+  return totals
 }
