@@ -7,13 +7,9 @@
  *
  * Entity-specific mocks (Convex routes, cross-store deps) stay inline in each test file.
  */
+import { defineStore } from 'pinia'
 import { vi } from 'vitest'
-
-// ---------------------------------------------------------------------------
-// 1. Vue / Pinia auto-imports
-// ---------------------------------------------------------------------------
-const { computed, ref, shallowRef, watch } = await import('vue')
-const { defineStore } = await import('pinia')
+import { computed, ref, shallowRef, watch } from 'vue'
 
 vi.stubGlobal('computed', computed)
 vi.stubGlobal('ref', ref)
