@@ -42,7 +42,6 @@ export function useAmount() {
       rates: currenciesStore.rates,
       trnsIds,
       trnsItems: trnsStore.items ?? {},
-      walletsIds: Object.keys(walletsStore.items ?? {}),
       walletsItems: walletsStore.items ?? {},
     })
   }
