@@ -11,7 +11,7 @@ import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
-import { useWalletsPageCounts } from './useWalletsPageCounts'
+import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsPageFilter } from './useWalletsPageFilter'
 import { useWalletsPageGrouping } from './useWalletsPageGrouping'
 
@@ -88,7 +88,7 @@ const {
 const {
   counts,
   countWalletsSum,
-} = useWalletsPageCounts(selectedWalletsIdsWithCurrency)
+} = useWalletsCounts(selectedWalletsIdsWithCurrency)
 
 const {
   groupedBySecondary,

@@ -1,6 +1,7 @@
 import type { ShallowRef } from 'vue'
 
 import localforage from 'localforage'
+
 import type { EntityType } from '~/components/offline/types'
 
 import { errorEmo, random, successEmo, warningEmo } from '~/assets/js/emo'
