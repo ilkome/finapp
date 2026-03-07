@@ -18,7 +18,6 @@ export const categoryFormSchema = z.object({
 export type CategoryForm = z.infer<typeof categoryFormSchema>
 
 export type CategoryItem = CategoryForm & {
-  childIds?: CategoryId[]
   updatedAt?: number
 }
 

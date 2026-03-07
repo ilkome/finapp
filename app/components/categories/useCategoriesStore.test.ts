@@ -188,13 +188,13 @@ describe('useCategoriesStore', () => {
         ...store.items,
         child1: makeCategory({ color: '#f00', name: 'Child 1', parentId: 'parent1' }),
         child2: makeCategory({ color: '#f00', name: 'Child 2', parentId: 'parent1' }),
-        parent1: makeCategory({ childIds: ['child1', 'child2'], color: '#f00', name: 'Parent' }),
+        parent1: makeCategory({ color: '#f00', name: 'Parent' }),
       }
 
       store.saveCategory({
         id: 'parent1',
         isUpdateChildCategoriesColor: true,
-        values: makeCategory({ childIds: ['child1', 'child2'], color: '#00f', name: 'Parent' }),
+        values: makeCategory({ color: '#00f', name: 'Parent' }),
       })
 
       expect(store.items.child1.color).toBe('#00f')
@@ -207,7 +207,7 @@ describe('useCategoriesStore', () => {
       store.items = {
         ...store.items,
         child1: makeCategory({ color: '#f00', name: 'Child 1', parentId: 'parent1' }),
-        parent1: makeCategory({ childIds: ['child1'], color: '#f00', name: 'Parent' }),
+        parent1: makeCategory({ color: '#f00', name: 'Parent' }),
       }
 
       store.saveCategory({
@@ -222,13 +222,13 @@ describe('useCategoriesStore', () => {
       )
     })
 
-    it('syncs childIds when parentId changes', () => {
+    it('computes children correctly after parentId change', () => {
       const store = useCategoriesStore()
       store.items = {
         ...store.items,
         c1: makeCategory({ name: 'Child', parentId: 'oldParent' }),
         newParent: makeCategory({ name: 'New Parent' }),
-        oldParent: makeCategory({ childIds: ['c1'], name: 'Old Parent' }),
+        oldParent: makeCategory({ name: 'Old Parent' }),
       }
 
       store.saveCategory({
@@ -237,8 +237,8 @@ describe('useCategoriesStore', () => {
         values: makeCategory({ name: 'Child', parentId: 'newParent' }),
       })
 
-      expect(store.items.oldParent.childIds).toBeUndefined()
-      expect(store.items.newParent.childIds).toEqual(['c1'])
+      expect(store.getChildrenIds('oldParent')).toEqual([])
+      expect(store.getChildrenIds('newParent')).toEqual(['c1'])
     })
 
     it('shows toast on mutation failure', async () => {
@@ -350,17 +350,18 @@ describe('useCategoriesStore', () => {
       })
     })
 
-    it('syncs parent childIds on delete', () => {
+    it('parent has no deleted child in getChildrenIds', () => {
       const store = useCategoriesStore()
       store.items = {
         ...store.items,
-        c1: makeCategory({ name: 'Child', parentId: 'parent1' }),
-        parent1: makeCategory({ childIds: ['c1', 'c2'], name: 'Parent' }),
+        c1: makeCategory({ name: 'Child 1', parentId: 'parent1' }),
+        c2: makeCategory({ name: 'Child 2', parentId: 'parent1' }),
+        parent1: makeCategory({ name: 'Parent' }),
       }
 
       store.deleteCategory('c1')
 
-      expect(store.items.parent1.childIds).toEqual(['c2'])
+      expect(store.getChildrenIds('parent1')).toEqual(['c2'])
     })
   })
 })
