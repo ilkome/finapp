@@ -57,26 +57,25 @@ export function useStatDate({
   if (queryParams) {
     const parsed = queryParamsSchema.safeParse(queryParams)
 
-    if (!parsed.success)
-      return
-
-    const data = parsed.data
-    if (data.intervalsBy)
-      params.value.intervalsBy = data.intervalsBy
-    if (data.intervalsDuration)
-      params.value.intervalsDuration = data.intervalsDuration
-    if (data.intervalSelected)
-      params.value.intervalSelected = data.intervalSelected
-    if (data.rangeBy)
-      params.value.rangeBy = data.rangeBy
-    if (data.rangeDuration)
-      params.value.rangeDuration = data.rangeDuration
-    if (data.rangeOffset)
-      params.value.rangeOffset = data.rangeOffset
-    if (data.isShowMaxRange !== undefined)
-      params.value.isShowMaxRange = data.isShowMaxRange
-    if (data.isSkipEmpty !== undefined)
-      params.value.isSkipEmpty = data.isSkipEmpty
+    if (parsed.success) {
+      const data = parsed.data
+      if (data.intervalsBy)
+        params.value.intervalsBy = data.intervalsBy
+      if (data.intervalsDuration)
+        params.value.intervalsDuration = data.intervalsDuration
+      if (data.intervalSelected)
+        params.value.intervalSelected = data.intervalSelected
+      if (data.rangeBy)
+        params.value.rangeBy = data.rangeBy
+      if (data.rangeDuration)
+        params.value.rangeDuration = data.rangeDuration
+      if (data.rangeOffset)
+        params.value.rangeOffset = data.rangeOffset
+      if (data.isShowMaxRange !== undefined)
+        params.value.isShowMaxRange = data.isShowMaxRange
+      if (data.isSkipEmpty !== undefined)
+        params.value.isSkipEmpty = data.isSkipEmpty
+    }
   }
 
   const range = computed<Range>(() => {
