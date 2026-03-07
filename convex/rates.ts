@@ -1,7 +1,7 @@
 import { v } from 'convex/values'
 
 import { internal } from './_generated/api'
-import { action, internalAction, internalMutation, query } from './_generated/server'
+import { internalAction, internalMutation, query } from './_generated/server'
 
 const appId = process.env.OPENEXCHANGERATES_APP_ID
 
@@ -33,13 +33,6 @@ export const saveRates = internalMutation({
     else {
       await ctx.db.insert('rates', { date, rates, updatedAt: Date.now() })
     }
-  },
-})
-
-export const refreshRates = action({
-  args: {},
-  handler: async (ctx) => {
-    await ctx.runAction(internal.rates.fetchAndSaveRates, {})
   },
 })
 
