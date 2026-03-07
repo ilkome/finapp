@@ -8,12 +8,11 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { showSuccessToast } from '~/composables/useStoreSync'
-
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
-import { useWalletsPageGrouping } from './useWalletsPageGrouping'
+import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -98,7 +97,7 @@ const {
   toggleOpened,
   typeGroupsStatus,
   walletsToggledMap,
-} = useWalletsPageGrouping(selectedWalletsIds, groupedBy)
+} = useWalletsGrouping(selectedWalletsIds, groupedBy)
 
 function toggleSecondaryGrouping() {
   if (groupedBy.value === 'currency')
