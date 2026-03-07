@@ -1,10 +1,10 @@
 import type { ComputedRef } from 'vue'
 
 import { useStorage } from '@vueuse/core'
-import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fns'
+import { differenceInDays } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { Range, StatDateProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/stat/filter/types'
 import type { ChartSeries, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
@@ -12,7 +12,8 @@ import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
-import { getTypesMapping } from '~/components/stat/utils'
+import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
+import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 type UseStatItemParams = {
@@ -49,28 +50,11 @@ export function useStatItem({
 
   const filteredCategoriesIds = ref<CategoryId[]>([])
 
-  const selectedType = computed(() => {
-    if (statTab.value === 'summary')
-      return filteredType.value
-    if (statTab.value === 'split')
-      return type.value
-    return statTab.value
-  })
-
-  const selectedTypeForSum = computed(() => {
-    if (statTab.value === 'summary')
-      return 'summary'
-    if (statTab.value === 'split')
-      return type.value
-    return statTab.value
-  })
-
+  const selectedType = computed(() => getSelectedType(statTab.value, filteredType.value, type.value))
+  const selectedTypeForSum = computed(() => getSelectedTypeForSum(statTab.value, type.value))
   const selectedTypesMapping = computed(() => getTypesMapping(selectedType.value))
 
-  const isPeriodOneDay = computed(() =>
-    (statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1)
-    || (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalSelected !== -1),
-  )
+  const isPeriodOneDay = computed(() => isPeriodOneDayFn(statDate.params.value))
 
   const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     trnsIds: trnsIds.value,
@@ -81,45 +65,13 @@ export function useStatItem({
     trnsIds: trnsIds.value,
   }))
 
-  function getIntervalsData(ids: TrnId[], intervalsInRange: Range[]) {
-    if (!intervalsInRange.length)
-      return []
+  const intervalsData = computed(() =>
+    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, getTotalOfTrnsIds),
+  )
 
-    // Pre-allocate one bucket per interval
-    const buckets: TrnId[][] = intervalsInRange.map(() => [])
-
-    // Single pass over trns — binary search for the matching interval
-    for (const id of ids) {
-      const trnDate = trnsStore.items?.[id]?.date
-      if (trnDate == null)
-        continue
-
-      let lo = 0
-      let hi = intervalsInRange.length - 1
-      while (lo <= hi) {
-        const mid = (lo + hi) >> 1
-        if (trnDate < intervalsInRange[mid].start) {
-          hi = mid - 1
-        }
-        else if (trnDate > intervalsInRange[mid].end) {
-          lo = mid + 1
-        }
-        else {
-          buckets[mid].push(id)
-          break
-        }
-      }
-    }
-
-    return intervalsInRange.map((range, i) => ({
-      range,
-      total: getTotalOfTrnsIds(buckets[i]),
-      trnsIds: buckets[i],
-    }))
-  }
-
-  const intervalsData = computed(() => getIntervalsData(rangeTrnsIds.value, statDate.intervalsInRange.value))
-  const intervalsDataWithFilteredCategories = computed(() => getIntervalsData(rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value))
+  const intervalsDataWithFilteredCategories = computed(() =>
+    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, getTotalOfTrnsIds),
+  )
 
   const selectedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     sort: true,
@@ -149,50 +101,16 @@ export function useStatItem({
     if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
       return
 
-    const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[type.value]
+    const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[type.value!]
 
-    const date = statDate.params.value.intervalSelected !== -1
+    const dateRange = statDate.params.value.intervalSelected !== -1
       ? statDate.selectedInterval.value
       : statDate.range.value
 
-    const dif = {
-      day: differenceInDays(date?.end, date?.start) + 1,
-      month: differenceInMonths(date?.end, date?.start) + 1,
-      week: differenceInWeeks(date?.end, date?.start) + 1,
-    }
-
-    const items = {
-      month: 0,
-      week: 0,
-      // eslint-disable-next-line perfectionist/sort-objects
-      day: 0,
-    }
-
-    if (dif.month > 1)
-      items.month = sum / dif.month
-    if (dif.day > 1)
-      items.day = sum / dif.day
-    if (dif.week > 1)
-      items.week = sum / dif.week
-
-    return Object.fromEntries(Object.entries(items).filter(([_, value]) => value !== 0))
+    return computeAverageTotal(sum, dateRange!)
   })
 
-  const typesToShow = computed(() => {
-    if (statTab.value === 'summary') {
-      if (filteredType.value === 'netIncome')
-        return ['income', 'expense']
-      if (filteredType.value === 'income')
-        return ['income']
-      if (filteredType.value === 'expense')
-        return ['expense']
-    }
-
-    if (statTab.value === 'expense' || statTab.value === 'income')
-      return [statTab.value]
-
-    return [type.value]
-  })
+  const typesToShow = computed(() => getTypesToShow(statTab.value, filteredType.value, type.value))
 
   const chartSeries = computed<ChartSeries[]>(() => {
     const intervalTotals = intervalsDataWithFilteredCategories.value.map(g => g.total)

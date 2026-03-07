@@ -3,8 +3,8 @@ import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import { action, internalMutation, mutation, query } from './_generated/server'
 import { CREDIT_LIMIT_MAX, getAuthUser, getOwnEntity, requireAuthUser, validateNumberRange, validateStringLength } from './shared'
-import { walletTypeValidator } from './validators'
 import { removeTrnsFromHash } from './trnsHash'
+import { walletTypeValidator } from './validators'
 
 export const list = query({
   args: {},

@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { Categories } from '~/components/categories/types'
 import type { CategoriesWithData } from '~/components/stat/types'
 
-import { collectCategoriesByTrns, flattenCategoriesWithValues, groupCategoriesWithValues } from '~/components/stat/categories/collectAndGroup'
+import { collectCategoriesByTrns, flattenCategoriesWithValues, groupCategoriesWithValues, sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
 
 const categories: Categories = {
   food: { color: 'red', name: 'Food', order: 0, parentId: 0 },
@@ -240,5 +240,20 @@ describe('groupCategoriesWithValues', () => {
   it('handles empty input', () => {
     const result = groupCategoriesWithValues({}, categories, () => 0)
     expect(result).toEqual([])
+  })
+})
+
+describe('sortCategoriesByAmount', () => {
+  it('sorts: positive descending, then negative by absolute descending', () => {
+    const categories: CategoriesWithData[string][] = [
+      { id: 'a', name: 'A', trnsIds: [], value: 100 },
+      { id: 'b', name: 'B', trnsIds: [], value: 300 },
+      { id: 'c', name: 'C', trnsIds: [], value: 200 },
+      { id: 'd', name: 'D', trnsIds: [], value: -200 },
+      { id: 'e', name: 'E', trnsIds: [], value: -400 },
+    ]
+
+    expect(categories.sort(sortCategoriesByAmount).map(c => c.value))
+      .toEqual([300, 200, 100, -400, -200])
   })
 })
