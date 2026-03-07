@@ -2,7 +2,7 @@ import { v } from 'convex/values'
 
 import { internal } from './_generated/api'
 import { action, internalMutation, mutation, query } from './_generated/server'
-import { getAuthUser, getOwnEntity, requireAuthUser, validateStringLength, walletTypeValidator } from './shared'
+import { CREDIT_LIMIT_MAX, getAuthUser, getOwnEntity, requireAuthUser, validateNumberRange, validateStringLength, walletTypeValidator } from './shared'
 import { removeTrnsFromHash } from './trnsHash'
 
 export const list = query({
@@ -43,6 +43,7 @@ export const create = mutation({
     validateStringLength(args.color, 50, 'Color')
     validateStringLength(args.currency, 10, 'Currency')
     validateStringLength(args.desc, 500, 'Description')
+    validateNumberRange(args.creditLimit, 0, CREDIT_LIMIT_MAX, 'Credit limit')
     return await ctx.db.insert('wallets', {
       ...args,
       isArchived: args.isArchived ?? false,
@@ -80,6 +81,7 @@ export const update = mutation({
     validateStringLength(args.color, 50, 'Color')
     validateStringLength(args.currency, 10, 'Currency')
     validateStringLength(args.desc, 500, 'Description')
+    validateNumberRange(args.creditLimit, 0, CREDIT_LIMIT_MAX, 'Credit limit')
     await getOwnEntity(ctx, id, user._id)
     await ctx.db.patch(id, { ...args, updatedAt: Date.now() })
   },

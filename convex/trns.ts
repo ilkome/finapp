@@ -6,11 +6,12 @@ import type { MutationCtx } from './_generated/server'
 
 import { internal } from './_generated/api'
 import { mutation, query } from './_generated/server'
-import { getAuthUser, getOwnEntity, requireAuthUser, TrnType, validateStringLength } from './shared'
+import { AMOUNT_MAX, DATE_MAX, DATE_MIN, getAuthUser, getOwnEntity, requireAuthUser, TrnType, validateNumberRange, validateStringLength } from './shared'
 import { addTrnToHash, fnv1aNum, removeTrnFromHash } from './trnsHash'
 
 async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
   validateStringLength(args.desc, 500, 'Description')
+  validateNumberRange(args.date, DATE_MIN, DATE_MAX, 'Date')
 
   if (args.type === TrnType.Transfer) {
     if (args.categoryId && args.categoryId !== 'transfer')
@@ -23,6 +24,8 @@ async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, us
       throw new Error('Transfer expense amount must be positive')
     if (!args.incomeAmount || args.incomeAmount <= 0)
       throw new Error('Transfer income amount must be positive')
+    validateNumberRange(args.expenseAmount, 0, AMOUNT_MAX, 'Expense amount')
+    validateNumberRange(args.incomeAmount, 0, AMOUNT_MAX, 'Income amount')
     await Promise.all([
       getOwnEntity(ctx, args.expenseWalletId as Id<'wallets'>, userId, 'Expense wallet not found'),
       getOwnEntity(ctx, args.incomeWalletId as Id<'wallets'>, userId, 'Income wallet not found'),
@@ -31,6 +34,7 @@ async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, us
   else {
     if (!args.amount || args.amount <= 0)
       throw new Error('Amount must be positive')
+    validateNumberRange(args.amount, 0, AMOUNT_MAX, 'Amount')
     if (!args.walletId)
       throw new Error('Wallet is required')
     if (!args.categoryId)
