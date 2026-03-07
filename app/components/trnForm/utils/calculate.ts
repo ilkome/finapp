@@ -35,6 +35,10 @@ function getLastNumber(expression: string): string {
   return expression.split(/[/*\-+]/).at(-1) || ''
 }
 
+/**
+ * Safe arithmetic expression evaluator (recursive descent parser).
+ * Supports +, -, *, / with correct operator precedence. No eval/Function.
+ */
 export function evaluateExpression(value: string): number {
   try {
     const sanitized = sanitizeInput(value)
@@ -43,12 +47,39 @@ export function evaluateExpression(value: string): number {
       ? sanitized.slice(0, -1)
       : sanitized || '0'
 
-    // Using Function constructor is necessary for dynamic evaluation
-    // but we ensure input is sanitized
-    // eslint-disable-next-line no-new-func
-    const result = new Function(`"use strict";return (${expression})`)()
+    let pos = 0
 
-    return result <= Number.MAX_SAFE_INTEGER ? Math.abs(result) : 0
+    function parseExpr(): number {
+      let left = parseTerm()
+      while (pos < expression.length && (expression[pos] === '+' || expression[pos] === '-')) {
+        const op = expression[pos++]
+        const right = parseTerm()
+        left = op === '+' ? left + right : left - right
+      }
+      return left
+    }
+
+    function parseTerm(): number {
+      let left = parseNumber()
+      while (pos < expression.length && (expression[pos] === '*' || expression[pos] === '/')) {
+        const op = expression[pos++]
+        const right = parseNumber()
+        left = op === '*' ? left * right : left / right
+      }
+      return left
+    }
+
+    function parseNumber(): number {
+      const start = pos
+      while (pos < expression.length && ((expression[pos] >= '0' && expression[pos] <= '9') || expression[pos] === '.')) {
+        pos++
+      }
+      return Number(expression.slice(start, pos)) || 0
+    }
+
+    const result = parseExpr()
+
+    return Number.isFinite(result) && result <= Number.MAX_SAFE_INTEGER ? Math.abs(result) : 0
   }
   catch {
     return 0
