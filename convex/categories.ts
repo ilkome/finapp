@@ -82,6 +82,8 @@ async function updateCategoryCore(
     throw new Error('Icon is required')
   if (args.name !== undefined && !args.name.trim())
     throw new Error('Name is required')
+  if (args.color !== undefined && !args.color.trim())
+    throw new Error('Color is required')
 
   const category = await getOwnEntity(ctx, id, userId)
 
@@ -127,6 +129,8 @@ export const create = mutation({
       throw new Error('Icon is required')
     if (!args.name.trim())
       throw new Error('Name is required')
+    if (!args.color.trim())
+      throw new Error('Color is required')
 
     const parentId = args.parentId ?? 0
 

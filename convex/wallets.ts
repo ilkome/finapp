@@ -35,6 +35,10 @@ export const create = mutation({
     const user = await requireAuthUser(ctx)
     if (!args.name.trim())
       throw new Error('Name is required')
+    if (!args.color.trim())
+      throw new Error('Color is required')
+    if (!args.currency.trim())
+      throw new Error('Currency is required')
     return await ctx.db.insert('wallets', {
       ...args,
       isArchived: args.isArchived ?? false,
@@ -64,6 +68,10 @@ export const update = mutation({
     const user = await requireAuthUser(ctx)
     if (args.name !== undefined && !args.name.trim())
       throw new Error('Name is required')
+    if (args.color !== undefined && !args.color.trim())
+      throw new Error('Color is required')
+    if (args.currency !== undefined && !args.currency.trim())
+      throw new Error('Currency is required')
     await getOwnEntity(ctx, id, user._id)
     await ctx.db.patch(id, { ...args, updatedAt: Date.now() })
   },
