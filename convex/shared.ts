@@ -14,6 +14,22 @@ export function validateStringLength(value: string | undefined, maxLen: number, 
 }
 
 /**
+ * Validate numeric field range. Throws if value is outside [min, max].
+ * Skips check when value is undefined (optional fields).
+ */
+export function validateNumberRange(value: number | undefined, min: number, max: number, fieldName: string) {
+  if (value !== undefined && (value < min || value > max))
+    throw new Error(`${fieldName} must be between ${min} and ${max}`)
+}
+
+// 2000-01-01 .. 2100-01-01 in ms
+export const DATE_MIN = 946_684_800_000
+export const DATE_MAX = 4_102_444_800_000
+
+export const AMOUNT_MAX = 1_000_000_000_000
+export const CREDIT_LIMIT_MAX = 1_000_000_000
+
+/**
  * Get authenticated user or return null (for queries).
  */
 export async function getAuthUser(ctx: QueryCtx) {
