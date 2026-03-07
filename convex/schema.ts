@@ -57,7 +57,7 @@ export default defineSchema({
 
   userSettings: defineTable({
     baseCurrency: v.string(),
-    locale: v.optional(v.string()),
+    locale: v.optional(v.union(v.literal('en'), v.literal('ru'))),
     userId: v.string(),
   }).index('by_user', ['userId']),
 

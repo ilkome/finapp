@@ -20,10 +20,13 @@ export const get = query({
 export const upsert = mutation({
   args: {
     baseCurrency: v.optional(v.string()),
-    locale: v.optional(v.string()),
+    locale: v.optional(v.union(v.literal('en'), v.literal('ru'))),
   },
   handler: async (ctx, args) => {
     const user = await requireAuthUser(ctx)
+
+    if (args.baseCurrency !== undefined && !args.baseCurrency.trim())
+      throw new Error('Base currency is required')
 
     const existing = await ctx.db
       .query('userSettings')
