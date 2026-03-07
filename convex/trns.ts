@@ -166,11 +166,9 @@ export const update = mutation({
   handler: async (ctx, { id, ...args }) => {
     const user = await requireAuthUser(ctx)
     const trn = await getOwnEntity(ctx, id, user._id)
-    await validateTrnFields(ctx, { ...trn, ...args }, user._id)
 
+    // Build patch first — normalize stale fields when type changes
     const patch: Record<string, any> = { ...args, updatedAt: Date.now() }
-
-    // Clear stale fields when type changes to prevent orphaned index entries
     if (args.type !== undefined && args.type !== trn.type) {
       if (args.type === TrnType.Transfer) {
         patch.walletId = undefined
@@ -186,6 +184,8 @@ export const update = mutation({
       }
     }
 
+    // Validate the final state (existing trn + normalized patch)
+    await validateTrnFields(ctx, { ...trn, ...patch }, user._id)
     await ctx.db.patch(id, patch)
   },
 })
@@ -208,4 +208,3 @@ export const remove = mutation({
       await removeTrnFromHash(ctx, user._id, id)
   },
 })
-
