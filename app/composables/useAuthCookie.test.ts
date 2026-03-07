@@ -52,7 +52,7 @@ describe('useAuthCookie', () => {
     })
   })
 
-  describe('Secure flag', () => {
+  describe('secure flag', () => {
     it('included on https', async () => {
       vi.stubGlobal('location', { protocol: 'https:' })
       vi.resetModules()

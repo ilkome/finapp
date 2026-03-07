@@ -1,4 +1,5 @@
 import localforage from 'localforage'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LocaleSlug } from '~/components/locale/types'
 
