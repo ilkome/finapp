@@ -31,10 +31,8 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
 }))
 
 const removeTrnsFromStoreMock = vi.fn()
-const deleteTrnsByIdsMock = vi.fn()
 vi.mock('~/components/trns/useTrnsStore', () => ({
   useTrnsStore: () => ({
-    deleteTrnsByIds: deleteTrnsByIdsMock,
     hasItems: false,
     items: {},
     removeTrnsFromStore: removeTrnsFromStoreMock,
