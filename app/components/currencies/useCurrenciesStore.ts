@@ -23,16 +23,8 @@ export const useCurrenciesStore = defineStore('currencies', () => {
       // Get latest rates from Convex
       const latestRates = await client.query(api.rates.getLatest, {})
 
-      if (latestRates?.rates) {
+      if (latestRates?.rates)
         setRates(latestRates.rates as Rates)
-      }
-      else {
-        // If no rates exist, try to refresh them via action
-        await client.action(api.rates.refreshRates, {})
-        const freshRates = await client.query(api.rates.getLatest, {})
-        if (freshRates?.rates)
-          setRates(freshRates.rates as Rates)
-      }
     }
     catch (e) {
       logger.error('init failed', e)
