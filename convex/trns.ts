@@ -31,8 +31,10 @@ async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, us
       throw new Error('Wallet is required')
     if (!args.categoryId)
       throw new Error('Category is required')
+    if (args.categoryId === 'transfer')
+      throw new Error('categoryId "transfer" is only allowed for Transfer type')
     await getOwnEntity(ctx, args.walletId as Id<'wallets'>, userId, 'Wallet not found')
-    if (args.categoryId !== 'transfer' && args.categoryId !== 'adjustment')
+    if (args.categoryId !== 'adjustment')
       await getOwnEntity(ctx, args.categoryId as Id<'categories'>, userId, 'Category not found')
   }
 }
