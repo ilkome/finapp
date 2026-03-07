@@ -1,8 +1,6 @@
 import type { ShallowRef } from 'vue'
 
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
-
 import type { EntityType } from '~/components/offline/types'
 
 import { errorEmo, random, successEmo, warningEmo } from '~/assets/js/emo'
@@ -36,7 +34,7 @@ export function createDebouncedPersist<T>(storageKey: string) {
   return useDebounceFn((values: T) => {
     if (_persistBlocked)
       return
-    localforage.setItem(storageKey, deepUnref(values))
+    localforage.setItem(storageKey, values)
   }, 300)
 }
 
@@ -143,7 +141,7 @@ export function handleMutationResult<T>(opts: {
           const remapped = { ...rest, [convexId]: item }
           opts.items.value = remapped
           if (!_persistBlocked)
-            localforage.setItem(STORAGE_KEYS[opts.entity], deepUnref(remapped))
+            localforage.setItem(STORAGE_KEYS[opts.entity], remapped)
           logger.log(`remapped ID: ${opts.id} → ${convexId}`)
           return { convexId, localId: opts.id }
         }
