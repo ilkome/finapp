@@ -13,8 +13,8 @@ describe('get Transactions IDs', () => {
       'transactionExpenseWalletCashUSD400',
       'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
       'transferExpenseWalletCashUSD10IncomeWalletRUB700',
-      'transferCategoryIncomeWalletCashUSD30',
-      'transferCategoryIdExpenseWalletCashUSD30',
+      'adjustmentIncomeWalletCashUSD30',
+      'adjustmentExpenseWalletCashUSD30',
     ]))
   })
 
@@ -39,8 +39,8 @@ describe('get Transactions IDs', () => {
       'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
       'transferExpenseWalletRUB300IncomeWalletCreditUSD10',
       'transferExpenseWalletCashUSD10IncomeWalletRUB700',
-      'transferCategoryIncomeWalletCashUSD30',
-      'transferCategoryIdExpenseWalletCashUSD30',
+      'adjustmentIncomeWalletCashUSD30',
+      'adjustmentExpenseWalletCashUSD30',
     ]))
   })
 })

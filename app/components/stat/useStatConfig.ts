@@ -15,14 +15,10 @@ export const ConfigSchema = z.object({
     isLines: z.boolean(),
     isRoundIcon: z.boolean(),
     isShow: z.boolean(),
-    isShowFavorites: z.boolean(),
-    isShowRecent: z.boolean(),
   }),
   catsRound: z.object({
     isGrouped: z.boolean(),
     isShow: z.boolean(),
-    isShowFavorites: z.boolean(),
-    isShowRecent: z.boolean(),
   }),
   catsView: z.enum(['list', 'round']),
   chart: z.object({
@@ -50,7 +46,6 @@ export const ConfigSchema = z.object({
 })
 
 export type MiniItemConfig = z.infer<typeof ConfigSchema>
-export type UpdateConfigFn = <K extends keyof MiniItemConfig>(key: K, value: MiniItemConfig[K]) => void
 
 type StatConfigParams = {
   props?: DeepPartial<MiniItemConfig>
@@ -67,14 +62,10 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isLines: true,
       isRoundIcon: true,
       isShow: true,
-      isShowFavorites: false,
-      isShowRecent: false,
     },
     catsRound: {
       isGrouped: false,
       isShow: true,
-      isShowFavorites: false,
-      isShowRecent: false,
     },
     catsView: 'list',
     chart: {

@@ -16,7 +16,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
-  clickIcon: [id: CategoryId]
 }>()
 
 const statDate = inject(statDateKey)!

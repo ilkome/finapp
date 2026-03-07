@@ -82,8 +82,6 @@ useHead({ title: category.value?.name })
       :filter="{
         isShowCategories: false,
         isShowWallets: true,
-        isShow: true,
-        isShowSelected: filter.isShow?.value && filter.categoriesIds.value.length > 0,
       }"
       :config="{
         isShowWallets: true,
@@ -98,7 +96,7 @@ useHead({ title: category.value?.name })
 
       <template #popover>
         <UiHeaderLink
-          v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
+          v-if="categoryId !== 'transfer'"
           icon="lucide:pencil"
           @click="router.push(`/categories/${categoryId}/edit`)"
         >

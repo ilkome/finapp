@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 defineProps<{
   isPeriodOneDay: boolean
   selectedTrnsIds: TrnId[]
-  storageKey: string
-  type: StatTabSlug
 }>()
 </script>
 

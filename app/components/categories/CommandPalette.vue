@@ -9,9 +9,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  clickParent: [id: CategoryId]
-  close: []
-  filter: [id: CategoryId]
   selected: [id: CategoryId]
 }>()
 
@@ -61,7 +58,6 @@ const cats = computed(() => {
 
 function onSelect(item: CategoryItemWithId) {
   emit('selected', item.id)
-  emit('close')
   if (props.hide)
     props.hide()
 }
@@ -91,7 +87,6 @@ function onSelect(item: CategoryItemWithId) {
 
         <div class="grid grow">
           <CategoriesName
-            :alt="item.alt"
             :category="item"
           />
         </div>

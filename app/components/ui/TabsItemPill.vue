@@ -4,7 +4,7 @@ const { isActive = false, variant = 'default' } = defineProps<{
   variant?: 'default' | 'outline'
 }>()
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{ click: [] }>()
 </script>
 
 <template>

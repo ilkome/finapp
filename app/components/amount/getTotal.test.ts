@@ -6,17 +6,12 @@ import { walletsItems } from '~~/mocks/wallets'
 import type { TrnId } from '~/components/trns/types'
 
 import { getTotal } from '~/components/amount/getTotal'
-import { getTransferCategoriesIds } from '~/components/categories/utils'
-import { mockCategories } from '~/components/categories/utils.test'
-
-const transferCategoriesIds = getTransferCategoriesIds(mockCategories)
 
 describe('total of Transactions', () => {
   it('correct empty result and correct total structure', () => {
     const trnsIds: TrnId[] = []
 
     const total = getTotal({
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -40,7 +35,6 @@ describe('total of Transactions', () => {
     const total = getTotal({
       baseCurrencyCode,
       rates,
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -61,7 +55,6 @@ describe('total of Transactions', () => {
     const total = getTotal({
       baseCurrencyCode,
       rates,
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -85,7 +78,6 @@ describe('total of Transactions', () => {
     const total = getTotal({
       baseCurrencyCode,
       rates,
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -109,7 +101,6 @@ describe('total of Transactions', () => {
     const total = getTotal({
       baseCurrencyCode,
       rates,
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -123,19 +114,18 @@ describe('total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('total in Wallet Cash USD with Transfers', () => {
+  it('total in Wallet Cash USD with Transfers and adjustments', () => {
     const walletsIds = ['walletCashUSD']
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
       'transferExpenseWalletCashUSD10IncomeWalletRUB700',
       'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
-      'transferCategoryIncomeWalletCashUSD30',
-      'transferCategoryIdExpenseWalletCashUSD30',
+      'adjustmentIncomeWalletCashUSD30',
+      'adjustmentExpenseWalletCashUSD30',
     ]
 
     const total = getTotal({
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsIds,
@@ -145,22 +135,38 @@ describe('total of Transactions', () => {
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
     expect(total.sum).toEqual(600)
-    expect(total.incomeTransfers).toEqual(70)
-    expect(total.expenseTransfers).toEqual(40)
+    expect(total.incomeTransfers).toEqual(40)
+    expect(total.expenseTransfers).toEqual(10)
     expect(total.sumTransfers).toEqual(30)
+    expect(total.adjustment).toEqual(0)
   })
 
-  it('total of Transfers when no Wallets provided', () => {
+  it('adjustment income adds to adjustment, expense subtracts', () => {
+    const trnsIds = [
+      'adjustmentIncomeWalletCashUSD200',
+      'adjustmentExpenseWalletCashUSD50',
+    ]
+
+    const total = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.adjustment).toEqual(150)
+    expect(total.income).toEqual(0)
+    expect(total.expense).toEqual(0)
+    expect(total.sum).toEqual(0)
+  })
+
+  it('total of Transfers when no Wallets filter provided', () => {
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
       'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
-      'transferCategoryIncomeWalletCashUSD30',
-      'transferCategoryIdExpenseWalletCashUSD30',
     ]
 
     const total = getTotal({
-      transferCategoriesIds,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -169,8 +175,8 @@ describe('total of Transactions', () => {
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
     expect(total.sum).toEqual(600)
-    expect(total.incomeTransfers).toEqual(70)
-    expect(total.expenseTransfers).toEqual(70)
+    expect(total.incomeTransfers).toEqual(40)
+    expect(total.expenseTransfers).toEqual(40)
     expect(total.sumTransfers).toEqual(0)
   })
 })

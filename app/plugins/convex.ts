@@ -18,12 +18,9 @@ export default defineNuxtPlugin(() => {
   }
 
   let convex: ConvexClient | ConvexHttpClient
-  let convexHttp: ConvexHttpClient
 
   if (import.meta.server) {
-    const httpClient = createConvexHttpClient(convexUrl)
-    convex = httpClient
-    convexHttp = httpClient
+    convex = createConvexHttpClient(convexUrl)
   }
   else {
     const client = createConvexClient(convexUrl)
@@ -131,13 +128,11 @@ export default defineNuxtPlugin(() => {
     )
 
     convex = client
-    convexHttp = createConvexHttpClient(convexUrl)
   }
 
   return {
     provide: {
       convex,
-      convexHttp,
     },
   }
 })

@@ -4,7 +4,6 @@ import { useBottomSheetDrag } from './useBottomSheetDrag'
 const props = defineProps<{
   drugClassesCustom?: string
   drugStyle?: Record<string, string>
-  isHideOverflow?: boolean
   isShow?: boolean
 }>()
 
@@ -14,7 +13,6 @@ const emit = defineEmits<{
 
 // Settings
 const settings = {
-  debug: true,
   pixelOffsetToStartClosing: 20,
   pixelsNeedToDrugForClose: 60,
 }
@@ -23,7 +21,6 @@ const settings = {
 const drug = ref<HTMLElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
 const handlerRef = ref<HTMLElement | null>(null)
-const contentInside = ref<HTMLElement | null>(null)
 
 const { height: drugHeight } = useElementSize(drug)
 const { height: windowHeight } = useWindowSize()
@@ -40,7 +37,6 @@ const {
   wrapClasses,
 } = useBottomSheetDrag({
   containerRef,
-  contentInside,
   drug,
   drugStyle: toRef(() => props.drugStyle),
   emit,
@@ -98,12 +94,11 @@ const drugClasses = computed(() => [
 <template>
   <div
     ref="containerRef"
-    :class="[wrapClasses, { 'pointer-events-none': isHideOverflow }]"
+    :class="wrapClasses"
     class="fixed inset-0 z-50 size-full overflow-hidden select-none"
   >
     <!-- Overlay -->
     <div
-      v-if="!isHideOverflow"
       :class="overflowClasses"
       :style="overlayStyles"
       class="absolute inset-0 z-10 size-full bg-(--overlay)"

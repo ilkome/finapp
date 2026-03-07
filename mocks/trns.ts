@@ -3,6 +3,42 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 import { TrnType } from '~/components/trns/types'
 
 export const trnsItems: Record<TrnId, TrnItem> = {
+  adjustmentExpenseWalletCashUSD30: {
+    amount: 30,
+    categoryId: 'adjustment',
+    date: 123456,
+    type: TrnType.Expense,
+    updatedAt: 12,
+    walletId: 'walletCashUSD',
+  },
+
+  adjustmentExpenseWalletCashUSD50: {
+    amount: 50,
+    categoryId: 'adjustment',
+    date: 123456,
+    type: TrnType.Expense,
+    updatedAt: 12,
+    walletId: 'walletCashUSD',
+  },
+
+  adjustmentIncomeWalletCashUSD30: {
+    amount: 30,
+    categoryId: 'adjustment',
+    date: 123456,
+    type: TrnType.Income,
+    updatedAt: 12,
+    walletId: 'walletCashUSD',
+  },
+
+  adjustmentIncomeWalletCashUSD200: {
+    amount: 200,
+    categoryId: 'adjustment',
+    date: 123456,
+    type: TrnType.Income,
+    updatedAt: 12,
+    walletId: 'walletCashUSD',
+  },
+
   transactionExpenseWalletCashUSD400: {
     amount: 400,
     categoryId: 'expense',
@@ -37,24 +73,6 @@ export const trnsItems: Record<TrnId, TrnItem> = {
     type: TrnType.Income,
     updatedAt: 12,
     walletId: 'walletOneRUB',
-  },
-
-  transferCategoryIdExpenseWalletCashUSD30: {
-    amount: 30,
-    categoryId: 'transfer',
-    date: 123456,
-    type: TrnType.Expense,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  transferCategoryIncomeWalletCashUSD30: {
-    amount: 30,
-    categoryId: 'transfer',
-    date: 123456,
-    type: TrnType.Income,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
   },
 
   transferExpenseWalletCashUSD10IncomeWalletRUB700: {

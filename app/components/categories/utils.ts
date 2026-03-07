@@ -23,13 +23,6 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   return result
 }
 
-export function getTransferCategoriesIds(items: Categories): CategoryId[] {
-  if (!items?.transfer)
-    return []
-
-  return ['transfer']
-}
-
 export function getParentCategoryIdOrReturnSame(items: Categories, categoryId: CategoryId): CategoryId {
   const category = items[categoryId]
   if (!category || category.parentId === 0)

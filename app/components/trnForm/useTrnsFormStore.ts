@@ -47,9 +47,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   })
 
   const ui = ref<TrnFormUi>({
-    catsRootModal: false,
     isShow: false,
-    walletsModal: false,
   })
 
   const modal = ref({
@@ -122,9 +120,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.walletId = null
 
     ui.value = {
-      catsRootModal: false,
       isShow: false,
-      walletsModal: false,
     }
     modal.value = {
       description: false,
@@ -241,20 +237,15 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     ui.value.isShow = true
   }
 
-  function trnFormCreate(props?: { categoryId?: CategoryId, walletId?: WalletId }) {
+  function trnFormCreate() {
     setValues({
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
       trn: trnsStore.lastCreatedTrnItem,
-      walletId: props?.walletId ?? walletsStore.sortedIds[0],
+      walletId: walletsStore.sortedIds[0],
       walletsIds: walletsStore.sortedIds,
     })
     ui.value.isShow = true
-
-    if (props) {
-      if (props.categoryId)
-        values.categoryId = props.categoryId
-    }
   }
 
   function trnFormDuplicate(trnId: TrnId) {
@@ -289,7 +280,6 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     onClose,
     onSubmit,
     openTrnFormModal,
-    setValues,
     trnFormCreate,
     trnFormDuplicate,
     trnFormEdit,

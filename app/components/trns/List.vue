@@ -2,7 +2,6 @@
 import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDateFormats } from '~/components/date/useDateFormats'
 import { getStartOf } from '~/components/date/utils'
@@ -12,7 +11,6 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const {
   alt,
-  initTrnType = 'all',
   isShowDates,
   isShowExpense,
   isShowFilterByDesc,
@@ -25,7 +23,6 @@ const {
   trnsIds = [],
 } = defineProps<{
   alt?: boolean
-  initTrnType?: TrnsViewType
   isShowDates?: boolean
   isShowExpense?: boolean
   isShowFilterByDesc?: boolean
@@ -43,7 +40,6 @@ const emit = defineEmits<{
 }>()
 
 const currenciesStore = useCurrenciesStore()
-const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
 
@@ -51,7 +47,7 @@ const { getTotalOfTrnsIds } = useAmount()
 const { t } = useI18n()
 const { formatDate } = useDateFormats()
 const isShowWithDesc = ref(false)
-const filterBy = ref<TrnsViewType>(initTrnType)
+const filterBy = ref<TrnsViewType>('all')
 const pageNumber = ref(1)
 
 type TypeFilter = {
@@ -102,7 +98,7 @@ const filteredByTypeIds = computed(() => {
       return trnsStore.items[id]?.categoryId === 'adjustment'
 
     if (filterBy.value === 'transfer')
-      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || categoriesStore.transferCategoriesIds.includes(trnsStore.items[id]?.categoryId)
+      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || trnsStore.items[id]?.categoryId === 'transfer'
 
     return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
   })

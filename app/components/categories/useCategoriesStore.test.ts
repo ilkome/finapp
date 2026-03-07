@@ -1,32 +1,10 @@
+import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { CategoryItem } from '~/components/categories/types'
 
-// --- Mocks ---
-
-const localforageStore = new Map<string, any>()
-vi.mock('localforage', () => ({
-  default: {
-    getItem: vi.fn((key: string) => Promise.resolve(localforageStore.get(key) ?? null)),
-    removeItem: vi.fn((key: string) => {
-      localforageStore.delete(key)
-      return Promise.resolve()
-    }),
-    setItem: vi.fn((key: string, value: any) => {
-      localforageStore.set(key, value)
-      return Promise.resolve()
-    }),
-  },
-}))
-
-vi.mock('@vueuse/core', () => ({
-  useDebounceFn: (fn: (...args: any[]) => any) => fn,
-}))
-
-vi.mock('vue-deepunref', () => ({
-  deepUnref: (v: any) => v,
-}))
+// --- Entity-specific mocks ---
 
 vi.mock('~~/services/convex/api', () => ({
   convexCategoriesToMap: (v: any) => v,
@@ -35,27 +13,11 @@ vi.mock('~~/services/convex/api', () => ({
 vi.mock('~/components/categories/utils', () => ({
   compareCategoriesByParentAndName: () => 0,
   getTransactibleCategoriesIds: () => [],
-  getTransferCategoriesIds: () => ['transfer'],
 }))
 
 const mutationMock = vi.fn(() => Promise.resolve())
 const onUpdateMock = vi.fn()
 
-vi.stubGlobal('useConvexClient', () => ({
-  mutation: mutationMock,
-  onUpdate: onUpdateMock,
-}))
-vi.stubGlobal('useConvexClientComposable', () => ({
-  mutation: mutationMock,
-  onUpdate: onUpdateMock,
-}))
-vi.stubGlobal('asConvexId', (id: string) => id)
-vi.stubGlobal('isLocalId', (id: string) => id.startsWith('local_'))
-vi.stubGlobal('useConvexApi', () => ({
-  api: {
-    categories: { create: 'categories.create', list: 'categories.list', remove: 'categories.remove', update: 'categories.update', updateWithChildren: 'categories.updateWithChildren' },
-  },
-}))
 vi.stubGlobal('useConvexClientWithApi', () => ({
   api: {
     categories: { create: 'categories.create', list: 'categories.list', remove: 'categories.remove', update: 'categories.update', updateWithChildren: 'categories.updateWithChildren' },
@@ -66,22 +28,6 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
   },
 }))
 
-const toastAddMock = vi.fn()
-vi.stubGlobal('useToast', () => ({ add: toastAddMock }))
-vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
-vi.stubGlobal('useNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-
-vi.mock('~/assets/js/emo', () => ({
-  errorEmo: ['🤷‍♀️'],
-  random: (items: any[]) => items[0],
-}))
-
-vi.stubGlobal('defineStore', (await import('pinia')).defineStore)
-const { computed, shallowRef } = await import('vue')
-vi.stubGlobal('shallowRef', shallowRef)
-vi.stubGlobal('computed', computed)
-
 const removeTrnsFromStoreMock = vi.fn()
 const deleteTrnsByIdsMock = vi.fn()
 vi.mock('~/components/trns/useTrnsStore', () => ({
@@ -91,16 +37,6 @@ vi.mock('~/components/trns/useTrnsStore', () => ({
     items: {},
     removeTrnsFromStore: removeTrnsFromStoreMock,
   }),
-}))
-
-vi.mock('~/components/demo/useDemo', () => ({
-  useDemo: () => ({
-    isDemo: { value: false },
-  }),
-}))
-
-vi.mock('~/components/offline/replay', () => ({
-  isReplaying: () => false,
 }))
 
 const offlineHelpers = await import('~/components/offline/helpers')
@@ -135,9 +71,9 @@ function makeCategory(overrides: Partial<CategoryItem> = {}): CategoryItem {
 // --- Tests ---
 
 describe('useCategoriesStore', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     setActivePinia(createPinia())
-    localforageStore.clear()
+    await localforage.clear()
     vi.clearAllMocks()
     mutationMock.mockReturnValue(Promise.resolve())
   })
@@ -160,7 +96,7 @@ describe('useCategoriesStore', () => {
       expect(store.items.c1.name).toBe('Food')
     })
 
-    it('saves to localforage', () => {
+    it('saves to localforage', async () => {
       const store = useCategoriesStore()
 
       store.saveCategory({
@@ -169,7 +105,8 @@ describe('useCategoriesStore', () => {
         values: makeCategory(),
       })
 
-      expect(localforageStore.get('finapp.categories')).toHaveProperty('c1')
+      const saved = await localforage.getItem<any>('finapp.categories')
+      expect(saved).toHaveProperty('c1')
     })
 
     it('pushes to offline queue immediately', () => {
@@ -304,6 +241,7 @@ describe('useCategoriesStore', () => {
     })
 
     it('shows toast on mutation failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('Server error')))
       const store = useCategoriesStore()
 
@@ -397,6 +335,7 @@ describe('useCategoriesStore', () => {
     })
 
     it('shows toast on delete mutation failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('Server error')))
       const store = useCategoriesStore()
       store.items = { ...store.items, c1: makeCategory() }

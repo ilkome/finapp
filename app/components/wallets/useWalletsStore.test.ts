@@ -1,32 +1,10 @@
+import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { WalletItem } from '~/components/wallets/types'
 
-// --- Mocks ---
-
-const localforageStore = new Map<string, any>()
-vi.mock('localforage', () => ({
-  default: {
-    getItem: vi.fn((key: string) => Promise.resolve(localforageStore.get(key) ?? null)),
-    removeItem: vi.fn((key: string) => {
-      localforageStore.delete(key)
-      return Promise.resolve()
-    }),
-    setItem: vi.fn((key: string, value: any) => {
-      localforageStore.set(key, value)
-      return Promise.resolve()
-    }),
-  },
-}))
-
-vi.mock('@vueuse/core', () => ({
-  useDebounceFn: (fn: (...args: any[]) => any) => fn,
-}))
-
-vi.mock('vue-deepunref', () => ({
-  deepUnref: (v: any) => v,
-}))
+// --- Entity-specific mocks ---
 
 vi.mock('~~/services/convex/api', () => ({
   convexWalletsToMap: (v: any) => v,
@@ -39,21 +17,6 @@ vi.mock('~~/utils/simple', () => ({
 const mutationMock = vi.fn(() => Promise.resolve())
 const onUpdateMock = vi.fn()
 
-vi.stubGlobal('useConvexClient', () => ({
-  mutation: mutationMock,
-  onUpdate: onUpdateMock,
-}))
-vi.stubGlobal('useConvexClientComposable', () => ({
-  mutation: mutationMock,
-  onUpdate: onUpdateMock,
-}))
-vi.stubGlobal('asConvexId', (id: string) => id)
-vi.stubGlobal('isLocalId', (id: string) => id.startsWith('local_'))
-vi.stubGlobal('useConvexApi', () => ({
-  api: {
-    wallets: { create: 'wallets.create', list: 'wallets.list', remove: 'wallets.remove', update: 'wallets.update', updateOrder: 'wallets.updateOrder' },
-  },
-}))
 vi.stubGlobal('useConvexClientWithApi', () => ({
   api: {
     wallets: { create: 'wallets.create', list: 'wallets.list', remove: 'wallets.remove', update: 'wallets.update', updateOrder: 'wallets.updateOrder' },
@@ -63,23 +26,6 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
     onUpdate: onUpdateMock,
   },
 }))
-
-const toastAddMock = vi.fn()
-vi.stubGlobal('useToast', () => ({ add: toastAddMock }))
-vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
-vi.stubGlobal('useNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-
-vi.mock('~/assets/js/emo', () => ({
-  errorEmo: ['😿'],
-  random: (items: any[]) => items[0],
-}))
-
-vi.stubGlobal('defineStore', (await import('pinia')).defineStore)
-const { computed, ref, shallowRef } = await import('vue')
-vi.stubGlobal('computed', computed)
-vi.stubGlobal('ref', ref)
-vi.stubGlobal('shallowRef', shallowRef)
 
 const removeTrnsFromStoreMock = vi.fn()
 vi.mock('~/components/trns/useTrnsStore', () => ({
@@ -105,16 +51,6 @@ vi.mock('~/components/user/useUserStore', () => ({
   }),
 }))
 
-vi.mock('~/components/demo/useDemo', () => ({
-  useDemo: () => ({
-    isDemo: { value: false },
-  }),
-}))
-
-vi.mock('~/components/offline/replay', () => ({
-  isReplaying: () => false,
-}))
-
 const offlineHelpers = await import('~/components/offline/helpers')
 vi.mock('~/components/offline/helpers', async (importOriginal) => {
   const actual = await importOriginal() as any
@@ -125,6 +61,7 @@ vi.mock('~/components/offline/helpers', async (importOriginal) => {
     pushOfflineOp: vi.fn(actual.pushOfflineOp),
     removeOfflineOp: vi.fn(actual.removeOfflineOp),
     removeOfflineOpByType: vi.fn(actual.removeOfflineOpByType),
+    removeOfflineOps: vi.fn(actual.removeOfflineOps),
   }
 })
 
@@ -151,12 +88,11 @@ function makeWallet(overrides: Partial<WalletItem> = {}): WalletItem {
 // --- Tests ---
 
 describe('useWalletsStore', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     setActivePinia(createPinia())
-    localforageStore.clear()
+    await localforage.clear()
     vi.clearAllMocks()
     mutationMock.mockReturnValue(Promise.resolve())
-    toastAddMock.mockClear()
   })
 
   afterEach(() => {
@@ -174,13 +110,14 @@ describe('useWalletsStore', () => {
       expect(store.items!.w1.name).toBe('Cash')
     })
 
-    it('saves to localforage', () => {
+    it('saves to localforage', async () => {
       const store = useWalletsStore()
       store.items = {}
 
       store.saveWallet({ id: 'w1', values: makeWallet() })
 
-      expect(localforageStore.get('finapp.wallets')).toHaveProperty('w1')
+      const saved = await localforage.getItem<any>('finapp.wallets')
+      expect(saved).toHaveProperty('w1')
     })
 
     it('pushes to offline queue immediately', () => {
@@ -243,6 +180,7 @@ describe('useWalletsStore', () => {
     })
 
     it('shows toast on mutation failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('network')))
 
       const store = useWalletsStore()
@@ -310,6 +248,7 @@ describe('useWalletsStore', () => {
     })
 
     it('shows toast on delete mutation failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('network')))
       const store = useWalletsStore()
       store.items = { w1: makeWallet() }
@@ -358,6 +297,7 @@ describe('useWalletsStore', () => {
     })
 
     it('shows toast on failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('network')))
 
       const store = useWalletsStore()

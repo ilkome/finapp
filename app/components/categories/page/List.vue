@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCategoryContextMenu } from '~/components/categories/useCategoryContextMenu'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
@@ -67,25 +68,9 @@ async function onDeleteConfirm() {
   }, 300)
 }
 
-function getContextMenuItems(categoryId: CategoryId) {
-  if (categoriesStore.transferCategoriesIds.includes(categoryId))
-    return undefined
-
-  return [[
-    {
-      icon: 'lucide:pencil',
-      label: t('base.edit'),
-      onSelect: () => router.push(`/categories/${categoryId}/edit`),
-    },
-  ], [
-    {
-      color: 'error' as const,
-      icon: 'lucide:trash-2',
-      label: t('base.delete'),
-      onSelect: () => onClickDelete(categoryId),
-    },
-  ]]
-}
+const { getCategoryContextMenuItems } = useCategoryContextMenu({
+  onDelete: categoryId => onClickDelete(categoryId),
+})
 </script>
 
 <template>
@@ -136,7 +121,7 @@ function getContextMenuItems(categoryId: CategoryId) {
         :class="{
           'grid gap-1.5 @sm:grid-cols-2 @2xl/page:grid-cols-3': categoriesView === 'grid',
         }"
-        :getContextMenuItems="getContextMenuItems"
+        :getContextMenuItems="getCategoryContextMenuItems"
         :insideClasses="categoriesView === 'grid' ? 'bg-item-2' : ''"
         @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
       />

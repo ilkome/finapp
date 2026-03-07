@@ -98,7 +98,6 @@ const modals = ref({
             <CategoriesSelectorTree
               :selectedIds="filter?.categoriesIds.value"
               class="min-w-80 px-3"
-              @filter="filter.toggleCategoryId"
               @selected="filter.toggleCategoryId"
               @setCategories="filter.setCategories"
             />

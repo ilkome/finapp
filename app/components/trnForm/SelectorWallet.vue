@@ -5,13 +5,11 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
-  isLaptop: boolean
   title?: string
   walletId: WalletId
 }>()
 
 const emit = defineEmits<{
-  open: [slide: number]
   selected: [id: WalletId]
 }>()
 

@@ -1,16 +1,12 @@
 <script setup lang="ts">
-import type { AmountProps } from '~/components/amount/Amount.vue'
 import type { SeriesSlugSelected } from '~/components/stat/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
 const props = defineProps<{
   amount: number
-  amountProps?: Partial<AmountProps>
   averageTotal?: Record<string, number>
-  currencyCode?: string
   isActive?: boolean
-  isTotal?: boolean
   title?: string
   type: SeriesSlugSelected
 }>()
@@ -37,20 +33,18 @@ const currenciesStore = useCurrenciesStore()
         </UiTextSubtitle>
 
         <UiTextSubtitle v-if="!props.title">
-          {{ props.isTotal ? t('money.all') : '' }}
           {{ t(`money.${props.type}`) }}
         </UiTextSubtitle>
 
         <Amount
           :amount="props.amount"
-          :currencyCode="props.currencyCode || currenciesStore.base"
+          :currencyCode="currenciesStore.base"
           :class="{
             '!text-income-1': props.amount > 0 && props.type !== 'netIncome',
             '!text-expense-1': props.amount < 0 && props.type !== 'netIncome',
           }"
           align="left"
           variant="xl"
-          v-bind="props.amountProps"
         />
       </div>
 

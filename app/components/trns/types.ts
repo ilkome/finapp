@@ -73,8 +73,6 @@ export type TrnsGetterProps = {
   trnsIds?: TrnId[]
   trnsItems?: Trns
   trnsTypes?: TrnType[]
-  trnType?: TrnType
-  untilDate?: number
   walletsIds?: WalletId[]
 }
 

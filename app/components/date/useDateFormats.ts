@@ -38,7 +38,6 @@ export function useDateFormats() {
         }
 
       case 'trnItem':
-      default:
         return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
     }
   }

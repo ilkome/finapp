@@ -3,7 +3,6 @@ import type { DateLinkItemProps } from '~/components/date/LinkItem.vue'
 import type { IntervalGroupedLabel, StatDateProvider } from '~/components/date/types'
 
 const props = defineProps<{
-  isShowMaxRange?: boolean
   isShowRangeAdjust?: boolean
   itemProps?: Partial<DateLinkItemProps>
   statDate: StatDateProvider

@@ -1,43 +1,13 @@
+import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref } from 'vue'
 
-// --- Mocks ---
-
-const localforageStore = new Map<string, any>()
-vi.mock('localforage', () => ({
-  default: {
-    clear: vi.fn(() => {
-      localforageStore.clear()
-      return Promise.resolve()
-    }),
-    getItem: vi.fn((key: string) => Promise.resolve(localforageStore.get(key) ?? null)),
-    setItem: vi.fn((key: string, value: any) => {
-      localforageStore.set(key, value)
-      return Promise.resolve()
-    }),
-  },
-}))
-
-vi.mock('vue-deepunref', () => ({
-  deepUnref: (v: any) => v,
-}))
+// --- Entity-specific mocks ---
 
 const mutationMock = vi.fn(() => Promise.resolve())
 const queryMock = vi.fn(() => Promise.resolve(null))
 
-vi.stubGlobal('useConvexClient', () => ({
-  mutation: mutationMock,
-  query: queryMock,
-}))
-vi.stubGlobal('useConvexClientComposable', () => ({
-  mutation: mutationMock,
-  query: queryMock,
-}))
-vi.stubGlobal('useConvexApi', () => ({
-  api: {
-    userSettings: { get: 'userSettings.get', upsert: 'userSettings.upsert' },
-  },
-}))
 vi.stubGlobal('useConvexClientWithApi', () => ({
   api: {
     userSettings: { get: 'userSettings.get', upsert: 'userSettings.upsert' },
@@ -48,16 +18,10 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
   },
 }))
 
-vi.stubGlobal('defineStore', (await import('pinia')).defineStore)
-const { computed, ref } = await import('vue')
-vi.stubGlobal('computed', computed)
-vi.stubGlobal('ref', ref)
-
 const setLocaleMock = vi.fn()
 vi.stubGlobal('useNuxtApp', () => ({
   $i18n: { setLocale: setLocaleMock },
 }))
-vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
 
 const useSessionMock = vi.fn(() => ref({ data: null, isPending: false }))
 vi.stubGlobal('useAuth', () => ({
@@ -83,12 +47,6 @@ vi.mock('~/components/wallets/useWalletsStore', () => ({
   }),
 }))
 
-vi.mock('~/components/demo/useDemo', () => ({
-  useDemo: () => ({
-    isDemo: { value: false },
-  }),
-}))
-
 vi.mock('~/composables/useAuthCookie', () => ({
   clearAuthCookie: vi.fn(),
 }))
@@ -98,9 +56,9 @@ const { useUserStore } = await import('~/components/user/useUserStore')
 // --- Tests ---
 
 describe('useUserStore', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     setActivePinia(createPinia())
-    localforageStore.clear()
+    await localforage.clear()
     vi.clearAllMocks()
   })
 
@@ -115,17 +73,19 @@ describe('useUserStore', () => {
       expect(store.baseCurrency).toBe('EUR')
     })
 
-    it('persists to localforage', () => {
+    it('persists to localforage', async () => {
       const store = useUserStore()
       store.setUserBaseCurrency('EUR')
 
-      const saved = localforageStore.get('finapp.userSettings')
+      const saved = await localforage.getItem<any>('finapp.userSettings')
       expect(saved).toEqual({ baseCurrency: 'EUR', locale: 'en' })
     })
   })
 
   describe('saveUserBaseCurrency', () => {
     it('updates ref and calls Convex mutation', () => {
+      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'test@test.com', id: 'user1', image: null, name: 'Test' } }, isPending: false }))
+      setActivePinia(createPinia())
       const store = useUserStore()
       store.saveUserBaseCurrency('JPY')
 
@@ -137,12 +97,10 @@ describe('useUserStore', () => {
     })
 
     it('skips Convex mutation in demo mode', async () => {
-      // Override isDemo for this test
       const demoModule = await import('~/components/demo/useDemo')
       const original = demoModule.useDemo
       ;(demoModule as any).useDemo = () => ({ ...original(), isDemo: { value: true } })
 
-      // Need fresh store to pick up new mock
       setActivePinia(createPinia())
       const store = useUserStore()
       store.saveUserBaseCurrency('GBP')
@@ -150,7 +108,6 @@ describe('useUserStore', () => {
       expect(store.baseCurrency).toBe('GBP')
       expect(mutationMock).not.toHaveBeenCalled()
 
-      // Restore
       ;(demoModule as any).useDemo = original
     })
   })
@@ -164,17 +121,19 @@ describe('useUserStore', () => {
       expect(setLocaleMock).toHaveBeenCalledWith('ru')
     })
 
-    it('persists to localforage', () => {
+    it('persists to localforage', async () => {
       const store = useUserStore()
       store.setUserLocale('ru')
 
-      const saved = localforageStore.get('finapp.userSettings')
+      const saved = await localforage.getItem<any>('finapp.userSettings')
       expect(saved).toEqual({ baseCurrency: 'USD', locale: 'ru' })
     })
   })
 
   describe('saveUserLocale', () => {
     it('calls Convex mutation when not in demo mode', () => {
+      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'test@test.com', id: 'user1', image: null, name: 'Test' } }, isPending: false }))
+      setActivePinia(createPinia())
       const store = useUserStore()
       store.saveUserLocale('ru')
 
@@ -198,7 +157,6 @@ describe('useUserStore', () => {
       expect(setLocaleMock).toHaveBeenCalledWith('ru')
       expect(mutationMock).not.toHaveBeenCalled()
 
-      // Restore
       ;(demoModule as any).useDemo = original
     })
   })
@@ -247,12 +205,12 @@ describe('useUserStore', () => {
   })
 
   describe('persistUserSettings', () => {
-    it('saves both baseCurrency and locale together', () => {
+    it('saves both baseCurrency and locale together', async () => {
       const store = useUserStore()
       store.setUserBaseCurrency('EUR')
       store.setUserLocale('ru')
 
-      const saved = localforageStore.get('finapp.userSettings')
+      const saved = await localforage.getItem<any>('finapp.userSettings')
       expect(saved).toEqual({ baseCurrency: 'EUR', locale: 'ru' })
     })
   })

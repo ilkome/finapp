@@ -14,12 +14,11 @@ export function useStatCategories() {
   const { getTotalOfTrnsIds } = useAmount()
 
   function collectCategoriesByTrns(trnsIds: TrnId[], preCategoriesIds?: CategoryId[]): CategoriesWithData {
-    const transferIds = new Set(categoriesStore.transferCategoriesIds)
     const categoriesByTrns = trnsIds.reduce((acc, trnId) => {
       const categoryId = trnsStore.items?.[trnId]?.categoryId
       const category = categoryId && categoriesStore.items[categoryId]
 
-      if (!categoryId || !category || transferIds.has(categoryId))
+      if (!categoryId || !category || categoryId === 'transfer')
         return acc
 
       acc[categoryId] ??= {

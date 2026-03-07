@@ -3,7 +3,7 @@ const props = defineProps<{
   isActive?: boolean
 }>()
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{ click: [] }>()
 </script>
 
 <template>

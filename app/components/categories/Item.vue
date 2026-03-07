@@ -11,10 +11,8 @@ export type CategoryItemProps = {
   class?: string
   contextMenuItems?: any[][]
   insideClasses?: string
-  isShowDots?: boolean
   isShowParent?: boolean
   lineWidth?: number
-  slider?: object
 }
 
 const props = defineProps<CategoryItemProps>()

@@ -20,10 +20,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { createDebouncedPersist, handleMutationResult, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
-type TrnsGetterParams = {
-  includesChildCategories?: boolean
-}
-
 const logger = createLogger('trns')
 
 async function fetchAllPages<T>(
@@ -58,14 +54,12 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const items = shallowRef<Trns | null>(null)
 
-  function getStoreTrnsIds(props: TrnsGetterProps, params?: TrnsGetterParams) {
-    const categoriesIds = params?.includesChildCategories
-      ? categoriesStore.getTransactibleIds(props.categoriesIds)
-      : props.categoriesIds
-
+  function getStoreTrnsIds(props: TrnsGetterProps) {
     return getTrnsIds({
       ...props,
-      categoriesIds,
+      categoriesIds: props.categoriesIds?.length
+        ? categoriesStore.getTransactibleIds(props.categoriesIds)
+        : props.categoriesIds,
       trnsItems: items.value ?? undefined,
     })
   }
@@ -90,13 +84,12 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!hasItems.value)
       return undefined
 
-    const transferIds = new Set(categoriesStore.transferCategoriesIds)
     let latestId: TrnId | undefined
     let latestDate = -1
 
     for (const trnId of Object.keys(items.value)) {
       const trn = items.value[trnId]
-      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment' || transferIds.has(trn.categoryId))
+      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment' || trn.categoryId === 'transfer')
         continue
       if (trn.date > latestDate) {
         latestDate = trn.date
@@ -424,7 +417,6 @@ export const useTrnsStore = defineStore('trns', () => {
     hasItems,
     initTrns,
     items,
-    lastCreatedTrnId,
     lastCreatedTrnItem,
     removeTrnsFromStore,
     saveTrn,

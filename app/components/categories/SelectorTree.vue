@@ -4,13 +4,10 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
-  hide?: () => void
   selectedIds?: CategoryId[]
 }>()
 
 const emit = defineEmits<{
-  close: []
-  filter: [id: CategoryId]
   selected: [id: CategoryId]
   setCategories: [ids: CategoryId[]]
 }>()
@@ -30,9 +27,6 @@ function select(categoryId: CategoryId, isForce: boolean) {
   }
 
   emit('selected', categoryId)
-  emit('close')
-  if (props.hide)
-    props.hide()
 }
 
 function onFilter(id: CategoryId) {

@@ -10,12 +10,10 @@ const props = defineProps<{
   getContextMenuItems?: (categoryId: CategoryId) => any[][] | undefined
   ids: CategoryId[]
   insideClasses?: string
-  slider?: object
 }>()
 
 const emit = defineEmits<{
   click: [id: CategoryId]
-  clickIcon: [id: CategoryId]
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -30,13 +28,10 @@ const categoriesStore = useCategoriesStore()
       :category="categoriesStore.items[categoryId]"
       :categoryId="categoryId"
       :contextMenuItems="props.getContextMenuItems?.(categoryId)"
-      :slider="slider"
       :insideClasses="props.insideClasses"
       :lineWidth="1"
-      isShowDots
       v-bind="categoriesItemProps"
       @click="emit('click', categoryId)"
-      @filter="emit('clickIcon', categoryId)"
     />
   </div>
 </template>

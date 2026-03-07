@@ -3,8 +3,7 @@ import type { MutationCtx, QueryCtx } from './_generated/server'
 
 import { authComponent } from './auth'
 
-export { TrnType, walletTypes, walletTypeValidator } from './validators'
-export type { WalletType } from './validators'
+export { TrnType, walletTypeValidator } from './validators'
 
 /**
  * Get authenticated user or return null (for queries).

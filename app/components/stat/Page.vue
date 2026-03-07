@@ -24,7 +24,7 @@ const storageKey = computed(() => `dashboard-${activeTab.value}`)
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
   walletsIds: filter?.walletsIds?.value,
-}, { includesChildCategories: true }))
+}))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 

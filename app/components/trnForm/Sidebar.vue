@@ -65,7 +65,6 @@ watch(isShow, async (v) => {
                 <TrnFormMain
                   maxHeight="100vh"
                   class="!pb-0"
-                  typesPosition="top"
                 />
                 <div
                   v-if="trnsFormStore.values.trnType !== 2"

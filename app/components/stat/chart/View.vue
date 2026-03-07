@@ -8,7 +8,6 @@ import VChart from 'vue-echarts'
 
 import type { Period } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { PeriodNameWithAll } from '~/components/stat/filter/types'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatByLocale } from '~/components/date/utils'
@@ -17,13 +16,11 @@ import { getLocalAmount } from '~/components/stat/chart/utils'
 
 const {
   chartType = 'line',
-  isShowDataLabels,
   period,
   series,
   xAxisLabels,
 } = defineProps<{
   chartType?: ChartType
-  isShowDataLabels?: boolean
   period: Period
   series: ChartSeries[]
   xAxisLabels: number[]
@@ -49,18 +46,15 @@ use([
 const { locale } = useI18n()
 const chartRef = ref()
 
-function getFormatForChart(periodName: PeriodNameWithAll) {
+function getFormatForChart(periodName: Period) {
   switch (periodName) {
     case 'day':
-      return 'd MMM'
     case 'week':
       return 'd MMM'
     case 'month':
       return 'MMM'
     case 'year':
       return 'yyyy'
-    default:
-      return 'MM'
   }
 }
 
@@ -74,11 +68,11 @@ const option = computed(() => {
   })
 
   data.xAxis.axisLabel.formatter = (date: string) => {
-    return formatByLocale(new Date(+date), getFormatForChart(period, new Date(+date)), locale.value)
+    return formatByLocale(new Date(+date), getFormatForChart(period), locale.value)
   }
 
   data.xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
-    return formatByLocale(new Date(+value), getFormatForChart(period, new Date(+value)), locale.value)
+    return formatByLocale(new Date(+value), getFormatForChart(period), locale.value)
   }
 
   return data
@@ -97,10 +91,7 @@ function setChartSeries(series: ChartSeries[]) {
   return series
     .map((item: ChartSeries) => ({
       ...defu(lineConfig, item),
-      label: {
-        ...lineConfig.label,
-        show: isShowDataLabels,
-      },
+      label: lineConfig.label,
       stack: (chartType || item.type) === 'bar' ? 'b' : false,
       type: item.markedArea ? 'bar' : (chartType || item.type),
     }))

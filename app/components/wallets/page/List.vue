@@ -7,6 +7,7 @@ import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
@@ -28,7 +29,6 @@ const userStore = useUserStore()
 const trnsStore = useTrnsStore()
 const isSortModalOpen = ref(false)
 
-const isShowBaseCurrencyModal = ref(false)
 const isOpen = ref(false)
 
 const deleteWalletId = ref<WalletId | null>(null)
@@ -70,28 +70,14 @@ async function onDeleteConfirm() {
   }, 300)
 }
 
-function getWalletContextMenuItems(walletId: WalletId) {
-  return [[
-    {
-      icon: 'lucide:pencil',
-      label: t('base.edit'),
-      onSelect: () => router.push(`/wallets/${walletId}/edit`),
-    },
-  ], [
-    {
-      color: 'error' as const,
-      icon: 'lucide:trash-2',
-      label: t('base.delete'),
-      onSelect: () => { deleteWalletId.value = walletId },
-    },
-  ]]
-}
+const { getWalletContextMenuItems } = useWalletContextMenu({
+  onDelete: (walletId: WalletId) => { deleteWalletId.value = walletId },
+})
 
 const groupedBy = useStorage<WalletsGroupedBy>('finapp-wallets-groupedBy', 'none')
 
 const {
   currencyFiltered,
-  isShowCurrencyFilter,
   onSelectFilterCurrency,
   selectedWalletsIds,
   selectedWalletsIdsWithCurrency,
@@ -419,22 +405,4 @@ const isSecondaryGroupingActive = computed(() =>
 
   <!-- Sort Modal -->
   <WalletsSortModal v-if="isSortModalOpen" @close="isSortModalOpen = false" />
-
-  <!-- Base Currency Modal -->
-  <CurrenciesModal
-    v-if="isShowBaseCurrencyModal"
-    :activeCode="currenciesStore.base"
-    @select="userStore.setUserBaseCurrency"
-    @close="isShowBaseCurrencyModal = false"
-  />
-
-  <!-- Currency Filter Modal -->
-  <CurrenciesModal
-    v-if="walletsStore.currenciesUsed.length > 1 && isShowCurrencyFilter"
-    :activeCode="currencyFiltered"
-    isShowAllButton
-    isHideUnused
-    @select="onSelectFilterCurrency"
-    @close="isShowCurrencyFilter = false"
-  />
 </template>

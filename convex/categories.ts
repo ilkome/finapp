@@ -68,7 +68,6 @@ async function updateCategoryCore(
   ctx: MutationCtx,
   id: Id<'categories'>,
   args: {
-    childIds?: Id<'categories'>[]
     color?: string
     icon?: string
     name?: string
@@ -114,7 +113,6 @@ export const list = query({
 
 export const create = mutation({
   args: {
-    childIds: v.optional(v.array(v.id('categories'))),
     color: v.string(),
     icon: v.string(),
     name: v.string(),
@@ -157,7 +155,6 @@ export const create = mutation({
 
 export const update = mutation({
   args: {
-    childIds: v.optional(v.array(v.id('categories'))),
     color: v.optional(v.string()),
     icon: v.optional(v.string()),
     id: v.id('categories'),

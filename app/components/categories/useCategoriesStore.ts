@@ -4,7 +4,7 @@ import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/
 import type { TrnId } from '~/components/trns/types'
 import type { RemapInfo } from '~/composables/useStoreSync'
 
-import { compareCategoriesByParentAndName, getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
+import { compareCategoriesByParentAndName, getTransactibleCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -51,8 +51,6 @@ type CategoriesStore = {
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<RemapInfo | void> | void
   setCategories: (values: Categories | null) => void
-  transactibleIds: ComputedRef<CategoryId[]>
-  transferCategoriesIds: ComputedRef<CategoryId[]>
 }
 
 const logger = createLogger('categories')
@@ -66,36 +64,27 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     Object.keys(items.value).some(id => id !== 'transfer' && id !== 'adjustment'),
   )
 
-  const transferCategoriesIds = computed(() => getTransferCategoriesIds(items.value))
-
-  const categoriesIds = computed(() => {
-    if (!items.value)
-      return []
-
-    return Object.keys(items.value)
-  })
+  const categoriesIds = computed(() => Object.keys(items.value))
 
   const categoriesRootIds = computed(() => {
-    if (!hasItems.value || !items.value)
+    if (!hasItems.value)
       return []
 
-    const transferIds = new Set(transferCategoriesIds.value)
     return Object.keys(items.value)
-      .filter(id => items.value?.[id]?.parentId === 0 && !transferIds.has(id) && id !== 'adjustment')
+      .filter(id => items.value?.[id]?.parentId === 0 && id !== 'transfer' && id !== 'adjustment')
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   })
 
   const categoriesForBeParent = computed(() => {
-    if (!hasItems.value || !items.value)
+    if (!hasItems.value)
       return []
 
     const usedCategoryIds = new Set(
       Object.values(trnsStore.items ?? {}).map(trn => trn.categoryId),
     )
-    const transferIds = new Set(transferCategoriesIds.value)
 
     return categoriesRootIds.value.filter((id: CategoryId) =>
-      !usedCategoryIds.has(id) && !transferIds.has(id),
+      !usedCategoryIds.has(id) && id !== 'transfer',
     )
   })
 
@@ -127,7 +116,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     const trnsItems = trnsStore.items
     const maxCategories = Math.min(categoriesIds.value.length, 16)
-    const transferIds = new Set(transferCategoriesIds.value)
     const favoriteIds = new Set(favoriteCategoriesIds.value)
 
     // Track most recent date per category (single pass)
@@ -151,7 +139,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
           return acc
 
         const category = items.value[categoryId]
-        if (!category || !category.showInLastUsed || transferIds.has(categoryId) || favoriteIds.has(categoryId))
+        if (!category || !category.showInLastUsed || categoryId === 'transfer' || favoriteIds.has(categoryId))
           return acc
 
         acc.push(categoryId)
@@ -163,9 +151,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   })
 
   const categoriesIdsForTrnValues = computed<CategoryId[]>(() => {
-    const transferIds = new Set(transferCategoriesIds.value)
     return categoriesIds.value.filter((id) => {
-      if (transferIds.has(id))
+      if (id === 'transfer')
         return false
       return !items.value[id]?.childIds?.length
     })
@@ -363,7 +350,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   return {
     cancelPersist: () => debouncedPersist.cancel?.(),
     categoriesForBeParent,
-    categoriesIds,
     categoriesIdsForTrnValues,
     categoriesRootIds,
     deleteCategory,
@@ -379,7 +365,5 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     recentCategoriesIds,
     saveCategory,
     setCategories,
-    transactibleIds,
-    transferCategoriesIds,
   }
 })

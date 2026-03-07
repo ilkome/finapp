@@ -141,7 +141,6 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
         isShowCategories: true,
       }"
       :filter="{
-        isShow: true,
         isShowWallets: true,
       }"
     >
@@ -160,7 +159,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
       </template>
 
       <template
-        v-if="!categoriesStore.transferCategoriesIds.includes(categoryId)"
+        v-if="categoryId !== 'transfer'"
         #popover="{ close }"
       >
         <UiHeaderLink

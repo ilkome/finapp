@@ -16,16 +16,6 @@ export const getLatest = query({
   },
 })
 
-export const getByDate = query({
-  args: { date: v.string() },
-  handler: async (ctx, { date }) => {
-    return await ctx.db
-      .query('rates')
-      .withIndex('by_date', q => q.eq('date', date))
-      .first()
-  },
-})
-
 export const saveRates = internalMutation({
   args: {
     date: v.string(),

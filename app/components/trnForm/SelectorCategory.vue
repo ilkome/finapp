@@ -5,12 +5,10 @@ const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
   category: CategoryItem
   categoryId: CategoryId
-  isLaptop: boolean
   title?: string
 }>()
 
 const emit = defineEmits<{
-  open: [slide: number]
   selected: [id: CategoryId]
 }>()
 

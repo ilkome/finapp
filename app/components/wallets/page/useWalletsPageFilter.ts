@@ -46,20 +46,16 @@ export function useWalletsPageFilter(groupedBy: Ref<WalletsGroupedBy>) {
     })
   })
 
-  const isShowCurrencyFilter = ref(false)
-
   function onSelectFilterCurrency(code: CurrencyCode, toggle?: () => void) {
     if (currencyFiltered.value === code && toggle)
       toggle()
 
     walletViewType.value = 'total'
     currencyFiltered.value = code
-    isShowCurrencyFilter.value = false
   }
 
   return {
     currencyFiltered,
-    isShowCurrencyFilter,
     onSelectFilterCurrency,
     selectedWalletsIds,
     selectedWalletsIdsWithCurrency,

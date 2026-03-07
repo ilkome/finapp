@@ -14,34 +14,15 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
-
 const walletId = computed(() => {
   const walletsIds = Object.keys(walletsStore.items ?? {})
   const firstWalletId = walletsIds[0]
   return trnsFormStore.values.walletId ?? firstWalletId
 })
-
-const isShow = ref(false)
-const initialSlide = ref(0)
-function show(slide: number) {
-  isShow.value = true
-  initialSlide.value = slide
-}
 </script>
 
 <template>
   <div class="grid pb-0">
-    <TrnFormSelection
-      v-if="isShow"
-      v-model:isShow="isShow"
-      :maxHeight="maxHeight"
-      :initialSlide
-    />
-
     <UiTitleModal @click="trnsFormStore.values.trnId = null">
       {{ trnsFormStore.values.trnId ? t('trnForm.titleEditTrn') : t('trnForm.createTrn') }}
     </UiTitleModal>
@@ -72,10 +53,8 @@ function show(slide: number) {
         <TrnFormSelectorWallet
           v-if="walletId"
           :bottomSheetStyle="{ maxHeight }"
-          :isLaptop
           :title="t('trnForm.wallet.select')"
           :walletId="walletId"
-          @open="show(0)"
           @selected="(id: WalletId) => trnsFormStore.values.walletId = id"
         />
 
@@ -84,9 +63,7 @@ function show(slide: number) {
           :bottomSheetStyle="{ maxHeight }"
           :category="categoriesStore.items[trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
           :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
-          :isLaptop
           :title="t('trnForm.category.select')"
-          @open="show(2)"
           @selected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
         />
       </div>
@@ -94,8 +71,6 @@ function show(slide: number) {
       <TrnFormMainAmountTransfer
         v-if="trnsFormStore.values.trnType === 2"
         :bottomSheetStyle="{ maxHeight }"
-        isLaptop
-        @open="show(0)"
       />
 
       <TrnFormMainCalculator />

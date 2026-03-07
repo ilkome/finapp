@@ -18,10 +18,7 @@ function handleClick() {
     class="flex grow items-center gap-3 rounded-lg p-2 text-sm hover:bg-(--item-5)"
     @click="handleClick"
   >
-    <FormSwitch
-      v-if="checkboxValue !== undefined"
-      :value="checkboxValue"
-    />
+    <FormSwitch :value="checkboxValue" />
 
     <div class="text-muted grow">
       {{ title }}

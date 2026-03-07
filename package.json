@@ -69,6 +69,7 @@
     "eslint-plugin-format": "^1.1.0",
     "eslint-plugin-perfectionist": "^4.15.1",
     "eslint-plugin-tailwindcss": "4.0.0-beta.0",
+    "happy-dom": "^20.8.3",
     "nuxt": "^4.2.1",
     "prettier": "^3.7.4",
     "prettier-plugin-tailwindcss": "^0.7.2",

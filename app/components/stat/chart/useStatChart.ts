@@ -42,7 +42,7 @@ export function useStatChart() {
 
     return {
       color: seriesOptions[typeItem]?.color,
-      data: data.map(i => typeItem !== 'summary' ? Math.abs(i[typeItem]) : i[typeItem]),
+      data: data.map(i => Math.abs(i[typeItem])),
       markLine,
       name: t(`money.${typeItem}`),
       type: seriesOptions[typeItem]?.type,
