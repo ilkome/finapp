@@ -27,27 +27,27 @@ const { getCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
+// Lazy computeds — each computed only when accessed (Vue computed is lazy).
+// Replaces the old `categoriesStat` which eagerly computed BOTH variants on every change.
+const groupedCategories = computed(() => getCategoriesWithData(props.selectedTrnsIds ?? [], true))
+const ungroupedCategories = computed(() => getCategoriesWithData(props.selectedTrnsIds ?? [], false))
+
 const categoriesWithData = computed<CategoryWithData[]>(() => {
   const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
 
-  const cats: CategoryId[] = []
-  if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds) {
-    cats.push(...props.preCategoriesIds)
+  // When showing empty categories, need a separate call with preCategoriesIds
+  if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds?.length) {
+    return getCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds)
   }
 
-  return getCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, cats)
+  return isGrouped ? groupedCategories.value : ungroupedCategories.value
 })
 
-const categoriesStat = computed<{ grouped: CategoryWithData[], ungrouped: CategoryWithData[] }>(() => ({
-  grouped: getCategoriesWithData(props.selectedTrnsIds ?? [], true),
-  ungrouped: getCategoriesWithData(props.selectedTrnsIds ?? [], false),
-}))
-
-const verticalCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.vertical.isGrouped ? 'grouped' : 'ungrouped'])
+const verticalCategories = computed<CategoryWithData[]>(() => statConfig.config.value.vertical.isGrouped ? groupedCategories.value : ungroupedCategories.value)
 const visibleVerticalCategories = computed(() => verticalCategories.value.filter(c => c.value !== 0))
 const verticalBiggestCatNumber = computed(() => getBiggestCatNumber(verticalCategories.value))
 
-const linesCategories = computed<CategoryWithData[]>(() => categoriesStat.value[statConfig.config.value.catsList.isGrouped ? 'grouped' : 'ungrouped'])
+const linesCategories = computed<CategoryWithData[]>(() => statConfig.config.value.catsList.isGrouped ? groupedCategories.value : ungroupedCategories.value)
 const linesBiggestCatNumber = computed(() => getBiggestCatNumber(linesCategories.value))
 
 const biggestCatNumber = computed(() => getBiggestCatNumber(categoriesWithData.value))
