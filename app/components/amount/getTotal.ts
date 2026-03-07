@@ -45,6 +45,7 @@ export type TotalReturns = {
 
 export function getTotal(props: TotalProps): TotalReturns {
   const { baseCurrencyCode, rates, trnsIds, trnsItems, walletsIds, walletsItems } = props
+  const walletsSet = walletsIds?.length ? new Set(walletsIds) : null
 
   function getAmount(amount: number, currencyCode: CurrencyCode) {
     return getAmountInRate({
@@ -95,13 +96,11 @@ export function getTotal(props: TotalProps): TotalReturns {
       const expenseAmount = getAmount(trn.expenseAmount, expenseWallet.currency)
 
       // Include only selected wallets
-      if (walletsIds && walletsIds.length > 0) {
-        // Income
-        if (walletsIds.includes(trn.incomeWalletId))
+      if (walletsSet) {
+        if (walletsSet.has(trn.incomeWalletId))
           incomeTransfers += incomeAmount
 
-        // Expense
-        if (walletsIds.includes(trn.expenseWalletId))
+        if (walletsSet.has(trn.expenseWalletId))
           expenseTransfers += expenseAmount
       }
       else {
