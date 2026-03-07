@@ -11,8 +11,6 @@ import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/compo
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
-import { pushOfflineOp } from '~/components/offline/helpers'
-import { isReplaying } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { getTrnsIds } from '~/components/trns/getTrns'
 import { TrnType } from '~/components/trns/types'
