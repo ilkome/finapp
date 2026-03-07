@@ -1,25 +1,68 @@
 import { describe, expect, it } from 'vitest'
 
-import type { CategoryWithData } from '~/components/stat/types'
+import { getSelectedType, getSelectedTypeForSum, getTypesToShow } from '~/components/stat/utils'
 
-import { sortCategoriesByAmount } from '~/components/stat/utils'
+describe('getSelectedType', () => {
+  it('returns filteredType for summary tab', () => {
+    expect(getSelectedType('summary', 'expense', 'income')).toBe('expense')
+    expect(getSelectedType('summary', 'netIncome', undefined)).toBe('netIncome')
+  })
 
-describe('sortCategoriesByAmount', () => {
-  it('sort multiple values in correct order', () => {
-    const categories: CategoryWithData[] = [
-      { id: 'a', trnsIds: [], value: 100 },
-      { id: 'b', trnsIds: [], value: 300 },
-      { id: 'c', trnsIds: [], value: 200 },
-      { id: 'd', trnsIds: [], value: -200 },
-      { id: 'e', trnsIds: [], value: -400 },
-    ]
+  it('returns type for split tab', () => {
+    expect(getSelectedType('split', 'netIncome', 'expense')).toBe('expense')
+  })
 
-    expect(categories.sort(sortCategoriesByAmount)).toEqual([
-      { id: 'b', trnsIds: [], value: 300 },
-      { id: 'c', trnsIds: [], value: 200 },
-      { id: 'a', trnsIds: [], value: 100 },
-      { id: 'e', trnsIds: [], value: -400 },
-      { id: 'd', trnsIds: [], value: -200 },
-    ])
+  it('falls back to filteredType for split when type is undefined', () => {
+    expect(getSelectedType('split', 'income', undefined)).toBe('income')
+  })
+
+  it('returns statTab for expense/income tabs', () => {
+    expect(getSelectedType('expense', 'netIncome', 'income')).toBe('expense')
+    expect(getSelectedType('income', 'expense', undefined)).toBe('income')
+  })
+})
+
+describe('getSelectedTypeForSum', () => {
+  it('returns summary for summary tab', () => {
+    expect(getSelectedTypeForSum('summary', 'expense')).toBe('summary')
+  })
+
+  it('returns type for split tab', () => {
+    expect(getSelectedTypeForSum('split', 'income')).toBe('income')
+  })
+
+  it('returns statTab for expense/income tabs', () => {
+    expect(getSelectedTypeForSum('expense', 'income')).toBe('expense')
+    expect(getSelectedTypeForSum('income', undefined)).toBe('income')
+  })
+})
+
+describe('getTypesToShow', () => {
+  it('returns both types for summary+netIncome', () => {
+    expect(getTypesToShow('summary', 'netIncome', undefined)).toEqual(['income', 'expense'])
+  })
+
+  it('returns single type for summary+income', () => {
+    expect(getTypesToShow('summary', 'income', undefined)).toEqual(['income'])
+  })
+
+  it('returns single type for summary+expense', () => {
+    expect(getTypesToShow('summary', 'expense', undefined)).toEqual(['expense'])
+  })
+
+  it('returns statTab for expense tab', () => {
+    expect(getTypesToShow('expense', 'netIncome', 'income')).toEqual(['expense'])
+  })
+
+  it('returns statTab for income tab', () => {
+    expect(getTypesToShow('income', 'netIncome', undefined)).toEqual(['income'])
+  })
+
+  it('returns type for split tab', () => {
+    expect(getTypesToShow('split', 'netIncome', 'expense')).toEqual(['expense'])
+  })
+
+  it('falls back to both types for split without type', () => {
+    expect(getTypesToShow('split', 'netIncome', undefined)).toEqual(['income', 'expense'])
   })
 })

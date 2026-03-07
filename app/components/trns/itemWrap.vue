@@ -4,6 +4,8 @@ import type { TrnId, TrnItemFull } from '~/components/trns/types'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps<{
   alt?: boolean
   date?: string
@@ -53,7 +55,7 @@ function handleDeleteConfirm() {
 </script>
 
 <template>
-  <UContextMenu :items="contextMenuItems">
+  <UContextMenu v-bind="$attrs" :items="contextMenuItems">
     <TrnsItem
       :alt="props.alt"
       :trnItem
