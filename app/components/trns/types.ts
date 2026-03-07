@@ -70,6 +70,7 @@ export type TrnsGetterProps = {
     from: number
     until: number
   }
+  sort?: boolean
   trnsIds?: TrnId[]
   trnsItems?: Trns
   trnsTypes?: TrnType[]

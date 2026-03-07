@@ -40,7 +40,10 @@ export function getTrnsIds(props: TrnsGetterProps) {
       : ids,
   ]
 
-  return filters
-    .reduce((ids, filter) => filter(ids), trnsIds)
-    .sort((a, b) => props.trnsItems?.[b]?.date - props.trnsItems?.[a]?.date)
+  const result = filters.reduce((ids, filter) => filter(ids), trnsIds)
+
+  if (props.sort)
+    result.sort((a, b) => props.trnsItems?.[b]?.date - props.trnsItems?.[a]?.date)
+
+  return result
 }

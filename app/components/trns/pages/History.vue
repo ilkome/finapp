@@ -19,6 +19,7 @@ useHead({
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
+  sort: true,
   walletsIds: filter.walletsIds.value,
 }))
 
