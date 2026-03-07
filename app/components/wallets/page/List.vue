@@ -12,7 +12,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
-import { useWalletsPageFilter } from './useWalletsPageFilter'
+import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
 import { useWalletsPageGrouping } from './useWalletsPageGrouping'
 
 const { t } = useI18n()
@@ -83,7 +83,7 @@ const {
   selectedWalletsIdsWithCurrency,
   setWalletViewType,
   walletViewType,
-} = useWalletsPageFilter(groupedBy)
+} = useWalletsFilter(groupedBy)
 
 const {
   counts,
