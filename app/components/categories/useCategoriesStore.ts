@@ -342,7 +342,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       errorMessage: 'categories.errors.deleteFailed',
       id,
       items,
-      mutation: client.mutation(api.categories.remove, { id: asConvexId<'categories'>(id) }),
+      mutation: client.action(api.categories.remove, { id: asConvexId<'categories'>(id) }),
 
     })
   }

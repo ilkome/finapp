@@ -15,6 +15,7 @@ vi.mock('~~/utils/simple', () => ({
 }))
 
 const mutationMock = vi.fn(() => Promise.resolve())
+const actionMock = vi.fn(() => Promise.resolve())
 const onUpdateMock = vi.fn()
 
 vi.stubGlobal('useConvexClientWithApi', () => ({
@@ -22,6 +23,7 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
     wallets: { create: 'wallets.create', list: 'wallets.list', remove: 'wallets.remove', update: 'wallets.update', updateOrder: 'wallets.updateOrder' },
   },
   client: {
+    action: actionMock,
     mutation: mutationMock,
     onUpdate: onUpdateMock,
   },
@@ -93,6 +95,7 @@ describe('useWalletsStore', () => {
     await localforage.clear()
     vi.clearAllMocks()
     mutationMock.mockReturnValue(Promise.resolve())
+    actionMock.mockReturnValue(Promise.resolve())
   })
 
   afterEach(() => {
@@ -224,7 +227,7 @@ describe('useWalletsStore', () => {
 
       store.deleteWallet('w1')
 
-      expect(mutationMock).toHaveBeenCalledWith('wallets.remove', { id: 'w1' })
+      expect(actionMock).toHaveBeenCalledWith('wallets.remove', { id: 'w1' })
     })
 
     it('cleans up offline queue on mutation success', async () => {
@@ -247,9 +250,9 @@ describe('useWalletsStore', () => {
       expect(removeTrnsFromStoreMock).toHaveBeenCalledWith(['trn1', 'trn2'])
     })
 
-    it('shows toast on delete mutation failure', async () => {
+    it('shows toast on failure', async () => {
       const { toastAddMock } = await import('~/test-utils/setup-store')
-      mutationMock.mockReturnValue(Promise.reject(new Error('network')))
+      actionMock.mockReturnValue(Promise.reject(new Error('network')))
       const store = useWalletsStore()
       store.items = { w1: makeWallet() }
 

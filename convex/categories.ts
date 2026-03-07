@@ -3,7 +3,8 @@ import { v } from 'convex/values'
 import type { Id } from './_generated/dataModel'
 import type { MutationCtx } from './_generated/server'
 
-import { mutation, query } from './_generated/server'
+import { internal } from './_generated/api'
+import { action, internalMutation, internalQuery, mutation, query } from './_generated/server'
 import { getAuthUser, getOwnEntity, requireAuthUser } from './shared'
 import { removeTrnsFromHash } from './trnsHash'
 
@@ -169,37 +170,86 @@ export const update = mutation({
   },
 })
 
-export const remove = mutation({
-  args: { id: v.id('categories') },
-  handler: async (ctx, { id }) => {
-    const user = await requireAuthUser(ctx)
-    const category = await getOwnEntity(ctx, id, user._id)
-
+export const validateCategoryRemoval = internalQuery({
+  args: { id: v.id('categories'), userId: v.string() },
+  handler: async (ctx, { id, userId }) => {
+    const category = await ctx.db.get(id)
+    if (!category || category.userId !== userId)
+      throw new Error('Not found')
     if (category.childIds?.length)
       throw new Error('Cannot delete category with children')
+  },
+})
 
-    // Cascade delete all trns in this category (paginated)
+export const removeTrnsByCategoryPage = internalMutation({
+  args: {
+    categoryId: v.id('categories'),
+    cursor: v.union(v.string(), v.null()),
+    userId: v.string(),
+  },
+  handler: async (ctx, { categoryId, cursor, userId }) => {
+    const page = await ctx.db
+      .query('trns')
+      .withIndex('by_user_category', q => q.eq('userId', userId).eq('categoryId', categoryId))
+      .paginate({ cursor, numItems: 500 })
+
     const deletedIds: string[] = []
-    let cursor: string | null = null
-    let isDone = false
-    while (!isDone) {
-      const page = await ctx.db
-        .query('trns')
-        .withIndex('by_user_category', q => q.eq('userId', user._id).eq('categoryId', id))
-        .paginate({ cursor, numItems: 500 })
-      for (const trn of page.page) {
-        await ctx.db.delete(trn._id)
-        deletedIds.push(trn._id)
-      }
-      isDone = page.isDone
-      cursor = page.continueCursor
+    for (const trn of page.page) {
+      await ctx.db.delete(trn._id)
+      deletedIds.push(trn._id)
     }
 
     if (deletedIds.length)
-      await removeTrnsFromHash(ctx, user._id, deletedIds)
+      await removeTrnsFromHash(ctx, userId, deletedIds)
 
-    await removeFromParentChildIds(ctx, id, category.parentId, user._id)
-    await ctx.db.delete(id)
+    return { continueCursor: page.continueCursor, isDone: page.isDone }
+  },
+})
+
+export const removeCategoryFinalize = internalMutation({
+  args: {
+    categoryId: v.id('categories'),
+    userId: v.string(),
+  },
+  handler: async (ctx, { categoryId, userId }) => {
+    const category = await ctx.db.get(categoryId)
+    if (!category || category.userId !== userId)
+      return
+    await removeFromParentChildIds(ctx, categoryId, category.parentId, userId)
+    await ctx.db.delete(categoryId)
+  },
+})
+
+export const remove = action({
+  args: { id: v.id('categories') },
+  handler: async (ctx, { id }) => {
+    const user = await ctx.runQuery(internal.userSettings.getCurrentUser)
+    if (!user)
+      throw new Error('Unauthorized')
+
+    // Validate before cascade delete (ownership + no children)
+    await ctx.runQuery(internal.categories.validateCategoryRemoval, {
+      id,
+      userId: user._id,
+    })
+
+    // Paginated trn deletion
+    let cursor: string | null = null
+    let isDone = false
+    while (!isDone) {
+      const result = await ctx.runMutation(internal.categories.removeTrnsByCategoryPage, {
+        categoryId: id,
+        cursor,
+        userId: user._id,
+      })
+      isDone = result.isDone
+      cursor = result.continueCursor
+    }
+
+    await ctx.runMutation(internal.categories.removeCategoryFinalize, {
+      categoryId: id,
+      userId: user._id,
+    })
   },
 })
 
