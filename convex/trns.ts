@@ -11,6 +11,8 @@ import { addTrnToHash, fnv1aNum, removeTrnFromHash } from './trnsHash'
 
 async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
   if (args.type === TrnType.Transfer) {
+    if (args.categoryId && args.categoryId !== 'transfer')
+      throw new Error('Transfer categoryId must be "transfer"')
     if (!args.expenseWalletId || !args.incomeWalletId)
       throw new Error('Transfer requires both wallets')
     if (args.expenseWalletId === args.incomeWalletId)
@@ -134,8 +136,11 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const user = await requireAuthUser(ctx)
     await validateTrnFields(ctx, args, user._id)
+    const data = args.type === TrnType.Transfer
+      ? { ...args, categoryId: 'transfer' as const }
+      : args
     const id = await ctx.db.insert('trns', {
-      ...args,
+      ...data,
       updatedAt: Date.now(),
       userId: user._id,
     })
