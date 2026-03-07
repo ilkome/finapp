@@ -162,7 +162,26 @@ export const update = mutation({
     const user = await requireAuthUser(ctx)
     const trn = await getOwnEntity(ctx, id, user._id)
     await validateTrnFields(ctx, { ...trn, ...args }, user._id)
-    await ctx.db.patch(id, { ...args, updatedAt: Date.now() })
+
+    const patch: Record<string, any> = { ...args, updatedAt: Date.now() }
+
+    // Clear stale fields when type changes to prevent orphaned index entries
+    if (args.type !== undefined && args.type !== trn.type) {
+      if (args.type === TrnType.Transfer) {
+        patch.walletId = undefined
+        patch.amount = undefined
+        if (!args.categoryId)
+          patch.categoryId = 'transfer'
+      }
+      else {
+        patch.expenseWalletId = undefined
+        patch.incomeWalletId = undefined
+        patch.expenseAmount = undefined
+        patch.incomeAmount = undefined
+      }
+    }
+
+    await ctx.db.patch(id, patch)
   },
 })
 
