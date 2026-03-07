@@ -5,7 +5,7 @@ import { walletsItems } from '~~/mocks/wallets'
 
 import type { TrnId } from '~/components/trns/types'
 
-import { getTotal } from '~/components/amount/getTotal'
+import { getTotal, getWalletsTotals } from '~/components/amount/getTotal'
 
 describe('total of Transactions', () => {
   it('correct empty result and correct total structure', () => {
@@ -178,5 +178,84 @@ describe('total of Transactions', () => {
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(40)
     expect(total.sumTransfers).toEqual(0)
+  })
+})
+
+describe('getWalletsTotals', () => {
+  it('returns empty map for empty trns', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {},
+      walletsItems,
+    })
+
+    expect(totals.size).toBe(0)
+  })
+
+  it('computes wallet balance from income and expense', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: trnsItems.transactionIncomeWalletCashUSD1000,
+        t2: trnsItems.transactionExpenseWalletCashUSD400,
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletCashUSD')).toBe(600)
+  })
+
+  it('handles transfers — adds to income wallet, subtracts from expense wallet', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: trnsItems.transferExpenseWalletCashUSD10IncomeWalletRUB700,
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletCashUSD')).toBe(-10)
+    expect(totals.get('walletRUB')).toBe(700)
+  })
+
+  it('handles adjustments as income/expense on wallet', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: trnsItems.adjustmentIncomeWalletCashUSD200,
+        t2: trnsItems.adjustmentExpenseWalletCashUSD50,
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletCashUSD')).toBe(150)
+  })
+
+  it('computes full balance for walletCashUSD with mixed trns', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: trnsItems.transactionIncomeWalletCashUSD1000,
+        t2: trnsItems.transactionExpenseWalletCashUSD400,
+        t3: trnsItems.transferExpenseWalletCashUSD10IncomeWalletRUB700,
+        t4: trnsItems.transferExpenseWalletCreditUSD40IncomeWalletCashUSD40,
+        t5: trnsItems.adjustmentIncomeWalletCashUSD30,
+        t6: trnsItems.adjustmentExpenseWalletCashUSD30,
+      },
+      walletsItems,
+    })
+
+    // 1000 - 400 - 10 + 40 + 30 - 30 = 630
+    expect(totals.get('walletCashUSD')).toBe(630)
+    expect(totals.get('walletRUB')).toBe(700)
+    expect(totals.get('walletCreditUSD')).toBe(-40)
+  })
+
+  it('converts currencies when rates provided', () => {
+    const totals = getWalletsTotals({
+      baseCurrencyCode: 'USD',
+      rates,
+      trnsItems: {
+        t1: trnsItems.transactionIncomeWalletOneRUB700,
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletOneRUB')).toBeCloseTo(10.81, 1)
   })
 })
