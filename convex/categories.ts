@@ -86,8 +86,8 @@ async function updateCategoryCore(
 
   if (args.parentId !== undefined && args.parentId !== 0)
     await validateParentId(ctx, args.parentId, userId, id)
-  if (args.name !== undefined)
-    await validateNameUniqueness(ctx, args.name, args.parentId ?? category.parentId, userId, id)
+  if (args.name !== undefined || args.parentId !== undefined)
+    await validateNameUniqueness(ctx, args.name ?? category.name, args.parentId ?? category.parentId, userId, id)
   if (args.parentId !== undefined)
     await syncChildIdsOnParentChange(ctx, id, category.parentId, args.parentId, userId)
 
