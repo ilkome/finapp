@@ -56,9 +56,6 @@ importers:
       vue:
         specifier: ^3.5.25
         version: 3.5.25(typescript@5.9.3)
-      vue-deepunref:
-        specifier: ^1.0.1
-        version: 1.0.1(typescript@5.9.3)
       vue-echarts:
         specifier: ^8.0.1
         version: 8.0.1(echarts@6.0.0)(vue@3.5.25(typescript@5.9.3))
@@ -7846,9 +7843,6 @@ packages:
 
   vue-component-type-helpers@3.1.5:
     resolution: {integrity: sha512-7V3yJuNWW7/1jxCcI1CswnpDsvs02Qcx/N43LkV+ZqhLj2PKj50slUflHAroNkN4UWiYfzMUUUXiNuv9khmSpQ==}
-
-  vue-deepunref@1.0.1:
-    resolution: {integrity: sha512-cZNaEBvG1O0RtdcxLf1icqOe6UhrAPzsByyhJ85nRSA/PnGh0VKoI9+T8S5mcoI3pgz0T6ci2PCn2zy4PATRjg==}
 
   vue-demi@0.14.10:
     resolution: {integrity: sha512-nMZBOwuzabUO0nLgIcc6rycZEebF6eeUfaiQx9+WSk8e29IbLvPU9feI6tqW4kTo3hvoYAJkMh8n8D0fuISphg==}
@@ -16741,12 +16735,6 @@ snapshots:
       ufo: 1.6.1
 
   vue-component-type-helpers@3.1.5: {}
-
-  vue-deepunref@1.0.1(typescript@5.9.3):
-    dependencies:
-      vue: 3.5.25(typescript@5.9.3)
-    transitivePeerDependencies:
-      - typescript
 
   vue-demi@0.14.10(vue@3.5.25(typescript@5.9.3)):
     dependencies:
