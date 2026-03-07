@@ -123,7 +123,7 @@ export const lineConfig = {
   label: {
     formatter: ({ value }: { value: number }) => getCompactAmount(value),
     position: 'top',
-    show: true,
+    show: false,
   },
   lineStyle: {
     width: 2,
