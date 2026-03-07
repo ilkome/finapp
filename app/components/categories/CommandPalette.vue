@@ -19,7 +19,6 @@ const cats = computed(() => {
   const adjustmentCategory = categoriesStore.items.adjustment
   const adjustmentGroup = {
     ...adjustmentCategory,
-    childIds: undefined,
     id: 'adjustment',
     items: [{
       id: 'adjustment',
@@ -32,8 +31,9 @@ const cats = computed(() => {
   const rootGroups = categoriesStore.categoriesRootIds.map((id) => {
     const category = categoriesStore.items[id]!
 
-    const items = category?.childIds?.length
-      ? categoriesStore.getChildrenIds(id).map(childId => ({
+    const children = categoriesStore.getChildrenIds(id)
+    const items = children.length
+      ? children.map(childId => ({
           id: childId,
           ...categoriesStore.items[childId],
           suffix: category.name,
@@ -46,7 +46,6 @@ const cats = computed(() => {
 
     return {
       ...category,
-      childIds: undefined,
       id,
       items,
       slot: 'category',

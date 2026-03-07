@@ -42,7 +42,6 @@ export const mockCategories: Categories = {
     parentId: 0,
   },
   withChilds: {
-    childIds: ['child1', 'child2'],
     color: 'red',
     icon: 'home',
     name: 'No Selectable with childs',
@@ -68,9 +67,6 @@ const mockCategories2: Categories = {
     showInQuickSelector: false,
   },
   '241120_k27ehb': {
-    childIds: [
-      '241120_7fxrno',
-    ],
     color: '#701a75',
     icon: 'mdi:truck-delivery',
     name: 'Auto',
@@ -79,7 +75,6 @@ const mockCategories2: Categories = {
     showInQuickSelector: false,
   },
   'transfer': {
-    childIds: [],
     color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
     name: 'Transfer',

@@ -13,7 +13,6 @@ import { createDebouncedPersist, handleMutationResult, mergeOfflineOps, pushDele
 import { createLogger } from '~/utils/logger'
 
 const adjustment: CategoryItem = {
-  childIds: [],
   color: 'var(--text-4)',
   icon: 'mdi:plus-minus',
   name: 'Adjustment',
@@ -23,7 +22,6 @@ const adjustment: CategoryItem = {
 }
 
 const transfer: CategoryItem = {
-  childIds: [],
   color: 'var(--text-4)',
   icon: 'mdi:repeat',
   name: 'Transfer',
@@ -154,7 +152,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return categoriesIds.value.filter((id) => {
       if (id === 'transfer')
         return false
-      return !items.value[id]?.childIds?.length
+      return !hasChildren(id)
     })
   })
 
@@ -190,18 +188,20 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!category || category.parentId !== 0)
       return false
 
-    return !!category.childIds?.length
+    return Object.keys(items.value).some(id => items.value[id]?.parentId === categoryId)
   }
 
   function getChildrenIds(categoryId: CategoryId) {
     if (!hasItems.value)
       return []
 
-    const category = items.value[categoryId]
-    if (!category?.childIds?.length)
+    const children = Object.keys(items.value)
+      .filter(id => items.value[id]?.parentId === categoryId)
+
+    if (!children.length)
       return []
 
-    return [...category.childIds]
+    return children
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   }
 
@@ -209,10 +209,9 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!hasItems.value)
       return []
 
-    const category = items.value[categoryId]
-    return category?.childIds?.length
-      ? [...category.childIds]
-      : [categoryId]
+    const children = Object.keys(items.value)
+      .filter(id => items.value[id]?.parentId === categoryId)
+    return children.length ? children : [categoryId]
   }
 
   function getTransactibleIds(ids?: CategoryId[]) {
@@ -223,30 +222,10 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return transactibleIdsSet.value.has(categoryId)
   }
 
-  function syncOptimisticParentChildIds(categories: Categories, id: CategoryId, oldParentId: CategoryId | 0, newParentId: CategoryId | 0) {
-    if (oldParentId === newParentId)
-      return
-
-    if (oldParentId && oldParentId !== 0) {
-      const pId = String(oldParentId)
-      if (categories[pId]) {
-        const filtered = (categories[pId].childIds ?? []).filter(cid => cid !== id)
-        categories[pId] = { ...categories[pId], childIds: filtered.length ? filtered : undefined }
-      }
-    }
-
-    if (newParentId && newParentId !== 0) {
-      const pId = String(newParentId)
-      if (categories[pId])
-        categories[pId] = { ...categories[pId], childIds: [...(categories[pId].childIds ?? []), id] }
-    }
-  }
-
   function applyOptimisticUpdate(id: CategoryId, categoryValues: CategoryItem, isUpdateChildCategoriesColor: boolean, categoryChildIds: CategoryId[]) {
-    const existingChildIds = items.value?.[id]?.childIds
     const updatedItems: Categories = {
       ...(items.value ?? {}),
-      [id]: existingChildIds ? { ...categoryValues, childIds: existingChildIds } : categoryValues,
+      [id]: categoryValues,
     }
 
     if (isUpdateChildCategoriesColor && categoryChildIds.length > 0) {
@@ -255,8 +234,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
           updatedItems[childId] = { ...updatedItems[childId], color: categoryValues.color }
       }
     }
-
-    syncOptimisticParentChildIds(updatedItems, id, items.value?.[id]?.parentId ?? 0, categoryValues.parentId)
 
     setCategories(updatedItems)
   }
@@ -315,15 +292,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     // Optimistic UI
     const categories = { ...(items.value ?? {}) }
-    const category = categories[id]
-    if (category?.parentId && category.parentId !== 0) {
-      const pId = String(category.parentId)
-      const parent = categories[pId]
-      if (parent) {
-        const filtered = (parent.childIds ?? []).filter(cid => cid !== id)
-        categories[pId] = { ...parent, childIds: filtered.length ? filtered : undefined }
-      }
-    }
     delete categories[id]
     setCategories(categories)
 

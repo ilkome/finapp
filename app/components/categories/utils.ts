@@ -1,13 +1,25 @@
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
 export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId[]) {
+  const childrenMap = new Map<CategoryId, CategoryId[]>()
+  for (const id of Object.keys(items ?? {})) {
+    const parentId = items[id]?.parentId
+    if (parentId && parentId !== 0) {
+      const pid = String(parentId)
+      if (!childrenMap.has(pid))
+        childrenMap.set(pid, [])
+      childrenMap.get(pid)!.push(id)
+    }
+  }
+
   const seen = new Set<CategoryId>()
   const result: CategoryId[] = []
 
   for (const id of ids ?? Object.keys(items ?? [])) {
     const category = items?.[id]
-    if (category?.parentId === 0 && category?.childIds?.length) {
-      for (const childId of category.childIds) {
+    const children = childrenMap.get(id)
+    if (category?.parentId === 0 && children?.length) {
+      for (const childId of children) {
         if (!seen.has(childId)) {
           seen.add(childId)
           result.push(childId)

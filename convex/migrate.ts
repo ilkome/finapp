@@ -108,26 +108,17 @@ export const insertCategories = internalMutation({
   },
   handler: async (ctx, { categories, userId }) => {
     const idMap: Record<string, string> = {}
-    const inserts: Array<{ id: string, oldChildIds?: string[], oldParentId?: string }> = []
+    const inserts: Array<{ id: string, oldParentId?: string }> = []
 
-    for (const { oldChildIds, oldId, oldParentId, ...data } of categories) {
+    for (const { oldChildIds: _oldChildIds, oldId, oldParentId, ...data } of categories) {
       const id = await ctx.db.insert('categories', { ...data, userId })
       idMap[oldId] = id
-      inserts.push({ id, oldChildIds, oldParentId })
+      inserts.push({ id, oldParentId })
     }
 
-    for (const { id, oldChildIds, oldParentId } of inserts) {
-      const patch: Record<string, unknown> = {}
+    for (const { id, oldParentId } of inserts) {
       if (oldParentId && idMap[oldParentId]) {
-        patch.parentId = idMap[oldParentId]
-      }
-      if (oldChildIds && oldChildIds.length > 0) {
-        const mapped = oldChildIds.filter((cid: string) => idMap[cid]).map((cid: string) => idMap[cid])
-        if (mapped.length > 0)
-          patch.childIds = mapped
-      }
-      if (Object.keys(patch).length > 0) {
-        await ctx.db.patch(id as any, patch)
+        await ctx.db.patch(id as any, { parentId: idMap[oldParentId] })
       }
     }
 
