@@ -6,10 +6,12 @@ import type { MutationCtx } from './_generated/server'
 
 import { internal } from './_generated/api'
 import { mutation, query } from './_generated/server'
-import { getAuthUser, getOwnEntity, requireAuthUser, TrnType } from './shared'
+import { getAuthUser, getOwnEntity, requireAuthUser, TrnType, validateStringLength } from './shared'
 import { addTrnToHash, fnv1aNum, removeTrnFromHash } from './trnsHash'
 
 async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
+  validateStringLength(args.desc, 500, 'Description')
+
   if (args.type === TrnType.Transfer) {
     if (args.categoryId && args.categoryId !== 'transfer')
       throw new Error('Transfer categoryId must be "transfer"')

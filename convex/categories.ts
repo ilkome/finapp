@@ -5,7 +5,7 @@ import type { MutationCtx } from './_generated/server'
 
 import { internal } from './_generated/api'
 import { action, internalMutation, internalQuery, mutation, query } from './_generated/server'
-import { getAuthUser, getOwnEntity, requireAuthUser } from './shared'
+import { getAuthUser, getOwnEntity, requireAuthUser, validateStringLength } from './shared'
 import { removeTrnsFromHash } from './trnsHash'
 
 // --- Shared helpers ---
@@ -29,42 +29,6 @@ async function validateNameUniqueness(ctx: MutationCtx, name: string, parentId: 
     throw new Error('Category with this name already exists')
 }
 
-async function syncChildIdsOnParentChange(ctx: MutationCtx, id: Id<'categories'>, oldParentId: Id<'categories'> | 0, newParentId: Id<'categories'> | 0, userId: string) {
-  if (newParentId === oldParentId)
-    return
-
-  if (oldParentId !== 0) {
-    const oldParent = await ctx.db.get(oldParentId)
-    if (oldParent && oldParent.userId === userId) {
-      const updatedChildIds = (oldParent.childIds ?? []).filter(cid => cid !== id)
-      await ctx.db.patch(oldParentId, {
-        childIds: updatedChildIds.length ? updatedChildIds : undefined,
-      })
-    }
-  }
-
-  if (newParentId !== 0) {
-    const newParent = await ctx.db.get(newParentId)
-    if (newParent && newParent.userId === userId) {
-      await ctx.db.patch(newParentId, {
-        childIds: [...(newParent.childIds ?? []), id],
-      })
-    }
-  }
-}
-
-async function removeFromParentChildIds(ctx: MutationCtx, id: Id<'categories'>, parentId: Id<'categories'> | 0, userId: string) {
-  if (parentId === 0)
-    return
-  const parent = await ctx.db.get(parentId)
-  if (parent && parent.userId === userId) {
-    const updatedChildIds = (parent.childIds ?? []).filter(cid => cid !== id)
-    await ctx.db.patch(parentId, {
-      childIds: updatedChildIds.length ? updatedChildIds : undefined,
-    })
-  }
-}
-
 async function updateCategoryCore(
   ctx: MutationCtx,
   id: Id<'categories'>,
@@ -84,6 +48,9 @@ async function updateCategoryCore(
     throw new Error('Name is required')
   if (args.color !== undefined && !args.color.trim())
     throw new Error('Color is required')
+  validateStringLength(args.name, 100, 'Name')
+  validateStringLength(args.color, 50, 'Color')
+  validateStringLength(args.icon, 50, 'Icon')
 
   const category = await getOwnEntity(ctx, id, userId)
 
@@ -91,8 +58,6 @@ async function updateCategoryCore(
     await validateParentId(ctx, args.parentId, userId, id)
   if (args.name !== undefined || args.parentId !== undefined)
     await validateNameUniqueness(ctx, args.name ?? category.name, args.parentId ?? category.parentId, userId, id)
-  if (args.parentId !== undefined)
-    await syncChildIdsOnParentChange(ctx, id, category.parentId, args.parentId, userId)
 
   const now = Date.now()
   await ctx.db.patch(id, { ...args, updatedAt: now })
@@ -131,6 +96,9 @@ export const create = mutation({
       throw new Error('Name is required')
     if (!args.color.trim())
       throw new Error('Color is required')
+    validateStringLength(args.name, 100, 'Name')
+    validateStringLength(args.color, 50, 'Color')
+    validateStringLength(args.icon, 50, 'Icon')
 
     const parentId = args.parentId ?? 0
 
@@ -144,15 +112,6 @@ export const create = mutation({
       updatedAt: Date.now(),
       userId: user._id,
     })
-
-    if (parentId !== 0) {
-      const parent = await ctx.db.get(parentId)
-      if (parent && parent.userId === user._id) {
-        await ctx.db.patch(parentId, {
-          childIds: [...(parent.childIds ?? []), newId],
-        })
-      }
-    }
 
     return newId
   },
@@ -180,7 +139,12 @@ export const validateCategoryRemoval = internalQuery({
     const category = await ctx.db.get(id)
     if (!category || category.userId !== userId)
       throw new Error('Not found')
-    if (category.childIds?.length)
+    const child = await ctx.db
+      .query('categories')
+      .withIndex('by_user', q => q.eq('userId', userId))
+      .filter(q => q.eq(q.field('parentId'), id))
+      .first()
+    if (child)
       throw new Error('Cannot delete category with children')
   },
 })
@@ -219,7 +183,6 @@ export const removeCategoryFinalize = internalMutation({
     const category = await ctx.db.get(categoryId)
     if (!category || category.userId !== userId)
       return
-    await removeFromParentChildIds(ctx, categoryId, category.parentId, userId)
     await ctx.db.delete(categoryId)
   },
 })

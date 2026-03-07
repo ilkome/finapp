@@ -6,6 +6,14 @@ import { authComponent } from './auth'
 export { TrnType, walletTypeValidator } from './validators'
 
 /**
+ * Validate string field length. Throws if value exceeds maxLen.
+ */
+export function validateStringLength(value: string | undefined, maxLen: number, fieldName: string) {
+  if (value !== undefined && value.length > maxLen)
+    throw new Error(`${fieldName} must be at most ${maxLen} characters`)
+}
+
+/**
  * Get authenticated user or return null (for queries).
  */
 export async function getAuthUser(ctx: QueryCtx) {

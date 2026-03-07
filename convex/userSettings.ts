@@ -2,7 +2,7 @@ import { v } from 'convex/values'
 
 import { internal } from './_generated/api'
 import { action, internalQuery, mutation, query } from './_generated/server'
-import { getAuthUser, requireAuthUser } from './shared'
+import { getAuthUser, requireAuthUser, validateStringLength } from './shared'
 
 export const get = query({
   args: {},
@@ -27,6 +27,7 @@ export const upsert = mutation({
 
     if (args.baseCurrency !== undefined && !args.baseCurrency.trim())
       throw new Error('Base currency is required')
+    validateStringLength(args.baseCurrency, 10, 'Base currency')
 
     const existing = await ctx.db
       .query('userSettings')
