@@ -204,9 +204,14 @@ export const remove = mutation({
   },
 })
 
+const BATCH_LIMIT = 500
+
 export const removeBatch = mutation({
   args: { ids: v.array(v.id('trns')) },
   handler: async (ctx, { ids }) => {
+    if (ids.length > BATCH_LIMIT)
+      throw new Error(`Batch size exceeds limit of ${BATCH_LIMIT}`)
+
     const user = await requireAuthUser(ctx)
     const deletedIds: string[] = []
     for (const id of ids) {
