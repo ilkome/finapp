@@ -1,6 +1,7 @@
 import { v } from 'convex/values'
 
-import { mutation, query } from './_generated/server'
+import { internal } from './_generated/api'
+import { action, internalMutation, mutation, query } from './_generated/server'
 import { getAuthUser, getOwnEntity, requireAuthUser, walletTypeValidator } from './shared'
 import { removeTrnsFromHash } from './trnsHash'
 
@@ -84,48 +85,77 @@ export const updateOrder = mutation({
   },
 })
 
-export const remove = mutation({
-  args: { id: v.id('wallets') },
-  handler: async (ctx, { id }) => {
-    const user = await requireAuthUser(ctx)
-    const userId = user._id
-    await getOwnEntity(ctx, id, userId)
+export const removeTrnsByWalletPage = internalMutation({
+  args: {
+    cursor: v.union(v.string(), v.null()),
+    indexName: v.union(
+      v.literal('by_user_wallet'),
+      v.literal('by_user_expenseWallet'),
+      v.literal('by_user_incomeWallet'),
+    ),
+    userId: v.string(),
+    walletId: v.id('wallets'),
+  },
+  handler: async (ctx, { cursor, indexName, userId, walletId }) => {
+    const page = await ctx.db
+      .query('trns')
+      .withIndex(indexName, q => q.eq('userId', userId).eq(
+        indexName === 'by_user_wallet' ? 'walletId' : indexName === 'by_user_expenseWallet' ? 'expenseWalletId' : 'incomeWalletId',
+        walletId,
+      ))
+      .paginate({ cursor, numItems: 500 })
 
     const deletedIds: string[] = []
-    const deletedSet = new Set<string>()
-
-    // Paginated helper to delete trns by index
-    async function deleteTrnsByIndex(indexName: 'by_user_wallet' | 'by_user_expenseWallet' | 'by_user_incomeWallet', fieldValue: typeof id) {
-      let cursor: string | null = null
-      let isDone = false
-      while (!isDone) {
-        const page = await ctx.db
-          .query('trns')
-          .withIndex(indexName, q => q.eq('userId', userId).eq(
-            indexName === 'by_user_wallet' ? 'walletId' : indexName === 'by_user_expenseWallet' ? 'expenseWalletId' : 'incomeWalletId',
-            fieldValue,
-          ))
-          .paginate({ cursor, numItems: 500 })
-        for (const trn of page.page) {
-          if (deletedSet.has(trn._id))
-            continue
-          await ctx.db.delete(trn._id)
-          deletedIds.push(trn._id)
-          deletedSet.add(trn._id)
-        }
-        isDone = page.isDone
-        cursor = page.continueCursor
-      }
+    for (const trn of page.page) {
+      await ctx.db.delete(trn._id)
+      deletedIds.push(trn._id)
     }
-
-    // Delete regular trns and transfers referencing this wallet
-    await deleteTrnsByIndex('by_user_wallet', id)
-    await deleteTrnsByIndex('by_user_expenseWallet', id)
-    await deleteTrnsByIndex('by_user_incomeWallet', id)
-
-    await ctx.db.delete(id)
 
     if (deletedIds.length)
       await removeTrnsFromHash(ctx, userId, deletedIds)
+
+    return { continueCursor: page.continueCursor, isDone: page.isDone }
+  },
+})
+
+export const removeWalletFinalize = internalMutation({
+  args: {
+    userId: v.string(),
+    walletId: v.id('wallets'),
+  },
+  handler: async (ctx, { userId, walletId }) => {
+    const wallet = await ctx.db.get(walletId)
+    if (wallet && wallet.userId === userId)
+      await ctx.db.delete(walletId)
+  },
+})
+
+export const remove = action({
+  args: { id: v.id('wallets') },
+  handler: async (ctx, { id }) => {
+    const user = await ctx.runQuery(internal.userSettings.getCurrentUser)
+    if (!user)
+      throw new Error('Unauthorized')
+
+    const indexes = ['by_user_wallet', 'by_user_expenseWallet', 'by_user_incomeWallet'] as const
+    for (const indexName of indexes) {
+      let cursor: string | null = null
+      let isDone = false
+      while (!isDone) {
+        const result = await ctx.runMutation(internal.wallets.removeTrnsByWalletPage, {
+          cursor,
+          indexName,
+          userId: user._id,
+          walletId: id,
+        })
+        isDone = result.isDone
+        cursor = result.continueCursor
+      }
+    }
+
+    await ctx.runMutation(internal.wallets.removeWalletFinalize, {
+      userId: user._id,
+      walletId: id,
+    })
   },
 })

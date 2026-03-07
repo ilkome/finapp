@@ -208,7 +208,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       errorMessage: 'wallets.errors.deleteFailed',
       id,
       items,
-      mutation: client.mutation(api.wallets.remove, { id: asConvexId<'wallets'>(id) }),
+      mutation: client.action(api.wallets.remove, { id: asConvexId<'wallets'>(id) }),
 
     })
   }

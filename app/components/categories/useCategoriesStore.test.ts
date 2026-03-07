@@ -16,6 +16,7 @@ vi.mock('~/components/categories/utils', () => ({
 }))
 
 const mutationMock = vi.fn(() => Promise.resolve())
+const actionMock = vi.fn(() => Promise.resolve())
 const onUpdateMock = vi.fn()
 
 vi.stubGlobal('useConvexClientWithApi', () => ({
@@ -23,6 +24,7 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
     categories: { create: 'categories.create', list: 'categories.list', remove: 'categories.remove', update: 'categories.update', updateWithChildren: 'categories.updateWithChildren' },
   },
   client: {
+    action: actionMock,
     mutation: mutationMock,
     onUpdate: onUpdateMock,
   },
@@ -76,6 +78,7 @@ describe('useCategoriesStore', () => {
     await localforage.clear()
     vi.clearAllMocks()
     mutationMock.mockReturnValue(Promise.resolve())
+    actionMock.mockReturnValue(Promise.resolve())
   })
 
   afterEach(() => {
@@ -311,7 +314,7 @@ describe('useCategoriesStore', () => {
 
       store.deleteCategory('c1')
 
-      expect(mutationMock).toHaveBeenCalledWith('categories.remove', { id: 'c1' })
+      expect(actionMock).toHaveBeenCalledWith('categories.remove', { id: 'c1' })
     })
 
     it('cleans up offline queue on mutation success', async () => {
@@ -330,13 +333,13 @@ describe('useCategoriesStore', () => {
 
       store.deleteCategory('transfer')
 
-      expect(mutationMock).not.toHaveBeenCalled()
+      expect(actionMock).not.toHaveBeenCalled()
       expect(offlineHelpers.pushOfflineOp).not.toHaveBeenCalled()
     })
 
-    it('shows toast on delete mutation failure', async () => {
+    it('shows toast on failure', async () => {
       const { toastAddMock } = await import('~/test-utils/setup-store')
-      mutationMock.mockReturnValue(Promise.reject(new Error('Server error')))
+      actionMock.mockReturnValue(Promise.reject(new Error('Server error')))
       const store = useCategoriesStore()
       store.items = { ...store.items, c1: makeCategory() }
 
