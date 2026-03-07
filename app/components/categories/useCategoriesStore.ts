@@ -33,7 +33,6 @@ const transfer: CategoryItem = {
 type CategoriesStore = {
   cancelPersist: () => void
   categoriesForBeParent: ComputedRef<CategoryId[]>
-  categoriesIds: ComputedRef<CategoryId[]>
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
   categoriesRootIds: ComputedRef<CategoryId[]>
   deleteCategory: (id: CategoryId, trnsIds?: TrnId[]) => Promise<RemapInfo | void> | void
