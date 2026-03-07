@@ -360,14 +360,21 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!trn)
       return null
 
-    // Category
-    const category = categoriesStore.items[trn.categoryId]
-    if (!category)
-      return null
+    // Category (synthetic for special categoryIds)
+    let category = categoriesStore.items[trn.categoryId]
+    let categoryParent: typeof category | undefined
 
-    // Parent category
-    let categoryParent
-    if (category.parentId) {
+    if (!category) {
+      if (trn.categoryId === 'transfer' || trn.categoryId === 'adjustment') {
+        category = trn.categoryId === 'transfer'
+          ? { color: 'var(--text-2)', icon: 'lucide:arrow-left-right', name: 'Transfer', parentId: 0, showInLastUsed: false, showInQuickSelector: false }
+          : { color: 'var(--text-2)', icon: 'lucide:scale', name: 'Adjustment', parentId: 0, showInLastUsed: false, showInQuickSelector: false }
+      }
+      else {
+        return null
+      }
+    }
+    else if (category.parentId) {
       categoryParent = categoriesStore.items[category.parentId]
       if (!categoryParent)
         return null
