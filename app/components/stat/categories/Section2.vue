@@ -12,7 +12,6 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 const props = defineProps<{
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
-  selectedAndFilteredTrnsIds?: TrnId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
   type: StatTabSlug

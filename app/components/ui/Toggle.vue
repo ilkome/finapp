@@ -3,7 +3,6 @@ import { useStorage } from '@vueuse/core'
 
 const props = defineProps<{
   initStatus?: boolean
-  openPadding?: string
   storageKey?: string
 }>()
 
@@ -22,7 +21,6 @@ const isShown = useStorage(`${props.storageKey}`, props.initStatus)
 
     <div
       v-if="isShown"
-      :class="[props.openPadding]"
     >
       <slot
         :toggle="() => isShown = !isShown"

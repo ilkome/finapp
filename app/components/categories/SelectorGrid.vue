@@ -5,14 +5,10 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   activeItemId?: CategoryId
-  hide?: () => void
   ids: CategoryId[]
 }>()
 
 const emit = defineEmits<{
-  clickParent: [id: CategoryId]
-  close: []
-  filter: [id: CategoryId]
   selected: [id: CategoryId]
 }>()
 
@@ -20,19 +16,10 @@ const categoriesStore = useCategoriesStore()
 const itemClasses = 'bg-item-3 rounded-sm'
 
 function select(id: CategoryId) {
-  if (categoriesStore.hasChildren(id)) {
-    emit('clickParent', id)
+  if (categoriesStore.hasChildren(id))
     return
-  }
 
   emit('selected', id)
-  emit('close')
-  if (props.hide)
-    props.hide()
-}
-
-function onFilter(id: CategoryId) {
-  emit('filter', id)
 }
 </script>
 
@@ -48,7 +35,6 @@ function onFilter(id: CategoryId) {
       isShowParent
       alt
       @click="select(categoryId)"
-      @filter.stop="onFilter(categoryId)"
     />
   </div>
 </template>

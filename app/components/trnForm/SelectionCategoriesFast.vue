@@ -5,9 +5,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const emit = defineEmits<{
-  close: []
   selectCategory: [id: CategoryId]
-  selectParentCategory: [id: CategoryId]
 }>()
 
 const { t } = useI18n()
@@ -33,9 +31,9 @@ const isShowAllCategoriesFallback = computed(() =>
 
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
-      :hide="() => emit('close')"
+
       :ids="categoriesStore.favoriteCategoriesIds"
-      @clickParent="id => emit('selectParentCategory', id)"
+
       @selected="id => emit('selectCategory', id)"
     />
   </div>
@@ -48,9 +46,9 @@ const isShowAllCategoriesFallback = computed(() =>
 
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
-      :hide="() => emit('close')"
+
       :ids="categoriesStore.recentCategoriesIds"
-      @clickParent="id => emit('selectParentCategory', id)"
+
       @selected="id => emit('selectCategory', id)"
     />
   </div>
@@ -59,9 +57,9 @@ const isShowAllCategoriesFallback = computed(() =>
   <div v-if="isShowAllCategoriesFallback">
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId"
-      :hide="() => emit('close')"
+
       :ids="categoriesStore.categoriesIdsForTrnValues"
-      @clickParent="id => emit('selectParentCategory', id)"
+
       @selected="id => emit('selectCategory', id)"
     />
   </div>

@@ -6,7 +6,7 @@ const props = defineProps<{
   variant?: 'outline' | 'ghost' | 'solid'
 }>()
 
-const emit = defineEmits(['click'])
+const emit = defineEmits<{ click: [] }>()
 </script>
 
 <template>

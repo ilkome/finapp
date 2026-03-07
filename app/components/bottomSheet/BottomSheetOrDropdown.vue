@@ -4,7 +4,6 @@ const props = defineProps<{
   drugClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
-  placement?: string
   title?: string
 }>()
 
@@ -25,9 +24,6 @@ const open = ref(false)
     <UPopover
       v-if="isLaptop"
       v-model:open="open"
-      :popper="{
-        placement: props.placement ?? 'bottom-start',
-      }"
       :content="{
         align: 'center',
         side: 'bottom',

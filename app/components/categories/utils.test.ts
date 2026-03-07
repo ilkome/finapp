@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Categories } from '~/components/categories/types'
 
-import { getTransactibleCategoriesIds, getTransferCategoriesIds } from '~/components/categories/utils'
+import { getTransactibleCategoriesIds } from '~/components/categories/utils'
 
 export const mockCategories: Categories = {
   child1: {
@@ -115,49 +115,5 @@ describe('getTransactibleCategoriesIds', () => {
   it('filter by one parent category', () => {
     const result = getTransactibleCategoriesIds(mockCategories2, ['241120_k27ehb'])
     expect(result).toEqual(['241120_7fxrno'])
-  })
-})
-
-describe('getTransferCategoriesIds', () => {
-  it('returns only the reserved transfer ID', () => {
-    const result = getTransferCategoriesIds(mockCategories)
-    expect(result).toEqual(['transfer'])
-  })
-
-  it('does not match user categories named "transfer" or "перевод"', () => {
-    const items: Categories = {
-      myTransfer: {
-        color: '#000',
-        icon: 'mdi:repeat',
-        name: 'transfer',
-        parentId: 0,
-      },
-      transfer: {
-        color: 'var(--ui-primary)',
-        icon: 'mdi:repeat',
-        name: 'Transfer',
-        parentId: 0,
-      },
-      перевод: {
-        color: '#000',
-        icon: 'mdi:repeat',
-        name: 'перевод',
-        parentId: 0,
-      },
-    }
-    const result = getTransferCategoriesIds(items)
-    expect(result).toEqual(['transfer'])
-  })
-
-  it('empty categories object', () => {
-    // @ts-expect-error for test
-    const result = getTransferCategoriesIds({})
-    expect(result).toEqual([])
-  })
-
-  it('undefined categories', () => {
-    // @ts-expect-error for test
-    const result = getTransferCategoriesIds(undefined)
-    expect(result).toEqual([])
   })
 })

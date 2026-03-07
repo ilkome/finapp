@@ -15,7 +15,6 @@ const props = defineProps<{
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
-  isShowDots?: boolean
   isShowParent?: boolean
   item: CategoryWithData
   lineWidth?: number
@@ -23,7 +22,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
-  clickIcon: [id: CategoryId]
 }>()
 
 const statDate = inject(statDateKey)!
@@ -120,14 +118,12 @@ onLongPress(
           :color="category?.color"
           :name="category?.icon"
           invert
-          @click="emit('clickIcon', props.item.id)"
         />
         <UiIconBase
           v-else
           :color="category?.color"
           :name="category?.icon"
           class="ml-1 !w-6"
-          @click="emit('clickIcon', props.item.id)"
         />
       </template>
 

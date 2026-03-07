@@ -64,7 +64,6 @@ const emit = defineEmits<{
             class="grid grow gap-0.5"
           >
             <CategoriesName
-              v-if="trnItem.type !== TrnType.Transfer"
               :category="trnItem.category"
               :parentCategory="trnItem.categoryParent"
               isShowDots
@@ -118,9 +117,6 @@ const emit = defineEmits<{
             <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
               <Amount
                 :amount="trnItem.incomeAmount || trnItem.amount"
-                :class="{
-                  'opacity-0': trnItem.incomeAmount === trnItem.expenseAmount,
-                }"
                 :currencyCode="trnItem.incomeWallet.currency"
                 :type="TrnType.Income"
                 colorize="income"

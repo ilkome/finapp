@@ -6,10 +6,6 @@ const props = defineProps<{
   name: string
   size?: number
 }>()
-
-const emit = defineEmits<{
-  click: [e: Event]
-}>()
 </script>
 
 <template>
@@ -22,7 +18,6 @@ const emit = defineEmits<{
       [cn('rounded-full w-7 p-1.5', props.class)]: props.invert,
     }"
     class="flex-center text-icon-primary aspect-square overflow-hidden"
-    @click="(e: Event) => emit('click', e)"
   >
     <Icon
       :name="props.name"

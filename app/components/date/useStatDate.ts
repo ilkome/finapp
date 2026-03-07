@@ -198,7 +198,6 @@ export function useStatDate({
   return {
     addInterval,
     delInterval,
-    getIntervalsInRange,
     intervalsInRange,
     maxRange,
     minusRange,

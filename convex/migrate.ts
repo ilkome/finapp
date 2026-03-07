@@ -2,6 +2,7 @@ import { v } from 'convex/values'
 
 import { components, internal } from './_generated/api'
 import { internalAction, internalMutation } from './_generated/server'
+import { TrnType } from './shared'
 import { addTrnsToHash, fnv1aNum, getOrCreateSyncMeta } from './trnsHash'
 
 export const deleteTablePage = internalMutation({
@@ -211,5 +212,56 @@ export const recalcHashForUser = internalAction({
       cursor = result.continueCursor
       hash = result.hash
     }
+  },
+})
+
+// --- Migrate old transfers to adjustment ---
+// Old transfers have categoryId: 'transfer' with type: Expense(0) or Income(1).
+// Modern transfers use type: Transfer(2). Old transfers are semantically adjustments.
+
+export const migrateOldTransfersPage = internalMutation({
+  args: {
+    cursor: v.union(v.string(), v.null()),
+  },
+  handler: async (ctx, { cursor }) => {
+    const page = await ctx.db
+      .query('trns')
+      .paginate({ cursor, numItems: 500 })
+
+    let patched = 0
+    for (const trn of page.page) {
+      if (trn.categoryId === 'transfer' && (trn.type === TrnType.Expense || trn.type === TrnType.Income)) {
+        await ctx.db.patch(trn._id, { categoryId: 'adjustment' })
+        patched++
+      }
+    }
+
+    return {
+      continueCursor: page.continueCursor,
+      hasMore: !page.isDone,
+      patched,
+    }
+  },
+})
+
+export const migrateOldTransfers = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    let cursor: string | null = null
+    let totalPatched = 0
+
+    while (true) {
+      const result: { continueCursor: string, hasMore: boolean, patched: number }
+        = await ctx.runMutation(internal.migrate.migrateOldTransfersPage, { cursor })
+      totalPatched += result.patched
+
+      if (!result.hasMore)
+        break
+
+      cursor = result.continueCursor
+    }
+
+    console.log(`migrateOldTransfers: patched ${totalPatched} transactions`)
+    return totalPatched
   },
 })

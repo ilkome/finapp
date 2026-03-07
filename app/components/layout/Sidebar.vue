@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
+import type { WalletId } from '../wallets/types'
 
 const props = defineProps<{
   isShowSidebar?: boolean
@@ -18,6 +21,7 @@ const { width } = useWindowSize()
 const walletsStore = useWalletsStore()
 
 const isShowLogoMenu = ref(false)
+const { getWalletContextMenuItems } = useWalletContextMenu()
 </script>
 
 <template>
@@ -85,6 +89,7 @@ const isShowLogoMenu = ref(false)
                 v-for="(walletItem, walletId) in walletsItemsLimited"
                 :key="walletId"
                 :activeItemId="(route.params.id as string)"
+                :contextMenuItems="getWalletContextMenuItems(walletId as WalletId)"
                 :lineWidth="1"
                 :wallet="walletItem"
                 :walletId

@@ -73,6 +73,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
           const user = session.data?.user || null
           if (!user) {
             logger.error('Background getSession: session expired, redirecting to login')
+            sessionInitialized = false
             clearAuthCookie()
             navigateTo('/login')
           }

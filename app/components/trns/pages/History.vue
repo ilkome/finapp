@@ -20,8 +20,6 @@ useHead({
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
   walletsIds: filter.walletsIds.value,
-}, {
-  includesChildCategories: true,
 }))
 
 const lastFilter = useStorage<{

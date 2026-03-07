@@ -29,7 +29,7 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 const categoryId = computed(() => props.isOneCategory ? route.params.id as CategoryId : undefined)
-const isNotTransferCategory = computed(() => !props.isOneCategory || !categoriesStore.transferCategoriesIds.includes(categoryId.value))
+const isNotTransferCategory = computed(() => !props.isOneCategory || categoryId.value !== 'transfer')
 
 const {
   averageTotal,
@@ -77,7 +77,7 @@ function onClickCategory(clickedCategoryId: CategoryId) {
   quickViewTrns.value = trnsStore.getStoreTrnsIds({
     categoriesIds: [clickedCategoryId],
     trnsIds: selectedAndFilteredTrnsIds.value,
-  }, { includesChildCategories: true })
+  })
 }
 
 function onClickSumItemWrap(type: SeriesSlugSelected) {
@@ -158,8 +158,6 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           <StatTrns
             :isPeriodOneDay="isPeriodOneDay"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
-            :storageKey="newBaseStorageKey"
-            :type="props.type ?? 'netIncome'"
             class="@3xl/page:order-1"
           />
         </div>

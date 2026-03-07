@@ -1,5 +1,5 @@
 /* eslint-disable perfectionist/sort-objects */
-export const colors = {
+const colors = {
   slate: {
     50: '#f8fafc',
     100: '#f1f5f9',

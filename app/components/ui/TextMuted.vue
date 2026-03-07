@@ -2,10 +2,6 @@
 const { size = 'xs' } = defineProps<{
   size?: 'xs' | 'sm'
 }>()
-
-const emit = defineEmits<{
-  click: [e: Event]
-}>()
 </script>
 
 <template>
@@ -14,7 +10,6 @@ const emit = defineEmits<{
       'font-primary text-muted leading-none',
       size === 'xs' ? 'text-xs' : 'text-sm',
     )"
-    @click="(e: Event) => emit('click', e)"
   >
     <slot />
   </div>

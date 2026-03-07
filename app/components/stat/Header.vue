@@ -8,13 +8,10 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   config?: {
-    isShowCategories?: boolean
     isShowWallets?: boolean
   }
   filter?: {
-    isShow?: boolean
     isShowCategories?: boolean
-    isShowSelected?: boolean
     isShowWallets?: boolean
   }
 }>()
@@ -61,7 +58,6 @@ const statConfigModal: Ref<StatConfigModal> = ref({
 
         <StatConfigModal
           v-if="props.config"
-          :isShowCategories="!!props.config.isShowCategories"
           :isShowWallets="!!props.config.isShowWallets"
           :statConfigModal
         >
@@ -91,27 +87,22 @@ const statConfigModal: Ref<StatConfigModal> = ref({
     </template>
 
     <template
-      v-if="statConfig.config.value.wallets.isShow || $slots.summary"
+      v-if="statConfig.config.value.wallets.isShow"
       #after
     >
       <div class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8">
-        <template v-if="statConfig.config.value.wallets.isShow">
-          <div
-            v-if="statConfig.config.value.wallets.isShow"
-            class="flex max-w-6xl gap-1 overflow-x-auto py-px"
-          >
-            <WalletsItem
-              v-for="walletId in sortedFilterWalletsIds"
-              :key="walletId"
-              :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
-              :walletId
-              :wallet="walletsStore.itemsComputed?.[walletId]!"
-              insideClasses="!min-h-[38px]"
-              alt
-              @click="onClickWallet(walletId)"
-            />
-          </div>
-        </template>
+        <div class="flex max-w-6xl gap-1 overflow-x-auto py-px">
+          <WalletsItem
+            v-for="walletId in sortedFilterWalletsIds"
+            :key="walletId"
+            :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
+            :walletId
+            :wallet="walletsStore.itemsComputed?.[walletId]!"
+            insideClasses="!min-h-[38px]"
+            alt
+            @click="onClickWallet(walletId)"
+          />
+        </div>
       </div>
     </template>
   </UiHeader>

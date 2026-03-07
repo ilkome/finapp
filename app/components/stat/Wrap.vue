@@ -32,15 +32,11 @@ const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   trnsIds: datedTrnsIds.value,
   trnsTypes: [TrnType.Expense, TrnType.Transfer],
-}, {
-  includesChildCategories: true,
 }))
 
 const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   trnsIds: datedTrnsIds.value,
   trnsTypes: [TrnType.Income, TrnType.Transfer],
-}, {
-  includesChildCategories: true,
 }))
 </script>
 

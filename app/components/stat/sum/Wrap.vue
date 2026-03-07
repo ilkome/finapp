@@ -14,7 +14,6 @@ const props = defineProps<{
   isShowAverage: boolean
   isShowExpense: boolean
   isShowIncome: boolean
-  statTabSlug?: StatTabSlug
   total: TotalReturns
   trnsIds: TrnId[]
   type: StatTabSlug

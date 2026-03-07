@@ -1,32 +1,10 @@
+import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { TrnItem } from '~/components/trns/types'
 
-// --- Mocks ---
-
-const localforageStore = new Map<string, any>()
-vi.mock('localforage', () => ({
-  default: {
-    getItem: vi.fn((key: string) => Promise.resolve(localforageStore.get(key) ?? null)),
-    removeItem: vi.fn((key: string) => {
-      localforageStore.delete(key)
-      return Promise.resolve()
-    }),
-    setItem: vi.fn((key: string, value: any) => {
-      localforageStore.set(key, value)
-      return Promise.resolve()
-    }),
-  },
-}))
-
-vi.mock('@vueuse/core', () => ({
-  useDebounceFn: (fn: (...args: any[]) => any) => fn,
-}))
-
-vi.mock('vue-deepunref', () => ({
-  deepUnref: (v: any) => v,
-}))
+// --- Entity-specific mocks ---
 
 vi.mock('~~/services/convex/api', () => ({
   convexTrnsToMap: (arr: any[]) => {
@@ -43,32 +21,6 @@ const mutationMock = vi.fn(() => Promise.resolve())
 const queryMock = vi.fn(() => Promise.resolve(null))
 const onUpdateMock = vi.fn()
 
-// Mock Convex composables (auto-imported in Nuxt)
-vi.stubGlobal('useConvexClient', () => ({
-  mutation: mutationMock,
-  onUpdate: onUpdateMock,
-  query: queryMock,
-}))
-vi.stubGlobal('useConvexClientComposable', () => ({
-  mutation: mutationMock,
-  onUpdate: onUpdateMock,
-  query: queryMock,
-}))
-vi.stubGlobal('asConvexId', (id: string) => id)
-vi.stubGlobal('isLocalId', (id: string) => id.startsWith('local_'))
-vi.stubGlobal('cleanupFrontendIds', <T>(data: Record<string, T>, pendingUpdates: Record<string, T>) => {
-  const result = { ...data }
-  for (const id of Object.keys(result)) {
-    if (id.startsWith('local_') && !pendingUpdates[id])
-      delete result[id]
-  }
-  return result
-})
-vi.stubGlobal('useConvexApi', () => ({
-  api: {
-    trns: { create: 'trns.create', delta: 'trns.delta', ensureSyncMeta: 'trns.ensureSyncMeta', idsHash: 'trns.idsHash', list: 'trns.list', remove: 'trns.remove', update: 'trns.update' },
-  },
-}))
 vi.stubGlobal('useConvexClientWithApi', () => ({
   api: {
     trns: { create: 'trns.create', delta: 'trns.delta', ensureSyncMeta: 'trns.ensureSyncMeta', idsHash: 'trns.idsHash', list: 'trns.list', remove: 'trns.remove', update: 'trns.update' },
@@ -80,37 +32,10 @@ vi.stubGlobal('useConvexClientWithApi', () => ({
   },
 }))
 
-// Toast & i18n auto-imports
-const toastAddMock = vi.fn()
-vi.stubGlobal('useToast', () => ({ add: toastAddMock }))
-vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
-vi.stubGlobal('useNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-
-// Emo helpers
-vi.mock('~/assets/js/emo', () => ({
-  errorEmo: ['😿'],
-  random: (items: any[]) => items[0],
-}))
-
-// Pinia auto-imports
-vi.stubGlobal('defineStore', (await import('pinia')).defineStore)
-vi.stubGlobal('shallowRef', (await import('vue')).shallowRef)
-vi.stubGlobal('computed', (await import('vue')).computed)
-
-// Mock demo composable
-vi.mock('~/components/demo/useDemo', () => ({
-  useDemo: () => ({
-    isDemo: { value: false },
-  }),
-}))
-
-// Mock dependent stores
 vi.mock('~/components/categories/useCategoriesStore', () => ({
   useCategoriesStore: () => ({
     getTransactibleIds: (ids: any) => ids,
     items: { food: { color: '#f00', icon: 'mdi:food', name: 'Food', parentId: 0, showInLastUsed: true, showInQuickSelector: true }, transfer: { color: '#000', icon: 'mdi:repeat', name: 'Transfer', parentId: 0, showInLastUsed: false, showInQuickSelector: false } },
-    transferCategoriesIds: ['transfer'],
   }),
 }))
 
@@ -120,11 +45,6 @@ vi.mock('~/components/wallets/useWalletsStore', () => ({
   }),
 }))
 
-vi.mock('~/components/offline/replay', () => ({
-  isReplaying: () => false,
-}))
-
-// Mock offline helpers — spy on real implementations
 const offlineHelpers = await import('~/components/offline/helpers')
 vi.mock('~/components/offline/helpers', async (importOriginal) => {
   const actual = await importOriginal() as any
@@ -139,7 +59,6 @@ vi.mock('~/components/offline/helpers', async (importOriginal) => {
   }
 })
 
-// Re-import after mocks
 const { useTrnsStore } = await import('~/components/trns/useTrnsStore')
 
 // --- Helpers ---
@@ -159,12 +78,11 @@ function makeTrn(overrides: Partial<TrnItem> = {}): TrnItem {
 // --- Tests ---
 
 describe('useTrnsStore', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     setActivePinia(createPinia())
-    localforageStore.clear()
+    await localforage.clear()
     vi.clearAllMocks()
     mutationMock.mockReturnValue(Promise.resolve())
-    toastAddMock.mockClear()
   })
 
   afterEach(() => {
@@ -183,13 +101,14 @@ describe('useTrnsStore', () => {
       expect(store.items!.trn1.amount).toBe(100)
     })
 
-    it('saves to localforage', () => {
+    it('saves to localforage', async () => {
       const store = useTrnsStore()
       store.items = {}
 
       store.saveTrn({ id: 'trn1', values: makeTrn() })
 
-      expect(localforageStore.get('finapp.trns')).toHaveProperty('trn1')
+      const saved = await localforage.getItem<any>('finapp.trns')
+      expect(saved).toHaveProperty('trn1')
     })
 
     it('pushes to offline queue immediately', () => {
@@ -233,14 +152,12 @@ describe('useTrnsStore', () => {
 
       store.saveTrn({ id: 'trn1', values: makeTrn() })
 
-      // Wait for .then() to resolve
       await vi.waitFor(() => {
         expect(offlineHelpers.removeOfflineOp).toHaveBeenCalledWith('trns', 'trn1')
       })
     })
 
     it('keeps offline queue when mutation fails', async () => {
-      // Mutation returns a never-resolving promise to simulate offline
       mutationMock.mockReturnValue(new Promise(() => {}))
 
       const store = useTrnsStore()
@@ -248,7 +165,6 @@ describe('useTrnsStore', () => {
 
       store.saveTrn({ id: 'trn1', values: makeTrn() })
 
-      // Give time for potential .then() — it shouldn't fire
       await new Promise(r => setTimeout(r, 10))
 
       expect(offlineHelpers.removeOfflineOp).not.toHaveBeenCalled()
@@ -265,6 +181,7 @@ describe('useTrnsStore', () => {
     })
 
     it('shows toast on mutation failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('network')))
 
       const store = useTrnsStore()
@@ -323,6 +240,7 @@ describe('useTrnsStore', () => {
     })
 
     it('shows toast on mutation failure', async () => {
+      const { toastAddMock } = await import('~/test-utils/setup-store')
       mutationMock.mockReturnValue(Promise.reject(new Error('network')))
 
       const store = useTrnsStore()
@@ -387,8 +305,7 @@ describe('useTrnsStore', () => {
       await store.initTrns()
 
       expect(store.items).toHaveProperty('trn1')
-      const syncMeta = localforageStore.get('finapp.trns.syncMeta')
-      // Hash is computed locally from list result, not fetched from server
+      const syncMeta = await localforage.getItem<any>('finapp.trns.syncMeta')
       expect(syncMeta).toHaveProperty('idsHash')
       expect(syncMeta.idsHash).toBeTruthy()
       expect(syncMeta).not.toHaveProperty('serverIds')
@@ -415,11 +332,10 @@ describe('useTrnsStore', () => {
     })
 
     it('performs delta sync with hash match (no deletion check)', async () => {
-      // Pre-populate cache and sync meta — compute real hash for trn1
       const { xorIdsHash: computeHash } = await import('~~/utils/fnv1a')
       const hash = computeHash(['trn1'])
-      localforageStore.set('finapp.trns', { trn1: makeTrn() })
-      localforageStore.set('finapp.trns.syncMeta', { idsHash: hash, lastSyncedAt: 1700000000000 })
+      await localforage.setItem('finapp.trns', { trn1: makeTrn() })
+      await localforage.setItem('finapp.trns.syncMeta', { idsHash: hash, lastSyncedAt: 1700000000000 })
 
       queryMock.mockImplementation((queryName: string) => {
         if (queryName === 'trns.delta')
@@ -436,16 +352,14 @@ describe('useTrnsStore', () => {
     })
 
     it('performs delta sync with hash mismatch (falls back to fullSync)', async () => {
-      // Cache has trn1 and trn2, but trn2 was deleted on server
-      localforageStore.set('finapp.trns', { trn1: makeTrn(), trn2: makeTrn() })
-      localforageStore.set('finapp.trns.syncMeta', { idsHash: 'old_hash', lastSyncedAt: 1700000000000 })
+      await localforage.setItem('finapp.trns', { trn1: makeTrn(), trn2: makeTrn() })
+      await localforage.setItem('finapp.trns.syncMeta', { idsHash: 'old_hash', lastSyncedAt: 1700000000000 })
 
       queryMock.mockImplementation((queryName: string) => {
         if (queryName === 'trns.delta')
           return Promise.resolve({ continueCursor: '', isDone: true, page: [] })
         if (queryName === 'trns.idsHash')
           return Promise.resolve({ hash: 'new_hash', serverTime: 1700000002000 })
-        // fullSync fallback: list returns only trn1
         if (queryName === 'trns.list')
           return Promise.resolve({ continueCursor: '', isDone: true, page: [{ _id: 'trn1', amount: 100, categoryId: 'food', date: 1700000000000, type: 0, updatedAt: 1700000000000, walletId: 'wallet1' }] })
         return Promise.resolve(null)
@@ -461,8 +375,8 @@ describe('useTrnsStore', () => {
     it('applies delta changes and updates hash', async () => {
       const { xorIdsHash: computeHash } = await import('~~/utils/fnv1a')
       const hash = computeHash(['trn1'])
-      localforageStore.set('finapp.trns', { trn1: makeTrn({ amount: 100 }) })
-      localforageStore.set('finapp.trns.syncMeta', { idsHash: hash, lastSyncedAt: 1700000000000 })
+      await localforage.setItem('finapp.trns', { trn1: makeTrn({ amount: 100 }) })
+      await localforage.setItem('finapp.trns.syncMeta', { idsHash: hash, lastSyncedAt: 1700000000000 })
 
       queryMock.mockImplementation((queryName: string) => {
         if (queryName === 'trns.delta')
@@ -479,8 +393,8 @@ describe('useTrnsStore', () => {
     })
 
     it('clears store when user has no trns (idsHash returns null)', async () => {
-      localforageStore.set('finapp.trns', { trn1: makeTrn() })
-      localforageStore.set('finapp.trns.syncMeta', { idsHash: 'old_hash', lastSyncedAt: 1700000000000 })
+      await localforage.setItem('finapp.trns', { trn1: makeTrn() })
+      await localforage.setItem('finapp.trns.syncMeta', { idsHash: 'old_hash', lastSyncedAt: 1700000000000 })
 
       queryMock.mockImplementation(() => Promise.resolve(null))
 

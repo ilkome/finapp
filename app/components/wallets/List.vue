@@ -55,7 +55,7 @@ onMounted(() => stateLimit.value = limit)
           {{ t('wallets.showAll') }}
         </template>
 
-        <template v-else-if="stateLimit !== limit">
+        <template v-else>
           {{ t('wallets.showOnly') }} {{ limit }}
         </template>
       </div>

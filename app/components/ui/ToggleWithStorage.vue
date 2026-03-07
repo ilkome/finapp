@@ -4,7 +4,6 @@ import { useStorage } from '@vueuse/core'
 const props = defineProps<{
   initStatus?: boolean
   lineWidth?: number
-  openPadding?: string
   storageKey?: string
 }>()
 
@@ -14,9 +13,6 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
 <template>
   <div
     class="group relative"
-    :class="{
-      [props.openPadding]: props.openPadding && isShown,
-    }"
   >
     <div class="-my-px overflow-hidden">
       <div

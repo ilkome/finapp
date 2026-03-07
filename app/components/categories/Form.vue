@@ -324,7 +324,6 @@ async function onSave() {
               :activeItemId="props.categoryForm.parentId"
               :categoriesItemProps="{ class: 'group' }"
               :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-              :slider="() => ({})"
               class="!gap-x-1"
               @click="id => onParentSelect(id, close)"
             />

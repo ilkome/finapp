@@ -173,9 +173,9 @@ const allTrns = Object.entries(data.trns).map(([_oldId, t]) => {
   else if (t.walletId && t.type !== 2)
     trn.walletId = walletIdMap[t.walletId] || t.walletId
 
-  if (t.categoryId === 'transfer')
+  if (t.categoryId === 'transfer' && t.type === 2)
     trn.categoryId = 'transfer'
-  else if (t.categoryId === 'adjustment')
+  else if (t.categoryId === 'transfer' || t.categoryId === 'adjustment')
     trn.categoryId = 'adjustment'
   else if (t.categoryId)
     trn.categoryId = categoryIdMap[t.categoryId] || t.categoryId

@@ -40,7 +40,6 @@ const itemClasses = 'bg-item-3 rounded-sm'
         :categoryId="categoryId"
         :class="itemClasses"
         alt
-        isShowDots
         insideClasses="!min-h-[38px]"
         @click="filter.removeCategoryId(categoryId)"
       />

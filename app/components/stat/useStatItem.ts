@@ -74,12 +74,12 @@ export function useStatItem({
 
   const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     trnsIds: trnsIds.value,
-  }, { includesChildCategories: false }))
+  }))
 
   const rangeTrnsIdsWithFilteredCategories = computed(() => trnsStore.getStoreTrnsIds({
     categoriesIds: filteredCategoriesIds.value,
     trnsIds: trnsIds.value,
-  }, { includesChildCategories: true }))
+  }))
 
   function getIntervalsData(ids: TrnId[], intervalsInRange: Range[]) {
     return intervalsInRange.reduce((acc, range) => {
@@ -106,7 +106,7 @@ export function useStatItem({
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
     trnsTypes: selectedTypesMapping.value,
-  }, { includesChildCategories: false }))
+  }))
 
   const selectedAndFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     categoriesIds: filteredCategoriesIds.value,
@@ -114,7 +114,7 @@ export function useStatItem({
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
     trnsTypes: selectedTypesMapping.value,
-  }, { includesChildCategories: true }))
+  }))
 
   const rangeTotal = computed(() => {
     const ids = statDate.params.value.intervalSelected !== -1

@@ -43,8 +43,6 @@ const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     until: dates.value.end,
   },
   walletsIds: props.walletId ? [...(props.filter.walletsIds.value ?? []), props.walletId] : props.filter.walletsIds.value,
-}, {
-  includesChildCategories: true,
 }))
 
 const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))

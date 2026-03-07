@@ -51,7 +51,7 @@ export function evaluateExpression(value: string): number {
     return result <= Number.MAX_SAFE_INTEGER ? Math.abs(result) : 0
   }
   catch {
-    return Number.isInteger(value) ? Number(value) : 0
+    return 0
   }
 }
 

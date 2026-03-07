@@ -9,11 +9,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
-  isLaptop: boolean
-}>()
-
-const emit = defineEmits<{
-  open: [slide: number]
 }>()
 
 const trnsFormStore = useTrnsFormStore()
@@ -108,20 +103,16 @@ function copyAmount() {
           <TrnFormSelectorWallet
             v-if="slug === 'income' && incomeWalletId"
             :bottomSheetStyle="props.bottomSheetStyle"
-            :isLaptop
             :title="t(`trnForm.transfer.${slug}`)"
             :walletId="incomeWalletId"
-            @open="n => emit('open', n)"
             @selected="id => trnsFormStore.values.incomeWalletId = id"
           />
 
           <TrnFormSelectorWallet
             v-if="slug === 'expense' && expenseWalletId"
             :bottomSheetStyle="props.bottomSheetStyle"
-            :isLaptop
             :title="t(`trnForm.transfer.${slug}`)"
             :walletId="expenseWalletId"
-            @open="n => emit('open', n)"
             @selected="id => trnsFormStore.values.expenseWalletId = id"
           />
         </div>

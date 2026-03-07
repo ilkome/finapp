@@ -53,8 +53,6 @@ export const useUserStore = defineStore('user', () => {
     return null // Session checked, no user
   })
 
-  const sessionUid = computed(() => session.value?.data?.user?.id ?? null)
-
   const uid = computed<string | null>(() => currentUser.value?.uid || null)
 
   function setUser(values: User | null) {
@@ -244,12 +242,10 @@ export const useUserStore = defineStore('user', () => {
     removeAllUserData,
     saveUserBaseCurrency,
     saveUserLocale,
-    sessionUid,
     setUser,
     setUserBaseCurrency,
     setUserLocale,
     signOut,
     uid,
-    user,
   }
 })

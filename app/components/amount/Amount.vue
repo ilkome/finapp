@@ -16,7 +16,7 @@ export type AmountProps = {
   isShowSymbol?: boolean
   precision?: number
   type?: MoneyTypeNumber
-  variant?: '2xs' | '3xl' | 'base' | 'xs' | 'sm' | 'xl'
+  variant?: '2xs' | 'base' | 'xs' | 'sm' | 'xl'
 }
 
 const {
@@ -48,7 +48,6 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       'text-2xs': variant === '2xs',
       'text-xs': variant === 'xs',
       'text-sm': variant === 'sm',
-      'text-3xl': variant === '3xl',
       'text-xl': variant === 'xl',
       'text-base': variant === 'base',
     }"

@@ -8,13 +8,11 @@ const INIT_DELAY_MS = 10
 
 type UseBottomSheetDragParams = {
   containerRef: Ref<HTMLElement | null>
-  contentInside: Ref<HTMLElement | null>
   drug: Ref<HTMLElement | null>
   drugStyle: Ref<Record<string, string> | undefined>
   emit: (event: 'closed') => void
   handlerRef: Ref<HTMLElement | null>
   settings: {
-    debug: boolean
     pixelOffsetToStartClosing: number
     pixelsNeedToDrugForClose: number
   }
@@ -22,7 +20,6 @@ type UseBottomSheetDragParams = {
 
 export function useBottomSheetDrag({
   containerRef,
-  contentInside,
   drug,
   drugStyle,
   emit,
@@ -81,17 +78,6 @@ export function useBottomSheetDrag({
       (containerHeight + handlerHeight - nextCurrentY.value + debounce.value)
       / (containerHeight / PERCENT_BASE),
     )
-  })
-
-  /**
-   * Debug
-   */
-  const debug = ref({
-    diffHeight: computed(() => diffHeight.value),
-    diffHeightWithDebounce: computed(() => diffHeightWithDebounce.value),
-    direction: computed(() => direction.value),
-    nextCurrentY: computed(() => nextCurrentY.value),
-    status: 'standby',
   })
 
   /**
@@ -206,29 +192,6 @@ export function useBottomSheetDrag({
 
     const isHasScroll = contentHasScroll(event)
 
-    const bodyHeight = document.querySelector('body')?.clientHeight ?? 0
-    const contentInsideHeight = contentInside.value?.clientHeight ?? 0
-    const drugHeight = drug.value?.clientHeight ?? 0
-
-    if (
-      isDragging.value
-      && drug.value
-      && drugHeight < contentInsideHeight
-      && drugHeight + EDGE_PADDING < bodyHeight
-    ) {
-      drug.value
-        ?.querySelector('.scrollerBlock')
-        ?.classList
-        .add('pointer-events-none')
-      drug.value.style.height = `${initialHeight.value - nextCurrentY.value}px`
-    }
-    else {
-      drug.value
-        ?.querySelector('.scrollerBlock')
-        ?.classList
-        .remove('pointer-events-none')
-    }
-
     if (isHasScroll && !isHandler.value) {
       isDragging.value = false
       initialY.value = 0
@@ -238,12 +201,6 @@ export function useBottomSheetDrag({
 
     if (isDragging.value)
       clientY.value = getClientY(event)
-
-    if (settings.debug) {
-      debug.value.status = nextCurrentY.value >= settings.pixelsNeedToDrugForClose && direction.value === 'down'
-        ? 'will close'
-        : 'will open'
-    }
   }
 
   /**
@@ -252,22 +209,6 @@ export function useBottomSheetDrag({
   async function onDragEnd() {
     if (disabled.value || !isDragging.value)
       return
-
-    const bodyHeight = document.querySelector('body')?.clientHeight ?? 0
-    const contentInsideHeight = contentInside.value?.clientHeight ?? 0
-    const drugHeight = drug.value?.clientHeight ?? 0
-
-    if (direction.value === 'up' && nextCurrentY.value < 0) {
-      await nextTick()
-      if (
-        isDragging.value
-        && drug.value
-        && drugHeight < contentInsideHeight
-        && drugHeight + EDGE_PADDING < bodyHeight
-      ) {
-        drug.value.style.height = `${bodyHeight - EDGE_PADDING}px`
-      }
-    }
 
     const isNeedClose
       = nextCurrentY.value >= settings.pixelsNeedToDrugForClose
@@ -396,16 +337,10 @@ export function useBottomSheetDrag({
   }
 
   return {
-    // State
     close,
-    debug,
-    direction,
-    disabled,
     drugStyles,
-    // Functions
     init,
     isDragging,
-    open,
 
     opened,
     // Computed classes

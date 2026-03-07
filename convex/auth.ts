@@ -8,7 +8,6 @@ import { createAuthMiddleware } from 'better-auth/plugins'
 import type { DataModel } from './_generated/dataModel'
 
 import { components } from './_generated/api'
-import { query } from './_generated/server'
 import authConfig from './auth.config'
 import { frontendOrigins } from './origins'
 
@@ -60,10 +59,3 @@ function createAuth(ctx: GenericCtx<DataModel>) {
 }
 
 export { createAuth }
-
-export const getCurrentUser = query({
-  args: {},
-  handler: async (ctx) => {
-    return await authComponent.safeGetAuthUser(ctx)
-  },
-})

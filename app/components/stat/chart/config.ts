@@ -14,20 +14,17 @@ type EChartsOption = ComposeOption<
 >
 
 type SeriesOption = (BarSeriesOption | LineSeriesOption) & {
-  localeKey: string
   markLineColor?: string
 }
 
 export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
   expense: {
     color: 'var(--expense-1)',
-    localeKey: 'money.expense',
     markLineColor: 'var(--expense-2)',
     type: 'bar',
   },
   income: {
     color: 'var(--income-1)',
-    localeKey: 'money.expense',
     markLineColor: 'var(--income-2)',
     type: 'bar',
   },

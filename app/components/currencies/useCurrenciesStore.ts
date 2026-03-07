@@ -3,15 +3,12 @@ import { defineStore } from 'pinia'
 
 import type { Rates } from '~/components/currencies/types'
 
-import { currencies as allCurrencies } from '~/components/currencies/currencies'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
 import { isPersistBlocked } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('currencies')
-
-export const currencies = allCurrencies
 
 export const useCurrenciesStore = defineStore('currencies', () => {
   const userStore = useUserStore()

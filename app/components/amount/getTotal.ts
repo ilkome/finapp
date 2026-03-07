@@ -1,4 +1,3 @@
-import type { CategoryId } from '~/components/categories/types'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId, WalletItem } from '~/components/wallets/types'
@@ -28,14 +27,11 @@ export function getAmountInRate({
 type TotalProps = {
   baseCurrencyCode?: string
   rates?: Rates
-  transferCategoriesIds?: CategoryId[]
   trnsIds?: TrnId[]
   trnsItems: Record<TrnId, TrnItem>
   walletsIds?: WalletId[]
   walletsItems: Record<WalletId, WalletItem>
 }
-
-export type DateString = string
 
 export type TotalReturns = {
   adjustment: number
@@ -48,7 +44,7 @@ export type TotalReturns = {
 }
 
 export function getTotal(props: TotalProps): TotalReturns {
-  const { baseCurrencyCode, rates, transferCategoriesIds, trnsIds, trnsItems, walletsIds, walletsItems } = props
+  const { baseCurrencyCode, rates, trnsIds, trnsItems, walletsIds, walletsItems } = props
 
   function getAmount(amount: number, currencyCode: CurrencyCode) {
     return getAmountInRate({
@@ -75,31 +71,20 @@ export function getTotal(props: TotalProps): TotalReturns {
       // Adjustment: affects wallet balance but not income/expense statistics
       if (trn.categoryId === 'adjustment') {
         const wallet = walletsItems[trn.walletId]
-        adjustment += getAmount(trn.amount, wallet?.currency || 'USD')
+        const amount = getAmount(trn.amount, wallet?.currency || 'USD')
+        adjustment += trn.type === TrnType.Income ? amount : -amount
         continue
       }
-      const isTransferCategory = transferCategoriesIds?.includes(trn.categoryId || '')
       const wallet = walletsItems[trn.walletId]
       const sum = getAmount(trn.amount, wallet?.currency || 'USD')
 
-      // Income
-      if (trn.type === TrnType.Income) {
-        if (isTransferCategory)
-          incomeTransfers += sum
-        else
-          income += sum
-      }
-
-      // Expense
-      if (trn.type === TrnType.Expense) {
-        if (isTransferCategory)
-          expenseTransfers += sum
-        else
-          expense += sum
-      }
+      if (trn.type === TrnType.Income)
+        income += sum
+      else
+        expense += sum
     }
 
-    // Transfer v2
+    // Transfer
     else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
       const incomeWallet = walletsItems[trn.incomeWalletId]
       const expenseWallet = walletsItems[trn.expenseWalletId]

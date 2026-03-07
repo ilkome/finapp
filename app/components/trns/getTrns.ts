@@ -11,11 +11,6 @@ export function getTrnsIds(props: TrnsGetterProps) {
   const typesSet = Array.isArray(props.trnsTypes) ? new Set(props.trnsTypes) : null
 
   const filters: Array<(ids: TrnId[]) => TrnId[]> = [
-    // Type filter
-    ids => props.trnType != null
-      ? ids.filter(id => props.trnsItems?.[id]?.type === props.trnType)
-      : ids,
-
     // Types filter
     ids => typesSet
       ? ids.filter(id => typesSet.has(props.trnsItems?.[id]?.type))
