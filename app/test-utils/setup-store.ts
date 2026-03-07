@@ -53,8 +53,6 @@ vi.stubGlobal('cleanupFrontendIds', <T>(data: Record<string, T>, pendingUpdates:
 // ---------------------------------------------------------------------------
 // 5. Common module mocks
 // ---------------------------------------------------------------------------
-vi.mock('vue-deepunref', () => ({ deepUnref: (v: any) => v }))
-
 vi.mock('~/components/demo/useDemo', () => ({
   useDemo: () => ({ isDemo: { value: false } }),
 }))

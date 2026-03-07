@@ -1,6 +1,4 @@
 import localforage from 'localforage'
-import { deepUnref } from 'vue-deepunref'
-
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LocaleSlug } from '~/components/locale/types'
 
@@ -69,7 +67,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     if (!isPersistBlocked())
-      localforage.setItem(STORAGE_KEYS.user, deepUnref(user.value))
+      localforage.setItem(STORAGE_KEYS.user, user.value)
   }
 
   function persistUserSettings() {
