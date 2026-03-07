@@ -6,7 +6,6 @@ import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
@@ -24,7 +23,6 @@ useSeoMeta({
 
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
-const userStore = useUserStore()
 const trnsStore = useTrnsStore()
 const isSortModalOpen = ref(false)
 
@@ -77,7 +75,6 @@ const groupedBy = useStorage<WalletsGroupedBy>('finapp-wallets-groupedBy', 'none
 
 const {
   currencyFiltered,
-  onSelectFilterCurrency,
   selectedWalletsIds,
   selectedWalletsIdsWithCurrency,
   setWalletViewType,
