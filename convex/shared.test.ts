@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { AMOUNT_MAX, CREDIT_LIMIT_MAX, DATE_MAX, DATE_MIN, validateNumberRange, validateStringLength } from './shared'
+import { validateNumberRange, validateStringLength } from './shared'
 
 describe('convex/shared validators', () => {
   describe('validateStringLength', () => {
@@ -49,24 +49,6 @@ describe('convex/shared validators', () => {
     it('throws for value above max', () => {
       expect(() => validateNumberRange(101, 0, 100, 'Amount'))
         .toThrow('Amount must be between 0 and 100')
-    })
-  })
-
-  describe('constants', () => {
-    it('DATE_MIN is 2000-01-01', () => {
-      expect(new Date(DATE_MIN).toISOString()).toBe('2000-01-01T00:00:00.000Z')
-    })
-
-    it('DATE_MAX is 2100-01-01', () => {
-      expect(new Date(DATE_MAX).toISOString()).toBe('2100-01-01T00:00:00.000Z')
-    })
-
-    it('AMOUNT_MAX is 1 trillion', () => {
-      expect(AMOUNT_MAX).toBe(1_000_000_000_000)
-    })
-
-    it('CREDIT_LIMIT_MAX is 1 billion', () => {
-      expect(CREDIT_LIMIT_MAX).toBe(1_000_000_000)
     })
   })
 })

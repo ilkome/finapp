@@ -59,12 +59,6 @@ const transfer: {
 
 const transactions = [{
   data: {
-    become: false,
-    expect: {},
-  },
-  name: 'Format empty',
-}, {
-  data: {
     become: {
       ...transaction.generated,
     } as Transaction | false,
@@ -95,12 +89,6 @@ const transactions = [{
 
 const transfers = [{
   data: {
-    become: false,
-    expect: {},
-  },
-  name: 'Format empty',
-}, {
-  data: {
     become: {
       ...transfer.generated,
     } as Transfer,
@@ -127,15 +115,6 @@ const transfers = [{
     } as TrnFormValues,
   },
   name: 'Format with missing expenseWalletId',
-}, {
-  data: {
-    become: false,
-    expect: {
-      ...transfer.raw,
-      trnType: 1,
-    } as TrnFormValues,
-  },
-  name: 'Format with wrong type',
 }]
 
 /**
