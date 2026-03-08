@@ -29,7 +29,7 @@ describe('calculator utils', () => {
       expect(evaluateExpression('1.5+2.5')).toBe(4)
       expect(evaluateExpression('10.5*2')).toBe(21)
       expect(evaluateExpression('7.5/2.5')).toBe(3)
-      expect(evaluateExpression('0.1+0.2')).toBeCloseTo(0.3)
+      expect(evaluateExpression('0.1+0.2')).toBe(0.3)
     })
 
     it('strips spaces and commas', () => {
@@ -62,6 +62,17 @@ describe('calculator utils', () => {
 
     it('returns 0 for results exceeding MAX_SAFE_INTEGER', () => {
       expect(evaluateExpression('9007199254740992*2')).toBe(0)
+    })
+
+    it('rounds to 8 decimal places to avoid floating-point noise', () => {
+      expect(evaluateExpression('10/3')).toBe(3.33333333)
+      expect(evaluateExpression('1/7')).toBe(0.14285714)
+      expect(evaluateExpression('0.1+0.2')).toBe(0.3)
+    })
+
+    it('does not round integers', () => {
+      expect(evaluateExpression('999999999')).toBe(999999999)
+      expect(evaluateExpression('100*100')).toBe(10000)
     })
 
     it('single number', () => {
@@ -134,6 +145,10 @@ describe('calculator utils', () => {
       it('adds 0. after operator', () => {
         expect(createExpressionString('.', '5+')).toBe('5+0.')
         expect(createExpressionString('.', '10*')).toBe('10*0.')
+      })
+
+      it('adds 0. from empty expression', () => {
+        expect(createExpressionString('.', '')).toBe('0.')
       })
 
       it('does not add to number that already has decimal', () => {
@@ -255,6 +270,25 @@ describe('calculator utils', () => {
         expr = createExpressionString('2', expr) // '10*2'
         expr = createExpressionString('=', expr) // '20'
         expect(expr).toBe('20')
+      })
+
+      it('decimal from empty: .5 becomes 0.5', () => {
+        let expr = ''
+        expr = createExpressionString('.', expr) // '0.'
+        expect(expr).toBe('0.')
+        expr = createExpressionString('5', expr) // '0.5'
+        expr = createExpressionString('=', expr) // '0.5'
+        expect(expr).toBe('0.5')
+      })
+
+      it('division result is rounded: 10/3=', () => {
+        let expr = '0'
+        expr = createExpressionString('1', expr)
+        expr = createExpressionString('0', expr)
+        expr = createExpressionString('/', expr)
+        expr = createExpressionString('3', expr)
+        expr = createExpressionString('=', expr)
+        expect(expr).toBe('3.33333333')
       })
 
       it('decimal workflow: 0.5+1.5=', () => {

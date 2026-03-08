@@ -79,7 +79,11 @@ export function evaluateExpression(value: string): number {
 
     const result = parseExpr()
 
-    return Number.isFinite(result) && result <= Number.MAX_SAFE_INTEGER ? Math.abs(result) : 0
+    if (!Number.isFinite(result) || Math.abs(result) > Number.MAX_SAFE_INTEGER)
+      return 0
+
+    const abs = Math.abs(result)
+    return Number.isInteger(abs) ? abs : +abs.toFixed(config.decimalPlaces)
   }
   catch {
     return 0
@@ -92,7 +96,7 @@ function handleDecimalPoint(expression: string, lastChar: string): string {
   if (currentNumber.includes('.') || lastChar === '.')
     return expression
 
-  if (isOperator(lastChar))
+  if (!expression || isOperator(lastChar))
     return `${expression}0.`
 
   return `${expression}.`
