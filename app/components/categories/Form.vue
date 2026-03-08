@@ -181,164 +181,135 @@ async function onSave() {
     </div>
   </div>
 
-  <Teleport to="body">
-    <!-- Colors -->
-    <BottomSheet
-      v-if="modals.colors"
-      isShow
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="modals.colors = false"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
-      </template>
+  <!-- Colors -->
+  <BottomSheetModal
+    v-if="modals.colors"
+    @closed="modals.colors = false"
+  >
+    <template #default="{ close }">
+      <div>
+        <UiTitleModal>{{ t('categories.form.selectColor') }}</UiTitleModal>
+        <CategoriesItem
+          :categoryId="props.categoryId"
+          :category="categoryPlaceholder"
+        />
+      </div>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <div>
-            <UiTitleModal>{{ t('categories.form.selectColor') }}</UiTitleModal>
-            <CategoriesItem
-              :categoryId="props.categoryId"
-              :category="categoryPlaceholder"
-            />
-          </div>
+      <div class="scrollerBlock bottomSheetContentInside">
+        <ColorPalette
+          :activeColor="props.categoryForm.color"
+          :icon="props.categoryForm.icon"
+          isCategory
+          @click="color => emit('update', 'color', color)"
+        />
+      </div>
 
-          <div class="scrollerBlock bottomSheetContentInside">
-            <ColorPalette
-              :activeColor="props.categoryForm.color"
-              :icon="props.categoryForm.icon"
-              isCategory
-              @click="color => emit('update', 'color', color)"
-            />
-          </div>
+      <div class="flex-center p-2">
+        <UiButtonAccent
+          rounded
+          @click="close"
+        >
+          {{ t('base.apply') }}
+        </UiButtonAccent>
+      </div>
+    </template>
+  </BottomSheetModal>
 
-          <div class="flex-center p-2">
-            <UiButtonAccent
-              rounded
-              @click="close"
-            >
-              {{ t('base.apply') }}
-            </UiButtonAccent>
-          </div>
-        </div>
-      </template>
-    </BottomSheet>
+  <!-- Icon -->
+  <BottomSheetModal
+    v-if="modals.icon"
+    @closed="modals.icon = false"
+  >
+    <template #default="{ close }">
+      <div class="grid gap-3 pt-3 pb-1">
+        <UiTitleModal>{{ t('categories.form.selectIcon') }}</UiTitleModal>
+        <CategoriesItem
+          :categoryId="props.categoryId"
+          :category="categoryPlaceholder"
+        />
+      </div>
 
-    <!-- Icon -->
-    <BottomSheet
-      v-if="modals.icon"
-      isShow
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="modals.icon = false"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
-      </template>
+      <div class="scrollerBlock bottomSheetContentInside">
+        <FormElement class="pt-2 pb-4">
+          <template #label>
+            {{ t('categories.form.icon.desc') }}
+            <a
+              href="https://icones.js.org/collection/mdi"
+              target="_blank"
+              class="text-primary hover:underline"
+            >Material Design Icons</a>
+          </template>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <div class="grid gap-3 pt-3 pb-1">
-            <UiTitleModal>{{ t('categories.form.selectIcon') }}</UiTitleModal>
-            <CategoriesItem
-              :categoryId="props.categoryId"
-              :category="categoryPlaceholder"
-            />
-          </div>
+          <FormInput
+            :placeholder="t('categories.form.icon.placeholder')"
+            :modelValue="categoryForm.icon"
+            @update:modelValue="(value: string) => emit('update', 'icon', value)"
+          />
+        </FormElement>
 
-          <div class="scrollerBlock bottomSheetContentInside">
-            <FormElement class="pt-2 pb-4">
-              <template #label>
-                {{ t('categories.form.icon.desc') }}
-                <a
-                  href="https://icones.js.org/collection/mdi"
-                  target="_blank"
-                  class="text-primary hover:underline"
-                >Material Design Icons</a>
-              </template>
-
-              <FormInput
-                :placeholder="t('categories.form.icon.placeholder')"
-                :modelValue="categoryForm.icon"
-                @update:modelValue="(value: string) => emit('update', 'icon', value)"
-              />
-            </FormElement>
-
-            <div
-              v-for="iconGroup in icons"
-              :key="JSON.stringify(iconGroup)"
-              class="flex flex-wrap gap-3 pb-8 last:placeholder:text-blue-400"
-            >
-              <div
-                v-for="icon in iconGroup"
-                :key="icon"
-                :class="cn('flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent',
-                           icon === props.categoryForm.icon && 'border-(--ui-primary)',
-                )"
-                :style="{ background: props.categoryForm.color }"
-                @click="emit('update', 'icon', icon)"
-              >
-                <Icon :name="icon" size="20" />
-              </div>
-            </div>
-          </div>
-
-          <div class="bottomSheetContentBottom">
-            <UiButtonAccent
-              rounded
-              @click="close"
-            >
-              {{ t('base.apply') }}
-            </UiButtonAccent>
+        <div
+          v-for="iconGroup in icons"
+          :key="JSON.stringify(iconGroup)"
+          class="flex flex-wrap gap-3 pb-8 last:placeholder:text-blue-400"
+        >
+          <div
+            v-for="icon in iconGroup"
+            :key="icon"
+            :class="cn('flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent',
+                       icon === props.categoryForm.icon && 'border-(--ui-primary)',
+            )"
+            :style="{ background: props.categoryForm.color }"
+            @click="emit('update', 'icon', icon)"
+          >
+            <Icon :name="icon" size="20" />
           </div>
         </div>
-      </template>
-    </BottomSheet>
+      </div>
 
-    <!-- Parent -->
-    <BottomSheet
-      v-if="modals.parent"
-      isShow
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="modals.parent = false"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
-      </template>
+      <div class="bottomSheetContentBottom">
+        <UiButtonAccent
+          rounded
+          @click="close"
+        >
+          {{ t('base.apply') }}
+        </UiButtonAccent>
+      </div>
+    </template>
+  </BottomSheetModal>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
+  <!-- Parent -->
+  <BottomSheetModal
+    v-if="modals.parent"
+    @closed="modals.parent = false"
+  >
+    <template #default="{ close }">
+      <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
 
-          <div class="scrollerBlock bottomSheetContentInside">
-            <UiChipButton
-              :isActive="props.categoryForm.parentId === 0"
-              @click="onParentSelect(false, close)"
-            >
-              {{ t('categories.form.parent.no') }}
-            </UiChipButton>
+      <div class="scrollerBlock bottomSheetContentInside">
+        <UiChipButton
+          :isActive="props.categoryForm.parentId === 0"
+          @click="onParentSelect(false, close)"
+        >
+          {{ t('categories.form.parent.no') }}
+        </UiChipButton>
 
-            <CategoriesList
-              :activeItemId="props.categoryForm.parentId"
-              :categoriesItemProps="{ class: 'group' }"
-              :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-              class="!gap-x-1"
-              @click="id => onParentSelect(id, close)"
-            />
-          </div>
+        <CategoriesList
+          :activeItemId="props.categoryForm.parentId"
+          :categoriesItemProps="{ class: 'group' }"
+          :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
+          class="!gap-x-1"
+          @click="id => onParentSelect(id, close)"
+        />
+      </div>
 
-          <div class="bottomSheetContentBottom">
-            <UiButtonAccent
-              rounded
-              @click="close"
-            >
-              {{ t('base.apply') }}
-            </UiButtonAccent>
-          </div>
-        </div>
-      </template>
-    </BottomSheet>
-  </Teleport>
+      <div class="bottomSheetContentBottom">
+        <UiButtonAccent
+          rounded
+          @click="close"
+        >
+          {{ t('base.apply') }}
+        </UiButtonAccent>
+      </div>
+    </template>
+  </BottomSheetModal>
 </template>

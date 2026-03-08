@@ -146,6 +146,15 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
 
 const paginatedTotal = computed(() => computeTotalForTrnsIds(paginatedTrnsIds.value))
 
+const groupTotals = computed(() => {
+  const map = new Map<string, ReturnType<typeof computeTotalForTrnsIds>>()
+  for (const [date, ids] of Object.entries(groupedTrns.value)) {
+    if (ids.length > 1)
+      map.set(date, computeTotalForTrnsIds(ids))
+  }
+  return map
+})
+
 const trnItemsMap = computed(() => {
   const map = new Map<TrnId, ReturnType<typeof trnsStore.computeTrnItem>>()
   for (const trnId of paginatedTrnsIds.value) {
@@ -280,8 +289,8 @@ function onOpenTrnForm(date: number) {
             class="opacity-60"
           >
             <Amount
-              v-if="computeTotalForTrnsIds(groupTrnsIds).income !== 0"
-              :amount="computeTotalForTrnsIds(groupTrnsIds).income"
+              v-if="groupTotals.get(String(date))?.income"
+              :amount="groupTotals.get(String(date))!.income"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="TrnType.Income"
@@ -290,8 +299,8 @@ function onOpenTrnForm(date: number) {
             />
 
             <Amount
-              v-if="computeTotalForTrnsIds(groupTrnsIds).expense !== 0"
-              :amount="computeTotalForTrnsIds(groupTrnsIds).expense"
+              v-if="groupTotals.get(String(date))?.expense"
+              :amount="groupTotals.get(String(date))!.expense"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="TrnType.Expense"

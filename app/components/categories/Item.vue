@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-
 export type CategoryItemProps = {
   activeItemId?: string | 0 | false | null
   alt?: boolean
@@ -21,71 +19,35 @@ const emit = defineEmits<{
   click: [e: Event]
   filter: [categoryId: CategoryId]
 }>()
-
-const categoriesStore = useCategoriesStore()
-
-const childCategoriesIds = computed(() => categoriesStore.getChildrenIds(props.categoryId))
-const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
 </script>
 
 <template>
   <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
-    <UiElement
-      v-if="props.category"
-      :isActive="props.activeItemId === props.categoryId"
+    <CategoriesItemBody
+      :activeItemId="props.activeItemId"
+      :alt="props.alt"
+      :category="props.category"
+      :categoryId="props.categoryId"
       :class="props.class"
+      :insideClasses="props.insideClasses"
+      :isShowParent="props.isShowParent"
       :lineWidth="props.lineWidth"
-      :insideClasses="`min-h-[46px] ${props.insideClasses}`"
-      @click="(e: Event) => emit('click', e)"
-    >
-      <template #leftIcon>
-        <UiIconBase
-          :color="props.category.color"
-          :name="props.category.icon"
-          invert
-          @click="emit('filter', props.categoryId ?? '')"
-        />
-      </template>
-
-      <div class="grid grow gap-0.5">
-        <CategoriesName
-          :alt="props.alt"
-          :category="props.category"
-          :parentCategory="parentCategory"
-          :hasChildren="childCategoriesIds.length > 0"
-          :showChildrenCount="childCategoriesIds.length"
-          :isShowParent="props.isShowParent"
-        />
-      </div>
-    </UiElement>
+      @click="emit('click', $event)"
+      @filter="emit('filter', $event)"
+    />
   </UContextMenu>
 
-  <UiElement
-    v-else-if="props.category"
-    :isActive="props.activeItemId === props.categoryId"
+  <CategoriesItemBody
+    v-else
+    :activeItemId="props.activeItemId"
+    :alt="props.alt"
+    :category="props.category"
+    :categoryId="props.categoryId"
     :class="props.class"
+    :insideClasses="props.insideClasses"
+    :isShowParent="props.isShowParent"
     :lineWidth="props.lineWidth"
-    :insideClasses="`min-h-[46px] ${props.insideClasses}`"
-    @click="(e: Event) => emit('click', e)"
-  >
-    <template #leftIcon>
-      <UiIconBase
-        :color="props.category.color"
-        :name="props.category.icon"
-        invert
-        @click="emit('filter', props.categoryId ?? '')"
-      />
-    </template>
-
-    <div class="grid grow gap-0.5">
-      <CategoriesName
-        :alt="props.alt"
-        :category="props.category"
-        :parentCategory="parentCategory"
-        :hasChildren="childCategoriesIds.length > 0"
-        :showChildrenCount="childCategoriesIds.length"
-        :isShowParent="props.isShowParent"
-      />
-    </div>
-  </UiElement>
+    @click="emit('click', $event)"
+    @filter="emit('filter', $event)"
+  />
 </template>

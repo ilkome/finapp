@@ -24,7 +24,7 @@ function onSave(close: () => void) {
     :isOpen="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
     class="grow"
-    drugClassesCustom="max-w-md"
+    dragClassesCustom="max-w-md"
     isShowCloseBtn
     @closeModal="trnsFormStore.closeTrnFormModal('description')"
     @openModal="trnsFormStore.openTrnFormModal('description')"

@@ -10,7 +10,7 @@
   @apply @xl/page:max-w-2xl grow px-3 @md/page:px-4;
 }
 
-@utility bottomSheetDrugClassesCustom {
+@utility bottomSheetDragClassesCustom {
   @apply bg-default max-w-md rounded-xl;
 }
 

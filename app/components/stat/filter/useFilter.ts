@@ -4,130 +4,87 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
+function createQueryFilter<T extends string>(
+  route: ReturnType<typeof useRoute>,
+  router: ReturnType<typeof useRouter>,
+  queryKey: string,
+  validateFn?: (id: T) => boolean,
+) {
+  const ids = computed<T[]>(() => {
+    const value = route.query[queryKey]
+    if (Array.isArray(value))
+      return validateFn ? (value as T[]).filter(validateFn) : (value as T[])
+    return value ? [...(value as string).split(',')] as T[] : []
+  })
+
+  function setId(id: T) {
+    if (ids.value.includes(id))
+      return
+
+    router.push({
+      query: {
+        ...route.query,
+        [queryKey]: [...ids.value, id],
+      },
+    })
+  }
+
+  function setMultiple(newIds: T[]) {
+    router.push({
+      query: {
+        ...route.query,
+        [queryKey]: [...new Set(ids.value.concat(newIds))],
+      },
+    })
+  }
+
+  function removeId(id: T) {
+    router.push({
+      query: {
+        ...route.query,
+        [queryKey]: [...ids.value.filter(i => i !== id)],
+      },
+    })
+  }
+
+  function toggleId(id: T) {
+    if (ids.value.includes(id)) {
+      removeId(id)
+      return
+    }
+
+    setId(id)
+  }
+
+  return { ids, removeId, setId, setMultiple, toggleId }
+}
+
 export function useFilter() {
   const router = useRouter()
   const route = useRoute()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
 
-  /**
-   * Wallets
-   */
-  const walletsIds = computed<WalletId[]>(() => Array.isArray(route.query.filterWallets)
-    ? (route.query.filterWallets as WalletId[]).filter(id => walletsStore.items?.[id])
-    : route.query.filterWallets
-      ? [...route.query.filterWallets.split(',')]
-      : [],
-  )
+  const wallets = createQueryFilter<WalletId>(route, router, 'filterWallets', id => !!walletsStore.items?.[id])
+  const categories = createQueryFilter<CategoryId>(route, router, 'filterCategories', id => !!categoriesStore.items[id])
 
-  function setWalletId(walletId: WalletId) {
-    if (walletsIds.value.includes(walletId))
-      return
-
-    router.push({
-      query: {
-        ...route.query,
-        filterWallets: [...walletsIds.value, walletId],
-      },
-    })
-  }
-
-  function toggleWalletId(walletId: WalletId) {
-    if (walletsIds.value.includes(walletId)) {
-      removeWalletId(walletId)
-      return
-    }
-
-    setWalletId(walletId)
-  }
-
-  function setWallets(newWalletsIds: WalletId[]) {
-    router.push({
-      query: {
-        ...route.query,
-        filterWallets: [...new Set(walletsIds.value.concat(newWalletsIds))],
-      },
-    })
-  }
-
-  function removeWalletId(walletId: WalletId) {
-    router.push({
-      query: {
-        ...route.query,
-        filterWallets: [...walletsIds.value.filter(id => id !== walletId)],
-      },
-    })
-  }
-
-  /**
-   * Categories
-   */
-  const categoriesIds = computed<CategoryId[]>(() => Array.isArray(route.query.filterCategories)
-    ? (route.query.filterCategories as CategoryId[]).filter(id => categoriesStore.items[id])
-    : route.query.filterCategories
-      ? [...route.query.filterCategories.split(',')]
-      : [],
-  )
-
-  function setCategoryId(categoryId: CategoryId) {
-    if (categoriesIds.value.includes(categoryId))
-      return
-
-    router.push({
-      query: {
-        ...route.query,
-        filterCategories: [...categoriesIds.value, categoryId],
-      },
-    })
-  }
-
-  function setCategories(newCategoriesIds: CategoryId[]) {
-    router.push({
-      query: {
-        ...route.query,
-        filterCategories: [...new Set(categoriesIds.value.concat(newCategoriesIds))],
-      },
-    })
-  }
-
-  function removeCategoryId(categoryId: CategoryId) {
-    router.push({
-      query: {
-        ...route.query,
-        filterCategories: [...categoriesIds.value.filter(id => id !== categoryId)],
-      },
-    })
-  }
-
-  function toggleCategoryId(categoryId: CategoryId) {
-    if (categoriesIds.value.includes(categoryId)) {
-      removeCategoryId(categoryId)
-      return
-    }
-
-    setCategoryId(categoryId)
-  }
-
-  /**
-   * Clear
-   */
   function clearFilter() {
     router.push({ query: undefined })
   }
 
-  const isShow = computed(() => categoriesIds.value.length > 0 || walletsIds.value.length > 0)
+  const isShow = computed(() => categories.ids.value.length > 0 || wallets.ids.value.length > 0)
 
   return {
-    categoriesIds,
+    categoriesIds: categories.ids,
     clearFilter,
     isShow,
-    removeCategoryId,
-    removeWalletId,
-    setCategories,
-    setCategoryId,
-    setWallets,
-    toggleCategoryId,
-    toggleWalletId,
-    walletsIds,
+    removeCategoryId: categories.removeId,
+    removeWalletId: wallets.removeId,
+    setCategories: categories.setMultiple,
+    setCategoryId: categories.setId,
+    setWallets: wallets.setMultiple,
+    toggleCategoryId: categories.toggleId,
+    toggleWalletId: wallets.toggleId,
+    walletsIds: wallets.ids,
   }
 }

@@ -14,11 +14,9 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
-const walletId = computed(() => {
-  const walletsIds = Object.keys(walletsStore.items ?? {})
-  const firstWalletId = walletsIds[0]
-  return trnsFormStore.values.walletId ?? firstWalletId
-})
+const walletId = computed(() =>
+  trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
+)
 </script>
 
 <template>
