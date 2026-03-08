@@ -4,7 +4,7 @@ import type { MiniItemConfig } from '~/components/stat/useStatConfig'
 
 import { ConfigSchema } from '~/components/stat/useStatConfig'
 
-import { mergeConfigUpdate } from './statConfig'
+import { applyConfigUpdate } from './statConfig'
 
 const defaultConfig: MiniItemConfig = {
   catsList: {
@@ -22,12 +22,12 @@ const defaultConfig: MiniItemConfig = {
   chart: {
     isShowAverage: false,
   },
-  chartShow: true,
   chartType: 'bar',
   chartView: 'full',
   date: {
     isShowQuick: false,
   },
+  isChartShow: true,
   isShowEmptyCategories: false,
   statAverage: {
     count: 10,
@@ -59,7 +59,7 @@ describe('configSchema', () => {
   })
 
   it('rejects missing required field', () => {
-    const { chartShow: _, ...incomplete } = defaultConfig
+    const { isChartShow: _, ...incomplete } = defaultConfig
     expect(ConfigSchema.safeParse(incomplete).success).toBe(false)
   })
 
@@ -74,27 +74,27 @@ describe('configSchema', () => {
   })
 })
 
-describe('mergeConfigUpdate', () => {
+describe('applyConfigUpdate', () => {
   it('updates a primitive value', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'chartShow', false as any)
+    const result = applyConfigUpdate(defaultConfig, 'isChartShow', false as any)
     expect(result).not.toBeNull()
-    expect(result!.chartShow).toBe(false)
+    expect(result!.isChartShow).toBe(false)
   })
 
   it('updates chartType', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'chartType', 'line' as any)
+    const result = applyConfigUpdate(defaultConfig, 'chartType', 'line' as any)
     expect(result).not.toBeNull()
     expect(result!.chartType).toBe('line')
   })
 
   it('updates chartView', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'chartView', 'half' as any)
+    const result = applyConfigUpdate(defaultConfig, 'chartView', 'half' as any)
     expect(result).not.toBeNull()
     expect(result!.chartView).toBe('half')
   })
 
   it('deep-merges nested object', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'catsList', { isGrouped: false })
+    const result = applyConfigUpdate(defaultConfig, 'catsList', { isGrouped: false })
     expect(result).not.toBeNull()
     expect(result!.catsList.isGrouped).toBe(false)
     // Other fields preserved via defu
@@ -103,30 +103,30 @@ describe('mergeConfigUpdate', () => {
   })
 
   it('deep-merges wallets count', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'wallets', { count: 12 })
+    const result = applyConfigUpdate(defaultConfig, 'wallets', { count: 12 })
     expect(result).not.toBeNull()
     expect(result!.wallets.count).toBe(12)
     expect(result!.wallets.isShow).toBe(false) // preserved
   })
 
   it('returns null for invalid value', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'chartType', 'invalid' as any)
+    const result = applyConfigUpdate(defaultConfig, 'chartType', 'invalid' as any)
     expect(result).toBeNull()
   })
 
   it('returns null for invalid nested value', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'wallets', { count: 'bad' } as any)
+    const result = applyConfigUpdate(defaultConfig, 'wallets', { count: 'bad' } as any)
     expect(result).toBeNull()
   })
 
   it('does not mutate original config', () => {
-    const original = { ...defaultConfig, chartShow: true }
-    mergeConfigUpdate(original, 'chartShow', false as any)
-    expect(original.chartShow).toBe(true)
+    const original = { ...defaultConfig, isChartShow: true }
+    applyConfigUpdate(original, 'isChartShow', false as any)
+    expect(original.isChartShow).toBe(true)
   })
 
   it('preserves other keys when updating one', () => {
-    const result = mergeConfigUpdate(defaultConfig, 'isShowEmptyCategories', true as any)
+    const result = applyConfigUpdate(defaultConfig, 'isShowEmptyCategories', true as any)
     expect(result).not.toBeNull()
     expect(result!.isShowEmptyCategories).toBe(true)
     expect(result!.chartType).toBe('bar')

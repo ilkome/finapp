@@ -78,7 +78,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     onChangeAmount(value)
   }
 
-  function getIsShowSum() {
+  function shouldShowSum() {
     if (values.trnType === TrnType.Transfer) {
       const expense = values.amount[1] !== 0
         && formatInput(values.amount[1]) !== values.amountRaw[1]
@@ -223,7 +223,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amountRaw[0] = formatInput(0)
   }
 
-  function trnFormEdit(trnId: TrnId) {
+  function openFormForEdit(trnId: TrnId) {
     const trn = trnsStore.items[trnId]
 
     setValues({
@@ -236,7 +236,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     ui.value.isShow = true
   }
 
-  function trnFormCreate() {
+  function openFormForCreate() {
     setValues({
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
@@ -247,7 +247,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     ui.value.isShow = true
   }
 
-  function trnFormDuplicate(trnId: TrnId) {
+  function openFormForDuplicate(trnId: TrnId) {
     const trn = trnsStore.items?.[trnId] as TrnItem
 
     if (!trn)
@@ -268,7 +268,6 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     $reset,
     activeAmountIdx,
     closeTrnFormModal,
-    getIsShowSum,
     modal,
     onChangeAmount,
     onChangeCountSum,
@@ -278,10 +277,11 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     onClickCalculator,
     onClose,
     onSubmit,
+    openFormForCreate,
+    openFormForDuplicate,
+    openFormForEdit,
     openTrnFormModal,
-    trnFormCreate,
-    trnFormDuplicate,
-    trnFormEdit,
+    shouldShowSum,
     ui,
     values,
   }

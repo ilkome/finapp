@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const trnsStore = useTrnsStore()
-const { trnFormDuplicate, trnFormEdit } = useTrnsFormStore()
+const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
 
 const showDeleteConfirm = ref(false)
 
@@ -32,7 +32,7 @@ const contextMenuItems = computed(() => [[
   {
     icon: 'lucide:copy',
     label: t('base.duplicate'),
-    onSelect: () => trnFormDuplicate(props.trnId),
+    onSelect: () => openFormForDuplicate(props.trnId),
   },
 ], [
   {
@@ -45,7 +45,7 @@ const contextMenuItems = computed(() => [[
 
 function click() {
   emit('click')
-  trnFormEdit(props.trnId)
+  openFormForEdit(props.trnId)
 }
 
 function handleDeleteConfirm() {

@@ -79,7 +79,7 @@ onActivated(() => {
   statConfig.updateConfig('catsRound', { isGrouped: false })
   statConfig.updateConfig('vertical', { isGrouped: false })
 
-  if (categoriesStore.isItTransactible(categoryId.value))
+  if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
 })
 

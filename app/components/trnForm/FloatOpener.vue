@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const { trnFormCreate, ui } = useTrnsFormStore()
+const { openFormForCreate, ui } = useTrnsFormStore()
 </script>
 
 <template>
@@ -12,7 +12,7 @@ const { trnFormCreate, ui } = useTrnsFormStore()
       justify-end from-transparent to-(--item-5)
       transition hover:bg-gradient-to-r xl:flex
     "
-    @click="trnFormCreate()"
+    @click="openFormForCreate()"
   >
     <div
       class="

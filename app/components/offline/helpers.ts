@@ -28,12 +28,12 @@ const OLD_KEYS = [
   'finapp.trns.offline.delete',
 ]
 
-let oldKeysCleaned = false
+let isOldKeysCleaned = false
 
 async function cleanOldKeys() {
-  if (oldKeysCleaned)
+  if (isOldKeysCleaned)
     return
-  oldKeysCleaned = true
+  isOldKeysCleaned = true
   for (const key of OLD_KEYS)
     await localforage.removeItem(key)
 }

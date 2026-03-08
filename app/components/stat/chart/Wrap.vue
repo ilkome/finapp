@@ -48,7 +48,7 @@ function onChangePeriod(period: Period) {
 
 <template>
   <div
-    v-if="statConfig.config.value.chartShow"
+    v-if="statConfig.config.value.isChartShow"
     :class="{
       '@3xl/main:max-w-xl': props.chartView === 'half',
     }"

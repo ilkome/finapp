@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import { trnsItems } from '~~/mocks/trns'
 
-import { getTrnsIds } from '~/components/trns/getTrns'
+import { filterTrnsIds } from '~/components/trns/getTrns'
 
 describe('get Transactions IDs', () => {
   it('get Transactions IDs in Wallet Cash USD', () => {
     const walletsIds = ['walletCashUSD']
-    const trnsIds = getTrnsIds({ trnsItems, walletsIds })
+    const trnsIds = filterTrnsIds({ trnsItems, walletsIds })
 
     expect(trnsIds).toEqual(expect.arrayContaining([
       'transactionIncomeWalletCashUSD1000',
@@ -20,7 +20,7 @@ describe('get Transactions IDs', () => {
 
   it('get Transactions IDs in Wallet RUB', () => {
     const walletsIds = ['walletRUB']
-    const trnsIds = getTrnsIds({ trnsItems, walletsIds })
+    const trnsIds = filterTrnsIds({ trnsItems, walletsIds })
 
     expect(trnsIds).toEqual(expect.arrayContaining([
       'transferExpenseWalletRUB300IncomeWalletCreditUSD10',
@@ -29,7 +29,7 @@ describe('get Transactions IDs', () => {
   })
 
   it('get All Transactions', () => {
-    const trnsIds = getTrnsIds({ trnsItems })
+    const trnsIds = filterTrnsIds({ trnsItems })
 
     expect(trnsIds).toEqual(expect.arrayContaining([
       'transactionIncomeWalletCashUSD1000',

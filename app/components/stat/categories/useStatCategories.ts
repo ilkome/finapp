@@ -10,11 +10,11 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 export function useStatCategories() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
-  const { getTotalOfTrnsIds } = useAmount()
+  const { computeTotalForTrnsIds } = useAmount()
 
-  const computeValue = (trnsIds: TrnId[]) => getTotalOfTrnsIds(trnsIds).sum
+  const computeValue = (trnsIds: TrnId[]) => computeTotalForTrnsIds(trnsIds).sum
 
-  function getCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]): CategoryWithData[] {
+  function computeCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]): CategoryWithData[] {
     const collected = collectCategoriesByTrns({
       categoriesItems: categoriesStore.items,
       preCategoriesIds,
@@ -28,6 +28,6 @@ export function useStatCategories() {
   }
 
   return {
-    getCategoriesWithData,
+    computeCategoriesWithData,
   }
 }

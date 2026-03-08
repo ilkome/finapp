@@ -43,7 +43,7 @@ type CategoriesStore = {
   hasChildren: (categoryId: CategoryId) => boolean
   hasItems: ComputedRef<boolean>
   initCategories: () => void
-  isItTransactible: (categoryId: CategoryId) => boolean
+  isTransactible: (categoryId: CategoryId) => boolean
   items: ShallowRef<Categories>
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<RemapInfo | void> | void
@@ -217,7 +217,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return getTransactibleCategoriesIds(items.value ?? {}, ids)
   }
 
-  function isItTransactible(categoryId: CategoryId) {
+  function isTransactible(categoryId: CategoryId) {
     return transactibleIdsSet.value.has(categoryId)
   }
 
@@ -327,7 +327,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     hasChildren,
     hasItems,
     initCategories,
-    isItTransactible,
+    isTransactible,
     items,
     recentCategoriesIds,
     saveCategory,

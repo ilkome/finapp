@@ -69,7 +69,7 @@ onMounted(() => {
   statConfig.updateConfig('catsList', { isGrouped: false })
   statConfig.updateConfig('catsRound', { isGrouped: false })
 
-  if (categoriesStore.isItTransactible(categoryId.value))
+  if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
 })
 

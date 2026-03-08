@@ -36,7 +36,7 @@ export function useStatItem({
   type,
 }: UseStatItemParams) {
   const trnsStore = useTrnsStore()
-  const { getTotalOfTrnsIds } = useAmount()
+  const { computeTotalForTrnsIds } = useAmount()
   const { addMarkArea, createSeriesItem } = useStatChart()
 
   const newBaseStorageKey = computed(() =>
@@ -66,11 +66,11 @@ export function useStatItem({
   }))
 
   const intervalsData = computed(() =>
-    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, getTotalOfTrnsIds),
+    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, computeTotalForTrnsIds),
   )
 
   const intervalsDataWithFilteredCategories = computed(() =>
-    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, getTotalOfTrnsIds),
+    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, computeTotalForTrnsIds),
   )
 
   const selectedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -94,7 +94,7 @@ export function useStatItem({
     const ids = statDate.params.value.intervalSelected !== -1
       ? intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIdsWithFilteredCategories.value
-    return getTotalOfTrnsIds(ids)
+    return computeTotalForTrnsIds(ids)
   })
 
   const averageTotal = computed(() => {

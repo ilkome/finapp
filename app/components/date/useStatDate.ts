@@ -1,35 +1,12 @@
 import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 import defu from 'defu'
-import { z } from 'zod/v4'
 
 import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
 
-import { periods } from '~/components/date/types'
-import { calculateBestIntervalsBy, calculateIntervalInRange, getEndOf, getIntervalsInRange } from '~/components/date/utils'
+import { calculateBestIntervalsBy, getIntervalsInRange } from '~/components/date/utils'
 
-const queryParamsSchema = z.object({
-  intervalsBy: z.enum(periods).optional(),
-  intervalsDuration: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
-  intervalSelected: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
-  isShowMaxRange: z.string().transform(val => val === 'true').optional(),
-  isSkipEmpty: z.string().transform(val => val === 'true').optional(),
-  rangeBy: z.enum(periods).optional(),
-  rangeDuration: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
-  rangeOffset: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
-})
-
-const defaultParams: StatDateParams = {
-  customDate: false,
-  intervalsBy: 'day',
-  intervalsDuration: 1,
-  intervalSelected: -1,
-  isShowMaxRange: false,
-  isSkipEmpty: false,
-  rangeBy: 'day',
-  rangeDuration: 14,
-  rangeOffset: 0,
-}
+import { computeDateRange, defaultStatDateParams, parseStatDateQueryParams } from './statDateParams'
 
 export function useStatDate({
   initParams,
@@ -47,65 +24,20 @@ export function useStatDate({
   })
 
   if (Object.keys(params.value).length === 0) {
-    params.value = defu(initParams ?? {}, defaultParams)
+    params.value = defu(initParams ?? {}, defaultStatDateParams)
   }
 
-  const modals = ref({
+  const modal = ref({
     dateSelector: false,
   })
 
   if (queryParams) {
-    const parsed = queryParamsSchema.safeParse(queryParams)
-
-    if (parsed.success) {
-      const data = parsed.data
-      if (data.intervalsBy)
-        params.value.intervalsBy = data.intervalsBy
-      if (data.intervalsDuration)
-        params.value.intervalsDuration = data.intervalsDuration
-      if (data.intervalSelected)
-        params.value.intervalSelected = data.intervalSelected
-      if (data.rangeBy)
-        params.value.rangeBy = data.rangeBy
-      if (data.rangeDuration)
-        params.value.rangeDuration = data.rangeDuration
-      if (data.rangeOffset)
-        params.value.rangeOffset = data.rangeOffset
-      if (data.isShowMaxRange !== undefined)
-        params.value.isShowMaxRange = data.isShowMaxRange
-      if (data.isSkipEmpty !== undefined)
-        params.value.isSkipEmpty = data.isSkipEmpty
-    }
+    params.value = parseStatDateQueryParams(queryParams, params.value)
   }
 
-  const range = computed<Range>(() => {
-    if (params.value.customDate) {
-      return params.value.customDate
-    }
-
-    else if (params.value.isShowMaxRange && params.value.isSkipEmpty) {
-      return { ...maxRange.value }
-    }
-
-    else if (params.value.isShowMaxRange && !params.value.isSkipEmpty) {
-      return {
-        end: getEndOf(new Date(), params.value.rangeBy).getTime(),
-        start: maxRange.value.start,
-      }
-    }
-
-    const range = calculateIntervalInRange({
-      intervalsBy: params.value.rangeBy,
-      intervalsDuration: params.value.rangeDuration,
-      range: {
-        end: new Date().getTime(),
-        start: new Date().getTime(),
-      },
-      rangeOffset: params.value.rangeOffset,
-    })
-
-    return range
-  })
+  const range = computed<Range>(() =>
+    computeDateRange(params.value, maxRange.value, new Date().getTime()),
+  )
 
   const intervalsInRange = computed(() => getIntervalsInRange({
     intervalsBy: params.value.intervalsBy,
@@ -200,7 +132,7 @@ export function useStatDate({
     intervalsInRange,
     maxRange,
     minusRange,
-    modals,
+    modal,
     params,
     plusRange,
     range,

@@ -123,7 +123,7 @@ function copyAmount() {
           :amount="trnsFormStore.values.amount[item.amountsIdx]"
           :amountRaw="trnsFormStore.values.amountRaw[item.amountsIdx]"
           :highlight="item.transferType"
-          :isShowSum="trnsFormStore.getIsShowSum()"
+          :isShowSum="trnsFormStore.shouldShowSum()"
           isTransfer
           @change="trnsFormStore.onChangeAmount"
         />

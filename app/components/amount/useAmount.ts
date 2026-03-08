@@ -36,7 +36,7 @@ export function useAmount() {
 
   const baseCurrencyCode = computed(() => currenciesStore.base)
 
-  function getTotalOfTrnsIds(trnsIds?: TrnId[]): TotalReturns {
+  function computeTotalForTrnsIds(trnsIds?: TrnId[]): TotalReturns {
     return getTotal({
       baseCurrencyCode: currenciesStore.base,
       rates: currenciesStore.rates,
@@ -48,7 +48,7 @@ export function useAmount() {
 
   return {
     baseCurrencyCode,
+    computeTotalForTrnsIds,
     getAmountInBaseRate,
-    getTotalOfTrnsIds,
   }
 }
