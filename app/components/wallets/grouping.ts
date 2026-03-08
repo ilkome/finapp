@@ -47,9 +47,7 @@ export function buildWalletGroups(
   if (groupedBy === 'none')
     return false
 
-  const strategy = groupingStrategies[groupedBy as WalletsGroupedByExcludedNone]
-  if (!strategy)
-    return false
+  const strategy = groupingStrategies[groupedBy]
 
   const primaryGrouped = groupWalletsByProperty(ids, wallets, strategy.primary)
 

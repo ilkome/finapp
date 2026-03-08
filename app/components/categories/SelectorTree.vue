@@ -15,6 +15,13 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 const opened = ref<CategoryId[]>([])
 
+const childrenMap = computed(() => {
+  const map = new Map<CategoryId, CategoryId[]>()
+  for (const id of categoriesStore.categoriesRootIds)
+    map.set(id, categoriesStore.getChildrenIds(id))
+  return map
+})
+
 function select(categoryId: CategoryId, isForce: boolean) {
   if (!isForce && categoriesStore.hasChildren(categoryId)) {
     if (opened.value.includes(categoryId)) {
@@ -30,19 +37,19 @@ function select(categoryId: CategoryId, isForce: boolean) {
 }
 
 function onFilter(id: CategoryId) {
-  const childs = categoriesStore.getChildrenIds(id)
-  emit('setCategories', childs)
+  emit('setCategories', childrenMap.value.get(id) ?? [])
 }
 
 function isChildsSelected(categoryId: CategoryId) {
-  return categoriesStore.getChildrenIds(categoryId).some(id => props.selectedIds?.includes(id))
+  return (childrenMap.value.get(categoryId) ?? []).some(id => props.selectedIds?.includes(id))
 }
 
 function isEveryChildsSelected(categoryId: CategoryId) {
-  if (!categoriesStore.getChildrenIds(categoryId).length)
+  const children = childrenMap.value.get(categoryId) ?? []
+  if (!children.length)
     return false
 
-  return categoriesStore.getChildrenIds(categoryId).every(id => props.selectedIds?.includes(id))
+  return children.every(id => props.selectedIds?.includes(id))
 }
 
 onMounted(() => {
@@ -79,7 +86,7 @@ onMounted(() => {
         class="pr-2 pb-2 pl-4"
       >
         <CategoriesItem
-          v-for="childCategoryId in categoriesStore.getChildrenIds(categoryId)"
+          v-for="childCategoryId in childrenMap.get(categoryId)"
           :key="childCategoryId"
           :activeItemId="props.selectedIds?.includes(childCategoryId) ? childCategoryId : null"
           :category="categoriesStore.items[childCategoryId]"

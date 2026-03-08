@@ -19,9 +19,12 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+const summaryKeys = ['total', 'withdrawal', 'available', 'excludeInTotal', 'archived'] as const
+const typeKeys = ['cash', 'cashless', 'deposit', 'credit', 'crypto', 'debt'] as const
+
 const itemsGrouped = computed(() => [
-  [props.counts.total, props.counts.withdrawal, props.counts.available, props.counts.excludeInTotal, props.counts.archived].filter(i => i.isShow),
-  [props.counts.cash, props.counts.cashless, props.counts.deposit, props.counts.credit, props.counts.crypto, props.counts.debt].filter(i => i.isShow),
+  summaryKeys.map(key => props.counts[key]).filter(i => i.isShow),
+  typeKeys.map(key => props.counts[key]).filter(i => i.isShow),
 ])
 </script>
 

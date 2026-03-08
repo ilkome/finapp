@@ -23,7 +23,7 @@ const isShow = ref(false)
     :bottomSheetStyle="props.bottomSheetStyle"
     :isOpen="isShow"
     :title="props.title"
-    drugClassesCustom="h-full max-w-md"
+    dragClassesCustom="h-full max-w-md"
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"

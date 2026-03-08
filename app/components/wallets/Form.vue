@@ -175,48 +175,37 @@ async function onSave() {
     @close="modals.currencies = false"
   />
 
-  <Teleport to="body">
-    <!-- Colors  -->
-    <BottomSheet
-      v-if="modals.colors"
-      isShow
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="modals.colors = false"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
-      </template>
+  <!-- Colors  -->
+  <BottomSheetModal
+    v-if="modals.colors"
+    @closed="modals.colors = false"
+  >
+    <template #default="{ close }">
+      <div>
+        <UiTitleModal>{{ t('color.label') }}</UiTitleModal>
+        <WalletsItem
+          :walletId="props.walletId ?? editWalletId"
+          :wallet="walletPlaceholder"
+          isShowIcon
+        />
+      </div>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <div>
-            <UiTitleModal>{{ t('color.label') }}</UiTitleModal>
-            <WalletsItem
-              :walletId="props.walletId ?? editWalletId"
-              :wallet="walletPlaceholder"
-              isShowIcon
-            />
-          </div>
+      <div class="scrollerBlock bottomSheetContentInside">
+        <ColorPalette
+          :activeColor="props.walletForm.color"
+          isWallet
+          @click="(color: string) => emit('update', 'color', color)"
+        />
+      </div>
 
-          <div class="scrollerBlock bottomSheetContentInside">
-            <ColorPalette
-              :activeColor="props.walletForm.color"
-              isWallet
-              @click="(color: string) => emit('update', 'color', color)"
-            />
-          </div>
-
-          <div class="flex-center py-2">
-            <UiButtonAccent
-              rounded
-              @click="close"
-            >
-              {{ t('base.apply') }}
-            </UiButtonAccent>
-          </div>
-        </div>
-      </template>
-    </BottomSheet>
-  </Teleport>
+      <div class="flex-center py-2">
+        <UiButtonAccent
+          rounded
+          @click="close"
+        >
+          {{ t('base.apply') }}
+        </UiButtonAccent>
+      </div>
+    </template>
+  </BottomSheetModal>
 </template>

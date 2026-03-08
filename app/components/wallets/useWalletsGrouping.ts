@@ -27,11 +27,7 @@ export function useWalletsGrouping(
   })
 
   const groupedWalletsWithIds = computed<GroupedWallets | false>(() => {
-    let useSecondary = false
-    if (groupedBy.value === 'currency')
-      useSecondary = !!groupedBySecondary.value.currency
-    else if (groupedBy.value === 'type')
-      useSecondary = !!groupedBySecondary.value.type
+    const useSecondary = groupedBy.value !== 'none' && !!groupedBySecondary.value[groupedBy.value]
 
     return buildWalletGroups(
       selectedWalletsIds.value,
@@ -89,12 +85,22 @@ export function useWalletsGrouping(
     return items
   })
 
+  function toggleSecondaryGrouping() {
+    if (groupedBy.value !== 'none')
+      groupedBySecondary.value[groupedBy.value] = !groupedBySecondary.value[groupedBy.value]
+  }
+
+  const isSecondaryGroupingActive = computed(() =>
+    groupedBy.value !== 'none' && !!groupedBySecondary.value[groupedBy.value],
+  )
+
   return {
-    groupedBySecondary,
     groupedWalletsWithIds,
     groupTabs,
+    isSecondaryGroupingActive,
     toggleMap,
     toggleOpened,
+    toggleSecondaryGrouping,
     typeGroupsStatus,
     walletsToggledMap,
   }

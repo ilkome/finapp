@@ -55,6 +55,7 @@ export function useStatItem({
   const selectedTypesMapping = computed(() => getTypesMapping(selectedType.value))
 
   const isPeriodOneDay = computed(() => isPeriodOneDayFn(statDate.params.value))
+  const isIntervalSelected = computed(() => isIntervalSelected.value)
 
   const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     trnsIds: trnsIds.value,
@@ -75,7 +76,7 @@ export function useStatItem({
 
   const selectedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     sort: true,
-    trnsIds: statDate.params.value.intervalSelected !== -1
+    trnsIds: isIntervalSelected.value
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
     trnsTypes: selectedTypesMapping.value,
@@ -84,14 +85,14 @@ export function useStatItem({
   const selectedAndFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     categoriesIds: filteredCategoriesIds.value,
     sort: true,
-    trnsIds: statDate.params.value.intervalSelected !== -1
+    trnsIds: isIntervalSelected.value
       ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIds.value,
     trnsTypes: selectedTypesMapping.value,
   }))
 
   const rangeTotal = computed(() => {
-    const ids = statDate.params.value.intervalSelected !== -1
+    const ids = isIntervalSelected.value
       ? intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIdsWithFilteredCategories.value
     return computeTotalForTrnsIds(ids)
@@ -103,7 +104,7 @@ export function useStatItem({
 
     const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[type.value!]
 
-    const dateRange = statDate.params.value.intervalSelected !== -1
+    const dateRange = isIntervalSelected.value
       ? statDate.selectedInterval.value
       : statDate.range.value
 

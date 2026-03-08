@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import type { TrnId } from '~/components/trns/types'
-import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
+import type { WalletsGroupedBy } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
+import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
 import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -23,53 +20,16 @@ useSeoMeta({
 
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
-const trnsStore = useTrnsStore()
 const isSortModalOpen = ref(false)
-
 const isOpen = ref(false)
 
-const deleteWalletId = ref<WalletId | null>(null)
-
-const deleteTrnsCount = computed(() => {
-  if (!deleteWalletId.value)
-    return 0
-  return trnsStore.getStoreTrnsIds({
-    walletsIds: [deleteWalletId.value],
-  }).length
-})
-
-const deleteDescText = computed(() =>
-  deleteTrnsCount.value > 0 ? t('wallets.form.delete.alertWithTrns') : undefined,
-)
-
-const deleteHighlight = computed(() =>
-  deleteTrnsCount.value > 0 ? t('trns.plural', deleteTrnsCount.value) : undefined,
-)
-
-async function onDeleteConfirm() {
-  if (!deleteWalletId.value)
-    return
-
-  const walletId = deleteWalletId.value
-  const trnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({
-    walletsIds: [walletId],
-  })]
-
-  deleteWalletId.value = null
-  await walletsStore.deleteWallet(walletId, trnsIds)
-
-  setTimeout(() => {
-    showSuccessToast(trnsIds.length > 0
-      ? 'wallets.form.delete.okWithTrns'
-      : 'wallets.form.delete.okWithoutTrns', trnsIds.length > 0
-      ? { length: trnsIds.length, trns: t('trns.plural', trnsIds.length) }
-      : undefined)
-  }, 300)
-}
-
-const { getWalletContextMenuItems } = useWalletContextMenu({
-  onDelete: (walletId: WalletId) => { deleteWalletId.value = walletId },
-})
+const {
+  cancelDelete,
+  confirmDelete,
+  deleteInfo,
+  deleteWalletId,
+  requestDelete,
+} = useWalletDelete()
 
 const groupedBy = useStorage<WalletsGroupedBy>('finapp-wallets-groupedBy', 'none')
 
@@ -87,26 +47,15 @@ const {
 } = useWalletsCounts(selectedWalletsIdsWithCurrency)
 
 const {
-  groupedBySecondary,
   groupedWalletsWithIds,
   groupTabs,
+  isSecondaryGroupingActive,
   toggleMap,
   toggleOpened,
+  toggleSecondaryGrouping,
   typeGroupsStatus,
   walletsToggledMap,
 } = useWalletsGrouping(selectedWalletsIds, groupedBy)
-
-function toggleSecondaryGrouping() {
-  if (groupedBy.value === 'currency')
-    groupedBySecondary.currency = !groupedBySecondary.currency
-  else if (groupedBy.value === 'type')
-    groupedBySecondary.type = !groupedBySecondary.type
-}
-
-const isSecondaryGroupingActive = computed(() =>
-  (groupedBy.value === 'currency' && groupedBySecondary.currency)
-  || (groupedBy.value === 'type' && groupedBySecondary.type),
-)
 </script>
 
 <template>
@@ -255,19 +204,11 @@ const isSecondaryGroupingActive = computed(() =>
             v-if="groupedBy === 'none'"
             class="border-item-4 bg-item-2 rounded-xl md:max-w-lg"
           >
-            <WalletsItem
+            <WalletsPageListItem
               v-for="walletId in selectedWalletsIds"
               :key="walletId"
-              :wallet="walletsStore.itemsComputed[walletId]!"
               :walletId
-              :contextMenuItems="getWalletContextMenuItems(walletId)"
-              :lineWidth="2"
-              class="group"
-              isShowBaseRate
-              isShowIcon
-              isShowRate
-              isShowCreditLimit
-              @click="router.push(`/wallets/${walletId}`)"
+              @delete="requestDelete"
             />
           </div>
 
@@ -350,37 +291,21 @@ const isSecondaryGroupingActive = computed(() =>
                     </UiTitleDropRight>
                   </template>
 
-                  <WalletsItem
+                  <WalletsPageListItem
                     v-for="walletId in ids"
                     :key="walletId"
-                    :contextMenuItems="getWalletContextMenuItems(walletId)"
-                    :lineWidth="2"
-                    :wallet="walletsStore.itemsComputed[walletId]!"
                     :walletId
-                    class="group"
-                    isShowBaseRate
-                    isShowCreditLimit
-                    isShowIcon
-                    isShowRate
-                    @click="router.push(`/wallets/${walletId}`)"
+                    @delete="requestDelete"
                   />
                 </UiToggleControlled>
               </div>
 
               <template v-else>
-                <WalletsItem
+                <WalletsPageListItem
                   v-for="walletId in content.ids"
                   :key="walletId"
-                  :contextMenuItems="getWalletContextMenuItems(walletId)"
-                  :lineWidth="2"
-                  :wallet="walletsStore.itemsComputed[walletId]!"
                   :walletId
-                  class="group"
-                  isShowBaseRate
-                  isShowCreditLimit
-                  isShowIcon
-                  isShowRate
-                  @click="router.push(`/wallets/${walletId}`)"
+                  @delete="requestDelete"
                 />
               </template>
             </UiToggleControlled>
@@ -393,10 +318,10 @@ const isSecondaryGroupingActive = computed(() =>
   <LayoutConfirmModal
     v-if="deleteWalletId"
     :title="t('wallets.form.delete.title')"
-    :description="deleteDescText"
-    :highlight="deleteHighlight"
-    @closed="deleteWalletId = null"
-    @confirm="onDeleteConfirm"
+    :description="deleteInfo.descText"
+    :highlight="deleteInfo.highlight"
+    @closed="cancelDelete"
+    @confirm="confirmDelete"
   />
 
   <!-- Sort Modal -->

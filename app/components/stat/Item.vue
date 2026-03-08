@@ -166,76 +166,51 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
     </div>
 
     <!-- Quick View Trns -->
-    <Teleport
+    <BottomSheetModal
       v-if="quickViewTrns?.length > 0"
-      to="body"
+      @closed="quickViewTrns = []"
     >
-      <BottomSheet
-        v-if="quickViewTrns?.length > 0"
-        isShow
-        drugClassesCustom="bottomSheetDrugClassesCustom"
-        @closed="quickViewTrns = []"
-      >
-        <template #handler="{ close }">
-          <BottomSheetHandler />
-          <BottomSheetClose @click="close" />
-        </template>
+      <UiTitleModal>
+        {{ t('trns.title') }} {{ quickViewTrns.length > 0 ? quickViewTrns.length : '' }}
+      </UiTitleModal>
 
-        <div class="bottomSheetContent">
-          <UiTitleModal>
-            {{ t('trns.title') }} {{ quickViewTrns.length > 0 ? quickViewTrns.length : '' }}
-          </UiTitleModal>
+      <div class="scrollerBlock bottomSheetContentInside pb-2">
+        <TrnsList
+          :isShowDates="!isPeriodOneDay"
+          :isShowGroupSum="!isPeriodOneDay"
+          :size="50"
+          :trnsIds="quickViewTrns"
+          isShowExpense
+          isShowFilterByDesc
+          isShowFilterByType
+          isShowIncome
+          isShowTransfers
+          @click="() => quickViewTrns = []"
+        />
+      </div>
+    </BottomSheetModal>
 
-          <div class="scrollerBlock bottomSheetContentInside pb-2">
-            <TrnsList
-              :isShowDates="!isPeriodOneDay"
-              :isShowGroupSum="!isPeriodOneDay"
-              :size="50"
-              :trnsIds="quickViewTrns"
-              isShowExpense
-              isShowFilterByDesc
-              isShowFilterByType
-              isShowIncome
-              isShowTransfers
-              @click="() => quickViewTrns = []"
-            />
-          </div>
-        </div>
-      </BottomSheet>
-    </Teleport>
+    <BottomSheetModal
+      v-if="isShowTrns"
+      @closed="isShowTrns = false"
+    >
+      <UiTitleModal>
+        {{ t('trns.title') }} {{ selectedAndFilteredTrnsIds.length > 0 ? selectedAndFilteredTrnsIds.length : '' }}
+      </UiTitleModal>
 
-    <Teleport to="body">
-      <BottomSheet
-        v-if="isShowTrns"
-        isShow
-        drugClassesCustom="bottomSheetDrugClassesCustom"
-        @closed="isShowTrns = false"
-      >
-        <template #handler="{ close }">
-          <BottomSheetHandler />
-          <BottomSheetClose @click="close" />
-        </template>
-
-        <div class="bottomSheetContent">
-          <UiTitleModal>
-            {{ t('trns.title') }} {{ selectedAndFilteredTrnsIds.length > 0 ? selectedAndFilteredTrnsIds.length : '' }}
-          </UiTitleModal>
-
-          <div class="scrollerBlock bottomSheetContentInside">
-            <TrnsList
-              :isShowDates="!isPeriodOneDay"
-              :isShowGroupSum="!isPeriodOneDay"
-              :size="50"
-              :trnsIds="selectedAndFilteredTrnsIds"
-              isShowExpense
-              isShowFilterByDesc
-              isShowFilterByType
-              isShowIncome
-              isShowTransfers
-            />
-          </div>
-        </div>
-      </BottomSheet>
-    </Teleport>
+      <div class="scrollerBlock bottomSheetContentInside">
+        <TrnsList
+          :isShowDates="!isPeriodOneDay"
+          :isShowGroupSum="!isPeriodOneDay"
+          :size="50"
+          :trnsIds="selectedAndFilteredTrnsIds"
+          isShowExpense
+          isShowFilterByDesc
+          isShowFilterByType
+          isShowIncome
+          isShowTransfers
+        />
+      </div>
+    </BottomSheetModal>
   </div>
 </template>

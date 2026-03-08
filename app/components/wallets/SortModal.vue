@@ -19,43 +19,30 @@ function saveWalletsOrder(close: () => void) {
 </script>
 
 <template>
-  <Teleport to="body">
-    <BottomSheet
-      isShow
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="emit('close')"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
-      </template>
+  <BottomSheetModal @closed="emit('close')">
+    <template #default="{ close }">
+      <UiTitleModal>{{ t('wallets.sortTitle') }}</UiTitleModal>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <UiTitleModal>{{ t('wallets.sortTitle') }}</UiTitleModal>
+      <div ref="parent" class="scrollerBlock bottomSheetContentInside">
+        <WalletsItem
+          v-for="walletId in sortedWalletsIds"
+          :key="walletId"
+          :walletId
+          :wallet="walletsStore.itemsComputed[walletId]!"
+          alt
+          isSort
+          isShowIcon
+        />
+      </div>
 
-          <div ref="parent" class="scrollerBlock bottomSheetContentInside">
-            <WalletsItem
-              v-for="walletId in sortedWalletsIds"
-              :key="walletId"
-              :walletId
-              :wallet="walletsStore.itemsComputed[walletId]!"
-              alt
-              isSort
-              isShowIcon
-            />
-          </div>
-
-          <div class="bottomSheetContentBottom">
-            <UiButtonAccent
-              rounded
-              @click="saveWalletsOrder(close)"
-            >
-              {{ t('base.save') }}
-            </UiButtonAccent>
-          </div>
-        </div>
-      </template>
-    </BottomSheet>
-  </Teleport>
+      <div class="bottomSheetContentBottom">
+        <UiButtonAccent
+          rounded
+          @click="saveWalletsOrder(close)"
+        >
+          {{ t('base.save') }}
+        </UiButtonAccent>
+      </div>
+    </template>
+  </BottomSheetModal>
 </template>

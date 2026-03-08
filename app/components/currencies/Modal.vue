@@ -21,29 +21,16 @@ function select(code: CurrencyCode, close: () => void) {
 </script>
 
 <template>
-  <Teleport to="body">
-    <BottomSheet
-      isShow
-      drugClassesCustom="bottomSheetDrugClassesCustom"
-      @closed="emit('close')"
-    >
-      <template #handler="{ close }">
-        <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
-      </template>
+  <BottomSheetModal @closed="emit('close')">
+    <template #default="{ close }">
+      <UiTitleModal>{{ t('currencies.select') }}</UiTitleModal>
 
-      <template #default="{ close }">
-        <div class="bottomSheetContent">
-          <UiTitleModal>{{ t('currencies.select') }}</UiTitleModal>
-
-          <CurrenciesList
-            :active="props.activeCode"
-            :isShowAllButton="props.isShowAllButton"
-            :isHideUnused="props.isHideUnused"
-            @select="(c: CurrencyCode) => select(c, close)"
-          />
-        </div>
-      </template>
-    </BottomSheet>
-  </Teleport>
+      <CurrenciesList
+        :active="props.activeCode"
+        :isShowAllButton="props.isShowAllButton"
+        :isHideUnused="props.isHideUnused"
+        @select="(c: CurrencyCode) => select(c, close)"
+      />
+    </template>
+  </BottomSheetModal>
 </template>

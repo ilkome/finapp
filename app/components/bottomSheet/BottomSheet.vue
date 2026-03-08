@@ -2,8 +2,8 @@
 import { useBottomSheetDrag } from './useBottomSheetDrag'
 
 const props = defineProps<{
-  drugClassesCustom?: string
-  drugStyle?: Record<string, string>
+  dragClassesCustom?: string
+  dragStyle?: Record<string, string>
   isShow?: boolean
 }>()
 
@@ -14,20 +14,20 @@ const emit = defineEmits<{
 // Settings
 const settings = {
   pixelOffsetToStartClosing: 20,
-  pixelsNeedToDrugForClose: 60,
+  pixelsNeedToDragForClose: 60,
 }
 
 // Ref Elements
-const drug = ref<HTMLElement | null>(null)
+const drag = ref<HTMLElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
 const handlerRef = ref<HTMLElement | null>(null)
 
-const { height: drugHeight } = useElementSize(drug)
+const { height: dragHeight } = useElementSize(drag)
 const { height: windowHeight } = useWindowSize()
 
 const {
   close,
-  drugStyles,
+  dragStyles,
   init,
   isDragging,
   opened,
@@ -37,8 +37,8 @@ const {
   wrapClasses,
 } = useBottomSheetDrag({
   containerRef,
-  drug,
-  drugStyle: toRef(() => props.drugStyle),
+  drag,
+  dragStyle: toRef(() => props.dragStyle),
   emit,
   handlerRef,
   settings,
@@ -54,10 +54,10 @@ const isBodyLocked = import.meta.client ? useScrollLock(document.body) : ref(fal
  */
 watch(
   () => props.isShow,
-  async (value) => {
+  (value) => {
     if (value) {
       isBodyLocked.value = true
-      await init()
+      init()
     }
 
     if (!value) {
@@ -77,17 +77,14 @@ onBeforeUnmount(() => {
   removeEvents()
 })
 
-/**
- * Height
- */
-const drugClasses = computed(() => [
+const dragClasses = computed(() => [
   {
-    'pointer-events-none': isDragging.value && drugStyles.value.transform,
-    'rounded-tl-xl rounded-tr-xl': drugHeight.value < windowHeight.value,
+    'pointer-events-none': isDragging.value && dragStyles.value.transform,
+    'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
     'transition-opacity transition-transform duration-100':
       !isDragging.value && opened.value,
   },
-  props.drugClassesCustom,
+  props.dragClassesCustom,
 ])
 </script>
 
@@ -105,12 +102,12 @@ const drugClasses = computed(() => [
       @click="close()"
     />
 
-    <!-- Drug -->
+    <!-- Drag -->
     <div
-      ref="drug"
-      :class="drugClasses"
-      :style="drugStyles"
-      class="drug pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
+      ref="drag"
+      :class="dragClasses"
+      :style="dragStyles"
+      class="drag pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
       @click.stop=""
     >
       <div ref="handlerRef">

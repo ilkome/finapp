@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
-  drugClassesCustom?: string
+  dragClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
   title?: string
@@ -64,8 +64,8 @@ const open = ref(false)
         <BottomSheet
           v-if="props.isOpen"
           isShow
-          :drugClassesCustom="`${props.drugClassesCustom ?? ''} bottomSheetDrugClassesCustom`"
-          :drugStyle="props.bottomSheetStyle"
+          :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
+          :dragStyle="props.bottomSheetStyle"
           @closed="emit('closeModal')"
         >
           <template #default="{ close }">

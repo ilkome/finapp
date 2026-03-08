@@ -11,10 +11,9 @@ const props = defineProps<{
  * - If the name is a single word, returns the first two characters of the name.
  */
 function getWalletIconName(name: string) {
-  return name.split(' ')
-    .map(word => word[0])
-    .length > 1
-    ? name.split(' ').map(word => word[0]).join('').slice(0, 2)
+  const words = name.split(' ')
+  return words.length > 1
+    ? words.map(word => word[0]).join('').slice(0, 2)
     : name.slice(0, 2)
 }
 </script>

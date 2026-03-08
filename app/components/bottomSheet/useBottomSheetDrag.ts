@@ -3,165 +3,147 @@ import type { Ref } from 'vue'
 type Event = TouchEvent | MouseEvent
 
 const PERCENT_BASE = 100
-const EDGE_PADDING = 10
 const INIT_DELAY_MS = 10
 
 type UseBottomSheetDragParams = {
   containerRef: Ref<HTMLElement | null>
-  drug: Ref<HTMLElement | null>
-  drugStyle: Ref<Record<string, string> | undefined>
+  drag: Ref<HTMLElement | null>
+  dragStyle: Ref<Record<string, string> | undefined>
   emit: (event: 'closed') => void
   handlerRef: Ref<HTMLElement | null>
   settings: {
     pixelOffsetToStartClosing: number
-    pixelsNeedToDrugForClose: number
+    pixelsNeedToDragForClose: number
   }
+}
+
+function getClientY(event: Event): number {
+  return 'touches' in event
+    ? Math.round(event.touches[0].clientY)
+    : event.clientY
+}
+
+function calcVisiblePercent(
+  containerHeight: number,
+  handlerHeight: number,
+  dragDistance: number,
+): number {
+  if (containerHeight === 0)
+    return 0
+  return Math.round(
+    (containerHeight + handlerHeight - dragDistance)
+    / (containerHeight / PERCENT_BASE),
+  )
+}
+
+function calcOverlayOpacity(visiblePercent: number): number {
+  return Math.min(1, Math.max(0, visiblePercent / PERCENT_BASE))
+}
+
+function shouldClose(dragDistance: number, threshold: number, direction: 'down' | 'up'): boolean {
+  return dragDistance >= threshold && direction === 'down'
 }
 
 export function useBottomSheetDrag({
   containerRef,
-  drug,
-  drugStyle,
+  drag,
+  dragStyle,
   emit,
   handlerRef,
   settings,
 }: UseBottomSheetDragParams) {
-  // State
-  const initialHeight = ref(0)
   const initialY = ref(0)
   const clientY = ref(0)
+  // Must start as `true` so the visiblePercent watcher skips during init().
+  // Without this, setInitialY() → visiblePercent=0 → watcher sets disabled=true,
+  // undoing the disabled=false that init() sets right after.
   const isDragging = ref(true)
   const direction = ref<'down' | 'up'>('up')
   const isHandler = ref(false)
   const disabled = ref(true)
   const opened = ref(false)
-  const isEventsAdded = ref(false)
 
-  /**
-   * Next current y
-   */
-  const nextCurrentY = computed(() => clientY.value - initialY.value)
+  const dragDistance = computed(() => clientY.value - initialY.value)
 
-  /**
-   * Set direction
-   */
-  watch(nextCurrentY, (current, prev) => {
-    direction.value = current > prev ? 'down' : 'up'
-  })
-
-  /**
-   * Debounce drug
-   */
-  const debounce = computed(() =>
+  const dragOffset = computed(() =>
     disabled.value || isHandler.value ? 0 : settings.pixelOffsetToStartClosing,
   )
 
-  /**
-   * Diff height
-   */
-  const diffHeight = computed(() => {
-    const containerHeight = drug.value?.clientHeight ?? 0
-    const handlerHeight = handlerRef.value?.clientHeight ?? 0
-    return Math.round(
-      (containerHeight + handlerHeight - nextCurrentY.value)
-      / (containerHeight / PERCENT_BASE),
-    )
+  watch(dragDistance, (current, prev) => {
+    direction.value = current > prev ? 'down' : 'up'
   })
 
-  /**
-   * Diff height with debounce
-   */
-  const diffHeightWithDebounce = computed(() => {
-    const containerHeight = drug.value?.clientHeight ?? 0
-    const handlerHeight = handlerRef.value?.clientHeight ?? 0
-    return Math.round(
-      (containerHeight + handlerHeight - nextCurrentY.value + debounce.value)
-      / (containerHeight / PERCENT_BASE),
-    )
-  })
+  const visiblePercent = computed(() =>
+    calcVisiblePercent(
+      drag.value?.clientHeight ?? 0,
+      handlerRef.value?.clientHeight ?? 0,
+      dragDistance.value,
+    ),
+  )
 
-  /**
-   * Overlay Opacity
-   */
+  const visiblePercentWithOffset = computed(() =>
+    calcVisiblePercent(
+      drag.value?.clientHeight ?? 0,
+      handlerRef.value?.clientHeight ?? 0,
+      dragDistance.value - dragOffset.value,
+    ),
+  )
+
   const overlayStyles = computed(() => {
-    if (nextCurrentY.value <= debounce.value)
+    if (dragDistance.value <= dragOffset.value)
       return
 
     let opacity = 1
-    if (diffHeight.value < 0 || diffHeight.value > PERCENT_BASE) {
-      opacity = nextCurrentY.value <= PERCENT_BASE ? 1 : 0
+    if (visiblePercent.value < 0 || visiblePercent.value > PERCENT_BASE) {
+      opacity = dragDistance.value <= PERCENT_BASE ? 1 : 0
     }
     else {
-      opacity = Number(
-        diffHeightWithDebounce.value >= PERCENT_BASE
-          ? 1
-          : diffHeightWithDebounce.value >= EDGE_PADDING
-            ? `0.${diffHeightWithDebounce.value}`
-            : `0.0${diffHeightWithDebounce.value}`,
-      )
+      opacity = visiblePercentWithOffset.value >= PERCENT_BASE
+        ? 1
+        : calcOverlayOpacity(visiblePercentWithOffset.value)
     }
-    return {
-      opacity,
-    }
+
+    return { opacity }
   })
 
-  /**
-   * Drug styles
-   */
-  const drugStyles = computed(() => {
+  const dragStyles = computed(() => {
     if (!opened.value) {
       return {
-        ...drugStyle.value,
+        ...dragStyle.value,
         opacity: 0,
         transform: 'translateY(30px)',
       }
     }
 
-    if (nextCurrentY.value <= debounce.value) {
+    if (dragDistance.value <= dragOffset.value) {
       return {
-        ...drugStyle.value,
+        ...dragStyle.value,
         opacity: 1,
         transform: '',
       }
     }
 
     return {
-      ...drugStyle.value,
-      transform: `translateY(${nextCurrentY.value - debounce.value}px)`,
+      ...dragStyle.value,
+      transform: `translateY(${dragDistance.value - dragOffset.value}px)`,
     }
   })
 
-  /**
-   * Get client Y
-   */
-  function getClientY(event: Event): number {
-    return 'touches' in event
-      ? Math.round(event.touches[0].clientY)
-      : event.clientY
+  function contentHasScroll(event: Event): boolean {
+    const swiperSlide = drag.value?.querySelector('.swiper-slide-active')
+    const scrollerInSlide = swiperSlide?.querySelector('.scrollerBlock')
+    if (scrollerInSlide)
+      return scrollerInSlide.scrollTop > 0 && event.type.includes('touch')
+
+    const scroller = drag.value?.querySelector('.scrollerBlock')
+    if (!swiperSlide && scroller)
+      return scroller.scrollTop > 0 && event.type.includes('touch')
+
+    return false
   }
 
-  /**
-   * Content has scroll
-   */
-  function contentHasScroll(event: Event) {
-    // Handle scroll inside slider
-    const swiperSlideActive = drug.value?.querySelector('.swiper-slide-active')
-    if (swiperSlideActive) {
-      const scrollerBlock = swiperSlideActive.querySelector('.scrollerBlock')
-      if (scrollerBlock)
-        return scrollerBlock.scrollTop > 0 && event.type.includes('touch')
-    }
-
-    const scrollerBlock = drug.value?.querySelector('.scrollerBlock')
-    if (!swiperSlideActive && scrollerBlock)
-      return scrollerBlock.scrollTop > 0 && event.type.includes('touch')
-  }
-
-  /**
-   * Drag start
-   */
   function onDragStart(event: Event): void {
-    if (event.target instanceof Element && event?.target?.closest('.sortHandle'))
+    if (event.target instanceof Element && event.target.closest('.sortHandle'))
       return
 
     if (disabled.value)
@@ -169,10 +151,10 @@ export function useBottomSheetDrag({
 
     if (event.target instanceof Element) {
       isHandler.value = event.target.classList.contains('handler')
-      const isTarget = event.target.closest('.drug')
-      const isHasScroll = contentHasScroll(event)
+      const isTarget = event.target.closest('.drag')
+      const hasScroll = contentHasScroll(event)
 
-      if ((!isTarget || isHasScroll) && !isHandler.value) {
+      if ((!isTarget || hasScroll) && !isHandler.value) {
         isDragging.value = false
         return
       }
@@ -183,16 +165,11 @@ export function useBottomSheetDrag({
     }
   }
 
-  /**
-   * Dragging
-   */
   function onDragging(event: Event): void {
     if (disabled.value || !isDragging.value)
       return
 
-    const isHasScroll = contentHasScroll(event)
-
-    if (isHasScroll && !isHandler.value) {
+    if (contentHasScroll(event) && !isHandler.value) {
       isDragging.value = false
       initialY.value = 0
       clientY.value = 0
@@ -203,154 +180,110 @@ export function useBottomSheetDrag({
       clientY.value = getClientY(event)
   }
 
-  /**
-   * Drag end
-   */
-  async function onDragEnd() {
+  function onDragEnd() {
     if (disabled.value || !isDragging.value)
       return
 
-    const isNeedClose
-      = nextCurrentY.value >= settings.pixelsNeedToDrugForClose
-        && direction.value === 'down'
-
-    if (isNeedClose) {
+    if (shouldClose(dragDistance.value, settings.pixelsNeedToDragForClose, direction.value))
       close()
-    }
-    else {
+    else
       open()
-    }
   }
 
-  /**
-   * Clear
-   */
-  function clear() {
+  function resetDrag() {
     clientY.value = 0
     isDragging.value = false
   }
 
   function setInitialY() {
     initialY.value = -(
-      (drug.value?.clientHeight ?? 0) + (handlerRef.value?.clientHeight ?? 0)
+      (drag.value?.clientHeight ?? 0) + (handlerRef.value?.clientHeight ?? 0)
     )
   }
 
-  /**
-   * Close modal
-   */
   function close() {
-    clear()
+    resetDrag()
     setInitialY()
   }
 
-  /**
-   * Open modal
-   */
   function open() {
-    clear()
+    resetDrag()
     opened.value = true
     initialY.value = 0
   }
 
-  /**
-   * On close modal
-   */
-  function onClose() {
-    // Scroll up all scroller blocks
-    const scrollerBlocks = drug.value?.querySelectorAll('.scrollerBlock')
+  let stopTransitionListener: (() => void) | null = null
+
+  function onTransitionEnd() {
+    const scrollerBlocks = drag.value?.querySelectorAll('.scrollerBlock')
     scrollerBlocks?.forEach(el => (el.scrollTop = 0))
-    drug.value?.removeEventListener('transitionend', onClose)
+    stopTransitionListener?.()
+    stopTransitionListener = null
     opened.value = false
     emit('closed')
   }
 
-  /**
-   * Add events listeners
-   */
+  // Event listener management
+  let stopListeners: (() => void) | null = null
+
   function addEvents() {
-    if (isEventsAdded.value)
+    if (stopListeners)
       return
 
-    isEventsAdded.value = true
+    const stops = [
+      useEventListener(containerRef, 'touchstart', onDragStart),
+      useEventListener(containerRef, 'touchmove', onDragging),
+      useEventListener(containerRef, 'touchend', onDragEnd),
+      useEventListener(containerRef, 'mousedown', onDragStart),
+      useEventListener(containerRef, 'mouseup', onDragEnd),
+      useEventListener(document, 'mousemove', onDragging),
+      useEventListener(document, 'mouseleave', onDragEnd),
+    ]
 
-    // Touch
-    if (containerRef.value) {
-      containerRef.value.addEventListener('touchstart', onDragStart)
-      containerRef.value.addEventListener('touchmove', onDragging)
-      containerRef.value.addEventListener('touchend', onDragEnd)
-      containerRef.value.addEventListener('mousedown', onDragStart)
-      containerRef.value.addEventListener('mouseup', onDragEnd)
-
-      document.addEventListener('mousemove', onDragging)
-      document.addEventListener('mouseleave', onDragEnd)
+    stopListeners = () => {
+      stops.forEach(fn => fn())
+      stopListeners = null
     }
   }
 
-  /**
-   * Remove events listeners
-   */
   function removeEvents() {
-    isEventsAdded.value = false
-    if (containerRef.value) {
-      containerRef.value.removeEventListener('touchstart', onDragStart)
-      containerRef.value.removeEventListener('touchmove', onDragging)
-      containerRef.value.removeEventListener('touchend', onDragEnd)
-      containerRef.value.removeEventListener('mousedown', onDragStart)
-      containerRef.value.removeEventListener('mouseup', onDragEnd)
-
-      document.removeEventListener('mousemove', onDragging)
-      document.removeEventListener('mouseleave', onDragEnd)
-    }
+    stopListeners?.()
   }
 
-  /**
-   * Watch for diff height
-   */
-  watch(diffHeight, () => {
+  watch(visiblePercent, () => {
     if (isDragging.value)
       return
 
-    if (diffHeight.value === 0) {
+    if (visiblePercent.value === 0) {
       disabled.value = true
-      useEventListener(drug, 'transitionend', onClose, { passive: true })
+      stopTransitionListener?.()
+      stopTransitionListener = useEventListener(drag, 'transitionend', onTransitionEnd, { passive: true })
       return
     }
 
     disabled.value = false
   })
 
-  /**
-   * Init modal
-   */
-  async function init() {
-    initialHeight.value = drug.value?.clientHeight ?? 0
-
-    setTimeout(async () => {
+  function init() {
+    setTimeout(() => {
       setInitialY()
       disabled.value = false
       addEvents()
-      setTimeout(() => {
-        open()
-      }, INIT_DELAY_MS)
+      setTimeout(() => open(), INIT_DELAY_MS)
     }, INIT_DELAY_MS)
   }
 
   return {
     close,
-    drugStyles,
+    dragStyles,
     init,
     isDragging,
-
     opened,
-    // Computed classes
     overflowClasses: computed(() => ({
       'transition-opacity duration-100': !isDragging.value && opened.value,
     })),
     overlayStyles,
-
     removeEvents,
-
     wrapClasses: computed<Record<string, boolean>>(() => ({
       'pointer-events-none invisible opacity-0': !opened.value,
     })),
