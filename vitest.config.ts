@@ -30,6 +30,15 @@ export default defineConfig({
           setupFiles: ['./app/test-utils/setup-store.ts'],
         },
       },
+      {
+        resolve: { alias },
+        test: {
+          environment: 'edge-runtime',
+          include: ['convex/**/*.test.ts'],
+          name: 'convex',
+          setupFiles: ['./convex/test-utils/setup.ts'],
+        },
+      },
     ],
   },
 })

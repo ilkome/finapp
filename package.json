@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.4.1",
+    "@edge-runtime/vm": "^5.0.0",
     "@iconify-json/lucide": "^1.2.78",
     "@nuxt/eslint": "^1.11.0",
     "@nuxt/ui": "^4.2.1",
@@ -59,6 +60,7 @@
     "@vueuse/core": "^13.9.0",
     "@vueuse/nuxt": "^13.9.0",
     "clsx": "^2.1.1",
+    "convex-test": "^0.0.41",
     "date-fns": "^4.1.0",
     "defu": "^6.1.4",
     "dotenv": "^17.2.3",

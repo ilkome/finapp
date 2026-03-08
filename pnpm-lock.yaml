@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@convex-dev/better-auth':
         specifier: ^0.10.10
-        version: 0.10.10(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@standard-schema/spec@1.1.0)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(convex@1.31.7(react@19.2.4))(nanostores@1.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
+        version: 0.10.10(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@standard-schema/spec@1.1.0)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(convex@1.31.7(react@19.2.4))(nanostores@1.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)
       '@formkit/drag-and-drop':
         specifier: ^0.5.3
         version: 0.5.3
@@ -25,7 +25,7 @@ importers:
         version: 0.11.3(magicast@0.5.1)(pinia@3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3)))
       better-auth:
         specifier: ^1.4.9
-        version: 1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
+        version: 1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
       convex:
         specifier: ^1.22.0
         version: 1.31.7(react@19.2.4)
@@ -62,7 +62,10 @@ importers:
     devDependencies:
       '@antfu/eslint-config':
         specifier: ^6.4.1
-        version: 6.4.1(@vue/compiler-sfc@3.5.25)(eslint-plugin-format@1.1.0(eslint@9.39.1(jiti@2.6.1)))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
+        version: 6.4.1(@vue/compiler-sfc@3.5.25)(eslint-plugin-format@1.1.0(eslint@9.39.1(jiti@2.6.1)))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
+      '@edge-runtime/vm':
+        specifier: ^5.0.0
+        version: 5.0.0
       '@iconify-json/lucide':
         specifier: ^1.2.78
         version: 1.2.78
@@ -83,7 +86,7 @@ importers:
         version: 1.1.0(magicast@0.5.1)(vite@7.2.6(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(workbox-build@7.3.0)(workbox-window@7.3.0)
       '@vitest/coverage-v8':
         specifier: ^4.0.15
-        version: 4.0.15(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
+        version: 4.0.15(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
       '@vueuse/core':
         specifier: ^13.9.0
         version: 13.9.0(vue@3.5.25(typescript@5.9.3))
@@ -93,6 +96,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      convex-test:
+        specifier: ^0.0.41
+        version: 0.0.41(convex@1.31.7(react@19.2.4))
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -143,7 +149,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.15
-        version: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
+        version: 4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
       workbox-core:
         specifier: ^7.4.0
         version: 7.4.0
@@ -923,6 +929,14 @@ packages:
 
   '@dxup/unimport@0.1.2':
     resolution: {integrity: sha512-/B8YJGPzaYq1NbsQmwgP8EZqg40NpTw4ZB3suuI0TplbxKHeK94jeaawLmVhCv+YwUnOpiWEz9U6SeThku/8JQ==}
+
+  '@edge-runtime/primitives@6.0.0':
+    resolution: {integrity: sha512-FqoxaBT+prPBHBwE1WXS1ocnu/VLTQyZ6NMUBAdbP7N2hsFTTxMC/jMu2D/8GAlMQfxeuppcPuCUk/HO3fpIvA==}
+    engines: {node: '>=18'}
+
+  '@edge-runtime/vm@5.0.0':
+    resolution: {integrity: sha512-NKBGBSIKUG584qrS1tyxVpX/AKJKQw5HgjYEnPLC0QsTw79JrGn+qUr8CXFb955Iy7GUdiiUv1rJ6JBGvaKb6w==}
+    engines: {node: '>=18'}
 
   '@emnapi/core@1.5.0':
     resolution: {integrity: sha512-sbP8GzB1WDzacS8fgNPpHlp6C9VZe+SJP3F90W9rLemaQj2PzIuTEl1qDOYQf58YIpyjViI24y9aPWCjEzY2cg==}
@@ -4144,6 +4158,11 @@ packages:
         optional: true
       zod:
         optional: true
+
+  convex-test@0.0.41:
+    resolution: {integrity: sha512-GPHeYFOi70n7UtW0eCEQFVhzl/+m8PvbWkDCbKpHLybI1MrScf4sVpGeM0cC2qmtxiduxa2nLPbehPalhh9oyQ==}
+    peerDependencies:
+      convex: ^1.16.4
 
   convex@1.31.7:
     resolution: {integrity: sha512-PtNMe1mAIOvA8Yz100QTOaIdgt2rIuWqencVXrb4McdhxBHZ8IJ1eXTnrgCC9HydyilGT1pOn+KNqT14mqn9fQ==}
@@ -8127,7 +8146,7 @@ snapshots:
       '@jridgewell/gen-mapping': 0.3.12
       '@jridgewell/trace-mapping': 0.3.29
 
-  '@antfu/eslint-config@6.4.1(@vue/compiler-sfc@3.5.25)(eslint-plugin-format@1.1.0(eslint@9.39.1(jiti@2.6.1)))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))':
+  '@antfu/eslint-config@6.4.1(@vue/compiler-sfc@3.5.25)(eslint-plugin-format@1.1.0(eslint@9.39.1(jiti@2.6.1)))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))':
     dependencies:
       '@antfu/install-pkg': 1.1.0
       '@clack/prompts': 0.11.0
@@ -8136,7 +8155,7 @@ snapshots:
       '@stylistic/eslint-plugin': 5.6.1(eslint@9.39.1(jiti@2.6.1))
       '@typescript-eslint/eslint-plugin': 8.48.1(@typescript-eslint/parser@8.48.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       '@typescript-eslint/parser': 8.48.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
-      '@vitest/eslint-plugin': 1.5.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
+      '@vitest/eslint-plugin': 1.5.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
       ansis: 4.2.0
       cac: 6.7.14
       eslint: 9.39.1(jiti@2.6.1)
@@ -9035,14 +9054,14 @@ snapshots:
       nanostores: 1.1.0
       zod: 4.3.6
 
-  '@better-auth/passkey@1.4.9(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(nanostores@1.1.0)':
+  '@better-auth/passkey@1.4.9(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(nanostores@1.1.0)':
     dependencies:
       '@better-auth/core': 1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0)
       '@better-auth/utils': 0.3.0
       '@better-fetch/fetch': 1.1.21
       '@simplewebauthn/browser': 13.2.2
       '@simplewebauthn/server': 13.2.2
-      better-auth: 1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
+      better-auth: 1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
       better-call: 1.1.8(zod@4.1.13)
       nanostores: 1.1.0
       zod: 4.3.6
@@ -9076,11 +9095,11 @@ snapshots:
     dependencies:
       mime: 3.0.0
 
-  '@convex-dev/better-auth@0.10.10(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@standard-schema/spec@1.1.0)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(convex@1.31.7(react@19.2.4))(nanostores@1.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)':
+  '@convex-dev/better-auth@0.10.10(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@standard-schema/spec@1.1.0)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(convex@1.31.7(react@19.2.4))(nanostores@1.1.0)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@5.9.3)':
     dependencies:
-      '@better-auth/passkey': 1.4.9(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(nanostores@1.1.0)
+      '@better-auth/passkey': 1.4.9(@better-auth/core@1.4.18(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.8(zod@4.1.13))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)))(better-call@1.1.8(zod@4.1.13))(nanostores@1.1.0)
       '@better-fetch/fetch': 1.1.21
-      better-auth: 1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
+      better-auth: 1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
       common-tags: 1.8.2
       convex: 1.31.7(react@19.2.4)
       convex-helpers: 0.1.111(@standard-schema/spec@1.1.0)(convex@1.31.7(react@19.2.4))(react@19.2.4)(typescript@5.9.3)(zod@4.3.6)
@@ -9117,6 +9136,12 @@ snapshots:
       - magicast
 
   '@dxup/unimport@0.1.2': {}
+
+  '@edge-runtime/primitives@6.0.0': {}
+
+  '@edge-runtime/vm@5.0.0':
+    dependencies:
+      '@edge-runtime/primitives': 6.0.0
 
   '@emnapi/core@1.5.0':
     dependencies:
@@ -11599,7 +11624,7 @@ snapshots:
       vite: 7.2.6(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
       vue: 3.5.25(typescript@5.9.3)
 
-  '@vitest/coverage-v8@4.0.15(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))':
+  '@vitest/coverage-v8@4.0.15(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
       '@vitest/utils': 4.0.15
@@ -11612,18 +11637,18 @@ snapshots:
       obug: 2.1.1
       std-env: 3.10.0
       tinyrainbow: 3.0.3
-      vitest: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
+      vitest: 4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/eslint-plugin@1.5.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))':
+  '@vitest/eslint-plugin@1.5.1(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))':
     dependencies:
       '@typescript-eslint/scope-manager': 8.47.0
       '@typescript-eslint/utils': 8.47.0(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       eslint: 9.39.1(jiti@2.6.1)
     optionalDependencies:
       typescript: 5.9.3
-      vitest: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
+      vitest: 4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
     transitivePeerDependencies:
       - supports-color
 
@@ -12137,7 +12162,7 @@ snapshots:
 
   baseline-browser-mapping@2.9.19: {}
 
-  better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)):
+  better-auth@1.4.9(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3)):
     dependencies:
       '@better-auth/core': 1.4.9(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.6))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0)
       '@better-auth/telemetry': 1.4.9(@better-auth/core@1.4.9(@better-auth/utils@0.3.0)(@better-fetch/fetch@1.1.21)(better-call@1.1.7(zod@4.3.6))(jose@6.1.3)(kysely@0.28.11)(nanostores@1.1.0))
@@ -12154,7 +12179,7 @@ snapshots:
     optionalDependencies:
       react: 19.2.4
       react-dom: 19.2.4(react@19.2.4)
-      vitest: 4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
+      vitest: 4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
       vue: 3.5.25(typescript@5.9.3)
 
   better-call@1.1.7(zod@4.3.6):
@@ -12426,6 +12451,10 @@ snapshots:
       react: 19.2.4
       typescript: 5.9.3
       zod: 4.3.6
+
+  convex-test@0.0.41(convex@1.31.7(react@19.2.4)):
+    dependencies:
+      convex: 1.31.7(react@19.2.4)
 
   convex@1.31.7(react@19.2.4):
     dependencies:
@@ -16689,7 +16718,7 @@ snapshots:
       terser: 5.43.1
       yaml: 2.8.2
 
-  vitest@4.0.15(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2):
+  vitest@4.0.15(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.0)(@types/node@25.2.3)(happy-dom@20.8.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2):
     dependencies:
       '@vitest/expect': 4.0.15
       '@vitest/mocker': 4.0.15(vite@7.2.6(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2))
@@ -16712,6 +16741,7 @@ snapshots:
       vite: 7.2.6(@types/node@25.2.3)(jiti@2.6.1)(lightningcss@1.30.2)(terser@5.43.1)(yaml@2.8.2)
       why-is-node-running: 2.3.0
     optionalDependencies:
+      '@edge-runtime/vm': 5.0.0
       '@opentelemetry/api': 1.9.0
       '@types/node': 25.2.3
       happy-dom: 20.8.3
