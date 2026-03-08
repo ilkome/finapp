@@ -220,8 +220,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       return
     }
 
-    // Clear to placeholder
-    values.amountRaw[0] = '888'
+    values.amountRaw[0] = formatInput(0)
   }
 
   function trnFormEdit(trnId: TrnId) {
