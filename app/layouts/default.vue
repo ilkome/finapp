@@ -63,7 +63,7 @@ defineShortcuts({
   'meta_g': () => {
     trnsFormStore.ui.isShow
       ? trnsFormStore.ui.isShow = false
-      : trnsFormStore.trnFormCreate()
+      : trnsFormStore.openFormForCreate()
   },
 })
 </script>

@@ -12,7 +12,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
-import { getTrnsIds } from '~/components/trns/getTrns'
+import { filterTrnsIds } from '~/components/trns/getTrns'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { createDebouncedPersist, handleMutationResult, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
@@ -53,7 +53,7 @@ export const useTrnsStore = defineStore('trns', () => {
   const items = shallowRef<Trns | null>(null)
 
   function getStoreTrnsIds(props: TrnsGetterProps) {
-    return getTrnsIds({
+    return filterTrnsIds({
       ...props,
       categoriesIds: props.categoriesIds?.length
         ? categoriesStore.getTransactibleIds(props.categoriesIds)
@@ -99,7 +99,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     for (const trnId of Object.keys(items.value)) {
       const trn = items.value[trnId]
-      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment' || trn.categoryId === 'transfer')
+      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
         continue
       if (trn.date > latestDate) {
         latestDate = trn.date

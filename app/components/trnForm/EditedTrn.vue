@@ -17,7 +17,7 @@ const items = computed(() => ({
   duplicate: {
     click: () => {
       if (trnsFormStore.values.trnId) {
-        trnsFormStore.trnFormDuplicate(trnsFormStore.values.trnId)
+        trnsFormStore.openFormForDuplicate(trnsFormStore.values.trnId)
         trnsFormStore.values.trnId = null
       }
     },

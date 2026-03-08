@@ -67,11 +67,11 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
     <BottomSheetOrDropdown
       :title="t('dates.select')"
-      :isOpen="statDate.modals.value.dateSelector"
+      :isOpen="statDate.modal.value.dateSelector"
       class="flex grow-0 gap-1"
       isShowCloseBtn
-      @openModal="statDate.modals.value.dateSelector = true"
-      @closeModal="statDate.modals.value.dateSelector = false"
+      @openModal="statDate.modal.value.dateSelector = true"
+      @closeModal="statDate.modal.value.dateSelector = false"
     >
       <template #trigger>
         <UiTitleCollapse

@@ -5,6 +5,7 @@ import defu from 'defu'
 import { z } from 'zod/v4'
 
 import { chartTypes } from '~/components/stat/chart/types'
+import { applyConfigUpdate } from '~/components/stat/statConfig'
 
 export const chartViewOptions = ['half', 'full'] as const
 
@@ -24,12 +25,12 @@ export const ConfigSchema = z.object({
   chart: z.object({
     isShowAverage: z.boolean(),
   }),
-  chartShow: z.boolean(),
   chartType: z.enum(chartTypes),
   chartView: z.enum(chartViewOptions),
   date: z.object({
     isShowQuick: z.boolean(),
   }),
+  isChartShow: z.boolean(),
   isShowEmptyCategories: z.boolean(),
   statAverage: z.object({
     count: z.number(),
@@ -71,13 +72,13 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     chart: {
       isShowAverage: false,
     },
-    chartShow: true,
     chartType: 'bar',
     chartView: 'full',
-
     date: {
       isShowQuick: false,
     },
+
+    isChartShow: true,
 
     isShowEmptyCategories: false,
 
@@ -108,13 +109,9 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   }
 
   function updateConfig(key: keyof MiniItemConfig, value: Partial<MiniItemConfig[keyof MiniItemConfig]>) {
-    const update = { ...config.value, [key]: typeof value === 'object' ? defu(value, config.value[key]) : value }
-
-    if (!ConfigSchema.safeParse(update).success) {
-      return
-    }
-
-    config.value = update
+    const result = applyConfigUpdate(config.value, key, value)
+    if (result)
+      config.value = result
   }
 
   return {

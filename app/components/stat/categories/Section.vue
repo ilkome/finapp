@@ -19,11 +19,11 @@ const emit = defineEmits<{
 
 const visibleCategoriesLimit = 12
 
-const { getCategoriesWithData } = useStatCategories()
+const { computeCategoriesWithData } = useStatCategories()
 const statConfig = inject(statConfigKey)!
 const isExpanded = ref(false)
 
-const roundCategories = computed(() => getCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.catsRound.isGrouped, props.preCategoriesIds))
+const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.catsRound.isGrouped, props.preCategoriesIds))
 const visibleCategories = computed(() => isExpanded.value ? roundCategories.value : roundCategories.value.slice(0, visibleCategoriesLimit))
 </script>
 

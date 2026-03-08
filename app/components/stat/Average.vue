@@ -27,7 +27,7 @@ const props = defineProps<{
 const { t } = useI18n()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
-const { getTotalOfTrnsIds } = useAmount()
+const { computeTotalForTrnsIds } = useAmount()
 
 const untilDate = computed(() => getEndOf(sub(new Date(), { [`${props.statDate.params.value.rangeBy}s`]: props.statDate.params.value.rangeDuration }), props.statDate.params.value.rangeBy))
 
@@ -45,7 +45,7 @@ const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   walletsIds: props.walletId ? [...(props.filter.walletsIds.value ?? []), props.walletId] : props.filter.walletsIds.value,
 }))
 
-const total = computed(() => getTotalOfTrnsIds(datedTrnsIds.value))
+const total = computed(() => computeTotalForTrnsIds(datedTrnsIds.value))
 </script>
 
 <template>

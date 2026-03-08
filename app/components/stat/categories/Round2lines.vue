@@ -27,11 +27,11 @@ const longPressRef = ref(null)
 onLongPress(
   longPressRef,
   () => {
-    const isTransactible = categoriesStore.isItTransactible(props.item.id)
+    const isTransactible = categoriesStore.isTransactible(props.item.id)
     if (!isTransactible)
       return
 
-    trnsFormStore.trnFormCreate()
+    trnsFormStore.openFormForCreate()
     trnsFormStore.$patch((state) => {
       state.values.amount = [0, 0, 0]
       state.values.amountRaw = ['', '', '']

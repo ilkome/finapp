@@ -53,7 +53,7 @@ const introText = computed(() => {
         v-else
         size="xl"
         class="min-w-52 justify-center rounded-full px-8 py-3"
-        @click="trnsFormStore.trnFormCreate()"
+        @click="trnsFormStore.openFormForCreate()"
       >
         {{ t('onboarding.actionTrn') }}
       </UButton>

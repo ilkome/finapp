@@ -43,7 +43,7 @@ const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
 
-const { getTotalOfTrnsIds } = useAmount()
+const { computeTotalForTrnsIds } = useAmount()
 const { t } = useI18n()
 const { formatDate } = useDateFormats()
 const isShowWithDesc = ref(false)
@@ -98,7 +98,7 @@ const filteredByTypeIds = computed(() => {
       return trnsStore.items[id]?.categoryId === 'adjustment'
 
     if (filterBy.value === 'transfer')
-      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type || trnsStore.items[id]?.categoryId === 'transfer'
+      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
 
     return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
   })
@@ -144,7 +144,7 @@ const groupedTrns = computed(() => paginatedTrnsIds.value
     return acc
   }, {} as Record<string, TrnId[]>))
 
-const paginatedTotal = computed(() => getTotalOfTrnsIds(paginatedTrnsIds.value))
+const paginatedTotal = computed(() => computeTotalForTrnsIds(paginatedTrnsIds.value))
 
 const trnItemsMap = computed(() => {
   const map = new Map<TrnId, ReturnType<typeof trnsStore.computeTrnItem>>()
@@ -155,7 +155,7 @@ const trnItemsMap = computed(() => {
 })
 
 function onOpenTrnForm(date: number) {
-  trnsFormStore.trnFormCreate()
+  trnsFormStore.openFormForCreate()
   trnsFormStore.$patch((state) => {
     state.values.date = date
   })
@@ -280,8 +280,8 @@ function onOpenTrnForm(date: number) {
             class="opacity-60"
           >
             <Amount
-              v-if="getTotalOfTrnsIds(groupTrnsIds).income !== 0"
-              :amount="getTotalOfTrnsIds(groupTrnsIds).income"
+              v-if="computeTotalForTrnsIds(groupTrnsIds).income !== 0"
+              :amount="computeTotalForTrnsIds(groupTrnsIds).income"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="TrnType.Income"
@@ -290,8 +290,8 @@ function onOpenTrnForm(date: number) {
             />
 
             <Amount
-              v-if="getTotalOfTrnsIds(groupTrnsIds).expense !== 0"
-              :amount="getTotalOfTrnsIds(groupTrnsIds).expense"
+              v-if="computeTotalForTrnsIds(groupTrnsIds).expense !== 0"
+              :amount="computeTotalForTrnsIds(groupTrnsIds).expense"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               :type="TrnType.Expense"

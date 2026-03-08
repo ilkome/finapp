@@ -5,7 +5,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
 
-const isMath = computed(() => trnsFormStore.getIsShowSum())
+const isMath = computed(() => trnsFormStore.shouldShowSum())
 const isSubmittable = computed(() => trnsFormStore.values.amount[trnsFormStore.activeAmountIdx] > 0)
 
 async function onClickSubmit() {

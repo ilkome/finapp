@@ -62,13 +62,13 @@ function updateStatAverage(value: number) {
           </UiTitleSection>
 
           <UiSwitchItem
-            :checkboxValue="statConfig.config.value.chartShow"
+            :checkboxValue="statConfig.config.value.isChartShow"
             :title="t('stat.config.chartShow.label')"
-            @click="statConfig.updateConfig('chartShow', !statConfig.config.value.chartShow)"
+            @click="statConfig.updateConfig('isChartShow', !statConfig.config.value.isChartShow)"
           />
 
           <UiSwitchItem
-            v-if="statConfig.config.value.chartShow"
+            v-if="statConfig.config.value.isChartShow"
             :checkboxValue="statConfig.config.value.date.isShowQuick"
             :title="t('stat.config.date.quick.label')"
             @click="statConfig.updateConfig('date', { isShowQuick: !statConfig.config.value.date.isShowQuick })"
@@ -76,7 +76,7 @@ function updateStatAverage(value: number) {
 
           <!-- Chart: showed -->
           <div
-            v-if="statConfig.config.value.chartShow"
+            v-if="statConfig.config.value.isChartShow"
             class="grid gap-4"
           >
             <UiSwitchItem

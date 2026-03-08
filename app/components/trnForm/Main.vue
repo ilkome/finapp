@@ -39,7 +39,7 @@ const walletId = computed(() => {
       :amount="trnsFormStore.values.amount[trnsFormStore.activeAmountIdx]"
       :amountRaw="trnsFormStore.values.amountRaw[trnsFormStore.activeAmountIdx]"
       :highlight="trnsFormStore.values.trnType === 0 ? 'expense' : 'income'"
-      :isShowSum="trnsFormStore.getIsShowSum()"
+      :isShowSum="trnsFormStore.shouldShowSum()"
       class="px-3 pb-2"
       @change="trnsFormStore.onChangeAmount"
     />

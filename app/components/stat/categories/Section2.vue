@@ -23,21 +23,21 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { getCategoriesWithData } = useStatCategories()
+const { computeCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
 // Lazy computeds — each computed only when accessed (Vue computed is lazy).
 // Replaces the old `categoriesStat` which eagerly computed BOTH variants on every change.
-const groupedCategories = computed(() => getCategoriesWithData(props.selectedTrnsIds ?? [], true))
-const ungroupedCategories = computed(() => getCategoriesWithData(props.selectedTrnsIds ?? [], false))
+const groupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], true))
+const ungroupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], false))
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
   const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
 
   // When showing empty categories, need a separate call with preCategoriesIds
   if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds?.length) {
-    return getCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds)
+    return computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds)
   }
 
   return isGrouped ? groupedCategories.value : ungroupedCategories.value
