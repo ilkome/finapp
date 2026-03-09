@@ -1,7 +1,7 @@
 import { clientsClaim } from 'workbox-core'
 import { cleanupOutdatedCaches, PrecacheController, PrecacheRoute } from 'workbox-precaching'
-import { registerRoute } from 'workbox-routing'
-import { CacheFirst } from 'workbox-strategies'
+import { NavigationRoute, registerRoute, setCatchHandler } from 'workbox-routing'
+import { CacheFirst, NetworkFirst } from 'workbox-strategies'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -19,6 +19,17 @@ registerRoute(new PrecacheRoute(pc))
 // Cleanup caches from previous SW versions
 cleanupOutdatedCaches()
 
+// Navigation: network-first with offline fallback to cached HTML
+registerRoute(new NavigationRoute(new NetworkFirst({
+  cacheName: 'pages',
+})))
+
+// i18n locale messages: network-first for offline support
+registerRoute(
+  ({ url }) => url.pathname.startsWith('/_i18n/'),
+  new NetworkFirst({ cacheName: 'i18n' }),
+)
+
 // Runtime caching for external resources
 for (const origin of [
   'https://api.iconify.design',
@@ -27,6 +38,9 @@ for (const origin of [
 ]) {
   registerRoute(({ url }) => url.origin === origin, new CacheFirst())
 }
+
+// Prevent uncaught errors when precache or network fails (e.g. offline before precaching completes)
+setCatchHandler(async () => Response.error())
 
 // Defer precaching until app signals auth is ready
 let precached = false
