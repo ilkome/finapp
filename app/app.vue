@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { ToasterProps } from '@nuxt/ui'
 
-import colors from 'tailwindcss/colors'
-
 import { useGuard } from '~/components/user/useGuard'
 
 const appConfig = useAppConfig()
@@ -23,7 +21,7 @@ useEventListener(document, 'click', (e) => {
 })
 
 const isDark = usePreferredDark()
-const color = computed(() => (colorMode.value === 'dark' || (colorMode.value === 'system' && isDark.value)) ? (colors as Record<string, Record<string, string>>)[appConfig.ui.colors.neutral][900] : 'white')
+const color = computed(() => (colorMode.value === 'dark' || (colorMode.value === 'system' && isDark.value)) ? '#171717' : 'white')
 const blackAsPrimary = computed(() => appConfig.theme.blackAsPrimary ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}')
 const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius ?? 0.375}rem; }`)
 
