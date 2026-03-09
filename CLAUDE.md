@@ -21,7 +21,7 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 
 ## Project Structure
 
-See [Architecture](docs/architecture.md) for detailed project structure and file descriptions.
+See [Architecture](../docs/content/en/3.technical/1.architecture.md) for detailed project structure and file descriptions.
 
 ## Conventions
 
@@ -67,15 +67,13 @@ New entities get temporary IDs with `local_` prefix (e.g., `local_a1b2c3`). `isL
 
 ### Convex Client Access
 
-| Context | Client | Composable |
-|---------|--------|------------|
-| Server (SSR) | ConvexHttpClient | `useConvexHttpClient()` |
-| Client (browser) | ConvexClient (WebSocket) | `useConvexClientComposable()` |
-| Either (auto-detect) | — | `useConvexClient()` |
+| Composable | Returns | Purpose |
+|------------|---------|---------|
+| `useConvexClient()` | `ConvexClient \| ConvexHttpClient` | SSR-aware client (HTTP on server, WebSocket on client) |
+| `useConvexClientComposable()` | `ConvexClient` | WebSocket client (browser only) |
+| `useConvexClientWithApi()` | `{ api, client }` | Client + typed `api` object for queries/mutations |
 
-- `useConvexQuery()` — SSR-aware reactive query with real-time updates (client: WebSocket subscription, server: `useAsyncData` + HTTP)
-- `useConvexMutation()` — typed mutation caller bound to the current client
-- Stores use imperative `client.query()` instead of `useConvexQuery()` because they manage their own caching and offline merge
+- Stores use imperative `client.query()` and `client.mutation()` because they manage their own caching and offline merge
 
 ## Local Development Setup
 

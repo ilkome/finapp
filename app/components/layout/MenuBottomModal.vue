@@ -24,7 +24,7 @@ const { isDemo } = useDemo()
           <!-- User -->
           <div
             v-if="!isDemo"
-            class="border-item-6 mx-2 border-b pb-2 pt-2"
+            class="border-item-6 mx-2 border-b pt-2 pb-2"
           >
             <UserViewLogout />
           </div>
