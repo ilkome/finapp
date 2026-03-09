@@ -248,8 +248,8 @@ async function onSave() {
         </FormElement>
 
         <div
-          v-for="iconGroup in icons"
-          :key="JSON.stringify(iconGroup)"
+          v-for="(iconGroup, idx) in icons"
+          :key="idx"
           class="flex flex-wrap gap-3 pb-8 last:placeholder:text-blue-400"
         >
           <div

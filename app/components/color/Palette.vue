@@ -18,13 +18,24 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 
-function findCategoryIconByColor(color: string) {
-  return categoriesStore.categoriesRootIds.map(id => categoriesStore.items[id]).find(c => c?.color === color)?.icon
-}
+const categoryIconByColor = computed(() => {
+  const map = new Map<string, string>()
+  for (const id of categoriesStore.categoriesRootIds) {
+    const cat = categoriesStore.items[id]
+    if (cat?.color && cat.icon)
+      map.set(cat.color, cat.icon)
+  }
+  return map
+})
 
-function findWalletWithColor(color: string) {
-  return Object.values(walletsStore.items ?? {}).some(w => w?.color === color)
-}
+const walletColorsUsed = computed(() => {
+  const set = new Set<string>()
+  for (const w of Object.values(walletsStore.items ?? {})) {
+    if (w?.color)
+      set.add(w.color)
+  }
+  return set
+})
 </script>
 
 <template>
@@ -47,14 +58,14 @@ function findWalletWithColor(color: string) {
           >
             <div class="flex-center h-10" :style="{ background: color }">
               <Icon
-                v-if="props.isCategory && (findCategoryIconByColor(color) || color === props.activeColor)"
-                :name="props.activeColor === color ? props.icon : findCategoryIconByColor(color)"
+                v-if="props.isCategory && (categoryIconByColor.has(color) || color === props.activeColor)"
+                :name="props.activeColor === color ? props.icon : categoryIconByColor.get(color)"
                 size="20"
                 class="text-icon-primary"
               />
 
               <div
-                v-if="props.isWallet && findWalletWithColor(color)"
+                v-if="props.isWallet && walletColorsUsed.has(color)"
                 class="bg-item-4 size-3 rounded-full"
               />
             </div>

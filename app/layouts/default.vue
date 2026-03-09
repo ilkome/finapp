@@ -21,7 +21,9 @@ const { loadDataFromCache, loadDataFromDB } = useInitApp()
 const { width } = useWindowSize()
 
 const isShowSidebar = useCookie('finapp.isShowSidebar', { default: () => true })
+const isOnboardedHint = useCookie('finapp.isOnboarded', { default: () => false })
 const isOnboarded = computed(() => walletsStore.hasItems && categoriesStore.hasItems && trnsStore.hasItems)
+watch(isOnboarded, val => (isOnboardedHint.value = val))
 
 const { error, status } = useAsyncData(
   'app',
@@ -72,9 +74,9 @@ defineShortcuts({
   <div
     class="flex min-h-dvh flex-col transition-all duration-300 ease-in-out"
     :class="{
-      'sm:pl-12': isOnboarded,
-      'md:pl-72': isOnboarded && isShowSidebar && width >= 767,
-      'md:pr-[360px]': isOnboarded && trnsFormStore.ui.isShow && width >= 767,
+      'sm:pl-12': isOnboardedHint || isOnboarded,
+      'md:pl-72': (isOnboardedHint || isOnboarded) && isShowSidebar,
+      'md:pr-[360px]': isOnboarded && trnsFormStore.ui.isShow,
     }"
     style="margin-left: env(safe-area-inset-left)"
   >
