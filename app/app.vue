@@ -22,7 +22,8 @@ useEventListener(document, 'click', (e) => {
   closeBtn?.click()
 })
 
-const color = computed(() => colorMode.value === 'dark' ? (colors as Record<string, Record<string, string>>)[appConfig.ui.colors.neutral][900] : 'white')
+const isDark = usePreferredDark()
+const color = computed(() => (colorMode.value === 'dark' || (colorMode.value === 'system' && isDark.value)) ? (colors as Record<string, Record<string, string>>)[appConfig.ui.colors.neutral][900] : 'white')
 const blackAsPrimary = computed(() => appConfig.theme.blackAsPrimary ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}')
 const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius ?? 0.375}rem; }`)
 
