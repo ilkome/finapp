@@ -112,7 +112,7 @@ defineShortcuts({
       </template>
     </template>
 
-    <div v-else class="flex min-h-svh items-center justify-center">
+    <div v-else class="fixed inset-0 flex items-center justify-center">
       <UiLogo class="!text-6xl" />
     </div>
 
