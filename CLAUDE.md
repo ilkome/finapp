@@ -5,7 +5,7 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 - Node.js >= v24.12.0
 - Package manager: pnpm
 - SSR enabled (`ssr: true`)
-- PWA with service worker (generateSW strategy)
+- PWA with service worker (injectManifest strategy, custom `app/sw.ts`)
 
 ## Commands
 
@@ -47,8 +47,8 @@ All Pinia stores (`useTrnsStore`, `useWalletsStore`, `useCategoriesStore`) follo
 - `items: shallowRef` — reactive state (shallow for performance)
 - `init()` — fetch from Convex → `mergeOfflineOps` → `set`
 - `set(data)` — `items.value = data` + `debouncedPersist` (300ms)
-- `save({ id, values })` — optimistic UI → `pushOfflineOp` → fire mutation (no await)
-- `delete(id)` — optimistic UI → `pushOfflineOp` → fire mutation (no await)
+- `save({ id, values })` — optimistic UI → `pushSaveOp` → fire mutation (no await)
+- `delete(id)` — optimistic UI → `pushDeleteOp` → fire mutation (no await)
 
 Mutation result: `.then()` removes offline op + remaps frontend ID → `.catch()` shows error toast.
 
