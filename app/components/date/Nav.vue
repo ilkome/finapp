@@ -15,12 +15,14 @@ const emit = defineEmits<{
   <div class="flex items-center gap-1">
     <UiActionButton
       v-if="position === 'left' && isShowNavHome"
+      :ariaLabel="$t('base.today')"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />
     </UiActionButton>
 
     <UiActionButton
+      :ariaLabel="$t('base.previous')"
       :class="cn('bg-item-3', isStart && 'hover:transparent opacity-30')"
       @click="emit('changeDate', 'prev')"
     >
@@ -28,6 +30,7 @@ const emit = defineEmits<{
     </UiActionButton>
 
     <UiActionButton
+      :ariaLabel="$t('base.next')"
       :class="cn('bg-item-3', isEnd && 'hover:transparent opacity-30')"
       @click="emit('changeDate', 'next')"
     >
@@ -36,6 +39,7 @@ const emit = defineEmits<{
 
     <UiActionButton
       v-if="position === 'right' && isShowNavHome"
+      :ariaLabel="$t('base.today')"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />

@@ -129,6 +129,7 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
           :kbds="['Meta', '\\']"
         >
           <UiActionButton
+            :ariaLabel="t('app.toggleSidebar')"
             class="text-4 z-10"
             @click="emit('toggleSidebar')"
           >

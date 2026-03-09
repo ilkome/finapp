@@ -51,6 +51,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
       <UiTabsBar>
         <UiActionButton
           v-if="roundCategories.length > visibleCategoriesLimit"
+          :ariaLabel="$t('base.toggleExpand')"
           size="sm"
           @click="isExpanded = !isExpanded"
         >
@@ -61,6 +62,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
         </UiActionButton>
 
         <UiActionButton
+          :ariaLabel="$t('base.toggleGrouping')"
           size="sm"
           @click="statConfig.config.value.catsRound.isGrouped = !statConfig.config.value.catsRound.isGrouped"
         >

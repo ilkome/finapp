@@ -132,6 +132,7 @@ function toggleRoot(id: CategoryId) {
             class="flex items-center"
           >
             <UiActionButton
+              :ariaLabel="$t('base.toggleGrouping')"
               :isActive="statConfig.config.value.vertical.isGrouped"
               @click="statConfig.config.value.vertical.isGrouped = !statConfig.config.value.vertical.isGrouped"
             >
@@ -179,6 +180,7 @@ function toggleRoot(id: CategoryId) {
           >
             <UiActionButton
               v-if="statConfig.config.value.catsView === 'list' && !props.isOneCategory && statConfig.config.value.catsList.isGrouped"
+              :ariaLabel="$t('base.toggleFolders')"
               @click="toggleOpened"
             >
               <Icon
@@ -200,6 +202,7 @@ function toggleRoot(id: CategoryId) {
 
             <UiActionButton
               v-if="!props.isOneCategory"
+              :ariaLabel="$t('base.toggleGrouping')"
               :isActive="statConfig.config.value.catsList.isGrouped"
               @click="statConfig.config.value.catsList.isGrouped = !statConfig.config.value.catsList.isGrouped"
             >

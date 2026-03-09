@@ -37,10 +37,19 @@ export default {
     duplicate: 'Duplicate',
     edit: 'Edit',
     loading: 'Loading...',
+    moreOptions: 'More options',
+    next: 'Next',
     no: 'No',
     noData: 'No data',
+    previous: 'Previous',
     save: 'Save',
     sure: 'Confirm action',
+    today: 'Today',
+    toggleExpand: 'Toggle expand',
+    toggleFolders: 'Toggle folders',
+    toggleGrouping: 'Toggle grouping',
+    togglePresets: 'Toggle presets',
+    toggleView: 'Toggle view',
     yes: 'Yes',
   },
 
@@ -111,6 +120,7 @@ export default {
   },
 
   currencies: {
+    ariaFilter: 'Filter currencies',
     base: 'Base currency',
     list: {
       all: 'All',
@@ -345,6 +355,7 @@ export default {
 
   trnForm: {
     adjustmentTitle: 'Adjustment',
+    ariaCopyAmount: 'Copy amount',
     category: {
       select: 'Select category',
     },
@@ -399,6 +410,7 @@ export default {
   userLogout: 'Logout',
 
   wallets: {
+    ariaSwitch: 'Switch wallets',
     createNewTitle: 'New wallet',
     errors: {
       deleteFailed: 'Failed to delete wallet',

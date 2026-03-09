@@ -69,7 +69,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
 
       <template #actions>
-        <UiActionButton @click="router.push('/wallets/new')">
+        <UiActionButton :ariaLabel="$t('wallets.new')" @click="router.push('/wallets/new')">
           <Icon name="lucide:plus" size="24" />
         </UiActionButton>
 
@@ -80,7 +80,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
           @openModal="isOpen = true"
         >
           <template #trigger>
-            <UiActionButton>
+            <UiActionButton :ariaLabel="$t('base.moreOptions')">
               <Icon name="lucide:ellipsis-vertical" size="20" />
             </UiActionButton>
           </template>
@@ -176,6 +176,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
             class="ml-auto flex items-center gap-1"
           >
             <UiActionButton
+              :ariaLabel="$t('base.toggleGrouping')"
               @click="toggleSecondaryGrouping"
             >
               <Icon
@@ -184,7 +185,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
               />
             </UiActionButton>
 
-            <UiActionButton @click="toggleOpened">
+            <UiActionButton :ariaLabel="$t('base.toggleFolders')" @click="toggleOpened">
               <Icon
                 v-if="typeGroupsStatus.isAllOpen"
                 name="lucide:folder-open"

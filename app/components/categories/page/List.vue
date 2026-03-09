@@ -78,14 +78,14 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
     <UiHeader>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UiActionButton @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
+        <UiActionButton :ariaLabel="$t('base.toggleView')" @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
           <Icon
             :name="categoriesView === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
             size="20"
           />
         </UiActionButton>
 
-        <UiActionButton @click="router.push('/categories/new')">
+        <UiActionButton :ariaLabel="$t('categories.new')" @click="router.push('/categories/new')">
           <Icon name="lucide:plus" size="24" />
         </UiActionButton>
       </template>
