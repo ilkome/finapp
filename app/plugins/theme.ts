@@ -35,44 +35,20 @@ export default defineNuxtPlugin({
       useHead({
         script: [{
           innerHTML: `
-            let html = document.querySelector('style#nuxt-ui-colors').innerHTML;
-
-            if (localStorage.getItem('nuxt-ui-primary')) {
-              const primaryColor = localStorage.getItem('nuxt-ui-primary');
-              if (primaryColor !== 'black') {
-                html = html.replace(
-                  /(--ui-color-primary-\\d{2,3}:\\s*var\\(--color-)${appConfig.ui.colors.primary}(-\\d{2,3}.*?\\))/g,
-                  \`$1\${primaryColor}$2\`
-                );
+            (function(){
+              var ls=localStorage,s=document.querySelector.bind(document);
+              var pc=ls.getItem('nuxt-ui-primary'),nc=ls.getItem('nuxt-ui-neutral');
+              if(pc||nc){
+                var el=s('style#nuxt-ui-colors'),h=el.innerHTML;
+                if(pc&&pc!=='black')h=h.replace(/(--ui-color-primary-\\d{2,3}:\\s*var\\(--color-)${appConfig.ui.colors.primary}(-\\d{2,3}.*?\\))/g,'$1'+pc+'$2');
+                if(nc)h=h.replace(/(--ui-color-neutral-\\d{2,3}:\\s*var\\(--color-)${appConfig.ui.colors.neutral}(-\\d{2,3}.*?\\))/g,'$1'+(nc==='neutral'?'old-neutral':nc)+'$2');
+                el.innerHTML=h;
               }
-            }
-            if (localStorage.getItem('nuxt-ui-neutral')) {
-              let neutralColor = localStorage.getItem('nuxt-ui-neutral');
-              html = html.replace(
-                /(--ui-color-neutral-\\d{2,3}:\\s*var\\(--color-)${appConfig.ui.colors.neutral}(-\\d{2,3}.*?\\))/g,
-                \`$1\${neutralColor === 'neutral' ? 'old-neutral' : neutralColor}$2\`
-              );
-            }
-
-            document.querySelector('style#nuxt-ui-colors').innerHTML = html;
-            `.replace(/\s+/g, ' '),
-          tagPriority: -1,
-          type: 'text/javascript',
-        }, {
-          innerHTML: `
-            if (localStorage.getItem('nuxt-ui-radius')) {
-              document.querySelector('style#nuxt-ui-radius').innerHTML = ':root { --ui-radius: ' + localStorage.getItem('nuxt-ui-radius') + 'rem; }';
-            }
-          `.replace(/\s+/g, ' '),
-          tagPriority: -1,
-          type: 'text/javascript',
-        }, {
-          innerHTML: `
-            if (localStorage.getItem('nuxt-ui-black-as-primary') === 'true') {
-              document.querySelector('style#nuxt-ui-black-as-primary').innerHTML = ':root { --ui-primary: black; } .dark { --ui-primary: white; }';
-            } else {
-              document.querySelector('style#nuxt-ui-black-as-primary').innerHTML = '';
-            }
+              var r=ls.getItem('nuxt-ui-radius');
+              if(r)s('style#nuxt-ui-radius').innerHTML=':root{--ui-radius:'+r+'rem}';
+              var b=ls.getItem('nuxt-ui-black-as-primary');
+              s('style#nuxt-ui-black-as-primary').innerHTML=b==='true'?':root{--ui-primary:black}.dark{--ui-primary:white}':'';
+            })()
           `.replace(/\s+/g, ' '),
           tagPriority: -1,
           type: 'text/javascript',
