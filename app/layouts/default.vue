@@ -38,29 +38,12 @@ const { error, status } = useAsyncData(
       loadDataFromDB()
     }
 
-    triggerServiceWorkerPrecache()
   },
   {
     lazy: true,
     server: false,
   },
 )
-
-function triggerServiceWorkerPrecache() {
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.ready.then(async (reg) => {
-      reg.active?.postMessage({ type: 'PRECACHE_APP' })
-
-      // Warm pages cache: ensure current page is available offline
-      try {
-        const cache = await caches.open('pages')
-        if (!await cache.match(location.href))
-          await cache.add(location.href)
-      }
-      catch {}
-    })
-  }
-}
 
 defineShortcuts({
   'escape': () => {
