@@ -1,5 +1,5 @@
 import type { GridComponentOption } from 'echarts'
-import type { BarSeriesOption, LineSeriesOption, PieSeriesOption } from 'echarts/charts'
+import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts'
 import type { TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption } from 'echarts/core'
 
@@ -9,7 +9,6 @@ import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
 
 type EChartsOption = ComposeOption<
   | TooltipComponentOption
-  | PieSeriesOption
   | GridComponentOption
 >
 

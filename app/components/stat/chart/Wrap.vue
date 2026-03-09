@@ -66,7 +66,7 @@ function onChangePeriod(period: Period) {
       </div>
     </div>
 
-    <StatChartView
+    <LazyStatChartView
       :chartType="statConfig.config.value.chartType"
       :period="statDate.params.value.intervalsBy"
       :series="props.series"
