@@ -19,15 +19,22 @@ registerRoute(new PrecacheRoute(pc))
 // Cleanup caches from previous SW versions
 cleanupOutdatedCaches()
 
+// Only cache 200 OK responses (skip redirects, opaque, error responses)
+const cacheOkOnly = {
+  cacheWillUpdate: async ({ response }: { response: Response }) =>
+    response.status === 200 ? response : null,
+}
+
 // Navigation: network-first with offline fallback to cached HTML
 registerRoute(new NavigationRoute(new NetworkFirst({
   cacheName: 'pages',
+  plugins: [cacheOkOnly],
 })))
 
 // i18n locale messages: network-first for offline support
 registerRoute(
   ({ url }) => url.pathname.startsWith('/_i18n/'),
-  new NetworkFirst({ cacheName: 'i18n' }),
+  new NetworkFirst({ cacheName: 'i18n', plugins: [cacheOkOnly] }),
 )
 
 // Runtime caching for external resources
