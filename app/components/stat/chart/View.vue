@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import defu from 'defu'
-import { BarChart, LineChart, PieChart } from 'echarts/charts'
-import { DataZoomComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
+import { BarChart, LineChart } from 'echarts/charts'
+import { GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
@@ -32,13 +32,10 @@ const emit = defineEmits<{
 
 use([
   BarChart,
-  DataZoomComponent,
   GridComponent,
   LineChart,
   MarkAreaComponent,
   MarkLineComponent,
-  MarkPointComponent,
-  PieChart,
   SVGRenderer,
   TooltipComponent,
 ])
