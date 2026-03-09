@@ -52,19 +52,20 @@ export function useDemo() {
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
     const endDate = new Date().getTime()
 
+    const transactibleIds = categoriesStore.getTransactibleIds()
+    const walletIds = walletsStore.sortedIds
+
     const trns: Trns = Array.from({ length: config.trnsCount }).reduce((acc, _, i) => {
-      return {
-        ...acc,
-        [i]: {
-          amount: Math.floor(Math.random() * config.amount) + 1,
-          categoryId: categoriesStore.getTransactibleIds()[Math.floor(Math.random() * categoriesStore.getTransactibleIds().length)],
-          date: startDate + Math.random() * (endDate - startDate),
-          id: i,
-          type: Math.random() < 0.5 ? 0 : 1,
-          walletId: walletsStore.sortedIds[Math.floor(Math.random() * walletsStore.sortedIds.length)],
-        },
+      acc[i] = {
+        amount: Math.floor(Math.random() * config.amount) + 1,
+        categoryId: transactibleIds[Math.floor(Math.random() * transactibleIds.length)],
+        date: startDate + Math.random() * (endDate - startDate),
+        id: i,
+        type: Math.random() < 0.5 ? 0 : 1,
+        walletId: walletIds[Math.floor(Math.random() * walletIds.length)],
       }
-    }, {})
+      return acc
+    }, {} as Trns)
 
     trnsStore.setTrns(trns)
   }
