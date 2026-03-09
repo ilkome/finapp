@@ -2,10 +2,11 @@ import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 
 import { TrnType } from '~/components/trns/types'
 
-export function getTypesMapping(slug: StatTabSlug): TrnType[] | undefined {
-  const typeMapping: Record<StatTabSlug, TrnType[]> = {
+export function getTypesMapping(slug: SeriesSlugSelected | StatTabSlug): TrnType[] | undefined {
+  const typeMapping: Record<string, TrnType[]> = {
     expense: [TrnType.Expense, TrnType.Transfer],
     income: [TrnType.Income, TrnType.Transfer],
+    netIncome: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
     split: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
     summary: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
   }

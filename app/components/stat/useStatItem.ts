@@ -40,7 +40,7 @@ export function useStatItem({
   const { addMarkArea, createSeriesItem } = useStatChart()
 
   const newBaseStorageKey = computed(() =>
-    `finapp-${statDate.params.value.intervalsBy}-${storageKey.value}-${JSON.stringify(filter?.categoriesIds?.value)}`,
+    `finapp-${statDate.params.value.intervalsBy}-${storageKey.value}-${(filter?.categoriesIds?.value ?? []).join(',')}`,
   )
 
   const filteredType = useStorage<SeriesSlugSelected>(
@@ -55,7 +55,7 @@ export function useStatItem({
   const selectedTypesMapping = computed(() => getTypesMapping(selectedType.value))
 
   const isPeriodOneDay = computed(() => isPeriodOneDayFn(statDate.params.value))
-  const isIntervalSelected = computed(() => isIntervalSelected.value)
+  const isIntervalSelected = computed(() => statDate.params.value.intervalSelected >= 0)
 
   const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     trnsIds: trnsIds.value,
