@@ -12,8 +12,11 @@ export type MenuItem = {
   }
 }
 
+// Module-level ref: shared across all useMenuData() callers so that
+// SidebarMenuItem (sets true) and default.vue (reads) use the same state.
+const isMenuOpen = ref(false)
+
 export function useMenuData() {
-  const isMenuOpen = ref(false)
   const { t } = useI18n()
   const { openFormForCreate } = useTrnsFormStore()
   const walletsStore = useWalletsStore()

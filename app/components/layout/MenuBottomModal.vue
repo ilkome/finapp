@@ -20,13 +20,13 @@ const { isDemo } = useDemo()
       </template>
 
       <div class="bottomSheetContent">
-        <div class="bottomSheetContentInside grid gap-3 px-3 pt-4 pb-2">
+        <div class="bottomSheetContentInside px-3 pt-4 pb-2">
           <!-- User -->
           <div
             v-if="!isDemo"
-            class="mx-2"
+            class="border-item-6 mx-2 border-b pb-2 pt-2"
           >
-            <UserViewLogout isShowSignOut />
+            <UserViewLogout />
           </div>
 
           <LayoutSidebarMenu class="py-4" />
