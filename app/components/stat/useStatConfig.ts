@@ -54,7 +54,11 @@ type StatConfigParams = {
 }
 
 export function useStatConfig({ props, storageKey }: StatConfigParams) {
-  const newBaseStorageKey = computed(() => `finapp-${storageKey}-${JSON.stringify(useRouter().currentRoute.value.query)}`)
+  const newBaseStorageKey = computed(() => {
+    const query = useRouter().currentRoute.value.query
+    const queryKey = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
+    return `finapp-${storageKey}-${queryKey}`
+  })
 
   const config = useStorage<MiniItemConfig>(newBaseStorageKey.value, {
     catsList: {
