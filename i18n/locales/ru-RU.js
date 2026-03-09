@@ -37,10 +37,19 @@ export default {
     duplicate: 'Дублировать',
     edit: 'Редактировать',
     loading: 'Загрузка...',
+    moreOptions: 'Ещё',
+    next: 'Вперёд',
     no: 'Нет',
     noData: 'Нет данных',
+    previous: 'Назад',
     save: 'Сохранить',
     sure: 'Удалить?',
+    today: 'Сегодня',
+    toggleExpand: 'Развернуть/свернуть',
+    toggleFolders: 'Папки',
+    toggleGrouping: 'Группировка',
+    togglePresets: 'Пресеты',
+    toggleView: 'Вид',
     yes: 'Да',
   },
 
@@ -111,6 +120,7 @@ export default {
   },
 
   currencies: {
+    ariaFilter: 'Фильтр валют',
     base: 'Основная валюта',
     list: {
       all: 'Все',
@@ -345,6 +355,7 @@ export default {
 
   trnForm: {
     adjustmentTitle: 'Корректировка',
+    ariaCopyAmount: 'Копировать сумму',
     category: {
       select: 'Выбрать категорию',
     },
@@ -399,6 +410,7 @@ export default {
   userLogout: 'Выйти из аккаунта',
 
   wallets: {
+    ariaSwitch: 'Поменять кошельки',
     createNewTitle: 'Добавление кошелька',
     errors: {
       deleteFailed: 'Не удалось удалить кошелек',

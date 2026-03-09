@@ -134,11 +134,11 @@ function copyAmount() {
         v-if="item.transferType === 'expense'"
         class="flex justify-center gap-1 pt-3 pb-1"
       >
-        <UiActionButton @click="switchWallets">
+        <UiActionButton :ariaLabel="$t('wallets.ariaSwitch')" @click="switchWallets">
           <Icon name="lucide:arrow-up-down" size="24" />
         </UiActionButton>
 
-        <UiActionButton @click="copyAmount">
+        <UiActionButton :ariaLabel="$t('trnForm.ariaCopyAmount')" @click="copyAmount">
           <Icon name="lucide:clipboard-paste" size="24" />
         </UiActionButton>
       </div>

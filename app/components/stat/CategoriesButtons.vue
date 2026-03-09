@@ -71,6 +71,7 @@ function onChangeViewOptions(newViewOptions: Pick<DeepPartial<MiniItemConfig>, '
         </UiChipButton>
 
         <UiChipButton
+          :ariaLabel="$t('base.togglePresets')"
           class="!grow-0"
           @click="isShowMorePresets = !isShowMorePresets"
         >

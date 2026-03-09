@@ -67,7 +67,7 @@ const list = computed(() => {
     <UiHeader>
       <UiHeaderTitle>{{ t('currencies.page.title') }}</UiHeaderTitle>
       <template #actions>
-        <UiActionButton @click="showAll = !showAll">
+        <UiActionButton :ariaLabel="$t('currencies.ariaFilter')" @click="showAll = !showAll">
           <Icon
             :name="showAll ? 'lucide:filter' : 'lucide:globe'"
             size="20"
