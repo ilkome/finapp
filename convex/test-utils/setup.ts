@@ -14,7 +14,8 @@ beforeEach(() => {
 vi.mock('../auth', () => ({
   authComponent: {
     safeGetAuthUser: vi.fn(async () => {
-      if (!mockUserId) return null
+      if (!mockUserId)
+        return null
       return { _id: mockUserId }
     }),
   },
