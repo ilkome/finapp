@@ -25,6 +25,7 @@ const isExpanded = ref(false)
 
 const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.catsRound.isGrouped, props.preCategoriesIds))
 const visibleCategories = computed(() => isExpanded.value ? roundCategories.value : roundCategories.value.slice(0, visibleCategoriesLimit))
+const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
 
 <template>
@@ -34,9 +35,9 @@ const visibleCategories = computed(() => isExpanded.value ? roundCategories.valu
       :key="item.id"
       :item="item"
       :class="{
-        'opacity-60': props.filteredCategoriesIds?.length > 0 && !props.filteredCategoriesIds?.includes(item.id),
-        'opacity-50': !props.filteredCategoriesIds?.includes(item.id) && item.value === 0,
-        '!border-(--ui-primary)': props.filteredCategoriesIds?.includes(item.id),
+        'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
+        'opacity-50': !filteredSet.has(item.id) && item.value === 0,
+        '!border-(--ui-primary)': filteredSet.has(item.id),
       }"
       class="transition-opacity"
       isShowAmount

@@ -56,6 +56,10 @@ const {
   typeGroupsStatus,
   walletsToggledMap,
 } = useWalletsGrouping(selectedWalletsIds, groupedBy)
+
+function hasGroups(groups: Record<string, unknown> | undefined) {
+  return groups ? Object.keys(groups).length > 0 : false
+}
 </script>
 
 <template>
@@ -221,7 +225,7 @@ const {
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'bg-item-2 rounded-sm': Object.keys(content.groups ?? {}).length === 0,
+                'bg-item-2 rounded-sm': !hasGroups(content.groups),
               }"
               :isShown="
                 walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
@@ -255,7 +259,7 @@ const {
               </template>
 
               <div
-                v-if="Object.keys(content.groups ?? {}).length > 0"
+                v-if="hasGroups(content.groups)"
                 class="grid gap-2"
               >
                 <UiToggleControlled

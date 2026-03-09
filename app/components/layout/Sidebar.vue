@@ -17,7 +17,6 @@ const router = useRouter()
 const userStore = useUserStore()
 const { isDemo } = useDemo()
 const { t } = useI18n()
-const { width } = useWindowSize()
 const walletsStore = useWalletsStore()
 
 const isShowLogoMenu = ref(false)
@@ -27,10 +26,9 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
 <template>
   <aside
     :class="{
-      'w-72': props.isShowSidebar && width >= 767,
-      'w-12': !props.isShowSidebar || width < 767,
+      'md:w-72': props.isShowSidebar,
     }"
-    class="fixed inset-y-0 left-0 z-40 hidden h-dvh overflow-hidden transition-all duration-300 ease-in-out sm:block"
+    class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden transition-all duration-300 ease-in-out sm:block"
   >
     <div class="relative h-full overflow-hidden overflow-y-auto overscroll-contain">
       <!-- Small menu -->
@@ -41,8 +39,8 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
       />
 
       <div
-        v-if="width >= 768 && props.isShowSidebar"
-        class="grid h-full content-start gap-8 overflow-hidden overflow-y-auto"
+        v-if="props.isShowSidebar"
+        class="hidden h-full content-start gap-8 overflow-hidden overflow-y-auto md:grid"
       >
         <div class="px-2 pt-5">
           <BottomSheetOrDropdown

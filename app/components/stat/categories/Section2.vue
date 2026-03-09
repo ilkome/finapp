@@ -235,14 +235,14 @@ function toggleRoot(id: CategoryId) {
                   :biggestCatNumber="linesBiggestCatNumber"
                   :lineWidth="statConfig.config.value.catsList.isLines ? 0 : 1"
                   class="grow"
-                  @click="(item.categories && item.categories?.length >= 1) ? toggleRoot(item.id) : emit('clickCategory', item.id)"
+                  @click="item.categories?.length ? toggleRoot(item.id) : emit('clickCategory', item.id)"
                 />
               </div>
             </template>
 
             <!-- Inside -->
             <div
-              v-if="categoriesOpened[item.id]?.show && item.categories && item.categories?.length >= 1"
+              v-if="categoriesOpened[item.id]?.show && item.categories?.length"
               class="mt-[-2px] ml-5 -translate-x-px pb-3 pl-3"
             >
               <div
