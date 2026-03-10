@@ -26,7 +26,7 @@ export default defineNuxtPlugin(() => {
   // The crossDomainClient plugin automatically handles cookie forwarding
   // (reads localStorage['better-auth_cookie'] → sends as Better-Auth-Cookie header).
   const fetchToken = async (opts: { forceRefreshToken: boolean }) => {
-    if (!hasAuthCookie()) {
+    if (!hasAuthCookie() || !navigator.onLine) {
       authReadyResolve?.()
       return null
     }
@@ -38,7 +38,8 @@ export default defineNuxtPlugin(() => {
       return token
     }
     catch (error) {
-      logger.error('fetchConvexToken error:', error)
+      if (navigator.onLine)
+        logger.error('fetchConvexToken error:', error)
       authReadyResolve?.()
       return null
     }
@@ -58,7 +59,7 @@ export default defineNuxtPlugin(() => {
   // us call setAuth immediately, which starts token fetching in parallel
   // with the background session resolution.
   let authSet = false
-  if (hasAuthCookie()) {
+  if (hasAuthCookie() && navigator.onLine) {
     startAuth()
     authSet = true
   }
@@ -77,7 +78,9 @@ export default defineNuxtPlugin(() => {
           authSet = true
         }
       }
-      else {
+      else if (navigator.onLine) {
+        // Only clear auth when online — offline session fetch failures
+        // should not log the user out.
         client.client.clearAuth()
         authSet = false
         clearAuthCookie()
