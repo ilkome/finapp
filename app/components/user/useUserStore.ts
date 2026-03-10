@@ -11,7 +11,7 @@ import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { clearAuthCookie } from '~/composables/useAuthCookie'
+import { clearAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
 import { blockPersist, handleMutationResult, isPersistBlocked } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
@@ -170,6 +170,7 @@ export const useUserStore = defineStore('user', () => {
       await localforage.clear()
       isDemo.value = null
       clearAuthCookie()
+      setSessionInitialized(false)
       window.location.href = '/login'
       return
     }
@@ -190,6 +191,7 @@ export const useUserStore = defineStore('user', () => {
       useTrnsFormStore().$reset()
       setUser(null)
       clearAuthCookie()
+      setSessionInitialized(false)
       await localforage.clear()
       await authClient.signOut()
     }

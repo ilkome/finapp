@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // ---------------------------------------------------------------------------
 // Shared mock state (hoisted so vi.mock factories can reference them)
@@ -8,16 +8,28 @@ const {
   getSessionMock,
   hasAuthCookieMock,
   isDemoRef,
+  isSessionInitializedMock,
   navigateToMock,
   setAuthCookieMock,
-} = vi.hoisted(() => ({
-  clearAuthCookieMock: vi.fn(),
-  getSessionMock: vi.fn(),
-  hasAuthCookieMock: vi.fn(() => false),
-  isDemoRef: { value: false },
-  navigateToMock: vi.fn(),
-  setAuthCookieMock: vi.fn(),
-}))
+  setSessionInitializedMock,
+} = vi.hoisted(() => {
+  let _sessionInitialized = false
+  const isSessionInitializedMock = vi.fn(() => _sessionInitialized)
+  const setSessionInitializedMock = vi.fn((value: boolean) => {
+    _sessionInitialized = value
+  })
+
+  return {
+    clearAuthCookieMock: vi.fn(),
+    getSessionMock: vi.fn(),
+    hasAuthCookieMock: vi.fn(() => false),
+    isDemoRef: { value: false },
+    isSessionInitializedMock,
+    navigateToMock: vi.fn(),
+    setAuthCookieMock: vi.fn(),
+    setSessionInitializedMock,
+  }
+})
 
 // ---------------------------------------------------------------------------
 // Module mocks
@@ -29,8 +41,9 @@ vi.mock('~/components/demo/useDemo', () => ({
 vi.mock('~/composables/useAuthCookie', () => ({
   clearAuthCookie: clearAuthCookieMock,
   hasAuthCookie: hasAuthCookieMock,
+  isSessionInitialized: isSessionInitializedMock,
   setAuthCookie: setAuthCookieMock,
-  useAuthCookieSSR: () => ({ value: null }),
+  setSessionInitialized: setSessionInitializedMock,
 }))
 
 vi.mock('~/utils/logger', () => ({
@@ -42,6 +55,7 @@ vi.mock('~/utils/logger', () => ({
 // ---------------------------------------------------------------------------
 vi.stubGlobal('defineNuxtRouteMiddleware', (fn: any) => fn)
 vi.stubGlobal('navigateTo', navigateToMock)
+vi.stubGlobal('navigator', { onLine: true })
 vi.stubGlobal('useAuth', () => ({ getSession: getSessionMock }))
 vi.stubGlobal('getSafeRedirectPath', (value: unknown) => {
   if (typeof value === 'string' && value.startsWith('/') && !value.startsWith('//'))
@@ -63,21 +77,25 @@ async function flushPromises() {
 
 type MiddlewareFn = (to: ReturnType<typeof createRoute>) => Promise<unknown>
 
+let middleware: MiddlewareFn
+
 async function loadMiddleware(): Promise<MiddlewareFn> {
-  const mod = await import('~/middleware/auth.global')
-  return mod.default as MiddlewareFn
+  if (!middleware) {
+    const mod = await import('~/middleware/auth.global')
+    middleware = mod.default as MiddlewareFn
+  }
+  return middleware
 }
 
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
-// Note: import.meta.prerender and import.meta.server are undefined in vitest,
-// so SSR/prerender code paths are not exercised. All tests cover client behavior.
+// SPA mode — all code paths are client-side.
 
 describe('auth.global middleware', () => {
   beforeEach(() => {
-    vi.resetModules()
     vi.clearAllMocks()
+    setSessionInitializedMock(false)
     isDemoRef.value = false
     hasAuthCookieMock.mockReturnValue(false)
   })
@@ -282,6 +300,55 @@ describe('auth.global middleware', () => {
         path: '/login',
         query: { redirect: '/settings' },
       })
+    })
+  })
+
+  // --- Offline scenarios ---
+
+  describe('offline', () => {
+    beforeEach(() => {
+      vi.stubGlobal('navigator', { onLine: false })
+    })
+
+    afterEach(() => {
+      vi.stubGlobal('navigator', { onLine: true })
+    })
+
+    it('skips getSession when offline with cached cookie', async () => {
+      hasAuthCookieMock.mockReturnValue(true)
+      const middleware = await loadMiddleware()
+      const result = await middleware(createRoute('/dashboard'))
+
+      expect(getSessionMock).not.toHaveBeenCalled()
+      expect(navigateToMock).not.toHaveBeenCalled()
+      expect(result).toBeUndefined()
+    })
+
+    it('redirects /login to /dashboard when offline with cached cookie', async () => {
+      hasAuthCookieMock.mockReturnValue(true)
+      const middleware = await loadMiddleware()
+      await middleware(createRoute('/login'))
+
+      expect(navigateToMock).toHaveBeenCalledWith('/dashboard')
+    })
+
+    it('redirects to /login when offline without cached cookie', async () => {
+      const middleware = await loadMiddleware()
+      await middleware(createRoute('/settings'))
+
+      expect(getSessionMock).not.toHaveBeenCalled()
+      expect(navigateToMock).toHaveBeenCalledWith({
+        path: '/login',
+        query: { redirect: '/settings' },
+      })
+    })
+
+    it('passes through /login when offline without cached cookie', async () => {
+      const middleware = await loadMiddleware()
+      const result = await middleware(createRoute('/login'))
+
+      expect(navigateToMock).not.toHaveBeenCalled()
+      expect(result).toBeUndefined()
     })
   })
 })

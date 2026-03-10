@@ -1,19 +1,10 @@
 import { useDemo } from '~/components/demo/useDemo'
-import { clearAuthCookie, hasAuthCookie, setAuthCookie, useAuthCookieSSR } from '~/composables/useAuthCookie'
+import { clearAuthCookie, hasAuthCookie, isSessionInitialized, setAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('auth/middleware')
 
-// Track whether we've already initialized the cross-domain session
-// to avoid calling getSession() on every navigation (which triggers
-// $sessionSignal → useSession refetch → get-session → signal → loop)
-let sessionInitialized = false
-
 export default defineNuxtRouteMiddleware(async (to) => {
-  // Skip auth during static prerender — no session context available
-  if (import.meta.prerender)
-    return
-
   // OTT can arrive on any route (callbackURL is not always preserved).
   // Redirect to /auth/callback which handles OTT verification on the client.
   if (to.query.ott && to.path !== '/auth/callback') {
@@ -37,26 +28,6 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return
   }
 
-  // SSR: use cached cookie to avoid flash of login page
-  if (import.meta.server) {
-    const ssrCookie = useAuthCookieSSR()
-    const isLoginPage = to.path === '/login'
-    const hasCachedAuth = !!ssrCookie.value
-
-    if (!hasCachedAuth && !isLoginPage) {
-      const redirect = to.fullPath === '/' ? undefined : { redirect: to.fullPath }
-      return navigateTo({
-        path: '/login',
-        query: redirect,
-      })
-    }
-    if (hasCachedAuth && isLoginPage) {
-      return navigateTo('/dashboard')
-    }
-    return
-  }
-
-  // Client: verify auth with Better Auth
   const authClient = useAuth()
   const isLoginPage = to.path === '/login'
 
@@ -66,21 +37,21 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Only call once per page load — repeated calls trigger $sessionSignal loop
   // in the cross-domain client (each response sets a cookie → signal → refetch).
   if (hasAuthCookie()) {
-    if (!sessionInitialized) {
-      sessionInitialized = true
+    if (!isSessionInitialized() && navigator.onLine) {
+      setSessionInitialized(true)
       authClient.getSession()
         .then((session) => {
           const user = session.data?.user || null
           if (!user) {
             logger.error('Background getSession: session expired, redirecting to login')
-            sessionInitialized = false
+            setSessionInitialized(false)
             clearAuthCookie()
             navigateTo('/login')
           }
         })
         .catch((error) => {
           logger.error('Background getSession failed:', error)
-          sessionInitialized = false
+          setSessionInitialized(false)
         })
     }
 
@@ -93,6 +64,15 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // No cached auth on login page — nothing to verify, let user through.
   if (isLoginPage)
     return
+
+  // Offline without cached auth — can't verify, redirect to login
+  if (!navigator.onLine) {
+    const redirect = to.fullPath === '/' ? undefined : { redirect: to.fullPath }
+    return navigateTo({
+      path: '/login',
+      query: redirect,
+    })
+  }
 
   // No cached auth: must verify (blocking)
   try {
