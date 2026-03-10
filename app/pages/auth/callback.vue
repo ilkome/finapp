@@ -22,7 +22,7 @@ onMounted(async () => {
   if (hasAuthCookie()) {
     const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
     localStorage.removeItem('finapp.authRedirect')
-    window.location.href = redirectTo
+    navigateTo(redirectTo, { replace: true })
     return
   }
 
@@ -57,9 +57,9 @@ onMounted(async () => {
       const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
       localStorage.removeItem('finapp.authRedirect')
 
-      // Hard navigation creates a fresh app with the cookie already set.
-      // This ensures Convex plugin initializes with auth from the start.
-      window.location.href = redirectTo
+      // SPA navigation — the Convex plugin's session watch detects the
+      // auth transition and calls client.setAuth(fetchToken) automatically.
+      navigateTo(redirectTo, { replace: true })
       return
     }
   }
