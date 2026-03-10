@@ -4,15 +4,15 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 
 - Node.js >= v24.12.0
 - Package manager: pnpm
-- SSR enabled (`ssr: true`)
-- PWA with service worker (injectManifest strategy, custom `app/sw.ts`)
+- SPA mode (`ssr: false`)
+- PWA with `generateSW` strategy from `@vite-pwa/nuxt` (no custom service worker)
 
 ## Commands
 
 - `pnpm dev` — Nuxt dev server on port 3050
 - `pnpm dev:convex` — Convex backend (watches and auto-deploys changes)
 - Both must run simultaneously in separate terminals
-- `pnpm build` — SSR build (`nuxt build`)
+- `pnpm build` — SPA build (`nuxt build`)
 - `pnpm generate` — static generation (`nuxt generate`)
 - `pnpm lint` / `pnpm lint:fix` — ESLint
 - `pnpm test` — Vitest
@@ -69,8 +69,7 @@ New entities get temporary IDs with `local_` prefix (e.g., `local_a1b2c3`). `isL
 
 | Composable | Returns | Purpose |
 |------------|---------|---------|
-| `useConvexClient()` | `ConvexClient \| ConvexHttpClient` | SSR-aware client (HTTP on server, WebSocket on client) |
-| `useConvexClientComposable()` | `ConvexClient` | WebSocket client (browser only) |
+| `useConvexClient()` | `ConvexClient` | WebSocket client |
 | `useConvexClientWithApi()` | `{ api, client }` | Client + typed `api` object for queries/mutations |
 
 - Stores use imperative `client.query()` and `client.mutation()` because they manage their own caching and offline merge
