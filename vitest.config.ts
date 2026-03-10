@@ -36,7 +36,7 @@ export default defineConfig({
           environment: 'edge-runtime',
           include: ['convex/**/*.test.ts'],
           name: 'convex',
-          setupFiles: ['./convex/test-utils/setup.ts'],
+          setupFiles: ['./convex/test_utils/setup.helper.ts'],
         },
       },
     ],

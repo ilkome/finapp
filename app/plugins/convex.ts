@@ -16,89 +16,50 @@ export default defineNuxtPlugin(() => {
   const authClient = useAuth()
   const session = authClient.useSession()
 
-  const siteUrl = config.public.convexSiteUrl as string
+  // Resolves when the first token fetch completes (success or failure).
+  // Consumers (loadDataFromDB) await this before issuing Convex queries
+  // to ensure the WebSocket is authenticated.
+  let authReadyResolve: (() => void) | null = null
+  let authReadyPromise: Promise<void> | null = null
 
-  const fetchConvexToken = async (forceRefreshToken: boolean) => {
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 10000)
+  // Fetch a Convex JWT via Better Auth's /convex/token endpoint.
+  // The crossDomainClient plugin automatically handles cookie forwarding
+  // (reads localStorage['better-auth_cookie'] → sends as Better-Auth-Cookie header).
+  const fetchToken = async (opts: { forceRefreshToken: boolean }) => {
+    if (!hasAuthCookie()) {
+      authReadyResolve?.()
+      return null
+    }
 
     try {
-      // Use raw fetch with explicit cookie forwarding — cross-domain
-      // client stores cookies in localStorage, not document.cookie.
-      const raw = localStorage.getItem('better-auth_cookie')
-      if (!raw)
-        return null
-
-      let parsed: Record<string, { value?: string }>
-      try {
-        parsed = JSON.parse(raw)
-      }
-      catch {
-        return null
-      }
-
-      if (!parsed || typeof parsed !== 'object')
-        return null
-      const cookieStr = Object.entries(parsed)
-        .filter(([, val]) => val?.value)
-        .map(([key, val]) => `${key}=${val!.value}`)
-        .join('; ')
-
-      if (!cookieStr)
-        return null
-
-      // disableRefresh is set by the before hook in convex/auth.ts for /convex/token.
-      const url = new URL('/api/auth/convex/token', siteUrl)
-      if (forceRefreshToken)
-        url.searchParams.set('forceRefresh', 'true')
-
-      const res = await fetch(url, {
-        credentials: 'omit',
-        headers: {
-          'Better-Auth-Cookie': cookieStr,
-        },
-        method: 'GET',
-        signal: controller.signal,
-      })
-
-      if (!res.ok) {
-        logger.error(`convex/token ${res.status}`, { cookieKeys: Object.keys(parsed), hasCookie: !!cookieStr })
-        return null
-      }
-
-      const data = await res.json()
-      return data?.token ?? null
+      const { data } = await authClient.convex.token()
+      const token = data?.token || null
+      authReadyResolve?.()
+      return token
     }
     catch (error) {
       logger.error('fetchConvexToken error:', error)
+      authReadyResolve?.()
       return null
-    }
-    finally {
-      clearTimeout(timeout)
     }
   }
 
-  const fetchToken = async ({ forceRefreshToken }: { forceRefreshToken: boolean }) => {
-    if (!hasAuthCookie())
-      return null
-
-    return fetchConvexToken(forceRefreshToken)
+  function startAuth() {
+    if (!authReadyPromise) {
+      authReadyPromise = new Promise<void>((resolve) => {
+        authReadyResolve = resolve
+      })
+    }
+    client.setAuth(fetchToken)
   }
 
   // Eagerly set auth when the user has a cached auth cookie.
-  //
-  // This is NOT SSR heritage — it is required for SPA mode too.
-  // The auth middleware calls getSession() in the background (non-blocking),
-  // so the useSession() reactive ref is still pending when stores start
-  // querying Convex in default.vue's useAsyncData. Without this eager
-  // setAuth, those queries would fire with no auth token → 401 errors.
-  //
   // hasAuthCookie() is a fast synchronous document.cookie check that lets
   // us call setAuth immediately, which starts token fetching in parallel
   // with the background session resolution.
   let authSet = false
   if (hasAuthCookie()) {
-    client.setAuth(fetchToken)
+    startAuth()
     authSet = true
   }
 
@@ -111,9 +72,8 @@ export default defineNuxtPlugin(() => {
       if (resolvedUid === undefined)
         return // still pending
       if (resolvedUid) {
-        // Only call setAuth on actual transition (login), not on every session refresh
         if (!authSet) {
-          client.setAuth(fetchToken)
+          startAuth()
           authSet = true
         }
       }
@@ -125,9 +85,27 @@ export default defineNuxtPlugin(() => {
     },
   )
 
+  // Called from callback page after login to ensure Convex auth is set
+  // BEFORE SPA navigation to dashboard. Without this, loadDataFromDB()
+  // fires queries before the plugin's session watch triggers setAuth.
+  function ensureConvexAuth() {
+    if (hasAuthCookie()) {
+      startAuth()
+      authSet = true
+    }
+  }
+
+  // Returns a promise that resolves once the Convex auth token has been
+  // fetched (or immediately if no auth is in progress).
+  function waitForAuth(): Promise<void> {
+    return authReadyPromise ?? Promise.resolve()
+  }
+
   return {
     provide: {
       convex: client,
+      ensureConvexAuth,
+      waitForConvexAuth: waitForAuth,
     },
   }
 })

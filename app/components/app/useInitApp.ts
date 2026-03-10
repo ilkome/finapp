@@ -78,6 +78,11 @@ export function useInitApp() {
     // Unblock persists — may have been blocked by a prior clearLocalData
     unblockPersist()
 
+    // Wait for Convex auth token to be fetched so queries run authenticated.
+    // Without this, queries can fire before setAuth's token fetch completes.
+    const { $waitForConvexAuth } = useNuxtApp()
+    await ($waitForConvexAuth as () => Promise<void>)()
+
     // Set in-memory userId for queue ownership stamping during pushes
     setOfflineQueueUserId(userStore.uid)
 

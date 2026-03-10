@@ -38,7 +38,6 @@ useHead({
     { content: 'width=device-width, initial-scale=1, viewport-fit=cover', name: 'viewport' },
     { content: color, key: 'theme-color', name: 'theme-color' },
   ],
-  noscript: [{ innerHTML: 'This website requires JavaScript.' }],
   style: [
     { id: 'nuxt-ui-black-as-primary', innerHTML: blackAsPrimary, tagPriority: -2 },
     { id: 'nuxt-ui-radius', innerHTML: radius, tagPriority: -2 },
@@ -60,8 +59,8 @@ useGuard()
     <NuxtLoadingIndicator :height="2" color="var(--ui-primary)" />
     <NuxtPwaManifest />
 
-    <NuxtLayout>
-      <NuxtPage />
+    <NuxtLayout v-slot="{ keepalive }">
+      <NuxtPage :keepalive="keepalive" />
     </NuxtLayout>
   </UApp>
 </template>
