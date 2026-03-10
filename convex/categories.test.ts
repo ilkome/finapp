@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import { api } from './_generated/api'
 import schema from './schema'
-import { modules } from './test-utils/setup'
+import { modules } from './test_utils/setup.helper'
 
 const validCategory = {
   color: '#ff0000',

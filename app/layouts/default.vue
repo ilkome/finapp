@@ -39,9 +39,6 @@ const { error, status } = useAsyncData(
         loadDataFromDB()
     }
   },
-  {
-    lazy: true,
-  },
 )
 
 defineShortcuts({
@@ -101,10 +98,6 @@ defineShortcuts({
         <LayoutMenuBottomModal v-if="isMenuOpen" @close="isMenuOpen = false" />
       </template>
     </template>
-
-    <div v-else class="fixed inset-0 flex items-center justify-center">
-      <UiLogo class="!text-6xl" />
-    </div>
 
     <Teleport
       v-if="categoriesStore.hasItems && walletsStore.hasItems"

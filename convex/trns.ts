@@ -70,7 +70,9 @@ export const delta = query({
 export const ensureSyncMeta = mutation({
   args: {},
   handler: async (ctx) => {
-    const user = await requireAuthUser(ctx)
+    const user = await getAuthUser(ctx)
+    if (!user)
+      return
     const existing = await ctx.db
       .query('syncMeta')
       .withIndex('by_user', q => q.eq('userId', user._id))

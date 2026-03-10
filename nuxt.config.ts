@@ -88,6 +88,14 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
   ],
 
+  // Pre-render the SPA shell so the service worker can precache it
+  // for offline navigation (navigateFallback: '/')
+  nitro: {
+    prerender: {
+      routes: ['/'],
+    },
+  },
+
   pages: {
     pattern: ['**/*.vue', '!**/_/**'],
   },

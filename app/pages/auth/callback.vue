@@ -54,11 +54,14 @@ onMounted(async () => {
 
       setAuthCookie(uid)
 
+      // Set Convex auth BEFORE navigating so that loadDataFromDB()
+      // queries are queued behind the token fetch (WebSocket pauses).
+      const { $ensureConvexAuth } = useNuxtApp()
+      ;($ensureConvexAuth as () => void)()
+
       const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
       localStorage.removeItem('finapp.authRedirect')
 
-      // SPA navigation — the Convex plugin's session watch detects the
-      // auth transition and calls client.setAuth(fetchToken) automatically.
       navigateTo(redirectTo, { replace: true })
       return
     }
