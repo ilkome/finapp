@@ -5,7 +5,6 @@ import { TrnType, walletTypeValidator } from './validators'
 
 export default defineSchema({
   categories: defineTable({
-    childIds: v.optional(v.array(v.id('categories'))),
     color: v.string(),
     icon: v.string(),
     name: v.string(),
