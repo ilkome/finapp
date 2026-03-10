@@ -46,11 +46,9 @@ export default defineNuxtPlugin(() => {
   }
 
   function startAuth() {
-    if (!authReadyPromise) {
-      authReadyPromise = new Promise<void>((resolve) => {
-        authReadyResolve = resolve
-      })
-    }
+    authReadyPromise = new Promise<void>((resolve) => {
+      authReadyResolve = resolve
+    })
     client.setAuth(fetchToken)
   }
 
@@ -64,29 +62,46 @@ export default defineNuxtPlugin(() => {
     authSet = true
   }
 
-  // Watch session state for auth transitions
+  // Watch session state for auth transitions.
+  // Only act on definitive results: user found → set auth, user explicitly
+  // absent (no error) → clear auth. Network errors are ignored to prevent
+  // logging out users who are offline or have flaky connections.
   watch(
-    () => session.value?.isPending === false
-      ? (session.value?.data?.user?.id ?? null)
-      : undefined,
+    () => {
+      const s = session.value
+      if (!s || s.isPending)
+        return undefined // still loading
+      if (s.error)
+        return undefined // network/fetch error — not a definitive result
+      return s.data?.user?.id ?? null
+    },
     (resolvedUid) => {
       if (resolvedUid === undefined)
-        return // still pending
+        return
       if (resolvedUid) {
         if (!authSet) {
           startAuth()
           authSet = true
         }
       }
-      else if (navigator.onLine) {
-        // Only clear auth when online — offline session fetch failures
-        // should not log the user out.
+      else {
         client.client.clearAuth()
         authSet = false
         clearAuthCookie()
       }
     },
   )
+
+  // Re-authenticate when coming back online so that loadDataFromDB()
+  // (which awaits waitForConvexAuth) waits for a fresh token.
+  if (typeof window !== 'undefined') {
+    window.addEventListener('online', () => {
+      if (hasAuthCookie()) {
+        startAuth()
+        authSet = true
+      }
+    })
+  }
 
   // Called from callback page after login to ensure Convex auth is set
   // BEFORE SPA navigation to dashboard. Without this, loadDataFromDB()
