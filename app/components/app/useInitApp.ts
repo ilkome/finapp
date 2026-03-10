@@ -15,11 +15,23 @@ import { createLogger } from '~/utils/logger'
 
 export function useInitApp() {
   const isDbLoading = ref(false)
+  const isOffline = ref(false)
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
+
+  // Sync data when coming back online
+  useEventListener(window, 'online', () => {
+    isOffline.value = false
+    if (userStore.uid && !isDbLoading.value)
+      loadDataFromDB()
+  })
+
+  useEventListener(window, 'offline', () => {
+    isOffline.value = true
+  })
 
   async function loadDataFromCache() {
     const [user, userSettings, currencies, categories, wallets, trns] = await Promise.all([
@@ -92,6 +104,7 @@ export function useInitApp() {
   return {
     clearLocalData,
     isDbLoading,
+    isOffline,
     loadDataFromCache,
     loadDataFromDB,
   }

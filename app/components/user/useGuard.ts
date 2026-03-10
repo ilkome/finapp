@@ -12,10 +12,7 @@ export function useGuard() {
     watch(
       () => userStore.currentUser,
       (user, prevUser) => {
-        if (user && route.path === '/login') {
-          router.push('/dashboard')
-        }
-        else if (prevUser && !user) {
+        if (prevUser && !user) {
           if (userStore.isSigningOut)
             return
           clearLocalData()

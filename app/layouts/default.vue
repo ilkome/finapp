@@ -35,13 +35,12 @@ const { error, status } = useAsyncData(
     }
     else if (userStore.currentUser || hasAuthCookie()) {
       await loadDataFromCache()
-      loadDataFromDB()
+      if (navigator.onLine)
+        loadDataFromDB()
     }
-
   },
   {
     lazy: true,
-    server: false,
   },
 )
 
