@@ -59,7 +59,7 @@ New entities get temporary IDs with `local_` prefix (e.g., `local_a1b2c3`). `isL
 ## Convex Backend
 
 - Schema in `convex/schema.ts`: categories, wallets, trns, userSettings, rates
-- `TrnType` enum in `convex/shared.ts`: Expense (0), Income (1), Transfer (2)
+- `TrnType` enum in `convex/validators.ts` (re-exported from `convex/shared.ts`): Expense (0), Income (1), Transfer (2)
 - Adjustment is determined by `categoryId === 'adjustment'`, NOT by `TrnType`. It uses Expense or Income type, excluded from income/expense statistics
 - Auth: `@convex-dev/better-auth` with `cors: true` in `http.ts`
 - Generated types in `convex/_generated/` — do not edit
