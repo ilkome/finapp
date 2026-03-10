@@ -47,7 +47,7 @@ const {
 /**
  * Body scroll lock
  */
-const isBodyLocked = import.meta.client ? useScrollLock(document.body) : ref(false)
+const isBodyLocked = useScrollLock(document.body)
 
 /**
  * Run init when mounted or isShow changed

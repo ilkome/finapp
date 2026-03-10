@@ -28,16 +28,6 @@ async function signInWithGoogle() {
   isDemo.value = null
   isLoading.value = true
 
-  // Unregister service workers before OAuth flow.
-  // A stale SW with navigateFallback intercepts the callback page navigation
-  // at the network level and serves cached content instead of the real page.
-  // Our OTT verification code never runs → auth fails on re-login.
-  if ('serviceWorker' in navigator) {
-    const registrations = await navigator.serviceWorker.getRegistrations()
-    for (const reg of registrations)
-      await reg.unregister()
-  }
-
   // Remember where user wanted to go, so callback page can redirect back.
   // Using localStorage (synchronous) instead of cookie — cookie may not flush
   // before signIn.social() triggers full-page navigation to Google.

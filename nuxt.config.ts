@@ -76,10 +76,6 @@ export default defineNuxtConfig({
     clientBundle: {
       collections: ['lucide', 'mdi'],
       scan: true,
-      ssr: true,
-    },
-    serverBundle: {
-      collections: ['lucide', 'mdi'],
     },
   },
 
@@ -104,14 +100,7 @@ export default defineNuxtConfig({
     devOptions: {
       enabled: false,
       navigateFallback: '/',
-      navigateFallbackAllowlist: [/^\/$/],
       suppressWarnings: false,
-      type: 'module',
-    },
-    filename: 'sw.ts',
-    injectManifest: {
-      globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}'],
     },
     manifest: {
       background_color: '#171717',
@@ -153,8 +142,31 @@ export default defineNuxtConfig({
       theme_color: '#171717',
     },
     registerType: 'autoUpdate',
-    srcDir: '.',
-    strategies: 'injectManifest',
+    workbox: {
+      globIgnores: ['**/200*', '**/404*'],
+      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}'],
+      navigateFallback: '/',
+      runtimeCaching: [
+        {
+          handler: 'CacheFirst',
+          options: {
+            cacheableResponse: { statuses: [0, 200] },
+            cacheName: 'iconify',
+            expiration: { maxEntries: 500 },
+          },
+          urlPattern: /^https:\/\/api\.iconify\.design\/.*/,
+        },
+        {
+          handler: 'CacheFirst',
+          options: {
+            cacheableResponse: { statuses: [0, 200] },
+            cacheName: 'google-fonts',
+            expiration: { maxEntries: 30 },
+          },
+          urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
+        },
+      ],
+    },
   },
 
   runtimeConfig: {
@@ -164,6 +176,6 @@ export default defineNuxtConfig({
     },
   },
 
-  ssr: true,
+  ssr: false,
   telemetry: false,
 })

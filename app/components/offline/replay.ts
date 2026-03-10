@@ -27,9 +27,6 @@ async function collectRemaps(promises: (Promise<unknown> | undefined)[], remapId
 }
 
 export async function replayOfflineQueue(): Promise<void> {
-  if (!import.meta.client)
-    return
-
   if (_isReplaying)
     return
 
