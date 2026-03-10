@@ -74,6 +74,26 @@ New entities get temporary IDs with `local_` prefix (e.g., `local_a1b2c3`). `isL
 
 - Stores use imperative `client.query()` and `client.mutation()` because they manage their own caching and offline merge
 
+### Auth Flow
+
+Auth uses Better Auth with `convexClient()` and `crossDomainClient()` plugins (`composables/useAuth.ts`).
+
+**Convex auth lifecycle** (`plugins/convex.ts`):
+1. Eagerly call `client.setAuth(fetchToken)` if `hasAuthCookie()` && online — starts token fetch in parallel with session resolution
+2. `fetchToken` calls `authClient.convex.token()` — the `crossDomainClient` plugin handles cookie forwarding automatically
+3. `authReadyPromise` resolves when the first token fetch completes (success or failure); consumers (`loadDataFromDB`) await this before issuing queries
+4. Session watch acts only on definitive results — ignores `isPending` and `error` states to prevent logout on network failures
+5. `online` event re-creates `authReadyPromise` and calls `setAuth()` for fresh token
+6. `ensureConvexAuth()` — called from callback page to set auth BEFORE SPA navigation
+
+**Auth cookie** (`composables/useAuthCookie.ts`): `finapp.localAuthUid` cookie (document.cookie, 1yr max-age) — fast synchronous check for auth state. Not a security token, just a hint for middleware and plugin to skip network calls.
+
+### Convex Deploy Notes
+
+- Convex rejects hyphens in directory names (use underscores: `test_utils/`)
+- Files with multiple dots (e.g., `setup.helper.ts`) are auto-skipped by Convex bundler — useful for test helpers
+- Deploy with `--typecheck=disable` if there are pre-existing TS errors in Convex functions
+
 ## Local Development Setup
 
 1. Install dependencies: `pnpm install`
@@ -127,8 +147,11 @@ All `.env*` files are gitignored except `.env.example`.
 | App entry | `app/app.vue` |
 | Theme logic | `app/plugins/theme.ts`, `app/app.vue` |
 | Auth setup | `app/plugins/convex.ts`, `app/composables/useAuth.ts` |
+| Auth cookie | `app/composables/useAuthCookie.ts` |
+| Auth guard | `app/middleware/auth.global.ts`, `app/components/user/useGuard.ts` |
 | Store sync | `app/composables/useStoreSync.ts` |
 | Offline queue | `app/components/offline/helpers.ts` |
+| Offline replay | `app/components/offline/replay.ts` |
 | Statistics calc | `app/components/amount/getTotal.ts` |
 | Convex schema | `convex/schema.ts` |
 | Frontend IDs | `app/utils/convexId.ts`, `utils/generateId.ts` |
