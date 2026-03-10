@@ -104,7 +104,7 @@ pnpm dev:convex
 
 ## 🚀 Production
 
-Build for SSR (requires Node.js server):
+Build for production:
 
 ```bash
 pnpm build
