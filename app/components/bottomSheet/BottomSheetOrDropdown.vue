@@ -20,76 +20,74 @@ const open = ref(false)
 </script>
 
 <template>
-  <div class="grow">
-    <UPopover
-      v-if="isLaptop"
-      v-model:open="open"
-      :content="{
-        align: 'center',
-        side: 'bottom',
-      }"
-      :ui="{
-        content: 'z-50 overflow-hidden',
-      }"
-      class="popoverGroup grow overflow-hidden"
-    >
-      <slot name="trigger" />
+  <UPopover
+    v-if="isLaptop"
+    v-model:open="open"
+    :content="{
+      align: 'center',
+      side: 'bottom',
+    }"
+    :ui="{
+      content: 'z-50 overflow-hidden',
+    }"
+    class="popoverGroup grow overflow-hidden"
+  >
+    <slot name="trigger" />
 
-      <template #content>
-        <UiPopoverWrap
-          :title="props.title"
-          :isShowCloseBtn="props.isShowCloseBtn"
-          @close="() => open = false"
-        >
-          <slot
-            name="content"
-            :close="() => open = false"
-          />
-          <slot
-            name="custom"
-            :close="() => open = false"
-          />
-        </UiPopoverWrap>
-      </template>
-    </UPopover>
+    <template #content>
+      <UiPopoverWrap
+        :title="props.title"
+        :isShowCloseBtn="props.isShowCloseBtn"
+        @close="() => open = false"
+      >
+        <slot
+          name="content"
+          :close="() => open = false"
+        />
+        <slot
+          name="custom"
+          :close="() => open = false"
+        />
+      </UiPopoverWrap>
+    </template>
+  </UPopover>
 
-    <div
-      v-else
-      class="grow"
-      @click="emit('openModal')"
-    >
-      <slot name="trigger" />
+  <div
+    v-else
+    class="grow"
+    @click="emit('openModal')"
+  >
+    <slot name="trigger" />
 
-      <Teleport to="body">
-        <BottomSheet
-          v-if="props.isOpen"
-          isShow
-          :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
-          :dragStyle="props.bottomSheetStyle"
-          @closed="emit('closeModal')"
-        >
-          <template #default="{ close }">
-            <div class="bottomSheetContent">
-              <UiTitleModal v-if="props.title">
-                {{ props.title }}
-              </UiTitleModal>
+    <Teleport to="body">
+      <BottomSheet
+        v-if="props.isOpen"
+        isShow
+        :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
+        :dragStyle="props.bottomSheetStyle"
+        @closed="emit('closeModal')"
+      >
+        <template #default="{ close }">
+          <div class="bottomSheetContent">
+            <UiTitleModal v-if="props.title">
+              {{ props.title }}
+            </UiTitleModal>
 
-              <div
-                v-if="$slots.content"
-                class="scrollerBlock bottomSheetContentInside"
-              >
-                <slot name="content" :close />
-              </div>
-
-              <slot
-                v-if="$slots.custom"
-                name="custom"
-                :close
-              />
+            <div
+              v-if="$slots.content"
+              class="scrollerBlock bottomSheetContentInside"
+            >
+              <slot name="content" :close />
             </div>
-          </template>
-        </BottomSheet>
-      </Teleport>
-    </div>
+
+            <slot
+              v-if="$slots.custom"
+              name="custom"
+              :close
+            />
+          </div>
+        </template>
+      </BottomSheet>
+    </Teleport>
   </div>
 </template>

@@ -30,13 +30,12 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     <BottomSheetOrDropdown
       :title="t('common.date')"
       :isOpen="isShow"
-      class="grow"
       isShowCloseBtn
       @openModal="isShow = true"
       @closeModal="isShow = false"
     >
       <template #trigger>
-        <UiActionButton class="text-2 grid grow !justify-start p-2">
+        <UiActionButton class="text-2 grid w-full !justify-start p-2 text-left">
           <div class="text-1 text-sm">
             {{ formattedDate.day }} {{ formattedDate.month }}
           </div>
