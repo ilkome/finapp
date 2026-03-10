@@ -25,7 +25,7 @@ export default defineNuxtPlugin(() => {
   // Fetch a Convex JWT via Better Auth's /convex/token endpoint.
   // The crossDomainClient plugin automatically handles cookie forwarding
   // (reads localStorage['better-auth_cookie'] → sends as Better-Auth-Cookie header).
-  const fetchToken = async (opts: { forceRefreshToken: boolean }) => {
+  const fetchToken = async (_opts: { forceRefreshToken: boolean }) => {
     if (!hasAuthCookie() || !navigator.onLine) {
       authReadyResolve?.()
       return null
@@ -94,14 +94,12 @@ export default defineNuxtPlugin(() => {
 
   // Re-authenticate when coming back online so that loadDataFromDB()
   // (which awaits waitForConvexAuth) waits for a fresh token.
-  if (typeof window !== 'undefined') {
-    window.addEventListener('online', () => {
-      if (hasAuthCookie()) {
-        startAuth()
-        authSet = true
-      }
-    })
-  }
+  window.addEventListener('online', () => {
+    if (hasAuthCookie()) {
+      startAuth()
+      authSet = true
+    }
+  })
 
   // Called from callback page after login to ensure Convex auth is set
   // BEFORE SPA navigation to dashboard. Without this, loadDataFromDB()
