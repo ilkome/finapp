@@ -40,8 +40,14 @@ export default defineNuxtConfig({
 
   fonts: {
     defaults: {
-      subsets: ['cyrillic'],
+      subsets: ['cyrillic', 'latin', 'latin-ext'],
     },
+    families: [
+      { global: true, name: 'Roboto', weights: [400, 500, 600, 700] },
+      { global: true, name: 'Roboto Condensed', weights: [400, 500, 600, 700] },
+      { global: true, name: 'Nunito', weights: [400, 700, 800] },
+      { global: true, name: 'Unica One' },
+    ],
   },
 
   future: {
