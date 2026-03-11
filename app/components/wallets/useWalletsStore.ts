@@ -73,7 +73,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       [id]: values,
     })
 
-    if (!pushSaveOp({ entity: 'wallets', id, isDemo: isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+    if (!pushSaveOp({ entity: 'wallets', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
       return
 
     const { api, client } = useConvexClientWithApi()
@@ -112,8 +112,9 @@ export const useWalletsStore = defineStore('wallets', () => {
     // Optimistic update
     const updated = { ...(items.value ?? {}) } as Wallets
     for (let i = 0; i < ids.length; i++) {
-      if (updated[ids[i]])
-        updated[ids[i]] = { ...updated[ids[i]], order: i }
+      const walletId = ids[i]!
+      if (updated[walletId])
+        updated[walletId] = { ...updated[walletId]!, order: i }
     }
     setWallets(updated)
 
@@ -150,7 +151,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       return []
 
     return Object.keys(items.value ?? {}).sort(
-      (a, b) => items.value[a].order - items.value[b].order,
+      (a, b) => (items.value![a]?.order ?? 0) - (items.value![b]?.order ?? 0),
     )
   })
 
@@ -166,13 +167,16 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   const itemsComputed = computed<WalletsComputed>(() =>
     sortedIds.value.reduce((acc, id) => {
+      const wallet = items.value?.[id]
+      if (!wallet)
+        return acc
       acc[id] = {
-        ...items.value[id],
+        ...wallet,
         amount: walletTotals.value.get(id) ?? 0,
         rate: getAmountInRate({
           amount: 1,
           baseCurrencyCode: currenciesStore.base,
-          currencyCode: items.value?.[id]?.currency,
+          currencyCode: wallet.currency,
           rates: currenciesStore.rates,
         }),
       }
@@ -192,7 +196,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
 
-    if (!pushDeleteOp({ entity: 'wallets', id, isDemo: isDemo.value }))
+    if (!pushDeleteOp({ entity: 'wallets', id, isDemo: !!isDemo.value }))
       return
 
     // Fire-and-forget mutation, cleanup on success
@@ -209,7 +213,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   return {
-    cancelPersist: () => debouncedPersist.cancel?.(),
+    cancelPersist: () => (debouncedPersist as any).cancel?.(),
     currenciesUsed,
     deleteWallet,
     hasItems,

@@ -88,7 +88,7 @@ export function splitCategoryOps(ops: OfflineOp[]): {
       continue
     }
     const data = op.data as unknown as CategoryItem
-    if (!data.parentId || data.parentId === 0) {
+    if (!data.parentId || data.parentId === (0 as string | 0)) {
       parentOps.push(op)
     }
     else {

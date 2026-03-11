@@ -10,13 +10,13 @@ import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injecti
 const props = defineProps<{
   averageTotal?: Record<string, number>
   categoryId?: CategoryId
-  filteredType: StatTabSlug
+  filteredType: SeriesSlugSelected
   isShowAverage: boolean
   isShowExpense: boolean
   isShowIncome: boolean
   total: TotalReturns
   trnsIds: TrnId[]
-  type: StatTabSlug
+  type: SeriesSlugSelected | StatTabSlug
   walletId?: WalletId
 }>()
 
@@ -111,9 +111,9 @@ function onClick(type: SeriesSlugSelected) {
 
     <div v-else class="flex items-center">
       <StatSumItem
-        :amount="props.type === 'income' ? total[props.type] : -total[props.type]"
+        :amount="props.type === 'income' ? total.income : -((total as Record<string, number>)[props.type]!)"
         :class="className"
-        :type="props.type"
+        :type="(props.type as SeriesSlugSelected)"
         :averageTotal="props.isShowAverage ? props.averageTotal : undefined"
         @click="emit('clickAverage')"
       >
@@ -123,7 +123,7 @@ function onClick(type: SeriesSlugSelected) {
           :categoryId
           :filter
           :statDate
-          :statTabSlug="props.type ?? 'netIncome'"
+          :statTabSlug="(props.type ?? 'netIncome') as SeriesSlugSelected"
           :trnsIds
           :walletId
         />

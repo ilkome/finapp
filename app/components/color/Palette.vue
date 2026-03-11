@@ -59,7 +59,7 @@ const walletColorsUsed = computed(() => {
             <div class="flex-center h-10" :style="{ background: color }">
               <Icon
                 v-if="props.isCategory && (categoryIconByColor.has(color) || color === props.activeColor)"
-                :name="props.activeColor === color ? props.icon : categoryIconByColor.get(color)"
+                :name="props.activeColor === color ? props.icon ?? '' : categoryIconByColor.get(color) ?? ''"
                 size="20"
                 class="text-icon-primary"
               />
@@ -79,7 +79,7 @@ const walletColorsUsed = computed(() => {
         {{ t('color.custom') }}
       </template>
       <FormInput
-        :modelValue="activeColor"
+        :modelValue="activeColor ?? ''"
         type="color"
         @update:modelValue="(value: string) => emit('click', value)"
       />

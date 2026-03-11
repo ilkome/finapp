@@ -18,7 +18,7 @@ vi.mock('~~/services/convex/api', () => ({
 }))
 
 const mutationMock = vi.fn(() => Promise.resolve())
-const queryMock = vi.fn(() => Promise.resolve(null))
+const queryMock = vi.fn<(...args: any[]) => Promise<any>>(() => Promise.resolve(null))
 const onUpdateMock = vi.fn()
 
 vi.stubGlobal('useConvexClientWithApi', () => ({
@@ -98,7 +98,7 @@ describe('useTrnsStore', () => {
       store.saveTrn({ id: 'trn1', values: trn })
 
       expect(store.items).toHaveProperty('trn1')
-      expect(store.items!.trn1.amount).toBe(100)
+      expect((store.items!.trn1 as any).amount).toBe(100)
     })
 
     it('saves to localforage', async () => {
@@ -177,7 +177,7 @@ describe('useTrnsStore', () => {
 
       store.saveTrn({ id: 'trn1', values: makeTrn() })
 
-      expect(store.items!.trn1.updatedAt).toBeGreaterThanOrEqual(before)
+      expect(store.items!.trn1!.updatedAt).toBeGreaterThanOrEqual(before)
     })
 
     it('shows toast on mutation failure', async () => {
@@ -371,7 +371,7 @@ describe('useTrnsStore', () => {
       const store = useTrnsStore()
       await store.initTrns()
 
-      expect(store.items!.trn1.amount).toBe(200)
+      expect((store.items!.trn1 as any).amount).toBe(200)
     })
 
     it('clears store when user has no trns (idsHash returns null)', async () => {

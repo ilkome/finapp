@@ -31,7 +31,10 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
-const parentCategory = computed(() => categoriesStore.items[category.value?.parentId])
+const parentCategory = computed(() => {
+  const pid = category.value?.parentId
+  return pid ? categoriesStore.items[pid] : undefined
+})
 
 function getBarStyle() {
   if (!props.item.value || props.item.value === 0)

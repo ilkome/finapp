@@ -1,6 +1,11 @@
 import localforage from 'localforage'
 
+import type { Categories } from '~/components/categories/types'
+import type { Rates } from '~/components/currencies/types'
 import type { LocaleSlug } from '~/components/locale/types'
+import type { Trns } from '~/components/trns/types'
+import type { User } from '~/components/user/useUserStore'
+import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -35,23 +40,24 @@ export function useInitApp() {
 
   async function loadDataFromCache() {
     const [user, userSettings, currencies, categories, wallets, trns] = await Promise.all([
-      localforage.getItem(STORAGE_KEYS.user),
+      localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem<{ baseCurrency?: string, locale?: LocaleSlug }>(STORAGE_KEYS.userSettings),
-      localforage.getItem(STORAGE_KEYS.currencies),
-      localforage.getItem(STORAGE_KEYS.categories),
-      localforage.getItem(STORAGE_KEYS.wallets),
-      localforage.getItem(STORAGE_KEYS.trns),
+      localforage.getItem<{ rates?: Rates }>(STORAGE_KEYS.currencies),
+      localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
+      localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
+      localforage.getItem<Trns | null>(STORAGE_KEYS.trns),
     ])
 
-    userStore.setUser(user)
+    userStore.setUser(user ?? null)
     if (userSettings?.baseCurrency)
       userStore.setUserBaseCurrency(userSettings.baseCurrency)
     if (userSettings?.locale)
       userStore.setUserLocale(userSettings.locale)
-    currenciesStore.setRates(currencies?.rates)
-    walletsStore.setWallets(wallets)
-    categoriesStore.setCategories(categories)
-    trnsStore.setTrns(trns)
+    if (currencies?.rates)
+      currenciesStore.setRates(currencies.rates)
+    walletsStore.setWallets(wallets ?? null)
+    categoriesStore.setCategories(categories ?? null)
+    trnsStore.setTrns(trns ?? null)
   }
 
   function clearLocalData() {

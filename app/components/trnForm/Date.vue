@@ -8,7 +8,7 @@ const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const { formatDate } = useDateFormats()
 
-const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full'))
+const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full') as { day: string, full: string, month: string, week: string, weekday: string } | undefined)
 const isToday = computed(() => isSameDay(new Date(trnsFormStore.values.date), new Date()))
 const isShow = ref(false)
 
@@ -37,10 +37,10 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       <template #trigger>
         <UiActionButton class="text-2 grid w-full !justify-start p-2 text-left">
           <div class="text-1 text-sm">
-            {{ formattedDate.day }} {{ formattedDate.month }}
+            {{ formattedDate?.day }} {{ formattedDate?.month }}
           </div>
           <div class="font-regular text-2xs leading-none">
-            {{ formattedDate.weekday }}
+            {{ formattedDate?.weekday }}
           </div>
         </UiActionButton>
       </template>

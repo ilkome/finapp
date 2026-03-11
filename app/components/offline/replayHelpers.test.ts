@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import type { OfflineOp } from '~/components/offline/types'
-import type { TrnItem } from '~/components/trns/types'
+import type { Transaction, Transfer, TrnItem } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
 
@@ -26,7 +26,7 @@ describe('remapTrnIds', () => {
       walletId: 'local_w1',
     } as TrnItem
 
-    const result = remapTrnIds(trn, remap)
+    const result = remapTrnIds(trn, remap) as Transaction
     expect(result.walletId).toBe('convex_w1')
     expect(result.categoryId).toBe('convex_c1')
   })
@@ -44,7 +44,7 @@ describe('remapTrnIds', () => {
       updatedAt: 1000,
     } as TrnItem
 
-    const result = remapTrnIds(trn, remap2)
+    const result = remapTrnIds(trn, remap2) as Transfer
     expect(result.expenseWalletId).toBe('convex_w1')
     expect(result.incomeWalletId).toBe('convex_w2')
   })
@@ -59,7 +59,7 @@ describe('remapTrnIds', () => {
       walletId: 'real_w1',
     } as TrnItem
 
-    const result = remapTrnIds(trn, remap)
+    const result = remapTrnIds(trn, remap) as Transaction
     expect(result.walletId).toBe('real_w1')
     expect(result.categoryId).toBe('food')
   })
@@ -72,7 +72,7 @@ describe('remapTrnIds', () => {
       type: TrnType.Expense,
       updatedAt: 1000,
       walletId: 'local_w1',
-    } as TrnItem
+    } as Transaction
 
     remapTrnIds(trn, remap)
     expect(trn.walletId).toBe('local_w1')
@@ -167,7 +167,7 @@ describe('splitCategoryOps', () => {
     const result = splitCategoryOps(ops)
     expect(result.parentOps).toHaveLength(2)
     expect(result.childOps).toHaveLength(1)
-    expect(result.childOps[0].id).toBe('c2')
+    expect(result.childOps[0]!.id).toBe('c2')
   })
 
   it('puts delete ops in parentOps', () => {
@@ -178,7 +178,7 @@ describe('splitCategoryOps', () => {
 
     const result = splitCategoryOps(ops)
     expect(result.parentOps).toHaveLength(1)
-    expect(result.parentOps[0].type).toBe('delete')
+    expect(result.parentOps[0]!.type).toBe('delete')
     expect(result.childOps).toHaveLength(1)
   })
 

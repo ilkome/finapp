@@ -1,4 +1,4 @@
-import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 
 import { TrnType } from '~/components/trns/types'
 
@@ -50,7 +50,7 @@ export function getTypesToShow(
   statTab: StatTabSlug,
   filteredType: SeriesSlugSelected,
   type: SeriesSlugSelected | undefined,
-): string[] {
+): SeriesSlug[] {
   if (statTab === 'summary') {
     if (filteredType === 'netIncome')
       return ['income', 'expense']
@@ -63,5 +63,7 @@ export function getTypesToShow(
   if (statTab === 'expense' || statTab === 'income')
     return [statTab]
 
-  return type ? [type] : ['income', 'expense']
+  if (type && type !== 'netIncome')
+    return [type]
+  return ['income', 'expense']
 }

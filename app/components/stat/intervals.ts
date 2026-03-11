@@ -29,14 +29,14 @@ export function bucketTrnsByIntervals(
     let hi = intervalsInRange.length - 1
     while (lo <= hi) {
       const mid = (lo + hi) >> 1
-      if (trnDate < intervalsInRange[mid].start) {
+      if (trnDate < intervalsInRange[mid]!.start) {
         hi = mid - 1
       }
-      else if (trnDate > intervalsInRange[mid].end) {
+      else if (trnDate > intervalsInRange[mid]!.end) {
         lo = mid + 1
       }
       else {
-        buckets[mid].push(id)
+        buckets[mid]!.push(id)
         break
       }
     }
@@ -44,8 +44,8 @@ export function bucketTrnsByIntervals(
 
   return intervalsInRange.map((range, i) => ({
     range,
-    total: computeTotal(buckets[i]),
-    trnsIds: buckets[i],
+    total: computeTotal(buckets[i]!),
+    trnsIds: buckets[i]!,
   }))
 }
 

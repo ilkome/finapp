@@ -204,7 +204,7 @@ export const remove = action({
     let cursor: string | null = null
     let isDone = false
     while (!isDone) {
-      const result = await ctx.runMutation(internal.categories.removeTrnsByCategoryPage, {
+      const result: { continueCursor: string, isDone: boolean } = await ctx.runMutation(internal.categories.removeTrnsByCategoryPage, {
         categoryId: id,
         cursor,
         userId: user._id,

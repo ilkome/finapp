@@ -44,7 +44,7 @@ type CategoriesStore = {
   hasItems: ComputedRef<boolean>
   initCategories: () => void
   isTransactible: (categoryId: CategoryId) => boolean
-  items: ShallowRef<Categories>
+  items: import('vue').ShallowRef<Categories>
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<RemapInfo | void> | void
   setCategories: (values: Categories | null) => void
@@ -117,8 +117,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     // Track most recent date per category (single pass)
     const latestDateByCategory = new Map<CategoryId, number>()
-    for (const trnId of Object.keys(trnsItems)) {
-      const trn = trnsItems[trnId]
+    for (const trnId of Object.keys(trnsItems ?? {})) {
+      const trn = trnsItems?.[trnId]
       if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
         continue
 
@@ -164,7 +164,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       let data: Categories | null = categories?.length ? convexCategoriesToMap(categories) : null
 
       if (data)
-        data = await mergeOfflineOps(data, 'categories')
+        data = await mergeOfflineOps(data, 'categories') as Categories
 
       setCategories(data)
     }
@@ -249,7 +249,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     // Optimistic UI
     applyOptimisticUpdate(id, values, isUpdateChildCategoriesColor, categoryChildIds)
 
-    if (!pushSaveOp({ entity: 'categories', id, isDemo: isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+    if (!pushSaveOp({ entity: 'categories', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
       return
 
     const { api, client } = useConvexClientWithApi()
@@ -259,7 +259,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       color: values.color,
       icon: values.icon,
       name: values.name,
-      parentId: values.parentId && values.parentId !== 0 ? asConvexId<'categories'>(String(values.parentId)) : 0 as const,
+      parentId: values.parentId ? asConvexId<'categories'>(String(values.parentId)) : 0 as const,
       showInLastUsed: values.showInLastUsed,
       showInQuickSelector: values.showInQuickSelector,
     }
@@ -298,7 +298,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
 
-    if (!pushDeleteOp({ entity: 'categories', id, isDemo: isDemo.value }))
+    if (!pushDeleteOp({ entity: 'categories', id, isDemo: !!isDemo.value }))
       return
 
     // Fire-and-forget mutation, cleanup on success
@@ -315,7 +315,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   return {
-    cancelPersist: () => debouncedPersist.cancel?.(),
+    cancelPersist: () => (debouncedPersist as unknown as { cancel?: () => void }).cancel?.(),
     categoriesForBeParent,
     categoriesIdsForTrnValues,
     categoriesRootIds,

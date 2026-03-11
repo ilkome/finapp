@@ -16,7 +16,7 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 
 const cats = computed(() => {
-  const adjustmentCategory = categoriesStore.items.adjustment
+  const adjustmentCategory = categoriesStore.items.adjustment!
   const adjustmentGroup = {
     ...adjustmentCategory,
     id: 'adjustment',
@@ -55,8 +55,8 @@ const cats = computed(() => {
   return [adjustmentGroup, ...rootGroups]
 })
 
-function onSelect(item: CategoryItemWithId) {
-  emit('selected', item.id)
+function onSelect(item: any) {
+  emit('selected', (item as CategoryItemWithId).id)
   if (props.hide)
     props.hide()
 }
@@ -65,28 +65,28 @@ function onSelect(item: CategoryItemWithId) {
 <template>
   <UCommandPalette
     :placeholder="t('categories.search.placeholder')"
-    :groups="cats"
+    :groups="(cats as any)"
     labelKey="name"
     @update:modelValue="onSelect"
   >
-    <template #category="{ item }">
+    <template #category="{ item: rawItem }">
       <UiElement
-        :isActive="item.id === props.activeItemId"
+        :isActive="(rawItem as any).id === props.activeItemId"
         :lineWidth="1"
         class="w-full grow"
         insideClasses="min-h-[46px]"
       >
         <template #leftIcon>
           <UiIconBase
-            :color="item.color"
-            :name="item.icon"
+            :color="(rawItem as any).color"
+            :name="(rawItem as any).icon"
             invert
           />
         </template>
 
         <div class="grid grow">
           <CategoriesName
-            :category="item"
+            :category="(rawItem as any)"
           />
         </div>
       </UiElement>

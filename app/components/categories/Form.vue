@@ -68,7 +68,8 @@ async function onSave() {
   }
 
   for (const id of Object.keys(categoriesStore.items)) {
-    if (categoriesStore.items[id].name === parsed.data.name && categoriesStore.items[id].parentId === parsed.data.parentId && id !== editCategoryId) {
+    const cat = categoriesStore.items[id]
+    if (cat && cat.name === parsed.data.name && cat.parentId === parsed.data.parentId && id !== editCategoryId) {
       showErrorToast('categories.form.name.exist')
       return
     }
@@ -190,7 +191,7 @@ async function onSave() {
       <div>
         <UiTitleModal>{{ t('categories.form.selectColor') }}</UiTitleModal>
         <CategoriesItem
-          :categoryId="props.categoryId"
+          :categoryId="editCategoryId"
           :category="categoryPlaceholder"
         />
       </div>
@@ -224,7 +225,7 @@ async function onSave() {
       <div class="grid gap-3 pt-3 pb-1">
         <UiTitleModal>{{ t('categories.form.selectIcon') }}</UiTitleModal>
         <CategoriesItem
-          :categoryId="props.categoryId"
+          :categoryId="editCategoryId"
           :category="categoryPlaceholder"
         />
       </div>

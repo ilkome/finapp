@@ -68,9 +68,9 @@ describe('buildWalletGroups', () => {
     if (!result)
       return
 
-    expect(result.cashless.ids).toEqual(['cardRUB', 'cardUSD'])
-    expect(result.cash.ids).toEqual(['cashRUB', 'cashUSD'])
-    expect(result.cash.groups).toEqual({})
+    expect(result.cashless!.ids).toEqual(['cardRUB', 'cardUSD'])
+    expect(result.cash!.ids).toEqual(['cashRUB', 'cashUSD'])
+    expect(result.cash!.groups).toEqual({})
   })
 
   it('builds primary groups by currency', () => {
@@ -78,8 +78,8 @@ describe('buildWalletGroups', () => {
     if (!result)
       return
 
-    expect(result.RUB.ids).toEqual(['cardRUB', 'cashRUB'])
-    expect(result.USD.ids).toEqual(['cardUSD', 'cashUSD', 'creditUSD'])
+    expect(result.RUB!.ids).toEqual(['cardRUB', 'cashRUB'])
+    expect(result.USD!.ids).toEqual(['cardUSD', 'cashUSD', 'creditUSD'])
   })
 
   it('builds secondary groups: type → currency', () => {
@@ -87,9 +87,9 @@ describe('buildWalletGroups', () => {
     if (!result)
       return
 
-    expect(result.cash.groups).toBeDefined()
-    expect(result.cash.groups!.RUB).toEqual(['cashRUB'])
-    expect(result.cash.groups!.USD).toEqual(['cashUSD'])
+    expect(result.cash!.groups).toBeDefined()
+    expect(result.cash!.groups!.RUB).toEqual(['cashRUB'])
+    expect(result.cash!.groups!.USD).toEqual(['cashUSD'])
   })
 
   it('builds secondary groups: currency → type', () => {
@@ -97,9 +97,9 @@ describe('buildWalletGroups', () => {
     if (!result)
       return
 
-    expect(result.USD.groups!.cash).toEqual(['cashUSD'])
-    expect(result.USD.groups!.cashless).toEqual(['cardUSD'])
-    expect(result.USD.groups!.credit).toEqual(['creditUSD'])
+    expect(result.USD!.groups!.cash).toEqual(['cashUSD'])
+    expect(result.USD!.groups!.cashless).toEqual(['cardUSD'])
+    expect(result.USD!.groups!.credit).toEqual(['creditUSD'])
   })
 })
 
@@ -159,24 +159,24 @@ describe('computeToggleStatus', () => {
 describe('applyToggle', () => {
   it('toggles primary group from undefined to false', () => {
     const result = applyToggle({}, 'type', 'cash')
-    expect(result.type!.cash.show).toBe(false)
+    expect(result.type!.cash!.show).toBe(false)
   })
 
   it('toggles primary group from false to true', () => {
     const map: WalletsToggleMap = { type: { cash: { show: false } } }
     const result = applyToggle(map, 'type', 'cash')
-    expect(result.type!.cash.show).toBe(true)
+    expect(result.type!.cash!.show).toBe(true)
   })
 
   it('toggles secondary group from undefined to false', () => {
     const result = applyToggle({}, 'type', 'cash', 'RUB')
-    expect(result.type!.cash.groups!.RUB).toBe(false)
+    expect(result.type!.cash!.groups!.RUB).toBe(false)
   })
 
   it('toggles secondary group from false to true', () => {
     const map: WalletsToggleMap = { type: { cash: { groups: { RUB: false } } } }
     const result = applyToggle(map, 'type', 'cash', 'RUB')
-    expect(result.type!.cash.groups!.RUB).toBe(true)
+    expect(result.type!.cash!.groups!.RUB).toBe(true)
   })
 
   it('does nothing for groupedBy "none"', () => {
@@ -196,8 +196,8 @@ describe('applyToggleAll', () => {
     const status = { isAllOpen: false, isAllOpenInside: false, isAnyOpen: false, isAnyOpenInside: false }
     const result = applyToggleAll({}, 'type', grouped, false, status)
 
-    expect(result.type!.cash.show).toBe(true)
-    expect(result.type!.cashless.show).toBe(true)
+    expect(result.type!.cash!.show).toBe(true)
+    expect(result.type!.cashless!.show).toBe(true)
   })
 
   it('closes all primary groups when all are open', () => {
@@ -210,8 +210,8 @@ describe('applyToggleAll', () => {
     const status = { isAllOpen: true, isAllOpenInside: false, isAnyOpen: true, isAnyOpenInside: false }
     const result = applyToggleAll(map, 'type', grouped, false, status)
 
-    expect(result.type!.cash.show).toBe(false)
-    expect(result.type!.cashless.show).toBe(false)
+    expect(result.type!.cash!.show).toBe(false)
+    expect(result.type!.cashless!.show).toBe(false)
   })
 
   it('with secondary: opens secondary when primary already open', () => {
@@ -224,9 +224,9 @@ describe('applyToggleAll', () => {
     const status = { isAllOpen: true, isAllOpenInside: false, isAnyOpen: true, isAnyOpenInside: false }
     const result = applyToggleAll(map, 'type', grouped, true, status)
 
-    expect(result.type!.cash.groups!.RUB).toBe(true)
-    expect(result.type!.cash.groups!.USD).toBe(true)
-    expect(result.type!.cashless.groups!.RUB).toBe(true)
+    expect(result.type!.cash!.groups!.RUB).toBe(true)
+    expect(result.type!.cash!.groups!.USD).toBe(true)
+    expect(result.type!.cashless!.groups!.RUB).toBe(true)
   })
 
   it('with secondary: closes everything when all open', () => {
@@ -239,9 +239,9 @@ describe('applyToggleAll', () => {
     const status = { isAllOpen: true, isAllOpenInside: true, isAnyOpen: true, isAnyOpenInside: true }
     const result = applyToggleAll(map, 'type', grouped, true, status)
 
-    expect(result.type!.cash.show).toBe(false)
-    expect(result.type!.cash.groups!.RUB).toBe(false)
-    expect(result.type!.cashless.show).toBe(false)
+    expect(result.type!.cash!.show).toBe(false)
+    expect(result.type!.cash!.groups!.RUB).toBe(false)
+    expect(result.type!.cashless!.show).toBe(false)
   })
 
   it('does nothing for groupedBy "none"', () => {

@@ -98,7 +98,7 @@ export async function mergeOfflineOps<T>(
   if (hasUpdates || hasDeletes) {
     const merged = { ...data }
     for (const id of Object.keys(pendingUpdates))
-      merged[id] = pendingUpdates[id]
+      merged[id] = pendingUpdates[id]!
     for (const id of pendingDeleteIds)
       delete merged[id]
     data = merged
@@ -129,7 +129,7 @@ export function handleMutationResult<T>(opts: {
       logger.log(`confirmed ${opts.action}: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`)
 
       if (ids.length === 1)
-        await removeOfflineOp(opts.entity, ids[0])
+        await removeOfflineOp(opts.entity, ids[0]!)
       else
         await removeOfflineOps(opts.entity, ids)
 
@@ -139,7 +139,7 @@ export function handleMutationResult<T>(opts: {
         const current = opts.items.value
         if (current && opts.id in current && opts.id !== convexId) {
           const { [opts.id]: item, ...rest } = current
-          const remapped = { ...rest, [convexId]: item }
+          const remapped = { ...rest, [convexId]: item } as Record<string, T>
           opts.items.value = remapped
           if (!_persistBlocked)
             localforage.setItem(STORAGE_KEYS[opts.entity], remapped)

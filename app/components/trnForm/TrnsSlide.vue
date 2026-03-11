@@ -12,8 +12,8 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = defineProps<{
   mainSlideIdx: number
   slider?: {
-    slideTo: object | null
-  }
+    slideTo: (index: number, speed?: number) => void
+  } | null
 }>()
 
 const { t } = useI18n()
@@ -53,7 +53,7 @@ function changeFilter(value: FilterBy) {
 }
 
 function onClickTransaction() {
-  props.slider?.slideTo(props.mainSlideIdx)
+  props.slider?.slideTo(props.mainSlideIdx, 0)
 }
 
 const tabs = computed<{ id: FilterBy, name: string }[]>(() => [

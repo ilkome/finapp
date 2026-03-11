@@ -30,10 +30,10 @@ describe('computeWalletCounts', () => {
       wallets: {},
     })
 
-    expect(result.total.value).toBe(0)
-    expect(result.cash.value).toBe(0)
-    expect(result.credit.value).toBe(0)
-    expect(result.total.isShow).toBe(true)
+    expect(result.total!.value).toBe(0)
+    expect(result.cash!.value).toBe(0)
+    expect(result.credit!.value).toBe(0)
+    expect(result.total!.isShow).toBe(true)
   })
 
   it('accumulates cash wallet into total', () => {
@@ -49,8 +49,8 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.total.value).toBe(1000)
-    expect(result.cash.value).toBe(1000)
+    expect(result.total!.value).toBe(1000)
+    expect(result.cash!.value).toBe(1000)
   })
 
   it('excludes credit wallets from total', () => {
@@ -67,8 +67,8 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.total.value).toBe(500)
-    expect(result.credit.value).toBe(-200)
+    expect(result.total!.value).toBe(500)
+    expect(result.credit!.value).toBe(-200)
   })
 
   it('puts isExcludeInTotal wallets into excludeInTotal, not total', () => {
@@ -85,9 +85,9 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.total.value).toBe(1000)
-    expect(result.excludeInTotal.value).toBe(300)
-    expect(result.excludeInTotal.isShow).toBe(true)
+    expect(result.total!.value).toBe(1000)
+    expect(result.excludeInTotal!.value).toBe(300)
+    expect(result.excludeInTotal!.isShow).toBe(true)
   })
 
   it('computes available as withdrawal minus abs(credit)', () => {
@@ -104,9 +104,9 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.available.value).toBe(4000)
-    expect(result.withdrawal.value).toBe(5000)
-    expect(result.available.isShow).toBe(true)
+    expect(result.available!.value).toBe(4000)
+    expect(result.withdrawal!.value).toBe(5000)
+    expect(result.available!.isShow).toBe(true)
   })
 
   it('converts currencies to base rate', () => {
@@ -122,8 +122,8 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.total.value).toBe(100)
-    expect(result.cash.value).toBe(100)
+    expect(result.total!.value).toBe(100)
+    expect(result.cash!.value).toBe(100)
   })
 
   it('converts creditPossible to base currency', () => {
@@ -139,7 +139,7 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.credit.secondValue).toBe(100)
+    expect(result.credit!.secondValue).toBe(100)
   })
 
   it('accumulates creditPossible from multiple credit wallets', () => {
@@ -156,7 +156,7 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.credit.secondValue).toBe(8000)
+    expect(result.credit!.secondValue).toBe(8000)
   })
 
   it('cash.isShow false when only 1 wallet exists', () => {
@@ -172,7 +172,7 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.cash.isShow).toBe(false)
+    expect(result.cash!.isShow).toBe(false)
   })
 
   it('cash.isShow false when sum is zero', () => {
@@ -188,7 +188,7 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.cash.isShow).toBe(false)
+    expect(result.cash!.isShow).toBe(false)
   })
 
   it('archived wallets tracked with isShow', () => {
@@ -205,8 +205,8 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.archived.value).toBe(500)
-    expect(result.archived.isShow).toBe(true)
+    expect(result.archived!.value).toBe(500)
+    expect(result.archived!.isShow).toBe(true)
   })
 
   it('archived.isShow false when no archived wallets', () => {
@@ -222,7 +222,7 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.archived.isShow).toBe(false)
+    expect(result.archived!.isShow).toBe(false)
   })
 
   it('skips missing wallets', () => {
@@ -234,7 +234,7 @@ describe('computeWalletCounts', () => {
       wallets: {},
     })
 
-    expect(result.total.value).toBe(0)
+    expect(result.total!.value).toBe(0)
   })
 
   it('all wallet types accumulated correctly', () => {
@@ -255,15 +255,15 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.cash.value).toBe(100)
-    expect(result.cashless.value).toBe(200)
-    expect(result.crypto.value).toBe(300)
-    expect(result.deposit.value).toBe(400)
-    expect(result.debt.value).toBe(500)
-    expect(result.credit.value).toBe(-600)
-    expect(result.credit.secondValue).toBe(10000)
+    expect(result.cash!.value).toBe(100)
+    expect(result.cashless!.value).toBe(200)
+    expect(result.crypto!.value).toBe(300)
+    expect(result.deposit!.value).toBe(400)
+    expect(result.debt!.value).toBe(500)
+    expect(result.credit!.value).toBe(-600)
+    expect(result.credit!.secondValue).toBe(10000)
     // total = 100+200+300+400+500 = 1500 (credit excluded)
-    expect(result.total.value).toBe(1500)
+    expect(result.total!.value).toBe(1500)
   })
 
   it('isExcludeInTotal credit wallet goes to excludeInTotal, not credit or total', () => {
@@ -279,9 +279,9 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.excludeInTotal.value).toBe(-300)
-    expect(result.total.value).toBe(0)
-    expect(result.credit.value).toBe(-300)
+    expect(result.excludeInTotal!.value).toBe(-300)
+    expect(result.total!.value).toBe(0)
+    expect(result.credit!.value).toBe(-300)
   })
 
   it('withdrawal wallet with negative amount', () => {
@@ -299,7 +299,7 @@ describe('computeWalletCounts', () => {
     })
 
     // available = withdrawal - |credit| = -500 - 1000 = -1500
-    expect(result.available.value).toBe(-1500)
+    expect(result.available!.value).toBe(-1500)
   })
 })
 

@@ -18,7 +18,7 @@ const sliderObj = ref<Swiper | null>(null)
 
 function init() {
   if (!sliderObj.value) {
-    sliderObj.value = new Swiper(sliderRef.value, {
+    sliderObj.value = new Swiper(sliderRef.value!, {
       init: true,
       initialSlide: 0,
       longSwipesMs: 60,
@@ -88,7 +88,7 @@ watch(isShow, async (v) => {
                 </UiTitleSection>
 
                 <TrnFormTrnsSlide
-                  :slider="sliderObj"
+                  :slider="sliderObj as any"
                   :mainSlideIdx="0"
                   class="px-2 pb-6"
                 />

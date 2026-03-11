@@ -24,7 +24,7 @@ const { options, preference, setTheme } = useTheme()
       <FormSelect
         :options
         :value="preference"
-        @change="(theme: Theme) => setTheme(theme)"
+        @change="(value: string) => setTheme(value as Theme)"
       />
     </template>
 

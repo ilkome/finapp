@@ -6,7 +6,7 @@ import { ref } from 'vue'
 // --- Entity-specific mocks ---
 
 const mutationMock = vi.fn(() => Promise.resolve())
-const queryMock = vi.fn(() => Promise.resolve(null))
+const queryMock = vi.fn((): Promise<any> => Promise.resolve(null))
 
 vi.stubGlobal('useConvexClientWithApi', () => ({
   api: {
@@ -23,7 +23,7 @@ vi.stubGlobal('useNuxtApp', () => ({
   $i18n: { setLocale: setLocaleMock },
 }))
 
-const useSessionMock = vi.fn(() => ref({ data: null, isPending: false }))
+const useSessionMock = vi.fn(() => ref({ data: null as any, isPending: false }))
 vi.stubGlobal('useAuth', () => ({
   signOut: vi.fn(),
   useSession: useSessionMock,

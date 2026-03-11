@@ -1,6 +1,7 @@
 import type { CategoryItem } from '~/components/categories/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LocaleSlug } from '~/components/locale/types'
+import type { TrnItem } from '~/components/trns/types'
 import type { WalletItem } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -19,7 +20,7 @@ export function isReplaying(): boolean {
   return _isReplaying
 }
 
-async function collectRemaps(promises: (Promise<unknown> | undefined)[], remapIds: Map<string, string>) {
+async function collectRemaps(promises: (Promise<unknown> | void | undefined)[], remapIds: Map<string, string>) {
   const results = await Promise.all(promises.map(p => p ?? Promise.resolve()))
   for (const { convexId, localId } of extractRemaps(results)) {
     remapIds.set(localId, convexId)

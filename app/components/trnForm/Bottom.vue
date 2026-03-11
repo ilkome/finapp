@@ -46,7 +46,7 @@ onBeforeUnmount(() => {
 
 function init() {
   if (!sliderObj.value) {
-    sliderObj.value = new Swiper(sliderRef.value, {
+    sliderObj.value = new Swiper(sliderRef.value!, {
       // centeredSlides: true,
       init: false,
       initialSlide: 1,
@@ -93,7 +93,7 @@ onMounted(init)
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
-              :slider="sliderObj"
+              :slider="sliderObj as any"
               :mainSlideIdx="1"
               class="overflow-hidden px-2 pt-4 pb-6"
             />

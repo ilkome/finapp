@@ -39,7 +39,7 @@ export function useDemo() {
         return acc
       }, {} as Categories),
       wallets: Object.entries(data.wallets).reduce((acc, [id, wallet]) => {
-        acc[id] = { ...wallet, desc: wallet.desc[locale], name: wallet.name[locale] }
+        acc[id] = { ...wallet, desc: wallet.desc[locale], name: wallet.name[locale] } as Wallets[string]
         return acc
       }, {} as Wallets),
     }
@@ -55,17 +55,17 @@ export function useDemo() {
     const transactibleIds = categoriesStore.getTransactibleIds()
     const walletIds = walletsStore.sortedIds
 
-    const trns: Trns = Array.from({ length: config.trnsCount }).reduce((acc, _, i) => {
+    const trns: Trns = Array.from({ length: config.trnsCount }).reduce<Trns>((acc, _, i) => {
       acc[i] = {
         amount: Math.floor(Math.random() * config.amount) + 1,
-        categoryId: transactibleIds[Math.floor(Math.random() * transactibleIds.length)],
+        categoryId: transactibleIds[Math.floor(Math.random() * transactibleIds.length)]!,
         date: startDate + Math.random() * (endDate - startDate),
-        id: i,
         type: Math.random() < 0.5 ? 0 : 1,
-        walletId: walletIds[Math.floor(Math.random() * walletIds.length)],
+        updatedAt: Date.now(),
+        walletId: walletIds[Math.floor(Math.random() * walletIds.length)]!,
       }
       return acc
-    }, {} as Trns)
+    }, {})
 
     trnsStore.setTrns(trns)
   }

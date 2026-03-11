@@ -117,7 +117,7 @@ export const insertCategories = internalMutation({
 
     for (const { id, oldParentId } of inserts) {
       if (oldParentId && idMap[oldParentId]) {
-        await ctx.db.patch(id as any, { parentId: idMap[oldParentId] })
+        await ctx.db.patch(id as any, { parentId: idMap[oldParentId] as any })
       }
     }
 
@@ -148,7 +148,7 @@ export const insertUserSettings = internalMutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('userSettings', args)
+    await ctx.db.insert('userSettings', args as any)
   },
 })
 

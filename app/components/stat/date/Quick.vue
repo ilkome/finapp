@@ -12,7 +12,7 @@ const sliderObj = ref<Swiper | null>(null)
 onMounted(() => {
   const initialSlide = 1
 
-  sliderObj.value = new Swiper(sliderRef.value, {
+  sliderObj.value = new Swiper(sliderRef.value!, {
     autoHeight: true,
     initialSlide,
     longSwipesMs: 60,

@@ -15,7 +15,7 @@ const emit = defineEmits<{
 <template>
   <select
     :value="props.value"
-    @change="emit('change', $event.target.value)"
+    @change="emit('change', ($event.target as HTMLSelectElement).value)"
   >
     <option
       v-for="option in props.options"

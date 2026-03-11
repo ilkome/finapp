@@ -31,7 +31,7 @@ function select(id: CategoryId) {
       :activeItemId="props.activeItemId"
       :categoryId="categoryId"
       :class="itemClasses"
-      :category="categoriesStore.items[categoryId]"
+      :category="categoriesStore.items[categoryId]!"
       isShowParent
       alt
       @click="select(categoryId)"

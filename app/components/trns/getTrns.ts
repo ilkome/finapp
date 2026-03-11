@@ -25,7 +25,7 @@ export function filterTrnsIds(props: TrnsGetterProps) {
           return false
         if (until && trn.date > until)
           return false
-        if (walletsSet && !walletsSet.has(trn.walletId) && !walletsSet.has(trn.expenseWalletId) && !walletsSet.has(trn.incomeWalletId))
+        if (walletsSet && !walletsSet.has((trn as any).walletId) && !walletsSet.has((trn as any).expenseWalletId) && !walletsSet.has((trn as any).incomeWalletId))
           return false
         if (categoriesSet && !categoriesSet.has(trn.categoryId))
           return false
@@ -34,7 +34,7 @@ export function filterTrnsIds(props: TrnsGetterProps) {
     : trnsIds
 
   if (props.sort)
-    result.sort((a, b) => props.trnsItems?.[b]?.date - props.trnsItems?.[a]?.date)
+    result.sort((a, b) => (props.trnsItems?.[b]?.date ?? 0) - (props.trnsItems?.[a]?.date ?? 0))
 
   return result
 }

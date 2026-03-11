@@ -1,17 +1,39 @@
-import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import type { WalletId, WalletItem } from '~/components/wallets/types'
+import type { CategoryId } from '~/components/categories/types'
+import type { WalletId } from '~/components/wallets/types'
 
 type LocaleString = {
   en: string
   ru: string
 }
 
+type DemoCategoryItem = {
+  color: string
+  icon: string
+  name: LocaleString
+  order?: number
+  parentId: string | 0
+  showInLastUsed: boolean
+  showInQuickSelector: boolean
+  updatedAt?: number
+}
+
+type DemoWalletItem = {
+  color: string
+  creditLimit?: number
+  currency: string
+  desc: LocaleString
+  isArchived?: boolean
+  isExcludeInTotal?: boolean
+  isWithdrawal?: boolean
+  name: LocaleString
+  order?: number
+  type: 'cash' | 'cashless' | 'credit' | 'crypto' | 'debt' | 'deposit'
+  updatedAt?: number
+}
+
 export const data: {
-  categories: Record<CategoryId, Omit<CategoryItem, 'name'> & { name: LocaleString }>
-  wallets: Record<WalletId, Omit<WalletItem, 'name' | 'desc'> & {
-    desc: LocaleString
-    name: LocaleString
-  }>
+  categories: Record<CategoryId, DemoCategoryItem>
+  wallets: Record<WalletId, DemoWalletItem>
 } = {
   categories: {
     '4b6473ee7324': {

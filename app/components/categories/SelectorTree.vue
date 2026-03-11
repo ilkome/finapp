@@ -75,7 +75,7 @@ onMounted(() => {
       <CategoriesItem
         :categoryId
         :lineWidth="4"
-        :category="categoriesStore.items[categoryId]"
+        :category="categoriesStore.items[categoryId]!"
         :activeItemId="props.selectedIds?.includes(categoryId) ? categoryId : null"
         @click="select(categoryId, false)"
         @filter.stop="onFilter(categoryId)"
@@ -89,7 +89,7 @@ onMounted(() => {
           v-for="childCategoryId in childrenMap.get(categoryId)"
           :key="childCategoryId"
           :activeItemId="props.selectedIds?.includes(childCategoryId) ? childCategoryId : null"
-          :category="categoriesStore.items[childCategoryId]"
+          :category="categoriesStore.items[childCategoryId]!"
           :categoryId="childCategoryId"
           @click.stop="select(childCategoryId, true)"
           @filter.stop="onFilter(childCategoryId)"

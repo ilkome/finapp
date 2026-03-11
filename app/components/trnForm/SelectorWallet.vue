@@ -31,7 +31,7 @@ const isShow = ref(false)
     <template #trigger>
       <WalletsItem
         :walletId
-        :wallet="walletsStore.itemsComputed[walletId]"
+        :wallet="walletsStore.itemsComputed[walletId]!"
         insideClasses="!min-h-[46px]"
         isShowIcon
         isShowCreditLimit

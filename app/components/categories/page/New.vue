@@ -32,7 +32,7 @@ useHead({
 
     <CategoriesForm
       :categoryForm="categoryForm"
-      @update="(key: string, value: CategoryItem[keyof CategoryItem]) => categoryForm[key] = value"
+      @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
       @afterSave="() => router.replace('/dashboard')"
     />
   </UiPage>

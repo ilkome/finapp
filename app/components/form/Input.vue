@@ -16,6 +16,6 @@ const emit = defineEmits<{
     :value="props.modelValue"
     :type="props.type ?? 'text'"
     class="border-item-6 bg-item-3 placeholder:text-muted m-0 w-full rounded-sm border border-solid px-3 py-2 text-base font-normal outline-none hover:bg-(--item-5) focus:border-(--ui-primary)"
-    @input="(event: HTMLInputEvent) => emit('update:modelValue', event.target.value)"
+    @input="(event: Event) => emit('update:modelValue', (event.target as HTMLInputElement).value)"
   >
 </template>

@@ -35,6 +35,7 @@ export function useDateFormats() {
           month: formatByLocale(date, 'MMM', locale.value),
           week: formatByLocale(date, 'dd.MM', locale.value),
           weekday: `${diff < 2 ? `${formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,
+          year: formatByLocale(date, 'yyyy', locale.value),
         }
 
       case 'trnItem':

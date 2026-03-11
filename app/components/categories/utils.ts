@@ -4,7 +4,7 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   const childrenMap = new Map<CategoryId, CategoryId[]>()
   for (const id of Object.keys(items ?? {})) {
     const parentId = items[id]?.parentId
-    if (parentId && parentId !== 0) {
+    if (parentId) {
       const pid = String(parentId)
       if (!childrenMap.has(pid))
         childrenMap.set(pid, [])

@@ -14,6 +14,13 @@ import { formatByLocale } from '~/components/date/utils'
 import { config, lineConfig } from '~/components/stat/chart/config'
 import { getLocalAmount } from '~/components/stat/chart/utils'
 
+type TooltipParam = {
+  color: string
+  name: string
+  seriesName: string
+  value: number
+}
+
 const {
   chartType = 'line',
   period,
@@ -64,11 +71,12 @@ const option = computed(() => {
     },
   })
 
-  data.xAxis.axisLabel.formatter = (date: string) => {
+  const xAxis = data.xAxis as Record<string, any>
+  xAxis.axisLabel.formatter = (date: string) => {
     return formatByLocale(new Date(+date), getFormatForChart(period), locale.value)
   }
 
-  data.xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
+  xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
     return formatByLocale(new Date(+value), getFormatForChart(period), locale.value)
   }
 
@@ -108,12 +116,12 @@ function setChartSeries(series: ChartSeries[]) {
       <template #tooltip="params">
         <div class="rounded-md bg-(--item-5) px-2 pt-2">
           <div class="text-muted pb-2 text-xs">
-            {{ formatByLocale(new Date(+params[0].name), getFormatForChart(period), locale) }}
+            {{ formatByLocale(new Date(+(params as TooltipParam[])[0]!.name), getFormatForChart(period), locale) }}
           </div>
 
           <div class="grid gap-0">
             <div
-              v-for="(param, i) in params" :key="i"
+              v-for="(param, i) in (params as TooltipParam[])" :key="i"
               class="border-item-6 flex items-center justify-between gap-4 border-b pb-1 last:border-b-0"
             >
               <div class="flex items-center gap-2">
