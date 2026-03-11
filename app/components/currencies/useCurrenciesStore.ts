@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 
 import type { Rates } from '~/components/currencies/types'
 
+import { ratesSchema } from '~/components/currencies/types'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
 import { isPersistBlocked } from '~/composables/useStoreSync'
@@ -23,8 +24,13 @@ export const useCurrenciesStore = defineStore('currencies', () => {
       // Get latest rates from Convex
       const latestRates = await client.query(api.rates.getLatest, {})
 
-      if (latestRates?.rates)
-        setRates(latestRates.rates as Rates)
+      if (latestRates?.rates) {
+        const parsed = ratesSchema.safeParse(latestRates.rates)
+        if (parsed.success)
+          setRates(parsed.data)
+        else
+          logger.error('invalid rates from Convex', parsed.error)
+      }
     }
     catch (e) {
       logger.error('init failed', e)

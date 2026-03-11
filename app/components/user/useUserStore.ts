@@ -10,6 +10,7 @@ import { isReplaying } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { userSettingsSchema } from '~/components/user/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { clearAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
 import { blockPersist, handleMutationResult, isPersistBlocked } from '~/composables/useStoreSync'
@@ -139,20 +140,28 @@ export const useUserStore = defineStore('user', () => {
       if (!settings)
         return
 
-      baseCurrency.value = settings.baseCurrency || 'USD'
-      if (settings.locale) {
-        locale.value = settings.locale as LocaleSlug
-        useNuxtApp().$i18n.setLocale(settings.locale as LocaleSlug)
+      const parsed = userSettingsSchema.safeParse(settings)
+      if (parsed.success) {
+        baseCurrency.value = parsed.data.baseCurrency
+        if (parsed.data.locale) {
+          locale.value = parsed.data.locale
+          useNuxtApp().$i18n.setLocale(parsed.data.locale)
+        }
       }
 
-      // Apply pending offline ops (local changes win over server)
+      // Apply pending offline ops (local changes win over server).
+      // Ops are partial — only override the fields they contain.
       const pendingOps = await getOfflineOpsByEntity('userSettings')
+      const partialSchema = userSettingsSchema.partial()
       for (const op of pendingOps) {
-        if (op.data?.baseCurrency)
-          baseCurrency.value = op.data.baseCurrency as CurrencyCode
-        if (op.data?.locale) {
-          locale.value = op.data.locale as LocaleSlug
-          useNuxtApp().$i18n.setLocale(op.data.locale as LocaleSlug)
+        const parsedOp = partialSchema.safeParse(op.data)
+        if (!parsedOp.success)
+          continue
+        if (parsedOp.data.baseCurrency)
+          baseCurrency.value = parsedOp.data.baseCurrency
+        if (parsedOp.data.locale) {
+          locale.value = parsedOp.data.locale
+          useNuxtApp().$i18n.setLocale(parsedOp.data.locale)
         }
       }
 
