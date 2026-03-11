@@ -127,9 +127,10 @@ function onSelectRange(value: any) {
       </div>
     </div>
 
+    <!-- @vue-ignore -->
     <UCalendar
       v-if="tabs.selected.value === 'calendar'"
-      v-model="(dateRange as any)"
+      v-model="dateRange"
       :maxValue="getUCalendarToday()"
       :numberOfMonths="2"
       range

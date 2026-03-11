@@ -26,8 +26,9 @@ function onUpdate(date: CalendarDate) {
 </script>
 
 <template>
+  <!-- @vue-ignore -->
   <UCalendar
-    v-model="(date as any)"
+    v-model="date"
     :maxValue="maxDate"
     class="p-3"
     @update:modelValue="onUpdate as any"
