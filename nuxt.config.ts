@@ -1,4 +1,5 @@
 import process from 'node:process'
+import categoryIcons from './app/assets/js/icons.js'
 
 export default defineNuxtConfig({
   colorMode: {
@@ -75,6 +76,7 @@ export default defineNuxtConfig({
   icon: {
     clientBundle: {
       collections: ['lucide', 'mdi'],
+      icons: categoryIcons.flat(),
       scan: true,
     },
   },
