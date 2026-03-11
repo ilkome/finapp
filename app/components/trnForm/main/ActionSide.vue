@@ -18,7 +18,7 @@ async function onClickSubmit() {
   if (!trnFormData)
     return
 
-  await trnsStore.saveTrn({
+  trnsStore.saveTrn({
     id: trnFormData.id,
     values: trnFormData.values,
   })
