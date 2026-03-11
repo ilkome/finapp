@@ -58,10 +58,10 @@ type TypeFilter = {
   type: TrnType | undefined
 }
 
-const typeFilters = computed<TypeFilter[]>(() => {
+const typeFilters = computed(() => {
   const counts = { adjustment: 0, expense: 0, income: 0, transfer: 0 }
   for (const id of trnsIds) {
-    const trn = trnsStore.items[id]
+    const trn = trnsStore.items?.[id]
     if (!trn)
       continue
     if (trn.categoryId === 'adjustment') {
@@ -76,13 +76,14 @@ const typeFilters = computed<TypeFilter[]>(() => {
       counts.transfer++
   }
 
-  return [
+  const filters: TypeFilter[] = [
     { count: trnsIds.length, isShow: true, name: t('common.all'), slug: 'all', type: undefined },
-    { count: counts.expense, isShow: isShowExpense, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
-    { count: counts.income, isShow: isShowIncome, name: t('money.income'), slug: 'income', type: TrnType.Income },
-    { count: counts.transfer, isShow: isShowTransfers, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
+    { count: counts.expense, isShow: !!isShowExpense, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
+    { count: counts.income, isShow: !!isShowIncome, name: t('money.income'), slug: 'income', type: TrnType.Income },
+    { count: counts.transfer, isShow: !!isShowTransfers, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
     { count: counts.adjustment, isShow: counts.adjustment > 0, name: t('trnForm.adjustmentTitle'), slug: 'adjustment', type: undefined },
-  ].filter(item => item.isShow)
+  ]
+  return filters.filter(item => item.isShow)
 })
 
 const selectedTypeFilter = computed(() => {
@@ -95,20 +96,20 @@ const filteredByTypeIds = computed(() => {
 
   return (trnsIds ?? []).filter((id) => {
     if (filterBy.value === 'adjustment')
-      return trnsStore.items[id]?.categoryId === 'adjustment'
+      return trnsStore.items?.[id]?.categoryId === 'adjustment'
 
     if (filterBy.value === 'transfer')
-      return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
+      return trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
 
-    return trnsStore.items[id]?.type === selectedTypeFilter.value?.type
+    return trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
   })
 })
 
-const isTrnsWithDesc = computed(() => filteredByTypeIds.value.some(id => trnsStore.items[id]?.desc))
+const isTrnsWithDesc = computed(() => filteredByTypeIds.value.some(id => trnsStore.items?.[id]?.desc))
 
 const selectedIds = computed(() => {
   if (isShowWithDesc.value && isTrnsWithDesc.value)
-    return filteredByTypeIds.value.filter(id => trnsStore.items[id]?.desc)
+    return filteredByTypeIds.value.filter(id => trnsStore.items?.[id]?.desc)
 
   return filteredByTypeIds.value
 })
@@ -131,10 +132,11 @@ function setFilterBy(type: TrnsViewType | 'all') {
 
 const groupedTrns = computed(() => paginatedTrnsIds.value
   .reduce((acc, trnId) => {
-    if (!trnsStore.items?.[trnId]) {
+    const trn = trnsStore.items?.[trnId]
+    if (!trn) {
       return acc
     }
-    const date = getStartOf(new Date(trnsStore.items[trnId]?.date), 'day').getTime()
+    const date = getStartOf(new Date(trn.date), 'day').getTime()
     if (!acc[date]) {
       acc[date] = [trnId]
     }
@@ -254,9 +256,9 @@ function onOpenTrnForm(date: number) {
         <TrnsItemWrap
           v-if="trnItemsMap.get(trnId)"
           :alt="alt"
-          :date="formatDate(trnItemsMap.get(trnId)?.date, 'trnItem')"
+          :date="(formatDate(trnItemsMap.get(trnId)!.date, 'trnItem') as string)"
           :trnId="trnId"
-          :trnItem="trnItemsMap.get(trnId)"
+          :trnItem="trnItemsMap.get(trnId)!"
           class="group/trn group"
           @click="emit('click')"
         />
@@ -316,8 +318,8 @@ function onOpenTrnForm(date: number) {
               v-if="trnItemsMap.get(trnId)"
               :alt="alt"
               :trnId="trnId"
-              :trnItem="trnItemsMap.get(trnId)"
-              :date="formatDate(trnItemsMap.get(trnId)?.date, 'trnItem')"
+              :trnItem="trnItemsMap.get(trnId)!"
+              :date="(formatDate(trnItemsMap.get(trnId)!.date, 'trnItem') as string)"
               class="group"
               @click="emit('click')"
             />

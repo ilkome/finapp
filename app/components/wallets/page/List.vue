@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import type { WalletsGroupedBy } from '~/components/wallets/types'
+import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
@@ -134,16 +134,16 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         <div class="flex flex-wrap justify-stretch gap-2 @2xl/page:justify-start">
           <StatSumItem
             :title="t('money.types.total')"
-            :amount="counts.total.value"
+            :amount="counts.total?.value ?? 0"
             type="netIncome"
-            @click="setWalletViewType(counts.total.id)"
+            @click="setWalletViewType((counts.total?.id ?? 'total') as WalletType | 'total')"
           />
           <StatSumItem
-            v-if="counts.available.value !== 0 && counts.available.value !== counts.total.value"
+            v-if="counts.available?.value !== 0 && counts.available?.value !== counts.total?.value"
             :title="t('money.types.available')"
-            :amount="counts.available.value"
+            :amount="counts.available?.value ?? 0"
             type="netIncome"
-            @click="setWalletViewType(counts.available.id)"
+            @click="setWalletViewType((counts.available?.id ?? 'isAvailable') as WalletType | 'total')"
           />
         </div>
 
@@ -152,7 +152,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
           :activeType="walletViewType"
           :currencyCode="currenciesStore.base"
           :counts="counts"
-          @click="setWalletViewType"
+          @click="(v: string) => setWalletViewType(v as WalletType | 'total')"
         />
       </div>
 

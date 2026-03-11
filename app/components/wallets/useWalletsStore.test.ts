@@ -109,7 +109,7 @@ describe('useWalletsStore', () => {
       store.saveWallet({ id: 'w1', values: makeWallet() })
 
       expect(store.items).toHaveProperty('w1')
-      expect(store.items!.w1.name).toBe('Cash')
+      expect(store.items!.w1!.name).toBe('Cash')
     })
 
     it('saves to localforage', async () => {
@@ -277,8 +277,8 @@ describe('useWalletsStore', () => {
       mutationMock.mockReturnValue(new Promise(() => {})) // never resolves
       store.saveWalletsOrder(['w2', 'w1'])
 
-      expect(store.items!.w2.order).toBe(0)
-      expect(store.items!.w1.order).toBe(1)
+      expect(store.items!.w2!.order).toBe(0)
+      expect(store.items!.w1!.order).toBe(1)
     })
 
     it('fires atomic updateOrder mutation', () => {
@@ -327,7 +327,7 @@ describe('useWalletsStore', () => {
 
       store.saveWallet({ id: 'w3', values: makeWallet({ order: 0 }) })
 
-      expect(store.items!.w3.order).toBe(4)
+      expect(store.items!.w3!.order).toBe(4)
     })
 
     it('does not change order for existing wallets', () => {
@@ -339,7 +339,7 @@ describe('useWalletsStore', () => {
 
       store.saveWallet({ id: 'w1', values: makeWallet({ order: 5 }) })
 
-      expect(store.items!.w1.order).toBe(5)
+      expect(store.items!.w1!.order).toBe(5)
     })
   })
 })

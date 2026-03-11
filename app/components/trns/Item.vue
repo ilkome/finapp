@@ -106,8 +106,8 @@ const emit = defineEmits<{
 
           <div class="flex flex-wrap gap-2">
             <Amount
-              :amount="trnItem.expenseAmount || trnItem.amount"
-              :colorize="trnItem.incomeAmount === trnItem.expenseAmount ? '' : 'expense'"
+              :amount="trnItem.expenseAmount"
+              :colorize="trnItem.incomeAmount === trnItem.expenseAmount ? undefined : 'expense'"
               :currencyCode="trnItem.expenseWallet.currency"
               :type="TrnType.Expense"
               class="!flex items-center gap-2"
@@ -116,7 +116,7 @@ const emit = defineEmits<{
 
             <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
               <Amount
-                :amount="trnItem.incomeAmount || trnItem.amount"
+                :amount="trnItem.incomeAmount"
                 :currencyCode="trnItem.incomeWallet.currency"
                 :type="TrnType.Income"
                 colorize="income"

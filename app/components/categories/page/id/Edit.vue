@@ -9,8 +9,8 @@ const router = useRouter()
 const route = useRoute()
 const categoriesStore = useCategoriesStore()
 
-const categoryId = computed<CategoryId>(() => route.params.id)
-const category = computed<CategoryItem>(() => categoriesStore.items[categoryId.value])
+const categoryId = computed<CategoryId>(() => String(route.params.id))
+const category = computed(() => categoriesStore.items[categoryId.value])
 const categoryForm = ref(categoryFormSchema.parse(category.value))
 
 useHead({
@@ -30,7 +30,7 @@ useHead({
     <CategoriesForm
       :categoryId="categoryId"
       :categoryForm="categoryForm"
-      @update="(key: string, value: CategoryItem[keyof CategoryItem]) => categoryForm[key] = value"
+      @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
       @afterSave="() => router.replace(`/categories/${categoryId}`)"
     />
   </UiPage>

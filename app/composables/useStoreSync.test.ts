@@ -12,10 +12,10 @@ const removeOfflineOpMock = vi.fn().mockResolvedValue(undefined)
 const removeOfflineOpsMock = vi.fn().mockResolvedValue(undefined)
 
 vi.mock('~/components/offline/helpers', () => ({
-  getOfflineOpsByEntity: (...args: any[]) => getOfflineOpsByEntityMock(...args),
-  pushOfflineOp: (...args: any[]) => pushOfflineOpMock(...args),
-  removeOfflineOp: (...args: any[]) => removeOfflineOpMock(...args),
-  removeOfflineOps: (...args: any[]) => removeOfflineOpsMock(...args),
+  getOfflineOpsByEntity: (...args: unknown[]) => getOfflineOpsByEntityMock(...args as []),
+  pushOfflineOp: (...args: unknown[]) => pushOfflineOpMock(...args as []),
+  removeOfflineOp: (...args: unknown[]) => removeOfflineOpMock(...args as []),
+  removeOfflineOps: (...args: unknown[]) => removeOfflineOpsMock(...args as []),
 }))
 
 let isReplayingValue = false

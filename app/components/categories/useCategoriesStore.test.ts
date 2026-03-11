@@ -94,7 +94,7 @@ describe('useCategoriesStore', () => {
       })
 
       expect(store.items).toHaveProperty('c1')
-      expect(store.items.c1.name).toBe('Food')
+      expect(store.items.c1!.name).toBe('Food')
     })
 
     it('saves to localforage', async () => {
@@ -197,9 +197,9 @@ describe('useCategoriesStore', () => {
         values: makeCategory({ color: '#00f', name: 'Parent' }),
       })
 
-      expect(store.items.child1.color).toBe('#00f')
-      expect(store.items.child2.color).toBe('#00f')
-      expect(store.items.parent1.color).toBe('#00f')
+      expect(store.items.child1!.color).toBe('#00f')
+      expect(store.items.child2!.color).toBe('#00f')
+      expect(store.items.parent1!.color).toBe('#00f')
     })
 
     it('fires updateWithChildren mutation when updating children color', () => {

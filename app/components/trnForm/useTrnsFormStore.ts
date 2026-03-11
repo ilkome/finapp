@@ -140,12 +140,12 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     if (props.action === 'create') {
       values.trnType = 0
       if (!values.walletId || !props.walletsIds.includes(values.walletId))
-        values.walletId = props.walletId ?? props.trn?.walletId ?? props.walletsIds[0]
+        values.walletId = props.walletId ?? (props.trn && 'walletId' in props.trn ? props.trn.walletId : undefined) ?? props.walletsIds[0] ?? null
       if (!values.categoryId || !props.categoriesIds.includes(values.categoryId as CategoryId))
-        values.categoryId = props.trn?.categoryId ?? props.categoriesIds[0]
+        values.categoryId = props.trn?.categoryId ?? props.categoriesIds[0] ?? null
 
-      values.incomeWalletId = props.walletsIds[0]
-      values.expenseWalletId = props.walletsIds[1] ?? props.walletsIds[0]
+      values.incomeWalletId = props.walletsIds[0] ?? null
+      values.expenseWalletId = props.walletsIds[1] ?? props.walletsIds[0] ?? null
     }
 
     if (props.action === 'edit')
@@ -224,7 +224,9 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function openFormForEdit(trnId: TrnId) {
-    const trn = trnsStore.items[trnId]
+    const trn = trnsStore.items?.[trnId]
+    if (!trn)
+      return
 
     setValues({
       action: 'edit',
@@ -240,7 +242,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     setValues({
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
-      trn: trnsStore.lastCreatedTrnItem,
+      trn: trnsStore.lastCreatedTrnItem as TrnItem,
       walletId: walletsStore.sortedIds[0],
       walletsIds: walletsStore.sortedIds,
     })

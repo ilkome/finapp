@@ -65,6 +65,7 @@ useHead({ title: wallet.value?.name })
 onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
+const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
 
 function onClickEdit() {
   router.push(`/wallets/${walletId.value}/edit`)
@@ -169,19 +170,19 @@ async function onDeleteConfirm() {
         />
       </div>
 
-      <div v-if="wallet.creditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
+      <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
         <StatSumItemWallet
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.debt')"
         />
         <StatSumItemWallet
-          :amount="wallet.creditLimit - (-total)"
+          :amount="walletCreditLimit - (-total)"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.available')"
         />
         <StatSumItemWallet
-          :amount="wallet.creditLimit"
+          :amount="walletCreditLimit"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.limit')"
         />

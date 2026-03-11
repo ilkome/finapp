@@ -31,7 +31,7 @@ const options = [{
       <FormSelect
         :options
         :value="locale"
-        @change="(locale: LocaleSlug) => userStore.saveUserLocale(locale)"
+        @change="(value: string) => userStore.saveUserLocale(value as LocaleSlug)"
       />
     </template>
 

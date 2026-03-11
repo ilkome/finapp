@@ -41,7 +41,7 @@ describe('pushOfflineOp', () => {
     const queue = await getAllOfflineOps()
     expect(queue).toHaveLength(1)
     expect(queue[0]).toMatchObject({ data: { amount: 100 }, entity: 'trns', id: 'trn1', type: 'create' })
-    expect(queue[0].timestamp).toBeGreaterThan(0)
+    expect(queue[0]!.timestamp).toBeGreaterThan(0)
   })
 
   it('appends operations for different entities', async () => {
@@ -59,8 +59,8 @@ describe('pushOfflineOp', () => {
 
       const queue = await getAllOfflineOps()
       expect(queue).toHaveLength(1)
-      expect(queue[0].type).toBe('create')
-      expect(queue[0].data).toEqual({ name: 'Cash Updated' })
+      expect(queue[0]!.type).toBe('create')
+      expect(queue[0]!.data).toEqual({ name: 'Cash Updated' })
     })
 
     it('create + delete → both removed', async () => {
@@ -77,8 +77,8 @@ describe('pushOfflineOp', () => {
 
       const queue = await getAllOfflineOps()
       expect(queue).toHaveLength(1)
-      expect(queue[0].type).toBe('update')
-      expect(queue[0].data).toEqual({ name: 'New' })
+      expect(queue[0]!.type).toBe('update')
+      expect(queue[0]!.data).toEqual({ name: 'New' })
     })
 
     it('update + delete → replace with delete', async () => {
@@ -87,7 +87,7 @@ describe('pushOfflineOp', () => {
 
       const queue = await getAllOfflineOps()
       expect(queue).toHaveLength(1)
-      expect(queue[0].type).toBe('delete')
+      expect(queue[0]!.type).toBe('delete')
     })
 
     it('delete + any → ignores new operation', async () => {
@@ -96,7 +96,7 @@ describe('pushOfflineOp', () => {
 
       const queue = await getAllOfflineOps()
       expect(queue).toHaveLength(1)
-      expect(queue[0].type).toBe('delete')
+      expect(queue[0]!.type).toBe('delete')
     })
   })
 })
@@ -110,7 +110,7 @@ describe('removeOfflineOp', () => {
 
     const queue = await getAllOfflineOps()
     expect(queue).toHaveLength(1)
-    expect(queue[0].entity).toBe('trns')
+    expect(queue[0]!.entity).toBe('trns')
   })
 
   it('does nothing when not found', async () => {
@@ -142,7 +142,7 @@ describe('getOfflineOpsByEntity', () => {
 
     const walletOps = await getOfflineOpsByEntity('wallets')
     expect(walletOps).toHaveLength(1)
-    expect(walletOps[0].entity).toBe('wallets')
+    expect(walletOps[0]!.entity).toBe('wallets')
   })
 
   it('returns empty array when no matching ops', async () => {
@@ -174,9 +174,9 @@ describe('cross-entity isolation', () => {
     const walletsOps = await getOfflineOpsByEntity('wallets')
 
     expect(trnsOps).toHaveLength(1)
-    expect(trnsOps[0].data).toEqual({ a: 1 })
+    expect(trnsOps[0]!.data).toEqual({ a: 1 })
     expect(walletsOps).toHaveLength(1)
-    expect(walletsOps[0].data).toEqual({ b: 2 })
+    expect(walletsOps[0]!.data).toEqual({ b: 2 })
   })
 
   it('collapsing only applies within same entity+id', async () => {
@@ -187,6 +187,6 @@ describe('cross-entity isolation', () => {
     const queue = await getAllOfflineOps()
     // trns create+delete collapsed to nothing, wallets create remains
     expect(queue).toHaveLength(1)
-    expect(queue[0].entity).toBe('wallets')
+    expect(queue[0]!.entity).toBe('wallets')
   })
 })

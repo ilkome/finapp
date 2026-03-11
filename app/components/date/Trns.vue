@@ -6,11 +6,14 @@ const props = defineProps<{
 }>()
 
 const { formatDate } = useDateFormats()
-const formattedDate = computed(() => formatDate(props.date, 'full'))
+const formattedDate = computed(() => {
+  const result = formatDate(props.date, 'full')
+  return typeof result === 'object' ? result : undefined
+})
 </script>
 
 <template>
-  <div class="flex items-center gap-2">
+  <div v-if="formattedDate" class="flex items-center gap-2">
     <div class="_w-10 _text-center font-secondary text-3xl font-semibold">
       {{ formattedDate.day }}
     </div>

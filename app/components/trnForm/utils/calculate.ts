@@ -71,7 +71,7 @@ export function evaluateExpression(value: string): number {
 
     function parseNumber(): number {
       const start = pos
-      while (pos < expression.length && ((expression[pos] >= '0' && expression[pos] <= '9') || expression[pos] === '.')) {
+      while (pos < expression.length && ((expression[pos]! >= '0' && expression[pos]! <= '9') || expression[pos] === '.')) {
         pos++
       }
       return Number(expression.slice(start, pos)) || 0

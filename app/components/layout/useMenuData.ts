@@ -24,7 +24,7 @@ export function useMenuData() {
   const route = useRoute()
 
   const items = computed<Record<string, MenuItem>>(() => {
-    const list = {
+    const list: Record<string, MenuItem> = {
       trnForm: {
         icon: 'hugeicons:plus-sign-square',
         name: t('trnForm.createTrn'),

@@ -39,7 +39,7 @@ const dateRange = ref({
   start: parseUCalendarDate(statDate.range.value.start),
 })
 
-function onSelectRange(value: unknown) {
+function onSelectRange(value: any) {
   const range = {
     end: value.end,
     start: value.start,
@@ -129,7 +129,7 @@ function onSelectRange(value: unknown) {
 
     <UCalendar
       v-if="tabs.selected.value === 'calendar'"
-      v-model="dateRange"
+      v-model="(dateRange as any)"
       :maxValue="getUCalendarToday()"
       :numberOfMonths="2"
       range

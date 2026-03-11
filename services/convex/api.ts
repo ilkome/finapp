@@ -23,7 +23,7 @@ export function convexWalletsToMap(wallets: ConvexDoc[]): Wallets {
 }
 
 export function convexCategoriesToMap(categories: ConvexDoc[]): Categories {
-  return arrayToMap<CategoryItem>(categories)
+  return arrayToMap<CategoryItem>(categories) as Categories
 }
 
 export function convexTrnsToMap(trns: ConvexDoc[]): Trns {

@@ -161,7 +161,7 @@ export const remove = action({
       let cursor: string | null = null
       let isDone = false
       while (!isDone) {
-        const result = await ctx.runMutation(internal.wallets.removeTrnsByWalletPage, {
+        const result: { continueCursor: string, isDone: boolean } = await ctx.runMutation(internal.wallets.removeTrnsByWalletPage, {
           cursor,
           indexName,
           userId: user._id,

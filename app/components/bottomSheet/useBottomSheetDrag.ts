@@ -19,7 +19,7 @@ type UseBottomSheetDragParams = {
 
 function getClientY(event: Event): number {
   return 'touches' in event
-    ? Math.round(event.touches[0].clientY)
+    ? Math.round(event.touches[0]!.clientY)
     : event.clientY
 }
 

@@ -194,8 +194,8 @@ describe('getWalletsTotals', () => {
   it('computes wallet balance from income and expense', () => {
     const totals = getWalletsTotals({
       trnsItems: {
-        t1: trnsItems.transactionIncomeWalletCashUSD1000,
-        t2: trnsItems.transactionExpenseWalletCashUSD400,
+        t1: trnsItems.transactionIncomeWalletCashUSD1000!,
+        t2: trnsItems.transactionExpenseWalletCashUSD400!,
       },
       walletsItems,
     })
@@ -206,7 +206,7 @@ describe('getWalletsTotals', () => {
   it('handles transfers — adds to income wallet, subtracts from expense wallet', () => {
     const totals = getWalletsTotals({
       trnsItems: {
-        t1: trnsItems.transferExpenseWalletCashUSD10IncomeWalletRUB700,
+        t1: trnsItems.transferExpenseWalletCashUSD10IncomeWalletRUB700!,
       },
       walletsItems,
     })
@@ -218,8 +218,8 @@ describe('getWalletsTotals', () => {
   it('handles adjustments as income/expense on wallet', () => {
     const totals = getWalletsTotals({
       trnsItems: {
-        t1: trnsItems.adjustmentIncomeWalletCashUSD200,
-        t2: trnsItems.adjustmentExpenseWalletCashUSD50,
+        t1: trnsItems.adjustmentIncomeWalletCashUSD200!,
+        t2: trnsItems.adjustmentExpenseWalletCashUSD50!,
       },
       walletsItems,
     })
@@ -230,12 +230,12 @@ describe('getWalletsTotals', () => {
   it('computes full balance for walletCashUSD with mixed trns', () => {
     const totals = getWalletsTotals({
       trnsItems: {
-        t1: trnsItems.transactionIncomeWalletCashUSD1000,
-        t2: trnsItems.transactionExpenseWalletCashUSD400,
-        t3: trnsItems.transferExpenseWalletCashUSD10IncomeWalletRUB700,
-        t4: trnsItems.transferExpenseWalletCreditUSD40IncomeWalletCashUSD40,
-        t5: trnsItems.adjustmentIncomeWalletCashUSD30,
-        t6: trnsItems.adjustmentExpenseWalletCashUSD30,
+        t1: trnsItems.transactionIncomeWalletCashUSD1000!,
+        t2: trnsItems.transactionExpenseWalletCashUSD400!,
+        t3: trnsItems.transferExpenseWalletCashUSD10IncomeWalletRUB700!,
+        t4: trnsItems.transferExpenseWalletCreditUSD40IncomeWalletCashUSD40!,
+        t5: trnsItems.adjustmentIncomeWalletCashUSD30!,
+        t6: trnsItems.adjustmentExpenseWalletCashUSD30!,
       },
       walletsItems,
     })
@@ -251,7 +251,7 @@ describe('getWalletsTotals', () => {
       baseCurrencyCode: 'USD',
       rates,
       trnsItems: {
-        t1: trnsItems.transactionIncomeWalletOneRUB700,
+        t1: trnsItems.transactionIncomeWalletOneRUB700!,
       },
       walletsItems,
     })

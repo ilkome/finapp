@@ -59,8 +59,8 @@ const walletId = computed(() =>
         <TrnFormSelectorCategory
           v-if="trnsFormStore.values.categoryId || categoriesStore.categoriesIdsForTrnValues[0]"
           :bottomSheetStyle="{ maxHeight }"
-          :category="categoriesStore.items[trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]]"
-          :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+          :category="categoriesStore.items[(trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0])!]!"
+          :categoryId="(trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0])!"
           :title="t('trnForm.category.select')"
           @selected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
         />

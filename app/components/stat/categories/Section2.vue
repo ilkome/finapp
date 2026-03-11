@@ -2,7 +2,7 @@
 import { useStorage } from '@vueuse/core'
 
 import type { Categories, CategoryId } from '~/components/categories/types'
-import type { CategoryWithData, StatTabSlug } from '~/components/stat/types'
+import type { CategoryWithData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -14,7 +14,7 @@ const props = defineProps<{
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
-  type: StatTabSlug
+  type: SeriesSlugSelected | StatTabSlug
 }>()
 
 const emit = defineEmits<{

@@ -119,7 +119,7 @@ async function onSave() {
         <FormSelect
           :options="walletType"
           :value="props.walletForm.type ?? 'cash'"
-          @change="(value: WalletType) => emit('update', 'type', value)"
+          @change="(value: string) => emit('update', 'type', value as WalletType)"
         />
       </div>
 
@@ -131,7 +131,7 @@ async function onSave() {
         <FormInput
           :placeholder="t('wallets.form.credit.limit')"
           :modelValue="props.walletForm.creditLimit ?? ''"
-          @update:modelValue="(value: string) => emit('update', 'creditLimit', +value)"
+          @update:modelValue="(value: string) => emit('update', 'creditLimit' as keyof WalletItem, +value)"
         />
       </FormElement>
 

@@ -30,7 +30,7 @@ const isShowAllCategoriesFallback = computed(() =>
     </UiTitleCollapse>
 
     <CategoriesSelectorGrid
-      :activeItemId="trnsFormStore.values.categoryId"
+      :activeItemId="trnsFormStore.values.categoryId ?? undefined"
 
       :ids="categoriesStore.favoriteCategoriesIds"
 
@@ -45,7 +45,7 @@ const isShowAllCategoriesFallback = computed(() =>
     </UiTitleModal>
 
     <CategoriesSelectorGrid
-      :activeItemId="trnsFormStore.values.categoryId"
+      :activeItemId="trnsFormStore.values.categoryId ?? undefined"
 
       :ids="categoriesStore.recentCategoriesIds"
 
@@ -56,7 +56,7 @@ const isShowAllCategoriesFallback = computed(() =>
   <!-- All categories fallback when no favorites and no recent -->
   <div v-if="isShowAllCategoriesFallback">
     <CategoriesSelectorGrid
-      :activeItemId="trnsFormStore.values.categoryId"
+      :activeItemId="trnsFormStore.values.categoryId ?? undefined"
 
       :ids="categoriesStore.categoriesIdsForTrnValues"
 

@@ -31,7 +31,7 @@ async function fetchAllPages<T>(
   let isDone = false
 
   while (!isDone) {
-    const result = await client.query(queryFn, {
+    const result: any = await client.query(queryFn, {
       ...args,
       paginationOpts: { cursor, numItems: pageSize },
     })
@@ -97,8 +97,8 @@ export const useTrnsStore = defineStore('trns', () => {
     let latestId: TrnId | undefined
     let latestDate = -1
 
-    for (const trnId of Object.keys(items.value)) {
-      const trn = items.value[trnId]
+    for (const trnId of Object.keys(items.value!)) {
+      const trn = items.value![trnId]
       if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
         continue
       if (trn.date > latestDate) {
@@ -119,12 +119,12 @@ export const useTrnsStore = defineStore('trns', () => {
 
   async function fullSync(retried = false): Promise<void> {
     const { api, client } = useConvexClientWithApi()
-    const trns = await fetchAllPages(client, api.trns.list, {})
-    let data: Trns | null = trns.length ? convexTrnsToMap(trns) : null
+    const trns = await fetchAllPages<{ _id: string }>(client, api.trns.list, {})
+    let data: Trns | null = trns.length ? convexTrnsToMap(trns as any[]) : null
 
     // Verify local hash against server + get server timestamp
-    const hashResult = await client.query(api.trns.idsHash, {})
-    const localHash = xorIdsHash(trns.map((t: { _id: string }) => t._id))
+    const hashResult = await client.query(api.trns.idsHash, {}) as { hash: string, serverTime: number } | null
+    const localHash = xorIdsHash(trns.map(t => t._id))
 
     if (hashResult && localHash !== hashResult.hash) {
       if (!retried) {
@@ -155,8 +155,8 @@ export const useTrnsStore = defineStore('trns', () => {
 
     // Fetch delta changes and current hash in parallel
     const [changedTrns, hashResult] = await Promise.all([
-      fetchAllPages(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
-      client.query(api.trns.idsHash, {}),
+      fetchAllPages<{ _id: string }>(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
+      client.query(api.trns.idsHash, {}) as Promise<{ hash: string, serverTime: number } | null>,
     ])
 
     if (hashResult === null) {
@@ -170,7 +170,7 @@ export const useTrnsStore = defineStore('trns', () => {
     // Start with cached data and apply delta
     let data: Trns = { ...cachedTrns }
     if (changedTrns.length > 0) {
-      const changedMap = convexTrnsToMap(changedTrns)
+      const changedMap = convexTrnsToMap(changedTrns as any[])
       data = { ...data, ...changedMap }
     }
 
@@ -243,7 +243,7 @@ export const useTrnsStore = defineStore('trns', () => {
     // Optimistic UI
     setTrns({ ...(items.value ?? {}), [id]: valuesWithEditDate })
 
-    if (!pushSaveOp({ entity: 'trns', id, isDemo: isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+    if (!pushSaveOp({ entity: 'trns', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
       return
 
     const { api, client } = useConvexClientWithApi()
@@ -273,8 +273,8 @@ export const useTrnsStore = defineStore('trns', () => {
 
     // Fire-and-forget mutation, cleanup on success
     const mutation = isExisting
-      ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData })
-      : client.mutation(api.trns.create, trnData)
+      ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData } as any)
+      : client.mutation(api.trns.create, trnData as any)
 
     return handleMutationResult({
       action,
@@ -293,7 +293,7 @@ export const useTrnsStore = defineStore('trns', () => {
     delete trns[id]
     setTrns(trns)
 
-    if (!pushDeleteOp({ entity: 'trns', id, isDemo: isDemo.value }))
+    if (!pushDeleteOp({ entity: 'trns', id, isDemo: !!isDemo.value }))
       return
 
     // Fire-and-forget mutation, cleanup on success
@@ -387,7 +387,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   return {
-    cancelPersist: () => debouncedPersist.cancel?.(),
+    cancelPersist: () => (debouncedPersist as any).cancel?.(),
     computeTrnItem,
     deleteTrn,
     getRange,

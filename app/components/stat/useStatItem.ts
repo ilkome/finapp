@@ -3,6 +3,7 @@ import type { ComputedRef } from 'vue'
 import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 
+import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/stat/filter/types'
@@ -102,7 +103,7 @@ export function useStatItem({
     if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
       return
 
-    const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[type.value!]
+    const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[type.value as keyof TotalReturns] as number
 
     const dateRange = isIntervalSelected.value
       ? statDate.selectedInterval.value

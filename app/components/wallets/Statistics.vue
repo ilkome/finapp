@@ -23,8 +23,8 @@ const summaryKeys = ['total', 'withdrawal', 'available', 'excludeInTotal', 'arch
 const typeKeys = ['cash', 'cashless', 'deposit', 'credit', 'crypto', 'debt'] as const
 
 const itemsGrouped = computed(() => [
-  summaryKeys.map(key => props.counts[key]).filter(i => i.isShow),
-  typeKeys.map(key => props.counts[key]).filter(i => i.isShow),
+  summaryKeys.map(key => props.counts[key]).filter((i): i is NonNullable<typeof i> => !!i?.isShow),
+  typeKeys.map(key => props.counts[key]).filter((i): i is NonNullable<typeof i> => !!i?.isShow),
 ])
 </script>
 

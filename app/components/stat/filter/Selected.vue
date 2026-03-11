@@ -23,7 +23,7 @@ const itemClasses = 'bg-item-3 rounded-sm'
         :key="walletId"
         :class="itemClasses"
         :walletId="walletId"
-        :wallet="walletsStore.itemsComputed[walletId]"
+        :wallet="walletsStore.itemsComputed[walletId]!"
         insideClasses="!min-h-[38px]"
         alt
         isShowCreditLimit
@@ -36,7 +36,7 @@ const itemClasses = 'bg-item-3 rounded-sm'
       <CategoriesItem
         v-for="categoryId in filter?.categoriesIds?.value"
         :key="categoryId"
-        :category="categoriesStore.items[categoryId]"
+        :category="categoriesStore.items[categoryId]!"
         :categoryId="categoryId"
         :class="itemClasses"
         alt

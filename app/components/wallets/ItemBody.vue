@@ -38,12 +38,16 @@ const classes = computed(() => ([
 const creditViews = ['debt', 'summary'] as const
 const activeCreditView = useStorage<typeof creditViews[number]>(props.walletId, 'debt')
 
+const walletCreditLimit = computed(() =>
+  props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
+)
+
 const creditAmount = computed(() => {
   switch (activeCreditView.value) {
     case 'debt':
       return props.wallet?.amount
     case 'summary':
-      return Math.abs(props.wallet.creditLimit ?? 0) - Math.abs(props.wallet.amount)
+      return Math.abs(walletCreditLimit.value) - Math.abs(props.wallet.amount)
     default:
       return 0
   }
@@ -102,11 +106,11 @@ if (!props.isSort) {
         </div>
 
         <div
-          v-if="props.isShowCreditLimit && wallet.type === 'credit' && wallet.creditLimit"
+          v-if="props.isShowCreditLimit && wallet.type === 'credit' && walletCreditLimit"
           class="flex items-center gap-0.5 opacity-70"
         >
           <Amount
-            :amount="wallet.creditLimit - Math.abs(wallet.amount)"
+            :amount="walletCreditLimit - Math.abs(wallet.amount)"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
             :isShowSymbol="false"
@@ -123,7 +127,7 @@ if (!props.isSort) {
 
           <Amount
             v-if="wallet.amount !== 0"
-            :amount="wallet.creditLimit"
+            :amount="walletCreditLimit"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
             :isShowSymbol="false"
@@ -135,7 +139,7 @@ if (!props.isSort) {
 
       <div class="pr-1">
         <Amount
-          v-if="wallet.creditLimit"
+          v-if="walletCreditLimit"
           :amount="creditAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
@@ -160,7 +164,7 @@ if (!props.isSort) {
 
         <div v-if="!isSort">
           <Amount
-            v-if="wallet.creditLimit"
+            v-if="walletCreditLimit"
             :amount="creditAmount"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"

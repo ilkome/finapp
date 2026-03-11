@@ -137,10 +137,8 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
 <template>
   <UiPage v-if="category">
     <StatHeader
-      :config="{
-        isShowCategories: true,
-      }"
       :filter="{
+        isShowCategories: true,
         isShowWallets: true,
       }"
     >

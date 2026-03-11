@@ -56,7 +56,7 @@ function onClickWallet(walletId: WalletId) {
         :key="walletId"
         :activeItemId="props.activeItemId || (props.selectedIds?.includes(walletId) ? walletId : null)"
         :walletId
-        :wallet="walletsStore.itemsComputed[walletId]"
+        :wallet="walletsStore.itemsComputed[walletId]!"
         :lineWidth="4"
         class="group/item"
         isShowIcon

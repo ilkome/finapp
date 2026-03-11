@@ -87,7 +87,7 @@ async function pushOfflineOpImpl(op: Omit<OfflineOp, 'timestamp'>): Promise<void
     return
   }
 
-  const existing = queue[existingIdx]
+  const existing = queue[existingIdx]!
 
   // delete is terminal — ignore any new operation
   if (existing.type === 'delete') {
@@ -103,7 +103,7 @@ async function pushOfflineOpImpl(op: Omit<OfflineOp, 'timestamp'>): Promise<void
     }
     else {
       // update → delete: replace
-      queue[existingIdx] = { ...op, timestamp: Date.now() }
+      queue[existingIdx] = { ...op, timestamp: Date.now() } as OfflineOp
       logger.log(`collapsed update→delete: ${op.entity}/${op.id}`)
     }
     await writeQueue(queue)
@@ -223,7 +223,7 @@ async function clearOfflineQueueImpl(): Promise<void> {
 
 function findLastIndex<T>(arr: T[], predicate: (item: T) => boolean): number {
   for (let i = arr.length - 1; i >= 0; i--) {
-    if (predicate(arr[i]))
+    if (predicate(arr[i] as T))
       return i
   }
   return -1

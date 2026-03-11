@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest'
 
+import type { Transaction, Transfer } from '~/components/trns/types'
+
 import { validate } from '~/components/trnForm/utils/validate'
 import { TrnType } from '~/components/trns/types'
 
 const now = Date.now()
 
-const validTransaction = {
+const validTransaction: Transaction = {
   amount: 100,
   categoryId: 'food',
   date: now,
@@ -14,7 +16,7 @@ const validTransaction = {
   walletId: 'w1',
 }
 
-const validTransfer = {
+const validTransfer: Transfer = {
   categoryId: 'transfer' as const,
   date: now,
   expenseAmount: 100,

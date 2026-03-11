@@ -64,9 +64,9 @@ describe('bucketTrnsByIntervals', () => {
     )
 
     expect(result).toHaveLength(3)
-    expect(result[0].trnsIds).toEqual(['t1', 't3'])
-    expect(result[1].trnsIds).toEqual(['t2'])
-    expect(result[2].trnsIds).toEqual([])
+    expect(result[0]!.trnsIds).toEqual(['t1', 't3'])
+    expect(result[1]!.trnsIds).toEqual(['t2'])
+    expect(result[2]!.trnsIds).toEqual([])
   })
 
   it('computes totals via callback', () => {
@@ -82,9 +82,9 @@ describe('bucketTrnsByIntervals', () => {
       ids => makeTotal(ids.length * 500, 0),
     )
 
-    expect(result[0].total.income).toBe(1000)
-    expect(result[0].total.sum).toBe(1000)
-    expect(result[1].total.income).toBe(0)
+    expect(result[0]!.total.income).toBe(1000)
+    expect(result[0]!.total.sum).toBe(1000)
+    expect(result[1]!.total.income).toBe(0)
   })
 
   it('returns empty array for empty intervals', () => {
@@ -98,7 +98,7 @@ describe('bucketTrnsByIntervals', () => {
     }
 
     const result = bucketTrnsByIntervals(trnsItems, ['t1'], intervals, () => zeroTotal)
-    expect(result[0].trnsIds).toEqual([])
+    expect(result[0]!.trnsIds).toEqual([])
   })
 
   it('skips transactions outside any interval', () => {
@@ -111,20 +111,20 @@ describe('bucketTrnsByIntervals', () => {
     }
 
     const result = bucketTrnsByIntervals(trnsItems, ['t1', 't2', 't3'], intervals, ids => makeTotal(0, ids.length))
-    expect(result[0].trnsIds).toEqual([])
-    expect(result[1].trnsIds).toEqual(['t3'])
-    expect(result[2].trnsIds).toEqual([])
+    expect(result[0]!.trnsIds).toEqual([])
+    expect(result[1]!.trnsIds).toEqual(['t3'])
+    expect(result[2]!.trnsIds).toEqual([])
   })
 
   it('skips missing transaction IDs', () => {
     const result = bucketTrnsByIntervals({}, ['missing'], intervals, () => zeroTotal)
-    expect(result[0].trnsIds).toEqual([])
+    expect(result[0]!.trnsIds).toEqual([])
   })
 
   it('preserves range references in output', () => {
     const result = bucketTrnsByIntervals({}, [], intervals, () => zeroTotal)
-    expect(result[0].range).toBe(intervals[0])
-    expect(result[2].range).toBe(intervals[2])
+    expect(result[0]!.range).toBe(intervals[0])
+    expect(result[2]!.range).toBe(intervals[2])
   })
 })
 

@@ -13,7 +13,7 @@ const trnsFormStore = useTrnsFormStore()
   >
     <TrnsItem
       v-if="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
-      :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
+      :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)!"
       class="group bg-item-3 rounded-lg"
       @click="trnsFormStore.values.trnId = null"
     />

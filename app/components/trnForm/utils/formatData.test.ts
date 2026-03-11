@@ -140,10 +140,12 @@ tests.forEach((test) => {
         const data = test.id === 'transactions'
           ? formatTransaction(variant.data.expect)
           : formatTransfer(variant.data.expect)
-        delete data.updatedAt
+        if (data)
+          delete (data as any).updatedAt
 
         const res = variant.data.become
-        delete res.updatedAt
+        if (res)
+          delete (res as any).updatedAt
 
         expect(data).toEqual(res)
       })

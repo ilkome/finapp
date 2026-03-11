@@ -5,13 +5,13 @@ import type { CategoriesWithData } from '~/components/stat/types'
 
 import { collectCategoriesByTrns, flattenCategoriesWithValues, groupCategoriesWithValues, sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
 
-const categories: Categories = {
-  food: { color: 'red', name: 'Food', order: 0, parentId: 0 },
-  groceries: { color: 'green', name: 'Groceries', order: 0, parentId: 'food' },
-  restaurants: { color: 'blue', name: 'Restaurants', order: 0, parentId: 'food' },
-  salary: { color: 'yellow', name: 'Salary', order: 0, parentId: 0 },
-  transport: { color: 'orange', name: 'Transport', order: 0, parentId: 0 },
-}
+const categories = {
+  food: { color: 'red', name: 'Food', parentId: 0 },
+  groceries: { color: 'green', name: 'Groceries', parentId: 'food' },
+  restaurants: { color: 'blue', name: 'Restaurants', parentId: 'food' },
+  salary: { color: 'yellow', name: 'Salary', parentId: 0 },
+  transport: { color: 'orange', name: 'Transport', parentId: 0 },
+} as unknown as Categories
 
 const trnsItems = {
   t1: { categoryId: 'groceries' },
@@ -31,10 +31,10 @@ describe('collectCategoriesByTrns', () => {
       trnsItems,
     })
 
-    expect(result.groceries.trnsIds).toEqual(['t1', 't2'])
-    expect(result.restaurants.trnsIds).toEqual(['t3'])
-    expect(result.salary.trnsIds).toEqual(['t4'])
-    expect(result.transport.trnsIds).toEqual(['t5'])
+    expect(result.groceries!.trnsIds).toEqual(['t1', 't2'])
+    expect(result.restaurants!.trnsIds).toEqual(['t3'])
+    expect(result.salary!.trnsIds).toEqual(['t4'])
+    expect(result.transport!.trnsIds).toEqual(['t5'])
   })
 
   it('skips transfer category', () => {
@@ -76,9 +76,9 @@ describe('collectCategoriesByTrns', () => {
     })
 
     expect(result.transport).toBeDefined()
-    expect(result.transport.trnsIds).toEqual([])
-    expect(result.salary.trnsIds).toEqual([])
-    expect(result.groceries.trnsIds).toEqual(['t1'])
+    expect(result.transport!.trnsIds).toEqual([])
+    expect(result.salary!.trnsIds).toEqual([])
+    expect(result.groceries!.trnsIds).toEqual(['t1'])
   })
 
   it('preCategoriesIds does not overwrite existing data', () => {
@@ -89,7 +89,7 @@ describe('collectCategoriesByTrns', () => {
       trnsItems,
     })
 
-    expect(result.groceries.trnsIds).toEqual(['t1', 't2'])
+    expect(result.groceries!.trnsIds).toEqual(['t1', 't2'])
   })
 
   it('returns empty for empty trnsIds', () => {
@@ -130,12 +130,12 @@ describe('flattenCategoriesWithValues', () => {
 
     const result2 = flattenCategoriesWithValues(data2, (ids) => {
       const map: Record<string, number> = { h: 500, l: 200, n: -100 }
-      return map[ids[0]] ?? 0
+      return map[ids[0]!] ?? 0
     })
 
-    expect(result2[0].value).toBe(500)
-    expect(result2[1].value).toBe(200)
-    expect(result2[2].value).toBe(-100)
+    expect(result2[0]!.value).toBe(500)
+    expect(result2[1]!.value).toBe(200)
+    expect(result2[2]!.value).toBe(-100)
   })
 
   it('puts zero-value categories at the end', () => {
@@ -146,8 +146,8 @@ describe('flattenCategoriesWithValues', () => {
 
     const result = flattenCategoriesWithValues(data, ids => ids.length > 0 ? 100 : 0)
 
-    expect(result[0].id).toBe('full')
-    expect(result[1].id).toBe('empty')
+    expect(result[0]!.id).toBe('full')
+    expect(result[1]!.id).toBe('empty')
   })
 })
 
@@ -163,11 +163,11 @@ describe('groupCategoriesWithValues', () => {
     const result = groupCategoriesWithValues(collected, categories, computeValue)
 
     expect(result).toHaveLength(1)
-    expect(result[0].id).toBe('food')
-    expect(result[0].name).toBe('Food')
-    expect(result[0].value).toBe(-150) // -100 + -50
-    expect(result[0].trnsIds).toEqual(['t1', 't2', 't3'])
-    expect(result[0].categories).toHaveLength(2)
+    expect(result[0]!.id).toBe('food')
+    expect(result[0]!.name).toBe('Food')
+    expect(result[0]!.value).toBe(-150) // -100 + -50
+    expect(result[0]!.trnsIds).toEqual(['t1', 't2', 't3'])
+    expect(result[0]!.categories).toHaveLength(2)
   })
 
   it('keeps root categories without parent as standalone', () => {
@@ -215,11 +215,11 @@ describe('groupCategoriesWithValues', () => {
     const computeValue = (ids: string[]) => ids.length * -50
 
     const result = groupCategoriesWithValues(collected, categories, computeValue)
-    const foodGroup = result[0]
+    const foodGroup = result[0]!
 
     // restaurants: -100, groceries: -50 → restaurants first (larger absolute negative)
-    expect(foodGroup.categories![0].id).toBe('restaurants')
-    expect(foodGroup.categories![1].id).toBe('groceries')
+    expect(foodGroup.categories![0]!.id).toBe('restaurants')
+    expect(foodGroup.categories![1]!.id).toBe('groceries')
   })
 
   it('sorts parent groups by total amount', () => {
@@ -233,8 +233,8 @@ describe('groupCategoriesWithValues', () => {
     const result = groupCategoriesWithValues(collected, categories, computeValue)
 
     // transport: -300, food(groceries): -100 → transport first
-    expect(result[0].id).toBe('transport')
-    expect(result[1].id).toBe('food')
+    expect(result[0]!.id).toBe('transport')
+    expect(result[1]!.id).toBe('food')
   })
 
   it('handles empty input', () => {
