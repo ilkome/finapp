@@ -73,7 +73,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       [id]: values,
     })
 
-    if (!pushSaveOp({ entity: 'wallets', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+    if (!pushSaveOp({ entity: 'wallets', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
       return
 
     const { api, client } = useConvexClientWithApi()
@@ -126,7 +126,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (!isReplaying()) {
       for (const id of ids) {
         if (updated[id])
-          pushOfflineOp({ data: updated[id] as unknown as Record<string, unknown>, entity: 'wallets', id, type: 'update' })
+          pushOfflineOp({ data: updated[id], entity: 'wallets', id, type: 'update' })
       }
     }
 
@@ -213,7 +213,7 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   return {
-    cancelPersist: () => (debouncedPersist as unknown as { cancel?: () => void }).cancel?.(),
+    cancelPersist: () => debouncedPersist.cancel(),
     currenciesUsed,
     deleteWallet,
     hasItems,

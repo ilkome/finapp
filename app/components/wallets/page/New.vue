@@ -10,6 +10,10 @@ const walletForm = ref(walletItemSchema.parse({ type: 'cash' }))
 
 const isOnboarding = computed(() => 'onboarding' in route.query)
 
+function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
+  (walletForm.value as Record<string, unknown>)[key] = value
+}
+
 useHead({
   title: `${t('base.add')}: ${walletForm.value.name ? walletForm.value.name : t('wallets.form.name.label')}`,
 })
@@ -33,7 +37,7 @@ useHead({
     <WalletsForm
       :walletForm="walletForm"
       @afterSave="() => router.replace('/dashboard')"
-      @update="(id: keyof WalletItem, value: WalletItem[keyof WalletItem]) => (walletForm as unknown as Record<keyof WalletItem, WalletItem[keyof WalletItem]>)[id] = value"
+      @update="updateField"
     />
   </UiPage>
 </template>
