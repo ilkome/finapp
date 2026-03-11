@@ -93,7 +93,7 @@ onMounted(init)
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
-              :slider="sliderObj as any"
+              :slider="sliderObj"
               :mainSlideIdx="1"
               class="overflow-hidden px-2 pt-4 pb-6"
             />

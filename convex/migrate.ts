@@ -1,5 +1,7 @@
 import { v } from 'convex/values'
 
+import type { Id } from './_generated/dataModel'
+
 import { components, internal } from './_generated/api'
 import { internalAction, internalMutation } from './_generated/server'
 import { addTrnsToHash, fnv1aNum, getOrCreateSyncMeta } from './trnsHash'
@@ -55,7 +57,8 @@ export const deleteAuthTablePage = internalMutation({
     const field = model === 'user' ? '_id' : 'userId'
     const result = await ctx.runMutation(components.betterAuth.adapter.deleteMany, {
       input: {
-        model: model as any,
+        // @ts-expect-error BetterAuth adapter expects specific model names but we iterate dynamically
+        model,
         where: [{ field, operator: 'eq', value: userId }],
       },
       paginationOpts: { cursor: null, numItems: 500 },
@@ -117,7 +120,7 @@ export const insertCategories = internalMutation({
 
     for (const { id, oldParentId } of inserts) {
       if (oldParentId && idMap[oldParentId]) {
-        await ctx.db.patch(id as any, { parentId: idMap[oldParentId] as any })
+        await ctx.db.patch(id as Id<'categories'>, { parentId: idMap[oldParentId] as unknown as Id<'categories'> })
       }
     }
 
@@ -137,7 +140,7 @@ export const insertTrnsBatch = internalMutation({
       newIds.push(id)
     }
     await addTrnsToHash(ctx, userId, newIds)
-    return (trns as any[]).length
+    return (trns as unknown[]).length
   },
 })
 
@@ -148,7 +151,11 @@ export const insertUserSettings = internalMutation({
     userId: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('userSettings', args as any)
+    await ctx.db.insert('userSettings', {
+      baseCurrency: args.baseCurrency,
+      locale: args.locale as 'en' | 'ru' | undefined,
+      userId: args.userId,
+    })
   },
 })
 

@@ -32,7 +32,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
       :walletId
       :walletForm
       @afterSave="() => router.replace(`/wallets/${walletId}`)"
-      @update="(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) => (walletForm as any)[key] = value"
+      @update="(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) => (walletForm as unknown as Record<keyof WalletItem, WalletItem[keyof WalletItem]>)[key] = value"
     />
   </UiPage>
 </template>

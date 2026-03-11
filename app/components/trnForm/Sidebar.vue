@@ -88,7 +88,7 @@ watch(isShow, async (v) => {
                 </UiTitleSection>
 
                 <TrnFormTrnsSlide
-                  :slider="sliderObj as any"
+                  :slider="sliderObj"
                   :mainSlideIdx="0"
                   class="px-2 pb-6"
                 />

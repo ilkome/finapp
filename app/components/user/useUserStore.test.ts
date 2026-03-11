@@ -23,7 +23,9 @@ vi.stubGlobal('useNuxtApp', () => ({
   $i18n: { setLocale: setLocaleMock },
 }))
 
-const useSessionMock = vi.fn(() => ref({ data: null as any, isPending: false }))
+type SessionUser = { email: string, id: string, image: string | null, name: string }
+type SessionData = { data: { user: SessionUser } | null, isPending: boolean }
+const useSessionMock = vi.fn(() => ref<SessionData>({ data: null, isPending: false }))
 vi.stubGlobal('useAuth', () => ({
   signOut: vi.fn(),
   useSession: useSessionMock,
@@ -99,7 +101,8 @@ describe('useUserStore', () => {
     it('skips Convex mutation in demo mode', async () => {
       const demoModule = await import('~/components/demo/useDemo')
       const original = demoModule.useDemo
-      ;(demoModule as any).useDemo = () => ({ ...original(), isDemo: { value: true } })
+      const demoWritable = demoModule as Record<string, typeof demoModule.useDemo>
+      demoWritable.useDemo = () => ({ ...original(), isDemo: ref('true') })
 
       setActivePinia(createPinia())
       const store = useUserStore()
@@ -108,7 +111,7 @@ describe('useUserStore', () => {
       expect(store.baseCurrency).toBe('GBP')
       expect(mutationMock).not.toHaveBeenCalled()
 
-      ;(demoModule as any).useDemo = original
+      demoWritable.useDemo = original
     })
   })
 
@@ -147,7 +150,8 @@ describe('useUserStore', () => {
     it('skips Convex mutation in demo mode', async () => {
       const demoModule = await import('~/components/demo/useDemo')
       const original = demoModule.useDemo
-      ;(demoModule as any).useDemo = () => ({ ...original(), isDemo: { value: true } })
+      const demoWritable = demoModule as Record<string, typeof demoModule.useDemo>
+      demoWritable.useDemo = () => ({ ...original(), isDemo: ref('true') })
 
       setActivePinia(createPinia())
       const store = useUserStore()
@@ -157,7 +161,7 @@ describe('useUserStore', () => {
       expect(setLocaleMock).toHaveBeenCalledWith('ru')
       expect(mutationMock).not.toHaveBeenCalled()
 
-      ;(demoModule as any).useDemo = original
+      demoWritable.useDemo = original
     })
   })
 

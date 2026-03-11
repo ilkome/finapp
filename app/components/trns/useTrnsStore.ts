@@ -18,6 +18,9 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { createDebouncedPersist, handleMutationResult, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
+/** Shape returned by Convex paginated queries (has _id, _creationTime, userId + entity fields). */
+type ConvexTrnDoc = { [key: string]: unknown, _creationTime: number, _id: string, userId: string }
+
 const logger = createLogger('trns')
 
 async function fetchAllPages<T>(
@@ -119,8 +122,8 @@ export const useTrnsStore = defineStore('trns', () => {
 
   async function fullSync(retried = false): Promise<void> {
     const { api, client } = useConvexClientWithApi()
-    const trns = await fetchAllPages<{ _id: string }>(client, api.trns.list, {})
-    let data: Trns | null = trns.length ? convexTrnsToMap(trns as any[]) : null
+    const trns = await fetchAllPages<ConvexTrnDoc>(client, api.trns.list, {})
+    let data: Trns | null = trns.length ? convexTrnsToMap(trns) : null
 
     // Verify local hash against server + get server timestamp
     const hashResult = await client.query(api.trns.idsHash, {}) as { hash: string, serverTime: number } | null
@@ -155,7 +158,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     // Fetch delta changes and current hash in parallel
     const [changedTrns, hashResult] = await Promise.all([
-      fetchAllPages<{ _id: string }>(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
+      fetchAllPages<ConvexTrnDoc>(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
       client.query(api.trns.idsHash, {}) as Promise<{ hash: string, serverTime: number } | null>,
     ])
 
@@ -170,7 +173,7 @@ export const useTrnsStore = defineStore('trns', () => {
     // Start with cached data and apply delta
     let data: Trns = { ...cachedTrns }
     if (changedTrns.length > 0) {
-      const changedMap = convexTrnsToMap(changedTrns as any[])
+      const changedMap = convexTrnsToMap(changedTrns)
       data = { ...data, ...changedMap }
     }
 
@@ -258,23 +261,25 @@ export const useTrnsStore = defineStore('trns', () => {
     const trnData = values.type === TrnType.Transfer
       ? {
           ...base,
-          categoryId: 'transfer',
+          categoryId: 'transfer' as const,
           expenseAmount: values.expenseAmount,
-          expenseWalletId: values.expenseWalletId,
+          expenseWalletId: asConvexId<'wallets'>(values.expenseWalletId),
           incomeAmount: values.incomeAmount,
-          incomeWalletId: values.incomeWalletId,
+          incomeWalletId: asConvexId<'wallets'>(values.incomeWalletId),
         }
       : {
           ...base,
           amount: values.amount,
-          categoryId: values.categoryId,
-          walletId: values.walletId,
+          categoryId: values.categoryId === 'adjustment'
+            ? 'adjustment' as const
+            : asConvexId<'categories'>(values.categoryId),
+          walletId: asConvexId<'wallets'>(values.walletId),
         }
 
     // Fire-and-forget mutation, cleanup on success
     const mutation = isExisting
-      ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData } as any)
-      : client.mutation(api.trns.create, trnData as any)
+      ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData })
+      : client.mutation(api.trns.create, trnData)
 
     return handleMutationResult({
       action,
@@ -387,7 +392,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   return {
-    cancelPersist: () => (debouncedPersist as any).cancel?.(),
+    cancelPersist: () => (debouncedPersist as unknown as { cancel?: () => void }).cancel?.(),
     computeTrnItem,
     deleteTrn,
     getRange,

@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import type { CommandPaletteItem } from '@nuxt/ui'
+
 import type { CategoryId, CategoryItemWithId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+
+type CategoryCommandPaletteItem = CommandPaletteItem & CategoryItemWithId
 
 const props = defineProps<{
   activeItemId?: CategoryId
@@ -55,38 +59,39 @@ const cats = computed(() => {
   return [adjustmentGroup, ...rootGroups]
 })
 
-function onSelect(item: any) {
-  emit('selected', (item as CategoryItemWithId).id)
+function onSelect(item: CategoryCommandPaletteItem) {
+  emit('selected', item.id)
   if (props.hide)
     props.hide()
 }
 </script>
 
 <template>
+  <!-- @vue-ignore -->
   <UCommandPalette
     :placeholder="t('categories.search.placeholder')"
-    :groups="(cats as any)"
+    :groups="cats"
     labelKey="name"
     @update:modelValue="onSelect"
   >
     <template #category="{ item: rawItem }">
       <UiElement
-        :isActive="(rawItem as any).id === props.activeItemId"
+        :isActive="(rawItem as CategoryCommandPaletteItem).id === props.activeItemId"
         :lineWidth="1"
         class="w-full grow"
         insideClasses="min-h-[46px]"
       >
         <template #leftIcon>
           <UiIconBase
-            :color="(rawItem as any).color"
-            :name="(rawItem as any).icon"
+            :color="(rawItem as CategoryCommandPaletteItem).color"
+            :name="(rawItem as CategoryCommandPaletteItem).icon"
             invert
           />
         </template>
 
         <div class="grid grow">
           <CategoriesName
-            :category="(rawItem as any)"
+            :category="(rawItem as CategoryCommandPaletteItem)"
           />
         </div>
       </UiElement>
