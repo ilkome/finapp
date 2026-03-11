@@ -31,20 +31,28 @@ export function isPersistBlocked(): boolean {
   return _persistBlocked
 }
 
-export function createDebouncedPersist<T>(storageKey: string) {
-  return useDebounceFn((values: T) => {
+export type DebouncedPersist<T> = {
+  (values: T): Promise<void>
+  cancel: () => void
+}
+
+export function createDebouncedPersist<T>(storageKey: string): DebouncedPersist<T> {
+  const fn = useDebounceFn((values: T) => {
     if (_persistBlocked)
       return
     localforage.setItem(storageKey, values)
   }, 300)
+
+  // useDebounceFn has .cancel() at runtime but doesn't expose it in types
+  return fn as unknown as DebouncedPersist<T>
 }
 
-export function pushSaveOp(opts: {
+export function pushSaveOp<T extends Record<string, unknown>>(opts: {
   entity: EntityType
   id: string
   isDemo: boolean
   isExisting: boolean
-  values: Record<string, unknown>
+  values: T
 }): boolean {
   if (opts.isDemo)
     return false

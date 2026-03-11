@@ -246,7 +246,7 @@ export const useTrnsStore = defineStore('trns', () => {
     // Optimistic UI
     setTrns({ ...(items.value ?? {}), [id]: valuesWithEditDate })
 
-    if (!pushSaveOp({ entity: 'trns', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+    if (!pushSaveOp({ entity: 'trns', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
       return
 
     const { api, client } = useConvexClientWithApi()
@@ -392,7 +392,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   return {
-    cancelPersist: () => (debouncedPersist as unknown as { cancel?: () => void }).cancel?.(),
+    cancelPersist: () => debouncedPersist.cancel(),
     computeTrnItem,
     deleteTrn,
     getRange,

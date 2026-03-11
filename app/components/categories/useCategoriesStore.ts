@@ -249,7 +249,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     // Optimistic UI
     applyOptimisticUpdate(id, values, isUpdateChildCategoriesColor, categoryChildIds)
 
-    if (!pushSaveOp({ entity: 'categories', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values: values as unknown as Record<string, unknown> }))
+    if (!pushSaveOp({ entity: 'categories', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
       return
 
     const { api, client } = useConvexClientWithApi()
@@ -315,7 +315,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   return {
-    cancelPersist: () => (debouncedPersist as unknown as { cancel?: () => void }).cancel?.(),
+    cancelPersist: () => debouncedPersist.cancel(),
     categoriesForBeParent,
     categoriesIdsForTrnValues,
     categoriesRootIds,

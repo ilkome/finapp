@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 
-import type { EntityType, OfflineOp } from '~/components/offline/types'
+import type { EntityType, OfflineOp, OfflineOpInput } from '~/components/offline/types'
 
 import { createLogger } from '~/utils/logger'
 
@@ -63,12 +63,12 @@ async function writeQueue(queue: OfflineOp[]): Promise<void> {
  */
 let writeChain = Promise.resolve()
 
-export function pushOfflineOp(op: Omit<OfflineOp, 'timestamp'>): Promise<void> {
+export function pushOfflineOp(op: OfflineOpInput): Promise<void> {
   writeChain = writeChain.then(() => pushOfflineOpImpl(op), () => pushOfflineOpImpl(op))
   return writeChain
 }
 
-async function pushOfflineOpImpl(op: Omit<OfflineOp, 'timestamp'>): Promise<void> {
+async function pushOfflineOpImpl(op: OfflineOpInput): Promise<void> {
   // Ensure queue ownership is stamped on first push
   if (_currentUserId) {
     const storedUserId = await localforage.getItem<string>(QUEUE_USER_KEY)

@@ -13,6 +13,10 @@ const walletId = computed(() => route.params.id) as Ref<WalletId>
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 const walletForm = ref(walletItemSchema.parse(wallet.value))
 
+function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
+  (walletForm.value as Record<string, unknown>)[key] = value
+}
+
 useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}` })
 </script>
 
@@ -32,7 +36,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
       :walletId
       :walletForm
       @afterSave="() => router.replace(`/wallets/${walletId}`)"
-      @update="(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) => (walletForm as unknown as Record<keyof WalletItem, WalletItem[keyof WalletItem]>)[key] = value"
+      @update="updateField"
     />
   </UiPage>
 </template>
