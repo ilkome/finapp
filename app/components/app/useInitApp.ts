@@ -1,18 +1,18 @@
 import localforage from 'localforage'
 
 import type { Categories } from '~/components/categories/types'
-import type { Rates } from '~/components/currencies/types'
-import type { LocaleSlug } from '~/components/locale/types'
 import type { Trns } from '~/components/trns/types'
 import type { User } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { ratesSchema } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { setOfflineQueueUserId } from '~/components/offline/helpers'
 import { replayOfflineQueue } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { blockPersist, unblockPersist } from '~/composables/useStoreSync'
@@ -39,22 +39,28 @@ export function useInitApp() {
   })
 
   async function loadDataFromCache() {
-    const [user, userSettings, currencies, categories, wallets, trns] = await Promise.all([
+    const [user, rawUserSettings, rawCurrencies, categories, wallets, trns] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
-      localforage.getItem<{ baseCurrency?: string, locale?: LocaleSlug }>(STORAGE_KEYS.userSettings),
-      localforage.getItem<{ rates?: Rates }>(STORAGE_KEYS.currencies),
+      localforage.getItem(STORAGE_KEYS.userSettings),
+      localforage.getItem<{ rates?: unknown }>(STORAGE_KEYS.currencies),
       localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
       localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
       localforage.getItem<Trns | null>(STORAGE_KEYS.trns),
     ])
 
     userStore.setUser(user ?? null)
-    if (userSettings?.baseCurrency)
-      userStore.setUserBaseCurrency(userSettings.baseCurrency)
-    if (userSettings?.locale)
-      userStore.setUserLocale(userSettings.locale)
-    if (currencies?.rates)
-      currenciesStore.setRates(currencies.rates)
+
+    const userSettings = userSettingsSchema.safeParse(rawUserSettings)
+    if (userSettings.success) {
+      userStore.setUserBaseCurrency(userSettings.data.baseCurrency)
+      if (userSettings.data.locale)
+        userStore.setUserLocale(userSettings.data.locale)
+    }
+
+    const rates = ratesSchema.safeParse(rawCurrencies?.rates)
+    if (rates.success)
+      currenciesStore.setRates(rates.data)
+
     walletsStore.setWallets(wallets ?? null)
     categoriesStore.setCategories(categories ?? null)
     trnsStore.setTrns(trns ?? null)
