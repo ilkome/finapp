@@ -42,6 +42,7 @@ export default [
     'mdi:road-variant',
     'mdi:gas-station',
     'mdi:gauge-full',
+    'mdi:coolant-temperature',
   ],
   [
     'mdi:airplane',
@@ -98,6 +99,7 @@ export default [
     'mdi:music',
     'mdi:theater',
     'mdi:movie-roll',
+    'mdi:flask-round-bottom-outline',
   ],
   [
     'mdi:palm-tree',
@@ -156,6 +158,7 @@ export default [
     'mdi:tooth-outline',
     'mdi:hospital',
     'mdi:pill',
+    'mdi:brain',
     'mdi:folder-heart-outline',
   ],
   [
@@ -209,8 +212,10 @@ export default [
     'mdi:creation',
     'mdi:content-cut',
     'mdi:floor-lamp',
+    'mdi:lava-lamp',
     'mdi:sofa',
     'mdi:bed',
+    'mdi:bed-king-outline',
     'mdi:dresser-outline',
     'mdi:dolly',
     'mdi:axe',
@@ -239,6 +244,7 @@ export default [
     'mdi:cash-100',
     'mdi:repeat',
     'mdi:bank',
+    'mdi:home-currency-usd',
   ],
   [
     'mdi:auto-fix',
