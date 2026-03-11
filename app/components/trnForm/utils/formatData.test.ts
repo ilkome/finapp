@@ -137,15 +137,25 @@ tests.forEach((test) => {
   describe(test.name, () => {
     test.variants.forEach((variant) => {
       it(variant.name, () => {
-        const data = test.id === 'transactions'
+        const rawData = test.id === 'transactions'
           ? formatTransaction(variant.data.expect)
           : formatTransfer(variant.data.expect)
-        if (data)
-          delete (data as any).updatedAt
 
-        const res = variant.data.become
-        if (res)
-          delete (res as any).updatedAt
+        // Strip updatedAt (dynamic timestamp) before comparison
+        let data: Omit<Transaction, 'updatedAt'> | Omit<Transfer, 'updatedAt'> | false = rawData
+        if (rawData) {
+          const { updatedAt: _u, ...rest } = rawData
+          data = rest
+        }
+
+        let res: Omit<Transaction, 'updatedAt'> | Omit<Transfer, 'updatedAt'> | false
+        if (variant.data.become && typeof variant.data.become === 'object') {
+          const { updatedAt: _u, ...rest } = variant.data.become
+          res = rest
+        }
+        else {
+          res = false
+        }
 
         expect(data).toEqual(res)
       })

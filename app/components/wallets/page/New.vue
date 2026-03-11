@@ -33,7 +33,7 @@ useHead({
     <WalletsForm
       :walletForm="walletForm"
       @afterSave="() => router.replace('/dashboard')"
-      @update="(id: keyof WalletItem, value: WalletItem[keyof WalletItem]) => (walletForm as any)[id] = value"
+      @update="(id: keyof WalletItem, value: WalletItem[keyof WalletItem]) => (walletForm as unknown as Record<keyof WalletItem, WalletItem[keyof WalletItem]>)[id] = value"
     />
   </UiPage>
 </template>

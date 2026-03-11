@@ -31,6 +31,6 @@ function onUpdate(date: CalendarDate) {
     v-model="date"
     :maxValue="maxDate"
     class="p-3"
-    @update:modelValue="onUpdate as any"
+    @update:modelValue="onUpdate"
   />
 </template>

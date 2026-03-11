@@ -2,7 +2,7 @@ import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { TrnItem } from '~/components/trns/types'
+import type { Transaction, Transfer } from '~/components/trns/types'
 
 // --- Entity-specific mocks ---
 
@@ -47,7 +47,7 @@ vi.mock('~/components/wallets/useWalletsStore', () => ({
 
 const offlineHelpers = await import('~/components/offline/helpers')
 vi.mock('~/components/offline/helpers', async (importOriginal) => {
-  const actual = await importOriginal() as any
+  const actual = await importOriginal() as typeof import('~/components/offline/helpers')
   return {
     clearOfflineQueue: vi.fn(actual.clearOfflineQueue),
     getAllOfflineOps: vi.fn(actual.getAllOfflineOps),
@@ -63,7 +63,7 @@ const { useTrnsStore } = await import('~/components/trns/useTrnsStore')
 
 // --- Helpers ---
 
-function makeTrn(overrides: Partial<TrnItem> = {}): TrnItem {
+function makeTrn(overrides: Partial<Transaction> = {}): Transaction {
   return {
     amount: 100,
     categoryId: 'food',
@@ -72,7 +72,21 @@ function makeTrn(overrides: Partial<TrnItem> = {}): TrnItem {
     updatedAt: 1700000000000,
     walletId: 'wallet1',
     ...overrides,
-  } as TrnItem
+  }
+}
+
+function makeTransfer(overrides: Partial<Transfer> = {}): Transfer {
+  return {
+    categoryId: 'transfer',
+    date: 1700000000000,
+    expenseAmount: 100,
+    expenseWalletId: 'wallet1',
+    incomeAmount: 100,
+    incomeWalletId: 'wallet1',
+    type: 2,
+    updatedAt: 1700000000000,
+    ...overrides,
+  }
 }
 
 // --- Tests ---
@@ -98,7 +112,10 @@ describe('useTrnsStore', () => {
       store.saveTrn({ id: 'trn1', values: trn })
 
       expect(store.items).toHaveProperty('trn1')
-      expect((store.items!.trn1 as any).amount).toBe(100)
+      const trn1 = store.items!.trn1!
+      expect(trn1.type).not.toBe(2)
+      if (trn1.type !== 2)
+        expect(trn1.amount).toBe(100)
     })
 
     it('saves to localforage', async () => {
@@ -371,7 +388,10 @@ describe('useTrnsStore', () => {
       const store = useTrnsStore()
       await store.initTrns()
 
-      expect((store.items!.trn1 as any).amount).toBe(200)
+      const trn1 = store.items!.trn1!
+      expect(trn1.type).not.toBe(2)
+      if (trn1.type !== 2)
+        expect(trn1.amount).toBe(200)
     })
 
     it('clears store when user has no trns (idsHash returns null)', async () => {
@@ -390,7 +410,7 @@ describe('useTrnsStore', () => {
   describe('computeTrnItem', () => {
     it('returns null when store not loaded', () => {
       const store = useTrnsStore()
-      store.items = false as any
+      store.items = null
 
       expect(store.computeTrnItem('trn1')).toBeNull()
     })
@@ -424,40 +444,31 @@ describe('useTrnsStore', () => {
       expect(result).not.toBeNull()
       expect(result!.id).toBe('trn1')
       expect(result!.category).toEqual(expect.objectContaining({ name: 'Food' }))
-      expect((result as any).wallet).toEqual(expect.objectContaining({ name: 'Cash' }))
+      expect(result!.type).not.toBe(2)
+      if (result!.type !== 2)
+        expect(result!.wallet).toEqual(expect.objectContaining({ name: 'Cash' }))
     })
 
     it('returns full item for transfer', () => {
       const store = useTrnsStore()
       store.items = {
-        trn1: makeTrn({
-          categoryId: 'transfer',
-          expenseAmount: 100,
-          expenseWalletId: 'wallet1',
-          incomeAmount: 100,
-          incomeWalletId: 'wallet1',
-          type: 2,
-        } as any),
+        trn1: makeTransfer(),
       }
 
       const result = store.computeTrnItem('trn1')
       expect(result).not.toBeNull()
       expect(result!.id).toBe('trn1')
-      expect((result as any).expenseWallet).toEqual(expect.objectContaining({ name: 'Cash' }))
-      expect((result as any).incomeWallet).toEqual(expect.objectContaining({ name: 'Cash' }))
+      expect(result!.type).toBe(2)
+      if (result!.type === 2) {
+        expect(result!.expenseWallet).toEqual(expect.objectContaining({ name: 'Cash' }))
+        expect(result!.incomeWallet).toEqual(expect.objectContaining({ name: 'Cash' }))
+      }
     })
 
     it('returns null when transfer expense wallet missing', () => {
       const store = useTrnsStore()
       store.items = {
-        trn1: makeTrn({
-          categoryId: 'transfer',
-          expenseAmount: 100,
-          expenseWalletId: 'nonexistent',
-          incomeAmount: 100,
-          incomeWalletId: 'wallet1',
-          type: 2,
-        } as any),
+        trn1: makeTransfer({ expenseWalletId: 'nonexistent' }),
       }
 
       expect(store.computeTrnItem('trn1')).toBeNull()
@@ -466,14 +477,7 @@ describe('useTrnsStore', () => {
     it('returns null when transfer income wallet missing', () => {
       const store = useTrnsStore()
       store.items = {
-        trn1: makeTrn({
-          categoryId: 'transfer',
-          expenseAmount: 100,
-          expenseWalletId: 'wallet1',
-          incomeAmount: 100,
-          incomeWalletId: 'nonexistent',
-          type: 2,
-        } as any),
+        trn1: makeTransfer({ incomeWalletId: 'nonexistent' }),
       }
 
       expect(store.computeTrnItem('trn1')).toBeNull()

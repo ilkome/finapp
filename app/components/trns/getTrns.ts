@@ -1,5 +1,7 @@
 import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
+import { TrnType } from '~/components/trns/types'
+
 export function filterTrnsIds(props: TrnsGetterProps) {
   if (!props.trnsIds && !props.trnsItems)
     return []
@@ -25,8 +27,13 @@ export function filterTrnsIds(props: TrnsGetterProps) {
           return false
         if (until && trn.date > until)
           return false
-        if (walletsSet && !walletsSet.has((trn as any).walletId) && !walletsSet.has((trn as any).expenseWalletId) && !walletsSet.has((trn as any).incomeWalletId))
-          return false
+        if (walletsSet) {
+          const matchesWallet = trn.type === TrnType.Transfer
+            ? walletsSet.has(trn.expenseWalletId) || walletsSet.has(trn.incomeWalletId)
+            : walletsSet.has(trn.walletId)
+          if (!matchesWallet)
+            return false
+        }
         if (categoriesSet && !categoriesSet.has(trn.categoryId))
           return false
         return true
