@@ -100,13 +100,15 @@
   --color-item-6: var(--item-6);
   --color-item-7: var(--item-7);
 
-  --font-brand: Nunito, Roboto, sans-serif;
-  --font-primary: Roboto, sans-serif;
-  --font-secondary: Unica One, Roboto, sans-serif;
-  --font-tertiary: Roboto, sans-serif;
-
   --text-2xs: 10px;
 
   --breakpoint-2sm: 320px;
   --breakpoint-3sm: 360px;
+}
+
+@theme {
+  --font-brand: Nunito, Roboto, sans-serif;
+  --font-primary: Roboto, sans-serif;
+  --font-secondary: Unica One, Roboto, sans-serif;
+  --font-tertiary: Roboto, sans-serif;
 }

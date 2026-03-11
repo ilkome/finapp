@@ -40,11 +40,7 @@ export default defineNuxtConfig({
 
   fonts: {
     defaults: {
-      styles: ['normal'],
-      subsets: [
-        'cyrillic',
-      ],
-      weights: [400],
+      subsets: ['cyrillic'],
     },
   },
 
