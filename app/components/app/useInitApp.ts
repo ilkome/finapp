@@ -71,10 +71,6 @@ export function useInitApp() {
     // and debounced persists from re-writing data after cleanup.
     blockPersist()
 
-    categoriesStore.cancelPersist()
-    trnsStore.cancelPersist()
-    walletsStore.cancelPersist()
-
     categoriesStore.setCategories(null)
     trnsStore.setTrns(null)
     walletsStore.setWallets(null)

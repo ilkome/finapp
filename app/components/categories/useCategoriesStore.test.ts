@@ -97,19 +97,6 @@ describe('useCategoriesStore', () => {
       expect(store.items.c1!.name).toBe('Food')
     })
 
-    it('saves to localforage', async () => {
-      const store = useCategoriesStore()
-
-      store.saveCategory({
-        id: 'c1',
-        isUpdateChildCategoriesColor: false,
-        values: makeCategory(),
-      })
-
-      const saved = await localforage.getItem<any>('finapp.categories')
-      expect(saved).toHaveProperty('c1')
-    })
-
     it('pushes to offline queue immediately', () => {
       const store = useCategoriesStore()
 

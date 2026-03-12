@@ -213,7 +213,6 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   return {
-    cancelPersist: () => debouncedPersist.cancel(),
     currenciesUsed,
     deleteWallet,
     hasItems,

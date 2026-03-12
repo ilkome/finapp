@@ -189,10 +189,6 @@ export const useUserStore = defineStore('user', () => {
     blockPersist()
 
     try {
-      categoriesStore.cancelPersist()
-      trnsStore.cancelPersist()
-      walletsStore.cancelPersist()
-
       trnsStore.setTrns(null)
       categoriesStore.setCategories(null)
       walletsStore.setWallets(null)
@@ -221,9 +217,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   async function removeAllUserData() {
-    categoriesStore.cancelPersist()
-    trnsStore.cancelPersist()
-    walletsStore.cancelPersist()
+    blockPersist()
 
     trnsStore.setTrns(null)
     categoriesStore.setCategories(null)

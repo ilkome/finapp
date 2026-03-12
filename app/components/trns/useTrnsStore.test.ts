@@ -118,16 +118,6 @@ describe('useTrnsStore', () => {
         expect(trn1.amount).toBe(100)
     })
 
-    it('saves to localforage', async () => {
-      const store = useTrnsStore()
-      store.items = {}
-
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
-
-      const saved = await localforage.getItem<any>('finapp.trns')
-      expect(saved).toHaveProperty('trn1')
-    })
-
     it('pushes to offline queue immediately', () => {
       const store = useTrnsStore()
       store.items = {}
