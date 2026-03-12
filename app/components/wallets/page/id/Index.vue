@@ -67,7 +67,8 @@ onActivated(() => trnsFormStore.values.walletId = walletId.value)
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
 
-function onClickEdit() {
+function onClickEdit(close: () => void) {
+  close()
   router.push(`/wallets/${walletId.value}/edit`)
 }
 
@@ -135,7 +136,7 @@ async function onDeleteConfirm() {
       <template #popover="{ close }">
         <UiHeaderLink
           icon="lucide:pencil"
-          @click="onClickEdit"
+          @click="onClickEdit(close)"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>

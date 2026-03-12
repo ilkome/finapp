@@ -94,11 +94,11 @@ useHead({ title: category.value?.name })
         />
       </template>
 
-      <template #popover>
+      <template #popover="{ close }">
         <UiHeaderLink
           v-if="categoryId !== 'transfer'"
           icon="lucide:pencil"
-          @click="router.push(`/categories/${categoryId}/edit`)"
+          @click="close(); router.push(`/categories/${categoryId}/edit`)"
         >
           {{ t('base.edit') }}
         </UiHeaderLink>
