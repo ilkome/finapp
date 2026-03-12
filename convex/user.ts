@@ -50,7 +50,7 @@ export const upsert = mutation({
 export const removeAllUserData = action({
   args: {},
   handler: async (ctx) => {
-    const user = await ctx.runQuery(internal.userSettings.getCurrentUser)
+    const user = await ctx.runQuery(internal.user.getCurrentUser)
     if (!user)
       throw new Error('Unauthorized')
     await ctx.runAction(internal.migrate.deleteUserData, { userId: user._id })

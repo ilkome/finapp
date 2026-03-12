@@ -13,12 +13,11 @@ import type * as categories from "../categories.js";
 import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as migrate from "../migrate.js";
-import type * as origins from "../origins.js";
 import type * as rates from "../rates.js";
 import type * as shared from "../shared.js";
 import type * as trns from "../trns.js";
 import type * as trnsHash from "../trnsHash.js";
-import type * as userSettings from "../userSettings.js";
+import type * as user from "../user.js";
 import type * as validators from "../validators.js";
 import type * as wallets from "../wallets.js";
 
@@ -34,12 +33,11 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   http: typeof http;
   migrate: typeof migrate;
-  origins: typeof origins;
   rates: typeof rates;
   shared: typeof shared;
   trns: typeof trns;
   trnsHash: typeof trnsHash;
-  userSettings: typeof userSettings;
+  user: typeof user;
   validators: typeof validators;
   wallets: typeof wallets;
 }>;

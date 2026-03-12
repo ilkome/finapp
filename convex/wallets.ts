@@ -3,7 +3,7 @@ import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import { action, internalMutation, mutation, query } from './_generated/server'
 import { CREDIT_LIMIT_MAX, getAuthUser, getOwnEntity, requireAuthUser, validateNumberRange, validateStringLength } from './shared'
-import { removeTrnsFromHash } from './trnsHash'
+import { toggleTrnsHash } from './trnsHash'
 import { walletTypeValidator } from './validators'
 
 export const list = query({
@@ -131,7 +131,7 @@ export const removeTrnsByWalletPage = internalMutation({
     }
 
     if (deletedIds.length)
-      await removeTrnsFromHash(ctx, userId, deletedIds)
+      await toggleTrnsHash(ctx, userId, deletedIds)
 
     return { continueCursor: page.continueCursor, isDone: page.isDone }
   },
@@ -152,7 +152,7 @@ export const removeWalletFinalize = internalMutation({
 export const remove = action({
   args: { id: v.id('wallets') },
   handler: async (ctx, { id }) => {
-    const user = await ctx.runQuery(internal.userSettings.getCurrentUser)
+    const user = await ctx.runQuery(internal.user.getCurrentUser)
     if (!user)
       throw new Error('Unauthorized')
 

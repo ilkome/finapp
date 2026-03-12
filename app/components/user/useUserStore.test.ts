@@ -10,7 +10,7 @@ const queryMock = vi.fn((): Promise<any> => Promise.resolve(null))
 
 vi.stubGlobal('useConvexClientWithApi', () => ({
   api: {
-    userSettings: { get: 'userSettings.get', upsert: 'userSettings.upsert' },
+    user: { get: 'user.get', upsert: 'user.upsert' },
   },
   client: {
     mutation: mutationMock,
@@ -93,7 +93,7 @@ describe('useUserStore', () => {
 
       expect(store.baseCurrency).toBe('JPY')
       expect(mutationMock).toHaveBeenCalledWith(
-        'userSettings.upsert',
+        'user.upsert',
         { baseCurrency: 'JPY' },
       )
     })
@@ -142,7 +142,7 @@ describe('useUserStore', () => {
 
       expect(store.locale).toBe('ru')
       expect(mutationMock).toHaveBeenCalledWith(
-        'userSettings.upsert',
+        'user.upsert',
         { locale: 'ru' },
       )
     })

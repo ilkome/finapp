@@ -131,18 +131,31 @@ for (const [id, cat] of Object.entries(data.categories)) {
   }
 }
 
-const categories = Object.entries(data.categories).map(([oldId, c]) => ({
-  color: c.color,
-  icon: fixIcon(c.icon),
-  name: c.name,
-  oldChildIds: childIdsMap[oldId] || [],
-  oldId,
-  oldParentId: c.parentId === 0 ? undefined : c.parentId ? String(c.parentId) : undefined,
-  parentId: 0,
-  showInLastUsed: c.showInLastUsed ?? false,
-  showInQuickSelector: c.showInQuickSelector ?? false,
-  updatedAt: c.edited,
-}))
+// Categories named "Перевод" or "Transfer" are treated as adjustment — skip them
+const ADJUSTMENT_CATEGORY_NAMES = new Set(['перевод', 'transfer'])
+const adjustmentCategoryIds = new Set()
+
+const categories = Object.entries(data.categories)
+  .filter(([oldId, c]) => {
+    if (ADJUSTMENT_CATEGORY_NAMES.has(c.name.toLowerCase())) {
+      adjustmentCategoryIds.add(oldId)
+      console.log(`  Skipping category "${c.name}" (${oldId}) → trns will become adjustment`)
+      return false
+    }
+    return true
+  })
+  .map(([oldId, c]) => ({
+    color: c.color,
+    icon: fixIcon(c.icon),
+    name: c.name,
+    oldChildIds: (childIdsMap[oldId] || []).filter(id => !adjustmentCategoryIds.has(id)),
+    oldId,
+    oldParentId: c.parentId === 0 ? undefined : c.parentId ? String(c.parentId) : undefined,
+    parentId: 0,
+    showInLastUsed: c.showInLastUsed ?? false,
+    showInQuickSelector: c.showInQuickSelector ?? false,
+    updatedAt: c.edited,
+  }))
 
 const categoryIdMap = runConvex('migrate:insertCategories', { categories, userId: USER_ID })
 console.log(`Category ID map: ${Object.keys(categoryIdMap).length} entries`)
@@ -173,9 +186,9 @@ const allTrns = Object.entries(data.trns).map(([_oldId, t]) => {
   else if (t.walletId && t.type !== 2)
     trn.walletId = walletIdMap[t.walletId] || t.walletId
 
-  if (t.categoryId === 'transfer' && t.type === 2)
+  if ((t.categoryId === 'transfer' || adjustmentCategoryIds.has(t.categoryId)) && t.type === 2)
     trn.categoryId = 'transfer'
-  else if (t.categoryId === 'transfer' || t.categoryId === 'adjustment')
+  else if (t.categoryId === 'transfer' || t.categoryId === 'adjustment' || adjustmentCategoryIds.has(t.categoryId))
     trn.categoryId = 'adjustment'
   else if (t.categoryId)
     trn.categoryId = categoryIdMap[t.categoryId] || t.categoryId

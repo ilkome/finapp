@@ -7,7 +7,7 @@ import type { MutationCtx } from './_generated/server'
 import { internal } from './_generated/api'
 import { mutation, query } from './_generated/server'
 import { AMOUNT_MAX, DATE_MAX, DATE_MIN, getAuthUser, getOwnEntity, requireAuthUser, TrnType, validateNumberRange, validateStringLength } from './shared'
-import { addTrnToHash, fnv1aNum, removeTrnFromHash } from './trnsHash'
+import { fnv1aNum, toggleTrnHash } from './trnsHash'
 
 async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
   validateStringLength(args.desc, 500, 'Description')
@@ -79,7 +79,7 @@ export const ensureSyncMeta = mutation({
       .first()
     if (existing?.trnsIdsHash)
       return
-    await ctx.scheduler.runAfter(0, internal.migrate.recalcHashForUser, { userId: user._id })
+    await ctx.scheduler.runAfter(0, internal.trnsHash.recalcHashForUser, { userId: user._id })
   },
 })
 
@@ -152,7 +152,7 @@ export const create = mutation({
       updatedAt: Date.now(),
       userId: user._id,
     })
-    await addTrnToHash(ctx, user._id, id)
+    await toggleTrnHash(ctx, user._id, id)
     return id
   },
 })
@@ -213,6 +213,6 @@ export const remove = mutation({
     const user = await requireAuthUser(ctx)
     const deleted = await removeUserTrn(ctx, id, user._id)
     if (deleted)
-      await removeTrnFromHash(ctx, user._id, id)
+      await toggleTrnHash(ctx, user._id, id)
   },
 })

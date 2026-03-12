@@ -6,7 +6,7 @@ import type { MutationCtx } from './_generated/server'
 import { internal } from './_generated/api'
 import { action, internalMutation, internalQuery, mutation, query } from './_generated/server'
 import { getAuthUser, getOwnEntity, requireAuthUser, validateStringLength } from './shared'
-import { removeTrnsFromHash } from './trnsHash'
+import { toggleTrnsHash } from './trnsHash'
 
 // --- Shared helpers ---
 
@@ -168,7 +168,7 @@ export const removeTrnsByCategoryPage = internalMutation({
     }
 
     if (deletedIds.length)
-      await removeTrnsFromHash(ctx, userId, deletedIds)
+      await toggleTrnsHash(ctx, userId, deletedIds)
 
     return { continueCursor: page.continueCursor, isDone: page.isDone }
   },
@@ -190,7 +190,7 @@ export const removeCategoryFinalize = internalMutation({
 export const remove = action({
   args: { id: v.id('categories') },
   handler: async (ctx, { id }) => {
-    const user = await ctx.runQuery(internal.userSettings.getCurrentUser)
+    const user = await ctx.runQuery(internal.user.getCurrentUser)
     if (!user)
       throw new Error('Unauthorized')
 
