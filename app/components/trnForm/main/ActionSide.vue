@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useVibrate } from '@vueuse/core'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
+const { isSupported: isVibrateSupported, vibrate } = useVibrate({ pattern: [50, 50, 50] })
 
 const isMath = computed(() => trnsFormStore.shouldShowSum())
 const isSubmittable = computed(() => trnsFormStore.values.amount[trnsFormStore.activeAmountIdx] > 0)
@@ -22,6 +25,10 @@ async function onClickSubmit() {
     id: trnFormData.id,
     values: trnFormData.values,
   })
+
+  if (isVibrateSupported.value)
+    vibrate()
+
   trnsFormStore.onClear()
 }
 </script>
