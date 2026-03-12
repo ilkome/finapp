@@ -50,7 +50,7 @@ export function useDemo() {
     walletsStore.setWallets(translatedData.wallets)
 
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
-    const endDate = new Date().getTime()
+    const endDate = Date.now()
 
     const transactibleIds = categoriesStore.getTransactibleIds()
     const walletIds = walletsStore.sortedIds

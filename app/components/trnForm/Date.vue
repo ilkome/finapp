@@ -13,7 +13,7 @@ const isToday = computed(() => isSameDay(new Date(trnsFormStore.values.date), ne
 const isShow = ref(false)
 
 function changeDate(way: 'prev' | 'next' | 'today') {
-  let newDate: number = new Date().getTime()
+  let newDate: number = Date.now()
 
   if (way === 'prev')
     newDate = subDays(trnsFormStore.values.date, 1).getTime()

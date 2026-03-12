@@ -43,7 +43,7 @@ onLongPress(
         state.values.date = statDate.selectedInterval.value!.start
       }
       else {
-        state.values.date = new Date().getTime()
+        state.values.date = Date.now()
       }
     })
   },

@@ -12,8 +12,10 @@ export default [
         css: true,
         html: true,
       },
+      markdown: false,
       rules: {
         '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+        'e18e/prefer-static-regex': 'off',
         'import/order': 'off',
         'no-console': 'off',
         'perfectionist/sort-array-includes': ['error', { order: 'asc', type: 'natural' }],
@@ -33,7 +35,7 @@ export default [
     }),
   )),
   {
-    ignores: ['convex/_generated/**', 'docs/**'],
+    ignores: ['.agents/**', 'convex/_generated/**', 'docs/**'],
   },
   {
     files: ['convex/**/*.ts', 'scripts/**/*.mjs'],

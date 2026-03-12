@@ -11,10 +11,10 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
     amount: props.amount[0],
     categoryId: props.categoryId,
 
-    date: props.date || new Date().getTime(),
+    date: props.date || Date.now(),
     type: props.trnType,
 
-    updatedAt: new Date().getTime(),
+    updatedAt: Date.now(),
     walletId: props.walletId,
   }
 
@@ -41,7 +41,7 @@ function formatTransfer(props: TrnFormValues): Transfer | false {
     incomeWalletId: props.incomeWalletId,
     type: props.trnType,
 
-    updatedAt: new Date().getTime(),
+    updatedAt: Date.now(),
   }
 
   if (props.desc)

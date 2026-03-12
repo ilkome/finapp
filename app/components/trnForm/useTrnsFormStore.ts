@@ -36,7 +36,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
     categoryId: null,
-    date: new Date().getTime(),
+    date: Date.now(),
     desc: undefined,
     expenseWalletId: null,
     incomeWalletId: null,
@@ -110,7 +110,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amount = [0, 0, 0]
     values.amountRaw = ['', '', '']
     values.categoryId = null
-    values.date = new Date().getTime()
+    values.date = Date.now()
     values.desc = undefined
     values.expenseWalletId = null
     values.incomeWalletId = null

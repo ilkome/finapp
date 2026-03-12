@@ -21,7 +21,7 @@ const walletBaseSchema = z.object({
   isWithdrawal: z.boolean().default(false),
   name: z.string().trim().min(1).default(''),
   order: z.number().default(0),
-  updatedAt: z.number().default(() => new Date().getTime()),
+  updatedAt: z.number().default(() => Date.now()),
 })
 
 export const walletItemSchema = z.discriminatedUnion('type', [

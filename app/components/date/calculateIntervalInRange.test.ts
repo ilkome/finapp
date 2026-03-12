@@ -105,8 +105,8 @@ describe('calculateIntervalInRange', () => {
 
   describe('from today dates', () => {
     const range: Range = {
-      end: new Date().getTime(),
-      start: new Date().getTime(),
+      end: Date.now(),
+      start: Date.now(),
     }
 
     it('should calculate range for this month', () => {

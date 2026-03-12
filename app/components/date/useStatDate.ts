@@ -36,7 +36,7 @@ export function useStatDate({
   }
 
   const range = computed<Range>(() =>
-    computeDateRange(params.value, maxRange.value, new Date().getTime()),
+    computeDateRange(params.value, maxRange.value, Date.now()),
   )
 
   const intervalsInRange = computed(() => getIntervalsInRange({
