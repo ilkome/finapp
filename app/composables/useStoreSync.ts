@@ -32,17 +32,12 @@ export function isPersistBlocked(): boolean {
   return _persistBlocked
 }
 
-export type DebouncedPersist<T> = {
-  (values: T): void
-  cancel: () => void
-}
-
-export function createDebouncedPersist<T>(storageKey: string): DebouncedPersist<T> {
+export function createDebouncedPersist<T>(storageKey: string) {
   return debounce((values: T) => {
     if (_persistBlocked)
       return
     localforage.setItem(storageKey, values)
-  }, 300, { edges: ['leading', 'trailing'] })
+  }, 300)
 }
 
 export function pushSaveOp<T extends Record<string, unknown>>(opts: {

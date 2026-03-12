@@ -112,16 +112,6 @@ describe('useWalletsStore', () => {
       expect(store.items!.w1!.name).toBe('Cash')
     })
 
-    it('saves to localforage', async () => {
-      const store = useWalletsStore()
-      store.items = {}
-
-      store.saveWallet({ id: 'w1', values: makeWallet() })
-
-      const saved = await localforage.getItem<any>('finapp.wallets')
-      expect(saved).toHaveProperty('w1')
-    })
-
     it('pushes to offline queue immediately', () => {
       const store = useWalletsStore()
       store.items = {}

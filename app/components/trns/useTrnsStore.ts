@@ -392,7 +392,6 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   return {
-    cancelPersist: () => debouncedPersist.cancel(),
     computeTrnItem,
     deleteTrn,
     getRange,

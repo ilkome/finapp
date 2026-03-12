@@ -31,7 +31,6 @@ const transfer: CategoryItem = {
 }
 
 type CategoriesStore = {
-  cancelPersist: () => void
   categoriesForBeParent: ComputedRef<CategoryId[]>
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
   categoriesRootIds: ComputedRef<CategoryId[]>
@@ -316,7 +315,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   return {
-    cancelPersist: () => debouncedPersist.cancel(),
     categoriesForBeParent,
     categoriesIdsForTrnValues,
     categoriesRootIds,
