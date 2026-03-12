@@ -107,14 +107,13 @@ Convex dev deployment env vars must be configured (one-time):
 
 ```sh
 npx convex env set BETTER_AUTH_SECRET <value>
-npx convex env set SITE_URL https://<dev-deployment>.eu-west-1.convex.site
-npx convex env set FRONTEND_URL http://localhost:3050
+npx convex env set APP_URL http://localhost:3050
 npx convex env set GOOGLE_CLIENT_ID <value>
 npx convex env set GOOGLE_CLIENT_SECRET <value>
 npx convex env set OPENEXCHANGERATES_APP_ID <value>
 ```
 
-CORS: dev deployment origins (`https://<deployment>.convex.site` and `https://<deployment>.convex.cloud`) must be listed in `convex/http.ts` `allowedOrigins`.
+CORS is configured automatically from `CONVEX_SITE_URL` (built-in) and `APP_URL` env vars in `convex/http.ts` — no manual origin lists needed.
 
 ## Environment Variables
 
@@ -135,8 +134,8 @@ All `.env*` files are gitignored except `.env.example`.
 ### Convex backend env vars (set via `npx convex env set`)
 
 - `BETTER_AUTH_SECRET` — secret key for Better Auth (**required** — without it all auth endpoints including CORS preflight will fail)
-- `SITE_URL` — Convex site URL (Better Auth base URL)
-- `FRONTEND_URL` — frontend URL for cross-domain auth
+- `APP_URL` — app URL for cross-domain auth and CORS/trustedOrigins
+- `CONVEX_SITE_URL` — built-in Convex system variable (auto-provided, do not set manually), used as Better Auth base URL and for CORS
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google OAuth
 - `OPENEXCHANGERATES_APP_ID` — exchange rates API
 

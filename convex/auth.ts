@@ -9,10 +9,9 @@ import type { DataModel } from './_generated/dataModel'
 
 import { components } from './_generated/api'
 import authConfig from './auth.config'
-import { frontendOrigins } from './origins'
 
-const siteUrl = process.env.SITE_URL!
-const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3050'
+const siteUrl = process.env.CONVEX_SITE_URL!
+const appUrl = process.env.APP_URL || 'http://localhost:3050'
 
 export const authComponent = createClient<DataModel>(components.betterAuth)
 
@@ -41,7 +40,7 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         jwksRotateOnTokenGenerationError: true,
       }),
       crossDomain({
-        siteUrl: frontendUrl,
+        siteUrl: appUrl,
       }),
     ],
     session: {
@@ -54,7 +53,7 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       },
     },
-    trustedOrigins: frontendOrigins,
+    trustedOrigins: [appUrl],
   })
 }
 
