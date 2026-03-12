@@ -23,6 +23,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "preview": "nuxt generate && nuxt preview",
+    "typecheck": "nuxi typecheck",
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "docs:dev": "pnpm --dir docs dev",
