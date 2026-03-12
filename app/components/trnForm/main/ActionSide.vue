@@ -6,6 +6,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
+// @ts-expect-error `interval` not optional in VueUse types but has @default 0 — type bug
 const { isSupported: isVibrateSupported, vibrate } = useVibrate({ pattern: [50, 50, 50] })
 
 const isMath = computed(() => trnsFormStore.shouldShowSum())
