@@ -113,8 +113,6 @@ npx convex env set GOOGLE_CLIENT_SECRET <value>
 npx convex env set OPENEXCHANGERATES_APP_ID <value>
 ```
 
-CORS is configured automatically from `CONVEX_SITE_URL` (built-in) and `APP_URL` env vars in `convex/http.ts` — no manual origin lists needed.
-
 ## Environment Variables
 
 ### Env files
@@ -135,7 +133,6 @@ All `.env*` files are gitignored except `.env.example`.
 
 - `BETTER_AUTH_SECRET` — secret key for Better Auth (**required** — without it all auth endpoints including CORS preflight will fail)
 - `APP_URL` — app URL for cross-domain auth and CORS/trustedOrigins
-- `CONVEX_SITE_URL` — built-in Convex system variable (auto-provided, do not set manually), used as Better Auth base URL and for CORS
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google OAuth
 - `OPENEXCHANGERATES_APP_ID` — exchange rates API
 
