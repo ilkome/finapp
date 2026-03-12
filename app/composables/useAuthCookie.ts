@@ -12,7 +12,7 @@ export function setSessionInitialized(value: boolean) {
 }
 
 export function hasAuthCookie(): boolean {
-  return document.cookie.includes('finapp.localAuthUid')
+  return /(?:^|;\s*)finapp\.localAuthUid=/.test(document.cookie)
 }
 
 const secureSuffix = globalThis.location?.protocol === 'https:' ? ';Secure' : ''
