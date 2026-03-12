@@ -102,7 +102,7 @@ export const useUserStore = defineStore('user', () => {
       entity: 'userSettings',
       errorMessage: 'settings.errors.saveFailed',
       id: 'settings',
-      mutation: client.mutation(api.userSettings.upsert, { baseCurrency: value }),
+      mutation: client.mutation(api.user.upsert, { baseCurrency: value }),
     })
   }
 
@@ -128,7 +128,7 @@ export const useUserStore = defineStore('user', () => {
       entity: 'userSettings',
       errorMessage: 'settings.errors.saveFailed',
       id: 'settings',
-      mutation: client.mutation(api.userSettings.upsert, { locale: value }),
+      mutation: client.mutation(api.user.upsert, { locale: value }),
     })
   }
 
@@ -136,7 +136,7 @@ export const useUserStore = defineStore('user', () => {
     try {
       const { api, client } = useConvexClientWithApi()
 
-      const settings = await client.query(api.userSettings.get, {})
+      const settings = await client.query(api.user.get, {})
       if (!settings)
         return
 
@@ -239,7 +239,7 @@ export const useUserStore = defineStore('user', () => {
 
     if (!isDemo.value) {
       const { api, client } = useConvexClientWithApi()
-      await client.action(api.userSettings.removeAllUserData, {})
+      await client.action(api.user.removeAllUserData, {})
     }
   }
 

@@ -1,3 +1,4 @@
+// Duplicate: also in convex/trnsHash.ts (Convex has its own bundler, can't share)
 export function fnv1aNum(str: string): number {
   let hash = 0x811C9DC5
   for (let i = 0; i < str.length; i++) {
