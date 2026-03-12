@@ -47,7 +47,7 @@ function createAuth(ctx: GenericCtx<DataModel>) {
       }),
     ],
     session: {
-      expiresIn: 60 * 60 * 24 * 90, // 90 days
+      expiresIn: 60 * 60 * 24 * 30, // 30 days
       updateAge: 60 * 60 * 24, // 1 day (refresh on each visit)
     },
     socialProviders: {
