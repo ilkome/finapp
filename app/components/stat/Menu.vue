@@ -43,7 +43,7 @@ function onClickStatMenu(tabName: StatTabSlug) {
 }
 
 watch(() => props.active, () => {
-  if (!menu.value.find(i => i.id === props.active))
+  if (!menu.value.some(i => i.id === props.active))
     onClickStatMenu(menu.value[0]!.id)
 }, { immediate: true })
 </script>

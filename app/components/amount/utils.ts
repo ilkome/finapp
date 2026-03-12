@@ -21,7 +21,7 @@ export function formatAmount(amount: number, currencyCode?: CurrencyCode, {
   precision = 0,
 } = {}) {
   const currencySettings = currencyCode ? currencyMap.get(currencyCode) : undefined
-  const p = precision != null ? precision : currencySettings?.precision ?? 2
+  const p = precision ?? currencySettings?.precision ?? 2
 
   return getFormatter(p).format(amount).replace(/,/g, ' ')
 }

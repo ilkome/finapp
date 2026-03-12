@@ -1,6 +1,3 @@
-// Track whether we've already initialized the cross-domain session
-// to avoid calling getSession() on every navigation (which triggers
-// $sessionSignal → useSession refetch → get-session → signal → loop)
 let _sessionInitialized = false
 
 export function isSessionInitialized(): boolean {

@@ -236,7 +236,7 @@ export const useTrnsStore = defineStore('trns', () => {
   function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
     const valuesWithEditDate = {
       ...values,
-      updatedAt: new Date().getTime(),
+      updatedAt: Date.now(),
     }
 
     // Check before setTrns so the new id isn't already in the store

@@ -5,5 +5,5 @@ export function uniqueElementsBy<T extends object>(obj: { [key: string]: T }, pr
     uniqueValues.add(entry[propertyName as keyof T] as string)
   }
 
-  return Array.from(uniqueValues)
+  return [...uniqueValues]
 }

@@ -269,7 +269,7 @@ export function useBottomSheetDrag({
       setInitialY()
       disabled.value = false
       addEvents()
-      setTimeout(() => open(), INIT_DELAY_MS)
+      setTimeout(open, INIT_DELAY_MS)
     }, INIT_DELAY_MS)
   }
 

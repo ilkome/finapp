@@ -33,7 +33,7 @@ function createQueryFilter<T extends string>(
     router.push({
       query: {
         ...route.query,
-        [queryKey]: [...new Set(ids.value.concat(newIds))],
+        [queryKey]: [...new Set([...ids.value, ...newIds])],
       },
     })
   }

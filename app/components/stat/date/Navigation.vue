@@ -9,7 +9,7 @@ const statDate = inject(statDateKey)!
 
 const isShowNav = computed(() =>
   !statDate.params.value.isShowMaxRange
-  && (statDate.range.value.start < new Date().getTime()
+  && (statDate.range.value.start < Date.now()
     || (
       statDate.range.value.start !== statDate.maxRange.value.start
       && statDate.range.value.end !== statDate.maxRange.value.end)))

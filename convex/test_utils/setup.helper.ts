@@ -1,22 +1,26 @@
 /// <reference types="vite/client" />
 import { beforeEach, vi } from 'vitest'
 
-export let mockUserId: string | null = 'test-user-id'
+const state = { mockUserId: 'test-user-id' as string | null }
+
+export function getMockUserId() {
+  return state.mockUserId
+}
 
 export function setMockUser(userId: string | null) {
-  mockUserId = userId
+  state.mockUserId = userId
 }
 
 beforeEach(() => {
-  mockUserId = 'test-user-id'
+  state.mockUserId = 'test-user-id'
 })
 
 vi.mock('../auth', () => ({
   authComponent: {
     safeGetAuthUser: vi.fn(async () => {
-      if (!mockUserId)
+      if (!state.mockUserId)
         return null
-      return { _id: mockUserId }
+      return { _id: state.mockUserId }
     }),
   },
 }))
