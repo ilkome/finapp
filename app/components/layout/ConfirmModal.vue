@@ -14,15 +14,24 @@ const { t } = useI18n()
 
 const isOpen = ref(true)
 
-function onConfirm(close: () => void) {
+function confirm() {
   emit('confirm')
-  close()
+  isOpen.value = false
 }
 
 function onClosed() {
-  isOpen.value = false
   emit('closed')
 }
+
+useEventListener('keydown', (e: KeyboardEvent) => {
+  if (!isOpen.value)
+    return
+
+  if (e.key === 'Enter') {
+    e.preventDefault()
+    confirm()
+  }
+})
 </script>
 
 <template>
@@ -43,21 +52,22 @@ function onClosed() {
 
     <template #footer="{ close }">
       <UButton
-        variant="outline"
+        class="px-6 text-sm"
         color="neutral"
         size="xl"
-        class="px-6 text-sm"
+        variant="outline"
         @click="close"
       >
         {{ t('base.cancel') }}
       </UButton>
 
       <UButton
-        variant="soft"
+        autofocus
+        class="px-6"
         color="error"
         size="xl"
-        class="px-6"
-        @click="onConfirm(close)"
+        variant="soft"
+        @click="confirm"
       >
         {{ t('base.delete') }}
       </UButton>

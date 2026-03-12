@@ -18,7 +18,7 @@ const isMenuOpen = ref(false)
 
 export function useMenuData() {
   const { t } = useI18n()
-  const { openFormForCreate } = useTrnsFormStore()
+  const trnsFormStore = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const route = useRoute()
@@ -81,8 +81,12 @@ export function useMenuData() {
     isMenuOpen.value = false
 
     if (menuId === 'trnForm') {
-      if (walletsStore.hasItems && categoriesStore.hasItems)
-        openFormForCreate()
+      if (trnsFormStore.ui.isShow) {
+        trnsFormStore.onClose()
+      }
+      else if (walletsStore.hasItems && categoriesStore.hasItems) {
+        trnsFormStore.openFormForCreate()
+      }
       return
     }
 

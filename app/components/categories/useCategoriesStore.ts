@@ -128,8 +128,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     }
 
     // Filter valid categories and pick top N by most recent usage
-    // @ts-expect-error Iterator Helpers not yet typed for MapIterator in TS 5.9
-    const sortedEntries: [CategoryId, number][] = latestDateByCategory.entries().toSorted(([, dateA], [, dateB]) => dateB - dateA)
+    const sortedEntries: [CategoryId, number][] = Array.from(latestDateByCategory.entries()).sort(([, dateA], [, dateB]) => dateB - dateA)
 
     const recentIds = sortedEntries.reduce<CategoryId[]>((acc, [categoryId]) => {
       if (acc.length >= maxCategories)
