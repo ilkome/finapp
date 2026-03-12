@@ -74,8 +74,7 @@ VITE_CONVEX_SITE_URL=your_convex_site_url
 These variables run on the Convex backend. Set them via CLI:
 
 ```bash
-npx convex env set SITE_URL your_convex_site_url
-npx convex env set FRONTEND_URL https://your-app-domain.com
+npx convex env set APP_URL https://your-app-domain.com
 npx convex env set GOOGLE_CLIENT_ID your_client_id
 npx convex env set GOOGLE_CLIENT_SECRET your_client_secret
 npx convex env set OPENEXCHANGERATES_APP_ID your_app_id
