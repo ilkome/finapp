@@ -1,5 +1,6 @@
 import type { ShallowRef } from 'vue'
 
+import { debounce } from 'es-toolkit'
 import localforage from 'localforage'
 
 import type { EntityType } from '~/components/offline/types'
@@ -32,19 +33,16 @@ export function isPersistBlocked(): boolean {
 }
 
 export type DebouncedPersist<T> = {
-  (values: T): Promise<void>
+  (values: T): void
   cancel: () => void
 }
 
 export function createDebouncedPersist<T>(storageKey: string): DebouncedPersist<T> {
-  const fn = useDebounceFn((values: T) => {
+  return debounce((values: T) => {
     if (_persistBlocked)
       return
     localforage.setItem(storageKey, values)
-  }, 300)
-
-  // useDebounceFn has .cancel() at runtime but doesn't expose it in types
-  return fn as unknown as DebouncedPersist<T>
+  }, 300, { edges: ['leading', 'trailing'] })
 }
 
 export function pushSaveOp<T extends Record<string, unknown>>(opts: {
