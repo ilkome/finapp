@@ -34,6 +34,9 @@ function createAuth(ctx: GenericCtx<DataModel>) {
         }
       }),
     },
+    account: {
+      encryptOAuthTokens: true,
+    },
     plugins: [
       convex({
         authConfig,
