@@ -129,19 +129,18 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     }
 
     // Filter valid categories and pick top N by most recent usage
-    const recentIds = [...latestDateByCategory.entries()]
-      .sort(([, dateA], [, dateB]) => dateB - dateA)
-      .reduce<CategoryId[]>((acc, [categoryId]) => {
-        if (acc.length >= maxCategories)
-          return acc
-
-        const category = items.value[categoryId]
-        if (!category || !category.showInLastUsed || categoryId === 'transfer' || favoriteIds.has(categoryId))
-          return acc
-
-        acc.push(categoryId)
+    // @ts-expect-error Iterator Helpers not yet typed for MapIterator in TS 5.9
+    const recentIds = latestDateByCategory.entries().toSorted(([, dateA], [, dateB]) => dateB - dateA).reduce<CategoryId[]>((acc, [categoryId]) => {
+      if (acc.length >= maxCategories)
         return acc
-      }, [])
+
+      const category = items.value[categoryId]
+      if (!category || !category.showInLastUsed || categoryId === 'transfer' || favoriteIds.has(categoryId))
+        return acc
+
+      acc.push(categoryId)
+      return acc
+    }, [])
 
     return recentIds
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
