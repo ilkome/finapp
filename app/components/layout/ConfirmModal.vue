@@ -39,7 +39,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     v-model:open="isOpen"
     :title="props.title || t('base.sure')"
     :ui="{ content: 'max-w-sm', footer: 'justify-between' }"
-    @update:open="(val: boolean) => { if (!val) onClosed() }"
+    @after:leave="onClosed"
   >
     <template v-if="description || highlight" #body>
       <div class="text-muted">
