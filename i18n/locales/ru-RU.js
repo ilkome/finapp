@@ -131,8 +131,8 @@ export default {
     page: {
       rate: 'Курс',
       setBase: 'Сделать основной валютой',
-      showAll: 'Показать все валюты',
-      showUsed: 'Показать валюты кошельков',
+      showAll: 'Все',
+      showUsed: 'Используемые',
       title: 'Валюты',
     },
     select: 'Выбрать валюту',

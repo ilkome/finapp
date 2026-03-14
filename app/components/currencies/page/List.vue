@@ -11,13 +11,7 @@ const walletsStore = useWalletsStore()
 
 useHead({ title: t('currencies.page.title') })
 
-const showAll = ref(false)
 const searchInput = ref('')
-
-watch(showAll, (value) => {
-  if (!value)
-    searchInput.value = ''
-})
 
 const currencyMap = new Map(
   currencies.map(c => [c.code, { name: c.name, symbol: c.symbol }]),
@@ -34,24 +28,8 @@ function getRate(code: string): number | undefined {
   return baseRate / codeRate
 }
 
-const list = computed(() => {
+function sortCurrencies(items: string[]): string[] {
   const base = currenciesStore.base
-  const usedCodes = walletsStore.currenciesUsed
-
-  let items = showAll.value
-    ? currencies.map(c => c.code)
-    : usedCodes
-
-  if (searchInput.value) {
-    const search = searchInput.value.toLowerCase()
-    items = items.filter((code) => {
-      const info = currencyMap.get(code)
-      return code.toLowerCase().includes(search)
-        || info?.name.toLowerCase().includes(search)
-    })
-  }
-
-  // Sort: base currency first, then alphabetically
   return items.toSorted((a, b) => {
     if (a === base)
       return -1
@@ -59,6 +37,28 @@ const list = computed(() => {
       return 1
     return a.localeCompare(b)
   })
+}
+
+function filterBySearch(items: string[]): string[] {
+  if (!searchInput.value)
+    return items
+
+  const search = searchInput.value.toLowerCase()
+  return items.filter((code) => {
+    const info = currencyMap.get(code)
+    return code.toLowerCase().includes(search)
+      || info?.name.toLowerCase().includes(search)
+  })
+}
+
+const usedList = computed(() => {
+  return sortCurrencies(filterBySearch(walletsStore.currenciesUsed))
+})
+
+const allList = computed(() => {
+  const usedSet = new Set(walletsStore.currenciesUsed)
+  const items = currencies.map(c => c.code).filter(code => !usedSet.has(code))
+  return sortCurrencies(filterBySearch(items))
 })
 </script>
 
@@ -66,47 +66,49 @@ const list = computed(() => {
   <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('currencies.page.title') }}</UiHeaderTitle>
-      <template #actions>
-        <UiActionButton :ariaLabel="$t('currencies.ariaFilter')" @click="showAll = !showAll">
-          <Icon
-            :name="showAll ? 'lucide:filter' : 'lucide:globe'"
-            size="20"
-          />
-        </UiActionButton>
-      </template>
     </UiHeader>
 
     <div class="max-w-4xl grow px-2 lg:px-4 2xl:px-8">
-      <!-- Toggle label -->
-      <div class="flex items-center gap-3 pb-3">
-        <button
-          class="text-muted text-xs hover:text-(--ui-text-highlighted)"
-          @click="showAll = !showAll"
-        >
-          {{ showAll ? t('currencies.page.showUsed') : t('currencies.page.showAll') }}
-        </button>
-      </div>
+      <FormInput
+        v-model="searchInput"
+        :placeholder="`${t('currencies.list.search')}...`"
+        class="pb-3"
+      />
 
-      <!-- Search (only when showing all) -->
-      <div v-if="showAll" class="pb-3">
-        <FormInput
-          v-model="searchInput"
-          :placeholder="`${t('currencies.list.search')}...`"
-        />
-      </div>
+      <!-- Used currencies -->
+      <UiTitleCollapse isHideArrow>
+        {{ t('currencies.page.showUsed') }}
+      </UiTitleCollapse>
 
-      <!-- Empty -->
-      <div
-        v-if="list.length === 0"
-        class="text-muted py-6 text-center text-sm"
-      >
+      <div v-if="usedList.length === 0" class="text-muted py-6 text-center text-sm">
         {{ t('currencies.list.notFound') }}
       </div>
 
-      <!-- List -->
       <div v-else>
         <CurrenciesItem
-          v-for="code in list"
+          v-for="code in usedList"
+          :key="code"
+          :code="code"
+          :isBase="code === currenciesStore.base"
+          :name="currencyMap.get(code)?.name ?? code"
+          :rate="getRate(code)"
+          :symbol="currencyMap.get(code)?.symbol"
+          @setBase="userStore.saveUserBaseCurrency"
+        />
+      </div>
+
+      <!-- All currencies -->
+      <UiTitleCollapse isHideArrow>
+        {{ t('currencies.page.showAll') }}
+      </UiTitleCollapse>
+
+      <div v-if="allList.length === 0" class="text-muted py-6 text-center text-sm">
+        {{ t('currencies.list.notFound') }}
+      </div>
+
+      <div v-else>
+        <CurrenciesItem
+          v-for="code in allList"
           :key="code"
           :code="code"
           :isBase="code === currenciesStore.base"
