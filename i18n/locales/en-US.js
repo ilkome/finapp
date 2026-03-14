@@ -131,8 +131,8 @@ export default {
     page: {
       rate: 'Rate',
       setBase: 'Set as base currency',
-      showAll: 'Show all currencies',
-      showUsed: 'Show wallet currencies',
+      showAll: 'All',
+      showUsed: 'Used',
       title: 'Currencies',
     },
     select: 'Select currency',
