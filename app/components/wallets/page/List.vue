@@ -74,6 +74,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         </UiActionButton>
 
         <BottomSheetOrDropdown
+          v-if="walletsStore.sortedIds.length > 1"
           :isOpen="isOpen"
           isShowCloseBtn
           @closeModal="isOpen = false"
@@ -88,7 +89,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
           <template #content>
             <div class="p-1 pt-4 pb-3">
               <UiHeaderLink
-                v-if="walletsStore.sortedIds.length > 1"
                 icon="lucide:arrow-down-up"
                 @click="isSortModalOpen = true"
               >

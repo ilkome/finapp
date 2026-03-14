@@ -25,9 +25,9 @@ const isShowAllCategoriesFallback = computed(() =>
     v-if="categoriesStore.favoriteCategoriesIds.length > 0"
     class="pt-2"
   >
-    <UiTitleCollapse arrow="right" class="mx-2">
+    <UiTitleModal>
       {{ t('categories.favoriteCategories') }}
-    </UiTitleCollapse>
+    </UiTitleModal>
 
     <CategoriesSelectorGrid
       :activeItemId="trnsFormStore.values.categoryId ?? undefined"
