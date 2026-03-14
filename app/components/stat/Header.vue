@@ -39,6 +39,8 @@ const statConfigModal: Ref<StatConfigModal> = ref({
   isShow: false,
   show: () => statConfigModal.value.isShow = true,
 })
+
+const isPopoverOpen = ref(false)
 </script>
 
 <template>
@@ -47,7 +49,7 @@ const statConfigModal: Ref<StatConfigModal> = ref({
 
     <template #actions>
       <div
-        v-if="props.filter || props.config"
+        v-if="props.filter || props.config || $slots.popover"
         class="ml-auto flex items-center gap-1"
       >
         <StatFilterSelector
@@ -57,25 +59,33 @@ const statConfigModal: Ref<StatConfigModal> = ref({
         />
 
         <StatConfigModal
-          v-if="props.config"
-          :isShowWallets="!!props.config.isShowWallets"
+          v-if="props.config || $slots.popover"
+          :isShowWallets="!!props.config?.isShowWallets"
           :statConfigModal
+        />
+
+        <BottomSheetOrDropdown
+          v-if="$slots.popover"
+          :isOpen="isPopoverOpen"
+          isShowCloseBtn
+          @openModal="isPopoverOpen = true"
+          @closeModal="isPopoverOpen = false"
         >
-          <template
-            v-if="$slots.popover"
-            #default="{ close }"
-          >
-            <div>
+          <template #trigger>
+            <UiActionButton :ariaLabel="$t('base.moreOptions')">
+              <Icon name="lucide:ellipsis-vertical" size="20" />
+            </UiActionButton>
+          </template>
+
+          <template #content>
+            <div class="min-w-52 p-1 pt-4 pb-3">
               <slot
                 name="popover"
-                :close="() => {
-                  statConfigModal.close()
-                  close()
-                }"
+                :close="() => isPopoverOpen = false"
               />
             </div>
           </template>
-        </StatConfigModal>
+        </BottomSheetOrDropdown>
       </div>
     </template>
 

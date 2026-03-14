@@ -112,7 +112,6 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="wallet">
     <StatHeader
-      :config="{}"
       :filter="{ isShowCategories: true }"
     >
       <template #title>
