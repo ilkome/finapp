@@ -88,8 +88,9 @@ Auth uses Better Auth with `convexClient()` and `crossDomainClient()` plugins (`
 
 **Auth cookie** (`composables/useAuthCookie.ts`): `finapp.localAuthUid` cookie (document.cookie, 1yr max-age) — fast synchronous check for auth state. Not a security token, just a hint for middleware and plugin to skip network calls.
 
-### Convex Deploy Notes
+### Convex CLI Notes
 
+- **Targeting prod**: always use the `--prod` flag (`npx convex run --prod`, `npx convex export --prod`). Do NOT use `CONVEX_DEPLOYMENT` env var — `.env.local` overrides env vars, so the CLI silently hits dev instead of prod
 - Convex rejects hyphens in directory names (use underscores: `test_utils/`)
 - Files with multiple dots (e.g., `setup.helper.ts`) are auto-skipped by Convex bundler — useful for test helpers
 - Deploy with `--typecheck=disable` if there are pre-existing TS errors in Convex functions
