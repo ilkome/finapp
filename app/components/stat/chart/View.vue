@@ -11,8 +11,8 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatByLocale } from '~/components/date/utils'
-import { config, lineConfig } from '~/components/stat/chart/config'
-import { getLocalAmount } from '~/components/stat/chart/utils'
+import { config, defaultSeriesConfig } from '~/components/stat/chart/config'
+import { formatChartAmount } from '~/components/stat/chart/utils'
 
 type TooltipParam = {
   color: string
@@ -64,7 +64,7 @@ function getFormatForChart(periodName: Period) {
 
 const option = computed(() => {
   const data = defu(config, {
-    series: setChartSeries(series),
+    series: buildChartSeries(series),
     xAxis: {
       data: xAxisLabels,
       type: 'category',
@@ -80,6 +80,10 @@ const option = computed(() => {
     return formatByLocale(new Date(+value), getFormatForChart(period), locale.value)
   }
 
+  const yAxis = data.yAxis as Record<string, any>
+  yAxis.axisPointer.label.formatter = (props: { value: number }) =>
+    formatChartAmount(+props.value, locale.value) ?? ''
+
   return data
 })
 
@@ -92,11 +96,11 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
   emit('click', index)
 }
 
-function setChartSeries(series: ChartSeries[]) {
+function buildChartSeries(series: ChartSeries[]) {
   return series
     .map((item: ChartSeries) => ({
-      ...defu(lineConfig, item),
-      label: lineConfig.label,
+      ...defu(defaultSeriesConfig, item),
+      label: defaultSeriesConfig.label,
       stack: (chartType || item.type) === 'bar' ? 'b' : false,
       type: item.markedArea ? 'bar' : (chartType || item.type),
     }))
@@ -132,7 +136,7 @@ function setChartSeries(series: ChartSeries[]) {
               </div>
 
               <div class="font-secondary text-1 text-right text-lg">
-                {{ getLocalAmount(param.value) }}
+                {{ formatChartAmount(param.value, locale) }}
               </div>
             </div>
           </div>

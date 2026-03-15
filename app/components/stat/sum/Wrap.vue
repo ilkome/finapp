@@ -5,15 +5,12 @@ import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   averageTotal?: Record<string, number>
   categoryId?: CategoryId
   filteredType: SeriesSlugSelected
-  isShowAverage: boolean
-  isShowExpense: boolean
-  isShowIncome: boolean
   total: TotalReturns
   trnsIds: TrnId[]
   type: SeriesSlugSelected | StatTabSlug
@@ -26,20 +23,18 @@ const emit = defineEmits<{
 }>()
 
 const statConfig = inject(statConfigKey)!
-const filter = inject(filterKey)!
-const statDate = inject(statDateKey)!
+
+const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
 
 const className = computed(() => cn(
   'min-w-min rounded-sm min-h-[42px] flex items-center px-3',
   {
-    interactive: props.isShowIncome && props.isShowExpense && props.type === 'summary',
+    interactive: props.type === 'summary',
   },
 ))
 
 function onClick(type: SeriesSlugSelected) {
-  if (props.isShowIncome && props.isShowExpense) {
-    emit('click', type)
-  }
+  emit('click', type)
 }
 </script>
 
@@ -50,7 +45,6 @@ function onClick(type: SeriesSlugSelected) {
       class="flex flex-wrap gap-2 @2xl/page:justify-start"
     >
       <StatSumItem
-        v-if="props.isShowExpense"
         :amount="-total.expense"
         :isActive="filteredType === 'expense'"
         :class="className"
@@ -58,11 +52,8 @@ function onClick(type: SeriesSlugSelected) {
         @click="onClick('expense')"
       >
         <StatAverage
-          v-if="props.isShowAverage"
-          :averageConfig="statConfig.config.value.statAverage.count"
+          v-if="isShowAverage"
           :categoryId
-          :filter
-          :statDate
           :trnsIds
           :walletId
           statTabSlug="expense"
@@ -70,7 +61,6 @@ function onClick(type: SeriesSlugSelected) {
       </StatSumItem>
 
       <StatSumItem
-        v-if="props.isShowIncome"
         :amount="total.income"
         :isActive="filteredType === 'income'"
         :class="className"
@@ -78,11 +68,8 @@ function onClick(type: SeriesSlugSelected) {
         @click="onClick('income')"
       >
         <StatAverage
-          v-if="props.isShowAverage"
-          :averageConfig="statConfig.config.value.statAverage.count"
+          v-if="isShowAverage"
           :categoryId
-          :filter
-          :statDate
           :trnsIds
           :walletId
           statTabSlug="income"
@@ -90,18 +77,14 @@ function onClick(type: SeriesSlugSelected) {
       </StatSumItem>
 
       <StatSumItem
-        v-if="props.isShowIncome && props.isShowExpense"
         :amount="total.sum"
         :class="className"
         type="netIncome"
         @click="onClick('netIncome')"
       >
         <StatAverage
-          v-if="props.isShowAverage"
-          :averageConfig="statConfig.config.value.statAverage.count"
+          v-if="isShowAverage"
           :categoryId
-          :filter
-          :statDate
           :trnsIds
           :walletId
           statTabSlug="netIncome"
@@ -114,15 +97,12 @@ function onClick(type: SeriesSlugSelected) {
         :amount="props.type === 'income' ? total.income : -((total as Record<string, number>)[props.type]!)"
         :class="className"
         :type="(props.type as SeriesSlugSelected)"
-        :averageTotal="props.isShowAverage ? props.averageTotal : undefined"
+        :averageTotal="isShowAverage ? props.averageTotal : undefined"
         @click="emit('clickAverage')"
       >
         <StatAverage
-          v-if="props.isShowAverage"
-          :averageConfig="statConfig.config.value.statAverage.count"
+          v-if="isShowAverage"
           :categoryId
-          :filter
-          :statDate
           :statTabSlug="(props.type ?? 'netIncome') as SeriesSlugSelected"
           :trnsIds
           :walletId

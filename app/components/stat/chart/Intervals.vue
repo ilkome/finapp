@@ -14,10 +14,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const items = computed(() => {
+const availableIntervals = computed(() => {
   const dayDiff = differenceInDays(props.range.end, props.range.start)
 
-  const items = [{
+  return [{
     isShow: props.period !== 'day' || dayDiff > 7,
     label: t('dates.day.simple'),
     value: 'day',
@@ -33,24 +33,22 @@ const items = computed(() => {
     isShow: dayDiff >= 400,
     label: t('dates.year.simple'),
     value: 'year',
-  }]
-
-  return items.filter(i => i.isShow)
+  }].filter(i => i.isShow)
 })
 
-const value = ref(props.period)
+const selectedPeriod = ref(props.period)
 </script>
 
 <template>
   <USelect
-    v-if="items.length > 1"
-    v-model="value"
-    :items="items"
+    v-if="availableIntervals.length > 1"
+    v-model="selectedPeriod"
+    :items="availableIntervals"
     :ui="{
       base: 'ring-0 text-muted text-2xs hover:bg-(--item-5)',
       trailingIcon: 'size-4',
       content: 'w-24',
     }"
-    @change="emit('changePeriod', value)"
+    @change="emit('changePeriod', selectedPeriod)"
   />
 </template>

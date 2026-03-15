@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import type { StatConfigModal } from '~/components/stat/types'
+import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey, statConfigKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = defineProps<{
-  config?: {
-    isShowWallets?: boolean
-  }
-  filter?: {
-    isShowCategories?: boolean
-    isShowWallets?: boolean
-  }
+defineProps<{
+  configWallets?: boolean
+  filterCategories?: boolean
+  filterWallets?: boolean
 }>()
+
+const activeTab = defineModel<StatTabSlug>('activeTab')
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
@@ -34,12 +32,6 @@ function onClickWallet(walletId: WalletId) {
   trnsFormStore.values.walletId = walletId
 }
 
-const statConfigModal: Ref<StatConfigModal> = ref({
-  close: () => statConfigModal.value.isShow = false,
-  isShow: false,
-  show: () => statConfigModal.value.isShow = true,
-})
-
 const isPopoverOpen = ref(false)
 </script>
 
@@ -48,20 +40,15 @@ const isPopoverOpen = ref(false)
     <slot name="title" />
 
     <template #actions>
-      <div
-        v-if="props.filter || props.config || $slots.popover"
-        class="ml-auto flex items-center gap-1"
-      >
+      <div class="ml-auto flex items-center gap-1">
         <StatFilterSelector
-          v-if="props.filter"
-          :isShowCategories="!!props.filter.isShowCategories"
-          :isShowWallets="!!props.filter.isShowWallets"
+          v-if="filterCategories || filterWallets"
+          :isShowCategories="!!filterCategories"
+          :isShowWallets="!!filterWallets"
         />
 
         <StatConfigModal
-          v-if="props.config || $slots.popover"
-          :isShowWallets="!!props.config?.isShowWallets"
-          :statConfigModal
+          :isShowWallets="!!configWallets"
         />
 
         <BottomSheetOrDropdown
@@ -89,10 +76,10 @@ const isPopoverOpen = ref(false)
       </div>
     </template>
 
-    <template #selected>
-      <slot
-        v-if="$slots.selected"
-        name="selected"
+    <template v-if="activeTab" #selected>
+      <StatMenu
+        :active="activeTab"
+        @click="(id: StatTabSlug) => activeTab = id"
       />
     </template>
 

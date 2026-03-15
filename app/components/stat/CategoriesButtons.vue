@@ -83,25 +83,9 @@ function onChangeViewOptions(newViewOptions: Pick<DeepPartial<MiniItemConfig>, '
       </div>
 
       <div v-if="isShowMorePresets">
-        <UiSwitchItem
-          :checkboxValue="statConfig.config.value.catsList.isItemsBg"
-          :title="t('stat.catButtons.isItemsBg')"
-          @click="statConfig.updateConfig('catsList', { isItemsBg: !statConfig.config.value.catsList.isItemsBg })"
-        />
-
-        <!-- Lines -->
-        <UiSwitchItem
-          :checkboxValue="statConfig.config.value.catsList.isLines"
-          :title="t('stat.catButtons.isLines')"
-          @click="statConfig.updateConfig('catsList', { isLines: !statConfig.config.value.catsList.isLines })"
-        />
-
-        <!-- Round icons -->
-        <UiSwitchItem
-          :checkboxValue="statConfig.config.value.catsList.isRoundIcon"
-          :title="t('stat.catButtons.isRoundIcon')"
-          @click="statConfig.updateConfig('catsList', { isRoundIcon: !statConfig.config.value.catsList.isRoundIcon })"
-        />
+        <StatConfigSwitch configKey="catsList" field="isItemsBg" :title="t('stat.catButtons.isItemsBg')" />
+        <StatConfigSwitch configKey="catsList" field="isLines" :title="t('stat.catButtons.isLines')" />
+        <StatConfigSwitch configKey="catsList" field="isRoundIcon" :title="t('stat.catButtons.isRoundIcon')" />
       </div>
     </div>
 
@@ -112,21 +96,9 @@ function onChangeViewOptions(newViewOptions: Pick<DeepPartial<MiniItemConfig>, '
         {{ t('stat.catButtons.elements') }}
       </UiTitleSection>
       <div>
-        <UiSwitchItem
-          :checkboxValue="statConfig.config.value.vertical.isShow"
-          :title="t('stat.config.categories.vertical.title')"
-          @click="statConfig.updateConfig('vertical', { isShow: !statConfig.config.value.vertical.isShow })"
-        />
-        <UiSwitchItem
-          :checkboxValue="statConfig.config.value.catsRound.isShow"
-          :title="t('stat.config.categories.rounds.title')"
-          @click="statConfig.updateConfig('catsRound', { isShow: !statConfig.config.value.catsRound.isShow })"
-        />
-        <UiSwitchItem
-          :checkboxValue="statConfig.config.value.catsList.isShow"
-          :title="t('stat.config.categories.list.title')"
-          @click="statConfig.updateConfig('catsList', { isShow: !statConfig.config.value.catsList.isShow })"
-        />
+        <StatConfigSwitch configKey="vertical" field="isShow" :title="t('stat.config.categories.vertical.title')" />
+        <StatConfigSwitch configKey="catsRound" field="isShow" :title="t('stat.config.categories.rounds.title')" />
+        <StatConfigSwitch configKey="catsList" field="isShow" :title="t('stat.config.categories.list.title')" />
       </div>
     </div>
   </div>

@@ -11,6 +11,10 @@ export enum TrnType {
 
 export type TrnId = string
 
+export function getTrnTypeByAmount(amount: number): TrnType {
+  return amount > 0 ? TrnType.Income : TrnType.Expense
+}
+
 export type TrnsViewType = 'adjustment' | 'all' | 'expense' | 'income' | 'transfer'
 
 export type TransferSide = 'expense' | 'income'
