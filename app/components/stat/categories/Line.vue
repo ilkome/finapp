@@ -7,6 +7,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { computeBarStyle } from '~/components/stat/categories/barUtils'
 import { useCategoryLongPress } from '~/components/stat/categories/useCategoryLongPress'
 import { statConfigKey } from '~/components/stat/injectionKeys'
+import { getTrnTypeByAmount } from '~/components/trns/types'
 
 const props = defineProps<{
   insideClass?: string

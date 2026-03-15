@@ -5,6 +5,7 @@ import type { CategoryWithData } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useCategoryLongPress } from '~/components/stat/categories/useCategoryLongPress'
+import { getTrnTypeByAmount } from '~/components/trns/types'
 
 const props = defineProps<{
   isShowAmount?: boolean
