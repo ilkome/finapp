@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
 
+import { getCreditAvailable } from '~/components/wallets/types'
+
 const props = defineProps<{
   activeType?: string | false
   counts: Record<string, {
@@ -68,7 +70,7 @@ const itemsGrouped = computed(() => [
               class="flex items-center gap-1 pt-1 opacity-90"
             >
               <Amount
-                :amount="item.secondValue - Math.abs(item.value)"
+                :amount="getCreditAvailable(item.secondValue, item.value)"
                 :currencyCode="currencyCode"
                 variant="2xs"
               />

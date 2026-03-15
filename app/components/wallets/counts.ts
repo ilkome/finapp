@@ -46,6 +46,12 @@ export function computeWalletCounts(params: {
 
     const amount = convert(wallet.amount ?? 0, wallet.currency ?? 'USD')
 
+    if (wallet.isArchived) {
+      sum.archived += amount
+      hasArchivedWallet = true
+      continue
+    }
+
     if (wallet.isExcludeInTotal)
       sum.excludeInTotal += amount
     else if (wallet.type !== 'credit')
@@ -76,11 +82,6 @@ export function computeWalletCounts(params: {
 
     if (wallet.isWithdrawal)
       sum.withdrawal += amount
-
-    if (wallet.isArchived) {
-      sum.archived += amount
-      hasArchivedWallet = true
-    }
   }
 
   return {
@@ -91,7 +92,7 @@ export function computeWalletCounts(params: {
     },
     available: {
       id: 'isAvailable',
-      isShow: sum.withdrawal !== 0,
+      isShow: sum.withdrawal !== 0 && sum.credit !== 0,
       value: sum.withdrawal - Math.abs(sum.credit),
     },
     cash: {

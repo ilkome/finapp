@@ -4,6 +4,8 @@ import { useStorage } from '@vueuse/core'
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
+import { getCreditAvailable } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -36,7 +38,7 @@ const classes = computed(() => ([
 ]))
 
 const creditViews = ['debt', 'summary'] as const
-const activeCreditView = useStorage<typeof creditViews[number]>(props.walletId, 'debt')
+const activeCreditView = useStorage<typeof creditViews[number]>(`${WALLET_STORAGE_KEYS.creditViewPrefix}${props.walletId}`, 'debt')
 
 const walletCreditLimit = computed(() =>
   props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
@@ -47,7 +49,7 @@ const creditAmount = computed(() => {
     case 'debt':
       return props.wallet?.amount
     case 'summary':
-      return Math.abs(walletCreditLimit.value) - Math.abs(props.wallet.amount)
+      return getCreditAvailable(walletCreditLimit.value, props.wallet.amount)
     default:
       return 0
   }
@@ -110,7 +112,7 @@ if (!props.isSort) {
           class="flex items-center gap-0.5 opacity-70"
         >
           <Amount
-            :amount="walletCreditLimit - Math.abs(wallet.amount)"
+            :amount="getCreditAvailable(walletCreditLimit, wallet.amount)"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
             :isShowSymbol="false"

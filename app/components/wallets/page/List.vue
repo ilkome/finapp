@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
@@ -31,7 +32,7 @@ const {
   requestDelete,
 } = useWalletDelete()
 
-const groupedBy = useStorage<WalletsGroupedBy>('finapp-wallets-groupedBy', 'none')
+const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
 
 const {
   currencyFiltered,
@@ -148,7 +149,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         </div>
 
         <WalletsStatistics
-          :storageKey="`finapp-wallets-total-${groupedBy}`"
+          :storageKey="`${WALLET_STORAGE_KEYS.totalPrefix}${groupedBy}`"
           :activeType="walletViewType"
           :currencyCode="currenciesStore.base"
           :counts="counts"

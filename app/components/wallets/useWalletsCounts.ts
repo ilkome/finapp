@@ -15,7 +15,7 @@ export function useWalletsCounts(
   const counts = computed(() => computeWalletCounts({
     baseCurrency: currenciesStore.base,
     rates: currenciesStore.rates,
-    totalWalletsCount: Object.keys(walletsStore.itemsComputed).length,
+    totalWalletsCount: Object.values(walletsStore.itemsComputed).filter(w => !w.isArchived).length,
     walletIds: selectedWalletsIdsWithCurrency.value,
     wallets: walletsStore.itemsComputed,
   }))

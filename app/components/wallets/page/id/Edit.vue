@@ -11,10 +11,16 @@ const walletsStore = useWalletsStore()
 
 const walletId = computed(() => route.params.id) as Ref<WalletId>
 const wallet = computed(() => walletsStore.items?.[walletId.value])
-const walletForm = ref(walletItemSchema.parse(wallet.value))
+
+if (!wallet.value) {
+  router.replace('/wallets')
+}
+
+const walletForm = ref(wallet.value ? walletItemSchema.parse(wallet.value) : undefined)
 
 function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
-  (walletForm.value as Record<string, unknown>)[key] = value
+  if (walletForm.value)
+    (walletForm.value as Record<string, unknown>)[key] = value
 }
 
 useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}` })
@@ -22,7 +28,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
 
 <template>
   <UiPage
-    v-if="wallet"
+    v-if="wallet && walletForm"
     class="flex h-full flex-col"
   >
     <UiHeader>

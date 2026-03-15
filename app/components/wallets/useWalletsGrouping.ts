@@ -5,6 +5,7 @@ import { useStorage } from '@vueuse/core'
 import type { GroupedWallets, WalletsToggleMap } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
+import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus } from '~/components/wallets/grouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -17,12 +18,12 @@ export function useWalletsGrouping(
   const { t } = useI18n()
   const walletsStore = useWalletsStore()
 
-  const groupedBySecondary = useStorage('finapp-wallets-groupedBySecondary', {
+  const groupedBySecondary = useStorage(WALLET_STORAGE_KEYS.groupedBySecondary, {
     currency: false,
     type: false,
   })
 
-  const walletsToggledMap = useStorage<WalletsToggleMap>('finapp-wallets-toggle-map', {} as WalletsToggleMap, localStorage, {
+  const walletsToggledMap = useStorage<WalletsToggleMap>(WALLET_STORAGE_KEYS.toggleMap, {} as WalletsToggleMap, localStorage, {
     mergeDefaults: true,
   })
 

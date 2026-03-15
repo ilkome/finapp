@@ -23,11 +23,11 @@ export function filterWalletsByViewType(
 
     switch (viewType) {
       case 'isWithdrawal': return wallet.isWithdrawal && !wallet.isArchived
-      case 'isExcludeInTotal': return wallet.isExcludeInTotal
+      case 'isExcludeInTotal': return wallet.isExcludeInTotal && !wallet.isArchived
       case 'isArchived': return wallet.isArchived
       case 'isAvailable': return (wallet.type === 'credit' || wallet.isWithdrawal) && !wallet.isArchived
       case 'total': return !wallet.isArchived
-      default: return wallet.type === viewType
+      default: return wallet.type === viewType && !wallet.isArchived
     }
   })
 }
