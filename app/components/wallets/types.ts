@@ -47,3 +47,10 @@ export type WalletsComputed = Record<WalletId, WalletItemComputed>
 
 export type WalletsGroupedBy = 'type' | 'currency' | 'none'
 export type WalletsCurrencyFiltered = 'all' | CurrencyCode
+
+/**
+ * Calculate credit available: credit limit minus absolute amount used.
+ */
+export function getCreditAvailable(creditLimit: number, amount: number): number {
+  return creditLimit - Math.abs(amount)
+}

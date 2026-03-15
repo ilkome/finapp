@@ -159,6 +159,22 @@ describe('computeWalletCounts', () => {
     expect(result.credit!.secondValue).toBe(8000)
   })
 
+  it('available hidden when no credit wallets', () => {
+    const wallets = {
+      w1: wallet({ amount: 5000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
+    }
+
+    const result = computeWalletCounts({
+      baseCurrency: 'USD',
+      rates,
+      totalWalletsCount: 1,
+      walletIds: ['w1'],
+      wallets,
+    })
+
+    expect(result.available!.isShow).toBe(false)
+  })
+
   it('cash.isShow false when only 1 wallet exists', () => {
     const wallets = {
       w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
@@ -191,7 +207,7 @@ describe('computeWalletCounts', () => {
     expect(result.cash!.isShow).toBe(false)
   })
 
-  it('archived wallets tracked with isShow', () => {
+  it('archived wallets excluded from total and type sums', () => {
     const wallets = {
       w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
       w2: wallet({ amount: 500, currency: 'USD', isArchived: true, type: 'cashless' }),
@@ -207,6 +223,27 @@ describe('computeWalletCounts', () => {
 
     expect(result.archived!.value).toBe(500)
     expect(result.archived!.isShow).toBe(true)
+    expect(result.total!.value).toBe(1000)
+    expect(result.cashless!.value).toBe(0)
+  })
+
+  it('archived wallets excluded from withdrawal and available', () => {
+    const wallets = {
+      w1: wallet({ amount: 3000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
+      w2: wallet({ amount: 1000, currency: 'USD', isArchived: true, isWithdrawal: true, type: 'cashless' }),
+      w3: wallet({ amount: -500, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+    }
+
+    const result = computeWalletCounts({
+      baseCurrency: 'USD',
+      rates,
+      totalWalletsCount: 3,
+      walletIds: ['w1', 'w2', 'w3'],
+      wallets,
+    })
+
+    expect(result.withdrawal!.value).toBe(3000)
+    expect(result.available!.value).toBe(2500)
   })
 
   it('archived.isShow false when no archived wallets', () => {

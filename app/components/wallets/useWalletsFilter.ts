@@ -2,18 +2,19 @@ import type { Ref } from 'vue'
 
 import { useStorage } from '@vueuse/core'
 
-import type { WalletId, WalletsCurrencyFiltered, WalletsGroupedBy, WalletType, WalletViewTypes } from '~/components/wallets/types'
+import type { WalletId, WalletsCurrencyFiltered, WalletsGroupedBy, WalletViewTypes } from '~/components/wallets/types'
 
+import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { filterWalletsByCurrency, filterWalletsByViewType } from '~/components/wallets/filters'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export function useWalletsFilter(groupedBy: Ref<WalletsGroupedBy>) {
   const walletsStore = useWalletsStore()
 
-  const currencyFiltered = useStorage<WalletsCurrencyFiltered>('finapp-wallets-active-currency', 'all')
-  const walletViewType = useStorage<WalletViewTypes | 'total'>('finapp-wallets-active-type', 'total')
+  const currencyFiltered = useStorage<WalletsCurrencyFiltered>(WALLET_STORAGE_KEYS.activeCurrency, 'all')
+  const walletViewType = useStorage<WalletViewTypes | 'total'>(WALLET_STORAGE_KEYS.activeType, 'total')
 
-  function setWalletViewType(v: WalletType | 'total') {
+  function setWalletViewType(v: WalletViewTypes | 'total') {
     walletViewType.value = v
   }
 
@@ -24,6 +25,14 @@ export function useWalletsFilter(groupedBy: Ref<WalletsGroupedBy>) {
   const selectedWalletsIds = computed<WalletId[]>(() =>
     filterWalletsByViewType(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, walletViewType.value),
   )
+
+  watch(selectedWalletsIds, (ids) => {
+    if (ids.length === 0 && walletViewType.value !== 'total') {
+      const totalIds = filterWalletsByViewType(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, 'total')
+      if (totalIds.length > 0)
+        walletViewType.value = 'total'
+    }
+  })
 
   return {
     currencyFiltered,

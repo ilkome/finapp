@@ -114,9 +114,31 @@ describe('filterWalletsByViewType', () => {
     expect(result).not.toContain('archivedCredit')
   })
 
-  it('cash: returns only cash wallets', () => {
+  it('cash: returns only non-archived cash wallets', () => {
     const result = filterWalletsByViewType(allIds, wallets, 'cash')
-    expect(result).toEqual(['archived'])
+    expect(result).toEqual([])
+  })
+
+  it('type filter excludes archived wallets', () => {
+    const walletsWithActiveCash = {
+      ...wallets,
+      activeCash: wallet({ amount: 100, currency: 'USD', type: 'cash' }),
+    }
+    const ids = Object.keys(walletsWithActiveCash)
+    const result = filterWalletsByViewType(ids, walletsWithActiveCash, 'cash')
+    expect(result).toContain('activeCash')
+    expect(result).not.toContain('archived')
+  })
+
+  it('isExcludeInTotal: excludes archived wallets', () => {
+    const walletsWithArchivedExcluded = {
+      ...wallets,
+      archivedExcluded: wallet({ amount: 200, currency: 'USD', isArchived: true, isExcludeInTotal: true, type: 'cashless' }),
+    }
+    const ids = Object.keys(walletsWithArchivedExcluded)
+    const result = filterWalletsByViewType(ids, walletsWithArchivedExcluded, 'isExcludeInTotal')
+    expect(result).toContain('excludeUSD')
+    expect(result).not.toContain('archivedExcluded')
   })
 
   it('cashless: returns cashless wallets', () => {

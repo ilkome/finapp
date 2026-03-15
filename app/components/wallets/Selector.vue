@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId } from '~/components/wallets/types'
 
+import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -18,7 +19,7 @@ const emit = defineEmits<{
 
 const walletsStore = useWalletsStore()
 
-const currencyFiltered = useStorage<CurrencyCode>('finapp-wallets-selector-currency', 'all')
+const currencyFiltered = useStorage<CurrencyCode>(WALLET_STORAGE_KEYS.selectorCurrency, 'all')
 const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
   return Object.keys(walletsStore.itemsComputed).filter((id) => {
     const wallet = walletsStore.itemsComputed[id]
