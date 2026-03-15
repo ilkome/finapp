@@ -41,9 +41,3 @@ export type IntervalData = {
   total: TotalReturns
   trnsIds: TrnId[]
 }
-
-export type StatConfigModal = {
-  close: () => void
-  isShow: boolean
-  show: () => void
-}

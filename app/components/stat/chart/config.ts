@@ -5,7 +5,7 @@ import type { ComposeOption } from 'echarts/core'
 
 import type { SeriesSlug } from '~/components/stat/types'
 
-import { getCompactAmount, getLocalAmount } from '~/components/stat/chart/utils'
+import { formatChartAmount, formatCompactChartAmount } from '~/components/stat/chart/utils'
 
 type EChartsOption = ComposeOption<
   | TooltipComponentOption
@@ -79,7 +79,7 @@ export const config: EChartsOption['baseOption'] = {
   yAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
-      formatter: (n: number) => getCompactAmount(n),
+      formatter: (n: number) => formatCompactChartAmount(n),
       show: false, // TODO: config
     },
     axisLine: {
@@ -91,7 +91,7 @@ export const config: EChartsOption['baseOption'] = {
       label: {
         backgroundColor: 'var(--chart-line)',
         color: 'var(--chart-axisLabel)',
-        formatter: props => getLocalAmount(+props.value) ?? '',
+        formatter: props => formatChartAmount(+props.value) ?? '',
       },
       snap: true,
     },
@@ -108,7 +108,7 @@ export const config: EChartsOption['baseOption'] = {
   },
 }
 
-export const lineConfig = {
+export const defaultSeriesConfig = {
   areaStyle: {
     opacity: 0.1,
   },
@@ -120,7 +120,7 @@ export const lineConfig = {
     disabled: true,
   },
   label: {
-    formatter: ({ value }: { value: number }) => getCompactAmount(value),
+    formatter: ({ value }: { value: number }) => formatCompactChartAmount(value),
     position: 'top',
     show: false,
   },

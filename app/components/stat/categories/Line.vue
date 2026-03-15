@@ -4,31 +4,34 @@ import type { CategoryWithData } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { computeBarStyle } from '~/components/stat/categories/barUtils'
+import { useCategoryLongPress } from '~/components/stat/categories/useCategoryLongPress'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
-  biggestCatNumber: {
-    expense: number
-    income: number
-  }
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
   isShowParent?: boolean
   item: CategoryWithData
   lineWidth?: number
+  maxCategoryValues: {
+    expense: number
+    income: number
+  }
 }>()
 
 const emit = defineEmits<{
   click: [categoryId: CategoryId]
 }>()
 
-const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
-const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+
+const isItemsBg = computed(() => statConfig.config.value.catsList.isItemsBg)
+const isLines = computed(() => statConfig.config.value.catsList.isLines)
+const isRoundIcon = computed(() => statConfig.config.value.catsList.isRoundIcon)
 
 const category = computed(() => categoriesStore.items[props.item.id])
 const parentCategory = computed(() => {
@@ -36,50 +39,13 @@ const parentCategory = computed(() => {
   return pid ? categoriesStore.items[pid] : undefined
 })
 
-function getBarStyle() {
-  if (!props.item.value || props.item.value === 0)
-    return
+const barStyle = computed(() =>
+  computeBarStyle(props.item.value, category.value?.color, props.maxCategoryValues, 'width'),
+)
 
-  const isIncome = props.item.value > 0
-  const reference = isIncome ? props.biggestCatNumber.income : props.biggestCatNumber.expense
-
-  return {
-    backgroundColor: category.value?.color,
-    width: `${(Math.abs(props.item.value) / Math.abs(reference)) * 100}%`,
-  }
-}
-
-const longPressRef = ref(null)
-onLongPress(
-  longPressRef,
-  () => {
-    const isTransactible = categoriesStore.isTransactible(props.item.id)
-    if (!isTransactible)
-      return
-
-    trnsFormStore.openFormForCreate()
-    trnsFormStore.$patch((state) => {
-      state.values.amount = [0, 0, 0]
-      state.values.amountRaw = ['', '', '']
-      state.values.categoryId = props.item.id
-      state.ui.isShow = true
-
-      const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'
-      if (isDayDate && statDate.selectedInterval.value?.start) {
-        state.values.date = statDate.selectedInterval.value!.start
-      }
-      else {
-        state.values.date = Date.now()
-      }
-    })
-  },
-  {
-    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
-      if (!isLongPress && distance < 100) {
-        emit('click', props.item.id)
-      }
-    },
-  },
+const { longPressRef } = useCategoryLongPress(
+  () => props.item.id,
+  () => emit('click', props.item.id),
 )
 </script>
 
@@ -89,7 +55,7 @@ onLongPress(
     ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-3 ': props.isActive,
-      'bg-item-2 rounded-lg': statConfig.config.value.catsList.isItemsBg,
+      'bg-item-2 rounded-lg': isItemsBg,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -97,18 +63,18 @@ onLongPress(
     <slot name="before" />
     <UiElement
       :isActive="props.isActive"
-      :lineWidth="!statConfig.config.value.catsList.isItemsBg ? props.lineWidth : 0"
+      :lineWidth="!isItemsBg ? props.lineWidth : 0"
       class="relative"
       insideClasses="!min-h-[44px]"
     >
       <template #line>
         <div
-          v-if="statConfig.config.value.catsList.isLines"
+          v-if="isLines"
           class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-[52px]"
         >
           <div class="bg-item-4 overflow-hidden rounded-lg">
             <div
-              :style="getBarStyle()"
+              :style="barStyle"
               class="h-1 opacity-60"
             />
           </div>
@@ -117,7 +83,7 @@ onLongPress(
 
       <template #leftIcon>
         <UiIconBase
-          v-if="statConfig.config.value.catsList.isRoundIcon"
+          v-if="isRoundIcon"
           :color="category?.color"
           :name="category?.icon"
           invert
@@ -132,7 +98,7 @@ onLongPress(
 
       <CategoriesName
         :category
-        :class="{ '!pb-2': statConfig.config.value.catsList.isLines }"
+        :class="{ '!pb-2': isLines }"
         :hasChildren="categoriesStore.getChildrenIds(props.item.id).length > 0"
         :isShowParent="props.isShowParent"
         :parentCategory
@@ -142,13 +108,13 @@ onLongPress(
       <div
         v-if="props.item.value !== 0"
         :class="{
-          '!pb-2': statConfig.config.value.catsList.isLines,
+          '!pb-2': isLines,
         }"
         class="grow pr-1"
       >
         <Amount
           :amount="props.item.value"
-          :type="props.item.value > 0 ? 1 : 0"
+          :type="getTrnTypeByAmount(props.item.value)"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
           :isShowSymbol="false"

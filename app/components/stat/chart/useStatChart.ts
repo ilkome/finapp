@@ -4,12 +4,12 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { seriesOptions } from '~/components/stat/chart/config'
-import { markArea } from '~/components/stat/chart/utils'
+import { createMarkAreaData } from '~/components/stat/chart/utils'
 
 export function useStatChart() {
   const { t } = useI18n()
 
-  const chartTypes = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
+  const chartTypeOptions = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
     icon: 'lucide:chart-line',
     label: t('chart.types.bar'),
     value: 'bar',
@@ -49,20 +49,20 @@ export function useStatChart() {
     }
   }
 
-  function addMarkArea(series: ChartSeries[], markedDate: DateUTC, chartType?: ChartType) {
+  function withMarkArea(series: ChartSeries[], markedDate: DateUTC, chartType?: ChartType) {
     if (!markedDate)
       return series
 
     if (chartType === 'bar') {
       if (series[0])
-        series[0].markArea = markArea(markedDate)
+        series[0].markArea = createMarkAreaData(markedDate)
       return series
     }
 
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
     const markAreaSeries: ChartSeries = {
       data: [],
-      markArea: markArea(markedDate),
+      markArea: createMarkAreaData(markedDate),
       markedArea: 'markedArea',
       name: 'markArea',
       type: 'bar',
@@ -74,8 +74,8 @@ export function useStatChart() {
   }
 
   return {
-    addMarkArea,
-    chartTypes,
+    chartTypeOptions,
     createSeriesItem,
+    withMarkArea,
   }
 }

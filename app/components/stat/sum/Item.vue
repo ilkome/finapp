@@ -28,12 +28,8 @@ const currenciesStore = useCurrenciesStore()
   >
     <div class="flex items-end gap-5">
       <div class="grid gap-1">
-        <UiTextSubtitle v-if="props.title">
-          {{ props.title }}
-        </UiTextSubtitle>
-
-        <UiTextSubtitle v-if="!props.title">
-          {{ t(`money.${props.type}`) }}
+        <UiTextSubtitle>
+          {{ props.title ?? t(`money.${props.type}`) }}
         </UiTextSubtitle>
 
         <Amount

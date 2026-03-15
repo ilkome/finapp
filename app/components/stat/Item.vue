@@ -10,8 +10,8 @@ import { useStatItem } from '~/components/stat/useStatItem'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
+  categoryId?: CategoryId
   hasChildren?: boolean
-  isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
   statTab: StatTabSlug
   storageKey: string
@@ -20,7 +20,6 @@ const props = defineProps<{
   walletId?: WalletId
 }>()
 
-const route = useRoute()
 const { t } = useI18n()
 const filter = inject(filterKey)!
 const statDate = inject(statDateKey)!
@@ -28,8 +27,12 @@ const statConfig = inject(statConfigKey)!
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const categoryId = computed(() => props.isOneCategory ? route.params.id as CategoryId : undefined)
-const isNotTransferCategory = computed(() => !props.isOneCategory || categoryId.value !== 'transfer')
+const isOneCategory = computed(() => !!props.categoryId)
+const shouldShowAmounts = computed(() => !props.categoryId || props.categoryId !== 'transfer')
+const isRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
+const isListShow = computed(() => statConfig.config.value.catsList.isShow)
+const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
+const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
 
 const {
   averageTotal,
@@ -38,13 +41,13 @@ const {
   filteredCategoriesIds,
   filteredType,
   isPeriodOneDay,
-  newBaseStorageKey,
   onClickSumItem,
   onSetCategoryFilter,
   rangeTotal,
   selectedAndFilteredTrnsIds,
   selectedTrnsIds,
   selectedTypeForSum,
+  statItemStorageKey,
 } = useStatItem({
   filter,
   statConfig,
@@ -55,12 +58,27 @@ const {
   type: computed(() => props.type),
 })
 
-const quickViewTrns = ref<TrnId[]>([])
-const isShowTrns = ref(false)
 const hasCategoriesData = computed(() => props.hasChildren || (props.preCategoriesIds ?? []).length > 0)
+const shouldUseTwoColumnLayout = computed(() => props.statTab !== 'split' && isListShow.value)
+
+// Modal state: 'quickView' shows snapshot trnsIds, 'fullTrns' shows reactive selectedAndFilteredTrnsIds
+const modalSource = ref<'fullTrns' | 'quickView' | null>(null)
+const quickViewTrnsIds = ref<TrnId[]>([])
+const modalTrnsIds = computed(() => {
+  if (modalSource.value === 'quickView')
+    return quickViewTrnsIds.value
+  if (modalSource.value === 'fullTrns')
+    return selectedAndFilteredTrnsIds.value
+  return []
+})
+
+function closeModal() {
+  modalSource.value = null
+  quickViewTrnsIds.value = []
+}
 
 function onClickCategory(clickedCategoryId: CategoryId) {
-  if (route.name === 'categories-id') {
+  if (props.categoryId) {
     filter.setCategoryId(clickedCategoryId)
 
     const baseParams = {
@@ -73,17 +91,17 @@ function onClickCategory(clickedCategoryId: CategoryId) {
     return useRouter().push(`/categories/${clickedCategoryId}?${queryParams}`)
   }
 
-  // Show quick view
-  quickViewTrns.value = trnsStore.getStoreTrnsIds({
+  quickViewTrnsIds.value = trnsStore.getStoreTrnsIds({
     categoriesIds: [clickedCategoryId],
     sort: true,
     trnsIds: selectedAndFilteredTrnsIds.value,
   })
+  modalSource.value = 'quickView'
 }
 
 function onClickSumItemWrap(type: SeriesSlugSelected) {
   if (type === 'netIncome')
-    isShowTrns.value = true
+    modalSource.value = 'fullTrns'
 
   onClickSumItem(type)
 }
@@ -92,14 +110,11 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
 <template>
   <div class="@container/stat">
     <StatChartWrap
-      v-if="isNotTransferCategory"
-      :chartView="statConfig.config.value.chartView"
+      v-if="shouldShowAmounts"
       :series="chartSeries"
       :xAxisLabels="chartXAxisLabels"
       class="pb-3"
-    >
-      <StatDateQuick v-if="statConfig.config.value.date.isShowQuick" />
-    </StatChartWrap>
+    />
 
     <div class="grid min-w-0 content-start gap-3">
       <StatDateNavigation>
@@ -111,29 +126,23 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
       </StatDateNavigation>
 
       <StatSumWrap
-        v-if="isNotTransferCategory"
-        :averageConfig="statConfig.config.value.statAverage.count"
+        v-if="shouldShowAmounts"
         :averageTotal
-        :categoryId
-        :filter
+        :categoryId="props.categoryId"
         :filteredType="filteredType"
-        :isShowAverage="statConfig.config.value.statAverage.isShow"
-        :isShowExpense="true"
-        :isShowIncome="true"
-        :statDate
         :total="rangeTotal"
         :trnsIds
         :type="selectedTypeForSum"
         :walletId
         @click="onClickSumItemWrap"
-        @clickAverage="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })"
+        @clickAverage="statConfig.updateConfig('statAverage', { isShow: !isShowAverage })"
       />
 
       <div class="_min-h-dvh grid min-w-0 content-start items-start gap-4">
-        <StatCategoriesSection
-          v-if="statConfig.config.value.catsRound.isShow && hasCategoriesData"
+        <StatCategoriesRoundSection
+          v-if="isRoundShow && hasCategoriesData"
           :filteredCategoriesIds
-          :isOneCategory="props.isOneCategory"
+          :isOneCategory="isOneCategory"
           :preCategoriesIds="props.preCategoriesIds || categoriesStore.favoriteCategoriesIds"
           :selectedTrnsIds
           @clickCategory="onClickCategory"
@@ -142,15 +151,15 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
 
         <div
           :class="{
-            'grid gap-5 @3xl/page:grid-cols-2 @3xl/page:gap-6': props.statTab !== 'split' && statConfig.config.value.catsList.isShow,
+            'grid gap-5 @3xl/page:grid-cols-2 @3xl/page:gap-6': shouldUseTwoColumnLayout,
           }"
         >
-          <StatCategoriesSection2
-            v-if="(statConfig.config.value.catsList.isShow || statConfig.config.value.vertical.isShow) && hasCategoriesData"
-            :isOneCategory="props.isOneCategory"
+          <StatCategoriesDetailedSection
+            v-if="(isListShow || isVerticalShow) && hasCategoriesData"
+            :isOneCategory="isOneCategory"
             :preCategoriesIds="props.preCategoriesIds"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
-            :storageKey="newBaseStorageKey"
+            :storageKey="statItemStorageKey"
             :type="props.type ?? 'netIncome'"
             @clickCategory="onClickCategory"
             @setCategoryFilter="onSetCategoryFilter"
@@ -165,37 +174,12 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
       </div>
     </div>
 
-    <!-- Quick View Trns -->
     <BottomSheetModal
-      v-if="quickViewTrns?.length > 0"
-      @closed="quickViewTrns = []"
+      v-if="modalSource"
+      @closed="closeModal"
     >
       <UiTitleModal>
-        {{ t('trns.title') }} {{ quickViewTrns.length > 0 ? quickViewTrns.length : '' }}
-      </UiTitleModal>
-
-      <div class="scrollerBlock bottomSheetContentInside pb-2">
-        <TrnsList
-          :isShowDates="!isPeriodOneDay"
-          :isShowGroupSum="!isPeriodOneDay"
-          :size="50"
-          :trnsIds="quickViewTrns"
-          isShowExpense
-          isShowFilterByDesc
-          isShowFilterByType
-          isShowIncome
-          isShowTransfers
-          @click="() => quickViewTrns = []"
-        />
-      </div>
-    </BottomSheetModal>
-
-    <BottomSheetModal
-      v-if="isShowTrns"
-      @closed="isShowTrns = false"
-    >
-      <UiTitleModal>
-        {{ t('trns.title') }} {{ selectedAndFilteredTrnsIds.length > 0 ? selectedAndFilteredTrnsIds.length : '' }}
+        {{ t('trns.title') }} {{ modalTrnsIds.length > 0 ? modalTrnsIds.length : '' }}
       </UiTitleModal>
 
       <div class="scrollerBlock bottomSheetContentInside">
@@ -203,12 +187,13 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           :isShowDates="!isPeriodOneDay"
           :isShowGroupSum="!isPeriodOneDay"
           :size="50"
-          :trnsIds="selectedAndFilteredTrnsIds"
+          :trnsIds="modalTrnsIds"
           isShowExpense
           isShowFilterByDesc
           isShowFilterByType
           isShowIncome
           isShowTransfers
+          @click="modalSource === 'quickView' ? closeModal() : undefined"
         />
       </div>
     </BottomSheetModal>

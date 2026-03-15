@@ -7,7 +7,7 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
 import type { FilterProvider } from '~/components/stat/filter/types'
-import type { ChartSeries, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
@@ -38,14 +38,14 @@ export function useStatItem({
 }: UseStatItemParams) {
   const trnsStore = useTrnsStore()
   const { computeTotalForTrnsIds } = useAmount()
-  const { addMarkArea, createSeriesItem } = useStatChart()
+  const { createSeriesItem, withMarkArea } = useStatChart()
 
-  const newBaseStorageKey = computed(() =>
+  const statItemStorageKey = computed(() =>
     `finapp-${statDate.params.value.intervalsBy}-${storageKey.value}-${(filter?.categoriesIds?.value ?? []).join(',')}`,
   )
 
   const filteredType = useStorage<SeriesSlugSelected>(
-    `finapp-filtered-type-${type.value}-${newBaseStorageKey.value}`,
+    `finapp-filtered-type-${type.value}-${statItemStorageKey.value}`,
     'netIncome',
   )
 
@@ -62,33 +62,43 @@ export function useStatItem({
     trnsIds: trnsIds.value,
   }))
 
-  const rangeTrnsIdsWithFilteredCategories = computed(() => trnsStore.getStoreTrnsIds({
-    categoriesIds: filteredCategoriesIds.value,
-    trnsIds: trnsIds.value,
-  }))
+  const hasCategoryFilter = computed(() => filteredCategoriesIds.value.length > 0)
+
+  const rangeTrnsIdsWithFilteredCategories = computed(() => {
+    if (!hasCategoryFilter.value)
+      return rangeTrnsIds.value
+    return trnsStore.getStoreTrnsIds({
+      categoriesIds: filteredCategoriesIds.value,
+      trnsIds: trnsIds.value,
+    })
+  })
 
   const intervalsData = computed(() =>
     bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, computeTotalForTrnsIds),
   )
 
-  const intervalsDataWithFilteredCategories = computed(() =>
-    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, computeTotalForTrnsIds),
+  const intervalsDataWithFilteredCategories = computed(() => {
+    if (!hasCategoryFilter.value)
+      return intervalsData.value
+    return bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, computeTotalForTrnsIds)
+  })
+
+  const baseTrnsIdsForSelection = computed(() =>
+    isIntervalSelected.value
+      ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
+      : rangeTrnsIds.value,
   )
 
   const selectedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     sort: true,
-    trnsIds: isIntervalSelected.value
-      ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
-      : rangeTrnsIds.value,
+    trnsIds: baseTrnsIdsForSelection.value,
     trnsTypes: selectedTypesMapping.value,
   }))
 
   const selectedAndFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     categoriesIds: filteredCategoriesIds.value,
     sort: true,
-    trnsIds: isIntervalSelected.value
-      ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
-      : rangeTrnsIds.value,
+    trnsIds: baseTrnsIdsForSelection.value,
     trnsTypes: selectedTypesMapping.value,
   }))
 
@@ -103,7 +113,8 @@ export function useStatItem({
     if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
       return
 
-    const sum = filteredType.value === 'netIncome' ? rangeTotal.value.sum : rangeTotal.value[type.value as keyof TotalReturns] as number
+    const key = filteredType.value === 'netIncome' ? 'sum' : (type.value ?? 'sum')
+    const sum = rangeTotal.value[key as keyof TotalReturns] as number ?? 0
 
     const dateRange = isIntervalSelected.value
       ? statDate.selectedInterval.value
@@ -114,23 +125,25 @@ export function useStatItem({
 
   const typesToShow = computed(() => getTypesToShow(statTab.value, filteredType.value, type.value))
 
+  function computeSeriesAverage(typeSlug: SeriesSlug, intervals: IntervalData[]): number | false {
+    if (!statConfig.config.value.chart.isShowAverage || intervals.length === 0)
+      return false
+    return intervals.reduce((acc, i) => acc + i.total[typeSlug], 0) / intervals.length
+  }
+
   const chartSeries = computed<ChartSeries[]>(() => {
-    const intervalTotals = intervalsDataWithFilteredCategories.value.map(g => g.total)
+    const intervals = intervalsDataWithFilteredCategories.value
+    const intervalTotals = intervals.map(g => g.total)
+
     const baseSeries = typesToShow.value.map(t =>
-      createSeriesItem(
-        t,
-        intervalTotals,
-        statConfig.config.value.chart.isShowAverage
-          ? intervalsDataWithFilteredCategories.value.reduce((acc, i) => acc + i.total[t], 0) / intervalsData.value.length
-          : false,
-      ),
+      createSeriesItem(t, intervalTotals, computeSeriesAverage(t, intervals)),
     )
 
-    const selectedInterval = intervalsDataWithFilteredCategories.value?.[statDate.params.value.intervalSelected]
+    const selectedInterval = intervals[statDate.params.value.intervalSelected]
     if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0)
       return baseSeries
 
-    return addMarkArea(baseSeries, selectedInterval.range.start, statConfig.config.value?.chartType)
+    return withMarkArea(baseSeries, selectedInterval.range.start, statConfig.config.value?.chartType)
   })
 
   const chartXAxisLabels = computed(() =>
@@ -156,12 +169,12 @@ export function useStatItem({
     filteredCategoriesIds,
     filteredType,
     isPeriodOneDay,
-    newBaseStorageKey,
     onClickSumItem,
     onSetCategoryFilter,
     rangeTotal,
     selectedAndFilteredTrnsIds,
     selectedTrnsIds,
     selectedTypeForSum,
+    statItemStorageKey,
   }
 }

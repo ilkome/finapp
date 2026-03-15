@@ -2,8 +2,7 @@
 import { sub } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { Range, StatDateProvider } from '~/components/date/types'
-import type { FilterProvider } from '~/components/stat/filter/types'
+import type { Range } from '~/components/date/types'
 import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -11,41 +10,64 @@ import type { WalletId } from '~/components/wallets/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getEndOf, getStartOf } from '~/components/date/utils'
-import { TrnType } from '~/components/trns/types'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { getTrnTypeByAmount, TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
-  averageConfig: number
   categoryId?: CategoryId
-  filter: FilterProvider
-  statDate: StatDateProvider
   statTabSlug: SeriesSlugSelected
   trnsIds: TrnId[]
   walletId?: WalletId
 }>()
 
 const { t } = useI18n()
+const filter = inject(filterKey)!
+const statConfig = inject(statConfigKey)!
+const statDate = inject(statDateKey)!
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const { computeTotalForTrnsIds } = useAmount()
 
-const untilDate = computed(() => getEndOf(sub(new Date(), { [`${props.statDate.params.value.rangeBy}s`]: props.statDate.params.value.rangeDuration }), props.statDate.params.value.rangeBy))
+const averageConfig = computed(() => statConfig.config.value.statAverage.count)
+
+const untilDate = computed(() => getEndOf(sub(new Date(), { [`${statDate.params.value.rangeBy}s`]: statDate.params.value.rangeDuration }), statDate.params.value.rangeBy))
 
 const dates = computed<Range>(() => ({
   end: untilDate.value.getTime(),
-  start: getStartOf(sub(untilDate.value, { [`${props.statDate.params.value.rangeBy}s`]: (props.statDate.params.value.rangeDuration * props.averageConfig) - 1 }), props.statDate.params.value.rangeBy).getTime(),
+  start: getStartOf(sub(untilDate.value, { [`${statDate.params.value.rangeBy}s`]: (statDate.params.value.rangeDuration * averageConfig.value) - 1 }), statDate.params.value.rangeBy).getTime(),
 }))
 
 const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: props.categoryId ? [...props.filter.categoriesIds.value, props.categoryId] : props.filter.categoriesIds.value,
+  categoriesIds: props.categoryId ? [...filter.categoriesIds.value, props.categoryId] : filter.categoriesIds.value,
   dates: {
     from: dates.value.start,
     until: dates.value.end,
   },
-  walletsIds: props.walletId ? [...(props.filter.walletsIds.value ?? []), props.walletId] : props.filter.walletsIds.value,
+  walletsIds: props.walletId ? [...(filter.walletsIds.value ?? []), props.walletId] : filter.walletsIds.value,
 }))
 
 const total = computed(() => computeTotalForTrnsIds(datedTrnsIds.value))
+
+const averageAmount = computed(() => {
+  if (props.statTabSlug === 'income')
+    return total.value.income / averageConfig.value
+  if (props.statTabSlug === 'expense')
+    return total.value.expense / averageConfig.value
+  return total.value.sum / averageConfig.value
+})
+
+const amountType = computed(() => {
+  if (props.statTabSlug === 'netIncome')
+    return getTrnTypeByAmount(averageAmount.value)
+  return props.statTabSlug === 'income' ? TrnType.Income : TrnType.Expense
+})
+
+const amountColorize = computed(() => {
+  if (props.statTabSlug === 'netIncome')
+    return averageAmount.value > 0 ? 'income' : 'expense'
+  return props.statTabSlug as 'expense' | 'income'
+})
 </script>
 
 <template>
@@ -58,29 +80,10 @@ const total = computed(() => computeTotalForTrnsIds(datedTrnsIds.value))
 
       <div class="flex gap-4">
         <Amount
-          v-if="statTabSlug === 'income'"
-          :amount="total.income / props.averageConfig"
+          :amount="averageAmount"
+          :colorize="amountColorize"
           :currencyCode="currenciesStore.base"
-          :type="TrnType.Income"
-          align="left"
-          colorize="income"
-          variant="base"
-        />
-        <Amount
-          v-if="statTabSlug === 'expense'"
-          :amount="total.expense / props.averageConfig"
-          :currencyCode="currenciesStore.base"
-          :type="TrnType.Expense"
-          align="left"
-          colorize="expense"
-          variant="base"
-        />
-        <Amount
-          v-if="statTabSlug === 'netIncome'"
-          :amount="total.sum / props.averageConfig"
-          :colorize="total.sum > 0 ? 'income' : 'expense'"
-          :currencyCode="currenciesStore.base"
-          :type="total.sum > 0 ? TrnType.Income : TrnType.Expense"
+          :type="amountType"
           align="left"
           variant="base"
         />

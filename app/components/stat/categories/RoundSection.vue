@@ -23,7 +23,8 @@ const { computeCategoriesWithData } = useStatCategories()
 const statConfig = inject(statConfigKey)!
 const isExpanded = ref(false)
 
-const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], statConfig.config.value.catsRound.isGrouped, props.preCategoriesIds))
+const isGrouped = computed(() => statConfig.config.value.catsRound.isGrouped)
+const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped.value, props.preCategoriesIds))
 const visibleCategories = computed(() => isExpanded.value ? roundCategories.value : roundCategories.value.slice(0, visibleCategoriesLimit))
 const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
@@ -61,16 +62,11 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
           />
         </UiActionButton>
 
-        <UiActionButton
-          :ariaLabel="$t('base.toggleGrouping')"
+        <StatCategoriesGroupingToggle
+          :isGrouped="isGrouped"
           size="sm"
-          @click="statConfig.config.value.catsRound.isGrouped = !statConfig.config.value.catsRound.isGrouped"
-        >
-          <Icon
-            :name="statConfig.config.value.catsRound.isGrouped ? 'lucide:network' : 'lucide:folder-tree'"
-            :size="20"
-          />
-        </UiActionButton>
+          @toggle="statConfig.config.value.catsRound.isGrouped = !isGrouped"
+        />
       </UiTabsBar>
     </div>
   </div>

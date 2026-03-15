@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { Period } from '~/components/date/types'
 import type { ChartSeries } from '~/components/stat/types'
-import type { MiniItemConfig } from '~/components/stat/useStatConfig'
 
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const props = defineProps<{
-  chartView: MiniItemConfig['chartView']
+defineProps<{
   series: ChartSeries[]
   xAxisLabels: number[]
 }>()
@@ -16,49 +14,35 @@ const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
 
+const isChartShow = computed(() => statConfig.config.value.isChartShow)
+const chartView = computed(() => statConfig.config.value.chartView)
+const chartType = computed(() => statConfig.config.value.chartType)
+const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
+
 function onClickChart(idx: number) {
-  const newPeriod = idx
-
-  // Handle when click outside of chart
-  if (newPeriod === statDate.intervalsInRange.value.length) {
-    statDate.params.value.intervalSelected = -1
-    return
-  }
-
-  // Handle when click on the same period
-  if (statDate.params.value.intervalSelected === newPeriod) {
-    statDate.params.value.intervalSelected = -1
-  }
-  else {
-    statDate.params.value.intervalSelected = newPeriod
-
-    if (statDate.params.value.intervalsBy === 'day' && statDate.params.value.intervalsDuration === 1) {
-      const day = statDate.intervalsInRange.value[statDate.params.value.intervalSelected]?.start
-      if (day)
-        trnsFormStore.values.date = day
-    }
-  }
+  const day = statDate.selectInterval(idx)
+  if (day)
+    trnsFormStore.values.date = day
 }
 
 function onChangePeriod(period: Period) {
-  statDate.params.value.intervalSelected = -1
-  statDate.params.value.intervalsBy = period
+  statDate.setIntervalsBy(period)
 }
 </script>
 
 <template>
   <div
-    v-if="statConfig.config.value.isChartShow"
+    v-if="isChartShow"
     :class="{
-      '@3xl/main:max-w-xl': props.chartView === 'half',
+      '@3xl/main:max-w-xl': chartView === 'half',
     }"
   >
     <div class="-mb-1 flex justify-end">
-      <slot />
+      <StatDateQuick v-if="isShowQuick" />
 
       <div class="h-7">
         <StatChartIntervals
-          :class="{ 'border-item-4 border-l': statConfig.config.value.date.isShowQuick }"
+          :class="{ 'border-item-4 border-l': isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"
@@ -67,10 +51,10 @@ function onChangePeriod(period: Period) {
     </div>
 
     <LazyStatChartView
-      :chartType="statConfig.config.value.chartType"
+      :chartType
       :period="statDate.params.value.intervalsBy"
-      :series="props.series"
-      :xAxisLabels="props.xAxisLabels"
+      :series
+      :xAxisLabels
       @click="onClickChart"
     />
   </div>

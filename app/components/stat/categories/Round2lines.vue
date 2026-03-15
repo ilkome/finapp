@@ -4,8 +4,7 @@ import type { CategoryWithData } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { statDateKey } from '~/components/stat/injectionKeys'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useCategoryLongPress } from '~/components/stat/categories/useCategoryLongPress'
 
 const props = defineProps<{
   isShowAmount?: boolean
@@ -16,44 +15,14 @@ const emit = defineEmits<{
   click: [categoryId: CategoryId]
 }>()
 
-const statDate = inject(statDateKey)!
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const trnsFormStore = useTrnsFormStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
 
-const longPressRef = ref(null)
-onLongPress(
-  longPressRef,
-  () => {
-    const isTransactible = categoriesStore.isTransactible(props.item.id)
-    if (!isTransactible)
-      return
-
-    trnsFormStore.openFormForCreate()
-    trnsFormStore.$patch((state) => {
-      state.values.amount = [0, 0, 0]
-      state.values.amountRaw = ['', '', '']
-      state.values.categoryId = props.item.id
-      state.ui.isShow = true
-
-      const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'
-      if (isDayDate && statDate.selectedInterval.value?.start) {
-        state.values.date = statDate.selectedInterval.value!.start
-      }
-      else {
-        state.values.date = Date.now()
-      }
-    })
-  },
-  {
-    onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {
-      if (!isLongPress && distance < 100) {
-        emit('click', props.item.id)
-      }
-    },
-  },
+const { longPressRef } = useCategoryLongPress(
+  () => props.item.id,
+  () => emit('click', props.item.id),
 )
 </script>
 
@@ -89,7 +58,7 @@ onLongPress(
       >
         <Amount
           :amount="props.item.value"
-          :type="props.item.value > 0 ? 1 : 0"
+          :type="getTrnTypeByAmount(props.item.value)"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
           :isShowSymbol="false"

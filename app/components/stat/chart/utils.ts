@@ -1,4 +1,4 @@
-export function markArea(value: number): {
+export function createMarkAreaData(value: number): {
   data: [{ xAxis: string }, { xAxis: string }][]
   itemStyle: { color: string, opacity: number }
 } {
@@ -8,13 +8,22 @@ export function markArea(value: number): {
   }
 }
 
-export function getCompactAmount(amount: number) {
-  return new Intl.NumberFormat('en', { notation: 'compact' }).format(amount)
+const compactFormatter = new Intl.NumberFormat('en', { notation: 'compact' })
+
+export function formatCompactChartAmount(amount: number) {
+  return compactFormatter.format(amount)
 }
 
-export function getLocalAmount(amount: number) {
-  return new Intl.NumberFormat('ru', {
-    maximumFractionDigits: 0,
-    minimumFractionDigits: 0,
-  }).format(amount)
+const amountFormatters = new Map<string, Intl.NumberFormat>()
+
+export function formatChartAmount(amount: number, locale = 'en') {
+  let formatter = amountFormatters.get(locale)
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(locale, {
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    })
+    amountFormatters.set(locale, formatter)
+  }
+  return formatter.format(amount)
 }
