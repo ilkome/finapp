@@ -173,23 +173,28 @@ function getT() {
   return _t
 }
 
-export function showErrorToast(key: string, params?: Record<string, unknown>) {
+const emoByType = {
+  error: errorEmo,
+  success: successEmo,
+  warning: warningEmo,
+} as const
+
+type ToastType = keyof typeof emoByType
+
+export function showToast(type: ToastType, key: string, params?: Record<string, unknown>) {
   const toast = getToast()
   const t = getT()
-  const id = toast.add({ color: 'error', description: t ? t(key, params ?? {}) : key, title: random(errorEmo) })
-  return id
+  return toast.add({ color: type, description: t ? t(key, params ?? {}) : key, title: random(emoByType[type]) })
+}
+
+export function showErrorToast(key: string, params?: Record<string, unknown>) {
+  return showToast('error', key, params)
 }
 
 export function showSuccessToast(key: string, params?: Record<string, unknown>) {
-  const toast = getToast()
-  const t = getT()
-  const id = toast.add({ color: 'success', description: t ? t(key, params ?? {}) : key, title: random(successEmo) })
-  return id
+  return showToast('success', key, params)
 }
 
 export function showWarningToast(key: string, params?: Record<string, unknown>) {
-  const toast = getToast()
-  const t = getT()
-  const id = toast.add({ color: 'warning', description: t ? t(key, params ?? {}) : key, title: random(warningEmo) })
-  return id
+  return showToast('warning', key, params)
 }
