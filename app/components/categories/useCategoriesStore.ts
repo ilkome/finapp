@@ -71,9 +71,15 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   })
 
-  const usedCategoryIds = computed(() =>
-    new Set(Object.values(trnsStore.items ?? {}).map(trn => trn.categoryId)),
-  )
+  const usedCategoryIds = computed(() => {
+    const ids = new Set<string>()
+    const trns = trnsStore.items
+    if (trns) {
+      for (const id in trns)
+        ids.add(trns[id]!.categoryId)
+    }
+    return ids
+  })
 
   const categoriesForBeParent = computed(() => {
     if (!hasItems.value)
