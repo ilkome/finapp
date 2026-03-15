@@ -39,7 +39,7 @@ const dateRange = ref({
   start: parseUCalendarDate(statDate.range.value.start),
 })
 
-function onSelectRange(value: any) {
+function onSelectRange(value: { end: unknown, start: unknown }) {
   const range = {
     end: value.end,
     start: value.start,
