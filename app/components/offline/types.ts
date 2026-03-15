@@ -1,4 +1,11 @@
-export type EntityType = 'categories' | 'trns' | 'userSettings' | 'wallets'
+export const OfflineEntityType = {
+  Categories: 'categories',
+  Trns: 'trns',
+  UserSettings: 'userSettings',
+  Wallets: 'wallets',
+} as const
+
+export type EntityType = typeof OfflineEntityType[keyof typeof OfflineEntityType]
 
 export type OfflineOpData = Record<string, unknown>
 

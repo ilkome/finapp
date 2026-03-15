@@ -1,11 +1,16 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { OfflineOp } from '~/components/offline/types'
 import type { Transaction, Transfer, TrnItem } from '~/components/trns/types'
 
+import { OfflineEntityType } from '~/components/offline/types'
 import { TrnType } from '~/components/trns/types'
 
-import { extractRemaps, groupOpsByEntity, isTrnOrphaned, remapTrnIds, splitCategoryOps } from './replayHelpers'
+import { collectRemaps, extractRemaps, groupOpsByEntity, isTrnOrphaned, remapTrnIds, replayCategoryOps, replaySettingsOps, replayTrnOps, replayWalletOps, splitCategoryOps } from './replayHelpers'
+
+vi.mock('~/components/offline/helpers', () => ({
+  removeOfflineOp: vi.fn(() => Promise.resolve()),
+}))
 
 function makeOp(entity: OfflineOp['entity'], id: string, type: OfflineOp['type'] = 'create', data?: Record<string, unknown>): OfflineOp {
   return { data, entity, id, timestamp: Date.now(), type }
@@ -124,12 +129,12 @@ describe('isTrnOrphaned', () => {
 describe('groupOpsByEntity', () => {
   it('groups operations by entity type', () => {
     const ops = [
-      makeOp('wallets', 'w1'),
-      makeOp('trns', 't1'),
-      makeOp('categories', 'c1'),
-      makeOp('wallets', 'w2'),
-      makeOp('userSettings', 's1'),
-      makeOp('trns', 't2'),
+      makeOp(OfflineEntityType.Wallets, 'w1'),
+      makeOp(OfflineEntityType.Trns, 't1'),
+      makeOp(OfflineEntityType.Categories, 'c1'),
+      makeOp(OfflineEntityType.Wallets, 'w2'),
+      makeOp(OfflineEntityType.UserSettings, 's1'),
+      makeOp(OfflineEntityType.Trns, 't2'),
     ]
 
     const result = groupOpsByEntity(ops)
@@ -148,7 +153,7 @@ describe('groupOpsByEntity', () => {
   })
 
   it('preserves op references', () => {
-    const op = makeOp('trns', 't1')
+    const op = makeOp(OfflineEntityType.Trns, 't1')
     const result = groupOpsByEntity([op])
     expect(result.trnOps[0]).toBe(op)
   })
@@ -159,9 +164,9 @@ describe('groupOpsByEntity', () => {
 describe('splitCategoryOps', () => {
   it('splits parent and child categories', () => {
     const ops = [
-      makeOp('categories', 'c1', 'create', { name: 'Food', parentId: 0 }),
-      makeOp('categories', 'c2', 'create', { name: 'Groceries', parentId: 'c1' }),
-      makeOp('categories', 'c3', 'create', { name: 'Transport', parentId: 0 }),
+      makeOp(OfflineEntityType.Categories, 'c1', 'create', { name: 'Food', parentId: 0 }),
+      makeOp(OfflineEntityType.Categories, 'c2', 'create', { name: 'Groceries', parentId: 'c1' }),
+      makeOp(OfflineEntityType.Categories, 'c3', 'create', { name: 'Transport', parentId: 0 }),
     ]
 
     const result = splitCategoryOps(ops)
@@ -172,8 +177,8 @@ describe('splitCategoryOps', () => {
 
   it('puts delete ops in parentOps', () => {
     const ops = [
-      makeOp('categories', 'c1', 'delete'),
-      makeOp('categories', 'c2', 'create', { name: 'Child', parentId: 'c1' }),
+      makeOp(OfflineEntityType.Categories, 'c1', 'delete'),
+      makeOp(OfflineEntityType.Categories, 'c2', 'create', { name: 'Child', parentId: 'c1' }),
     ]
 
     const result = splitCategoryOps(ops)
@@ -184,7 +189,7 @@ describe('splitCategoryOps', () => {
 
   it('treats no parentId as root', () => {
     const ops = [
-      makeOp('categories', 'c1', 'create', { name: 'Root' }),
+      makeOp(OfflineEntityType.Categories, 'c1', 'create', { name: 'Root' }),
     ]
 
     const result = splitCategoryOps(ops)
@@ -227,5 +232,372 @@ describe('extractRemaps', () => {
 
   it('returns empty for empty results', () => {
     expect(extractRemaps([])).toEqual([])
+  })
+})
+
+// --- collectRemaps ---
+
+describe('collectRemaps', () => {
+  it('collects remap entries from resolved promises', async () => {
+    const remapIds = new Map<string, string>()
+    const promises = [
+      Promise.resolve({ convexId: 'convex_1', localId: 'local_1' }),
+      Promise.resolve({ convexId: 'convex_2', localId: 'local_2' }),
+    ]
+
+    await collectRemaps(promises, remapIds)
+    expect(remapIds.get('local_1')).toBe('convex_1')
+    expect(remapIds.get('local_2')).toBe('convex_2')
+  })
+
+  it('handles void and undefined promises', async () => {
+    const remapIds = new Map<string, string>()
+    const promises: (Promise<unknown> | void | undefined)[] = [
+      undefined,
+      Promise.resolve(undefined),
+      Promise.resolve({ convexId: 'c1', localId: 'l1' }),
+    ]
+
+    await collectRemaps(promises, remapIds)
+    expect(remapIds.size).toBe(1)
+    expect(remapIds.get('l1')).toBe('c1')
+  })
+
+  it('appends to existing remap map', async () => {
+    const remapIds = new Map([['existing_l', 'existing_c']])
+    const promises = [
+      Promise.resolve({ convexId: 'c1', localId: 'l1' }),
+    ]
+
+    await collectRemaps(promises, remapIds)
+    expect(remapIds.size).toBe(2)
+    expect(remapIds.get('existing_l')).toBe('existing_c')
+    expect(remapIds.get('l1')).toBe('c1')
+  })
+})
+
+// --- replayWalletOps ---
+
+describe('replayWalletOps', () => {
+  it('does nothing for empty ops', async () => {
+    const saveWallet = vi.fn()
+    const deleteWallet = vi.fn()
+    const remapIds = new Map<string, string>()
+
+    await replayWalletOps([], remapIds, { deleteWallet, saveWallet })
+    expect(saveWallet).not.toHaveBeenCalled()
+    expect(deleteWallet).not.toHaveBeenCalled()
+  })
+
+  it('calls saveWallet for create/update ops', async () => {
+    const saveWallet = vi.fn(() => Promise.resolve())
+    const deleteWallet = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Wallets, 'w1', 'create', { currency: 'USD', name: 'Cash', type: 'cash' }),
+      makeOp(OfflineEntityType.Wallets, 'w2', 'update', { name: 'Bank', type: 'cashless' }),
+    ]
+
+    await replayWalletOps(ops, remapIds, { deleteWallet, saveWallet })
+    expect(saveWallet).toHaveBeenCalledTimes(2)
+    expect(saveWallet).toHaveBeenCalledWith({ id: 'w1', values: expect.objectContaining({ currency: 'USD', name: 'Cash', type: 'cash' }) })
+    expect(saveWallet).toHaveBeenCalledWith({ id: 'w2', values: expect.objectContaining({ name: 'Bank', type: 'cashless' }) })
+    expect(deleteWallet).not.toHaveBeenCalled()
+  })
+
+  it('calls deleteWallet for delete ops', async () => {
+    const saveWallet = vi.fn()
+    const deleteWallet = vi.fn(() => Promise.resolve())
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Wallets, 'w1', 'delete'),
+    ]
+
+    await replayWalletOps(ops, remapIds, { deleteWallet, saveWallet })
+    expect(deleteWallet).toHaveBeenCalledWith('w1')
+    expect(saveWallet).not.toHaveBeenCalled()
+  })
+
+  it('collects remaps from save results', async () => {
+    const saveWallet = vi.fn(() => Promise.resolve({ convexId: 'convex_w1', localId: 'local_w1' }))
+    const deleteWallet = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Wallets, 'local_w1', 'create', { name: 'Cash', type: 'cash' }),
+    ]
+
+    await replayWalletOps(ops, remapIds, { deleteWallet, saveWallet })
+    expect(remapIds.get('local_w1')).toBe('convex_w1')
+  })
+})
+
+// --- replayCategoryOps ---
+
+describe('replayCategoryOps', () => {
+  it('does nothing for empty ops', async () => {
+    const saveCategory = vi.fn()
+    const deleteCategory = vi.fn()
+    const remapIds = new Map<string, string>()
+
+    await replayCategoryOps([], remapIds, { deleteCategory, saveCategory })
+    expect(saveCategory).not.toHaveBeenCalled()
+    expect(deleteCategory).not.toHaveBeenCalled()
+  })
+
+  it('processes parent categories before children', async () => {
+    const callOrder: string[] = []
+    const saveCategory = vi.fn((params) => {
+      callOrder.push(params.id)
+      return Promise.resolve()
+    })
+    const deleteCategory = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Categories, 'c1', 'create', { name: 'Food', parentId: 0 }),
+      makeOp(OfflineEntityType.Categories, 'c2', 'create', { name: 'Groceries', parentId: 'c1' }),
+    ]
+
+    await replayCategoryOps(ops, remapIds, { deleteCategory, saveCategory })
+    expect(callOrder).toEqual(['c1', 'c2'])
+  })
+
+  it('remaps parentId for child categories', async () => {
+    const saveCategory = vi.fn(() => Promise.resolve())
+    const deleteCategory = vi.fn()
+    const remapIds = new Map([['local_c1', 'convex_c1']])
+    const ops = [
+      makeOp(OfflineEntityType.Categories, 'c2', 'create', { name: 'Groceries', parentId: 'local_c1' }),
+    ]
+
+    await replayCategoryOps(ops, remapIds, { deleteCategory, saveCategory })
+    expect(saveCategory).toHaveBeenCalledWith(expect.objectContaining({
+      values: expect.objectContaining({ parentId: 'convex_c1' }),
+    }))
+  })
+
+  it('calls deleteCategory for delete ops', async () => {
+    const saveCategory = vi.fn()
+    const deleteCategory = vi.fn(() => Promise.resolve())
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Categories, 'c1', 'delete'),
+    ]
+
+    await replayCategoryOps(ops, remapIds, { deleteCategory, saveCategory })
+    expect(deleteCategory).toHaveBeenCalledWith('c1')
+  })
+
+  it('always passes isUpdateChildCategoriesColor as false', async () => {
+    const saveCategory = vi.fn(() => Promise.resolve())
+    const deleteCategory = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Categories, 'c1', 'create', { name: 'Food', parentId: 0 }),
+    ]
+
+    await replayCategoryOps(ops, remapIds, { deleteCategory, saveCategory })
+    expect(saveCategory).toHaveBeenCalledWith(expect.objectContaining({
+      isUpdateChildCategoriesColor: false,
+    }))
+  })
+
+  it('collects remaps from parent and child saves', async () => {
+    let callCount = 0
+    const saveCategory = vi.fn(() => {
+      callCount++
+      if (callCount === 1)
+        return Promise.resolve({ convexId: 'convex_c1', localId: 'local_c1' })
+      return Promise.resolve({ convexId: 'convex_c2', localId: 'local_c2' })
+    })
+    const deleteCategory = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Categories, 'local_c1', 'create', { name: 'Food', parentId: 0 }),
+      makeOp(OfflineEntityType.Categories, 'local_c2', 'create', { name: 'Groceries', parentId: 'local_c1' }),
+    ]
+
+    await replayCategoryOps(ops, remapIds, { deleteCategory, saveCategory })
+    expect(remapIds.get('local_c1')).toBe('convex_c1')
+    expect(remapIds.get('local_c2')).toBe('convex_c2')
+  })
+})
+
+// --- replayTrnOps ---
+
+describe('replayTrnOps', () => {
+  const wallets = { w1: {}, w2: {} }
+  const categories = { food: {} }
+
+  it('does nothing for empty ops', async () => {
+    const saveTrn = vi.fn()
+    const deleteTrn = vi.fn()
+    const removeOp = vi.fn()
+    const remapIds = new Map<string, string>()
+
+    const orphanCount = await replayTrnOps([], remapIds, {
+      deleteTrn,
+      removeOfflineOp: removeOp,
+      saveTrn,
+    }, { categoriesItems: categories, walletsItems: wallets })
+    expect(orphanCount).toBe(0)
+    expect(saveTrn).not.toHaveBeenCalled()
+    expect(deleteTrn).not.toHaveBeenCalled()
+  })
+
+  it('calls saveTrn for valid create ops', async () => {
+    const saveTrn = vi.fn()
+    const deleteTrn = vi.fn()
+    const removeOp = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Trns, 't1', 'create', {
+        amount: 100,
+        categoryId: 'food',
+        date: 1000,
+        type: TrnType.Expense,
+        updatedAt: 1000,
+        walletId: 'w1',
+      }),
+    ]
+
+    const orphanCount = await replayTrnOps(ops, remapIds, {
+      deleteTrn,
+      removeOfflineOp: removeOp,
+      saveTrn,
+    }, { categoriesItems: categories, walletsItems: wallets })
+    expect(orphanCount).toBe(0)
+    expect(saveTrn).toHaveBeenCalledTimes(1)
+  })
+
+  it('calls deleteTrn for delete ops', async () => {
+    const saveTrn = vi.fn()
+    const deleteTrn = vi.fn()
+    const removeOp = vi.fn()
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Trns, 't1', 'delete'),
+    ]
+
+    await replayTrnOps(ops, remapIds, {
+      deleteTrn,
+      removeOfflineOp: removeOp,
+      saveTrn,
+    }, { categoriesItems: categories, walletsItems: wallets })
+    expect(deleteTrn).toHaveBeenCalledWith('t1')
+    expect(saveTrn).not.toHaveBeenCalled()
+  })
+
+  it('skips orphaned trns and returns orphan count', async () => {
+    const saveTrn = vi.fn()
+    const deleteTrn = vi.fn()
+    const removeOp = vi.fn(() => Promise.resolve())
+    const remapIds = new Map<string, string>()
+    const ops = [
+      makeOp(OfflineEntityType.Trns, 't1', 'create', {
+        amount: 100,
+        categoryId: 'food',
+        date: 1000,
+        type: TrnType.Expense,
+        updatedAt: 1000,
+        walletId: 'missing_wallet',
+      }),
+    ]
+
+    const orphanCount = await replayTrnOps(ops, remapIds, {
+      deleteTrn,
+      removeOfflineOp: removeOp,
+      saveTrn,
+    }, { categoriesItems: categories, walletsItems: wallets })
+    expect(orphanCount).toBe(1)
+    expect(saveTrn).not.toHaveBeenCalled()
+    expect(removeOp).toHaveBeenCalledWith(OfflineEntityType.Trns, 't1')
+  })
+
+  it('remaps wallet and category IDs before saving', async () => {
+    const saveTrn = vi.fn()
+    const deleteTrn = vi.fn()
+    const removeOp = vi.fn()
+    const remapIds = new Map([['local_w', 'w1'], ['local_c', 'food']])
+    const ops = [
+      makeOp(OfflineEntityType.Trns, 't1', 'create', {
+        amount: 100,
+        categoryId: 'local_c',
+        date: 1000,
+        type: TrnType.Expense,
+        updatedAt: 1000,
+        walletId: 'local_w',
+      }),
+    ]
+
+    await replayTrnOps(ops, remapIds, {
+      deleteTrn,
+      removeOfflineOp: removeOp,
+      saveTrn,
+    }, { categoriesItems: categories, walletsItems: wallets })
+    expect(saveTrn).toHaveBeenCalledWith(expect.objectContaining({
+      values: expect.objectContaining({ categoryId: 'food', walletId: 'w1' }),
+    }))
+  })
+})
+
+// --- replaySettingsOps ---
+
+describe('replaySettingsOps', () => {
+  it('does nothing for empty ops', async () => {
+    const saveBaseCurrency = vi.fn()
+    const saveLocale = vi.fn()
+
+    await replaySettingsOps([], { saveBaseCurrency, saveLocale })
+    expect(saveBaseCurrency).not.toHaveBeenCalled()
+    expect(saveLocale).not.toHaveBeenCalled()
+  })
+
+  it('calls saveBaseCurrency when baseCurrency is present', async () => {
+    const saveBaseCurrency = vi.fn()
+    const saveLocale = vi.fn()
+    const ops = [
+      makeOp(OfflineEntityType.UserSettings, 's1', 'update', { baseCurrency: 'EUR' }),
+    ]
+
+    await replaySettingsOps(ops, { saveBaseCurrency, saveLocale })
+    expect(saveBaseCurrency).toHaveBeenCalledWith('EUR')
+    expect(saveLocale).not.toHaveBeenCalled()
+  })
+
+  it('calls saveLocale when locale is present', async () => {
+    const saveBaseCurrency = vi.fn()
+    const saveLocale = vi.fn()
+    const ops = [
+      makeOp(OfflineEntityType.UserSettings, 's1', 'update', { locale: 'ru' }),
+    ]
+
+    await replaySettingsOps(ops, { saveBaseCurrency, saveLocale })
+    expect(saveLocale).toHaveBeenCalledWith('ru')
+    expect(saveBaseCurrency).not.toHaveBeenCalled()
+  })
+
+  it('calls both when both are present', async () => {
+    const saveBaseCurrency = vi.fn()
+    const saveLocale = vi.fn()
+    const ops = [
+      makeOp(OfflineEntityType.UserSettings, 's1', 'update', { baseCurrency: 'USD', locale: 'en' }),
+    ]
+
+    await replaySettingsOps(ops, { saveBaseCurrency, saveLocale })
+    expect(saveBaseCurrency).toHaveBeenCalledWith('USD')
+    expect(saveLocale).toHaveBeenCalledWith('en')
+  })
+
+  it('processes multiple settings ops', async () => {
+    const saveBaseCurrency = vi.fn()
+    const saveLocale = vi.fn()
+    const ops = [
+      makeOp(OfflineEntityType.UserSettings, 's1', 'update', { baseCurrency: 'EUR' }),
+      makeOp(OfflineEntityType.UserSettings, 's2', 'update', { locale: 'ru' }),
+    ]
+
+    await replaySettingsOps(ops, { saveBaseCurrency, saveLocale })
+    expect(saveBaseCurrency).toHaveBeenCalledTimes(1)
+    expect(saveLocale).toHaveBeenCalledTimes(1)
   })
 })
