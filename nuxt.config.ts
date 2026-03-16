@@ -1,11 +1,14 @@
+import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import categoryIcons from './app/assets/js/icons.js'
 
-const currentDir = fileURLToPath(new URL('.', import.meta.url))
+const currentDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
+  $meta: { name: 'base' },
+
   colorMode: {
     classSuffix: '',
     fallback: 'dark',
@@ -23,7 +26,7 @@ export default defineNuxtConfig({
       pattern: '**/_/**',
     },
   ],
-  css: [`${currentDir}app/assets/css/main.css`],
+  css: [join(currentDir, './app/assets/css/main.css')],
 
   devtools: {
     timeline: {
