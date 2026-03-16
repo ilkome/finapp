@@ -16,16 +16,6 @@ export default defineNuxtConfig({
   },
 
   compatibilityDate: '2024-07-07',
-  components: [
-    {
-      path: '~/components/',
-    },
-    {
-      path: '~/pages',
-      pathPrefix: false,
-      pattern: '**/_/**',
-    },
-  ],
   css: [join(currentDir, './app/assets/css/main.css')],
 
   devtools: {
