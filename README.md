@@ -74,11 +74,14 @@ VITE_CONVEX_SITE_URL=your_convex_site_url
 These variables run on the Convex backend. Set them via CLI:
 
 ```bash
+npx convex env set BETTER_AUTH_SECRET your_secret
 npx convex env set APP_URL https://your-app-domain.com
 npx convex env set GOOGLE_CLIENT_ID your_client_id
 npx convex env set GOOGLE_CLIENT_SECRET your_client_secret
 npx convex env set OPENEXCHANGERATES_APP_ID your_app_id
 ```
+
+- **BETTER_AUTH_SECRET**: Required — without it all auth endpoints including CORS preflight will fail
 
 - **Google OAuth**: Create credentials in [Google Cloud Console](https://console.cloud.google.com/)
 - **Exchange rates**: Sign up at [openexchangerates.org](https://openexchangerates.org/signup/free)
