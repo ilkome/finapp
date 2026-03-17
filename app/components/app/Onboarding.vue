@@ -23,7 +23,7 @@ const introText = computed(() => {
 <template>
   <div class="onboarding flex min-h-svh items-center justify-center">
     <div class="flex-center flex-col gap-6 px-4 text-center">
-      <UiLogo class="!text-6xl" />
+      <UiLogo size="lg" />
 
       <div class="flex flex-col gap-2">
         <p class="text-muted">

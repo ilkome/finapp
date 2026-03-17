@@ -89,7 +89,7 @@ async function openDemo() {
       class="grid h-full items-center gap-8 overflow-hidden overflow-y-auto px-3 py-4"
     >
       <div class="flex flex-col items-center justify-center pb-10">
-        <UiLogo class="pb-0 !text-6xl !font-extrabold" />
+        <UiLogo size="lg" />
         <div class="text-muted pt-1 text-sm">
           {{ t('login.description') }}
         </div>
