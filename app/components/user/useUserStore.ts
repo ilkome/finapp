@@ -197,6 +197,7 @@ export const useUserStore = defineStore('user', () => {
       setUser(null)
       clearAuthCookie()
       setSessionInitialized(false)
+      useCookie('finapp.isOnboarded').value = false
       await localforage.clear()
       await authClient.signOut()
     }
@@ -223,6 +224,8 @@ export const useUserStore = defineStore('user', () => {
     categoriesStore.setCategories(null)
     walletsStore.setWallets(null)
     useTrnsFormStore().$reset()
+
+    useCookie('finapp.isOnboarded').value = false
 
     const { clearOfflineQueue, setOfflineQueueUserId } = await import('~/components/offline/helpers')
     await clearOfflineQueue()
