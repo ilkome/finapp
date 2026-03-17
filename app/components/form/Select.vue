@@ -28,7 +28,7 @@ const emit = defineEmits<{
 </template>
 
 <style scoped>
-@reference '~/assets/css/main.css';
+@reference '../../assets/css/main.css';
 
 select {
   appearance: none;

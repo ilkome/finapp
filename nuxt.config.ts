@@ -7,8 +7,6 @@ import categoryIcons from './app/assets/js/icons.js'
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
-  $meta: { name: 'base' },
-
   colorMode: {
     classSuffix: '',
     fallback: 'dark',
@@ -186,5 +184,23 @@ export default defineNuxtConfig({
   },
 
   ssr: false,
+
   telemetry: false,
+
+  vite: {
+    optimizeDeps: {
+      include: [
+        'localforage',
+        '@convex-dev/better-auth/client/plugins',
+        'better-auth/vue',
+        'date-fns',
+        'convex/browser',
+        'zod/v4',
+        'es-toolkit',
+        'convex/server',
+        '@internationalized/date',
+        'date-fns/locale',
+      ],
+    },
+  },
 })
