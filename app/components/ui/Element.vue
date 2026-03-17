@@ -47,7 +47,7 @@ const elementClasses = computed(() => cn(
 </template>
 
 <style>
-@reference '~/assets/css/main.css';
+@reference '../../assets/css/main.css';
 
 [data-state='open'] > .uiElement {
   @apply !bg-item-4;

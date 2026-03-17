@@ -77,7 +77,7 @@ const walletId = computed(() =>
 </template>
 
 <style lang="css">
-@reference '~/assets/css/main.css';
+@reference '../../assets/css/main.css';
 
 .trnForm {
   padding-bottom: calc(env(safe-area-inset-bottom) - 16px);

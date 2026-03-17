@@ -104,7 +104,7 @@ watch(isShow, async (v) => {
 </template>
 
 <style>
-@reference '~/assets/css/main.css';
+@reference '../../assets/css/main.css';
 
 .fadeIn-enter-active,
 .fadeIn-leave-active {
