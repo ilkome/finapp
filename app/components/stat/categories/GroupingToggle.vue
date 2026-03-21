@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
   isGrouped: boolean
-  size?: string
+  size?: 'sm' | 'md'
 }>()
 
 const emit = defineEmits<{

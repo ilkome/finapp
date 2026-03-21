@@ -9,15 +9,15 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 
 ## Commands
 
-- `pnpm dev` — Nuxt dev server on port 3050
-- `pnpm dev:convex` — Convex backend (watches and auto-deploys changes)
+- `pnpm dev` - Nuxt dev server on port 3050
+- `pnpm dev:convex` - Convex backend (watches and auto-deploys changes)
 - Both must run simultaneously in separate terminals
-- `pnpm build` — SPA build (`nuxt build`)
-- `pnpm generate` — static generation (`nuxt generate`)
-- `pnpm lint` / `pnpm lint:fix` — ESLint
-- `pnpm test` — Vitest
-- `pnpm docs:dev` — docs dev server
-- `pnpm docs:build` — build docs site
+- `pnpm build` - SPA build (`nuxt build`)
+- `pnpm generate` - static generation (`nuxt generate`)
+- `pnpm lint` / `pnpm lint:fix` - ESLint
+- `pnpm test` - Vitest
+- `pnpm docs:dev` - docs dev server
+- `pnpm docs:build` - build docs site
 
 ## Project Structure
 
@@ -37,18 +37,18 @@ See [Architecture](../docs/content/en/3.technical/1.architecture.md) for detaile
 
 - @nuxt/ui defines CSS vars in `@layer theme`
 - Dynamic theme (radius, colors) is applied via `useHead()` in `app.vue` with `tagPriority: -2`
-- **Do NOT** set `--ui-radius` or `--ui-primary` in `theme.css` — non-layered CSS loads after `useHead()` and overrides it
+- **Do NOT** set `--ui-radius` or `--ui-primary` in `theme.css` - non-layered CSS loads after `useHead()` and overrides it
 - Radius uses `??` (not `||`) to allow `0`: `${appConfig.theme.radius ?? 0.375}`
 
 ## Store Pattern
 
 All Pinia stores (`useTrnsStore`, `useWalletsStore`, `useCategoriesStore`) follow the same pattern:
 
-- `items: shallowRef` — reactive state (shallow for performance)
-- `init()` — fetch from Convex → `mergeOfflineOps` → `set`
-- `set(data)` — `items.value = data` + `debouncedPersist` (300ms)
-- `save({ id, values })` — optimistic UI → `pushSaveOp` → fire mutation (no await)
-- `delete(id)` — optimistic UI → `pushDeleteOp` → fire mutation (no await)
+- `items: shallowRef` - reactive state (shallow for performance)
+- `init()` - fetch from Convex → `mergeOfflineOps` → `set`
+- `set(data)` - `items.value = data` + `debouncedPersist` (300ms)
+- `save({ id, values })` - optimistic UI → `pushSaveOp` → fire mutation (no await)
+- `delete(id)` - optimistic UI → `pushDeleteOp` → fire mutation (no await)
 
 Mutation result: `.then()` removes offline op + remaps frontend ID → `.catch()` shows error toast.
 
@@ -62,7 +62,7 @@ New entities get temporary IDs with `local_` prefix (e.g., `local_a1b2c3`). `isL
 - `TrnType` enum in `convex/validators.ts` (re-exported from `convex/shared.ts`): Expense (0), Income (1), Transfer (2)
 - Adjustment is determined by `categoryId === 'adjustment'`, NOT by `TrnType`. It uses Expense or Income type, excluded from income/expense statistics
 - Auth: `@convex-dev/better-auth` with `cors: true` in `http.ts`
-- Generated types in `convex/_generated/` — do not edit
+- Generated types in `convex/_generated/` - do not edit
 - `convex/tsconfig.json` is separate from the app tsconfig
 
 ### Convex Client Access
@@ -79,27 +79,27 @@ New entities get temporary IDs with `local_` prefix (e.g., `local_a1b2c3`). `isL
 Auth uses Better Auth with `convexClient()` and `crossDomainClient()` plugins (`composables/useAuth.ts`).
 
 **Convex auth lifecycle** (`plugins/convex.ts`):
-1. Eagerly call `client.setAuth(fetchToken)` if `hasAuthCookie()` && online — starts token fetch in parallel with session resolution
-2. `fetchToken` calls `authClient.convex.token()` — the `crossDomainClient` plugin handles cookie forwarding automatically
+1. Eagerly call `client.setAuth(fetchToken)` if `hasAuthCookie()` && online - starts token fetch in parallel with session resolution
+2. `fetchToken` calls `authClient.convex.token()` - the `crossDomainClient` plugin handles cookie forwarding automatically
 3. `authReadyPromise` resolves when the first token fetch completes (success or failure); consumers (`loadDataFromDB`) await this before issuing queries
-4. Session watch acts only on definitive results — ignores `isPending` and `error` states to prevent logout on network failures
+4. Session watch acts only on definitive results - ignores `isPending` and `error` states to prevent logout on network failures
 5. `online` event re-creates `authReadyPromise` and calls `setAuth()` for fresh token
-6. `ensureConvexAuth()` — called from callback page to set auth BEFORE SPA navigation
+6. `ensureConvexAuth()` - called from callback page to set auth BEFORE SPA navigation
 
-**Auth cookie** (`composables/useAuthCookie.ts`): `finapp.localAuthUid` cookie (document.cookie, 1yr max-age) — fast synchronous check for auth state. Not a security token, just a hint for middleware and plugin to skip network calls.
+**Auth cookie** (`composables/useAuthCookie.ts`): `finapp.localAuthUid` cookie (document.cookie, 1yr max-age) - fast synchronous check for auth state. Not a security token, just a hint for middleware and plugin to skip network calls.
 
 ### Convex CLI Notes
 
-- **Targeting prod**: always use the `--prod` flag (`npx convex run --prod`, `npx convex export --prod`). Do NOT use `CONVEX_DEPLOYMENT` env var — `.env.local` overrides env vars, so the CLI silently hits dev instead of prod
+- **Targeting prod**: always use the `--prod` flag (`npx convex run --prod`, `npx convex export --prod`). Do NOT use `CONVEX_DEPLOYMENT` env var - `.env.local` overrides env vars, so the CLI silently hits dev instead of prod
 - Convex rejects hyphens in directory names (use underscores: `test_utils/`)
-- Files with multiple dots (e.g., `setup.helper.ts`) are auto-skipped by Convex bundler — useful for test helpers
+- Files with multiple dots (e.g., `setup.helper.ts`) are auto-skipped by Convex bundler - useful for test helpers
 - Deploy with `--typecheck=disable` if there are pre-existing TS errors in Convex functions
 
 ## Local Development Setup
 
 1. Install dependencies: `pnpm install`
-2. Start Convex backend: `pnpm dev:convex` — connects to dev deployment, watches and auto-deploys changes
-3. Start Nuxt frontend: `pnpm dev` — runs on http://localhost:3050
+2. Start Convex backend: `pnpm dev:convex` - connects to dev deployment, watches and auto-deploys changes
+3. Start Nuxt frontend: `pnpm dev` - runs on http://localhost:3050
 4. Both servers must run simultaneously (in separate terminals)
 
 ### First-time setup
@@ -118,24 +118,24 @@ npx convex env set OPENEXCHANGERATES_APP_ID <value>
 
 ### Env files
 
-- `.env` — dev deployment values, read by Nuxt (default `--dotenv`)
-- `.env.local` — auto-created by `convex dev`, used by Convex CLI (gitignored)
-- `.env.prod` — prod deployment values, used by `pnpm dev:prod`
+- `.env` - dev deployment values, read by Nuxt (default `--dotenv`)
+- `.env.local` - auto-created by `convex dev`, used by Convex CLI (gitignored)
+- `.env.prod` - prod deployment values, used by `pnpm dev:prod`
 
 All `.env*` files are gitignored except `.env.example`.
 
 ### Nuxt env vars (in `.env` / `.env.prod`)
 
-- `CONVEX_DEPLOYMENT` — deployment identifier (used by Convex CLI)
-- `VITE_CONVEX_URL` — Convex deployment URL (Nuxt frontend)
-- `VITE_CONVEX_SITE_URL` — Convex site URL (Nuxt auth client)
+- `CONVEX_DEPLOYMENT` - deployment identifier (used by Convex CLI)
+- `VITE_CONVEX_URL` - Convex deployment URL (Nuxt frontend)
+- `VITE_CONVEX_SITE_URL` - Convex site URL (Nuxt auth client)
 
 ### Convex backend env vars (set via `npx convex env set`)
 
-- `BETTER_AUTH_SECRET` — secret key for Better Auth (**required** — without it all auth endpoints including CORS preflight will fail)
-- `APP_URL` — app URL for cross-domain auth and CORS/trustedOrigins
-- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` — Google OAuth
-- `OPENEXCHANGERATES_APP_ID` — exchange rates API
+- `BETTER_AUTH_SECRET` - secret key for Better Auth (**required** - without it all auth endpoints including CORS preflight will fail)
+- `APP_URL` - app URL for cross-domain auth and CORS/trustedOrigins
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` - Google OAuth
+- `OPENEXCHANGERATES_APP_ID` - exchange rates API
 
 ## Key Files
 

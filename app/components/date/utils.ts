@@ -1,11 +1,21 @@
 import type { CalendarDate } from '@internationalized/date'
 
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
+import type { Duration } from 'date-fns'
 import { differenceInDays, endOfDay, endOfMonth, endOfWeek, endOfYear, format, formatISO, startOfDay, startOfMonth, startOfWeek, startOfYear, sub } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
-import type { IntervalsInRangeProps, Range } from '~/components/date/types'
+import type { IntervalsInRangeProps, Period, Range } from '~/components/date/types'
 import type { LocaleSlug } from '~/components/locale/types'
+
+export function toDuration(period: Period, value: number): Duration {
+  switch (period) {
+    case 'day': return { days: value }
+    case 'week': return { weeks: value }
+    case 'month': return { months: value }
+    case 'year': return { years: value }
+  }
+}
 
 export function formatByLocale(date: Date, formatter: string, locale?: LocaleSlug) {
   const formatOptions = locale === 'ru' ? { locale: ru } : {}
@@ -14,20 +24,18 @@ export function formatByLocale(date: Date, formatter: string, locale?: LocaleSlu
 
 export function calculateIntervalInRange(params: IntervalsInRangeProps): Range {
   const offset = (params.rangeOffset ?? 0) * params.intervalsDuration
-  const baseDate = sub(new Date(params.range.end), {
-    [`${params.intervalsBy}s`]: offset,
-  })
+  const baseDate = sub(new Date(params.range.end), toDuration(params.intervalsBy, offset))
 
   return {
     end: getEndOf(baseDate, params.intervalsBy).getTime(),
     start: getStartOf(
-      sub(baseDate, { [`${params.intervalsBy}s`]: params.intervalsDuration - 1 }),
+      sub(baseDate, toDuration(params.intervalsBy, params.intervalsDuration - 1)),
       params.intervalsBy,
     ).getTime(),
   }
 }
 
-export function calculateBestIntervalsBy(range: Range) {
+export function calculateBestIntervalsBy(range: Range): Period {
   const rangeDuration = differenceInDays(range.end, range.start)
   return rangeDuration > 400
     ? 'year'
@@ -48,7 +56,7 @@ export function getIntervalsInRange(params: IntervalsInRangeProps) {
   })
 
   while (current.end > range.start) {
-    list.unshift(current)
+    list.push(current)
 
     current = calculateIntervalInRange({
       intervalsBy,
@@ -57,6 +65,8 @@ export function getIntervalsInRange(params: IntervalsInRangeProps) {
       rangeOffset: 1,
     })
   }
+
+  list.reverse()
 
   if (list.length > 0) {
     if (list.at(-1)!.end > range.end) {
@@ -71,7 +81,7 @@ export function getIntervalsInRange(params: IntervalsInRangeProps) {
   return list
 }
 
-export function getStartOf(date: Date, intervalType: string): Date {
+export function getStartOf(date: Date, intervalType: Period): Date {
   switch (intervalType) {
     case 'year':
       return startOfYear(date)
@@ -79,12 +89,12 @@ export function getStartOf(date: Date, intervalType: string): Date {
       return startOfMonth(date)
     case 'week':
       return startOfWeek(date, { weekStartsOn: 1 })
-    default:
+    case 'day':
       return startOfDay(date)
   }
 }
 
-export function getEndOf(date: Date, intervalType: string): Date {
+export function getEndOf(date: Date, intervalType: Period): Date {
   switch (intervalType) {
     case 'year':
       return endOfYear(date)
@@ -92,7 +102,7 @@ export function getEndOf(date: Date, intervalType: string): Date {
       return endOfMonth(date)
     case 'week':
       return endOfWeek(date, { weekStartsOn: 1 })
-    default:
+    case 'day':
       return endOfDay(date)
   }
 }
@@ -107,6 +117,6 @@ export function parseUCalendarDate(date: number) {
 
 export function getUCalendarTimedDate(date: CalendarDate) {
   const now = new Date()
-  const selectedDate = date.toString()
-  return new Date(selectedDate).setHours(now.getHours(), now.getMinutes())
+  const localDate = date.toDate(getLocalTimeZone())
+  return localDate.setHours(now.getHours(), now.getMinutes())
 }

@@ -14,10 +14,10 @@ export function useDateFormats() {
       return
 
     const filterDate = new Date(date)
-    const from = getStartOf(filterDate, periodName).getTime()
-    const until = getEndOf(filterDate, periodName).getTime()
+    const start = getStartOf(filterDate, periodName).getTime()
+    const end = getEndOf(filterDate, periodName).getTime()
 
-    return { from, until }
+    return { end, start }
   }
 
   function formatDate(value: number, type: 'trnItem' | 'full') {
@@ -34,12 +34,12 @@ export function useDateFormats() {
           full: formatByLocale(date, 'dd.MM.yyyy HH:mm', locale.value),
           month: formatByLocale(date, 'MMM', locale.value),
           week: formatByLocale(date, 'dd.MM', locale.value),
-          weekday: `${diff < 2 ? `${formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,
+          weekday: `${diff < 2 ? `${formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date })}, ` : ''} ${formatByLocale(date, 'EEEE', locale.value)}`,
           year: formatByLocale(date, 'yyyy', locale.value),
         }
 
       case 'trnItem':
-        return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date, type: 'start' })
+        return formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date })
     }
   }
 

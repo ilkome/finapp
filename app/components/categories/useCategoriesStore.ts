@@ -66,8 +66,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!hasItems.value)
       return []
 
-    return Object.keys(items.value)
-      .filter(id => items.value?.[id]?.parentId === 0 && id !== 'transfer' && id !== 'adjustment')
+    return categoriesIds.value
+      .filter(id => items.value[id]?.parentId === 0 && id !== 'transfer' && id !== 'adjustment')
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   })
 
@@ -97,19 +97,9 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!hasItems.value)
       return []
 
-    return Object.keys(items.value)
+    return categoriesIds.value
       .filter(id => items.value[id]?.showInQuickSelector)
-      .sort((a, b) => {
-        const catA = items.value[a]!
-        const catB = items.value[b]!
-        const parentNameA = items.value[catA.parentId]?.name || ''
-        const parentNameB = items.value[catB.parentId]?.name || ''
-
-        if (parentNameA !== parentNameB)
-          return parentNameA.localeCompare(parentNameB)
-
-        return catA.name.localeCompare(catB.name)
-      })
+      .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   })
 
   const recentCategoriesIds = computed(() => {
@@ -122,8 +112,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     // Track most recent date per category (single pass)
     const latestDateByCategory = new Map<CategoryId, number>()
-    for (const trnId of Object.keys(trnsItems ?? {})) {
-      const trn = trnsItems?.[trnId]
+    for (const trnId in trnsItems) {
+      const trn = trnsItems[trnId]
       if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
         continue
 
@@ -134,31 +124,27 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     }
 
     // Filter valid categories and pick top N by most recent usage
-    const sortedEntries: [CategoryId, number][] = [...latestDateByCategory.entries()].toSorted(([, dateA], [, dateB]) => dateB - dateA)
+    const sortedEntries = [...latestDateByCategory.entries()].toSorted(([, dateA], [, dateB]) => dateB - dateA)
 
-    const recentIds = sortedEntries.reduce<CategoryId[]>((acc, [categoryId]) => {
-      if (acc.length >= maxCategories)
-        return acc
+    const recentIds: CategoryId[] = []
+    for (const [categoryId] of sortedEntries) {
+      if (recentIds.length >= maxCategories)
+        break
 
       const category = items.value[categoryId]
       if (!category || !category.showInLastUsed || categoryId === 'transfer' || favoriteIds.has(categoryId))
-        return acc
+        continue
 
-      acc.push(categoryId)
-      return acc
-    }, [])
+      recentIds.push(categoryId)
+    }
 
     return recentIds
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   })
 
-  const categoriesIdsForTrnValues = computed<CategoryId[]>(() => {
-    return categoriesIds.value.filter((id) => {
-      if (id === 'transfer')
-        return false
-      return !hasChildren(id)
-    })
-  })
+  const categoriesIdsForTrnValues = computed<CategoryId[]>(() =>
+    transactibleIds.value.filter(id => id !== 'transfer'),
+  )
 
   const debouncedPersist = createDebouncedPersist<Categories>(STORAGE_KEYS.categories)
 
@@ -199,27 +185,18 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!hasItems.value)
       return []
 
-    const children = Object.keys(items.value)
+    return Object.keys(items.value)
       .filter(id => items.value[id]?.parentId === categoryId)
-
-    if (!children.length)
-      return []
-
-    return children
       .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
   }
 
   function getChildrenIdsOrParent(categoryId: CategoryId) {
-    if (!hasItems.value)
-      return []
-
-    const children = Object.keys(items.value)
-      .filter(id => items.value[id]?.parentId === categoryId)
+    const children = getChildrenIds(categoryId)
     return children.length ? children : [categoryId]
   }
 
   function getTransactibleIds(ids?: CategoryId[]) {
-    return getTransactibleCategoriesIds(items.value ?? {}, ids)
+    return getTransactibleCategoriesIds(items.value, ids)
   }
 
   function isTransactible(categoryId: CategoryId) {
@@ -228,7 +205,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
   function applyOptimisticUpdate(id: CategoryId, categoryValues: CategoryItem, isUpdateChildCategoriesColor: boolean, categoryChildIds: CategoryId[]) {
     const updatedItems: Categories = {
-      ...(items.value ?? {}),
+      ...items.value,
       [id]: categoryValues,
     }
 
@@ -295,7 +272,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return
 
     // Optimistic UI
-    const categories = { ...(items.value ?? {}) }
+    const categories = { ...items.value }
     delete categories[id]
     setCategories(categories)
 

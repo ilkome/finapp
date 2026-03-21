@@ -43,7 +43,6 @@ export function useStatDate({
     intervalsBy: params.value.intervalsBy,
     intervalsDuration: params.value.intervalsDuration,
     range: range.value,
-    rangeOffset: params.value.rangeOffset,
   }))
 
   const selectedInterval = computed(() => intervalsInRange.value[params.value.intervalSelected])
@@ -71,10 +70,7 @@ export function useStatDate({
 
   function setRangeByCalendar(r: Range) {
     resetCustomAndMaxRangeParams()
-    params.value.customDate = {
-      end: new Date(r.end).getTime(),
-      start: new Date(r.start).getTime(),
-    }
+    params.value.customDate = { ...r }
     params.value.rangeOffset = 0
 
     params.value.rangeBy = 'day'

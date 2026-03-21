@@ -1,8 +1,11 @@
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
 export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId[]) {
+  if (!items)
+    return []
+
   const childrenMap = new Map<CategoryId, CategoryId[]>()
-  for (const id of Object.keys(items ?? {})) {
+  for (const id of Object.keys(items)) {
     const parentId = items[id]?.parentId
     if (parentId) {
       const pid = String(parentId)
@@ -15,8 +18,8 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   const seen = new Set<CategoryId>()
   const result: CategoryId[] = []
 
-  for (const id of ids ?? Object.keys(items ?? [])) {
-    const category = items?.[id]
+  for (const id of ids ?? Object.keys(items)) {
+    const category = items[id]
     const children = childrenMap.get(id)
     if (category?.parentId === 0 && children?.length) {
       for (const childId of children) {
@@ -48,7 +51,7 @@ export function getParentCategoryIdOrUndefined(items: Categories, categoryId: Ca
 }
 
 export function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, items: Categories): number {
-  const parentNameA = items[a.parentId]?.name || ''
-  const parentNameB = items[b.parentId]?.name || ''
+  const parentNameA = items[a.parentId]?.name ?? ''
+  const parentNameB = items[b.parentId]?.name ?? ''
   return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)
 }

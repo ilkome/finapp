@@ -2,8 +2,8 @@ import type { SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/s
 
 import { TrnType } from '~/components/trns/types'
 
-export function getTypesMapping(slug: SeriesSlugSelected | StatTabSlug): TrnType[] | undefined {
-  const typeMapping: Record<string, TrnType[]> = {
+export function getTypesMapping(slug: SeriesSlugSelected | StatTabSlug): TrnType[] {
+  const typeMapping: Record<SeriesSlugSelected | StatTabSlug, TrnType[]> = {
     expense: [TrnType.Expense, TrnType.Transfer],
     income: [TrnType.Income, TrnType.Transfer],
     netIncome: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
@@ -11,7 +11,7 @@ export function getTypesMapping(slug: SeriesSlugSelected | StatTabSlug): TrnType
     summary: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
   }
 
-  return typeMapping[slug] ?? [TrnType.Expense, TrnType.Income, TrnType.Transfer]
+  return typeMapping[slug]
 }
 
 /**

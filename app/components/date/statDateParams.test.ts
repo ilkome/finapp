@@ -79,13 +79,12 @@ describe('parseStatDateQueryParams', () => {
     expect(result).toEqual(base)
   })
 
-  it('skips zero values for numeric fields', () => {
+  it('applies zero values for numeric fields', () => {
     const result = parseStatDateQueryParams(
       { rangeDuration: '0' },
       base,
     )
-    // 0 is falsy, so the if-check skips it
-    expect(result.rangeDuration).toBe(base.rangeDuration)
+    expect(result.rangeDuration).toBe(0)
   })
 })
 

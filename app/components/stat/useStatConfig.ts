@@ -36,6 +36,9 @@ export const ConfigSchema = z.object({
     count: z.number(),
     isShow: z.boolean(),
   }),
+  trns: z.object({
+    isShow: z.boolean(),
+  }),
   vertical: z.object({
     isGrouped: z.boolean(),
     isShow: z.boolean(),
@@ -89,6 +92,10 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     statAverage: {
       count: 10,
       isShow: false,
+    },
+
+    trns: {
+      isShow: true,
     },
 
     vertical: {

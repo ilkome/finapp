@@ -42,13 +42,6 @@ describe('useGetDateRange', () => {
   const { formatDateToStringWithLast, getStringDateRange } = useGetDateRange(t)
   const today = fixedDate
 
-  /** Call formatDateToStringWithLast for both 'start' and 'end', return concatenated label */
-  function getLabel(params: { by: 'day' | 'month' | 'week' | 'year', duration: number, end: Date, start: Date }, isShowMaxRange?: boolean): string {
-    const s = formatDateToStringWithLast({ ...params, type: 'start' }, isShowMaxRange)
-    const e = formatDateToStringWithLast({ ...params, type: 'end' }, isShowMaxRange)
-    return `${s}${e}`
-  }
-
   afterAll(() => {
     vi.useRealTimers()
   })
@@ -109,38 +102,38 @@ describe('useGetDateRange', () => {
     })
   })
 
-  describe('formatDateToStringWithLast — current/last period labels', () => {
+  describe('formatDateToStringWithLast - current/last period labels', () => {
     it('shows "Today" for current day', () => {
-      expect(getLabel({ by: 'day', duration: 1, end: today, start: today })).toBe('Today')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: today, start: today })).toBe('Today')
     })
 
     it('shows "Yesterday" for previous day', () => {
       const yesterday = sub(today, { days: 1 })
-      expect(getLabel({ by: 'day', duration: 1, end: yesterday, start: yesterday })).toBe('Yesterday')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: yesterday, start: yesterday })).toBe('Yesterday')
     })
 
     it('shows "This Month" for current month', () => {
-      expect(getLabel({ by: 'month', duration: 1, end: endOfMonth(today), start: startOfMonth(today) })).toBe('This Month')
+      expect(formatDateToStringWithLast({ by: 'month', duration: 1, end: endOfMonth(today), start: startOfMonth(today) })).toBe('This Month')
     })
 
     it('shows "Last Month" for previous month', () => {
       const lastMonth = sub(today, { months: 1 })
-      expect(getLabel({ by: 'month', duration: 1, end: endOfMonth(lastMonth), start: startOfMonth(lastMonth) })).toBe('Last Month')
+      expect(formatDateToStringWithLast({ by: 'month', duration: 1, end: endOfMonth(lastMonth), start: startOfMonth(lastMonth) })).toBe('Last Month')
     })
 
     it('shows "Last N periods" when end is in current period', () => {
       const start = sub(today, { days: 2 })
-      expect(getLabel({ by: 'day', duration: 3, end: today, start })).toBe('Last 3 days')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 3, end: today, start })).toBe('Last 3 days')
     })
 
     it('shows "d MMMM" for single day in current year (not today/yesterday)', () => {
       const date = new Date('2025-03-15T12:00:00')
-      expect(getLabel({ by: 'day', duration: 1, end: date, start: date })).toBe('15 March')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date })).toBe('15 March')
     })
 
     it('shows "d MMM yyyy" for single day in past year', () => {
       const date = new Date('2024-06-15T12:00:00')
-      expect(getLabel({ by: 'day', duration: 1, end: date, start: date })).toBe('15 Jun 2024')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date })).toBe('15 Jun 2024')
     })
   })
 })

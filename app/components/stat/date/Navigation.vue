@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
 
-import { getEndOf, getStartOf } from '~/components/date/utils'
+import { getEndOf, getStartOf, toDuration } from '~/components/date/utils'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
@@ -25,7 +25,7 @@ const isStart = computed(() =>
 )
 
 const isShowNavHome = computed(() => {
-  const start = getStartOf(sub(new Date(), { [`${statDate.params.value.rangeBy}s`]: statDate.params.value.rangeDuration - 1 }), statDate.params.value.rangeBy).getTime()
+  const start = getStartOf(sub(new Date(), toDuration(statDate.params.value.rangeBy, statDate.params.value.rangeDuration - 1)), statDate.params.value.rangeBy).getTime()
   const end = getEndOf(new Date(), statDate.params.value.rangeBy).getTime()
 
   return !statDate.params.value.isShowMaxRange && (statDate.params.value.intervalSelected !== -1 || (statDate.range.value.start !== start && statDate.range.value.end !== end))

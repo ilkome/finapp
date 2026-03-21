@@ -19,13 +19,13 @@ export function getAmountInRate({
     return amount
 
   if (baseCurrencyCode !== currencyCode)
-    return amount / (rates[currencyCode] || 1) * (rates[baseCurrencyCode] || 1)
+    return amount / (rates[currencyCode] ?? 1) * (rates[baseCurrencyCode] ?? 1)
 
   return amount
 }
 
 type TotalProps = {
-  baseCurrencyCode?: string
+  baseCurrencyCode?: CurrencyCode
   rates?: Rates
   trnsIds?: TrnId[]
   trnsItems: Record<TrnId, TrnItem>
@@ -69,15 +69,14 @@ export function getTotal(props: TotalProps): TotalReturns {
 
     // Transaction
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
-      // Adjustment: affects wallet balance but not income/expense statistics
       if (trn.categoryId === 'adjustment') {
         const wallet = walletsItems[trn.walletId]
-        const amount = getAmount(trn.amount, wallet?.currency || 'USD')
+        const amount = getAmount(trn.amount, wallet?.currency ?? 'USD')
         adjustment += trn.type === TrnType.Income ? amount : -amount
         continue
       }
       const wallet = walletsItems[trn.walletId]
-      const sum = getAmount(trn.amount, wallet?.currency || 'USD')
+      const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
 
       if (trn.type === TrnType.Income)
         income += sum
@@ -130,7 +129,7 @@ export function getTotal(props: TotalProps): TotalReturns {
  * For each wallet, returns: income - expense + transfers + adjustments.
  */
 export function getWalletsTotals(props: {
-  baseCurrencyCode?: string
+  baseCurrencyCode?: CurrencyCode
   rates?: Rates
   trnsItems: Trns
   walletsItems: Wallets
