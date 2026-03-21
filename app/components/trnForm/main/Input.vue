@@ -16,7 +16,6 @@ const { t } = useI18n()
 
 <template>
   <div class="relative">
-    <!-- Sum -->
     <div
       :class="[{
         'opacity-0': !isShowSum,

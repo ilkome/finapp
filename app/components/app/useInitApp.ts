@@ -27,7 +27,6 @@ export function useInitApp() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
-  // Sync data when coming back online
   useEventListener(window, 'online', () => {
     isOffline.value = false
     if (userStore.uid && !isDbLoading.value)

@@ -14,17 +14,14 @@ const props = defineProps<{
 
 <template>
   <div :class="cn('flex gap-3 items-baseline pt-0', props.alt && 'flex-col gap-0.5')">
-    <!-- Parent category name -->
     <template v-if="alt && isShowParent && !props.hasChildren && props.category?.parentId">
       <div class="text-2xs text-4 leading-none">
         {{ props.parentCategory?.name }}
       </div>
     </template>
 
-    <!-- Base name -->
     <div class="text-toned flex items-center gap-2 text-sm leading-none font-medium tracking-wide text-nowrap">
       {{ props.category?.name }}
-      <!-- Has childs -->
       <div
         v-if="props.isShowDots && props.hasChildren"
         class="text-4 text-xs leading-none"
@@ -40,7 +37,6 @@ const props = defineProps<{
       </div>
     </div>
 
-    <!-- Parent category name -->
     <template v-if="!alt && isShowParent && !props.hasChildren && props.category?.parentId">
       <div class="text-2xs text-4 leading-none text-nowrap">
         •

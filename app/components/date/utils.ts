@@ -1,7 +1,7 @@
 import type { CalendarDate } from '@internationalized/date'
+import type { Duration } from 'date-fns'
 
 import { getLocalTimeZone, parseDate, today } from '@internationalized/date'
-import type { Duration } from 'date-fns'
 import { differenceInDays, endOfDay, endOfMonth, endOfWeek, endOfYear, format, formatISO, startOfDay, startOfMonth, startOfWeek, startOfYear, sub } from 'date-fns'
 import { ru } from 'date-fns/locale'
 

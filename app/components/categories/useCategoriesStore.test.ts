@@ -4,8 +4,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { CategoryItem } from '~/components/categories/types'
 
-// --- Entity-specific mocks ---
-
 vi.mock('~~/services/convex/api', () => ({
   convexCategoriesToMap: (v: any) => v,
 }))
@@ -54,8 +52,6 @@ vi.mock('~/components/offline/helpers', async (importOriginal) => {
 
 const { useCategoriesStore } = await import('~/components/categories/useCategoriesStore')
 
-// --- Helpers ---
-
 function makeCategory(overrides: Partial<CategoryItem> = {}): CategoryItem {
   return {
     color: '#f00',
@@ -67,8 +63,6 @@ function makeCategory(overrides: Partial<CategoryItem> = {}): CategoryItem {
     ...overrides,
   }
 }
-
-// --- Tests ---
 
 describe('useCategoriesStore', () => {
   beforeEach(async () => {

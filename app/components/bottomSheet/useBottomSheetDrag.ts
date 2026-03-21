@@ -223,7 +223,6 @@ export function useBottomSheetDrag({
     emit('closed')
   }
 
-  // Event listener management
   let stopListeners: (() => void) | null = null
 
   function addEvents() {

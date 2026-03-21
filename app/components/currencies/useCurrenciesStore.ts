@@ -21,7 +21,6 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     try {
       const { api, client } = useConvexClientWithApi()
 
-      // Get latest rates from Convex
       const latestRates = await client.query(api.rates.getLatest, {})
 
       if (latestRates?.rates) {

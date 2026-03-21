@@ -33,6 +33,9 @@ const defaultConfig: MiniItemConfig = {
     count: 10,
     isShow: false,
   },
+  trns: {
+    isShow: true,
+  },
   vertical: {
     isGrouped: false,
     isShow: false,
