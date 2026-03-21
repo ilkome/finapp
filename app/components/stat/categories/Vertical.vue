@@ -19,14 +19,12 @@ const emit = defineEmits<{
 }>()
 
 const categoriesStore = useCategoriesStore()
-
 const category = computed(() => categoriesStore.items[props.item.id])
+const amount = computed(() => formatCompactAmount(props.item.value))
 
 const barStyle = computed(() =>
   computeBarStyle(props.item.value, category.value?.color, props.maxCategoryValues, 'height'),
 )
-
-const amount = computed(() => formatCompactAmount(props.item.value))
 
 const { longPressRef } = useCategoryLongPress(
   () => props.item.id,
@@ -38,7 +36,7 @@ const { longPressRef } = useCategoryLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="rounded-sm p-1 pb-4 hover:bg-(--item-5)"
+    class="rounded-sm p-1 pt-5 pb-2 hover:bg-(--item-5)"
   >
     <div class="bg-item-3 flex h-28 items-end rounded-sm">
       <div

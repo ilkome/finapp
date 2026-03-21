@@ -107,7 +107,7 @@ const {
 
         <div
           v-if="isShown"
-          class="grid pt-3"
+          class="grid"
         >
           <div class="flex overflow-hidden overflow-x-auto pt-2 pl-1">
             <StatCategoriesVertical

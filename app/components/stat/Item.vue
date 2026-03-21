@@ -33,6 +33,7 @@ const isRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
 const isListShow = computed(() => statConfig.config.value.catsList.isShow)
 const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
 const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
+const isTrnsShow = computed(() => statConfig.config.value.trns.isShow)
 
 const {
   averageTotal,
@@ -166,8 +167,10 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           />
 
           <StatTrns
+            v-if="isTrnsShow"
             :isPeriodOneDay="isPeriodOneDay"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
+            :storageKey="statItemStorageKey"
             class="@3xl/page:order-1"
           />
         </div>

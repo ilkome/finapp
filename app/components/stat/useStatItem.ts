@@ -113,8 +113,8 @@ export function useStatItem({
     if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
       return
 
-    const key = filteredType.value === 'netIncome' ? 'sum' : (type.value ?? 'sum')
-    const sum = rangeTotal.value[key as keyof TotalReturns] as number ?? 0
+    const key: keyof TotalReturns = (!type.value || type.value === 'netIncome' || filteredType.value === 'netIncome') ? 'sum' : type.value
+    const sum = rangeTotal.value[key] ?? 0
 
     const dateRange = isIntervalSelected.value
       ? statDate.selectedInterval.value
@@ -147,7 +147,7 @@ export function useStatItem({
   })
 
   const chartXAxisLabels = computed(() =>
-    intervalsDataWithFilteredCategories.value.map(i => +i.range.start),
+    intervalsDataWithFilteredCategories.value.map(i => i.range.start),
   )
 
   function onSetCategoryFilter(categoryId: CategoryId) {

@@ -43,17 +43,17 @@ export function parseStatDateQueryParams(
   const data = parsed.data
   const result = { ...currentParams }
 
-  if (data.intervalsBy)
+  if (data.intervalsBy !== undefined)
     result.intervalsBy = data.intervalsBy
-  if (data.intervalsDuration)
+  if (data.intervalsDuration !== undefined)
     result.intervalsDuration = data.intervalsDuration
-  if (data.intervalSelected)
+  if (data.intervalSelected !== undefined)
     result.intervalSelected = data.intervalSelected
-  if (data.rangeBy)
+  if (data.rangeBy !== undefined)
     result.rangeBy = data.rangeBy
-  if (data.rangeDuration)
+  if (data.rangeDuration !== undefined)
     result.rangeDuration = data.rangeDuration
-  if (data.rangeOffset)
+  if (data.rangeOffset !== undefined)
     result.rangeOffset = data.rangeOffset
   if (data.isShowMaxRange !== undefined)
     result.isShowMaxRange = data.isShowMaxRange
@@ -76,15 +76,10 @@ export function computeDateRange(
     return params.customDate
   }
 
-  if (params.isShowMaxRange && params.isSkipEmpty) {
-    return { ...maxRange }
-  }
-
-  if (params.isShowMaxRange && !params.isSkipEmpty) {
-    return {
-      end: getEndOf(new Date(now), params.rangeBy).getTime(),
-      start: maxRange.start,
-    }
+  if (params.isShowMaxRange) {
+    return params.isSkipEmpty
+      ? { ...maxRange }
+      : { end: getEndOf(new Date(now), params.rangeBy).getTime(), start: maxRange.start }
   }
 
   return calculateIntervalInRange({

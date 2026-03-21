@@ -36,7 +36,8 @@ export type StatDateParamsQuery = {
 
 export type IntervalsInRangeProps = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'> & {
   range: Range
-} & Pick<StatDateParams, 'rangeOffset'>
+  rangeOffset?: number
+}
 
 type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
 export type Grouped = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'>

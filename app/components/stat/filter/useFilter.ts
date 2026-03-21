@@ -14,7 +14,7 @@ function createQueryFilter<T extends string>(
     const value = route.query[queryKey]
     if (Array.isArray(value))
       return validateFn ? (value as T[]).filter(validateFn) : (value as T[])
-    return value ? [...(value as string).split(',')] as T[] : []
+    return value ? (value as string).split(',') as T[] : []
   })
 
   function setId(id: T) {
@@ -42,7 +42,7 @@ function createQueryFilter<T extends string>(
     router.push({
       query: {
         ...route.query,
-        [queryKey]: [...ids.value.filter(i => i !== id)],
+        [queryKey]: ids.value.filter(i => i !== id),
       },
     })
   }

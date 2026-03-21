@@ -99,6 +99,7 @@ function onChangeViewOptions(newViewOptions: Pick<DeepPartial<MiniItemConfig>, '
         <StatConfigSwitch configKey="vertical" field="isShow" :title="t('stat.config.categories.vertical.title')" />
         <StatConfigSwitch configKey="catsRound" field="isShow" :title="t('stat.config.categories.rounds.title')" />
         <StatConfigSwitch configKey="catsList" field="isShow" :title="t('stat.config.categories.list.title')" />
+        <StatConfigSwitch configKey="trns" field="isShow" :title="t('trns.title')" />
       </div>
     </div>
   </div>

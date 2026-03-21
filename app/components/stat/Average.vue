@@ -9,7 +9,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { getEndOf, getStartOf } from '~/components/date/utils'
+import { getEndOf, getStartOf, toDuration } from '~/components/date/utils'
 import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { getTrnTypeByAmount, TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -31,18 +31,18 @@ const { computeTotalForTrnsIds } = useAmount()
 
 const averageConfig = computed(() => statConfig.config.value.statAverage.count)
 
-const untilDate = computed(() => getEndOf(sub(new Date(), { [`${statDate.params.value.rangeBy}s`]: statDate.params.value.rangeDuration }), statDate.params.value.rangeBy))
+const untilDate = computed(() => getEndOf(sub(new Date(), toDuration(statDate.params.value.rangeBy, statDate.params.value.rangeDuration)), statDate.params.value.rangeBy))
 
 const dates = computed<Range>(() => ({
   end: untilDate.value.getTime(),
-  start: getStartOf(sub(untilDate.value, { [`${statDate.params.value.rangeBy}s`]: (statDate.params.value.rangeDuration * averageConfig.value) - 1 }), statDate.params.value.rangeBy).getTime(),
+  start: getStartOf(sub(untilDate.value, toDuration(statDate.params.value.rangeBy, (statDate.params.value.rangeDuration * averageConfig.value) - 1)), statDate.params.value.rangeBy).getTime(),
 }))
 
 const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: props.categoryId ? [...filter.categoriesIds.value, props.categoryId] : filter.categoriesIds.value,
   dates: {
-    from: dates.value.start,
-    until: dates.value.end,
+    end: dates.value.end,
+    start: dates.value.start,
   },
   walletsIds: props.walletId ? [...(filter.walletsIds.value ?? []), props.walletId] : filter.walletsIds.value,
 }))

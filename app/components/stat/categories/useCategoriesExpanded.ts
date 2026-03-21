@@ -9,10 +9,7 @@ type CategoryState = { show: boolean }
 type CategoriesState = Record<CategoryId, CategoryState>
 
 function createInitialState(categories: Categories): CategoriesState {
-  return Object.keys(categories).reduce((acc, id) => {
-    acc[id] = { show: false }
-    return acc
-  }, {} as CategoriesState)
+  return Object.fromEntries(Object.keys(categories).map(id => [id, { show: false }]))
 }
 
 export function useCategoriesExpanded(
@@ -45,9 +42,8 @@ export function useCategoriesExpanded(
 
   function toggleAll() {
     const newShow = !isAnyExpanded.value
-    Object.keys(currentState.value).forEach((id) => {
+    for (const id of Object.keys(currentState.value))
       expandedState.value[id] = { show: newShow }
-    })
   }
 
   function toggle(id: CategoryId) {

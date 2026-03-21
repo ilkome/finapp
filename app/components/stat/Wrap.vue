@@ -32,8 +32,8 @@ const sharedItemProps = computed(() => ({
 
 const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   dates: {
-    from: statDate.range.value.start,
-    until: statDate.range.value.end,
+    end: statDate.range.value.end,
+    start: statDate.range.value.start,
   },
   trnsIds: props.trnsIds,
 }))

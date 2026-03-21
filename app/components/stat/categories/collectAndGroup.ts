@@ -1,24 +1,21 @@
 import type { Categories, CategoryId } from '~/components/categories/types'
 import type { CategoriesWithData, CategoryWithData } from '~/components/stat/types'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 
-export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData) {
-  if (!a || !b)
-    return 0
-
+export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData): number {
   if (a.value === 0)
     return 1
   if (b.value === 0)
     return -1
 
-  const isP = a.value > 0 && b.value > 0
-  const isN = a.value < 0 && b.value < 0
+  const bothPositive = a.value > 0 && b.value > 0
+  const bothNegative = a.value < 0 && b.value < 0
 
-  if (isP)
+  if (bothPositive)
     return b.value - a.value
-  if (isN)
+  if (bothNegative)
     return a.value - b.value
   return a.value > 0 ? -1 : 1
 }
@@ -27,7 +24,7 @@ export function collectCategoriesByTrns(params: {
   categoriesItems: Categories
   preCategoriesIds?: CategoryId[]
   trnsIds: TrnId[]
-  trnsItems: Record<TrnId, { categoryId?: string }>
+  trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
 }): CategoriesWithData {
   const { categoriesItems, preCategoriesIds, trnsIds, trnsItems } = params
 
@@ -110,8 +107,7 @@ export function groupCategoriesWithValues(
       value: 0,
     }
 
-    grouped[parentId].categories ??= []
-    grouped[parentId].categories.push({
+    grouped[parentId].categories!.push({
       ...cat,
       value: catTotal,
     })

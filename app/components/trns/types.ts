@@ -71,8 +71,8 @@ export type Trns = Record<TrnId, TrnItem>
 export type TrnsGetterProps = {
   categoriesIds?: CategoryId[]
   dates?: {
-    from: number
-    until: number
+    start: number
+    end: number
   }
   sort?: boolean
   trnsIds?: TrnId[]

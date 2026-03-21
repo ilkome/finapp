@@ -13,25 +13,18 @@ export function useAmount() {
   const walletsStore = useWalletsStore()
   const trnsStore = useTrnsStore()
 
-  function getAmountInBaseRate({ amount, currencyCode, noFormat }: {
+  function getAmountInBaseRate({ amount, currencyCode }: {
     amount: number
     currencyCode: CurrencyCode
-    noFormat?: boolean
   }, { precision }: { precision?: number } = {}) {
-    const rates = currenciesStore.rates
-    const baseCurrencyCode = currenciesStore.base
-
     const amountInBaseRate = getAmountInRate({
       amount,
-      baseCurrencyCode,
+      baseCurrencyCode: currenciesStore.base,
       currencyCode,
-      rates,
+      rates: currenciesStore.rates,
     })
 
-    if (noFormat)
-      return `${amountInBaseRate}`
-
-    return formatAmount(+amountInBaseRate, baseCurrencyCode, { precision })
+    return formatAmount(amountInBaseRate, currenciesStore.base, { precision })
   }
 
   const baseCurrencyCode = computed(() => currenciesStore.base)

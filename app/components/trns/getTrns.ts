@@ -11,10 +11,10 @@ export function filterTrnsIds(props: TrnsGetterProps) {
   const walletsSet = props.walletsIds?.length ? new Set(props.walletsIds) : null
   const categoriesSet = props.categoriesIds?.length ? new Set(props.categoriesIds) : null
   const typesSet = Array.isArray(props.trnsTypes) ? new Set(props.trnsTypes) : null
-  const from = props.dates?.from
-  const until = props.dates?.until
+  const start = props.dates?.start
+  const end = props.dates?.end
 
-  const hasFilters = typesSet || from || until || walletsSet || categoriesSet
+  const hasFilters = typesSet || start !== undefined || end !== undefined || walletsSet || categoriesSet
 
   const result = hasFilters
     ? trnsIds.filter((id) => {
@@ -23,9 +23,9 @@ export function filterTrnsIds(props: TrnsGetterProps) {
           return false
         if (typesSet && !typesSet.has(trn.type))
           return false
-        if (from && trn.date < from)
+        if (start !== undefined && trn.date < start)
           return false
-        if (until && trn.date > until)
+        if (end !== undefined && trn.date > end)
           return false
         if (walletsSet) {
           const matchesWallet = trn.type === TrnType.Transfer

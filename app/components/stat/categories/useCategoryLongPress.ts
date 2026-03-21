@@ -30,7 +30,7 @@ export function useCategoryLongPress(
 
         const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'
         if (isDayDate && statDate.selectedInterval.value?.start) {
-          state.values.date = statDate.selectedInterval.value!.start
+          state.values.date = statDate.selectedInterval.value.start
         }
         else {
           state.values.date = Date.now()
