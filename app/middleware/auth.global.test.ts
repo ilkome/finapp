@@ -1,8 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// ---------------------------------------------------------------------------
-// Shared mock state (hoisted so vi.mock factories can reference them)
-// ---------------------------------------------------------------------------
 const {
   clearAuthCookieMock,
   getSessionMock,
@@ -31,9 +28,6 @@ const {
   }
 })
 
-// ---------------------------------------------------------------------------
-// Module mocks
-// ---------------------------------------------------------------------------
 vi.mock('~/components/demo/useDemo', () => ({
   useDemo: () => ({ isDemo: isDemoRef }),
 }))
@@ -50,9 +44,6 @@ vi.mock('~/utils/logger', () => ({
   createLogger: () => ({ error: vi.fn(), info: vi.fn(), warn: vi.fn() }),
 }))
 
-// ---------------------------------------------------------------------------
-// Nuxt auto-import stubs
-// ---------------------------------------------------------------------------
 vi.stubGlobal('defineNuxtRouteMiddleware', (fn: any) => fn)
 vi.stubGlobal('navigateTo', navigateToMock)
 vi.stubGlobal('navigator', { onLine: true })
@@ -63,9 +54,6 @@ vi.stubGlobal('getSafeRedirectPath', (value: unknown) => {
   return '/dashboard'
 })
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 function createRoute(path: string, query: Record<string, string> = {}) {
   const qs = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
   return { fullPath: qs ? `${path}?${qs}` : path, path, query }
@@ -87,11 +75,6 @@ async function loadMiddleware(): Promise<MiddlewareFn> {
   return middleware
 }
 
-// ---------------------------------------------------------------------------
-// Tests
-// ---------------------------------------------------------------------------
-// SPA mode — all code paths are client-side.
-
 describe('auth.global middleware', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -99,8 +82,6 @@ describe('auth.global middleware', () => {
     isDemoRef.value = false
     hasAuthCookieMock.mockReturnValue(false)
   })
-
-  // --- OTT handling ---
 
   describe('oTT handling', () => {
     it('redirects OTT from arbitrary path to /auth/callback', async () => {
@@ -122,8 +103,6 @@ describe('auth.global middleware', () => {
     })
   })
 
-  // --- /auth/callback passthrough ---
-
   describe('/auth/callback passthrough', () => {
     it('skips all auth checks', async () => {
       const middleware = await loadMiddleware()
@@ -134,8 +113,6 @@ describe('auth.global middleware', () => {
       expect(result).toBeUndefined()
     })
   })
-
-  // --- Demo mode ---
 
   describe('demo mode', () => {
     beforeEach(() => {
@@ -164,8 +141,6 @@ describe('auth.global middleware', () => {
       expect(result).toBeUndefined()
     })
   })
-
-  // --- Client: with auth cookie ---
 
   describe('client: with auth cookie', () => {
     beforeEach(() => {
@@ -217,13 +192,11 @@ describe('auth.global middleware', () => {
       getSessionMock.mockResolvedValueOnce({ data: { user: null } })
       const middleware = await loadMiddleware()
 
-      // First visit: session expired → clearCookie + redirect
       await middleware(createRoute('/dashboard'))
       await flushPromises()
       expect(clearAuthCookieMock).toHaveBeenCalled()
       expect(getSessionMock).toHaveBeenCalledOnce()
 
-      // Simulate re-login: cookie is back, next navigation should call getSession again
       getSessionMock.mockResolvedValue({ data: { user: { id: 'u2' } } })
       await middleware(createRoute('/settings'))
 
@@ -234,20 +207,16 @@ describe('auth.global middleware', () => {
       getSessionMock.mockRejectedValueOnce(new Error('network'))
       const middleware = await loadMiddleware()
 
-      // First call: getSession fails
       await middleware(createRoute('/dashboard'))
       await flushPromises()
       expect(getSessionMock).toHaveBeenCalledOnce()
 
-      // Second call: sessionInitialized was reset, so getSession fires again
       getSessionMock.mockResolvedValue({ data: { user: { id: 'u1' } } })
       await middleware(createRoute('/settings'))
 
       expect(getSessionMock).toHaveBeenCalledTimes(2)
     })
   })
-
-  // --- Client: no auth cookie ---
 
   describe('client: no auth cookie', () => {
     it('passes through /login without verification', async () => {
@@ -302,8 +271,6 @@ describe('auth.global middleware', () => {
       })
     })
   })
-
-  // --- Offline scenarios ---
 
   describe('offline', () => {
     beforeEach(() => {

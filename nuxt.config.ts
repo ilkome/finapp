@@ -28,10 +28,6 @@ export default defineNuxtConfig({
     },
   },
 
-  experimental: {
-    // viewTransition: true,
-  },
-
   fonts: {
     defaults: {
       subsets: ['cyrillic', 'latin', 'latin-ext'],

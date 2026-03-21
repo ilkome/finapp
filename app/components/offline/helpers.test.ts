@@ -10,7 +10,6 @@ import {
 } from '~/components/offline/helpers'
 import { OfflineEntityType } from '~/components/offline/types'
 
-// Mock localforage
 const store = new Map<string, any>()
 
 vi.mock('localforage', () => ({
@@ -186,7 +185,6 @@ describe('cross-entity isolation', () => {
     await pushOfflineOp({ entity: OfflineEntityType.Trns, id: 'id1', type: 'delete' })
 
     const queue = await getAllOfflineOps()
-    // trns create+delete collapsed to nothing, wallets create remains
     expect(queue).toHaveLength(1)
     expect(queue[0]!.entity).toBe(OfflineEntityType.Wallets)
   })

@@ -4,8 +4,6 @@ import type { Range, StatDateParams } from '~/components/date/types'
 
 import { computeDateRange, defaultStatDateParams, parseStatDateQueryParams } from './statDateParams'
 
-// --- parseStatDateQueryParams ---
-
 describe('parseStatDateQueryParams', () => {
   const base: StatDateParams = { ...defaultStatDateParams }
 
@@ -88,8 +86,6 @@ describe('parseStatDateQueryParams', () => {
   })
 })
 
-// --- computeDateRange ---
-
 describe('computeDateRange', () => {
   const now = new Date('2024-06-15T12:00:00').getTime()
   const maxRange: Range = {
@@ -133,7 +129,6 @@ describe('computeDateRange', () => {
 
     const result = computeDateRange(params, maxRange, now)
     expect(result.start).toBe(maxRange.start)
-    // end should be end of current month, not maxRange.end
     expect(result.end).toBeGreaterThanOrEqual(now)
   })
 
@@ -168,7 +163,6 @@ describe('computeDateRange', () => {
     const range0 = computeDateRange(params0, maxRange, now)
     const range1 = computeDateRange(params1, maxRange, now)
 
-    // positive offset subtracts time (goes back)
     expect(range1.start).toBeLessThan(range0.start)
     expect(range1.end).toBeLessThan(range0.end)
   })
@@ -189,8 +183,6 @@ describe('computeDateRange', () => {
     expect(result).toEqual(customDate)
   })
 })
-
-// --- defaultStatDateParams ---
 
 describe('defaultStatDateParams', () => {
   it('has expected defaults', () => {

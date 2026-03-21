@@ -3,9 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { OfflineOp } from '~/components/offline/types'
 
-// ---------------------------------------------------------------------------
-// Mocks — entity-specific (offline helpers)
-// ---------------------------------------------------------------------------
 const getOfflineOpsByEntityMock = vi.fn<() => Promise<OfflineOp[]>>().mockResolvedValue([])
 const pushOfflineOpMock = vi.fn()
 const removeOfflineOpMock = vi.fn().mockResolvedValue(undefined)
@@ -29,9 +26,6 @@ beforeEach(async () => {
   await localforage.clear()
 })
 
-// ---------------------------------------------------------------------------
-// mergeOfflineOps
-// ---------------------------------------------------------------------------
 describe('mergeOfflineOps', () => {
   it('applies pending updates and deletes on top of server data', async () => {
     const { mergeOfflineOps } = await import('~/composables/useStoreSync')
@@ -49,11 +43,8 @@ describe('mergeOfflineOps', () => {
 
     const result = await mergeOfflineOps(serverData, 'wallets')
 
-    // w1 overwritten with pending update data
     expect(result.w1).toEqual({ name: 'Updated' })
-    // w2 deleted
     expect(result).not.toHaveProperty('w2')
-    // w3 unchanged
     expect(result.w3).toEqual({ color: '#aaa', name: 'Untouched' })
   })
 
@@ -71,7 +62,6 @@ describe('mergeOfflineOps', () => {
   it('removes stale local_ IDs not in pending queue', async () => {
     const { mergeOfflineOps } = await import('~/composables/useStoreSync')
 
-    // No pending ops for local_stale
     getOfflineOpsByEntityMock.mockResolvedValueOnce([
       { data: { name: 'New' }, entity: 'wallets', id: 'local_fresh', timestamp: 1, type: 'create' },
     ] satisfies OfflineOp[])
@@ -90,9 +80,6 @@ describe('mergeOfflineOps', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// handleMutationResult — ID remap
-// ---------------------------------------------------------------------------
 describe('handleMutationResult', () => {
   it('remaps local_id → convexId on successful create', async () => {
     const { handleMutationResult, unblockPersist } = await import('~/composables/useStoreSync')
@@ -112,15 +99,11 @@ describe('handleMutationResult', () => {
       mutation: Promise.resolve('convex_w1'),
     })
 
-    // local_abc replaced with convex_w1
     expect(items.value).not.toHaveProperty('local_abc')
     expect(items.value).toHaveProperty('convex_w1')
     expect(items.value!.convex_w1).toEqual({ name: 'Cash' })
-    // existing untouched
     expect(items.value).toHaveProperty('existing')
-    // returns remap info
     expect(remap).toEqual({ convexId: 'convex_w1', localId: 'local_abc' })
-    // persisted to localforage
     expect(await localforage.getItem('finapp.wallets')).toEqual(items.value)
   })
 
@@ -141,12 +124,9 @@ describe('handleMutationResult', () => {
       mutation: Promise.resolve('convex_w1'),
     })
 
-    // Remap still happens
     expect(items.value).toHaveProperty('convex_w1')
-    // But not persisted
     expect(await localforage.getItem('finapp.wallets')).toBeNull()
 
-    // Cleanup
     const { unblockPersist } = await import('~/composables/useStoreSync')
     unblockPersist()
   })
@@ -164,11 +144,9 @@ describe('handleMutationResult', () => {
       mutation: Promise.reject(new Error('network')),
     })
 
-    // Toast shown with error color
     expect(toastAddMock).toHaveBeenCalledWith(
       expect.objectContaining({ color: 'error' }),
     )
-    // Offline op NOT removed (so it can be retried)
     expect(removeOfflineOpMock).not.toHaveBeenCalled()
   })
 
@@ -189,9 +167,6 @@ describe('handleMutationResult', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// pushSaveOp / pushDeleteOp
-// ---------------------------------------------------------------------------
 describe('pushSaveOp', () => {
   it('does nothing in demo mode', async () => {
     const { pushSaveOp } = await import('~/composables/useStoreSync')

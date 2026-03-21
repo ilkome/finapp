@@ -30,7 +30,6 @@ export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
 }
 
 export const config: EChartsOption['baseOption'] = {
-  // Grid
   grid: {
     bottom: '0',
     containLabel: true,
@@ -39,7 +38,6 @@ export const config: EChartsOption['baseOption'] = {
     top: '5',
   },
 
-  // Tooltip
   tooltip: {
     axisPointer: {
       animation: false,
@@ -51,7 +49,6 @@ export const config: EChartsOption['baseOption'] = {
     trigger: 'axis',
   },
 
-  // xAxis
   xAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
@@ -75,12 +72,11 @@ export const config: EChartsOption['baseOption'] = {
     type: 'category',
   },
 
-  // yAxis
   yAxis: {
     axisLabel: {
       color: 'var(--chart-label)',
       formatter: (n: number) => formatCompactChartAmount(n),
-      show: false, // TODO: config
+      show: false,
     },
     axisLine: {
       lineStyle: {

@@ -11,13 +11,11 @@ const emit = defineEmits<{
   closed: []
 }>()
 
-// Settings
 const settings = {
   pixelOffsetToStartClosing: 20,
   pixelsNeedToDragForClose: 60,
 }
 
-// Ref Elements
 const drag = ref<HTMLElement | null>(null)
 const containerRef = ref<HTMLElement | null>(null)
 const handlerRef = ref<HTMLElement | null>(null)
@@ -44,14 +42,8 @@ const {
   settings,
 })
 
-/**
- * Body scroll lock
- */
 const isBodyLocked = useScrollLock(document.body)
 
-/**
- * Run init when mounted or isShow changed
- */
 watch(
   () => props.isShow,
   (value) => {
@@ -94,7 +86,6 @@ const dragClasses = computed(() => [
     :class="wrapClasses"
     class="fixed inset-0 z-50 size-full overflow-hidden select-none"
   >
-    <!-- Overlay -->
     <div
       :class="overflowClasses"
       :style="overlayStyles"
@@ -102,7 +93,6 @@ const dragClasses = computed(() => [
       @click="close()"
     />
 
-    <!-- Drag -->
     <div
       ref="drag"
       :class="dragClasses"

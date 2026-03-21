@@ -31,7 +31,6 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
     class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden transition-all duration-300 ease-in-out sm:block"
   >
     <div class="relative h-full overflow-hidden overflow-y-auto overscroll-contain">
-      <!-- Small menu -->
       <LayoutSidebarMenu
         :isShowText="false"
         :class="{ 'md:hidden': props.isShowSidebar }"

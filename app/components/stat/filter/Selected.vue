@@ -16,7 +16,6 @@ const itemClasses = 'bg-item-3 rounded-sm'
 
 <template>
   <div class="flex gap-2">
-    <!-- Wallets -->
     <template v-if="props.isShowWallets">
       <WalletsItem
         v-for="walletId in filter?.walletsIds?.value"
@@ -31,7 +30,6 @@ const itemClasses = 'bg-item-3 rounded-sm'
       />
     </template>
 
-    <!-- Categories -->
     <template v-if="props.isShowCategories">
       <CategoriesItem
         v-for="categoryId in filter?.categoriesIds?.value"

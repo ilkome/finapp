@@ -17,14 +17,8 @@ vi.stubGlobal('shallowRef', shallowRef)
 vi.stubGlobal('watch', watch)
 vi.stubGlobal('defineStore', defineStore)
 
-// ---------------------------------------------------------------------------
-// 2. VueUse auto-imports — synchronous for test predictability
-// ---------------------------------------------------------------------------
 vi.stubGlobal('useDebounceFn', (fn: (...args: any[]) => any) => fn)
 
-// ---------------------------------------------------------------------------
-// 3. Nuxt auto-imports
-// ---------------------------------------------------------------------------
 export const toastAddMock = vi.fn()
 
 vi.stubGlobal('useToast', () => ({ add: toastAddMock }))
@@ -32,9 +26,6 @@ vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
 vi.stubGlobal('useNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
 vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
 
-// ---------------------------------------------------------------------------
-// 4. Project auto-imports (utils/)
-// ---------------------------------------------------------------------------
 vi.stubGlobal('asConvexId', (id: string) => id)
 vi.stubGlobal('isLocalId', (id: string) => id.startsWith('local_'))
 vi.stubGlobal('cleanupFrontendIds', <T>(data: Record<string, T>, pendingUpdates: Record<string, T>) => {
@@ -46,9 +37,6 @@ vi.stubGlobal('cleanupFrontendIds', <T>(data: Record<string, T>, pendingUpdates:
   return result
 })
 
-// ---------------------------------------------------------------------------
-// 5. Common module mocks
-// ---------------------------------------------------------------------------
 vi.mock('~/components/demo/useDemo', () => ({
   useDemo: () => ({ isDemo: { value: false } }),
 }))

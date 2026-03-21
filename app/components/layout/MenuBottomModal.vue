@@ -21,7 +21,6 @@ const { isDemo } = useDemo()
 
       <div class="bottomSheetContent">
         <div class="bottomSheetContentInside px-3 pt-4 pb-2">
-          <!-- User -->
           <div
             v-if="!isDemo"
             class="border-item-6 mx-2 border-b pt-2 pb-2"

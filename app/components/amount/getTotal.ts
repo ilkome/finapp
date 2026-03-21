@@ -67,7 +67,6 @@ export function getTotal(props: TotalProps): TotalReturns {
     if (!trn)
       continue
 
-    // Transaction
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
       if (trn.categoryId === 'adjustment') {
         const wallet = walletsItems[trn.walletId]
@@ -84,7 +83,6 @@ export function getTotal(props: TotalProps): TotalReturns {
         expense += sum
     }
 
-    // Transfer
     else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
       const incomeWallet = walletsItems[trn.incomeWalletId]
       const expenseWallet = walletsItems[trn.expenseWalletId]
@@ -94,7 +92,6 @@ export function getTotal(props: TotalProps): TotalReturns {
       const incomeAmount = getAmount(trn.incomeAmount, incomeWallet.currency)
       const expenseAmount = getAmount(trn.expenseAmount, expenseWallet.currency)
 
-      // Include only selected wallets
       if (walletsSet) {
         if (walletsSet.has(trn.incomeWalletId))
           incomeTransfers += incomeAmount
@@ -109,7 +106,6 @@ export function getTotal(props: TotalProps): TotalReturns {
     }
   }
 
-  // Total
   const sum = income - expense
   const sumTransfers = incomeTransfers - expenseTransfers
 
