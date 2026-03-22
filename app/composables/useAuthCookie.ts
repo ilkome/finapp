@@ -15,7 +15,8 @@ export function hasAuthCookie(): boolean {
 const secureSuffix = globalThis.location?.protocol === 'https:' ? ';Secure' : ''
 
 export function setAuthCookie(uid: string) {
-  document.cookie = `finapp.localAuthUid=${encodeURIComponent(uid)};path=/;max-age=31536000;SameSite=Lax${secureSuffix}`
+  const ONE_YEAR = 60 * 60 * 24 * 365
+  document.cookie = `finapp.localAuthUid=${encodeURIComponent(uid)};path=/;max-age=${ONE_YEAR};SameSite=Lax${secureSuffix}`
 }
 
 export function clearAuthCookie() {
