@@ -33,7 +33,6 @@ const { isDemo } = useDemo()
           <div
             v-if="isDemo"
             class="px-3 py-2"
-            @click="userStore.signOut"
           >
             <UiButtonAccent
               rounded
