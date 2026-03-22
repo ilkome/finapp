@@ -21,11 +21,12 @@ async function validateParentId(ctx: MutationCtx, parentId: Id<'categories'> | 0
 }
 
 async function validateNameUniqueness(ctx: MutationCtx, name: string, parentId: Id<'categories'> | 0, userId: string, excludeId?: Id<'categories'>) {
-  const duplicates = await ctx.db
+  const duplicate = await ctx.db
     .query('categories')
     .withIndex('by_user_name_parent', q => q.eq('userId', userId).eq('name', name).eq('parentId', parentId))
-    .collect()
-  if (duplicates.some(c => c._id !== excludeId))
+    .filter(q => excludeId ? q.neq(q.field('_id'), excludeId) : true)
+    .first()
+  if (duplicate)
     throw new Error('Category with this name already exists')
 }
 

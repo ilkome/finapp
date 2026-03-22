@@ -47,8 +47,13 @@ export const fetchAndSaveRates = internalAction({
     const res = await fetch(
       `https://openexchangerates.org/api/latest.json?app_id=${appId}`,
     )
-    const data = await res.json()
 
+    if (!res.ok) {
+      console.error(`Rates fetch failed: ${res.status} ${res.statusText}`)
+      return
+    }
+
+    const data = await res.json()
     const today = new Date().toISOString().slice(0, 10)
 
     await ctx.runMutation(internal.rates.saveRates, {
