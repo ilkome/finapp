@@ -4,6 +4,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { maxHeight = '60vh' } = defineProps<{
@@ -33,10 +34,10 @@ const walletId = computed(() =>
     </div>
 
     <TrnFormMainInput
-      v-if="trnsFormStore.values.trnType !== 2"
+      v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
       :amount="trnsFormStore.values.amount[trnsFormStore.activeAmountIdx]"
       :amountRaw="trnsFormStore.values.amountRaw[trnsFormStore.activeAmountIdx]"
-      :highlight="trnsFormStore.values.trnType === 0 ? 'expense' : 'income'"
+      :highlight="trnsFormStore.values.trnType === TrnType.Expense ? 'expense' : 'income'"
       :isShowSum="trnsFormStore.shouldShowSum()"
       class="px-3 pb-2"
       @change="trnsFormStore.onChangeAmount"
@@ -45,7 +46,7 @@ const walletId = computed(() =>
     <div class="grid gap-3 px-3 pb-6">
       <!-- Selected -->
       <div
-        v-if="trnsFormStore.values.trnType !== 2"
+        v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
         class="grid grid-cols-2 gap-2"
       >
         <TrnFormSelectorWallet
@@ -67,7 +68,7 @@ const walletId = computed(() =>
       </div>
 
       <TrnFormMainAmountTransfer
-        v-if="trnsFormStore.values.trnType === 2"
+        v-if="trnsFormStore.values.trnType === TrnType.Transfer"
         :bottomSheetStyle="{ maxHeight }"
       />
 

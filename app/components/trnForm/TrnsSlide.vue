@@ -37,7 +37,8 @@ const trnsIds = computed(() => {
     if (trnsFormStore.values.walletId)
       walletsIds.push(trnsFormStore.values.walletId)
 
-    categoriesIds = categoriesStore.getChildrenIdsOrParent(trnsFormStore.values.categoryId!)
+    if (trnsFormStore.values.categoryId)
+      categoriesIds = categoriesStore.getChildrenIdsOrParent(trnsFormStore.values.categoryId)
   }
 
   return trnsStore.getStoreTrnsIds({

@@ -3,6 +3,7 @@ import Swiper from 'swiper'
 import { Pagination } from 'swiper/modules'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { TrnType } from '~/components/trns/types'
 
 import 'swiper/css'
 
@@ -10,9 +11,6 @@ const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const isShow = computed(() => trnsFormStore.ui.isShow)
 
-/**
- * Slider
- */
 const sliderRef = ref<HTMLElement | null>(null)
 const sliderObj = ref<Swiper | null>(null)
 
@@ -67,7 +65,7 @@ watch(isShow, async (v) => {
                   class="!pb-0"
                 />
                 <div
-                  v-if="trnsFormStore.values.trnType !== 2"
+                  v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
                   class="-mt-8 grid gap-2 pb-6"
                 >
                   <TrnFormSelectionCategoriesFast

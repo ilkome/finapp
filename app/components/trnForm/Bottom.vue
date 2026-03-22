@@ -17,9 +17,6 @@ const isShow = computed(() =>
   && trnsFormStore.ui.isShow,
 )
 
-/**
- * Slider
- */
 const sliderRef = ref<HTMLElement | null>(null)
 const sliderObj = ref<Swiper | null>(null)
 const maxHeight = ref('550px')
@@ -27,6 +24,8 @@ const maxHeight = ref('550px')
 let resizeObserver: ResizeObserver | null = null
 
 function setTrnFormHeight() {
+  resizeObserver?.disconnect()
+
   const el = document.querySelector('.getHeight')
 
   resizeObserver = new ResizeObserver((entries) => {
@@ -47,7 +46,6 @@ onBeforeUnmount(() => {
 function init() {
   if (!sliderObj.value) {
     sliderObj.value = new Swiper(sliderRef.value!, {
-      // centeredSlides: true,
       init: false,
       initialSlide: 1,
       longSwipesMs: 60,
