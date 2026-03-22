@@ -60,7 +60,8 @@ if (!props.isSort) {
   onLongPress(
     longPressRef,
     () => {
-      activeCreditView.value = creditViews[creditViews.findIndex(i => i === activeCreditView.value) + 1]
+      const nextIndex = (creditViews.findIndex(i => i === activeCreditView.value) + 1) % creditViews.length
+      activeCreditView.value = creditViews[nextIndex]
     },
   )
 }
