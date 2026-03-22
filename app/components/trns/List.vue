@@ -98,9 +98,6 @@ const filteredByTypeIds = computed(() => {
     if (filterBy.value === 'adjustment')
       return trnsStore.items?.[id]?.categoryId === 'adjustment'
 
-    if (filterBy.value === 'transfer')
-      return trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
-
     return trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
   })
 })
