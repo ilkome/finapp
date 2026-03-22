@@ -10,7 +10,9 @@ const props = defineProps<{
   isShowSidebar?: boolean
 }>()
 
-const emit = defineEmits(['toggleSidebar'])
+const emit = defineEmits<{
+  toggleSidebar: []
+}>()
 
 const route = useRoute()
 const userStore = useUserStore()
