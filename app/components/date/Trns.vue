@@ -14,7 +14,7 @@ const formattedDate = computed(() => {
 
 <template>
   <div v-if="formattedDate" class="flex items-center gap-2">
-    <div class="_w-10 _text-center font-secondary text-3xl font-semibold">
+    <div class="font-secondary text-3xl font-semibold">
       {{ formattedDate.day }}
     </div>
 
