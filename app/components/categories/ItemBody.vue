@@ -12,6 +12,7 @@ const props = defineProps<{
   insideClasses?: string
   isShowParent?: boolean
   lineWidth?: number
+  to?: string
 }>()
 
 const emit = defineEmits<{
@@ -32,6 +33,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
     :class="props.class"
     :lineWidth="props.lineWidth"
     :insideClasses="`min-h-[46px] ${props.insideClasses}`"
+    :to="props.to"
     @click="(e: Event) => emit('click', e)"
   >
     <template #leftIcon>

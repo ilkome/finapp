@@ -9,7 +9,6 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
-const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
@@ -85,9 +84,11 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
           />
         </UiActionButton>
 
-        <UiActionButton :ariaLabel="$t('categories.new')" @click="router.push('/categories/new')">
-          <Icon name="lucide:plus" size="24" />
-        </UiActionButton>
+        <NuxtLink to="/categories/new">
+          <UiActionButton :ariaLabel="$t('categories.new')">
+            <Icon name="lucide:plus" size="24" />
+          </UiActionButton>
+        </NuxtLink>
       </template>
     </UiHeader>
 
@@ -99,12 +100,11 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
       <UiTitleSection class="pb-4">
         {{ t('categories.new') }}
       </UiTitleSection>
-      <UiButtonAccent
-        rounded
-        @click="router.push('/categories/new')"
-      >
-        {{ t('categories.new') }}
-      </UiButtonAccent>
+      <NuxtLink to="/categories/new">
+        <UiButtonAccent rounded>
+          {{ t('categories.new') }}
+        </UiButtonAccent>
+      </NuxtLink>
     </div>
 
     <!-- List -->
@@ -123,7 +123,7 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
         }"
         :getContextMenuItems="getCategoryContextMenuItems"
         :insideClasses="categoriesView === 'grid' ? 'bg-item-2' : ''"
-        @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
+        :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
       />
     </div>
 

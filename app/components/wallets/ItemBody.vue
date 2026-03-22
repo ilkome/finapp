@@ -17,6 +17,7 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
+  to?: string
   wallet: WalletItemComputed
   walletId: WalletId
 }>()
@@ -74,6 +75,7 @@ if (!props.isSort) {
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ?? ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"
+    :to="props.to"
     :class="classes"
     @click="emit('click', props.walletId)"
   >

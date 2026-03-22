@@ -12,7 +12,6 @@ import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
-const router = useRouter()
 
 useSeoMeta({
   ogTitle: t('wallets.name'),
@@ -70,9 +69,11 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
 
       <template #actions>
-        <UiActionButton :ariaLabel="$t('wallets.new')" @click="router.push('/wallets/new')">
-          <Icon name="lucide:plus" size="24" />
-        </UiActionButton>
+        <NuxtLink to="/wallets/new">
+          <UiActionButton :ariaLabel="$t('wallets.new')">
+            <Icon name="lucide:plus" size="24" />
+          </UiActionButton>
+        </NuxtLink>
 
         <BottomSheetOrDropdown
           v-if="walletsStore.sortedIds.length > 1"
@@ -109,12 +110,11 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       <UiTitleSection class="pb-4">
         {{ t('wallets.new') }}
       </UiTitleSection>
-      <UiButtonAccent
-        rounded
-        @click="router.push('/wallets/new')"
-      >
-        {{ t('wallets.new') }}
-      </UiButtonAccent>
+      <NuxtLink to="/wallets/new">
+        <UiButtonAccent rounded>
+          {{ t('wallets.new') }}
+        </UiButtonAccent>
+      </NuxtLink>
     </div>
 
     <!-- Content -->

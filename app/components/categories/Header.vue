@@ -5,12 +5,6 @@ const props = defineProps<{
   category: CategoryItem
   parentCategory?: CategoryItem
 }>()
-
-const router = useRouter()
-
-function onParentClick() {
-  router.push(`/categories/${props.category.parentId}`)
-}
 </script>
 
 <template>
@@ -38,12 +32,12 @@ function onParentClick() {
           •
         </div>
 
-        <div
-          class="flex items-center gap-2 rounded-lg px-3 py-1 hover:bg-(--item-5)"
-          @click="onParentClick"
+        <NuxtLink
+          :to="`/categories/${props.category.parentId}`"
+          class="flex items-center gap-2 rounded-lg px-3 py-1 no-underline text-inherit hover:bg-(--item-5)"
         >
           {{ props.parentCategory.name }}
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </UiHeaderTitle>
