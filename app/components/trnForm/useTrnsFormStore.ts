@@ -42,7 +42,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     incomeWalletId: null,
     transferType: 'expense',
     trnId: null,
-    trnType: 0,
+    trnType: TrnType.Expense,
     walletId: null,
   })
 
@@ -68,9 +68,17 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       : values.transferType === 'expense' ? 1 : 2,
   )
 
+  function setAmountAt(idx: number, raw: string) {
+    values.amount[idx] = evaluateExpression(raw)
+    values.amountRaw[idx] = formatInput(raw)
+  }
+
+  function syncAmountRawAt(idx: number) {
+    values.amountRaw[idx] = formatInput(values.amount[idx])
+  }
+
   function onChangeAmount(amountRaw: string) {
-    values.amount[activeAmountIdx.value] = evaluateExpression(amountRaw)
-    values.amountRaw[activeAmountIdx.value] = formatInput(amountRaw)
+    setAmountAt(activeAmountIdx.value, amountRaw)
   }
 
   function onClickCalculator(key: CalculatorKey) {
@@ -116,7 +124,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.incomeWalletId = null
     values.transferType = 'expense'
     values.trnId = null
-    values.trnType = 0
+    values.trnType = TrnType.Expense
     values.walletId = null
 
     ui.value = {
@@ -138,7 +146,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.trnId = null
 
     if (props.action === 'create') {
-      values.trnType = 0
+      values.trnType = TrnType.Expense
       if (!values.walletId || !props.walletsIds.includes(values.walletId))
         values.walletId = props.walletId ?? (props.trn && 'walletId' in props.trn ? props.trn.walletId : undefined) ?? props.walletsIds[0] ?? null
       if (!values.categoryId || !props.categoriesIds.includes(values.categoryId as CategoryId))
@@ -207,20 +215,13 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function onChangeCountSum() {
-    // Transfer
     if (values.trnType === TrnType.Transfer) {
-      values.amountRaw[1] = formatInput(values.amount[1])
-      values.amountRaw[2] = formatInput(values.amount[2])
+      syncAmountRawAt(1)
+      syncAmountRawAt(2)
       return
     }
 
-    // Transaction
-    if (values.amount[0] !== 0) {
-      values.amountRaw[0] = formatInput(values.amount[0])
-      return
-    }
-
-    values.amountRaw[0] = formatInput(0)
+    syncAmountRawAt(0)
   }
 
   function openFormForEdit(trnId: TrnId) {

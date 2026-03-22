@@ -8,8 +8,11 @@ export function validate(values: Transaction | Transfer): string | null {
   if (!result.success) {
     const issue = result.error.issues[0]
 
-    if (values.type === TrnType.Transfer)
+    if (values.type === TrnType.Transfer) {
+      if (issue?.path?.includes('incomeWalletId') || issue?.path?.includes('expenseWalletId'))
+        return 'trnForm.errors.selectWallet'
       return 'trnForm.errors.transferAmountEmpty'
+    }
 
     if (issue?.path?.includes('amount'))
       return 'trnForm.errors.amountEmpty'
