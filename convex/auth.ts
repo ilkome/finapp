@@ -10,7 +10,7 @@ import { components } from './_generated/api'
 import authConfig from './auth.config'
 
 const siteUrl = process.env.CONVEX_SITE_URL!
-const appUrl = process.env.APP_URL || 'http://localhost:3050'
+const appUrl = process.env.APP_URL!
 
 export const authComponent = createClient<DataModel>(components.betterAuth)
 
