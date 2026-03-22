@@ -279,8 +279,12 @@ export async function replayTrnOps(ops: OfflineOp[], remapIds: Map<string, strin
 
     if (isTrnOrphaned(remapped, context.walletsItems, context.categoriesItems)) {
       orphanCount++
-      try { await actions.removeOfflineOp(op.entity, op.id) }
-      catch (e) { logger.warn(`failed to remove orphan op ${op.entity}/${op.id}:`, e) }
+      try {
+        await actions.removeOfflineOp(op.entity, op.id)
+      }
+      catch (e) {
+        logger.warn(`failed to remove orphan op ${op.entity}/${op.id}:`, e)
+      }
       continue
     }
 

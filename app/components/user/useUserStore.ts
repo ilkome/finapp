@@ -177,7 +177,7 @@ export const useUserStore = defineStore('user', () => {
 
     if (isDemo.value) {
       await localforage.clear()
-      isDemo.value = null
+      isDemo.value = undefined
       clearAuthCookie()
       setSessionInitialized(false)
       window.location.href = '/login'
