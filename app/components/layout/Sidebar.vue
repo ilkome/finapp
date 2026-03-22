@@ -13,7 +13,6 @@ const props = defineProps<{
 const emit = defineEmits(['toggleSidebar'])
 
 const route = useRoute()
-const router = useRouter()
 const userStore = useUserStore()
 const { isDemo } = useDemo()
 const { t } = useI18n()
@@ -94,19 +93,18 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
                 isShowCreditLimit
                 isShowRate
                 isShowIcon
-                @click="() => walletId === route.params.id ? router.push('/dashboard') : router.push(`/wallets/${walletId}`)"
+                :to="walletId === route.params.id ? '/dashboard' : `/wallets/${walletId}`"
               />
 
               <div
                 v-if="walletsIdsSorted.length === 0"
                 class="flex-center flex-col py-4"
               >
-                <UiButtonAccent
-                  rounded
-                  @click="router.push('/wallets/new')"
-                >
-                  {{ t('wallets.new') }}
-                </UiButtonAccent>
+                <NuxtLink to="/wallets/new">
+                  <UiButtonAccent rounded>
+                    {{ t('wallets.new') }}
+                  </UiButtonAccent>
+                </NuxtLink>
               </div>
             </template>
           </WalletsList>

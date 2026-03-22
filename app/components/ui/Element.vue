@@ -3,6 +3,7 @@ const props = defineProps<{
   insideClasses?: string
   isActive?: boolean
   lineWidth?: number
+  to?: string
 }>()
 
 const emit = defineEmits<{
@@ -19,7 +20,12 @@ const elementClasses = computed(() => cn(
 </script>
 
 <template>
-  <div @click="(e: Event) => emit('click', e)">
+  <component
+    :is="props.to ? resolveComponent('NuxtLink') : 'div'"
+    :to="props.to"
+    :class="{ uiElementLink: props.to }"
+    @click="(e: Event) => emit('click', e)"
+  >
     <div :class="elementClasses">
       <div
         v-if="slots.leftIcon"
@@ -43,11 +49,15 @@ const elementClasses = computed(() => cn(
       }"
       class="mx-2 h-px bg-(--item-5)"
     />
-  </div>
+  </component>
 </template>
 
 <style>
 @reference '../../assets/css/main.css';
+
+a.uiElementLink {
+  @apply no-underline text-inherit;
+}
 
 [data-state='open'] > .uiElement {
   @apply !bg-item-4;

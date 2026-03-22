@@ -193,7 +193,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
         :categoriesItemProps="{
           class: 'group',
         }"
-        @click="(categoryId: CategoryId) => router.push(`/categories/${categoryId}`)"
+        :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
       />
     </div>
 

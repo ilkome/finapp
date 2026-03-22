@@ -15,9 +15,9 @@ if (Object.keys(route.query).length > 0)
   <div class="p-4">
     <h1>{{ t('actionError.title') }}</h1>
     <pre>{{ error }}</pre>
-    <h1 @click="router.push('/')">
-      {{ t('actionError.goHome') }}
-    </h1>
+    <NuxtLink to="/" class="text-inherit">
+      <h1>{{ t('actionError.goHome') }}</h1>
+    </NuxtLink>
     <slot />
   </div>
 </template>

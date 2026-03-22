@@ -12,7 +12,6 @@ const emit = defineEmits<{
   delete: [walletId: WalletId]
 }>()
 
-const router = useRouter()
 const walletsStore = useWalletsStore()
 
 const { getWalletContextMenuItems } = useWalletContextMenu({
@@ -31,6 +30,6 @@ const { getWalletContextMenuItems } = useWalletContextMenu({
     isShowCreditLimit
     isShowIcon
     isShowRate
-    @click="router.push(`/wallets/${props.walletId}`)"
+    :to="`/wallets/${props.walletId}`"
   />
 </template>

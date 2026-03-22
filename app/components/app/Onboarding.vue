@@ -4,7 +4,6 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
-const router = useRouter()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
@@ -33,18 +32,18 @@ const introText = computed(() => {
 
       <UButton
         v-if="!walletsStore.hasItems"
+        to="/wallets/new?onboarding"
         size="xl"
         class="min-w-52 justify-center rounded-full px-8 py-3"
-        @click="router.push('/wallets/new?onboarding')"
       >
         {{ t('onboarding.actionWallet') }}
       </UButton>
 
       <UButton
         v-else-if="!categoriesStore.hasItems"
+        to="/categories/new?onboarding"
         size="xl"
         class="min-w-52 justify-center rounded-full px-8 py-3"
-        @click="router.push('/categories/new?onboarding')"
       >
         {{ t('onboarding.actionCategory') }}
       </UButton>

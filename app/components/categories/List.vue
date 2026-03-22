@@ -8,6 +8,7 @@ const props = defineProps<{
   activeItemId?: string | 0 | false | null
   categoriesItemProps?: Partial<CategoryItemProps>
   getContextMenuItems?: (categoryId: CategoryId) => any[][] | undefined
+  getTo?: (categoryId: CategoryId) => string
   ids: CategoryId[]
   insideClasses?: string
 }>()
@@ -29,6 +30,7 @@ const categoriesStore = useCategoriesStore()
       :categoryId="categoryId"
       :contextMenuItems="props.getContextMenuItems?.(categoryId)"
       :insideClasses="props.insideClasses"
+      :to="props.getTo?.(categoryId)"
       :lineWidth="1"
       v-bind="categoriesItemProps"
       @click="emit('click', categoryId)"
