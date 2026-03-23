@@ -30,11 +30,11 @@ function onSave(close: () => void) {
     @openModal="trnsFormStore.openTrnFormModal('description')"
   >
     <template #trigger>
-      <TrnFormMainCalculatorButton class="relative">
+      <TrnFormMainCalculatorButton class="relative overflow-visible">
         <Icon name="lucide:message-square" size="26" />
         <div
           v-if="trnsFormStore.values.desc"
-          class="absolute top-1 right-1 aspect-square w-2 rounded-full bg-(--ui-primary)"
+          class="absolute top-0 right-0 aspect-square w-2.5 rounded-full bg-(--ui-primary)"
         />
       </TrnFormMainCalculatorButton>
     </template>
