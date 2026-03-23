@@ -115,6 +115,7 @@ function buildChartSeries(series: ChartSeries[]) {
     <VChart
       ref="chartRef"
       :option
+      :update-options="{ notMerge: true }"
       autoresize
     >
       <template #tooltip="params">
