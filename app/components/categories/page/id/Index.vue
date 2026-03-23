@@ -24,7 +24,52 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
-const { getCategoryContextMenuItems } = useCategoryContextMenu()
+const deleteChildId = ref<CategoryId | null>(null)
+
+const deleteChildTrnsCount = computed(() => {
+  if (!deleteChildId.value)
+    return 0
+  return trnsStore.getStoreTrnsIds({
+    categoriesIds: categoriesStore.getChildrenIdsOrParent(deleteChildId.value),
+  }).length
+})
+
+const deleteChildDescText = computed(() =>
+  deleteChildTrnsCount.value > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
+)
+
+const deleteChildHighlight = computed(() =>
+  deleteChildTrnsCount.value > 0 ? t('trns.plural', deleteChildTrnsCount.value) : undefined,
+)
+
+function onClickDeleteChild(childCategoryId: CategoryId) {
+  deleteChildId.value = childCategoryId
+}
+
+async function onDeleteChildConfirm() {
+  if (!deleteChildId.value)
+    return
+
+  const childId = deleteChildId.value
+  const childTrnsIds = [...trnsStore.getStoreTrnsIds({
+    categoriesIds: categoriesStore.getChildrenIdsOrParent(childId),
+  })]
+
+  deleteChildId.value = null
+  await categoriesStore.deleteCategory(childId, childTrnsIds)
+
+  setTimeout(() => {
+    showSuccessToast(childTrnsIds.length > 0
+      ? 'categories.form.delete.okWithTrns'
+      : 'categories.form.delete.okWithoutTrns', childTrnsIds.length > 0
+      ? { length: childTrnsIds.length, trns: t('trns.plural', childTrnsIds.length) }
+      : undefined)
+  }, 300)
+}
+
+const { getCategoryContextMenuItems } = useCategoryContextMenu({
+  onDelete: childCategoryId => onClickDeleteChild(childCategoryId),
+})
 
 provide(filterKey, filter)
 
@@ -185,6 +230,15 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
       :highlight="deleteHighlight"
       @closed="isShowDeleteConfirm = false"
       @confirm="onDeleteConfirm"
+    />
+
+    <LayoutConfirmModal
+      v-if="deleteChildId"
+      :title="t('categories.form.delete.title')"
+      :description="deleteChildDescText"
+      :highlight="deleteChildHighlight"
+      @closed="deleteChildId = null"
+      @confirm="onDeleteChildConfirm"
     />
 
     <div
