@@ -49,6 +49,7 @@ const emit = defineEmits<{
     :insideClasses="props.insideClasses"
     :isShowParent="props.isShowParent"
     :lineWidth="props.lineWidth"
+    :to="props.to"
     @click="emit('click', $event)"
     @filter="emit('filter', $event)"
   />
