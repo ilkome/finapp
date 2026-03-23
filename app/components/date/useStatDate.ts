@@ -117,6 +117,11 @@ export function useStatDate({
   const minusRange = () => modifyRange(-1)
 
   function selectInterval(idx: number) {
+    if (params.value.intervalSelected === idx) {
+      params.value.intervalSelected = -1
+      return undefined
+    }
+
     params.value.intervalSelected = idx
     const interval = intervalsInRange.value[idx]
     return interval?.start
