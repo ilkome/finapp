@@ -116,6 +116,17 @@ export function useStatDate({
   const plusRange = () => modifyRange(1)
   const minusRange = () => modifyRange(-1)
 
+  function selectInterval(idx: number) {
+    params.value.intervalSelected = idx
+    const interval = intervalsInRange.value[idx]
+    return interval?.start
+  }
+
+  function setIntervalsBy(intervalsBy: Grouped['intervalsBy']) {
+    resetCustomAndMaxRangeParams()
+    params.value.intervalsBy = intervalsBy
+  }
+
   function setInterval({ intervalsBy, intervalsDuration }: Grouped) {
     resetCustomAndMaxRangeParams()
     params.value.intervalsBy = intervalsBy
@@ -133,7 +144,9 @@ export function useStatDate({
     plusRange,
     range,
     selectedInterval,
+    selectInterval,
     setInterval,
+    setIntervalsBy,
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,
