@@ -10,6 +10,7 @@ const emit = defineEmits<{
   click: [e: Event]
 }>()
 
+const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
 
 const elementClasses = computed(() => cn(
@@ -21,7 +22,7 @@ const elementClasses = computed(() => cn(
 
 <template>
   <component
-    :is="props.to ? resolveComponent('NuxtLink') : 'div'"
+    :is="props.to ? NuxtLink : 'div'"
     :to="props.to"
     :class="{ uiElementLink: props.to }"
     @click="(e: Event) => emit('click', e)"
