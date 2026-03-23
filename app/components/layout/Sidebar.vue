@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { useDemo } from '~/components/demo/useDemo'
-import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -15,8 +13,6 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
-const userStore = useUserStore()
-const { isDemo } = useDemo()
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
 
@@ -114,15 +110,6 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
       </div>
 
       <div class="absolute bottom-0 left-0 hidden w-full flex-col gap-2 md:flex">
-        <div
-          v-if="isDemo && props.isShowSidebar"
-          class="px-4"
-        >
-          <UiButtonAccent @click="userStore.signOut">
-            {{ t('demo.exit') }}
-          </UiButtonAccent>
-        </div>
-
         <UTooltip
           :text="t('app.toggleSidebar')"
           :kbds="['Meta', '\\']"

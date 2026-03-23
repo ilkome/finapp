@@ -6,6 +6,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCategoryContextMenu } from '~/components/categories/useCategoryContextMenu'
 import { useStatDate } from '~/components/date/useStatDate'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
 import { useFilter } from '~/components/stat/filter/useFilter'
@@ -23,6 +24,7 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
+const { getCategoryContextMenuItems } = useCategoryContextMenu()
 
 provide(filterKey, filter)
 
@@ -193,6 +195,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
         :categoriesItemProps="{
           class: 'group',
         }"
+        :getContextMenuItems="getCategoryContextMenuItems"
         :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
       />
     </div>
