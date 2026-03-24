@@ -26,37 +26,41 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 </script>
 
 <template>
-  <div class="flex gap-1">
-    <BottomSheetOrDropdown
-      :title="t('common.date')"
-      :isOpen="isShow"
-      isShowCloseBtn
-      @openModal="isShow = true"
-      @closeModal="isShow = false"
-    >
-      <template #trigger>
-        <UiActionButton class="text-2 grid w-full !justify-start p-2 text-left">
-          <div class="text-1 text-sm">
-            {{ formattedDate?.day }} {{ formattedDate?.month }}
-          </div>
-          <div class="font-regular text-2xs leading-none">
-            {{ formattedDate?.weekday }}
-          </div>
-        </UiActionButton>
-      </template>
-
-      <template #content="{ close }">
-        <div class="min-w-80">
-          <TrnFormCalendar :onClose="close" />
-        </div>
-      </template>
-    </BottomSheetOrDropdown>
-
+  <div class="flex items-center gap-1">
     <DateNav
+      class="grow"
       :isShowNavHome="!isToday"
       :isEnd="isToday"
       :isStart="false"
       @changeDate="changeDate"
-    />
+    >
+      <BottomSheetOrDropdown
+        :title="t('common.date')"
+        :isOpen="isShow"
+        class="grow"
+        isShowCloseBtn
+        @openModal="isShow = true"
+        @closeModal="isShow = false"
+      >
+        <template #trigger>
+          <UiActionButton class="text-2 grid h-full w-full content-center !justify-start px-2 text-left">
+            <div class="text-1 text-sm">
+              {{ formattedDate?.day }} {{ formattedDate?.month }}
+            </div>
+            <div class="font-regular text-2xs leading-none">
+              {{ formattedDate?.weekday }}
+            </div>
+          </UiActionButton>
+        </template>
+
+        <template #content="{ close }">
+          <div class="min-w-80">
+            <TrnFormCalendar :onClose="close" />
+          </div>
+        </template>
+      </BottomSheetOrDropdown>
+    </DateNav>
+
+    <slot />
   </div>
 </template>

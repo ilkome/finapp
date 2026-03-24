@@ -27,7 +27,9 @@ const walletId = computed(() =>
     </UiTitleModal>
 
     <TrnFormEditedTrn v-if="trnsFormStore.values.trnId" />
-    <TrnFormDate class="px-3 pb-0 " />
+    <TrnFormDate class="px-3 pb-1">
+      <TrnFormMainDescription />
+    </TrnFormDate>
 
     <div class="px-3 pb-2">
       <TrnFormMainTypes />

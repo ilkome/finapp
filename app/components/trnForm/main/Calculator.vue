@@ -76,8 +76,7 @@ onLongPress(
       </div>
     </div>
 
-    <div class="grid grid-rows-[auto_1fr] gap-3">
-      <TrnFormMainDescription />
+    <div class="grid grid-rows-[1fr] gap-3">
       <TrnFormMainActionSide />
     </div>
   </div>
