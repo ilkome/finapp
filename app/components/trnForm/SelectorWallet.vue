@@ -35,7 +35,7 @@ const isShow = ref(false)
         insideClasses="!min-h-[46px]"
         isShowIcon
         isShowCreditLimit
-        alt
+        compact
       />
     </template>
 

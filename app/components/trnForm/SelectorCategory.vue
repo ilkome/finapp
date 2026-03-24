@@ -29,7 +29,8 @@ const isShow = ref(false)
       <CategoriesItem
         :category="props.category"
         :categoryId="props.categoryId"
-        alt
+        stacked
+        isShowParent
         insideClasses="bg-item-3 min-h-[42px] py-2"
       />
     </template>

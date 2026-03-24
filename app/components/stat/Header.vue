@@ -40,40 +40,38 @@ const isPopoverOpen = ref(false)
     <slot name="title" />
 
     <template #actions>
-      <div class="ml-auto flex items-center gap-1">
-        <StatFilterSelector
-          v-if="filterCategories || filterWallets"
-          :isShowCategories="!!filterCategories"
-          :isShowWallets="!!filterWallets"
-        />
+      <StatFilterSelector
+        v-if="filterCategories || filterWallets"
+        :isShowCategories="!!filterCategories"
+        :isShowWallets="!!filterWallets"
+      />
 
-        <StatConfigModal
-          :isShowWallets="!!configWallets"
-        />
+      <StatConfigModal
+        :isShowWallets="!!configWallets"
+      />
 
-        <BottomSheetOrDropdown
-          v-if="$slots.popover"
-          :isOpen="isPopoverOpen"
-          isShowCloseBtn
-          @openModal="isPopoverOpen = true"
-          @closeModal="isPopoverOpen = false"
-        >
-          <template #trigger>
-            <UiActionButton :ariaLabel="$t('base.moreOptions')">
-              <Icon name="lucide:ellipsis-vertical" size="20" />
-            </UiActionButton>
-          </template>
+      <BottomSheetOrDropdown
+        v-if="$slots.popover"
+        :isOpen="isPopoverOpen"
+        isShowCloseBtn
+        @openModal="isPopoverOpen = true"
+        @closeModal="isPopoverOpen = false"
+      >
+        <template #trigger>
+          <UiActionButton :ariaLabel="$t('base.moreOptions')">
+            <Icon name="lucide:ellipsis-vertical" size="20" />
+          </UiActionButton>
+        </template>
 
-          <template #content>
-            <div class="min-w-52 p-1 pt-4 pb-3">
-              <slot
-                name="popover"
-                :close="() => isPopoverOpen = false"
-              />
-            </div>
-          </template>
-        </BottomSheetOrDropdown>
-      </div>
+        <template #content>
+          <div class="min-w-52 p-1 pt-4 pb-3">
+            <slot
+              name="popover"
+              :close="() => isPopoverOpen = false"
+            />
+          </div>
+        </template>
+      </BottomSheetOrDropdown>
     </template>
 
     <template v-if="activeTab" #selected>
@@ -96,7 +94,7 @@ const isPopoverOpen = ref(false)
             :walletId
             :wallet="walletsStore.itemsComputed?.[walletId]!"
             insideClasses="!min-h-[38px]"
-            alt
+            compact
             @click="onClickWallet(walletId)"
           />
         </div>

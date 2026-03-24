@@ -1,8 +1,22 @@
 <script setup lang="ts">
+import type { WalletId } from '~/components/wallets/types'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
+const walletsStore = useWalletsStore()
+
+const recentWallets = computed(() => {
+  const ids = walletsStore.recentWalletIds.slice(0, 5)
+  return ids.reduce((acc, id) => {
+    const wallet = walletsStore.itemsComputed[id]
+    if (wallet)
+      acc[id] = wallet
+    return acc
+  }, {} as Record<WalletId, typeof walletsStore.itemsComputed[WalletId]>)
+})
 </script>
 
 <template>
@@ -11,22 +25,18 @@ const trnsFormStore = useTrnsFormStore()
       {{ t('wallets.title') }}
     </UiTitleModal>
 
-    <WalletsList
-      v-slot="{ walletsItemsLimited }"
-      :limit="5"
-      class="grid grid-cols-2 gap-1 px-3 pt-1"
-    >
+    <div class="grid grid-cols-2 gap-1 px-3 pt-1">
       <WalletsItem
-        v-for="(wallet, walletId) in walletsItemsLimited"
+        v-for="(wallet, walletId) in recentWallets"
         :key="walletId"
         :activeItemId="trnsFormStore.values.walletId"
-        :walletId
+        :walletId="(walletId as WalletId)"
         :wallet
         isShowIcon
         isShowCreditLimit
-        alt
-        @click="trnsFormStore.values.walletId = walletId"
+        compact
+        @click="trnsFormStore.values.walletId = (walletId as WalletId)"
       />
-    </WalletsList>
+    </div>
   </div>
 </template>

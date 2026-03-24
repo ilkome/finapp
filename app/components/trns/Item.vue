@@ -4,7 +4,7 @@ import type { TrnItemFull } from '~/components/trns/types'
 import { TrnType } from '~/components/trns/types'
 
 const props = defineProps<{
-  alt?: boolean
+  compact?: boolean
   date?: string
   trnItem: TrnItemFull
 }>()
@@ -17,11 +17,11 @@ const emit = defineEmits<{
 <template>
   <UiElement
     v-if="props.trnItem"
-    :lineWidth="props.alt ? 3 : 0"
-    :insideClasses="props.alt ? 'py-2 min-h-[32px]' : 'py-3 min-h-[38px]'"
+    :lineWidth="props.compact ? 3 : 0"
+    :insideClasses="props.compact ? 'py-2 min-h-[32px]' : 'py-3 min-h-[38px]'"
     @click="emit('click')"
   >
-    <template v-if="!alt" #leftIcon>
+    <template v-if="!compact" #leftIcon>
       <UiIconBase
         :name="props.trnItem.category?.icon"
         :color="props.trnItem.category?.color"
@@ -32,7 +32,7 @@ const emit = defineEmits<{
     <div class="grid grow gap-1 pr-1">
       <div class="flex grow items-center gap-3">
         <!-- Alt -->
-        <template v-if="alt">
+        <template v-if="compact">
           <div
             v-if="date"
             class="text-2xs min-w-10 truncate leading-none"
@@ -60,13 +60,11 @@ const emit = defineEmits<{
           class="grid grow gap-1"
         >
           <div
-            v-if="!alt"
+            v-if="!compact"
             class="grid grow gap-0.5"
           >
             <CategoriesName
               :category="trnItem.category"
-              :parentCategory="trnItem.categoryParent"
-              isShowDots
             />
           </div>
 

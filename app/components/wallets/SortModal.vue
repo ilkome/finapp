@@ -29,7 +29,7 @@ function saveWalletsOrder(close: () => void) {
           :key="walletId"
           :walletId
           :wallet="walletsStore.itemsComputed[walletId]!"
-          alt
+          compact
           isSort
           isShowIcon
         />

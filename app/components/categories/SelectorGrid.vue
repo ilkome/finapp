@@ -33,7 +33,7 @@ function select(id: CategoryId) {
       :class="itemClasses"
       :category="categoriesStore.items[categoryId]!"
       isShowParent
-      alt
+      stacked
       @click="select(categoryId)"
     />
   </div>

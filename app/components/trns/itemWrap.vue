@@ -7,7 +7,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 defineOptions({ inheritAttrs: false })
 
 const props = defineProps<{
-  alt?: boolean
+  compact?: boolean
   date?: string
   trnId: TrnId
   trnItem: TrnItemFull
@@ -57,7 +57,7 @@ function handleDeleteConfirm() {
 <template>
   <UContextMenu v-bind="$attrs" :items="contextMenuItems">
     <TrnsItem
-      :alt="props.alt"
+      :compact="props.compact"
       :trnItem
       :date
       @click="click"
