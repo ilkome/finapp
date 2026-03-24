@@ -184,22 +184,13 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
 <template>
   <UiPage v-if="category">
     <StatHeader
-      :filter="{
-        isShowCategories: true,
-        isShowWallets: true,
-      }"
+      v-model:activeTab="activeTab"
+      filterWallets
     >
       <template #title>
         <CategoriesHeader
           :category="category"
           :parentCategory="categoriesStore.items[category.parentId]"
-        />
-      </template>
-
-      <template #selected>
-        <StatMenu
-          :active="activeTab"
-          @click="(id: StatTabSlug) => activeTab = id"
         />
       </template>
 
@@ -256,12 +247,12 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
 
     <StatWrap
       :activeTab
+      :categoryId
       :hasChildren="categoriesIdsOrParent.length > 1"
       :preCategoriesIds
       :range="statDate.range.value"
       :storageKey
       :trnsIds
-      isOneCategory
     />
   </UiPage>
 </template>

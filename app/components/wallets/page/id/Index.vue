@@ -112,7 +112,8 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="wallet">
     <StatHeader
-      :filter="{ isShowCategories: true }"
+      v-model:activeTab="activeTab"
+      filterCategories
     >
       <template #title>
         <UiHeaderTitle>
@@ -123,13 +124,6 @@ async function onDeleteConfirm() {
           />
           {{ wallet.name }}
         </UiHeaderTitle>
-      </template>
-
-      <template #selected>
-        <StatMenu
-          :active="activeTab"
-          @click="(id: StatTabSlug) => activeTab = id"
-        />
       </template>
 
       <template #popover="{ close }">

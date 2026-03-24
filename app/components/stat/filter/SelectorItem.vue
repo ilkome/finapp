@@ -27,15 +27,9 @@ const isOpen = ref(false)
           inset
           size="xs"
         >
-          <UButton
-            :aria-label="props.title"
-            :icon="props.icon"
-            class="text-muted"
-            color="neutral"
-            size="lg"
-            square
-            variant="ghost"
-          />
+          <UiActionButton :ariaLabel="props.title">
+            <Icon :name="props.icon" size="20" />
+          </UiActionButton>
         </UChip>
       </UTooltip>
     </template>

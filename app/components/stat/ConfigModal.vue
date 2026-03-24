@@ -26,15 +26,9 @@ const isOpen = ref(false)
   >
     <template #trigger>
       <UTooltip :text="t('stat.config.menu.label')">
-        <UButton
-          :aria-label="t('stat.config.menu.label')"
-          class="text-muted"
-          color="neutral"
-          icon="lucide:settings-2"
-          size="lg"
-          square
-          variant="ghost"
-        />
+        <UiActionButton :ariaLabel="t('stat.config.menu.label')">
+          <Icon name="lucide:settings-2" size="20" />
+        </UiActionButton>
       </UTooltip>
     </template>
 

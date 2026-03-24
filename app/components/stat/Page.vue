@@ -64,23 +64,13 @@ onDeactivated(() => {
 <template>
   <UiPage>
     <StatHeader
-      :filter="{
-        isShowCategories: true,
-        isShowWallets: true,
-      }"
-      :config="{
-        isShowWallets: true,
-      }"
+      v-model:activeTab="activeTab"
+      configWallets
+      filterCategories
+      filterWallets
     >
       <template #title>
         <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>
-      </template>
-
-      <template #selected>
-        <StatMenu
-          :active="activeTab"
-          @click="(id: StatTabSlug) => activeTab = id"
-        />
       </template>
     </StatHeader>
 
