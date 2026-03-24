@@ -17,7 +17,7 @@ import { showErrorToast } from '~/composables/useStoreSync'
 
 type Values = {
   categoriesIds: CategoryId[]
-  trn: TrnItem
+  trn?: TrnItem
   walletId?: WalletId
   walletsIds: WalletId[]
 } & ({
@@ -74,7 +74,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function syncAmountRawAt(idx: number) {
-    values.amountRaw[idx] = formatInput(values.amount[idx])
+    values.amountRaw[idx] = formatInput(values.amount[idx] ?? 0)
   }
 
   function onChangeAmount(amountRaw: string) {
@@ -159,7 +159,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     if (props.action === 'edit')
       values.trnId = props.trnId
 
-    if (props.action === 'edit' || props.action === 'duplicate') {
+    if ((props.action === 'edit' || props.action === 'duplicate') && props.trn) {
       if (props.trn.type !== TrnType.Transfer) {
         values.amount = [props.trn.amount, 0, 0]
         values.categoryId = props.trn.categoryId
@@ -243,7 +243,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     setValues({
       action: 'create',
       categoriesIds: categoriesStore.categoriesIdsForTrnValues,
-      trn: trnsStore.lastCreatedTrnItem as TrnItem,
+      trn: trnsStore.lastCreatedTrnItem ?? undefined,
       walletId: walletsStore.sortedIds[0],
       walletsIds: walletsStore.sortedIds,
     })

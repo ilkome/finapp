@@ -4,6 +4,8 @@ import { groupOpsByEntity, replayCategoryOps, replaySettingsOps, replayTrnOps, r
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import type { LocaleSlug } from '~/components/locale/types'
+
 import { isLocalId } from '~/utils/convexId'
 import { createLogger } from '~/utils/logger'
 
@@ -101,7 +103,7 @@ export async function replayOfflineQueue(): Promise<void> {
     // Phase 4: Replay settings
     await replaySettingsOps(settingsOps, {
       saveBaseCurrency: currency => userStore.saveUserBaseCurrency(currency),
-      saveLocale: locale => userStore.saveUserLocale(locale),
+      saveLocale: locale => userStore.saveUserLocale(locale as LocaleSlug),
     })
 
     if (orphanCount > 0) {

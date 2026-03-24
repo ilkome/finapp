@@ -55,3 +55,10 @@ export function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryIte
   const parentNameB = items[b.parentId]?.name ?? ''
   return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)
 }
+
+export function compareCategoryIds(idA: CategoryId, idB: CategoryId, items: Categories): number {
+  const catA = items[idA]
+  const catB = items[idB]
+  if (!catA || !catB) return 0
+  return compareCategoriesByParentAndName(catA, catB, items)
+}

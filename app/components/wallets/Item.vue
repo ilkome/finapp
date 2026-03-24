@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
-  alt?: boolean
-  contextMenuItems?: any[][]
+  compact?: boolean
+  contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
   isShowBaseRate?: boolean
   isShowCreditLimit?: boolean
@@ -26,7 +27,7 @@ const emit = defineEmits<{
   <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <WalletsItemBody
       :activeItemId="props.activeItemId"
-      :alt="props.alt"
+      :compact="props.compact"
       :insideClasses="props.insideClasses"
       :isShowBaseRate="props.isShowBaseRate"
       :isShowCreditLimit="props.isShowCreditLimit"
@@ -44,7 +45,7 @@ const emit = defineEmits<{
   <WalletsItemBody
     v-else
     :activeItemId="props.activeItemId"
-    :alt="props.alt"
+    :compact="props.compact"
     :insideClasses="props.insideClasses"
     :isShowBaseRate="props.isShowBaseRate"
     :isShowCreditLimit="props.isShowCreditLimit"
