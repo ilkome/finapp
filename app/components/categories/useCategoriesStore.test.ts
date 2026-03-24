@@ -10,6 +10,7 @@ vi.mock('~~/services/convex/api', () => ({
 
 vi.mock('~/components/categories/utils', () => ({
   compareCategoriesByParentAndName: () => 0,
+  compareCategoryIds: () => 0,
   getTransactibleCategoriesIds: () => [],
 }))
 

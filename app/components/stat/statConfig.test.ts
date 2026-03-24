@@ -15,8 +15,11 @@ const defaultConfig: MiniItemConfig = {
     isShow: true,
   },
   catsRound: {
+    isExpanded: false,
     isGrouped: false,
     isShow: true,
+    isShowFavorites: true,
+    isShowRecent: true,
   },
   catsView: 'list',
   chart: {
