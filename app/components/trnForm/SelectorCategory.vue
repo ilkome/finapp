@@ -5,19 +5,19 @@ const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
   category: CategoryItem
   categoryId: CategoryId
-  title?: string
 }>()
 
 const emit = defineEmits<{
   selected: [id: CategoryId]
 }>()
 
+const { t } = useI18n()
 const isShow = ref(false)
 </script>
 
 <template>
   <BottomSheetOrDropdown
-    :title="props.title"
+    :title="t('trnForm.category.select')"
     :isOpen="isShow"
     :bottomSheetStyle="props.bottomSheetStyle"
     dragClassesCustom="h-full max-w-md"
