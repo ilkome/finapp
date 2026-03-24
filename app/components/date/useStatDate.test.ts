@@ -42,9 +42,9 @@ describe('selectInterval', () => {
 
   beforeEach(() => {
     statDate = createStatDate({
-      intervalSelected: -1,
       intervalsBy: 'month',
       intervalsDuration: 1,
+      intervalSelected: -1,
       rangeBy: 'year',
       rangeDuration: 1,
       rangeOffset: 0,

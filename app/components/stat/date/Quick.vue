@@ -1,59 +1,41 @@
 <script setup lang="ts">
-import Swiper from 'swiper'
-import 'swiper/css'
-
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
-
-const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = ref<Swiper | null>(null)
-
-onMounted(() => {
-  const initialSlide = 1
-
-  sliderObj.value = new Swiper(sliderRef.value!, {
-    autoHeight: true,
-    initialSlide,
-    longSwipesMs: 60,
-    longSwipesRatio: 0.1,
-    observeParents: true,
-    observer: true,
-    shortSwipes: false,
-    slidesPerView: 1,
-    touchStartPreventDefault: false,
-  })
-})
+const isExpanded = ref(false)
 </script>
 
 <template>
-  <div class="relative overflow-hidden">
-    <div ref="sliderRef" class="swiper-container">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide">
-          <DateRanges
-            :itemProps="{ variant: 'small' }"
-            :statDate
-            view="periods"
-          />
-        </div>
+  <div class="flex items-center overflow-x-auto">
+    <DateRanges
+      :itemProps="{ variant: 'small' }"
+      :statDate
+      view="periods"
+    />
 
-        <div class="swiper-slide">
-          <DateRanges
-            :itemProps="{ variant: 'small' }"
-            :statDate
-            view="presets"
-          />
-        </div>
+    <template v-if="isExpanded">
+      <DateRanges
+        :itemProps="{ variant: 'small' }"
+        :statDate
+        view="presets"
+      />
 
-        <div class="swiper-slide">
-          <DateRanges
-            :itemProps="{ variant: 'small' }"
-            :statDate
-            view="maximum"
-          />
-        </div>
-      </div>
-    </div>
+      <DateRanges
+        :itemProps="{ variant: 'small' }"
+        :statDate
+        view="maximum"
+      />
+    </template>
+
+    <button
+      type="button"
+      class="interactive text-muted flex min-h-[32px] min-w-[32px] shrink-0 items-center justify-center rounded-sm"
+      @click="isExpanded = !isExpanded"
+    >
+      <Icon
+        :name="isExpanded ? 'lucide:chevron-left' : 'lucide:chevron-right'"
+        size="16"
+      />
+    </button>
   </div>
 </template>

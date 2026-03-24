@@ -105,7 +105,7 @@ function selectMaxRange(isSkipEmpty = false) {
 
 <template>
   <div
-    class="flex overflow-hidden"
+    class="flex shrink-0"
     :class="{
       'gap-1': props.itemProps?.variant !== 'small',
     }"

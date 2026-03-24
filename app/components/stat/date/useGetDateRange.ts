@@ -33,17 +33,17 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
   function formatMonthRange({ duration, end, start }: DateFormatParams): string {
     if (isSameYear(start, today)) {
       if (isSameMonth(start, today) || duration === 1)
-        return formatByLocale(start, 'MMMM', locale)
-      return `${formatByLocale(start, 'MMM', locale)} - ${formatByLocale(end, 'MMM', locale)}`
+        return formatByLocale(start, 'LLLL', locale)
+      return `${formatByLocale(start, 'LLL', locale)} - ${formatByLocale(end, 'LLL', locale)}`
     }
 
     if (isSameYear(start, end)) {
       if (isSameMonth(start, end))
-        return formatByLocale(start, 'MMM yyyy', locale)
-      return `${formatByLocale(start, 'MMM', locale)} - ${formatByLocale(end, 'MMM yyyy', locale)}`
+        return formatByLocale(start, 'LLL yyyy', locale)
+      return `${formatByLocale(start, 'LLL', locale)} - ${formatByLocale(end, 'LLL yyyy', locale)}`
     }
 
-    return `${formatByLocale(start, 'MMM yyyy', locale)} - ${formatByLocale(end, 'MMM yyyy', locale)}`
+    return `${formatByLocale(start, 'LLL yyyy', locale)} - ${formatByLocale(end, 'LLL yyyy', locale)}`
   }
 
   function formatWeekRange({ end, start }: DateFormatParams): string {
@@ -111,6 +111,13 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
 
   function formatDateToString(params: DateFormatParams): string {
     const { by, duration, start } = params
+
+    if (duration === 1 && isSamePeriod(start, today, by)) {
+      if (by === 'day')
+        return t('dates.day.current')
+      if (by === 'week')
+        return t('dates.week.current')
+    }
 
     if (duration === 1 && by === 'day' && isSameYear(start, today))
       return formatByLocale(start, 'd MMMM', locale)
