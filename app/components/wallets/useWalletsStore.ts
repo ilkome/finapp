@@ -11,6 +11,7 @@ import { useDemo } from '~/components/demo/useDemo'
 import { pushOfflineOp } from '~/components/offline/helpers'
 import { isReplaying } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { createDebouncedPersist, handleMutationResult, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
@@ -155,6 +156,40 @@ export const useWalletsStore = defineStore('wallets', () => {
     )
   })
 
+  const recentWalletIds = computed<WalletId[]>(() => {
+    if (!hasItems.value || !trnsStore.hasItems)
+      return []
+
+    const trnsItems = trnsStore.items
+    const latestDateByWallet = new Map<WalletId, number>()
+
+    for (const trnId in trnsItems) {
+      const trn = trnsItems[trnId]
+      if (!trn)
+        continue
+
+      if (trn.type === TrnType.Transfer) {
+        const existing1 = latestDateByWallet.get(trn.expenseWalletId)
+        if (!existing1 || trn.date > existing1)
+          latestDateByWallet.set(trn.expenseWalletId, trn.date)
+
+        const existing2 = latestDateByWallet.get(trn.incomeWalletId)
+        if (!existing2 || trn.date > existing2)
+          latestDateByWallet.set(trn.incomeWalletId, trn.date)
+      }
+      else {
+        const existing = latestDateByWallet.get(trn.walletId)
+        if (!existing || trn.date > existing)
+          latestDateByWallet.set(trn.walletId, trn.date)
+      }
+    }
+
+    return [...latestDateByWallet.entries()]
+      .toSorted(([, a], [, b]) => b - a)
+      .map(([id]) => id)
+      .filter(id => items.value?.[id])
+  })
+
   // O(N) single pass over all trns — replaces O(W×N) per-wallet getWalletTotal
   const walletTotals = computed(() =>
     getWalletsTotals({
@@ -219,6 +254,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     initWallets,
     items,
     itemsComputed,
+    recentWalletIds,
     saveWallet,
     saveWalletsOrder,
     setWallets,
