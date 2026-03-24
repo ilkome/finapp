@@ -26,41 +26,37 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 </script>
 
 <template>
-  <div class="flex items-center gap-1">
-    <DateNav
+  <DateNav
+    class="grow"
+    :isShowNavHome="!isToday"
+    :isEnd="isToday"
+    :isStart="false"
+    @changeDate="changeDate"
+  >
+    <BottomSheetOrDropdown
+      :title="t('common.date')"
+      :isOpen="isShow"
       class="grow"
-      :isShowNavHome="!isToday"
-      :isEnd="isToday"
-      :isStart="false"
-      @changeDate="changeDate"
+      isShowCloseBtn
+      @openModal="isShow = true"
+      @closeModal="isShow = false"
     >
-      <BottomSheetOrDropdown
-        :title="t('common.date')"
-        :isOpen="isShow"
-        class="grow"
-        isShowCloseBtn
-        @openModal="isShow = true"
-        @closeModal="isShow = false"
-      >
-        <template #trigger>
-          <UiActionButton class="text-2 grid h-full w-full content-center !justify-start px-2 text-left">
-            <div class="text-1 text-sm">
-              {{ formattedDate?.day }} {{ formattedDate?.month }}
-            </div>
-            <div class="font-regular text-2xs leading-none">
-              {{ formattedDate?.weekday }}
-            </div>
-          </UiActionButton>
-        </template>
-
-        <template #content="{ close }">
-          <div class="min-w-80">
-            <TrnFormCalendar :onClose="close" />
+      <template #trigger>
+        <UiActionButton class="text-2 grid h-full w-full content-center !justify-start px-2 text-left">
+          <div class="text-1 text-sm">
+            {{ formattedDate?.day }} {{ formattedDate?.month }}
           </div>
-        </template>
-      </BottomSheetOrDropdown>
-    </DateNav>
+          <div class="font-regular text-2xs leading-none">
+            {{ formattedDate?.weekday }}
+          </div>
+        </UiActionButton>
+      </template>
 
-    <slot />
-  </div>
+      <template #content="{ close }">
+        <div class="min-w-80">
+          <TrnFormCalendar :onClose="close" />
+        </div>
+      </template>
+    </BottomSheetOrDropdown>
+  </DateNav>
 </template>
