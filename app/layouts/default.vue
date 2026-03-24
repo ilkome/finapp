@@ -3,6 +3,7 @@ import { useInitApp } from '~/components/app/useInitApp'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useMenuData } from '~/components/layout/useMenuData'
+import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -17,6 +18,7 @@ const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()
 const { isMenuOpen } = useMenuData()
+const { isSearchOpen } = useSearch()
 const { loadDataFromCache, loadDataFromDB } = useInitApp()
 const { width } = useWindowSize()
 
@@ -54,6 +56,9 @@ defineShortcuts({
       ? trnsFormStore.ui.isShow = false
       : trnsFormStore.openFormForCreate()
   },
+  'meta_k': () => {
+    isSearchOpen.value = !isSearchOpen.value
+  },
 })
 </script>
 
@@ -90,6 +95,8 @@ defineShortcuts({
           </main>
         </div>
       </div>
+
+      <SearchModal v-if="isOnboarded" />
 
       <template v-if="isOnboarded">
         <TrnFormFloatOpener v-if="width >= 767" />
