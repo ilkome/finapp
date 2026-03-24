@@ -34,7 +34,7 @@ const props = defineProps<{
 
         <NuxtLink
           :to="`/categories/${props.category.parentId}`"
-          class="flex items-center gap-2 rounded-lg px-3 py-1 no-underline text-inherit hover:bg-(--item-5)"
+          class="flex items-center gap-2 rounded-lg px-3 py-1 text-inherit no-underline hover:bg-(--item-5)"
         >
           {{ props.parentCategory.name }}
         </NuxtLink>
