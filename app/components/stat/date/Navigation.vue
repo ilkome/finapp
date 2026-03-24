@@ -51,21 +51,41 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
 <template>
   <div class="items-top bg-default/90 sticky top-0 z-20 -my-2 flex grow items-center gap-2 overflow-x-auto py-2 backdrop-blur lg:top-[87px]">
-    <div
-      v-if="!statDate.params.value.customDate"
-      class="flex gap-1"
+    <DateNav
+      v-if="isShowNav && !statDate.params.value.customDate"
+      :isEnd
+      :isShowNavHome
+      :isStart
+      @changeDate="changeDate"
     >
-      <DateNav
-        v-if="isShowNav"
-        :isEnd
-        :isShowNavHome
-        :isStart
-        position="right"
-        @changeDate="changeDate"
-      />
-    </div>
+      <BottomSheetOrDropdown
+        :title="t('dates.select')"
+        :isOpen="statDate.modal.value.dateSelector"
+        class="flex grow-0 gap-1"
+        isShowCloseBtn
+        @openModal="statDate.modal.value.dateSelector = true"
+        @closeModal="statDate.modal.value.dateSelector = false"
+      >
+        <template #trigger>
+          <UiTitleCollapse
+            class="_bg-item-4 text-md !grow-0"
+            isShown
+          >
+            <StatDateRange />
+          </UiTitleCollapse>
+        </template>
+
+        <template #content="{ close }">
+          <StatDateSelector
+            class="min-w-[362px] pb-2 md:px-3"
+            @close="close"
+          />
+        </template>
+      </BottomSheetOrDropdown>
+    </DateNav>
 
     <BottomSheetOrDropdown
+      v-else
       :title="t('dates.select')"
       :isOpen="statDate.modal.value.dateSelector"
       class="flex grow-0 gap-1"

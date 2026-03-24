@@ -1,9 +1,8 @@
 <script setup lang="ts">
-const { isEnd, isShowNavHome, isStart, position = 'left' } = defineProps<{
+const { isEnd, isShowNavHome, isStart } = defineProps<{
   isEnd: boolean
   isShowNavHome: boolean
   isStart: boolean
-  position?: 'left' | 'right'
 }>()
 
 const emit = defineEmits<{
@@ -13,14 +12,6 @@ const emit = defineEmits<{
 
 <template>
   <div class="flex items-center gap-1">
-    <UiActionButton
-      v-if="position === 'left' && isShowNavHome"
-      :ariaLabel="$t('base.today')"
-      @click="emit('changeDate', 'today')"
-    >
-      <Icon name="lucide:undo-2" size="20" />
-    </UiActionButton>
-
     <UiActionButton
       :ariaLabel="$t('base.previous')"
       :class="cn('bg-item-3', isStart && 'hover:transparent opacity-30')"
@@ -38,11 +29,13 @@ const emit = defineEmits<{
     </UiActionButton>
 
     <UiActionButton
-      v-if="position === 'right' && isShowNavHome"
+      v-if="isShowNavHome"
       :ariaLabel="$t('base.today')"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />
     </UiActionButton>
+
+    <slot />
   </div>
 </template>
