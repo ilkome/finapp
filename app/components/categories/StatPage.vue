@@ -79,13 +79,8 @@ useHead({ title: category.value?.name })
 <template>
   <UiPage v-if="category">
     <StatHeader
-      :filter="{
-        isShowCategories: false,
-        isShowWallets: true,
-      }"
-      :config="{
-        isShowWallets: true,
-      }"
+      configWallets
+      filterWallets
     >
       <template #title>
         <CategoriesHeader
@@ -107,11 +102,11 @@ useHead({ title: category.value?.name })
 
     <StatWrap
       :activeTab
+      :categoryId
       :hasChildren="categoriesIdsOrParent.length > 1"
       :range="statDate.range.value"
       :storageKey
       :trnsIds
-      isOneCategory
     />
   </UiPage>
 </template>
