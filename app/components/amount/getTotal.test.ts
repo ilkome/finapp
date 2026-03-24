@@ -246,16 +246,4 @@ describe('getWalletsTotals', () => {
     expect(totals.get('walletCreditUSD')).toBe(-40)
   })
 
-  it('converts currencies when rates provided', () => {
-    const totals = getWalletsTotals({
-      baseCurrencyCode: 'USD',
-      rates,
-      trnsItems: {
-        t1: trnsItems.transactionIncomeWalletOneRUB700!,
-      },
-      walletsItems,
-    })
-
-    expect(totals.get('walletOneRUB')).toBeCloseTo(10.81, 1)
-  })
 })

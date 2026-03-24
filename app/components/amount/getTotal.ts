@@ -125,20 +125,14 @@ export function getTotal(props: TotalProps): TotalReturns {
  * For each wallet, returns: income - expense + transfers + adjustments.
  */
 export function getWalletsTotals(props: {
-  baseCurrencyCode?: CurrencyCode
-  rates?: Rates
   trnsItems: Trns
   walletsItems: Wallets
 }): Map<WalletId, number> {
-  const { baseCurrencyCode, rates, trnsItems, walletsItems } = props
+  const { trnsItems, walletsItems } = props
   const totals = new Map<WalletId, number>()
 
   function addToWallet(walletId: WalletId, amount: number) {
     totals.set(walletId, (totals.get(walletId) ?? 0) + amount)
-  }
-
-  function convert(amount: number, currencyCode: CurrencyCode): number {
-    return getAmountInRate({ amount, baseCurrencyCode, currencyCode, rates })
   }
 
   for (const trnId of Object.keys(trnsItems)) {
@@ -147,19 +141,15 @@ export function getWalletsTotals(props: {
       continue
 
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
-      const wallet = walletsItems[trn.walletId]
-      if (!wallet)
+      if (!walletsItems[trn.walletId])
         continue
-      const amount = convert(trn.amount, wallet.currency)
-      addToWallet(trn.walletId, trn.type === TrnType.Income ? amount : -amount)
+      addToWallet(trn.walletId, trn.type === TrnType.Income ? trn.amount : -trn.amount)
     }
     else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
-      const incomeWallet = walletsItems[trn.incomeWalletId]
-      const expenseWallet = walletsItems[trn.expenseWalletId]
-      if (!incomeWallet || !expenseWallet)
+      if (!walletsItems[trn.incomeWalletId] || !walletsItems[trn.expenseWalletId])
         continue
-      addToWallet(trn.incomeWalletId, convert(trn.incomeAmount, incomeWallet.currency))
-      addToWallet(trn.expenseWalletId, -convert(trn.expenseAmount, expenseWallet.currency))
+      addToWallet(trn.incomeWalletId, trn.incomeAmount)
+      addToWallet(trn.expenseWalletId, -trn.expenseAmount)
     }
   }
 
