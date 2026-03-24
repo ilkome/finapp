@@ -193,8 +193,6 @@ export const useWalletsStore = defineStore('wallets', () => {
   // O(N) single pass over all trns — replaces O(W×N) per-wallet getWalletTotal
   const walletTotals = computed(() =>
     getWalletsTotals({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
       trnsItems: trnsStore.items ?? {},
       walletsItems: items.value ?? {},
     }),

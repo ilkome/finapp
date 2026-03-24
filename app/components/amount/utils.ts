@@ -18,12 +18,20 @@ function getFormatter(precision: number) {
 }
 
 export function formatAmount(amount: number, currencyCode?: CurrencyCode, {
-  precision = 0,
-} = {}) {
+  precision,
+}: { precision?: number } = {}) {
   const currencySettings = currencyCode ? currencyMap.get(currencyCode) : undefined
   const p = precision ?? currencySettings?.precision ?? 2
 
-  return getFormatter(p).format(amount).replace(/,/g, ' ')
+  const formatted = getFormatter(p).format(amount)
+
+  // If rounding hides a non-zero value, show significant digits
+  if (amount !== 0 && Number(formatted.replace(/,/g, '')) === 0) {
+    const significant = getFormatter(Math.min(Math.max(-Math.floor(Math.log10(Math.abs(amount))) + 1, p), 20))
+    return significant.format(amount).replace(/,/g, ' ')
+  }
+
+  return formatted.replace(/,/g, ' ')
 }
 
 export function getCurrencySymbol(currencyCode?: CurrencyCode) {
