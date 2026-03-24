@@ -9,9 +9,10 @@
  */
 import { defineStore } from 'pinia'
 import { vi } from 'vitest'
-import { computed, ref, shallowRef, watch } from 'vue'
+import { computed, reactive, ref, shallowRef, watch } from 'vue'
 
 vi.stubGlobal('computed', computed)
+vi.stubGlobal('reactive', reactive)
 vi.stubGlobal('ref', ref)
 vi.stubGlobal('shallowRef', shallowRef)
 vi.stubGlobal('watch', watch)
