@@ -9,7 +9,7 @@ const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 
 const recentWallets = computed(() => {
-  const ids = walletsStore.recentWalletIds.slice(0, 5)
+  const ids = walletsStore.recentWalletIds.slice(0, 6)
   return ids.reduce((acc, id) => {
     const wallet = walletsStore.itemsComputed[id]
     if (wallet)
