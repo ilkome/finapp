@@ -9,6 +9,7 @@ import { getTrnTypeByAmount } from '~/components/trns/types'
 
 const props = defineProps<{
   isShowAmount?: boolean
+  isShowParent?: boolean
   item: CategoryWithData
 }>()
 
@@ -20,6 +21,11 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
 const category = computed(() => categoriesStore.items[props.item.id])
+const parentCategory = computed(() => {
+  if (!category.value?.parentId)
+    return undefined
+  return categoriesStore.items[category.value.parentId]
+})
 
 const { longPressRef } = useCategoryLongPress(
   () => props.item.id,
@@ -49,9 +55,13 @@ const { longPressRef } = useCategoryLongPress(
     </div>
 
     <div>
-      <div class="text-xs">
-        {{ category.name }}
-      </div>
+      <CategoriesName
+        :category
+        :isShowParent="props.isShowParent"
+        :parentCategory
+        stacked
+        size="xs"
+      />
 
       <div
         v-if="props.isShowAmount"
