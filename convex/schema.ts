@@ -15,11 +15,12 @@ export default defineSchema({
     userId: v.string(),
   })
     .index('by_user', ['userId'])
-    .index('by_user_name_parent', ['userId', 'name', 'parentId']),
+    .index('by_user_name_parent', ['userId', 'name', 'parentId'])
+    .index('by_user_parent', ['userId', 'parentId']),
 
   rates: defineTable({
     date: v.string(),
-    rates: v.any(),
+    rates: v.record(v.string(), v.number()),
     updatedAt: v.number(),
   }).index('by_date', ['date']),
 

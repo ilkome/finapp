@@ -142,8 +142,7 @@ export const validateCategoryRemoval = internalQuery({
       throw new Error('Not found')
     const child = await ctx.db
       .query('categories')
-      .withIndex('by_user', q => q.eq('userId', userId))
-      .filter(q => q.eq(q.field('parentId'), id))
+      .withIndex('by_user_parent', q => q.eq('userId', userId).eq('parentId', id))
       .first()
     if (child)
       throw new Error('Cannot delete category with children')
