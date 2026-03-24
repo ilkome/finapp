@@ -109,13 +109,13 @@ function buildChartSeries(series: ChartSeries[]) {
 
 <template>
   <div
-    class="h-40 @3xl/page:h-52"
+    class="h-40 @3xl/stat:h-52"
     @click="onClickChart"
   >
     <VChart
       ref="chartRef"
       :option
-      :update-options="{ notMerge: true }"
+      :updateOptions="{ notMerge: true }"
       autoresize
     >
       <template #tooltip="params">
