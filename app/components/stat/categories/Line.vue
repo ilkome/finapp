@@ -99,11 +99,10 @@ const { longPressRef } = useCategoryLongPress(
 
       <CategoriesName
         :category
+        :childrenCount="props.item.categories?.length"
         :class="{ '!pb-2': isLines }"
-        :hasChildren="categoriesStore.getChildrenIds(props.item.id).length > 0"
         :isShowParent="props.isShowParent"
         :parentCategory
-        :showChildrenCount="props.item.categories?.length"
       />
 
       <div

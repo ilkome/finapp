@@ -27,7 +27,7 @@ const statConfig = inject(statConfigKey)!
 const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
 
 const className = computed(() => cn(
-  'min-w-min rounded-sm min-h-[42px] flex items-center px-3',
+  'min-w-min min-h-[42px] flex items-center',
   {
     interactive: props.type === 'summary',
   },
@@ -42,7 +42,7 @@ function onClick(type: SeriesSlugSelected) {
   <div class="overflow-x-auto">
     <div
       v-if="props.type === 'summary'"
-      class="flex flex-wrap gap-2 @2xl/page:justify-start"
+      class="flex flex-wrap gap-2 @2xl/stat:justify-start"
     >
       <StatSumItem
         :amount="-total.expense"

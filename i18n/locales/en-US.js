@@ -37,6 +37,7 @@ export default {
     duplicate: 'Duplicate',
     edit: 'Edit',
     loading: 'Loading...',
+    menu: 'Menu',
     moreOptions: 'More options',
     next: 'Next',
     no: 'No',
@@ -255,6 +256,12 @@ export default {
     introWallets: 'Start tracking your finances by adding your first wallet',
   },
 
+  search: {
+    noResults: 'Nothing found',
+    placeholder: 'Search categories, wallets, transactions...',
+    title: 'Search',
+  },
+
   settings: {
     caution: 'With caution',
     deleteButton: 'Delete my data',
@@ -284,6 +291,9 @@ export default {
           title: 'List categories',
         },
         rounds: {
+          groupByParent: 'Group by parent',
+          showFavorites: 'Show favorites',
+          showRecent: 'Show recent',
           title: 'Rounds categories',
         },
         vertical: {

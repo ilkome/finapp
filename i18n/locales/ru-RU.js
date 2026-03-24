@@ -37,6 +37,7 @@ export default {
     duplicate: 'Дублировать',
     edit: 'Редактировать',
     loading: 'Загрузка...',
+    menu: 'Меню',
     moreOptions: 'Ещё',
     next: 'Вперёд',
     no: 'Нет',
@@ -255,6 +256,12 @@ export default {
     introWallets: 'Начните учёт финансов, добавив первый кошелёк',
   },
 
+  search: {
+    noResults: 'Ничего не найдено',
+    placeholder: 'Поиск категорий, кошельков, транзакций...',
+    title: 'Поиск',
+  },
+
   settings: {
     caution: 'C осторожностью',
     deleteButton: 'Удалить все мои данные',
@@ -284,6 +291,9 @@ export default {
           title: 'Список категорий',
         },
         rounds: {
+          groupByParent: 'Группировать по родителю',
+          showFavorites: 'Показывать избранные',
+          showRecent: 'Показывать недавние',
           title: 'Круглые категории',
         },
         vertical: {
@@ -417,7 +427,7 @@ export default {
       orderFailed: 'Не удалось сохранить порядок кошельков',
       saveFailed: 'Не удалось сохранить кошелек',
     },
-    filter: 'Фильтровать кошельки',
+    filter: 'Фильтр по кошелькам',
     filterByCurrency: 'Валюты кошельков',
     form: {
       credit: {
