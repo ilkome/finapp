@@ -23,20 +23,20 @@ function onSave(close: () => void) {
   <BottomSheetOrDropdown
     :isOpen="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
-    class="grow"
+    class="!grow-0 shrink-0"
     dragClassesCustom="max-w-md"
     isShowCloseBtn
     @closeModal="trnsFormStore.closeTrnFormModal('description')"
     @openModal="trnsFormStore.openTrnFormModal('description')"
   >
     <template #trigger>
-      <TrnFormMainCalculatorButton class="relative overflow-visible">
-        <Icon name="lucide:message-square" size="26" />
+      <UiActionButton class="relative overflow-visible">
+        <Icon name="lucide:message-square" size="20" />
         <div
           v-if="trnsFormStore.values.desc"
           class="absolute top-0 right-0 aspect-square w-2.5 rounded-full bg-(--ui-primary)"
         />
-      </TrnFormMainCalculatorButton>
+      </UiActionButton>
     </template>
 
     <template #content="{ close }">
