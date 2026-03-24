@@ -19,7 +19,7 @@ export const getLatest = query({
 export const saveRates = internalMutation({
   args: {
     date: v.string(),
-    rates: v.any(),
+    rates: v.record(v.string(), v.number()),
   },
   handler: async (ctx, { date, rates }) => {
     const existing = await ctx.db
