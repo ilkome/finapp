@@ -34,7 +34,7 @@ async function fetchAllPages<T>(
   let isDone = false
 
   while (!isDone) {
-    const result: any = await client.query(queryFn, {
+    const result: { continueCursor: string, isDone: boolean, page: T[] } | null = await client.query(queryFn, {
       ...args,
       paginationOpts: { cursor, numItems: pageSize },
     })

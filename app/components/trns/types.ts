@@ -55,11 +55,11 @@ type TrnItemFullBase = {
   id: TrnId
 }
 
-type TransactionFull = Transaction & TrnItemFullBase & {
+export type TransactionFull = Transaction & TrnItemFullBase & {
   wallet: WalletItem
 }
 
-type TransferFull = Transfer & TrnItemFullBase & {
+export type TransferFull = Transfer & TrnItemFullBase & {
   expenseWallet: WalletItem
   incomeWallet: WalletItem
 }

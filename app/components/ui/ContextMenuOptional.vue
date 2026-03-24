@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
+
 const props = defineProps<{
-  items?: any[][]
+  items?: ContextMenuItem[][]
 }>()
 </script>
 

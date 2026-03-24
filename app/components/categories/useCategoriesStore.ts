@@ -4,7 +4,7 @@ import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/
 import type { TrnId } from '~/components/trns/types'
 import type { RemapInfo } from '~/composables/useStoreSync'
 
-import { compareCategoriesByParentAndName, getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { compareCategoryIds, getTransactibleCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -68,15 +68,17 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return categoriesIds.value
       .filter(id => items.value[id]?.parentId === 0 && id !== 'transfer' && id !== 'adjustment')
-      .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
+      .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
   const usedCategoryIds = computed(() => {
     const ids = new Set<string>()
     const trns = trnsStore.items
     if (trns) {
-      for (const id in trns)
-        ids.add(trns[id]!.categoryId)
+      for (const id in trns) {
+        const trn = trns[id]
+        if (trn) ids.add(trn.categoryId)
+      }
     }
     return ids
   })
@@ -99,7 +101,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return categoriesIds.value
       .filter(id => items.value[id]?.showInQuickSelector)
-      .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
+      .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
   const recentCategoriesIds = computed(() => {
@@ -139,7 +141,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     }
 
     return recentIds
-      .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
+      .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
   const categoriesIdsForTrnValues = computed<CategoryId[]>(() =>
@@ -187,7 +189,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return Object.keys(items.value)
       .filter(id => items.value[id]?.parentId === categoryId)
-      .sort((a, b) => compareCategoriesByParentAndName(items.value[a]!, items.value[b]!, items.value))
+      .sort((a, b) => compareCategoryIds(a, b, items.value))
   }
 
   function getChildrenIdsOrParent(categoryId: CategoryId) {

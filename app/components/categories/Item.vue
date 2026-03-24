@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 export type CategoryItemProps = {
   activeItemId?: string | 0 | false | null
-  alt?: boolean
   category: CategoryItem
   categoryId: CategoryId
   class?: string
-  contextMenuItems?: any[][]
+  contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
   isShowParent?: boolean
   lineWidth?: number
+  stacked?: boolean
   to?: string
 }
 
@@ -26,7 +27,7 @@ const emit = defineEmits<{
   <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <CategoriesItemBody
       :activeItemId="props.activeItemId"
-      :alt="props.alt"
+      :stacked="props.stacked"
       :category="props.category"
       :categoryId="props.categoryId"
       :class="props.class"
@@ -42,7 +43,7 @@ const emit = defineEmits<{
   <CategoriesItemBody
     v-else
     :activeItemId="props.activeItemId"
-    :alt="props.alt"
+    :stacked="props.stacked"
     :category="props.category"
     :categoryId="props.categoryId"
     :class="props.class"
