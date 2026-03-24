@@ -75,26 +75,19 @@ function onSelect(item: CategoryCommandPaletteItem) {
     @update:modelValue="onSelect"
   >
     <template #category="{ item: rawItem }">
-      <UiElement
-        :isActive="(rawItem as CategoryCommandPaletteItem).id === props.activeItemId"
-        :lineWidth="1"
-        class="w-full grow"
-        insideClasses="min-h-[46px]"
+      <div
+        class="flex w-full items-center gap-3"
+        :class="{ 'text-primary': (rawItem as CategoryCommandPaletteItem).id === props.activeItemId }"
       >
-        <template #leftIcon>
-          <UiIconBase
-            :color="(rawItem as CategoryCommandPaletteItem).color"
-            :name="(rawItem as CategoryCommandPaletteItem).icon"
-            invert
-          />
-        </template>
-
-        <div class="grid grow">
-          <CategoriesName
-            :category="(rawItem as CategoryCommandPaletteItem)"
-          />
-        </div>
-      </UiElement>
+        <UiIconBase
+          :color="(rawItem as CategoryCommandPaletteItem).color"
+          :name="(rawItem as CategoryCommandPaletteItem).icon"
+          invert
+        />
+        <CategoriesName
+          :category="(rawItem as CategoryCommandPaletteItem)"
+        />
+      </div>
     </template>
   </UCommandPalette>
 </template>
