@@ -5,13 +5,13 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
-  alt?: boolean
   category: CategoryItem
   categoryId: CategoryId
   class?: string
   insideClasses?: string
   isShowParent?: boolean
   lineWidth?: number
+  stacked?: boolean
   to?: string
 }>()
 
@@ -47,11 +47,10 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
 
     <div class="grid grow gap-0.5">
       <CategoriesName
-        :alt="props.alt"
+        :stacked="props.stacked"
         :category="props.category"
         :parentCategory="parentCategory"
-        :hasChildren="childCategoriesIds.length > 0"
-        :showChildrenCount="childCategoriesIds.length"
+        :childrenCount="childCategoriesIds.length"
         :isShowParent="props.isShowParent"
       />
     </div>

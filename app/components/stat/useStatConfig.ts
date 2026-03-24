@@ -18,8 +18,11 @@ export const ConfigSchema = z.object({
     isShow: z.boolean(),
   }),
   catsRound: z.object({
+    isExpanded: z.boolean(),
     isGrouped: z.boolean(),
     isShow: z.boolean(),
+    isShowFavorites: z.boolean(),
+    isShowRecent: z.boolean(),
   }),
   catsView: z.enum(['list', 'round']),
   chart: z.object({
@@ -72,8 +75,11 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isShow: true,
     },
     catsRound: {
+      isExpanded: true,
       isGrouped: false,
       isShow: true,
+      isShowFavorites: false,
+      isShowRecent: false,
     },
     catsView: 'list',
     chart: {

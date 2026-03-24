@@ -10,7 +10,7 @@ import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const {
-  alt,
+  compact,
   isShowDates,
   isShowExpense,
   isShowFilterByDesc,
@@ -22,7 +22,7 @@ const {
   size = 30,
   trnsIds = [],
 } = defineProps<{
-  alt?: boolean
+  compact?: boolean
   isShowDates?: boolean
   isShowExpense?: boolean
   isShowFilterByDesc?: boolean
@@ -252,7 +252,7 @@ function onOpenTrnForm(date: number) {
       <template v-for="trnId in paginatedTrnsIds" :key="trnId">
         <TrnsItemWrap
           v-if="trnItemsMap.get(trnId)"
-          :alt="alt"
+          :compact="compact"
           :date="(formatDate(trnItemsMap.get(trnId)!.date, 'trnItem') as string)"
           :trnId="trnId"
           :trnItem="trnItemsMap.get(trnId)!"
@@ -313,7 +313,7 @@ function onOpenTrnForm(date: number) {
           <template v-for="trnId in groupTrnsIds" :key="trnId">
             <TrnsItemWrap
               v-if="trnItemsMap.get(trnId)"
-              :alt="alt"
+              :compact="compact"
               :trnId="trnId"
               :trnItem="trnItemsMap.get(trnId)!"
               :date="(formatDate(trnItemsMap.get(trnId)!.date, 'trnItem') as string)"

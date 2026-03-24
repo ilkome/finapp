@@ -139,20 +139,24 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
         @clickAverage="statConfig.updateConfig('statAverage', { isShow: !isShowAverage })"
       />
 
-      <div class="_min-h-dvh grid min-w-0 content-start items-start gap-4">
-        <StatCategoriesRoundSection
-          v-if="isRoundShow && hasCategoriesData"
-          :filteredCategoriesIds
-          :isOneCategory="isOneCategory"
-          :preCategoriesIds="props.preCategoriesIds || categoriesStore.favoriteCategoriesIds"
-          :selectedTrnsIds
-          @clickCategory="onClickCategory"
-          @setCategoryFilter="onSetCategoryFilter"
-        />
+      <StatCategoriesRoundSection
+        v-if="isRoundShow && hasCategoriesData && (selectedTrnsIds.length > 0 || filteredCategoriesIds.length > 0)"
+        :filteredCategoriesIds
+        :isOneCategory="isOneCategory"
+        :preCategoriesIds="props.preCategoriesIds"
+        :selectedTrnsIds
+        @clickCategory="onClickCategory"
+        @setCategoryFilter="onSetCategoryFilter"
+      />
+
+      <div
+        v-if="selectedTrnsIds.length > 0"
+        class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
+      >
 
         <div
           :class="{
-            'grid gap-5 @3xl/page:grid-cols-2 @3xl/page:gap-6': shouldUseTwoColumnLayout,
+            'grid gap-5 @3xl/stat:grid-cols-2 @3xl/stat:gap-6': shouldUseTwoColumnLayout,
           }"
         >
           <StatCategoriesDetailedSection
@@ -171,9 +175,15 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
             :isPeriodOneDay="isPeriodOneDay"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
             :storageKey="statItemStorageKey"
-            class="@3xl/page:order-1"
+            class="@3xl/stat:order-1"
           />
         </div>
+      </div>
+
+      <div v-else class="mx-auto grid w-full max-w-150 content-start justify-items-center gap-4">
+        <TrnsNoTrns />
+
+        <StatCategoriesRoundSectionRecent />
       </div>
     </div>
 

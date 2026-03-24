@@ -24,7 +24,7 @@ const itemClasses = 'bg-item-3 rounded-sm'
         :walletId="walletId"
         :wallet="walletsStore.itemsComputed[walletId]!"
         insideClasses="!min-h-[38px]"
-        alt
+        compact
         isShowCreditLimit
         @click="filter.removeWalletId(walletId)"
       />
@@ -37,7 +37,7 @@ const itemClasses = 'bg-item-3 rounded-sm'
         :category="categoriesStore.items[categoryId]!"
         :categoryId="categoryId"
         :class="itemClasses"
-        alt
+        stacked
         insideClasses="!min-h-[38px]"
         @click="filter.removeCategoryId(categoryId)"
       />

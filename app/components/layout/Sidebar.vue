@@ -1,8 +1,10 @@
 <script setup lang="ts">
+import type { CategoryId } from '~/components/categories/types'
+import type { WalletId } from '~/components/wallets/types'
+
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-
-import type { WalletId } from '../wallets/types'
 
 const props = defineProps<{
   isShowSidebar?: boolean
@@ -15,9 +17,13 @@ const emit = defineEmits<{
 const route = useRoute()
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
 
 const isShowLogoMenu = ref(false)
 const { getWalletContextMenuItems } = useWalletContextMenu()
+
+type SidebarTab = 'categories' | 'wallets'
+const activeTab = ref<SidebarTab>('wallets')
 </script>
 
 <template>
@@ -69,43 +75,56 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
 
         <LayoutSidebarMenu class="px-2 pb-2" />
 
-        <div v-if="walletsStore.sortedIds.length > 0" class="px-2 pb-6">
-          <UiTitleSection class="!text-4 pb-2 pl-3">
-            {{ t('wallets.title') }}
-          </UiTitleSection>
+        <div class="px-2 pb-6">
+          <div class="flex gap-1 pb-2 pl-1">
+            <UiTabsItemPill
+              variant="outline"
+              :isActive="activeTab === 'wallets'"
+              @click="activeTab = 'wallets'"
+            >
+              {{ t('wallets.name') }}
+            </UiTabsItemPill>
+            <UiTabsItemPill
+              variant="outline"
+              :isActive="activeTab === 'categories'"
+              @click="activeTab = 'categories'"
+            >
+              {{ t('categories.name') }}
+            </UiTabsItemPill>
+          </div>
 
-          <WalletsList
-            :limit="10"
-            isShowToggle
-          >
-            <template #default="{ walletsIdsSorted, walletsItemsLimited }">
-              <WalletsItem
-                v-for="(walletItem, walletId) in walletsItemsLimited"
-                :key="walletId"
-                :activeItemId="(route.params.id as string)"
-                :contextMenuItems="getWalletContextMenuItems(walletId as WalletId)"
-                :lineWidth="1"
-                :wallet="walletItem"
-                :walletId
-                class="group"
-                isShowCreditLimit
-                isShowRate
-                isShowIcon
-                :to="walletId === route.params.id ? '/dashboard' : `/wallets/${walletId}`"
-              />
+          <!-- Wallets -->
+          <template v-if="activeTab === 'wallets' && walletsStore.recentWalletIds.length > 0">
+            <WalletsItem
+              v-for="walletId in walletsStore.recentWalletIds.slice(0, 10)"
+              :key="walletId"
+              :activeItemId="(route.params.id as string)"
+              :contextMenuItems="getWalletContextMenuItems(walletId as WalletId)"
+              :lineWidth="1"
+              :wallet="walletsStore.itemsComputed[walletId]!"
+              :walletId
+              class="group"
+              isShowCreditLimit
+              isShowRate
+              isShowIcon
+              :to="walletId === route.params.id ? '/dashboard' : `/wallets/${walletId}`"
+            />
+          </template>
 
-              <div
-                v-if="walletsIdsSorted.length === 0"
-                class="flex-center flex-col py-4"
-              >
-                <NuxtLink to="/wallets/new">
-                  <UiButtonAccent rounded>
-                    {{ t('wallets.new') }}
-                  </UiButtonAccent>
-                </NuxtLink>
-              </div>
-            </template>
-          </WalletsList>
+          <!-- Categories -->
+          <template v-if="activeTab === 'categories' && categoriesStore.recentCategoriesIds.length > 0">
+            <CategoriesItem
+              v-for="categoryId in categoriesStore.recentCategoriesIds.slice(0, 10)"
+              :key="categoryId"
+              :activeItemId="(route.params.id as string)"
+              :categoryId="(categoryId as CategoryId)"
+              :category="categoriesStore.items[categoryId]!"
+              :lineWidth="1"
+              isShowParent
+              stacked
+              :to="categoryId === route.params.id ? '/dashboard' : `/categories/${categoryId}`"
+            />
+          </template>
         </div>
       </div>
 

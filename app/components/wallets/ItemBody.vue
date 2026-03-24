@@ -9,7 +9,7 @@ import { getCreditAvailable } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
-  alt?: boolean
+  compact?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
   isShowCreditLimit?: boolean
@@ -31,7 +31,7 @@ const currenciesStore = useCurrenciesStore()
 const classes = computed(() => ([
   'relative',
   {
-    'bg-item-3 rounded-sm': props.alt,
+    'bg-item-3 rounded-sm': props.compact,
   },
   {
     group: props.isSort,
@@ -88,7 +88,7 @@ if (!props.isSort) {
     </template>
 
     <!-- Main -->
-    <template v-if="!props.alt">
+    <template v-if="!props.compact">
       <div class="grid grow gap-1">
         <div class="text-muted text-sm leading-none font-medium tracking-wide text-nowrap">
           {{ wallet.name }}
@@ -161,7 +161,7 @@ if (!props.isSort) {
     </template>
 
     <!-- Alternative -->
-    <template v-if="props.alt">
+    <template v-if="props.compact">
       <div class="grid grow gap-0.5">
         <div class="text-2 text-xs leading-none whitespace-nowrap">
           {{ wallet.name }}
