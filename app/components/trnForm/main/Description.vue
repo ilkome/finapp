@@ -23,7 +23,7 @@ function onSave(close: () => void) {
   <BottomSheetOrDropdown
     :isOpen="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
-    class="!grow-0 shrink-0"
+    class="shrink-0 !grow-0"
     dragClassesCustom="max-w-md"
     isShowCloseBtn
     @closeModal="trnsFormStore.closeTrnFormModal('description')"

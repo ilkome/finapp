@@ -85,8 +85,9 @@ function copyAmount() {
       :key="slug"
     >
       <div
-        :class="cn('-m-1 grid gap-2 overflow-hidden rounded-sm border border-transparent p-2',
-                   trnsFormStore.values.transferType === item.transferType && 'border-(--ui-primary)/50',
+        :class="cn(
+          '-m-1 grid gap-2 overflow-hidden rounded-sm border border-transparent p-2',
+          trnsFormStore.values.transferType === item.transferType && 'border-(--ui-primary)/50',
         )"
         @click="trnsFormStore.onChangeTransferType(item.transferType)"
       >
