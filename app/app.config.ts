@@ -34,6 +34,11 @@ export default defineAppConfig({
         overlay: '!bg-(--overlay)',
       },
     },
+    tooltip: {
+      slots: {
+        kbds: 'hidden md:inline-flex items-center shrink-0 gap-0.5 not-first-of-type:before:content-[\'·\'] not-first-of-type:before:me-0.5',
+      },
+    },
     toast: {
       props: {
         close: false,
