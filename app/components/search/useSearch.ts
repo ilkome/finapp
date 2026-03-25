@@ -17,7 +17,7 @@ export type SearchResultItem = CommandPaletteItem & {
 
 const RECENT_LIMIT = 10
 
-const isSearchOpen = ref(false)
+export const isSearchOpen = ref(false)
 
 export function useSearch() {
   const { t } = useI18n()
