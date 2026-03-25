@@ -23,7 +23,7 @@ const isShow = ref(false)
     :bottomSheetStyle="props.bottomSheetStyle"
     :isOpen="isShow"
     :title="props.title"
-    dragClassesCustom="h-full max-w-md"
+    dragClassesCustom="bottomSheetDragClassesCustom h-full"
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"
