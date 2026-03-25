@@ -1,6 +1,5 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { isSearchOpen } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -32,14 +31,6 @@ export function useMenuData() {
         tooltip: {
           text: t('trnForm.createTrn'),
           kbds: ['meta', 'G'],
-        },
-      },
-      search: {
-        icon: 'lucide:search',
-        name: t('search.title'),
-        tooltip: {
-          text: t('search.title'),
-          kbds: ['meta', 'K'],
         },
       },
       dashboard: {
@@ -96,11 +87,6 @@ export function useMenuData() {
       else if (walletsStore.hasItems && categoriesStore.hasItems) {
         trnsFormStore.openFormForCreate()
       }
-      return
-    }
-
-    if (menuId === 'search') {
-      isSearchOpen.value = true
       return
     }
 
