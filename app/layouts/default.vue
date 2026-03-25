@@ -19,7 +19,7 @@ const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()
 const { isMenuOpen } = useMenuData()
 const { isSearchOpen } = useSearch()
-const { loadDataFromCache, loadDataFromDB } = useInitApp()
+const { isDbLoading, loadDataFromCache, loadDataFromDB } = useInitApp()
 const { width } = useWindowSize()
 
 const isShowSidebar = useCookie('finapp.isShowSidebar', { default: () => true })
@@ -37,8 +37,15 @@ const { error, status } = useAsyncData(
     }
     else if (userStore.currentUser || hasAuthCookie()) {
       await loadDataFromCache()
-      if (navigator.onLine)
-        loadDataFromDB()
+
+      if (navigator.onLine) {
+        // If cache had data, load from DB in background (user sees cached UI).
+        // If no cache (first login), await so the loading screen stays visible.
+        if (isOnboarded.value)
+          loadDataFromDB()
+        else
+          await loadDataFromDB()
+      }
     }
   },
 )
@@ -72,7 +79,11 @@ defineShortcuts({
     }"
     style="margin-left: env(safe-area-inset-left)"
   >
-    <div v-if="status === 'error'" class="p-4">
+    <div v-if="status === 'pending' && !isOnboardedHint" class="flex-center h-dvh">
+      <UiLogo size="lg" />
+    </div>
+
+    <div v-else-if="status === 'error'" class="p-4">
       <pre>{{ error }}</pre>
     </div>
 

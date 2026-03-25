@@ -77,8 +77,11 @@ export function useInitApp() {
 
     // Clear cached data from localforage to prevent data leaks on shared devices.
     // The offline queue is intentionally preserved — it has its own userId ownership check.
-    for (const key of Object.values(STORAGE_KEYS))
-      localforage.removeItem(key)
+    const offlineKeys = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
+    for (const key of Object.values(STORAGE_KEYS)) {
+      if (!offlineKeys.has(key))
+        localforage.removeItem(key)
+    }
   }
 
   async function loadDataFromDB() {
@@ -89,6 +92,11 @@ export function useInitApp() {
     // Without this, queries can fire before setAuth's token fetch completes.
     const { $waitForConvexAuth } = useNuxtApp()
     await ($waitForConvexAuth as () => Promise<void>)()
+
+    // No authenticated user — skip data loading and replay to avoid
+    // overwriting cached stores with empty data or replaying without auth.
+    if (!userStore.uid)
+      return
 
     // Set in-memory userId for queue ownership stamping during pushes
     setOfflineQueueUserId(userStore.uid)

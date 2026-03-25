@@ -198,7 +198,16 @@ export const useUserStore = defineStore('user', () => {
       clearAuthCookie()
       setSessionInitialized(false)
       useCookie<boolean>('finapp.isOnboarded').value = false
-      await localforage.clear()
+
+      // Clear cached data but preserve the offline queue — it has its own
+      // userId ownership check and will be replayed or cleared on next login.
+      const offlineKeys = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
+      await Promise.all(
+        Object.values(STORAGE_KEYS)
+          .filter(key => !offlineKeys.has(key))
+          .map(key => localforage.removeItem(key)),
+      )
+
       await authClient.signOut()
     }
     catch (error) {

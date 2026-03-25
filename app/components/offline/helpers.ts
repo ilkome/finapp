@@ -2,10 +2,11 @@ import localforage from 'localforage'
 
 import type { EntityType, OfflineOp, OfflineOpInput } from '~/components/offline/types'
 
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { createLogger } from '~/utils/logger'
 
-const QUEUE_KEY = 'finapp.offline.queue'
-const QUEUE_USER_KEY = 'finapp.offline.queueUserId'
+const QUEUE_KEY = STORAGE_KEYS.offlineQueue
+const QUEUE_USER_KEY = STORAGE_KEYS.offlineQueueUserId
 
 const logger = createLogger('offline')
 
