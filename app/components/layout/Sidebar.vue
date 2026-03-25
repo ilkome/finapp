@@ -3,6 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { compareCategoryIds } from '~/components/categories/utils'
 import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -24,6 +25,32 @@ const { getWalletContextMenuItems } = useWalletContextMenu()
 
 type SidebarTab = 'categories' | 'wallets'
 const activeTab = ref<SidebarTab>('wallets')
+
+const sidebarCategoryIds = computed(() => {
+  const seen = new Set<CategoryId>()
+  const ids: CategoryId[] = []
+
+  for (const id of categoriesStore.favoriteCategoriesIds) {
+    if (!seen.has(id)) {
+      seen.add(id)
+      ids.push(id)
+    }
+  }
+
+  const remainingSlots = Math.max(0, 10 - ids.length)
+  let added = 0
+  for (const id of categoriesStore.recentCategoriesIds) {
+    if (added >= remainingSlots)
+      break
+    if (!seen.has(id)) {
+      seen.add(id)
+      ids.push(id)
+      added++
+    }
+  }
+
+  return ids.sort((a, b) => compareCategoryIds(a, b, categoriesStore.items))
+})
 </script>
 
 <template>
@@ -112,9 +139,9 @@ const activeTab = ref<SidebarTab>('wallets')
           </template>
 
           <!-- Categories -->
-          <template v-if="activeTab === 'categories' && categoriesStore.recentCategoriesIds.length > 0">
+          <template v-if="activeTab === 'categories' && sidebarCategoryIds.length > 0">
             <CategoriesItem
-              v-for="categoryId in categoriesStore.recentCategoriesIds.slice(0, 10)"
+              v-for="categoryId in sidebarCategoryIds"
               :key="categoryId"
               :activeItemId="(route.params.id as string)"
               :categoryId="(categoryId as CategoryId)"
