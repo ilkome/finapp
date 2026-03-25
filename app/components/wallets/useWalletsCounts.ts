@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 
 import type { WalletId } from '~/components/wallets/types'
 
@@ -8,12 +8,14 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export function useWalletsCounts(
   selectedWalletsIdsWithCurrency: ComputedRef<WalletId[]>,
+  includeArchivedInStats: Ref<boolean>,
 ) {
   const walletsStore = useWalletsStore()
   const currenciesStore = useCurrenciesStore()
 
   const counts = computed(() => computeWalletCounts({
     baseCurrency: currenciesStore.base,
+    includeArchivedInStats: includeArchivedInStats.value,
     rates: currenciesStore.rates,
     totalWalletsCount: Object.values(walletsStore.itemsComputed).filter(w => !w.isArchived).length,
     walletIds: selectedWalletsIdsWithCurrency.value,

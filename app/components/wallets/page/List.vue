@@ -32,6 +32,8 @@ const {
 } = useWalletDelete()
 
 const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
+const showArchived = useStorage<boolean>(WALLET_STORAGE_KEYS.showArchived, false)
+const includeArchivedInStats = useStorage<boolean>(WALLET_STORAGE_KEYS.includeArchivedInStats, false)
 
 const {
   currencyFiltered,
@@ -39,12 +41,12 @@ const {
   selectedWalletsIdsWithCurrency,
   setWalletViewType,
   walletViewType,
-} = useWalletsFilter(groupedBy)
+} = useWalletsFilter(groupedBy, showArchived)
 
 const {
   counts,
   countWalletsSum,
-} = useWalletsCounts(selectedWalletsIdsWithCurrency)
+} = useWalletsCounts(selectedWalletsIdsWithCurrency, includeArchivedInStats)
 
 const {
   groupedWalletsWithIds,
@@ -96,6 +98,19 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
               >
                 {{ t('wallets.sortTitle') }}
               </UiHeaderLink>
+
+              <div class="pt-2">
+                <UiSwitchItem
+                  :checkboxValue="showArchived"
+                  :title="t('wallets.options.showArchived')"
+                  @click="showArchived = !showArchived"
+                />
+                <UiSwitchItem
+                  :checkboxValue="includeArchivedInStats"
+                  :title="t('wallets.options.includeArchivedInStats')"
+                  @click="includeArchivedInStats = !includeArchivedInStats"
+                />
+              </div>
             </div>
           </template>
         </BottomSheetOrDropdown>
@@ -262,7 +277,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
               <div
                 v-if="hasGroups(content.groups)"
-                class="grid gap-2"
+                class="grid gap-2 pl-6"
               >
                 <UiToggleControlled
                   v-for="(ids, groupSecondary) in content.groups"
@@ -306,14 +321,14 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                 </UiToggleControlled>
               </div>
 
-              <template v-else>
+              <div v-else>
                 <WalletsPageListItem
                   v-for="walletId in content.ids"
                   :key="walletId"
                   :walletId
                   @delete="requestDelete"
                 />
-              </template>
+              </div>
             </UiToggleControlled>
           </div>
         </div>

@@ -6,5 +6,7 @@ export const WALLET_STORAGE_KEYS = {
   groupedBySecondary: 'finapp-wallets-groupedBySecondary',
   selectorCurrency: 'finapp-wallets-selector-currency',
   toggleMap: 'finapp-wallets-toggle-map',
+  showArchived: 'finapp-wallets-show-archived',
+  includeArchivedInStats: 'finapp-wallets-include-archived-in-stats',
   totalPrefix: 'finapp-wallets-total-',
 } as const

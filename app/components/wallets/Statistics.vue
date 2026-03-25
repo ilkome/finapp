@@ -38,11 +38,9 @@ const itemsGrouped = computed(() => [
     class="bg-item-2 mb-2 rounded-xl md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
-      <div class="flex grow items-center justify-between">
-        <UiTitleCollapse :isShown @click="toggle">
-          {{ t('statistics.title') }}
-        </UiTitleCollapse>
-      </div>
+      <UiTitleCollapse :isShown @click="toggle">
+        {{ t('statistics.title') }}
+      </UiTitleCollapse>
     </template>
 
     <div class="grid gap-6">

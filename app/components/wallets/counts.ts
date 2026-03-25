@@ -12,12 +12,13 @@ type CountItem = {
 
 export function computeWalletCounts(params: {
   baseCurrency?: CurrencyCode
+  includeArchivedInStats?: boolean
   rates?: Rates
   totalWalletsCount: number
   walletIds: WalletId[]
   wallets: Record<WalletId, WalletItemComputed>
 }): Record<string, CountItem> {
-  const { baseCurrency, rates, totalWalletsCount, walletIds, wallets } = params
+  const { baseCurrency, includeArchivedInStats = false, rates, totalWalletsCount, walletIds, wallets } = params
 
   function convert(amount: number, currencyCode: CurrencyCode): number {
     return getAmountInRate({ amount, baseCurrencyCode: baseCurrency, currencyCode, rates })
@@ -49,7 +50,8 @@ export function computeWalletCounts(params: {
     if (wallet.isArchived) {
       sum.archived += amount
       hasArchivedWallet = true
-      continue
+      if (!includeArchivedInStats)
+        continue
     }
 
     if (wallet.isExcludeInTotal)

@@ -15,19 +15,24 @@ export function filterWalletsByViewType(
   walletIds: WalletId[],
   wallets: Record<WalletId, WalletItemComputed>,
   viewType: WalletViewTypes | 'total',
+  showArchived = false,
 ): WalletId[] {
   return walletIds.filter((id) => {
     const wallet = wallets[id]
     if (!wallet)
       return false
 
+    if (viewType === 'isArchived')
+      return wallet.isArchived
+
+    const archivedFilter = showArchived || !wallet.isArchived
+
     switch (viewType) {
-      case 'isWithdrawal': return wallet.isWithdrawal && !wallet.isArchived
-      case 'isExcludeInTotal': return wallet.isExcludeInTotal && !wallet.isArchived
-      case 'isArchived': return wallet.isArchived
-      case 'isAvailable': return (wallet.type === 'credit' || wallet.isWithdrawal) && !wallet.isArchived
-      case 'total': return !wallet.isArchived
-      default: return wallet.type === viewType && !wallet.isArchived
+      case 'isWithdrawal': return wallet.isWithdrawal && archivedFilter
+      case 'isExcludeInTotal': return wallet.isExcludeInTotal && archivedFilter
+      case 'isAvailable': return (wallet.type === 'credit' || wallet.isWithdrawal) && archivedFilter
+      case 'total': return archivedFilter
+      default: return wallet.type === viewType && archivedFilter
     }
   })
 }
