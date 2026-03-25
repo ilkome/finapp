@@ -24,17 +24,41 @@
 
 <br/>
 
-## 🏞 Screenshots
-![Finapp 2.0.0](https://firebasestorage.googleapis.com/v0/b/finapp-17474.appspot.com/o/2.0.0%2Ffinapp-2.0.0-promo.png?alt=media&token=bce821da-f5fa-4e8a-be7a-8fc0ebfaf260)
+## 🏞 Screenshot
+
 
 <br/>
 
 ## 🚀 Features
-- Offline-first (PWA) with full CRUD support.
-- Instant sync across devices (Convex).
-- Mobile-first, but optimized for desktop.
-- Dark and Light theme support.
-- Multi-currency with automatic exchange rates.
+
+### Finance
+- **Wallets**: 6 types - cash, bank accounts, credit cards, deposits, crypto, debt
+- **Transactions**: expense, income, transfer, adjustment with built-in calculator
+- **Categories**: hierarchical (parent-child), custom icons and colors
+- **Multi-currency**: 165+ currencies with automatic daily exchange rates
+
+### Analytics
+- Dashboard with summary, expense, income tabs
+- Bar and line charts with average line
+- Flexible date ranges: day, week, month, year, custom period
+- Category breakdown with multiple display modes (list, icons, chart)
+- Multi-select filters by wallet and category
+
+### Offline & Sync
+- Offline-first PWA - fully functional without internet
+- Offline queue with automatic sync on reconnect
+- Real-time sync across devices via Convex
+
+### Customization
+- Light, Dark, and System color modes
+- 20+ primary colors and 5 neutral palettes
+- Adjustable border radius
+- Per-tab dashboard widget configuration
+- English and Russian interface
+
+### Other
+- Demo mode with sample data - no registration required
+- Google OAuth authentication
 
 <br/>
 
@@ -118,19 +142,9 @@ Or generate static files for static hosting:
 pnpm generate
 ```
 
-## 📚 Documentation
+## 📌 Previous Version
 
-Documentation site built with [Docus](https://docus.dev/). Run locally with `pnpm docs:dev`.
-
-### For users
-- [User Guide](docs/content/en/1.guide/index.md) — features, navigation, wallets, categories, transactions, statistics, settings
-
-### For developers
-- [Architecture](docs/content/en/2.architecture/index.md) — initialization flow, project structure, store pattern, client access, auth
-- [Transaction Types](docs/content/en/3.transaction-types/index.md) — types, adjustment logic, statistics
-- [Incremental Sync](docs/content/en/4.sync/index.md) — delta sync, deletion detection, performance
-- [Offline Queue](docs/content/en/5.offline-queue/index.md) — queue architecture, collapsing rules, sync scenarios
-- [Technical Decisions](docs/content/en/6.tech/index.md) — rationale behind key design choices
+The previous version of Finapp (built on Firebase) is available in the [`firebase`](https://github.com/ilkome/finapp/tree/firebase) branch.
 
 ## 🤝 Stay Connected
 - Telegram: [@ilkome](https://t.me/ilkome)
