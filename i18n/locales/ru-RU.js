@@ -232,7 +232,7 @@ export default {
     },
     type: 'Тип кошельки',
     types: {
-      available: 'Доступные для снятия',
+      available: 'Доступные',
       cash: 'Наличные',
       cashless: 'Безнал',
       credit: 'Кредит',
@@ -456,6 +456,10 @@ export default {
     },
     name: 'Кошельки',
     new: 'Новый кошелек',
+    options: {
+      includeArchivedInStats: 'Учитывать архивные в статистике',
+      showArchived: 'Показывать архивные кошельки',
+    },
     page: {
       currencies: 'Валюты',
       none: 'Список',

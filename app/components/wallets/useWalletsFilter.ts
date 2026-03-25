@@ -8,7 +8,7 @@ import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { filterWalletsByCurrency, filterWalletsByViewType } from '~/components/wallets/filters'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-export function useWalletsFilter(groupedBy: Ref<WalletsGroupedBy>) {
+export function useWalletsFilter(groupedBy: Ref<WalletsGroupedBy>, showArchived: Ref<boolean>) {
   const walletsStore = useWalletsStore()
 
   const currencyFiltered = useStorage<WalletsCurrencyFiltered>(WALLET_STORAGE_KEYS.activeCurrency, 'all')
@@ -23,12 +23,12 @@ export function useWalletsFilter(groupedBy: Ref<WalletsGroupedBy>) {
   )
 
   const selectedWalletsIds = computed<WalletId[]>(() =>
-    filterWalletsByViewType(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, walletViewType.value),
+    filterWalletsByViewType(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, walletViewType.value, showArchived.value),
   )
 
   watch(selectedWalletsIds, (ids) => {
     if (ids.length === 0 && walletViewType.value !== 'total') {
-      const totalIds = filterWalletsByViewType(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, 'total')
+      const totalIds = filterWalletsByViewType(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, 'total', showArchived.value)
       if (totalIds.length > 0)
         walletViewType.value = 'total'
     }

@@ -456,6 +456,10 @@ export default {
     },
     name: 'Wallets',
     new: 'New wallet',
+    options: {
+      includeArchivedInStats: 'Include archived in statistics',
+      showArchived: 'Show archived wallets',
+    },
     page: {
       currencies: 'Currencies',
       none: 'List',
