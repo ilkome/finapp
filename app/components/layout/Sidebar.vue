@@ -135,7 +135,7 @@ const activeTab = ref<SidebarTab>('wallets')
         >
           <UiActionButton
             :ariaLabel="t('app.toggleSidebar')"
-            class="text-4 z-10"
+            class="text-4 z-10 justify-start px-3"
             @click="emit('toggleSidebar')"
           >
             <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />
