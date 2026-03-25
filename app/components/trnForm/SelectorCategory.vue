@@ -20,7 +20,7 @@ const isShow = ref(false)
     :title="t('trnForm.category.select')"
     :isOpen="isShow"
     :bottomSheetStyle="props.bottomSheetStyle"
-    dragClassesCustom="h-full max-w-md"
+    dragClassesCustom="bottomSheetDragClassesCustom h-full"
     isShowCloseBtn
     @openModal="isShow = true"
     @closeModal="isShow = false"

@@ -74,7 +74,7 @@ onMounted(init)
 <template>
   <BottomSheet
     :isShow="isShow"
-    dragClassesCustom="max-h-[98dvh] max-w-md"
+    dragClassesCustom="bottomSheetDragClassesCustom max-h-[98dvh]"
     @closed="trnsFormStore.onClose()"
   >
     <template #handler="{ close }">
