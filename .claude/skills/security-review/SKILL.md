@@ -34,9 +34,9 @@ const config = useRuntimeConfig()
 const publicKey = config.public.convexUrl
 
 // Convex backend env vars
-const apiKey = process.env.OPENEXCHANGERATES_APP_ID
+const apiKey = process.env.OPEN_EXCHANGE_RATES_KEY
 if (!apiKey) {
-  throw new Error('OPENEXCHANGERATES_APP_ID not configured')
+  throw new Error('OPEN_EXCHANGE_RATES_KEY not configured')
 }
 ```
 
