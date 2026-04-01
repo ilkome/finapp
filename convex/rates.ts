@@ -3,7 +3,8 @@ import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import { internalAction, internalMutation, query } from './_generated/server'
 
-const appId = process.env.OPENEXCHANGERATES_APP_ID
+const RATES_API_URL = 'https://openexchangerates.org/api/latest.json'
+const appId = process.env.OPEN_EXCHANGE_RATES_KEY
 
 export const getLatest = query({
   args: {},
@@ -40,12 +41,12 @@ export const fetchAndSaveRates = internalAction({
   args: {},
   handler: async (ctx) => {
     if (!appId) {
-      console.error('OPENEXCHANGERATES_APP_ID not set')
+      console.error('OPEN_EXCHANGE_RATES_KEY not set')
       return
     }
 
     const res = await fetch(
-      `https://openexchangerates.org/api/latest.json?app_id=${appId}`,
+      `${RATES_API_URL}?app_id=${appId}`,
     )
 
     if (!res.ok) {

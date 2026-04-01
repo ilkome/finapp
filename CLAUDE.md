@@ -111,7 +111,7 @@ npx convex env set BETTER_AUTH_SECRET <value>
 npx convex env set APP_URL http://localhost:3050
 npx convex env set GOOGLE_CLIENT_ID <value>
 npx convex env set GOOGLE_CLIENT_SECRET <value>
-npx convex env set OPENEXCHANGERATES_APP_ID <value>
+npx convex env set OPEN_EXCHANGE_RATES_KEY <value>
 ```
 
 ## Environment Variables
@@ -135,7 +135,7 @@ All `.env*` files are gitignored except `.env.example`.
 - `BETTER_AUTH_SECRET` - secret key for Better Auth (**required** - without it all auth endpoints including CORS preflight will fail)
 - `APP_URL` - app URL for cross-domain auth and CORS/trustedOrigins
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` - Google OAuth
-- `OPENEXCHANGERATES_APP_ID` - exchange rates API
+- `OPEN_EXCHANGE_RATES_KEY` - exchange rates API
 
 ## Key Files
 
