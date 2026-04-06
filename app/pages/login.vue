@@ -28,24 +28,15 @@ async function signInWithGoogle() {
   isDemo.value = null
   isLoading.value = true
 
-  // Remember where user wanted to go, so callback page can redirect back.
-  // Using localStorage (synchronous) instead of cookie — cookie may not flush
-  // before signIn.social() triggers full-page navigation to Google.
   const redirectTo = getSafeRedirectPath(route.query.redirect)
   localStorage.setItem('finapp.authRedirect', redirectTo)
 
-  // Clear stale cross-domain cookies before initiating OAuth.
-  // After signOut, background responses (getSession, atom refetch) can race
-  // with localStorage.removeItem and re-write stale cookies. The stale
-  // __Secure-better-auth.state confuses the OAuth flow.
   localStorage.removeItem('better-auth_cookie')
   localStorage.removeItem('better-auth_session_data')
 
   try {
     const result = await signIn.social({ callbackURL: `${window.location.origin}/auth/callback`, provider: 'google' })
 
-    // crossDomainClient returns {url, redirect: true} instead of auto-redirecting.
-    // Manually redirect to the Google OAuth URL.
     if (result.data?.url) {
       window.location.href = result.data.url
     }

@@ -59,7 +59,6 @@ export const useWalletsStore = defineStore('wallets', () => {
     // Frontend IDs are always treated as new creates (server generates real ID)
     const isExisting = !isLocalId(id) && items.value && id in items.value
 
-    // Set order to max+1 for new wallets
     if (!isExisting) {
       const maxOrder = Object.values(items.value ?? {}).reduce(
         (max, w) => Math.max(max, w.order ?? 0),
@@ -68,7 +67,6 @@ export const useWalletsStore = defineStore('wallets', () => {
       values = { ...values, order: maxOrder + 1 }
     }
 
-    // Optimistic UI
     setWallets({
       ...(items.value ?? {}),
       [id]: values,
@@ -93,7 +91,6 @@ export const useWalletsStore = defineStore('wallets', () => {
       type: values.type,
     }
 
-    // Fire-and-forget mutation, cleanup on success
     const mutation = isExisting
       ? client.mutation(api.wallets.update, { id: asConvexId<'wallets'>(id), ...walletData })
       : client.mutation(api.wallets.create, walletData)
@@ -110,7 +107,6 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   function saveWalletsOrder(ids: WalletId[]) {
-    // Optimistic update
     const updated = { ...(items.value ?? {}) } as Wallets
     for (let i = 0; i < ids.length; i++) {
       const walletId = ids[i]!
@@ -220,19 +216,16 @@ export const useWalletsStore = defineStore('wallets', () => {
   const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsComputed.value, 'currency'))
 
   function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
-    // Optimistic UI
     const wallets = { ...(items.value ?? {}) }
     delete wallets[id]
     setWallets(wallets)
 
-    // Optimistic: remove trns from store immediately (backend cascade handles actual deletion)
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
 
     if (!pushDeleteOp({ entity: 'wallets', id, isDemo: !!isDemo.value }))
       return
 
-    // Fire-and-forget mutation, cleanup on success
     const { api, client } = useConvexClientWithApi()
     return handleMutationResult({
       action: 'delete',

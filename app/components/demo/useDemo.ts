@@ -35,17 +35,14 @@ function weightedPick<T extends { weight: number }>(rules: T[]): T {
   return rules.at(-1)!
 }
 
-/** Random integer in [min, max]. */
 function randInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-/** Random item from array. */
 function randItem<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)]!
 }
 
-/** Round to nearest 10. */
 function roundAmount(n: number): number {
   return Math.round(n / 10) * 10
 }

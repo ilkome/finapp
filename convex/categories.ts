@@ -8,7 +8,6 @@ import { action, internalMutation, internalQuery, mutation, query } from './_gen
 import { getAuthUser, getOwnEntity, requireAuthUser, validateStringLength } from './shared'
 import { toggleTrnsHash } from './trnsHash'
 
-// --- Shared helpers ---
 
 async function validateParentId(ctx: MutationCtx, parentId: Id<'categories'> | 0, userId: string, selfId?: Id<'categories'>) {
   if (parentId === 0)
@@ -64,8 +63,6 @@ async function updateCategoryCore(
   await ctx.db.patch(id, { ...args, updatedAt: now })
   return now
 }
-
-// --- Queries & Mutations ---
 
 export const list = query({
   args: {},
@@ -200,7 +197,6 @@ export const remove = action({
       userId: user._id,
     })
 
-    // Paginated trn deletion
     let cursor: string | null = null
     let isDone = false
     while (!isDone) {

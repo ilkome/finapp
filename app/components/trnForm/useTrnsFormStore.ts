@@ -181,7 +181,6 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   async function onSubmit() {
-    // Validate wallet/category exist before formatting
     if (values.trnType !== TrnType.Transfer) {
       if (!values.walletId || !walletsStore.items?.[values.walletId]) {
         showErrorToast('trnForm.errors.selectWallet')

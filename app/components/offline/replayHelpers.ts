@@ -42,9 +42,6 @@ async function validateOpData<T>(
   return null
 }
 
-/**
- * Remap local IDs in trn data using the collected remap map.
- */
 export function remapTrnIds(data: TrnItem, remapIds: Map<string, string>): TrnItem {
   if (data.type === TrnType.Transfer) {
     return {
@@ -60,9 +57,6 @@ export function remapTrnIds(data: TrnItem, remapIds: Map<string, string>): TrnIt
   }
 }
 
-/**
- * Check if a trn references wallets/categories that don't exist.
- */
 export function isTrnOrphaned(
   data: TrnItem,
   walletsItems: Record<string, unknown>,
@@ -80,9 +74,6 @@ type GroupedOps = {
   walletOps: OfflineOp[]
 }
 
-/**
- * Group offline operations by entity type.
- */
 export function groupOpsByEntity(ops: OfflineOp[]): GroupedOps {
   const walletOps: OfflineOp[] = []
   const categoryOps: OfflineOp[] = []
@@ -138,9 +129,6 @@ export function splitCategoryOps(ops: OfflineOp[]): {
   return { childOps, parentOps }
 }
 
-/**
- * Extract remap entries (localId -> convexId) from resolved promise results.
- */
 export function extractRemaps(results: unknown[]): Array<{ convexId: string, localId: string }> {
   const remaps: Array<{ convexId: string, localId: string }> = []
   for (const r of results) {
@@ -150,11 +138,6 @@ export function extractRemaps(results: unknown[]): Array<{ convexId: string, loc
   return remaps
 }
 
-// --- Per-entity replay functions ---
-
-/**
- * Collect remap entries from resolved promises into the remap map.
- */
 export async function collectRemaps(promises: (Promise<unknown> | void | undefined)[], remapIds: Map<string, string>): Promise<void> {
   const results = await Promise.all(promises.map(p => p ?? Promise.resolve()))
   for (const { convexId, localId } of extractRemaps(results)) {
@@ -167,9 +150,6 @@ type WalletActions = {
   saveWallet: (params: { id: string, values: WalletItem }) => Promise<unknown> | void | undefined
 }
 
-/**
- * Replay wallet operations: save or delete each wallet, collecting ID remaps.
- */
 export async function replayWalletOps(ops: OfflineOp[], remapIds: Map<string, string>, actions: WalletActions): Promise<void> {
   if (ops.length === 0)
     return
@@ -193,17 +173,13 @@ type CategoryActions = {
   saveCategory: (params: { id: string, isUpdateChildCategoriesColor: boolean, values: CategoryItem }) => Promise<unknown> | void | undefined
 }
 
-/**
- * Replay category operations: parents first, then children (with parentId remapping).
- * Collects ID remaps after each sub-phase.
- */
+/** Parents first, then children (with parentId remapping). */
 export async function replayCategoryOps(ops: OfflineOp[], remapIds: Map<string, string>, actions: CategoryActions): Promise<void> {
   if (ops.length === 0)
     return
 
   const { childOps, parentOps } = splitCategoryOps(ops)
 
-  // Parents first
   if (parentOps.length > 0) {
     const promises: (Promise<unknown> | void | undefined)[] = []
     for (const op of parentOps) {
@@ -223,7 +199,6 @@ export async function replayCategoryOps(ops: OfflineOp[], remapIds: Map<string, 
     await collectRemaps(promises, remapIds)
   }
 
-  // Children second (remap parentId if needed)
   if (childOps.length > 0) {
     const promises: (Promise<unknown> | void | undefined)[] = []
     for (const op of childOps) {
@@ -255,10 +230,7 @@ type TrnContext = {
   walletsItems: Record<string, unknown>
 }
 
-/**
- * Replay trn operations: remap wallet/category IDs, skip orphaned trns.
- * Returns the number of orphaned trns that were skipped.
- */
+/** Returns count of orphaned trns that were skipped. */
 export async function replayTrnOps(ops: OfflineOp[], remapIds: Map<string, string>, actions: TrnActions, context: TrnContext): Promise<number> {
   if (ops.length === 0)
     return 0
@@ -299,9 +271,6 @@ type SettingsActions = {
   saveLocale: (locale: string) => void
 }
 
-/**
- * Replay user settings operations: validate and apply base currency and locale changes.
- */
 export async function replaySettingsOps(ops: OfflineOp[], actions: SettingsActions): Promise<void> {
   for (const op of ops) {
     const settings = await validateOpData(op, settingsSchema, 'settings')

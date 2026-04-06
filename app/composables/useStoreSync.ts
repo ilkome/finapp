@@ -13,11 +13,6 @@ import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('store-sync')
 
-/**
- * When true, all localforage persist operations are skipped.
- * Set by clearLocalData() to prevent in-flight store inits and mutation callbacks
- * from re-writing data after cleanup. Reset by loadDataFromDB().
- */
 let _persistBlocked = false
 
 export function blockPersist(): void {
@@ -73,10 +68,6 @@ export function pushDeleteOp(opts: {
   return true
 }
 
-/**
- * Merge pending offline ops on top of server data during store init.
- * Handles updates, deletes, and cleanup of stale frontend IDs.
- */
 export async function mergeOfflineOps<T>(
   data: Record<string, T>,
   entity: EntityType,
@@ -111,10 +102,6 @@ export async function mergeOfflineOps<T>(
 
 export type RemapInfo = { convexId: string, localId: string }
 
-/**
- * Handle mutation .then/.catch: remove offline op, remap frontend ID, toast errors.
- * Returns a promise that resolves with remap info (for creates) or void.
- */
 export function handleMutationResult<T>(opts: {
   action: 'create' | 'delete' | 'update'
   entity: EntityType
@@ -134,7 +121,6 @@ export function handleMutationResult<T>(opts: {
       else
         await removeOfflineOps(opts.entity, ids)
 
-      // Remap frontend ID to Convex ID for new items (single create only)
       if (opts.action === 'create' && !Array.isArray(opts.id) && result && opts.items) {
         const convexId = String(result)
         const current = opts.items.value

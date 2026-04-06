@@ -16,9 +16,6 @@ onMounted(async () => {
     return
   }
 
-  // Service worker can replay callback navigation after the first run already
-  // succeeded. If auth cookie is set, the first callback already completed —
-  // skip verify and redirect to the app.
   if (hasAuthCookie()) {
     const redirectTo = getSafeRedirectPath(localStorage.getItem('finapp.authRedirect'))
     localStorage.removeItem('finapp.authRedirect')
@@ -41,12 +38,6 @@ onMounted(async () => {
       return
     }
 
-    // crossDomainClient's onSuccess hook already processed Set-Better-Auth-Cookie
-    // from the OTT verify response and wrote the SIGNED session token to localStorage.
-    // Call getSession WITHOUT Authorization header — let the cross-domain client
-    // send the signed token via Better-Auth-Cookie. Using Authorization: Bearer
-    // with the raw (unsigned) token causes the server to skip cookie injection
-    // and the bearer plugin can't verify an unsigned token.
     const session = await authClient.getSession()
 
     if (session.data?.user) {
@@ -54,8 +45,6 @@ onMounted(async () => {
 
       setAuthCookie(uid)
 
-      // Set Convex auth BEFORE navigating so that loadDataFromDB()
-      // queries are queued behind the token fetch (WebSocket pauses).
       const { $ensureConvexAuth } = useNuxtApp()
       ;($ensureConvexAuth as () => void)()
 
