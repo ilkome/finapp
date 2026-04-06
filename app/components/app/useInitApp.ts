@@ -66,8 +66,6 @@ export function useInitApp() {
   }
 
   function clearLocalData() {
-    // Block all persist operations — prevents in-flight store inits, mutation callbacks,
-    // and debounced persists from re-writing data after cleanup.
     blockPersist()
 
     categoriesStore.setCategories(null)
@@ -75,8 +73,6 @@ export function useInitApp() {
     walletsStore.setWallets(null)
     userStore.setUser(null)
 
-    // Clear cached data from localforage to prevent data leaks on shared devices.
-    // The offline queue is intentionally preserved — it has its own userId ownership check.
     const offlineKeys = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
     for (const key of Object.values(STORAGE_KEYS)) {
       if (!offlineKeys.has(key))
@@ -85,20 +81,14 @@ export function useInitApp() {
   }
 
   async function loadDataFromDB() {
-    // Unblock persists — may have been blocked by a prior clearLocalData
     unblockPersist()
 
-    // Wait for Convex auth token to be fetched so queries run authenticated.
-    // Without this, queries can fire before setAuth's token fetch completes.
     const { $waitForConvexAuth } = useNuxtApp()
     await ($waitForConvexAuth as () => Promise<void>)()
 
-    // No authenticated user — skip data loading and replay to avoid
-    // overwriting cached stores with empty data or replaying without auth.
     if (!userStore.uid)
       return
 
-    // Set in-memory userId for queue ownership stamping during pushes
     setOfflineQueueUserId(userStore.uid)
 
     isDbLoading.value = true

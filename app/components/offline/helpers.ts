@@ -10,10 +10,6 @@ const QUEUE_USER_KEY = STORAGE_KEYS.offlineQueueUserId
 
 const logger = createLogger('offline')
 
-/**
- * Module-level userId for stamping queue ownership at push time.
- * Set via setOfflineQueueUserId() during app init / replay.
- */
 let _currentUserId: string | null = null
 
 export function setOfflineQueueUserId(userId: string | null): void {
@@ -50,8 +46,6 @@ async function writeQueue(queue: OfflineOp[]): Promise<void> {
 }
 
 /**
- * Add operation to the unified offline queue with collapsing.
- *
  * Collapsing rules (matching by entity + id):
  * | Existing | New    | Result                              |
  * |----------|--------|-------------------------------------|
@@ -60,7 +54,7 @@ async function writeQueue(queue: OfflineOp[]): Promise<void> {
  * | update   | update | update with merged data             |
  * | update   | delete | replace update with delete          |
  * | delete   | *      | ignore new (delete is terminal)     |
- * | —        | *      | append as-is                        |
+ * | -        | *      | append as-is                        |
  */
 let writeChain = Promise.resolve()
 
@@ -70,7 +64,6 @@ export function pushOfflineOp(op: OfflineOpInput): Promise<void> {
 }
 
 async function pushOfflineOpImpl(op: OfflineOpInput): Promise<void> {
-  // Ensure queue ownership is stamped on first push
   if (_currentUserId) {
     const storedUserId = await localforage.getItem<string>(QUEUE_USER_KEY)
     if (!storedUserId)
@@ -90,7 +83,6 @@ async function pushOfflineOpImpl(op: OfflineOpInput): Promise<void> {
 
   const existing = queue[existingIdx]!
 
-  // delete is terminal — ignore any new operation
   if (existing.type === 'delete') {
     logger.log(`skip ${op.type} (already deleted): ${op.entity}/${op.id}`)
     return
@@ -98,12 +90,10 @@ async function pushOfflineOpImpl(op: OfflineOpInput): Promise<void> {
 
   if (op.type === 'delete') {
     if (existing.type === 'create') {
-      // Never reached server — remove both
       queue.splice(existingIdx, 1)
       logger.log(`collapsed create+delete (removed): ${op.entity}/${op.id}`)
     }
     else {
-      // update → delete: replace
       queue[existingIdx] = { ...op, timestamp: Date.now() } as OfflineOp
       logger.log(`collapsed update→delete: ${op.entity}/${op.id}`)
     }
@@ -111,8 +101,6 @@ async function pushOfflineOpImpl(op: OfflineOpInput): Promise<void> {
     return
   }
 
-  // create + update → create with merged data
-  // update + update → update with merged data
   queue[existingIdx] = {
     ...existing,
     data: { ...existing.data, ...op.data },
@@ -122,10 +110,6 @@ async function pushOfflineOpImpl(op: OfflineOpInput): Promise<void> {
   logger.log(`collapsed ${existing.type}+${op.type}: ${op.entity}/${op.id}`)
 }
 
-/**
- * Remove all operations for entity+id (after successful mutation).
- * Serialized through writeChain to prevent race conditions with pushOfflineOp.
- */
 export function removeOfflineOp(entity: EntityType, id: string): Promise<void> {
   writeChain = writeChain.then(() => removeOfflineOpImpl(entity, id), () => removeOfflineOpImpl(entity, id))
   return writeChain
@@ -140,10 +124,6 @@ async function removeOfflineOpImpl(entity: EntityType, id: string): Promise<void
   }
 }
 
-/**
- * Remove all operations for entity + multiple ids in a single read/write.
- * Serialized through writeChain to prevent race conditions.
- */
 export function removeOfflineOps(entity: EntityType, ids: string[]): Promise<void> {
   writeChain = writeChain.then(() => removeOfflineOpsImpl(entity, ids), () => removeOfflineOpsImpl(entity, ids))
   return writeChain
@@ -159,10 +139,6 @@ async function removeOfflineOpsImpl(entity: EntityType, ids: string[]): Promise<
   }
 }
 
-/**
- * Remove a specific operation matching entity+id+type.
- * Serialized through writeChain to prevent race conditions.
- */
 export function removeOfflineOpByType(entity: EntityType, id: string, type: OfflineOp['type']): Promise<void> {
   writeChain = writeChain.then(() => removeOfflineOpByTypeImpl(entity, id, type), () => removeOfflineOpByTypeImpl(entity, id, type))
   return writeChain
@@ -177,39 +153,23 @@ async function removeOfflineOpByTypeImpl(entity: EntityType, id: string, type: O
   }
 }
 
-/**
- * Get all operations in order (for replay).
- */
 export async function getAllOfflineOps(): Promise<OfflineOp[]> {
   return readQueue()
 }
 
-/**
- * Get operations for a specific entity (for init merge).
- */
 export async function getOfflineOpsByEntity(entity: EntityType): Promise<OfflineOp[]> {
   const queue = await readQueue()
   return queue.filter(o => o.entity === entity)
 }
 
-/**
- * Get the userId associated with the current offline queue.
- */
 export async function getQueueUserId(): Promise<string | null> {
   return localforage.getItem<string>(QUEUE_USER_KEY)
 }
 
-/**
- * Set the userId associated with the current offline queue.
- */
 export async function setQueueUserId(userId: string): Promise<void> {
   await localforage.setItem(QUEUE_USER_KEY, userId)
 }
 
-/**
- * Clear the entire offline queue (logout or user mismatch).
- * Serialized through writeChain to prevent race conditions with pushOfflineOp.
- */
 export function clearOfflineQueue(): Promise<void> {
   writeChain = writeChain.then(() => clearOfflineQueueImpl(), () => clearOfflineQueueImpl())
   return writeChain

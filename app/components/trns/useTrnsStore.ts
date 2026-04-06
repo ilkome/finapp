@@ -156,7 +156,6 @@ export const useTrnsStore = defineStore('trns', () => {
   async function deltaSync(syncMeta: TrnsSyncMeta, cachedTrns: Trns): Promise<void> {
     const { api, client } = useConvexClientWithApi()
 
-    // Fetch delta changes and current hash in parallel
     const [changedTrns, hashResult] = await Promise.all([
       fetchAllPages<ConvexTrnDoc>(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
       client.query(api.trns.idsHash, {}) as Promise<{ hash: string, serverTime: number } | null>,
@@ -170,14 +169,12 @@ export const useTrnsStore = defineStore('trns', () => {
 
     const { hash: currentHash, serverTime } = hashResult
 
-    // Start with cached data and apply delta
     let data: Trns = { ...cachedTrns }
     if (changedTrns.length > 0) {
       const changedMap = convexTrnsToMap(changedTrns)
       data = { ...data, ...changedMap }
     }
 
-    // Check if hash matches after applying delta
     const localHash = xorIdsHash(Object.keys(data).filter(id => !isLocalId(id)))
     if (localHash !== currentHash) {
       // Hash mismatch = deletions or missed changes → fallback to fullSync
@@ -243,7 +240,6 @@ export const useTrnsStore = defineStore('trns', () => {
     // Frontend IDs are always treated as new creates (server generates real ID)
     const isExisting = !isLocalId(id) && items.value && id in items.value
 
-    // Optimistic UI
     setTrns({ ...(items.value ?? {}), [id]: valuesWithEditDate })
 
     if (!pushSaveOp({ entity: 'trns', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
@@ -276,7 +272,6 @@ export const useTrnsStore = defineStore('trns', () => {
           walletId: asConvexId<'wallets'>(values.walletId),
         }
 
-    // Fire-and-forget mutation, cleanup on success
     const mutation = isExisting
       ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData })
       : client.mutation(api.trns.create, trnData)
@@ -301,7 +296,6 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!pushDeleteOp({ entity: 'trns', id, isDemo: !!isDemo.value }))
       return
 
-    // Fire-and-forget mutation, cleanup on success
     const { api, client } = useConvexClientWithApi()
     return handleMutationResult({
       action: 'delete',
@@ -314,10 +308,7 @@ export const useTrnsStore = defineStore('trns', () => {
     })
   }
 
-  /**
-   * Remove trns from store only (optimistic UI cleanup).
-   * Does NOT fire mutations or push to offline queue.
-   */
+  /** Remove trns from store only. Does NOT fire mutations or push to offline queue. */
   function removeTrnsFromStore(trnsIds: TrnId[]) {
     if (!items.value)
       return
@@ -332,7 +323,6 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!items.value || !walletsStore.items || !categoriesStore.items)
       return null
 
-    // Trn
     const trn = items.value[id]
     if (!trn)
       return null
@@ -357,7 +347,6 @@ export const useTrnsStore = defineStore('trns', () => {
         return null
     }
 
-    // Transfer
     if (trn.type === TrnType.Transfer) {
       const expenseWallet = walletsStore.items[trn.expenseWalletId]
       if (!expenseWallet)
@@ -377,7 +366,6 @@ export const useTrnsStore = defineStore('trns', () => {
       }
     }
 
-    // Regular transaction
     const wallet = walletsStore.items[trn.walletId]
     if (!wallet)
       return null

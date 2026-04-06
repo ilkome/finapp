@@ -24,7 +24,6 @@ export async function replayOfflineQueue(): Promise<void> {
   const userStore = useUserStore()
   const currentUserId = userStore.uid
 
-  // Verify queue ownership — don't replay another user's queue
   try {
     const queueUserId = await getQueueUserId()
     if (queueUserId && queueUserId !== currentUserId) {
@@ -33,7 +32,6 @@ export async function replayOfflineQueue(): Promise<void> {
       return
     }
 
-    // Set ownership for future ops (both in-memory and persisted)
     if (currentUserId) {
       setOfflineQueueUserId(currentUserId)
       await setQueueUserId(currentUserId)
@@ -55,7 +53,6 @@ export async function replayOfflineQueue(): Promise<void> {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
-  // Filter out frontend-ID deletes and group by entity
   const filteredOps = []
   for (const op of queue) {
     if (isLocalId(op.id) && op.type === 'delete') {

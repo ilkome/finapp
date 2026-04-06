@@ -66,7 +66,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
 <template>
   <UiPage>
-    <!-- Header -->
     <UiHeader>
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
 
@@ -117,7 +116,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       </template>
     </UiHeader>
 
-    <!-- Empty -->
     <div
       v-if="!walletsStore.hasItems"
       class="flex-center grow flex-col"
@@ -132,21 +130,17 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       </NuxtLink>
     </div>
 
-    <!-- Content -->
     <div
       v-else
       class="grid max-w-5xl grow px-2 lg:px-4 2xl:px-8 @xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12"
     >
-      <!-- Right -->
       <div class="grid content-start gap-3 @xl/page:order-1 @xl/page:gap-4 @xl/page:pt-1 @3xl/main:max-w-sm">
-        <!-- Wallets Currencies -->
         <WalletsCurrencies
           v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
           :currencyFiltered
           @selectFilterCurrency="code => currencyFiltered = code"
         />
 
-        <!-- Total -->
         <div class="flex flex-wrap justify-stretch gap-2 @2xl/page:justify-start">
           <StatSumItem
             :title="t('money.types.total')"
@@ -172,7 +166,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         />
       </div>
 
-      <!-- Left content -->
       <div class="@3xl/main:max-w-sm">
         <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2 ">
           <UiTabsScroll>
@@ -218,9 +211,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
           </div>
         </div>
 
-        <!-- Wallets List -->
         <div class="md:max-w-lg @xl/page:max-w-lg">
-          <!-- No grouping -->
           <div
             v-if="groupedBy === 'none'"
             class="border-item-4 bg-item-2 rounded-xl md:max-w-lg"
@@ -233,7 +224,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
             />
           </div>
 
-          <!-- Grouping -->
           <div
             v-if="groupedBy !== 'none' && groupedWalletsWithIds"
             class="grid gap-4"
@@ -345,6 +335,5 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
     @confirm="confirmDelete"
   />
 
-  <!-- Sort Modal -->
   <WalletsSortModal v-if="isSortModalOpen" @close="isSortModalOpen = false" />
 </template>

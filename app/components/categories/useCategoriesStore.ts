@@ -125,7 +125,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
         latestDateByCategory.set(categoryId, trn.date)
     }
 
-    // Filter valid categories and pick top N by most recent usage
     const sortedEntries = [...latestDateByCategory.entries()].toSorted(([, dateA], [, dateB]) => dateB - dateA)
 
     const recentIds: CategoryId[] = []
@@ -230,7 +229,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     // Frontend IDs are always treated as new creates (server generates real ID)
     const isExisting = !isLocalId(id) && items.value && id in items.value
 
-    // Optimistic UI
     applyOptimisticUpdate(id, values, isUpdateChildCategoriesColor, categoryChildIds)
 
     if (!pushSaveOp({ entity: 'categories', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
@@ -273,19 +271,16 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (id === 'transfer' || id === 'adjustment')
       return
 
-    // Optimistic UI
     const categories = { ...items.value }
     delete categories[id]
     setCategories(categories)
 
-    // Optimistic: remove trns from store immediately (backend cascade handles actual deletion)
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
 
     if (!pushDeleteOp({ entity: 'categories', id, isDemo: !!isDemo.value }))
       return
 
-    // Fire-and-forget mutation, cleanup on success
     const { api, client } = useConvexClientWithApi()
     return handleMutationResult({
       action: 'delete',
