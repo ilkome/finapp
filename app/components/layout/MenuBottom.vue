@@ -15,7 +15,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
     />
     <div
       class="pointer-events-auto w-full"
-      :style="{ paddingBottom: `max(8px, calc(env(safe-area-inset-bottom) - 4px))` }"
+      :style="{ paddingBottom: `max(8px, calc(env(safe-area-inset-bottom) - 12px))` }"
     >
       <div
         class="border-default/50 bg-default/10 mx-auto flex max-w-sm items-stretch rounded-2xl border shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
