@@ -26,6 +26,8 @@ vi.stubGlobal('useNuxtApp', () => ({
   $i18n: { setLocale: setLocaleMock },
 }))
 
+vi.stubGlobal('useOnline', () => ref(true))
+
 type SessionUser = { email: string, id: string, image: string | null, name: string }
 type SessionData = { data: { user: SessionUser } | null, isPending: boolean }
 const useSessionMock = vi.fn(() => ref<SessionData>({ data: null, isPending: false }))
