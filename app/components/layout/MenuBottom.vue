@@ -8,7 +8,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 </script>
 
 <template>
-  <div class="pointer-events-none fixed bottom-0 left-0 z-20 w-full md:hidden">
+  <div class="pointer-events-none fixed bottom-0 left-0 z-20 w-full px-4 md:hidden">
     <div
       class="absolute bottom-0 left-0 h-12 w-full"
       style="background: linear-gradient(to bottom, transparent, var(--ui-bg))"
