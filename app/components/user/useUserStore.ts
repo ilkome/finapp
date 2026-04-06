@@ -37,6 +37,8 @@ export const useUserStore = defineStore('user', () => {
   const baseCurrency = ref<CurrencyCode>('USD')
   const locale = ref<LocaleSlug>('en')
 
+  const isOnline = useOnline()
+
   const currentUser = computed<User | null>(() => {
     const s = session.value
     const sessionUser = s?.data?.user
@@ -49,8 +51,11 @@ export const useUserStore = defineStore('user', () => {
       }
     }
     if (s?.isPending)
-      return user.value // Not loaded yet — use Pinia cache
-    return null // Session checked, no user
+      return user.value
+
+    if (!isOnline.value && user.value)
+      return user.value
+    return null
   })
 
   const uid = computed<string | null>(() => currentUser.value?.uid || null)
@@ -149,8 +154,6 @@ export const useUserStore = defineStore('user', () => {
         }
       }
 
-      // Apply pending offline ops (local changes win over server).
-      // Ops are partial — only override the fields they contain.
       const pendingOps = await getOfflineOpsByEntity('userSettings')
       const partialSchema = userSettingsSchema.partial()
       for (const op of pendingOps) {
@@ -184,8 +187,7 @@ export const useUserStore = defineStore('user', () => {
       return
     }
 
-    // Block all persist operations — prevents in-flight mutation callbacks
-    // from re-writing data to localforage after clear().
+    // Prevents in-flight mutation callbacks from re-writing data after cleanup.
     blockPersist()
 
     try {
@@ -199,8 +201,6 @@ export const useUserStore = defineStore('user', () => {
       setSessionInitialized(false)
       useCookie<boolean>('finapp.isOnboarded').value = false
 
-      // Clear cached data but preserve the offline queue — it has its own
-      // userId ownership check and will be replayed or cleared on next login.
       const offlineKeys = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
       await Promise.all(
         Object.values(STORAGE_KEYS)
@@ -217,12 +217,8 @@ export const useUserStore = defineStore('user', () => {
       isSigningOut.value = false
     }
 
-    // Clean up AFTER all async work completes — no race with guard redirect.
     localStorage.removeItem('better-auth_cookie')
     localStorage.removeItem('better-auth_session_data')
-
-    // Hard navigation creates clean page state. This runs only after all
-    // cleanup is done, so the next login won't be interrupted.
     window.location.href = '/login'
   }
 
@@ -239,8 +235,6 @@ export const useUserStore = defineStore('user', () => {
     const { clearOfflineQueue, setOfflineQueueUserId } = await import('~/components/offline/helpers')
     await clearOfflineQueue()
 
-    // Restore in-memory userId — clearOfflineQueue resets it to null,
-    // but the user stays logged in and future pushes need ownership.
     setOfflineQueueUserId(uid.value)
 
     if (!isDemo.value) {
