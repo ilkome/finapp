@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import pkg from '~~/package.json'
 
 import type { LocaleSlug } from '~/components/locale/types'
@@ -14,6 +16,7 @@ const currenciesStore = useCurrenciesStore()
 const { generateDemoData } = useDemo()
 const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
+const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 
 useSeoMeta({
   ogTitle: t('settings.title'),
@@ -57,6 +60,17 @@ function onGenerateDemoData() {
             :value="locale"
             @change="(loc: string) => userStore.saveUserLocale(loc as LocaleSlug)"
           />
+        </UiSettingsCard>
+
+        <!-- Menu labels -->
+        <UiSettingsCard :title="t('settings.mobileMenu')" class="md:hidden">
+          <template #content>
+            <UiSwitchItem
+              :checkboxValue="isShowMenuLabels"
+              :title="t('settings.menuLabels')"
+              @click="isShowMenuLabels = !isShowMenuLabels"
+            />
+          </template>
         </UiSettingsCard>
 
         <!-- Currency -->

@@ -3,6 +3,7 @@ import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const emit = defineEmits<{ close: [] }>()
+const { t } = useI18n()
 const userStore = useUserStore()
 const { isDemo } = useDemo()
 </script>
@@ -28,7 +29,7 @@ const { isDemo } = useDemo()
             <UserViewLogout />
           </div>
 
-          <LayoutSidebarMenu class="py-4" />
+          <LayoutSidebarMenu class="py-4" source="itemsModal" />
 
           <div
             v-if="isDemo"
