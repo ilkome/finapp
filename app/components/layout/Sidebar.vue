@@ -58,13 +58,13 @@ const sidebarCategoryIds = computed(() => {
     :class="{
       'md:w-72': props.isShowSidebar,
     }"
-    class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden transition-all duration-300 ease-in-out sm:block"
+    class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden transition-all duration-300 ease-in-out md:block"
   >
     <div class="relative h-full overflow-hidden overflow-y-auto overscroll-contain">
       <LayoutSidebarMenu
         :isShowText="false"
-        :class="{ 'md:hidden': props.isShowSidebar }"
-        class="sm:align-center hidden h-full flex-col justify-center gap-1 sm:flex"
+        :class="{ hidden: props.isShowSidebar }"
+        class="flex h-full flex-col items-center justify-center gap-1"
       />
 
       <div

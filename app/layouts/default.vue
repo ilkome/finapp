@@ -19,13 +19,20 @@ const trnsStore = useTrnsStore()
 const { isDemo } = useDemo()
 const { isMenuOpen } = useMenuData()
 const { isSearchOpen } = useSearch()
-const { isDbLoading, loadDataFromCache, loadDataFromDB } = useInitApp()
+const { loadDataFromCache, loadDataFromDB } = useInitApp()
 const { width } = useWindowSize()
 
 const isShowSidebar = useCookie('finapp.isShowSidebar', { default: () => true })
 const isOnboardedHint = useCookie('finapp.isOnboarded', { default: () => false })
 const isOnboarded = computed(() => walletsStore.hasItems && categoriesStore.hasItems && trnsStore.hasItems)
 watch(isOnboarded, val => (isOnboardedHint.value = val))
+
+const hasSidebar = computed(() => isOnboardedHint.value || isOnboarded.value)
+const layoutClasses = computed(() => cn(
+  'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
+  hasSidebar.value && (isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
+  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-[360px]',
+))
 
 const { error, status } = useAsyncData(
   'app',
@@ -71,12 +78,7 @@ defineShortcuts({
 
 <template>
   <div
-    class="flex min-h-dvh flex-col transition-all duration-300 ease-in-out"
-    :class="{
-      'sm:pl-12': isOnboardedHint || isOnboarded,
-      'md:pl-72': (isOnboardedHint || isOnboarded) && isShowSidebar,
-      'md:pr-[360px]': isOnboarded && trnsFormStore.ui.isShow,
-    }"
+    :class="layoutClasses"
     style="margin-left: env(safe-area-inset-left)"
   >
     <div v-if="status === 'pending' && !isOnboardedHint" class="flex-center h-dvh">
@@ -96,11 +98,11 @@ defineShortcuts({
       </template>
 
       <div :class="isOnboarded ? 'flex min-h-dvh flex-col md:py-4 md:pr-4' : 'flex flex-1 items-center justify-center'">
-        <div :class="isOnboarded ? 'bg-default sm:border-item-4 relative z-10 flex max-w-5xl flex-1 flex-col contain-paint sm:rounded-md sm:border lg:rounded-2xl' : 'w-full max-w-lg px-4'">
+        <div :class="isOnboarded ? 'bg-default md:border-item-4 relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-2xl' : 'w-full max-w-lg px-4'">
           <main
             id="pageScroll"
-            :style="isOnboarded ? 'padding-bottom: calc(50px + env(safe-area-inset-bottom))' : ''"
-            class="@container/main flex-1 contain-paint"
+            :style="isOnboarded ? 'padding-bottom: calc(64px + env(safe-area-inset-bottom))' : ''"
+            class="@container/main flex-1 contain-paint md:!pb-0"
           >
             <slot :keepalive="{ include: keepalive }" />
           </main>

@@ -72,12 +72,24 @@ export function useMenuData() {
   const itemsBottom = computed<Record<string, MenuItem>>(() => ({
     wallets: items.value.wallets!,
     categories: items.value.categories!,
-    trnForm: items.value.trnForm!,
+    trnForm: { ...items.value.trnForm!, name: t('base.add') },
     dashboard: items.value.dashboard!,
-    menu: { icon: 'hugeicons:menu-01', name: '' },
+    menu: { icon: 'hugeicons:menu-01', name: t('base.menu') },
   }))
 
+  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'dashboard'])
+  const itemsModal = computed<Record<string, MenuItem>>(() =>
+    Object.fromEntries(
+      Object.entries(items.value).filter(([key]) => !bottomKeys.has(key)),
+    ),
+  )
+
   function onClick(menuId: string) {
+    if (menuId === 'menu') {
+      isMenuOpen.value = true
+      return
+    }
+
     isMenuOpen.value = false
 
     if (menuId === 'trnForm') {
@@ -87,11 +99,6 @@ export function useMenuData() {
       else if (walletsStore.hasItems && categoriesStore.hasItems) {
         trnsFormStore.openFormForCreate()
       }
-      return
-    }
-
-    if (menuId === 'menu') {
-      isMenuOpen.value = true
       return
     }
 
@@ -105,6 +112,7 @@ export function useMenuData() {
   return {
     items,
     itemsBottom,
+    itemsModal,
     onClick,
     checkIsActive,
     isMenuOpen,

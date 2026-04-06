@@ -268,6 +268,8 @@ export default {
     errors: {
       saveFailed: 'Failed to save settings',
     },
+    menuLabels: 'Show labels in bottom menu',
+    mobileMenu: 'Interface',
     title: 'Settings',
   },
 
