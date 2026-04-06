@@ -18,7 +18,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
       :style="{ paddingBottom: `max(8px, calc(env(safe-area-inset-bottom) - 12px))` }"
     >
       <div
-        class="border-default/50 bg-default/10 mx-auto flex max-w-sm items-stretch rounded-2xl border shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+        class="border-default/80 bg-default/10 mx-auto flex max-w-sm items-stretch rounded-2xl border shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
       >
         <div
           v-for="(item, menuId) in itemsBottom"
