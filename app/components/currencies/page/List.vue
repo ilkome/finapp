@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { currencies } from '~/components/currencies/currencies'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { useCurrencyName } from '~/components/currencies/useCurrencyName'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -8,14 +9,29 @@ const { t } = useI18n()
 const currenciesStore = useCurrenciesStore()
 const userStore = useUserStore()
 const walletsStore = useWalletsStore()
+const { getCurrencyName } = useCurrencyName()
 
 useHead({ title: t('currencies.page.title') })
 
 const searchInput = ref('')
+const activeTab = ref<'fiat' | 'crypto'>('fiat')
 
 const currencyMap = new Map(
-  currencies.map(c => [c.code, { name: c.name, symbol: c.symbol }]),
+  currencies.map(c => [c.code, { symbol: c.symbol }]),
 )
+
+// Fiat detection: Intl.DisplayNames knows ISO 4217 codes and returns
+// a translated name for fiat, but returns the code itself for unknown (crypto)
+const intlCurrencyNames = new Intl.DisplayNames('en', { type: 'currency' })
+function isFiatCode(code: string): boolean {
+  try {
+    const name = intlCurrencyNames.of(code)
+    return name !== undefined && name !== code
+  }
+  catch {
+    return false
+  }
+}
 
 function getRate(code: string): number | undefined {
   const base = currenciesStore.base
@@ -45,9 +61,8 @@ function filterBySearch(items: string[]): string[] {
 
   const search = searchInput.value.toLowerCase()
   return items.filter((code) => {
-    const info = currencyMap.get(code)
     return code.toLowerCase().includes(search)
-      || info?.name.toLowerCase().includes(search)
+      || getCurrencyName(code).toLowerCase().includes(search)
   })
 }
 
@@ -55,10 +70,24 @@ const usedList = computed(() => {
   return sortCurrencies(filterBySearch(walletsStore.currenciesUsed))
 })
 
-const allList = computed(() => {
+const allRateCodes = computed(() => {
+  return Object.keys(currenciesStore.rates)
+})
+
+const fiatList = computed(() => {
   const usedSet = new Set(walletsStore.currenciesUsed)
-  const items = currencies.map(c => c.code).filter(code => !usedSet.has(code))
+  const items = allRateCodes.value.filter(code => isFiatCode(code) && !usedSet.has(code))
   return sortCurrencies(filterBySearch(items))
+})
+
+const cryptoList = computed(() => {
+  const usedSet = new Set(walletsStore.currenciesUsed)
+  const items = allRateCodes.value.filter(code => !isFiatCode(code) && !usedSet.has(code))
+  return sortCurrencies(filterBySearch(items))
+})
+
+const activeList = computed(() => {
+  return activeTab.value === 'fiat' ? fiatList.value : cryptoList.value
 })
 </script>
 
@@ -90,29 +119,43 @@ const allList = computed(() => {
           :key="code"
           :code="code"
           :isBase="code === currenciesStore.base"
-          :name="currencyMap.get(code)?.name ?? code"
+          :name="getCurrencyName(code)"
           :rate="getRate(code)"
           :symbol="currencyMap.get(code)?.symbol"
           @setBase="userStore.saveUserBaseCurrency"
         />
       </div>
 
-      <!-- All currencies -->
-      <UiTitleCollapse isHideArrow>
-        {{ t('currencies.page.showAll') }}
-      </UiTitleCollapse>
+      <!-- Fiat / Crypto tabs -->
+      <UiTabsScroll class="mt-4 mb-2">
+        <UiTabsItemPill
+          :isActive="activeTab === 'fiat'"
+          variant="outline"
+          @click="activeTab = 'fiat'"
+        >
+          {{ t('currencies.page.fiat') }}
+        </UiTabsItemPill>
 
-      <div v-if="allList.length === 0" class="text-muted py-6 text-center text-sm">
+        <UiTabsItemPill
+          :isActive="activeTab === 'crypto'"
+          variant="outline"
+          @click="activeTab = 'crypto'"
+        >
+          {{ t('currencies.page.crypto') }}
+        </UiTabsItemPill>
+      </UiTabsScroll>
+
+      <div v-if="activeList.length === 0" class="text-muted py-6 text-center text-sm">
         {{ t('currencies.list.notFound') }}
       </div>
 
       <div v-else>
         <CurrenciesItem
-          v-for="code in allList"
+          v-for="code in activeList"
           :key="code"
           :code="code"
           :isBase="code === currenciesStore.base"
-          :name="currencyMap.get(code)?.name ?? code"
+          :name="getCurrencyName(code)"
           :rate="getRate(code)"
           :symbol="currencyMap.get(code)?.symbol"
           @setBase="userStore.saveUserBaseCurrency"
