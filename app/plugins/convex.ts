@@ -48,6 +48,9 @@ export default defineNuxtPlugin(() => {
       authReadyResolve = resolve
     })
     client.setAuth(fetchToken)
+    // Eagerly fetch token so authReadyPromise resolves immediately,
+    // rather than waiting for the Convex client to schedule fetchToken.
+    fetchToken({ forceRefreshToken: false })
   }
 
   let authSet = false
