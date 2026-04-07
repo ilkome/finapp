@@ -1,11 +1,11 @@
+import type { LocaleSlug } from '~/components/locale/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { clearOfflineQueue, getAllOfflineOps, getQueueUserId, removeOfflineOp, setOfflineQueueUserId, setQueueUserId } from '~/components/offline/helpers'
 import { groupOpsByEntity, replayCategoryOps, replaySettingsOps, replayTrnOps, replayWalletOps } from '~/components/offline/replayHelpers'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import type { LocaleSlug } from '~/components/locale/types'
-
 import { isLocalId } from '~/utils/convexId'
 import { createLogger } from '~/utils/logger'
 
