@@ -130,6 +130,8 @@ export default {
       showAll: 'Show all wallets',
     },
     page: {
+      crypto: 'Crypto',
+      fiat: 'Fiat',
       rate: 'Rate',
       setBase: 'Set as base currency',
       showAll: 'All',

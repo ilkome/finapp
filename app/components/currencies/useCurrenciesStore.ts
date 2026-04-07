@@ -25,10 +25,12 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
       if (latestRates?.rates) {
         const parsed = ratesSchema.safeParse(latestRates.rates)
-        if (parsed.success)
+        if (parsed.success) {
           setRates(parsed.data)
-        else
+        }
+        else {
           logger.error('invalid rates from Convex', parsed.error)
+        }
       }
     }
     catch (e) {

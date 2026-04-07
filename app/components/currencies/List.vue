@@ -2,6 +2,7 @@
 import type { CurrencyCode } from '~/components/currencies/types'
 
 import { currencies } from '~/components/currencies/currencies'
+import { useCurrencyName } from '~/components/currencies/useCurrencyName'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -16,6 +17,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
 const { active } = toRefs(props)
+const { getCurrencyName } = useCurrencyName()
 
 const searchInput = ref('')
 const list = computed(() => {
@@ -27,7 +29,7 @@ const list = computed(() => {
 
   return searchableCurrencies.filter(
     currency =>
-      currency.name.toLowerCase().includes(search)
+      getCurrencyName(currency.code).toLowerCase().includes(search)
       || currency.code.toLowerCase().includes(search),
   )
 })
@@ -88,7 +90,7 @@ const list = computed(() => {
               v-if="currencies.find((c) => c.code === currencyCode)"
               class="text-sm"
             >
-              {{ currencies.find((c) => c.code === currencyCode)?.name }}
+              {{ getCurrencyName(currencyCode) }}
             </div>
           </div>
         </UiElement>
@@ -108,7 +110,7 @@ const list = computed(() => {
               {{ currency.code }}
             </div>
             <div class="text-sm">
-              {{ currency.name }}
+              {{ getCurrencyName(currency.code) }}
             </div>
           </div>
         </UiElement>

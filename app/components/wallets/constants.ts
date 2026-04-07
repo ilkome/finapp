@@ -4,9 +4,9 @@ export const WALLET_STORAGE_KEYS = {
   creditViewPrefix: 'finapp-wallets-credit-view-',
   groupedBy: 'finapp-wallets-groupedBy',
   groupedBySecondary: 'finapp-wallets-groupedBySecondary',
-  selectorCurrency: 'finapp-wallets-selector-currency',
-  toggleMap: 'finapp-wallets-toggle-map',
-  showArchived: 'finapp-wallets-show-archived',
   includeArchivedInStats: 'finapp-wallets-include-archived-in-stats',
+  selectorCurrency: 'finapp-wallets-selector-currency',
+  showArchived: 'finapp-wallets-show-archived',
+  toggleMap: 'finapp-wallets-toggle-map',
   totalPrefix: 'finapp-wallets-total-',
 } as const

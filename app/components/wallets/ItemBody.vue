@@ -89,8 +89,8 @@ if (!props.isSort) {
 
     <!-- Main -->
     <template v-if="!props.compact">
-      <div class="grid grow gap-1">
-        <div class="text-muted text-sm leading-none font-medium tracking-wide text-nowrap">
+      <div class="grid grow gap-1 overflow-hidden">
+        <div class="text-muted truncate text-sm leading-none font-medium tracking-wide">
           {{ wallet.name }}
         </div>
 
@@ -162,8 +162,8 @@ if (!props.isSort) {
 
     <!-- Alternative -->
     <template v-if="props.compact">
-      <div class="grid grow gap-0.5">
-        <div class="text-2 text-xs leading-none whitespace-nowrap">
+      <div class="grid grow gap-0.5 overflow-hidden">
+        <div class="text-2 truncate text-xs leading-none">
           {{ wallet.name }}
         </div>
 

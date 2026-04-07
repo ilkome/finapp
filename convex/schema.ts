@@ -21,8 +21,11 @@ export default defineSchema({
   rates: defineTable({
     date: v.string(),
     rates: v.record(v.string(), v.number()),
+    source: v.optional(v.string()),
     updatedAt: v.number(),
-  }).index('by_date', ['date']),
+  })
+    .index('by_date', ['date'])
+    .index('by_date_source', ['date', 'source']),
 
   syncMeta: defineTable({
     trnsIdsHash: v.optional(v.string()),

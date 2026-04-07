@@ -45,7 +45,7 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
       />
     </template>
 
-    <div class="grid grow gap-0.5">
+    <div class="grid grow gap-0.5 overflow-hidden">
       <CategoriesName
         :stacked="props.stacked"
         :category="props.category"

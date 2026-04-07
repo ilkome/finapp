@@ -77,7 +77,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (trns) {
       for (const id in trns) {
         const trn = trns[id]
-        if (trn) ids.add(trn.categoryId)
+        if (trn)
+          ids.add(trn.categoryId)
       }
     }
     return ids

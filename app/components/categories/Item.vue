@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
+
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 export type CategoryItemProps = {
