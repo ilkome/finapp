@@ -245,5 +245,4 @@ describe('getWalletsTotals', () => {
     expect(totals.get('walletRUB')).toBe(700)
     expect(totals.get('walletCreditUSD')).toBe(-40)
   })
-
 })

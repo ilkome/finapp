@@ -61,7 +61,7 @@ describe('collectCategoriesByTrns', () => {
     const result = collectCategoriesByTrns({
       categoriesItems: categories,
       trnsIds: ['t1'],
-      trnsItems: { t1: {} },
+      trnsItems: { t1: {} as any },
     })
 
     expect(Object.keys(result)).toEqual([])
