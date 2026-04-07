@@ -1,7 +1,9 @@
 import { createPinia, setActivePinia } from 'pinia'
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TrnType } from '~/components/trns/types'
+
+import { useTrnsFormStore } from './useTrnsFormStore'
 
 // --- Mocks ---
 
@@ -14,7 +16,7 @@ vi.mock('~/components/categories/useCategoriesStore', () => ({
 
 vi.mock('~/components/wallets/useWalletsStore', () => ({
   useWalletsStore: () => ({
-    items: { w1: { name: 'Cash', currency: 'USD' }, w2: { name: 'Card', currency: 'USD' } },
+    items: { w1: { currency: 'USD', name: 'Cash' }, w2: { currency: 'USD', name: 'Card' } },
     sortedIds: ['w1', 'w2'],
   }),
 }))
@@ -41,8 +43,6 @@ vi.mock('~/components/amount/utils', () => ({
 beforeEach(() => {
   setActivePinia(createPinia())
 })
-
-import { useTrnsFormStore } from './useTrnsFormStore'
 
 describe('useTrnsFormStore', () => {
   describe('initial state', () => {

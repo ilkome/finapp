@@ -1,8 +1,11 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { OfflineOp } from '~/components/offline/types'
 
 import { OfflineEntityType } from '~/components/offline/types'
+
+// Import once - _isReplaying resets via finally block after each test
+import { isReplaying, replayOfflineQueue } from './replay'
 
 // --- Mocks ---
 
@@ -14,12 +17,12 @@ const mockSetOfflineQueueUserId = vi.fn()
 const mockSetQueueUserId = vi.fn(() => Promise.resolve())
 
 vi.mock('~/components/offline/helpers', () => ({
-  clearOfflineQueue: (...args: unknown[]) => mockClearOfflineQueue(...args),
-  getAllOfflineOps: (...args: unknown[]) => mockGetAllOfflineOps(...args),
-  getQueueUserId: (...args: unknown[]) => mockGetQueueUserId(...args),
-  removeOfflineOp: (...args: unknown[]) => mockRemoveOfflineOp(...args),
-  setOfflineQueueUserId: (...args: unknown[]) => mockSetOfflineQueueUserId(...args),
-  setQueueUserId: (...args: unknown[]) => mockSetQueueUserId(...args),
+  clearOfflineQueue: (...args: any[]) => (mockClearOfflineQueue as any)(...args),
+  getAllOfflineOps: (...args: any[]) => (mockGetAllOfflineOps as any)(...args),
+  getQueueUserId: (...args: any[]) => (mockGetQueueUserId as any)(...args),
+  removeOfflineOp: (...args: any[]) => (mockRemoveOfflineOp as any)(...args),
+  setOfflineQueueUserId: (...args: any[]) => (mockSetOfflineQueueUserId as any)(...args),
+  setQueueUserId: (...args: any[]) => (mockSetQueueUserId as any)(...args),
 }))
 
 const mockReplayWalletOps = vi.fn(() => Promise.resolve())
@@ -34,11 +37,11 @@ const mockGroupOpsByEntity = vi.fn(() => ({
 }))
 
 vi.mock('~/components/offline/replayHelpers', () => ({
-  groupOpsByEntity: (...args: unknown[]) => mockGroupOpsByEntity(...args),
-  replayCategoryOps: (...args: unknown[]) => mockReplayCategoryOps(...args),
-  replaySettingsOps: (...args: unknown[]) => mockReplaySettingsOps(...args),
-  replayTrnOps: (...args: unknown[]) => mockReplayTrnOps(...args),
-  replayWalletOps: (...args: unknown[]) => mockReplayWalletOps(...args),
+  groupOpsByEntity: (...args: any[]) => (mockGroupOpsByEntity as any)(...args),
+  replayCategoryOps: (...args: any[]) => (mockReplayCategoryOps as any)(...args),
+  replaySettingsOps: (...args: any[]) => (mockReplaySettingsOps as any)(...args),
+  replayTrnOps: (...args: any[]) => (mockReplayTrnOps as any)(...args),
+  replayWalletOps: (...args: any[]) => (mockReplayWalletOps as any)(...args),
 }))
 
 let mockUid: string | null = 'user1'
@@ -57,9 +60,9 @@ vi.mock('~/components/trns/useTrnsStore', () => ({
 
 vi.mock('~/components/user/useUserStore', () => ({
   useUserStore: () => ({
-    get uid() { return mockUid },
     saveUserBaseCurrency: vi.fn(),
     saveUserLocale: vi.fn(),
+    get uid() { return mockUid },
   }),
 }))
 
@@ -79,9 +82,6 @@ vi.mock('~/utils/convexId', () => ({
 function makeOp(entity: OfflineOp['entity'], id: string, type: OfflineOp['type'] = 'create', data?: Record<string, unknown>): OfflineOp {
   return { data, entity, id, timestamp: Date.now(), type }
 }
-
-// Import once - _isReplaying resets via finally block after each test
-import { isReplaying, replayOfflineQueue } from './replay'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -161,10 +161,19 @@ describe('replayOfflineQueue', () => {
 
   it('replays phases in order: wallets -> categories -> trns -> settings', async () => {
     const callOrder: string[] = []
-    mockReplayWalletOps.mockImplementation(async () => { callOrder.push('wallets') })
-    mockReplayCategoryOps.mockImplementation(async () => { callOrder.push('categories') })
-    mockReplayTrnOps.mockImplementation(async () => { callOrder.push('trns'); return 0 })
-    mockReplaySettingsOps.mockImplementation(async () => { callOrder.push('settings') })
+    mockReplayWalletOps.mockImplementation(async () => {
+      callOrder.push('wallets')
+    })
+    mockReplayCategoryOps.mockImplementation(async () => {
+      callOrder.push('categories')
+    })
+    mockReplayTrnOps.mockImplementation(async () => {
+      callOrder.push('trns')
+      return 0
+    })
+    mockReplaySettingsOps.mockImplementation(async () => {
+      callOrder.push('settings')
+    })
 
     mockGetAllOfflineOps.mockResolvedValue([
       makeOp(OfflineEntityType.Wallets, 'w1', 'create'),

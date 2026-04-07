@@ -22,7 +22,7 @@ vi.mock('@vueuse/core', () => ({
 // ---------------------------------------------------------------------------
 // Mock stores / composables used inside useStatItem
 // ---------------------------------------------------------------------------
-const getStoreTrnsIdsMock = vi.fn(({ trnsIds }: { trnsIds?: string[] }) => trnsIds ?? [])
+const getStoreTrnsIdsMock = vi.fn(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
 
 vi.mock('~/components/trns/useTrnsStore', () => ({
   useTrnsStore: () => ({
@@ -32,10 +32,13 @@ vi.mock('~/components/trns/useTrnsStore', () => ({
 }))
 
 const computeTotalMock = vi.fn((): TotalReturns => ({
+  adjustment: 0,
   expense: 0,
+  expenseTransfers: 0,
   income: 0,
+  incomeTransfers: 0,
   sum: 0,
-  transfer: 0,
+  sumTransfers: 0,
 }))
 
 vi.mock('~/components/amount/useAmount', () => ({
@@ -73,7 +76,7 @@ vi.mock('~/components/stat/intervals', async (importOriginal) => {
   const actual = await importOriginal() as any
   return {
     ...actual,
-    bucketTrnsByIntervals: (...args: any[]) => bucketTrnsByIntervalsMock(...args),
+    bucketTrnsByIntervals: (...args: any[]) => (bucketTrnsByIntervalsMock as any)(...args),
   }
 })
 
@@ -170,7 +173,7 @@ function createStatItem(overrides?: {
 describe('useStatItem', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    getStoreTrnsIdsMock.mockImplementation(({ trnsIds }: { trnsIds?: string[] }) => trnsIds ?? [])
+    getStoreTrnsIdsMock.mockImplementation(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
   })
 
   // -------------------------------------------------------------------------
@@ -255,8 +258,8 @@ describe('useStatItem', () => {
       ]
 
       bucketTrnsByIntervalsMock.mockReturnValue([{
-        range: intervals[0],
-        total: { expense: 0, income: 0, sum: 0, transfer: 0 },
+        range: intervals[0]!,
+        total: { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0, sum: 0, sumTransfers: 0 },
         trnsIds: intervalTrnsIds,
       }])
 

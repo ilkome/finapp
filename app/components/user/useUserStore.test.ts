@@ -37,6 +37,11 @@ vi.stubGlobal('useAuth', () => ({
   useSession: useSessionMock,
 }))
 
+const setTrnsMock = vi.fn()
+const setCategoriesMock = vi.fn()
+const setWalletsMock = vi.fn()
+const trnFormResetMock = vi.fn()
+
 vi.mock('~/components/categories/useCategoriesStore', () => ({
   useCategoriesStore: () => ({
     setCategories: (...args: unknown[]) => setCategoriesMock(...args),
@@ -77,18 +82,13 @@ vi.mock('~/composables/useStoreSync', async (importOriginal) => {
   }
 })
 
-const setTrnsMock = vi.fn()
-const setCategoriesMock = vi.fn()
-const setWalletsMock = vi.fn()
-const trnFormResetMock = vi.fn()
-
 const clearOfflineQueueMock = vi.fn(() => Promise.resolve())
 const setOfflineQueueUserIdMock = vi.fn()
 vi.mock('~/components/offline/helpers', () => ({
-  clearOfflineQueue: (...args: unknown[]) => clearOfflineQueueMock(...args),
+  clearOfflineQueue: (...args: any[]) => (clearOfflineQueueMock as any)(...args),
   getOfflineOpsByEntity: vi.fn(() => Promise.resolve([])),
   pushOfflineOp: vi.fn(() => Promise.resolve()),
-  setOfflineQueueUserId: (...args: unknown[]) => setOfflineQueueUserIdMock(...args),
+  setOfflineQueueUserId: (...args: any[]) => (setOfflineQueueUserIdMock as any)(...args),
 }))
 
 const useCookieMock = vi.fn(() => ({ value: null }))
@@ -296,11 +296,11 @@ describe('useUserStore', () => {
     })
 
     it('clears localforage', async () => {
-      await localforage.setItem('testKey', 'testValue')
+      await localforage.setItem('finapp.wallets', 'testValue')
       const store = useUserStore()
       await store.signOut()
 
-      const value = await localforage.getItem('testKey')
+      const value = await localforage.getItem('finapp.wallets')
       expect(value).toBeNull()
     })
 
