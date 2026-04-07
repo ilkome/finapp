@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
+
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 const props = defineProps<{

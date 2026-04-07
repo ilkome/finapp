@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-
 import pkg from '~~/package.json'
 
 import type { LocaleSlug } from '~/components/locale/types'

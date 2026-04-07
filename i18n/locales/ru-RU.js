@@ -130,6 +130,8 @@ export default {
       showAll: 'Показать все кошельки',
     },
     page: {
+      crypto: 'Криптовалюты',
+      fiat: 'Фиатные',
       rate: 'Курс',
       setBase: 'Сделать основной валютой',
       showAll: 'Все',

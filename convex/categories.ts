@@ -8,7 +8,6 @@ import { action, internalMutation, internalQuery, mutation, query } from './_gen
 import { getAuthUser, getOwnEntity, requireAuthUser, validateStringLength } from './shared'
 import { toggleTrnsHash } from './trnsHash'
 
-
 async function validateParentId(ctx: MutationCtx, parentId: Id<'categories'> | 0, userId: string, selfId?: Id<'categories'>) {
   if (parentId === 0)
     return
