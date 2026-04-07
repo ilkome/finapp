@@ -73,7 +73,7 @@ export function useInitApp() {
     walletsStore.setWallets(null)
     userStore.setUser(null)
 
-    const offlineKeys = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
+    const offlineKeys: Set<string> = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
     for (const key of Object.values(STORAGE_KEYS)) {
       if (!offlineKeys.has(key))
         localforage.removeItem(key)

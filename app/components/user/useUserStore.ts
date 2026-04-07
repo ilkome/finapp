@@ -201,7 +201,7 @@ export const useUserStore = defineStore('user', () => {
       setSessionInitialized(false)
       useCookie<boolean>('finapp.isOnboarded').value = false
 
-      const offlineKeys = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
+      const offlineKeys: Set<string> = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
       await Promise.all(
         Object.values(STORAGE_KEYS)
           .filter(key => !offlineKeys.has(key))

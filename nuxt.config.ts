@@ -68,10 +68,10 @@ export default defineNuxtConfig({
 
   icon: {
     clientBundle: {
-      collections: ['lucide', 'mdi'],
       icons: categoryIcons.flat(),
       scan: true,
     },
+    collections: ['lucide', 'mdi'],
   },
 
   modules: [

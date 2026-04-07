@@ -4,7 +4,6 @@ import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useStatItem } from '~/components/stat/useStatItem'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -24,7 +23,6 @@ const { t } = useI18n()
 const filter = inject(filterKey)!
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
-const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 const isOneCategory = computed(() => !!props.categoryId)
@@ -153,7 +151,6 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
         v-if="selectedTrnsIds.length > 0"
         class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
       >
-
         <div
           :class="{
             'grid gap-5 @3xl/stat:grid-cols-2 @3xl/stat:gap-6': shouldUseTwoColumnLayout,

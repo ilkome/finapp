@@ -90,11 +90,12 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
       <div class="flex w-full items-center gap-3">
         <UiIconBase
           :color="getCategory(rawItem as SearchResultItem)?.color"
-          :name="getCategory(rawItem as SearchResultItem)?.icon"
+          :name="getCategory(rawItem as SearchResultItem)?.icon ?? ''"
           invert
         />
         <CategoriesName
-          :category="getCategory(rawItem as SearchResultItem)"
+          v-if="getCategory(rawItem as SearchResultItem)"
+          :category="getCategory(rawItem as SearchResultItem)!"
           :parentCategory="getCategoryParent(rawItem as SearchResultItem)"
           isShowParent
           stacked
@@ -131,7 +132,7 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
       >
         <div class="flex-center min-w-8">
           <UiIconBase
-            :name="getTrn(rawItem as SearchResultItem)?.category?.icon"
+            :name="getTrn(rawItem as SearchResultItem)?.category?.icon ?? ''"
             :color="getTrn(rawItem as SearchResultItem)?.category?.color"
             invert
           />
@@ -140,11 +141,11 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
         <div class="grid grow gap-1 pr-1">
           <div class="flex grow items-center gap-3">
             <!-- Regular transaction -->
-            <template v-if="getTransaction(rawItem as SearchResultItem) as TransactionFull | undefined">
+            <template v-if="getTransaction(rawItem as SearchResultItem)">
               <div class="grid grow gap-0.5">
                 <CategoriesName
-                  :category="getTransaction(rawItem as SearchResultItem)?.category"
-                  :parentCategory="getTransaction(rawItem as SearchResultItem)?.categoryParent"
+                  :category="getTransaction(rawItem as SearchResultItem)!.category"
+                  :parentCategory="getTransaction(rawItem as SearchResultItem)!.categoryParent"
                   isShowParent
                 />
                 <div class="flex items-center gap-2">
@@ -155,11 +156,11 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
               </div>
 
               <Amount
-                :amount="getTransaction(rawItem as SearchResultItem)?.amount"
-                :currencyCode="getTransaction(rawItem as SearchResultItem)?.wallet?.currency"
+                :amount="getTransaction(rawItem as SearchResultItem)!.amount"
+                :currencyCode="getTransaction(rawItem as SearchResultItem)!.wallet.currency"
                 :isShowMinus="getTransaction(rawItem as SearchResultItem)?.type === TrnType.Expense"
                 :isShowPlus="getTransaction(rawItem as SearchResultItem)?.type === TrnType.Income"
-                :type="getTransaction(rawItem as SearchResultItem)?.type"
+                :type="getTransaction(rawItem as SearchResultItem)!.type"
                 align="right"
                 class="grow"
                 colorize="income"
@@ -180,9 +181,9 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
 
               <div class="flex flex-wrap gap-2">
                 <Amount
-                  :amount="getTransfer(rawItem as SearchResultItem)?.expenseAmount"
+                  :amount="getTransfer(rawItem as SearchResultItem)!.expenseAmount"
                   :colorize="getTransfer(rawItem as SearchResultItem)?.incomeAmount === getTransfer(rawItem as SearchResultItem)?.expenseAmount ? undefined : 'expense'"
-                  :currencyCode="getTransfer(rawItem as SearchResultItem)?.expenseWallet?.currency"
+                  :currencyCode="getTransfer(rawItem as SearchResultItem)!.expenseWallet.currency"
                   :type="TrnType.Expense"
                   class="!flex items-center gap-2"
                   variant="sm"
@@ -190,8 +191,8 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
 
                 <template v-if="getTransfer(rawItem as SearchResultItem)?.incomeAmount !== getTransfer(rawItem as SearchResultItem)?.expenseAmount">
                   <Amount
-                    :amount="getTransfer(rawItem as SearchResultItem)?.incomeAmount"
-                    :currencyCode="getTransfer(rawItem as SearchResultItem)?.incomeWallet?.currency"
+                    :amount="getTransfer(rawItem as SearchResultItem)!.incomeAmount"
+                    :currencyCode="getTransfer(rawItem as SearchResultItem)!.incomeWallet.currency"
                     :type="TrnType.Income"
                     colorize="income"
                     class="!flex items-center gap-2"
