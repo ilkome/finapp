@@ -59,7 +59,7 @@ function onClick(categoryId: CategoryId) {
 
       <div class="size-6">
         <UiIconBase
-          :name="categoriesStore.items[categoryId]?.icon"
+          :name="categoriesStore.items[categoryId]?.icon ?? ''"
           :color="categoriesStore.items[categoryId]?.color"
           :size="14"
           class="!w-6 p-1"
