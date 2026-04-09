@@ -131,8 +131,10 @@ onActivated(() => {
 })
 
 function onEditClick(close: () => void) {
-  router.push(`/categories/${categoryId.value}/edit`)
   close()
+  setTimeout(() => {
+    router.push(`/categories/${categoryId.value}/edit`)
+  }, 100)
 }
 
 useHead({ title: category.value?.name })

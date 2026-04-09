@@ -63,11 +63,11 @@ const isPopoverOpen = ref(false)
           </UiActionButton>
         </template>
 
-        <template #content>
+        <template #content="{ close: closeContent }">
           <div class="min-w-52 p-1 pt-4 pb-3">
             <slot
               name="popover"
-              :close="() => isPopoverOpen = false"
+              :close="() => { closeContent?.(); isPopoverOpen = false }"
             />
           </div>
         </template>
