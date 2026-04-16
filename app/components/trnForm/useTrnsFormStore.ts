@@ -77,13 +77,93 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amountRaw[idx] = formatInput(values.amount[idx] ?? 0)
   }
 
+  const transferIncomeWalletId = computed<WalletId | undefined>(
+    () => values.incomeWalletId ?? walletsStore.sortedIds[0],
+  )
+
+  const transferExpenseWalletId = computed<WalletId | undefined>(
+    () => values.expenseWalletId ?? walletsStore.sortedIds[1] ?? walletsStore.sortedIds[0],
+  )
+
+  const isSameCurrencyTransfer = computed(() => {
+    if (!transferExpenseWalletId.value || !transferIncomeWalletId.value)
+      return false
+
+    const expenseWallet = walletsStore.items?.[transferExpenseWalletId.value]
+    const incomeWallet = walletsStore.items?.[transferIncomeWalletId.value]
+
+    if (!expenseWallet || !incomeWallet)
+      return false
+
+    return expenseWallet.currency === incomeWallet.currency
+  })
+
   function onChangeAmount(amountRaw: string) {
     setAmountAt(activeAmountIdx.value, amountRaw)
   }
 
+  function onChangeTransferAmountSynced(amountRaw: string) {
+    setAmountAt(1, amountRaw)
+    setAmountAt(2, amountRaw)
+  }
+
   function onClickCalculator(key: CalculatorKey) {
     const value = createExpressionString(key, values.amountRaw[activeAmountIdx.value] ?? '')
-    onChangeAmount(value)
+    if (isSameCurrencyTransfer.value)
+      onChangeTransferAmountSynced(value)
+    else
+      onChangeAmount(value)
+  }
+
+  function onTransferWalletSelected(side: 'expense' | 'income', id: WalletId) {
+    const wasSame = isSameCurrencyTransfer.value
+
+    if (side === 'expense')
+      values.expenseWalletId = id
+    else
+      values.incomeWalletId = id
+
+    // same → different: reset income amount
+    if (wasSame && !isSameCurrencyTransfer.value) {
+      values.amount[2] = 0
+      values.amountRaw[2] = ''
+    }
+
+    // different → same: copy expense amount to income, reset transferType
+    if (!wasSame && isSameCurrencyTransfer.value) {
+      values.amount[2] = values.amount[1]
+      values.amountRaw[2] = values.amountRaw[1]
+      values.transferType = 'expense'
+    }
+  }
+
+  function switchTransferWallets() {
+    const incomeId = values.incomeWalletId
+    const expenseId = values.expenseWalletId
+
+    values.incomeWalletId = expenseId
+    values.expenseWalletId = incomeId
+
+    if (isSameCurrencyTransfer.value) {
+      values.amount[2] = values.amount[1]
+      values.amountRaw[2] = values.amountRaw[1]
+    }
+    else {
+      const amt1 = values.amount[1]
+      const raw1 = values.amountRaw[1]
+      const amt2 = values.amount[2]
+      const raw2 = values.amountRaw[2]
+
+      values.amount[1] = amt2
+      values.amountRaw[1] = raw2
+      values.amount[2] = amt1
+      values.amountRaw[2] = raw1
+    }
+  }
+
+  function copyTransferAmount() {
+    values.amount[2] = values.amount[1]
+    values.amountRaw[2] = values.amountRaw[1]
   }
 
   function shouldShowSum() {
@@ -270,20 +350,27 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     $reset,
     activeAmountIdx,
     closeTrnFormModal,
+    copyTransferAmount,
+    isSameCurrencyTransfer,
     modal,
     onChangeAmount,
     onChangeCountSum,
+    onChangeTransferAmountSynced,
     onChangeTransferType,
     onChangeTrnType,
     onClear,
     onClickCalculator,
     onClose,
     onSubmit,
+    onTransferWalletSelected,
     openFormForCreate,
     openFormForDuplicate,
     openFormForEdit,
     openTrnFormModal,
     shouldShowSum,
+    switchTransferWallets,
+    transferExpenseWalletId,
+    transferIncomeWalletId,
     ui,
     values,
   }

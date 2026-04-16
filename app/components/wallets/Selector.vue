@@ -9,6 +9,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   activeItemId?: WalletId
+  disabledIds?: WalletId[]
   hide?: () => void
   selectedIds?: WalletId[]
 }>()
@@ -23,7 +24,9 @@ const currencyFiltered = useStorage<CurrencyCode>(WALLET_STORAGE_KEYS.selectorCu
 const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
   return Object.keys(walletsStore.itemsComputed).filter((id) => {
     const wallet = walletsStore.itemsComputed[id]
-    return !wallet?.isArchived && (currencyFiltered.value === 'all' || currencyFiltered.value === wallet?.currency)
+    return !wallet?.isArchived
+      && !props.disabledIds?.includes(id)
+      && (currencyFiltered.value === 'all' || currencyFiltered.value === wallet?.currency)
   })
 })
 

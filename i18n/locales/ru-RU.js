@@ -396,8 +396,10 @@ export default {
     filterWalletAndCategory: 'Кошелек и Категория',
     titleEditTrn: 'Редактирование транзакции',
     transfer: {
-      expense: 'Перевод из',
-      income: 'Перевод в',
+      expenseLabel: 'Перевод из',
+      expenseModal: 'Перевод из кошелька',
+      incomeLabel: 'Перевод в',
+      incomeModal: 'Перевод в кошелёк',
     },
     transferTitle: 'Перевод',
     wallet: {
