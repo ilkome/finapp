@@ -7,6 +7,7 @@ const props = defineProps<{
   amount: number
   averageTotal?: Record<string, number>
   isActive?: boolean
+  plain?: boolean
   title?: string
   type: SeriesSlugSelected
 }>()
@@ -21,8 +22,11 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    :class="cn('flex-1 flex-wrap rounded-sm border border-transparent bg-(--item-3) px-3 py-2 @2xl/stat:max-w-max',
-               props.isActive && 'bg-item-2 border-(--ui-primary)/40',
+    :class="cn(
+      props.plain
+        ? 'px-3 pb-1 text-center'
+        : 'flex-1 flex-wrap rounded-sm border border-transparent bg-(--item-3) px-3 py-2 @2xl/stat:max-w-max',
+      props.isActive && 'bg-item-2 border-(--ui-primary)/40',
     )"
     @click="(e: Event) => emit('click', e)"
   >
@@ -38,6 +42,7 @@ const currenciesStore = useCurrenciesStore()
           :class="{
             '!text-income-1': props.amount > 0 && props.type !== 'netIncome',
             '!text-expense-1': props.amount < 0 && props.type !== 'netIncome',
+            '!text-2xl': props.plain,
           }"
           align="left"
           variant="xl"

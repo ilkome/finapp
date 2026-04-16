@@ -7,7 +7,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = defineProps<{
   isShowWallets?: boolean
   labelMode?: boolean
-  onBeforeOpen?: () => void
 }>()
 
 const statConfig = inject(statConfigKey)!
@@ -23,7 +22,7 @@ const isOpen = ref(false)
     :title="t('stat.config.menu.label')"
     :isOpen
     isShowCloseBtn
-    @openModal="() => { props.onBeforeOpen?.(); isOpen = true }"
+    @openModal="isOpen = true"
     @closeModal="isOpen = false"
   >
     <template #trigger>

@@ -4,7 +4,6 @@ const props = defineProps<{
   hasSelection: boolean
   icon: string
   labelMode?: boolean
-  onBeforeOpen?: () => void
   title: string
 }>()
 
@@ -18,7 +17,7 @@ const isOpen = ref(false)
     :title="props.title"
     :isOpen="isOpen"
     isShowCloseBtn
-    @openModal="() => { props.onBeforeOpen?.(); isOpen = true }"
+    @openModal="isOpen = true"
     @closeModal="isOpen = false"
   >
     <template #trigger>

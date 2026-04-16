@@ -92,12 +92,13 @@ function onClick(type: SeriesSlugSelected) {
       </StatSumItem>
     </div>
 
-    <div v-else class="flex items-center">
+    <div v-else class="flex items-center justify-center sm:justify-start">
       <StatSumItem
         :amount="props.type === 'income' ? total.income : -((total as Record<string, number>)[props.type]!)"
         :class="className"
         :type="(props.type as SeriesSlugSelected)"
         :averageTotal="isShowAverage ? props.averageTotal : undefined"
+        plain
         @click="emit('clickAverage')"
       >
         <StatAverage
