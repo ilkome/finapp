@@ -113,6 +113,7 @@ async function onDeleteConfirm() {
   <UiPage v-if="wallet">
     <StatHeader
       v-model:activeTab="activeTab"
+      backTo="/wallets"
       filterCategories
     >
       <template #title>

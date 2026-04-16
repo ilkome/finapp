@@ -7,6 +7,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 defineProps<{
+  backTo?: string
   configWallets?: boolean
   filterCategories?: boolean
   filterWallets?: boolean
@@ -36,7 +37,7 @@ const isPopoverOpen = ref(false)
 </script>
 
 <template>
-  <UiHeader>
+  <UiHeader :backTo="backTo">
     <slot name="title" />
 
     <template #actions>

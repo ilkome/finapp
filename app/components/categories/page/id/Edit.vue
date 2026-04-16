@@ -23,7 +23,7 @@ useHead({
     v-if="category"
     class="flex h-full flex-col"
   >
-    <UiHeader>
+    <UiHeader :backTo="`/categories/${categoryId}`">
       <UiHeaderTitle>{{ t('base.edit') }} : {{ category.name }}</UiHeaderTitle>
     </UiHeader>
 

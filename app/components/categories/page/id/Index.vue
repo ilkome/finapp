@@ -187,6 +187,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
   <UiPage v-if="category">
     <StatHeader
       v-model:activeTab="activeTab"
+      :backTo="category.parentId ? `/categories/${category.parentId}` : '/categories'"
       filterWallets
     >
       <template #title>
