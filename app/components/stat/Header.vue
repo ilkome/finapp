@@ -41,18 +41,19 @@ const isPopoverOpen = ref(false)
     <slot name="title" />
 
     <template #actions>
-      <StatFilterSelector
-        v-if="filterCategories || filterWallets"
-        :isShowCategories="!!filterCategories"
-        :isShowWallets="!!filterWallets"
-      />
+      <div class="hidden items-center sm:flex">
+        <StatFilterSelector
+          v-if="filterCategories || filterWallets"
+          :isShowCategories="!!filterCategories"
+          :isShowWallets="!!filterWallets"
+        />
 
-      <StatConfigModal
-        :isShowWallets="!!configWallets"
-      />
+        <StatConfigModal
+          :isShowWallets="!!configWallets"
+        />
+      </div>
 
       <BottomSheetOrDropdown
-        v-if="$slots.popover"
         :isOpen="isPopoverOpen"
         isShowCloseBtn
         @openModal="isPopoverOpen = true"
@@ -66,6 +67,23 @@ const isPopoverOpen = ref(false)
 
         <template #content="{ close: closeContent }">
           <div class="min-w-52 p-1 pt-4 pb-3">
+            <!-- Mobile: search, filters, config -->
+            <div class="mb-2 grid border-b border-(--ui-border) pb-3 sm:hidden">
+              <StatFilterSelector
+                v-if="filterCategories || filterWallets"
+                :isShowCategories="!!filterCategories"
+                :isShowWallets="!!filterWallets"
+                :onBeforeOpen="() => { closeContent?.(); isPopoverOpen = false }"
+                labelMode
+              />
+
+              <StatConfigModal
+                :isShowWallets="!!configWallets"
+                :onBeforeOpen="() => { closeContent?.(); isPopoverOpen = false }"
+                labelMode
+              />
+            </div>
+
             <slot
               name="popover"
               :close="() => { closeContent?.(); isPopoverOpen = false }"

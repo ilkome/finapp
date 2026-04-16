@@ -9,36 +9,21 @@ const props = defineProps<{
 
 <template>
   <UiHeaderTitle>
-    <div class="-mx-3 flex items-center">
-      <div
-        class="flex items-center gap-2 rounded-lg px-3 py-1"
-      >
-        <Icon
-          :name="props.category.icon"
-          :style="{ color: props.category.color }"
-          class="mt-[-2px] size-5"
-        />
-
-        <div class="text-lg font-semibold @lg:text-xl">
-          {{ props.category.name }}
-        </div>
-      </div>
-
-      <div
-        v-if="props.parentCategory"
-        class="text-2 flex items-center pt-[3px] text-xs leading-none font-medium @lg:text-base"
-      >
-        <div class="text-2xs text-4">
-          •
-        </div>
-
+    <div class="flex min-w-0 items-center">
+      <template v-if="props.parentCategory">
         <NuxtLink
           :to="`/categories/${props.category.parentId}`"
-          class="flex items-center gap-2 rounded-lg px-3 py-1 text-inherit no-underline hover:bg-(--item-5)"
+          class="text-muted truncate text-lg font-medium no-underline hover:text-(--ui-text-highlighted) @lg:text-xl"
         >
           {{ props.parentCategory.name }}
         </NuxtLink>
-      </div>
+
+        <span class="text-4 mx-1 text-lg @lg:text-xl">/</span>
+      </template>
+
+      <span class="truncate">
+        {{ props.category.name }}
+      </span>
     </div>
   </UiHeaderTitle>
 </template>

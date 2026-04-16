@@ -118,11 +118,6 @@ async function onDeleteConfirm() {
     >
       <template #title>
         <UiHeaderTitle>
-          <WalletsIcon
-            :color="wallet.color"
-            :name="wallet.name"
-            class="mt-[-2px] mr-1"
-          />
           {{ wallet.name }}
         </UiHeaderTitle>
       </template>

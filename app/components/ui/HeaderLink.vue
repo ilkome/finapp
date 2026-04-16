@@ -9,21 +9,21 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UiElement
-    class="group/item"
-    :lineWidth="4"
-    insideClasses="min-h-[44px] pr-3"
+  <div
+    class="interactive flex min-h-[44px] items-center gap-3 rounded-sm px-2 py-1.5 text-sm font-medium"
     @click="e => emit('click', e)"
   >
-    <template #leftIcon>
+    <div
+      v-if="props.icon"
+      class="flex min-w-8 items-center justify-center"
+    >
       <Icon
-        v-if="props.icon"
         :name="props.icon"
-        size="20"
+        size="22"
         class="text-muted"
       />
-    </template>
+    </div>
 
     <slot />
-  </UiElement>
+  </div>
 </template>
