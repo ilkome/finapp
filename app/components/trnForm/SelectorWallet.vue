@@ -5,6 +5,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   bottomSheetStyle?: Record<string, string>
+  disabledWalletIds?: WalletId[]
   title?: string
   walletId: WalletId
 }>()
@@ -43,6 +44,7 @@ const isShow = ref(false)
       <WalletsSelector
         :hide="close"
         :activeItemId="props.walletId"
+        :disabledIds="props.disabledWalletIds"
         class="min-w-80 px-2"
         @selected="(id: WalletId) => emit('selected', id)"
       />

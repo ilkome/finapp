@@ -396,8 +396,10 @@ export default {
     filterWalletAndCategory: 'Wallet & Category',
     titleEditTrn: 'Edit transaction',
     transfer: {
-      expense: 'Transfer from',
-      income: 'Transfer to',
+      expenseLabel: 'Transfer from',
+      expenseModal: 'Transfer from wallet',
+      incomeLabel: 'Transfer to',
+      incomeModal: 'Transfer to wallet',
     },
     transferTitle: 'Transfer',
     wallet: {
