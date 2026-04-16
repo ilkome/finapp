@@ -31,7 +31,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
     v-if="wallet && walletForm"
     class="flex h-full flex-col"
   >
-    <UiHeader>
+    <UiHeader :backTo="`/wallets/${walletId}`">
       <UiHeaderTitle>
         {{ t('base.edit') }}:
         {{ walletForm.name ? walletForm.name : t('wallets.form.name.label') }}
