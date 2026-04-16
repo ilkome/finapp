@@ -3,6 +3,8 @@ const props = defineProps<{
   buttonLabel?: string
   hasSelection: boolean
   icon: string
+  labelMode?: boolean
+  onBeforeOpen?: () => void
   title: string
 }>()
 
@@ -16,11 +18,21 @@ const isOpen = ref(false)
     :title="props.title"
     :isOpen="isOpen"
     isShowCloseBtn
-    @openModal="isOpen = true"
+    @openModal="() => { props.onBeforeOpen?.(); isOpen = true }"
     @closeModal="isOpen = false"
   >
     <template #trigger>
-      <UTooltip :text="props.title">
+      <UiHeaderLink
+        v-if="props.labelMode"
+        :icon="props.icon"
+      >
+        {{ props.title }}
+      </UiHeaderLink>
+
+      <UTooltip
+        v-else
+        :text="props.title"
+      >
         <UChip
           :show="props.hasSelection"
           color="secondary"

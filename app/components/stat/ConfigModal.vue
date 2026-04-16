@@ -6,6 +6,8 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   isShowWallets?: boolean
+  labelMode?: boolean
+  onBeforeOpen?: () => void
 }>()
 
 const statConfig = inject(statConfigKey)!
@@ -21,11 +23,21 @@ const isOpen = ref(false)
     :title="t('stat.config.menu.label')"
     :isOpen
     isShowCloseBtn
-    @openModal="isOpen = true"
+    @openModal="() => { props.onBeforeOpen?.(); isOpen = true }"
     @closeModal="isOpen = false"
   >
     <template #trigger>
-      <UTooltip :text="t('stat.config.menu.label')">
+      <UiHeaderLink
+        v-if="props.labelMode"
+        icon="lucide:settings-2"
+      >
+        {{ t('stat.config.menu.label') }}
+      </UiHeaderLink>
+
+      <UTooltip
+        v-else
+        :text="t('stat.config.menu.label')"
+      >
         <UiActionButton :ariaLabel="t('stat.config.menu.label')">
           <Icon name="lucide:settings-2" size="20" />
         </UiActionButton>

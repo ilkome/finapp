@@ -50,7 +50,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="items-top bg-default/90 sticky top-0 z-20 -my-2 flex grow items-center gap-2 overflow-x-auto py-2 backdrop-blur lg:top-[87px]">
+  <div class="items-top bg-default/90 sticky top-0 z-20 -mt-2 mr-12 flex grow items-center gap-2 overflow-x-auto py-2 pb-0 backdrop-blur sm:mr-0 lg:top-[87px]">
     <DateNav
       v-if="isShowNav && !statDate.params.value.customDate"
       :isEnd
