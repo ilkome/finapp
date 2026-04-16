@@ -14,6 +14,7 @@ import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injecti
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
@@ -78,7 +79,39 @@ const category = computed(() => categoriesStore.items[categoryId.value])
 const preCategoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
 
-const activeTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'summary')
+const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+  categoriesIds: categoriesIdsOrParent.value,
+}))
+
+const singleTrnType = computed<StatTabSlug | null>(() => {
+  const items = trnsStore.items
+  if (!items)
+    return null
+  let hasExpense = false
+  let hasIncome = false
+  for (const id of allTrnsIds.value) {
+    const trn = items[id]
+    if (!trn)
+      continue
+    if (trn.type === TrnType.Expense)
+      hasExpense = true
+    if (trn.type === TrnType.Income)
+      hasIncome = true
+    if (hasExpense && hasIncome)
+      return null
+  }
+  if (hasExpense)
+    return 'expense'
+  if (hasIncome)
+    return 'income'
+  return null
+})
+
+const storedTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'summary')
+const activeTab = computed({
+  get: () => singleTrnType.value ?? storedTab.value,
+  set: (v: StatTabSlug) => { storedTab.value = v },
+})
 const storageKey = computed(() => `page-${categoryId.value}-${activeTab.value}`)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -188,6 +221,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
     <StatHeader
       v-model:activeTab="activeTab"
       :backTo="category.parentId ? `/categories/${category.parentId}` : '/categories'"
+      :hideTabs="!!singleTrnType"
       filterWallets
     >
       <template #title>

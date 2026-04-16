@@ -6,11 +6,12 @@ import { filterKey, statConfigKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-defineProps<{
+const props = defineProps<{
   backTo?: string
   configWallets?: boolean
   filterCategories?: boolean
   filterWallets?: boolean
+  hideTabs?: boolean
 }>()
 
 const activeTab = defineModel<StatTabSlug>('activeTab')
@@ -68,18 +69,16 @@ const isPopoverOpen = ref(false)
         <template #content="{ close: closeContent }">
           <div class="min-w-52 p-1 pt-4 pb-3">
             <!-- Mobile: search, filters, config -->
-            <div class="mb-2 grid border-b border-(--ui-border) pb-3 sm:hidden">
+            <div class="sm:hidden" :class="[$slots.popover ? 'mb-2 border-b border-(--ui-border) pb-3' : '']">
               <StatFilterSelector
                 v-if="filterCategories || filterWallets"
                 :isShowCategories="!!filterCategories"
                 :isShowWallets="!!filterWallets"
-                :onBeforeOpen="() => { closeContent?.(); isPopoverOpen = false }"
                 labelMode
               />
 
               <StatConfigModal
                 :isShowWallets="!!configWallets"
-                :onBeforeOpen="() => { closeContent?.(); isPopoverOpen = false }"
                 labelMode
               />
             </div>
@@ -93,7 +92,7 @@ const isPopoverOpen = ref(false)
       </BottomSheetOrDropdown>
     </template>
 
-    <template v-if="activeTab" #selected>
+    <template v-if="activeTab && !props.hideTabs" #selected>
       <StatMenu
         :active="activeTab"
         @click="(id: StatTabSlug) => activeTab = id"
