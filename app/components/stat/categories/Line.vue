@@ -30,7 +30,6 @@ const statConfig = inject(statConfigKey)!
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
-const isItemsBg = computed(() => statConfig.config.value.catsList.isItemsBg)
 const isLines = computed(() => statConfig.config.value.catsList.isLines)
 const isRoundIcon = computed(() => statConfig.config.value.catsList.isRoundIcon)
 
@@ -56,7 +55,6 @@ const { longPressRef } = useCategoryLongPress(
     ref="longPressRef"
     :class="[props.insideClass, {
       '-bg-item-3 ': props.isActive,
-      'bg-item-2 rounded-lg': isItemsBg,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -64,7 +62,7 @@ const { longPressRef } = useCategoryLongPress(
     <slot name="before" />
     <UiElement
       :isActive="props.isActive"
-      :lineWidth="!isItemsBg ? props.lineWidth : 0"
+      :lineWidth="props.lineWidth"
       class="relative"
       insideClasses="!min-h-[44px]"
     >

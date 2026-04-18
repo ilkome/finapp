@@ -9,7 +9,6 @@ import { applyConfigUpdate } from './statConfig'
 const defaultConfig: MiniItemConfig = {
   catsList: {
     isGrouped: true,
-    isItemsBg: false,
     isLines: true,
     isRoundIcon: true,
     isShow: true,
@@ -17,6 +16,7 @@ const defaultConfig: MiniItemConfig = {
   catsRound: {
     isExpanded: false,
     isGrouped: false,
+    isIconBg: true,
     isShow: true,
     isShowFavorites: true,
     isShowRecent: true,
