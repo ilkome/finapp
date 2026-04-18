@@ -11,9 +11,10 @@ const emit = defineEmits<{
 
 <template>
   <div
-    :class="cn('grid max-h-[60dvh]',
+    :class="cn('grid',
                (props.title || props.isShowCloseBtn) && 'grid-rows-[auto_1fr]',
     )"
+    style="max-height: var(--reka-popper-available-height, 60dvh)"
   >
     <UiTitleModal v-if="props.title">
       {{ props.title }}
