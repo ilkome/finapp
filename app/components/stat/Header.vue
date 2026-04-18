@@ -55,6 +55,7 @@ const isPopoverOpen = ref(false)
       </div>
 
       <BottomSheetOrDropdown
+        :class="$slots.popover ? '' : 'sm:hidden'"
         :isOpen="isPopoverOpen"
         isShowCloseBtn
         @openModal="isPopoverOpen = true"
