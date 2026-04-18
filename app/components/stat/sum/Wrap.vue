@@ -92,7 +92,7 @@ function onClick(type: SeriesSlugSelected) {
       </StatSumItem>
     </div>
 
-    <div v-else class="flex items-center justify-center sm:justify-start">
+    <div v-else class="flex items-center justify-start">
       <StatSumItem
         :amount="props.type === 'income' ? total.income : -((total as Record<string, number>)[props.type]!)"
         :class="className"
