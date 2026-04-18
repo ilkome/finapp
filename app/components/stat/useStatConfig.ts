@@ -12,7 +12,6 @@ export const chartViewOptions = ['half', 'full'] as const
 export const ConfigSchema = z.object({
   catsList: z.object({
     isGrouped: z.boolean(),
-    isItemsBg: z.boolean(),
     isLines: z.boolean(),
     isRoundIcon: z.boolean(),
     isShow: z.boolean(),
@@ -20,6 +19,7 @@ export const ConfigSchema = z.object({
   catsRound: z.object({
     isExpanded: z.boolean(),
     isGrouped: z.boolean(),
+    isIconBg: z.boolean(),
     isShow: z.boolean(),
     isShowFavorites: z.boolean(),
     isShowRecent: z.boolean(),
@@ -69,7 +69,6 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   const config = useStorage<MiniItemConfig>(configStorageKey.value, {
     catsList: {
       isGrouped: true,
-      isItemsBg: false,
       isLines: true,
       isRoundIcon: true,
       isShow: true,
@@ -77,6 +76,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     catsRound: {
       isExpanded: true,
       isGrouped: false,
+      isIconBg: true,
       isShow: true,
       isShowFavorites: false,
       isShowRecent: false,

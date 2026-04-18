@@ -280,14 +280,8 @@ export default {
       forLast: 'за прошлые периоды',
     },
     catButtons: {
-      alt: 'Альтернативный',
-      elements: 'Элементы',
-      isItemsBg: 'Фон категорий',
       isLines: 'Линии сумм',
-      isRoundIcon: 'Скруглённые категории',
-      listItemsOptions: 'Настройки списка категорий',
-      minimal: 'Легкий',
-      standard: 'Стандартный',
+      isRoundIcon: 'Фон иконок',
     },
     config: {
       categories: {

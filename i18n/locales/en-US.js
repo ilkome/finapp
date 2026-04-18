@@ -280,14 +280,8 @@ export default {
       forLast: 'for the last periods',
     },
     catButtons: {
-      alt: 'Alternative',
-      elements: 'Elements',
-      isItemsBg: 'Items background',
       isLines: 'Amount lines',
-      isRoundIcon: 'rounded-sm categories',
-      listItemsOptions: 'List items options',
-      minimal: 'Minimal',
-      standard: 'Standard',
+      isRoundIcon: 'Icons background',
     },
     config: {
       categories: {

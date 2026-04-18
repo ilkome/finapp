@@ -5,6 +5,7 @@ import type { CategoryWithData } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useCategoryLongPress } from '~/components/stat/categories/useCategoryLongPress'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 import { getTrnTypeByAmount } from '~/components/trns/types'
 
 const props = defineProps<{
@@ -19,6 +20,9 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const statConfig = inject(statConfigKey)!
+
+const isIconBg = computed(() => statConfig.config.value.catsRound.isIconBg)
 
 const category = computed(() => categoriesStore.items[props.item.id])
 const parentCategory = computed(() => {
@@ -37,7 +41,8 @@ const { longPressRef } = useCategoryLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="dark:bg-item-3 relative flex items-center gap-2 overflow-hidden rounded-2xl border border-transparent p-1 pr-3 hover:bg-(--item-5)"
+    class="dark:bg-item-3 relative flex items-center overflow-hidden rounded-2xl border border-transparent p-1 pr-3 hover:bg-(--item-5)"
+    :class="isIconBg ? 'gap-2' : 'gap-1'"
   >
     <div
       :style="{ backgroundColor: category?.color }"
@@ -46,11 +51,19 @@ const { longPressRef } = useCategoryLongPress(
 
     <div class="size-6">
       <UiIconBase
+        v-if="isIconBg"
         :name="category?.icon"
         :color="category?.color"
         :size="14"
         class="!w-6 p-1"
         invert
+      />
+      <UiIconBase
+        v-else
+        :name="category?.icon"
+        :color="category?.color"
+        :size="14"
+        class="!w-6 p-1"
       />
     </div>
 

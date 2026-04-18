@@ -32,7 +32,6 @@ const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
 const isVerticalGrouped = computed(() => statConfig.config.value.vertical.isGrouped)
 const isListShow = computed(() => catsList.value.isShow)
 const isListGrouped = computed(() => catsList.value.isGrouped)
-const isItemsBg = computed(() => catsList.value.isItemsBg)
 const isLines = computed(() => catsList.value.isLines)
 
 // Categories data (lazy — each variant computed only when accessed)
@@ -162,16 +161,13 @@ const {
           v-if="isShown"
           :class="{
             '@3xl/main:max-w-md': !isListGrouped,
-            'grid gap-1': isItemsBg,
           }"
           class="pt-2"
         >
           <UiToggleControlled
             v-for="item in linesCategories"
             :key="item.id"
-            :class="{
-              group: !isItemsBg,
-            }"
+            class="group"
             :isShown="isExpanded(item.id)"
           >
             <template #header>
@@ -192,12 +188,7 @@ const {
               v-if="isExpanded(item.id) && item.categories?.length"
               class="mt-[-2px] ml-5 -translate-x-px pb-3 pl-3"
             >
-              <div
-                :class="{
-                  'mt-1': isItemsBg,
-                }"
-                class="grid"
-              >
+              <div class="grid">
                 <StatCategoriesLine
                   v-for="itemInside in item.categories"
                   :key="itemInside.id"
@@ -206,9 +197,6 @@ const {
                   :maxCategoryValues="childrenMaxValues"
                   :lineWidth="isLines ? 0 : 1"
                   class="grow"
-                  :class="{
-                    'my-px': isItemsBg,
-                  }"
                   @click="emit('clickCategory', itemInside.id)"
                 />
               </div>
