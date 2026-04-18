@@ -28,7 +28,7 @@ const { isSearchOpen } = useSearch()
           <UTooltip
             :text="$t('search.title')"
             :kbds="['meta', 'K']"
-            class="hidden sm:block"
+            class="hidden sm:flex"
           >
             <UiActionButton
               :ariaLabel="$t('search.title')"
