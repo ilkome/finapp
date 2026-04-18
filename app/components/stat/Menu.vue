@@ -49,15 +49,15 @@ watch(() => props.active, () => {
 </script>
 
 <template>
-  <div class="-mb-px flex gap-2">
+  <div class="-mb-px flex items-start gap-2">
     <div
       v-for="item in menu"
       :key="item.id"
       :class="[{
-        'rounded-none border-b border-b-1 !border-(--ui-primary)': item.id === props.active,
-        'text-muted hover:mb-1 hover:bg-(--item-5) hover:pb-1': item.id !== props.active,
+        '!border-(--ui-primary) pb-2.5': item.id === props.active,
+        'rounded-sm pb-1.5 text-muted hover:bg-(--item-5)': item.id !== props.active,
       }]"
-      class="rounded-sm px-3 py-1.5 pb-2 text-xs tracking-wide text-nowrap lg:text-sm"
+      class="border-b border-transparent px-3 pt-1.5 text-xs tracking-wide text-nowrap lg:text-sm"
       @click="onClickStatMenu(item.id)"
     >
       {{ item.name }}
