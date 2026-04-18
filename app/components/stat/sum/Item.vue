@@ -24,7 +24,7 @@ const currenciesStore = useCurrenciesStore()
   <div
     :class="cn(
       props.plain
-        ? 'px-3 pb-1 text-center'
+        ? 'px-1 pb-1'
         : 'flex-1 flex-wrap rounded-sm border border-transparent bg-(--item-3) px-3 py-2 @2xl/stat:max-w-max',
       props.isActive && 'bg-item-2 border-(--ui-primary)/40',
     )"
