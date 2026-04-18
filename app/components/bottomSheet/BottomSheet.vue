@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useBodyScrollLock } from 'reka-ui'
+
 import { useBottomSheetDrag } from './useBottomSheetDrag'
 
 const props = defineProps<{
@@ -42,7 +44,7 @@ const {
   settings,
 })
 
-const isBodyLocked = useScrollLock(document.body)
+const isBodyLocked = useBodyScrollLock(false)
 
 watch(
   () => props.isShow,
@@ -89,7 +91,7 @@ const dragClasses = computed(() => [
     <div
       :class="overflowClasses"
       :style="overlayStyles"
-      class="absolute inset-0 z-10 size-full bg-(--overlay)"
+      class="pointer-events-auto absolute inset-0 z-10 size-full bg-(--overlay)"
       @click="close()"
     />
 
