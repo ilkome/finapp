@@ -19,6 +19,16 @@ logs
 .DS_Store
 .fleet
 .idea
+.claude/settings.local.json
+
+# Playwright
+/playwright/profiles
+/playwright/.auth
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
+/.playwright-mcp
 
 # Local env files
 .env

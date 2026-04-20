@@ -1,0 +1,13 @@
+{
+  "browser": {
+    "browserName": "chromium",
+    "isolated": false,
+    "userDataDir": "./playwright/profiles/finapp-chromium",
+    "launchOptions": {
+      "headless": false
+    },
+    "contextOptions": {
+      "viewport": null
+    }
+  }
+}
