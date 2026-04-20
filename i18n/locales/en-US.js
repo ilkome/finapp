@@ -61,6 +61,7 @@ export default {
       deleteFailed: 'Failed to delete category',
       saveFailed: 'Failed to save category',
     },
+    favorite: 'Favorites',
     favoriteCategories: 'Favorite categories',
     filter: 'Filter categories',
     form: {
@@ -96,6 +97,7 @@ export default {
     },
     name: 'Categories',
     new: 'New category',
+    recent: 'Recent',
     recentCategories: 'Recent categories',
     search: {
       placeholder: 'Search categories...',
@@ -279,6 +281,7 @@ export default {
     average: {
       forLast: 'for the last periods',
     },
+    noDataForPeriod: 'No statistics for the selected period',
     catButtons: {
       isLines: 'Amount lines',
       isRoundIcon: 'Icons background',
