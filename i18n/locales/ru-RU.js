@@ -281,7 +281,6 @@ export default {
     average: {
       forLast: 'за прошлые периоды',
     },
-    noDataForPeriod: 'Нет статистики за выбранный период',
     catButtons: {
       isLines: 'Линии сумм',
       isRoundIcon: 'Фон иконок',
@@ -347,6 +346,7 @@ export default {
         title: 'Кошельки',
       },
     },
+    noDataForPeriod: 'Нет статистики за выбранный период',
     title: 'Статистика',
   },
 

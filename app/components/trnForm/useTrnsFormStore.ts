@@ -109,7 +109,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
 
   function onClickCalculator(key: CalculatorKey) {
     const value = createExpressionString(key, values.amountRaw[activeAmountIdx.value] ?? '')
-    if (isSameCurrencyTransfer.value)
+    if (values.trnType === TrnType.Transfer && isSameCurrencyTransfer.value)
       onChangeTransferAmountSynced(value)
     else
       onChangeAmount(value)
@@ -129,8 +129,15 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       values.amountRaw[2] = ''
     }
 
-    // different → same: copy expense amount to income, reset transferType
+    // different → same: pick the user-entered amount and sync both sides
     if (!wasSame && isSameCurrencyTransfer.value) {
+      const pickIdx = values.amount[1] !== 0
+        ? 1
+        : values.amount[2] !== 0
+          ? 2
+          : values.transferType === 'income' ? 2 : 1
+      values.amount[1] = values.amount[pickIdx]
+      values.amountRaw[1] = values.amountRaw[pickIdx]
       values.amount[2] = values.amount[1]
       values.amountRaw[2] = values.amountRaw[1]
       values.transferType = 'expense'
@@ -257,6 +264,13 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       values.trnType = props.trn.type
       values.desc = props.trn.desc
       values.date = props.trn.date
+
+      // Transfer now same-currency but stored amounts differ: normalize to expense amount
+      if (props.trn.type === TrnType.Transfer && isSameCurrencyTransfer.value
+        && values.amount[1] !== values.amount[2]) {
+        values.amount[2] = values.amount[1]
+        values.amountRaw[2] = values.amountRaw[1]
+      }
     }
   }
 

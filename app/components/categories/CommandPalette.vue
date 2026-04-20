@@ -38,17 +38,6 @@ watch([hasFavorites, hasRecent], () => {
     filter.value = 'all'
 }, { immediate: true })
 
-function buildCategoryItem(id: CategoryId) {
-  const category = categoriesStore.items[id]!
-  const parentId = category.parentId
-  const parent = parentId ? categoriesStore.items[parentId] : null
-  return {
-    id,
-    ...category,
-    suffix: parent?.name ?? category.name,
-  }
-}
-
 const allCats = computed(() => {
   const adjustmentCategory = categoriesStore.items.adjustment!
   const adjustmentGroup = {

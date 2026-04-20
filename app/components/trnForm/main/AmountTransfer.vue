@@ -37,6 +37,11 @@ watch(
         trnsFormStore.values.amount[1] = trnsFormStore.values.amount[0]
         trnsFormStore.values.amountRaw[1] = trnsFormStore.values.amountRaw[0]
       }
+
+      if (trnsFormStore.isSameCurrencyTransfer && trnsFormStore.values.amount[2] === 0) {
+        trnsFormStore.values.amount[2] = trnsFormStore.values.amount[1]
+        trnsFormStore.values.amountRaw[2] = trnsFormStore.values.amountRaw[1]
+      }
     }
   },
   { immediate: true },
