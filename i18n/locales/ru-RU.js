@@ -302,6 +302,8 @@ export default {
         average: {
           label: 'Показывать средние значения',
         },
+        byCategories: 'По категориям',
+        groupByParent: 'Группировать по родителю',
         type: {
           label: 'Тип графика',
         },
@@ -319,6 +321,12 @@ export default {
         quick: {
           label: 'Слайдер быстрого выбора даты',
         },
+      },
+      grouping: {
+        auto: 'Авто',
+        children: 'С вложенными',
+        label: 'Показывать категории',
+        parents: 'Только родители',
       },
       menu: {
         label: 'Настройки страницы',

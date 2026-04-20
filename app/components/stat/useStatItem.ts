@@ -12,8 +12,11 @@ import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { buildCategoriesSeries } from '~/components/stat/chart/useCategorySeriesBuilder'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
+import { resolveGrouped } from '~/components/stat/useStatConfig'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -37,6 +40,7 @@ export function useStatItem({
   type,
 }: UseStatItemParams) {
   const trnsStore = useTrnsStore()
+  const categoriesStore = useCategoriesStore()
   const { computeTotalForTrnsIds } = useAmount()
   const { createSeriesItem, withMarkArea } = useStatChart()
 
@@ -131,19 +135,46 @@ export function useStatItem({
     return intervals.reduce((acc, i) => acc + i.total[typeSlug], 0) / intervals.length
   }
 
+  const categoriesBreakdownType = computed<SeriesSlug>(() => {
+    if (statTab.value === 'expense')
+      return 'expense'
+    if (statTab.value === 'income')
+      return 'income'
+    if (filteredType.value === 'expense' || filteredType.value === 'income')
+      return filteredType.value
+    return 'expense'
+  })
+
   const chartSeries = computed<ChartSeries[]>(() => {
     const intervals = intervalsDataWithFilteredCategories.value
-    const intervalTotals = intervals.map(g => g.total)
-
-    const baseSeries = typesToShow.value.map(t =>
-      createSeriesItem(t, intervalTotals, computeSeriesAverage(t, intervals)),
-    )
-
     const selectedInterval = intervals[statDate.params.value.intervalSelected]
+    const chartType = statConfig.config.value?.chartType
+
+    let baseSeries: ChartSeries[]
+
+    if (statConfig.config.value.chart.mode === 'categories') {
+      baseSeries = buildCategoriesSeries({
+        categoriesItems: categoriesStore.items ?? {},
+        chartType,
+        computeTotalForTrnsIds,
+        filterCategoriesIds: filteredCategoriesIds.value,
+        intervals,
+        isGrouped: resolveGrouped(statConfig.config.value.chart.isGrouped, statConfig.config.value.grouping),
+        trnsItems: trnsStore.items ?? {},
+        type: categoriesBreakdownType.value,
+      })
+    }
+    else {
+      const intervalTotals = intervals.map(g => g.total)
+      baseSeries = typesToShow.value.map(t =>
+        createSeriesItem(t, intervalTotals, computeSeriesAverage(t, intervals)),
+      )
+    }
+
     if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0)
       return baseSeries
 
-    return withMarkArea(baseSeries, selectedInterval.range.start, statConfig.config.value?.chartType)
+    return withMarkArea(baseSeries, selectedInterval.range.start, chartType)
   })
 
   const chartXAxisLabels = computed(() =>

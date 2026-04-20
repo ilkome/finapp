@@ -31,6 +31,16 @@ vi.mock('~/components/trns/useTrnsStore', () => ({
   }),
 }))
 
+vi.mock('~/components/categories/useCategoriesStore', () => ({
+  useCategoriesStore: () => ({
+    items: {},
+  }),
+}))
+
+vi.mock('~/components/stat/chart/useCategorySeriesBuilder', () => ({
+  buildCategoriesSeries: () => [],
+}))
+
 const computeTotalMock = vi.fn((): TotalReturns => ({
   adjustment: 0,
   expense: 0,
