@@ -140,7 +140,7 @@ function selectId(id: CategoryId) {
         @selected="selectId"
       />
       <div v-if="hasRecent">
-        <div class="bg-default/20 font-tertiary sticky top-0 z-20 pt-5 pb-4 text-lg leading-none font-semibold backdrop-blur-xl dark:bg-neutral-800/50">
+        <div class="font-tertiary sticky top-0 z-20 pt-5 pb-4 text-lg leading-none font-semibold">
           {{ t('categories.recentCategories') }}
         </div>
         <CategoriesSelectorGrid
