@@ -32,17 +32,7 @@ const nameClass = computed(() =>
       </div>
     </div>
 
-    <template v-if="stacked && isShowParent && !hasChildren && props.category?.parentId">
-      <div class="text-2xs text-4 truncate leading-none">
-        {{ props.parentCategory?.name }}
-      </div>
-    </template>
-
-    <template v-if="!stacked && isShowParent && !hasChildren && props.category?.parentId">
-      <div class="text-2xs text-4 shrink-0 leading-none">
-        •
-      </div>
-
+    <template v-if="isShowParent && !hasChildren && props.category?.parentId">
       <div class="text-2xs text-4 truncate leading-none">
         {{ props.parentCategory?.name }}
       </div>
