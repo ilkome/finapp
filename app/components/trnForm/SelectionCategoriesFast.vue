@@ -34,6 +34,7 @@ const isShowAllCategoriesFallback = computed(() =>
 
       :ids="categoriesStore.favoriteCategoriesIds"
 
+      class="px-3 pt-1"
       @selected="id => emit('selectCategory', id)"
     />
   </div>
@@ -49,6 +50,7 @@ const isShowAllCategoriesFallback = computed(() =>
 
       :ids="categoriesStore.recentCategoriesIds"
 
+      class="px-3 pt-1"
       @selected="id => emit('selectCategory', id)"
     />
   </div>
@@ -60,6 +62,7 @@ const isShowAllCategoriesFallback = computed(() =>
 
       :ids="categoriesStore.categoriesIdsForTrnValues"
 
+      class="px-3 pt-1"
       @selected="id => emit('selectCategory', id)"
     />
   </div>

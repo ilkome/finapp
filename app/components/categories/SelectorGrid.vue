@@ -24,7 +24,7 @@ function select(id: CategoryId) {
 </script>
 
 <template>
-  <div class="3sm:grid-cols-2 grid gap-1 px-3 pt-1">
+  <div class="3sm:grid-cols-2 grid gap-1">
     <CategoriesItem
       v-for="categoryId in props.ids"
       :key="categoryId"

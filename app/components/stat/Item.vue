@@ -110,6 +110,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="shouldShowAmounts"
+      :isEmpty="selectedTrnsIds.length === 0"
       :series="chartSeries"
       :xAxisLabels="chartXAxisLabels"
       class="pb-3"

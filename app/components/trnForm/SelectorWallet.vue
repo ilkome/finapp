@@ -45,7 +45,7 @@ const isShow = ref(false)
         :hide="close"
         :activeItemId="props.walletId"
         :disabledIds="props.disabledWalletIds"
-        class="min-w-80 px-2"
+        class="min-w-80 px-3"
         @selected="(id: WalletId) => emit('selected', id)"
       />
     </template>

@@ -61,6 +61,7 @@ export default {
       deleteFailed: 'Не удалось удалить категорию',
       saveFailed: 'Не удалось сохранить категорию',
     },
+    favorite: 'Избранное',
     favoriteCategories: 'Избранные категории',
     filter: 'Фильтр по категориям',
     form: {
@@ -96,6 +97,7 @@ export default {
     },
     name: 'Категории',
     new: 'Новая категория',
+    recent: 'Недавние',
     recentCategories: 'Недавние категории',
     search: {
       placeholder: 'Поиск категорий...',
@@ -279,6 +281,7 @@ export default {
     average: {
       forLast: 'за прошлые периоды',
     },
+    noDataForPeriod: 'Нет статистики за выбранный период',
     catButtons: {
       isLines: 'Линии сумм',
       isRoundIcon: 'Фон иконок',

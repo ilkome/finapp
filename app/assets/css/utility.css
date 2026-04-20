@@ -1,5 +1,5 @@
 @utility interactive {
-  @apply select-none hover:bg-elevated;
+  @apply select-none hover:bg-item-6/50 dark:hover:bg-item-7/10;
 }
 
 @utility flex-center {

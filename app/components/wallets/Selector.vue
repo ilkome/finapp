@@ -39,22 +39,11 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <div
-    :class="cn('grid h-full gap-2 overflow-hidden',
-               walletsStore.currenciesUsed.length > 1 && 'grid-rows-[auto_1fr]',
-    )"
-  >
+  <div class="relative grid h-full overflow-hidden">
     <div
-      v-if="walletsStore.currenciesUsed.length > 1"
-      class="grid md:max-w-xs"
+      class="scrollerBlock h-full overflow-y-auto py-px"
+      :class="{ 'pb-16': walletsStore.currenciesUsed.length > 1 }"
     >
-      <WalletsCurrencies
-        :currencyFiltered
-        @selectFilterCurrency="code => currencyFiltered = code"
-      />
-    </div>
-
-    <div class="scrollerBlock h-full overflow-y-auto py-px">
       <WalletsItem
         v-for="walletId in selectedWalletsIdsWithCurrency"
         :key="walletId"
@@ -68,5 +57,20 @@ function onClickWallet(walletId: WalletId) {
         @click="onClickWallet(walletId)"
       />
     </div>
+
+    <template v-if="walletsStore.currenciesUsed.length > 1">
+      <div
+        class="pointer-events-none absolute bottom-0 left-0 z-10 h-12 w-full"
+        style="background: linear-gradient(to bottom, transparent, var(--ui-bg))"
+      />
+      <div class="pointer-events-none absolute bottom-2 left-0 z-20 w-full px-2">
+        <div class="border-default/80 bg-default/20 pointer-events-auto rounded-2xl border p-1 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
+          <WalletsCurrencies
+            :currencyFiltered
+            @selectFilterCurrency="code => currencyFiltered = code"
+          />
+        </div>
+      </div>
+    </template>
   </div>
 </template>

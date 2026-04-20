@@ -58,7 +58,7 @@ type TypeFilter = {
   type: TrnType | undefined
 }
 
-const typeFilters = computed(() => {
+const typeCounts = computed(() => {
   const counts = { adjustment: 0, expense: 0, income: 0, transfer: 0 }
   for (const id of trnsIds) {
     const trn = trnsStore.items?.[id]
@@ -75,15 +75,32 @@ const typeFilters = computed(() => {
     else if (trn.type === TrnType.Transfer)
       counts.transfer++
   }
+  return counts
+})
 
+const realTypesCount = computed(() => {
+  const c = typeCounts.value
+  return (c.expense > 0 ? 1 : 0) + (c.income > 0 ? 1 : 0) + (c.transfer > 0 ? 1 : 0) + (c.adjustment > 0 ? 1 : 0)
+})
+
+const typeFilters = computed(() => {
+  const counts = typeCounts.value
   const filters: TypeFilter[] = [
     { count: trnsIds.length, isShow: true, name: t('common.all'), slug: 'all', type: undefined },
-    { count: counts.expense, isShow: !!isShowExpense, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
-    { count: counts.income, isShow: !!isShowIncome, name: t('money.income'), slug: 'income', type: TrnType.Income },
-    { count: counts.transfer, isShow: !!isShowTransfers, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
+    { count: counts.expense, isShow: !!isShowExpense && counts.expense > 0, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
+    { count: counts.income, isShow: !!isShowIncome && counts.income > 0, name: t('money.income'), slug: 'income', type: TrnType.Income },
+    { count: counts.transfer, isShow: !!isShowTransfers && counts.transfer > 0, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
     { count: counts.adjustment, isShow: counts.adjustment > 0, name: t('trnForm.adjustmentTitle'), slug: 'adjustment', type: undefined },
   ]
   return filters.filter(item => item.isShow)
+})
+
+watch(typeFilters, (tabs) => {
+  if (filterBy.value === 'all')
+    return
+  const selected = tabs.find(t => t.slug === filterBy.value)
+  if (!selected || selected.count === 0)
+    filterBy.value = 'all'
 })
 
 const selectedTypeFilter = computed(() => {
@@ -103,6 +120,7 @@ const filteredByTypeIds = computed(() => {
 })
 
 const isTrnsWithDesc = computed(() => filteredByTypeIds.value.some(id => trnsStore.items?.[id]?.desc))
+const isAllTrnsWithDesc = computed(() => filteredByTypeIds.value.every(id => trnsStore.items?.[id]?.desc))
 
 const selectedIds = computed(() => {
   if (isShowWithDesc.value && isTrnsWithDesc.value)
@@ -116,15 +134,7 @@ const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.va
 const isShowedAllTrns = computed(() => paginatedTrnsIds.value.length === selectedIds.value.length)
 
 function setFilterBy(type: TrnsViewType | 'all') {
-  if (filterBy.value === type) {
-    filterBy.value = 'all'
-    return
-  }
-
-  if (type !== 'all' && typeFilters.value.find(f => f.slug === type)?.count === 0)
-    return
-
-  filterBy.value = type ?? 'all'
+  filterBy.value = filterBy.value === type ? 'all' : (type ?? 'all')
 }
 
 const groupedTrns = computed(() => paginatedTrnsIds.value
@@ -188,7 +198,7 @@ function onOpenTrnForm(date: number) {
 
     <!-- Filter by type -->
     <UiTabsScroll
-      v-if="isShowFilterByType && typeFilters.length > 2"
+      v-if="isShowFilterByType && realTypesCount > 1"
       class="mb-2"
     >
       <UiTabsItemPill
@@ -196,9 +206,6 @@ function onOpenTrnForm(date: number) {
         :key="filterItem.slug"
         variant="outline"
         :isActive="filterBy === filterItem.slug"
-        :class="{
-          'pointer-events-none opacity-50': filterItem.count === 0,
-        }"
         @click="setFilterBy(filterItem.slug)"
       >
         {{ filterItem.name }}
@@ -207,7 +214,7 @@ function onOpenTrnForm(date: number) {
 
     <!-- With Description -->
     <div
-      v-if="isShowFilterByDesc && isTrnsWithDesc && selectedIds.length > 0"
+      v-if="isShowFilterByDesc && isTrnsWithDesc && !isAllTrnsWithDesc && selectedIds.length > 0"
       class="relative"
     >
       <UiSwitchItem
