@@ -281,7 +281,6 @@ export default {
     average: {
       forLast: 'for the last periods',
     },
-    noDataForPeriod: 'No statistics for the selected period',
     catButtons: {
       isLines: 'Amount lines',
       isRoundIcon: 'Icons background',
@@ -347,6 +346,7 @@ export default {
         title: 'Wallets',
       },
     },
+    noDataForPeriod: 'No statistics for the selected period',
     title: 'Dashboard',
   },
 
