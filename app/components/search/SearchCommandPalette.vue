@@ -147,6 +147,7 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
                   :category="getTransaction(rawItem as SearchResultItem)!.category"
                   :parentCategory="getTransaction(rawItem as SearchResultItem)!.categoryParent"
                   isShowParent
+                  stacked
                 />
                 <div class="flex items-center gap-2">
                   <div class="text-2xs text-4 leading-none">
