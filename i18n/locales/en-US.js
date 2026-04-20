@@ -302,6 +302,8 @@ export default {
         average: {
           label: 'Show average line',
         },
+        byCategories: 'By categories',
+        groupByParent: 'Group by parent',
         type: {
           label: 'Chart type',
         },
@@ -319,6 +321,12 @@ export default {
         quick: {
           label: 'Date selector slider',
         },
+      },
+      grouping: {
+        auto: 'Auto',
+        children: 'With children',
+        label: 'Show categories',
+        parents: 'Parents only',
       },
       menu: {
         label: 'Page Settings',

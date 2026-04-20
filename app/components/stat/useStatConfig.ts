@@ -9,6 +9,17 @@ import { applyConfigUpdate } from '~/components/stat/statConfig'
 
 export const chartViewOptions = ['half', 'full'] as const
 
+export const groupingModes = ['auto', 'parents', 'children'] as const
+export type GroupingMode = typeof groupingModes[number]
+
+export function resolveGrouped(raw: boolean, grouping: GroupingMode): boolean {
+  if (grouping === 'parents')
+    return true
+  if (grouping === 'children')
+    return false
+  return raw
+}
+
 export const ConfigSchema = z.object({
   catsList: z.object({
     isGrouped: z.boolean(),
@@ -26,13 +37,16 @@ export const ConfigSchema = z.object({
   }),
   catsView: z.enum(['list', 'round']),
   chart: z.object({
+    isGrouped: z.boolean(),
     isShowAverage: z.boolean(),
+    mode: z.enum(['aggregated', 'categories']),
   }),
   chartType: z.enum(chartTypes),
   chartView: z.enum(chartViewOptions),
   date: z.object({
     isShowQuick: z.boolean(),
   }),
+  grouping: z.enum(groupingModes),
   isChartShow: z.boolean(),
   isShowEmptyCategories: z.boolean(),
   statAverage: z.object({
@@ -83,7 +97,9 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     },
     catsView: 'list',
     chart: {
+      isGrouped: true,
       isShowAverage: false,
+      mode: 'aggregated',
     },
     chartType: 'bar',
     chartView: 'full',
@@ -91,6 +107,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isShowQuick: false,
     },
 
+    grouping: 'auto',
     isChartShow: true,
 
     isShowEmptyCategories: false,

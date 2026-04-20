@@ -23,13 +23,16 @@ const defaultConfig: MiniItemConfig = {
   },
   catsView: 'list',
   chart: {
+    isGrouped: true,
     isShowAverage: false,
+    mode: 'aggregated',
   },
   chartType: 'bar',
   chartView: 'full',
   date: {
     isShowQuick: false,
   },
+  grouping: 'auto',
   isChartShow: true,
   isShowEmptyCategories: false,
   statAverage: {

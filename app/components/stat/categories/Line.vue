@@ -13,6 +13,8 @@ const props = defineProps<{
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
+  isExpanded?: boolean
+  isShowChevron?: boolean
   isShowParent?: boolean
   item: CategoryWithData
   lineWidth?: number
@@ -20,11 +22,15 @@ const props = defineProps<{
     expense: number
     income: number
   }
+  stacked?: boolean
 }>()
 
 const emit = defineEmits<{
+  amountClick: [categoryId: CategoryId]
   click: [categoryId: CategoryId]
 }>()
+
+const hasChildren = computed(() => !!props.item.categories?.length)
 
 const statConfig = inject(statConfigKey)!
 const categoriesStore = useCategoriesStore()
@@ -47,6 +53,11 @@ const { longPressRef } = useCategoryLongPress(
   () => props.item.id,
   () => emit('click', props.item.id),
 )
+
+function onAmountClick(e: MouseEvent) {
+  e.stopPropagation()
+  emit('amountClick', props.item.id)
+}
 </script>
 
 <template>
@@ -95,20 +106,29 @@ const { longPressRef } = useCategoryLongPress(
         />
       </template>
 
-      <CategoriesName
-        :category
-        :childrenCount="props.item.categories?.length"
-        :class="{ '!pb-2': isLines }"
-        :isShowParent="props.isShowParent"
-        :parentCategory
-      />
+      <div class="flex grow items-center gap-1">
+        <CategoriesName
+          :category
+          :childrenCount="isShowChevron ? undefined : props.item.categories?.length"
+          :class="{ '!pb-2': isLines }"
+          :isShowParent="props.isShowParent"
+          :parentCategory
+          :stacked="props.stacked"
+        />
+
+        <Icon
+          v-if="isShowChevron && hasChildren"
+          :name="props.isExpanded ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+          size="18"
+          class="text-muted self-center"
+        />
+      </div>
 
       <div
         v-if="props.item.value !== 0"
-        :class="{
-          '!pb-2': isLines,
-        }"
-        class="grow pr-1"
+        :class="{ '!pb-2': isLines }"
+        class="-my-1.5 flex min-w-24 shrink-0 cursor-pointer items-center justify-end self-stretch rounded-sm px-2"
+        @click="onAmountClick"
       >
         <Amount
           :amount="props.item.value"

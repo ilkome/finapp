@@ -7,6 +7,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoriesExpanded } from '~/components/stat/categories/useCategoriesExpanded'
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
+import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   isOneCategory?: boolean
@@ -31,7 +32,7 @@ const catsList = computed(() => statConfig.config.value.catsList)
 const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
 const isVerticalGrouped = computed(() => statConfig.config.value.vertical.isGrouped)
 const isListShow = computed(() => catsList.value.isShow)
-const isListGrouped = computed(() => catsList.value.isGrouped)
+const isListGrouped = computed(() => resolveGrouped(catsList.value.isGrouped, statConfig.config.value.grouping))
 const isLines = computed(() => catsList.value.isLines)
 
 // Categories data (lazy — each variant computed only when accessed)
@@ -39,7 +40,8 @@ const groupedCategories = computed(() => computeCategoriesWithData(props.selecte
 const ungroupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], false))
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
-  const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
+  const rawGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
+  const isGrouped = resolveGrouped(rawGrouped, statConfig.config.value.grouping)
 
   if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds?.length)
     return computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds)
@@ -74,6 +76,21 @@ const {
   categoriesStore.items ?? {},
   categoriesWithData,
 )
+
+function onParentClick(item: CategoryWithData) {
+  if (item.categories?.length)
+    toggleCategory(item.id)
+  else
+    emit('clickCategory', item.id)
+}
+
+function onToggleListGrouping() {
+  if (statConfig.config.value.grouping !== 'auto') {
+    statConfig.updateConfig('grouping', 'auto')
+    return
+  }
+  statConfig.updateConfig('catsList', { isGrouped: !isListGrouped.value })
+}
 </script>
 
 <template>
@@ -152,7 +169,7 @@ const {
             <StatCategoriesGroupingToggle
               v-if="!props.isOneCategory"
               :isGrouped="isListGrouped"
-              @toggle="statConfig.config.value.catsList.isGrouped = !isListGrouped"
+              @toggle="onToggleListGrouping"
             />
           </div>
         </div>
@@ -174,11 +191,15 @@ const {
               <div class="-mt-px flex items-stretch justify-between">
                 <StatCategoriesLine
                   :isShowParent="props.isOneCategory ? false : !isListGrouped"
+                  :stacked="!props.isOneCategory && !isListGrouped"
                   :item="item"
+                  :isExpanded="isExpanded(item.id)"
+                  isShowChevron
                   :maxCategoryValues="linesMaxValues"
                   :lineWidth="isLines ? 0 : 1"
                   class="grow"
-                  @click="item.categories?.length ? toggleCategory(item.id) : emit('clickCategory', item.id)"
+                  @click="onParentClick(item)"
+                  @amountClick="emit('clickCategory', item.id)"
                 />
               </div>
             </template>
@@ -198,6 +219,7 @@ const {
                   :lineWidth="isLines ? 0 : 1"
                   class="grow"
                   @click="emit('clickCategory', itemInside.id)"
+                  @amountClick="emit('clickCategory', itemInside.id)"
                 />
               </div>
             </div>
