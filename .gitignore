@@ -40,3 +40,6 @@ logs
 utils/migrate/data.json
 
 ftp.config.js
+
+# Temporarily-installed admin functions (see apps/admin/)
+convex/admin/

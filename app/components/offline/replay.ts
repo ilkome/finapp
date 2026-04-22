@@ -63,7 +63,20 @@ export async function replayOfflineQueue(): Promise<void> {
     filteredOps.push(op)
   }
 
-  const { categoryOps, settingsOps, trnOps, walletOps } = groupOpsByEntity(filteredOps)
+  const { categoryOps, settingsOps, trnOps, unknownOps, walletOps } = groupOpsByEntity(filteredOps)
+
+  // Purge ops from removed/renamed features so the queue doesn't grow unbounded.
+  if (unknownOps.length > 0) {
+    logger.warn(`removing ${unknownOps.length} ops with unknown entity`)
+    for (const op of unknownOps) {
+      try {
+        await removeOfflineOp(op.entity, op.id)
+      }
+      catch (e) {
+        logger.error(`failed to remove unknown op ${op.entity}/${op.id}:`, e)
+      }
+    }
+  }
 
   _isReplaying = true
   const remapIds = new Map<string, string>()

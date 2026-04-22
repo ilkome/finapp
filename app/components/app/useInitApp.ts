@@ -15,6 +15,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { hasAuthCookie } from '~/composables/useAuthCookie'
 import { blockPersist, unblockPersist } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
@@ -85,6 +86,25 @@ export function useInitApp() {
 
     const { $waitForConvexAuth } = useNuxtApp()
     await ($waitForConvexAuth as () => Promise<void>)()
+
+    // Auth cookie exists but session hasn't resolved yet (no cached user from previous login).
+    // Wait briefly for userStore.uid to appear before giving up.
+    if (!userStore.uid && hasAuthCookie()) {
+      await new Promise<void>((resolve) => {
+        let timer: ReturnType<typeof setTimeout>
+        const stop = watch(() => userStore.uid, (val) => {
+          if (val) {
+            stop()
+            clearTimeout(timer)
+            resolve()
+          }
+        })
+        timer = setTimeout(() => {
+          stop()
+          resolve()
+        }, 5000)
+      })
+    }
 
     if (!userStore.uid)
       return

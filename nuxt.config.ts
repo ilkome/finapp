@@ -156,6 +156,15 @@ export default defineNuxtConfig({
           },
           urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/,
         },
+        {
+          handler: 'CacheFirst',
+          options: {
+            cacheableResponse: { statuses: [0, 200] },
+            cacheName: 'user-avatars',
+            expiration: { maxAgeSeconds: 60 * 60 * 24 * 30, maxEntries: 20 },
+          },
+          urlPattern: /^https:\/\/lh3\.googleusercontent\.com\/.*/,
+        },
       ],
     },
   },

@@ -33,6 +33,7 @@ const mockGroupOpsByEntity = vi.fn(() => ({
   categoryOps: [] as OfflineOp[],
   settingsOps: [] as OfflineOp[],
   trnOps: [] as OfflineOp[],
+  unknownOps: [] as OfflineOp[],
   walletOps: [] as OfflineOp[],
 }))
 
@@ -96,6 +97,7 @@ beforeEach(() => {
     categoryOps: [],
     settingsOps: [],
     trnOps: [],
+    unknownOps: [],
     walletOps: [],
   })
 })
@@ -182,6 +184,7 @@ describe('replayOfflineQueue', () => {
       categoryOps: [makeOp(OfflineEntityType.Categories, 'c1', 'create')],
       settingsOps: [makeOp(OfflineEntityType.UserSettings, 's1', 'update')],
       trnOps: [makeOp(OfflineEntityType.Trns, 't1', 'create')],
+      unknownOps: [],
       walletOps: [makeOp(OfflineEntityType.Wallets, 'w1', 'create')],
     })
 
@@ -228,6 +231,7 @@ describe('replayOfflineQueue', () => {
       categoryOps: [],
       settingsOps: [],
       trnOps: [makeOp(OfflineEntityType.Trns, 't1', 'create')],
+      unknownOps: [],
       walletOps: [],
     })
     mockReplayTrnOps.mockResolvedValue(3)
@@ -235,6 +239,22 @@ describe('replayOfflineQueue', () => {
     await replayOfflineQueue()
 
     expect(mockShowWarningToast).toHaveBeenCalledWith('trns.errors.orphanedSkipped', { count: 3 })
+  })
+
+  it('removes ops with unknown entity from queue', async () => {
+    const unknownOp = { entity: 'loanPaymentLinks', id: 'x1', timestamp: 0, type: 'update' } as unknown as OfflineOp
+    mockGetAllOfflineOps.mockResolvedValue([unknownOp])
+    mockGroupOpsByEntity.mockReturnValue({
+      categoryOps: [],
+      settingsOps: [],
+      trnOps: [],
+      unknownOps: [unknownOp],
+      walletOps: [],
+    })
+
+    await replayOfflineQueue()
+
+    expect(mockRemoveOfflineOp).toHaveBeenCalledWith('loanPaymentLinks', 'x1')
   })
 
   it('does not show toast when no orphans', async () => {
@@ -245,6 +265,7 @@ describe('replayOfflineQueue', () => {
       categoryOps: [],
       settingsOps: [],
       trnOps: [makeOp(OfflineEntityType.Trns, 't1', 'create')],
+      unknownOps: [],
       walletOps: [],
     })
     mockReplayTrnOps.mockResolvedValue(0)

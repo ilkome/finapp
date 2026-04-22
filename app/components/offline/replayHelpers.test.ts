@@ -150,12 +150,26 @@ describe('groupOpsByEntity', () => {
     expect(result.categoryOps).toEqual([])
     expect(result.trnOps).toEqual([])
     expect(result.settingsOps).toEqual([])
+    expect(result.unknownOps).toEqual([])
   })
 
   it('preserves op references', () => {
     const op = makeOp(OfflineEntityType.Trns, 't1')
     const result = groupOpsByEntity([op])
     expect(result.trnOps[0]).toBe(op)
+  })
+
+  it('collects ops with unknown entity into unknownOps', () => {
+    const known = makeOp(OfflineEntityType.Trns, 't1')
+    const unknown = { entity: 'loanPaymentLinks', id: 'x1', timestamp: 0, type: 'update' } as unknown as OfflineOp
+    const result = groupOpsByEntity([known, unknown])
+
+    expect(result.trnOps).toHaveLength(1)
+    expect(result.walletOps).toHaveLength(0)
+    expect(result.categoryOps).toHaveLength(0)
+    expect(result.settingsOps).toHaveLength(0)
+    expect(result.unknownOps).toHaveLength(1)
+    expect(result.unknownOps[0]).toBe(unknown)
   })
 })
 
