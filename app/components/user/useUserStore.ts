@@ -12,7 +12,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { clearAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
+import { clearAuthCookie, hasAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
 import { blockPersist, handleMutationResult, isPersistBlocked } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
@@ -37,8 +37,6 @@ export const useUserStore = defineStore('user', () => {
   const baseCurrency = ref<CurrencyCode>('USD')
   const locale = ref<LocaleSlug>('en')
 
-  const isOnline = useOnline()
-
   const currentUser = computed<User | null>(() => {
     const s = session.value
     const sessionUser = s?.data?.user
@@ -50,10 +48,7 @@ export const useUserStore = defineStore('user', () => {
         uid: sessionUser.id,
       }
     }
-    if (s?.isPending)
-      return user.value
-
-    if (!isOnline.value && user.value)
+    if (user.value && !isDemo.value && hasAuthCookie())
       return user.value
     return null
   })
@@ -61,21 +56,42 @@ export const useUserStore = defineStore('user', () => {
   const uid = computed<string | null>(() => currentUser.value?.uid || null)
 
   function setUser(values: User | null) {
-    if (!values) {
-      user.value = null
-    }
-    else {
-      user.value = {
-        displayName: values.displayName,
-        email: values.email,
-        photoURL: values.photoURL,
-        uid: values.uid,
-      }
-    }
+    user.value = values
+      ? {
+          displayName: values.displayName,
+          email: values.email,
+          photoURL: values.photoURL,
+          uid: values.uid,
+        }
+      : null
 
     if (!isPersistBlocked())
-      localforage.setItem(STORAGE_KEYS.user, user.value)
+      localforage.setItem(STORAGE_KEYS.user, user.value ? { ...user.value } : null)
   }
+
+  // Persist session user to cache on resolution so next reload has `user` synchronously.
+  // Skipped in demo mode to avoid leaking real-auth session into demo's cleared cache.
+  watch(
+    () => session.value?.data?.user,
+    (sessionUser) => {
+      if (!sessionUser || isSigningOut.value || isDemo.value)
+        return
+      const next: User = {
+        displayName: sessionUser.name,
+        email: sessionUser.email,
+        photoURL: sessionUser.image,
+        uid: sessionUser.id,
+      }
+      if (user.value?.uid === next.uid
+        && user.value?.email === next.email
+        && user.value?.displayName === next.displayName
+        && user.value?.photoURL === next.photoURL) {
+        return
+      }
+      setUser(next)
+    },
+    { immediate: true },
+  )
 
   function persistUserSettings() {
     if (isPersistBlocked())
@@ -183,6 +199,7 @@ export const useUserStore = defineStore('user', () => {
       isDemo.value = undefined
       clearAuthCookie()
       setSessionInitialized(false)
+      useCookie<boolean>('finapp.isOnboarded').value = false
       window.location.href = '/login'
       return
     }

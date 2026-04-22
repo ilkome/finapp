@@ -71,6 +71,7 @@ type GroupedOps = {
   categoryOps: OfflineOp[]
   settingsOps: OfflineOp[]
   trnOps: OfflineOp[]
+  unknownOps: OfflineOp[]
   walletOps: OfflineOp[]
 }
 
@@ -79,6 +80,7 @@ export function groupOpsByEntity(ops: OfflineOp[]): GroupedOps {
   const categoryOps: OfflineOp[] = []
   const trnOps: OfflineOp[] = []
   const settingsOps: OfflineOp[] = []
+  const unknownOps: OfflineOp[] = []
 
   for (const op of ops) {
     switch (op.entity) {
@@ -94,10 +96,12 @@ export function groupOpsByEntity(ops: OfflineOp[]): GroupedOps {
       case OfflineEntityType.UserSettings:
         settingsOps.push(op)
         break
+      default:
+        unknownOps.push(op)
     }
   }
 
-  return { categoryOps, settingsOps, trnOps, walletOps }
+  return { categoryOps, settingsOps, trnOps, unknownOps, walletOps }
 }
 
 /**
