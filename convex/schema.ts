@@ -16,7 +16,8 @@ export default defineSchema({
   })
     .index('by_user', ['userId'])
     .index('by_user_name_parent', ['userId', 'name', 'parentId'])
-    .index('by_user_parent', ['userId', 'parentId']),
+    .index('by_user_parent', ['userId', 'parentId'])
+    .index('by_user_updatedAt', ['userId', 'updatedAt']),
 
   rates: defineTable({
     date: v.string(),
@@ -31,6 +32,15 @@ export default defineSchema({
     trnsIdsHash: v.optional(v.string()),
     userId: v.string(),
   }).index('by_user', ['userId']),
+
+  tombstones: defineTable({
+    deletedAt: v.number(),
+    entity: v.union(v.literal('trns'), v.literal('wallets'), v.literal('categories')),
+    entityId: v.string(),
+    userId: v.string(),
+  })
+    .index('by_user_entity_deletedAt', ['userId', 'entity', 'deletedAt'])
+    .index('by_user_deletedAt', ['userId', 'deletedAt']),
 
   trns: defineTable({
     amount: v.optional(v.number()),
@@ -77,5 +87,7 @@ export default defineSchema({
     type: walletTypeValidator,
     updatedAt: v.optional(v.number()),
     userId: v.string(),
-  }).index('by_user', ['userId']),
+  })
+    .index('by_user', ['userId'])
+    .index('by_user_updatedAt', ['userId', 'updatedAt']),
 })

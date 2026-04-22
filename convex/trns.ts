@@ -7,6 +7,7 @@ import type { MutationCtx } from './_generated/server'
 import { internal } from './_generated/api'
 import { mutation, query } from './_generated/server'
 import { AMOUNT_MAX, DATE_MAX, DATE_MIN, getAuthUser, getOwnEntity, requireAuthUser, TrnType, validateNumberRange, validateStringLength } from './shared'
+import { emitTombstone } from './tombstones'
 import { fnv1aNum, toggleTrnHash } from './trnsHash'
 
 async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
@@ -64,6 +65,36 @@ export const delta = query({
       .withIndex('by_user_updatedAt', q =>
         q.eq('userId', user._id).gt('updatedAt', since))
       .paginate(paginationOpts)
+  },
+})
+
+const REALTIME_DELTA_LIMIT = 500
+
+export const deltaRealtime = query({
+  args: { since: v.number() },
+  handler: async (ctx, { since }) => {
+    const user = await getAuthUser(ctx)
+    if (!user)
+      return null
+    const serverTime = Date.now()
+    const docsPlusOne = await ctx.db
+      .query('trns')
+      .withIndex('by_user_updatedAt', q =>
+        q.eq('userId', user._id).gt('updatedAt', since))
+      .take(REALTIME_DELTA_LIMIT + 1)
+    const truncated = docsPlusOne.length > REALTIME_DELTA_LIMIT
+    const docs = truncated ? docsPlusOne.slice(0, REALTIME_DELTA_LIMIT) : docsPlusOne
+    const tombstones = await ctx.db
+      .query('tombstones')
+      .withIndex('by_user_entity_deletedAt', q =>
+        q.eq('userId', user._id).eq('entity', 'trns').gt('deletedAt', since))
+      .take(REALTIME_DELTA_LIMIT)
+    return {
+      deletedIds: tombstones.map(t => t.entityId),
+      docs,
+      serverTime,
+      truncated,
+    }
   },
 })
 
@@ -212,7 +243,9 @@ export const remove = mutation({
   handler: async (ctx, { id }) => {
     const user = await requireAuthUser(ctx)
     const deleted = await removeUserTrn(ctx, id, user._id)
-    if (deleted)
+    if (deleted) {
       await toggleTrnHash(ctx, user._id, id)
+      await emitTombstone(ctx, user._id, 'trns', id)
+    }
   },
 })

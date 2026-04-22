@@ -27,6 +27,23 @@ export function isPersistBlocked(): boolean {
   return _persistBlocked
 }
 
+// Tracks ids of mutations currently being confirmed by the server. Used by
+// the realtime-sync layer to suppress self-echo: subscription updates whose
+// id is in-flight are skipped so the origin device doesn't apply its own change twice.
+const _inFlightOps = new Set<string>()
+
+export function trackInFlight(id: string): void {
+  _inFlightOps.add(id)
+}
+
+export function untrackInFlight(id: string): void {
+  _inFlightOps.delete(id)
+}
+
+export function isInFlight(id: string): boolean {
+  return _inFlightOps.has(id)
+}
+
 export function createDebouncedPersist<T>(storageKey: string) {
   return debounce((values: T) => {
     if (_persistBlocked)
@@ -112,6 +129,11 @@ export function handleMutationResult<T>(opts: {
 }): Promise<RemapInfo | void> {
   const ids = Array.isArray(opts.id) ? opts.id : [opts.id]
 
+  // Track ids as in-flight so that the subscription's own echo (for update/delete
+  // this is the convex id already; for create the local id won't match, but the
+  // post-mutation remap handles that path).
+  for (const id of ids) trackInFlight(id)
+
   return opts.mutation
     .then(async (result): Promise<RemapInfo | void> => {
       logger.log(`confirmed ${opts.action}: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`)
@@ -131,6 +153,10 @@ export function handleMutationResult<T>(opts: {
           if (!_persistBlocked)
             localforage.setItem(STORAGE_KEYS[opts.entity], remapped)
           logger.log(`remapped ID: ${opts.id} → ${convexId}`)
+          // Track convex id briefly so that a subscription echo arriving just
+          // after remap is still suppressed.
+          trackInFlight(convexId)
+          setTimeout(untrackInFlight, 2000, convexId)
           return { convexId, localId: opts.id }
         }
       }
@@ -138,6 +164,9 @@ export function handleMutationResult<T>(opts: {
     .catch((e) => {
       logger.error(`${opts.action} failed: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`, e)
       showErrorToast(opts.errorMessage)
+    })
+    .finally(() => {
+      for (const id of ids) untrackInFlight(id)
     })
 }
 

@@ -3,6 +3,7 @@ import { v } from 'convex/values'
 import { internal } from './_generated/api'
 import { action, internalMutation, mutation, query } from './_generated/server'
 import { CREDIT_LIMIT_MAX, getAuthUser, getOwnEntity, requireAuthUser, validateNumberRange, validateStringLength } from './shared'
+import { emitTombstone, emitTombstones } from './tombstones'
 import { toggleTrnsHash } from './trnsHash'
 import { walletTypeValidator } from './validators'
 
@@ -16,6 +17,36 @@ export const list = query({
       .query('wallets')
       .withIndex('by_user', q => q.eq('userId', user._id))
       .collect()
+  },
+})
+
+const REALTIME_DELTA_LIMIT = 500
+
+export const deltaRealtime = query({
+  args: { since: v.number() },
+  handler: async (ctx, { since }) => {
+    const user = await getAuthUser(ctx)
+    if (!user)
+      return null
+    const serverTime = Date.now()
+    const docsPlusOne = await ctx.db
+      .query('wallets')
+      .withIndex('by_user_updatedAt', q =>
+        q.eq('userId', user._id).gt('updatedAt', since))
+      .take(REALTIME_DELTA_LIMIT + 1)
+    const truncated = docsPlusOne.length > REALTIME_DELTA_LIMIT
+    const docs = truncated ? docsPlusOne.slice(0, REALTIME_DELTA_LIMIT) : docsPlusOne
+    const tombstones = await ctx.db
+      .query('tombstones')
+      .withIndex('by_user_entity_deletedAt', q =>
+        q.eq('userId', user._id).eq('entity', 'wallets').gt('deletedAt', since))
+      .take(REALTIME_DELTA_LIMIT)
+    return {
+      deletedIds: tombstones.map(t => t.entityId),
+      docs,
+      serverTime,
+      truncated,
+    }
   },
 })
 
@@ -130,8 +161,10 @@ export const removeTrnsByWalletPage = internalMutation({
       deletedIds.push(trn._id)
     }
 
-    if (deletedIds.length)
+    if (deletedIds.length) {
       await toggleTrnsHash(ctx, userId, deletedIds)
+      await emitTombstones(ctx, userId, 'trns', deletedIds)
+    }
 
     return { continueCursor: page.continueCursor, isDone: page.isDone }
   },
@@ -144,8 +177,10 @@ export const removeWalletFinalize = internalMutation({
   },
   handler: async (ctx, { userId, walletId }) => {
     const wallet = await ctx.db.get(walletId)
-    if (wallet && wallet.userId === userId)
+    if (wallet && wallet.userId === userId) {
       await ctx.db.delete(walletId)
+      await emitTombstone(ctx, userId, 'wallets', walletId)
+    }
   },
 })
 

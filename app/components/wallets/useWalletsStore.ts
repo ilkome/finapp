@@ -14,7 +14,7 @@ import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { createDebouncedPersist, handleMutationResult, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
+import { createDebouncedPersist, handleMutationResult, isInFlight, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('wallets')
@@ -26,6 +26,8 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   const items = shallowRef<Wallets | null>(null)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
+  /** In-memory only — survives for the app session. Reset on each initWallets. */
+  const lastSyncedAt = ref(0)
 
   async function initWallets() {
     try {
@@ -37,10 +39,54 @@ export const useWalletsStore = defineStore('wallets', () => {
         data = await mergeOfflineOps(data, 'wallets')
 
       setWallets(data)
+      lastSyncedAt.value = Date.now()
     }
     catch (e) {
       logger.error('init failed', e)
     }
+  }
+
+  type ConvexWalletDoc = { [key: string]: unknown, _creationTime: number, _id: string, userId: string }
+
+  function applyRealtimePatch(patch: { deletedIds: string[], docs: ConvexWalletDoc[], serverTime: number, truncated: boolean }): number | null {
+    if (patch.truncated) {
+      logger.log('realtime delta truncated — running initWallets')
+      initWallets()
+      return null
+    }
+
+    const current = items.value ?? {}
+    const updated: Wallets = { ...current }
+    let changed = false
+
+    for (const doc of patch.docs) {
+      if (isInFlight(doc._id))
+        continue
+      const existing = updated[doc._id]
+      const existingUpdatedAt = existing?.updatedAt
+      const docUpdatedAt = typeof doc.updatedAt === 'number' ? doc.updatedAt : 0
+      if (existing && typeof existingUpdatedAt === 'number' && existingUpdatedAt >= docUpdatedAt)
+        continue
+      const { _creationTime: _ct, _id, userId: _u, ...rest } = doc
+      updated[_id] = rest as unknown as WalletItem
+      changed = true
+    }
+
+    for (const id of patch.deletedIds) {
+      if (isInFlight(id))
+        continue
+      if (id in updated) {
+        delete updated[id]
+        changed = true
+      }
+    }
+
+    if (changed) {
+      setWallets(updated)
+      logger.log(`realtime: ${patch.docs.length} docs, ${patch.deletedIds.length} deletes`)
+    }
+    lastSyncedAt.value = patch.serverTime
+    return patch.serverTime
   }
 
   const debouncedPersist = createDebouncedPersist<Wallets | null>(STORAGE_KEYS.wallets)
@@ -239,12 +285,14 @@ export const useWalletsStore = defineStore('wallets', () => {
   }
 
   return {
+    applyRealtimePatch,
     currenciesUsed,
     deleteWallet,
     hasItems,
     initWallets,
     items,
     itemsComputed,
+    lastSyncedAt,
     recentWalletIds,
     saveWallet,
     saveWalletsOrder,

@@ -473,4 +473,96 @@ describe('useTrnsStore', () => {
       expect(store.computeTrnItem('trn1')).toBeNull()
     })
   })
+
+  describe('applyRealtimePatch', () => {
+    it('adds new docs from delta', async () => {
+      const store = useTrnsStore()
+      store.items = {}
+
+      await store.applyRealtimePatch({
+        deletedIds: [],
+        docs: [{
+          _creationTime: 0,
+          _id: 't1',
+          amount: 100,
+          categoryId: 'food',
+          date: 1,
+          type: 0,
+          updatedAt: 10,
+          userId: 'u',
+          walletId: 'wallet1',
+        }],
+        serverTime: 100,
+        truncated: false,
+      })
+
+      expect(store.items?.t1).toMatchObject({ amount: 100, updatedAt: 10 })
+    })
+
+    it('skips docs with stale updatedAt', async () => {
+      const store = useTrnsStore()
+      store.items = { t1: makeTrn({ amount: 200, updatedAt: 50 }) }
+
+      await store.applyRealtimePatch({
+        deletedIds: [],
+        docs: [{
+          _creationTime: 0,
+          _id: 't1',
+          amount: 999,
+          categoryId: 'food',
+          date: 1,
+          type: 0,
+          updatedAt: 20,
+          userId: 'u',
+          walletId: 'wallet1',
+        }],
+        serverTime: 100,
+        truncated: false,
+      })
+
+      expect(store.items?.t1?.amount).toBe(200)
+    })
+
+    it('removes docs in deletedIds', async () => {
+      const store = useTrnsStore()
+      store.items = { t1: makeTrn(), t2: makeTrn() }
+
+      await store.applyRealtimePatch({
+        deletedIds: ['t1'],
+        docs: [],
+        serverTime: 100,
+        truncated: false,
+      })
+
+      expect(store.items?.t1).toBeUndefined()
+      expect(store.items?.t2).toBeDefined()
+    })
+
+    it('skips docs whose id is in inFlightOps (self-echo)', async () => {
+      const { trackInFlight, untrackInFlight } = await import('~/composables/useStoreSync')
+      const store = useTrnsStore()
+      store.items = {}
+
+      trackInFlight('t1')
+      await store.applyRealtimePatch({
+        deletedIds: [],
+        docs: [{
+          _creationTime: 0,
+          _id: 't1',
+          amount: 100,
+          categoryId: 'food',
+          date: 1,
+          type: 0,
+          updatedAt: 10,
+          userId: 'u',
+          walletId: 'wallet1',
+        }],
+        serverTime: 100,
+        truncated: false,
+      })
+      untrackInFlight('t1')
+
+      expect(store.items?.t1).toBeUndefined()
+    })
+  })
 })

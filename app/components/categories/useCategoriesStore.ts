@@ -9,7 +9,7 @@ import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { createDebouncedPersist, handleMutationResult, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
+import { createDebouncedPersist, handleMutationResult, isInFlight, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
 const adjustment: CategoryItem = {
@@ -31,6 +31,7 @@ const transfer: CategoryItem = {
 }
 
 type CategoriesStore = {
+  applyRealtimePatch: (patch: { deletedIds: string[], docs: { [k: string]: unknown, _creationTime: number, _id: string, userId: string }[], serverTime: number, truncated: boolean }) => number | null
   categoriesForBeParent: ComputedRef<CategoryId[]>
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
   categoriesRootIds: ComputedRef<CategoryId[]>
@@ -44,6 +45,7 @@ type CategoriesStore = {
   initCategories: () => void
   isTransactible: (categoryId: CategoryId) => boolean
   items: import('vue').ShallowRef<Categories>
+  lastSyncedAt: import('vue').Ref<number>
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<RemapInfo | void> | void
   setCategories: (values: Categories | null) => void
@@ -150,6 +152,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
   const debouncedPersist = createDebouncedPersist<Categories>(STORAGE_KEYS.categories)
 
+  const lastSyncedAt = ref(0)
+
   async function initCategories() {
     try {
       const { api, client } = useConvexClientWithApi()
@@ -160,10 +164,60 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
         data = await mergeOfflineOps(data, 'categories') as Categories
 
       setCategories(data)
+      lastSyncedAt.value = Date.now()
     }
     catch (e) {
       logger.error('init failed', e)
     }
+  }
+
+  type ConvexCategoryDoc = { [key: string]: unknown, _creationTime: number, _id: string, userId: string }
+
+  function applyRealtimePatch(patch: { deletedIds: string[], docs: ConvexCategoryDoc[], serverTime: number, truncated: boolean }): number | null {
+    if (patch.truncated) {
+      logger.log('realtime delta truncated — running initCategories')
+      initCategories()
+      return null
+    }
+
+    const current = items.value
+    const updated: Categories = { ...current }
+    let changed = false
+
+    for (const doc of patch.docs) {
+      if (isInFlight(doc._id))
+        continue
+      const existing = updated[doc._id]
+      const existingUpdatedAt = existing?.updatedAt
+      const docUpdatedAt = typeof doc.updatedAt === 'number' ? doc.updatedAt : 0
+      if (existing && typeof existingUpdatedAt === 'number' && existingUpdatedAt >= docUpdatedAt)
+        continue
+      const { _creationTime: _ct, _id, userId: _u, ...rest } = doc
+      updated[_id] = rest as unknown as CategoryItem
+      changed = true
+    }
+
+    for (const id of patch.deletedIds) {
+      if (isInFlight(id) || id === 'transfer' || id === 'adjustment')
+        continue
+      if (id in updated) {
+        delete updated[id]
+        changed = true
+      }
+    }
+
+    if (changed) {
+      // setCategories re-adds synthetic transfer/adjustment entries.
+      const userItems: Categories = {}
+      for (const id of Object.keys(updated)) {
+        if (id !== 'transfer' && id !== 'adjustment')
+          userItems[id] = updated[id]!
+      }
+      setCategories(userItems)
+      logger.log(`realtime: ${patch.docs.length} docs, ${patch.deletedIds.length} deletes`)
+    }
+    lastSyncedAt.value = patch.serverTime
+    return patch.serverTime
   }
 
   function setCategories(values: Categories | null) {
@@ -295,6 +349,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   return {
+    applyRealtimePatch,
     categoriesForBeParent,
     categoriesIdsForTrnValues,
     categoriesRootIds,
@@ -308,6 +363,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     initCategories,
     isTransactible,
     items,
+    lastSyncedAt,
     recentCategoriesIds,
     saveCategory,
     setCategories,

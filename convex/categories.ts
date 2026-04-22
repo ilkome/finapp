@@ -6,6 +6,7 @@ import type { MutationCtx } from './_generated/server'
 import { internal } from './_generated/api'
 import { action, internalMutation, internalQuery, mutation, query } from './_generated/server'
 import { getAuthUser, getOwnEntity, requireAuthUser, validateStringLength } from './shared'
+import { emitTombstone, emitTombstones } from './tombstones'
 import { toggleTrnsHash } from './trnsHash'
 
 async function validateParentId(ctx: MutationCtx, parentId: Id<'categories'> | 0, userId: string, selfId?: Id<'categories'>) {
@@ -73,6 +74,36 @@ export const list = query({
       .query('categories')
       .withIndex('by_user', q => q.eq('userId', user._id))
       .collect()
+  },
+})
+
+const REALTIME_DELTA_LIMIT = 500
+
+export const deltaRealtime = query({
+  args: { since: v.number() },
+  handler: async (ctx, { since }) => {
+    const user = await getAuthUser(ctx)
+    if (!user)
+      return null
+    const serverTime = Date.now()
+    const docsPlusOne = await ctx.db
+      .query('categories')
+      .withIndex('by_user_updatedAt', q =>
+        q.eq('userId', user._id).gt('updatedAt', since))
+      .take(REALTIME_DELTA_LIMIT + 1)
+    const truncated = docsPlusOne.length > REALTIME_DELTA_LIMIT
+    const docs = truncated ? docsPlusOne.slice(0, REALTIME_DELTA_LIMIT) : docsPlusOne
+    const tombstones = await ctx.db
+      .query('tombstones')
+      .withIndex('by_user_entity_deletedAt', q =>
+        q.eq('userId', user._id).eq('entity', 'categories').gt('deletedAt', since))
+      .take(REALTIME_DELTA_LIMIT)
+    return {
+      deletedIds: tombstones.map(t => t.entityId),
+      docs,
+      serverTime,
+      truncated,
+    }
   },
 })
 
@@ -163,8 +194,10 @@ export const removeTrnsByCategoryPage = internalMutation({
       deletedIds.push(trn._id)
     }
 
-    if (deletedIds.length)
+    if (deletedIds.length) {
       await toggleTrnsHash(ctx, userId, deletedIds)
+      await emitTombstones(ctx, userId, 'trns', deletedIds)
+    }
 
     return { continueCursor: page.continueCursor, isDone: page.isDone }
   },
@@ -180,6 +213,7 @@ export const removeCategoryFinalize = internalMutation({
     if (!category || category.userId !== userId)
       return
     await ctx.db.delete(categoryId)
+    await emitTombstone(ctx, userId, 'categories', categoryId)
   },
 })
 

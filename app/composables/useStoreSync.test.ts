@@ -249,3 +249,52 @@ describe('pushDeleteOp', () => {
     expect(pushOfflineOpMock).not.toHaveBeenCalled()
   })
 })
+
+describe('inFlightOps tracking', () => {
+  it('trackInFlight adds id and isInFlight returns true', async () => {
+    const { isInFlight, trackInFlight, untrackInFlight } = await import('~/composables/useStoreSync')
+
+    trackInFlight('w1')
+    expect(isInFlight('w1')).toBe(true)
+    untrackInFlight('w1')
+    expect(isInFlight('w1')).toBe(false)
+  })
+
+  it('handleMutationResult tracks id during mutation and untracks after resolve', async () => {
+    const { handleMutationResult, isInFlight } = await import('~/composables/useStoreSync')
+
+    let resolveMutation: (v: unknown) => void
+    const mutation = new Promise((r) => {
+      resolveMutation = r
+    })
+
+    const promise = handleMutationResult({
+      action: 'update',
+      entity: 'wallets',
+      errorMessage: 'x',
+      id: 'w-tracked',
+      mutation,
+    })
+
+    expect(isInFlight('w-tracked')).toBe(true)
+    resolveMutation!(undefined)
+    await promise
+    expect(isInFlight('w-tracked')).toBe(false)
+  })
+
+  it('handleMutationResult untracks id after rejection', async () => {
+    const { handleMutationResult, isInFlight } = await import('~/composables/useStoreSync')
+
+    const mutation = Promise.reject(new Error('fail'))
+
+    await handleMutationResult({
+      action: 'update',
+      entity: 'wallets',
+      errorMessage: 'x',
+      id: 'w-fail',
+      mutation,
+    })
+
+    expect(isInFlight('w-fail')).toBe(false)
+  })
+})
