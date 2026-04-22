@@ -13,6 +13,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { clearAuthCookie, hasAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
+import { stopAllRealtime } from '~/composables/useRealtimeSync'
 import { blockPersist, handleMutationResult, isPersistBlocked } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
@@ -153,6 +154,23 @@ export const useUserStore = defineStore('user', () => {
     })
   }
 
+  function applyRealtimeSettings(settings: unknown): void {
+    if (!settings)
+      return
+    const parsed = userSettingsSchema.safeParse(settings)
+    if (!parsed.success)
+      return
+    if (parsed.data.baseCurrency !== baseCurrency.value) {
+      baseCurrency.value = parsed.data.baseCurrency
+      persistUserSettings()
+    }
+    if (parsed.data.locale && parsed.data.locale !== locale.value) {
+      locale.value = parsed.data.locale
+      useNuxtApp().$i18n.setLocale(parsed.data.locale)
+      persistUserSettings()
+    }
+  }
+
   async function initUserSettings() {
     try {
       const { api, client } = useConvexClientWithApi()
@@ -193,6 +211,7 @@ export const useUserStore = defineStore('user', () => {
 
   async function signOut() {
     isSigningOut.value = true
+    stopAllRealtime()
 
     if (isDemo.value) {
       await localforage.clear()
@@ -261,6 +280,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   return {
+    applyRealtimeSettings,
     baseCurrency,
     currentUser,
     initUserSettings,

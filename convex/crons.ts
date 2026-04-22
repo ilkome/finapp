@@ -10,4 +10,10 @@ crons.daily(
   internal.rates.fetchAndSaveRates,
 )
 
+crons.daily(
+  'purge old tombstones',
+  { hourUTC: 4, minuteUTC: 0 },
+  internal.tombstones.purgeOld,
+)
+
 export default crons

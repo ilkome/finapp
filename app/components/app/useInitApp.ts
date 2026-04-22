@@ -16,6 +16,7 @@ import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { hasAuthCookie } from '~/composables/useAuthCookie'
+import { startAllRealtime } from '~/composables/useRealtimeSync'
 import { blockPersist, unblockPersist } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
@@ -122,6 +123,9 @@ export function useInitApp() {
       ])
 
       await replayOfflineQueue()
+      // Subscriptions must start AFTER initial sync so `since` is meaningful
+      // and AFTER replay so our own replayed ops are in inFlightOps first.
+      startAllRealtime().catch(e => createLogger('app').error('startAllRealtime failed', e))
     }
     catch (e) {
       createLogger('app').error('loadDataFromDB failed', e)

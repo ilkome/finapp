@@ -15,6 +15,7 @@ import type * as http from "../http.js";
 import type * as migrate from "../migrate.js";
 import type * as rates from "../rates.js";
 import type * as shared from "../shared.js";
+import type * as tombstones from "../tombstones.js";
 import type * as trns from "../trns.js";
 import type * as trnsHash from "../trnsHash.js";
 import type * as user from "../user.js";
@@ -35,6 +36,7 @@ declare const fullApi: ApiFromModules<{
   migrate: typeof migrate;
   rates: typeof rates;
   shared: typeof shared;
+  tombstones: typeof tombstones;
   trns: typeof trns;
   trnsHash: typeof trnsHash;
   user: typeof user;

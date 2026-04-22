@@ -15,7 +15,7 @@ import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { filterTrnsIds } from '~/components/trns/getTrns'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { createDebouncedPersist, handleMutationResult, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
+import { createDebouncedPersist, handleMutationResult, isInFlight, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
 /** Shape returned by Convex paginated queries (has _id, _creationTime, userId + entity fields). */
@@ -194,6 +194,60 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!isPersistBlocked())
       await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, newSyncMeta)
     logger.log(`delta sync: ${changedTrns.length} changed`)
+  }
+
+  /**
+   * Apply a realtime delta patch from a server subscription. Returns the
+   * new `since` timestamp for the next subscription window, or null when
+   * caller should fall back to a fullSync (truncated or no items).
+   */
+  async function applyRealtimePatch(patch: { deletedIds: string[], docs: ConvexTrnDoc[], serverTime: number, truncated: boolean }): Promise<number | null> {
+    if (patch.truncated) {
+      logger.log('realtime delta truncated — running fullSync')
+      await fullSync()
+      return null
+    }
+
+    const current = items.value ?? {}
+    const updated: Trns = { ...current }
+    let changed = false
+
+    for (const doc of patch.docs) {
+      if (isInFlight(doc._id))
+        continue
+      const existing = updated[doc._id]
+      if (existing && typeof existing.updatedAt === 'number' && existing.updatedAt >= (doc.updatedAt as number))
+        continue
+      const { _creationTime: _ct, _id, userId: _u, ...rest } = doc
+      updated[_id] = rest as unknown as Trns[string]
+      changed = true
+    }
+
+    for (const id of patch.deletedIds) {
+      if (isInFlight(id))
+        continue
+      if (id in updated) {
+        delete updated[id]
+        changed = true
+      }
+    }
+
+    if (changed) {
+      setTrns(Object.keys(updated).length > 0 ? updated : null)
+      logger.log(`realtime: ${patch.docs.length} docs, ${patch.deletedIds.length} deletes`)
+    }
+
+    const syncMeta: TrnsSyncMeta = {
+      idsHash: '',
+      lastSyncedAt: patch.serverTime,
+    }
+    const existingMeta = await localforage.getItem<TrnsSyncMeta>(STORAGE_KEYS.trnsSyncMeta)
+    if (existingMeta)
+      syncMeta.idsHash = existingMeta.idsHash
+    if (!isPersistBlocked())
+      await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, syncMeta)
+
+    return patch.serverTime
   }
 
   async function initTrns() {
@@ -380,6 +434,7 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   return {
+    applyRealtimePatch,
     computeTrnItem,
     deleteTrn,
     getRange,
