@@ -7,6 +7,37 @@ import categoryIcons from './app/assets/js/icons.js'
 const currentDir = dirname(fileURLToPath(import.meta.url))
 
 export default defineNuxtConfig({
+  app: {
+    head: {
+      htmlAttrs: { lang: 'en' },
+      link: [
+        { href: '/favicon.svg', rel: 'icon', type: 'image/svg+xml' },
+        { href: '/favicon.png', rel: 'icon', type: 'image/png' },
+        { href: 'https://finapp.ilko.me/', rel: 'canonical' },
+      ],
+      meta: [
+        { content: 'Open-source personal finance app. Track expenses, manage wallets, and analyze your spending. Works offline, syncs across devices.', name: 'description' },
+        { content: 'Finapp - Personal Finance Manager', property: 'og:title' },
+        { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', property: 'og:description' },
+        { content: 'website', property: 'og:type' },
+        { content: 'Finapp', property: 'og:site_name' },
+        { content: 'https://finapp.ilko.me/', property: 'og:url' },
+        { content: 'https://finapp.ilko.me/og-image.png', property: 'og:image' },
+        { content: '1200', property: 'og:image:width' },
+        { content: '630', property: 'og:image:height' },
+        { content: 'image/png', property: 'og:image:type' },
+        { content: 'Finapp dashboard with expense and income analytics', property: 'og:image:alt' },
+        { content: 'en_US', property: 'og:locale' },
+        { content: 'summary_large_image', name: 'twitter:card' },
+        { content: 'Finapp - Personal Finance Manager', name: 'twitter:title' },
+        { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', name: 'twitter:description' },
+        { content: 'https://finapp.ilko.me/og-image.png', name: 'twitter:image' },
+        { content: 'Finapp dashboard with expense and income analytics', name: 'twitter:image:alt' },
+      ],
+      title: 'Finapp - Personal Finance Manager',
+    },
+  },
+
   colorMode: {
     classSuffix: '',
     fallback: 'dark',
