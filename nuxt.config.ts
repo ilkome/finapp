@@ -17,7 +17,7 @@ export default defineNuxtConfig({
       ],
       meta: [
         { content: 'Open-source personal finance app. Track expenses, manage wallets, and analyze your spending. Works offline, syncs across devices.', name: 'description' },
-        { content: 'Finapp - Personal Finance Manager', property: 'og:title' },
+        { content: 'Personal Finance Manager', property: 'og:title' },
         { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', property: 'og:description' },
         { content: 'website', property: 'og:type' },
         { content: 'Finapp', property: 'og:site_name' },
@@ -29,12 +29,12 @@ export default defineNuxtConfig({
         { content: 'Finapp dashboard with expense and income analytics', property: 'og:image:alt' },
         { content: 'en_US', property: 'og:locale' },
         { content: 'summary_large_image', name: 'twitter:card' },
-        { content: 'Finapp - Personal Finance Manager', name: 'twitter:title' },
+        { content: 'Personal Finance Manager', name: 'twitter:title' },
         { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', name: 'twitter:description' },
         { content: 'https://finapp.ilko.me/og-image.png', name: 'twitter:image' },
         { content: 'Finapp dashboard with expense and income analytics', name: 'twitter:image:alt' },
       ],
-      title: 'Finapp - Personal Finance Manager',
+      title: 'Personal Finance Manager',
     },
   },
 
