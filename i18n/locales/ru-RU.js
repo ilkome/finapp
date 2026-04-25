@@ -66,6 +66,21 @@ export default {
     filter: 'Фильтр по категориям',
     form: {
       childColor: 'Применить цвет ко всем дочерним категориям',
+      children: {
+        confirmRemove: 'Отсоединить выбранные категории ({count}) от родителя? Они станут корневыми.',
+        currentlyIn: 'Сейчас в: {parent}',
+        empty: 'Нет детей',
+        group: {
+          current: 'Текущие дети',
+          freeRoot: 'Свободные корневые',
+          fromOther: 'Переместить из другого родителя',
+        },
+        label: 'Дочерние категории',
+        noCandidates: 'Нет доступных категорий',
+        noMatches: 'Ничего не найдено',
+        searchPlaceholder: 'Поиск категорий...',
+        selected: 'Выбрано: {count}',
+      },
       delete: {
         alertWithTrns: 'Также будут удалены',
         errorChildren: 'Вы не можете удалить категорию с дочерними категориям. Сначала удалите дочерние категории.',
@@ -91,6 +106,7 @@ export default {
         no: 'Без родителя',
       },
       recentCategory: 'Показывать в недавно использованных',
+      selectChildren: 'Дочерние категории',
       selectColor: 'Цвет',
       selectIcon: 'Иконка',
       selectParent: 'Родительская категория',

@@ -23,17 +23,133 @@ const categoriesStore = useCategoriesStore()
 
 const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
-const childIds = computed(() => categoriesStore.getChildrenIds(props.categoryId!))
-const hasChildren = computed(() => childIds.value.length > 0)
+const prevChildIds = computed(() => props.categoryId ? categoriesStore.getChildrenIds(props.categoryId) : [])
+const selectedChildIds = ref<CategoryId[]>([...prevChildIds.value])
+
+watch(prevChildIds, (ids) => {
+  selectedChildIds.value = [...ids]
+}, { flush: 'sync' })
+
+const hasChildren = computed(() => selectedChildIds.value.length > 0)
+const hadChildrenInitially = computed(() => prevChildIds.value.length > 0)
+const isRootCategory = computed(() => props.categoryForm.parentId === 0)
 const isAllowChangeParent = computed(() =>
   !hasChildren.value && categoriesStore.categoriesForBeParent.length > 0,
 )
+// A root can manage children only if it has no direct transactions of its own,
+// otherwise adopting children would hide its trns from stats.
+// We allow it also if it already has children (legacy safety valve).
+const canHaveChildren = computed(() =>
+  hadChildrenInitially.value
+  || (!!props.categoryId && categoriesStore.categoriesForBeParent.includes(props.categoryId)),
+)
+
+const rootsWithOwnChildren = computed<Set<CategoryId>>(() => {
+  const items = categoriesStore.items
+  const out = new Set<CategoryId>()
+  for (const cid of Object.keys(items)) {
+    const pid = items[cid]?.parentId
+    if (pid && pid !== 0 && typeof pid === 'string')
+      out.add(pid)
+  }
+  return out
+})
+
+const childrenCandidateIds = computed<CategoryId[]>(() => {
+  const items = categoriesStore.items
+  const roots = rootsWithOwnChildren.value
+  const result: CategoryId[] = []
+  for (const id of Object.keys(items)) {
+    if (id === 'adjustment' || id === 'transfer' || id === editCategoryId)
+      continue
+    const cat = items[id]
+    if (!cat)
+      continue
+    // Currently our child → include so it appears and can be removed
+    if (cat.parentId === editCategoryId) {
+      result.push(id)
+      continue
+    }
+    // Root category: adoptable only if it has no own children
+    if (cat.parentId === 0) {
+      if (!roots.has(id))
+        result.push(id)
+      continue
+    }
+    // Child of another root: can be reparented
+    result.push(id)
+  }
+  return result
+})
+
+type CandidateGroup = 'current' | 'fromOther' | 'freeRoot'
+
+const candidateGroups = computed<Record<CandidateGroup, CategoryId[]>>(() => {
+  const items = categoriesStore.items
+  const groups: Record<CandidateGroup, CategoryId[]> = { current: [], freeRoot: [], fromOther: [] }
+  for (const id of childrenCandidateIds.value) {
+    const cat = items[id]
+    if (!cat)
+      continue
+    if (prevChildIds.value.includes(id))
+      groups.current.push(id)
+    else if (cat.parentId === 0)
+      groups.freeRoot.push(id)
+    else
+      groups.fromOther.push(id)
+  }
+  const byName = (a: CategoryId, b: CategoryId) =>
+    (items[a]?.name ?? '').localeCompare(items[b]?.name ?? '')
+  groups.current.sort(byName)
+  groups.freeRoot.sort(byName)
+  groups.fromOther.sort(byName)
+  return groups
+})
+
+const childrenSearch = ref('')
+
+const filteredCandidateGroups = computed(() => {
+  const q = childrenSearch.value.trim().toLowerCase()
+  if (!q)
+    return candidateGroups.value
+  const items = categoriesStore.items
+  const match = (id: CategoryId) => {
+    const cat = items[id]
+    if (!cat)
+      return false
+    const parentName = typeof cat.parentId === 'string' ? items[cat.parentId]?.name ?? '' : ''
+    return cat.name.toLowerCase().includes(q) || parentName.toLowerCase().includes(q)
+  }
+  const g = candidateGroups.value
+  return {
+    current: g.current.filter(match),
+    freeRoot: g.freeRoot.filter(match),
+    fromOther: g.fromOther.filter(match),
+  }
+})
+
+function getParentName(id: CategoryId): string {
+  const cat = categoriesStore.items[id]
+  if (!cat || cat.parentId === 0 || typeof cat.parentId !== 'string')
+    return ''
+  return categoriesStore.items[cat.parentId]?.name ?? ''
+}
+
+const isAllowManageChildren = computed(() =>
+  isRootCategory.value
+  && !!props.categoryId
+  && canHaveChildren.value
+  && (childrenCandidateIds.value.length > 0 || prevChildIds.value.length > 0),
+)
 
 const modals = ref({
+  children: false,
   colors: false,
   icon: false,
   parent: false,
 })
+
+const childrenConfirm = ref<{ closeModal: () => void, count: number } | null>(null)
 
 const categoryPlaceholder = computed(() => ({
   ...props.categoryForm,
@@ -59,6 +175,40 @@ function onParentSelect(parentId: CategoryId | false, close: () => void) {
   close()
 }
 
+function toggleChildSelection(id: CategoryId) {
+  const idx = selectedChildIds.value.indexOf(id)
+  if (idx >= 0)
+    selectedChildIds.value = selectedChildIds.value.filter(x => x !== id)
+  else
+    selectedChildIds.value = [...selectedChildIds.value, id]
+}
+
+function applyChildrenSelection(close: () => void) {
+  const removedCount = prevChildIds.value.filter(id => !selectedChildIds.value.includes(id)).length
+  if (removedCount >= 2) {
+    childrenConfirm.value = { closeModal: close, count: removedCount }
+    return
+  }
+  close()
+}
+
+const childrenConfirmResolved = ref(false)
+
+function onChildrenConfirm() {
+  childrenConfirmResolved.value = true
+  childrenConfirm.value?.closeModal()
+  childrenConfirm.value = null
+}
+
+function onChildrenConfirmClosed() {
+  if (!childrenConfirmResolved.value) {
+    // User dismissed without confirming — revert selection back
+    selectedChildIds.value = [...prevChildIds.value]
+  }
+  childrenConfirmResolved.value = false
+  childrenConfirm.value = null
+}
+
 async function onSave() {
   const parsed = categoryFormSchema.safeParse(props.categoryForm)
 
@@ -75,9 +225,26 @@ async function onSave() {
     }
   }
 
+  // Validate uniqueness of names within the new children set
+  if (isAllowManageChildren.value) {
+    const finalChildren = selectedChildIds.value
+    const names = new Map<string, string>()
+    for (const cid of finalChildren) {
+      const cat = categoriesStore.items[cid]
+      if (!cat)
+        continue
+      if (names.has(cat.name)) {
+        showErrorToast('categories.form.name.exist')
+        return
+      }
+      names.set(cat.name, cid)
+    }
+  }
+
   await categoriesStore.saveCategory({
     id: editCategoryId,
     isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value,
+    nextChildIds: isAllowManageChildren.value ? [...selectedChildIds.value] : undefined,
     values: parsed.data,
   })
   emit('afterSave')
@@ -114,6 +281,20 @@ async function onSave() {
 
         <template #value>
           {{ props.categoryForm.parentId === 0 ? t('categories.form.parent.no') : categoriesStore.items[props.categoryForm.parentId]?.name }}
+        </template>
+      </UiButtonWithRight>
+
+      <!-- Children -->
+      <UiButtonWithRight
+        v-if="isAllowManageChildren"
+        @click="modals.children = true"
+      >
+        <template #label>
+          {{ t('categories.form.children.label') }}
+        </template>
+
+        <template #value>
+          {{ selectedChildIds.length > 0 ? t('categories.form.children.selected', { count: selectedChildIds.length }) : t('categories.form.children.empty') }}
         </template>
       </UiButtonWithRight>
 
@@ -277,6 +458,114 @@ async function onSave() {
       </div>
     </template>
   </BottomSheetModal>
+
+  <!-- Children -->
+  <BottomSheetModal
+    v-if="modals.children"
+    @closed="modals.children = false; childrenSearch = ''"
+  >
+    <template #default="{ close }">
+      <UiTitleModal>
+        {{ t('categories.form.selectChildren') }}
+        <span v-if="selectedChildIds.length > 0" class="text-muted ml-2 text-sm font-normal">
+          {{ t('categories.form.children.selected', { count: selectedChildIds.length }) }}
+        </span>
+      </UiTitleModal>
+
+      <div class="px-3 pt-1 pb-2">
+        <FormInput
+          v-model="childrenSearch"
+          :placeholder="t('categories.form.children.searchPlaceholder')"
+        />
+      </div>
+
+      <div class="scrollerBlock bottomSheetContentInside">
+        <div
+          v-if="childrenCandidateIds.length === 0"
+          class="text-muted p-4 text-center"
+        >
+          {{ t('categories.form.children.noCandidates') }}
+        </div>
+
+        <template v-else>
+          <template
+            v-for="group in (['current', 'freeRoot', 'fromOther'] as const)"
+            :key="group"
+          >
+            <div
+              v-if="filteredCandidateGroups[group].length > 0"
+              class="pb-2"
+            >
+              <div class="text-muted px-3 pt-2 pb-1 text-xs tracking-wide uppercase">
+                {{ t(`categories.form.children.group.${group}`) }}
+              </div>
+
+              <button
+                v-for="id in filteredCandidateGroups[group]"
+                :key="id"
+                type="button"
+                :aria-pressed="selectedChildIds.includes(id)"
+                :class="cn('flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-(--ui-bg-muted)', selectedChildIds.includes(id) && 'bg-(--ui-bg-muted)')"
+                @click="toggleChildSelection(id)"
+              >
+                <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-(--ui-primary) bg-(--ui-primary)' : 'border-(--ui-border)')">
+                  <Icon
+                    v-if="selectedChildIds.includes(id)"
+                    name="mdi:check"
+                    size="14"
+                    class="text-(--ui-bg)"
+                  />
+                </div>
+                <UiIconBase
+                  :color="categoriesStore.items[id]?.color"
+                  :name="categoriesStore.items[id]?.icon ?? ''"
+                  invert
+                />
+                <div class="min-w-0 flex-1">
+                  <div class="truncate">
+                    {{ categoriesStore.items[id]?.name }}
+                  </div>
+                  <div
+                    v-if="group === 'fromOther'"
+                    class="text-muted truncate text-xs"
+                  >
+                    {{ t('categories.form.children.currentlyIn', { parent: getParentName(id) }) }}
+                  </div>
+                </div>
+              </button>
+            </div>
+          </template>
+
+          <div
+            v-if="
+              filteredCandidateGroups.current.length === 0
+                && filteredCandidateGroups.freeRoot.length === 0
+                && filteredCandidateGroups.fromOther.length === 0
+            "
+            class="text-muted p-4 text-center"
+          >
+            {{ t('categories.form.children.noMatches') }}
+          </div>
+        </template>
+      </div>
+
+      <div class="bottomSheetContentBottom">
+        <UiButtonAccent
+          rounded
+          @click="applyChildrenSelection(close)"
+        >
+          {{ t('base.apply') }}
+        </UiButtonAccent>
+      </div>
+    </template>
+  </BottomSheetModal>
+
+  <LayoutConfirmModal
+    v-if="childrenConfirm"
+    :description="t('categories.form.children.confirmRemove', { count: childrenConfirm.count })"
+    @closed="onChildrenConfirmClosed"
+    @confirm="onChildrenConfirm"
+  />
 
   <!-- Parent -->
   <BottomSheetModal

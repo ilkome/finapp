@@ -63,3 +63,12 @@ export function compareCategoryIds(idA: CategoryId, idB: CategoryId, items: Cate
     return 0
   return compareCategoriesByParentAndName(catA, catB, items)
 }
+
+export function computeChildrenDiff(prev: CategoryId[], next: CategoryId[]): { added: CategoryId[], removed: CategoryId[] } {
+  const prevSet = new Set(prev)
+  const nextSet = new Set(next)
+  return {
+    added: next.filter(id => !prevSet.has(id)),
+    removed: prev.filter(id => !nextSet.has(id)),
+  }
+}
