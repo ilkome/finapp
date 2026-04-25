@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Categories } from '~/components/categories/types'
 
-import { getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { computeChildrenDiff, getTransactibleCategoriesIds } from '~/components/categories/utils'
 
 export const mockCategories: Categories = {
   child1: {
@@ -124,5 +124,27 @@ describe('getTransactibleCategoriesIds', () => {
   it('filter by one parent category', () => {
     const result = getTransactibleCategoriesIds(mockCategories2, ['241120_k27ehb'])
     expect(result).toEqual(['241120_7fxrno'])
+  })
+})
+
+describe('computeChildrenDiff', () => {
+  it('returns empty when both arrays are empty', () => {
+    expect(computeChildrenDiff([], [])).toEqual({ added: [], removed: [] })
+  })
+
+  it('all added when prev is empty', () => {
+    expect(computeChildrenDiff([], ['a', 'b'])).toEqual({ added: ['a', 'b'], removed: [] })
+  })
+
+  it('all removed when next is empty', () => {
+    expect(computeChildrenDiff(['a', 'b'], [])).toEqual({ added: [], removed: ['a', 'b'] })
+  })
+
+  it('detects added and removed together', () => {
+    expect(computeChildrenDiff(['a', 'b'], ['b', 'c'])).toEqual({ added: ['c'], removed: ['a'] })
+  })
+
+  it('returns empty diffs when sets are equal regardless of order', () => {
+    expect(computeChildrenDiff(['a', 'b'], ['b', 'a'])).toEqual({ added: [], removed: [] })
   })
 })

@@ -249,6 +249,100 @@ export const remove = action({
   },
 })
 
+export const setChildren = mutation({
+  args: {
+    addIds: v.array(v.id('categories')),
+    childrenColor: v.optional(v.string()),
+    id: v.id('categories'),
+    removeIds: v.array(v.id('categories')),
+  },
+  handler: async (ctx, { addIds, childrenColor, id, removeIds }) => {
+    const user = await requireAuthUser(ctx)
+    const parent = await getOwnEntity(ctx, id, user._id)
+    if (parent.parentId !== 0)
+      throw new Error('Only a root category can adopt children')
+
+    // Dedupe and reject overlap
+    const addSet = new Set(addIds)
+    const removeSet = new Set(removeIds)
+    if (addSet.size !== addIds.length || removeSet.size !== removeIds.length)
+      throw new Error('Duplicate IDs in addIds or removeIds')
+    for (const id of addSet) {
+      if (removeSet.has(id))
+        throw new Error('Same ID appears in both addIds and removeIds')
+    }
+    if (addSet.has(id))
+      throw new Error('Category cannot be its own child')
+
+    validateStringLength(childrenColor, 50, 'Color')
+
+    // Validate each add: own, leaf (no own children)
+    for (const addId of addSet) {
+      await getOwnEntity(ctx, addId, user._id)
+      const ownChild = await ctx.db
+        .query('categories')
+        .withIndex('by_user_parent', q => q.eq('userId', user._id).eq('parentId', addId))
+        .first()
+      if (ownChild)
+        throw new Error('Cannot move a category that has its own children')
+    }
+
+    // Validate each remove currently belongs to this parent
+    for (const removeId of removeSet) {
+      const cat = await getOwnEntity(ctx, removeId, user._id)
+      if (cat.parentId !== id)
+        throw new Error('Child does not belong to this parent')
+    }
+
+    // Name uniqueness: existing kept + added
+    const existingChildren = await ctx.db
+      .query('categories')
+      .withIndex('by_user_parent', q => q.eq('userId', user._id).eq('parentId', id))
+      .collect()
+    const finalNames = new Set<string>()
+    for (const child of existingChildren) {
+      if (removeSet.has(child._id) || addSet.has(child._id))
+        continue
+      if (finalNames.has(child.name))
+        throw new Error('Duplicate child name under parent')
+      finalNames.add(child.name)
+    }
+    for (const addId of addSet) {
+      const cat = await ctx.db.get(addId)
+      if (!cat)
+        throw new Error('Not found')
+      if (finalNames.has(cat.name))
+        throw new Error(`Category with name "${cat.name}" already exists under parent`)
+      finalNames.add(cat.name)
+    }
+
+    const now = Date.now()
+
+    for (const addId of addSet) {
+      const patch: { color?: string, parentId: typeof id, updatedAt: number } = {
+        parentId: id,
+        updatedAt: now,
+      }
+      if (childrenColor)
+        patch.color = childrenColor
+      await ctx.db.patch(addId, patch)
+    }
+    for (const removeId of removeSet)
+      await ctx.db.patch(removeId, { parentId: 0, updatedAt: now })
+
+    // Propagate color to kept children if requested
+    if (childrenColor) {
+      for (const child of existingChildren) {
+        if (removeSet.has(child._id) || addSet.has(child._id))
+          continue
+        await ctx.db.patch(child._id, { color: childrenColor, updatedAt: now })
+      }
+    }
+
+    return now
+  },
+})
+
 export const updateWithChildren = mutation({
   args: {
     childIds: v.array(v.id('categories')),

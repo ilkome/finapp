@@ -30,5 +30,6 @@ export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', C
 export type AddCategoryParams = {
   id: CategoryId
   isUpdateChildCategoriesColor: boolean
+  nextChildIds?: CategoryId[]
   values: CategoryItem
 }

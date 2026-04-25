@@ -126,6 +126,7 @@ export function handleMutationResult<T>(opts: {
   id: string | string[]
   items?: ShallowRef<Record<string, T> | null>
   mutation: Promise<unknown>
+  onError?: (error: unknown) => void
 }): Promise<RemapInfo | void> {
   const ids = Array.isArray(opts.id) ? opts.id : [opts.id]
 
@@ -163,6 +164,7 @@ export function handleMutationResult<T>(opts: {
     })
     .catch((e) => {
       logger.error(`${opts.action} failed: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`, e)
+      opts.onError?.(e)
       showErrorToast(opts.errorMessage)
     })
     .finally(() => {

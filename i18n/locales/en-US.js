@@ -66,6 +66,21 @@ export default {
     filter: 'Filter categories',
     form: {
       childColor: 'Apply color to all child categories',
+      children: {
+        confirmRemove: 'Remove {count} categories from this parent? They will become root categories.',
+        currentlyIn: 'Currently in: {parent}',
+        empty: 'No children',
+        group: {
+          current: 'Current children',
+          freeRoot: 'Available root categories',
+          fromOther: 'Move from another parent',
+        },
+        label: 'Child categories',
+        noCandidates: 'No categories available',
+        noMatches: 'No matches',
+        searchPlaceholder: 'Search categories...',
+        selected: '{count} selected',
+      },
       delete: {
         alertWithTrns: 'This will also delete',
         errorChildren: 'You cannot delete a category with child categories. Delete the child categories first.',
@@ -91,6 +106,7 @@ export default {
         no: 'Without parent',
       },
       recentCategory: 'Recent category',
+      selectChildren: 'Child categories',
       selectColor: 'Color',
       selectIcon: 'Icon',
       selectParent: 'Parent category',

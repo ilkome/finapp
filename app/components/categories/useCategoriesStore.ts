@@ -4,7 +4,7 @@ import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/
 import type { TrnId } from '~/components/trns/types'
 import type { RemapInfo } from '~/composables/useStoreSync'
 
-import { compareCategoryIds, getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -259,32 +259,80 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return transactibleIdsSet.value.has(categoryId)
   }
 
-  function applyOptimisticUpdate(id: CategoryId, categoryValues: CategoryItem, isUpdateChildCategoriesColor: boolean, categoryChildIds: CategoryId[]) {
+  function applyOptimisticUpdate(
+    id: CategoryId,
+    categoryValues: CategoryItem,
+    isUpdateChildCategoriesColor: boolean,
+    colorPropagationIds: CategoryId[],
+    reparent?: { added: CategoryId[], removed: CategoryId[] },
+  ) {
     const updatedItems: Categories = {
       ...items.value,
       [id]: categoryValues,
     }
 
-    if (isUpdateChildCategoriesColor && categoryChildIds.length > 0) {
-      for (const childId of categoryChildIds) {
+    if (isUpdateChildCategoriesColor && colorPropagationIds.length > 0) {
+      for (const childId of colorPropagationIds) {
         if (updatedItems[childId])
           updatedItems[childId] = { ...updatedItems[childId], color: categoryValues.color }
+      }
+    }
+
+    if (reparent) {
+      for (const addId of reparent.added) {
+        const existing = updatedItems[addId]
+        if (!existing)
+          continue
+        updatedItems[addId] = {
+          ...existing,
+          color: isUpdateChildCategoriesColor ? categoryValues.color : existing.color,
+          parentId: id,
+        }
+      }
+      for (const removeId of reparent.removed) {
+        if (updatedItems[removeId])
+          updatedItems[removeId] = { ...updatedItems[removeId], parentId: 0 }
       }
     }
 
     setCategories(updatedItems)
   }
 
-  function saveCategory({ id, isUpdateChildCategoriesColor, values }: AddCategoryParams) {
+  function saveCategory({ id, isUpdateChildCategoriesColor, nextChildIds, values }: AddCategoryParams) {
     if (id === 'transfer' || id === 'adjustment')
       return
 
-    const categoryChildIds = getChildrenIds(id)
+    const prevChildIds = getChildrenIds(id)
+    const useChildrenDiff = Array.isArray(nextChildIds)
+    const diff = useChildrenDiff
+      ? computeChildrenDiff(prevChildIds, nextChildIds!)
+      : { added: [] as CategoryId[], removed: [] as CategoryId[] }
+    const hasChildrenDiff = diff.added.length > 0 || diff.removed.length > 0
+    // Children that stay under this parent — safe color propagation targets
+    const keptChildIds = useChildrenDiff
+      ? prevChildIds.filter(cid => nextChildIds!.includes(cid))
+      : prevChildIds
 
     // Frontend IDs are always treated as new creates (server generates real ID)
     const isExisting = !isLocalId(id) && items.value && id in items.value
 
-    applyOptimisticUpdate(id, values, isUpdateChildCategoriesColor, categoryChildIds)
+    // Capture pre-optimistic snapshot for rollback (only for reparented children)
+    const reparentRollback = new Map<CategoryId, { color: string, parentId: CategoryId | 0 }>()
+    if (hasChildrenDiff) {
+      for (const cid of [...diff.added, ...diff.removed]) {
+        const prev = items.value[cid]
+        if (prev)
+          reparentRollback.set(cid, { color: prev.color, parentId: prev.parentId })
+      }
+    }
+
+    applyOptimisticUpdate(
+      id,
+      values,
+      isUpdateChildCategoriesColor,
+      keptChildIds,
+      hasChildrenDiff ? diff : undefined,
+    )
 
     if (!pushSaveOp({ entity: 'categories', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
       return
@@ -301,9 +349,9 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       showInQuickSelector: values.showInQuickSelector,
     }
 
-    const mutation = isExisting && isUpdateChildCategoriesColor && categoryChildIds.length > 0
+    const mutation = isExisting && isUpdateChildCategoriesColor && keptChildIds.length > 0
       ? client.mutation(api.categories.updateWithChildren, {
-          childIds: categoryChildIds.map(cid => asConvexId<'categories'>(cid)),
+          childIds: keptChildIds.map(cid => asConvexId<'categories'>(cid)),
           id: asConvexId<'categories'>(id),
           ...categoryData,
         })
@@ -311,15 +359,73 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
         ? client.mutation(api.categories.update, { id: asConvexId<'categories'>(id), ...categoryData })
         : client.mutation(api.categories.create, categoryData)
 
-    return handleMutationResult({
+    const coreResult = handleMutationResult({
       action,
       entity: 'categories',
       errorMessage: 'categories.errors.saveFailed',
       id,
       items,
       mutation,
-
     })
+
+    if (hasChildrenDiff) {
+      const snapshot = items.value
+      const reparentIds: CategoryId[] = []
+      for (const addId of diff.added) {
+        const current = snapshot[addId]
+        if (!current)
+          continue
+        reparentIds.push(addId)
+        pushSaveOp({
+          entity: 'categories',
+          id: addId,
+          isDemo: !!isDemo.value,
+          isExisting: true,
+          values: { ...current, parentId: id } as unknown as Record<string, unknown>,
+        })
+      }
+      for (const removeId of diff.removed) {
+        const current = snapshot[removeId]
+        if (!current)
+          continue
+        reparentIds.push(removeId)
+        pushSaveOp({
+          entity: 'categories',
+          id: removeId,
+          isDemo: !!isDemo.value,
+          isExisting: true,
+          values: { ...current, parentId: 0 } as unknown as Record<string, unknown>,
+        })
+      }
+
+      if (reparentIds.length > 0 && !isLocalId(id)) {
+        const reparentMutation = client.mutation(api.categories.setChildren, {
+          addIds: diff.added.map(cid => asConvexId<'categories'>(cid)),
+          childrenColor: isUpdateChildCategoriesColor ? values.color : undefined,
+          id: asConvexId<'categories'>(id),
+          removeIds: diff.removed.map(cid => asConvexId<'categories'>(cid)),
+        })
+        handleMutationResult({
+          action: 'update',
+          entity: 'categories',
+          errorMessage: 'categories.errors.saveFailed',
+          id: reparentIds,
+          items,
+          mutation: reparentMutation,
+          onError: () => {
+            // Restore previous parentIds/colors for reparented categories
+            const restored: Categories = { ...items.value }
+            for (const [cid, prev] of reparentRollback) {
+              if (restored[cid])
+                restored[cid] = { ...restored[cid], color: prev.color, parentId: prev.parentId }
+            }
+            setCategories(restored)
+          },
+        })
+      }
+    }
+
+    return coreResult
   }
 
   function deleteCategory(id: CategoryId, trnsIds?: TrnId[]) {
