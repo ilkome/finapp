@@ -1,24 +1,35 @@
 <script setup lang="ts">
 import { useSearch } from '~/components/search/useSearch'
+import { canGoBack } from '~/composables/useNavigationHistory'
 
 const { backTo } = defineProps<{
   backTo?: string
 }>()
 
 const { isSearchOpen } = useSearch()
+const router = useRouter()
+
+function onBack() {
+  if (canGoBack.value)
+    router.back()
+  else if (backTo)
+    router.replace(backTo)
+}
 </script>
 
 <template>
   <div class="bg-default/90 sticky top-0 z-20 mb-2 backdrop-blur">
     <div class="border-item-4 grid min-h-12 max-w-7xl items-center border-b px-2 py-2 lg:px-4 lg:py-4">
       <div class="flex grow items-center">
-        <NuxtLink
+        <button
           v-if="backTo"
-          :to="backTo"
+          type="button"
+          :aria-label="$t('base.previous')"
           class="interactive text-muted flex min-h-[42px] min-w-[42px] shrink-0 cursor-default items-center justify-center rounded-sm text-xl"
+          @click="onBack"
         >
           <Icon name="lucide:arrow-left" size="20" />
-        </NuxtLink>
+        </button>
 
         <div class="min-w-0 overflow-x-auto">
           <slot />

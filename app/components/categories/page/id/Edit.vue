@@ -3,6 +3,7 @@ import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
 import { categoryFormSchema } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { navigateAfterSave } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -31,7 +32,7 @@ useHead({
       :categoryId="categoryId"
       :categoryForm="categoryForm"
       @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
-      @afterSave="() => router.replace(`/categories/${categoryId}`)"
+      @afterSave="() => navigateAfterSave(router, `/categories/${categoryId}`)"
     />
   </UiPage>
 </template>

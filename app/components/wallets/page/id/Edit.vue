@@ -3,6 +3,7 @@ import type { WalletId, WalletItem } from '~/components/wallets/types'
 
 import { walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { navigateAfterSave } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -41,7 +42,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
     <WalletsForm
       :walletId
       :walletForm
-      @afterSave="() => router.replace(`/wallets/${walletId}`)"
+      @afterSave="() => navigateAfterSave(router, `/wallets/${walletId}`)"
       @update="updateField"
     />
   </UiPage>
