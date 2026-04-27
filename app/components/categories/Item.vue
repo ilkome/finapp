@@ -10,6 +10,8 @@ export type CategoryItemProps = {
   class?: string
   contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
+  isExpanded?: boolean
+  isShowChevron?: boolean
   isShowParent?: boolean
   lineWidth?: number
   stacked?: boolean
@@ -21,6 +23,7 @@ const props = defineProps<CategoryItemProps>()
 const emit = defineEmits<{
   click: [e: Event]
   filter: [categoryId: CategoryId]
+  toggle: []
 }>()
 </script>
 
@@ -33,11 +36,14 @@ const emit = defineEmits<{
       :categoryId="props.categoryId"
       :class="props.class"
       :insideClasses="props.insideClasses"
+      :isExpanded="props.isExpanded"
+      :isShowChevron="props.isShowChevron"
       :isShowParent="props.isShowParent"
       :lineWidth="props.lineWidth"
       :to="props.to"
       @click="emit('click', $event)"
       @filter="emit('filter', $event)"
+      @toggle="emit('toggle')"
     />
   </UContextMenu>
 
@@ -49,10 +55,13 @@ const emit = defineEmits<{
     :categoryId="props.categoryId"
     :class="props.class"
     :insideClasses="props.insideClasses"
+    :isExpanded="props.isExpanded"
+    :isShowChevron="props.isShowChevron"
     :isShowParent="props.isShowParent"
     :lineWidth="props.lineWidth"
     :to="props.to"
     @click="emit('click', $event)"
     @filter="emit('filter', $event)"
+    @toggle="emit('toggle')"
   />
 </template>

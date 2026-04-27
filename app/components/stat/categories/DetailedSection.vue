@@ -3,8 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCategoriesExpanded } from '~/components/stat/categories/useCategoriesExpanded'
+import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { resolveGrouped } from '~/components/stat/useStatConfig'
@@ -24,7 +23,6 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { computeCategoriesWithData } = useStatCategories()
-const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
 // Config
@@ -73,8 +71,7 @@ const {
   toggleAll: toggleAllCategories,
 } = useCategoriesExpanded(
   props.storageKey,
-  categoriesStore.items ?? {},
-  categoriesWithData,
+  computed(() => categoriesWithData.value.map(c => c.id)),
 )
 
 function onParentClick(item: CategoryWithData) {

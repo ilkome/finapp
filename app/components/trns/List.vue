@@ -277,7 +277,7 @@ function onOpenTrnForm(date: number) {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="_bg-item-2 _rounded-lg _border-b border-item-4 overflow-hidden pb-2 last:border-b-0 last:pb-px"
+        class="_rounded-lg _border-b border-item-4 overflow-hidden pb-2 last:border-b-0 last:pb-px"
       >
         <div
           :class="{ 'border-item-4': isShowGroupSum && groupTrnsIds.length > 1 }"

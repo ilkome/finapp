@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui'
+
 import type { StatTabSlug } from '~/components/stat/types'
+
+import { tabsNavUi } from '~/components/menu/Tabs'
 
 const props = defineProps<{
   active: StatTabSlug
@@ -12,27 +16,22 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const { width } = useWindowSize()
 
-const menu = computed(() => {
-  const all: {
-    id: StatTabSlug
-    name: string
-  }[] = [{
-    id: 'summary',
-    name: t('money.summary'),
-  }, {
-    id: 'expense',
-    name: t('money.expense'),
-  }, {
-    id: 'income',
-    name: t('money.income'),
-  }]
+const menu = computed<NavigationMenuItem[]>(() => {
+  const make = (value: StatTabSlug, label: string): NavigationMenuItem => ({
+    active: props.active === value,
+    label,
+    onSelect: () => onClickStatMenu(value),
+    value,
+  })
 
-  if (width.value > 766) {
-    all.push({
-      id: 'split',
-      name: t('money.split'),
-    })
-  }
+  const all = [
+    make('summary', t('money.summary')),
+    make('expense', t('money.expense')),
+    make('income', t('money.income')),
+  ]
+
+  if (width.value > 766)
+    all.push(make('split', t('money.split')))
 
   return all
 })
@@ -43,24 +42,16 @@ function onClickStatMenu(tabName: StatTabSlug) {
 }
 
 watch(() => props.active, () => {
-  if (!menu.value.some(i => i.id === props.active))
-    onClickStatMenu(menu.value[0]!.id)
+  if (!menu.value.some(i => i.value === props.active))
+    onClickStatMenu(menu.value[0]!.value as StatTabSlug)
 }, { immediate: true })
 </script>
 
 <template>
-  <div class="-mb-px flex items-start gap-2">
-    <div
-      v-for="item in menu"
-      :key="item.id"
-      :class="[{
-        '!border-(--ui-primary) pb-2.5': item.id === props.active,
-        'text-muted rounded-sm pb-1.5 hover:bg-(--item-5)': item.id !== props.active,
-      }]"
-      class="border-b border-transparent px-3 pt-1.5 text-xs tracking-wide text-nowrap lg:text-sm"
-      @click="onClickStatMenu(item.id)"
-    >
-      {{ item.name }}
-    </div>
-  </div>
+  <UNavigationMenu
+    :items="menu"
+    highlight
+    class="w-full"
+    :ui="tabsNavUi"
+  />
 </template>

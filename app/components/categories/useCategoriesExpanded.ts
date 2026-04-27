@@ -2,35 +2,27 @@ import type { ComputedRef } from 'vue'
 
 import { useStorage } from '@vueuse/core'
 
-import type { Categories, CategoryId } from '~/components/categories/types'
-import type { CategoryWithData } from '~/components/stat/types'
+import type { CategoryId } from '~/components/categories/types'
 
 type CategoryState = { show: boolean }
 type CategoriesState = Record<CategoryId, CategoryState>
 
-function createInitialState(categories: Categories): CategoriesState {
-  return Object.fromEntries(Object.keys(categories).map(id => [id, { show: false }]))
-}
-
 export function useCategoriesExpanded(
   storageKey: string,
-  storeCategories: Categories,
-  categoriesWithData: ComputedRef<CategoryWithData[]>,
+  currentIds: ComputedRef<CategoryId[]>,
 ) {
   const expandedState = useStorage<CategoriesState>(
-    `statCategoriesOpened1${storageKey}`,
-    createInitialState(storeCategories),
+    `categoriesOpened:${storageKey}`,
+    {} as CategoriesState,
   )
 
-  const currentState = computed(() =>
-    categoriesWithData.value.reduce((acc, cat) => {
-      acc[cat.id] = { show: expandedState.value[cat.id]?.show ?? false }
-      return acc
-    }, {} as CategoriesState),
+  const isAllExpanded = computed(() =>
+    currentIds.value.length > 0
+    && currentIds.value.every(id => expandedState.value[id]?.show),
   )
-
-  const isAllExpanded = computed(() => Object.values(currentState.value).every(c => c.show))
-  const isAnyExpanded = computed(() => Object.values(currentState.value).some(c => c.show))
+  const isAnyExpanded = computed(() =>
+    currentIds.value.some(id => expandedState.value[id]?.show),
+  )
 
   const folderIcon = computed(() => {
     if (isAllExpanded.value)
@@ -42,7 +34,7 @@ export function useCategoriesExpanded(
 
   function toggleAll() {
     const newShow = !isAnyExpanded.value
-    for (const id of Object.keys(currentState.value))
+    for (const id of currentIds.value)
       expandedState.value[id] = { show: newShow }
   }
 
