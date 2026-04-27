@@ -3,6 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
 
+import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryContextMenu } from '~/components/categories/useCategoryContextMenu'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -11,6 +12,11 @@ import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
+
+const { folderIcon, isExpanded, toggle, toggleAll } = useCategoriesExpanded(
+  'categoriesPage',
+  computed(() => categoriesStore.categoriesRootIds),
+)
 
 useHead({ title: t('categories.title') })
 
@@ -77,6 +83,14 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
     <UiHeader>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
+        <UiActionButton
+          v-if="categoriesView === 'list'"
+          :ariaLabel="$t('base.toggleFolders')"
+          @click="toggleAll"
+        >
+          <Icon :name="folderIcon" size="20" />
+        </UiActionButton>
+
         <UiActionButton :ariaLabel="$t('base.toggleView')" @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
           <Icon
             :name="categoriesView === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
@@ -121,6 +135,7 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
         :class="{
           'grid gap-1.5 @sm:grid-cols-2 @2xl/page:grid-cols-3': categoriesView === 'grid',
         }"
+        :expanded="categoriesView === 'list' ? { isExpanded, toggle } : undefined"
         :getContextMenuItems="getCategoryContextMenuItems"
         :insideClasses="categoriesView === 'grid' ? 'bg-item-2' : ''"
         :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"

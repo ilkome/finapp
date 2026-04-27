@@ -9,6 +9,8 @@ const props = defineProps<{
   categoryId: CategoryId
   class?: string
   insideClasses?: string
+  isExpanded?: boolean
+  isShowChevron?: boolean
   isShowParent?: boolean
   lineWidth?: number
   stacked?: boolean
@@ -18,12 +20,20 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [e: Event]
   filter: [categoryId: CategoryId]
+  toggle: []
 }>()
 
 const categoriesStore = useCategoriesStore()
 
 const childCategoriesIds = computed(() => categoriesStore.getChildrenIds(props.categoryId))
 const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
+const hasChildren = computed(() => childCategoriesIds.value.length > 0)
+
+function onToggleClick(e: Event) {
+  e.stopPropagation()
+  e.preventDefault()
+  emit('toggle')
+}
 </script>
 
 <template>
@@ -50,9 +60,22 @@ const parentCategory = computed(() => categoriesStore.items[props.category?.pare
         :stacked="props.stacked"
         :category="props.category"
         :parentCategory="parentCategory"
-        :childrenCount="childCategoriesIds.length"
+        :childrenCount="props.isShowChevron ? undefined : childCategoriesIds.length"
         :isShowParent="props.isShowParent"
       />
     </div>
+
+    <button
+      v-if="props.isShowChevron && hasChildren"
+      type="button"
+      class="flex-center text-muted -mr-1 h-9 w-9 shrink-0 cursor-pointer rounded-sm hover:bg-(--item-3)"
+      :aria-label="$t('base.toggleExpand')"
+      @click="onToggleClick"
+    >
+      <Icon
+        :name="props.isExpanded ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+        size="18"
+      />
+    </button>
   </UiElement>
 </template>

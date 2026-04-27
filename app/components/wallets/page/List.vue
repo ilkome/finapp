@@ -1,7 +1,11 @@
 <script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui'
+
 import { useStorage } from '@vueuse/core'
 
 import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
+
+import { tabsNavUi } from '~/components/menu/Tabs'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -62,6 +66,17 @@ const {
 function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
+
+const groupNavItems = computed<NavigationMenuItem[]>(() =>
+  groupTabs.value.map(item => ({
+    active: item.id === groupedBy.value,
+    label: item.label,
+    onSelect: () => {
+      groupedBy.value = item.id
+    },
+    value: item.id,
+  })),
+)
 </script>
 
 <template>
@@ -168,17 +183,12 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
       <div class="@3xl/main:max-w-sm">
         <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2 ">
-          <UiTabsScroll>
-            <UiTabsItemPill
-              v-for="item in groupTabs"
-              :key="item.id"
-              variant="outline"
-              :isActive="item.id === groupedBy"
-              @click="groupedBy = item.id"
-            >
-              {{ item.label }}
-            </UiTabsItemPill>
-          </UiTabsScroll>
+          <UNavigationMenu
+            :items="groupNavItems"
+            highlight
+            class="w-full"
+            :ui="tabsNavUi"
+          />
 
           <div
             v-if="groupedBy !== 'none'"
