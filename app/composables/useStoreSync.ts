@@ -139,6 +139,18 @@ export function handleMutationResult<T>(opts: {
     .then(async (result): Promise<RemapInfo | void> => {
       logger.log(`confirmed ${opts.action}: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`)
 
+      // Track convex id BEFORE any await so a realtime echo arriving during
+      // removeOfflineOp can't slip past the in-flight gate and overwrite
+      // our optimistic state with server-side echo data.
+      let convexIdToUntrack: string | null = null
+      if (opts.action === 'create' && !Array.isArray(opts.id) && result) {
+        const convexId = String(result)
+        if (opts.id !== convexId) {
+          trackInFlight(convexId)
+          convexIdToUntrack = convexId
+        }
+      }
+
       if (ids.length === 1)
         await removeOfflineOp(opts.entity, ids[0]!)
       else
@@ -154,13 +166,16 @@ export function handleMutationResult<T>(opts: {
           if (!_persistBlocked)
             localforage.setItem(STORAGE_KEYS[opts.entity], remapped)
           logger.log(`remapped ID: ${opts.id} → ${convexId}`)
-          // Track convex id briefly so that a subscription echo arriving just
-          // after remap is still suppressed.
-          trackInFlight(convexId)
+          // Extend tracking past the await so a delayed echo is still suppressed.
           setTimeout(untrackInFlight, 2000, convexId)
+          convexIdToUntrack = null
           return { convexId, localId: opts.id }
         }
       }
+
+      // If we tracked but never remapped (e.g., result mismatch), release.
+      if (convexIdToUntrack)
+        untrackInFlight(convexIdToUntrack)
     })
     .catch((e) => {
       logger.error(`${opts.action} failed: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`, e)

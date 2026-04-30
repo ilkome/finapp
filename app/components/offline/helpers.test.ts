@@ -7,6 +7,7 @@ import {
   pushOfflineOp,
   removeOfflineOp,
   removeOfflineOpByType,
+  updateOfflineOpData,
 } from '~/components/offline/helpers'
 import { OfflineEntityType } from '~/components/offline/types'
 
@@ -162,6 +163,58 @@ describe('clearOfflineQueue', () => {
 
     const queue = await getAllOfflineOps()
     expect(queue).toHaveLength(0)
+  })
+})
+
+describe('updateOfflineOpData', () => {
+  it('merges patch into update op data', async () => {
+    await pushOfflineOp({ data: { color: '#000', name: 'old' }, entity: OfflineEntityType.Categories, id: 'c1', type: 'update' })
+    const before = await getAllOfflineOps()
+    const t0 = before[0]!.timestamp
+
+    await new Promise(r => setTimeout(r, 2))
+    await updateOfflineOpData(OfflineEntityType.Categories, 'c1', { color: '#fff' })
+
+    const queue = await getAllOfflineOps()
+    expect(queue).toHaveLength(1)
+    expect(queue[0]).toMatchObject({ data: { color: '#fff', name: 'old' }, type: 'update' })
+    expect(queue[0]!.timestamp).toBeGreaterThan(t0)
+  })
+
+  it('merges patch into create op preserving type', async () => {
+    await pushOfflineOp({ data: { name: 'A', parentId: 'local_p1' }, entity: OfflineEntityType.Categories, id: 'local_c1', type: 'create' })
+    await updateOfflineOpData(OfflineEntityType.Categories, 'local_c1', { parentId: 'jd7xyz' })
+
+    const queue = await getAllOfflineOps()
+    expect(queue[0]).toMatchObject({ data: { name: 'A', parentId: 'jd7xyz' }, type: 'create' })
+  })
+
+  it('no-op when matching op missing', async () => {
+    await updateOfflineOpData(OfflineEntityType.Categories, 'missing', { color: '#fff' })
+    const queue = await getAllOfflineOps()
+    expect(queue).toHaveLength(0)
+  })
+
+  it('no-op when matching op is delete', async () => {
+    await pushOfflineOp({ entity: OfflineEntityType.Categories, id: 'c1', type: 'delete' })
+    await updateOfflineOpData(OfflineEntityType.Categories, 'c1', { color: '#fff' })
+
+    const queue = await getAllOfflineOps()
+    expect(queue).toHaveLength(1)
+    expect(queue[0]!.type).toBe('delete')
+    expect(queue[0]!.data).toBeUndefined()
+  })
+
+  it('serializes with concurrent push (no torn write)', async () => {
+    await pushOfflineOp({ data: { color: '#000' }, entity: OfflineEntityType.Categories, id: 'c1', type: 'update' })
+    await Promise.all([
+      pushOfflineOp({ data: { name: 'merged' }, entity: OfflineEntityType.Categories, id: 'c1', type: 'update' }),
+      updateOfflineOpData(OfflineEntityType.Categories, 'c1', { color: '#fff' }),
+    ])
+
+    const queue = await getAllOfflineOps()
+    expect(queue).toHaveLength(1)
+    expect(queue[0]!.data).toMatchObject({ color: '#fff', name: 'merged' })
   })
 })
 
