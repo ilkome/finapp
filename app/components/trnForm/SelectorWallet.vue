@@ -17,6 +17,10 @@ const emit = defineEmits<{
 const walletsStore = useWalletsStore()
 
 const isShow = ref(false)
+
+const { width } = useWindowSize()
+const { pointerType } = usePointer()
+const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
 </script>
 
 <template>
@@ -45,6 +49,7 @@ const isShow = ref(false)
         :hide="close"
         :activeItemId="props.walletId"
         :disabledIds="props.disabledWalletIds"
+        :filterAtTop="isLaptop"
         class="min-w-80 px-3"
         @selected="(id: WalletId) => emit('selected', id)"
       />

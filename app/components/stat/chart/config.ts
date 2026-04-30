@@ -18,13 +18,13 @@ type SeriesOption = (BarSeriesOption | LineSeriesOption) & {
 
 export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
   expense: {
-    color: 'var(--expense-1)',
-    markLineColor: 'var(--expense-2)',
+    color: 'var(--color-expense-1)',
+    markLineColor: 'var(--color-expense-2)',
     type: 'bar',
   },
   income: {
-    color: 'var(--income-1)',
-    markLineColor: 'var(--income-2)',
+    color: 'var(--color-income-1)',
+    markLineColor: 'var(--color-income-2)',
     type: 'bar',
   },
 }

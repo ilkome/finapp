@@ -42,8 +42,8 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       @closeModal="isShow = false"
     >
       <template #trigger>
-        <UiActionButton class="text-2 grid h-full w-full content-center !justify-start px-2 text-left">
-          <div class="text-1 text-sm">
+        <UiActionButton class="text-muted grid h-full w-full content-center !justify-start px-2 text-left">
+          <div class="text-highlighted text-sm">
             {{ formattedDate?.day }} {{ formattedDate?.month }}
           </div>
           <div class="font-regular text-2xs leading-none">

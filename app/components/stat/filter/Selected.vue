@@ -11,7 +11,7 @@ const props = defineProps<{
 const filter = inject(filterKey)!
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
-const itemClasses = 'bg-item-3 rounded-sm'
+const itemClasses = 'bg-elevated/30 rounded-sm'
 </script>
 
 <template>

@@ -21,10 +21,7 @@ const isShowAllCategoriesFallback = computed(() =>
 
 <template>
   <!-- Favorite categories -->
-  <div
-    v-if="categoriesStore.favoriteCategoriesIds.length > 0"
-    class="pt-2"
-  >
+  <div v-if="categoriesStore.favoriteCategoriesIds.length > 0">
     <UiTitleModal>
       {{ t('categories.favoriteCategories') }}
     </UiTitleModal>

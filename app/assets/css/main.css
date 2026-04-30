@@ -20,7 +20,7 @@
 @layer base {
   html,
   body {
-    @apply antialiased text-default bg-(--item-1) select-none;
+    @apply antialiased text-default bg-muted/30 select-none;
     overscroll-behavior-y: none;
   }
 }

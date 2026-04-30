@@ -42,14 +42,13 @@ const emit = defineEmits<{
 
           <div
             v-if="trnItem.type === TrnType.Transfer"
-            class="flex items-center gap-2"
+            class="text-muted flex items-center gap-2"
           >
             <Icon
               :name="props.trnItem.category?.icon"
-              :color="props.trnItem.category?.color"
               size="16"
             />
-            <div class="text-2 flex items-center gap-2 text-xs leading-none">
+            <div class="flex items-center gap-2 text-xs leading-none">
               {{ trnItem.category.name }}
             </div>
           </div>
@@ -72,7 +71,7 @@ const emit = defineEmits<{
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-2xs text-4 leading-none">
+            <div class="text-2xs text-muted leading-none">
               {{ trnItem.wallet.name }}
             </div>
           </div>
@@ -96,7 +95,7 @@ const emit = defineEmits<{
           v-if="trnItem.type === TrnType.Transfer"
           class="grid gap-1"
         >
-          <div class="text-3 flex items-center gap-1 text-sm leading-none">
+          <div class="text-toned flex items-center gap-1 text-sm leading-none">
             <span class="font-semibold">{{ trnItem.expenseWallet.name }}</span>
             <Icon name="lucide:move-right" size="16" />
             <span class="font-semibold">{{ trnItem.incomeWallet.name }}</span>

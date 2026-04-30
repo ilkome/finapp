@@ -15,7 +15,7 @@ const emit = defineEmits<{
     :class="cn(
       'flex items-center text-nowrap rounded-sm text-xs leading-none px-3',
       'interactive flex items-center justify-center min-h-[32px]',
-      props.variant === 'small' ? 'px-2 text-2xs text-muted' : 'bg-(--item-4)',
+      props.variant === 'small' ? 'px-2 text-2xs text-muted' : 'bg-accented',
       props.isActive ? 'text-primary' : '',
     )"
     @click="(e: Event) => emit('click', e)"

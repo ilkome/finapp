@@ -26,14 +26,6 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 
-const anyRootHasChildren = computed(() =>
-  props.ids.some(id => categoriesStore.hasChildren(id)),
-)
-
-const rootChevronOnLeft = computed(() =>
-  !!props.categoriesItemProps?.chevronOnLeft && anyRootHasChildren.value,
-)
-
 const isChildrenGrid = computed(() => props.childrenView === 'grid')
 
 function getRootLineWidth(categoryId: CategoryId) {
@@ -64,7 +56,6 @@ function getChildrenIds(categoryId: CategoryId) {
         :to="props.getTo?.(categoryId)"
         v-bind="categoriesItemProps"
         class="group"
-        :chevronOnLeft="rootChevronOnLeft"
         :lineWidth="getRootLineWidth(categoryId)"
         @click="emit('click', categoryId)"
         @toggle="props.expanded?.toggle(categoryId)"
@@ -73,8 +64,8 @@ function getChildrenIds(categoryId: CategoryId) {
       <div
         v-if="props.expanded?.isExpanded(categoryId) && categoriesStore.hasChildren(categoryId)"
         :class="isChildrenGrid
-          ? 'ml-9 pb-4 pl-10 pr-2'
-          : (rootChevronOnLeft ? '-mt-px ml-9 pb-1 pl-10' : '-mt-px ml-5 pb-1 pl-3')"
+          ? 'ml-2 pb-4 pl-3 pr-2'
+          : '-mt-px ml-5 pb-1 pl-3'"
       >
         <template v-if="!isChildrenGrid">
           <CategoriesItem
@@ -89,7 +80,6 @@ function getChildrenIds(categoryId: CategoryId) {
             :lineWidth="1"
             v-bind="categoriesItemProps"
             class="group"
-            :chevronOnLeft="false"
             @click="emit('click', childId)"
           />
         </template>

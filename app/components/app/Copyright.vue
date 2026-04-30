@@ -9,7 +9,7 @@ const { t } = useI18n()
   >
     {{ t('app.madeBy.text') }}
     <Icon
-      class="text-alert-1 mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl"
+      class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[oklch(0.63_0.24_24.81)]"
       name="mdi:heart"
     />
     {{ t('app.madeBy.name') }}

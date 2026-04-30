@@ -18,12 +18,12 @@ const formattedDate = computed(() => {
       {{ formattedDate.day }}
     </div>
 
-    <div class="text-2">
+    <div class="text-muted">
       <div class="text-2xs pb-[2px] leading-none">
         {{ formattedDate.weekday }}
       </div>
 
-      <div class="text-1 flex gap-1 text-sm leading-none font-medium">
+      <div class="flex gap-1 text-sm leading-none font-medium">
         <div>{{ formattedDate.month }}</div>
         <div>{{ formattedDate.year }}</div>
       </div>

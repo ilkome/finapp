@@ -84,18 +84,18 @@ const walletId = computed(() =>
   padding-bottom: calc(env(safe-area-inset-bottom) - 16px);
 
   .trnForm__pagination {
-    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-(--item-1);
+    @apply absolute left-1/2 z-[2] flex items-center justify-center w-auto p-1.5 rounded-md bg-default;
     transform: translateX(-50%);
     bottom: 1px;
   }
 
   .swiper-pagination-bullet {
-    @apply block w-1.5 h-1.5 mx-1 rounded-full bg-item-4;
+    @apply block w-1.5 h-1.5 mx-1 rounded-full bg-accented;
     opacity: 1;
   }
 
   .swiper-pagination-bullet-active {
-    @apply bg-(--ui-primary);
+    @apply bg-primary;
   }
 }
 </style>

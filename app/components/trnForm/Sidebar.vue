@@ -50,15 +50,15 @@ watch(isShow, async (v) => {
       v-if="isShow"
       class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-[360px] py-4"
     >
-      <div class="border-left border-item-6 border-item-4 bg-item-2 relative h-full overflow-hidden rounded-l-xl border border-r-0 shadow-2xl">
+      <div class="relative h-full overflow-hidden rounded-l-xl shadow-2xl">
         <div class="absolute top-2 right-2">
           <BottomSheetClose @click="trnsFormStore.onClose()" />
         </div>
 
-        <div ref="sliderRef" class="swiper-container h-full">
+        <div ref="sliderRef" class="swiper-container bg-default h-full">
           <div class="swiper-wrapper">
             <!-- Main -->
-            <div class="swiper-slide bg-default h-full">
+            <div class="swiper-slide h-full">
               <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
@@ -66,7 +66,7 @@ watch(isShow, async (v) => {
                 />
                 <div
                   v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
-                  class="-mt-8 grid gap-2 pb-6"
+                  class="grid gap-2 pb-6"
                 >
                   <TrnFormSelectionCategoriesFast
                     @selectCategory="id => trnsFormStore.values.categoryId = id"
@@ -77,7 +77,7 @@ watch(isShow, async (v) => {
 
             <!-- Quick selector -->
             <div
-              class="swiper-slide bg-(--bg-)"
+              class="swiper-slide"
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto overscroll-contain">

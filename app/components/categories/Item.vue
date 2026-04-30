@@ -7,13 +7,13 @@ export type CategoryItemProps = {
   activeItemId?: string | 0 | false | null
   category: CategoryItem
   categoryId: CategoryId
-  chevronOnLeft?: boolean
   class?: string
   contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
   isExpanded?: boolean
   isShowChevron?: boolean
   isShowParent?: boolean
+  leftMenuButton?: boolean
   lineWidth?: number
   stacked?: boolean
   to?: string
@@ -35,12 +35,13 @@ const emit = defineEmits<{
       :stacked="props.stacked"
       :category="props.category"
       :categoryId="props.categoryId"
-      :chevronOnLeft="props.chevronOnLeft"
       :class="props.class"
       :insideClasses="props.insideClasses"
       :isExpanded="props.isExpanded"
       :isShowChevron="props.isShowChevron"
       :isShowParent="props.isShowParent"
+      :leftMenuButton="props.leftMenuButton"
+      :leftMenuItems="props.contextMenuItems"
       :lineWidth="props.lineWidth"
       :to="props.to"
       @click="emit('click', $event)"
@@ -55,12 +56,12 @@ const emit = defineEmits<{
     :stacked="props.stacked"
     :category="props.category"
     :categoryId="props.categoryId"
-    :chevronOnLeft="props.chevronOnLeft"
     :class="props.class"
     :insideClasses="props.insideClasses"
     :isExpanded="props.isExpanded"
     :isShowChevron="props.isShowChevron"
     :isShowParent="props.isShowParent"
+    :leftMenuButton="props.leftMenuButton"
     :lineWidth="props.lineWidth"
     :to="props.to"
     @click="emit('click', $event)"

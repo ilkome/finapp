@@ -98,7 +98,7 @@ defineShortcuts({
       </template>
 
       <div :class="isOnboarded ? 'flex min-h-dvh flex-col md:py-4 md:pr-4' : 'flex flex-1 items-center justify-center'">
-        <div :class="isOnboarded ? 'bg-default md:border-item-4 relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-2xl' : 'w-full max-w-lg px-4'">
+        <div :class="isOnboarded ? 'bg-default md:border-accented relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-2xl' : 'w-full max-w-lg px-4'">
           <main
             id="pageScroll"
             :style="isOnboarded ? 'padding-bottom: calc(64px + env(safe-area-inset-bottom))' : ''"

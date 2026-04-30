@@ -1,5 +1,5 @@
 @utility interactive {
-  @apply select-none hover:bg-item-6/50 dark:hover:bg-item-7/10;
+  @apply select-none hover:bg-elevated/50;
 }
 
 @utility flex-center {
@@ -27,9 +27,7 @@
   @apply flex items-center justify-center p-2;
 }
 
-@utility scrollbar {
-  @apply h-full overflow-hidden overflow-y-auto;
-
+@utility scrollerBlock {
   &::-webkit-scrollbar {
     @apply w-1.5 h-1.5;
   }

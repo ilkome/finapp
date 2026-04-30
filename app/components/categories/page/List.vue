@@ -128,7 +128,7 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
-          chevronOnLeft: true,
+          leftMenuButton: true,
           lineWidth: 1,
         }"
         :childrenView="categoriesView"

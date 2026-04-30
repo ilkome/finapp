@@ -27,7 +27,9 @@ function getEntryPathname(entry: NavigationApiEntry): string {
 const _canGoBack = ref(false)
 
 if (navigation) {
-  const sync = () => { _canGoBack.value = navigation.canGoBack }
+  const sync = () => {
+    _canGoBack.value = navigation.canGoBack
+  }
   sync()
   navigation.addEventListener('currententrychange', sync)
 }

@@ -80,7 +80,7 @@ const sidebarCategoryIds = computed(() => {
           >
             <template #trigger>
               <div
-                class="interactive group-data-[state='open']:!bg-item-4 block cursor-default rounded-sm px-3 py-2"
+                class="interactive group-data-[state='open']:!bg-accented block cursor-default rounded-sm px-3 py-2"
               >
                 <UiLogo />
               </div>
@@ -162,7 +162,7 @@ const sidebarCategoryIds = computed(() => {
         >
           <UiActionButton
             :ariaLabel="t('app.toggleSidebar')"
-            class="text-4 z-10 justify-start px-3"
+            class="text-muted z-10 justify-start px-3"
             @click="emit('toggleSidebar')"
           >
             <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

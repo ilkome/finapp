@@ -14,7 +14,7 @@ const emit = defineEmits<{
   <div class="flex items-center gap-1">
     <UiActionButton
       :ariaLabel="$t('base.previous')"
-      :class="cn('bg-item-3', isStart && 'hover:transparent opacity-30')"
+      :class="cn('bg-elevated/30', isStart && 'hover:transparent opacity-30')"
       @click="emit('changeDate', 'prev')"
     >
       <Icon name="lucide:chevron-left" size="24" />
@@ -22,7 +22,7 @@ const emit = defineEmits<{
 
     <UiActionButton
       :ariaLabel="$t('base.next')"
-      :class="cn('bg-item-3', isEnd && 'hover:transparent opacity-30')"
+      :class="cn('bg-elevated/30', isEnd && 'hover:transparent opacity-30')"
       @click="emit('changeDate', 'next')"
     >
       <Icon name="lucide:chevron-left" size="24" class="rotate-180" />

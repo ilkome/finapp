@@ -36,9 +36,9 @@ const { longPressRef } = useCategoryLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="rounded-sm p-1 pt-5 pb-2 hover:bg-(--item-5)"
+    class="hover:bg-elevated rounded-sm p-1 pt-5 pb-2"
   >
-    <div class="bg-item-3 flex h-28 items-end rounded-sm">
+    <div class="bg-elevated flex h-28 items-end rounded-sm">
       <div
         class="relative w-7 rounded-t"
         :style="barStyle"

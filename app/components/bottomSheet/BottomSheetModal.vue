@@ -8,7 +8,7 @@ defineEmits<{
   <Teleport to="body">
     <BottomSheet
       isShow
-      dragClassesCustom="bottomSheetDragClassesCustom"
+      dragClassesCustom="bottomSheetDragClassesCustom min-h-[50dvh]"
       @closed="$emit('closed')"
     >
       <template #handler="{ close }">

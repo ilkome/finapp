@@ -14,10 +14,11 @@ const props = defineProps<{
       color: props.invert ? '' : props.color,
       backgroundColor: props.invert ? props.color : 'transparent',
     }"
-    :class="{
-      [cn('rounded-full w-7 p-1.5', props.class)]: props.invert,
-    }"
-    class="flex-center text-icon-primary aspect-square overflow-hidden"
+    :class="cn(
+      'flex-center text-icon-primary aspect-square overflow-hidden',
+      props.invert && cn('rounded-full w-7 p-1.5', props.class),
+      props.invert && !props.color && 'bg-muted !text-muted',
+    )"
   >
     <Icon
       :name="props.name"

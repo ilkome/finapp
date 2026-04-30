@@ -24,7 +24,7 @@ useHead({
       {{ t('categories.createNewTitle') }}
     </h1>
 
-    <UiHeader v-else>
+    <UiHeader v-else hideSearch>
       <UiHeaderTitle>
         {{ t('categories.createNewTitle') }}
       </UiHeaderTitle>
@@ -33,7 +33,7 @@ useHead({
     <CategoriesForm
       :categoryForm="categoryForm"
       @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
-      @afterSave="() => router.replace('/dashboard')"
+      @afterSave="(id: string) => router.replace(isOnboarding ? '/dashboard' : `/categories/${id}`)"
     />
   </UiPage>
 </template>

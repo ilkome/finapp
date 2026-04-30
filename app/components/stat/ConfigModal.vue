@@ -47,7 +47,7 @@ const isOpen = ref(false)
         <!-- Wallets -->
         <div
           v-if="props.isShowWallets"
-          class="border-item-3 border-b pb-3"
+          class="border-accented border-b pb-3"
         >
           <UiTitleSection size="sm" class="pb-2">
             {{ t('stat.config.wallets.title') }}
@@ -75,7 +75,7 @@ const isOpen = ref(false)
 
         <!-- Statistics -->
         <div
-          class="border-item-3 border-b pb-3"
+          class="border-accented border-b pb-3"
         >
           <UiTitleSection size="sm" class="pb-2">
             {{ t('statistics.title') }}

@@ -23,13 +23,13 @@ function onParentClick(event: Event) {
       <template v-if="props.parentCategory">
         <NuxtLink
           :to="`/categories/${props.category.parentId}`"
-          class="text-muted truncate text-lg font-medium no-underline hover:text-(--ui-text-highlighted) @lg:text-xl"
+          class="text-muted hover:text-highlighted truncate text-lg font-medium no-underline @lg:text-xl"
           @click="onParentClick"
         >
           {{ props.parentCategory.name }}
         </NuxtLink>
 
-        <span class="text-4 mx-1 text-lg @lg:text-xl">/</span>
+        <span class="text-muted mx-1 text-lg @lg:text-xl">/</span>
       </template>
 
       <span class="truncate">

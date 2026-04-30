@@ -29,7 +29,7 @@ onLongPress(
 </script>
 
 <template>
-  <div class="grid grid-cols-[auto_1fr_auto] justify-between gap-0">
+  <div class="grid grid-cols-[auto_1fr_auto] justify-between gap-1">
     <div class="flex flex-col gap-1">
       <TrnFormMainCalculatorButton @click="trnsFormStore.onClickCalculator('*')">
         <Icon
@@ -48,7 +48,7 @@ onLongPress(
       </TrnFormMainCalculatorButton>
     </div>
 
-    <div class="flex flex-col gap-1 px-3">
+    <div class="flex flex-col gap-1">
       <div
         v-for="(row, rowIdx) in buttons"
         :key="rowIdx"

@@ -35,7 +35,7 @@ const itemsGrouped = computed(() => [
     :initStatus="true"
     :lineWidth="0"
     :storageKey="props.storageKey"
-    class="bg-item-2 mb-2 rounded-xl md:max-w-lg"
+    class="bg-elevated/30 mb-2 rounded-xl md:max-w-lg"
   >
     <template #header="{ toggle, isShown }">
       <UiTitleCollapse :isShown @click="toggle">

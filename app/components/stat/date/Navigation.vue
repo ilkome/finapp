@@ -68,7 +68,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       >
         <template #trigger>
           <UiTitleCollapse
-            class="_bg-item-4 text-md !grow-0"
+            class="text-md !grow-0"
             isShown
           >
             <StatDateRange />
@@ -95,7 +95,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
     >
       <template #trigger>
         <UiTitleCollapse
-          class="_bg-item-4 text-md !grow-0"
+          class="text-md !grow-0"
           isShown
         >
           <StatDateRange />
