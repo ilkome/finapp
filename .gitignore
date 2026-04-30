@@ -24,6 +24,7 @@ logs
 # Playwright
 /playwright/profiles
 /playwright/.auth
+/playwright/output
 /test-results
 /playwright-report
 /blob-report
