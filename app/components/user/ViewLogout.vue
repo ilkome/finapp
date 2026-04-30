@@ -35,7 +35,7 @@ const { t } = useI18n()
       icon="lucide:log-out"
       @click="userStore.signOut"
     >
-      {{ t('userLogout') }}
+      {{ t('user.logout') }}
     </UButton>
   </div>
 </template>

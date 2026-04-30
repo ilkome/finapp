@@ -42,6 +42,7 @@ export default {
     next: 'Вперёд',
     no: 'Нет',
     noData: 'Нет данных',
+    open: 'Открыть',
     previous: 'Назад',
     save: 'Сохранить',
     sure: 'Удалить?',
@@ -362,7 +363,6 @@ export default {
         title: 'Кошельки',
       },
     },
-    noDataForPeriod: 'Нет статистики за выбранный период',
     title: 'Статистика',
   },
 
@@ -444,7 +444,10 @@ export default {
     title: 'Транзакции',
   },
 
-  userLogout: 'Выйти из аккаунта',
+  user: {
+    logout: 'Выйти из аккаунта',
+    title: 'Аккаунт',
+  },
 
   wallets: {
     ariaSwitch: 'Поменять кошельки',

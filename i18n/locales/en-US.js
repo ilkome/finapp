@@ -42,6 +42,7 @@ export default {
     next: 'Next',
     no: 'No',
     noData: 'No data',
+    open: 'Open',
     previous: 'Previous',
     save: 'Save',
     sure: 'Confirm action',
@@ -362,7 +363,6 @@ export default {
         title: 'Wallets',
       },
     },
-    noDataForPeriod: 'No statistics for the selected period',
     title: 'Dashboard',
   },
 
@@ -444,7 +444,10 @@ export default {
     title: 'Transactions',
   },
 
-  userLogout: 'Logout',
+  user: {
+    logout: 'Logout',
+    title: 'Account',
+  },
 
   wallets: {
     ariaSwitch: 'Switch wallets',
