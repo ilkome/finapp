@@ -30,6 +30,7 @@ logs
 /blob-report
 /playwright/.cache
 /.playwright-mcp
+/tests/e2e/.auth
 
 # Local env files
 .env
