@@ -26,14 +26,14 @@ const nameClass = computed(() =>
 
       <div
         v-if="hasChildren && childrenCount"
-        class="text-4 shrink-0"
+        class="text-muted shrink-0"
       >
         {{ childrenCount }}
       </div>
     </div>
 
     <template v-if="isShowParent && !hasChildren && props.category?.parentId">
-      <div class="text-2xs text-4 truncate leading-none">
+      <div class="text-2xs text-muted truncate leading-none">
         {{ props.parentCategory?.name }}
       </div>
     </template>

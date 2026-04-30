@@ -1,32 +1,8 @@
 :root {
-  --ui-secondary: var(--ui-color-secondary-500);
-  --ui-success: var(--ui-color-success-500);
-  --ui-info: var(--ui-color-info-500);
-  --ui-warning: var(--ui-color-warning-500);
-  --ui-error: var(--ui-color-error-500);
-
-  --color-neutral-400: var(--ui-color-neutral-400);
-  --color-neutral-500: var(--ui-color-neutral-500);
-
-  --expense-1: oklch(0.63 0.24 24.81);
-  --expense-2: oklch(0.63 0.24 24.81 / 0.5);
-  --income-1: oklch(0.65 0.2 142.06);
-  --income-2: oklch(0.65 0.2 142.06 / 0.5);
-
-  --text-alert-1: oklch(0.63 0.24 24.81);
-
-  --chart-label: var(--text-4);
-  --chart-line: var(--item-5);
-  --chart-splitLine: var(--item-6);
-  --chart-axisLabel: var(--text-1);
-}
-
-.dark {
-  --ui-secondary: var(--ui-color-secondary-400);
-  --ui-success: var(--ui-color-success-400);
-  --ui-info: var(--ui-color-info-400);
-  --ui-warning: var(--ui-color-warning-400);
-  --ui-error: var(--ui-color-error-400);
+  --chart-label: var(--ui-text-dimmed);
+  --chart-line: var(--ui-border);
+  --chart-splitLine: var(--ui-border-accented);
+  --chart-axisLabel: var(--ui-text-highlighted);
 }
 
 /*
@@ -35,20 +11,20 @@
 .dark {
   color-scheme: dark;
 
-  --item-1: color-mix(in oklch, var(--ui-color-neutral-950) 30%, var(--ui-color-neutral-900));
-  --item-2: var(--ui-color-neutral-900);
-  --item-3: color-mix(in oklch, var(--ui-color-neutral-900) 70%, var(--ui-color-neutral-800));
-  --item-4: var(--ui-color-neutral-800);
-  --item-5: color-mix(in oklch, var(--ui-color-neutral-800) 85%, var(--ui-color-neutral-700));
-  --item-6: color-mix(in oklch, var(--ui-color-neutral-800) 55%, var(--ui-color-neutral-700));
-  --item-7: color-mix(in oklch, var(--ui-color-neutral-500) 60%, var(--ui-color-neutral-400));
+  --ui-bg: var(--ui-color-neutral-900);
+  --ui-bg-muted: var(--ui-color-neutral-950);
+  --ui-bg-elevated: var(--ui-color-neutral-800);
+  --ui-bg-accented: var(--ui-color-neutral-800);
+  --ui-border: var(--ui-color-neutral-700);
+  --ui-border-accented: var(--ui-color-neutral-800);
 
-  --overlay: #000000cc;
+  --ui-secondary: var(--ui-color-secondary-400);
+  --ui-success: var(--ui-color-success-400);
+  --ui-info: var(--ui-color-info-400);
+  --ui-warning: var(--ui-color-warning-400);
+  --ui-error: var(--ui-color-error-400);
 
-  --text-1: rgb(220 220 220);
-  --text-2: rgb(160 160 160);
-  --text-3: rgb(200 200 200);
-  --text-4: rgb(130 130 130);
+  --color-overlay: #000000cc;
 }
 
 /*
@@ -57,52 +33,30 @@
 .light {
   color-scheme: light;
 
-  --item-1: white;
-  --item-2: var(--ui-color-neutral-50);
-  --item-3: var(--ui-color-neutral-100);
-  --item-4: color-mix(in oklch, var(--ui-color-neutral-100) 90%, var(--ui-color-neutral-200));
-  --item-5: color-mix(in oklch, var(--ui-color-neutral-100) 70%, var(--ui-color-neutral-200));
-  --item-6: var(--ui-color-neutral-200);
-  --item-7: color-mix(in oklch, var(--ui-color-neutral-300) 50%, var(--ui-color-neutral-400));
+  --ui-bg: white;
+  --ui-bg-muted: var(--ui-color-neutral-50);
+  --ui-bg-elevated: var(--ui-color-neutral-200);
+  --ui-bg-accented: var(--ui-color-neutral-100);
+  --ui-border: var(--ui-color-neutral-400);
+  --ui-border-accented: var(--ui-color-neutral-100);
 
-  --overlay: #00000099;
+  --ui-secondary: var(--ui-color-secondary-500);
+  --ui-success: var(--ui-color-success-500);
+  --ui-info: var(--ui-color-info-500);
+  --ui-warning: var(--ui-color-warning-500);
+  --ui-error: var(--ui-color-error-500);
 
-  --text-1: rgb(0 0 0);
-  --text-2: rgb(80 80 80);
-  --text-3: rgb(64 64 64);
-  --text-4: rgb(100 100 100);
+  --color-overlay: #00000099;
 }
 
 @theme static {
-  --aspect-auto: auto;
-  --aspect-square: 1 / 1;
-
-  --color-1: oklch(0.87 0 0);
-  --color-2: oklch(0.67 0 0);
-  --color-3: oklch(0.81 0 0);
-  --color-4: oklch(0.54 0 0);
-
-  --color-alert-1: oklch(0.63 0.24 24.81);
-
+  --color-overlay: #00000099;
   --color-expense-1: oklch(0.63 0.24 24.81);
   --color-expense-2: oklch(0.63 0.24 24.81 / 0.5);
-
   --color-income-1: oklch(0.65 0.2 142.06);
   --color-income-2: oklch(0.65 0.2 142.06 / 0.5);
-
   --color-icon-primary: var(--color-neutral-50);
-
-  --color-item-1: var(--item-1);
-  --color-item-2: var(--item-2);
-  --color-item-3: var(--item-3);
-  --color-item-4: var(--item-4);
-  --color-item-5: var(--item-5);
-  --color-item-6: var(--item-6);
-  --color-item-7: var(--item-7);
-
   --text-2xs: 10px;
-
-  --breakpoint-2sm: 320px;
   --breakpoint-3sm: 360px;
 }
 

@@ -45,7 +45,7 @@ function onGenerateDemoData() {
     </UiHeader>
 
     <div class="pageWrapper">
-      <div class="grid gap-4 pt-2 pb-12 @3xl/main:max-w-lg">
+      <div class="grid gap-4 px-2 pt-2 pb-12 @3xl/main:max-w-lg">
         <!-- Theme -->
         <ThemePicker inline />
 
@@ -63,23 +63,23 @@ function onGenerateDemoData() {
 
         <!-- Menu labels -->
         <UiSettingsCard :title="t('settings.mobileMenu')" class="md:hidden">
-          <template #content>
-            <UiSwitchItem
-              :checkboxValue="isShowMenuLabels"
-              :title="t('settings.menuLabels')"
-              @click="isShowMenuLabels = !isShowMenuLabels"
-            />
-          </template>
+          <UiSwitchItem
+            :checkboxValue="isShowMenuLabels"
+            :title="t('settings.menuLabels')"
+            @click="isShowMenuLabels = !isShowMenuLabels"
+          />
         </UiSettingsCard>
 
         <!-- Currency -->
         <UiSettingsCard :title="t('currencies.base')">
           <button
-            class="bg-item-3 block min-h-[42px] w-full cursor-pointer items-center overflow-hidden rounded-md border border-transparent px-4 py-2 pr-10 text-left outline-none hover:bg-(--item-5) focus:border-(--ui-primary)"
-            style="appearance: none; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM4MDgwODAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGNsYXNzPSJsdWNpZGUgbHVjaWRlLWNoZXZyb25zLXVwLWRvd24iPjxwYXRoIGQ9Im03IDE1IDUgNSA1LTUiLz48cGF0aCBkPSJtNyA5IDUtNSA1IDUiLz48L3N2Zz4='); background-position: right 0.7rem center; background-repeat: no-repeat; background-size: 1.25em 1.25em;"
+            class="text-highlighted bg-elevated/30 ring-accented hover:!bg-elevated/50 focus-visible:ring-primary group relative inline-flex min-h-[42px] min-w-[160px] cursor-pointer items-center gap-2 rounded-md px-4 py-2 pe-10 text-sm ring transition-colors ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             @click="isShowBaseCurrencyModal = true"
           >
-            {{ currenciesStore.base }}
+            <span class="truncate">{{ currenciesStore.base }}</span>
+            <span class="absolute inset-y-0 end-0 flex items-center pe-3">
+              <UIcon name="i-lucide-chevrons-up-down" class="text-dimmed size-5 shrink-0" />
+            </span>
           </button>
         </UiSettingsCard>
 
@@ -88,16 +88,14 @@ function onGenerateDemoData() {
           v-if="isDemo"
           :title="t('demo.update')"
         >
-          <template #content>
-            <UButton
-              variant="outline"
-              color="secondary"
-              size="md"
-              @click="onGenerateDemoData"
-            >
-              {{ t('demo.update') }}
-            </UButton>
-          </template>
+          <UButton
+            variant="outline"
+            color="secondary"
+            size="md"
+            @click="onGenerateDemoData"
+          >
+            {{ t('demo.update') }}
+          </UButton>
         </UiSettingsCard>
 
         <!-- Delete -->
@@ -119,9 +117,12 @@ function onGenerateDemoData() {
         </UiSettingsCard>
 
         <!-- User -->
-        <div class="py-4">
+        <UiSettingsCard
+          danger
+          :title="t('user.title')"
+        >
           <UserViewLogout isShowSignOut />
-        </div>
+        </UiSettingsCard>
 
         <!-- About -->
         <div class="text-muted pt-4 text-xs">

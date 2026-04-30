@@ -65,7 +65,7 @@ function onAmountClick(e: MouseEvent) {
     v-if="category"
     ref="longPressRef"
     :class="[props.insideClass, {
-      '-bg-item-3 ': props.isActive,
+      '-bg-elevated ': props.isActive,
     }]"
     :style="props.insideStyle"
     class="relative"
@@ -82,7 +82,7 @@ function onAmountClick(e: MouseEvent) {
           v-if="isLines"
           class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-[52px]"
         >
-          <div class="bg-item-4 overflow-hidden rounded-lg">
+          <div class="bg-accented overflow-hidden rounded-lg">
             <div
               :style="barStyle"
               class="h-1 opacity-60"

@@ -15,7 +15,7 @@ const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
-  <div class="font-tertiary text-base leading-none font-semibold" :class="[props.isPrimary && '!text-3']">
+  <div class="font-tertiary text-base leading-none font-semibold" :class="[props.isPrimary && '!text-toned']">
     {{ props.label }}
   </div>
 

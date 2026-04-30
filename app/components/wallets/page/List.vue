@@ -5,9 +5,8 @@ import { useStorage } from '@vueuse/core'
 
 import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
-import { tabsNavUi } from '~/components/menu/Tabs'
-
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { tabsNavUi } from '~/components/menu/Tabs'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
@@ -221,10 +220,10 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
           </div>
         </div>
 
-        <div class="md:max-w-lg @xl/page:max-w-lg">
+        <div class="pb-6 md:max-w-lg @xl/page:max-w-lg">
           <div
             v-if="groupedBy === 'none'"
-            class="border-item-4 bg-item-2 rounded-xl md:max-w-lg"
+            class="md:max-w-lg"
           >
             <WalletsPageListItem
               v-for="walletId in selectedWalletsIds"
@@ -242,7 +241,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'bg-item-2 rounded-sm': !hasGroups(content.groups),
+                'bg-elevated/30 rounded-sm': !hasGroups(content.groups),
               }"
               :isShown="
                 walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
@@ -253,7 +252,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
                   :isShown
                   @click="toggleMap(groupPrimary)"
                 >
-                  <div class="font-tertiary !text-3 text-base leading-none font-semibold">
+                  <div class="font-tertiary !text-toned text-base leading-none font-semibold">
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 
@@ -285,7 +284,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
                   :isShown="
                     walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
                   "
-                  class="_border border-item-4 bg-item-2 group grid gap-1 rounded-xl"
+                  class="bg-elevated/30 group grid gap-1 rounded-xl"
                 >
                   <template #header="{ isShown }">
                     <UiTitleDropRight

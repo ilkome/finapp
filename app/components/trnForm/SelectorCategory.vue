@@ -31,7 +31,7 @@ const isShow = ref(false)
         :categoryId="props.categoryId"
         stacked
         isShowParent
-        insideClasses="bg-item-3 min-h-[42px] py-2"
+        insideClasses="bg-elevated/30 hover:bg-elevated/50 min-h-[42px] py-2"
       />
     </template>
 

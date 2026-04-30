@@ -95,16 +95,16 @@ watch(
         <div
           :class="cn(
             '-m-1 grid gap-2 overflow-hidden rounded-sm border border-transparent p-2',
-            trnsFormStore.values.transferType === item.transferType && 'border-(--ui-primary)/50',
+            trnsFormStore.values.transferType === item.transferType && 'border-primary/50',
           )"
           @click="trnsFormStore.onChangeTransferType(item.transferType)"
         >
           <div class="flex items-center gap-2 whitespace-nowrap">
             <div
               :class="[{
-                'bg-(--item-5)': trnsFormStore.values.transferType === item.transferType,
+                'bg-elevated': trnsFormStore.values.transferType === item.transferType,
               }]"
-              class="text-1/70 bg-item-3 interactive flex min-h-[44px] w-1/2 grow items-center rounded-sm px-3 py-2 text-sm lg:min-h-[42px]"
+              class="text-highlighted/70 interactive flex min-h-[44px] w-1/2 grow items-center rounded-sm px-3 py-2 text-sm lg:min-h-[42px]"
             >
               {{ t(`trnForm.transfer.${slug}Label`) }}
             </div>

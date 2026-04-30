@@ -22,7 +22,7 @@ const { t } = useI18n()
         'left-3': isTransfer,
         'left-1/2 -translate-x-1/2': !isTransfer,
       }]"
-      class="text-1/60 pointer-events-none absolute top-2 text-center text-sm"
+      class="text-highlighted/60 pointer-events-none absolute top-2 text-center text-sm"
       tabindex="0"
     >
       {{ amount }}
@@ -36,7 +36,7 @@ const { t } = useI18n()
       }"
       :placeholder="t('trnForm.enterAmount')"
       :modelValue="amountRaw"
-      class="swiper-no-swiping bg-item-2 font-secondary border-transparent pt-6 pb-2 text-center !text-3xl placeholder:text-3xl"
+      class="swiper-no-swiping font-secondary border-transparent bg-transparent pt-6 pb-2 text-center !text-3xl placeholder:text-3xl"
       inputmode="tel"
       @update:modelValue="(value: string) => emit('change', value || '')"
     />

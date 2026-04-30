@@ -45,7 +45,7 @@ const selectedPeriod = ref(props.period)
     v-model="selectedPeriod"
     :items="availableIntervals"
     :ui="{
-      base: 'ring-0 text-muted text-2xs hover:bg-(--item-5)',
+      base: 'ring-0 text-muted text-2xs hover:bg-elevated',
       trailingIcon: 'size-4',
       content: 'w-24',
     }"

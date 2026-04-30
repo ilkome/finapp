@@ -33,7 +33,8 @@ const primary = computed({
   },
 })
 
-const radiuses = [0, 0.25, 0.375, 0.5, 1, 1.5]
+const radiuses = [0, 0.25, 0.375, 0.5]
+const radiusItems = radiuses.map(r => ({ label: String(r), value: r }))
 const radius = computed({
   get() {
     return appConfig.theme.radius
@@ -49,6 +50,11 @@ const modes = [
   { icon: 'i-lucide-moon', label: 'dark' },
   { icon: 'i-lucide-monitor', label: 'system' },
 ]
+const modeItems = computed(() => [
+  { icon: 'i-lucide-sun', label: t('theme.light'), value: 'light' },
+  { icon: 'i-lucide-moon', label: t('theme.dark'), value: 'dark' },
+  { icon: 'i-lucide-monitor', label: t('theme.system'), value: 'system' },
+])
 const mode = computed({
   get() {
     return colorMode.value
@@ -57,140 +63,170 @@ const mode = computed({
     colorMode.preference = option
   },
 })
+const modePreference = computed({
+  get() {
+    return colorMode.preference
+  },
+  set(option) {
+    colorMode.preference = option
+  },
+})
+const selectedModeItem = computed(() =>
+  modeItems.value.find(m => m.value === modePreference.value),
+)
+
+function capitalize(s: string) {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
+
+const BLACK_PRIMARY = '__black__'
+const primaryItems = computed(() => [
+  { label: 'Black', value: BLACK_PRIMARY },
+  ...primaryColors.map(c => ({ label: capitalize(c), value: c })),
+])
+const primarySelected = computed({
+  get() {
+    return appConfig.theme.blackAsPrimary ? BLACK_PRIMARY : primary.value
+  },
+  set(option) {
+    if (option === BLACK_PRIMARY) {
+      setBlackAsPrimary(true)
+    }
+    else {
+      setBlackAsPrimary(false)
+      primary.value = option
+    }
+  },
+})
+
+const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(c), value: c })))
 
 function setBlackAsPrimary(value: boolean) {
   appConfig.theme.blackAsPrimary = value
   window.localStorage.setItem('nuxt-ui-black-as-primary', String(value))
 }
-
-const activeTab = ref('mode')
 </script>
 
 <template>
-  <!-- Inline mode: tabs -->
-  <div
+  <!-- Inline mode: dropdowns inside a settings card -->
+  <UiSettingsCard
     v-if="props.inline"
-    class="border-item-6 overflow-hidden rounded-lg border"
+    :title="t('theme.title')"
   >
-    <div class="px-4 pt-4 pb-2 text-lg font-semibold">
-      {{ t('theme.title') }}
-    </div>
-
-    <div class="px-4 pb-2">
-      <UiTabsScroll>
-        <UiTabsItemPill
-          :isActive="activeTab === 'mode'"
-          variant="outline"
-          @click="activeTab = 'mode'"
+    <div class="grid gap-3">
+      <!-- Theme mode -->
+      <div class="flex flex-col items-start gap-1">
+        <span class="text-muted text-xs">{{ t('theme.picker.theme') }}</span>
+        <USelectMenu
+          v-model="modePreference"
+          :items="modeItems"
+          valueKey="value"
+          :searchInput="false"
         >
-          {{ t('theme.picker.theme') }}
-        </UiTabsItemPill>
-        <UiTabsItemPill
-          variant="outline"
-          :isActive="activeTab === 'primary'"
-          @click="activeTab = 'primary'"
+          <template #leading>
+            <UIcon :name="selectedModeItem?.icon" class="size-5" />
+          </template>
+          <template #item-leading="{ item }">
+            <UIcon :name="item.icon" class="size-5" />
+          </template>
+        </USelectMenu>
+      </div>
+
+      <!-- Primary color -->
+      <div class="flex flex-col items-start gap-1">
+        <span class="text-muted text-xs">{{ t('theme.picker.primary') }}</span>
+        <USelectMenu
+          v-model="primarySelected"
+          :items="primaryItems"
+          valueKey="value"
+          :searchInput="false"
         >
-          {{ t('theme.picker.primary') }}
-        </UiTabsItemPill>
-        <UiTabsItemPill
-          variant="outline"
-          :isActive="activeTab === 'neutral'"
-          @click="activeTab = 'neutral'"
+          <template #leading>
+            <span
+              v-if="primarySelected === BLACK_PRIMARY"
+              class="size-5 rounded-full bg-black dark:bg-white"
+            />
+            <span
+              v-else
+              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+              :style="{
+                '--color-light': `var(--color-${primarySelected}-500)`,
+                '--color-dark': `var(--color-${primarySelected}-400)`,
+              }"
+            />
+          </template>
+          <template #item-leading="{ item }">
+            <span
+              v-if="item.value === BLACK_PRIMARY"
+              class="size-5 rounded-full bg-black dark:bg-white"
+            />
+            <span
+              v-else
+              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+              :style="{
+                '--color-light': `var(--color-${item.value}-500)`,
+                '--color-dark': `var(--color-${item.value}-400)`,
+              }"
+            />
+          </template>
+        </USelectMenu>
+      </div>
+
+      <!-- Neutral color -->
+      <div class="flex flex-col items-start gap-1">
+        <span class="text-muted text-xs">{{ t('theme.picker.neutral') }}</span>
+        <USelectMenu
+          v-model="neutral"
+          :items="neutralItems"
+          valueKey="value"
+          :searchInput="false"
         >
-          {{ t('theme.picker.neutral') }}
-        </UiTabsItemPill>
-        <UiTabsItemPill
-          variant="outline"
-          :isActive="activeTab === 'radius'"
-          @click="activeTab = 'radius'"
+          <template #leading>
+            <span
+              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+              :style="{
+                '--color-light': `var(--color-${neutral}-500)`,
+                '--color-dark': `var(--color-${neutral}-400)`,
+              }"
+            />
+          </template>
+          <template #item-leading="{ item }">
+            <span
+              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+              :style="{
+                '--color-light': `var(--color-${item.value}-500)`,
+                '--color-dark': `var(--color-${item.value}-400)`,
+              }"
+            />
+          </template>
+        </USelectMenu>
+      </div>
+
+      <!-- Radius -->
+      <div class="flex flex-col items-start gap-1">
+        <span class="text-muted text-xs">{{ t('theme.picker.radius') }}</span>
+        <USelectMenu
+          v-model="radius"
+          :items="radiusItems"
+          valueKey="value"
+          :searchInput="false"
         >
-          {{ t('theme.picker.radius') }}
-        </UiTabsItemPill>
-      </UiTabsScroll>
+          <template #leading>
+            <span
+              class="bg-elevated size-5"
+              :style="{ borderRadius: `${radius}rem` }"
+            />
+          </template>
+          <template #item-leading="{ item }">
+            <span
+              class="bg-elevated size-5"
+              :style="{ borderRadius: `${item.value}rem` }"
+            />
+          </template>
+        </USelectMenu>
+      </div>
     </div>
-
-    <!-- Theme mode -->
-    <div v-if="activeTab === 'mode'" class="grid grid-cols-3 px-4 pb-4">
-      <UiElement
-        v-for="m in modes"
-        :key="m.label"
-        :isActive="colorMode.preference === m.label"
-        @click="mode = m.label"
-      >
-        <template #leftIcon>
-          <UIcon :name="m.icon" class="text-muted size-5" />
-        </template>
-        <span class="text-sm capitalize">{{ m.label }}</span>
-      </UiElement>
-    </div>
-
-    <!-- Primary color -->
-    <div v-if="activeTab === 'primary'" class="grid grid-cols-3 px-4 pb-4">
-      <UiElement
-        :isActive="appConfig.theme.blackAsPrimary"
-        @click="setBlackAsPrimary(true)"
-      >
-        <template #leftIcon>
-          <span class="inline-block size-5 rounded-full bg-black dark:bg-white" />
-        </template>
-        <span class="text-sm capitalize">Black</span>
-      </UiElement>
-
-      <UiElement
-        v-for="color in primaryColors"
-        :key="color"
-        :isActive="!appConfig.theme.blackAsPrimary && primary === color"
-        @click="primary = color"
-      >
-        <template #leftIcon>
-          <span
-            class="inline-block size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-            :style="{
-              '--color-light': `var(--color-${color}-500)`,
-              '--color-dark': `var(--color-${color}-400)`,
-            }"
-          />
-        </template>
-        <span class="text-sm capitalize">{{ color }}</span>
-      </UiElement>
-    </div>
-
-    <!-- Neutral color -->
-    <div v-if="activeTab === 'neutral'" class="grid grid-cols-3 px-4 pb-4">
-      <UiElement
-        v-for="color in neutralColors"
-        :key="color"
-        :isActive="neutral === color"
-        @click="neutral = color"
-      >
-        <template #leftIcon>
-          <span
-            class="inline-block size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-            :style="{
-              '--color-light': `var(--color-${color}-500)`,
-              '--color-dark': `var(--color-${color}-400)`,
-            }"
-          />
-        </template>
-        <span class="text-sm capitalize">{{ color }}</span>
-      </UiElement>
-    </div>
-
-    <!-- Radius -->
-    <div v-if="activeTab === 'radius'" class="grid grid-cols-3 px-4 pb-4">
-      <UiElement
-        v-for="r in radiuses"
-        :key="r"
-        :isActive="radius === r"
-        @click="radius = r"
-      >
-        <template #leftIcon>
-          <UIcon name="i-lucide-square" class="text-muted size-5" :style="{ borderRadius: `${r * 4}px` }" />
-        </template>
-        <span class="text-sm">{{ r }}</span>
-      </UiElement>
-    </div>
-  </div>
+  </UiSettingsCard>
 
   <!-- Popover mode: button with popover -->
   <UPopover
@@ -262,16 +298,25 @@ const activeTab = ref('mode')
           {{ t('theme.picker.radius') }}
         </legend>
 
-        <div class="-mx-2 grid grid-cols-5 gap-1">
-          <ThemePickerButton
-            v-for="r in radiuses"
-            :key="r"
-            :label="String(r)"
-            class="justify-center px-0"
-            :selected="radius === r"
-            @click="radius = r"
-          />
-        </div>
+        <USelectMenu
+          v-model="radius"
+          :items="radiusItems"
+          valueKey="value"
+          :searchInput="false"
+        >
+          <template #leading>
+            <span
+              class="bg-elevated size-5"
+              :style="{ borderRadius: `${radius}rem` }"
+            />
+          </template>
+          <template #item-leading="{ item }">
+            <span
+              class="bg-elevated size-5"
+              :style="{ borderRadius: `${item.value}rem` }"
+            />
+          </template>
+        </USelectMenu>
       </fieldset>
 
       <fieldset>

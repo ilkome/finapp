@@ -70,7 +70,7 @@ const isPopoverOpen = ref(false)
         <template #content="{ close: closeContent }">
           <div class="min-w-52 p-1 pt-4 pb-3">
             <!-- Mobile: search, filters, config -->
-            <div class="sm:hidden" :class="[$slots.popover ? 'mb-2 border-b border-(--ui-border) pb-3' : '']">
+            <div class="sm:hidden" :class="[$slots.popover ? 'border-default mb-2 border-b pb-3' : '']">
               <StatFilterSelector
                 v-if="filterCategories || filterWallets"
                 :isShowCategories="!!filterCategories"

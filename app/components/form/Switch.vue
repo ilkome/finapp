@@ -16,13 +16,15 @@ const emit = defineEmits<{
     </div>
 
     <div
-      :class="cn('relative h-5 w-10 rounded-xl py-px px-[2px] transition-colors ease-in-out',
-                 value ? 'bg-(--ui-primary)' : 'bg-(--ui-bg-accented)',
+      :class="cn(
+        'relative h-5 w-10 rounded-xl py-px px-[2px] transition-colors ease-in-out',
+        value ? 'bg-primary' : 'bg-elevated',
       )"
     >
       <div
-        :class="cn('bg-default size-4.5 rounded-xl shadow-md transition-transform ease-in-out',
-                   value && 'translate-x-4.5',
+        :class="cn(
+          'bg-default size-4.5 rounded-xl shadow-md transition-transform ease-in-out',
+          value && 'translate-x-4.5',
         )"
       />
     </div>

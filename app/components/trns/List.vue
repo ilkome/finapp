@@ -233,7 +233,7 @@ function onOpenTrnForm(date: number) {
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-item-4 border-b pr-3 pb-2 opacity-60"
+        class="border-accented border-b pr-3 pb-2 opacity-60"
       >
         <Amount
           v-if="paginatedTotal.income !== 0"
@@ -277,10 +277,10 @@ function onOpenTrnForm(date: number) {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="_rounded-lg _border-b border-item-4 overflow-hidden pb-2 last:border-b-0 last:pb-px"
+        class="_rounded-lg _border-b border-accented overflow-hidden pb-2 last:border-b-0 last:pb-px"
       >
         <div
-          :class="{ 'border-item-4': isShowGroupSum && groupTrnsIds.length > 1 }"
+          :class="{ 'border-accented': isShowGroupSum && groupTrnsIds.length > 1 }"
           class="flex items-center gap-2 px-3 py-1"
         >
           <DateTrns
@@ -338,7 +338,7 @@ function onOpenTrnForm(date: number) {
       class="px-2 pt-1"
     >
       <div
-        class="flex-center text-muted hover:bg-item-6 rounded-(--ui-radius) bg-(--item-5) px-5 py-2 text-sm"
+        class="flex-center text-muted hover:bg-accented bg-elevated rounded-sm px-5 py-2 text-sm"
         @click="pageNumber = ++pageNumber"
       >
         {{ t('trns.more') }} {{ paginatedTrnsIds.length }} /

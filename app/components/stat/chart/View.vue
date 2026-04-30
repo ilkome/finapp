@@ -119,7 +119,7 @@ function buildChartSeries(series: ChartSeries[]) {
       autoresize
     >
       <template #tooltip="params">
-        <div class="rounded-md bg-(--item-5) px-2 pt-2">
+        <div class="bg-elevated rounded-md px-2 pt-2">
           <div class="text-muted pb-2 text-xs">
             {{ formatByLocale(new Date(+(params as TooltipParam[])[0]!.name), getFormatForChart(period), locale) }}
           </div>
@@ -127,7 +127,7 @@ function buildChartSeries(series: ChartSeries[]) {
           <div class="grid gap-0">
             <div
               v-for="(param, i) in (params as TooltipParam[])" :key="i"
-              class="border-item-6 flex items-center justify-between gap-4 border-b pb-1 last:border-b-0"
+              class="border-default flex items-center justify-between gap-4 border-b pb-1 last:border-b-0"
             >
               <div class="flex items-center gap-2">
                 <div class="size-2.5 rounded-full" :style="`background: ${param.color}`" />
@@ -136,7 +136,7 @@ function buildChartSeries(series: ChartSeries[]) {
                 </div>
               </div>
 
-              <div class="font-secondary text-1 text-right text-lg">
+              <div class="font-secondary text-highlighted text-right text-lg">
                 {{ formatChartAmount(param.value, locale) }}
               </div>
             </div>

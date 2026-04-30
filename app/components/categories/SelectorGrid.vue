@@ -13,7 +13,7 @@ const emit = defineEmits<{
 }>()
 
 const categoriesStore = useCategoriesStore()
-const itemClasses = 'bg-item-3 rounded-sm'
+const itemClasses = 'bg-elevated/30 rounded-sm'
 
 function select(id: CategoryId) {
   if (categoriesStore.hasChildren(id))

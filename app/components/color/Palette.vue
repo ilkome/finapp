@@ -51,7 +51,7 @@ const walletColorsUsed = computed(() => {
             v-for="(color, idx) in colorsGroup"
             :key="idx"
             :class="cn('w-full overflow-hidden rounded-sm border-2 border-transparent',
-                       color === props.activeColor && 'border-(--ui-primary) shadow',
+                       color === props.activeColor && 'border-primary shadow',
                        !color && 'pointer-events-none',
             )"
             @click="emit('click', color)"
@@ -66,7 +66,7 @@ const walletColorsUsed = computed(() => {
 
               <div
                 v-if="props.isWallet && walletColorsUsed.has(color)"
-                class="bg-item-4 size-3 rounded-full"
+                class="bg-accented size-3 rounded-full"
               />
             </div>
           </div>

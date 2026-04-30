@@ -2,8 +2,9 @@
 import { useSearch } from '~/components/search/useSearch'
 import { canGoBack } from '~/composables/useNavigationHistory'
 
-const { backTo } = defineProps<{
+const { backTo, hideSearch } = defineProps<{
   backTo?: string
+  hideSearch?: boolean
 }>()
 
 const { isSearchOpen } = useSearch()
@@ -19,7 +20,7 @@ function onBack() {
 
 <template>
   <div class="bg-default/90 sticky top-0 z-20 mb-2 backdrop-blur">
-    <div class="border-item-4 grid min-h-12 max-w-7xl items-center border-b px-2 py-2 lg:px-4 lg:py-4">
+    <div class="border-accented grid min-h-12 max-w-7xl items-center border-b px-2 py-2 lg:px-4 lg:py-4">
       <div class="flex grow items-center">
         <button
           v-if="backTo"
@@ -37,6 +38,7 @@ function onBack() {
 
         <div class="ml-auto flex shrink-0 flex-nowrap items-center gap-1 pl-2">
           <UTooltip
+            v-if="!hideSearch"
             :text="$t('search.title')"
             :kbds="['meta', 'K']"
             class="hidden sm:flex"

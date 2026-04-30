@@ -28,7 +28,7 @@ useHead({
       {{ t('wallets.createNewTitle') }}
     </h1>
 
-    <UiHeader v-else>
+    <UiHeader v-else hideSearch>
       <UiHeaderTitle>
         {{ t('wallets.createNewTitle') }}
       </UiHeaderTitle>

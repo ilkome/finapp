@@ -4,7 +4,7 @@
       <div class="grid gap-12">
         <div>
           <!-- Colors -->
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             Colors
           </h1>
 
@@ -14,26 +14,20 @@
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex-center size-20 bg-(--item-1)">
-                  1
+                <div class="flex-center bg-default size-20">
+                  default
                 </div>
-                <div class="flex-center bg-item-2 size-20">
-                  2
+                <div class="flex-center bg-muted size-20">
+                  muted
                 </div>
-                <div class="flex-center bg-item-3 size-20">
-                  3
+                <div class="flex-center bg-elevated size-20">
+                  elevated
                 </div>
-                <div class="flex-center bg-item-4 size-20">
-                  4
+                <div class="flex-center bg-accented size-20">
+                  accented
                 </div>
-                <div class="flex-center size-20 bg-(--item-5)">
-                  5
-                </div>
-                <div class="flex-center bg-item-6 size-20">
-                  6
-                </div>
-                <div class="flex-center bg-item-7 size-20">
-                  7
+                <div class="flex-center bg-inverted text-inverted size-20">
+                  inverted
                 </div>
               </div>
             </div>
@@ -42,75 +36,21 @@
               <div class="text-muted text-sm">
                 Texts
               </div>
+              <div class="bg-default flex flex-col gap-1 p-4">
+                <span class="text-highlighted">text-highlighted</span>
+                <span class="text-toned">text-toned</span>
+                <span class="text-default">text-default</span>
+                <span class="text-muted">text-muted</span>
+                <span class="text-dimmed">text-dimmed</span>
+              </div>
+            </div>
+
+            <div class="grid gap-2">
+              <div class="text-muted text-sm">
+                Primary
+              </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex-center bg-1 text-icon-primary size-20">
-                  1
-                </div>
-                <div class="flex-center bg-3 size-20">
-                  3
-                </div>
-                <div class="flex-center bg-2 size-20">
-                  2
-                </div>
-                <div class="flex-center bg-4 size-20">
-                  4
-                </div>
-              </div>
-            </div>
-
-            <div class="flex flex-wrap gap-4">
-              <div class="grid gap-2">
-                <div class="text-muted text-sm">
-                  Accent
-                </div>
-                <div class="flex flex-wrap gap-0">
-                  <div class="size-20 bg-(--ui-primary)" />
-                </div>
-              </div>
-
-              <div class="grid gap-2">
-                <div class="text-muted text-sm">
-                  Icon primary
-                </div>
-                <div class="flex flex-wrap gap-0">
-                  <div class="flex-center bg-icon-primary size-20">
-                    1
-                  </div>
-                </div>
-              </div>
-
-              <div class="grid gap-2">
-                <div class="text-muted text-sm">
-                  Alert
-                </div>
-                <div class="flex flex-wrap gap-0">
-                  <div class="bg-alert-1 size-20" />
-                </div>
-              </div>
-
-              <div class="grid gap-2">
-                <div class="text-muted text-sm">
-                  Money
-                </div>
-                <div class="flex flex-wrap gap-0">
-                  <div class="bg-income-1 size-20" />
-                  <div class="bg-income-2 size-20" />
-                  <div class="bg-expense-1 size-20" />
-                  <div class="bg-expense-2 size-20" />
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h1 class="border-item-6 mb-2 border-b pb-1">
-                Chart
-              </h1>
-
-              <div class="flex flex-wrap">
-                <div class="size-20 bg-(--chart-line)" />
-                <div class="size-20 bg-(--chart-splitLine)" />
-                <div class="size-20 bg-(--chart-label)" />
-                <div class="size-20 bg-(--chart-tooltip)" />
+                <div class="bg-primary size-20" />
               </div>
             </div>
           </div>
@@ -118,7 +58,7 @@
 
         <!-- UiTitle -->
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             UiTitle
           </h1>
 
@@ -150,7 +90,7 @@
         </div>
 
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             UiText
           </h1>
 
@@ -166,7 +106,7 @@
         </div>
 
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             UiToggle
           </h1>
 
@@ -186,7 +126,7 @@
         </div>
 
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             UiItem
           </h1>
 
@@ -206,7 +146,7 @@
         </div>
 
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             UiTabs
           </h1>
 
@@ -222,7 +162,7 @@
         </div>
 
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             UiTabsItem
           </h1>
 
@@ -264,7 +204,7 @@
       <div>
         <!-- Calendar -->
         <div>
-          <h1 class="border-item-6 mb-2 border-b pb-1">
+          <h1 class="border-default mb-2 border-b pb-1">
             Calendar
           </h1>
 

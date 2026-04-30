@@ -15,7 +15,7 @@ const emit = defineEmits<{
     :placeholder="props.placeholder"
     :value="props.modelValue"
     :type="props.type ?? 'text'"
-    class="border-item-6 bg-item-3 placeholder:text-muted m-0 w-full rounded-sm border border-solid px-3 py-2 text-base font-normal outline-none hover:bg-(--item-5) focus:border-(--ui-primary)"
+    class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-full rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
     @input="(event: Event) => emit('update:modelValue', (event.target as HTMLInputElement).value)"
   >
 </template>

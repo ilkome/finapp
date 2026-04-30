@@ -31,7 +31,22 @@ export default defineAppConfig({
     },
     modal: {
       slots: {
-        overlay: '!bg-(--overlay)',
+        overlay: '!bg-overlay',
+      },
+    },
+    selectMenu: {
+      defaultVariants: {
+        size: 'lg',
+        variant: 'outline',
+      },
+      slots: {
+        base: 'min-h-[42px] px-4 min-w-[160px]',
+        item: 'hover:bg-elevated/50 rounded-sm',
+      },
+      variants: {
+        variant: {
+          outline: 'bg-elevated/30 hover:!bg-elevated/50',
+        },
       },
     },
     toast: {
@@ -39,7 +54,7 @@ export default defineAppConfig({
         close: false,
       },
       slots: {
-        description: 'text-1',
+        description: 'text-highlighted',
         title: 'text-3xl',
         wrapper: 'flex-row items-center gap-3',
       },

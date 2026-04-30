@@ -65,7 +65,7 @@ watch([filter.categoriesIds, filter.walletsIds], () => {
       </template>
     </UiHeader>
 
-    <div class="pageWrapper bg-default mb-4 rounded-xl pt-1 pb-4">
+    <div class="pageWrapper mb-4 rounded-xl pt-1 pb-4">
       <div class="grid min-w-0 gap-3 @3xl/main:max-w-md">
         <TrnsList
           :trnsIds

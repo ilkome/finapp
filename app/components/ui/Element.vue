@@ -14,9 +14,9 @@ const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
 
 const elementClasses = computed(() => cn(
-  'interactive uiElement flex grow items-center gap-3 overflow-hidden rounded-sm px-2 py-1.5 min-h-[42px] -my-[1px] border border-transparent',
+  'interactive uiElement flex grow items-center gap-3 overflow-hidden rounded-sm px-2 py-1.5 min-h-[42px] -my-[1px]',
   props.insideClasses,
-  { 'relative border-(--ui-primary)/60 z-10': props.isActive },
+  { 'relative z-10': props.isActive },
 ))
 </script>
 
@@ -48,7 +48,7 @@ const elementClasses = computed(() => cn(
         'ml-[48px] group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
-      class="mx-2 h-px bg-(--item-5)"
+      class="bg-elevated/50 mx-2 h-px"
     />
   </component>
 </template>
@@ -61,6 +61,6 @@ a.uiElementLink {
 }
 
 [data-state='open'] > .uiElement {
-  @apply !bg-item-4;
+  @apply !bg-accented;
 }
 </style>

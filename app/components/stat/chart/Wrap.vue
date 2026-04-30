@@ -6,12 +6,10 @@ import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 defineProps<{
-  isEmpty?: boolean
   series: ChartSeries[]
   xAxisLabels: number[]
 }>()
 
-const { t } = useI18n()
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
@@ -44,7 +42,7 @@ function onChangePeriod(period: Period) {
 
       <div class="h-7">
         <StatChartIntervals
-          :class="{ 'border-item-4 border-l': isShowQuick }"
+          :class="{ 'border-accented border-l': isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"
@@ -52,22 +50,12 @@ function onChangePeriod(period: Period) {
       </div>
     </div>
 
-    <div class="relative">
-      <LazyStatChartView
-        v-show="!isEmpty"
-        :chartType
-        :period="statDate.params.value.intervalsBy"
-        :series
-        :xAxisLabels
-        @click="onClickChart"
-      />
-
-      <div
-        v-if="isEmpty"
-        class="text-muted grid h-40 place-items-center text-sm @3xl/stat:h-52"
-      >
-        {{ t('stat.noDataForPeriod') }}
-      </div>
-    </div>
+    <LazyStatChartView
+      :chartType
+      :period="statDate.params.value.intervalsBy"
+      :series
+      :xAxisLabels
+      @click="onClickChart"
+    />
   </div>
 </template>

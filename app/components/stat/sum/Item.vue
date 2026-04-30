@@ -25,8 +25,8 @@ const currenciesStore = useCurrenciesStore()
     :class="cn(
       props.plain
         ? 'px-1 pb-1'
-        : 'flex-1 flex-wrap rounded-sm border border-transparent bg-(--item-3) px-3 py-2 @2xl/stat:max-w-max',
-      props.isActive && 'bg-item-2 border-(--ui-primary)/40',
+        : 'flex-1 flex-wrap rounded-sm border border-transparent bg-elevated/30 px-3 py-2 @2xl/stat:max-w-max',
+      props.isActive && 'bg-elevated/30 border-primary/40',
     )"
     @click="(e: Event) => emit('click', e)"
   >

@@ -14,7 +14,7 @@ defineProps<{
     variant="outline"
     :icon="icon"
     :label="label"
-    class="rounded-[calc(var(--ui-radius))] text-[11px] capitalize ring-(--ui-border)"
+    class="ring-default rounded-sm text-[11px] capitalize"
     :class="[selected ? 'bg-elevated' : 'hover:bg-elevated/50']"
   >
     <template v-if="chip" #leading>

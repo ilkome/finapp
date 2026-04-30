@@ -91,7 +91,7 @@ const dragClasses = computed(() => [
     <div
       :class="overflowClasses"
       :style="overlayStyles"
-      class="pointer-events-auto absolute inset-0 z-10 size-full bg-(--overlay)"
+      class="bg-overlay pointer-events-auto absolute inset-0 z-10 size-full"
       @click="close()"
     />
 

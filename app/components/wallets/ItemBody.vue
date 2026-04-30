@@ -31,7 +31,7 @@ const currenciesStore = useCurrenciesStore()
 const classes = computed(() => ([
   'relative',
   {
-    'bg-item-3 rounded-sm': props.compact,
+    'bg-elevated/30 rounded-sm': props.compact,
   },
   {
     group: props.isSort,
@@ -163,7 +163,7 @@ if (!props.isSort) {
     <!-- Alternative -->
     <template v-if="props.compact">
       <div class="grid grow gap-0.5 overflow-hidden">
-        <div class="text-2 truncate text-xs leading-none">
+        <div class="text-muted truncate text-xs leading-none">
           {{ wallet.name }}
         </div>
 
@@ -191,7 +191,7 @@ if (!props.isSort) {
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center absolute right-0 h-full rounded-md px-3 group-hover:bg-(--item-6)"
+        class="sortHandle flex-center group-hover:bg-accented absolute right-0 h-full rounded-md px-3"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>
