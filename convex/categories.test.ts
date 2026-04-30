@@ -109,6 +109,38 @@ describe('convex/categories', () => {
         t.mutation(api.categories.update, { id, parentId: id }),
       ).rejects.toThrow('Category cannot be its own parent')
     })
+
+    it('rejects making a category with children into a child', async () => {
+      const t = convexTest(schema, modules)
+      const parentId = await t.mutation(api.categories.create, validCategory)
+      await t.mutation(api.categories.create, {
+        ...validCategory,
+        name: 'Groceries',
+        parentId,
+      })
+      const otherRootId = await t.mutation(api.categories.create, { ...validCategory, name: 'Transport' })
+
+      await expect(
+        t.mutation(api.categories.update, { id: parentId, parentId: otherRootId }),
+      ).rejects.toThrow('Cannot move a category that has its own children')
+    })
+
+    it('allows clearing parentId on root with children (no-op)', async () => {
+      const t = convexTest(schema, modules)
+      const parentId = await t.mutation(api.categories.create, validCategory)
+      await t.mutation(api.categories.create, {
+        ...validCategory,
+        name: 'Groceries',
+        parentId,
+      })
+
+      await t.mutation(api.categories.update, { id: parentId, name: 'Food updated', parentId: 0 })
+
+      const list = await t.query(api.categories.list)
+      const updated = list!.find(c => c._id === parentId)!
+      expect(updated.name).toBe('Food updated')
+      expect(updated.parentId).toBe(0)
+    })
   })
 
   describe('updateWithChildren', () => {

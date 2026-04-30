@@ -1,6 +1,6 @@
 import localforage from 'localforage'
 
-import type { EntityType, OfflineOp, OfflineOpInput } from '~/components/offline/types'
+import type { EntityType, OfflineOp, OfflineOpData, OfflineOpInput } from '~/components/offline/types'
 
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { createLogger } from '~/utils/logger'
@@ -137,6 +137,37 @@ async function removeOfflineOpsImpl(entity: EntityType, ids: string[]): Promise<
     await writeQueue(filtered)
     logger.log(`synced ${ids.length} ops: ${entity}`)
   }
+}
+
+/**
+ * Merge `patch` into the queued op's `data` (shallow), bump timestamp.
+ * No-op if no op matches, op is `delete`, or op carries no `data`.
+ * Op type is preserved.
+ */
+export function updateOfflineOpData(entity: EntityType, id: string, patch: OfflineOpData): Promise<void> {
+  writeChain = writeChain.then(() => updateOfflineOpDataImpl(entity, id, patch), () => updateOfflineOpDataImpl(entity, id, patch))
+  return writeChain
+}
+
+async function updateOfflineOpDataImpl(entity: EntityType, id: string, patch: OfflineOpData): Promise<void> {
+  const queue = await readQueue()
+  const idx = findLastIndex(queue, o => o.entity === entity && o.id === id)
+  if (idx === -1) {
+    logger.log(`skip update-data (no op): ${entity}/${id}`)
+    return
+  }
+  const existing = queue[idx]!
+  if (existing.type === 'delete') {
+    logger.log(`skip update-data (delete is terminal): ${entity}/${id}`)
+    return
+  }
+  if (!existing.data) {
+    logger.warn(`skip update-data (no data field): ${entity}/${id}`)
+    return
+  }
+  queue[idx] = { ...existing, data: { ...existing.data, ...patch }, timestamp: Date.now() }
+  await writeQueue(queue)
+  logger.log(`patched ${existing.type} data: ${entity}/${id}`)
 }
 
 export function removeOfflineOpByType(entity: EntityType, id: string, type: OfflineOp['type']): Promise<void> {

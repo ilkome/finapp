@@ -14,7 +14,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  afterSave: []
+  afterSave: [id: CategoryId]
   update: [key: keyof CategoryForm, value: CategoryForm[keyof CategoryForm]]
 }>()
 
@@ -25,9 +25,17 @@ const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
 const prevChildIds = computed(() => props.categoryId ? categoriesStore.getChildrenIds(props.categoryId) : [])
 const selectedChildIds = ref<CategoryId[]>([...prevChildIds.value])
+let lastSyncedPrevIds = [...prevChildIds.value]
 
+// Don't blow away user's in-progress selection when prevChildIds changes due
+// to a realtime patch on another device. Reset only if user hasn't deviated.
 watch(prevChildIds, (ids) => {
-  selectedChildIds.value = [...ids]
+  const sameAsLastSeen
+    = selectedChildIds.value.length === lastSyncedPrevIds.length
+      && selectedChildIds.value.every(id => lastSyncedPrevIds.includes(id))
+  if (sameAsLastSeen)
+    selectedChildIds.value = [...ids]
+  lastSyncedPrevIds = [...ids]
 }, { flush: 'sync' })
 
 const hasChildren = computed(() => selectedChildIds.value.length > 0)
@@ -248,13 +256,13 @@ async function onSave() {
     }
   }
 
-  await categoriesStore.saveCategory({
+  const result = await categoriesStore.saveCategory({
     id: editCategoryId,
     isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value,
     nextChildIds: isAllowManageChildren.value ? [...selectedChildIds.value] : undefined,
     values: parsed.data,
   })
-  emit('afterSave')
+  emit('afterSave', result?.convexId ?? editCategoryId)
 }
 </script>
 
@@ -445,7 +453,7 @@ async function onSave() {
             v-for="icon in iconGroup"
             :key="icon"
             :class="cn('flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent',
-                       icon === props.categoryForm.icon && 'border-(--ui-primary)',
+                       icon === props.categoryForm.icon && 'border-primary',
             )"
             :style="{ background: props.categoryForm.color }"
             @click="emit('update', 'icon', icon)"
@@ -512,15 +520,15 @@ async function onSave() {
                 :key="id"
                 type="button"
                 :aria-pressed="selectedChildIds.includes(id)"
-                :class="cn('flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-(--ui-bg-muted)', selectedChildIds.includes(id) && 'bg-(--ui-bg-muted)')"
+                :class="cn('flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-muted', selectedChildIds.includes(id) && 'bg-muted')"
                 @click="toggleChildSelection(id)"
               >
-                <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-(--ui-primary) bg-(--ui-primary)' : 'border-(--ui-border)')">
+                <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-primary bg-primary' : 'border-default')">
                   <Icon
                     v-if="selectedChildIds.includes(id)"
                     name="mdi:check"
                     size="14"
-                    class="text-(--ui-bg)"
+                    class="text-icon-primary"
                   />
                 </div>
                 <UiIconBase

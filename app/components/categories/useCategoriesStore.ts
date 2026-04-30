@@ -6,6 +6,7 @@ import type { RemapInfo } from '~/composables/useStoreSync'
 
 import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
+import { removeOfflineOps, updateOfflineOpData } from '~/components/offline/helpers'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -13,7 +14,7 @@ import { createDebouncedPersist, handleMutationResult, isInFlight, mergeOfflineO
 import { createLogger } from '~/utils/logger'
 
 const adjustment: CategoryItem = {
-  color: 'var(--text-4)',
+  color: '',
   icon: 'mdi:plus-minus',
   name: 'Adjustment',
   parentId: 0,
@@ -22,7 +23,7 @@ const adjustment: CategoryItem = {
 }
 
 const transfer: CategoryItem = {
-  color: 'var(--text-4)',
+  color: '',
   icon: 'mdi:repeat',
   name: 'Transfer',
   parentId: 0,
@@ -208,12 +209,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     if (changed) {
       // setCategories re-adds synthetic transfer/adjustment entries.
-      const userItems: Categories = {}
+      const userItems: Record<CategoryId, CategoryItem> = {}
       for (const id of Object.keys(updated)) {
         if (id !== 'transfer' && id !== 'adjustment')
           userItems[id] = updated[id]!
       }
-      setCategories(userItems)
+      setCategories(userItems as Categories)
       logger.log(`realtime: ${patch.docs.length} docs, ${patch.deletedIds.length} deletes`)
     }
     lastSyncedAt.value = patch.serverTime
@@ -266,15 +267,16 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     colorPropagationIds: CategoryId[],
     reparent?: { added: CategoryId[], removed: CategoryId[] },
   ) {
+    const now = Date.now()
     const updatedItems: Categories = {
       ...items.value,
-      [id]: categoryValues,
+      [id]: { ...categoryValues, updatedAt: now },
     }
 
     if (isUpdateChildCategoriesColor && colorPropagationIds.length > 0) {
       for (const childId of colorPropagationIds) {
         if (updatedItems[childId])
-          updatedItems[childId] = { ...updatedItems[childId], color: categoryValues.color }
+          updatedItems[childId] = { ...updatedItems[childId], color: categoryValues.color, updatedAt: now }
       }
     }
 
@@ -287,11 +289,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
           ...existing,
           color: isUpdateChildCategoriesColor ? categoryValues.color : existing.color,
           parentId: id,
+          updatedAt: now,
         }
       }
       for (const removeId of reparent.removed) {
         if (updatedItems[removeId])
-          updatedItems[removeId] = { ...updatedItems[removeId], parentId: 0 }
+          updatedItems[removeId] = { ...updatedItems[removeId], parentId: 0, updatedAt: now }
       }
     }
 
@@ -337,6 +340,24 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (!pushSaveOp({ entity: 'categories', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
       return
 
+    // 3c — Queue per-kept-child color ops so propagation survives updateWithChildren failure.
+    const useUpdateWithChildren = !!isExisting && isUpdateChildCategoriesColor && keptChildIds.length > 0
+    if (useUpdateWithChildren) {
+      const snapshot = items.value
+      for (const cid of keptChildIds) {
+        const child = snapshot[cid]
+        if (!child)
+          continue
+        pushSaveOp({
+          entity: 'categories',
+          id: cid,
+          isDemo: !!isDemo.value,
+          isExisting: true,
+          values: { ...child, color: values.color } as unknown as Record<string, unknown>,
+        })
+      }
+    }
+
     const { api, client } = useConvexClientWithApi()
     const action = isExisting ? 'update' : 'create'
 
@@ -349,7 +370,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       showInQuickSelector: values.showInQuickSelector,
     }
 
-    const mutation = isExisting && isUpdateChildCategoriesColor && keptChildIds.length > 0
+    const mutation = useUpdateWithChildren
       ? client.mutation(api.categories.updateWithChildren, {
           childIds: keptChildIds.map(cid => asConvexId<'categories'>(cid)),
           id: asConvexId<'categories'>(id),
@@ -363,7 +384,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       action,
       entity: 'categories',
       errorMessage: 'categories.errors.saveFailed',
-      id,
+      // When updateWithChildren is in play, drain kept-child ops on success too.
+      id: useUpdateWithChildren ? [id, ...keptChildIds] : id,
       items,
       mutation,
     })
@@ -399,17 +421,27 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       }
 
       if (reparentIds.length > 0 && !isLocalId(id)) {
+        // Filter local-id children out of setChildren — their create op carries
+        // the new parentId via the collapsed update op, so server picks it up
+        // when the create eventually replays. Sending local_* to setChildren
+        // would be rejected as an invalid Convex id.
+        const serverAddIds = diff.added.filter(cid => !isLocalId(cid))
+        const serverRemoveIds = diff.removed.filter(cid => !isLocalId(cid))
+
+        if (serverAddIds.length === 0 && serverRemoveIds.length === 0)
+          return coreResult
+
         const reparentMutation = client.mutation(api.categories.setChildren, {
-          addIds: diff.added.map(cid => asConvexId<'categories'>(cid)),
+          addIds: serverAddIds.map(cid => asConvexId<'categories'>(cid)),
           childrenColor: isUpdateChildCategoriesColor ? values.color : undefined,
           id: asConvexId<'categories'>(id),
-          removeIds: diff.removed.map(cid => asConvexId<'categories'>(cid)),
+          removeIds: serverRemoveIds.map(cid => asConvexId<'categories'>(cid)),
         })
         handleMutationResult({
           action: 'update',
           entity: 'categories',
           errorMessage: 'categories.errors.saveFailed',
-          id: reparentIds,
+          id: [...serverAddIds, ...serverRemoveIds],
           items,
           mutation: reparentMutation,
           onError: () => {
@@ -420,7 +452,93 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
                 restored[cid] = { ...restored[cid], color: prev.color, parentId: prev.parentId }
             }
             setCategories(restored)
+            // 3d — Drain non-local reparent update ops; for local-id children
+            // patch their queued create back to pre-optimistic parentId so the
+            // child is still created server-side, just under the original parent.
+            const nonLocalIds = reparentIds.filter(cid => !isLocalId(cid))
+            if (nonLocalIds.length > 0)
+              void removeOfflineOps('categories', nonLocalIds)
+            for (const cid of reparentIds) {
+              if (!isLocalId(cid))
+                continue
+              const prev = reparentRollback.get(cid)
+              if (prev)
+                void updateOfflineOpData('categories', cid, { parentId: prev.parentId })
+            }
           },
+        })
+      }
+      else if (reparentIds.length > 0 && isLocalId(id)) {
+        // New parent: wait for create to remap localId → convexId, then
+        // patch children's parentId locally and call setChildren on server.
+        // Local-id children stay queued and rely on offline replay.
+        const serverAddIds = diff.added.filter(cid => !isLocalId(cid))
+        const serverRemoveIds = diff.removed.filter(cid => !isLocalId(cid))
+
+        Promise.resolve(coreResult).then((remap) => {
+          if (!remap || remap.localId !== id)
+            return
+
+          const updated: Categories = { ...items.value }
+          let changed = false
+          for (const addId of diff.added) {
+            const child = updated[addId]
+            if (child && child.parentId === remap.localId) {
+              updated[addId] = { ...child, parentId: remap.convexId }
+              changed = true
+            }
+          }
+          if (changed)
+            setCategories(updated)
+
+          // 3b — Patch queued child ops so their data.parentId no longer points
+          // at the remapped local id. Covers both reparented existing children
+          // (queued as 'update') and local-id children with their own queued
+          // 'create' op carrying values.parentId = local_parent_id.
+          for (const addId of diff.added)
+            void updateOfflineOpData('categories', addId, { parentId: remap.convexId })
+
+          if (serverAddIds.length === 0 && serverRemoveIds.length === 0)
+            return
+
+          const reparentMutation = client.mutation(api.categories.setChildren, {
+            addIds: serverAddIds.map(cid => asConvexId<'categories'>(cid)),
+            childrenColor: isUpdateChildCategoriesColor ? values.color : undefined,
+            id: asConvexId<'categories'>(remap.convexId),
+            removeIds: serverRemoveIds.map(cid => asConvexId<'categories'>(cid)),
+          })
+          handleMutationResult({
+            action: 'update',
+            entity: 'categories',
+            errorMessage: 'categories.errors.saveFailed',
+            id: [...serverAddIds, ...serverRemoveIds],
+            items,
+            mutation: reparentMutation,
+            onError: () => {
+              const restored: Categories = { ...items.value }
+              for (const [cid, prev] of reparentRollback) {
+                if (restored[cid])
+                  restored[cid] = { ...restored[cid], color: prev.color, parentId: prev.parentId }
+              }
+              setCategories(restored)
+              // 3d — Drain non-local reparent update ops; for local-id children
+              // patch their queued create back to pre-optimistic parentId.
+              const nonLocalIds = [...diff.added, ...diff.removed].filter(cid => !isLocalId(cid))
+              if (nonLocalIds.length > 0)
+                void removeOfflineOps('categories', nonLocalIds)
+              for (const cid of [...diff.added, ...diff.removed]) {
+                if (!isLocalId(cid))
+                  continue
+                const prev = reparentRollback.get(cid)
+                if (prev)
+                  void updateOfflineOpData('categories', cid, { parentId: prev.parentId })
+              }
+            },
+          })
+        }).catch((e) => {
+          // coreResult resolves with RemapInfo|void and never rejects (handleMutationResult
+          // catches mutation rejection internally), but guard against unforeseen throws.
+          logger.error('reparent post-create flow failed', e)
         })
       }
     }

@@ -54,8 +54,19 @@ async function updateCategoryCore(
 
   const category = await getOwnEntity(ctx, id, userId)
 
-  if (args.parentId !== undefined && args.parentId !== 0)
+  if (args.parentId !== undefined && args.parentId !== 0) {
     await validateParentId(ctx, args.parentId, userId, id)
+    // Only block when the parent actually changes — a redundant resend of the
+    // current parentId (common in updateWithChildren / formless updates) is fine.
+    if (args.parentId !== category.parentId) {
+      const ownChild = await ctx.db
+        .query('categories')
+        .withIndex('by_user_parent', q => q.eq('userId', userId).eq('parentId', id))
+        .first()
+      if (ownChild)
+        throw new Error('Cannot move a category that has its own children')
+    }
+  }
   if (args.name !== undefined || args.parentId !== undefined)
     await validateNameUniqueness(ctx, args.name ?? category.name, args.parentId ?? category.parentId, userId, id)
 
