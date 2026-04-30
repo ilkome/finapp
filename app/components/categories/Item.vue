@@ -7,6 +7,7 @@ export type CategoryItemProps = {
   activeItemId?: string | 0 | false | null
   category: CategoryItem
   categoryId: CategoryId
+  chevronOnLeft?: boolean
   class?: string
   contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
@@ -34,6 +35,7 @@ const emit = defineEmits<{
       :stacked="props.stacked"
       :category="props.category"
       :categoryId="props.categoryId"
+      :chevronOnLeft="props.chevronOnLeft"
       :class="props.class"
       :insideClasses="props.insideClasses"
       :isExpanded="props.isExpanded"
@@ -53,6 +55,7 @@ const emit = defineEmits<{
     :stacked="props.stacked"
     :category="props.category"
     :categoryId="props.categoryId"
+    :chevronOnLeft="props.chevronOnLeft"
     :class="props.class"
     :insideClasses="props.insideClasses"
     :isExpanded="props.isExpanded"

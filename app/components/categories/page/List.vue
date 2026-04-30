@@ -84,7 +84,6 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
         <UiActionButton
-          v-if="categoriesView === 'list'"
           :ariaLabel="$t('base.toggleFolders')"
           @click="toggleAll"
         >
@@ -129,15 +128,12 @@ const { getCategoryContextMenuItems } = useCategoryContextMenu({
       <CategoriesList
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
-          class: 'group',
-          lineWidth: categoriesView === 'list' ? 1 : 0,
+          chevronOnLeft: true,
+          lineWidth: 1,
         }"
-        :class="{
-          'grid gap-1.5 @sm:grid-cols-2 @2xl/page:grid-cols-3': categoriesView === 'grid',
-        }"
-        :expanded="categoriesView === 'list' ? { isExpanded, toggle } : undefined"
+        :childrenView="categoriesView"
+        :expanded="{ isExpanded, toggle }"
         :getContextMenuItems="getCategoryContextMenuItems"
-        :insideClasses="categoriesView === 'grid' ? 'bg-item-2' : ''"
         :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
       />
     </div>

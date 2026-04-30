@@ -274,9 +274,6 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
     >
       <CategoriesList
         :ids="categoriesIds"
-        :categoriesItemProps="{
-          class: 'group',
-        }"
         :getContextMenuItems="getCategoryContextMenuItems"
         :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
       />

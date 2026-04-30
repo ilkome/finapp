@@ -33,14 +33,17 @@ watch(prevChildIds, (ids) => {
 const hasChildren = computed(() => selectedChildIds.value.length > 0)
 const hadChildrenInitially = computed(() => prevChildIds.value.length > 0)
 const isRootCategory = computed(() => props.categoryForm.parentId === 0)
+const isNewCategory = computed(() => !props.categoryId)
 const isAllowChangeParent = computed(() =>
   !hasChildren.value && categoriesStore.categoriesForBeParent.length > 0,
 )
 // A root can manage children only if it has no direct transactions of its own,
 // otherwise adopting children would hide its trns from stats.
-// We allow it also if it already has children (legacy safety valve).
+// New categories have no transactions yet, so they always qualify.
+// Existing root with own children also qualifies (legacy safety valve).
 const canHaveChildren = computed(() =>
-  hadChildrenInitially.value
+  isNewCategory.value
+  || hadChildrenInitially.value
   || (!!props.categoryId && categoriesStore.categoriesForBeParent.includes(props.categoryId)),
 )
 
@@ -137,10 +140,14 @@ function getParentName(id: CategoryId): string {
 
 const isAllowManageChildren = computed(() =>
   isRootCategory.value
-  && !!props.categoryId
   && canHaveChildren.value
   && (childrenCandidateIds.value.length > 0 || prevChildIds.value.length > 0),
 )
+
+watch(() => props.categoryForm.parentId, (parentId) => {
+  if (parentId !== 0 && selectedChildIds.value.length > 0)
+    selectedChildIds.value = [...prevChildIds.value]
+})
 
 const modals = ref({
   children: false,
@@ -585,7 +592,6 @@ async function onSave() {
 
         <CategoriesList
           :activeItemId="props.categoryForm.parentId"
-          :categoriesItemProps="{ class: 'group' }"
           :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
           class="!gap-x-1"
           @click="id => onParentSelect(id, close)"
