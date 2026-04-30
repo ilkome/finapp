@@ -46,35 +46,14 @@ function onClick(categoryId: CategoryId) {
 
 <template>
   <div class="flex flex-wrap justify-center gap-1 gap-y-2">
-    <div
+    <CategoriesRoundPill
       v-for="categoryId in categoryIds"
       :key="categoryId"
-      class="dark:bg-item-3 relative flex cursor-default items-center gap-2 overflow-hidden rounded-2xl border border-transparent p-1 pr-3 hover:bg-(--item-5)"
+      :categoryId="categoryId"
+      :isShowParent="!!categoriesStore.items[categoryId]?.parentId"
+      isIconBg
+      class="cursor-default"
       @click="onClick(categoryId)"
-    >
-      <div
-        :style="{ backgroundColor: categoriesStore.items[categoryId]?.color }"
-        class="absolute inset-0 size-full opacity-10"
-      />
-
-      <div class="size-6">
-        <UiIconBase
-          :name="categoriesStore.items[categoryId]?.icon ?? ''"
-          :color="categoriesStore.items[categoryId]?.color"
-          :size="14"
-          class="!w-6 p-1"
-          invert
-        />
-      </div>
-
-      <CategoriesName
-        v-if="categoriesStore.items[categoryId]"
-        :category="categoriesStore.items[categoryId]!"
-        :isShowParent="!!categoriesStore.items[categoryId]?.parentId"
-        :parentCategory="categoriesStore.items[categoryId]?.parentId ? categoriesStore.items[categoriesStore.items[categoryId]!.parentId] : undefined"
-        stacked
-        size="xs"
-      />
-    </div>
+    />
   </div>
 </template>

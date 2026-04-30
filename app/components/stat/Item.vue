@@ -110,7 +110,6 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="shouldShowAmounts"
-      :isEmpty="selectedTrnsIds.length === 0"
       :series="chartSeries"
       :xAxisLabels="chartXAxisLabels"
       class="pb-3"
@@ -124,7 +123,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           isShowWallets
         />
 
-        <StatCategoriesRoundSectionMenu
+        <StatCategoriesConfigMenu
           :filteredCategoriesIds
           :preCategoriesIds="props.preCategoriesIds"
           :selectedTrnsIds
@@ -188,7 +187,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
       <div v-else class="mx-auto grid w-full max-w-150 content-start justify-items-center gap-4">
         <TrnsNoTrns />
 
-        <StatCategoriesRoundSectionRecent />
+        <StatCategoriesRoundRecent />
       </div>
     </div>
 

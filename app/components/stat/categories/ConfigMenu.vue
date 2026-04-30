@@ -136,9 +136,9 @@ function setGrouping(mode: GroupingMode) {
         <div class="grid gap-3">
           <!-- Chart -->
           <div class="overflow-hidden rounded-sm border border-(--ui-border)">
-            <div class="flex items-stretch bg-(--item-4)" :class="{ 'pb-px': isExpandedChartCard }">
+            <div class="bg-accented flex items-stretch" :class="{ 'pb-px': isExpandedChartCard }">
               <div
-                class="flex grow cursor-pointer items-center gap-2 rounded-tr-sm rounded-br-sm px-3 py-2 hover:bg-(--item-3)"
+                class="hover:bg-elevated flex grow cursor-pointer items-center gap-2 rounded-tr-sm rounded-br-sm px-3 py-2"
                 @click="isExpandedChartCard = !isExpandedChartCard"
               >
                 <Icon
@@ -150,7 +150,7 @@ function setGrouping(mode: GroupingMode) {
                 </div>
               </div>
               <div
-                class="flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3 hover:bg-(--item-3)"
+                class="hover:bg-elevated flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3"
                 @click.stop="toggleChartShow"
               >
                 <FormSwitch :value="isChartShow" />
@@ -227,9 +227,9 @@ function setGrouping(mode: GroupingMode) {
 
           <!-- Round categories -->
           <div class="overflow-hidden rounded-sm border border-(--ui-border)">
-            <div class="flex items-stretch bg-(--item-4)" :class="{ 'pb-px': isExpandedRoundCard }">
+            <div class="bg-accented flex items-stretch" :class="{ 'pb-px': isExpandedRoundCard }">
               <div
-                class="flex grow cursor-pointer items-center gap-2 rounded-tr-sm rounded-br-sm px-3 py-2 hover:bg-(--item-3)"
+                class="hover:bg-elevated flex grow cursor-pointer items-center gap-2 rounded-tr-sm rounded-br-sm px-3 py-2"
                 @click="isExpandedRoundCard = !isExpandedRoundCard"
               >
                 <Icon
@@ -241,7 +241,7 @@ function setGrouping(mode: GroupingMode) {
                 </div>
               </div>
               <div
-                class="flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3 hover:bg-(--item-3)"
+                class="hover:bg-elevated flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3"
                 @click.stop="toggleMaster('catsRound', isCatsRoundShow)"
               >
                 <FormSwitch :value="isCatsRoundShow" />
@@ -284,9 +284,9 @@ function setGrouping(mode: GroupingMode) {
 
           <!-- List -->
           <div class="overflow-hidden rounded-sm border border-(--ui-border)">
-            <div class="flex items-stretch bg-(--item-4)" :class="{ 'pb-px': isExpandedListCard }">
+            <div class="bg-accented flex items-stretch" :class="{ 'pb-px': isExpandedListCard }">
               <div
-                class="flex grow cursor-pointer items-center gap-2 rounded-tr-sm rounded-br-sm px-3 py-2 hover:bg-(--item-3)"
+                class="hover:bg-elevated flex grow cursor-pointer items-center gap-2 rounded-tr-sm rounded-br-sm px-3 py-2"
                 @click="isExpandedListCard = !isExpandedListCard"
               >
                 <Icon
@@ -298,7 +298,7 @@ function setGrouping(mode: GroupingMode) {
                 </div>
               </div>
               <div
-                class="flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3 hover:bg-(--item-3)"
+                class="hover:bg-elevated flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3"
                 @click.stop="toggleMaster('catsList', isCatsListShow)"
               >
                 <FormSwitch :value="isCatsListShow" />
