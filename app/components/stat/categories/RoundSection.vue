@@ -69,7 +69,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 
 <template>
   <div class="flex min-w-0 flex-wrap justify-start gap-1 gap-y-2">
-    <StatCategoriesRound2lines
+    <StatCategoriesRound
       v-for="item in visibleCategories"
       :key="item.id"
       :item="item"
