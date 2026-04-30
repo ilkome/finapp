@@ -9,5 +9,6 @@
     "contextOptions": {
       "viewport": null
     }
-  }
+  },
+  "outputDir": "./playwright/output"
 }
