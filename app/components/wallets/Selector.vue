@@ -10,6 +10,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = defineProps<{
   activeItemId?: WalletId
   disabledIds?: WalletId[]
+  filterAtTop?: boolean
   hide?: () => void
   selectedIds?: WalletId[]
 }>()
@@ -42,7 +43,10 @@ function onClickWallet(walletId: WalletId) {
   <div class="relative grid h-full overflow-hidden">
     <div
       class="scrollerBlock h-full overflow-y-auto py-px"
-      :class="{ 'pb-16': walletsStore.currenciesUsed.length > 1 }"
+      :class="{
+        'pb-16': !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
+        'pt-16': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
+      }"
     >
       <WalletsItem
         v-for="walletId in selectedWalletsIdsWithCurrency"
@@ -60,10 +64,16 @@ function onClickWallet(walletId: WalletId) {
 
     <template v-if="walletsStore.currenciesUsed.length > 1">
       <div
-        class="pointer-events-none absolute bottom-0 left-0 z-10 h-12 w-full"
-        style="background: linear-gradient(to bottom, transparent, var(--ui-bg))"
+        class="pointer-events-none absolute left-0 z-10 h-12 w-full"
+        :class="props.filterAtTop ? 'top-0' : 'bottom-0'"
+        :style="props.filterAtTop
+          ? 'background: linear-gradient(to top, transparent, var(--ui-bg))'
+          : 'background: linear-gradient(to bottom, transparent, var(--ui-bg))'"
       />
-      <div class="pointer-events-none absolute bottom-2 left-0 z-20 w-full px-2">
+      <div
+        class="pointer-events-none absolute left-0 z-20 w-full px-2"
+        :class="props.filterAtTop ? 'top-2' : 'bottom-2'"
+      >
         <div class="border-default/80 bg-default/20 pointer-events-auto rounded-2xl border p-1 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
           <WalletsCurrencies
             :currencyFiltered
