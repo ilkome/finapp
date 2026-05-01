@@ -7,6 +7,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  backSkipPattern?: RegExp
   backTo?: string
   configWallets?: boolean
   filterCategories?: boolean
@@ -33,12 +34,10 @@ function onClickWallet(walletId: WalletId) {
   filter.toggleWalletId(walletId)
   trnsFormStore.values.walletId = walletId
 }
-
-const isPopoverOpen = ref(false)
 </script>
 
 <template>
-  <UiHeader :backTo="backTo">
+  <UiHeader :backSkipPattern="backSkipPattern" :backTo="backTo">
     <slot name="title" />
 
     <template #actions>

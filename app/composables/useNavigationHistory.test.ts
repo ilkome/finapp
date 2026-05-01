@@ -113,6 +113,47 @@ describe('useNavigationHistory', () => {
     expect(router.push).toHaveBeenCalledWith('/x')
   })
 
+  it('navigateBackSkipping traverses to the nearest earlier entry outside the skipped wallet pages', async () => {
+    const traverseTo = vi.fn()
+    stubNavigation([
+      { index: 0, key: 'k0', url: 'http://localhost/dashboard' },
+      { index: 1, key: 'k1', url: 'http://localhost/wallets/first' },
+      { index: 2, key: 'k2', url: 'http://localhost/wallets/second' },
+      { index: 3, key: 'k3', url: 'http://localhost/wallets/third' },
+    ], 3, { traverseTo })
+    const { navigateBackSkipping } = await import('~/composables/useNavigationHistory')
+    const router = { back: vi.fn(), push: vi.fn(), replace: vi.fn() }
+    navigateBackSkipping(router, '/wallets', /^\/wallets\/[^/]+$/)
+    expect(traverseTo).toHaveBeenCalledWith('k0')
+    expect(router.replace).not.toHaveBeenCalled()
+  })
+
+  it('navigateBackSkipping replaces with the fallback when history contains only skipped pages', async () => {
+    stubNavigation([
+      { index: 0, key: 'k0', url: 'http://localhost/wallets/first' },
+      { index: 1, key: 'k1', url: 'http://localhost/wallets/second' },
+    ], 1)
+    const { navigateBackSkipping } = await import('~/composables/useNavigationHistory')
+    const router = { back: vi.fn(), push: vi.fn(), replace: vi.fn() }
+    navigateBackSkipping(router, '/wallets', /^\/wallets\/[^/]+$/)
+    expect(router.replace).toHaveBeenCalledWith('/wallets')
+  })
+
+  it('navigateBackSkipping traverses to an earlier fallback even when it matches the skipped pattern', async () => {
+    const traverseTo = vi.fn()
+    stubNavigation([
+      { index: 0, key: 'k0', url: 'http://localhost/dashboard' },
+      { index: 1, key: 'k1', url: 'http://localhost/categories/parent' },
+      { index: 2, key: 'k2', url: 'http://localhost/categories/child-a' },
+      { index: 3, key: 'k3', url: 'http://localhost/categories/child-b' },
+    ], 3, { traverseTo })
+    const { navigateBackSkipping } = await import('~/composables/useNavigationHistory')
+    const router = { back: vi.fn(), push: vi.fn(), replace: vi.fn() }
+    navigateBackSkipping(router, '/categories/parent', /^\/categories\/[^/]+$/)
+    expect(traverseTo).toHaveBeenCalledWith('k1')
+    expect(router.replace).not.toHaveBeenCalled()
+  })
+
   it('canGoBack stays false in environments without Navigation API', async () => {
     stubNoNavigation()
     const { canGoBack, navigateAfterSave } = await import('~/composables/useNavigationHistory')
