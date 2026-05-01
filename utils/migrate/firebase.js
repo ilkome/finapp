@@ -104,7 +104,7 @@ console.log(`\n=== Importing ${Object.keys(data.accounts).length} wallets ===`)
 const wallets = Object.entries(data.accounts).map(([oldId, w]) => ({
   color: w.color,
   currency: w.currency,
-  desc: w.desc || undefined,
+  desc: w.desc || w.description || undefined,
   isArchived: w.isArchived ?? false,
   isExcludeInTotal: w.isExcludeInTotal ?? false,
   isWithdrawal: w.isWithdrawal ?? false,
@@ -168,8 +168,8 @@ const allTrns = Object.entries(data.trns).map(([_oldId, t]) => {
     updatedAt: t.edited,
   }
 
-  if (t.desc)
-    trn.desc = t.desc
+  if (t.desc || t.description)
+    trn.desc = t.desc || t.description
   if (t.amount !== undefined)
     trn.amount = t.amount
 
