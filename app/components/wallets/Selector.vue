@@ -45,7 +45,7 @@ function onClickWallet(walletId: WalletId) {
       class="scrollerBlock h-full overflow-y-auto py-px"
       :class="{
         'pb-16': !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
-        'pt-16': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
+        'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
       }"
     >
       <WalletsItem
@@ -72,7 +72,7 @@ function onClickWallet(walletId: WalletId) {
       />
       <div
         class="pointer-events-none absolute left-0 z-20 w-full px-2"
-        :class="props.filterAtTop ? 'top-2' : 'bottom-2'"
+        :class="props.filterAtTop ? 'top-0' : 'bottom-2'"
       >
         <div class="border-default/80 bg-default/20 pointer-events-auto rounded-2xl border p-1 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
           <WalletsCurrencies

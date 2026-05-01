@@ -24,7 +24,11 @@ useHead({
       {{ t('categories.createNewTitle') }}
     </h1>
 
-    <UiHeader v-else hideSearch>
+    <UiHeader
+      v-else
+      hideSearch
+      backTo="categories"
+    >
       <UiHeaderTitle>
         {{ t('categories.createNewTitle') }}
       </UiHeaderTitle>

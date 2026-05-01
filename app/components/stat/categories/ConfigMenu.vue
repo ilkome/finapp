@@ -159,7 +159,7 @@ function setGrouping(mode: GroupingMode) {
 
             <div
               v-if="isExpandedChartCard"
-              class="grid gap-2 p-2 transition-opacity"
+              class="p-2 transition-opacity"
               :class="{ 'pointer-events-none opacity-50': !isChartShow }"
             >
               <StatConfigSwitch
@@ -185,43 +185,45 @@ function setGrouping(mode: GroupingMode) {
               />
 
               <!-- Chart: view (md+ only) -->
-              <div class="hidden gap-2 md:grid">
-                <UiTitleSection size="sm" class="px-1">
-                  {{ t('stat.config.chartView.label') }}
-                </UiTitleSection>
-                <UiTabsBar>
-                  <UiTabsItemPill
-                    v-for="view in chartViewOptions"
-                    :key="view"
-                    variant="outline"
-                    :isActive="statConfig.config.value.chartView === view"
-                    class="grow"
-                    @click="statConfig.updateConfig('chartView', view)"
-                  >
-                    {{ t(`stat.config.chartView.${view}`) }}
-                  </UiTabsItemPill>
-                </UiTabsBar>
-              </div>
+              <grid class="grid gap-4 pt-4">
+                <div class="hidden gap-2 md:grid">
+                  <UiTitleSection size="sm" class="px-1">
+                    {{ t('stat.config.chartView.label') }}
+                  </UiTitleSection>
+                  <UiTabsBar>
+                    <UiTabsItemPill
+                      v-for="view in chartViewOptions"
+                      :key="view"
+                      variant="outline"
+                      :isActive="statConfig.config.value.chartView === view"
+                      class="grow"
+                      @click="statConfig.updateConfig('chartView', view)"
+                    >
+                      {{ t(`stat.config.chartView.${view}`) }}
+                    </UiTabsItemPill>
+                  </UiTabsBar>
+                </div>
 
-              <!-- Chart: type -->
-              <div class="grid gap-2">
-                <UiTitleSection size="sm" class="px-1">
-                  {{ t('stat.config.chart.type.label') }}
-                </UiTitleSection>
-                <UiTabsBar>
-                  <UiTabsItemPill
-                    v-for="item in chartTypeOptions"
-                    :key="item.value"
-                    variant="outline"
-                    :isActive="statConfig.config.value.chartType === item.value"
-                    class="flex grow gap-1"
-                    @click="statConfig.updateConfig('chartType', item.value)"
-                  >
-                    <Icon :name="item.icon" :size="16" />
-                    {{ item.label }}
-                  </UiTabsItemPill>
-                </UiTabsBar>
-              </div>
+                <!-- Chart: type -->
+                <div class="grid gap-2">
+                  <UiTitleSection size="sm" class="px-1">
+                    {{ t('stat.config.chart.type.label') }}
+                  </UiTitleSection>
+                  <UiTabsBar>
+                    <UiTabsItemPill
+                      v-for="item in chartTypeOptions"
+                      :key="item.value"
+                      variant="outline"
+                      :isActive="statConfig.config.value.chartType === item.value"
+                      class="flex grow gap-1"
+                      @click="statConfig.updateConfig('chartType', item.value)"
+                    >
+                      <Icon :name="item.icon" :size="16" />
+                      {{ item.label }}
+                    </UiTabsItemPill>
+                  </UiTabsBar>
+                </div>
+              </grid>
             </div>
           </div>
 

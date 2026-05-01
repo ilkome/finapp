@@ -26,7 +26,7 @@ function onBack() {
           v-if="backTo"
           type="button"
           :aria-label="$t('base.previous')"
-          class="interactive text-muted flex min-h-[42px] min-w-[42px] shrink-0 cursor-default items-center justify-center rounded-sm text-xl"
+          class="interactive text-muted flex min-h-[42px] min-w-[42px] shrink-0 cursor-default items-center justify-center rounded-full text-xl"
           @click="onBack"
         >
           <Icon name="lucide:arrow-left" size="20" />

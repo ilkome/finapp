@@ -69,7 +69,6 @@ export default {
       childColor: 'Применить цвет ко всем дочерним категориям',
       children: {
         confirmRemove: 'Отсоединить выбранные категории ({count}) от родителя? Они станут корневыми.',
-        currentlyIn: 'Сейчас в: {parent}',
         empty: 'Нет детей',
         group: {
           current: 'Текущие дети',
@@ -79,7 +78,7 @@ export default {
         label: 'Дочерние категории',
         noCandidates: 'Нет доступных категорий',
         noMatches: 'Ничего не найдено',
-        searchPlaceholder: 'Поиск категорий...',
+        searchPlaceholder: 'Поиск...',
         selected: 'Выбрано: {count}',
       },
       delete: {

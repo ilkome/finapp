@@ -9,6 +9,10 @@ const props = defineProps<{
 
 const filter = inject(filterKey)!
 const { t } = useI18n()
+
+const { width } = useWindowSize()
+const { pointerType } = usePointer()
+const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
 </script>
 
 <template>
@@ -21,6 +25,7 @@ const { t } = useI18n()
       icon="hugeicons:wallet-01"
     >
       <WalletsSelector
+        :filterAtTop="isLaptop"
         :selectedIds="filter?.walletsIds.value"
         class="min-w-80 px-3"
         @selected="filter.toggleWalletId"
@@ -29,7 +34,6 @@ const { t } = useI18n()
 
     <StatFilterSelectorItem
       v-if="props.isShowCategories"
-      :buttonLabel="t('base.close')"
       :hasSelection="filter?.categoriesIds.value.length > 0"
       :labelMode="props.labelMode"
       :title="t('categories.filter')"

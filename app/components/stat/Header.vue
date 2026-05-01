@@ -42,7 +42,7 @@ const isPopoverOpen = ref(false)
     <slot name="title" />
 
     <template #actions>
-      <div class="hidden items-center sm:flex">
+      <div class="flex items-center">
         <StatFilterSelector
           v-if="filterCategories || filterWallets"
           :isShowCategories="!!filterCategories"
@@ -53,44 +53,6 @@ const isPopoverOpen = ref(false)
           :isShowWallets="!!configWallets"
         />
       </div>
-
-      <BottomSheetOrDropdown
-        :class="$slots.popover ? '' : 'sm:hidden'"
-        :isOpen="isPopoverOpen"
-        isShowCloseBtn
-        @openModal="isPopoverOpen = true"
-        @closeModal="isPopoverOpen = false"
-      >
-        <template #trigger>
-          <UiActionButton :ariaLabel="$t('base.moreOptions')">
-            <Icon name="lucide:ellipsis-vertical" size="20" />
-          </UiActionButton>
-        </template>
-
-        <template #content="{ close: closeContent }">
-          <div class="min-w-52 p-1 pt-4 pb-3">
-            <!-- Mobile: search, filters, config -->
-            <div class="sm:hidden" :class="[$slots.popover ? 'border-default mb-2 border-b pb-3' : '']">
-              <StatFilterSelector
-                v-if="filterCategories || filterWallets"
-                :isShowCategories="!!filterCategories"
-                :isShowWallets="!!filterWallets"
-                labelMode
-              />
-
-              <StatConfigModal
-                :isShowWallets="!!configWallets"
-                labelMode
-              />
-            </div>
-
-            <slot
-              name="popover"
-              :close="() => { closeContent?.(); isPopoverOpen = false }"
-            />
-          </div>
-        </template>
-      </BottomSheetOrDropdown>
     </template>
 
     <template v-if="activeTab && !props.hideTabs" #selected>
