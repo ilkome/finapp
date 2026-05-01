@@ -520,7 +520,7 @@ async function onSave() {
                 :key="id"
                 type="button"
                 :aria-pressed="selectedChildIds.includes(id)"
-                :class="cn('flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-muted', selectedChildIds.includes(id) && 'bg-muted')"
+                :class="cn('flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-elevated/50 rounded-sm', selectedChildIds.includes(id) && 'bg-elevated/30')"
                 @click="toggleChildSelection(id)"
               >
                 <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-primary bg-primary' : 'border-default')">
@@ -531,22 +531,19 @@ async function onSave() {
                     class="text-icon-primary"
                   />
                 </div>
+
                 <UiIconBase
                   :color="categoriesStore.items[id]?.color"
                   :name="categoriesStore.items[id]?.icon ?? ''"
                   invert
                 />
-                <div class="min-w-0 flex-1">
-                  <div class="truncate">
-                    {{ categoriesStore.items[id]?.name }}
-                  </div>
-                  <div
-                    v-if="group === 'fromOther'"
-                    class="text-muted truncate text-xs"
-                  >
-                    {{ t('categories.form.children.currentlyIn', { parent: getParentName(id) }) }}
-                  </div>
-                </div>
+
+                <CategoriesName
+                  stacked
+                  :category="categoriesStore.items[id]!"
+                  :parentCategory="id ? categoriesStore.items[categoriesStore.items[id]?.parentId as CategoryId] : undefined"
+                  :isShowParent="!!getParentName(id)"
+                />
               </button>
             </div>
           </template>

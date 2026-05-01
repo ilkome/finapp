@@ -91,7 +91,6 @@ useHead({ title: category.value?.name })
 
       <template #popover="{ close }">
         <UiHeaderLink
-          v-if="categoryId !== 'transfer'"
           icon="lucide:pencil"
           @click="close(); router.push(`/categories/${categoryId}/edit`)"
         >

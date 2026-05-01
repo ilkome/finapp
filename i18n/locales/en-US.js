@@ -69,7 +69,6 @@ export default {
       childColor: 'Apply color to all child categories',
       children: {
         confirmRemove: 'Remove {count} categories from this parent? They will become root categories.',
-        currentlyIn: 'Currently in: {parent}',
         empty: 'No children',
         group: {
           current: 'Current children',
@@ -79,7 +78,7 @@ export default {
         label: 'Child categories',
         noCandidates: 'No categories available',
         noMatches: 'No matches',
-        searchPlaceholder: 'Search categories...',
+        searchPlaceholder: 'Search...',
         selected: '{count} selected',
       },
       delete: {

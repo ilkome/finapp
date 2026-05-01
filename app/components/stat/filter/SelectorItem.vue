@@ -1,6 +1,5 @@
 <script setup lang="ts">
 const props = defineProps<{
-  buttonLabel?: string
   hasSelection: boolean
   icon: string
   labelMode?: boolean
@@ -50,8 +49,8 @@ const isOpen = ref(false)
         <slot :close="close" />
 
         <div class="px-3 py-2">
-          <UiButtonAccent @click="close">
-            {{ props.buttonLabel ?? t('base.apply') }}
+          <UiButtonAccent class="rounded-full" @click="close">
+            {{ t('base.apply') }}
           </UiButtonAccent>
         </div>
       </div>

@@ -14,9 +14,9 @@ const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
 
 const elementClasses = computed(() => cn(
-  'interactive uiElement flex grow items-center gap-3 overflow-hidden rounded-sm px-2 py-1.5 min-h-[42px] -my-[1px]',
+  'interactive uiElement flex grow border border-transparent items-center gap-3 overflow-hidden rounded-sm px-2 py-1.5 min-h-[42px] -my-[1px]',
   props.insideClasses,
-  { 'relative z-10': props.isActive },
+  { 'relative z-10 bg-elevated/30 border-primary/30': props.isActive },
 ))
 </script>
 
