@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useSearch } from '~/components/search/useSearch'
-import { canGoBack } from '~/composables/useNavigationHistory'
+import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { backTo, hideSearch } = defineProps<{
+const { backSkipPattern, backTo, hideSearch } = defineProps<{
+  backSkipPattern?: RegExp
   backTo?: string
   hideSearch?: boolean
 }>()
@@ -11,10 +12,15 @@ const { isSearchOpen } = useSearch()
 const router = useRouter()
 
 function onBack() {
-  if (canGoBack.value)
+  if (backTo && backSkipPattern) {
+    navigateBackSkipping(router, backTo, backSkipPattern)
+  }
+  else if (canGoBack.value) {
     router.back()
-  else if (backTo)
+  }
+  else if (backTo) {
     router.replace(backTo)
+  }
 }
 </script>
 

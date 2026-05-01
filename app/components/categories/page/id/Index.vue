@@ -76,6 +76,7 @@ provide(filterKey, filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
+const categoryDetailHistoryPattern = /^\/categories\/[^/]+$/
 const preCategoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
 
@@ -220,6 +221,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
   <UiPage v-if="category">
     <StatHeader
       v-model:activeTab="activeTab"
+      :backSkipPattern="categoryDetailHistoryPattern"
       :backTo="category.parentId ? `/categories/${category.parentId}` : '/categories'"
       :hideTabs="!!singleTrnType"
       filterWallets

@@ -26,6 +26,7 @@ provide(filterKey, filter)
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
+const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
 
 const activeTab = useStorage<StatTabSlug>(`${walletId.value}-tab`, 'summary')
 const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
@@ -113,6 +114,7 @@ async function onDeleteConfirm() {
   <UiPage v-if="wallet">
     <StatHeader
       v-model:activeTab="activeTab"
+      :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
       filterCategories
     >

@@ -42,6 +42,25 @@ function previousEntryUrl(): string | null {
   return prev ? getEntryPathname(prev) : null
 }
 
+function findEarlierEntry(matcher: (pathname: string) => boolean): NavigationApiEntry | null {
+  if (!navigation?.currentEntry)
+    return null
+
+  const entries = navigation.entries()
+  for (let i = navigation.currentEntry.index - 1; i >= 0; i--) {
+    const entry = entries[i]
+    if (entry && matcher(getEntryPathname(entry)))
+      return entry
+  }
+
+  return null
+}
+
+function matchesPath(pathname: string, pattern: RegExp) {
+  pattern.lastIndex = 0
+  return pattern.test(pathname)
+}
+
 /** Use back() if target is the previous entry to avoid duplicating it on top. */
 export function navigateAfterSave(router: RouterLike, target: string) {
   if (previousEntryUrl() === target)
@@ -52,15 +71,23 @@ export function navigateAfterSave(router: RouterLike, target: string) {
 
 /** Traverse to target if already in history; push otherwise — avoids cycles. */
 export function navigateToAncestor(router: RouterLike, target: string) {
-  if (navigation?.currentEntry) {
-    const entries = navigation.entries()
-    for (let i = navigation.currentEntry.index - 1; i >= 0; i--) {
-      const entry = entries[i]
-      if (entry && getEntryPathname(entry) === target) {
-        navigation.traverseTo(entry.key)
-        return
-      }
-    }
+  const entry = findEarlierEntry(pathname => pathname === target)
+  if (entry) {
+    navigation?.traverseTo(entry.key)
+    return
   }
   router.push(target)
+}
+
+/**
+ * Skip sibling detail pages and return to the nearest earlier non-matching page.
+ * Falls back to replace() when the stack only contains skipped entries.
+ */
+export function navigateBackSkipping(router: RouterLike, fallback: string, skipPattern: RegExp) {
+  const entry = findEarlierEntry(pathname => pathname === fallback || !matchesPath(pathname, skipPattern))
+  if (entry) {
+    navigation?.traverseTo(entry.key)
+    return
+  }
+  router.replace(fallback)
 }
