@@ -1,0 +1,17 @@
+{
+  "name": "@finapp/docs",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev --extends docus -p 3051",
+    "build": "nuxt build --extends docus"
+  },
+  "dependencies": {
+    "@nuxt/fonts": "0.14.0",
+    "@nuxt/hints": "1.0.0-alpha.6",
+    "@nuxt/icon": "2.2.1",
+    "better-sqlite3": "^12.5.0",
+    "docus": "latest",
+    "nuxt": "^4.2.2"
+  }
+}

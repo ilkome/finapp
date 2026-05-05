@@ -21,7 +21,7 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 
 ## Project Structure
 
-See [Architecture](../docs/content/en/3.technical/1.architecture.md) for detailed project structure and file descriptions.
+See [Architecture](docs/content/en/3.technical/1.architecture.md) for detailed project structure and file descriptions.
 
 ## Conventions
 

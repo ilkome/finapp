@@ -3,13 +3,16 @@
 </p>
 
 # Finapp — Open Source Finance App
+
 > Your money, your control — anywhere, anytime.
 
-**Finapp** helps you easily track and manage personal finances.
+**Finapp** helps you easily track and manage personal finances. The repository is a pnpm monorepo with the Nuxt application and the documentation site.
 
-<br/>
+## Live Demo
 
-## ✨ Why Finapp?
+[finapp.ilko.me](https://finapp.ilko.me/)
+
+## Why Finapp?
 
 - **Simple**: No clutter, no distractions — just your transactions and balances.
 - **Fast**: Works offline and syncs instantly across devices.
@@ -17,65 +20,67 @@
 - **Flexible**: Supports multiple currencies with automatic exchange rates.
 - **Portable**: Optimized for mobile and desktop, installable as a PWA.
 
-<br/>
-
-## 🕹 Live Demo
-➡️ [finapp.ilko.me](https://finapp.ilko.me/)
-
-<br/>
-
-## 🏞 Screenshot
-
-
-<br/>
-
-## 🚀 Features
+## Features
 
 ### Finance
-- **Wallets**: 6 types - cash, bank accounts, credit cards, deposits, crypto, debt
-- **Transactions**: expense, income, transfer, adjustment with built-in calculator
-- **Categories**: hierarchical (parent-child), custom icons and colors
-- **Multi-currency**: 165+ currencies with automatic daily exchange rates
+
+- **Wallets**: 6 types — cash, bank accounts, credit cards, deposits, crypto, debt.
+- **Transactions**: expense, income, transfer, adjustment with a built-in calculator.
+- **Categories**: hierarchical parent-child categories with custom icons and colors.
+- **Multi-currency**: 165+ currencies with automatic daily exchange rates.
 
 ### Analytics
-- Dashboard with summary, expense, income tabs
-- Bar and line charts with average line
-- Flexible date ranges: day, week, month, year, custom period
-- Category breakdown with multiple display modes (list, icons, chart)
-- Multi-select filters by wallet and category
+
+- Dashboard with summary, expense, and income tabs.
+- Bar and line charts with an average line.
+- Flexible date ranges: day, week, month, year, or custom period.
+- Category breakdown with multiple display modes.
+- Multi-select filters by wallet and category.
 
 ### Offline & Sync
-- Offline-first PWA - fully functional without internet
-- Offline queue with automatic sync on reconnect
-- Real-time sync across devices via Convex
+
+- Offline-first PWA that works without an internet connection.
+- Offline queue with automatic sync on reconnect.
+- Real-time sync across devices via Convex.
 
 ### Customization
-- Light, Dark, and System color modes
-- 20+ primary colors and 5 neutral palettes
-- Adjustable border radius
-- Per-tab dashboard widget configuration
-- English and Russian interface
 
-### Other
-- Demo mode with sample data - no registration required
-- Google OAuth authentication
+- Light, Dark, and System color modes.
+- 20+ primary colors and 5 neutral palettes.
+- Adjustable border radius.
+- Per-tab dashboard widget configuration.
+- English and Russian interface.
 
-<br/>
+## Tech Stack
 
-## 🦄 Tech Stack
 - Vue 3
 - Nuxt 4
 - Pinia
-- @nuxt/ui v4 (Tailwind CSS v4)
-- Convex (backend)
-- Better Auth (authentication)
-- Progressive Web App
+- @nuxt/ui v4 and Tailwind CSS v4
+- Convex
+- Better Auth
+- Docus
+- pnpm workspaces
 
-<br/>
+## Repository Structure
 
-## 📦 Getting Started
+```text
+finapp/
+  app/    # Nuxt application, Convex backend, tests, app assets
+  docs/   # Docus documentation site
+```
 
-### 1. Clone and Install
+The root package contains workspace scripts only. App and docs dependencies are kept in their own package manifests.
+
+## Getting Started
+
+### Requirements
+
+- Node.js `>=24.12.0`
+- pnpm `10.x`
+- A Convex project for local backend development
+
+### Install
 
 ```bash
 git clone https://github.com/ilkome/finapp.git finapp
@@ -83,9 +88,15 @@ cd finapp
 pnpm install
 ```
 
-### 2. Setup Convex
-- Create a project at [convex.dev](https://www.convex.dev/).
-- Copy `.env.example` to `.env` and fill in:
+### Configure the app
+
+Copy the app environment example and fill in your Convex deployment values:
+
+```bash
+cp app/.env.example app/.env
+```
+
+Required Nuxt environment variables:
 
 ```bash
 CONVEX_DEPLOYMENT=your_deployment
@@ -93,58 +104,72 @@ VITE_CONVEX_URL=your_convex_url
 VITE_CONVEX_SITE_URL=your_convex_site_url
 ```
 
-### 3. Setup Convex Environment Variables
-
-These variables run on the Convex backend. Set them via CLI:
+Set Convex backend environment variables from the app workspace:
 
 ```bash
-npx convex env set BETTER_AUTH_SECRET your_secret
-npx convex env set APP_URL https://your-app-domain.com
-npx convex env set GOOGLE_CLIENT_ID your_client_id
-npx convex env set GOOGLE_CLIENT_SECRET your_client_secret
-npx convex env set OPEN_EXCHANGE_RATES_KEY your_app_id
+pnpm --filter @finapp/app exec convex env set BETTER_AUTH_SECRET your_secret
+pnpm --filter @finapp/app exec convex env set APP_URL http://localhost:3050
+pnpm --filter @finapp/app exec convex env set GOOGLE_CLIENT_ID your_client_id
+pnpm --filter @finapp/app exec convex env set GOOGLE_CLIENT_SECRET your_client_secret
+pnpm --filter @finapp/app exec convex env set OPEN_EXCHANGE_RATES_KEY your_app_id
 ```
 
-- **BETTER_AUTH_SECRET**: Required — without it all auth endpoints including CORS preflight will fail
+`BETTER_AUTH_SECRET` is required. Without it, auth endpoints, including CORS preflight requests, will fail.
 
-- **Google OAuth**: Create credentials in [Google Cloud Console](https://console.cloud.google.com/)
-- **Exchange rates**: Sign up at [openexchangerates.org](https://openexchangerates.org/signup/free)
+## Development
 
-<br/>
-
-## 🛠 Development
-
-Run local server with hot reload:
-
-```bash
-pnpm dev
-```
-
-Run Convex dev server (in a separate terminal):
+Run the Convex backend and the Nuxt app in separate terminals:
 
 ```bash
 pnpm dev:convex
 ```
 
-<br/>
-
-## 🚀 Production
-
-Build for production:
-
 ```bash
-pnpm build
+pnpm dev
 ```
 
-Or generate static files for static hosting:
+The app runs at `http://localhost:3050`.
+
+Run the documentation site:
 
 ```bash
-pnpm generate
+pnpm docs:dev
 ```
 
-## 📌 Previous Version
+The docs run at `http://localhost:3051`.
 
-The previous version of Finapp (built on Firebase) is available in the [`firebase`](https://github.com/ilkome/finapp/tree/firebase) branch.
+Run app and docs dev servers together. Convex still runs separately with `pnpm dev:convex`.
 
-## 🤝 Stay Connected
+```bash
+pnpm dev:all
+```
+
+## Scripts
+
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the app dev server |
+| `pnpm dev:convex` | Start the Convex dev backend |
+| `pnpm docs:dev` | Start the documentation dev server |
+| `pnpm dev:all` | Start app and docs dev servers in parallel |
+| `pnpm build` | Build all workspace packages that define `build` |
+| `pnpm generate` | Generate the app for static hosting |
+| `pnpm docs:build` | Build the documentation site |
+| `pnpm lint` | Run root-owned linting for the monorepo |
+| `pnpm lint:app` | Run linting for the app package |
+| `pnpm lint:docs` | Run linting for the docs package |
+| `pnpm lint:fix` | Run linting with automatic fixes |
+| `pnpm test` | Run tests in workspace packages |
+| `pnpm typecheck` | Run type checks in workspace packages |
+
+## Documentation
+
+User guides, development notes, and technical reference live in [`docs/content`](docs/content). Start the docs site with `pnpm docs:dev`.
+
+## Previous Version
+
+The previous version of Finapp, built on Firebase, is available in the [`firebase`](https://github.com/ilkome/finapp/tree/firebase) branch.
+
+## Stay Connected
+
 - Telegram: [@ilkome](https://t.me/ilkome)

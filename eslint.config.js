@@ -1,10 +1,50 @@
 import antfu from '@antfu/eslint-config'
+import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
 import { extend } from 'eslint-flat-config-utils'
 import tailwind from 'eslint-plugin-tailwindcss'
 
-import withNuxt from './.nuxt/eslint.config.mjs'
+function withNuxt(...customs) {
+  return createConfigForNuxt({
+    dirs: {
+      components: ['app/app/components'],
+      componentsPrefixed: [],
+      composables: ['app/app/composables', 'app/app/utils'],
+      layouts: ['app/app/layouts'],
+      middleware: ['app/app/middleware'],
+      modules: ['app/modules'],
+      pages: ['app/app/pages'],
+      plugins: ['app/app/plugins'],
+      root: ['app'],
+      servers: [],
+      src: ['app/app'],
+    },
+    features: {
+      standalone: false,
+    },
+  }).append(...customs)
+}
 
 export default [
+  {
+    ignores: [
+      '**/.nuxt/**',
+      '**/.output/**',
+      '**/coverage/**',
+      '**/dist/**',
+      'app/convex/_generated/**',
+      'app/playwright/profiles/**',
+      'app/tests/e2e/.auth/**',
+      'app/utils/migrate/data.json',
+    ],
+  },
+  {
+    settings: {
+      tailwindcss: {
+        config: {},
+        cssFiles: ['app/app/assets/css/**/*.css'],
+      },
+    },
+  },
   ...tailwind.configs['flat/recommended'],
   ...await extend(withNuxt(
     antfu({
@@ -28,23 +68,23 @@ export default [
         'perfectionist/sort-objects': ['error', { order: 'asc', type: 'natural' }],
         'pnpm/json-enforce-catalog': 'off',
         'pnpm/json-valid-catalog': 'off',
+        'pnpm/yaml-enforce-settings': 'off',
         'tailwindcss/no-custom-classname': 'off',
         'vue/attribute-hyphenation': ['error', 'never'],
         'vue/v-on-event-hyphenation': ['error', 'never'],
       },
+      typescript: true,
+      vue: true,
     }),
   )),
   {
-    ignores: ['.agents/**', 'convex/_generated/**', 'docs/**'],
-  },
-  {
-    files: ['convex/**/*.ts', 'scripts/**/*.mjs'],
+    files: ['app/convex/**/*.ts', 'app/scripts/**/*.mjs'],
     rules: {
       'node/prefer-global/process': 'off',
     },
   },
   {
-    files: ['app/layouts/**/*.vue'],
+    files: ['app/app/layouts/**/*.vue'],
     rules: {
       'vue/no-multiple-template-root': 'off',
     },

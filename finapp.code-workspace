@@ -1,12 +1,16 @@
 {
 	"folders": [
     {
-      "name": "app",
-      "path": "app"
-    },
-    {
       "name": "finapp",
       "path": "."
+    },
+    {
+      "name": "docs",
+      "path": "docs"
+    },
+    {
+      "name": "app",
+      "path": "app"
     }
   ]
 }
