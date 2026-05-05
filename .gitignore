@@ -20,17 +20,25 @@ logs
 .fleet
 .idea
 .claude/settings.local.json
+**/.claude/settings.local.json
 
 # Playwright
-/playwright/profiles
-/playwright/.auth
-/playwright/output
 /test-results
-/playwright-report
 /blob-report
-/playwright/.cache
-/.playwright-mcp
-/tests/e2e/.auth
+playwright/profiles
+**/playwright/profiles
+playwright/.auth
+**/playwright/.auth
+playwright/output
+**/playwright/output
+playwright-report
+**/playwright-report
+playwright/.cache
+**/playwright/.cache
+.playwright-mcp
+**/.playwright-mcp
+tests/e2e/.auth
+**/tests/e2e/.auth
 
 # Local env files
 .env
@@ -40,8 +48,3 @@ logs
 
 # Migration data
 utils/migrate/data.json
-
-ftp.config.js
-
-# Temporarily-installed admin functions (see apps/admin/)
-convex/admin/
