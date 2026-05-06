@@ -7,9 +7,11 @@ import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { hasAuthCookie } from '~/composables/useAuthCookie'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('realtime')
+const RESTART_DELAY_MS = 1_000
 
 export type RealtimeDelta<TDoc> = {
   deletedIds: string[]
@@ -25,6 +27,55 @@ export type SubscriptionHandle = {
 
 type ConvexOnUpdateClient = {
   onUpdate: <T>(query: FunctionReference<'query'>, args: Record<string, unknown>, cb: (value: T) => void, onError?: (e: Error) => void) => () => void
+}
+
+let _handles: SubscriptionHandle[] = []
+let _restartInFlight = false
+let _restartTimer: ReturnType<typeof setTimeout> | null = null
+
+function clearPendingRestart(): void {
+  if (!_restartTimer)
+    return
+  clearTimeout(_restartTimer)
+  _restartTimer = null
+}
+
+function scheduleRealtimeRestart(reason: string): void {
+  if (_restartTimer || _restartInFlight)
+    return
+
+  _restartTimer = setTimeout(() => {
+    _restartTimer = null
+    void restartAllRealtime(reason)
+  }, RESTART_DELAY_MS)
+}
+
+async function restartAllRealtime(reason: string): Promise<void> {
+  if (_restartInFlight)
+    return
+  if (!navigator.onLine || !hasAuthCookie())
+    return
+
+  _restartInFlight = true
+  try {
+    const { $waitForConvexAuth } = useNuxtApp()
+    await ($waitForConvexAuth as () => Promise<void>)()
+    if (!navigator.onLine || !hasAuthCookie())
+      return
+    await startAllRealtime()
+    logger.log(`restarted subscriptions after ${reason}`)
+  }
+  catch (e) {
+    logger.error(`restart after ${reason} failed`, e)
+  }
+  finally {
+    _restartInFlight = false
+  }
+}
+
+function handleSubscriptionError(label: string, error: Error): void {
+  logger.warn(`${label}: subscription error, restarting realtime`, error.message)
+  scheduleRealtimeRestart(label)
 }
 
 /**
@@ -55,7 +106,9 @@ export function subscribeDelta<TDoc>(opts: {
     if (next === null)
       stop()
   }, (error) => {
-    logger.warn(`${opts.label}: subscription error (will auto-retry)`, error.message)
+    if (stopped)
+      return
+    handleSubscriptionError(opts.label, error)
   })
 
   function stop(): void {
@@ -66,9 +119,8 @@ export function subscribeDelta<TDoc>(opts: {
   return { label: opts.label, stop }
 }
 
-let _handles: SubscriptionHandle[] = []
-
 export function stopAllRealtime(): void {
+  clearPendingRestart()
   for (const h of _handles) {
     try {
       h.stop()
@@ -123,7 +175,7 @@ export async function startAllRealtime(): Promise<void> {
   const stopSettings = onUpdateClient.onUpdate(api.user.get, {}, (settings) => {
     userStore.applyRealtimeSettings(settings)
   }, (error) => {
-    logger.warn('userSettings: subscription error (will auto-retry)', error.message)
+    handleSubscriptionError('userSettings', error)
   })
   _handles.push({ label: 'userSettings', stop: stopSettings })
 
