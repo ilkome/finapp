@@ -24,7 +24,7 @@ export type SubscriptionHandle = {
 }
 
 type ConvexOnUpdateClient = {
-  onUpdate: <T>(query: FunctionReference<'query'>, args: Record<string, unknown>, cb: (value: T) => void) => () => void
+  onUpdate: <T>(query: FunctionReference<'query'>, args: Record<string, unknown>, cb: (value: T) => void, onError?: (e: Error) => void) => () => void
 }
 
 /**
@@ -54,6 +54,8 @@ export function subscribeDelta<TDoc>(opts: {
     const next = await opts.applyPatch(value)
     if (next === null)
       stop()
+  }, (error) => {
+    logger.warn(`${opts.label}: subscription error (will auto-retry)`, error.message)
   })
 
   function stop(): void {
@@ -120,6 +122,8 @@ export async function startAllRealtime(): Promise<void> {
 
   const stopSettings = onUpdateClient.onUpdate(api.user.get, {}, (settings) => {
     userStore.applyRealtimeSettings(settings)
+  }, (error) => {
+    logger.warn('userSettings: subscription error (will auto-retry)', error.message)
   })
   _handles.push({ label: 'userSettings', stop: stopSettings })
 
