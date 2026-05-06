@@ -35,7 +35,11 @@ async function signInWithGoogle() {
   localStorage.removeItem('better-auth_session_data')
 
   try {
-    const result = await signIn.social({ callbackURL: `${window.location.origin}/auth/callback`, provider: 'google' })
+    const result = await signIn.social({
+      callbackURL: `${window.location.origin}/auth/callback`,
+      errorCallbackURL: `${window.location.origin}/login`,
+      provider: 'google',
+    })
 
     if (result.data?.url) {
       window.location.href = result.data.url

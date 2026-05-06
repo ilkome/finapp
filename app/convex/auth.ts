@@ -21,6 +21,9 @@ function createAuth(ctx: GenericCtx<DataModel>) {
     },
     baseURL: siteUrl,
     database: authComponent.adapter(ctx),
+    onAPIError: {
+      errorURL: `${appUrl}/login`,
+    },
     plugins: [
       convex({
         authConfig,
