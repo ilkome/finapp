@@ -7,11 +7,9 @@ import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { hasAuthCookie } from '~/composables/useAuthCookie'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('realtime')
-const RESTART_DELAY_MS = 1_000
 
 export type RealtimeDelta<TDoc> = {
   deletedIds: string[]
@@ -30,52 +28,13 @@ type ConvexOnUpdateClient = {
 }
 
 let _handles: SubscriptionHandle[] = []
-let _restartInFlight = false
-let _restartTimer: ReturnType<typeof setTimeout> | null = null
-
-function clearPendingRestart(): void {
-  if (!_restartTimer)
-    return
-  clearTimeout(_restartTimer)
-  _restartTimer = null
-}
-
-function scheduleRealtimeRestart(reason: string): void {
-  if (_restartTimer || _restartInFlight)
-    return
-
-  _restartTimer = setTimeout(() => {
-    _restartTimer = null
-    void restartAllRealtime(reason)
-  }, RESTART_DELAY_MS)
-}
-
-async function restartAllRealtime(reason: string): Promise<void> {
-  if (_restartInFlight)
-    return
-  if (!navigator.onLine || !hasAuthCookie())
-    return
-
-  _restartInFlight = true
-  try {
-    const { $waitForConvexAuth } = useNuxtApp()
-    await ($waitForConvexAuth as () => Promise<void>)()
-    if (!navigator.onLine || !hasAuthCookie())
-      return
-    await startAllRealtime()
-    logger.log(`restarted subscriptions after ${reason}`)
-  }
-  catch (e) {
-    logger.error(`restart after ${reason} failed`, e)
-  }
-  finally {
-    _restartInFlight = false
-  }
-}
+const _lastErrorByLabel = new Map<string, string>()
 
 function handleSubscriptionError(label: string, error: Error): void {
-  logger.warn(`${label}: subscription error, restarting realtime`, error.message)
-  scheduleRealtimeRestart(label)
+  if (_lastErrorByLabel.get(label) === error.message)
+    return
+  _lastErrorByLabel.set(label, error.message)
+  logger.warn(`${label}: subscription error`, error.message)
 }
 
 /**
@@ -120,7 +79,6 @@ export function subscribeDelta<TDoc>(opts: {
 }
 
 export function stopAllRealtime(): void {
-  clearPendingRestart()
   for (const h of _handles) {
     try {
       h.stop()
@@ -132,6 +90,7 @@ export function stopAllRealtime(): void {
   if (_handles.length > 0)
     logger.log(`stopped ${_handles.length} subscriptions`)
   _handles = []
+  _lastErrorByLabel.clear()
 }
 
 export async function startAllRealtime(): Promise<void> {
