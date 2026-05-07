@@ -1,5 +1,6 @@
 {
   "installCommand": "pnpm install",
   "buildCommand": "pnpm build",
-  "outputDirectory": ".output/public"
+  "outputDirectory": ".output/public",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../package.json ../pnpm-lock.yaml ../pnpm-workspace.yaml"
 }
