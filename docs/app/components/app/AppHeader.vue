@@ -2,7 +2,6 @@
 const appConfig = useAppConfig()
 const site = useSiteConfig()
 
-const { isEnabled: isAssistantEnabled } = useAssistant()
 const { isEnabled, localePath, locales } = useDocusI18n()
 
 const links = computed(() => appConfig.github && appConfig.github.url
@@ -42,10 +41,6 @@ const links = computed(() => appConfig.github && appConfig.github.url
       </UButton>
 
       <AppHeaderCTA />
-
-      <template v-if="isAssistantEnabled">
-        <AssistantChat />
-      </template>
 
       <template v-if="isEnabled && locales.length > 1">
         <ClientOnly>
