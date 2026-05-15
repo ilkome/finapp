@@ -79,6 +79,8 @@ useHead({ title: category.value?.name })
 <template>
   <UiPage v-if="category">
     <StatHeader
+      :trnsIds
+      configCategories
       configWallets
       filterWallets
     >

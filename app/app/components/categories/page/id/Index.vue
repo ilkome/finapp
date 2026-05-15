@@ -224,6 +224,9 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
       :backSkipPattern="categoryDetailHistoryPattern"
       :backTo="category.parentId ? `/categories/${category.parentId}` : '/categories'"
       :hideTabs="!!singleTrnType"
+      :preCategoriesIds
+      :trnsIds
+      configCategories
       filterWallets
     >
       <template #title>
