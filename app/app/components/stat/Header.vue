@@ -1,26 +1,35 @@
 <script setup lang="ts">
+import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
+import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey, statConfigKey } from '~/components/stat/injectionKeys'
+import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
+  configCategories?: boolean
   configWallets?: boolean
   filterCategories?: boolean
   filterWallets?: boolean
   hideTabs?: boolean
+  preCategoriesIds?: CategoryId[]
+  trnsIds?: TrnId[]
 }>()
 
 const activeTab = defineModel<StatTabSlug>('activeTab')
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
+const statDate = inject(statDateKey)!
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
+const trnsStore = useTrnsStore()
 
 const sortedFilterWalletsIds = computed(() => {
   const filteredIds = filter.walletsIds.value
@@ -28,6 +37,21 @@ const sortedFilterWalletsIds = computed(() => {
     ? walletsStore.sortedIds.slice(0, statConfig.config.value.wallets.count)
     : filteredIds
   return [...new Set([...showedIds, ...filteredIds])]
+})
+
+const categoryConfigTrnsIds = computed(() => {
+  if (!props.configCategories || !props.trnsIds)
+    return undefined
+
+  return trnsStore.getStoreTrnsIds({
+    dates: {
+      end: statDate.range.value.end,
+      start: statDate.range.value.start,
+    },
+    sort: true,
+    trnsIds: props.trnsIds,
+    trnsTypes: activeTab.value ? getTypesMapping(activeTab.value) : undefined,
+  })
 })
 
 function onClickWallet(walletId: WalletId) {
@@ -48,9 +72,13 @@ function onClickWallet(walletId: WalletId) {
           :isShowWallets="!!filterWallets"
         />
 
-        <StatConfigModal
-          :isShowWallets="!!configWallets"
-        />
+        <StatConfigModal>
+          <StatConfigView
+            :isShowWallets="!!configWallets"
+            :preCategoriesIds="props.preCategoriesIds"
+            :selectedTrnsIds="categoryConfigTrnsIds"
+          />
+        </StatConfigModal>
       </div>
     </template>
 

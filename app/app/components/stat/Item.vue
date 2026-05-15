@@ -122,14 +122,6 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           isShowCategories
           isShowWallets
         />
-
-        <div class="ml-auto">
-          <StatCategoriesConfigMenu
-            :filteredCategoriesIds
-            :preCategoriesIds="props.preCategoriesIds"
-            :selectedTrnsIds
-          />
-        </div>
       </StatDateNavigation>
 
       <StatSumWrap
