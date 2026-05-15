@@ -60,7 +60,7 @@ const rootsWithOwnChildren = computed<Set<CategoryId>>(() => {
   const out = new Set<CategoryId>()
   for (const cid of Object.keys(items)) {
     const pid = items[cid]?.parentId
-    if (pid && pid !== 0 && typeof pid === 'string')
+    if (pid && typeof pid === 'string')
       out.add(pid)
   }
   return out

@@ -66,6 +66,10 @@ export type TransferFull = Transfer & TrnItemFullBase & {
 
 export type TrnItemFull = TransactionFull | TransferFull
 
+export function isTransfer(trn: TrnItem | TrnItemFull | undefined): trn is Transfer | TransferFull {
+  return trn?.type === TrnType.Transfer
+}
+
 export type Trns = Record<TrnId, TrnItem>
 
 export type TrnsGetterProps = {

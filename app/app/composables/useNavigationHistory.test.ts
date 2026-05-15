@@ -34,6 +34,10 @@ function stubNoNavigation() {
   vi.resetModules()
 }
 
+function createRouterMock() {
+  return { back: vi.fn(), push: vi.fn(), replace: vi.fn() }
+}
+
 const defaultEntries: Entry[] = [
   { index: 0, key: 'k0', url: 'http://localhost/categories' },
   { index: 1, key: 'k1', url: 'http://localhost/categories/abc' },
@@ -62,7 +66,7 @@ describe('useNavigationHistory', () => {
 
   it('navigateAfterSave calls router.back when previous entry equals target', async () => {
     const { navigateAfterSave } = await import('~/composables/useNavigationHistory')
-    const router = { back: vi.fn(), replace: vi.fn() }
+    const router = createRouterMock()
     navigateAfterSave(router, '/categories/abc')
     expect(router.back).toHaveBeenCalledOnce()
     expect(router.replace).not.toHaveBeenCalled()
@@ -70,7 +74,7 @@ describe('useNavigationHistory', () => {
 
   it('navigateAfterSave calls router.replace when previous entry differs', async () => {
     const { navigateAfterSave } = await import('~/composables/useNavigationHistory')
-    const router = { back: vi.fn(), replace: vi.fn() }
+    const router = createRouterMock()
     navigateAfterSave(router, '/somewhere/else')
     expect(router.replace).toHaveBeenCalledWith('/somewhere/else')
     expect(router.back).not.toHaveBeenCalled()
@@ -79,7 +83,7 @@ describe('useNavigationHistory', () => {
   it('navigateAfterSave calls router.replace at the first entry (no prev)', async () => {
     stubNavigation([{ index: 0, key: 'k0', url: 'http://localhost/edit' }], 0)
     const { navigateAfterSave } = await import('~/composables/useNavigationHistory')
-    const router = { back: vi.fn(), replace: vi.fn() }
+    const router = createRouterMock()
     navigateAfterSave(router, '/detail')
     expect(router.replace).toHaveBeenCalledWith('/detail')
   })
@@ -158,7 +162,7 @@ describe('useNavigationHistory', () => {
     stubNoNavigation()
     const { canGoBack, navigateAfterSave } = await import('~/composables/useNavigationHistory')
     expect(canGoBack.value).toBe(false)
-    const router = { back: vi.fn(), replace: vi.fn() }
+    const router = createRouterMock()
     navigateAfterSave(router, '/anywhere')
     expect(router.replace).toHaveBeenCalledWith('/anywhere')
     expect(router.back).not.toHaveBeenCalled()

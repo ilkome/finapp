@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { Transaction, Transfer } from '~/components/trns/types'
 
+import { isTransfer } from '~/components/trns/types'
+
 // --- Entity-specific mocks ---
 
 vi.mock('~~/services/convex/api', () => ({
@@ -520,7 +522,8 @@ describe('useTrnsStore', () => {
         truncated: false,
       })
 
-      expect(store.items?.t1?.amount).toBe(200)
+      const t1 = store.items?.t1
+      expect(isTransfer(t1) ? undefined : t1?.amount).toBe(200)
     })
 
     it('removes docs in deletedIds', async () => {
