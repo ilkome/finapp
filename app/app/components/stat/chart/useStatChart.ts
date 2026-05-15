@@ -10,11 +10,11 @@ export function useStatChart() {
   const { t } = useI18n()
 
   const chartTypeOptions = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
-    icon: 'lucide:chart-line',
+    icon: 'lucide:chart-column',
     label: t('chart.types.bar'),
     value: 'bar',
   }, {
-    icon: 'lucide:chart-column',
+    icon: 'lucide:chart-line',
     label: t('chart.types.line'),
     value: 'line',
   }])
