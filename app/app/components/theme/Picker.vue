@@ -232,6 +232,10 @@ function setBlackAsPrimary(value: boolean) {
   <!-- Popover mode: button with popover -->
   <UPopover
     v-else
+    :content="{
+      align: 'start',
+      side: 'bottom',
+    }"
     :ui="{ content: 'w-72 px-6 py-4 flex flex-col gap-4 max-h-[var(--reka-popper-available-height,80dvh)] overflow-y-auto' }"
   >
     <template #default="{ open }">

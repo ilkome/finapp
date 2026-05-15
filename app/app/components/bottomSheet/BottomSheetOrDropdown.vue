@@ -24,7 +24,7 @@ const open = ref(false)
     v-if="isLaptop"
     v-model:open="open"
     :content="{
-      align: 'center',
+      align: 'start',
       side: 'bottom',
     }"
     :ui="{
