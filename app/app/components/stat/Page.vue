@@ -65,6 +65,8 @@ onDeactivated(() => {
   <UiPage>
     <StatHeader
       v-model:activeTab="activeTab"
+      :trnsIds
+      configCategories
       configWallets
       filterCategories
       filterWallets
