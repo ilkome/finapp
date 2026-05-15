@@ -116,6 +116,8 @@ async function onDeleteConfirm() {
       v-model:activeTab="activeTab"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
+      :trnsIds
+      configCategories
       filterCategories
     >
       <template #title>
