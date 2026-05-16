@@ -10,7 +10,7 @@ import { AMOUNT_MAX, DATE_MAX, DATE_MIN, getAuthUser, getOwnEntity, requireAuthU
 import { emitTombstone } from './tombstones'
 import { fnv1aNum, toggleTrnHash } from './trnsHash'
 
-async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
+export async function validateTrnFields(ctx: MutationCtx, args: Record<string, any>, userId: string) {
   validateStringLength(args.desc, 500, 'Description')
   validateNumberRange(args.date, DATE_MIN, DATE_MAX, 'Date')
 
