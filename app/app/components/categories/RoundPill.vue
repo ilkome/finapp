@@ -5,6 +5,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
   categoryId: CategoryId
+  isActive?: boolean
   isIconBg?: boolean
   isShowParent?: boolean
 }>()
@@ -20,8 +21,11 @@ const parentCategory = computed(() => {
 <template>
   <div
     v-if="category"
-    class="bg-elevated/10 hover:bg-elevated/30 relative flex items-center overflow-hidden rounded-2xl border border-transparent p-1 pr-3"
-    :class="props.isIconBg ? 'gap-2' : 'gap-1'"
+    class="bg-elevated/10 hover:bg-elevated/30 relative flex items-center overflow-hidden rounded-2xl border p-1 pr-3"
+    :class="[
+      props.isIconBg ? 'gap-2' : 'gap-1',
+      props.isActive ? 'border-primary/60 bg-elevated/30' : 'border-transparent',
+    ]"
   >
     <div
       :style="{ backgroundColor: category.color }"

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 
+import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
@@ -12,89 +15,191 @@ const emit = defineEmits<{
   setCategories: [ids: CategoryId[]]
 }>()
 
+const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const opened = ref<CategoryId[]>([])
 
-const childrenMap = computed(() => {
-  const map = new Map<CategoryId, CategoryId[]>()
-  for (const id of categoriesStore.categoriesRootIds)
-    map.set(id, categoriesStore.getChildrenIds(id))
-  return map
+const search = ref('')
+const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
+const view = useStorage<'list' | 'grid'>('finapp.categoriesFilterView', 'list')
+
+const allRootIds = computed<CategoryId[]>(() => {
+  const items = categoriesStore.items
+  return [...categoriesStore.categoriesRootIds].sort((a, b) =>
+    (items[a]?.name ?? '').localeCompare(items[b]?.name ?? ''),
+  )
 })
 
-function select(categoryId: CategoryId, isForce: boolean) {
-  if (!isForce && categoriesStore.hasChildren(categoryId)) {
-    if (opened.value.includes(categoryId)) {
-      opened.value = opened.value.filter(id => id !== categoryId)
-    }
-    else {
-      opened.value.push(categoryId)
-    }
-    return
-  }
+const {
+  folderIcon,
+  isExpanded,
+  toggle,
+  toggleAll,
+} = useCategoriesExpanded('categoriesFilter', allRootIds)
 
-  emit('selected', categoryId)
+function nameMatches(id: CategoryId, q: string) {
+  const cat = categoriesStore.items[id]
+  if (!cat)
+    return false
+  return cat.name.toLowerCase().includes(q)
 }
 
-function onFilter(id: CategoryId) {
-  emit('setCategories', childrenMap.value.get(id) ?? [])
+const searchQuery = computed(() => search.value.trim().toLowerCase())
+
+const filteredRootIds = computed<CategoryId[]>(() => {
+  const q = searchQuery.value
+  if (!q)
+    return allRootIds.value
+  return allRootIds.value.filter((rootId) => {
+    if (nameMatches(rootId, q))
+      return true
+    return categoriesStore.getChildrenIds(rootId).some(cid => nameMatches(cid, q))
+  })
+})
+
+function visibleChildrenIds(rootId: CategoryId): CategoryId[] {
+  const all = categoriesStore.getChildrenIds(rootId)
+  const q = searchQuery.value
+  if (!q)
+    return all
+  if (nameMatches(rootId, q))
+    return all
+  return all.filter(cid => nameMatches(cid, q))
 }
 
-function isChildsSelected(categoryId: CategoryId) {
-  return (childrenMap.value.get(categoryId) ?? []).some(id => props.selectedIds?.includes(id))
+function isRootExpanded(rootId: CategoryId) {
+  if (searchQuery.value)
+    return visibleChildrenIds(rootId).length > 0
+  return isExpanded(rootId)
 }
 
-function isEveryChildsSelected(categoryId: CategoryId) {
-  const children = childrenMap.value.get(categoryId) ?? []
+const hasNoMatches = computed(() =>
+  !!searchQuery.value && filteredRootIds.value.length === 0,
+)
+
+function isAllChildrenSelected(rootId: CategoryId) {
+  const children = categoriesStore.getChildrenIds(rootId)
   if (!children.length)
     return false
-
   return children.every(id => props.selectedIds?.includes(id))
 }
 
-onMounted(() => {
-  props.selectedIds?.forEach((id) => {
-    if (categoriesStore.items[id]?.parentId)
-      opened.value.push(categoriesStore.items[id]?.parentId)
-  })
+function rootActiveId(rootId: CategoryId): CategoryId | null {
+  if (props.selectedIds?.includes(rootId))
+    return rootId
+  if (isAllChildrenSelected(rootId))
+    return rootId
+  return null
+}
+
+function onRootClick(rootId: CategoryId) {
+  if (categoriesStore.hasChildren(rootId)) {
+    toggle(rootId)
+    return
+  }
+  emit('selected', rootId)
+}
+
+function onRootFilter(rootId: CategoryId) {
+  emit('setCategories', categoriesStore.getChildrenIds(rootId))
+}
+
+onMounted(async () => {
+  await nextTick()
+  searchInput.value?.focus()
 })
 </script>
 
 <template>
-  <div>
-    <div
-      v-for="categoryId in categoriesStore.categoriesRootIds"
-      :key="categoryId"
-      class="group/item"
-      :class="{
-        'bg-elevated relative mb-2 rounded-md': opened.includes(categoryId),
-        'bg-elevated rounded-md': isChildsSelected(categoryId),
-        '!border-primary/60 border': isEveryChildsSelected(categoryId),
-      }"
-    >
-      <CategoriesItem
-        :categoryId
-        :lineWidth="4"
-        :category="categoriesStore.items[categoryId]!"
-        :activeItemId="props.selectedIds?.includes(categoryId) ? categoryId : null"
-        @click="select(categoryId, false)"
-        @filter.stop="onFilter(categoryId)"
-      />
-
-      <div
-        v-if="opened.includes(categoryId) && categoriesStore.hasChildren(categoryId)"
-        class="pr-2 pb-2 pl-4"
+  <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
+    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-2">
+      <input
+        ref="searchInput"
+        v-model="search"
+        type="text"
+        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        :placeholder="t('categories.search.placeholder')"
       >
-        <CategoriesItem
-          v-for="childCategoryId in childrenMap.get(categoryId)"
-          :key="childCategoryId"
-          :activeItemId="props.selectedIds?.includes(childCategoryId) ? childCategoryId : null"
-          :category="categoriesStore.items[childCategoryId]!"
-          :categoryId="childCategoryId"
-          @click.stop="select(childCategoryId, true)"
-          @filter.stop="onFilter(childCategoryId)"
-        />
+      <div class="flex items-center">
+        <UiActionButton
+          :ariaLabel="$t('base.toggleView')"
+          @click="view = view === 'list' ? 'grid' : 'list'"
+        >
+          <Icon
+            :name="view === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
+            size="20"
+          />
+        </UiActionButton>
+
+        <UiActionButton
+          :ariaLabel="$t('base.toggleFolders')"
+          @click="toggleAll"
+        >
+          <Icon :name="folderIcon" size="20" />
+        </UiActionButton>
       </div>
+    </div>
+
+    <div class="scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4">
+      <div
+        v-if="hasNoMatches"
+        class="text-muted p-4 text-center"
+      >
+        {{ t('categories.form.children.noMatches') }}
+      </div>
+
+      <template v-else>
+        <template
+          v-for="rootId in filteredRootIds"
+          :key="rootId"
+        >
+          <CategoriesItem
+            :activeItemId="rootActiveId(rootId)"
+            :category="categoriesStore.items[rootId]!"
+            :categoryId="rootId"
+            :isExpanded="isRootExpanded(rootId)"
+            :isShowChevron="categoriesStore.hasChildren(rootId)"
+            :leftMenuButton="true"
+            :hideLeftMenuButton="true"
+            :lineWidth="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId) ? 0 : 1"
+            class="group"
+            @click="onRootClick(rootId)"
+            @toggle="toggle(rootId)"
+            @filter="onRootFilter(rootId)"
+          />
+
+          <div
+            v-if="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId)"
+            :class="view === 'grid'
+              ? 'ml-2 pr-2 pb-4 pl-3'
+              : '-mt-px ml-5 pb-1 pl-3'"
+          >
+            <template v-if="view === 'list'">
+              <CategoriesItem
+                v-for="childId in visibleChildrenIds(rootId)"
+                :key="childId"
+                :activeItemId="props.selectedIds?.includes(childId) ? childId : null"
+                :category="categoriesStore.items[childId]!"
+                :categoryId="childId"
+                :leftMenuButton="true"
+                :hideLeftMenuButton="true"
+                :lineWidth="1"
+                class="group"
+                @click="emit('selected', childId)"
+              />
+            </template>
+
+            <div v-else class="flex flex-wrap gap-1">
+              <CategoriesRoundLink
+                v-for="childId in visibleChildrenIds(rootId)"
+                :key="childId"
+                :categoryId="childId"
+                :isActive="props.selectedIds?.includes(childId)"
+                @click="emit('selected', childId)"
+              />
+            </div>
+          </div>
+        </template>
+      </template>
     </div>
   </div>
 </template>

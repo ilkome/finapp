@@ -27,7 +27,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       <WalletsSelector
         :filterAtTop="isLaptop"
         :selectedIds="filter?.walletsIds.value"
-        class="min-w-80 px-3"
+        class="min-w-80 px-2"
         @selected="filter.toggleWalletId"
       />
     </StatFilterSelectorItem>
@@ -39,14 +39,12 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       :title="t('categories.filter')"
       icon="hugeicons:folder-library"
     >
-      <div class="scrollerBlock overflow-y-auto">
-        <CategoriesSelectorTree
-          :selectedIds="filter?.categoriesIds.value"
-          class="min-w-80 px-3"
-          @selected="filter.toggleCategoryId"
-          @setCategories="filter.setCategories"
-        />
-      </div>
+      <CategoriesSelectorTree
+        :selectedIds="filter?.categoriesIds.value"
+        class="min-w-80"
+        @selected="filter.toggleCategoryId"
+        @setCategories="filter.setCategories"
+      />
     </StatFilterSelectorItem>
   </div>
 </template>

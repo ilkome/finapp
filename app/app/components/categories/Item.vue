@@ -8,6 +8,7 @@ export type CategoryItemProps = {
   categoryId: CategoryId
   class?: string
   contextMenuItems?: ContextMenuItem[][]
+  hideLeftMenuButton?: boolean
   insideClasses?: string
   isExpanded?: boolean
   isShowChevron?: boolean
@@ -39,6 +40,7 @@ const emit = defineEmits<{
       :isExpanded="props.isExpanded"
       :isShowChevron="props.isShowChevron"
       :isShowParent="props.isShowParent"
+      :hideLeftMenuButton="props.hideLeftMenuButton"
       :leftMenuButton="props.leftMenuButton"
       :leftMenuItems="props.contextMenuItems"
       :lineWidth="props.lineWidth"
