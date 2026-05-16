@@ -19,13 +19,10 @@ const emit = defineEmits<{
   setCategoryFilter: [categoryId: CategoryId]
 }>()
 
-const visibleCategoriesLimit = 12
-
 const { computeCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
-const isExpanded = computed(() => statConfig.config.value.catsRound.isExpanded)
 const isGrouped = computed(() => resolveGrouped(statConfig.config.value.catsRound.isGrouped, statConfig.config.value.grouping))
 const isShowFavorites = computed(() => statConfig.config.value.catsRound.isShowFavorites)
 const isShowRecent = computed(() => statConfig.config.value.catsRound.isShowRecent)
@@ -63,14 +60,13 @@ const mergedPreCategoriesIds = computed(() => {
 })
 
 const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped.value, mergedPreCategoriesIds.value))
-const visibleCategories = computed(() => isExpanded.value ? roundCategories.value : roundCategories.value.slice(0, visibleCategoriesLimit))
 const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
 
 <template>
   <div class="flex min-w-0 flex-wrap justify-start gap-1 gap-y-2">
     <StatCategoriesRound
-      v-for="item in visibleCategories"
+      v-for="item in roundCategories"
       :key="item.id"
       :item="item"
       :class="{

@@ -42,6 +42,8 @@ export default {
     next: 'Next',
     no: 'No',
     noData: 'No data',
+    off: 'Off',
+    on: 'On',
     open: 'Open',
     previous: 'Previous',
     save: 'Save',
@@ -304,16 +306,19 @@ export default {
     config: {
       categories: {
         list: {
-          title: 'List categories',
+          description: 'Detailed list of all categories for the period with amounts, shares, and transaction counts.',
+          title: 'Categories list',
         },
         rounds: {
+          description: 'Strip of round category icons: favorites, recently used.',
           groupByParent: 'Group by parent',
           showFavorites: 'Show favorites',
           showRecent: 'Show recent',
-          title: 'Rounds categories',
+          title: 'Quick categories',
         },
         vertical: {
-          title: 'Vertical chart',
+          groupByParent: 'Group by parent',
+          title: 'Comparison bars',
         },
       },
       chart: {
@@ -328,7 +333,7 @@ export default {
       },
       chartShow: {
         label: 'Show chart',
-        title: 'Chart',
+        title: 'Main chart',
       },
       chartView: {
         full: 'Full',
@@ -343,7 +348,8 @@ export default {
       grouping: {
         auto: 'Auto',
         children: 'With children',
-        label: 'Show categories',
+        description: 'Auto - each block uses its own setting.\nParents only - subcategory amounts roll up into the parent.\nWith children - every subcategory shown as a separate row.',
+        label: 'Categories grouping',
         parents: 'Parents only',
       },
       menu: {
@@ -356,9 +362,14 @@ export default {
         count: {
           label: 'Show average values',
         },
+        description: 'Arithmetic mean over the chosen number of past periods. Displayed next to the period total.',
+        subtitle: 'Average over last {count} periods',
+        title: 'Average totals',
       },
       wallets: {
+        description: 'Quick access to the first N wallets from the full list. Order is set on the Wallets page.',
         label: 'Show wallets',
+        subtitle: 'Top {count}',
         title: 'Wallets',
       },
     },

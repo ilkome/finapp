@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { StatConfigPanelId } from '~/components/stat/types'
+
+import { statConfigPanelKey } from '~/components/stat/injectionKeys'
+
 const props = defineProps<{
   labelMode?: boolean
 }>()
@@ -6,6 +10,14 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const isOpen = ref(false)
+const activePanel = ref<StatConfigPanelId>('root')
+
+provide(statConfigPanelKey, activePanel)
+
+function onClose() {
+  isOpen.value = false
+  activePanel.value = 'root'
+}
 </script>
 
 <template>
@@ -14,7 +26,7 @@ const isOpen = ref(false)
     :isOpen
     isShowCloseBtn
     @openModal="isOpen = true"
-    @closeModal="isOpen = false"
+    @closeModal="onClose"
   >
     <template #trigger>
       <UiHeaderLink
@@ -36,7 +48,7 @@ const isOpen = ref(false)
 
     <template #content="{ close }">
       <div
-        class="grid gap-4 overflow-y-auto px-1 py-3 md:px-3 md:!pb-2"
+        class="grid gap-4 overflow-y-auto"
         style="max-height: var(--reka-popper-available-height, 80dvh)"
       >
         <BottomSheetClose @click="close" />

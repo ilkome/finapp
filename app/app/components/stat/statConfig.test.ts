@@ -14,7 +14,6 @@ const defaultConfig: MiniItemConfig = {
     isShow: true,
   },
   catsRound: {
-    isExpanded: false,
     isGrouped: false,
     isIconBg: true,
     isShow: true,

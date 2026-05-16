@@ -28,7 +28,6 @@ export const ConfigSchema = z.object({
     isShow: z.boolean(),
   }),
   catsRound: z.object({
-    isExpanded: z.boolean(),
     isGrouped: z.boolean(),
     isIconBg: z.boolean(),
     isShow: z.boolean(),
@@ -88,7 +87,6 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isShow: true,
     },
     catsRound: {
-      isExpanded: true,
       isGrouped: false,
       isIconBg: true,
       isShow: true,
