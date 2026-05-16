@@ -511,6 +511,9 @@ export default {
       none: 'List',
       type: 'Type',
     },
+    search: {
+      placeholder: 'Search',
+    },
     showAll: 'Show all',
     showOnly: 'Show only',
     sortTitle: 'Sort wallets',

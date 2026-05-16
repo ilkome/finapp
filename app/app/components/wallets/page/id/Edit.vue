@@ -3,7 +3,7 @@ import type { WalletId, WalletItem } from '~/components/wallets/types'
 
 import { walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { navigateAfterSave } from '~/composables/useNavigationHistory'
+import { canGoBack, navigateAfterSave } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -24,6 +24,13 @@ function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem])
     (walletForm.value as Record<string, unknown>)[key] = value
 }
 
+function onAfterSave() {
+  if (route.query.returnBack === '1' && canGoBack.value)
+    router.back()
+  else
+    navigateAfterSave(router, `/wallets/${walletId.value}`)
+}
+
 useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}` })
 </script>
 
@@ -42,7 +49,7 @@ useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form
     <WalletsForm
       :walletId
       :walletForm
-      @afterSave="() => navigateAfterSave(router, `/wallets/${walletId}`)"
+      @afterSave="onAfterSave"
       @update="updateField"
     />
   </UiPage>

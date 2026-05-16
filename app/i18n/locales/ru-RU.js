@@ -511,6 +511,9 @@ export default {
       none: 'Список',
       type: 'Тип',
     },
+    search: {
+      placeholder: 'Поиск',
+    },
     showAll: 'Показать все',
     showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
