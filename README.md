@@ -116,6 +116,16 @@ pnpm --filter @finapp/app exec convex env set OPEN_EXCHANGE_RATES_KEY your_app_i
 
 `BETTER_AUTH_SECRET` is required. Without it, auth endpoints, including CORS preflight requests, will fail.
 
+### Environment files
+
+The app workspace uses several `.env` files (all gitignored except `.env.example`):
+
+| File | Purpose |
+| --- | --- |
+| `app/.env` | Dev deployment values, read by Nuxt |
+| `app/.env.local` | Auto-created by `convex dev`, used by the Convex CLI |
+| `app/.env.prod` | Prod deployment values, used by `pnpm dev:prod` |
+
 ## Development
 
 Run the Convex backend and the Nuxt app in separate terminals:
