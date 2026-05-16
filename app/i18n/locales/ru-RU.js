@@ -58,6 +58,12 @@ export default {
   },
 
   categories: {
+    actions: {
+      addToFavorites: 'Добавить в избранное',
+      addToRecent: 'Показывать в недавних',
+      removeFromFavorites: 'Убрать из избранного',
+      removeFromRecent: 'Не показывать в недавних',
+    },
     allTitle: 'Все',
     createNewTitle: 'Добавление категории',
     errors: {
@@ -118,7 +124,7 @@ export default {
     recent: 'Недавние',
     recentCategories: 'Недавние категории',
     search: {
-      placeholder: 'Поиск категорий...',
+      placeholder: 'Поиск',
     },
     title: 'Категории',
   },

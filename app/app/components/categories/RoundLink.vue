@@ -5,6 +5,7 @@ import type { CategoryId } from '~/components/categories/types'
 const props = defineProps<{
   categoryId: CategoryId
   contextMenuItems?: ContextMenuItem[][]
+  isActive?: boolean
   to?: string
 }>()
 
@@ -20,7 +21,7 @@ const emit = defineEmits<{
       class="text-inherit no-underline"
       @click="emit('click')"
     >
-      <CategoriesRoundPill :categoryId="props.categoryId" />
+      <CategoriesRoundPill :categoryId="props.categoryId" :isActive="props.isActive" />
     </NuxtLink>
   </UContextMenu>
 

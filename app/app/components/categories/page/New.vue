@@ -2,6 +2,7 @@
 import type { CategoryItem } from '~/components/categories/types'
 
 import { categoryFormSchema } from '~/components/categories/types'
+import { canGoBack } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -13,6 +14,14 @@ const isOnboarding = computed(() => 'onboarding' in route.query)
 useHead({
   title: `${t('base.add')}: ${categoryForm.value.name ? categoryForm.value.name : t('categories.form.name.label')}`,
 })
+
+function onAfterSave(id: string) {
+  if (route.query.returnBack === '1' && canGoBack.value) {
+    router.back()
+    return
+  }
+  router.replace(isOnboarding.value ? '/dashboard' : `/categories/${id}`)
+}
 </script>
 
 <template>
@@ -37,7 +46,7 @@ useHead({
     <CategoriesForm
       :categoryForm="categoryForm"
       @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
-      @afterSave="(id: string) => router.replace(isOnboarding ? '/dashboard' : `/categories/${id}`)"
+      @afterSave="onAfterSave"
     />
   </UiPage>
 </template>

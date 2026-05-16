@@ -36,10 +36,10 @@ const isShow = ref(false)
     </template>
 
     <template #custom="{ close }">
-      <CategoriesCommandPalette
+      <CategoriesSelectorModal
         :hide="close"
         :activeItemId="props.categoryId"
-        class="min-w-80 px-3"
+        class="min-w-80"
         @selected="(id: CategoryId) => { emit('selected', id); close() }"
       />
     </template>

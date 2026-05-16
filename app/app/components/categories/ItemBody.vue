@@ -9,6 +9,7 @@ const props = defineProps<{
   category: CategoryItem
   categoryId: CategoryId
   class?: string
+  hideLeftMenuButton?: boolean
   insideClasses?: string
   isExpanded?: boolean
   isShowChevron?: boolean
@@ -92,7 +93,7 @@ function onRowClick(e: Event) {
     </div>
 
     <UDropdownMenu
-      v-if="props.leftMenuItems"
+      v-if="props.leftMenuItems && !props.hideLeftMenuButton"
       :items="props.leftMenuItems"
       :content="{ align: 'start', side: 'bottom' }"
     >

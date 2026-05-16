@@ -58,6 +58,12 @@ export default {
   },
 
   categories: {
+    actions: {
+      addToFavorites: 'Add to favorites',
+      addToRecent: 'Show in recent',
+      removeFromFavorites: 'Remove from favorites',
+      removeFromRecent: 'Hide from recent',
+    },
     allTitle: 'All',
     createNewTitle: 'New category',
     errors: {
@@ -118,7 +124,7 @@ export default {
     recent: 'Recent',
     recentCategories: 'Recent categories',
     search: {
-      placeholder: 'Search categories...',
+      placeholder: 'Search',
     },
     title: 'Categories',
   },
