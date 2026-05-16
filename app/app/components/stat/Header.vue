@@ -75,7 +75,6 @@ function onClickWallet(walletId: WalletId) {
         <StatConfigModal>
           <StatConfigView
             :isShowWallets="!!configWallets"
-            :preCategoriesIds="props.preCategoriesIds"
             :selectedTrnsIds="categoryConfigTrnsIds"
           />
         </StatConfigModal>

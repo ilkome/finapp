@@ -1,90 +1,97 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
+import { useElementSize } from '@vueuse/core'
+import { AnimatePresence, Motion } from 'motion-v'
 
-import type { CategoryId } from '~/components/categories/types'
-import type { GroupingMode } from '~/components/stat/useStatConfig'
+import type { StatConfigPanelId } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useStatCategories } from '~/components/stat/categories/useStatCategories'
-import { useStatChart } from '~/components/stat/chart/useStatChart'
-import { statConfigKey } from '~/components/stat/injectionKeys'
-import { chartViewOptions, groupingModes, resolveGrouped } from '~/components/stat/useStatConfig'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
 
-const props = withDefaults(defineProps<{
-  filteredCategoriesIds?: CategoryId[]
+const props = defineProps<{
   isShowWallets?: boolean
-  preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
-}>(), {
-  filteredCategoriesIds: () => [],
-})
+}>()
 
-const { t } = useI18n()
-const visibleCategoriesLimit = 12
+const activePanel = inject(statConfigPanelKey, ref<StatConfigPanelId>('root'))
 
-const { computeCategoriesWithData } = useStatCategories()
-const categoriesStore = useCategoriesStore()
+const { locale, t } = useI18n()
 const statConfig = inject(statConfigKey)!
-const walletsStore = useWalletsStore()
-const isExpandedChartCard = useStorage('stat-config-expanded-chart', false)
-const isExpandedRoundCard = useStorage('stat-config-expanded-round', false)
-const isExpandedListCard = useStorage('stat-config-expanded-list', false)
-const isExpandedWalletsCard = useStorage('stat-config-expanded-wallets', false)
-const isExpandedStatAverageCard = useStorage('stat-config-expanded-stat-average', false)
-const isExpandedGroupingCard = useStorage('stat-config-expanded-grouping', false)
 
-const { chartTypeOptions } = useStatChart()
 const isChartShow = computed(() => statConfig.config.value.isChartShow)
-
-const grouping = computed(() => statConfig.config.value.grouping)
-const isAutoGrouping = computed(() => grouping.value === 'auto')
-
-const isExpanded = computed(() => statConfig.config.value.catsRound.isExpanded)
-const isChartGrouped = computed(() => resolveGrouped(statConfig.config.value.chart.isGrouped, grouping.value))
-const isCatsRoundGrouped = computed(() => resolveGrouped(statConfig.config.value.catsRound.isGrouped, grouping.value))
-const isShowFavorites = computed(() => statConfig.config.value.catsRound.isShowFavorites)
-const isShowRecent = computed(() => statConfig.config.value.catsRound.isShowRecent)
-
 const isCatsRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
 const isCatsListShow = computed(() => statConfig.config.value.catsList.isShow)
 
-const mergedPreCategoriesIds = computed(() => {
-  const ids: CategoryId[] = []
-  const seen = new Set<CategoryId>()
+const hasTrnsConfig = computed(() => props.selectedTrnsIds !== undefined)
 
-  function addId(id: CategoryId) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-    }
-  }
-
-  if (props.preCategoriesIds) {
-    for (const id of props.preCategoriesIds)
-      addId(id)
-  }
-
-  if (isShowFavorites.value) {
-    for (const id of categoriesStore.favoriteCategoriesIds)
-      addId(id)
-  }
-
-  if (isShowRecent.value) {
-    for (const id of categoriesStore.recentCategoriesIds)
-      addId(id)
-  }
-
-  for (const id of props.filteredCategoriesIds)
-    addId(id)
-
-  return ids
+const availablePanels = computed<StatConfigPanelId[]>(() => {
+  const panels: StatConfigPanelId[] = ['root', 'statAverage']
+  if (props.isShowWallets)
+    panels.push('wallets')
+  if (hasTrnsConfig.value)
+    panels.push('grouping', 'chart', 'catsRound', 'catsList', 'vertical')
+  return panels
 })
 
-const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isCatsRoundGrouped.value, mergedPreCategoriesIds.value))
+watch(availablePanels, (panels) => {
+  if (!panels.includes(activePanel.value))
+    activePanel.value = 'root'
+}, { immediate: true })
 
-function toggleMaster(key: 'catsList' | 'catsRound' | 'trns' | 'vertical', current: boolean) {
+const panelTitle = computed<string>(() => {
+  switch (activePanel.value) {
+    case 'wallets':
+      return t('stat.config.wallets.title')
+    case 'statAverage':
+      return t('stat.config.statAverage.title')
+    case 'grouping':
+      return t('stat.config.grouping.label')
+    case 'chart':
+      return t('stat.config.chartShow.title')
+    case 'catsRound':
+      return t('stat.config.categories.rounds.title')
+    case 'catsList':
+      return t('stat.config.categories.list.title')
+    case 'vertical':
+      return t('stat.config.categories.vertical.title')
+    default:
+      return ''
+  }
+})
+
+const panelDescription = computed<string>(() => {
+  switch (activePanel.value) {
+    case 'wallets':
+      return t('stat.config.wallets.description')
+    case 'statAverage':
+      return t('stat.config.statAverage.description')
+    case 'grouping':
+      return t('stat.config.grouping.description')
+    case 'catsRound':
+      return t('stat.config.categories.rounds.description')
+    case 'catsList':
+      return t('stat.config.categories.list.description')
+    default:
+      return ''
+  }
+})
+
+const direction = ref<1 | -1>(1)
+
+function open(panel: StatConfigPanelId) {
+  if (panel === activePanel.value)
+    return
+  direction.value = 1
+  activePanel.value = panel
+}
+
+function back() {
+  if (activePanel.value === 'root')
+    return
+  direction.value = -1
+  activePanel.value = 'root'
+}
+
+function toggleSection<K extends 'catsList' | 'catsRound' | 'statAverage' | 'vertical' | 'wallets'>(key: K, current: boolean) {
   statConfig.updateConfig(key, { isShow: !current } as never)
 }
 
@@ -92,334 +99,247 @@ function toggleChartShow() {
   statConfig.updateConfig('isChartShow', !isChartShow.value)
 }
 
-function toggleGroupedWithReset(key: 'catsList' | 'catsRound' | 'chart', currentEffective: boolean) {
-  if (!isAutoGrouping.value) {
-    statConfig.updateConfig('grouping', 'auto')
-    return
+const panelToggleValue = computed<boolean | undefined>(() => {
+  switch (activePanel.value) {
+    case 'wallets':
+      return statConfig.config.value.wallets.isShow
+    case 'statAverage':
+      return statConfig.config.value.statAverage.isShow
+    case 'chart':
+      return isChartShow.value
+    case 'catsRound':
+      return isCatsRoundShow.value
+    case 'catsList':
+      return isCatsListShow.value
+    case 'vertical':
+      return statConfig.config.value.vertical.isShow
+    default:
+      return undefined
   }
-  statConfig.updateConfig(key, { isGrouped: !currentEffective } as never)
+})
+
+function togglePanelSection() {
+  switch (activePanel.value) {
+    case 'wallets':
+      toggleSection('wallets', statConfig.config.value.wallets.isShow)
+      break
+    case 'statAverage':
+      toggleSection('statAverage', statConfig.config.value.statAverage.isShow)
+      break
+    case 'chart':
+      toggleChartShow()
+      break
+    case 'catsRound':
+      toggleSection('catsRound', isCatsRoundShow.value)
+      break
+    case 'catsList':
+      toggleSection('catsList', isCatsListShow.value)
+      break
+    case 'vertical':
+      toggleSection('vertical', statConfig.config.value.vertical.isShow)
+      break
+  }
 }
 
-function setGrouping(mode: GroupingMode) {
-  statConfig.updateConfig('grouping', mode)
+const rootRef = ref<HTMLElement>()
+const { height: rootHeight } = useElementSize(rootRef)
+
+const FALLBACK_MIN_HEIGHT = 360
+const lastRootHeight = ref(FALLBACK_MIN_HEIGHT)
+
+watchEffect(() => {
+  if (rootHeight.value > 0)
+    lastRootHeight.value = rootHeight.value
+})
+
+watch(
+  [locale, () => props.isShowWallets, () => props.selectedTrnsIds],
+  () => {
+    lastRootHeight.value = FALLBACK_MIN_HEIGHT
+  },
+)
+
+const stableMinHeight = computed(() => Math.max(lastRootHeight.value, FALLBACK_MIN_HEIGHT))
+
+const SLIDE_DISTANCE = 8
+const SLIDE_DURATION = 0.12
+const SLIDE_EASING = [0.4, 0, 0.2, 1] as const
+
+const panelVariants = {
+  center: { opacity: 1, x: 0 },
+  enter: (dir: 1 | -1) => ({ opacity: 0, x: dir * SLIDE_DISTANCE }),
+  exit: (dir: 1 | -1) => ({ opacity: 0, x: dir * -SLIDE_DISTANCE }),
+}
+
+const panelTransition = {
+  duration: SLIDE_DURATION,
+  ease: SLIDE_EASING,
+}
+
+type RootRow = {
+  isShow?: boolean
+  key: string
+  panel?: Exclude<StatConfigPanelId, 'root'>
+  subtitle?: string
+  title: string
+  toggle?: () => void
+}
+
+const rows = computed<RootRow[]>(() => {
+  const list: RootRow[] = []
+
+  if (props.isShowWallets) {
+    list.push({
+      isShow: statConfig.config.value.wallets.isShow,
+      key: 'wallets',
+      panel: 'wallets',
+      subtitle: t('stat.config.wallets.subtitle', { count: statConfig.config.value.wallets.count }),
+      title: t('stat.config.wallets.title'),
+      toggle: () => toggleSection('wallets', statConfig.config.value.wallets.isShow),
+    })
+  }
+
+  list.push({
+    isShow: statConfig.config.value.statAverage.isShow,
+    key: 'statAverage',
+    panel: 'statAverage',
+    subtitle: t('stat.config.statAverage.subtitle', { count: statConfig.config.value.statAverage.count }),
+    title: t('stat.config.statAverage.title'),
+    toggle: () => toggleSection('statAverage', statConfig.config.value.statAverage.isShow),
+  })
+
+  if (hasTrnsConfig.value) {
+    list.push({
+      isShow: isChartShow.value,
+      key: 'chart',
+      panel: 'chart',
+      title: t('stat.config.chartShow.title'),
+      toggle: toggleChartShow,
+    })
+    list.push({
+      key: 'grouping',
+      panel: 'grouping',
+      subtitle: t(`stat.config.grouping.${statConfig.config.value.grouping}`),
+      title: t('stat.config.grouping.label'),
+    })
+    list.push({
+      isShow: isCatsRoundShow.value,
+      key: 'catsRound',
+      panel: 'catsRound',
+      title: t('stat.config.categories.rounds.title'),
+      toggle: () => toggleSection('catsRound', isCatsRoundShow.value),
+    })
+    list.push({
+      isShow: isCatsListShow.value,
+      key: 'catsList',
+      panel: 'catsList',
+      title: t('stat.config.categories.list.title'),
+      toggle: () => toggleSection('catsList', isCatsListShow.value),
+    })
+    list.push({
+      isShow: statConfig.config.value.vertical.isShow,
+      key: 'vertical',
+      panel: 'vertical',
+      title: t('stat.config.categories.vertical.title'),
+      toggle: () => toggleSection('vertical', statConfig.config.value.vertical.isShow),
+    })
+    list.push({
+      isShow: statConfig.config.value.trns.isShow,
+      key: 'trns',
+      title: t('trns.title'),
+      toggle: () => statConfig.updateConfig('trns', { isShow: !statConfig.config.value.trns.isShow }),
+    })
+  }
+
+  return list
+})
+
+function onRowActivate(row: RootRow) {
+  if (row.panel)
+    open(row.panel)
+  else if (row.toggle)
+    row.toggle()
 }
 </script>
 
 <template>
-  <div class="grid gap-4">
-    <!-- Wallets -->
-    <div v-if="props.isShowWallets" class="border-default overflow-hidden rounded-xl border">
-      <div class="hover:bg-elevated/50 flex items-stretch" :class="{ 'pb-px': isExpandedWalletsCard }">
-        <div
-          class="flex grow cursor-pointer rounded-tr-sm rounded-br-sm px-3 py-2"
-          @click="isExpandedWalletsCard = !isExpandedWalletsCard"
-        >
-          <div class="flex items-center gap-1">
-            <div class="text-toned text-sm leading-none font-medium tracking-wide">
-              {{ t('stat.config.wallets.title') }}
-            </div>
-            <Icon
-              :name="isExpandedWalletsCard ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-              size="18"
-              class="text-muted mt-px"
-            />
-          </div>
-        </div>
-        <div class="mx-1 my-1 h-auto w-px bg-[var(--ui-border)]" />
-        <div class="hover:bg-muted/30 flex h-auto shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3" @click.stop="statConfig.updateConfig('wallets', { isShow: !statConfig.config.value.wallets.isShow })">
-          <FormSwitch :value="statConfig.config.value.wallets.isShow" />
-        </div>
-      </div>
-      <div v-if="isExpandedWalletsCard" class="p-2 transition-opacity" :class="{ 'pointer-events-none opacity-50': !statConfig.config.value.wallets.isShow }">
-        <UiNumberStepper
-          :modelValue="statConfig.config.value.wallets.count"
-          :min="1"
-          :max="walletsStore.sortedIds.length"
-          @update:modelValue="value => statConfig.updateConfig('wallets', { count: value })"
-        />
-      </div>
-    </div>
-
-    <!-- Statistics -->
-    <div class="border-default overflow-hidden rounded-xl border">
-      <div class="hover:bg-elevated/50 flex items-stretch" :class="{ 'pb-px': isExpandedStatAverageCard }">
-        <div
-          class="flex grow cursor-pointer rounded-tr-sm rounded-br-sm px-3 py-2"
-          @click="isExpandedStatAverageCard = !isExpandedStatAverageCard"
-        >
-          <div class="flex items-center gap-1">
-            <div class="text-toned text-sm leading-none font-medium tracking-wide">
-              {{ t('statistics.title') }}
-            </div>
-            <Icon
-              :name="isExpandedStatAverageCard ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-              size="18"
-              class="text-muted mt-px"
-            />
-          </div>
-        </div>
-        <div class="mx-1 my-1 h-auto w-px bg-[var(--ui-border)]" />
-        <div class="hover:bg-muted/30 flex h-auto shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3" @click.stop="statConfig.updateConfig('statAverage', { isShow: !statConfig.config.value.statAverage.isShow })">
-          <FormSwitch :value="statConfig.config.value.statAverage.isShow" />
-        </div>
-      </div>
-      <div v-if="isExpandedStatAverageCard" class="p-2 transition-opacity" :class="{ 'pointer-events-none opacity-50': !statConfig.config.value.statAverage.isShow }">
-        <UiNumberStepper
-          :modelValue="statConfig.config.value.statAverage.count"
-          :min="1"
-          @update:modelValue="value => statConfig.updateConfig('statAverage', { count: value })"
-        />
-      </div>
-    </div>
-
-    <div
-      v-if="props.selectedTrnsIds"
-      class="grid gap-2"
+  <div
+    class="statConfigPanel"
+    :style="{ minHeight: `${stableMinHeight}px` }"
+  >
+    <AnimatePresence
+      :custom="direction"
+      mode="wait"
+      :initial="false"
     >
-      <!-- Global grouping -->
-      <div class="border-default overflow-hidden rounded-xl border">
-        <div class="hover:bg-elevated/50 flex items-stretch">
-          <div
-            class="flex grow cursor-pointer rounded-tr-sm rounded-br-sm px-3 py-2"
-            @click="isExpandedGroupingCard = !isExpandedGroupingCard"
+      <Motion
+        :key="activePanel"
+        :custom="direction"
+        :variants="panelVariants"
+        initial="enter"
+        animate="center"
+        exit="exit"
+        :transition="panelTransition"
+      >
+        <div
+          v-if="activePanel === 'root'"
+          ref="rootRef"
+          class="grid"
+        >
+          <template
+            v-for="(row, i) in rows"
+            :key="row.key"
           >
-            <div class="flex items-center gap-1">
-              <div class="text-toned text-sm leading-none font-medium tracking-wide">
-                {{ t('stat.config.grouping.label') }}
-              </div>
-              <Icon
-                :name="isExpandedGroupingCard ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-                size="18"
-                class="text-muted mt-px"
-              />
-            </div>
-          </div>
-        </div>
-        <div v-if="isExpandedGroupingCard" class="p-2 transition-opacity">
-          <UiTabsBar>
-            <UiTabsItemPill
-              v-for="mode in groupingModes"
-              :key="mode"
-              variant="outline"
-              :isActive="grouping === mode"
-              class="grow"
-              @click="setGrouping(mode)"
-            >
-              {{ t(`stat.config.grouping.${mode}`) }}
-            </UiTabsItemPill>
-          </UiTabsBar>
-        </div>
-      </div>
-
-      <div class="grid gap-3">
-        <!-- Chart -->
-        <div class="border-default overflow-hidden rounded-xl border">
-          <div class="hover:bg-elevated/50 flex items-stretch" :class="{ 'pb-px': isExpandedChartCard }">
             <div
-              class="flex grow cursor-pointer rounded-tr-sm rounded-br-sm px-3 py-2"
-              @click="isExpandedChartCard = !isExpandedChartCard"
-            >
-              <div class="flex items-center gap-1">
-                <div class="text-toned text-sm leading-none font-medium tracking-wide">
-                  {{ t('stat.config.chartShow.title') }}
-                </div>
-                <Icon
-                  :name="isExpandedChartCard ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-                  size="18"
-                  class="text-muted mt-px"
-                />
-              </div>
-            </div>
-
-            <div class="mx-1 my-1 h-auto w-px bg-[var(--ui-border)]" />
-            <div
-              class="hover:bg-muted/30 flex h-auto shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3"
-              @click.stop="toggleChartShow"
-            >
-              <FormSwitch :value="isChartShow" />
-            </div>
-          </div>
-
-          <div
-            v-if="isExpandedChartCard"
-            class="p-2 transition-opacity"
-            :class="{ 'pointer-events-none opacity-50': !isChartShow }"
-          >
-            <StatConfigSwitch
-              configKey="date"
-              field="isShowQuick"
-              :title="t('stat.config.date.quick.label')"
+              v-if="i > 0"
+              aria-hidden="true"
+              class="bg-elevated/50 mx-2 h-px"
             />
-            <StatConfigSwitch
-              configKey="chart"
-              field="isShowAverage"
-              :title="t('stat.config.chart.average.label')"
+            <StatConfigRow
+              :hasPanel="!!row.panel"
+              :hasToggle="!!row.toggle"
+              :isShow="row.isShow"
+              :subtitle="row.subtitle"
+              :title="row.title"
+              @activate="onRowActivate(row)"
+              @toggle="row.toggle?.()"
             />
-            <UiSwitchItem
-              :checkboxValue="statConfig.config.value.chart.mode === 'categories'"
-              :title="t('stat.config.chart.byCategories')"
-              @click="statConfig.updateConfig('chart', { mode: statConfig.config.value.chart.mode === 'categories' ? 'aggregated' : 'categories' })"
-            />
-            <UiSwitchItem
-              v-if="statConfig.config.value.chart.mode === 'categories'"
-              :checkboxValue="isChartGrouped"
-              :title="t('stat.config.chart.groupByParent')"
-              @click="toggleGroupedWithReset('chart', isChartGrouped)"
-            />
-
-            <!-- Chart: view (md+ only) -->
-            <div class="grid gap-4 pt-4">
-              <div class="hidden gap-2 md:grid">
-                <UiTitleSection size="sm" class="px-1">
-                  {{ t('stat.config.chartView.label') }}
-                </UiTitleSection>
-                <UiTabsBar>
-                  <UiTabsItemPill
-                    v-for="view in chartViewOptions"
-                    :key="view"
-                    variant="outline"
-                    :isActive="statConfig.config.value.chartView === view"
-                    class="grow"
-                    @click="statConfig.updateConfig('chartView', view)"
-                  >
-                    {{ t(`stat.config.chartView.${view}`) }}
-                  </UiTabsItemPill>
-                </UiTabsBar>
-              </div>
-
-              <!-- Chart: type -->
-              <div class="grid gap-2">
-                <UiTitleSection size="sm" class="px-1">
-                  {{ t('stat.config.chart.type.label') }}
-                </UiTitleSection>
-                <UiTabsBar>
-                  <UiTabsItemPill
-                    v-for="item in chartTypeOptions"
-                    :key="item.value"
-                    variant="outline"
-                    :isActive="statConfig.config.value.chartType === item.value"
-                    class="flex grow gap-1"
-                    @click="statConfig.updateConfig('chartType', item.value)"
-                  >
-                    <Icon :name="item.icon" :size="16" />
-                    {{ item.label }}
-                  </UiTabsItemPill>
-                </UiTabsBar>
-              </div>
-            </div>
-          </div>
+          </template>
         </div>
 
-        <!-- Round categories -->
-        <div class="border-default overflow-hidden rounded-xl border">
-          <div class="hover:bg-elevated/50 flex items-stretch" :class="{ 'pb-px': isExpandedRoundCard }">
-            <div
-              class="flex grow cursor-pointer rounded-tr-sm rounded-br-sm px-3 py-2"
-              @click="isExpandedRoundCard = !isExpandedRoundCard"
-            >
-              <div class="flex items-center gap-1">
-                <div class="text-toned text-sm leading-none font-medium tracking-wide">
-                  {{ t('stat.config.categories.rounds.title') }}
-                </div>
-                <Icon
-                  :name="isExpandedRoundCard ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-                  size="18"
-                  class="text-muted mt-px"
-                />
-              </div>
-            </div>
-            <div
-              class="mx-1 my-1 h-auto w-px bg-[var(--ui-border)]"
-            />
-            <div
-              class="hover:bg-muted/30 flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3"
-              @click.stop="toggleMaster('catsRound', isCatsRoundShow)"
-            >
-              <FormSwitch :value="isCatsRoundShow" />
-            </div>
-          </div>
-
-          <div
-            v-if="isExpandedRoundCard"
-            class="grid gap-0.5 p-2 transition-opacity"
-            :class="{ 'pointer-events-none opacity-50': !isCatsRoundShow }"
-          >
-            <UiSwitchItem
-              :checkboxValue="isCatsRoundGrouped"
-              :title="t('stat.config.categories.rounds.groupByParent')"
-              @click="toggleGroupedWithReset('catsRound', isCatsRoundGrouped)"
-            />
-            <UiSwitchItem
-              :checkboxValue="isShowFavorites"
-              :title="t('stat.config.categories.rounds.showFavorites')"
-              @click="statConfig.updateConfig('catsRound', { isShowFavorites: !isShowFavorites })"
-            />
-            <UiSwitchItem
-              :checkboxValue="isShowRecent"
-              :title="t('stat.config.categories.rounds.showRecent')"
-              @click="statConfig.updateConfig('catsRound', { isShowRecent: !isShowRecent })"
-            />
-            <StatConfigSwitch
-              configKey="catsRound"
-              field="isIconBg"
-              :title="t('stat.catButtons.isRoundIcon')"
-            />
-            <UiSwitchItem
-              v-if="roundCategories.length > visibleCategoriesLimit"
-              :checkboxValue="isExpanded"
-              :title="t('base.toggleExpand')"
-              @click="statConfig.updateConfig('catsRound', { isExpanded: !isExpanded })"
-            />
-          </div>
+        <div v-else>
+          <StatConfigPanelHeader
+            :title="panelTitle"
+            @back="back"
+          />
+          <StatConfigPanelToggle
+            :description="panelDescription"
+            :value="panelToggleValue"
+            @toggle="togglePanelSection"
+          />
+          <StatConfigPanelsWallets
+            v-if="activePanel === 'wallets'"
+          />
+          <StatConfigPanelsStatAverage
+            v-else-if="activePanel === 'statAverage'"
+          />
+          <StatConfigPanelsGrouping
+            v-else-if="activePanel === 'grouping'"
+          />
+          <StatConfigPanelsChart
+            v-else-if="activePanel === 'chart'"
+          />
+          <StatConfigPanelsCatsRound
+            v-else-if="activePanel === 'catsRound'"
+          />
+          <StatConfigPanelsCatsList
+            v-else-if="activePanel === 'catsList'"
+          />
+          <StatConfigPanelsVertical
+            v-else-if="activePanel === 'vertical'"
+          />
         </div>
-
-        <!-- List -->
-        <div class="border-default overflow-hidden rounded-xl border">
-          <div class="hover:bg-elevated/50 flex items-stretch" :class="{ 'pb-px': isExpandedListCard }">
-            <div
-              class="flex grow cursor-pointer rounded-tr-sm rounded-br-sm px-3 py-2"
-              @click="isExpandedListCard = !isExpandedListCard"
-            >
-              <div class="flex items-center gap-1">
-                <div class="text-toned text-sm leading-none font-medium tracking-wide">
-                  {{ t('stat.config.categories.list.title') }}
-                </div>
-                <Icon
-                  :name="isExpandedListCard ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-                  size="18"
-                  class="text-muted mt-px"
-                />
-              </div>
-            </div>
-            <div
-              class="mx-1 my-1 h-auto w-px bg-[var(--ui-border)]"
-            />
-            <div
-              class="hover:bg-muted/30 flex shrink-0 cursor-pointer items-center rounded-tl-sm rounded-bl-sm px-3"
-              @click.stop="toggleMaster('catsList', isCatsListShow)"
-            >
-              <FormSwitch :value="isCatsListShow" @click="toggleMaster('catsList', isCatsListShow)" />
-            </div>
-          </div>
-
-          <div
-            v-if="isExpandedListCard"
-            class="grid gap-0.5 p-2 transition-opacity"
-            :class="{ 'pointer-events-none opacity-50': !isCatsListShow }"
-          >
-            <StatConfigSwitch configKey="catsList" field="isLines" :title="t('stat.catButtons.isLines')" />
-            <StatConfigSwitch configKey="catsList" field="isRoundIcon" :title="t('stat.catButtons.isRoundIcon')" />
-          </div>
-        </div>
-      </div>
-
-      <div class="grid gap-0.5">
-        <!-- Vertical -->
-        <StatConfigSwitch configKey="vertical" field="isShow" :title="t('stat.config.categories.vertical.title')" />
-
-        <!-- Transactions -->
-        <StatConfigSwitch configKey="trns" field="isShow" :title="t('trns.title')" />
-      </div>
-    </div>
+      </Motion>
+    </AnimatePresence>
   </div>
 </template>

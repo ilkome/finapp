@@ -10,6 +10,16 @@ export type SeriesSlug = 'income' | 'expense'
 export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
 export type MoneyTypeNumber = 0 | 1 | 2
 
+export type StatConfigPanelId
+  = | 'root'
+    | 'wallets'
+    | 'statAverage'
+    | 'grouping'
+    | 'chart'
+    | 'catsRound'
+    | 'catsList'
+    | 'vertical'
+
 type CategoryWithDataBase = {
   id: CategoryId
   name: CategoryItem['name']
