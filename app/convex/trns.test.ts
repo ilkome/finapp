@@ -1,3 +1,5 @@
+import type { TestConvex } from 'convex-test'
+
 import { convexTest } from 'convex-test'
 import { describe, expect, it } from 'vitest'
 
@@ -21,13 +23,13 @@ const validCategory = {
   showInQuickSelector: true,
 }
 
-async function setupWalletAndCategory(t: ReturnType<typeof convexTest>) {
+async function setupWalletAndCategory(t: TestConvex<typeof schema>) {
   const walletId = await t.mutation(api.wallets.create, validWallet)
   const categoryId = await t.mutation(api.categories.create, validCategory)
   return { categoryId, walletId }
 }
 
-async function setupTwoWallets(t: ReturnType<typeof convexTest>) {
+async function setupTwoWallets(t: TestConvex<typeof schema>) {
   const w1 = await t.mutation(api.wallets.create, { ...validWallet, order: 0 })
   const w2 = await t.mutation(api.wallets.create, { ...validWallet, name: 'Card', order: 1 })
   return { w1, w2 }
