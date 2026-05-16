@@ -33,7 +33,7 @@
     "test:e2e:real": "playwright test --project=real"
   },
   "dependencies": {
-    "@convex-dev/better-auth": "^0.11.3",
+    "@convex-dev/better-auth": "^0.12.2",
     "@formkit/drag-and-drop": "^0.5.3",
     "@iconify-json/mdi": "^1.2.3",
     "@internationalized/date": "^3.12.0",
@@ -44,6 +44,7 @@
     "echarts": "^6.0.0",
     "fuse.js": "^7.1.0",
     "localforage": "^1.10.0",
+    "motion-v": "^2.2.1",
     "pinia": "^3.0.4",
     "reka-ui": "^2.9.6",
     "swiper": "^12.1.3",
