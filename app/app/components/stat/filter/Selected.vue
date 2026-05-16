@@ -11,11 +11,11 @@ const props = defineProps<{
 const filter = inject(filterKey)!
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
-const itemClasses = 'bg-elevated/30 rounded-sm'
+const itemClasses = 'bg-elevated/30 rounded-sm shrink-0'
 </script>
 
 <template>
-  <div class="flex gap-2">
+  <div class="flex shrink-0 gap-2">
     <template v-if="props.isShowWallets">
       <WalletsItem
         v-for="walletId in filter?.walletsIds?.value"
