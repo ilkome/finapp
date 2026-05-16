@@ -27,7 +27,7 @@ const emit = defineEmits<{
 
     <div
       v-if="$slots.default"
-      class="scroller overflow-y-auto py-px"
+      class="scroller overflow-y-auto px-2 py-px"
     >
       <slot />
     </div>
