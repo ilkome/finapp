@@ -2,6 +2,7 @@
 import type { WalletItem } from '~/components/wallets/types'
 
 import { walletItemSchema } from '~/components/wallets/types'
+import { canGoBack } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -12,6 +13,14 @@ const isOnboarding = computed(() => 'onboarding' in route.query)
 
 function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
   (walletForm.value as Record<string, unknown>)[key] = value
+}
+
+function onAfterSave() {
+  if (route.query.returnBack === '1' && canGoBack.value) {
+    router.back()
+    return
+  }
+  router.replace('/dashboard')
 }
 
 useHead({
@@ -40,7 +49,7 @@ useHead({
 
     <WalletsForm
       :walletForm="walletForm"
-      @afterSave="() => router.replace('/dashboard')"
+      @afterSave="onAfterSave"
       @update="updateField"
     />
   </UiPage>

@@ -50,7 +50,8 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         :activeItemId="props.walletId"
         :disabledIds="props.disabledWalletIds"
         :filterAtTop="isLaptop"
-        class="min-w-80 px-3"
+        withHeader
+        class="min-w-80 px-2"
         @selected="(id: WalletId) => emit('selected', id)"
       />
     </template>
