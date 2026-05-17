@@ -1,6 +1,10 @@
 # Documentation
 
-Built with [Docus](https://docus.dev)
+**English** | [Русский](./README.ru.md)
+
+Built with [Docus](https://docus.dev).
+
+See also the root README ([English](../README.md) | [Русский](../README.ru.md)).
 
 ## Languages
 

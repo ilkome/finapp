@@ -4,6 +4,8 @@
 
 # Finapp — Open Source Finance App
 
+**English** | [Русский](./README.ru.md)
+
 > Your money, your control — anywhere, anytime.
 
 **Finapp** helps you easily track and manage personal finances. The repository is a pnpm monorepo with the Nuxt application and the documentation site.

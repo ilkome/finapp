@@ -1,8 +1,10 @@
 # @finapp/app
 
+**English** | [Русский](./README.ru.md)
+
 Nuxt application package for Finapp.
 
-Use the root README for installation, environment setup, and development commands:
+Use the root README ([English](../README.md) | [Русский](../README.ru.md)) for installation, environment setup, and development commands:
 
 - App dev server: `pnpm dev`
 - Convex dev backend: `pnpm dev:convex`
