@@ -7,8 +7,8 @@ const props = defineProps<{
 </script>
 
 <template>
-  <UContextMenu v-if="props.items" :items="props.items">
+  <UiContextMenuMy v-if="props.items" :items="props.items">
     <slot />
-  </UContextMenu>
+  </UiContextMenuMy>
   <slot v-else />
 </template>

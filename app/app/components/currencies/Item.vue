@@ -24,7 +24,7 @@ const contextMenuItems = computed(() => [[{
 </script>
 
 <template>
-  <UContextMenu :items="contextMenuItems">
+  <UiContextMenuMy :items="contextMenuItems">
     <UiElement
       :lineWidth="props.isBase ? 6 : 0"
       class="group"
@@ -56,5 +56,5 @@ const contextMenuItems = computed(() => [[{
         </div>
       </div>
     </UiElement>
-  </UContextMenu>
+  </UiContextMenuMy>
 </template>

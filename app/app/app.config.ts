@@ -29,11 +29,6 @@ export default defineAppConfig({
         viewport: 'scrollerBlock',
       },
     },
-    contextMenu: {
-      props: {
-        pressOpenDelay: 400,
-      },
-    },
     modal: {
       slots: {
         overlay: '!bg-overlay',

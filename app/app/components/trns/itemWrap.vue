@@ -55,14 +55,14 @@ function handleDeleteConfirm() {
 </script>
 
 <template>
-  <UContextMenu v-bind="$attrs" :items="contextMenuItems">
+  <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
     <TrnsItem
       :compact="props.compact"
       :trnItem
       :date
       @click="click"
     />
-  </UContextMenu>
+  </UiContextMenuMy>
 
   <LayoutConfirmModal
     v-if="showDeleteConfirm"

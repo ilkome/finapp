@@ -4,6 +4,7 @@ import { Pagination } from 'swiper/modules'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
+import { closeAllContextMenus } from '~/composables/useContextMenuRegistry'
 
 import 'swiper/css'
 
@@ -34,6 +35,7 @@ function init() {
 
 watch(isShow, async (v) => {
   if (v) {
+    closeAllContextMenus()
     await nextTick()
     init()
   }
