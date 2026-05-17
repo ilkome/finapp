@@ -30,10 +30,10 @@ const emit = defineEmits<{
   'update:open': [open: boolean]
 }>()
 
-const exposer = ref<{ close: () => void } | null>(null)
+const open = ref(false)
 
 function close() {
-  exposer.value?.close()
+  open.value = false
 }
 
 onMounted(() => {
@@ -42,6 +42,7 @@ onMounted(() => {
 })
 
 function onOpen(v: boolean) {
+  open.value = v
   emit('update:open', v)
   if (v) {
     closeOtherContextMenus(close)
@@ -61,11 +62,11 @@ const ui = computed(() => tv({
 
 <template>
   <ContextMenuRoot
+    :open="open"
     :modal="props.modal"
     :pressOpenDelay="props.pressOpenDelay"
     @update:open="onOpen"
   >
-    <UiContextMenuStateExposer ref="exposer" />
     <ContextMenuTrigger asChild :disabled="props.disabled">
       <slot />
     </ContextMenuTrigger>
