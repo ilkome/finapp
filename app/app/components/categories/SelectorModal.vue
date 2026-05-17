@@ -223,7 +223,7 @@ onMounted(async () => {
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">
