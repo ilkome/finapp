@@ -1,13 +1,18 @@
 import type { WalletId } from '~/components/wallets/types'
 
+import { useWalletCreditView } from '~/components/wallets/useWalletCreditView'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
 export function useWalletContextMenu(options?: {
   excludeOpen?: boolean
   onDelete?: (walletId: WalletId) => void
   onEdit?: (walletId: WalletId) => void
   returnBackOnSave?: boolean
+  withCreditView?: boolean
 }) {
   const { t } = useI18n()
   const router = useRouter()
+  const walletsStore = useWalletsStore()
 
   function getWalletContextMenuItems(walletId: WalletId) {
     const editPath = options?.returnBackOnSave
@@ -32,6 +37,18 @@ export function useWalletContextMenu(options?: {
     ]
 
     const groups: any[][] = [editGroup]
+
+    const wallet = walletsStore.itemsComputed[walletId]
+    if (options?.withCreditView && wallet?.type === 'credit' && wallet.creditLimit > 0) {
+      const { cycle, view } = useWalletCreditView(walletId)
+      groups.unshift([{
+        icon: view.value === 'debt' ? 'lucide:wallet' : 'lucide:credit-card',
+        label: view.value === 'debt'
+          ? t('wallets.creditView.showAvailable')
+          : t('wallets.creditView.showDebt'),
+        onSelect: cycle,
+      }])
+    }
 
     if (options?.onDelete) {
       groups.push([{

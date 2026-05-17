@@ -468,6 +468,10 @@ export default {
   wallets: {
     ariaSwitch: 'Поменять кошельки',
     createNewTitle: 'Добавление кошелька',
+    creditView: {
+      showAvailable: 'Показать доступный лимит',
+      showDebt: 'Показать текущий долг',
+    },
     errors: {
       deleteFailed: 'Не удалось удалить кошелек',
       orderFailed: 'Не удалось сохранить порядок кошельков',

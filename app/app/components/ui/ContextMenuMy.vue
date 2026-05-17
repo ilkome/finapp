@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   descriptionKey: 'description',
   labelKey: 'label',
-  modal: true,
+  modal: false,
   portal: true,
   pressOpenDelay: 400,
 })
@@ -43,8 +43,13 @@ onMounted(() => {
 
 function onOpen(v: boolean) {
   emit('update:open', v)
-  if (v)
+  if (v) {
     closeOtherContextMenus(close)
+    window.addEventListener('scroll', close, { capture: true, once: true, passive: true })
+  }
+  else {
+    window.removeEventListener('scroll', close, { capture: true })
+  }
 }
 
 const appConfig = useAppConfig()
