@@ -174,7 +174,8 @@ pnpm dev:all
 
 ## Documentation
 
-User guides, development notes, and technical reference live in [`docs/content`](docs/content). Start the docs site with `pnpm docs:dev`.
+User guides, development notes, and technical reference live in [`docs/content`](docs/content). 
+Start the docs site with `pnpm docs:dev`.
 
 ## Previous Version
 
