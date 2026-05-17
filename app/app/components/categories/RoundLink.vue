@@ -15,7 +15,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
+  <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <NuxtLink
       :to="props.to"
       class="text-inherit no-underline"
@@ -23,7 +23,7 @@ const emit = defineEmits<{
     >
       <CategoriesRoundPill :categoryId="props.categoryId" :isActive="props.isActive" />
     </NuxtLink>
-  </UContextMenu>
+  </UiContextMenuMy>
 
   <NuxtLink
     v-else

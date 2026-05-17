@@ -24,7 +24,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
+  <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <WalletsItemBody
       :activeItemId="props.activeItemId"
       :compact="props.compact"
@@ -40,7 +40,7 @@ const emit = defineEmits<{
       :walletId="props.walletId"
       @click="emit('click', $event)"
     />
-  </UContextMenu>
+  </UiContextMenuMy>
 
   <WalletsItemBody
     v-else

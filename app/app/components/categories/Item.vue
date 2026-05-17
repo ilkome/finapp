@@ -29,7 +29,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <UContextMenu v-if="props.contextMenuItems" :items="props.contextMenuItems">
+  <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <CategoriesItemBody
       :activeItemId="props.activeItemId"
       :stacked="props.stacked"
@@ -49,7 +49,7 @@ const emit = defineEmits<{
       @filter="emit('filter', $event)"
       @toggle="emit('toggle')"
     />
-  </UContextMenu>
+  </UiContextMenuMy>
 
   <CategoriesItemBody
     v-else
