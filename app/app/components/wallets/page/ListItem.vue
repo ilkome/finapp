@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 
-import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
+import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -13,11 +13,15 @@ const emit = defineEmits<{
 }>()
 
 const walletsStore = useWalletsStore()
+const m = useWalletMenuItems()
 
-const { getWalletContextMenuItems } = useWalletContextMenu({
-  excludeOpen: true,
-  onDelete: (id: WalletId) => emit('delete', id),
-  withCreditView: true,
+const contextMenuItems = computed(() => {
+  const cv = m.creditView(props.walletId)
+  return [
+    ...(cv ? [[cv]] : []),
+    [m.edit(props.walletId)],
+    [m.delete(props.walletId, id => emit('delete', id))],
+  ]
 })
 </script>
 
@@ -25,7 +29,7 @@ const { getWalletContextMenuItems } = useWalletContextMenu({
   <WalletsItem
     :wallet="walletsStore.itemsComputed[props.walletId]!"
     :walletId="props.walletId"
-    :contextMenuItems="getWalletContextMenuItems(props.walletId)"
+    :contextMenuItems="contextMenuItems"
     :lineWidth="2"
     class="group"
     isShowBaseRate

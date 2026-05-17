@@ -5,7 +5,7 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCategoryContextMenu } from '~/components/categories/useCategoryContextMenu'
+import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
@@ -73,9 +73,17 @@ async function onDeleteConfirm() {
   }, 300)
 }
 
-const { getCategoryContextMenuItems } = useCategoryContextMenu({
-  onDelete: categoryId => onClickDelete(categoryId),
-})
+const categoryMenu = useCategoryMenuItems()
+
+function getCategoryContextMenuItems(categoryId: CategoryId) {
+  if (!isMenuableCategory(categoryId))
+    return undefined
+  const open = categoryMenu.open(categoryId)
+  return [
+    [...(open ? [open] : []), categoryMenu.edit(categoryId)],
+    [categoryMenu.delete(categoryId, onClickDelete)],
+  ]
+}
 </script>
 
 <template>

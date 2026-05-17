@@ -5,8 +5,8 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
-import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
+import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -64,26 +64,18 @@ const hasNoMatches = computed(() =>
   !!searchQuery.value && selectedWalletsIdsWithCurrency.value.length === 0,
 )
 
-const { getWalletContextMenuItems: getLaptopMenuItems } = useWalletContextMenu({
-  excludeOpen: true,
-  onDelete: requestDelete,
-  returnBackOnSave: true,
-})
-
-const { getWalletContextMenuItems: getMobileMenuItems } = useWalletContextMenu({
-  excludeOpen: true,
-  onDelete: requestDelete,
-  onEdit: (id) => {
-    editingWalletId.value = id
-  },
-})
+const walletMenu = useWalletMenuItems()
 
 function getWalletContextMenuItems(walletId: WalletId) {
   if (!props.withHeader)
     return undefined
-  return isLaptop.value
-    ? getLaptopMenuItems(walletId)
-    : getMobileMenuItems(walletId)
+  const editOpts = isLaptop.value
+    ? { returnBack: true }
+    : { onEdit: (id: WalletId) => { editingWalletId.value = id } }
+  return [
+    [walletMenu.edit(walletId, editOpts)],
+    [walletMenu.delete(walletId, requestDelete)],
+  ]
 }
 
 function onClickWallet(walletId: WalletId) {

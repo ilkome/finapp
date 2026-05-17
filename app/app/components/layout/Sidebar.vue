@@ -4,7 +4,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { compareCategoryIds } from '~/components/categories/utils'
-import { useWalletContextMenu } from '~/components/wallets/useWalletContextMenu'
+import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -21,7 +21,15 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 
 const isShowLogoMenu = ref(false)
-const { getWalletContextMenuItems } = useWalletContextMenu({ excludeOpen: true, withCreditView: true })
+const walletMenu = useWalletMenuItems()
+
+function getWalletContextMenuItems(walletId: WalletId) {
+  const cv = walletMenu.creditView(walletId)
+  return [
+    ...(cv ? [[cv]] : []),
+    [walletMenu.edit(walletId)],
+  ]
+}
 
 type SidebarTab = 'categories' | 'wallets'
 const activeTab = ref<SidebarTab>('wallets')

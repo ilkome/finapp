@@ -6,7 +6,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCategoryContextMenu } from '~/components/categories/useCategoryContextMenu'
+import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useStatDate } from '~/components/date/useStatDate'
 import { calculateBestIntervalsBy } from '~/components/date/utils'
 import { useFilter } from '~/components/stat/filter/useFilter'
@@ -68,9 +68,17 @@ async function onDeleteChildConfirm() {
   }, 300)
 }
 
-const { getCategoryContextMenuItems } = useCategoryContextMenu({
-  onDelete: childCategoryId => onClickDeleteChild(childCategoryId),
-})
+const categoryMenu = useCategoryMenuItems()
+
+function getCategoryContextMenuItems(categoryId: CategoryId) {
+  if (!isMenuableCategory(categoryId))
+    return undefined
+  const open = categoryMenu.open(categoryId)
+  return [
+    [...(open ? [open] : []), categoryMenu.edit(categoryId)],
+    [categoryMenu.delete(categoryId, onClickDeleteChild)],
+  ]
+}
 
 provide(filterKey, filter)
 
