@@ -2,6 +2,11 @@
   <img src="https://finapp.ilko.me/logo.png" alt="Finapp Logo" width="320" />
 </p>
 
+> [!WARNING]
+> **This branch is the legacy v6 Firebase version of Finapp and is no longer maintained.**
+> The current version is built on Convex and lives on the [`main`](https://github.com/ilkome/finapp/tree/main) branch.
+> A migration guide from Firebase to Convex is available in the [docs](https://github.com/ilkome/finapp/blob/main/docs/content/en/2.development/03.migration.md).
+
 # Finapp — Open Source Finance App
 > Your money, your control — anywhere, anytime.
 
