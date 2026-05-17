@@ -12,6 +12,10 @@
 
 [finapp.ilko.me](https://finapp.ilko.me/)
 
+## Documentation
+
+[finapp-docs.ilko.me](https://finapp-docs.ilko.me/)
+
 ## Why Finapp?
 
 - **Simple**: No clutter, no distractions — just your transactions and balances.
