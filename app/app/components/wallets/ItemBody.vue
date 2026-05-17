@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { getCreditAvailable } from '~/components/wallets/types'
+import { useWalletCreditView } from '~/components/wallets/useWalletCreditView'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -38,8 +36,7 @@ const classes = computed(() => ([
   },
 ]))
 
-const creditViews = ['debt', 'summary'] as const
-const activeCreditView = useStorage<typeof creditViews[number]>(`${WALLET_STORAGE_KEYS.creditViewPrefix}${props.walletId}`, 'debt')
+const { view: activeCreditView } = useWalletCreditView(props.walletId)
 
 const walletCreditLimit = computed(() =>
   props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
@@ -55,23 +52,11 @@ const creditAmount = computed(() => {
       return 0
   }
 })
-
-const longPressRef = ref(null)
-if (!props.isSort) {
-  onLongPress(
-    longPressRef,
-    () => {
-      const nextIndex = (creditViews.findIndex(i => i === activeCreditView.value) + 1) % creditViews.length
-      activeCreditView.value = creditViews[nextIndex]
-    },
-  )
-}
 </script>
 
 <template>
   <UiElement
     v-if="wallet"
-    ref="longPressRef"
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ?? ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"

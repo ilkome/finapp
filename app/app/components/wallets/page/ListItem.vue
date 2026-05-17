@@ -16,6 +16,7 @@ const walletsStore = useWalletsStore()
 
 const { getWalletContextMenuItems } = useWalletContextMenu({
   onDelete: (id: WalletId) => emit('delete', id),
+  withCreditView: true,
 })
 </script>
 
