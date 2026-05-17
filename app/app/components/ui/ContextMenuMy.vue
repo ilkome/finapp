@@ -23,7 +23,7 @@ const props = withDefaults(defineProps<{
   labelKey: 'label',
   modal: false,
   portal: true,
-  pressOpenDelay: 400,
+  pressOpenDelay: 500,
 })
 
 const emit = defineEmits<{
