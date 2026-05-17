@@ -4,7 +4,7 @@ import { useWindowSize } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCategoryContextMenu } from '~/components/categories/useCategoryContextMenu'
+import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
@@ -81,26 +81,20 @@ async function onDeleteConfirm() {
   }, 300)
 }
 
-const { getCategoryContextMenuItems: getLaptopMenuItems } = useCategoryContextMenu({
-  excludeOpen: true,
-  onDelete: onClickDelete,
-  returnBackOnSave: true,
-  withQuickToggles: true,
-})
-
-const { getCategoryContextMenuItems: getMobileMenuItems } = useCategoryContextMenu({
-  excludeOpen: true,
-  onDelete: onClickDelete,
-  onEdit: (id) => {
-    editingCategoryId.value = id
-  },
-  withQuickToggles: true,
-})
+const categoryMenu = useCategoryMenuItems()
 
 function getCategoryContextMenuItems(categoryId: CategoryId) {
-  return isLaptop.value
-    ? getLaptopMenuItems(categoryId)
-    : getMobileMenuItems(categoryId)
+  if (!isMenuableCategory(categoryId))
+    return undefined
+  const editOpts = isLaptop.value
+    ? { returnBack: true }
+    : { onEdit: (id: CategoryId) => { editingCategoryId.value = id } }
+  const qt = categoryMenu.quickToggles(categoryId)
+  return [
+    [categoryMenu.edit(categoryId, editOpts)],
+    ...(qt ? [qt] : []),
+    [categoryMenu.delete(categoryId, onClickDelete)],
+  ]
 }
 
 const hasFavorites = computed(() => categoriesStore.favoriteCategoriesIds.length > 0)
