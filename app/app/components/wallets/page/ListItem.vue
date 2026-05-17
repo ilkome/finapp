@@ -15,6 +15,7 @@ const emit = defineEmits<{
 const walletsStore = useWalletsStore()
 
 const { getWalletContextMenuItems } = useWalletContextMenu({
+  excludeOpen: true,
   onDelete: (id: WalletId) => emit('delete', id),
   withCreditView: true,
 })

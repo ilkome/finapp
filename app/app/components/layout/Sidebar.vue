@@ -21,7 +21,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 
 const isShowLogoMenu = ref(false)
-const { getWalletContextMenuItems } = useWalletContextMenu({ withCreditView: true })
+const { getWalletContextMenuItems } = useWalletContextMenu({ excludeOpen: true, withCreditView: true })
 
 type SidebarTab = 'categories' | 'wallets'
 const activeTab = ref<SidebarTab>('wallets')
