@@ -212,6 +212,21 @@ export default defineNuxtConfig({
   telemetry: false,
 
   vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          // Force all reka-ui code into a single chunk so its internal
+          // createContext('ContextMenuRoot') etc. resolve to one Symbol
+          // across provider/inject. Otherwise @nuxt/ui's mixed imports
+          // ("reka-ui" vs "reka-ui/namespaced") let Rollup emit the
+          // underlying module twice, breaking inject in production.
+          manualChunks(id) {
+            if (id.includes('node_modules/reka-ui') || /reka-ui@[^/]+/.test(id))
+              return 'reka-ui'
+          },
+        },
+      },
+    },
     optimizeDeps: {
       include: [
         'localforage',
@@ -224,6 +239,8 @@ export default defineNuxtConfig({
         'convex/server',
         '@internationalized/date',
         'date-fns/locale',
+        'reka-ui',
+        'reka-ui/namespaced',
       ],
     },
   },
