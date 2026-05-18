@@ -15,14 +15,10 @@ const emit = defineEmits<{
 const walletsStore = useWalletsStore()
 const m = useWalletMenuItems()
 
-const contextMenuItems = computed(() => {
-  const cv = m.creditView(props.walletId)
-  return [
-    ...(cv ? [[cv]] : []),
-    [m.edit(props.walletId)],
-    [m.delete(props.walletId, id => emit('delete', id))],
-  ]
-})
+const contextMenuItems = computed(() => [
+  [m.edit(props.walletId)],
+  [m.delete(props.walletId, id => emit('delete', id))],
+])
 </script>
 
 <template>
