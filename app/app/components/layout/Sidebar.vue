@@ -24,9 +24,7 @@ const isShowLogoMenu = ref(false)
 const walletMenu = useWalletMenuItems()
 
 function getWalletContextMenuItems(walletId: WalletId) {
-  const cv = walletMenu.creditView(walletId)
   return [
-    ...(cv ? [[cv]] : []),
     [walletMenu.edit(walletId)],
   ]
 }

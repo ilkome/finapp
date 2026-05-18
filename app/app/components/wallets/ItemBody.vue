@@ -3,7 +3,6 @@ import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getCreditAvailable } from '~/components/wallets/types'
-import { useWalletCreditView } from '~/components/wallets/useWalletCreditView'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -36,22 +35,9 @@ const classes = computed(() => ([
   },
 ]))
 
-const { view: activeCreditView } = useWalletCreditView(props.walletId)
-
 const walletCreditLimit = computed(() =>
   props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
 )
-
-const creditAmount = computed(() => {
-  switch (activeCreditView.value) {
-    case 'debt':
-      return props.wallet?.amount
-    case 'summary':
-      return getCreditAvailable(walletCreditLimit.value, props.wallet.amount)
-    default:
-      return 0
-  }
-})
 </script>
 
 <template>
@@ -130,7 +116,7 @@ const creditAmount = computed(() => {
       <div class="pr-1">
         <Amount
           v-if="walletCreditLimit"
-          :amount="creditAmount"
+          :amount="wallet.amount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
           variant="sm"
@@ -155,7 +141,7 @@ const creditAmount = computed(() => {
         <div v-if="!isSort">
           <Amount
             v-if="walletCreditLimit"
-            :amount="creditAmount"
+            :amount="wallet.amount"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
             :isShowMinus="false"

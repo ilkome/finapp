@@ -468,10 +468,6 @@ export default {
   wallets: {
     ariaSwitch: 'Switch wallets',
     createNewTitle: 'New wallet',
-    creditView: {
-      showAvailable: 'Show available credit',
-      showDebt: 'Show current debt',
-    },
     errors: {
       deleteFailed: 'Failed to delete wallet',
       orderFailed: 'Failed to save wallet order',
