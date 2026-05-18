@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { tv } from '@nuxt/ui/utils/tv'
-import { ContextMenuRoot, ContextMenuTrigger } from 'reka-ui'
+import { ContextMenuRoot, ContextMenuTrigger, injectContextMenuRootContext } from 'reka-ui'
 
 import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 
@@ -30,28 +30,36 @@ const emit = defineEmits<{
   'update:open': [open: boolean]
 }>()
 
-const open = ref(false)
+// Renderless bridge: rendered inside <ContextMenuRoot> so it can inject the
+// real root context and actually drive open state via onOpenChange. Without
+// this, the registry's close() would only mutate an unused outer ref while
+// reka-ui keeps the menu open.
+const RegistryBridge = defineComponent({
+  setup() {
+    const ctx = injectContextMenuRootContext()
+    const close = () => ctx.onOpenChange(false)
 
-function close() {
-  open.value = false
-}
+    onMounted(() => {
+      const unregister = registerContextMenu(close)
+      onBeforeUnmount(() => {
+        unregister()
+        window.removeEventListener('scroll', close, { capture: true })
+      })
+    })
 
-onMounted(() => {
-  const unregister = registerContextMenu(close)
-  onBeforeUnmount(unregister)
+    watch(ctx.open, (v) => {
+      if (v) {
+        closeOtherContextMenus(close)
+        window.addEventListener('scroll', close, { capture: true, once: true, passive: true })
+      }
+      else {
+        window.removeEventListener('scroll', close, { capture: true })
+      }
+    })
+
+    return () => null
+  },
 })
-
-function onOpen(v: boolean) {
-  open.value = v
-  emit('update:open', v)
-  if (v) {
-    closeOtherContextMenus(close)
-    window.addEventListener('scroll', close, { capture: true, once: true, passive: true })
-  }
-  else {
-    window.removeEventListener('scroll', close, { capture: true })
-  }
-}
 
 const appConfig = useAppConfig()
 const ui = computed(() => tv({
@@ -62,11 +70,11 @@ const ui = computed(() => tv({
 
 <template>
   <ContextMenuRoot
-    :open="open"
     :modal="props.modal"
     :pressOpenDelay="props.pressOpenDelay"
-    @update:open="onOpen"
+    @update:open="(v) => emit('update:open', v)"
   >
+    <RegistryBridge />
     <ContextMenuTrigger asChild :disabled="props.disabled">
       <slot />
     </ContextMenuTrigger>
