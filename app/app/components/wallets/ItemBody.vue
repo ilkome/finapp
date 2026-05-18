@@ -25,15 +25,10 @@ const emit = defineEmits<{
 
 const currenciesStore = useCurrenciesStore()
 
-const classes = computed(() => ([
-  'relative',
-  {
-    'bg-elevated/30 rounded-sm': props.compact,
-  },
-  {
-    group: props.isSort,
-  },
-]))
+const classes = computed(() => ({
+  'bg-elevated/30 rounded-sm': props.compact,
+  'group relative': props.isSort,
+}))
 
 const walletCreditLimit = computed(() =>
   props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
