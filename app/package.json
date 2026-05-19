@@ -73,7 +73,7 @@
     "dotenv": "^17.3.1",
     "es-toolkit": "^1.45.1",
     "happy-dom": "^20.8.8",
-    "nuxt": "^4.4.2",
+    "nuxt": "^4.4.6",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
