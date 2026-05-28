@@ -31,6 +31,8 @@ const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 
+const isPopoverOpen = ref(false)
+
 const sortedFilterWalletsIds = computed(() => {
   const filteredIds = filter.walletsIds.value
   const showedIds = statConfig.config.value.wallets.isShow
@@ -78,6 +80,25 @@ function onClickWallet(walletId: WalletId) {
             :selectedTrnsIds="categoryConfigTrnsIds"
           />
         </StatConfigModal>
+
+        <BottomSheetOrDropdown
+          v-if="$slots.popover"
+          :isOpen="isPopoverOpen"
+          @openModal="isPopoverOpen = true"
+          @closeModal="isPopoverOpen = false"
+        >
+          <template #trigger>
+            <UTooltip :text="$t('base.moreOptions')">
+              <UiActionButton :ariaLabel="$t('base.moreOptions')">
+                <Icon name="lucide:ellipsis-vertical" size="20" />
+              </UiActionButton>
+            </UTooltip>
+          </template>
+
+          <template #content="{ close }">
+            <slot name="popover" :close />
+          </template>
+        </BottomSheetOrDropdown>
       </div>
     </template>
 
