@@ -38,6 +38,15 @@ function createQueryFilter<T extends string>(
     })
   }
 
+  function removeMultiple(idsToRemove: T[]) {
+    router.push({
+      query: {
+        ...route.query,
+        [queryKey]: ids.value.filter(id => !idsToRemove.includes(id)),
+      },
+    })
+  }
+
   function removeId(id: T) {
     router.push({
       query: {
@@ -56,7 +65,7 @@ function createQueryFilter<T extends string>(
     setId(id)
   }
 
-  return { ids, removeId, setId, setMultiple, toggleId }
+  return { ids, removeId, removeMultiple, setId, setMultiple, toggleId }
 }
 
 export function useFilter() {
@@ -78,8 +87,10 @@ export function useFilter() {
     categoriesIds: categories.ids,
     clearFilter,
     isShow,
+    removeCategories: categories.removeMultiple,
     removeCategoryId: categories.removeId,
     removeWalletId: wallets.removeId,
+    removeWallets: wallets.removeMultiple,
     setCategories: categories.setMultiple,
     setCategoryId: categories.setId,
     setWallets: wallets.setMultiple,

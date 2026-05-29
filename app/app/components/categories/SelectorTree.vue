@@ -11,6 +11,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
+  removeCategories: [ids: CategoryId[]]
   selected: [id: CategoryId]
   setCategories: [ids: CategoryId[]]
 }>()
@@ -76,19 +77,28 @@ const hasNoMatches = computed(() =>
   !!searchQuery.value && filteredRootIds.value.length === 0,
 )
 
-function isAllChildrenSelected(rootId: CategoryId) {
+function rootCheckboxValue(rootId: CategoryId): boolean | 'indeterminate' {
+  if (!categoriesStore.hasChildren(rootId))
+    return props.selectedIds?.includes(rootId) ?? false
   const children = categoriesStore.getChildrenIds(rootId)
-  if (!children.length)
+  const count = children.filter(id => props.selectedIds?.includes(id)).length
+  if (count === 0)
     return false
-  return children.every(id => props.selectedIds?.includes(id))
+  if (count === children.length)
+    return true
+  return 'indeterminate'
 }
 
-function rootActiveId(rootId: CategoryId): CategoryId | null {
-  if (props.selectedIds?.includes(rootId))
-    return rootId
-  if (isAllChildrenSelected(rootId))
-    return rootId
-  return null
+function onRootCheckboxChange(rootId: CategoryId, value: boolean | 'indeterminate') {
+  if (!categoriesStore.hasChildren(rootId)) {
+    emit('selected', rootId)
+    return
+  }
+  const children = categoriesStore.getChildrenIds(rootId)
+  if (value === true)
+    emit('setCategories', children)
+  else
+    emit('removeCategories', children)
 }
 
 function onRootClick(rootId: CategoryId) {
@@ -97,10 +107,6 @@ function onRootClick(rootId: CategoryId) {
     return
   }
   emit('selected', rootId)
-}
-
-function onRootFilter(rootId: CategoryId) {
-  emit('setCategories', categoriesStore.getChildrenIds(rootId))
 }
 
 onMounted(async () => {
@@ -152,20 +158,34 @@ onMounted(async () => {
           v-for="rootId in filteredRootIds"
           :key="rootId"
         >
-          <CategoriesItem
-            :activeItemId="rootActiveId(rootId)"
-            :category="categoriesStore.items[rootId]!"
-            :categoryId="rootId"
-            :isExpanded="isRootExpanded(rootId)"
-            :isShowChevron="categoriesStore.hasChildren(rootId)"
-            :leftMenuButton="true"
-            :hideLeftMenuButton="true"
-            :lineWidth="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId) ? 0 : 1"
-            class="group"
-            @click="onRootClick(rootId)"
-            @toggle="toggle(rootId)"
-            @filter="onRootFilter(rootId)"
-          />
+          <div class="group hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent">
+            <div
+              class="flex-center relative w-8 shrink-0 self-stretch pl-2"
+              @click.stop
+            >
+              <div
+                class="absolute inset-0 z-10"
+                @click.stop="onRootCheckboxChange(rootId, rootCheckboxValue(rootId) === true ? false : true)"
+              />
+              <UCheckbox
+                :modelValue="rootCheckboxValue(rootId)"
+                class="pointer-events-none"
+              />
+            </div>
+            <CategoriesItem
+              :activeItemId="null"
+              :category="categoriesStore.items[rootId]!"
+              :categoryId="rootId"
+              :isExpanded="isRootExpanded(rootId)"
+              :isShowChevron="categoriesStore.hasChildren(rootId)"
+              :leftMenuButton="true"
+              :hideLeftMenuButton="true"
+              :lineWidth="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId) ? 0 : 1"
+              class="min-w-0 flex-1"
+              @click="onRootClick(rootId)"
+              @toggle="toggle(rootId)"
+            />
+          </div>
 
           <div
             v-if="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId)"
@@ -174,18 +194,35 @@ onMounted(async () => {
               : '-mt-px ml-5 pb-1 pl-3'"
           >
             <template v-if="view === 'list'">
-              <CategoriesItem
+              <div
                 v-for="childId in visibleChildrenIds(rootId)"
                 :key="childId"
-                :activeItemId="props.selectedIds?.includes(childId) ? childId : null"
-                :category="categoriesStore.items[childId]!"
-                :categoryId="childId"
-                :leftMenuButton="true"
-                :hideLeftMenuButton="true"
-                :lineWidth="1"
-                class="group"
+                class="group hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent"
                 @click="emit('selected', childId)"
-              />
+              >
+                <div
+                  class="flex-center relative w-8 shrink-0 self-stretch pl-2"
+                  @click.stop
+                >
+                  <div
+                    class="absolute inset-0 z-10"
+                    @click.stop="emit('selected', childId)"
+                  />
+                  <UCheckbox
+                    :modelValue="props.selectedIds?.includes(childId) ?? false"
+                    class="pointer-events-none"
+                  />
+                </div>
+                <CategoriesItem
+                  :activeItemId="null"
+                  :category="categoriesStore.items[childId]!"
+                  :categoryId="childId"
+                  :leftMenuButton="true"
+                  :hideLeftMenuButton="true"
+                  :lineWidth="1"
+                  class="min-w-0 flex-1"
+                />
+              </div>
             </template>
 
             <div v-else class="flex flex-wrap gap-1">

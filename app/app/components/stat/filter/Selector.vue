@@ -44,6 +44,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         class="min-w-80"
         @selected="filter.toggleCategoryId"
         @setCategories="filter.setCategories"
+        @removeCategories="filter.removeCategories"
       />
     </StatFilterSelectorItem>
   </div>

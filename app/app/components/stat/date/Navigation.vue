@@ -77,7 +77,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
         <template #content="{ close }">
           <StatDateSelector
-            class="min-w-[362px] pb-2 md:px-3"
+            class="min-w-[362px] pb-2"
             @close="close"
           />
         </template>
