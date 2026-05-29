@@ -11,7 +11,6 @@ const props = defineProps<{
 const router = useRouter()
 
 function onParentClick(event: Event) {
-  // preventDefault stops the vue-router NuxtLink guard via its defaultPrevented check.
   event.preventDefault()
   navigateToAncestor(router, `/categories/${props.category.parentId}`)
 }
