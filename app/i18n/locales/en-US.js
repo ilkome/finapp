@@ -375,6 +375,7 @@ export default {
       wallets: {
         description: 'Quick access to the first N wallets from the full list. Order is set on the Wallets page.',
         label: 'Show wallets',
+        showIcon: 'Show wallet icon',
         subtitle: 'Top {count}',
         title: 'Wallets',
       },

@@ -62,6 +62,7 @@ export const ConfigSchema = z.object({
   wallets: z.object({
     count: z.number(),
     isShow: z.boolean(),
+    isShowIcon: z.boolean(),
   }),
 })
 
@@ -127,6 +128,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     wallets: {
       count: 6,
       isShow: false,
+      isShowIcon: true,
     },
   }, localStorage, {
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
