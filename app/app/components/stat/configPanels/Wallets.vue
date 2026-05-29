@@ -2,6 +2,7 @@
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
+const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 const walletsStore = useWalletsStore()
 </script>
@@ -16,6 +17,12 @@ const walletsStore = useWalletsStore()
       :min="1"
       :max="walletsStore.sortedIds.length"
       @update:modelValue="value => statConfig.updateConfig('wallets', { count: value })"
+    />
+
+    <StatConfigSwitch
+      configKey="wallets"
+      field="isShowIcon"
+      :title="t('stat.config.wallets.showIcon')"
     />
   </div>
 </template>

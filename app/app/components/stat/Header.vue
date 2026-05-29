@@ -113,14 +113,15 @@ function onClickWallet(walletId: WalletId) {
       v-if="statConfig.config.value.wallets.isShow"
       #after
     >
-      <div class="grid gap-2 px-2 pb-0 lg:px-4 2xl:px-8">
-        <div class="flex max-w-6xl gap-1 overflow-x-auto py-px">
+      <div class="flex overflow-x-auto px-2 py-2 lg:px-4 2xl:px-8">
+        <div class="flex shrink-0 gap-2">
           <WalletsItem
             v-for="walletId in sortedFilterWalletsIds"
             :key="walletId"
             :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
             :walletId
             :wallet="walletsStore.itemsComputed?.[walletId]!"
+            :isShowIcon="statConfig.config.value.wallets.isShowIcon"
             insideClasses="!min-h-[38px]"
             compact
             @click="onClickWallet(walletId)"
