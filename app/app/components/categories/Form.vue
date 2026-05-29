@@ -452,7 +452,7 @@ async function onSave() {
           <div
             v-for="icon in iconGroup"
             :key="icon"
-            :class="cn('flex-center text-icon-primary size-10 cursor-pointer rounded-full border-2 border-transparent',
+            :class="cn('flex-center text-icon-primary size-10 rounded-full border-2 border-transparent',
                        icon === props.categoryForm.icon && 'border-primary',
             )"
             :style="{ background: props.categoryForm.color }"

@@ -24,7 +24,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           v-for="(item, menuId) in itemsBottom"
           :key="menuId"
           :class="cn(
-            'interactive flex min-h-[44px] basis-0 grow cursor-pointer flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5',
+            'interactive flex min-h-[44px] basis-0 grow flex-col items-center justify-center gap-0.5 rounded-2xl py-1.5',
             checkIsActive(String(menuId)) ? 'text-primary' : 'text-muted',
           )"
           @click="onClick(String(menuId))"

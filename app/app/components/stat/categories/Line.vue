@@ -129,7 +129,7 @@ function onAmountClick(e: MouseEvent) {
       <div
         v-if="props.item.value !== 0"
         :class="{ '!pb-2': isLines }"
-        class="-my-1.5 flex min-w-12 shrink-0 cursor-pointer items-center justify-end self-stretch rounded-sm px-2"
+        class="-my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm px-2"
         @click="onAmountClick"
         @pointerdown.stop
       >

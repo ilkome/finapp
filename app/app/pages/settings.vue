@@ -73,7 +73,7 @@ function onGenerateDemoData() {
         <!-- Currency -->
         <UiSettingsCard :title="t('currencies.base')">
           <button
-            class="text-highlighted bg-elevated/30 ring-accented hover:!bg-elevated/50 focus-visible:ring-primary group relative inline-flex min-h-[42px] min-w-[160px] cursor-pointer items-center gap-2 rounded-md px-4 py-2 pe-10 text-sm ring transition-colors ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            class="text-highlighted bg-elevated/30 ring-accented hover:!bg-elevated/50 focus-visible:ring-primary group relative inline-flex min-h-[42px] min-w-[160px] items-center gap-2 rounded-md px-4 py-2 pe-10 text-sm ring transition-colors ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
             @click="isShowBaseCurrencyModal = true"
           >
             <span class="truncate">{{ currenciesStore.base }}</span>
