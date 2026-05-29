@@ -1,0 +1,50 @@
+# .understandignore — patterns for files/dirs to exclude from analysis
+# Syntax: same as .gitignore (globs, # comments, ! negation, trailing / for dirs)
+# Lines below are suggestions — uncomment to activate.
+# Use ! prefix to force-include something excluded by defaults.
+#
+# Built-in defaults (always excluded unless negated):
+#   node_modules/, .git/, dist/, build/, obj/, *.lock, *.min.js, etc.
+#
+# --- From .gitignore (uncomment to exclude) ---
+
+# .output
+# .data
+# .nuxt
+# .nitro
+# /sw.*
+# logs
+# .DS_Store
+# .fleet
+# .claude/settings.local.json
+# **/.claude/settings.local.json
+# /test-results
+# /blob-report
+# playwright/profiles
+# **/playwright/profiles
+# playwright/.auth
+# **/playwright/.auth
+# playwright/output
+# **/playwright/output
+# playwright-report
+# **/playwright-report
+# playwright/.cache
+# **/playwright/.cache
+.playwright-mcp
+**/.playwright-mcp
+# tests/e2e/.auth
+# **/tests/e2e/.auth
+# .env
+# .env.*
+# !.env.example
+# utils/migrate/data.json
+
+# --- Detected directories (uncomment to exclude) ---
+
+docs/
+
+# --- Test file patterns (uncomment to exclude) ---
+
+*.test.*
+*.spec.*
+*.snap
