@@ -99,7 +99,7 @@ function onRowClick(e: Event) {
     >
       <button
         type="button"
-        class="flex-center text-muted hover:bg-elevated/50 -my-1 -mr-1 h-9 w-9 shrink-0 cursor-pointer rounded-sm"
+        class="flex-center text-muted hover:bg-elevated/50 -my-1 -mr-1 h-9 w-9 shrink-0 rounded-sm"
         :aria-label="t('base.moreOptions')"
         @click.stop.prevent
       >
@@ -139,7 +139,7 @@ function onRowClick(e: Event) {
     <button
       v-if="showRightChevron"
       type="button"
-      class="flex-center text-muted hover:bg-elevated/50 -mr-1 h-9 w-9 shrink-0 cursor-pointer rounded-sm"
+      class="flex-center text-muted hover:bg-elevated/50 -mr-1 h-9 w-9 shrink-0 rounded-sm"
       :aria-label="t('base.toggleExpand')"
       @click="onToggleClick"
     >
