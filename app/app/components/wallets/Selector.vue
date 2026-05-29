@@ -139,19 +139,53 @@ onMounted(async () => {
           {{ t('search.noResults') }}
         </div>
 
-        <WalletsItem
+        <template
           v-for="walletId in selectedWalletsIdsWithCurrency"
           :key="walletId"
-          :activeItemId="props.activeItemId || (props.selectedIds?.includes(walletId) ? walletId : null)"
-          :contextMenuItems="getWalletContextMenuItems(walletId)"
-          :walletId
-          :wallet="walletsStore.itemsComputed[walletId]!"
-          :lineWidth="4"
-          class="group/item"
-          isShowIcon
-          isShowCreditLimit
-          @click="onClickWallet(walletId)"
-        />
+        >
+          <div
+            v-if="props.selectedIds !== undefined"
+            class="hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent"
+            @click="onClickWallet(walletId)"
+          >
+            <div
+              class="flex-center relative w-10 shrink-0 self-stretch pl-2"
+              @click.stop
+            >
+              <div
+                class="absolute inset-0 z-10"
+                @click.stop="onClickWallet(walletId)"
+              />
+              <UCheckbox
+                :modelValue="props.selectedIds.includes(walletId)"
+                class="pointer-events-none"
+              />
+            </div>
+            <WalletsItem
+              :activeItemId="props.activeItemId ?? null"
+              :contextMenuItems="getWalletContextMenuItems(walletId)"
+              :walletId
+              :wallet="walletsStore.itemsComputed[walletId]!"
+              :lineWidth="4"
+              class="group/item min-w-0 flex-1"
+              isShowIcon
+              isShowCreditLimit
+            />
+          </div>
+
+          <WalletsItem
+            v-else
+            :activeItemId="props.activeItemId ?? null"
+            :contextMenuItems="getWalletContextMenuItems(walletId)"
+            :walletId
+            :wallet="walletsStore.itemsComputed[walletId]!"
+            :lineWidth="4"
+            class="group/item"
+            isShowIcon
+            isShowCreditLimit
+            @click="onClickWallet(walletId)"
+          />
+        </template>
       </div>
 
       <template v-if="walletsStore.currenciesUsed.length > 1">
