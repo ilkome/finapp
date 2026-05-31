@@ -18,6 +18,10 @@
 
 [finapp-docs.ilko.me](https://finapp-docs.ilko.me/)
 
+## Knowledge Graph
+
+Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://finapp-graph.ilko.me/en/)
+
 ## Why Finapp?
 
 - **Simple**: No clutter, no distractions — just your transactions and balances.
