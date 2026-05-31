@@ -18,6 +18,10 @@
 
 [finapp-docs.ilko.me](https://finapp-docs.ilko.me/)
 
+## Граф знаний
+
+Интерактивная карта архитектуры кодовой базы: [finapp-graph.ilko.me/ru](https://finapp-graph.ilko.me/ru/)
+
 ## Почему Finapp?
 
 - **Просто**: ничего лишнего - только ваши транзакции и балансы.
