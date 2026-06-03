@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "1d42416cd60cf1d46c83728360e5af732fa371ff",
-  "generatedAt": "2026-05-29T04:51:48.867Z",
+  "gitCommitHash": "b5011573639e1c723d053eed9ddf1829d23b3e62",
+  "generatedAt": "2026-05-31T11:44:59.544Z",
   "files": {
     ".mcp.json": {
       "filePath": ".mcp.json",
@@ -12,16 +12,6 @@
       "exports": [],
       "totalLines": 17,
       "hasStructuralAnalysis": true
-    },
-    ".understand-anything/.understandignore": {
-      "filePath": ".understand-anything/.understandignore",
-      "contentHash": "fb97efd07645c18ea0ab9535dc36c15f8421a9ef031bc213044f1d596d5f8c39",
-      "functions": [],
-      "classes": [],
-      "imports": [],
-      "exports": [],
-      "totalLines": 51,
-      "hasStructuralAnalysis": false
     },
     "app/.env.example": {
       "filePath": "app/.env.example",
@@ -657,12 +647,12 @@
     },
     "app/app/components/categories/Header.vue": {
       "filePath": "app/app/components/categories/Header.vue",
-      "contentHash": "9a030031010ac9945225f577d3d37d45f8443cb363eadae356ae93388712f460",
+      "contentHash": "3a0d8aa43968ac56b3f4e1d368bf62b194cbe2aac5d47b1c8cd64e187447e5ce",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 41,
+      "totalLines": 40,
       "hasStructuralAnalysis": false
     },
     "app/app/components/categories/Item.vue": {
@@ -3416,12 +3406,12 @@
     },
     "app/app/components/stat/configPanels/Wallets.vue": {
       "filePath": "app/app/components/stat/configPanels/Wallets.vue",
-      "contentHash": "fde4407e298f919b078c9870b9231fc0ec4f87a7bdbea814878c9cb151f2dbe6",
+      "contentHash": "8923fa82e3d39919290e63c3726bc4c2e4cacdb37b6aa602065c4732c3f0f17c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 22,
+      "totalLines": 29,
       "hasStructuralAnalysis": false
     },
     "app/app/components/stat/ConfigPanelToggle.vue": {
@@ -3673,12 +3663,12 @@
     },
     "app/app/components/stat/Header.vue": {
       "filePath": "app/app/components/stat/Header.vue",
-      "contentHash": "8ac7dfd4e1f59bd1b47510ba6580b84f85742004c28508e727dea44707d2c23f",
+      "contentHash": "7696ed73848cb2b9cbde4b79f4e461568dbbd04e97e17f323fa52671e94b1573",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 133,
+      "totalLines": 134,
       "hasStructuralAnalysis": false
     },
     "app/app/components/stat/injectionKeys.ts": {
@@ -3966,7 +3956,7 @@
     },
     "app/app/components/stat/useStatConfig.ts": {
       "filePath": "app/app/components/stat/useStatConfig.ts",
-      "contentHash": "8431a7bc9a719cc720c76ccd4ec3563897aed0e3b758a0e113226907ce06470b",
+      "contentHash": "ded2c61bc6184505336f3f3f6a95f6be7d36b4a15805ca116a6a3d0dd520b5c6",
       "functions": [
         {
           "name": "resolveGrouped",
@@ -3984,7 +3974,7 @@
             "{ props, storageKey }"
           ],
           "exported": true,
-          "lineCount": 79
+          "lineCount": 80
         }
       ],
       "classes": [],
@@ -4033,7 +4023,7 @@
         "ConfigSchema",
         "useStatConfig"
       ],
-      "totalLines": 156,
+      "totalLines": 158,
       "hasStructuralAnalysis": true
     },
     "app/app/components/stat/useStatItem.ts": {
@@ -8683,22 +8673,22 @@
     },
     "app/i18n/locales/en-US.js": {
       "filePath": "app/i18n/locales/en-US.js",
-      "contentHash": "2bca63ea5963c9a0212df8acd4502ac6db9177556bc676205b844ebd134814f7",
+      "contentHash": "46da37e0a20cbdb3807e26380f735b327d4dca87c55cb1cfd9dad88c8e6855db",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 523,
+      "totalLines": 524,
       "hasStructuralAnalysis": true
     },
     "app/i18n/locales/ru-RU.js": {
       "filePath": "app/i18n/locales/ru-RU.js",
-      "contentHash": "7bce0a9cca9956f36d6e1902015830d5cfeb805318a0440918b25c3292cbf1cc",
+      "contentHash": "f61415dc9422957ab27434c5a25a476a73b8506e15d6cacc6be43bfa37e6e8c6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 523,
+      "totalLines": 524,
       "hasStructuralAnalysis": true
     },
     "app/i18n/ruPluralization.ts": {
@@ -8818,7 +8808,7 @@
     },
     "app/package.json": {
       "filePath": "app/package.json",
-      "contentHash": "aa1d18b5f309e63876ccec647b213ca0d9028c8dc05ab3d3263da56e1ed1543f",
+      "contentHash": "ecd4ec85f2f92dbe5c7eb074b0e4e4112af2c5bce7f3e0c809426bb17a97c8b6",
       "functions": [],
       "classes": [],
       "imports": [],
