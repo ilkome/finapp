@@ -86,7 +86,7 @@ async function saveCategory(page: Page) {
 
 /**
  * Create a fresh parent on /categories/new with N existing categories chosen as children.
- * Returns the parent name, child names, and the freshly assigned Convex id (from URL).
+ * Returns the parent name, child names, and the freshly assigned id (from URL).
  */
 async function createParentWithChildren(page: Page, suffix: string, childCount = 2) {
   const name = uniqueName(suffix)

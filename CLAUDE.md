@@ -45,7 +45,7 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 ## Documentation
 
 - Setup, env vars, scripts: `README.md`
-- Architecture, store pattern: `docs/content/en/3.reference/` (note: reference docs still describe the old Convex layer and need updating)
+- Architecture, store pattern: `docs/content/en/3.reference/`
 
 ## graphify
 
