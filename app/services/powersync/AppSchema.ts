@@ -74,5 +74,3 @@ export const AppSchema = new Schema({
   user_settings,
   wallets,
 })
-
-export type AppDatabase = (typeof AppSchema)['types']
