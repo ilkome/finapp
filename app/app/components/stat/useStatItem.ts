@@ -6,6 +6,7 @@ import { differenceInDays } from 'date-fns'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
+import type { CategoryPieDatum } from '~/components/stat/chart/useCategorySeriesBuilder'
 import type { FilterProvider } from '~/components/stat/filter/types'
 import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
@@ -13,12 +14,17 @@ import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { buildCategoriesSeries } from '~/components/stat/chart/useCategorySeriesBuilder'
+import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/useCategorySeriesBuilder'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
-import { resolveGrouped } from '~/components/stat/useStatConfig'
+import { resolveChartType, resolveGrouped } from '~/components/stat/useStatConfig'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+
+export type ChartPieGroup = {
+  pieData: CategoryPieDatum[]
+  type: SeriesSlug
+}
 
 type UseStatItemParams = {
   filter: FilterProvider
@@ -39,6 +45,7 @@ export function useStatItem({
   trnsIds,
   type,
 }: UseStatItemParams) {
+  const { t } = useI18n()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
   const { computeTotalForTrnsIds } = useAmount()
@@ -140,15 +147,39 @@ export function useStatItem({
       return 'expense'
     if (statTab.value === 'income')
       return 'income'
+    // Split renders one item per type ('expense' / 'income'); follow that prop
+    // so each column's donut/bars show its own side.
+    if (statTab.value === 'split' && (type.value === 'expense' || type.value === 'income'))
+      return type.value
     if (filteredType.value === 'expense' || filteredType.value === 'income')
       return filteredType.value
     return 'expense'
   })
 
+  // Effective filter + grouping for the category breakdown (donut and bars).
+  // Selecting a category drills into it: match its leaf (transactible) ids and
+  // stop grouping, so a selected parent breaks down into its child slices.
+  const categoryBreakdownFilter = computed(() => {
+    const ids = filteredCategoriesIds.value
+    if (ids.length === 0) {
+      return {
+        filterCategoriesIds: undefined as CategoryId[] | undefined,
+        isGrouped: resolveGrouped(statConfig.config.value.chart.isGrouped, statConfig.config.value.grouping),
+      }
+    }
+    return {
+      filterCategoriesIds: categoriesStore.getTransactibleIds(ids),
+      isGrouped: false,
+    }
+  })
+
   const chartSeries = computed<ChartSeries[]>(() => {
     const intervals = intervalsDataWithFilteredCategories.value
     const selectedInterval = intervals[statDate.params.value.intervalSelected]
-    const chartType = statConfig.config.value?.chartType
+    // Bar/line series never use the `pie` type; the donut renders from
+    // `chartPieGroups`, so collapse pie -> bar for the axis-based series here.
+    const rawChartType = resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode)
+    const chartType = rawChartType === 'pie' ? 'bar' : rawChartType
 
     let baseSeries: ChartSeries[]
 
@@ -157,9 +188,9 @@ export function useStatItem({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
         computeTotalForTrnsIds,
-        filterCategoriesIds: filteredCategoriesIds.value,
+        filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
         intervals,
-        isGrouped: resolveGrouped(statConfig.config.value.chart.isGrouped, statConfig.config.value.grouping),
+        isGrouped: categoryBreakdownFilter.value.isGrouped,
         trnsItems: trnsStore.items ?? {},
         type: categoriesBreakdownType.value,
       })
@@ -181,6 +212,34 @@ export function useStatItem({
     intervalsDataWithFilteredCategories.value.map(i => i.range.start),
   )
 
+  function buildPieGroup(type: SeriesSlug): CategoryPieDatum[] {
+    return buildCategoriesPieData({
+      categoriesItems: categoriesStore.items ?? {},
+      computeTotalForTrnsIds,
+      filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
+      intervals: intervalsDataWithFilteredCategories.value,
+      isGrouped: categoryBreakdownFilter.value.isGrouped,
+      trnsItems: trnsStore.items ?? {},
+      type,
+    }, t('stat.config.chart.other'))
+  }
+
+  // Summary tab shows expense + income donuts side by side; every other tab
+  // shows a single donut for the active breakdown type.
+  const chartPieGroups = computed<ChartPieGroup[]>(() => {
+    if (statConfig.config.value.chart.mode !== 'categories')
+      return []
+
+    if (statTab.value === 'summary') {
+      return [
+        { pieData: buildPieGroup('expense'), type: 'expense' },
+        { pieData: buildPieGroup('income'), type: 'income' },
+      ]
+    }
+
+    return [{ pieData: buildPieGroup(categoriesBreakdownType.value), type: categoriesBreakdownType.value }]
+  })
+
   function onSetCategoryFilter(categoryId: CategoryId) {
     if (filteredCategoriesIds.value.includes(categoryId)) {
       filteredCategoriesIds.value = []
@@ -195,6 +254,8 @@ export function useStatItem({
 
   return {
     averageTotal,
+    categoriesBreakdownType,
+    chartPieGroups,
     chartSeries,
     chartXAxisLabels,
     filteredCategoriesIds,

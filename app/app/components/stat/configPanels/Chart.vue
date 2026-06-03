@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { chartViewOptions, resolveGrouped } from '~/components/stat/useStatConfig'
+import { chartViewOptions, resolveChartType, resolveGrouped } from '~/components/stat/useStatConfig'
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
@@ -11,6 +11,14 @@ const isChartShow = computed(() => statConfig.config.value.isChartShow)
 const grouping = computed(() => statConfig.config.value.grouping)
 const isAutoGrouping = computed(() => grouping.value === 'auto')
 const isChartGrouped = computed(() => resolveGrouped(statConfig.config.value.chart.isGrouped, grouping.value))
+const isCategoriesMode = computed(() => statConfig.config.value.chart.mode === 'categories')
+const activeChartType = computed(() => resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode))
+const isPie = computed(() => activeChartType.value === 'pie')
+
+// Pie is only meaningful for the per-category breakdown.
+const visibleChartTypeOptions = computed(() =>
+  chartTypeOptions.value.filter(option => !option.categoriesOnly || isCategoriesMode.value),
+)
 
 function toggleGroupedWithReset(currentEffective: boolean) {
   if (!isAutoGrouping.value) {
@@ -32,6 +40,7 @@ function toggleGroupedWithReset(currentEffective: boolean) {
       :title="t('stat.config.date.quick.label')"
     />
     <StatConfigSwitch
+      v-if="!isPie"
       configKey="chart"
       field="isShowAverage"
       :title="t('stat.config.chart.average.label')"
@@ -49,7 +58,10 @@ function toggleGroupedWithReset(currentEffective: boolean) {
     />
 
     <div class="grid gap-4 pt-4">
-      <div class="hidden gap-2 md:grid">
+      <div
+        v-if="!isPie"
+        class="hidden gap-2 md:grid"
+      >
         <UiTitleSection size="sm" class="px-1">
           {{ t('stat.config.chartView.label') }}
         </UiTitleSection>
@@ -73,10 +85,10 @@ function toggleGroupedWithReset(currentEffective: boolean) {
         </UiTitleSection>
         <UiTabsBar>
           <UiTabsItemPill
-            v-for="item in chartTypeOptions"
+            v-for="item in visibleChartTypeOptions"
             :key="item.value"
             variant="outline"
-            :isActive="statConfig.config.value.chartType === item.value"
+            :isActive="activeChartType === item.value"
             class="flex grow gap-1"
             @click="statConfig.updateConfig('chartType', item.value)"
           >
