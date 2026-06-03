@@ -16,7 +16,7 @@ const { t } = useI18n()
 const walletsStore = useWalletsStore()
 
 const wallet = computed(() =>
-  props.walletId ? walletsStore.items[props.walletId] : undefined,
+  props.walletId ? walletsStore.items?.[props.walletId] : undefined,
 )
 const walletForm = ref(
   wallet.value

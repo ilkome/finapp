@@ -1,4 +1,8 @@
-import { convexWalletsToMap } from '~~/services/convex/api'
+import type { Row } from '~~/services/powersync/transforms'
+
+import { watchTable } from '~~/services/powersync/db'
+import { deleteRow, upsertRow, upsertRows } from '~~/services/powersync/mutations'
+import { rowToWallet, walletToRow } from '~~/services/powersync/transforms'
 import { uniqueElementsBy } from '~~/utils/simple'
 
 import type { CurrencyCode } from '~/components/currencies/types'
@@ -8,92 +12,70 @@ import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed
 import { getAmountInRate, getWalletsTotals } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
-import { pushOfflineOp } from '~/components/offline/helpers'
-import { isReplaying } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
-import { createDebouncedPersist, handleMutationResult, isInFlight, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
+import { persistStoreCache } from '~/composables/useStoreCache'
+import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
+import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('wallets')
+
+function rowsToWallets(rows: Row[]): Wallets | null {
+  if (!rows.length)
+    return null
+  const map: Wallets = {}
+  for (const row of rows)
+    map[row.id] = rowToWallet(row)
+  return map
+}
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
   const currenciesStore = useCurrenciesStore()
   const { isDemo } = useDemo()
+  const { uid } = useSupabaseAuth()
 
   const items = shallowRef<Wallets | null>(null)
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
-  /** In-memory only — survives for the app session. Reset on each initWallets. */
-  const lastSyncedAt = ref(0)
+  // True after the first local-SQLite emission; drives the onboarding gate. Reset on
+  // (re)subscribe so a new user waits for theirs. Demo skips the watch (see useInitApp).
+  const isLoaded = ref(false)
 
-  async function initWallets() {
-    try {
-      const { api, client } = useConvexClientWithApi()
-      const wallets = await client.query(api.wallets.list, {})
-      let data: Wallets | null = wallets?.length ? convexWalletsToMap(wallets) : null
-
-      if (data)
-        data = await mergeOfflineOps(data, 'wallets')
-
-      setWallets(data)
-      lastSyncedAt.value = Date.now()
-    }
-    catch (e) {
-      logger.error('init failed', e)
-    }
-  }
-
-  type ConvexWalletDoc = { [key: string]: unknown, _creationTime: number, _id: string, userId: string }
-
-  function applyRealtimePatch(patch: { deletedIds: string[], docs: ConvexWalletDoc[], serverTime: number, truncated: boolean }): number | null {
-    if (patch.truncated) {
-      logger.log('realtime delta truncated — running initWallets')
-      initWallets()
-      return null
-    }
-
-    const current = items.value ?? {}
-    const updated: Wallets = { ...current }
-    let changed = false
-
-    for (const doc of patch.docs) {
-      if (isInFlight(doc._id))
-        continue
-      const existing = updated[doc._id]
-      const existingUpdatedAt = existing?.updatedAt
-      const docUpdatedAt = typeof doc.updatedAt === 'number' ? doc.updatedAt : 0
-      if (existing && typeof existingUpdatedAt === 'number' && existingUpdatedAt >= docUpdatedAt)
-        continue
-      const { _creationTime: _ct, _id, userId: _u, ...rest } = doc
-      updated[_id] = rest as unknown as WalletItem
-      changed = true
-    }
-
-    for (const id of patch.deletedIds) {
-      if (isInFlight(id))
-        continue
-      if (id in updated) {
-        delete updated[id]
-        changed = true
-      }
-    }
-
-    if (changed) {
-      setWallets(updated)
-      logger.log(`realtime: ${patch.docs.length} docs, ${patch.deletedIds.length} deletes`)
-    }
-    lastSyncedAt.value = patch.serverTime
-    return patch.serverTime
-  }
+  let watchController: AbortController | null = null
 
   const debouncedPersist = createDebouncedPersist<Wallets | null>(STORAGE_KEYS.wallets)
 
   function setWallets(values: Wallets | null) {
     items.value = values
-    debouncedPersist(values)
+    // Demo persists to localforage; real mode mirrors into the per-user cold-start blob
+    // (PowerSync SQLite stays the source of truth).
+    if (isDemo.value)
+      debouncedPersist(values)
+    else
+      persistStoreCache('wallets', values)
+  }
+
+  /** Cold-start paint from the per-user snapshot before the SQLite watch emits. See trns store. */
+  function primeFromCache(data: Wallets | null): void {
+    if (isDemo.value || !data || isLoaded.value)
+      return
+    items.value = data
+  }
+
+  /** Real mode: subscribe to local SQLite. Fires immediately and on every sync/local write. */
+  function initWallets(): void {
+    if (isDemo.value)
+      return
+    watchController?.abort()
+    isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
+    watchController = watchTable<Row>('SELECT * FROM wallets', [], (rows) => {
+      setWallets(rowsToWallets(rows))
+      isLoaded.value = true
+    })
+    logger.log('watching wallets')
   }
 
   function saveWallet({ id, values }: { id: WalletId, values: WalletItem }) {
@@ -101,11 +83,10 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (!hasItems.value)
       useUserStore().saveUserBaseCurrency(values.currency)
 
-    // Check before optimistic update so the new id isn't already in the store
-    // Frontend IDs are always treated as new creates (server generates real ID)
-    const isExisting = !isLocalId(id) && items.value && id in items.value
+    // A new wallet is one whose id isn't already in the store.
+    const isNew = !(items.value && id in items.value)
 
-    if (!isExisting) {
+    if (isNew) {
       const maxOrder = Object.values(items.value ?? {}).reduce(
         (max, w) => Math.max(max, w.order ?? 0),
         -1,
@@ -113,46 +94,26 @@ export const useWalletsStore = defineStore('wallets', () => {
       values = { ...values, order: maxOrder + 1 }
     }
 
+    const prev = items.value
+
+    // Optimistic update (instant UI). In real mode the watch re-emits the same shape.
     setWallets({
       ...(items.value ?? {}),
       [id]: values,
     })
 
-    if (!pushSaveOp({ entity: 'wallets', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
+    if (isDemo.value)
       return
 
-    const { api, client } = useConvexClientWithApi()
-    const action = isExisting ? 'update' : 'create'
-
-    const walletData = {
-      color: values.color,
-      creditLimit: 'creditLimit' in values ? values.creditLimit : undefined,
-      currency: values.currency,
-      desc: values.desc || undefined,
-      isArchived: values.isArchived,
-      isExcludeInTotal: values.isExcludeInTotal,
-      isWithdrawal: values.isWithdrawal,
-      name: values.name,
-      order: values.order,
-      type: values.type,
-    }
-
-    const mutation = isExisting
-      ? client.mutation(api.wallets.update, { id: asConvexId<'wallets'>(id), ...walletData })
-      : client.mutation(api.wallets.create, walletData)
-
-    return handleMutationResult({
-      action,
-      entity: 'wallets',
-      errorMessage: 'wallets.errors.saveFailed',
-      id,
-      items,
-      mutation,
-
+    upsertRow('wallets', id, walletToRow(values, uid.value ?? '')).catch((e) => {
+      setWallets(prev) // roll back the optimistic update if the local write failed
+      logger.error('saveWallet failed', e)
+      showErrorToast('wallets.errors.saveFailed')
     })
   }
 
   function saveWalletsOrder(ids: WalletId[]) {
+    const prev = items.value
     const updated = { ...(items.value ?? {}) } as Wallets
     for (let i = 0; i < ids.length; i++) {
       const walletId = ids[i]!
@@ -164,28 +125,18 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (isDemo.value)
       return
 
-    // Save to offline queue immediately (skip during replay)
-    logger.log('optimistic update: order')
-    if (!isReplaying()) {
-      for (const id of ids) {
-        if (updated[id])
-          pushOfflineOp({ data: updated[id], entity: 'wallets', id, type: 'update' })
-      }
-    }
-
-    const { api, client } = useConvexClientWithApi()
-
-    return handleMutationResult({
-      action: 'update',
-      entity: 'wallets',
-      errorMessage: 'wallets.errors.orderFailed',
-      id: ids,
-      mutation: client.mutation(api.wallets.updateOrder, {
-        orders: ids.map((walletId, index) => ({
-          id: asConvexId<'wallets'>(walletId),
-          order: index,
+    upsertRows(
+      'wallets',
+      ids
+        .filter(walletId => items.value?.[walletId])
+        .map((walletId, index) => ({
+          id: walletId,
+          row: walletToRow({ ...items.value![walletId]!, order: index }, uid.value ?? ''),
         })),
-      }),
+    ).catch((e) => {
+      setWallets(prev) // restore the previous order if the local write failed
+      logger.error('saveWalletsOrder failed', e)
+      showErrorToast('wallets.errors.orderFailed')
     })
   }
 
@@ -232,7 +183,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       .filter(id => items.value?.[id])
   })
 
-  // O(N) single pass over all trns — replaces O(W×N) per-wallet getWalletTotal
+  // Wallet totals in a single pass over all trns.
   const walletTotals = computed(() =>
     getWalletsTotals({
       trnsItems: trnsStore.items ?? {},
@@ -261,7 +212,9 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsComputed.value, 'currency'))
 
-  function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
+  async function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
+    const prevWallets = items.value
+    const prevTrns = trnsStore.items
     const wallets = { ...(items.value ?? {}) }
     delete wallets[id]
     setWallets(wallets)
@@ -269,30 +222,35 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
 
-    if (!pushDeleteOp({ entity: 'wallets', id, isDemo: !!isDemo.value }))
+    if (isDemo.value)
       return
 
-    const { api, client } = useConvexClientWithApi()
-    return handleMutationResult({
-      action: 'delete',
-      entity: 'wallets',
-      errorMessage: 'wallets.errors.deleteFailed',
-      id,
-      items,
-      mutation: client.action(api.wallets.remove, { id: asConvexId<'wallets'>(id) }),
-
-    })
+    // Real mode: the wallet's transactions must also be deleted from the DB,
+    // otherwise the trns watch would re-add them after the optimistic removal.
+    try {
+      await Promise.all([
+        deleteRow('wallets', id),
+        ...(trnsIds ?? []).map(trnId => deleteRow('trns', trnId)),
+      ])
+    }
+    catch (e) {
+      // Roll back the wallet and its cascaded trns if the local write failed.
+      setWallets(prevWallets)
+      trnsStore.setTrns(prevTrns)
+      logger.error('deleteWallet failed', e)
+      showErrorToast('wallets.errors.deleteFailed')
+    }
   }
 
   return {
-    applyRealtimePatch,
     currenciesUsed,
     deleteWallet,
     hasItems,
     initWallets,
+    isLoaded,
     items,
     itemsComputed,
-    lastSyncedAt,
+    primeFromCache,
     recentWalletIds,
     saveWallet,
     saveWalletsOrder,

@@ -130,9 +130,11 @@ export default {
   },
 
   chart: {
+    empty: 'No data for this period',
     types: {
       bar: 'Bars',
       line: 'Lines',
+      pie: 'Donut',
     },
   },
 
@@ -234,13 +236,17 @@ export default {
 
   login: {
     description: 'Powerful open-source finance application',
+    email: 'Email',
     error: 'Login failed. Please try again.',
+    haveAccount: 'Already have an account? Sign in',
+    noAccount: 'No account? Sign up',
     openDemo: 'Open Demo',
     or: 'or',
+    password: 'Password',
+    signIn: 'Sign in',
+    signUp: 'Sign up',
     title: 'Login',
   },
-
-  loginWithGoogle: 'Login with Google',
 
   money: {
     all: 'Total',
@@ -333,6 +339,7 @@ export default {
         },
         byCategories: 'By categories',
         groupByParent: 'Group by parent',
+        other: 'Other',
         type: {
           label: 'Chart type',
         },
@@ -385,6 +392,17 @@ export default {
 
   statistics: {
     title: 'Statistics',
+  },
+
+  sync: {
+    actions: {
+      reloadFromServer: 'Reload from server',
+    },
+    errors: {
+      uploadDiverged: 'A change could not be synced - your local data may differ from the server. Reload to discard unsynced local changes and refresh from the server.',
+      uploadRejected: 'Some changes could not be synced to the server',
+      uploadReverted: 'A change could not be saved and was reverted',
+    },
   },
 
   theme: {

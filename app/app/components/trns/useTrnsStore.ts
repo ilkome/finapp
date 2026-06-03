@@ -1,9 +1,8 @@
-import type { ConvexClient } from 'convex/browser'
-import type { FunctionReference } from 'convex/server'
+import type { Row } from '~~/services/powersync/transforms'
 
-import localforage from 'localforage'
-import { convexTrnsToMap } from '~~/services/convex/api'
-import { xorIdsHash } from '~~/utils/fnv1a'
+import { watchTable } from '~~/services/powersync/db'
+import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
+import { trnToRow } from '~~/services/powersync/transforms'
 
 import type { Range } from '~/components/date/types'
 import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/components/trns/types'
@@ -13,47 +12,31 @@ import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { filterTrnsIds } from '~/components/trns/getTrns'
+import { reconcileTrns, rowsToTrns } from '~/components/trns/reconcile'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { createDebouncedPersist, handleMutationResult, isInFlight, isPersistBlocked, mergeOfflineOps, pushDeleteOp, pushSaveOp } from '~/composables/useStoreSync'
+import { persistStoreCache } from '~/composables/useStoreCache'
+import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
+import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
-
-/** Shape returned by Convex paginated queries (has _id, _creationTime, userId + entity fields). */
-type ConvexTrnDoc = { [key: string]: unknown, _creationTime: number, _id: string, userId: string }
 
 const logger = createLogger('trns')
 
-async function fetchAllPages<T>(
-  client: ConvexClient,
-  queryFn: FunctionReference<'query'>,
-  args: Record<string, unknown>,
-  pageSize = 5000,
-): Promise<T[]> {
-  const allItems: T[] = []
-  let cursor: string | null = null
-  let isDone = false
-
-  while (!isDone) {
-    const result: { continueCursor: string, isDone: boolean, page: T[] } | null = await client.query(queryFn, {
-      ...args,
-      paginationOpts: { cursor, numItems: pageSize },
-    })
-    if (!result)
-      return allItems
-    allItems.push(...result.page)
-    isDone = result.isDone
-    cursor = result.continueCursor
-  }
-
-  return allItems
-}
+// trns is the largest table, so its watch coalesces more aggressively than the 30ms default;
+// the optimistic write already updated the UI, so the delayed re-query echo is imperceptible.
+const TRNS_WATCH_THROTTLE_MS = 120
 
 export const useTrnsStore = defineStore('trns', () => {
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
   const { isDemo } = useDemo()
+  const { uid } = useSupabaseAuth()
 
   const items = shallowRef<Trns | null>(null)
+  // True after the first local-SQLite emission; reset on (re)subscribe so a new user waits for theirs.
+  const isLoaded = ref(false)
+
+  let watchController: AbortController | null = null
 
   function getStoreTrnsIds(props: TrnsGetterProps) {
     return filterTrnsIds({
@@ -115,254 +98,77 @@ export const useTrnsStore = defineStore('trns', () => {
 
   const lastCreatedTrnItem = computed<TrnItem | undefined>(() => lastCreatedTrnId.value ? items.value?.[lastCreatedTrnId.value] : undefined)
 
-  type TrnsSyncMeta = {
-    idsHash: string
-    lastSyncedAt: number
-  }
-
-  async function fullSync(retried = false): Promise<void> {
-    const { api, client } = useConvexClientWithApi()
-    const trns = await fetchAllPages<ConvexTrnDoc>(client, api.trns.list, {})
-    let data: Trns | null = trns.length ? convexTrnsToMap(trns) : null
-
-    // Verify local hash against server + get server timestamp
-    const hashResult = await client.query(api.trns.idsHash, {}) as { hash: string, serverTime: number } | null
-    const localHash = xorIdsHash(trns.map(t => t._id))
-
-    if (hashResult && localHash !== hashResult.hash) {
-      if (!retried) {
-        logger.log('fullSync hash mismatch, retrying')
-        return fullSync(true)
-      }
-      logger.log('fullSync hash still mismatched after retry, proceeding')
-    }
-
-    const lastSyncedAt = hashResult?.serverTime ?? Date.now()
-
-    if (data)
-      data = await mergeOfflineOps(data, 'trns')
-
-    setTrns(data)
-
-    const syncMeta: TrnsSyncMeta = {
-      idsHash: hashResult?.hash ?? localHash,
-      lastSyncedAt,
-    }
-    if (!isPersistBlocked())
-      await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, syncMeta)
-    logger.log(`full sync: ${trns.length} trns`)
-  }
-
-  async function deltaSync(syncMeta: TrnsSyncMeta, cachedTrns: Trns): Promise<void> {
-    const { api, client } = useConvexClientWithApi()
-
-    const [changedTrns, hashResult] = await Promise.all([
-      fetchAllPages<ConvexTrnDoc>(client, api.trns.delta, { since: syncMeta.lastSyncedAt }),
-      client.query(api.trns.idsHash, {}) as Promise<{ hash: string, serverTime: number } | null>,
-    ])
-
-    if (hashResult === null) {
-      setTrns(null)
-      await localforage.removeItem(STORAGE_KEYS.trnsSyncMeta)
-      return
-    }
-
-    const { hash: currentHash, serverTime } = hashResult
-
-    let data: Trns = { ...cachedTrns }
-    if (changedTrns.length > 0) {
-      const changedMap = convexTrnsToMap(changedTrns)
-      data = { ...data, ...changedMap }
-    }
-
-    const localHash = xorIdsHash(Object.keys(data).filter(id => !isLocalId(id)))
-    if (localHash !== currentHash) {
-      // Hash mismatch = deletions or missed changes → fallback to fullSync
-      logger.log('hash mismatch after delta, falling back to fullSync')
-      throw new Error('hash mismatch')
-    }
-
-    data = await mergeOfflineOps(data, 'trns')
-
-    setTrns(Object.keys(data).length > 0 ? data : null)
-
-    // Update sync metadata (use server time to avoid client clock skew)
-    const newSyncMeta: TrnsSyncMeta = {
-      idsHash: currentHash,
-      lastSyncedAt: serverTime,
-    }
-    if (!isPersistBlocked())
-      await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, newSyncMeta)
-    logger.log(`delta sync: ${changedTrns.length} changed`)
-  }
-
-  /**
-   * Apply a realtime delta patch from a server subscription. Returns the
-   * new `since` timestamp for the next subscription window, or null when
-   * caller should fall back to a fullSync (truncated or no items).
-   */
-  async function applyRealtimePatch(patch: { deletedIds: string[], docs: ConvexTrnDoc[], serverTime: number, truncated: boolean }): Promise<number | null> {
-    if (patch.truncated) {
-      logger.log('realtime delta truncated — running fullSync')
-      await fullSync()
-      return null
-    }
-
-    const current = items.value ?? {}
-    const updated: Trns = { ...current }
-    let changed = false
-
-    for (const doc of patch.docs) {
-      if (isInFlight(doc._id))
-        continue
-      const existing = updated[doc._id]
-      if (existing && typeof existing.updatedAt === 'number' && existing.updatedAt >= (doc.updatedAt as number))
-        continue
-      const { _creationTime: _ct, _id, userId: _u, ...rest } = doc
-      updated[_id] = rest as unknown as Trns[string]
-      changed = true
-    }
-
-    for (const id of patch.deletedIds) {
-      if (isInFlight(id))
-        continue
-      if (id in updated) {
-        delete updated[id]
-        changed = true
-      }
-    }
-
-    if (changed) {
-      setTrns(Object.keys(updated).length > 0 ? updated : null)
-      logger.log(`realtime: ${patch.docs.length} docs, ${patch.deletedIds.length} deletes`)
-    }
-
-    const syncMeta: TrnsSyncMeta = {
-      idsHash: '',
-      lastSyncedAt: patch.serverTime,
-    }
-    const existingMeta = await localforage.getItem<TrnsSyncMeta>(STORAGE_KEYS.trnsSyncMeta)
-    if (existingMeta)
-      syncMeta.idsHash = existingMeta.idsHash
-    if (!isPersistBlocked())
-      await localforage.setItem(STORAGE_KEYS.trnsSyncMeta, syncMeta)
-
-    return patch.serverTime
-  }
-
-  async function initTrns() {
-    try {
-      const syncMeta = await localforage.getItem<TrnsSyncMeta>(STORAGE_KEYS.trnsSyncMeta)
-      const cachedTrns = await localforage.getItem<Trns>(STORAGE_KEYS.trns)
-
-      if (syncMeta && cachedTrns) {
-        try {
-          await deltaSync(syncMeta, cachedTrns)
-          return
-        }
-        catch (e) {
-          logger.log('delta sync failed, falling back to full sync', e)
-        }
-      }
-
-      // Ensure syncMeta row exists before fullSync so subsequent idsHash queries are O(1)
-      // Fire-and-forget: don't block fullSync if auth token isn't ready yet
-      const { api, client } = useConvexClientWithApi()
-      client.mutation(api.trns.ensureSyncMeta, {}).catch(() => {})
-
-      await fullSync()
-    }
-    catch (e) {
-      logger.error('init failed', e)
-    }
-  }
-
   const debouncedPersist = createDebouncedPersist<Trns | null>(STORAGE_KEYS.trns)
 
   function setTrns(values: Trns | null) {
     items.value = values
-    debouncedPersist(values)
+    // Demo persists to localforage; real mode mirrors into the per-user cold-start blob
+    // (PowerSync SQLite stays the source of truth).
+    if (isDemo.value)
+      debouncedPersist(values)
+    else
+      persistStoreCache('trns', values)
+  }
+
+  /** Cold-start paint: seed items from the snapshot before the watch emits (no-op once it has). */
+  function primeFromCache(data: Trns | null): void {
+    if (isDemo.value || !data || isLoaded.value)
+      return
+    items.value = data
+  }
+
+  /** Real mode: subscribe to local SQLite. Fires immediately and on every sync/local write. */
+  function initTrns(): void {
+    if (isDemo.value)
+      return
+    watchController?.abort()
+    isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
+    watchController = watchTable<Row>('SELECT * FROM trns', [], (rows) => {
+      isLoaded.value = true
+      const prev = items.value
+      const next = prev ? reconcileTrns(prev, rows) : rowsToTrns(rows)
+      // reconcileTrns returns `prev` (same ref) when nothing changed - skip the rebuild
+      // (this is the echo of our own optimistic write).
+      if (next !== prev)
+        setTrns(next)
+    }, TRNS_WATCH_THROTTLE_MS)
+    logger.log('watching trns')
   }
 
   function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
-    const valuesWithEditDate = {
-      ...values,
-      updatedAt: Date.now(),
-    }
+    const valuesWithEditDate = { ...values, updatedAt: Date.now() }
+    const prev = items.value
 
-    // Check before setTrns so the new id isn't already in the store
-    // Frontend IDs are always treated as new creates (server generates real ID)
-    const isExisting = !isLocalId(id) && items.value && id in items.value
-
+    // Optimistic update (instant UI). In real mode the watch re-emits the same shape.
     setTrns({ ...(items.value ?? {}), [id]: valuesWithEditDate })
 
-    if (!pushSaveOp({ entity: 'trns', id, isDemo: !!isDemo.value, isExisting: !!isExisting, values }))
+    if (isDemo.value)
       return
 
-    const { api, client } = useConvexClientWithApi()
-    const action = isExisting ? 'update' : 'create'
-
-    const base = {
-      date: valuesWithEditDate.date,
-      desc: valuesWithEditDate.desc || undefined,
-      type: valuesWithEditDate.type,
-    }
-
-    const trnData = values.type === TrnType.Transfer
-      ? {
-          ...base,
-          categoryId: 'transfer' as const,
-          expenseAmount: values.expenseAmount,
-          expenseWalletId: asConvexId<'wallets'>(values.expenseWalletId),
-          incomeAmount: values.incomeAmount,
-          incomeWalletId: asConvexId<'wallets'>(values.incomeWalletId),
-        }
-      : {
-          ...base,
-          amount: values.amount,
-          categoryId: values.categoryId === 'adjustment'
-            ? 'adjustment' as const
-            : asConvexId<'categories'>(values.categoryId),
-          walletId: asConvexId<'wallets'>(values.walletId),
-        }
-
-    const mutation = isExisting
-      ? client.mutation(api.trns.update, { id: asConvexId<'trns'>(id), ...trnData })
-      : client.mutation(api.trns.create, trnData)
-
-    return handleMutationResult({
-      action,
-      entity: 'trns',
-      errorMessage: 'trns.errors.saveFailed',
-      id,
-      items,
-      mutation,
-
+    upsertRow('trns', id, trnToRow(valuesWithEditDate, uid.value ?? '')).catch((e) => {
+      setTrns(prev) // roll back the optimistic update if the local write failed
+      logger.error('saveTrn failed', e)
+      showErrorToast('trns.errors.saveFailed')
     })
   }
 
   function deleteTrn(id: TrnId) {
-    // Optimistic UI
+    const prev = items.value
     const trns = { ...(items.value ?? {}) }
     delete trns[id]
     setTrns(trns)
 
-    if (!pushDeleteOp({ entity: 'trns', id, isDemo: !!isDemo.value }))
+    if (isDemo.value)
       return
 
-    const { api, client } = useConvexClientWithApi()
-    return handleMutationResult({
-      action: 'delete',
-      entity: 'trns',
-      errorMessage: 'trns.errors.deleteFailed',
-      id,
-      items,
-      mutation: client.mutation(api.trns.remove, { id: asConvexId<'trns'>(id) }),
-
+    deleteRow('trns', id).catch((e) => {
+      setTrns(prev) // restore the deleted trn if the local write failed
+      logger.error('deleteTrn failed', e)
+      showErrorToast('trns.errors.deleteFailed')
     })
   }
 
-  /** Remove trns from store only. Does NOT fire mutations or push to offline queue. */
+  /** Remove trns from the in-memory store only (used when a wallet/category is deleted). */
   function removeTrnsFromStore(trnsIds: TrnId[]) {
     if (!items.value)
       return
@@ -434,15 +240,16 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   return {
-    applyRealtimePatch,
     computeTrnItem,
     deleteTrn,
     getRange,
     getStoreTrnsIds,
     hasItems,
     initTrns,
+    isLoaded,
     items,
     lastCreatedTrnItem,
+    primeFromCache,
     removeTrnsFromStore,
     saveTrn,
     setTrns,

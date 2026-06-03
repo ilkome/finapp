@@ -1,18 +1,10 @@
-import type { ShallowRef } from 'vue'
-
 import { debounce } from 'es-toolkit'
 import localforage from 'localforage'
 
-import type { EntityType } from '~/components/offline/types'
-
 import { errorEmo, random, successEmo, warningEmo } from '~/assets/js/emo'
-import { getOfflineOpsByEntity, pushOfflineOp, removeOfflineOp, removeOfflineOps } from '~/components/offline/helpers'
-import { isReplaying } from '~/components/offline/replay'
-import { STORAGE_KEYS } from '~/components/offline/storageKeys'
-import { createLogger } from '~/utils/logger'
 
-const logger = createLogger('store-sync')
-
+// Persistence to localforage is only used by demo mode (real mode persists via
+// PowerSync's local SQLite). blockPersist guards writes during sign-out cleanup.
 let _persistBlocked = false
 
 export function blockPersist(): void {
@@ -27,164 +19,12 @@ export function isPersistBlocked(): boolean {
   return _persistBlocked
 }
 
-// Tracks ids of mutations currently being confirmed by the server. Used by
-// the realtime-sync layer to suppress self-echo: subscription updates whose
-// id is in-flight are skipped so the origin device doesn't apply its own change twice.
-const _inFlightOps = new Set<string>()
-
-export function trackInFlight(id: string): void {
-  _inFlightOps.add(id)
-}
-
-export function untrackInFlight(id: string): void {
-  _inFlightOps.delete(id)
-}
-
-export function isInFlight(id: string): boolean {
-  return _inFlightOps.has(id)
-}
-
 export function createDebouncedPersist<T>(storageKey: string) {
   return debounce((values: T) => {
     if (_persistBlocked)
       return
     localforage.setItem(storageKey, values)
   }, 300)
-}
-
-export function pushSaveOp<T extends Record<string, unknown>>(opts: {
-  entity: EntityType
-  id: string
-  isDemo: boolean
-  isExisting: boolean
-  values: T
-}): boolean {
-  if (opts.isDemo)
-    return false
-
-  const action = opts.isExisting ? 'update' : 'create'
-  logger.log(`optimistic ${action}: ${opts.id}`)
-  if (!isReplaying())
-    pushOfflineOp({ data: opts.values, entity: opts.entity, id: opts.id, type: action })
-
-  return true
-}
-
-export function pushDeleteOp(opts: {
-  entity: EntityType
-  id: string
-  isDemo: boolean
-}): boolean {
-  if (opts.isDemo)
-    return false
-
-  logger.log(`optimistic delete: ${opts.id}`)
-  if (!isReplaying())
-    pushOfflineOp({ entity: opts.entity, id: opts.id, type: 'delete' })
-
-  return true
-}
-
-export async function mergeOfflineOps<T>(
-  data: Record<string, T>,
-  entity: EntityType,
-): Promise<Record<string, T>> {
-  const pendingOps = await getOfflineOpsByEntity(entity)
-
-  const pendingUpdates: Record<string, T> = {}
-  const pendingDeleteIds: string[] = []
-
-  for (const op of pendingOps) {
-    if (op.type === 'delete')
-      pendingDeleteIds.push(op.id)
-    else if (op.data)
-      pendingUpdates[op.id] = op.data as unknown as T
-  }
-
-  const hasUpdates = Object.keys(pendingUpdates).length > 0
-  const hasDeletes = pendingDeleteIds.length > 0
-
-  if (hasUpdates || hasDeletes) {
-    const merged = { ...data }
-    for (const id of Object.keys(pendingUpdates))
-      merged[id] = pendingUpdates[id]!
-    for (const id of pendingDeleteIds)
-      delete merged[id]
-    data = merged
-    logger.log(`init: merged ${Object.keys(pendingUpdates).length} updates, ${pendingDeleteIds.length} deletes`)
-  }
-
-  return cleanupFrontendIds(data, pendingUpdates)
-}
-
-export type RemapInfo = { convexId: string, localId: string }
-
-export function handleMutationResult<T>(opts: {
-  action: 'create' | 'delete' | 'update'
-  entity: EntityType
-  errorMessage: string
-  id: string | string[]
-  items?: ShallowRef<Record<string, T> | null>
-  mutation: Promise<unknown>
-  onError?: (error: unknown) => void
-}): Promise<RemapInfo | void> {
-  const ids = Array.isArray(opts.id) ? opts.id : [opts.id]
-
-  // Track ids as in-flight so that the subscription's own echo (for update/delete
-  // this is the convex id already; for create the local id won't match, but the
-  // post-mutation remap handles that path).
-  for (const id of ids) trackInFlight(id)
-
-  return opts.mutation
-    .then(async (result): Promise<RemapInfo | void> => {
-      logger.log(`confirmed ${opts.action}: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`)
-
-      // Track convex id BEFORE any await so a realtime echo arriving during
-      // removeOfflineOp can't slip past the in-flight gate and overwrite
-      // our optimistic state with server-side echo data.
-      let convexIdToUntrack: string | null = null
-      if (opts.action === 'create' && !Array.isArray(opts.id) && result) {
-        const convexId = String(result)
-        if (opts.id !== convexId) {
-          trackInFlight(convexId)
-          convexIdToUntrack = convexId
-        }
-      }
-
-      if (ids.length === 1)
-        await removeOfflineOp(opts.entity, ids[0]!)
-      else
-        await removeOfflineOps(opts.entity, ids)
-
-      if (opts.action === 'create' && !Array.isArray(opts.id) && result && opts.items) {
-        const convexId = String(result)
-        const current = opts.items.value
-        if (current && opts.id in current && opts.id !== convexId) {
-          const { [opts.id]: item, ...rest } = current
-          const remapped = { ...rest, [convexId]: item } as Record<string, T>
-          opts.items.value = remapped
-          if (!_persistBlocked)
-            localforage.setItem(STORAGE_KEYS[opts.entity], remapped)
-          logger.log(`remapped ID: ${opts.id} → ${convexId}`)
-          // Extend tracking past the await so a delayed echo is still suppressed.
-          setTimeout(untrackInFlight, 2000, convexId)
-          convexIdToUntrack = null
-          return { convexId, localId: opts.id }
-        }
-      }
-
-      // If we tracked but never remapped (e.g., result mismatch), release.
-      if (convexIdToUntrack)
-        untrackInFlight(convexIdToUntrack)
-    })
-    .catch((e) => {
-      logger.error(`${opts.action} failed: ${ids.length > 1 ? `${ids.length} items` : ids[0]}`, e)
-      opts.onError?.(e)
-      showErrorToast(opts.errorMessage)
-    })
-    .finally(() => {
-      for (const id of ids) untrackInFlight(id)
-    })
 }
 
 let _toast: ReturnType<typeof useToast> | null = null
@@ -217,6 +57,27 @@ export function showToast(type: ToastType, key: string, params?: Record<string, 
   const toast = getToast()
   const t = getT()
   return toast.add({ color: type, description: t ? t(key, params ?? {}) : key, title: random(emoByType[type]) })
+}
+
+/**
+ * Like showToast but with a single action button (e.g. "Reload from server").
+ * `onClick` runs when the user taps the action.
+ */
+export function showActionToast(
+  type: ToastType,
+  messageKey: string,
+  actionLabelKey: string,
+  onClick: () => void,
+  params?: Record<string, unknown>,
+) {
+  const toast = getToast()
+  const t = getT()
+  return toast.add({
+    actions: [{ label: t ? t(actionLabelKey) : actionLabelKey, onClick }],
+    color: type,
+    description: t ? t(messageKey, params ?? {}) : messageKey,
+    title: random(emoByType[type]),
+  })
 }
 
 export function showErrorToast(key: string, params?: Record<string, unknown>) {

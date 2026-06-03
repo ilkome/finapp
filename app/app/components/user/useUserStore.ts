@@ -1,20 +1,22 @@
+import type { Row } from '~~/services/powersync/transforms'
+
 import localforage from 'localforage'
+import { disconnectPowerSync, usePowerSyncDb, watchTable } from '~~/services/powersync/db'
+import { upsertRow } from '~~/services/powersync/mutations'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LocaleSlug } from '~/components/locale/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDemo } from '~/components/demo/useDemo'
-import { getOfflineOpsByEntity, pushOfflineOp } from '~/components/offline/helpers'
-import { isReplaying } from '~/components/offline/replay'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { userSettingsSchema } from '~/components/user/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { clearAuthCookie, hasAuthCookie, setSessionInitialized } from '~/composables/useAuthCookie'
-import { stopAllRealtime } from '~/composables/useRealtimeSync'
-import { blockPersist, handleMutationResult, isPersistBlocked } from '~/composables/useStoreSync'
+import { hasPersistedSession } from '~/composables/useAuthSession'
+import { clearStoreCache, persistStoreCache } from '~/composables/useStoreCache'
+import { blockPersist, isPersistBlocked } from '~/composables/useStoreSync'
+import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 export type User = {
@@ -24,11 +26,17 @@ export type User = {
   uid: string
 }
 
+/** The 'user' slice of the cold-start snapshot (identity + settings) - see useStoreCache. */
+export type UserSettingsCache = {
+  baseCurrency?: CurrencyCode
+  locale?: LocaleSlug
+  user?: User | null
+}
+
 const logger = createLogger('user')
 
 export const useUserStore = defineStore('user', () => {
-  const authClient = useAuth()
-  const session = authClient.useSession()
+  const { session, signOut: supabaseSignOut, user: authUser } = useSupabaseAuth()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
@@ -38,18 +46,18 @@ export const useUserStore = defineStore('user', () => {
   const baseCurrency = ref<CurrencyCode>('USD')
   const locale = ref<LocaleSlug>('en')
 
+  let watchController: AbortController | null = null
+
   const currentUser = computed<User | null>(() => {
-    const s = session.value
-    const sessionUser = s?.data?.user
-    if (sessionUser) {
+    if (authUser.value) {
       return {
-        displayName: sessionUser.name,
-        email: sessionUser.email,
-        photoURL: sessionUser.image,
-        uid: sessionUser.id,
+        displayName: authUser.value.email,
+        email: authUser.value.email,
+        photoURL: null,
+        uid: authUser.value.id,
       }
     }
-    if (user.value && !isDemo.value && hasAuthCookie())
+    if (user.value && !isDemo.value && hasPersistedSession())
       return user.value
     return null
   })
@@ -66,21 +74,26 @@ export const useUserStore = defineStore('user', () => {
         }
       : null
 
-    if (!isPersistBlocked())
-      localforage.setItem(STORAGE_KEYS.user, user.value ? { ...user.value } : null)
+    // Demo persists the user to its own localforage key; real mode mirrors into the cold-start snapshot.
+    if (isDemo.value) {
+      if (!isPersistBlocked())
+        localforage.setItem(STORAGE_KEYS.user, user.value ? { ...user.value } : null)
+    }
+    else {
+      persistUserCache()
+    }
   }
 
-  // Persist session user to cache on resolution so next reload has `user` synchronously.
-  // Skipped in demo mode to avoid leaking real-auth session into demo's cleared cache.
+  // Keep `user.value` in sync with the resolved session (real mode only; demo manages its own user).
   watch(
-    () => session.value?.data?.user,
+    () => session.value?.user,
     (sessionUser) => {
       if (!sessionUser || isSigningOut.value || isDemo.value)
         return
       const next: User = {
-        displayName: sessionUser.name,
+        displayName: sessionUser.email,
         email: sessionUser.email,
-        photoURL: sessionUser.image,
+        photoURL: null,
         uid: sessionUser.id,
       }
       if (user.value?.uid === next.uid
@@ -97,10 +110,41 @@ export const useUserStore = defineStore('user', () => {
   function persistUserSettings() {
     if (isPersistBlocked())
       return
-    localforage.setItem(STORAGE_KEYS.userSettings, {
+    if (isDemo.value) {
+      localforage.setItem(STORAGE_KEYS.userSettings, {
+        baseCurrency: baseCurrency.value,
+        locale: locale.value,
+      })
+      return
+    }
+    // Real mode: mirror settings into the per-user cold-start snapshot.
+    persistUserCache()
+  }
+
+  /** Write the 'user' snapshot slice (identity + settings) for the next cold start. */
+  function persistUserCache() {
+    if (isDemo.value)
+      return
+    // toRaw: IndexedDB can't structure-clone a Vue proxy, so persist the plain target.
+    persistStoreCache('user', {
       baseCurrency: baseCurrency.value,
       locale: locale.value,
-    })
+      user: toRaw(user.value),
+    } satisfies UserSettingsCache)
+  }
+
+  /** Cold-start paint: seed identity + settings from the snapshot before the user_settings watch emits. */
+  function primeFromCache(data: UserSettingsCache | null): void {
+    if (isDemo.value || !data)
+      return
+    if (data.user && !user.value)
+      user.value = data.user
+    if (data.baseCurrency)
+      baseCurrency.value = data.baseCurrency
+    if (data.locale && data.locale !== locale.value) {
+      locale.value = data.locale
+      useNuxtApp().$i18n.setLocale(data.locale)
+    }
   }
 
   function setUserBaseCurrency(value: CurrencyCode) {
@@ -114,17 +158,12 @@ export const useUserStore = defineStore('user', () => {
     if (isDemo.value || !uid.value)
       return
 
-    logger.log(`optimistic update: baseCurrency → ${value}`)
-    if (!isReplaying())
-      pushOfflineOp({ data: { baseCurrency: value }, entity: 'userSettings', id: 'settings', type: 'update' })
-
-    const { api, client } = useConvexClientWithApi()
-    handleMutationResult({
-      action: 'update',
-      entity: 'userSettings',
-      errorMessage: 'settings.errors.saveFailed',
-      id: 'settings',
-      mutation: client.mutation(api.user.upsert, { baseCurrency: value }),
+    upsertRow('user_settings', uid.value, {
+      baseCurrency: value,
+      locale: locale.value,
+      userId: uid.value,
+    }).catch((e) => {
+      logger.error('saveUserBaseCurrency failed', e)
     })
   }
 
@@ -140,84 +179,42 @@ export const useUserStore = defineStore('user', () => {
     if (isDemo.value || !uid.value)
       return
 
-    logger.log(`optimistic update: locale → ${value}`)
-    if (!isReplaying())
-      pushOfflineOp({ data: { locale: value }, entity: 'userSettings', id: 'settings', type: 'update' })
-
-    const { api, client } = useConvexClientWithApi()
-    handleMutationResult({
-      action: 'update',
-      entity: 'userSettings',
-      errorMessage: 'settings.errors.saveFailed',
-      id: 'settings',
-      mutation: client.mutation(api.user.upsert, { locale: value }),
+    upsertRow('user_settings', uid.value, {
+      baseCurrency: baseCurrency.value,
+      locale: value,
+      userId: uid.value,
+    }).catch((e) => {
+      logger.error('saveUserLocale failed', e)
     })
   }
 
-  function applyRealtimeSettings(settings: unknown): void {
-    if (!settings)
+  /** Real mode: subscribe to the user's settings row in local SQLite. */
+  function initUserSettings(): void {
+    if (isDemo.value)
       return
-    const parsed = userSettingsSchema.safeParse(settings)
-    if (!parsed.success)
-      return
-    if (parsed.data.baseCurrency !== baseCurrency.value) {
-      baseCurrency.value = parsed.data.baseCurrency
-      persistUserSettings()
-    }
-    if (parsed.data.locale && parsed.data.locale !== locale.value) {
-      locale.value = parsed.data.locale
-      useNuxtApp().$i18n.setLocale(parsed.data.locale)
-      persistUserSettings()
-    }
-  }
 
-  async function initUserSettings() {
-    try {
-      const { api, client } = useConvexClientWithApi()
-
-      const settings = await client.query(api.user.get, {})
-      if (!settings)
+    watchController?.abort()
+    watchController = watchTable<Row>('SELECT * FROM user_settings LIMIT 1', [], (rows) => {
+      const s = rows[0]
+      if (!s)
         return
-
-      const parsed = userSettingsSchema.safeParse(settings)
-      if (parsed.success) {
-        baseCurrency.value = parsed.data.baseCurrency
-        if (parsed.data.locale) {
-          locale.value = parsed.data.locale
-          useNuxtApp().$i18n.setLocale(parsed.data.locale)
-        }
+      if (s.baseCurrency)
+        baseCurrency.value = s.baseCurrency
+      if (s.locale && s.locale !== locale.value) {
+        locale.value = s.locale
+        useNuxtApp().$i18n.setLocale(s.locale)
       }
-
-      const pendingOps = await getOfflineOpsByEntity('userSettings')
-      const partialSchema = userSettingsSchema.partial()
-      for (const op of pendingOps) {
-        const parsedOp = partialSchema.safeParse(op.data)
-        if (!parsedOp.success)
-          continue
-        if (parsedOp.data.baseCurrency)
-          baseCurrency.value = parsedOp.data.baseCurrency
-        if (parsedOp.data.locale) {
-          locale.value = parsedOp.data.locale
-          useNuxtApp().$i18n.setLocale(parsedOp.data.locale)
-        }
-      }
-
       persistUserSettings()
-    }
-    catch (e) {
-      logger.error('init user settings failed', e)
-    }
+    })
+    logger.log('watching user settings')
   }
 
   async function signOut() {
     isSigningOut.value = true
-    stopAllRealtime()
 
     if (isDemo.value) {
       await localforage.clear()
       isDemo.value = undefined
-      clearAuthCookie()
-      setSessionInitialized(false)
       useCookie<boolean>('finapp.isOnboarded').value = false
       window.location.href = '/login'
       return
@@ -233,18 +230,19 @@ export const useUserStore = defineStore('user', () => {
 
       useTrnsFormStore().$reset()
       setUser(null)
-      clearAuthCookie()
-      setSessionInitialized(false)
       useCookie<boolean>('finapp.isOnboarded').value = false
 
-      const offlineKeys: Set<string> = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
       await Promise.all(
-        Object.values(STORAGE_KEYS)
-          .filter(key => !offlineKeys.has(key))
-          .map(key => localforage.removeItem(key)),
+        Object.values(STORAGE_KEYS).map(key => localforage.removeItem(key)),
       )
+      await clearStoreCache() // session still present here, so the uid resolves
 
-      await authClient.signOut()
+      // Best-effort local wipe; if it fails the owner marker makes the next foreign sign-in wipe first.
+      const cleared = await disconnectPowerSync()
+      if (!cleared)
+        logger.warn('local data not cleared on sign-out; will wipe on next foreign sign-in')
+
+      await supabaseSignOut()
     }
     catch (error) {
       logger.error('signOut failed:', error)
@@ -253,8 +251,6 @@ export const useUserStore = defineStore('user', () => {
       isSigningOut.value = false
     }
 
-    localStorage.removeItem('better-auth_cookie')
-    localStorage.removeItem('better-auth_session_data')
     window.location.href = '/login'
   }
 
@@ -268,24 +264,31 @@ export const useUserStore = defineStore('user', () => {
 
     useCookie<boolean>('finapp.isOnboarded').value = false
 
-    const { clearOfflineQueue, setOfflineQueueUserId } = await import('~/components/offline/helpers')
-    await clearOfflineQueue()
+    if (isDemo.value) {
+      await localforage.clear()
+      return
+    }
 
-    setOfflineQueueUserId(uid.value)
-
-    if (!isDemo.value) {
-      const { api, client } = useConvexClientWithApi()
-      await client.action(api.user.removeAllUserData, {})
+    try {
+      const db = usePowerSyncDb()
+      await db.execute('DELETE FROM trns')
+      await db.execute('DELETE FROM categories')
+      await db.execute('DELETE FROM wallets')
+      await db.execute('DELETE FROM user_settings')
+      await clearStoreCache()
+    }
+    catch (e) {
+      logger.error('removeAllUserData failed', e)
     }
   }
 
   return {
-    applyRealtimeSettings,
     baseCurrency,
     currentUser,
     initUserSettings,
     isSigningOut,
     locale,
+    primeFromCache,
     removeAllUserData,
     saveUserBaseCurrency,
     saveUserLocale,

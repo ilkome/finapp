@@ -65,7 +65,7 @@ const appConfig = useAppConfig()
 const ui = computed(() => tv({
   extend: tv(theme as any),
   ...(appConfig as any).ui?.contextMenu || {},
-})({ size: props.size }))
+})({ size: props.size } as any) as any)
 </script>
 
 <template>

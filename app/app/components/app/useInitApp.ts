@@ -1,45 +1,85 @@
 import localforage from 'localforage'
+import { connectPowerSync, getLocalDbOwner, waitForFirstSync } from '~~/services/powersync/db'
 
 import type { Categories } from '~/components/categories/types'
+import type { Rates } from '~/components/currencies/types'
 import type { Trns } from '~/components/trns/types'
-import type { User } from '~/components/user/useUserStore'
+import type { User, UserSettingsCache } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { ratesSchema } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { setOfflineQueueUserId } from '~/components/offline/helpers'
-import { replayOfflineQueue } from '~/components/offline/replay'
+import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { hasAuthCookie } from '~/composables/useAuthCookie'
-import { startAllRealtime } from '~/composables/useRealtimeSync'
+import { getPersistedUid } from '~/composables/useAuthSession'
+import { clearStoreCache, readStoreCache } from '~/composables/useStoreCache'
 import { blockPersist, unblockPersist } from '~/composables/useStoreSync'
+import { useSupabase } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
+const logger = createLogger('app')
+
+// Module-level singletons: every useInitApp() caller (layout, dashboard, guard) observes the same flags.
+const isDbLoading = ref(false)
+const isOffline = ref(false)
+
 export function useInitApp() {
-  const isDbLoading = ref(false)
-  const isOffline = ref(false)
   const userStore = useUserStore()
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
 
+  // True once all three data stores have received their first local-SQLite watch emission (even
+  // an empty one) - the real "local data is on screen" signal the onboarding gate waits on. Demo
+  // mode loads synchronously, so it's always ready.
+  const isHydrated = computed(() =>
+    useDemo().isDemo.value
+    || (walletsStore.isLoaded && categoriesStore.isLoaded && trnsStore.isLoaded))
+
   useEventListener(window, 'online', () => {
     isOffline.value = false
+    // PowerSync reconnects on its own; re-arming watches is cheap and idempotent.
     if (userStore.uid && !isDbLoading.value)
-      loadDataFromDB()
+      startWatches()
   })
 
   useEventListener(window, 'offline', () => {
     isOffline.value = true
   })
 
-  async function loadDataFromCache() {
+  /**
+   * Register reactive watches on local SQLite. Each watch emits current local rows immediately
+   * and again on every incoming sync. Idempotent: each store aborts its previous watch first.
+   */
+  function startWatches() {
+    userStore.initUserSettings()
+    currenciesStore.initCurrencies()
+    categoriesStore.initCategories()
+    walletsStore.initWallets()
+    trnsStore.initTrns()
+  }
+
+  // Instant first paint: seed the stores from the last session's per-user snapshot while
+  // PowerSync's db.init + first query scan are still running. The watches then reconcile to truth.
+  async function primeStoresFromCache() {
+    const snap = await readStoreCache()
+    if (!snap)
+      return
+    trnsStore.primeFromCache((snap.trns as Trns) ?? null)
+    categoriesStore.primeFromCache((snap.categories as Categories) ?? null)
+    walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
+    userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
+    currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
+  }
+
+  // Demo mode keeps its own localforage-backed cache (no backend).
+  async function loadDemoFromCache() {
     const [user, rawUserSettings, rawCurrencies, categories, wallets, trns] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem(STORAGE_KEYS.userSettings),
@@ -67,6 +107,53 @@ export function useInitApp() {
     trnsStore.setTrns(trns ?? null)
   }
 
+  // Offline-first: local PowerSync SQLite is the only data source the UI reads. This arms the live
+  // watches; their first emission fills the stores from disk. The server sync runs in the background.
+  async function startLocalData() {
+    unblockPersist()
+
+    if (useDemo().isDemo.value) {
+      await loadDemoFromCache()
+      return
+    }
+
+    // Paint instantly from the last session's snapshot, in parallel with db.init - don't await.
+    void primeStoresFromCache()
+
+    // If local SQLite still holds another user's rows, wipe + reconnect before reading so we never
+    // surface the previous user's data. Same-user path stays instant (no wait).
+    const currentUid = userStore.uid ?? getPersistedUid()
+    const owner = getLocalDbOwner()
+    if (currentUid && owner && owner !== currentUid) {
+      const config = useRuntimeConfig()
+      await connectPowerSync(useSupabase(), config.public.powersyncUrl as string, currentUid)
+    }
+
+    startWatches()
+  }
+
+  // NOT a second data load - just waits for the server's first sync to land in local SQLite. Only
+  // matters when local SQLite is empty/stale (fresh login, new device): holds the loading screen so
+  // a returning user on a new device doesn't flash onboarding before their data lands.
+  async function awaitInitialSync() {
+    if (useDemo().isDemo.value)
+      return
+
+    if (!userStore.uid)
+      return
+
+    isDbLoading.value = true
+    try {
+      await waitForFirstSync()
+    }
+    catch (e) {
+      logger.error('awaitInitialSync failed', e)
+    }
+    finally {
+      isDbLoading.value = false
+    }
+  }
+
   function clearLocalData() {
     blockPersist()
 
@@ -75,71 +162,18 @@ export function useInitApp() {
     walletsStore.setWallets(null)
     userStore.setUser(null)
 
-    const offlineKeys: Set<string> = new Set([STORAGE_KEYS.offlineQueue, STORAGE_KEYS.offlineQueueUserId])
-    for (const key of Object.values(STORAGE_KEYS)) {
-      if (!offlineKeys.has(key))
-        localforage.removeItem(key)
-    }
-  }
+    for (const key of Object.values(STORAGE_KEYS))
+      localforage.removeItem(key)
 
-  async function loadDataFromDB() {
-    unblockPersist()
-
-    const { $waitForConvexAuth } = useNuxtApp()
-    await ($waitForConvexAuth as () => Promise<void>)()
-
-    // Auth cookie exists but session hasn't resolved yet (no cached user from previous login).
-    // Wait briefly for userStore.uid to appear before giving up.
-    if (!userStore.uid && hasAuthCookie()) {
-      await new Promise<void>((resolve) => {
-        let timer: ReturnType<typeof setTimeout>
-        const stop = watch(() => userStore.uid, (val) => {
-          if (val) {
-            stop()
-            clearTimeout(timer)
-            resolve()
-          }
-        })
-        timer = setTimeout(() => {
-          stop()
-          resolve()
-        }, 5000)
-      })
-    }
-
-    if (!userStore.uid)
-      return
-
-    setOfflineQueueUserId(userStore.uid)
-
-    isDbLoading.value = true
-    try {
-      await Promise.all([
-        userStore.initUserSettings(),
-        currenciesStore.initCurrencies(),
-        categoriesStore.initCategories(),
-        walletsStore.initWallets(),
-        trnsStore.initTrns(),
-      ])
-
-      await replayOfflineQueue()
-      // Subscriptions must start AFTER initial sync so `since` is meaningful
-      // and AFTER replay so our own replayed ops are in inFlightOps first.
-      startAllRealtime().catch(e => createLogger('app').error('startAllRealtime failed', e))
-    }
-    catch (e) {
-      createLogger('app').error('loadDataFromDB failed', e)
-    }
-    finally {
-      isDbLoading.value = false
-    }
+    void clearStoreCache()
   }
 
   return {
+    awaitInitialSync,
     clearLocalData,
     isDbLoading,
+    isHydrated,
     isOffline,
-    loadDataFromCache,
-    loadDataFromDB,
+    startLocalData,
   }
 }

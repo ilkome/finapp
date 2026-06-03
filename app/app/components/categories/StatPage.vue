@@ -24,7 +24,7 @@ const filter = useFilter()
 provide(filterKey, filter)
 
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
-const category = ref(categoriesStore.items[categoryId.value])
+const category = computed(() => categoriesStore.items[categoryId.value])
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
 
 const activeTab = useStorage<StatTabSlug>(`stat-${categoryId.value}-tab`, 'summary')
@@ -62,8 +62,19 @@ const statDate = useStatDate({
 })
 provide(statDateKey, statDate)
 
-if (!category.value)
-  router.replace('/dashboard')
+// On a hard reload of /categories/{id} the store only holds the synthetic
+// adjustment/transfer entries for a tick, so redirecting synchronously would
+// bounce a valid id to the dashboard (hydration race). `items` is always truthy
+// (it carries those synthetic entries), so wait on `hasItems` instead: only
+// redirect once real categories have hydrated but this id is genuinely absent.
+watch(
+  () => categoriesStore.hasItems,
+  (hasItems) => {
+    if (hasItems && !category.value)
+      router.replace('/dashboard')
+  },
+  { immediate: true },
+)
 
 onMounted(() => {
   statConfig.updateConfig('catsList', { isGrouped: false })
@@ -73,7 +84,7 @@ onMounted(() => {
     trnsFormStore.values.categoryId = categoryId.value
 })
 
-useHead({ title: category.value?.name })
+useHead({ title: computed(() => category.value?.name) })
 </script>
 
 <template>
