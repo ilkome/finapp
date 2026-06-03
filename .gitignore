@@ -54,7 +54,5 @@ utils/migrate/data.json
 # Generated knowledge-graph / tooling output (regenerated locally, not source)
 graphify-out
 **/graphify-out
-.understand-anything/deploy
-.understand-anything/backup-en
-.understand-anything/backup-ru
+.understand-anything/
 .fallow/
