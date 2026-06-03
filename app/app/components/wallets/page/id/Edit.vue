@@ -13,11 +13,28 @@ const walletsStore = useWalletsStore()
 const walletId = computed(() => route.params.id) as Ref<WalletId>
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 
-if (!wallet.value) {
-  router.replace('/wallets')
-}
+const walletForm = ref<WalletItem | undefined>(
+  wallet.value ? walletItemSchema.parse(wallet.value) : undefined,
+)
 
-const walletForm = ref(wallet.value ? walletItemSchema.parse(wallet.value) : undefined)
+// On a hard reload of /wallets/{id}/edit the store is still empty for a tick, so
+// redirecting synchronously would bounce a valid id to the list (hydration race).
+// `items` is null until at least one wallet has loaded, so wait for it: seed the
+// form once the wallet appears, and only redirect once the store has hydrated
+// (items truthy) but this id is genuinely absent.
+watch(
+  () => walletsStore.items,
+  (items) => {
+    if (wallet.value) {
+      if (!walletForm.value)
+        walletForm.value = walletItemSchema.parse(wallet.value)
+    }
+    else if (items) {
+      router.replace('/wallets')
+    }
+  },
+  { immediate: true },
+)
 
 function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
   if (walletForm.value)
@@ -31,7 +48,7 @@ function onAfterSave() {
     navigateAfterSave(router, `/wallets/${walletId.value}`)
 }
 
-useHead({ title: `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}` })
+useHead({ title: computed(() => `${t('base.edit')}: ${walletForm.value?.name || t('wallets.form.name.label')}`) })
 </script>
 
 <template>

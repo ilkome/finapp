@@ -1,4 +1,8 @@
-export function generateId() {
-  const random = Math.random().toString(36).substring(2, 8)
-  return `local_${random}`
+/**
+ * Client-generated entity id. With PowerSync the client generates the final id
+ * (a UUID), so there is no server-side remapping - the id written locally is the
+ * same id stored in Postgres.
+ */
+export function generateId(): string {
+  return crypto.randomUUID()
 }

@@ -12,10 +12,18 @@ const categoriesStore = useCategoriesStore()
 
 const categoryId = computed<CategoryId>(() => String(route.params.id))
 const category = computed(() => categoriesStore.items[categoryId.value])
-const categoryForm = ref(categoryFormSchema.parse(category.value))
+// On a hard navigation the store hydrates from PowerSync after setup, so
+// `category` is undefined initially - parse `?? {}` to avoid throwing, then
+// re-seed the form once the category arrives (the template gates on `category`).
+const categoryForm = ref(categoryFormSchema.parse(category.value ?? {}))
+
+watch(category, (cat) => {
+  if (cat)
+    categoryForm.value = categoryFormSchema.parse(cat)
+}, { immediate: true })
 
 useHead({
-  title: `${t('base.edit')}: ${categoryForm.value?.name || t('categories.form.name.label')}`,
+  title: computed(() => `${t('base.edit')}: ${categoryForm.value?.name || t('categories.form.name.label')}`),
 })
 
 function onAfterSave() {

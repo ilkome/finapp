@@ -256,13 +256,14 @@ async function onSave() {
     }
   }
 
-  const result = await categoriesStore.saveCategory({
+  await categoriesStore.saveCategory({
     id: editCategoryId,
     isUpdateChildCategoriesColor: isUpdateChildCategoriesColor.value,
     nextChildIds: isAllowManageChildren.value ? [...selectedChildIds.value] : undefined,
     values: parsed.data,
   })
-  emit('afterSave', result?.convexId ?? editCategoryId)
+  // With client-generated UUIDs the id is final - no server remap.
+  emit('afterSave', editCategoryId)
 }
 </script>
 
