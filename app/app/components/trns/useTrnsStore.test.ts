@@ -1,571 +1,179 @@
-import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { Transaction, Transfer } from '~/components/trns/types'
+import type { TrnItem } from '~/components/trns/types'
 
-import { isTransfer } from '~/components/trns/types'
+import { TrnType } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { toastAddMock } from '~/test-utils/setup-store'
 
-// --- Entity-specific mocks ---
-
-vi.mock('~~/services/convex/api', () => ({
-  convexTrnsToMap: (arr: any[]) => {
-    const map: Record<string, any> = {}
-    for (const item of arr) {
-      const { _id, ...rest } = item
-      map[_id] = rest
-    }
-    return map
-  },
-}))
-
-const mutationMock = vi.fn(() => Promise.resolve())
-const queryMock = vi.fn<(...args: any[]) => Promise<any>>(() => Promise.resolve(null))
-const onUpdateMock = vi.fn()
-
-vi.stubGlobal('useConvexClientWithApi', () => ({
-  api: {
-    trns: { create: 'trns.create', delta: 'trns.delta', ensureSyncMeta: 'trns.ensureSyncMeta', idsHash: 'trns.idsHash', list: 'trns.list', remove: 'trns.remove', update: 'trns.update' },
-  },
-  client: {
-    mutation: mutationMock,
-    onUpdate: onUpdateMock,
-    query: queryMock,
-  },
-}))
-
-vi.mock('~/components/categories/useCategoriesStore', () => ({
-  useCategoriesStore: () => ({
-    getTransactibleIds: (ids: any) => ids,
-    items: { food: { color: '#f00', icon: 'mdi:food', name: 'Food', parentId: 0, showInLastUsed: true, showInQuickSelector: true }, transfer: { color: '#000', icon: 'mdi:repeat', name: 'Transfer', parentId: 0, showInLastUsed: false, showInQuickSelector: false } },
-  }),
-}))
-
-vi.mock('~/components/wallets/useWalletsStore', () => ({
-  useWalletsStore: () => ({
-    items: { wallet1: { color: '#0f0', currency: 'USD', desc: '', isArchived: false, isExcludeInTotal: false, isWithdrawal: false, name: 'Cash', order: 0, type: 'cash', updatedAt: 0 } },
-  }),
-}))
-
-const offlineHelpers = await import('~/components/offline/helpers')
-vi.mock('~/components/offline/helpers', async (importOriginal) => {
-  const actual = await importOriginal() as typeof import('~/components/offline/helpers')
+// Mock the PowerSync data layer so the store talks to a controllable fake:
+// `watchTable` captures its callback (to drive hydration), the mutations record
+// calls and let us force rejections (to test optimistic rollback), `useDemo`
+// flips real/demo mode, and `useSupabaseAuth` supplies a stable uid.
+const h = vi.hoisted(() => {
+  const watchCallbacks: ((rows: any[]) => void)[] = []
   return {
-    clearOfflineQueue: vi.fn(actual.clearOfflineQueue),
-    getAllOfflineOps: vi.fn(actual.getAllOfflineOps),
-    getOfflineOpsByEntity: vi.fn(actual.getOfflineOpsByEntity),
-    pushOfflineOp: vi.fn(actual.pushOfflineOp),
-    removeOfflineOp: vi.fn(actual.removeOfflineOp),
-    removeOfflineOpByType: vi.fn(actual.removeOfflineOpByType),
-    removeOfflineOps: vi.fn(actual.removeOfflineOps),
+    auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' }, user: { value: null } },
+    deleteRow: vi.fn(),
+    demo: { value: false },
+    upsertRow: vi.fn(),
+    upsertRows: vi.fn(),
+    watchCallbacks,
+    watchTable: vi.fn((_sql: string, _params: unknown[], cb: (rows: any[]) => void) => {
+      watchCallbacks.push(cb)
+      return { abort: vi.fn() }
+    }),
   }
 })
 
-const { useTrnsStore } = await import('~/components/trns/useTrnsStore')
+vi.mock('~~/services/powersync/db', () => ({ watchTable: h.watchTable }))
+vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
+vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
+vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))
 
-// --- Helpers ---
+const tick = () => new Promise<void>(resolve => setTimeout(resolve, 0))
 
-function makeTrn(overrides: Partial<Transaction> = {}): Transaction {
-  return {
-    amount: 100,
-    categoryId: 'food',
-    date: 1700000000000,
-    type: 0,
-    updatedAt: 1700000000000,
-    walletId: 'wallet1',
-    ...overrides,
-  }
+function expense(over: Partial<TrnItem> = {}): TrnItem {
+  return { amount: 100, categoryId: 'food', date: 1700000000000, type: TrnType.Expense, updatedAt: 1, walletId: 'cash', ...over } as TrnItem
 }
 
-function makeTransfer(overrides: Partial<Transfer> = {}): Transfer {
-  return {
-    categoryId: 'transfer',
-    date: 1700000000000,
-    expenseAmount: 100,
-    expenseWalletId: 'wallet1',
-    incomeAmount: 100,
-    incomeWalletId: 'wallet1',
-    type: 2,
-    updatedAt: 1700000000000,
-    ...overrides,
-  }
+function expenseRow(id: string, updatedAt: number, amount = 100) {
+  return { amount, categoryId: 'food', date: 1700000000000, id, type: 0, updatedAt, walletId: 'cash' }
 }
-
-// --- Tests ---
 
 describe('useTrnsStore', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     setActivePinia(createPinia())
-    await localforage.clear()
-    vi.clearAllMocks()
-    mutationMock.mockReturnValue(Promise.resolve())
+    h.demo.value = false
+    h.watchCallbacks.length = 0
+    h.watchTable.mockClear()
+    h.upsertRow.mockReset().mockResolvedValue(undefined)
+    h.deleteRow.mockReset().mockResolvedValue(undefined)
+    toastAddMock.mockClear()
   })
 
-  afterEach(() => {
-    vi.restoreAllMocks()
-  })
-
-  describe('saveTrn — optimistic UI', () => {
-    it('updates items immediately', () => {
+  describe('hydration via watch', () => {
+    it('subscribes to the trns table and builds items from row snapshots', () => {
       const store = useTrnsStore()
-      store.items = {}
+      store.initTrns()
 
-      const trn = makeTrn()
-      store.saveTrn({ id: 'trn1', values: trn })
+      expect(h.watchTable).toHaveBeenCalledTimes(1)
+      expect(h.watchTable.mock.calls[0]?.[0]).toBe('SELECT * FROM trns')
 
-      expect(store.items).toHaveProperty('trn1')
-      const trn1 = store.items!.trn1!
-      expect(trn1.type).not.toBe(2)
-      if (trn1.type !== 2)
-        expect(trn1.amount).toBe(100)
+      const emit = h.watchCallbacks[0]!
+      emit([expenseRow('a', 1), expenseRow('b', 2)])
+
+      expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
+      expect(store.items?.a).toMatchObject({ amount: 100, categoryId: 'food', type: 0 })
     })
 
-    it('pushes to offline queue immediately', () => {
+    it('sets items to null when the snapshot empties', () => {
       const store = useTrnsStore()
-      store.items = {}
+      store.initTrns()
+      const emit = h.watchCallbacks[0]!
 
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
+      emit([expenseRow('a', 1)])
+      expect(store.items?.a).toBeDefined()
 
-      expect(offlineHelpers.pushOfflineOp).toHaveBeenCalledWith(
-        expect.objectContaining({ entity: 'trns', id: 'trn1', type: 'create' }),
-      )
-    })
-
-    it('fires Convex create mutation for new trn', () => {
-      const store = useTrnsStore()
-      store.items = {}
-
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
-
-      expect(mutationMock).toHaveBeenCalledWith(
-        'trns.create',
-        expect.objectContaining({ amount: 100, type: 0 }),
-      )
-    })
-
-    it('fires Convex update mutation for existing trn', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn() }
-
-      store.saveTrn({ id: 'trn1', values: makeTrn({ amount: 200 }) })
-
-      expect(mutationMock).toHaveBeenCalledWith(
-        'trns.update',
-        expect.objectContaining({ amount: 200, id: 'trn1' }),
-      )
-    })
-
-    it('cleans up offline queue on mutation success', async () => {
-      const store = useTrnsStore()
-      store.items = {}
-
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
-
-      await vi.waitFor(() => {
-        expect(offlineHelpers.removeOfflineOp).toHaveBeenCalledWith('trns', 'trn1')
-      })
-    })
-
-    it('keeps offline queue when mutation fails', async () => {
-      mutationMock.mockReturnValue(new Promise(() => {}))
-
-      const store = useTrnsStore()
-      store.items = {}
-
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
-
-      await new Promise(r => setTimeout(r, 10))
-
-      expect(offlineHelpers.removeOfflineOp).not.toHaveBeenCalled()
-    })
-
-    it('adds updatedAt timestamp', () => {
-      const store = useTrnsStore()
-      store.items = {}
-      const before = Date.now()
-
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
-
-      expect(store.items!.trn1!.updatedAt).toBeGreaterThanOrEqual(before)
-    })
-
-    it('shows toast on mutation failure', async () => {
-      const { toastAddMock } = await import('~/test-utils/setup-store')
-      mutationMock.mockReturnValue(Promise.reject(new Error('network')))
-
-      const store = useTrnsStore()
-      store.items = {}
-
-      store.saveTrn({ id: 'trn1', values: makeTrn() })
-
-      await vi.waitFor(() => {
-        expect(toastAddMock).toHaveBeenCalledWith(
-          expect.objectContaining({ color: 'error', description: 'trns.errors.saveFailed' }),
-        )
-      })
-    })
-  })
-
-  describe('deleteTrn — optimistic UI', () => {
-    it('removes item from store immediately', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn(), trn2: makeTrn() }
-
-      store.deleteTrn('trn1')
-
-      expect(store.items).not.toHaveProperty('trn1')
-      expect(store.items).toHaveProperty('trn2')
-    })
-
-    it('pushes to offline queue', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn() }
-
-      store.deleteTrn('trn1')
-
-      expect(offlineHelpers.pushOfflineOp).toHaveBeenCalledWith(
-        expect.objectContaining({ entity: 'trns', id: 'trn1', type: 'delete' }),
-      )
-    })
-
-    it('fires Convex remove mutation', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn() }
-
-      store.deleteTrn('trn1')
-
-      expect(mutationMock).toHaveBeenCalledWith('trns.remove', { id: 'trn1' })
-    })
-
-    it('cleans up offline queue on mutation success', async () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn() }
-
-      store.deleteTrn('trn1')
-
-      await vi.waitFor(() => {
-        expect(offlineHelpers.removeOfflineOp).toHaveBeenCalledWith('trns', 'trn1')
-      })
-    })
-
-    it('shows toast on mutation failure', async () => {
-      const { toastAddMock } = await import('~/test-utils/setup-store')
-      mutationMock.mockReturnValue(Promise.reject(new Error('network')))
-
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn() }
-
-      store.deleteTrn('trn1')
-
-      await vi.waitFor(() => {
-        expect(toastAddMock).toHaveBeenCalledWith(
-          expect.objectContaining({ color: 'error', description: 'trns.errors.deleteFailed' }),
-        )
-      })
-    })
-  })
-
-  describe('removeTrnsFromStore', () => {
-    it('removes trns from store without mutations or queue', () => {
-      const store = useTrnsStore()
-      store.items = {
-        trn1: makeTrn(),
-        trn2: makeTrn(),
-        trn3: makeTrn(),
-      }
-
-      store.removeTrnsFromStore(['trn1', 'trn3'])
-
-      expect(store.items).not.toHaveProperty('trn1')
-      expect(store.items).toHaveProperty('trn2')
-      expect(store.items).not.toHaveProperty('trn3')
-      expect(mutationMock).not.toHaveBeenCalled()
-      expect(offlineHelpers.pushOfflineOp).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('initTrns — sync flow', () => {
-    it('performs full sync when no cached data', async () => {
-      queryMock.mockImplementation((queryName: string) => {
-        if (queryName === 'trns.list')
-          return Promise.resolve({ continueCursor: '', isDone: true, page: [{ _id: 'trn1', amount: 100, categoryId: 'food', date: 1700000000000, type: 0, updatedAt: 1700000000000, walletId: 'wallet1' }] })
-        return Promise.resolve(null)
-      })
-
-      const store = useTrnsStore()
-      await store.initTrns()
-
-      expect(store.items).toHaveProperty('trn1')
-      const syncMeta = await localforage.getItem<any>('finapp.trns.syncMeta')
-      expect(syncMeta).toHaveProperty('idsHash')
-      expect(syncMeta.idsHash).toBeTruthy()
-      expect(syncMeta).not.toHaveProperty('serverIds')
-    })
-
-    it('performs full sync with multiple pages', async () => {
-      let callCount = 0
-      queryMock.mockImplementation((queryName: string) => {
-        if (queryName === 'trns.list') {
-          callCount++
-          if (callCount === 1) {
-            return Promise.resolve({ continueCursor: 'cursor1', isDone: false, page: [{ _id: 'trn1', amount: 100, categoryId: 'food', date: 1700000000000, type: 0, updatedAt: 1700000000000, walletId: 'wallet1' }] })
-          }
-          return Promise.resolve({ continueCursor: '', isDone: true, page: [{ _id: 'trn2', amount: 200, categoryId: 'food', date: 1700000001000, type: 0, updatedAt: 1700000001000, walletId: 'wallet1' }] })
-        }
-        return Promise.resolve(null)
-      })
-
-      const store = useTrnsStore()
-      await store.initTrns()
-
-      expect(store.items).toHaveProperty('trn1')
-      expect(store.items).toHaveProperty('trn2')
-    })
-
-    it('performs delta sync with hash match (no deletion check)', async () => {
-      const { xorIdsHash: computeHash } = await import('~~/utils/fnv1a')
-      const hash = computeHash(['trn1'])
-      await localforage.setItem('finapp.trns', { trn1: makeTrn() })
-      await localforage.setItem('finapp.trns.syncMeta', { idsHash: hash, lastSyncedAt: 1700000000000 })
-
-      queryMock.mockImplementation((queryName: string) => {
-        if (queryName === 'trns.delta')
-          return Promise.resolve({ continueCursor: '', isDone: true, page: [] })
-        if (queryName === 'trns.idsHash')
-          return Promise.resolve({ hash, serverTime: 1700000002000 })
-        return Promise.resolve(null)
-      })
-
-      const store = useTrnsStore()
-      await store.initTrns()
-
-      expect(store.items).toHaveProperty('trn1')
-    })
-
-    it('performs delta sync with hash mismatch (falls back to fullSync)', async () => {
-      await localforage.setItem('finapp.trns', { trn1: makeTrn(), trn2: makeTrn() })
-      await localforage.setItem('finapp.trns.syncMeta', { idsHash: 'old_hash', lastSyncedAt: 1700000000000 })
-
-      queryMock.mockImplementation((queryName: string) => {
-        if (queryName === 'trns.delta')
-          return Promise.resolve({ continueCursor: '', isDone: true, page: [] })
-        if (queryName === 'trns.idsHash')
-          return Promise.resolve({ hash: 'new_hash', serverTime: 1700000002000 })
-        if (queryName === 'trns.list')
-          return Promise.resolve({ continueCursor: '', isDone: true, page: [{ _id: 'trn1', amount: 100, categoryId: 'food', date: 1700000000000, type: 0, updatedAt: 1700000000000, walletId: 'wallet1' }] })
-        return Promise.resolve(null)
-      })
-
-      const store = useTrnsStore()
-      await store.initTrns()
-
-      expect(store.items).toHaveProperty('trn1')
-      expect(store.items).not.toHaveProperty('trn2')
-    })
-
-    it('applies delta changes and updates hash', async () => {
-      const { xorIdsHash: computeHash } = await import('~~/utils/fnv1a')
-      const hash = computeHash(['trn1'])
-      await localforage.setItem('finapp.trns', { trn1: makeTrn({ amount: 100 }) })
-      await localforage.setItem('finapp.trns.syncMeta', { idsHash: hash, lastSyncedAt: 1700000000000 })
-
-      queryMock.mockImplementation((queryName: string) => {
-        if (queryName === 'trns.delta')
-          return Promise.resolve({ continueCursor: '', isDone: true, page: [{ _id: 'trn1', amount: 200, categoryId: 'food', date: 1700000000000, type: 0, updatedAt: 1700000001000, walletId: 'wallet1' }] })
-        if (queryName === 'trns.idsHash')
-          return Promise.resolve({ hash, serverTime: 1700000002000 })
-        return Promise.resolve(null)
-      })
-
-      const store = useTrnsStore()
-      await store.initTrns()
-
-      const trn1 = store.items!.trn1!
-      expect(trn1.type).not.toBe(2)
-      if (trn1.type !== 2)
-        expect(trn1.amount).toBe(200)
-    })
-
-    it('clears store when user has no trns (idsHash returns null)', async () => {
-      await localforage.setItem('finapp.trns', { trn1: makeTrn() })
-      await localforage.setItem('finapp.trns.syncMeta', { idsHash: 'old_hash', lastSyncedAt: 1700000000000 })
-
-      queryMock.mockImplementation(() => Promise.resolve(null))
-
-      const store = useTrnsStore()
-      await store.initTrns()
-
+      emit([])
       expect(store.items).toBeNull()
     })
-  })
 
-  describe('computeTrnItem', () => {
-    it('returns null when store not loaded', () => {
-      const store = useTrnsStore()
-      store.items = null
-
-      expect(store.computeTrnItem('trn1')).toBeNull()
+    it('does not subscribe in demo mode', () => {
+      h.demo.value = true
+      useTrnsStore().initTrns()
+      expect(h.watchTable).not.toHaveBeenCalled()
     })
 
-    it('returns null when trn not found', () => {
+    it('flips isLoaded on the first emission and resets it on re-subscribe', () => {
       const store = useTrnsStore()
-      store.items = {}
+      expect(store.isLoaded).toBe(false)
 
-      expect(store.computeTrnItem('nonexistent')).toBeNull()
-    })
+      store.initTrns()
+      expect(store.isLoaded).toBe(false) // armed but no emission yet
 
-    it('returns null when category not found', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn({ categoryId: 'nonexistent' }) }
+      h.watchCallbacks[0]!([]) // even an empty emission counts as hydrated
+      expect(store.isLoaded).toBe(true)
 
-      expect(store.computeTrnItem('trn1')).toBeNull()
-    })
-
-    it('returns null when wallet not found', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn({ walletId: 'nonexistent' }) }
-
-      expect(store.computeTrnItem('trn1')).toBeNull()
-    })
-
-    it('returns full item for regular transaction', () => {
-      const store = useTrnsStore()
-      store.items = { trn1: makeTrn() }
-
-      const result = store.computeTrnItem('trn1')
-      expect(result).not.toBeNull()
-      expect(result!.id).toBe('trn1')
-      expect(result!.category).toEqual(expect.objectContaining({ name: 'Food' }))
-      expect(result!.type).not.toBe(2)
-      if (result!.type !== 2)
-        expect(result!.wallet).toEqual(expect.objectContaining({ name: 'Cash' }))
-    })
-
-    it('returns full item for transfer', () => {
-      const store = useTrnsStore()
-      store.items = {
-        trn1: makeTransfer(),
-      }
-
-      const result = store.computeTrnItem('trn1')
-      expect(result).not.toBeNull()
-      expect(result!.id).toBe('trn1')
-      expect(result!.type).toBe(2)
-      if (result!.type === 2) {
-        expect(result!.expenseWallet).toEqual(expect.objectContaining({ name: 'Cash' }))
-        expect(result!.incomeWallet).toEqual(expect.objectContaining({ name: 'Cash' }))
-      }
-    })
-
-    it('returns null when transfer expense wallet missing', () => {
-      const store = useTrnsStore()
-      store.items = {
-        trn1: makeTransfer({ expenseWalletId: 'nonexistent' }),
-      }
-
-      expect(store.computeTrnItem('trn1')).toBeNull()
-    })
-
-    it('returns null when transfer income wallet missing', () => {
-      const store = useTrnsStore()
-      store.items = {
-        trn1: makeTransfer({ incomeWalletId: 'nonexistent' }),
-      }
-
-      expect(store.computeTrnItem('trn1')).toBeNull()
+      store.initTrns() // re-subscribe (e.g. a different user) waits again
+      expect(store.isLoaded).toBe(false)
     })
   })
 
-  describe('applyRealtimePatch', () => {
-    it('adds new docs from delta', async () => {
+  describe('saveTrn', () => {
+    it('applies the optimistic update synchronously and upserts the row', async () => {
       const store = useTrnsStore()
-      store.items = {}
+      store.saveTrn({ id: 't1', values: expense() })
 
-      await store.applyRealtimePatch({
-        deletedIds: [],
-        docs: [{
-          _creationTime: 0,
-          _id: 't1',
-          amount: 100,
-          categoryId: 'food',
-          date: 1,
-          type: 0,
-          updatedAt: 10,
-          userId: 'u',
-          walletId: 'wallet1',
-        }],
-        serverTime: 100,
-        truncated: false,
-      })
+      expect(store.items?.t1).toMatchObject({ amount: 100, categoryId: 'food' })
+      expect(store.items?.t1?.updatedAt).toEqual(expect.any(Number))
 
-      expect(store.items?.t1).toMatchObject({ amount: 100, updatedAt: 10 })
+      await tick()
+      expect(h.upsertRow).toHaveBeenCalledWith('trns', 't1', expect.objectContaining({ amount: 100, userId: 'u1' }))
     })
 
-    it('skips docs with stale updatedAt', async () => {
+    it('rolls back to the previous items and toasts when the write fails', async () => {
       const store = useTrnsStore()
-      store.items = { t1: makeTrn({ amount: 200, updatedAt: 50 }) }
+      const prev = store.items // null on a fresh store
+      h.upsertRow.mockReset().mockRejectedValueOnce(new Error('boom'))
 
-      await store.applyRealtimePatch({
-        deletedIds: [],
-        docs: [{
-          _creationTime: 0,
-          _id: 't1',
-          amount: 999,
-          categoryId: 'food',
-          date: 1,
-          type: 0,
-          updatedAt: 20,
-          userId: 'u',
-          walletId: 'wallet1',
-        }],
-        serverTime: 100,
-        truncated: false,
-      })
+      store.saveTrn({ id: 't1', values: expense() })
+      expect(store.items?.t1).toBeDefined() // optimistic write landed first
 
-      const t1 = store.items?.t1
-      expect(isTransfer(t1) ? undefined : t1?.amount).toBe(200)
+      await tick()
+      expect(store.items).toBe(prev) // restored to the exact previous reference
+      expect(toastAddMock).toHaveBeenCalledTimes(1)
     })
 
-    it('removes docs in deletedIds', async () => {
+    it('does not touch PowerSync in demo mode', async () => {
+      h.demo.value = true
       const store = useTrnsStore()
-      store.items = { t1: makeTrn(), t2: makeTrn() }
+      store.saveTrn({ id: 't1', values: expense() })
 
-      await store.applyRealtimePatch({
-        deletedIds: ['t1'],
-        docs: [],
-        serverTime: 100,
-        truncated: false,
-      })
+      expect(store.items?.t1).toBeDefined()
+      await tick()
+      expect(h.upsertRow).not.toHaveBeenCalled()
+    })
+  })
 
+  describe('deleteTrn', () => {
+    it('removes the trn optimistically and deletes the row', async () => {
+      const store = useTrnsStore()
+      store.setTrns({ t1: expense(), t2: expense() })
+
+      store.deleteTrn('t1')
       expect(store.items?.t1).toBeUndefined()
       expect(store.items?.t2).toBeDefined()
+
+      await tick()
+      expect(h.deleteRow).toHaveBeenCalledWith('trns', 't1')
     })
 
-    it('skips docs whose id is in inFlightOps (self-echo)', async () => {
-      const { trackInFlight, untrackInFlight } = await import('~/composables/useStoreSync')
+    it('restores the deleted trn and toasts when the write fails', async () => {
       const store = useTrnsStore()
-      store.items = {}
+      const seeded = { t1: expense() }
+      store.setTrns(seeded)
+      const prev = store.items
+      h.deleteRow.mockReset().mockRejectedValueOnce(new Error('boom'))
 
-      trackInFlight('t1')
-      await store.applyRealtimePatch({
-        deletedIds: [],
-        docs: [{
-          _creationTime: 0,
-          _id: 't1',
-          amount: 100,
-          categoryId: 'food',
-          date: 1,
-          type: 0,
-          updatedAt: 10,
-          userId: 'u',
-          walletId: 'wallet1',
-        }],
-        serverTime: 100,
-        truncated: false,
-      })
-      untrackInFlight('t1')
+      store.deleteTrn('t1')
+      expect(store.items?.t1).toBeUndefined() // optimistic removal
 
-      expect(store.items?.t1).toBeUndefined()
+      await tick()
+      expect(store.items).toBe(prev)
+      expect(store.items?.t1).toBeDefined()
+      expect(toastAddMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not touch PowerSync in demo mode', async () => {
+      h.demo.value = true
+      const store = useTrnsStore()
+      store.setTrns({ t1: expense() })
+
+      store.deleteTrn('t1')
+      await tick()
+      expect(h.deleteRow).not.toHaveBeenCalled()
     })
   })
 })

@@ -1,378 +1,68 @@
 import localforage from 'localforage'
 import { createPinia, setActivePinia } from 'pinia'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { ref } from 'vue'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-// --- Entity-specific mocks ---
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { useUserStore } from '~/components/user/useUserStore'
 
-const mutationMock = vi.fn(() => Promise.resolve())
-const queryMock = vi.fn((): Promise<any> => Promise.resolve(null))
-
-const actionMock = vi.fn(() => Promise.resolve())
-
-vi.stubGlobal('useConvexClientWithApi', () => ({
-  api: {
-    user: { get: 'user.get', removeAllUserData: 'user.removeAllUserData', upsert: 'user.upsert' },
-  },
-  client: {
-    action: actionMock,
-    mutation: mutationMock,
-    query: queryMock,
-  },
+const h = vi.hoisted(() => ({
+  auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' }, user: { value: null } },
+  deleteRow: vi.fn(),
+  demo: { value: false },
+  disconnectPowerSync: vi.fn(async () => true),
+  upsertRow: vi.fn(),
+  upsertRows: vi.fn(),
+  usePowerSyncDb: vi.fn(() => ({ execute: vi.fn() })),
+  watchTable: vi.fn(() => ({ abort: vi.fn() })),
 }))
 
-const setLocaleMock = vi.fn()
-vi.stubGlobal('useNuxtApp', () => ({
-  $i18n: { setLocale: setLocaleMock },
-}))
+vi.mock('localforage', () => ({ default: { clear: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() } }))
+vi.mock('~~/services/powersync/db', () => ({ disconnectPowerSync: h.disconnectPowerSync, usePowerSyncDb: h.usePowerSyncDb, watchTable: h.watchTable }))
+vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
+vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
+vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))
 
-vi.stubGlobal('useOnline', () => ref(true))
+const setItem = vi.mocked(localforage.setItem)
 
-type SessionUser = { email: string, id: string, image: string | null, name: string }
-type SessionData = { data: { user: SessionUser } | null, isPending: boolean }
-const useSessionMock = vi.fn(() => ref<SessionData>({ data: null, isPending: false }))
-const authSignOutMock = vi.fn(() => Promise.resolve())
-vi.stubGlobal('useAuth', () => ({
-  signOut: authSignOutMock,
-  useSession: useSessionMock,
-}))
-
-const setTrnsMock = vi.fn()
-const setCategoriesMock = vi.fn()
-const setWalletsMock = vi.fn()
-const trnFormResetMock = vi.fn()
-
-vi.mock('~/components/categories/useCategoriesStore', () => ({
-  useCategoriesStore: () => ({
-    setCategories: (...args: unknown[]) => setCategoriesMock(...args),
-  }),
-}))
-
-vi.mock('~/components/trns/useTrnsStore', () => ({
-  useTrnsStore: () => ({
-    setTrns: (...args: unknown[]) => setTrnsMock(...args),
-  }),
-}))
-
-vi.mock('~/components/wallets/useWalletsStore', () => ({
-  useWalletsStore: () => ({
-    setWallets: (...args: unknown[]) => setWalletsMock(...args),
-  }),
-}))
-
-vi.mock('~/components/trnForm/useTrnsFormStore', () => ({
-  useTrnsFormStore: () => ({
-    $reset: (...args: unknown[]) => trnFormResetMock(...args),
-  }),
-}))
-
-const clearAuthCookieMock = vi.fn()
-const setSessionInitializedMock = vi.fn()
-vi.mock('~/composables/useAuthCookie', () => ({
-  clearAuthCookie: (...args: unknown[]) => clearAuthCookieMock(...args),
-  setSessionInitialized: (...args: unknown[]) => setSessionInitializedMock(...args),
-}))
-
-const blockPersistMock = vi.fn()
-vi.mock('~/composables/useStoreSync', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('~/composables/useStoreSync')>()
-  return {
-    ...actual,
-    blockPersist: (...args: unknown[]) => blockPersistMock(...args),
-  }
-})
-
-const clearOfflineQueueMock = vi.fn(() => Promise.resolve())
-const setOfflineQueueUserIdMock = vi.fn()
-vi.mock('~/components/offline/helpers', () => ({
-  clearOfflineQueue: (...args: any[]) => (clearOfflineQueueMock as any)(...args),
-  getOfflineOpsByEntity: vi.fn(() => Promise.resolve([])),
-  pushOfflineOp: vi.fn(() => Promise.resolve()),
-  setOfflineQueueUserId: (...args: any[]) => (setOfflineQueueUserIdMock as any)(...args),
-}))
-
-const useCookieMock = vi.fn(() => ({ value: null }))
-vi.stubGlobal('useCookie', useCookieMock)
-
-const { useUserStore } = await import('~/components/user/useUserStore')
-
-// --- Tests ---
+const sampleUser = { displayName: 'Ilya', email: 'a@b.c', photoURL: null, uid: 'u1' }
 
 describe('useUserStore', () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     setActivePinia(createPinia())
-    await localforage.clear()
-    vi.clearAllMocks()
+    h.demo.value = false
+    setItem.mockClear()
   })
 
-  afterEach(() => {
-    vi.restoreAllMocks()
+  describe('setUser localforage gating (real mode is the source of truth)', () => {
+    it('does NOT persist the user to localforage in real mode', () => {
+      useUserStore().setUser(sampleUser)
+      expect(setItem).not.toHaveBeenCalled()
+    })
+
+    it('persists the user to localforage in demo mode', () => {
+      h.demo.value = true
+      useUserStore().setUser(sampleUser)
+      expect(setItem).toHaveBeenCalledWith(STORAGE_KEYS.user, expect.objectContaining({ email: 'a@b.c', uid: 'u1' }))
+    })
   })
 
-  describe('setUserBaseCurrency', () => {
-    it('updates baseCurrency ref', () => {
+  describe('persistUserSettings localforage gating', () => {
+    it('does NOT persist settings to localforage in real mode', () => {
+      useUserStore().setUserBaseCurrency('EUR')
+      expect(setItem).not.toHaveBeenCalled()
+    })
+
+    it('persists settings to localforage in demo mode', () => {
+      h.demo.value = true
       const store = useUserStore()
       store.setUserBaseCurrency('EUR')
       expect(store.baseCurrency).toBe('EUR')
-    })
-
-    it('persists to localforage', async () => {
-      const store = useUserStore()
-      store.setUserBaseCurrency('EUR')
-
-      const saved = await localforage.getItem<any>('finapp.userSettings')
-      expect(saved).toEqual({ baseCurrency: 'EUR', locale: 'en' })
+      expect(setItem).toHaveBeenCalledWith(STORAGE_KEYS.userSettings, expect.objectContaining({ baseCurrency: 'EUR' }))
     })
   })
 
-  describe('saveUserBaseCurrency', () => {
-    it('updates ref and calls Convex mutation', () => {
-      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'test@test.com', id: 'user1', image: null, name: 'Test' } }, isPending: false }))
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      store.saveUserBaseCurrency('JPY')
-
-      expect(store.baseCurrency).toBe('JPY')
-      expect(mutationMock).toHaveBeenCalledWith(
-        'user.upsert',
-        { baseCurrency: 'JPY' },
-      )
-    })
-
-    it('skips Convex mutation in demo mode', async () => {
-      const demoModule = await import('~/components/demo/useDemo')
-      const original = demoModule.useDemo
-      const demoWritable = demoModule as Record<string, typeof demoModule.useDemo>
-      demoWritable.useDemo = () => ({ ...original(), isDemo: ref('true') })
-
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      store.saveUserBaseCurrency('GBP')
-
-      expect(store.baseCurrency).toBe('GBP')
-      expect(mutationMock).not.toHaveBeenCalled()
-
-      demoWritable.useDemo = original
-    })
-  })
-
-  describe('setUserLocale', () => {
-    it('updates locale ref and calls setLocale', () => {
-      const store = useUserStore()
-      store.setUserLocale('ru')
-
-      expect(store.locale).toBe('ru')
-      expect(setLocaleMock).toHaveBeenCalledWith('ru')
-    })
-
-    it('persists to localforage', async () => {
-      const store = useUserStore()
-      store.setUserLocale('ru')
-
-      const saved = await localforage.getItem<any>('finapp.userSettings')
-      expect(saved).toEqual({ baseCurrency: 'USD', locale: 'ru' })
-    })
-  })
-
-  describe('saveUserLocale', () => {
-    it('calls Convex mutation when not in demo mode', () => {
-      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'test@test.com', id: 'user1', image: null, name: 'Test' } }, isPending: false }))
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      store.saveUserLocale('ru')
-
-      expect(store.locale).toBe('ru')
-      expect(mutationMock).toHaveBeenCalledWith(
-        'user.upsert',
-        { locale: 'ru' },
-      )
-    })
-
-    it('skips Convex mutation in demo mode', async () => {
-      const demoModule = await import('~/components/demo/useDemo')
-      const original = demoModule.useDemo
-      const demoWritable = demoModule as Record<string, typeof demoModule.useDemo>
-      demoWritable.useDemo = () => ({ ...original(), isDemo: ref('true') })
-
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      store.saveUserLocale('ru')
-
-      expect(store.locale).toBe('ru')
-      expect(setLocaleMock).toHaveBeenCalledWith('ru')
-      expect(mutationMock).not.toHaveBeenCalled()
-
-      demoWritable.useDemo = original
-    })
-  })
-
-  describe('initUserSettings', () => {
-    it('sets baseCurrency and locale from Convex', async () => {
-      queryMock.mockResolvedValue({ baseCurrency: 'EUR', locale: 'ru' })
-
-      const store = useUserStore()
-      await store.initUserSettings()
-
-      expect(store.baseCurrency).toBe('EUR')
-      expect(store.locale).toBe('ru')
-      expect(setLocaleMock).toHaveBeenCalledWith('ru')
-    })
-
-    it('defaults to USD when baseCurrency is empty', async () => {
-      queryMock.mockResolvedValue({ baseCurrency: '', locale: null })
-
-      const store = useUserStore()
-      await store.initUserSettings()
-
-      expect(store.baseCurrency).toBe('USD')
-    })
-
-    it('does nothing when settings is null', async () => {
-      queryMock.mockResolvedValue(null)
-
-      const store = useUserStore()
-      await store.initUserSettings()
-
-      expect(store.baseCurrency).toBe('USD')
-      expect(store.locale).toBe('en')
-    })
-
-    it('skips locale when not set in settings', async () => {
-      queryMock.mockResolvedValue({ baseCurrency: 'GBP' })
-
-      const store = useUserStore()
-      await store.initUserSettings()
-
-      expect(store.baseCurrency).toBe('GBP')
-      expect(store.locale).toBe('en')
-      expect(setLocaleMock).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('persistUserSettings', () => {
-    it('saves both baseCurrency and locale together', async () => {
-      const store = useUserStore()
-      store.setUserBaseCurrency('EUR')
-      store.setUserLocale('ru')
-
-      const saved = await localforage.getItem<any>('finapp.userSettings')
-      expect(saved).toEqual({ baseCurrency: 'EUR', locale: 'ru' })
-    })
-  })
-
-  describe('signOut', () => {
-    beforeEach(() => {
-      // Mock window.location
-      Object.defineProperty(window, 'location', {
-        configurable: true,
-        value: { href: '/' },
-        writable: true,
-      })
-    })
-
-    it('blocks persist to prevent race conditions', async () => {
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(blockPersistMock).toHaveBeenCalled()
-    })
-
-    it('resets all stores', async () => {
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(setTrnsMock).toHaveBeenCalledWith(null)
-      expect(setCategoriesMock).toHaveBeenCalledWith(null)
-      expect(setWalletsMock).toHaveBeenCalledWith(null)
-      expect(trnFormResetMock).toHaveBeenCalled()
-    })
-
-    it('clears auth state', async () => {
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(clearAuthCookieMock).toHaveBeenCalled()
-      expect(setSessionInitializedMock).toHaveBeenCalledWith(false)
-    })
-
-    it('clears localforage', async () => {
-      await localforage.setItem('finapp.wallets', 'testValue')
-      const store = useUserStore()
-      await store.signOut()
-
-      const value = await localforage.getItem('finapp.wallets')
-      expect(value).toBeNull()
-    })
-
-    it('calls authClient.signOut', async () => {
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(authSignOutMock).toHaveBeenCalled()
-    })
-
-    it('redirects to /login', async () => {
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(window.location.href).toBe('/login')
-    })
-
-    it('resets isSigningOut after completion', async () => {
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(store.isSigningOut).toBe(false)
-    })
-
-    it('resets isSigningOut on error', async () => {
-      authSignOutMock.mockRejectedValueOnce(new Error('network'))
-      const store = useUserStore()
-      await store.signOut()
-
-      expect(store.isSigningOut).toBe(false)
-    })
-  })
-
-  describe('removeAllUserData', () => {
-    it('blocks persist', async () => {
-      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'a@a.com', id: 'u1', image: null, name: 'A' } }, isPending: false }))
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      await store.removeAllUserData()
-
-      expect(blockPersistMock).toHaveBeenCalled()
-    })
-
-    it('resets all stores', async () => {
-      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'a@a.com', id: 'u1', image: null, name: 'A' } }, isPending: false }))
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      await store.removeAllUserData()
-
-      expect(setTrnsMock).toHaveBeenCalledWith(null)
-      expect(setCategoriesMock).toHaveBeenCalledWith(null)
-      expect(setWalletsMock).toHaveBeenCalledWith(null)
-      expect(trnFormResetMock).toHaveBeenCalled()
-    })
-
-    it('clears offline queue and restores userId', async () => {
-      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'a@a.com', id: 'u1', image: null, name: 'A' } }, isPending: false }))
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      await store.removeAllUserData()
-
-      expect(clearOfflineQueueMock).toHaveBeenCalled()
-      expect(setOfflineQueueUserIdMock).toHaveBeenCalledWith('u1')
-    })
-
-    it('calls Convex removeAllUserData action', async () => {
-      useSessionMock.mockReturnValue(ref({ data: { user: { email: 'a@a.com', id: 'u1', image: null, name: 'A' } }, isPending: false }))
-      setActivePinia(createPinia())
-      const store = useUserStore()
-      await store.removeAllUserData()
-
-      expect(actionMock).toHaveBeenCalledWith('user.removeAllUserData', {})
-    })
+  it('no longer carries the removed offline-queue keys in STORAGE_KEYS', () => {
+    expect(Object.values(STORAGE_KEYS)).not.toContain('finapp.offlineQueue')
+    expect(Object.keys(STORAGE_KEYS)).not.toContain('offlineQueue')
   })
 })
