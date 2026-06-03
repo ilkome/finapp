@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://unpkg.com/@powersync/service-sync-rules@latest/schema/sync_rules.json
+#
+# Sync rules (edition 3 / Sync Streams). Restart the PowerSync service to apply changes.
+#
+# `auth.user_id()` is the Supabase user id (uuid as text) from the validated JWT.
+# Columns are camelCase to match the Postgres schema, so they are double-quoted.
+
+config:
+  edition: 3
+
+streams:
+  # Per-user data: each client only receives its own rows.
+  user_data:
+    auto_subscribe: true
+    queries:
+      - SELECT * FROM categories WHERE "userId" = auth.user_id()
+      - SELECT * FROM wallets WHERE "userId" = auth.user_id()
+      - SELECT * FROM trns WHERE "userId" = auth.user_id()
+      - SELECT * FROM user_settings WHERE "userId" = auth.user_id()
+
+  # Global exchange rates: shared across all users.
+  rates:
+    auto_subscribe: true
+    queries:
+      - SELECT * FROM rates
