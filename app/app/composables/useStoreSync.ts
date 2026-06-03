@@ -53,7 +53,7 @@ const emoByType = {
 
 type ToastType = keyof typeof emoByType
 
-export function showToast(type: ToastType, key: string, params?: Record<string, unknown>) {
+function showToast(type: ToastType, key: string, params?: Record<string, unknown>) {
   const toast = getToast()
   const t = getT()
   return toast.add({ color: type, description: t ? t(key, params ?? {}) : key, title: random(emoByType[type]) })
@@ -86,8 +86,4 @@ export function showErrorToast(key: string, params?: Record<string, unknown>) {
 
 export function showSuccessToast(key: string, params?: Record<string, unknown>) {
   return showToast('success', key, params)
-}
-
-export function showWarningToast(key: string, params?: Record<string, unknown>) {
-  return showToast('warning', key, params)
 }

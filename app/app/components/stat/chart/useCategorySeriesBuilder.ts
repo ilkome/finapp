@@ -6,11 +6,11 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 
 /** Neutral grey used for the aggregated "Other" slice/series. */
-export const OTHER_SLICE_COLOR = 'var(--ui-text-dimmed)'
+const OTHER_SLICE_COLOR = 'var(--ui-text-dimmed)'
 /** Synthetic id for the aggregated "Other" pie slice. Not a real category. */
 export const OTHER_SLICE_ID = '__other__'
 /** Default number of top categories shown before the rest roll up into "Other". */
-export const DEFAULT_PIE_TOP_N = 8
+const DEFAULT_PIE_TOP_N = 8
 
 type AggregateParams = {
   categoriesItems: Categories
