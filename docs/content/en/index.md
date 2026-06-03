@@ -11,7 +11,7 @@ Your money, your control
 #description
 Open-source personal finance app built with Vue and Nuxt.
 
-Track expenses, manage wallets, and analyze your spending — anywhere, anytime.
+Track expenses, manage wallets, and analyze your spending - anywhere, anytime.
 
 #links
   :::u-button

@@ -26,7 +26,7 @@
 
 - **Просто**: ничего лишнего - только ваши транзакции и балансы.
 - **Быстро**: работает офлайн и мгновенно синхронизируется между устройствами.
-- **Приватно**: данные принадлежат вам и безопасно хранятся в Convex.
+- **Приватно**: данные принадлежат вам - сначала хранятся локально и синхронизируются через ваш собственный бэкенд Supabase.
 - **Гибко**: поддержка нескольких валют с автоматическими курсами обмена.
 - **Удобно**: оптимизировано для мобильных и десктопных устройств, устанавливается как PWA.
 
@@ -50,8 +50,8 @@
 ### Офлайн и синхронизация
 
 - Offline-first PWA, работает без интернета.
-- Очередь офлайн-операций с автоматической синхронизацией при подключении.
-- Синхронизация между устройствами в реальном времени через Convex.
+- Локальное хранилище SQLite с автоматической фоновой синхронизацией при подключении.
+- Синхронизация между устройствами в реальном времени через PowerSync.
 
 ### Кастомизация
 
@@ -67,8 +67,9 @@
 - Nuxt 4
 - Pinia
 - @nuxt/ui v4 и Tailwind CSS v4
-- Convex
-- Better Auth
+- Supabase (Postgres)
+- PowerSync
+- Supabase Auth
 - Docus
 - pnpm workspaces
 
@@ -76,7 +77,7 @@
 
 ```text
 finapp/
-  app/    # Nuxt-приложение, Convex-бэкенд, тесты, ассеты
+  app/    # Nuxt-приложение, конфигурация Supabase + PowerSync, тесты, ассеты
   docs/   # Сайт документации на Docus
 ```
 
@@ -88,7 +89,7 @@ finapp/
 
 - Node.js `>=24.12.0`
 - pnpm `10.x`
-- Проект Convex для локальной разработки бэкенда
+- Docker и [Supabase CLI](https://supabase.com/docs/guides/cli) для локального бэкенда
 
 ### Установка
 
@@ -100,31 +101,40 @@ pnpm install
 
 ### Настройка приложения
 
-Скопируйте пример env-файла приложения и заполните значениями вашего деплоя Convex:
+Скопируйте пример env-файла приложения и заполните значениями Supabase и PowerSync:
 
 ```bash
 cp app/.env.example app/.env
 ```
 
-Обязательные переменные окружения Nuxt:
+Обязательные переменные окружения:
 
 ```bash
-CONVEX_DEPLOYMENT=your_deployment
-VITE_CONVEX_URL=your_convex_url
-VITE_CONVEX_SITE_URL=your_convex_site_url
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_POWERSYNC_URL=your_powersync_url
 ```
 
-Установите переменные окружения Convex-бэкенда из workspace приложения:
+Для локальной разработки они указывают на локальный стек, запускаемый ниже: Supabase на `http://localhost:54321` и PowerSync на `http://localhost:8080`.
+
+### Локальный бэкенд
+
+Бэкенд - это локальный self-hosted Supabase (Postgres + Auth) плюс self-hosted сервис PowerSync. Выполните один раз из workspace `app/`:
 
 ```bash
-pnpm --filter @finapp/app exec convex env set BETTER_AUTH_SECRET your_secret
-pnpm --filter @finapp/app exec convex env set APP_URL http://localhost:3050
-pnpm --filter @finapp/app exec convex env set GOOGLE_CLIENT_ID your_client_id
-pnpm --filter @finapp/app exec convex env set GOOGLE_CLIENT_SECRET your_client_secret
-pnpm --filter @finapp/app exec convex env set OPEN_EXCHANGE_RATES_KEY your_app_id
+cd app
+
+# 1. Запустить Supabase (Postgres + Auth на :54321)
+supabase start
+
+# 2. Применить настройку репликации PowerSync (роль + публикация)
+docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync_setup.sql
+
+# 3. Запустить сервис PowerSync (:8080)
+docker compose -f powersync/docker-compose.yaml up -d
 ```
 
-`BETTER_AUTH_SECRET` обязателен. Без него эндпоинты аутентификации, включая preflight-запросы CORS, не будут работать.
+Аутентификация - Supabase email/password. Зарегистрируйте новый аккаунт на экране входа или создайте его через Supabase CLI.
 
 ### Env-файлы
 
@@ -132,17 +142,12 @@ Workspace приложения использует несколько `.env` ф
 
 | Файл | Назначение |
 | --- | --- |
-| `app/.env` | Значения dev-деплоя, читаются Nuxt |
-| `app/.env.local` | Создаётся автоматически `convex dev`, используется Convex CLI |
+| `app/.env` | Значения dev, читаются Nuxt |
 | `app/.env.prod` | Значения prod-деплоя, используются `pnpm dev:prod` |
 
 ## Разработка
 
-Запустите Convex-бэкенд и Nuxt-приложение в разных терминалах:
-
-```bash
-pnpm dev:convex
-```
+Когда локальный бэкенд запущен, запустите Nuxt-приложение:
 
 ```bash
 pnpm dev
@@ -158,7 +163,7 @@ pnpm docs:dev
 
 Документация доступна на `http://localhost:3051`.
 
-Запуск dev-серверов приложения и документации одновременно. Convex по-прежнему запускается отдельно через `pnpm dev:convex`.
+Запуск dev-серверов приложения и документации одновременно:
 
 ```bash
 pnpm dev:all
@@ -169,7 +174,6 @@ pnpm dev:all
 | Команда | Описание |
 | --- | --- |
 | `pnpm dev` | Запуск dev-сервера приложения |
-| `pnpm dev:convex` | Запуск dev-бэкенда Convex |
 | `pnpm docs:dev` | Запуск dev-сервера документации |
 | `pnpm dev:all` | Параллельный запуск dev-серверов приложения и документации |
 | `pnpm build` | Сборка всех workspace-пакетов с командой `build` |
