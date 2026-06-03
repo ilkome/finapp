@@ -1,6 +1,6 @@
 # Finapp
 
-Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Convex backend, Better Auth. Repo is a pnpm monorepo: `app/` (`@finapp/app`, Nuxt source under `app/app/`, Convex backend under `app/convex/`) and `docs/` (`@finapp/docs`).
+Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supabase (Postgres) backend, PowerSync offline-first sync, Supabase Auth (email/password). Repo is a pnpm monorepo: `app/` (`@finapp/app`, Nuxt source under `app/app/`, Supabase config under `app/supabase/`, self-hosted PowerSync under `app/powersync/`) and `docs/` (`@finapp/docs`).
 
 - Node.js >= v24.12.0
 - Package manager: pnpm
@@ -10,8 +10,7 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 ## Commands
 
 - `pnpm dev` - Nuxt dev server on port 3050
-- `pnpm dev:convex` - Convex backend (watches and auto-deploys changes)
-- Both must run simultaneously in separate terminals
+- Local backend (run once, in `app/`): `supabase start` (Postgres + Auth on :54321), then `docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync_setup.sql` (replication role + publication), then `docker compose -f powersync/docker-compose.yaml up -d` (PowerSync service on :8080)
 - `pnpm build` - SPA build
 - `pnpm generate` - static generation
 - `pnpm lint` / `pnpm lint:fix` - ESLint
@@ -28,28 +27,32 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Conve
 - i18n: `no_prefix` strategy, two locales (en-US, ru-RU)
 - Always run `pnpm lint:fix` before committing
 
-## Convex Backend
+## Backend: Supabase + PowerSync
 
-- Schema in `app/convex/schema.ts`: `categories`, `wallets`, `trns`, `userSettings`, `rates`, `syncMeta`, `tombstones`
-- `TrnType` enum in `convex/validators.ts` (re-exported from `convex/shared.ts`): Expense (0), Income (1), Transfer (2)
-- Adjustment is determined by `categoryId === 'adjustment'`, NOT by `TrnType`. It uses Expense or Income type, excluded from income/expense statistics
-- Auth: `@convex-dev/better-auth` with `cors: true` in `http.ts`
-- Generated types in `convex/_generated/` - do not edit
-- `convex/tsconfig.json` is separate from the app tsconfig
+- Postgres schema migration: `app/supabase/migrations/` - tables `categories`, `wallets`, `trns`, `user_settings`, `rates`. All id columns are `text` (client-generated UUIDs, no FK constraints - PowerSync upload order is not guaranteed). Columns are camelCase (quoted) to match the client item shapes. RLS scoped to `auth.uid()`. A trigger auto-creates `user_settings` on signup.
+- PowerSync replication setup: `app/supabase/powersync_setup.sql` (a `powersync_role` with REPLICATION + BYPASSRLS, and a `powersync` publication).
+- Self-hosted PowerSync service: `app/powersync/` (`docker-compose.yaml`, `config/service.yaml`, `config/sync-config.yaml`). It replicates the Supabase Postgres and validates Supabase JWTs via the JWKS endpoint. Sync rules are per-user (`WHERE "userId" = auth.user_id()`).
+- `TrnType` in `app/app/components/trns/types.ts`: Expense (0), Income (1), Transfer (2).
+- Adjustment is determined by `categoryId === 'adjustment'`, NOT by `TrnType`. It uses Expense or Income type, excluded from income/expense statistics. `categoryId` also holds the literal `'transfer'` for transfers.
 
-### Convex Client Access
+### Client data layer
 
-Both composables live in `app/app/composables/useConvex.ts`:
-
-| Composable | Returns | Purpose |
-|------------|---------|---------|
-| `useConvexClient()` | `ConvexClient` | WebSocket client |
-| `useConvexClientWithApi()` | `{ api, client }` | Client + typed `api` object for queries/mutations |
-
-Stores use imperative `client.query()` and `client.mutation()` because they manage their own caching and offline merge.
+- `app/services/powersync/` - `AppSchema.ts` (client SQLite schema), `db.ts` (the `PowerSyncDatabase` singleton + `connectPowerSync` / `watchTable` / `waitForFirstSync`), `connector.ts` (`SupabaseConnector`: `fetchCredentials` + `uploadData`), `transforms.ts` (row↔item: booleans 0/1, `parentId` null↔0, `rates` JSON), `mutations.ts` (`upsertRow` / `deleteRow` - INSERT/UPDATE, never `ON CONFLICT`, since PowerSync tables are views).
+- `app/app/composables/useSupabase.ts` - the supabase-js client + `useSupabaseAuth()` (reactive session, sign in/up/out).
+- `app/app/plugins/powersync.client.ts` - connects PowerSync when a session resolves; sets the `finapp.localAuthUid` cookie (the synchronous route-guard gate).
+- Stores hydrate via `db.watch('SELECT * FROM ...')` (one subscription handles both initial load and realtime, local + synced) and write via `upsertRow`/`deleteRow`. Demo mode bypasses PowerSync and uses in-memory + localforage.
 
 ## Documentation
 
 - Setup, env vars, scripts: `README.md`
-- Architecture, store pattern, sync, offline queue, auth flow: `docs/content/en/3.reference/`
-- Convex CLI gotchas, Better Auth incident fixes: `docs/content/en/2.development/08.troubleshooting.md`
+- Architecture, store pattern: `docs/content/en/3.reference/` (note: reference docs still describe the old Convex layer and need updating)
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).

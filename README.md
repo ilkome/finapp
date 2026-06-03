@@ -2,11 +2,11 @@
   <img src="https://finapp.ilko.me/logo.png" alt="Finapp Logo" width="320" />
 </p>
 
-# Finapp — Open Source Finance App
+# Finapp - Open Source Finance App
 
 **English** | [Русский](./README.ru.md)
 
-> Your money, your control — anywhere, anytime.
+> Your money, your control - anywhere, anytime.
 
 **Finapp** helps you easily track and manage personal finances. The repository is a pnpm monorepo with the Nuxt application and the documentation site.
 
@@ -24,9 +24,9 @@ Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://
 
 ## Why Finapp?
 
-- **Simple**: No clutter, no distractions — just your transactions and balances.
+- **Simple**: No clutter, no distractions - just your transactions and balances.
 - **Fast**: Works offline and syncs instantly across devices.
-- **Private**: You own your data — securely stored via Convex.
+- **Private**: You own your data - stored locally first and synced through your own Supabase backend.
 - **Flexible**: Supports multiple currencies with automatic exchange rates.
 - **Portable**: Optimized for mobile and desktop, installable as a PWA.
 
@@ -34,7 +34,7 @@ Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://
 
 ### Finance
 
-- **Wallets**: 6 types — cash, bank accounts, credit cards, deposits, crypto, debt.
+- **Wallets**: 6 types - cash, bank accounts, credit cards, deposits, crypto, debt.
 - **Transactions**: expense, income, transfer, adjustment with a built-in calculator.
 - **Categories**: hierarchical parent-child categories with custom icons and colors.
 - **Multi-currency**: 165+ currencies with automatic daily exchange rates.
@@ -50,8 +50,8 @@ Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://
 ### Offline & Sync
 
 - Offline-first PWA that works without an internet connection.
-- Offline queue with automatic sync on reconnect.
-- Real-time sync across devices via Convex.
+- Local-first SQLite storage with automatic background sync on reconnect.
+- Real-time sync across devices via PowerSync.
 
 ### Customization
 
@@ -67,8 +67,9 @@ Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://
 - Nuxt 4
 - Pinia
 - @nuxt/ui v4 and Tailwind CSS v4
-- Convex
-- Better Auth
+- Supabase (Postgres)
+- PowerSync
+- Supabase Auth
 - Docus
 - pnpm workspaces
 
@@ -76,7 +77,7 @@ Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://
 
 ```text
 finapp/
-  app/    # Nuxt application, Convex backend, tests, app assets
+  app/    # Nuxt application, Supabase + PowerSync config, tests, app assets
   docs/   # Docus documentation site
 ```
 
@@ -88,7 +89,7 @@ The root package contains workspace scripts only. App and docs dependencies are 
 
 - Node.js `>=24.12.0`
 - pnpm `10.x`
-- A Convex project for local backend development
+- Docker and the [Supabase CLI](https://supabase.com/docs/guides/cli) for the local backend
 
 ### Install
 
@@ -100,31 +101,40 @@ pnpm install
 
 ### Configure the app
 
-Copy the app environment example and fill in your Convex deployment values:
+Copy the app environment example and fill in your Supabase and PowerSync values:
 
 ```bash
 cp app/.env.example app/.env
 ```
 
-Required Nuxt environment variables:
+Required environment variables:
 
 ```bash
-CONVEX_DEPLOYMENT=your_deployment
-VITE_CONVEX_URL=your_convex_url
-VITE_CONVEX_SITE_URL=your_convex_site_url
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_POWERSYNC_URL=your_powersync_url
 ```
 
-Set Convex backend environment variables from the app workspace:
+For local development these point at the local stack started below: Supabase on `http://localhost:54321` and PowerSync on `http://localhost:8080`.
+
+### Local backend
+
+The backend is local self-hosted Supabase (Postgres + Auth) plus a self-hosted PowerSync service. Run these once from the `app/` workspace:
 
 ```bash
-pnpm --filter @finapp/app exec convex env set BETTER_AUTH_SECRET your_secret
-pnpm --filter @finapp/app exec convex env set APP_URL http://localhost:3050
-pnpm --filter @finapp/app exec convex env set GOOGLE_CLIENT_ID your_client_id
-pnpm --filter @finapp/app exec convex env set GOOGLE_CLIENT_SECRET your_client_secret
-pnpm --filter @finapp/app exec convex env set OPEN_EXCHANGE_RATES_KEY your_app_id
+cd app
+
+# 1. Start Supabase (Postgres + Auth on :54321)
+supabase start
+
+# 2. Apply the PowerSync replication setup (role + publication)
+docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync_setup.sql
+
+# 3. Start the PowerSync service (:8080)
+docker compose -f powersync/docker-compose.yaml up -d
 ```
 
-`BETTER_AUTH_SECRET` is required. Without it, auth endpoints, including CORS preflight requests, will fail.
+Auth is Supabase email/password. Sign up a new account from the login screen, or create one with the Supabase CLI.
 
 ### Environment files
 
@@ -132,17 +142,12 @@ The app workspace uses several `.env` files (all gitignored except `.env.example
 
 | File | Purpose |
 | --- | --- |
-| `app/.env` | Dev deployment values, read by Nuxt |
-| `app/.env.local` | Auto-created by `convex dev`, used by the Convex CLI |
-| `app/.env.prod` | Prod deployment values, used by `pnpm dev:prod` |
+| `app/.env` | Dev values, read by Nuxt |
+| `app/.env.prod` | Prod values, used by `pnpm dev:prod` |
 
 ## Development
 
-Run the Convex backend and the Nuxt app in separate terminals:
-
-```bash
-pnpm dev:convex
-```
+With the local backend running, start the Nuxt app:
 
 ```bash
 pnpm dev
@@ -158,7 +163,7 @@ pnpm docs:dev
 
 The docs run at `http://localhost:3051`.
 
-Run app and docs dev servers together. Convex still runs separately with `pnpm dev:convex`.
+Run the app and docs dev servers together:
 
 ```bash
 pnpm dev:all
@@ -169,7 +174,6 @@ pnpm dev:all
 | Command | Description |
 | --- | --- |
 | `pnpm dev` | Start the app dev server |
-| `pnpm dev:convex` | Start the Convex dev backend |
 | `pnpm docs:dev` | Start the documentation dev server |
 | `pnpm dev:all` | Start app and docs dev servers in parallel |
 | `pnpm build` | Build all workspace packages that define `build` |
