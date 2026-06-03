@@ -24,7 +24,9 @@ logs
 
 # Playwright
 /test-results
+**/test-results/
 /blob-report
+**/blob-report/
 playwright/profiles
 **/playwright/profiles
 playwright/.auth
@@ -48,3 +50,10 @@ tests/e2e/.auth
 
 # Migration data
 utils/migrate/data.json
+
+# Generated knowledge-graph / tooling output (regenerated locally, not source)
+graphify-out
+**/graphify-out
+.understand-anything/deploy
+.understand-anything/backup-en
+.understand-anything/backup-ru

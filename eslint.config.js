@@ -31,8 +31,13 @@ export default [
       '**/.output/**',
       '**/coverage/**',
       '**/dist/**',
-      'app/convex/_generated/**',
+      '**/playwright-report/**',
+      '.claude/**',
+      '.understand-anything/**',
+      'graphify-out/**',
       'app/playwright/profiles/**',
+      'app/powersync/**',
+      'app/supabase/config.toml',
       'app/tests/e2e/.auth/**',
       'app/utils/migrate/data.json',
     ],
@@ -77,12 +82,6 @@ export default [
       vue: true,
     }),
   )),
-  {
-    files: ['app/convex/**/*.ts', 'app/scripts/**/*.mjs'],
-    rules: {
-      'node/prefer-global/process': 'off',
-    },
-  },
   {
     files: ['app/app/layouts/**/*.vue'],
     rules: {
