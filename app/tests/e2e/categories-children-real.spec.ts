@@ -15,7 +15,7 @@ const T = {
   confirm: /^(Delete|Удалить)$/,
   parentCategory: /^(Parent category|Родительская категория)$/,
   save: /^(Save|Сохранить)$/,
-  search: /(Search categories|Поиск категорий)/i,
+  search: /(Search|Поиск)/i,
   selectedAny: /(\d+ selected|Выбрано:?\s*\d+)/i,
 }
 
@@ -46,9 +46,10 @@ function candidateRows(page: Page) {
 }
 
 async function getCandidateName(row: ReturnType<Page['locator']>) {
-  // Each candidate row has nested divs: [checkbox, icon, [name, currently-in]].
-  // Grab the first .truncate (the name) only.
-  const nameEl = row.locator('div.truncate').first()
+  // Row = [checkbox, icon, CategoriesName]. The name is a `span.truncate`; an
+  // optional `div.truncate` (parent name) only renders for non-root candidates,
+  // so match any `.truncate` and take the first (the name always comes first).
+  const nameEl = row.locator('.truncate').first()
   const text = (await nameEl.textContent()) ?? ''
   return text.trim()
 }
@@ -66,14 +67,21 @@ async function selectFirstNCandidates(page: Page, n: number): Promise<string[]> 
   return picked
 }
 
+// Bottom-anchored buttons (in bottom sheets / confirm dialogs) get covered by the
+// Nuxt devtools container, which spans the viewport bottom in the dev server.
+// `force: true` still does a coordinate click and lands on the devtools overlay,
+// so use `dispatchEvent('click')` - it fires the handler directly on the element,
+// independent of what overlaps it.
+async function clickButton(page: Page, name: RegExp) {
+  await page.getByRole('button', { name }).first().dispatchEvent('click')
+}
+
 async function applyModal(page: Page) {
-  // Bottom-anchored buttons sometimes get covered by the Nuxt devtools toolbar
-  // in the headed dev server. Force-click bypasses the actionability check.
-  await page.getByRole('button', { name: T.apply }).click({ force: true })
+  await clickButton(page, T.apply)
 }
 
 async function saveCategory(page: Page) {
-  await page.getByRole('button', { name: T.save }).click({ force: true })
+  await clickButton(page, T.save)
 }
 
 /**
@@ -126,13 +134,13 @@ async function selectedNamesInModal(page: Page): Promise<string[]> {
 
 test.describe.configure({ timeout: 120_000 })
 
-test.describe('Categories children — real backend', () => {
+test.describe('Categories children - real backend', () => {
   test.use({ actionTimeout: 15_000, navigationTimeout: 30_000 })
 
   test.beforeEach(async ({ context, page }) => {
     if (!existsSync(authFile))
       test.skip(true, `Run 'pnpm test:e2e:auth' first to save real-user auth state.`)
-    // Hide Nuxt devtools toolbar/frame — it intercepts clicks on bottom-anchored
+    // Hide Nuxt devtools toolbar/frame - it intercepts clicks on bottom-anchored
     // buttons (Apply / Save) inside bottom sheets.
     await context.addInitScript(() => {
       const css = `
@@ -273,7 +281,7 @@ test.describe('Categories children — real backend', () => {
 
     const confirmBtn = page.getByRole('button', { name: T.confirm }).first()
     await expect(confirmBtn).toBeVisible({ timeout: 5_000 })
-    await confirmBtn.click()
+    await confirmBtn.dispatchEvent('click')
 
     await saveCategory(page)
     await page.waitForURL((url) => {
@@ -311,7 +319,7 @@ test.describe('Categories children — real backend', () => {
 
     const cancelBtn = page.getByRole('button', { name: T.cancel }).first()
     await expect(cancelBtn).toBeVisible({ timeout: 5_000 })
-    await cancelBtn.click()
+    await cancelBtn.dispatchEvent('click')
 
     // Children modal stays open; selection should revert to the original set.
     await page.waitForTimeout(500)
@@ -364,13 +372,13 @@ test.describe('Categories children — real backend', () => {
     await expect(page.getByText(T.childCategories).first()).toBeVisible()
 
     await page.getByText(T.parentCategory).first().click()
-    // Bottom sheet shows "Without parent" chip + parent candidates list.
-    // Click the first non-"Without parent" link inside the open sheet.
+    // Bottom sheet shows a "Without parent" chip + the parent candidates list.
+    // Candidates render as clickable category rows (plain divs with @click, not
+    // links), so pick a seeded category by name (the click bubbles to the row).
     const sheet = page.locator('.bottomSheetContent').last()
-    const candidateLinks = sheet.locator('a, [role="link"]')
-    const count = await candidateLinks.count()
-    expect(count).toBeGreaterThan(0)
-    await candidateLinks.first().click()
+    const candidate = sheet.getByText(/^E2E Category \d+$/).first()
+    await expect(candidate).toBeVisible({ timeout: 10_000 })
+    await candidate.click()
 
     await expect(page.getByText(T.childCategories)).toHaveCount(0)
   })

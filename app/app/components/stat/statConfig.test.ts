@@ -48,6 +48,7 @@ const defaultConfig: MiniItemConfig = {
   wallets: {
     count: 6,
     isShow: false,
+    isShowIcon: true,
   },
 }
 
