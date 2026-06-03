@@ -166,7 +166,10 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}'],
+      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2,wasm}'],
+      // wa-sqlite WASM (~2.5 MB) must be precached or the offline-first start
+      // breaks in prod; the default 2 MiB cap would silently drop it.
+      maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
       navigateFallback: '/',
       runtimeCaching: [
         {
@@ -202,8 +205,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      convexSiteUrl: process.env.VITE_CONVEX_SITE_URL,
-      convexUrl: process.env.VITE_CONVEX_URL,
+      powersyncUrl: process.env.VITE_POWERSYNC_URL,
+      supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
+      supabaseUrl: process.env.VITE_SUPABASE_URL,
     },
   },
 
@@ -228,20 +232,22 @@ export default defineNuxtConfig({
       },
     },
     optimizeDeps: {
+      // @powersync/web ships web workers + WASM that must not be pre-bundled.
+      exclude: ['@powersync/web'],
       include: [
         'localforage',
-        '@convex-dev/better-auth/client/plugins',
-        'better-auth/vue',
+        '@supabase/supabase-js',
         'date-fns',
-        'convex/browser',
         'zod/v4',
         'es-toolkit',
-        'convex/server',
         '@internationalized/date',
         'date-fns/locale',
         'reka-ui',
         'reka-ui/namespaced',
       ],
+    },
+    worker: {
+      format: 'es',
     },
   },
 })

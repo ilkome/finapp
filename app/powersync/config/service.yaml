@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://unpkg.com/@powersync/service-schema@latest/json-schema/powersync-config.json
+#
+# PowerSync service config for local Finapp dev.
+# Connects to the local Supabase Postgres (logical replication) and validates
+# Supabase-issued JWTs via Supabase's JWKS endpoint.
+#
+# LOCAL-DEV ONLY: the passwords and api token below are committed for a localhost stack.
+# For any non-local deployment, replace them with secrets/env vars - do NOT reuse these.
+
+telemetry:
+  disable_telemetry_sharing: true
+
+# Source database: the local Supabase Postgres.
+# `db` resolves on the external supabase network; powersync_role has REPLICATION + BYPASSRLS.
+replication:
+  connections:
+    - type: postgresql
+      uri: postgresql://powersync_role:powersync_password@db:5432/postgres
+      sslmode: disable
+
+# Bucket storage: a dedicated Postgres container (see docker-compose). PowerSync
+# auto-migrates its own schema here.
+storage:
+  type: postgresql
+  uri: postgresql://postgres:powersync_storage@pg-storage:5432/powersync_storage
+  sslmode: disable
+
+# API/sync server port.
+port: 8080
+
+sync_config:
+  path: sync-config.yaml
+
+# Client auth: trust Supabase-issued user JWTs (ES256, fetched from the JWKS endpoint).
+# `kong` is Supabase's gateway container on the shared network.
+client_auth:
+  supabase: true
+  jwks_uri: http://kong:8000/auth/v1/.well-known/jwks.json
+  # Required to accept JWKS from a local/http URL.
+  allow_local_jwks: true
+  audience: ["authenticated"]
+
+# Local admin API token (diagnostics endpoints). Not used by app clients.
+api:
+  tokens:
+    - finapp_local_admin_token

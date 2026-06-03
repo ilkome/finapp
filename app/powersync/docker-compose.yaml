@@ -1,0 +1,65 @@
+# Self-hosted PowerSync service for local Finapp dev.
+#
+# Prerequisites: `supabase start` must be running (provides the `supabase_network_app`
+# network plus the `db` and `kong` aliases) and `supabase/powersync_setup.sql` applied.
+#
+# Start:  docker compose -f powersync/docker-compose.yaml up -d
+# Logs:   docker compose -f powersync/docker-compose.yaml logs -f powersync
+#
+# LOCAL-DEV ONLY: the storage password below is for a localhost container. Use a secret in production.
+
+services:
+  powersync:
+    image: journeyapps/powersync-service:latest
+    container_name: finapp_powersync
+    restart: unless-stopped
+    command: ["start", "-r", "unified"]
+    depends_on:
+      pg-storage:
+        condition: service_healthy
+    volumes:
+      - ./config:/config
+    environment:
+      POWERSYNC_CONFIG_PATH: /config/service.yaml
+      NODE_OPTIONS: --max-old-space-size=1000
+    ports:
+      - "8080:8080"
+    networks:
+      - default
+      - supabase_network_app
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:8080/probes/liveness').then(r => r.ok ? process.exit(0) : process.exit(1)).catch(() => process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 2s
+      retries: 15
+
+  # Dedicated Postgres for PowerSync bucket storage (kept separate from app data).
+  pg-storage:
+    image: postgres:18
+    container_name: finapp_powersync_storage
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: powersync_storage
+      POSTGRES_PASSWORD: powersync_storage
+    volumes:
+      - ps_storage_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d powersync_storage"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  ps_storage_data:
+
+# Supabase's network, created by `supabase start` (project id = app).
+networks:
+  supabase_network_app:
+    external: true

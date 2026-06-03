@@ -1,0 +1,61 @@
+import type { LockContext } from '@powersync/web'
+
+import { usePowerSyncDb } from './db'
+
+// PowerSync client tables are SQLite views with INSTEAD OF triggers: they take plain
+// INSERT/UPDATE/DELETE but not `INSERT ... ON CONFLICT`, so upsert = existence check + INSERT/UPDATE.
+
+// Every mutation targets one of these trusted literals (callers never pass user input). The
+// guard hardens the string-interpolated SQL below; column names come from transforms.ts (fixed
+// keys) and row values are always parameterized.
+const WRITABLE_TABLES = new Set(['categories', 'trns', 'user_settings', 'wallets'])
+
+function assertTable(table: string): void {
+  if (!WRITABLE_TABLES.has(table))
+    throw new Error(`Refusing to mutate unknown table: ${table}`)
+}
+
+async function upsertWith(
+  ctx: { execute: LockContext['execute'], getOptional: LockContext['getOptional'] },
+  table: string,
+  id: string,
+  row: Record<string, unknown>,
+): Promise<void> {
+  assertTable(table)
+  const cols = Object.keys(row)
+  const exists = await ctx.getOptional<{ id: string }>(`SELECT id FROM ${table} WHERE id = ?`, [id])
+
+  if (exists) {
+    const sets = cols.map(c => `"${c}" = ?`).join(', ')
+    await ctx.execute(`UPDATE ${table} SET ${sets} WHERE id = ?`, [...cols.map(c => row[c]), id])
+  }
+  else {
+    const quoted = cols.map(c => `"${c}"`).join(', ')
+    const placeholders = cols.map(() => '?').join(', ')
+    await ctx.execute(`INSERT INTO ${table} (id, ${quoted}) VALUES (?, ${placeholders})`, [id, ...cols.map(c => row[c])])
+  }
+}
+
+/**
+ * Insert or update a row by id. PowerSync queues the change and syncs it to Supabase.
+ * `row` holds SQLite-ready column values (transforms.ts); the caller owns the id.
+ */
+export async function upsertRow(table: string, id: string, row: Record<string, unknown>): Promise<void> {
+  // Existence check + INSERT/UPDATE in one transaction (atomic, single lock).
+  await usePowerSyncDb().writeTransaction(async (tx) => {
+    await upsertWith(tx, table, id, row)
+  })
+}
+
+export async function deleteRow(table: string, id: string): Promise<void> {
+  assertTable(table)
+  await usePowerSyncDb().execute(`DELETE FROM ${table} WHERE id = ?`, [id])
+}
+
+/** Upsert several rows in a single write transaction (e.g. wallet reordering). */
+export async function upsertRows(table: string, rows: { id: string, row: Record<string, unknown> }[]): Promise<void> {
+  await usePowerSyncDb().writeTransaction(async (tx) => {
+    for (const { id, row } of rows)
+      await upsertWith(tx, table, id, row)
+  })
+}
