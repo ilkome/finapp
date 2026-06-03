@@ -35,6 +35,7 @@ const isTrnsShow = computed(() => statConfig.config.value.trns.isShow)
 
 const {
   averageTotal,
+  chartPieGroups,
   chartSeries,
   chartXAxisLabels,
   filteredCategoriesIds,
@@ -110,9 +111,11 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
   <div class="@container/stat">
     <StatChartWrap
       v-if="shouldShowAmounts"
+      :pieGroups="chartPieGroups"
       :series="chartSeries"
       :xAxisLabels="chartXAxisLabels"
       class="pb-3"
+      @clickCategory="onSetCategoryFilter"
     />
 
     <div class="grid min-w-0 content-start gap-3">

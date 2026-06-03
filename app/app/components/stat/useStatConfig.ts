@@ -4,6 +4,8 @@ import { useStorage } from '@vueuse/core'
 import defu from 'defu'
 import { z } from 'zod/v4'
 
+import type { ChartType } from '~/components/stat/chart/types'
+
 import { chartTypes } from '~/components/stat/chart/types'
 import { applyConfigUpdate } from '~/components/stat/statConfig'
 
@@ -18,6 +20,17 @@ export function resolveGrouped(raw: boolean, grouping: GroupingMode): boolean {
   if (grouping === 'children')
     return false
   return raw
+}
+
+export type ChartMode = 'aggregated' | 'categories'
+
+/**
+ * Pie is only meaningful for the per-category breakdown. When the chart is in
+ * aggregated mode a stored `pie` selection falls back to `bar`, so switching
+ * modes never leaves the chart in an unrenderable state.
+ */
+export function resolveChartType(raw: ChartType, mode: ChartMode): ChartType {
+  return mode !== 'categories' && raw === 'pie' ? 'bar' : raw
 }
 
 export const ConfigSchema = z.object({

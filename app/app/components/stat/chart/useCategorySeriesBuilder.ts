@@ -5,15 +5,46 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 
-type BuildParams = {
+/** Neutral grey used for the aggregated "Other" slice/series. */
+export const OTHER_SLICE_COLOR = 'var(--ui-text-dimmed)'
+/** Synthetic id for the aggregated "Other" pie slice. Not a real category. */
+export const OTHER_SLICE_ID = '__other__'
+/** Default number of top categories shown before the rest roll up into "Other". */
+export const DEFAULT_PIE_TOP_N = 8
+
+type AggregateParams = {
   categoriesItems: Categories
-  chartType: ChartType | undefined
   computeTotalForTrnsIds: (ids: TrnId[]) => { expense: number, income: number, sum: number }
   filterCategoriesIds?: CategoryId[]
   intervals: IntervalData[]
   isGrouped: boolean
   trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
   type: SeriesSlug
+}
+
+type BuildSeriesParams = AggregateParams & {
+  chartType: ChartType | undefined
+}
+
+type BuildPieParams = AggregateParams & {
+  topN?: number
+}
+
+export type CategoryPieDatum = {
+  color: string
+  id: CategoryId
+  isOther?: boolean
+  name: string
+  value: number
+}
+
+type AggregatedTotals = {
+  /** displayCategoryId -> total over the full range (positive amounts only kept in `orderedCategoryIds`). */
+  categoryTotals: Record<CategoryId, number>
+  /** Category ids with a positive total, sorted by total descending. */
+  orderedCategoryIds: CategoryId[]
+  /** For each interval: displayCategoryId -> trnIds that fell into it. */
+  perIntervalByCategory: Record<CategoryId, TrnId[]>[]
 }
 
 function resolveCategoryId(
@@ -28,16 +59,22 @@ function resolveCategoryId(
   return getParentCategoryIdOrUndefined(categoriesItems, trnCategoryId) ?? trnCategoryId
 }
 
-export function buildCategoriesSeries({
+/**
+ * Single source of truth for category breakdown numbers.
+ * Buckets transactions per interval by display category, then sums each
+ * category's total across the whole range. Transfers and out-of-filter
+ * categories are excluded. Both the bar/line series and the pie slices are
+ * derived from this so their numbers always agree.
+ */
+export function aggregateCategoryTotals({
   categoriesItems,
-  chartType,
   computeTotalForTrnsIds,
   filterCategoriesIds,
   intervals,
   isGrouped,
   trnsItems,
   type,
-}: BuildParams): ChartSeries[] {
+}: AggregateParams): AggregatedTotals {
   const filterSet = filterCategoriesIds?.length ? new Set(filterCategoriesIds) : undefined
 
   // For each interval, build a map of displayCategoryId -> trnIds[]
@@ -74,6 +111,29 @@ export function buildCategoriesSeries({
     .filter(id => categoryTotals[id]! > 0)
     .sort((a, b) => categoryTotals[b]! - categoryTotals[a]!)
 
+  return { categoryTotals, orderedCategoryIds, perIntervalByCategory }
+}
+
+export function buildCategoriesSeries({
+  categoriesItems,
+  chartType,
+  computeTotalForTrnsIds,
+  filterCategoriesIds,
+  intervals,
+  isGrouped,
+  trnsItems,
+  type,
+}: BuildSeriesParams): ChartSeries[] {
+  const { orderedCategoryIds, perIntervalByCategory } = aggregateCategoryTotals({
+    categoriesItems,
+    computeTotalForTrnsIds,
+    filterCategoriesIds,
+    intervals,
+    isGrouped,
+    trnsItems,
+    type,
+  })
+
   return orderedCategoryIds.map((catId): ChartSeries => {
     const category = categoriesItems[catId]
     const data = perIntervalByCategory.map(bucket =>
@@ -86,4 +146,51 @@ export function buildCategoriesSeries({
       type: chartType ?? 'bar',
     }
   })
+}
+
+/**
+ * Pie slices for the "by categories" donut: top-N categories by total,
+ * descending, with the remainder rolled up into a single neutral "Other"
+ * slice (labeled with the `otherLabel` argument). Numbers come from the same
+ * aggregation as the bar series.
+ */
+export function buildCategoriesPieData(
+  { categoriesItems, computeTotalForTrnsIds, filterCategoriesIds, intervals, isGrouped, topN = DEFAULT_PIE_TOP_N, trnsItems, type }: BuildPieParams,
+  otherLabel: string,
+): CategoryPieDatum[] {
+  const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
+    categoriesItems,
+    computeTotalForTrnsIds,
+    filterCategoriesIds,
+    intervals,
+    isGrouped,
+    trnsItems,
+    type,
+  })
+
+  const top = orderedCategoryIds.slice(0, topN).map((catId): CategoryPieDatum => {
+    const category = categoriesItems[catId]
+    return {
+      color: category?.color ?? OTHER_SLICE_COLOR,
+      id: catId,
+      name: category?.name ?? catId,
+      value: categoryTotals[catId]!,
+    }
+  })
+
+  const restIds = orderedCategoryIds.slice(topN)
+  if (restIds.length === 0)
+    return top
+
+  const otherValue = restIds.reduce((acc, id) => acc + categoryTotals[id]!, 0)
+  return [
+    ...top,
+    {
+      color: OTHER_SLICE_COLOR,
+      id: OTHER_SLICE_ID,
+      isOther: true,
+      name: otherLabel,
+      value: otherValue,
+    },
+  ]
 }

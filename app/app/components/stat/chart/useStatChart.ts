@@ -9,7 +9,7 @@ import { createMarkAreaData } from '~/components/stat/chart/utils'
 export function useStatChart() {
   const { t } = useI18n()
 
-  const chartTypeOptions = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
+  const chartTypeOptions = computed<{ categoriesOnly?: boolean, icon: string, label: string, value: ChartType }[]>(() => [{
     icon: 'lucide:chart-column',
     label: t('chart.types.bar'),
     value: 'bar',
@@ -17,6 +17,11 @@ export function useStatChart() {
     icon: 'lucide:chart-line',
     label: t('chart.types.line'),
     value: 'line',
+  }, {
+    categoriesOnly: true,
+    icon: 'lucide:chart-pie',
+    label: t('chart.types.pie'),
+    value: 'pie',
   }])
 
   function createSeriesItem(typeItem: SeriesSlug, data: TotalReturns[], average?: number | false): ChartSeries {
