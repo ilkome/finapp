@@ -1,0 +1,66 @@
+# graphify corpus excludes (gitignore syntax).
+#
+# graphify prefers this file over .gitignore, so it SHADOWS the root .gitignore
+# for the knowledge graph: keep the build/output excludes below in sync with
+# .gitignore. The point of a separate file is the tracked tooling/config noise
+# at the bottom - files that belong in git but are not app architecture and only
+# pollute god-nodes with structural keys.
+
+# --- Build / generated outputs (mirrors .gitignore) ---
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+/sw.*
+
+# --- Deps / logs / OS ---
+node_modules
+logs
+*.log
+.DS_Store
+.fleet
+.idea
+
+# --- Local env (also caught by graphify's secret scan) ---
+.env
+.env.*
+!.env.example
+
+# --- Playwright / test artifacts ---
+/test-results
+**/test-results/
+/blob-report
+**/blob-report/
+playwright/profiles
+**/playwright/profiles
+playwright/.auth
+**/playwright/.auth
+playwright/output
+**/playwright/output
+playwright-report
+**/playwright-report
+playwright/.cache
+**/playwright/.cache
+.playwright-mcp
+**/.playwright-mcp
+tests/e2e/.auth
+**/tests/e2e/.auth
+
+# --- Migration data ---
+utils/migrate/data.json
+
+# --- Tooling output (regenerated, not source) ---
+graphify-out
+**/graphify-out
+.understand-anything/
+.fallow/
+
+# --- Tracked tooling/config noise (the reason this file exists) ---
+# Editor + agent + tool config parsed as "code" -> noise in the graph.
+.claude/
+.vscode/
+.mcp.json
+.fallowrc.json
+eslint.config.js
