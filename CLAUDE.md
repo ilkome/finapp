@@ -1,6 +1,6 @@
 # Finapp
 
-Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supabase (Postgres) backend, PowerSync offline-first sync, Supabase Auth (email/password). Repo is a pnpm monorepo: `app/` (`@finapp/app`, Nuxt source under `app/app/`, Supabase config under `app/supabase/`, self-hosted PowerSync under `app/powersync/`) and `docs/` (`@finapp/docs`).
+Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supabase (Postgres) backend, PowerSync offline-first sync, Supabase Auth (email/password + Google OAuth). Repo is a pnpm monorepo: `app/` (`@finapp/app`, Nuxt source under `app/app/`, Supabase config under `app/supabase/`, self-hosted PowerSync under `app/powersync/`) and `docs/` (`@finapp/docs`).
 
 - Node.js >= v24.12.0
 - Package manager: pnpm
@@ -38,8 +38,8 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 ### Client data layer
 
 - `app/services/powersync/` - `AppSchema.ts` (client SQLite schema), `db.ts` (the `PowerSyncDatabase` singleton + `connectPowerSync` / `watchTable` / `waitForFirstSync`), `connector.ts` (`SupabaseConnector`: `fetchCredentials` + `uploadData`), `transforms.ts` (row↔item: booleans 0/1, `parentId` null↔0, `rates` JSON), `mutations.ts` (`upsertRow` / `deleteRow` - INSERT/UPDATE, never `ON CONFLICT`, since PowerSync tables are views).
-- `app/app/composables/useSupabase.ts` - the supabase-js client + `useSupabaseAuth()` (reactive session, sign in/up/out).
-- `app/app/plugins/powersync.client.ts` - connects PowerSync when a session resolves; sets the `finapp.localAuthUid` cookie (the synchronous route-guard gate).
+- `app/app/composables/useSupabase.ts` - the supabase-js client + `useSupabaseAuth()` (reactive session, `signInWithPassword` / `signUp` / `signInWithGoogle` / `signOut`). `detectSessionInUrl: true` so the Google OAuth PKCE `?code=` is exchanged on return to `/login` (handled in `login.vue`).
+- `app/app/plugins/powersync.client.ts` - eagerly opens local SQLite for an already-logged-in user, then connects/disconnects PowerSync as the auth session (`uid`) resolves. The synchronous route-guard gate is `hasPersistedSession()` (`app/app/composables/useAuthSession.ts`), which reads the persisted Supabase session from localStorage directly - no cookie.
 - Stores hydrate via `db.watch('SELECT * FROM ...')` (one subscription handles both initial load and realtime, local + synced) and write via `upsertRow`/`deleteRow`. Demo mode bypasses PowerSync and uses in-memory + localforage.
 
 ## Documentation

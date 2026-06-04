@@ -5,7 +5,7 @@ import { useDemo } from '~/components/demo/useDemo'
 import { showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 
-const { signInWithPassword, signUp } = useSupabaseAuth()
+const { session, signInWithGoogle, signInWithPassword, signUp } = useSupabaseAuth()
 const logger = createLogger('login')
 
 definePageMeta({
@@ -27,6 +27,10 @@ const isLoading = ref(false)
 const isSignUp = ref(false)
 const email = ref('')
 const password = ref('')
+
+// Set right before redirecting to Google, read on return: marks this load as the OAuth callback.
+const OAUTH_PENDING_KEY = 'finapp.oauthPending'
+const isOauthReturn = ref(false)
 
 async function submit() {
   if (!email.value || !password.value)
@@ -55,11 +59,64 @@ async function submit() {
   }
 }
 
+async function onGoogle() {
+  isDemo.value = null
+  isLoading.value = true
+
+  try {
+    const redirect = getSafeRedirectPath(route.query.redirect)
+    const base = `${window.location.origin}/login`
+    const redirectTo = redirect === '/dashboard'
+      ? base
+      : `${base}?redirect=${encodeURIComponent(redirect)}`
+
+    // Survives the full-page redirect to Google and back (detectSessionInUrl can strip ?code= before we read it).
+    sessionStorage.setItem(OAUTH_PENDING_KEY, '1')
+
+    const { error } = await signInWithGoogle(redirectTo)
+    if (error)
+      throw error
+    // Success: the browser is already navigating to Google; keep the spinner.
+  }
+  catch (e: unknown) {
+    sessionStorage.removeItem(OAUTH_PENDING_KEY)
+    logger.error('google auth error:', e)
+    showErrorToast('login.error')
+    isLoading.value = false
+  }
+}
+
 async function openDemo() {
   isDemo.value = 'true'
   await generateDemoData(locale.value)
   router.push(getSafeRedirectPath(route.query.redirect))
 }
+
+// Returning from Google: detectSessionInUrl exchanges the ?code= asynchronously; hold the spinner,
+// then navigate once the session lands. Denied consent / provider errors come back as ?error=.
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search)
+  const pending = sessionStorage.getItem(OAUTH_PENDING_KEY) === '1'
+
+  if (params.has('error')) {
+    sessionStorage.removeItem(OAUTH_PENDING_KEY)
+    logger.error('google auth error:', params.get('error_description') ?? params.get('error'))
+    showErrorToast('login.error')
+    return
+  }
+
+  if (pending || params.has('code')) {
+    isOauthReturn.value = true
+    isLoading.value = true
+  }
+})
+
+watch(session, (next) => {
+  if (next && isOauthReturn.value) {
+    sessionStorage.removeItem(OAUTH_PENDING_KEY)
+    router.replace(getSafeRedirectPath(route.query.redirect))
+  }
+}, { immediate: true })
 </script>
 
 <template>
@@ -93,6 +150,24 @@ async function openDemo() {
         </div>
 
         <form class="grid min-w-[320px] items-center gap-3 py-14" @submit.prevent="submit">
+          <UButton
+            block
+            color="neutral"
+            icon="mdi:google"
+            :loading="isLoading"
+            size="xl"
+            type="button"
+            variant="subtle"
+            @click="onGoogle"
+          >
+            {{ t('login.signInWithGoogle') }}
+          </UButton>
+
+          <USeparator
+            :label="t('login.or')"
+            class="!text-muted px-3 pb-3"
+          />
+
           <UInput
             v-model="email"
             autocomplete="email"

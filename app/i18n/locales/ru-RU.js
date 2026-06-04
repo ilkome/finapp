@@ -244,6 +244,7 @@ export default {
     or: 'или',
     password: 'Пароль',
     signIn: 'Войти',
+    signInWithGoogle: 'Войти через Google',
     signUp: 'Регистрация',
     title: 'Вход',
   },

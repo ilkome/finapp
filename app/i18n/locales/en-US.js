@@ -244,6 +244,7 @@ export default {
     or: 'or',
     password: 'Password',
     signIn: 'Sign in',
+    signInWithGoogle: 'Sign in with Google',
     signUp: 'Sign up',
     title: 'Login',
   },

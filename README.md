@@ -134,7 +134,28 @@ docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync
 docker compose -f powersync/docker-compose.yaml up -d
 ```
 
-Auth is Supabase email/password. Sign up a new account from the login screen, or create one with the Supabase CLI.
+Auth supports **email/password** and **Sign in with Google**. Email/password works out of the box - sign up from the login screen, or create an account with the Supabase CLI.
+
+### Google sign-in (optional, local)
+
+The login screen shows a **Sign in with Google** button. To make it work against the local stack:
+
+1. In the [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create an **OAuth 2.0 Client ID** (Web application) and add the local Supabase callback as an authorized redirect URI:
+
+   ```text
+   http://127.0.0.1:54321/auth/v1/callback
+   ```
+
+2. Put the client id/secret in `app/.env` (the Supabase CLI loads `.env` from the directory you run it in; these feed `env()` in `app/supabase/config.toml` and are **not** shipped to the client):
+
+   ```bash
+   SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=your_google_client_id
+   SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=your_google_client_secret
+   ```
+
+3. Restart Supabase so it re-reads the config and env (`supabase stop && supabase start`).
+
+The Google provider is already enabled in `app/supabase/config.toml` (`[auth.external.google]`, `skip_nonce_check = true` for local). Leaving the env vars empty just keeps the button non-functional - email/password still works. For **production**, configure Google in the hosted Supabase dashboard instead (see [Deployment](docs/content/en/2.development/05.deployment.md)).
 
 ### Environment files
 
