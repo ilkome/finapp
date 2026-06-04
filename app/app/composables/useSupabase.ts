@@ -4,8 +4,9 @@ import { createClient } from '@supabase/supabase-js'
 
 import { AUTH_STORAGE_KEY } from '~/composables/useAuthSession'
 
-// Singleton Supabase client. Sessions persist in localStorage and auto-refresh;
-// `detectSessionInUrl` is off since we use email/password (no OAuth redirect to parse).
+// Singleton Supabase client. Sessions persist in localStorage and auto-refresh.
+// `detectSessionInUrl` is on so the PKCE `?code=` from the Google OAuth redirect is
+// exchanged for a session on return; it's a no-op on normal loads (no code param).
 let _client: SupabaseClient | null = null
 
 export function useSupabase(): SupabaseClient {
@@ -19,7 +20,7 @@ export function useSupabase(): SupabaseClient {
     {
       auth: {
         autoRefreshToken: true,
-        detectSessionInUrl: false,
+        detectSessionInUrl: true,
         persistSession: true,
         // Fixed key the synchronous route gate (useAuthSession) reads directly.
         storageKey: AUTH_STORAGE_KEY,
@@ -53,6 +54,11 @@ export function useSupabaseAuth() {
   return {
     isAuthReady,
     session,
+    // OAuth redirect flow: supabase-js stores a PKCE verifier and navigates to Google.
+    // On return, `detectSessionInUrl` exchanges the code (see login.vue). `redirectTo` must
+    // be allow-listed in Supabase auth config (config.toml additional_redirect_urls / dashboard).
+    signInWithGoogle: (redirectTo: string) =>
+      client.auth.signInWithOAuth({ options: { redirectTo }, provider: 'google' }),
     signInWithPassword: (email: string, password: string) =>
       client.auth.signInWithPassword({ email, password }),
     signOut: () => client.auth.signOut(),
