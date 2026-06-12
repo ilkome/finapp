@@ -99,10 +99,30 @@ export default defineNuxtConfig({
 
   icon: {
     clientBundle: {
-      icons: categoryIcons.flat(),
+      icons: [
+        ...categoryIcons.flat(),
+        // Statically referenced names that `scan` misses (dynamic ternaries, @nuxt/ui
+        // defaults). Runtime iconify fetches pop in after first paint and shift layout.
+        'hugeicons:archive-01',
+        'hugeicons:bank',
+        'hugeicons:folder-library',
+        'hugeicons:laptop-programming',
+        'hugeicons:menu-01',
+        'hugeicons:money-exchange-01',
+        'hugeicons:plus-sign-square',
+        'hugeicons:settings-01',
+        'hugeicons:wallet-01',
+        'lucide:chart-no-axes-combined',
+        'lucide:folder',
+        'lucide:folder-open',
+        'lucide:folder-open-dot',
+        'lucide:folder-tree',
+        'lucide:loader-circle',
+        'lucide:network',
+      ],
       scan: true,
     },
-    collections: ['lucide', 'mdi'],
+    collections: ['hugeicons', 'lucide', 'mdi'],
   },
 
   modules: [
