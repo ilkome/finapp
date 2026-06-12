@@ -26,6 +26,23 @@ watch([isOnboarded, isHydrated], () => {
     isOnboardedHint.value = isOnboarded.value
 })
 
+// Mount the trn form only after its first open so swiper stays out of the boot-critical
+// chunks; an idle prefetch keeps that first open instant.
+const hasTrnFormOpened = ref(false)
+watch(() => trnsFormStore.ui.isShow, (show) => {
+  if (show)
+    hasTrnFormOpened.value = true
+})
+
+onMounted(() => {
+  const idle = window.requestIdleCallback ?? ((cb: () => void) => setTimeout(cb, 2000))
+  idle(() => {
+    void (width.value < 767
+      ? import('~/components/trnForm/Bottom.vue')
+      : import('~/components/trnForm/Sidebar.vue'))
+  })
+})
+
 const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
@@ -111,11 +128,11 @@ defineShortcuts({
     </template>
 
     <Teleport
-      v-if="categoriesStore.hasItems && walletsStore.hasItems"
+      v-if="hasTrnFormOpened && categoriesStore.hasItems && walletsStore.hasItems"
       to="body"
     >
-      <TrnFormBottom v-if="width < 767" />
-      <TrnFormSidebar v-if="width >= 767" />
+      <LazyTrnFormBottom v-if="width < 767" />
+      <LazyTrnFormSidebar v-if="width >= 767" />
     </Teleport>
   </div>
 </template>

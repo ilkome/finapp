@@ -23,6 +23,8 @@ const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
 
+// Charts mount on the first idle frame so echarts doesn't compete with the LCP render.
+const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.isChartShow)
 const chartView = computed(() => statConfig.config.value.chartView)
 const chartType = computed(() => resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode))
@@ -64,7 +66,7 @@ function onChangePeriod(period: Period) {
     </div>
 
     <div
-      v-if="isPie"
+      v-if="isPie && isChartMountReady"
       class="grid gap-4"
       :class="{ '@sm/stat:grid-cols-2': props.pieGroups.length > 1 }"
     >
@@ -79,12 +81,15 @@ function onChangePeriod(period: Period) {
     </div>
 
     <LazyStatChartView
-      v-else
+      v-else-if="isChartMountReady"
       :chartType
       :period="statDate.params.value.intervalsBy"
       :series="props.series"
       :xAxisLabels="props.xAxisLabels"
       @click="onClickChart"
     />
+
+    <!-- Space-reserving placeholder: same height as the chart, so the idle mount doesn't shift layout. -->
+    <div v-else class="h-40 @3xl/stat:h-52" />
   </div>
 </template>
