@@ -54,6 +54,19 @@ export async function deleteRow(table: string, id: string): Promise<void> {
   await db.execute(`DELETE FROM ${table} WHERE id = ?`, [id])
 }
 
+/**
+ * Delete local trns referencing a wallet/category. Used when a rejected wallet/category
+ * INSERT is reverted, so optimistically-created trns don't survive as orphans. The deletes
+ * are queued for upload too, converging the server if any of those trns reached it.
+ */
+export async function deleteTrnsReferencing(table: 'categories' | 'wallets', id: string): Promise<void> {
+  const db = await getPowerSyncDb()
+  if (table === 'wallets')
+    await db.execute('DELETE FROM trns WHERE "walletId" = ? OR "expenseWalletId" = ? OR "incomeWalletId" = ?', [id, id, id])
+  else
+    await db.execute('DELETE FROM trns WHERE "categoryId" = ?', [id])
+}
+
 /** Upsert several rows in a single write transaction (e.g. wallet reordering). */
 export async function upsertRows(table: string, rows: { id: string, row: Record<string, unknown> }[]): Promise<void> {
   const db = await getPowerSyncDb()
