@@ -68,7 +68,8 @@ describe('useTrnsStore', () => {
       expect(store.items?.a).toMatchObject({ amount: 100, categoryId: 'food', type: 0 })
     })
 
-    it('sets items to null when the snapshot empties', () => {
+    // TEMP: cache-first guard - an empty emission must not wipe primed/cached items.
+    it('keeps existing items on an empty emission', () => {
       const store = useTrnsStore()
       store.initTrns()
       const emit = h.watchCallbacks[0]!
@@ -77,7 +78,7 @@ describe('useTrnsStore', () => {
       expect(store.items?.a).toBeDefined()
 
       emit([])
-      expect(store.items).toBeNull()
+      expect(store.items?.a).toBeDefined()
     })
 
     it('does not subscribe in demo mode', () => {
