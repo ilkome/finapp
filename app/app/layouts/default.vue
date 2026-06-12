@@ -76,12 +76,8 @@ defineShortcuts({
     :class="layoutClasses"
     style="margin-left: env(safe-area-inset-left)"
   >
-    <div v-if="bootState === 'loading'" class="flex-center h-dvh">
-      <UiLogo size="lg" />
-    </div>
-
     <div
-      v-else-if="bootState === 'error'"
+      v-if="bootState === 'error'"
       class="flex-center h-dvh flex-col gap-6 px-4 text-center"
     >
       <UiLogo size="lg" />
