@@ -75,8 +75,9 @@ describe('useCategoriesStore', () => {
       expect(store.items.c1).toMatchObject({ icon: 'mdi:cat' })
       expect(store.items.adjustment).toBeDefined() // synthetic re-added
 
+      // TEMP: cache-first guard - an empty emission must not wipe primed/cached items.
       h.watchCallbacks[0]!([])
-      expect(store.hasItems).toBe(false)
+      expect(store.hasItems).toBe(true)
       expect(store.items.transfer).toBeDefined()
     })
 

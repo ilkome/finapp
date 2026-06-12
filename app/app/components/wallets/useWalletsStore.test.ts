@@ -68,8 +68,9 @@ describe('useWalletsStore', () => {
       expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
       expect(store.items?.a).toMatchObject({ currency: 'USD', type: 'cash' })
 
+      // TEMP: cache-first guard - an empty emission must not wipe primed/cached items.
       h.watchCallbacks[0]!([])
-      expect(store.items).toBeNull()
+      expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
     })
 
     it('flips isLoaded on the first emission and resets it on re-subscribe', () => {
