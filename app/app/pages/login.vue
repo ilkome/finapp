@@ -92,6 +92,21 @@ async function openDemo() {
   router.push(getSafeRedirectPath(route.query.redirect))
 }
 
+// If the session never lands (user aborted the Google flow, hit back, or the provider
+// errored silently), give up on the spinner instead of hanging forever.
+const OAUTH_RETURN_TIMEOUT_MS = 10_000
+let oauthTimeout: ReturnType<typeof setTimeout> | undefined
+
+function clearOauthReturn() {
+  if (oauthTimeout) {
+    clearTimeout(oauthTimeout)
+    oauthTimeout = undefined
+  }
+  sessionStorage.removeItem(OAUTH_PENDING_KEY)
+  isOauthReturn.value = false
+  isLoading.value = false
+}
+
 // Returning from Google: detectSessionInUrl exchanges the ?code= asynchronously; hold the spinner,
 // then navigate once the session lands. Denied consent / provider errors come back as ?error=.
 onMounted(() => {
@@ -108,11 +123,22 @@ onMounted(() => {
   if (pending || params.has('code')) {
     isOauthReturn.value = true
     isLoading.value = true
+    oauthTimeout = setTimeout(() => {
+      logger.error('google auth timed out: no session after OAuth return')
+      clearOauthReturn()
+    }, OAUTH_RETURN_TIMEOUT_MS)
   }
+})
+
+onUnmounted(() => {
+  if (oauthTimeout)
+    clearTimeout(oauthTimeout)
 })
 
 watch(session, (next) => {
   if (next && isOauthReturn.value) {
+    if (oauthTimeout)
+      clearTimeout(oauthTimeout)
     sessionStorage.removeItem(OAUTH_PENDING_KEY)
     router.replace(getSafeRedirectPath(route.query.redirect))
   }
