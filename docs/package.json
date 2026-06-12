@@ -11,6 +11,8 @@
     "@nuxt/icon": "2.2.1",
     "better-sqlite3": "^12.5.0",
     "docus": "latest",
-    "nuxt": "^4.4.6"
+    "nuxt": "^4.4.6",
+    "zod": "^4.4.3",
+    "zod-to-json-schema": "^3.25.2"
   }
 }
