@@ -190,6 +190,9 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     watchController = watchTable<Row>('SELECT * FROM categories', [], (rows) => {
       isLoaded.value = true
       if (!rows.length) {
+        // TEMP: keep cached data instead of wiping it with an empty first emission.
+        if (hasItems.value)
+          return
         setCategories(null)
         return
       }

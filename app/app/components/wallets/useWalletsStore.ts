@@ -72,8 +72,11 @@ export const useWalletsStore = defineStore('wallets', () => {
     watchController?.abort()
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
     watchController = watchTable<Row>('SELECT * FROM wallets', [], (rows) => {
-      setWallets(rowsToWallets(rows))
       isLoaded.value = true
+      // TEMP: keep cached data instead of wiping it with an empty first SQLite emission.
+      if (!rows.length && hasItems.value)
+        return
+      setWallets(rowsToWallets(rows))
     })
     logger.log('watching wallets')
   }

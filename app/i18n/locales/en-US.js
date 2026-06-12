@@ -18,10 +18,12 @@ export default {
   app: {
     about: 'About',
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
+    loadError: 'Could not load your data. Check your connection and try again.',
     madeBy: {
       name: 'by Ilya Komichev',
       text: 'Made with',
     },
+    retry: 'Try again',
     toggleSidebar: 'Toggle sidebar',
     version: 'Version',
   },

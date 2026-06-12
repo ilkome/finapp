@@ -125,6 +125,9 @@ export const useTrnsStore = defineStore('trns', () => {
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
     watchController = watchTable<Row>('SELECT * FROM trns', [], (rows) => {
       isLoaded.value = true
+      // TEMP: keep cached data instead of wiping it with an empty first emission.
+      if (!rows.length && hasItems.value)
+        return
       const prev = items.value
       const next = prev ? reconcileTrns(prev, rows) : rowsToTrns(rows)
       // reconcileTrns returns `prev` (same ref) when nothing changed - skip the rebuild
