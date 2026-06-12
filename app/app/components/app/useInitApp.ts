@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { connectPowerSync, getLocalDbOwner, waitForFirstSync } from '~~/services/powersync/db'
+import { connectPowerSync, getLocalDbOwner, hasAnyLocalData, waitForFirstSync } from '~~/services/powersync/db'
 
 import type { Categories } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
@@ -26,7 +26,10 @@ const logger = createLogger('app')
 
 // Module-level singletons: every useInitApp() caller (layout, dashboard, guard) observes the same flags.
 const isDbLoading = ref(false)
-const isOffline = ref(false)
+const firstSyncComplete = ref(false)
+const syncError = ref(false)
+// Shared cookie ref so every caller reads/writes the same reactive value (per-call useCookie would not).
+let hintRef: Ref<boolean> | null = null
 
 export function useInitApp() {
   const userStore = useUserStore()
@@ -42,15 +45,53 @@ export function useInitApp() {
     useDemo().isDemo.value
     || (walletsStore.isLoaded && categoriesStore.isLoaded && trnsStore.isLoaded))
 
+  const isOnboarded = computed(() =>
+    walletsStore.hasItems && categoriesStore.hasItems && trnsStore.hasItems)
+
+  // Persisted hint so a returning user gets the app shell on the first frame, before hydration.
+  hintRef ??= useCookie('finapp.isOnboarded', { default: () => false })
+  const isOnboardedHint = hintRef
+
+  // Single source of truth for the boot screen. Onboarding only once we're certain the user is
+  // new (demo, or the first server sync genuinely completed) - never while data may still arrive.
+  const bootState = computed<'loading' | 'error' | 'onboarding' | 'ready'>(() => {
+    if (isOnboarded.value || isOnboardedHint.value)
+      return 'ready'
+    if (syncError.value)
+      return 'error'
+    const loaded = useDemo().isDemo.value || firstSyncComplete.value
+    if (loaded && isHydrated.value && !isDbLoading.value)
+      return 'onboarding'
+    // TEMP: never show the loading (logo) screen - paint cached/local data immediately.
+    // return 'loading'
+    return 'ready'
+  })
+
+  // Hold the loading screen until the throttled watches push the freshly-synced rows into the
+  // stores, so onboarding never flashes between "sync done" and "stores filled".
+  function waitForStoresToReflectData(maxMs = 2000): Promise<void> {
+    if (isOnboarded.value)
+      return Promise.resolve()
+    return new Promise((resolve) => {
+      let stop = () => {}
+      const timer = setTimeout(() => {
+        stop()
+        resolve()
+      }, maxMs)
+      stop = watch(isOnboarded, (ready) => {
+        if (ready) {
+          clearTimeout(timer)
+          stop()
+          resolve()
+        }
+      })
+    })
+  }
+
   useEventListener(window, 'online', () => {
-    isOffline.value = false
     // PowerSync reconnects on its own; re-arming watches is cheap and idempotent.
     if (userStore.uid && !isDbLoading.value)
       startWatches()
-  })
-
-  useEventListener(window, 'offline', () => {
-    isOffline.value = true
   })
 
   /**
@@ -117,8 +158,9 @@ export function useInitApp() {
       return
     }
 
-    // Paint instantly from the last session's snapshot, in parallel with db.init - don't await.
-    void primeStoresFromCache()
+    // TEMP: await the cache snapshot so it's in the stores before the watches arm (otherwise an
+    // empty first SQLite emission marks isLoaded and the cache prime is skipped).
+    await primeStoresFromCache()
 
     // If local SQLite still holds another user's rows, wipe + reconnect before reading so we never
     // surface the previous user's data. Same-user path stays instant (no wait).
@@ -132,9 +174,9 @@ export function useInitApp() {
     startWatches()
   }
 
-  // NOT a second data load - just waits for the server's first sync to land in local SQLite. Only
-  // matters when local SQLite is empty/stale (fresh login, new device): holds the loading screen so
-  // a returning user on a new device doesn't flash onboarding before their data lands.
+  // Waits for the server's first sync to land in local SQLite (fresh login / new device), holding
+  // the loading screen. Sets `syncError` instead of flashing onboarding when the sync can't
+  // complete and there's no local data to fall back to.
   async function awaitInitialSync() {
     if (useDemo().isDemo.value)
       return
@@ -143,15 +185,66 @@ export function useInitApp() {
       return
 
     isDbLoading.value = true
+    syncError.value = false
     try {
-      await waitForFirstSync()
+      if (!navigator.onLine) {
+        syncError.value = !(await hasAnyLocalData())
+        return
+      }
+
+      const synced = await waitForFirstSync()
+      if (!synced) {
+        syncError.value = !(await hasAnyLocalData())
+        firstSyncComplete.value = !syncError.value
+        return
+      }
+
+      firstSyncComplete.value = true
+      if (await hasAnyLocalData())
+        await waitForStoresToReflectData()
     }
     catch (e) {
       logger.error('awaitInitialSync failed', e)
+      syncError.value = !(await hasAnyLocalData().catch(() => false))
     }
     finally {
       isDbLoading.value = false
     }
+  }
+
+  // Boot the app: arm local data, then (clean login) wait for the first sync so onboarding never
+  // flashes; a returning user (hint) gets the shell now and syncs in the background. Re-runnable
+  // as the retry action from the error screen.
+  async function initApp() {
+    try {
+      if (useDemo().isDemo.value) {
+        if (!categoriesStore.hasItems)
+          await startLocalData()
+        return true
+      }
+
+      if (!(userStore.currentUser || hasPersistedSession()))
+        return true
+
+      await startLocalData()
+
+      // TEMP: don't wait for the first real sync - sync in the background so cached/local data
+      // shows immediately without the loading screen.
+      // if (isOnboardedHint.value) {
+      //   if (navigator.onLine)
+      //     awaitInitialSync()
+      // }
+      // else {
+      //   await awaitInitialSync()
+      // }
+      if (navigator.onLine)
+        awaitInitialSync()
+    }
+    catch (e) {
+      logger.error('initApp failed', e)
+      syncError.value = !(await hasAnyLocalData().catch(() => false))
+    }
+    return true
   }
 
   function clearLocalData() {
@@ -169,11 +262,11 @@ export function useInitApp() {
   }
 
   return {
-    awaitInitialSync,
+    bootState,
     clearLocalData,
-    isDbLoading,
+    initApp,
     isHydrated,
-    isOffline,
-    startLocalData,
+    isOnboarded,
+    isOnboardedHint,
   }
 }

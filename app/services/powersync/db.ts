@@ -134,22 +134,33 @@ export async function disconnectPowerSync(): Promise<boolean> {
   }
 }
 
-/** Resolve once the first sync from the server completes, or after `timeoutMs`. */
-export async function waitForFirstSync(timeoutMs = 10000): Promise<void> {
+/** Resolves `true` once the first full sync completes; `false` on timeout / not connected. */
+export async function waitForFirstSync(timeoutMs = 30000): Promise<boolean> {
   const db = usePowerSyncDb()
   if (db.currentStatus?.hasSynced)
-    return
+    return true
   const controller = new AbortController()
   const timer = setTimeout(() => controller.abort(), timeoutMs)
   try {
     await db.waitForFirstSync({ signal: controller.signal })
+    return !!db.currentStatus?.hasSynced
   }
   catch {
-    // timeout or not connected - the watch fills data later
+    return false
   }
   finally {
     clearTimeout(timer)
   }
+}
+
+export async function hasAnyLocalData(): Promise<boolean> {
+  const db = usePowerSyncDb()
+  for (const table of ['wallets', 'categories', 'trns'] as const) {
+    const row = await db.get<{ c: number }>(`SELECT count(*) as c FROM ${table}`)
+    if ((row?.c ?? 0) > 0)
+      return true
+  }
+  return false
 }
 
 /**
