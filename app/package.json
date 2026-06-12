@@ -53,6 +53,7 @@
     "vue-echarts": "^8.0.1"
   },
   "devDependencies": {
+    "@iconify-json/hugeicons": "^1.2.29",
     "@iconify-json/lucide": "^1.2.98",
     "@nuxt/eslint": "^1.15.2",
     "@nuxt/ui": "^4.6.0",
