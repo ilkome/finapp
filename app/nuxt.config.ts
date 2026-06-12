@@ -166,9 +166,13 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2,wasm}'],
-      // wa-sqlite WASM (~2.5 MB) must be precached or the offline-first start
-      // breaks in prod; the default 2 MiB cap would silently drop it.
+      // wa-sqlite WASM (~2.5 MB) must be precached or the offline-first start breaks in prod;
+      // the default 2 MiB cap would silently drop it. Only the variant the worker actually
+      // loads is precached: the async non-cipher build, dot-hash name (`wa-sqlite-async.<hash>.wasm`)
+      // - the one referenced by the built glue chunk. The other 7 emitted variants (sync builds,
+      // `mc-` cipher builds - used only with an encryptionKey - and dash-hash duplicates) would
+      // add ~12 MB to every SW install.
+      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}', '**/wa-sqlite-async.*.wasm'],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
       navigateFallback: '/',
       runtimeCaching: [
