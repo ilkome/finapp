@@ -52,9 +52,11 @@ export function useInitApp() {
   hintRef ??= useCookie('finapp.isOnboarded', { default: () => false })
   const isOnboardedHint = hintRef
 
-  // Single source of truth for the boot screen. Onboarding only once we're certain the user is
-  // new (demo, or the first server sync genuinely completed) - never while data may still arrive.
-  const bootState = computed<'loading' | 'error' | 'onboarding' | 'ready'>(() => {
+  // Single source of truth for the boot screen. Cache-first: there is no splash state - the
+  // shell (or the dashboard skeleton) paints immediately. Onboarding only once we're certain
+  // the user is new (demo, or the first server sync genuinely completed) - never while data
+  // may still arrive.
+  const bootState = computed<'error' | 'onboarding' | 'ready'>(() => {
     if (isOnboarded.value || isOnboardedHint.value)
       return 'ready'
     if (syncError.value)
@@ -62,13 +64,11 @@ export function useInitApp() {
     const loaded = useDemo().isDemo.value || firstSyncComplete.value
     if (loaded && isHydrated.value && !isDbLoading.value)
       return 'onboarding'
-    // TEMP: never show the loading (logo) screen - paint cached/local data immediately.
-    // return 'loading'
     return 'ready'
   })
 
-  // Hold the loading screen until the throttled watches push the freshly-synced rows into the
-  // stores, so onboarding never flashes between "sync done" and "stores filled".
+  // Hold awaitInitialSync's resolution until the throttled watches push the freshly-synced
+  // rows into the stores, so onboarding never flashes between "sync done" and "stores filled".
   function waitForStoresToReflectData(maxMs = 2000): Promise<void> {
     if (isOnboarded.value)
       return Promise.resolve()
@@ -163,8 +163,8 @@ export function useInitApp() {
       return
     }
 
-    // TEMP: await the cache snapshot so it's in the stores before the watches arm (otherwise an
-    // empty first SQLite emission marks isLoaded and the cache prime is skipped).
+    // Await the snapshot so primed data is in the stores before the watches arm: primeFromCache
+    // is a no-op once a store is loaded, so a late prime would be dropped.
     await primeStoresFromCache()
 
     // If local SQLite still holds another user's rows, wipe + reconnect before reading so we never
@@ -179,9 +179,9 @@ export function useInitApp() {
     startWatches()
   }
 
-  // Waits for the server's first sync to land in local SQLite (fresh login / new device), holding
-  // the loading screen. Sets `syncError` instead of flashing onboarding when the sync can't
-  // complete and there's no local data to fall back to.
+  // Waits for the server's first sync to land in local SQLite (fresh login / new device).
+  // Sets `syncError` instead of flashing onboarding when the sync can't complete and there's
+  // no local data to fall back to.
   async function awaitInitialSync() {
     if (useDemo().isDemo.value)
       return
@@ -217,9 +217,9 @@ export function useInitApp() {
     }
   }
 
-  // Boot the app: arm local data, then (clean login) wait for the first sync so onboarding never
-  // flashes; a returning user (hint) gets the shell now and syncs in the background. Re-runnable
-  // as the retry action from the error screen.
+  // Boot the app: arm local data (cache prime + watches), then let the first sync land in the
+  // background - bootState routes to onboarding/error only after it settles. Re-runnable as
+  // the retry action from the error screen.
   async function initApp() {
     try {
       if (useDemo().isDemo.value) {
@@ -233,15 +233,6 @@ export function useInitApp() {
 
       await startLocalData()
 
-      // TEMP: don't wait for the first real sync - sync in the background so cached/local data
-      // shows immediately without the loading screen.
-      // if (isOnboardedHint.value) {
-      //   if (navigator.onLine)
-      //     awaitInitialSync()
-      // }
-      // else {
-      //   await awaitInitialSync()
-      // }
       if (navigator.onLine)
         awaitInitialSync()
     }
