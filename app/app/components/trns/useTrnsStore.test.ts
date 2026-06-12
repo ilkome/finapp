@@ -68,8 +68,17 @@ describe('useTrnsStore', () => {
       expect(store.items?.a).toMatchObject({ amount: 100, categoryId: 'food', type: 0 })
     })
 
-    // TEMP: cache-first guard - an empty emission must not wipe primed/cached items.
-    it('keeps existing items on an empty emission', () => {
+    it('keeps primed items on an empty FIRST emission (sync not landed yet)', () => {
+      const store = useTrnsStore()
+      store.initTrns()
+      const emit = h.watchCallbacks[0]!
+
+      store.setTrns({ a: { amount: 100, categoryId: 'food', date: 1, type: 0 } } as never)
+      emit([])
+      expect(store.items?.a).toBeDefined()
+    })
+
+    it('applies an empty later emission (genuine wipe)', () => {
       const store = useTrnsStore()
       store.initTrns()
       const emit = h.watchCallbacks[0]!
@@ -78,7 +87,7 @@ describe('useTrnsStore', () => {
       expect(store.items?.a).toBeDefined()
 
       emit([])
-      expect(store.items?.a).toBeDefined()
+      expect(store.items).toBeNull()
     })
 
     it('does not subscribe in demo mode', () => {

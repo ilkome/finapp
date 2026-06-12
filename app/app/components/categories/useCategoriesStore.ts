@@ -187,11 +187,15 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return
     watchController?.abort()
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
+    let isFirstEmit = true
     watchController = watchTable<Row>('SELECT * FROM categories', [], (rows) => {
+      const isFirst = isFirstEmit
+      isFirstEmit = false
       isLoaded.value = true
       if (!rows.length) {
-        // TEMP: keep cached data instead of wiping it with an empty first emission.
-        if (hasItems.value)
+        // An empty FIRST emission means local SQLite hasn't received the first sync yet
+        // (fresh device) - keep the primed cache. Later empty emissions are genuine wipes.
+        if (isFirst && hasItems.value)
           return
         setCategories(null)
         return
