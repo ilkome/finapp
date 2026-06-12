@@ -123,13 +123,21 @@ export const useTrnsStore = defineStore('trns', () => {
       return
     watchController?.abort()
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
+    let isFirstEmit = true
     watchController = watchTable<Row>('SELECT * FROM trns', [], (rows) => {
       isLoaded.value = true
       // TEMP: keep cached data instead of wiping it with an empty first emission.
       if (!rows.length && hasItems.value)
         return
       const prev = items.value
+      // Cold-start instrumentation: per-row materialize+transform cost vs the SQLite scan
+      // (`ps:watch:trns` measure) - feeds the blob-cache architecture decision.
+      const transformStart = isFirstEmit ? performance.now() : 0
       const next = prev ? reconcileTrns(prev, rows) : rowsToTrns(rows)
+      if (isFirstEmit) {
+        isFirstEmit = false
+        performance.measure('trns:first-transform', { duration: performance.now() - transformStart, start: transformStart })
+      }
       // reconcileTrns returns `prev` (same ref) when nothing changed - skip the rebuild
       // (this is the echo of our own optimistic write).
       if (next !== prev)

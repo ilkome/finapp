@@ -109,14 +109,19 @@ export function useInitApp() {
   // Instant first paint: seed the stores from the last session's per-user snapshot while
   // PowerSync's db.init + first query scan are still running. The watches then reconcile to truth.
   async function primeStoresFromCache() {
+    // Cold-start instrumentation: blob-cache read+prime time vs the SQLite watch path
+    // (`ps:watch:*` measures) - feeds the blob-cache architecture decision.
+    performance.mark('cache:prime:start')
     const snap = await readStoreCache()
-    if (!snap)
-      return
-    trnsStore.primeFromCache((snap.trns as Trns) ?? null)
-    categoriesStore.primeFromCache((snap.categories as Categories) ?? null)
-    walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
-    userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
-    currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
+    if (snap) {
+      trnsStore.primeFromCache((snap.trns as Trns) ?? null)
+      categoriesStore.primeFromCache((snap.categories as Categories) ?? null)
+      walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
+      userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
+      currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
+    }
+    performance.mark('cache:prime:end')
+    performance.measure('cache:prime', 'cache:prime:start', 'cache:prime:end')
   }
 
   // Demo mode keeps its own localforage-backed cache (no backend).
