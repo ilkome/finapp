@@ -75,10 +75,19 @@ describe('useCategoriesStore', () => {
       expect(store.items.c1).toMatchObject({ icon: 'mdi:cat' })
       expect(store.items.adjustment).toBeDefined() // synthetic re-added
 
-      // TEMP: cache-first guard - an empty emission must not wipe primed/cached items.
+      // An empty emission after the first one is a genuine wipe and must apply.
+      h.watchCallbacks[0]!([])
+      expect(store.hasItems).toBe(false)
+      expect(store.items.transfer).toBeDefined()
+    })
+
+    it('keeps primed items on an empty FIRST emission (sync not landed yet)', () => {
+      const store = useCategoriesStore()
+      store.initCategories()
+
+      store.setCategories({ c1: { color: '', icon: 'mdi:cat', name: 'C1', parentId: 0, showInLastUsed: false, showInQuickSelector: false } } as never)
       h.watchCallbacks[0]!([])
       expect(store.hasItems).toBe(true)
-      expect(store.items.transfer).toBeDefined()
     })
 
     it('flips isLoaded on the first emission and resets it on re-subscribe', () => {

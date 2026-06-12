@@ -71,10 +71,14 @@ export const useWalletsStore = defineStore('wallets', () => {
       return
     watchController?.abort()
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
+    let isFirstEmit = true
     watchController = watchTable<Row>('SELECT * FROM wallets', [], (rows) => {
+      const isFirst = isFirstEmit
+      isFirstEmit = false
       isLoaded.value = true
-      // TEMP: keep cached data instead of wiping it with an empty first SQLite emission.
-      if (!rows.length && hasItems.value)
+      // An empty FIRST emission means local SQLite hasn't received the first sync yet
+      // (fresh device) - keep the primed cache. Later empty emissions are genuine wipes.
+      if (isFirst && !rows.length && hasItems.value)
         return
       setWallets(rowsToWallets(rows))
     })

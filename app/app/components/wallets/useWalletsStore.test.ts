@@ -68,9 +68,18 @@ describe('useWalletsStore', () => {
       expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
       expect(store.items?.a).toMatchObject({ currency: 'USD', type: 'cash' })
 
-      // TEMP: cache-first guard - an empty emission must not wipe primed/cached items.
+      // An empty emission after the first one is a genuine wipe and must apply.
       h.watchCallbacks[0]!([])
-      expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
+      expect(store.items).toBeNull()
+    })
+
+    it('keeps primed items on an empty FIRST emission (sync not landed yet)', () => {
+      const store = useWalletsStore()
+      store.initWallets()
+
+      store.setWallets({ a: { currency: 'USD', name: 'A', order: 0, type: 'cash' } } as never)
+      h.watchCallbacks[0]!([])
+      expect(store.items?.a).toBeDefined()
     })
 
     it('flips isLoaded on the first emission and resets it on re-subscribe', () => {
