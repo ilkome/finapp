@@ -1,6 +1,6 @@
-import { setUploadErrorHandler } from '~~/services/powersync/connector'
-import { connectPowerSync, disconnectPowerSync, forceResync, usePowerSyncDb } from '~~/services/powersync/db'
+import { connectPowerSync, disconnectPowerSync, forceResync, getPowerSyncDb } from '~~/services/powersync/db'
 import { deleteRow } from '~~/services/powersync/mutations'
+import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 import { planDivergence } from '~~/services/powersync/uploadReconcile'
 
 import { useDemo } from '~/components/demo/useDemo'
@@ -24,7 +24,7 @@ export default defineNuxtPlugin(() => {
   // Open local SQLite immediately for an already-logged-in user so the cold-start DB
   // init overlaps app boot instead of waiting for the async session to resolve.
   if (!isDemo.value && hasPersistedSession())
-    usePowerSyncDb().init().catch(e => logger.error('eager db init failed', e))
+    getPowerSyncDb().then(db => db.init()).catch(e => logger.error('eager db init failed', e))
 
   // Reconcile local rows after a write was fatally rejected by the server and discarded.
   setUploadErrorHandler((_error, divergedOps) => {

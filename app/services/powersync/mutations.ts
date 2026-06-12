@@ -1,6 +1,6 @@
 import type { LockContext } from '@powersync/web'
 
-import { usePowerSyncDb } from './db'
+import { getPowerSyncDb } from './db'
 
 // PowerSync client tables are SQLite views with INSTEAD OF triggers: they take plain
 // INSERT/UPDATE/DELETE but not `INSERT ... ON CONFLICT`, so upsert = existence check + INSERT/UPDATE.
@@ -42,19 +42,22 @@ async function upsertWith(
  */
 export async function upsertRow(table: string, id: string, row: Record<string, unknown>): Promise<void> {
   // Existence check + INSERT/UPDATE in one transaction (atomic, single lock).
-  await usePowerSyncDb().writeTransaction(async (tx) => {
+  const db = await getPowerSyncDb()
+  await db.writeTransaction(async (tx) => {
     await upsertWith(tx, table, id, row)
   })
 }
 
 export async function deleteRow(table: string, id: string): Promise<void> {
   assertTable(table)
-  await usePowerSyncDb().execute(`DELETE FROM ${table} WHERE id = ?`, [id])
+  const db = await getPowerSyncDb()
+  await db.execute(`DELETE FROM ${table} WHERE id = ?`, [id])
 }
 
 /** Upsert several rows in a single write transaction (e.g. wallet reordering). */
 export async function upsertRows(table: string, rows: { id: string, row: Record<string, unknown> }[]): Promise<void> {
-  await usePowerSyncDb().writeTransaction(async (tx) => {
+  const db = await getPowerSyncDb()
+  await db.writeTransaction(async (tx) => {
     for (const { id, row } of rows)
       await upsertWith(tx, table, id, row)
   })

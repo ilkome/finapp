@@ -1,7 +1,5 @@
 import type { CrudEntry } from '@powersync/web'
 
-import { UpdateType } from '@powersync/web'
-
 export type DivergencePlan = {
   /** True when any non-PUT op diverged; only a full re-sync can restore those. */
   needsReload: boolean
@@ -21,7 +19,9 @@ export function planDivergence(divergedOps: CrudEntry[]): DivergencePlan {
   if (!divergedOps.length)
     return { needsReload: false, toRevert: [] }
 
-  const allPut = divergedOps.every(op => op.op === UpdateType.PUT)
+  // String literal instead of the UpdateType enum: a runtime import here would statically
+  // pull @powersync/web into the entry chunk via the plugin (it stays lazy, see db.ts).
+  const allPut = divergedOps.every(op => (op.op as string) === 'PUT')
   if (!allPut)
     return { needsReload: true, toRevert: [] }
 
