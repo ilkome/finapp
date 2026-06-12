@@ -1,6 +1,5 @@
 import type {
   AbstractPowerSyncDatabase,
-  CrudEntry,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
 } from '@powersync/web'
@@ -10,6 +9,8 @@ import { UpdateType } from '@powersync/web'
 
 import { createLogger } from '~/utils/logger'
 
+import { notifyFatalUploadError } from './uploadErrorHandler'
+
 const logger = createLogger('powersync-connector')
 
 // Postgres error codes that retrying can't fix - the op is discarded, not requeued forever.
@@ -18,17 +19,6 @@ const FATAL_RESPONSE_CODES = [
   /^23...$/, // integrity constraint violation
   /^42501$/, // insufficient privilege (RLS violation)
 ]
-
-type UploadErrorHandler = (error: Error, divergedOps: CrudEntry[]) => void
-
-// Surfaces fatal (discarded) upload errors to the app; set once from the PowerSync
-// plugin so the connector stays free of UI/i18n coupling. The handler reconciles the
-// discarded ops (revert rejected inserts / offer a reload for rejected updates+deletes).
-let _onFatalUploadError: UploadErrorHandler | null = null
-
-export function setUploadErrorHandler(handler: UploadErrorHandler | null): void {
-  _onFatalUploadError = handler
-}
 
 /**
  * Bridges PowerSync's local write queue to Supabase:
@@ -93,7 +83,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         // never reached the server, so only those diverge and need reconciling.
         const divergedOps = transaction.crud.slice(failedIndex)
         logger.error('discarding fatal upload error', divergedOps, ex)
-        _onFatalUploadError?.(ex, divergedOps)
+        notifyFatalUploadError(ex, divergedOps)
         await transaction.complete()
       }
       else {

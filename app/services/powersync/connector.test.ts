@@ -1,7 +1,8 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { setUploadErrorHandler, SupabaseConnector } from '~~/services/powersync/connector'
+import { SupabaseConnector } from '~~/services/powersync/connector'
+import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 
 vi.mock('@powersync/web', () => ({
   UpdateType: { DELETE: 'DELETE', PATCH: 'PATCH', PUT: 'PUT' },

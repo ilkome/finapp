@@ -10,14 +10,14 @@ const h = vi.hoisted(() => ({
   deleteRow: vi.fn(),
   demo: { value: false },
   disconnectPowerSync: vi.fn(async () => true),
+  getPowerSyncDb: vi.fn(async () => ({ execute: vi.fn() })),
   upsertRow: vi.fn(),
   upsertRows: vi.fn(),
-  usePowerSyncDb: vi.fn(() => ({ execute: vi.fn() })),
   watchTable: vi.fn(() => ({ abort: vi.fn() })),
 }))
 
 vi.mock('localforage', () => ({ default: { clear: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() } }))
-vi.mock('~~/services/powersync/db', () => ({ disconnectPowerSync: h.disconnectPowerSync, usePowerSyncDb: h.usePowerSyncDb, watchTable: h.watchTable }))
+vi.mock('~~/services/powersync/db', () => ({ disconnectPowerSync: h.disconnectPowerSync, getPowerSyncDb: h.getPowerSyncDb, watchTable: h.watchTable }))
 vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
 vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
 vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))

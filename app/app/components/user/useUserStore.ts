@@ -1,7 +1,7 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import localforage from 'localforage'
-import { disconnectPowerSync, usePowerSyncDb, watchTable } from '~~/services/powersync/db'
+import { disconnectPowerSync, getPowerSyncDb, watchTable } from '~~/services/powersync/db'
 import { upsertRow } from '~~/services/powersync/mutations'
 
 import type { CurrencyCode } from '~/components/currencies/types'
@@ -270,7 +270,7 @@ export const useUserStore = defineStore('user', () => {
     }
 
     try {
-      const db = usePowerSyncDb()
+      const db = await getPowerSyncDb()
       await db.execute('DELETE FROM trns')
       await db.execute('DELETE FROM categories')
       await db.execute('DELETE FROM wallets')
