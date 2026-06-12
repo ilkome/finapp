@@ -1,5 +1,5 @@
 import { connectPowerSync, disconnectPowerSync, forceResync, getPowerSyncDb } from '~~/services/powersync/db'
-import { deleteRow } from '~~/services/powersync/mutations'
+import { deleteRow, deleteTrnsReferencing } from '~~/services/powersync/mutations'
 import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 import { planDivergence } from '~~/services/powersync/uploadReconcile'
 
@@ -42,10 +42,17 @@ export default defineNuxtPlugin(() => {
       )
     }
     else if (plan.toRevert.length) {
-      // Rejected INSERT(s): delete the local rows to converge. Defer out of the uploadData
-      // call stack (setTimeout 0) so the new write transaction doesn't contend for the lock.
-      for (const { id, table } of plan.toRevert)
-        setTimeout(() => { void deleteRow(table, id) }, 0)
+      // Rejected INSERT(s): delete the local rows to converge. A reverted wallet/category also
+      // cascades to local trns referencing it, so no orphans survive. Defer out of the
+      // uploadData call stack (setTimeout 0) so the new write transaction doesn't contend
+      // for the lock.
+      for (const { id, table } of plan.toRevert) {
+        setTimeout(() => {
+          void deleteRow(table, id)
+          if (table === 'wallets' || table === 'categories')
+            void deleteTrnsReferencing(table, id)
+        }, 0)
+      }
       showErrorToast('sync.errors.uploadReverted')
     }
   })
