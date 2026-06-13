@@ -1,44 +1,11 @@
 import { defineConfig, devices } from '@playwright/test'
-import { existsSync } from 'node:fs'
-import path from 'node:path'
 import process from 'node:process'
-import { fileURLToPath } from 'node:url'
-
-const dirname = path.dirname(fileURLToPath(import.meta.url))
-const authFile = path.join(dirname, 'tests', 'e2e', '.auth', 'user.json')
-const hasAuth = existsSync(authFile)
 
 export default defineConfig({
   projects: [
     {
       name: 'demo',
-      testIgnore: [/auth\.setup\.ts$/, /-real\.spec\.ts$/],
       use: { ...devices['Desktop Chrome'] },
-    },
-    {
-      name: 'auth-setup',
-      testMatch: /auth\.setup\.ts$/,
-      use: {
-        ...devices['Desktop Chrome'],
-        channel: 'chrome',
-        launchOptions: {
-          args: ['--disable-blink-features=AutomationControlled'],
-          ignoreDefaultArgs: ['--enable-automation'],
-        },
-      },
-    },
-    {
-      name: 'real',
-      testMatch: /-real\.spec\.ts$/,
-      use: {
-        ...devices['Desktop Chrome'],
-        channel: 'chrome',
-        launchOptions: {
-          args: ['--disable-blink-features=AutomationControlled'],
-          ignoreDefaultArgs: ['--enable-automation'],
-        },
-        ...(hasAuth ? { storageState: authFile } : {}),
-      },
     },
   ],
   reporter: [['html', { open: 'never' }], ['list']],
