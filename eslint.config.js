@@ -38,6 +38,7 @@ export default [
       'app/playwright/profiles/**',
       'app/powersync/**',
       'app/supabase/config.toml',
+      'app/supabase/functions/**', // Deno runtime, separate from the Nuxt toolchain
       'app/tests/e2e/.auth/**',
       'app/utils/migrate/data.json',
     ],
