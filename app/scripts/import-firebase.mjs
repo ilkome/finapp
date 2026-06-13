@@ -1,11 +1,9 @@
 #!/usr/bin/env node
 // Import a Firebase JSON export into the Supabase + PowerSync backend.
 //
-// Successor to the old `utils/migrate/firebase.js` (Firebase -> Convex). The
-// Supabase model lets the client pick row ids (all id columns are plain `text`,
-// no FK constraints), so unlike the Convex version this reuses the Firebase ids
-// verbatim - no id remap pass, references (parentId / walletId / categoryId)
-// stay valid as-is.
+// The Supabase model lets the client pick row ids (all id columns are plain
+// `text`, no FK constraints), so this reuses the Firebase ids verbatim - no id
+// remap pass, references (parentId / walletId / categoryId) stay valid as-is.
 //
 // Writes go through PostgREST with the project's `service_role` key (bypasses
 // RLS, runs over HTTPS so the IPv6-only direct Postgres connection is irrelevant)
