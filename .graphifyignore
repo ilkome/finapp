@@ -55,12 +55,10 @@ utils/migrate/data.json
 graphify-out
 **/graphify-out
 .understand-anything/
-.fallow/
 
 # --- Tracked tooling/config noise (the reason this file exists) ---
 # Editor + agent + tool config parsed as "code" -> noise in the graph.
 .claude/
 .vscode/
 .mcp.json
-.fallowrc.json
 eslint.config.js

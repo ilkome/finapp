@@ -55,7 +55,6 @@ utils/migrate/data.json
 graphify-out
 **/graphify-out
 .understand-anything/
-.fallow/
 
 # Vercel CLI link (local)
 .vercel
