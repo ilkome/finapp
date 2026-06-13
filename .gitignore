@@ -56,3 +56,8 @@ graphify-out
 **/graphify-out
 .understand-anything/
 .fallow/
+
+# Vercel CLI link (local)
+.vercel
+# PowerSync Cloud config (local; redeploy via `powersync deploy`)
+app/.powersync-cloud
