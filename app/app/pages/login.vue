@@ -5,7 +5,7 @@ import { useDemo } from '~/components/demo/useDemo'
 import { showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 
-const { session, signInWithGoogle, signInWithPassword, signUp } = useSupabaseAuth()
+const { session, signInWithGoogle } = useSupabaseAuth()
 const logger = createLogger('login')
 
 definePageMeta({
@@ -24,40 +24,10 @@ const route = useRoute()
 const router = useRouter()
 
 const isLoading = ref(false)
-const isSignUp = ref(false)
-const email = ref('')
-const password = ref('')
 
 // Set right before redirecting to Google, read on return: marks this load as the OAuth callback.
 const OAUTH_PENDING_KEY = 'finapp.oauthPending'
 const isOauthReturn = ref(false)
-
-async function submit() {
-  if (!email.value || !password.value)
-    return
-
-  isDemo.value = null
-  isLoading.value = true
-
-  try {
-    const { error } = isSignUp.value
-      ? await signUp(email.value, password.value)
-      : await signInWithPassword(email.value, password.value)
-
-    if (error)
-      throw error
-
-    // supabase-js has already persisted the session to localStorage by the time
-    // signIn/signUp resolves, so the synchronous route gate (hasPersistedSession)
-    // passes immediately - no need to mirror the uid anywhere before navigating.
-    router.push(getSafeRedirectPath(route.query.redirect))
-  }
-  catch (e: unknown) {
-    logger.error('auth error:', e)
-    showErrorToast('login.error')
-    isLoading.value = false
-  }
-}
 
 async function onGoogle() {
   isDemo.value = null
@@ -175,7 +145,7 @@ watch(session, (next) => {
           {{ t('login.description') }}
         </div>
 
-        <form class="grid min-w-[320px] items-center gap-3 py-14" @submit.prevent="submit">
+        <div class="grid min-w-[320px] items-center gap-3 py-14">
           <UButton
             block
             color="neutral"
@@ -191,47 +161,7 @@ watch(session, (next) => {
 
           <USeparator
             :label="t('login.or')"
-            class="!text-muted px-3 pb-3"
-          />
-
-          <UInput
-            v-model="email"
-            autocomplete="email"
-            :placeholder="t('login.email')"
-            size="xl"
-            type="email"
-          />
-          <UInput
-            v-model="password"
-            :autocomplete="isSignUp ? 'new-password' : 'current-password'"
-            :placeholder="t('login.password')"
-            size="xl"
-            type="password"
-          />
-
-          <UiButtonAccent
-            :loading="isLoading"
-            rounded
-            size="xl"
-            type="submit"
-          >
-            {{ isSignUp ? t('login.signUp') : t('login.signIn') }}
-          </UiButtonAccent>
-
-          <UButton
-            block
-            color="neutral"
-            size="md"
-            type="button"
-            variant="ghost"
-            @click="isSignUp = !isSignUp"
-          >
-            {{ isSignUp ? t('login.haveAccount') : t('login.noAccount') }}
-          </UButton>
-
-          <USeparator
-            :label="t('login.or')"
-            class="!text-muted px-3 pt-3"
+            class="!text-muted px-3 py-3"
           />
 
           <UiButtonAccent
@@ -243,7 +173,7 @@ watch(session, (next) => {
           >
             {{ t('login.openDemo') }}
           </UiButtonAccent>
-        </form>
+        </div>
       </div>
     </div>
 

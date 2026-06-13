@@ -238,16 +238,10 @@ export default {
 
   login: {
     description: 'Powerful open-source finance application',
-    email: 'Email',
     error: 'Login failed. Please try again.',
-    haveAccount: 'Already have an account? Sign in',
-    noAccount: 'No account? Sign up',
     openDemo: 'Open Demo',
     or: 'or',
-    password: 'Password',
-    signIn: 'Sign in',
     signInWithGoogle: 'Sign in with Google',
-    signUp: 'Sign up',
     title: 'Login',
   },
 

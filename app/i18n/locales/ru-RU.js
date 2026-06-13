@@ -238,16 +238,10 @@ export default {
 
   login: {
     description: 'Персональный финансовый ассистент',
-    email: 'Эл. почта',
     error: 'Ошибка входа. Попробуйте ещё раз.',
-    haveAccount: 'Уже есть аккаунт? Войти',
-    noAccount: 'Нет аккаунта? Зарегистрироваться',
     openDemo: 'Открыть демо',
     or: 'или',
-    password: 'Пароль',
-    signIn: 'Войти',
     signInWithGoogle: 'Войти через Google',
-    signUp: 'Регистрация',
     title: 'Вход',
   },
 
