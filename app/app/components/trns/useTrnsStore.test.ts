@@ -5,6 +5,7 @@ import type { TrnItem } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { AUTH_STORAGE_KEY } from '~/composables/useAuthSession'
 import { toastAddMock } from '~/test-utils/setup-store'
 
 // Mock the PowerSync data layer so the store talks to a controllable fake:
@@ -46,6 +47,8 @@ describe('useTrnsStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     h.demo.value = false
+    h.auth.uid.value = 'u1'
+    localStorage.clear()
     h.watchCallbacks.length = 0
     h.watchTable.mockClear()
     h.upsertRow.mockReset().mockResolvedValue(undefined)
@@ -144,6 +147,20 @@ describe('useTrnsStore', () => {
       expect(store.items?.t1).toBeDefined()
       await tick()
       expect(h.upsertRow).not.toHaveBeenCalled()
+    })
+
+    it('stamps the persisted uid when the reactive session uid has not resolved', async () => {
+      // Offline cold start: getSession resolved to null (reactive uid null), but the
+      // session is still in localStorage. The row must carry the real uid, not '' (which
+      // RLS would reject on upload, dropping the offline write).
+      h.auth.uid.value = null
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ user: { id: 'persisted-uid' } }))
+
+      const store = useTrnsStore()
+      store.saveTrn({ id: 't1', values: expense() })
+
+      await tick()
+      expect(h.upsertRow).toHaveBeenCalledWith('trns', 't1', expect.objectContaining({ userId: 'persisted-uid' }))
     })
   })
 

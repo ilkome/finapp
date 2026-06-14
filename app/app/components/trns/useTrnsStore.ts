@@ -15,6 +15,7 @@ import { filterTrnsIds } from '~/components/trns/getTrns'
 import { reconcileTrns, rowsToTrns } from '~/components/trns/reconcile'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
 import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
@@ -157,7 +158,7 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return
 
-    upsertRow('trns', id, trnToRow(valuesWithEditDate, uid.value ?? '')).catch((e) => {
+    upsertRow('trns', id, trnToRow(valuesWithEditDate, resolveWriteUid(uid.value))).catch((e) => {
       setTrns(prev) // roll back the optimistic update if the local write failed
       logger.error('saveTrn failed', e)
       showErrorToast('trns.errors.saveFailed')

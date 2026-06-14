@@ -12,6 +12,7 @@ import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
 import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
@@ -332,7 +333,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     for (const cid of diff.added) touched.add(cid)
     for (const cid of diff.removed) touched.add(cid)
 
-    const userId = uid.value ?? ''
+    const userId = resolveWriteUid(uid.value)
     const rows: { id: CategoryId, row: Record<string, unknown> }[] = []
     for (const cid of touched) {
       const item = items.value[cid]

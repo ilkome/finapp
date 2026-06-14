@@ -144,6 +144,28 @@ export async function disconnectPowerSync(): Promise<boolean> {
   }
 }
 
+/**
+ * Stop syncing but KEEP local SQLite and the unsynced upload queue (unlike
+ * disconnectPowerSync, which clears them). Used when the auth session is lost
+ * involuntarily (token revoked/expired) so pending offline writes survive until the
+ * user re-authenticates - re-connecting as the same uid then drains the queue. The
+ * owner marker is intentionally left in place so the same-user reconnect skips the wipe.
+ */
+export async function pausePowerSync(): Promise<void> {
+  if (!_dbPromise)
+    return
+  _connected = false
+  const db = await _dbPromise
+  await db.disconnect()
+  logger.log('paused (local data kept)')
+}
+
+/** Number of not-yet-uploaded operations in the local CRUD queue. */
+export async function getPendingUploadCount(): Promise<number> {
+  const db = await getPowerSyncDb()
+  return (await db.getUploadQueueStats()).count
+}
+
 /** Resolves `true` once the first full sync completes; `false` on timeout / not connected. */
 export async function waitForFirstSync(timeoutMs = 30000): Promise<boolean> {
   const db = await getPowerSyncDb()

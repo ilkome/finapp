@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AUTH_STORAGE_KEY, getPersistedSession, getPersistedUid, hasPersistedSession } from '~/composables/useAuthSession'
+import { AUTH_STORAGE_KEY, getPersistedSession, getPersistedUid, hasPersistedSession, resolveWriteUid } from '~/composables/useAuthSession'
 
 let store: Record<string, string>
 
@@ -71,6 +71,23 @@ describe('useAuthSession', () => {
         getItem: () => { throw new Error('blocked') },
       })
       expect(getPersistedSession()).toBeNull()
+    })
+  })
+
+  describe('resolveWriteUid', () => {
+    it('prefers the reactive uid when present', () => {
+      store[AUTH_STORAGE_KEY] = makeSession('persisted')
+      expect(resolveWriteUid('reactive')).toBe('reactive')
+    })
+
+    it('falls back to the persisted uid when the reactive uid is null', () => {
+      // The offline-cold-start case: getSession resolved to null, but the session is still in storage.
+      store[AUTH_STORAGE_KEY] = makeSession('persisted')
+      expect(resolveWriteUid(null)).toBe('persisted')
+    })
+
+    it('returns an empty string when neither is available', () => {
+      expect(resolveWriteUid(null)).toBe('')
     })
   })
 })
