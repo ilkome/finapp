@@ -1,4 +1,4 @@
-import { connectPowerSync, disconnectPowerSync, forceResync, getPowerSyncDb } from '~~/services/powersync/db'
+import { connectPowerSync, forceResync, getPendingUploadCount, getPowerSyncDb, pausePowerSync } from '~~/services/powersync/db'
 import { deleteRow, deleteTrnsReferencing } from '~~/services/powersync/mutations'
 import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 import { planDivergence } from '~~/services/powersync/uploadReconcile'
@@ -67,10 +67,26 @@ export default defineNuxtPlugin(() => {
       if (userId) {
         connectPowerSync(client, powerSyncUrl, userId).catch(e => logger.error('connect failed', e))
       }
-      // Only disconnect+wipe on a genuine sign-out (auth resolved, no user). The initial
-      // null on cold start (session not resolved yet) must NOT wipe a returning user's data.
+      // Session lost while resolved (the initial cold-start null is skipped via isAuthReady).
+      // This is NOT the explicit sign-out path - useUserStore.signOut() wipes locally itself
+      // before this fires - so it's an involuntary loss (token revoked/expired). Keep the local
+      // data + unsynced queue and only pause syncing; re-auth as the same user drains the queue.
+      // Wiping here would silently discard offline writes that never reached the server.
       else if (isAuthReady.value) {
-        disconnectPowerSync().catch(e => logger.error('disconnect failed', e))
+        pausePowerSync()
+          .then(() => getPendingUploadCount())
+          .then((pending) => {
+            if (pending > 0) {
+              showActionToast(
+                'warning',
+                'sync.errors.sessionLostPending',
+                'sync.actions.reauth',
+                () => { void navigateTo('/login') },
+                { count: pending },
+              )
+            }
+          })
+          .catch(e => logger.error('pause failed', e))
       }
     },
     { immediate: true },

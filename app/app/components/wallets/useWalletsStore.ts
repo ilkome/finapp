@@ -16,6 +16,7 @@ import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
+import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
 import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
@@ -112,7 +113,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (isDemo.value)
       return
 
-    upsertRow('wallets', id, walletToRow(values, uid.value ?? '')).catch((e) => {
+    upsertRow('wallets', id, walletToRow(values, resolveWriteUid(uid.value))).catch((e) => {
       setWallets(prev) // roll back the optimistic update if the local write failed
       logger.error('saveWallet failed', e)
       showErrorToast('wallets.errors.saveFailed')
@@ -138,7 +139,7 @@ export const useWalletsStore = defineStore('wallets', () => {
         .filter(walletId => items.value?.[walletId])
         .map((walletId, index) => ({
           id: walletId,
-          row: walletToRow({ ...items.value![walletId]!, order: index }, uid.value ?? ''),
+          row: walletToRow({ ...items.value![walletId]!, order: index }, resolveWriteUid(uid.value)),
         })),
     ).catch((e) => {
       setWallets(prev) // restore the previous order if the local write failed

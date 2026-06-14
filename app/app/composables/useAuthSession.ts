@@ -55,3 +55,13 @@ export function hasPersistedSession(): boolean {
 export function getPersistedUid(): string | null {
   return getPersistedSession()?.uid ?? null
 }
+
+/**
+ * The uid to stamp on a local row write. Prefers the reactive session uid, but falls
+ * back to the synchronously-persisted uid so writes made before the async session
+ * resolves (e.g. an offline cold start with an expired access token, where getSession
+ * returns null) aren't stamped with an empty userId - which RLS would reject on upload.
+ */
+export function resolveWriteUid(reactiveUid: string | null): string {
+  return reactiveUid ?? getPersistedUid() ?? ''
+}

@@ -393,9 +393,11 @@ export default {
 
   sync: {
     actions: {
+      reauth: 'Sign in again',
       reloadFromServer: 'Reload from server',
     },
     errors: {
+      sessionLostPending: 'Your session ended with {count} change(s) not yet synced. Sign in again to upload them.',
       uploadDiverged: 'A change could not be synced - your local data may differ from the server. Reload to discard unsynced local changes and refresh from the server.',
       uploadRejected: 'Some changes could not be synced to the server',
       uploadReverted: 'A change could not be saved and was reverted',
