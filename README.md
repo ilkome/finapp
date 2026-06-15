@@ -134,7 +134,17 @@ docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync
 docker compose -f powersync/docker-compose.yaml up -d
 ```
 
-Auth supports **email/password** and **Sign in with Google**. Email/password works out of the box - sign up from the login screen, or create an account with the Supabase CLI.
+The login screen offers **Sign in with Google** and **Demo mode**. Email/password stays enabled in the Supabase backend - used by the local seed test user for E2E - but is not exposed in the UI.
+
+### Seed data (local test user)
+
+`supabase db reset` applies `app/supabase/seed.sql`, which creates a fixed email/password test user (`e2e@finapp.local`) plus a demo-derived dataset (8 wallets, 32 categories, ~860 transactions). This lets agents / Playwright enter real PowerSync mode without Google OAuth. Apply it to a running DB without a reset:
+
+```bash
+docker exec -i supabase_db_app psql -U postgres -d postgres < app/supabase/seed.sql
+```
+
+See [Testing](docs/content/en/2.development/06.testing.md) for the test-user sign-in flow (`app/scripts/dev-login.mjs`) and how the seed is regenerated.
 
 ### Google sign-in (optional, local)
 

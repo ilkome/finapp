@@ -60,3 +60,4 @@ graphify-out
 .vercel
 # PowerSync Cloud config (local; redeploy via `powersync deploy`)
 app/.powersync-cloud
+app/scripts/.demo-snapshot.json
