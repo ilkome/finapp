@@ -35,6 +35,16 @@ export type UserSettingsCache = {
 
 const logger = createLogger('user')
 
+function toUser(u: { email?: string | null, id: string, user_metadata?: Record<string, any> | null }): User {
+  const meta = u.user_metadata ?? {}
+  return {
+    displayName: meta.full_name ?? meta.name ?? u.email ?? null,
+    email: u.email ?? null,
+    photoURL: meta.avatar_url ?? meta.picture ?? null,
+    uid: u.id,
+  }
+}
+
 export const useUserStore = defineStore('user', () => {
   const { session, signOut: supabaseSignOut, user: authUser } = useSupabaseAuth()
   const walletsStore = useWalletsStore()
@@ -49,14 +59,8 @@ export const useUserStore = defineStore('user', () => {
   let watchController: AbortController | null = null
 
   const currentUser = computed<User | null>(() => {
-    if (authUser.value) {
-      return {
-        displayName: authUser.value.email,
-        email: authUser.value.email,
-        photoURL: null,
-        uid: authUser.value.id,
-      }
-    }
+    if (authUser.value)
+      return toUser(authUser.value)
     if (user.value && !isDemo.value && hasPersistedSession())
       return user.value
     return null
@@ -90,12 +94,7 @@ export const useUserStore = defineStore('user', () => {
     (sessionUser) => {
       if (!sessionUser || isSigningOut.value || isDemo.value)
         return
-      const next: User = {
-        displayName: sessionUser.email,
-        email: sessionUser.email,
-        photoURL: null,
-        uid: sessionUser.id,
-      }
+      const next = toUser(sessionUser)
       if (user.value?.uid === next.uid
         && user.value?.email === next.email
         && user.value?.displayName === next.displayName
