@@ -30,4 +30,12 @@
   [data-reka-popper-content-wrapper] {
     z-index: 60 !important;
   }
+
+  /* On open, reka-ui locks the page via `pointer-events: none` on <body>, but the
+     menu content never gets `pointer-events: auto` back (the trnForm overlay breaks
+     the DismissableLayer stack), so clicks/taps pass through the menu to the element
+     underneath. Re-enable pointer events on the menu wrapper itself. */
+  [data-reka-popper-content-wrapper]:has([role='menu']) {
+    pointer-events: auto !important;
+  }
 }
