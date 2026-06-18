@@ -3,6 +3,7 @@ import { deleteRow, deleteTrnsReferencing } from '~~/services/powersync/mutation
 import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 import { planDivergence } from '~~/services/powersync/uploadReconcile'
 
+import { useInitApp } from '~/components/app/useInitApp'
 import { useDemo } from '~/components/demo/useDemo'
 import { hasPersistedSession } from '~/composables/useAuthSession'
 import { showActionToast, showErrorToast } from '~/composables/useStoreSync'
@@ -23,8 +24,12 @@ export default defineNuxtPlugin(() => {
 
   // Open local SQLite immediately for an already-logged-in user so the cold-start DB
   // init overlaps app boot instead of waiting for the async session to resolve.
-  if (!isDemo.value && hasPersistedSession())
+  if (!isDemo.value && hasPersistedSession()) {
     getPowerSyncDb().then(db => db.init()).catch(e => logger.error('eager db init failed', e))
+    // Seed the stores from the last session's snapshot now (parallel with db.init), before the
+    // layout's useAsyncData('app') runs, so the dashboard paints with data on the first render.
+    void useInitApp().primeStoresFromCache()
+  }
 
   // Reconcile local rows after a write was fatally rejected by the server and discarded.
   setUploadErrorHandler((_error, divergedOps) => {
