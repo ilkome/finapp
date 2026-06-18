@@ -134,6 +134,25 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
   ],
 
+  nitro: {
+    hooks: {
+      // Make the entry Tailwind stylesheet (~256KB) non-render-blocking so the SPA loading
+      // skeleton (inline-styled) paints on HTML arrival instead of waiting for that CSS to
+      // download. The app itself renders only after its JS bundle executes - slower than the
+      // CSS fetch - so styles are in place by mount (no FOUC); <noscript> keeps it blocking
+      // when JS is off. Rewrites the statically generated HTML (index/200/404).
+      'prerender:generate': (route: { contents?: string, fileName?: string }) => {
+        if (typeof route.contents !== 'string' || !route.fileName?.endsWith('.html'))
+          return
+        route.contents = route.contents.replace(
+          /<link rel="stylesheet" href="([^"]+)"([^>]*)>/g,
+          (_m, href, rest) =>
+            `<link rel="stylesheet" href="${href}"${rest} media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${href}"${rest}></noscript>`,
+        )
+      },
+    },
+  },
+
   pwa: {
     client: {
       installPrompt: true,
