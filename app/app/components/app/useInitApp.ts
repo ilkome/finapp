@@ -30,6 +30,9 @@ const firstSyncComplete = ref(false)
 const syncError = ref(false)
 // Shared cookie ref so every caller reads/writes the same reactive value (per-call useCookie would not).
 let hintRef: Ref<boolean> | null = null
+// Memoized so the early plugin call and the later startLocalData call share one blob read.
+// Reset on sign-out (clearLocalData) so the next user re-primes from their own snapshot.
+let primePromise: Promise<void> | null = null
 
 export function useInitApp() {
   const userStore = useUserStore()
@@ -108,20 +111,26 @@ export function useInitApp() {
 
   // Instant first paint: seed the stores from the last session's per-user snapshot while
   // PowerSync's db.init + first query scan are still running. The watches then reconcile to truth.
-  async function primeStoresFromCache() {
-    // Cold-start instrumentation: blob-cache read+prime time vs the SQLite watch path
-    // (`ps:watch:*` measures) - feeds the blob-cache architecture decision.
-    performance.mark('cache:prime:start')
-    const snap = await readStoreCache()
-    if (snap) {
-      trnsStore.primeFromCache((snap.trns as Trns) ?? null)
-      categoriesStore.primeFromCache((snap.categories as Categories) ?? null)
-      walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
-      userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
-      currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
-    }
-    performance.mark('cache:prime:end')
-    performance.measure('cache:prime', 'cache:prime:start', 'cache:prime:end')
+  // Memoized: the powersync plugin kicks this off at boot (parallel with db.init) so the data is
+  // in the stores before the first render, and startLocalData's await reuses the same read.
+  // primeFromCache only fills `items` (never `isLoaded`), so isHydrated/bootState stay watch-gated.
+  function primeStoresFromCache(): Promise<void> {
+    primePromise ??= (async () => {
+      // Cold-start instrumentation: blob-cache read+prime time vs the SQLite watch path
+      // (`ps:watch:*` measures) - feeds the blob-cache architecture decision.
+      performance.mark('cache:prime:start')
+      const snap = await readStoreCache()
+      if (snap) {
+        trnsStore.primeFromCache((snap.trns as Trns) ?? null)
+        categoriesStore.primeFromCache((snap.categories as Categories) ?? null)
+        walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
+        userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
+        currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
+      }
+      performance.mark('cache:prime:end')
+      performance.measure('cache:prime', 'cache:prime:start', 'cache:prime:end')
+    })()
+    return primePromise
   }
 
   // Demo mode keeps its own localforage-backed cache (no backend).
@@ -245,6 +254,7 @@ export function useInitApp() {
 
   function clearLocalData() {
     blockPersist()
+    primePromise = null
 
     categoriesStore.setCategories(null)
     trnsStore.setTrns(null)
@@ -264,5 +274,6 @@ export function useInitApp() {
     isHydrated,
     isOnboarded,
     isOnboardedHint,
+    primeStoresFromCache,
   }
 }
