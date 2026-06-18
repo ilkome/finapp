@@ -1,0 +1,123 @@
+<!-- Painted from the served HTML before the app bundle executes, so a returning user sees the
+     app-shell silhouette (~DOMContentLoaded) instead of a white screen until Vue mounts (~FCP).
+     Removed automatically once the SPA mounts. Self-contained: inline CSS only, no external assets.
+     Colors approximate the themed background (light / #171717 dark) via prefers-color-scheme since
+     the persisted color mode is not readable before JS. -->
+<style>
+  #__nuxt-spa-loader {
+    --sl-bg: #fbfbfb;
+    --sl-block: #ececec;
+    --sl-bar: #ffffff;
+    --sl-border: #ededed;
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    background: var(--sl-bg);
+    font-family: ui-sans-serif, system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    #__nuxt-spa-loader {
+      --sl-bg: #171717;
+      --sl-block: #262626;
+      --sl-bar: #1f1f1f;
+      --sl-border: #2a2a2a;
+    }
+  }
+  #__nuxt-spa-loader .sl-content {
+    flex: 1;
+    width: 100%;
+    max-width: 64rem;
+    margin: 0 auto;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  #__nuxt-spa-loader .sl-block {
+    background: var(--sl-block);
+    border-radius: 10px;
+    animation: sl-pulse 1.2s ease-in-out infinite;
+  }
+  #__nuxt-spa-loader .sl-h {
+    height: 22px;
+    width: 40%;
+    border-radius: 8px;
+  }
+  #__nuxt-spa-loader .sl-card {
+    height: 96px;
+  }
+  #__nuxt-spa-loader .sl-row {
+    height: 56px;
+  }
+  #__nuxt-spa-loader .sl-bar {
+    display: flex;
+    border-top: 1px solid var(--sl-border);
+    background: var(--sl-bar);
+    padding: 8px max(16px, env(safe-area-inset-left)) calc(8px + env(safe-area-inset-bottom));
+  }
+  #__nuxt-spa-loader .sl-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  #__nuxt-spa-loader .sl-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 7px;
+  }
+  #__nuxt-spa-loader .sl-cap {
+    width: 60%;
+    height: 8px;
+    border-radius: 4px;
+  }
+  @keyframes sl-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.45;
+    }
+  }
+  @media (min-width: 768px) {
+    #__nuxt-spa-loader .sl-bar {
+      display: none;
+    }
+  }
+</style>
+
+<div id="__nuxt-spa-loader" aria-hidden="true">
+  <div class="sl-content">
+    <div class="sl-block sl-h"></div>
+    <div class="sl-block sl-card"></div>
+    <div class="sl-block sl-row"></div>
+    <div class="sl-block sl-row"></div>
+    <div class="sl-block sl-row"></div>
+  </div>
+  <div class="sl-bar">
+    <div class="sl-tab">
+      <div class="sl-block sl-dot"></div>
+      <div class="sl-block sl-cap"></div>
+    </div>
+    <div class="sl-tab">
+      <div class="sl-block sl-dot"></div>
+      <div class="sl-block sl-cap"></div>
+    </div>
+    <div class="sl-tab">
+      <div class="sl-block sl-dot"></div>
+      <div class="sl-block sl-cap"></div>
+    </div>
+    <div class="sl-tab">
+      <div class="sl-block sl-dot"></div>
+      <div class="sl-block sl-cap"></div>
+    </div>
+    <div class="sl-tab">
+      <div class="sl-block sl-dot"></div>
+      <div class="sl-block sl-cap"></div>
+    </div>
+  </div>
+</div>
