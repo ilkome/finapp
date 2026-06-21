@@ -8,10 +8,10 @@
   },
   "dependencies": {
     "@nuxt/fonts": "0.14.0",
-    "@nuxt/icon": "2.2.1",
-    "better-sqlite3": "^12.5.0",
+    "@nuxt/icon": "2.2.3",
+    "better-sqlite3": "^12.11.1",
     "docus": "latest",
-    "nuxt": "^4.4.7",
+    "nuxt": "^4.4.8",
     "zod": "^4.4.3",
     "zod-to-json-schema": "^3.25.2"
   }
