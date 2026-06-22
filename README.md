@@ -88,7 +88,7 @@ The root package contains workspace scripts only. App and docs dependencies are 
 ### Requirements
 
 - Node.js `>=24.12.0`
-- pnpm `10.x`
+- pnpm `11.x`
 - Docker and the [Supabase CLI](https://supabase.com/docs/guides/cli) for the local backend
 
 ### Install
