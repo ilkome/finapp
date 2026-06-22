@@ -1,7 +1,7 @@
 {
   "name": "@finapp/app",
   "type": "module",
-  "version": "8.0.5",
+  "version": "8.0.6",
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "description": "Finapp helps you easily track and manage personal finances.",
@@ -67,7 +67,7 @@
     "date-fns": "^4.4.0",
     "defu": "^6.1.7",
     "dotenv": "^17.4.2",
-    "es-toolkit": "^1.47.1",
+    "es-toolkit": "^1.48.1",
     "happy-dom": "^20.10.6",
     "nuxt": "^4.4.8",
     "tailwind-merge": "^3.6.0",
