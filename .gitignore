@@ -56,6 +56,9 @@ graphify-out
 **/graphify-out
 .understand-anything/
 
+# Local planning scratch (not source)
+plans/
+
 # Vercel CLI link (local)
 .vercel
 # PowerSync Cloud config (local; redeploy via `powersync deploy`)
