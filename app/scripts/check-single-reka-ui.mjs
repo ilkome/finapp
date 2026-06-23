@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process'
+import process from 'node:process'
 
 // reka-ui must resolve to ONE version in the app tree. Two copies make its
 // createContext run twice and break provide/inject ("Injection
