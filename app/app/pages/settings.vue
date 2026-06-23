@@ -83,6 +83,9 @@ function onGenerateDemoData() {
           </button>
         </UiSettingsCard>
 
+        <!-- Extension point for layers (e.g. premium Telegram card) -->
+        <ExtensionSlot name="settings" />
+
         <!-- Demo -->
         <UiSettingsCard
           v-if="isDemo"
