@@ -2,6 +2,7 @@
 const props = defineProps<{
   checkboxValue: boolean
   title: string
+  busy?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -9,16 +10,22 @@ const emit = defineEmits<{
 }>()
 
 function handleClick() {
+  if (props.busy)
+    return
   emit('click', props.checkboxValue)
 }
 </script>
 
 <template>
   <div
-    class="hover:bg-elevated/50 flex grow items-center gap-3 rounded-sm p-2 text-sm"
+    :class="cn(
+      'hover:bg-elevated/50 flex grow items-center gap-3 rounded-sm p-2 text-sm',
+      busy && 'pointer-events-none opacity-60',
+    )"
     @click="handleClick"
   >
-    <FormSwitch :value="checkboxValue" />
+    <Icon v-if="busy" name="lucide:loader-circle" class="text-muted size-5 animate-spin" />
+    <FormSwitch v-else :value="checkboxValue" />
 
     <div class="text-muted grow">
       {{ title }}

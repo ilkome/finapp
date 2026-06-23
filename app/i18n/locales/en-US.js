@@ -322,6 +322,19 @@ export default {
     },
   },
 
+  notifications: {
+    description: 'Get push notifications on this device.',
+    enabled: 'Notifications enabled',
+    disabled: 'Notifications disabled',
+    error: 'Couldn\'t enable notifications. Please try again.',
+    iosHint: 'On iOS, add the app to your home screen first, then enable notifications.',
+    permissionDenied: 'Notifications are blocked in your browser settings.',
+    statusOn: 'Enabled',
+    statusOff: 'Disabled',
+    title: 'Notifications',
+    unsupported: 'Push notifications are not supported on this device.',
+  },
+
   onboarding: {
     actionCategory: 'Add category',
     actionTrn: 'Add transaction',

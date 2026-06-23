@@ -43,7 +43,7 @@ function clearLocalDbOwner(): void {
 
 /**
  * Singleton PowerSync database (local SQLite, WASM + IndexedDB VFS: multi-tab, no COOP/COEP).
- * `@powersync/web` (+ schema) is dynamically imported on first call so its ~300KB stays out of
+ * `@powersync/web` (+ schema) is dynamically imported on first call so its bundle stays out of
  * the entry chunk - the login page and demo mode never parse it.
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {

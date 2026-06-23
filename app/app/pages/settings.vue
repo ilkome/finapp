@@ -70,6 +70,9 @@ function onGenerateDemoData() {
           />
         </UiSettingsCard>
 
+        <!-- Notifications -->
+        <NotificationsSettings />
+
         <!-- Currency -->
         <UiSettingsCard :title="t('currencies.base')">
           <button

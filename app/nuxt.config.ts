@@ -137,7 +137,7 @@ export default defineNuxtConfig({
 
   nitro: {
     hooks: {
-      // Make the entry Tailwind stylesheet (~256KB) non-render-blocking so the SPA loading
+      // Make the sizable entry Tailwind stylesheet non-render-blocking so the SPA loading
       // skeleton (inline-styled) paints on HTML arrival instead of waiting for that CSS to
       // download. The app itself renders only after its JS bundle executes - slower than the
       // CSS fetch - so styles are in place by mount (no FOUC); <noscript> keeps it blocking
@@ -206,8 +206,23 @@ export default defineNuxtConfig({
     },
     registerType: 'autoUpdate',
     workbox: {
+      importScripts: ['/sw-push.js'],
       globIgnores: ['**/200*', '**/404*'],
+      // The wa-sqlite WASM must be precached or the offline-first start breaks in prod; it sits
+      // just over Workbox's 2 MiB default cap (hence the raised limit below), which would otherwise
+      // drop it silently. Only the variant the worker actually loads is precached: the async
+      // non-cipher build, dot-hash name (`wa-sqlite-async.<hash>.wasm`). The other emitted variants
+      // (sync builds, `mc-` cipher builds - used only with an encryptionKey, which db.ts does not set
+      // - and dash-hash duplicates) together would add several MB to every SW install.
+      // The manifestTransforms guard below fails the build if the precache entry ever stops matching
+      // (e.g. an upstream rename), so this never regresses to a broken offline start unnoticed.
       globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}', '**/wa-sqlite-async.*.wasm'],
+      manifestTransforms: [(entries) => {
+        const hasWasm = entries.some(e => /wa-sqlite-async\..*\.wasm$/.test(e.url))
+        if (!hasWasm)
+          throw new Error('PWA precache manifest is missing the wa-sqlite WASM - offline-first start would break in prod. Check the wasm filename/glob in nuxt.config.ts.')
+        return { manifest: entries }
+      }],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
       navigateFallback: '/',
       runtimeCaching: [
@@ -247,6 +262,7 @@ export default defineNuxtConfig({
       powersyncUrl: process.env.VITE_POWERSYNC_URL,
       supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
       supabaseUrl: process.env.VITE_SUPABASE_URL,
+      vapidPublicKey: process.env.VITE_VAPID_PUBLIC_KEY,
     },
   },
 
