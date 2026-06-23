@@ -17,6 +17,10 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 - `pnpm test` - Vitest
 - `pnpm docs:dev` / `pnpm docs:build` - docs site
 
+## Deploy
+
+- Always run `vercel deploy` from the monorepo root `apps/mono` (never from `app/`). The Vercel project's root directory is `app`.
+
 ## Conventions
 
 - Components: PascalCase, grouped by feature in `components/[feature]/`
