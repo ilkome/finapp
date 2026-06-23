@@ -32,8 +32,8 @@ importers:
         specifier: ^5.9.1
         version: 5.9.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
       eslint-plugin-tailwindcss:
-        specifier: 4.0.2
-        version: 4.0.2(eslint@10.5.0(jiti@2.7.0))(tailwindcss@4.3.1)(typescript@6.0.3)
+        specifier: 4.0.0-beta.0
+        version: 4.0.0-beta.0(tailwindcss@4.3.1)
       prettier:
         specifier: ^3.8.4
         version: 3.8.4
@@ -5785,15 +5785,11 @@ packages:
     peerDependencies:
       eslint: '>=9.38.0'
 
-  eslint-plugin-tailwindcss@4.0.2:
-    resolution: {integrity: sha512-I/plNAFclmxJUUzKhQ6W2sMYcfxMMYLcslVFzRwtoIaheLOvKoVluTOxx67aX0H234gAlKW5VuK0fOVWgPFkqQ==}
-    engines: {node: '>=20.19.0'}
+  eslint-plugin-tailwindcss@4.0.0-beta.0:
+    resolution: {integrity: sha512-WWCajZgQu38Sd67ZCl2W6i3MRzqB0d+H8s4qV9iB6lBJbsDOIpIlj6R1Fj2FXkoWErbo05pZnZYbCGIU9o/DsA==}
+    engines: {node: '>=18.12.0'}
     peerDependencies:
-      tailwindcss: ^4.0.0
-      typescript: '*'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
+      tailwindcss: ^3.4.0 || ^4.0.0
 
   eslint-plugin-toml@1.4.0:
     resolution: {integrity: sha512-3ErTnfUjXq/23f72XeyRcE0Y4Sd/ME1lsZeezczqpn2R4tE7+Sgco/NUKDXm0xAMz15tzcRz/9RfJRm6AqRO+A==}
@@ -7810,12 +7806,6 @@ packages:
     engines: {node: ^22.11.0 || ^24.11.0 || >=26.0}
     peerDependencies:
       postcss: ^8.5.15
-
-  postcss-nested@7.0.2:
-    resolution: {integrity: sha512-5osppouFc0VR9/VYzYxO03VaDa3e8F23Kfd6/9qcZTUI8P58GIYlArOET2Wq0ywSl2o2PjELhYOFI4W7l5QHKw==}
-    engines: {node: '>=18.0'}
-    peerDependencies:
-      postcss: ^8.2.14
 
   postcss-normalize-charset@8.0.1:
     resolution: {integrity: sha512-xzqr36F8UeIZOvOHsf3aul+RVJCADvSwuwpMLgizqKjisHZpBfztgW0XFLBfJvz9pJgaStaOXAtGb0zLqT6B0w==}
@@ -15613,19 +15603,13 @@ snapshots:
       regexp-ast-analysis: 0.7.1
       scslre: 0.3.0
 
-  eslint-plugin-tailwindcss@4.0.2(eslint@10.5.0(jiti@2.7.0))(tailwindcss@4.3.1)(typescript@6.0.3):
+  eslint-plugin-tailwindcss@4.0.0-beta.0(tailwindcss@4.3.1):
     dependencies:
-      '@typescript-eslint/utils': 8.61.1(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3)
+      fast-glob: 3.3.3
       postcss: 8.5.15
-      postcss-nested: 7.0.2(postcss@8.5.15)
       synckit: 0.11.13
       tailwind-api-utils: 1.0.3(tailwindcss@4.3.1)
       tailwindcss: 4.3.1
-    optionalDependencies:
-      typescript: 6.0.3
-    transitivePeerDependencies:
-      - eslint
-      - supports-color
 
   eslint-plugin-toml@1.4.0(eslint@10.5.0(jiti@2.7.0)):
     dependencies:
@@ -18883,11 +18867,6 @@ snapshots:
       browserslist: 4.28.2
       caniuse-api: 4.0.0
       cssesc: 3.0.0
-      postcss: 8.5.15
-      postcss-selector-parser: 7.1.4
-
-  postcss-nested@7.0.2(postcss@8.5.15):
-    dependencies:
       postcss: 8.5.15
       postcss-selector-parser: 7.1.4
 

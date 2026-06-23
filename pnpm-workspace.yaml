@@ -10,10 +10,10 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: true
 overrides:
-  # Pin h3 v1: docus dev tooling pulls an h3 v2 RC that crashes @nuxt/content
-  # prerender (.entries() on a v1 nitro event). Remove once nitro moves to h3 v2.
-  h3: 1.15.11
   # Active CVE floors (verified via pnpm audit). The rest of the deps tree
   # already resolves above its advisories, so no other override is needed.
   esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
+  # Pin h3 v1: docus dev tooling pulls an h3 v2 RC that crashes @nuxt/content
+  # prerender (.entries() on a v1 nitro event). Remove once nitro moves to h3 v2.
+  h3: 1.15.11
   serialize-javascript@<7.0.5: '>=7.0.5'
