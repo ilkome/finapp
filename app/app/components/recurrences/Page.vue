@@ -6,6 +6,7 @@ import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
 import { occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useRecurrenceTotals } from '~/components/recurrences/useRecurrenceTotals'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -15,11 +16,13 @@ const recurrencesStore = useRecurrencesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
+const trnsFormStore = useTrnsFormStore()
 const { totals } = useRecurrenceTotals()
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 
 const editingId = ref<RecurrenceId | undefined>()
+const showHelp = ref(false)
 
 function openEdit(id: RecurrenceId) {
   editingId.value = id
@@ -52,11 +55,26 @@ function fmtDay(day: number) {
   <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('recurrences.title') }}</UiHeaderTitle>
+      <template #actions>
+        <UiActionButton :ariaLabel="t('recurrences.help.open')" @click="showHelp = true">
+          <Icon name="lucide:circle-help" size="20" />
+        </UiActionButton>
+      </template>
     </UiHeader>
 
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
+      <!-- Add -->
+      <button
+        type="button"
+        class="bg-primary/15 text-primary hover:bg-primary/25 flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm"
+        @click="trnsFormStore.openFormForCreateRecurrence()"
+      >
+        <Icon name="lucide:plus" size="18" />
+        {{ t('recurrences.add') }}
+      </button>
+
       <!-- Totals -->
-      <div class="grid grid-cols-2 gap-2">
+      <div v-if="recurrencesStore.hasItems" class="grid grid-cols-2 gap-2">
         <div class="bg-elevated rounded-md px-3 py-2">
           <div class="text-2xs text-muted">
             {{ t('recurrences.totals.monthly') }}
@@ -139,6 +157,11 @@ function fmtDay(day: number) {
       v-if="editingId"
       :recurrenceId="editingId"
       @closed="editingId = undefined"
+    />
+
+    <RecurrencesHelp
+      v-if="showHelp"
+      @closed="showHelp = false"
     />
   </UiPage>
 </template>
