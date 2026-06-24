@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { UTCDate } from '@date-fns/utc'
+
 import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
 
 import { budgetPeriodTypes } from '~/components/budgets/types'
@@ -6,18 +8,44 @@ import { useBudgetPeriod } from '~/components/budgets/useBudgetPeriod'
 import { useBudgetProgress } from '~/components/budgets/useBudgetProgress'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale } from '~/components/date/utils'
+import { formatByLocale, getStartOf } from '~/components/date/utils'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { locale, t } = useI18n()
 const budgetsStore = useBudgetsStore()
 const currenciesStore = useCurrenciesStore()
+const trnsStore = useTrnsStore()
 
 const period = useBudgetPeriod()
 const { progressFor, safeToSpendTotal } = useBudgetProgress(period)
 
+// Paging into the past stops at the period holding the earliest transaction - older periods have
+// no activity, so the same limit against zero spend is pointless. No transactions -> stay put.
+const earliestTrnDate = computed(() => {
+  let min = Number.POSITIVE_INFINITY
+  for (const trn of Object.values(trnsStore.items ?? {})) {
+    if (trn.date < min)
+      min = trn.date
+  }
+  return min === Number.POSITIVE_INFINITY ? null : min
+})
+
+const canGoPrev = computed(() => {
+  if (earliestTrnDate.value == null)
+    return false
+  const earliestPeriodStart = getStartOf(new UTCDate(earliestTrnDate.value), period.periodType.value).getTime()
+  return period.range.value.start > earliestPeriodStart
+})
+
+function goPrev() {
+  if (canGoPrev.value)
+    period.prev()
+}
+
 useHead({ title: t('budgets.title') })
 
 const showForm = ref(false)
+const showHelp = ref(false)
 const editingId = ref<BudgetId | undefined>()
 
 function openCreate() {
@@ -56,6 +84,11 @@ function setPeriodType(type: BudgetPeriodType) {
   <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('budgets.title') }}</UiHeaderTitle>
+      <template #actions>
+        <UiActionButton :ariaLabel="t('budgets.help.open')" @click="showHelp = true">
+          <Icon name="lucide:circle-help" size="20" />
+        </UiActionButton>
+      </template>
     </UiHeader>
 
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
@@ -77,9 +110,10 @@ function setPeriodType(type: BudgetPeriodType) {
         <div class="flex items-center gap-1">
           <button
             type="button"
-            class="bg-elevated/40 text-muted hover:bg-elevated/60 flex size-8 items-center justify-center rounded-md"
+            class="bg-elevated/40 text-muted hover:bg-elevated/60 flex size-8 items-center justify-center rounded-md disabled:opacity-30"
             :aria-label="t('base.previous')"
-            @click="period.prev()"
+            :disabled="!canGoPrev"
+            @click="goPrev"
           >
             <Icon name="lucide:chevron-left" size="18" />
           </button>
@@ -147,6 +181,11 @@ function setPeriodType(type: BudgetPeriodType) {
       v-if="showForm"
       :budgetId="editingId"
       @closed="onFormClosed"
+    />
+
+    <BudgetsHelp
+      v-if="showHelp"
+      @closed="showHelp = false"
     />
   </UiPage>
 </template>

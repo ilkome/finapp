@@ -83,8 +83,10 @@ const recurrences = new Table(
 const budgets = new Table(
   {
     amount: column.real, // default planned amount per period (base currency)
+    amountPeriod: column.text, // week | month | year - the cadence `amount` is expressed in
     bucket: column.text, // need | want | savings (50/30/20)
     categoryId: column.text, // budgeted category (parent rolls up its subtree)
+    currency: column.text, // currency `amount` is stated in (base at creation); converted at read
     goalAmount: column.real, // sinking-fund target (later phase)
     goalDate: column.integer, // sinking-fund target date (later phase)
     kind: column.text, // expense | income

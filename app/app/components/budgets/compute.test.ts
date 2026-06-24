@@ -7,6 +7,7 @@ import {
   budgetOwnedCategoryIds,
   carriedIn,
   computeAvailable,
+  normalizeAmount,
   paceMarker,
   projectedPeriodEnd,
   safeToSpend,
@@ -16,6 +17,24 @@ import {
 function cat(parentId: string | 0): Categories[string] {
   return { color: '#fff', icon: 'i', name: 'n', parentId, showInLastUsed: true, showInQuickSelector: false }
 }
+
+describe('normalizeAmount', () => {
+  it('same cadence is unchanged', () => {
+    expect(normalizeAmount(100, 'month', 'month')).toBe(100)
+  })
+  it('year -> month divides by 12', () => {
+    expect(normalizeAmount(1200, 'year', 'month')).toBe(100)
+  })
+  it('month -> week uses 12/52', () => {
+    expect(normalizeAmount(100, 'month', 'week')).toBeCloseTo(23.08, 2)
+  })
+  it('week -> month uses 52/12', () => {
+    expect(normalizeAmount(50, 'week', 'month')).toBeCloseTo(216.67, 2)
+  })
+  it('round-trips back to the original cadence', () => {
+    expect(normalizeAmount(normalizeAmount(1200, 'year', 'week'), 'week', 'year')).toBeCloseTo(1200, 6)
+  })
+})
 
 describe('computeAvailable', () => {
   it('available = carriedIn + assigned - activity', () => {

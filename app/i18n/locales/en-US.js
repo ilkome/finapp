@@ -63,7 +63,58 @@ export default {
     confirm: { deleteText: 'This removes the limit. Your transactions are kept.', deleteTitle: 'Delete budget?' },
     empty: 'No budgets yet. Add a limit for a category.',
     errors: { deleteFailed: 'Could not delete budget', saveFailed: 'Could not save budget' },
-    form: { amount: 'Amount per period', amountPer: 'Amount per {period}', category: 'Category', kind: 'Type', rollover: 'Rollover', selectCategory: 'Select category', subtreeHint: 'Covers this category and all subcategories (except any with their own budget).' },
+    form: { amount: 'Amount per period', amountPer: 'Amount per {period}', cadence: 'Budget rhythm', category: 'Category', currency: 'Currency', kind: 'Type', rollover: 'Rollover', selectCategory: 'Select category', subtreeHint: 'Covers this category and all subcategories (except any with their own budget).' },
+    help: {
+      amount: {
+        body: 'Each budget has its own rhythm - weekly, monthly or yearly - chosen next to the amount. Enter the amount for one such period (for example 100 a month, or 1200 a year), in your main currency. The page then shows it sliced to whatever timeframe you are viewing.',
+        title: 'The amount and its rhythm',
+      },
+      bar: {
+        body: 'The bar fills toward your limit and turns fully red if you go over. The small vertical mark is your pace - where your spending should be by today if you spread the limit evenly across the period. If the fill is past the mark, you are spending faster than planned.',
+        title: 'The bar and the pace mark',
+      },
+      committed: {
+        body: 'Planned recurring payments due in this period that have not happened yet. They are set aside so you do not spend money already promised to a bill.',
+        title: 'Committed to recurring',
+      },
+      currency: {
+        body: 'You pick the currency a budget is set in (your main currency by default). It is converted to your current main currency for the bar and totals, and spending in other currencies is converted too - so one budget covers everything, and changing your main currency later keeps budgets correct.',
+        title: 'Currencies',
+      },
+      intro: {
+        body: 'A budget sets a spending limit for a category over a period of time. As you add transactions, the app shows how much you have spent, how much is left, and whether you are on track.',
+        title: 'What budgets do',
+      },
+      manage: {
+        body: 'Use "Add budget" to create one: pick a category, the type (expense or income), an amount, and a rollover rule. Tap Edit on a budget to change it, or delete it from the edit form - your transactions are kept.',
+        title: 'Add and edit',
+      },
+      open: 'How budgets work',
+      parent: {
+        body: 'Budget a parent category and it covers that whole branch - all its subcategories count toward the one limit. If a subcategory has its own budget, it is tracked separately and not counted twice in the parent.',
+        title: 'Parent categories',
+      },
+      period: {
+        body: 'The buttons at the top choose the timeframe everything is shown in. Each budget keeps its own rhythm, so switching the timeframe simply re-slices every budget to it: a 1200 / year budget shows as 100 a month or about 23 a week. The arrows page through time; the middle button jumps back to now.',
+        title: 'Week, month or year',
+      },
+      projected: {
+        body: 'An estimate of how much you will have spent by the end of the period if you keep going at the current rate.',
+        title: 'Projected',
+      },
+      rollover: {
+        body: 'Choose what happens to a period\'s leftover:\nNo rollover - each period starts fresh.\nRoll over surplus - money you did not spend is added to the next period.\nRoll over surplus & deficit - both unspent money and overspending carry over.\nThe ↺ line on a budget shows what was carried in from earlier periods.',
+        title: 'Rollover',
+      },
+      safeToSpend: {
+        body: 'The number at the top is your free-to-spend money: what is left across all expense budgets after setting aside the recurring payments still due this period.',
+        title: 'Safe to spend',
+      },
+      triad: {
+        body: 'Spent - what you spent in this category and its subcategories during the period.\nAssigned - your limit.\nAvailable - what is left: assigned plus any rollover, minus spent. It turns red when you go over.',
+        title: 'Spent, Assigned, Available',
+      },
+    },
     hero: { safeToSpend: 'Safe to spend', toAssign: 'To assign' },
     kind: { expense: 'Expense', income: 'Income' },
     mode: { envelope: 'Envelope', fifty_thirty_twenty: '50/30/20', limits: 'Limits' },

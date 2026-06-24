@@ -27,8 +27,15 @@ export type BudgetPeriodType = typeof budgetPeriodTypes[number]
 // the row, not the item shape (mirrors RecurrenceItem). See plans/budgets.md §4.
 export const budgetItemSchema = z.object({
   amount: z.number(),
+  // The cadence the amount is expressed in (the budget's own rhythm). The page normalizes it to
+  // whatever timeframe is being viewed. See plans/budgets-period-redesign.md (Model A).
+  amountPeriod: z.enum(budgetPeriodTypes),
   bucket: z.enum(budgetBuckets).nullable().optional(),
   categoryId: z.string().min(1),
+  // The currency the `amount` is stated in (the base currency at creation time). Converted to the
+  // current base at read time, like trns/recurrences - so changing the base currency keeps budgets
+  // correct instead of reinterpreting the bare number. Empty on legacy rows -> treated as base.
+  currency: z.string(),
   goalAmount: z.number().nullable().optional(),
   goalDate: z.number().nullable().optional(),
   kind: z.enum(budgetKinds),

@@ -20,6 +20,8 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
 const category = computed(() => categoriesStore.items?.[props.budget.categoryId])
+// Show the parent under a subcategory budget (mirrors the trn form) so it's clear which level is budgeted.
+const parentCategory = computed(() => category.value?.parentId ? categoriesStore.items?.[category.value.parentId] : undefined)
 
 function pct(value: number, of: number): number {
   if (of <= 0)
@@ -47,8 +49,15 @@ const isOver = computed(() => props.progress.available < 0)
         <div class="text-highlighted truncate text-sm">
           {{ category?.name ?? props.budget.categoryId }}
         </div>
+        <div v-if="parentCategory" class="text-2xs text-muted truncate leading-none">
+          {{ parentCategory.name }}
+        </div>
         <div class="text-2xs text-muted">
           {{ t(`budgets.kind.${props.budget.kind}`) }}
+          · {{ t(`budgets.periodUnit.${props.budget.amountPeriod}`) }}
+          <template v-if="props.budget.currency && props.budget.currency !== currenciesStore.base">
+            · {{ props.budget.currency }}
+          </template>
           <template v-if="props.budget.rollover !== 'none'">
             · {{ t(`budgets.rollover.${props.budget.rollover}`) }}
           </template>
