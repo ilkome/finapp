@@ -7,11 +7,13 @@ import type { Trns } from '~/components/trns/types'
 import type { User, UserSettingsCache } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
 
+import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { ratesSchema } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -40,6 +42,8 @@ export function useInitApp() {
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
+  const recurrencesStore = useRecurrencesStore()
+  const budgetsStore = useBudgetsStore()
 
   // True once all three data stores have received their first local-SQLite watch emission (even
   // an empty one) - the real "local data is on screen" signal the onboarding gate waits on. Demo
@@ -107,6 +111,8 @@ export function useInitApp() {
     categoriesStore.initCategories()
     walletsStore.initWallets()
     trnsStore.initTrns()
+    recurrencesStore.initRecurrences()
+    budgetsStore.initBudgets()
   }
 
   // Instant first paint: seed the stores from the last session's per-user snapshot while

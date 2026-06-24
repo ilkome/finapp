@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
+  confirmLabel?: string
   description?: string
   highlight?: string
   title?: string
@@ -73,7 +74,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
         variant="soft"
         @click="confirm"
       >
-        {{ t('base.delete') }}
+        {{ props.confirmLabel || t('base.delete') }}
       </UButton>
     </template>
   </UModal>

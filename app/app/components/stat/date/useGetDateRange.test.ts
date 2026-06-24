@@ -1,4 +1,3 @@
-import { addMonths, endOfDay, endOfMonth, endOfWeek, endOfYear, startOfDay, startOfMonth, startOfWeek, startOfYear, sub } from 'date-fns'
 import { afterAll, describe, expect, it, vi } from 'vitest'
 
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
@@ -31,16 +30,18 @@ function t(key: string) {
   return translations[key] || key
 }
 
-// Fix "today" to June 15 2025 so tests don't depend on the current date
+// Civil-day model: ranges are UTC-midnight epochs and labels render in UTC.
+// Fix "today" to a local instant on June 15 2025 -> civil day 2025-06-15.
 const fixedDate = new Date('2025-06-15T12:00:00')
+const monthEnd = (y: number, m: number) => Date.UTC(y, m + 1, 1) - 1
+const dayEnd = (y: number, m: number, d: number) => Date.UTC(y, m, d + 1) - 1
 
-// Must set fake timers before useGetDateRange captures `new Date()` internally
+// Must set fake timers before useGetDateRange captures `today` internally
 vi.useFakeTimers()
 vi.setSystemTime(fixedDate)
 
 describe('useGetDateRange', () => {
   const { formatDateToStringWithLast, getStringDateRange } = useGetDateRange(t)
-  const today = fixedDate
 
   afterAll(() => {
     vi.useRealTimers()
@@ -48,91 +49,74 @@ describe('useGetDateRange', () => {
 
   describe('year ranges', () => {
     it('should format current year', () => {
-      const range = {
-        end: endOfYear(today).getTime(),
-        start: startOfYear(today).getTime(),
-      }
+      const range = { end: Date.UTC(2026, 0, 1) - 1, start: Date.UTC(2025, 0, 1) }
       expect(getStringDateRange(range, 'year', 1)).toBe('2025')
     })
 
     it('should format year range', () => {
-      const range = {
-        end: endOfYear(new Date('2023-12-31')).getTime(),
-        start: startOfYear(new Date('2021-01-01')).getTime(),
-      }
+      const range = { end: Date.UTC(2023, 11, 31), start: Date.UTC(2021, 0, 1) }
       expect(getStringDateRange(range, 'year', 2)).toBe('2021 - 2023')
     })
   })
 
   describe('month ranges', () => {
     it('should format month range in this year', () => {
-      const range = {
-        end: addMonths(startOfYear(today), 2).getTime(),
-        start: addMonths(startOfYear(today), 1).getTime(),
-      }
+      const range = { end: Date.UTC(2025, 2, 15), start: Date.UTC(2025, 1, 1) }
       expect(getStringDateRange(range, 'month', 2)).toBe('Feb - Mar')
     })
 
     it('should format month range across years', () => {
-      const range = {
-        end: endOfMonth(new Date('2024-02-29')).getTime(),
-        start: startOfMonth(new Date('2023-11-01')).getTime(),
-      }
+      const range = { end: monthEnd(2024, 1), start: Date.UTC(2023, 10, 1) }
       expect(getStringDateRange(range, 'month', 1)).toBe('Nov 2023 - Feb 2024')
     })
   })
 
   describe('week ranges', () => {
     it('should format week range in same month and year', () => {
-      const range = {
-        end: endOfWeek(new Date('2024-11-03'), { weekStartsOn: 1 }).getTime(),
-        start: startOfWeek(new Date('2024-10-14'), { weekStartsOn: 1 }).getTime(),
-      }
+      // 2024-10-14 is a Monday; 2024-11-03 is a Sunday.
+      const range = { end: dayEnd(2024, 10, 3), start: Date.UTC(2024, 9, 14) }
       expect(getStringDateRange(range, 'week', 1)).toBe('14 Oct - 3 Nov 2024')
     })
   })
 
   describe('day ranges', () => {
     it('should format day range in same month', () => {
-      const range = {
-        end: endOfDay(new Date('2024-03-15')).getTime(),
-        start: startOfDay(new Date('2024-03-10')).getTime(),
-      }
+      const range = { end: dayEnd(2024, 2, 15), start: Date.UTC(2024, 2, 10) }
       expect(getStringDateRange(range, 'day', 5)).toBe('10-15 Mar 2024')
     })
   })
 
   describe('formatDateToStringWithLast - current/last period labels', () => {
+    const todayCivil = new Date(Date.UTC(2025, 5, 15))
+
     it('shows "Today" for current day', () => {
-      expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: today, start: today })).toBe('Today')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: todayCivil, start: todayCivil })).toBe('Today')
     })
 
     it('shows "Yesterday" for previous day', () => {
-      const yesterday = sub(today, { days: 1 })
+      const yesterday = new Date(Date.UTC(2025, 5, 14))
       expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: yesterday, start: yesterday })).toBe('Yesterday')
     })
 
     it('shows "This Month" for current month', () => {
-      expect(formatDateToStringWithLast({ by: 'month', duration: 1, end: endOfMonth(today), start: startOfMonth(today) })).toBe('This Month')
+      expect(formatDateToStringWithLast({ by: 'month', duration: 1, end: new Date(monthEnd(2025, 5)), start: new Date(Date.UTC(2025, 5, 1)) })).toBe('This Month')
     })
 
     it('shows "Last Month" for previous month', () => {
-      const lastMonth = sub(today, { months: 1 })
-      expect(formatDateToStringWithLast({ by: 'month', duration: 1, end: endOfMonth(lastMonth), start: startOfMonth(lastMonth) })).toBe('Last Month')
+      expect(formatDateToStringWithLast({ by: 'month', duration: 1, end: new Date(monthEnd(2025, 4)), start: new Date(Date.UTC(2025, 4, 1)) })).toBe('Last Month')
     })
 
     it('shows "Last N periods" when end is in current period', () => {
-      const start = sub(today, { days: 2 })
-      expect(formatDateToStringWithLast({ by: 'day', duration: 3, end: today, start })).toBe('Last 3 days')
+      expect(formatDateToStringWithLast({ by: 'day', duration: 3, end: todayCivil, start: new Date(Date.UTC(2025, 5, 13)) })).toBe('Last 3 days')
     })
 
     it('shows "d MMMM" for single day in current year (not today/yesterday)', () => {
-      const date = new Date('2025-03-15T12:00:00')
+      const date = new Date(Date.UTC(2025, 2, 15))
       expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date })).toBe('15 March')
     })
 
     it('shows "d MMM yyyy" for single day in past year', () => {
-      const date = new Date('2024-06-15T12:00:00')
+      const date = new Date(Date.UTC(2024, 5, 15))
       expect(formatDateToStringWithLast({ by: 'day', duration: 1, end: date, start: date })).toBe('15 Jun 2024')
     })
   })

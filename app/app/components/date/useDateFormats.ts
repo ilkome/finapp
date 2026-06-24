@@ -2,8 +2,17 @@ import { differenceInDays } from 'date-fns'
 
 import type { PeriodNameWithAll } from '~/components/stat/filter/types'
 
-import { formatByLocale, getEndOf, getStartOf } from '~/components/date/utils'
+import { civilDayStart, formatByLocale, getEndOf, getStartOf, todayCivilDayEpoch } from '~/components/date/utils'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
+
+type FullDateParts = {
+  day: string
+  full: string
+  month: string
+  week: string
+  weekday: string
+  year: string
+}
 
 export function useDateFormats() {
   const { locale, t } = useI18n()
@@ -20,12 +29,15 @@ export function useDateFormats() {
     return { end, start }
   }
 
-  function formatDate(value: number, type: 'trnItem' | 'full') {
+  function formatDate(value: number, type: 'trnItem'): string | undefined
+  function formatDate(value: number, type: 'full'): FullDateParts | undefined
+  function formatDate(value: number, type: 'trnItem' | 'full'): string | FullDateParts | undefined {
     if (!value)
       return undefined
 
     const date = new Date(value)
-    const diff = differenceInDays(new Date(), date)
+    // Compare civil days (UTC-midnight) so "today"/"yesterday" labels are timezone-stable.
+    const diff = differenceInDays(todayCivilDayEpoch(), civilDayStart(value))
 
     switch (type) {
       case 'full':

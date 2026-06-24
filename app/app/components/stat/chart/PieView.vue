@@ -98,7 +98,7 @@ function onClickSlice(params: ECElementEvent) {
     class="flex items-center justify-center gap-4"
     :class="{ '@3xl/stat:justify-start': showLegend }"
   >
-    <div class="relative h-40 w-40 shrink-0 @3xl/stat:h-52 @3xl/stat:w-52">
+    <div class="relative size-40 shrink-0 @3xl/stat:size-52">
       <VChart
         :option
         :updateOptions="{ notMerge: true }"
@@ -130,7 +130,7 @@ function onClickSlice(params: ECElementEvent) {
         <div class="font-secondary text-highlighted text-lg leading-tight">
           {{ formatChartAmount(total, locale) }}
         </div>
-        <div class="text-muted text-2xs">
+        <div class="text-2xs text-muted">
           {{ typeLabel }}
         </div>
       </div>
@@ -159,7 +159,7 @@ function onClickSlice(params: ECElementEvent) {
           <div class="font-secondary text-highlighted text-sm">
             {{ formatChartAmount(item.value, locale) }}
           </div>
-          <div class="text-dimmed text-2xs w-8 text-right">
+          <div class="text-2xs text-dimmed w-8 text-right">
             {{ percentOf(item.value) }}%
           </div>
         </div>

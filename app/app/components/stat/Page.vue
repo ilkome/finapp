@@ -76,6 +76,8 @@ onDeactivated(() => {
       </template>
     </StatHeader>
 
+    <BudgetsDashboardCard class="mx-2 mb-2 max-w-7xl lg:mx-4" />
+
     <StatWrap
       :activeTab
       :range="statDate.range.value"

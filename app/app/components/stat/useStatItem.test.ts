@@ -10,7 +10,43 @@ import type { IntervalData } from '~/components/stat/types'
 // ---------------------------------------------------------------------------
 vi.stubGlobal('computed', computed)
 vi.stubGlobal('ref', ref)
+vi.stubGlobal('shallowRef', ref)
 vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
+
+const zeroTotal: TotalReturns = {
+  adjustment: 0,
+  expense: 0,
+  expenseTransfers: 0,
+  income: 0,
+  incomeTransfers: 0,
+  sum: 0,
+  sumTransfers: 0,
+}
+
+// Forecast layer: mock so importing useStatItem does not pull in the recurrences store chain
+// (which loads Nuxt-runtime composables). Off by default keeps the actuals-only path under test.
+vi.mock('~/components/recurrences/useForecastMode', () => ({
+  useForecastMode: () => ref('off'),
+}))
+
+vi.mock('~/components/recurrences/useForecastSeries', () => ({
+  useForecastSeries: () => ({
+    computeForecastTotal: () => zeroTotal,
+    forecastIds: computed(() => []),
+    forecastIntervalsData: computed(() => []),
+    forecastItems: computed(() => ({})),
+    forecastTotal: computed(() => zeroTotal),
+    hasForecast: computed(() => false),
+  }),
+}))
+
+vi.mock('~/components/currencies/useCurrenciesStore', () => ({
+  useCurrenciesStore: () => ({ base: 'USD', rates: {} }),
+}))
+
+vi.mock('~/components/wallets/useWalletsStore', () => ({
+  useWalletsStore: () => ({ items: {} }),
+}))
 
 // ---------------------------------------------------------------------------
 // Mock @vueuse/core — useStorage as a plain ref

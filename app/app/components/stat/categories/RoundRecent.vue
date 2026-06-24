@@ -3,6 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { compareCategoryIds } from '~/components/categories/utils'
+import { todayCivilDayEpoch } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const categoriesStore = useCategoriesStore()
@@ -39,7 +40,7 @@ function onClick(categoryId: CategoryId) {
     state.values.amountRaw = ['', '', '']
     state.values.categoryId = categoryId
     state.ui.isShow = true
-    state.values.date = Date.now()
+    state.values.date = todayCivilDayEpoch()
   })
 }
 </script>

@@ -33,6 +33,7 @@
     "test:e2e:install": "playwright install chromium"
   },
   "dependencies": {
+    "@date-fns/utc": "^2.1.1",
     "@formkit/drag-and-drop": "^0.6.1",
     "@iconify-json/mdi": "^1.2.3",
     "@internationalized/date": "^3.12.2",

@@ -1,16 +1,20 @@
 <script setup lang="ts">
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
+import type { ForecastMode } from '~/components/recurrences/useForecastMode'
 import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   averageTotal?: Record<string, number>
   categoryId?: CategoryId
   filteredType: SeriesSlugSelected
+  forecastMode?: ForecastMode
+  forecastTotal?: TotalReturns
   total: TotalReturns
   trnsIds: TrnId[]
   type: SeriesSlugSelected | StatTabSlug
@@ -22,9 +26,17 @@ const emit = defineEmits<{
   clickAverage: []
 }>()
 
+const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
+const currenciesStore = useCurrenciesStore()
 
 const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
+
+// Forecast row: shown only when forecast is on and the period actually has projected occurrences.
+const isShowForecast = computed(() =>
+  !!props.forecastMode && props.forecastMode !== 'off' && !!props.forecastTotal && props.forecastTotal.sum !== 0,
+)
+const projectedSum = computed(() => props.total.sum + (props.forecastTotal?.sum ?? 0))
 
 const className = computed(() => cn(
   'min-w-min min-h-[42px] flex items-center',
@@ -109,6 +121,34 @@ function onClick(type: SeriesSlugSelected) {
           :walletId
         />
       </StatSumItem>
+    </div>
+
+    <div
+      v-if="isShowForecast"
+      class="text-2xs text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1"
+    >
+      <span class="tracking-wide uppercase">{{ t('stat.forecast.title') }}</span>
+      <span v-if="forecastMode === 'separate'" class="flex items-center gap-1">
+        {{ t('stat.forecast.short') }}
+        <Amount
+          :amount="forecastTotal!.sum"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          :isShowPlus="forecastTotal!.sum > 0"
+          align="left"
+          variant="xs"
+        />
+      </span>
+      <span class="text-highlighted flex items-center gap-1">
+        {{ t('stat.forecast.projected') }}
+        <Amount
+          :amount="projectedSum"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          align="left"
+          variant="xs"
+        />
+      </span>
     </div>
   </div>
 </template>

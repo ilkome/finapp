@@ -40,6 +40,8 @@ const {
   chartXAxisLabels,
   filteredCategoriesIds,
   filteredType,
+  forecastMode,
+  forecastRangeTotal,
   isPeriodOneDay,
   onClickSumItem,
   onSetCategoryFilter,
@@ -132,6 +134,8 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
         :averageTotal
         :categoryId="props.categoryId"
         :filteredType="filteredType"
+        :forecastMode="forecastMode"
+        :forecastTotal="forecastRangeTotal"
         :total="rangeTotal"
         :trnsIds
         :type="selectedTypeForSum"
@@ -195,7 +199,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
         {{ t('trns.title') }} {{ modalTrnsIds.length > 0 ? modalTrnsIds.length : '' }}
       </UiTitleModal>
 
-      <div class="scrollerBlock bottomSheetContentInside">
+      <div class="bottomSheetContentInside scrollerBlock">
         <TrnsList
           :isShowDates="!isPeriodOneDay"
           :isShowGroupSum="!isPeriodOneDay"

@@ -49,6 +49,14 @@ export function useMenuData() {
         icon: 'hugeicons:money-exchange-01',
         name: t('currencies.page.title'),
       },
+      recurrences: {
+        icon: 'hugeicons:calendar-03',
+        name: t('recurrences.title'),
+      },
+      budgets: {
+        icon: 'hugeicons:chart-histogram',
+        name: t('budgets.title'),
+      },
       history: {
         icon: 'hugeicons:archive-01',
         name: t('trns.history'),

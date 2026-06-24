@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { useVibrate } from '@vueuse/core'
 
+import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
+const recurrencesStore = useRecurrencesStore()
 // @ts-expect-error `interval` not optional in VueUse types but has @default 0 — type bug
 const { isSupported: isVibrateSupported, vibrate } = useVibrate({ pattern: [50, 50, 50] })
 
@@ -22,10 +25,25 @@ async function onClickSubmit() {
   if (!trnFormData)
     return
 
-  trnsStore.saveTrn({
-    id: trnFormData.id,
-    values: trnFormData.values,
-  })
+  const rep = trnsFormStore.repeat
+  if (rep.enabled && trnFormData.values.type !== TrnType.Transfer) {
+    // "Repeat" on: create a recurrence whose first occurrence is this trn (shared id).
+    recurrencesStore.createFromTrn(trnFormData.values, {
+      autoCreate: rep.autoCreate,
+      endCount: rep.endMode === 'count' ? rep.endCount : null,
+      endDate: rep.endMode === 'date' ? rep.endDate : null,
+      endMode: rep.endMode,
+      freq: rep.freq,
+      interval: rep.interval,
+      monthLastDay: rep.monthLastDay,
+    })
+  }
+  else {
+    trnsStore.saveTrn({
+      id: trnFormData.id,
+      values: trnFormData.values,
+    })
+  }
 
   if (isVibrateSupported.value)
     vibrate()

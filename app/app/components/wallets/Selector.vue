@@ -107,13 +107,13 @@ onMounted(async () => {
   <div class="flex h-full min-h-0 flex-col overflow-hidden">
     <div
       v-if="props.withHeader"
-      class="bg-default flex items-center gap-2 pt-2 pb-2"
+      class="bg-default flex items-center gap-2 py-2"
     >
       <input
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
         :placeholder="t('wallets.search.placeholder')"
       >
       <UiActionButton

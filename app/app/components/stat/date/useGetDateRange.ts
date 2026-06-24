@@ -1,9 +1,10 @@
-import { isSameDay, isSameMonth, isSameWeek, isSameYear, sub } from 'date-fns'
+import { UTCDate } from '@date-fns/utc'
+import { isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, isSameWeek as dfIsSameWeek, isSameYear as dfIsSameYear, sub } from 'date-fns'
 
 import type { Period, Range, StatDateParams } from '~/components/date/types'
 import type { LocaleSlug } from '~/components/locale/types'
 
-import { formatByLocale, toDuration } from '~/components/date/utils'
+import { formatByLocale, todayCivilDayEpoch, toDuration } from '~/components/date/utils'
 
 type DateFormatParams = {
   by: StatDateParams['rangeBy']
@@ -12,17 +13,32 @@ type DateFormatParams = {
   start: Date
 }
 
+// Civil-day model: compare in UTC (via UTCDate) so labels match the rendered civil day on any device.
+const u = (d: Date): UTCDate => new UTCDate(d.getTime())
+
+function isSameYear(a: Date, b: Date): boolean {
+  return dfIsSameYear(u(a), u(b))
+}
+
+function isSameMonth(a: Date, b: Date): boolean {
+  return dfIsSameMonth(u(a), u(b))
+}
+
 function isSamePeriod(a: Date, b: Date, by: Period): boolean {
   switch (by) {
     case 'year': return isSameYear(a, b)
     case 'month': return isSameMonth(a, b)
-    case 'week': return isSameWeek(a, b, { weekStartsOn: 1 })
-    case 'day': return isSameDay(a, b)
+    case 'week': return dfIsSameWeek(u(a), u(b), { weekStartsOn: 1 })
+    case 'day': return dfIsSameDay(u(a), u(b))
   }
 }
 
+function subOnePeriod(date: Date, by: Period): Date {
+  return sub(u(date), toDuration(by, 1))
+}
+
 export function useGetDateRange(t: (key: string, choice?: number) => string, locale?: LocaleSlug) {
-  const today = new Date()
+  const today = new Date(todayCivilDayEpoch())
 
   function formatYearRange({ duration, end, start }: DateFormatParams): string {
     return duration === 1
@@ -96,7 +112,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
       if (isSamePeriod(start, today, by))
         return t(`dates.${by}.current`)
 
-      if (isSamePeriod(start, sub(today, toDuration(by, 1)), by))
+      if (isSamePeriod(start, subOnePeriod(today, by), by))
         return t(`dates.${by}.last`)
 
       if (by === 'day' && isSameYear(start, today))
