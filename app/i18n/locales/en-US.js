@@ -378,6 +378,7 @@ export default {
       skip: 'Skip',
       skipNext: 'Skip next',
     },
+    add: 'Add recurring',
     confirm: {
       cancelText: 'Stops future transactions. Already-created ones stay.',
       cancelTitle: 'Cancel this series?',
@@ -399,6 +400,50 @@ export default {
       save: 'Save',
     },
     freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
+    help: {
+      autoManual: {
+        body: 'You choose this per rule. Automatic - the app creates the transaction itself on each date. Manual - it waits for you and appears under "Pending to confirm". Use automatic for fixed bills, manual when the amount varies.',
+        title: 'Automatic or confirm',
+      },
+      budgetsLink: {
+        body: 'Recurring payments still due in the current budget period are set aside - they lower your "safe to spend" so upcoming bills are not counted as free money.',
+        title: 'Link with budgets',
+      },
+      create: {
+        body: 'Turn on "Repeat" while adding a transaction - that transaction becomes the first one in the series, and the rest follow your schedule. Open a rule from this page to change the amount, schedule, or end.',
+        title: 'Creating one',
+      },
+      ends: {
+        body: 'A series can run forever, stop on a date, or stop after a set number of times.',
+        title: 'When it ends',
+      },
+      forecast: {
+        body: 'Operations that have not happened yet still show up in your statistics and forecast for the period ahead, so you can see what is coming before it lands.',
+        title: 'Seen ahead of time',
+      },
+      frequency: {
+        body: 'Repeat every day, week, month or year, and every few of them - for example every 2 weeks or every 3 months. For monthly rules you can also pin them to the last day of the month.',
+        title: 'How often',
+      },
+      intro: {
+        body: 'Recurring operations are your regular income and expenses - salary, rent, subscriptions - so you do not have to enter them by hand every time.',
+        title: 'What this is for',
+      },
+      manage: {
+        body: 'Pause a series to stop it for a while and resume later, or cancel it for good. You can skip a single date without touching the rest. Deleting a rule keeps the transactions it already created.',
+        title: 'Pause, skip, cancel',
+      },
+      open: 'How recurring works',
+      pending: {
+        body: 'Due manual operations wait here. Confirm to create the transaction (you can adjust the amount first), or Skip to dismiss that one date.',
+        title: 'Pending to confirm',
+      },
+      title: 'How recurring works',
+      totals: {
+        body: 'These show your combined recurring load converted to a per-month and a per-year amount, across currencies, so you can see the weight of your regular commitments.',
+        title: 'Totals at the top',
+      },
+    },
     manual: 'confirm',
     next: 'next',
     pending: { title: 'Pending to confirm' },

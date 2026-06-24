@@ -363,6 +363,13 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     ui.value.isShow = true
   }
 
+  // Entry point from the Recurrences section: the trn form is the creation path for a recurrence
+  // (its first occurrence is the entered trn), so open it for create with "Repeat" pre-enabled.
+  function openFormForCreateRecurrence() {
+    openFormForCreate()
+    repeat.value.enabled = true
+  }
+
   function openFormForDuplicate(trnId: TrnId) {
     const trn = trnsStore.items?.[trnId] as TrnItem
 
@@ -398,6 +405,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     onSubmit,
     onTransferWalletSelected,
     openFormForCreate,
+    openFormForCreateRecurrence,
     openFormForDuplicate,
     openFormForEdit,
     openTrnFormModal,
