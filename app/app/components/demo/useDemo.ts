@@ -8,6 +8,7 @@ import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { localInstantToCivilDay } from '~/components/date/utils'
 import currencies from '~/components/demo/currencies.json'
 import { data, expenseRules, incomeRules, oneOffExpenses, salaryConfig, transferRules } from '~/components/demo/data'
 import { TrnType } from '~/components/trns/types'
@@ -239,6 +240,15 @@ export function useDemo() {
         updatedAt: Date.now(),
         walletId,
       } satisfies TrnItem
+    }
+
+    // Civil-day model: snap each generated instant to its local calendar day (UTC-midnight)
+    // and keep the original instant as enteredAt. See plans/civil-date-migration.md.
+    for (const id in trns) {
+      const trn = trns[id]!
+      const instant = trn.date
+      trn.date = localInstantToCivilDay(instant)
+      trn.enteredAt = instant
     }
 
     trnsStore.setTrns(trns)

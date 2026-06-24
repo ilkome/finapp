@@ -117,12 +117,12 @@ onMounted(async () => {
 
 <template>
   <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-2">
+    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 py-2">
       <input
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">

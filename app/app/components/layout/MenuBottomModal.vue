@@ -32,7 +32,7 @@ function onSearchClick() {
         <div class="bottomSheetContentInside px-3 pt-4 pb-2">
           <div
             v-if="!isDemo"
-            class="border-default mx-2 border-b pt-2 pb-2"
+            class="border-default mx-2 border-b py-2"
           >
             <UserViewLogout />
           </div>

@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { addDays, isSameDay, subDays } from 'date-fns'
-
 import { useDateFormats } from '~/components/date/useDateFormats'
+import { addCivilDays, isSameCivilDay, todayCivilDayEpoch } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const { t } = useI18n()
@@ -9,17 +8,17 @@ const trnsFormStore = useTrnsFormStore()
 const { formatDate } = useDateFormats()
 
 const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full') as { day: string, full: string, month: string, week: string, weekday: string } | undefined)
-const isToday = computed(() => isSameDay(new Date(trnsFormStore.values.date), new Date()))
+const isToday = computed(() => isSameCivilDay(trnsFormStore.values.date, todayCivilDayEpoch()))
 const isShow = ref(false)
 
 function changeDate(way: 'prev' | 'next' | 'today') {
-  let newDate: number = Date.now()
+  let newDate: number = todayCivilDayEpoch()
 
   if (way === 'prev')
-    newDate = subDays(trnsFormStore.values.date, 1).getTime()
+    newDate = addCivilDays(trnsFormStore.values.date, -1)
 
   if (way === 'next' && !isToday.value)
-    newDate = addDays(trnsFormStore.values.date, 1).getTime()
+    newDate = addCivilDays(trnsFormStore.values.date, 1)
 
   trnsFormStore.values.date = newDate
 }
@@ -42,7 +41,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       @closeModal="isShow = false"
     >
       <template #trigger>
-        <UiActionButton class="text-muted grid h-full w-full content-center !justify-start px-2 text-left">
+        <UiActionButton class="text-muted grid size-full content-center !justify-start px-2 text-left">
           <div class="text-highlighted text-sm">
             {{ formattedDate?.day }} {{ formattedDate?.month }}
           </div>

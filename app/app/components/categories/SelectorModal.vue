@@ -14,6 +14,9 @@ type CategoryFilter = 'all' | 'favorites'
 const props = defineProps<{
   activeItemId?: CategoryId
   hide?: () => void
+  // Budgets aggregate a category's whole subtree, so they need to pick a parent itself - not just
+  // a leaf. When set, each expanded parent offers an explicit "whole category" row.
+  selectableParents?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -218,12 +221,12 @@ onMounted(async () => {
 
 <template>
   <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-2">
+    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 py-2">
       <input
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">
@@ -303,6 +306,29 @@ onMounted(async () => {
                 ? 'ml-2 pr-2 pb-4 pl-3'
                 : '-mt-px ml-5 pb-1 pl-3'"
             >
+              <button
+                v-if="props.selectableParents"
+                type="button"
+                class="hover:bg-elevated/40 mb-1 flex w-full items-center gap-2 rounded-md p-2 text-left"
+                :class="props.activeItemId === rootId ? 'bg-elevated/60' : ''"
+                @click="onSelect(rootId)"
+              >
+                <div
+                  class="flex size-7 shrink-0 items-center justify-center rounded-full"
+                  :style="{ background: categoriesStore.items[rootId]?.color ?? 'var(--ui-bg-accented)' }"
+                >
+                  <Icon :name="categoriesStore.items[rootId]?.icon ?? 'lucide:folder'" size="15" class="text-white" />
+                </div>
+                <div class="min-w-0">
+                  <div class="text-highlighted truncate text-sm">
+                    {{ t('categories.selectParent', { name: categoriesStore.items[rootId]?.name }) }}
+                  </div>
+                  <div class="text-2xs text-muted">
+                    {{ t('categories.selectParentHint') }}
+                  </div>
+                </div>
+              </button>
+
               <template v-if="view === 'list'">
                 <CategoriesItem
                   v-for="childId in visibleChildrenIds(rootId)"

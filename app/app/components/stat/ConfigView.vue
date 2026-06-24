@@ -5,6 +5,7 @@ import { AnimatePresence, Motion } from 'motion-v'
 import type { StatConfigPanelId } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
+import { nextForecastMode, useForecastMode } from '~/components/recurrences/useForecastMode'
 import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
@@ -16,6 +17,11 @@ const activePanel = inject(statConfigPanelKey, ref<StatConfigPanelId>('root'))
 
 const { locale, t } = useI18n()
 const statConfig = inject(statConfigKey)!
+const forecastMode = useForecastMode()
+
+function cycleForecast() {
+  forecastMode.value = nextForecastMode(forecastMode.value)
+}
 
 const isChartShow = computed(() => statConfig.config.value.isChartShow)
 const isCatsRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
@@ -177,6 +183,7 @@ const panelTransition = {
 }
 
 type RootRow = {
+  cycle?: () => void
   isShow?: boolean
   key: string
   panel?: Exclude<StatConfigPanelId, 'root'>
@@ -249,6 +256,12 @@ const rows = computed<RootRow[]>(() => {
       title: t('trns.title'),
       toggle: () => statConfig.updateConfig('trns', { isShow: !statConfig.config.value.trns.isShow }),
     })
+    list.push({
+      cycle: cycleForecast,
+      key: 'forecast',
+      subtitle: t(`stat.forecast.mode.${forecastMode.value}`),
+      title: t('stat.forecast.title'),
+    })
   }
 
   return list
@@ -257,6 +270,8 @@ const rows = computed<RootRow[]>(() => {
 function onRowActivate(row: RootRow) {
   if (row.panel)
     open(row.panel)
+  else if (row.cycle)
+    row.cycle()
   else if (row.toggle)
     row.toggle()
 }

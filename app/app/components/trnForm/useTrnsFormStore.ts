@@ -1,12 +1,14 @@
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
+import type { RecurrenceEndMode, RecurrenceFreq } from '~/components/recurrences/types'
 import type { TrnFormUi } from '~/components/trnForm/types'
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
 import type { TransferSide, TrnFormValues, TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { todayCivilDayEpoch } from '~/components/date/utils'
 import { createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 import { validate } from '~/components/trnForm/utils/validate'
@@ -36,7 +38,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
     categoryId: null,
-    date: Date.now(),
+    date: todayCivilDayEpoch(),
     desc: undefined,
     expenseWalletId: null,
     incomeWalletId: null,
@@ -53,6 +55,22 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   const modal = ref({
     description: false,
   })
+
+  // "Repeat" toggle: turns the trn being entered into a recurrence (plans/recurrences.md §9).
+  type RepeatState = {
+    autoCreate: boolean
+    enabled: boolean
+    endCount: number | null
+    endDate: number | null
+    endMode: RecurrenceEndMode
+    freq: RecurrenceFreq
+    interval: number
+    monthLastDay: boolean
+  }
+  function defaultRepeat(): RepeatState {
+    return { autoCreate: true, enabled: false, endCount: null, endDate: null, endMode: 'never', freq: 'month', interval: 1, monthLastDay: false }
+  }
+  const repeat = ref<RepeatState>(defaultRepeat())
 
   function closeTrnFormModal(name: keyof typeof modal.value) {
     modal.value[name] = false
@@ -199,13 +217,14 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amountRaw = ['', '', '']
     values.desc = undefined
     values.trnId = null
+    repeat.value = defaultRepeat()
   }
 
   function $reset() {
     values.amount = [0, 0, 0]
     values.amountRaw = ['', '', '']
     values.categoryId = null
-    values.date = Date.now()
+    values.date = todayCivilDayEpoch()
     values.desc = undefined
     values.expenseWalletId = null
     values.incomeWalletId = null
@@ -213,6 +232,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.trnId = null
     values.trnType = TrnType.Expense
     values.walletId = null
+    repeat.value = defaultRepeat()
 
     ui.value = {
       isShow: false,
@@ -381,6 +401,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     openFormForDuplicate,
     openFormForEdit,
     openTrnFormModal,
+    repeat,
     shouldShowSum,
     switchTransferWallets,
     transferExpenseWalletId,

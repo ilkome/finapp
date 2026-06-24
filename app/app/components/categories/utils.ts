@@ -38,6 +38,48 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   return result
 }
 
+/**
+ * All descendant category ids of `categoryId` (children, grandchildren, ...), excluding itself.
+ * Used by budgets to aggregate a parent category's subtree. Builds a parent->children map once,
+ * then walks it iteratively so a deep or (defensively) cyclic tree can't recurse unbounded.
+ */
+export function getDescendantIds(items: Categories, categoryId: CategoryId): CategoryId[] {
+  if (!items)
+    return []
+
+  const childrenMap = new Map<CategoryId, CategoryId[]>()
+  for (const id of Object.keys(items)) {
+    const parentId = items[id]?.parentId
+    if (parentId) {
+      const pid = String(parentId)
+      if (!childrenMap.has(pid))
+        childrenMap.set(pid, [])
+      childrenMap.get(pid)!.push(id)
+    }
+  }
+
+  const result: CategoryId[] = []
+  const seen = new Set<CategoryId>()
+  const stack = [...(childrenMap.get(String(categoryId)) ?? [])]
+  while (stack.length) {
+    const id = stack.pop()!
+    if (seen.has(id))
+      continue
+    seen.add(id)
+    result.push(id)
+    const kids = childrenMap.get(String(id))
+    if (kids)
+      stack.push(...kids)
+  }
+
+  return result
+}
+
+/** `categoryId` plus all its descendants (the full budget subtree). */
+export function getCategorySubtreeIds(items: Categories, categoryId: CategoryId): CategoryId[] {
+  return [categoryId, ...getDescendantIds(items, categoryId)]
+}
+
 export function getParentCategoryIdOrReturnSame(items: Categories, categoryId: CategoryId): CategoryId {
   const category = items[categoryId]
   if (!category || category.parentId === 0)

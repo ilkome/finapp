@@ -149,7 +149,9 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
-    const valuesWithEditDate = { ...values, updatedAt: Date.now() }
+    // enteredAt is stamped once at creation and preserved across edits (audit/ordering only).
+    const enteredAt = values.enteredAt ?? items.value?.[id]?.enteredAt ?? Date.now()
+    const valuesWithEditDate = { ...values, enteredAt, updatedAt: Date.now() }
     const prev = items.value
 
     // Optimistic update (instant UI). In real mode the watch re-emits the same shape.

@@ -55,6 +55,28 @@ export default {
     yes: 'Да',
   },
 
+  budgets: {
+    actions: { delete: 'Удалить', edit: 'Изменить', save: 'Сохранить' },
+    add: 'Добавить бюджет',
+    carried: 'перенос',
+    committed: 'зарезервировано на регулярные',
+    confirm: { deleteText: 'Удалится только лимит. Транзакции останутся.', deleteTitle: 'Удалить бюджет?' },
+    empty: 'Пока нет бюджетов. Добавьте лимит для категории.',
+    errors: { deleteFailed: 'Не удалось удалить бюджет', saveFailed: 'Не удалось сохранить бюджет' },
+    form: { amount: 'Сумма за период', amountPer: 'Сумма на {period}', category: 'Категория', kind: 'Тип', rollover: 'Перенос', selectCategory: 'Выбрать категорию', subtreeHint: 'Учитывает категорию и все подкатегории (кроме тех, у кого свой бюджет).' },
+    hero: { safeToSpend: 'Можно потратить', toAssign: 'К распределению' },
+    kind: { expense: 'Расход', income: 'Доход' },
+    mode: { envelope: 'Конверты', fifty_thirty_twenty: '50/30/20', limits: 'Лимиты' },
+    overBudget: 'Превышен бюджет',
+    pace: 'Темп',
+    period: { month: 'Месяц', week: 'Неделя', year: 'Год' },
+    periodUnit: { month: 'месяц', week: 'неделю', year: 'год' },
+    projected: 'Прогноз',
+    rollover: { none: 'Без переноса', surplus: 'Переносить остаток', surplus_deficit: 'Переносить остаток и перерасход' },
+    title: 'Бюджеты',
+    triad: { assigned: 'Назначено', available: 'Доступно', spent: 'Потрачено' },
+  },
+
   categories: {
     actions: {
       addToFavorites: 'Добавить в избранное',
@@ -124,6 +146,8 @@ export default {
     search: {
       placeholder: 'Поиск',
     },
+    selectParent: 'Вся «{name}»',
+    selectParentHint: 'со всеми подкатегориями',
     title: 'Категории',
   },
 
@@ -245,6 +269,11 @@ export default {
     title: 'Вход',
   },
 
+  menu: {
+    documentation: 'Документация',
+    title: 'Меню',
+  },
+
   money: {
     all: 'Всего',
     average: 'Среднее',
@@ -285,6 +314,48 @@ export default {
     intro: 'Добавьте свой первый доход или расход',
     introCategories: 'Добавьте категорию, например, «Еда» или «Зарплата»',
     introWallets: 'Начните учёт финансов, добавив первый кошелёк',
+  },
+
+  recurrences: {
+    actions: {
+      cancel: 'Отменить',
+      confirm: 'Подтвердить',
+      delete: 'Удалить',
+      edit: 'Изменить',
+      pause: 'Пауза',
+      resume: 'Возобновить',
+      skip: 'Пропустить',
+      skipNext: 'Пропустить',
+    },
+    confirm: {
+      cancelText: 'Будущие операции остановятся. Созданные останутся.',
+      cancelTitle: 'Отменить серию?',
+      deleteText: 'Правило удалится полностью. Созданные операции останутся.',
+      deleteTitle: 'Удалить серию?',
+    },
+    editTitle: 'Изменить повтор',
+    empty: 'Пока нет регулярных операций. Включите «Повтор» при добавлении операции.',
+    end: { count: 'После N', countPlaceholder: 'кол-во', date: 'До даты', never: 'Никогда' },
+    errors: { deleteFailed: 'Не удалось удалить', saveFailed: 'Не удалось сохранить' },
+    everyOne: { day: 'Каждый день', month: 'Каждый месяц', week: 'Каждую неделю', year: 'Каждый год' },
+    form: {
+      amount: 'Сумма',
+      autoCreate: 'Создавать автоматически (выкл = подтверждать каждый раз)',
+      ends: 'Окончание',
+      every: 'Каждые',
+      monthLastDay: 'Последний день месяца',
+      repeat: 'Повтор',
+      save: 'Сохранить',
+    },
+    freq: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
+    manual: 'подтверждение',
+    next: 'далее',
+    pending: { title: 'Ожидают подтверждения' },
+    status: { active: 'Активные', cancelled: 'Отменённые', paused: 'На паузе' },
+    summary: { until: 'до' },
+    title: 'Регулярные',
+    totals: { monthly: 'В месяц', yearly: 'В год' },
+    unit: { day: 'день | дня | дней', month: 'месяц | месяца | месяцев', week: 'неделя | недели | недель', year: 'год | года | лет' },
   },
 
   search: {
@@ -383,6 +454,16 @@ export default {
         subtitle: 'Топ {count}',
         title: 'Кошельки',
       },
+    },
+    forecast: {
+      mode: {
+        merged: 'Прогноз итога',
+        off: 'Выкл',
+        separate: 'Факт + прогноз',
+      },
+      projected: 'Прогноз',
+      short: 'прогноз',
+      title: 'Прогноз',
     },
     title: 'Статистика',
   },

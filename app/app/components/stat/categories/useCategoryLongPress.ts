@@ -1,6 +1,7 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { todayCivilDayEpoch } from '~/components/date/utils'
 import { statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -33,7 +34,7 @@ export function useCategoryLongPress(
           state.values.date = statDate.selectedInterval.value.start
         }
         else {
-          state.values.date = Date.now()
+          state.values.date = todayCivilDayEpoch()
         }
       })
     },

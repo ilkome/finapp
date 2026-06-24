@@ -46,24 +46,11 @@ const radius = computed({
   },
 })
 
-const modes = [
-  { icon: 'i-lucide-sun', label: 'light' },
-  { icon: 'i-lucide-moon', label: 'dark' },
-  { icon: 'i-lucide-monitor', label: 'system' },
-]
 const modeItems = computed(() => [
   { icon: 'i-lucide-sun', label: t('theme.light'), value: 'light' },
   { icon: 'i-lucide-moon', label: t('theme.dark'), value: 'dark' },
   { icon: 'i-lucide-monitor', label: t('theme.system'), value: 'system' },
 ])
-const mode = computed({
-  get() {
-    return colorMode.value
-  },
-  set(option) {
-    colorMode.preference = option
-  },
-})
 const modePreference = computed({
   get() {
     return colorMode.preference
@@ -253,92 +240,7 @@ function setBlackAsPrimary(value: boolean) {
     </template>
 
     <template #content>
-      <fieldset>
-        <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('theme.picker.primary') }}
-        </legend>
-
-        <div class="-mx-2 grid grid-cols-3 gap-1">
-          <ThemePickerButton
-            chip="primary"
-            label="Black"
-            :selected="appConfig.theme.blackAsPrimary"
-            @click="setBlackAsPrimary(true)"
-          >
-            <template #leading>
-              <span class="inline-block h-2 w-2 rounded-full bg-black dark:bg-white" />
-            </template>
-          </ThemePickerButton>
-
-          <ThemePickerButton
-            v-for="color in primaryColors"
-            :key="color"
-            :label="color"
-            :chip="color"
-            :selected="!appConfig.theme.blackAsPrimary && primary === color"
-            @click="primary = color"
-          />
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('theme.picker.neutral') }}
-        </legend>
-
-        <div class="-mx-2 grid grid-cols-3 gap-1">
-          <ThemePickerButton
-            v-for="color in neutralColors"
-            :key="color"
-            :label="color"
-            :chip="color"
-            :selected="neutral === color"
-            @click="neutral = color"
-          />
-        </div>
-      </fieldset>
-
-      <fieldset>
-        <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('theme.picker.radius') }}
-        </legend>
-
-        <USelectMenu
-          v-model="radius"
-          :items="radiusItems"
-          valueKey="value"
-          :searchInput="false"
-        >
-          <template #leading>
-            <span
-              class="bg-elevated size-5"
-              :style="{ borderRadius: `${radius}rem` }"
-            />
-          </template>
-          <template #item-leading="{ item }">
-            <span
-              class="bg-elevated size-5"
-              :style="{ borderRadius: `${item.value}rem` }"
-            />
-          </template>
-        </USelectMenu>
-      </fieldset>
-
-      <fieldset>
-        <legend class="mb-2 text-[11px] leading-none font-semibold">
-          {{ t('theme.picker.theme') }}
-        </legend>
-
-        <div class="-mx-2 grid grid-cols-3 gap-1">
-          <ThemePickerButton
-            v-for="m in modes"
-            :key="m.label"
-            v-bind="m"
-            :selected="colorMode.preference === m.label"
-            @click="mode = m.label"
-          />
-        </div>
-      </fieldset>
+      <ThemePickerPanel />
     </template>
   </UPopover>
 </template>

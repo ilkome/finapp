@@ -8,7 +8,7 @@ import { getPowerSyncDb } from './db'
 // Every mutation targets one of these trusted literals (callers never pass user input). The
 // guard hardens the string-interpolated SQL below; column names come from transforms.ts (fixed
 // keys) and row values are always parameterized.
-const WRITABLE_TABLES = new Set(['categories', 'trns', 'user_settings', 'wallets'])
+const WRITABLE_TABLES = new Set(['budget_assignments', 'budgets', 'categories', 'recurrences', 'trns', 'user_settings', 'wallets'])
 
 function assertTable(table: string): void {
   if (!WRITABLE_TABLES.has(table))
