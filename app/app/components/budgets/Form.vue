@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { BudgetId, BudgetItem, BudgetKind, BudgetRollover } from '~/components/budgets/types'
+import type { BudgetId, BudgetItem, BudgetKind, BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
 import type { CategoryId } from '~/components/categories/types'
 
-import { budgetKinds, budgetRollovers } from '~/components/budgets/types'
-import { useBudgetPeriod } from '~/components/budgets/useBudgetPeriod'
+import { budgetKinds, budgetPeriodTypes, budgetRollovers } from '~/components/budgets/types'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
 const props = defineProps<{
   budgetId?: BudgetId
@@ -18,19 +18,22 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const budgetsStore = useBudgetsStore()
 const categoriesStore = useCategoriesStore()
-const period = useBudgetPeriod()
-
-// The amount is "per the page's active period" (single global period in v1) - spell out which one.
-const amountLabel = computed(() => t('budgets.form.amountPer', { period: t(`budgets.periodUnit.${period.periodType.value}`) }))
+const currenciesStore = useCurrenciesStore()
 
 const existing = computed(() => props.budgetId ? budgetsStore.items?.[props.budgetId] : undefined)
 
 const categoryId = ref<CategoryId | undefined>(existing.value?.categoryId)
 const kind = ref<BudgetKind>(existing.value?.kind ?? 'expense')
 const amount = ref<string>(existing.value ? String(existing.value.amount) : '')
+const amountPeriod = ref<BudgetPeriodType>(existing.value?.amountPeriod ?? 'month')
+const currency = ref<string>(existing.value?.currency || currenciesStore.base)
 const rollover = ref<BudgetRollover>(existing.value?.rollover ?? 'none')
 
+// The amount is stated in the budget's own cadence (the page then normalizes it to the view).
+const amountLabel = computed(() => t('budgets.form.amountPer', { period: t(`budgets.periodUnit.${amountPeriod.value}`) }))
+
 const isPickingCategory = ref(false)
+const isPickingCurrency = ref(false)
 const confirmDelete = ref(false)
 
 const category = computed(() => categoryId.value ? categoriesStore.items?.[categoryId.value] : undefined)
@@ -48,7 +51,9 @@ function onSave() {
     return
   const values: BudgetItem = {
     amount: amountNumber.value,
+    amountPeriod: amountPeriod.value,
     categoryId: categoryId.value,
+    currency: currency.value,
     kind: kind.value,
     rollover: rollover.value,
     status: 'active',
@@ -119,6 +124,25 @@ function onDelete() {
         </div>
       </div>
 
+      <!-- Cadence: the rhythm the amount is for. The page normalizes it to the viewed timeframe. -->
+      <div class="grid gap-1">
+        <div class="text-2xs text-muted tracking-wide uppercase">
+          {{ t('budgets.form.cadence') }}
+        </div>
+        <div class="flex gap-1">
+          <button
+            v-for="p in budgetPeriodTypes"
+            :key="p"
+            type="button"
+            class="grow rounded-md px-3 py-2 text-sm"
+            :class="amountPeriod === p ? 'bg-primary/70 text-icon-primary' : 'bg-elevated/30 text-muted hover:bg-elevated/50'"
+            @click="amountPeriod = p"
+          >
+            {{ t(`budgets.period.${p}`) }}
+          </button>
+        </div>
+      </div>
+
       <!-- Amount -->
       <div class="grid gap-1">
         <div class="text-2xs text-muted tracking-wide uppercase">
@@ -129,6 +153,21 @@ function onDelete() {
           :placeholder="amountLabel"
           type="number"
         />
+      </div>
+
+      <!-- Currency: the currency the amount is stated in (converted to base at read time). -->
+      <div class="grid gap-1">
+        <div class="text-2xs text-muted tracking-wide uppercase">
+          {{ t('budgets.form.currency') }}
+        </div>
+        <button
+          type="button"
+          class="bg-elevated/30 hover:bg-elevated/50 flex min-h-[42px] items-center justify-between gap-2 rounded-md px-3 py-2 text-left"
+          @click="isPickingCurrency = true"
+        >
+          <span class="text-highlighted">{{ currency }}</span>
+          <Icon name="lucide:chevron-down" size="16" class="text-muted shrink-0" />
+        </button>
       </div>
 
       <!-- Rollover -->
@@ -177,6 +216,13 @@ function onDelete() {
       :description="t('budgets.confirm.deleteText')"
       @closed="confirmDelete = false"
       @confirm="onDelete"
+    />
+
+    <CurrenciesModal
+      v-if="isPickingCurrency"
+      :activeCode="currency"
+      @select="(c: string) => { currency = c; isPickingCurrency = false }"
+      @close="isPickingCurrency = false"
     />
 
     <BottomSheetModal

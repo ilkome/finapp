@@ -4,7 +4,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { Range } from '~/components/date/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { budgetOwnedCategoryIds, carriedIn, computeAvailable, paceMarker, projectedPeriodEnd, safeToSpend } from '~/components/budgets/compute'
+import { budgetOwnedCategoryIds, carriedIn, computeAvailable, normalizeAmount, paceMarker, projectedPeriodEnd, safeToSpend } from '~/components/budgets/compute'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -60,8 +60,20 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     return budget.kind === 'income' ? total.income : total.expense
   }
 
+  // Returns the assigned limit IN BASE CURRENCY so the rest of the math (activity, carry) stays in
+  // one currency. An explicit per-period assignment is already in the viewed period's terms; the
+  // base amount is normalized from the budget's cadence to the viewed timeframe. Both are stated in
+  // the budget's own currency (empty on legacy rows -> already base) and converted via rates, so
+  // changing the base currency keeps budgets correct.
   function effectiveAssigned(budgetId: BudgetId, budget: BudgetItem, periodStart: number): number {
-    return budgetsStore.assignmentFor(budgetId, periodStart) ?? budget.amount
+    const raw = budgetsStore.assignmentFor(budgetId, periodStart)
+      ?? normalizeAmount(budget.amount, budget.amountPeriod, period.periodType.value)
+    return getAmountInRate({
+      amount: raw,
+      baseCurrencyCode: currenciesStore.base,
+      currencyCode: budget.currency || currenciesStore.base,
+      rates: currenciesStore.rates,
+    })
   }
 
   // Committed recurring spend in the period not yet realized (no matching trn). Safe-to-spend

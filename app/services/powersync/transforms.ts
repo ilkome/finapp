@@ -1,4 +1,4 @@
-import type { BudgetAssignmentItem, BudgetBucket, BudgetItem, BudgetKind, BudgetRollover, BudgetStatus } from '~/components/budgets/types'
+import type { BudgetAssignmentItem, BudgetBucket, BudgetItem, BudgetKind, BudgetPeriodType, BudgetRollover, BudgetStatus } from '~/components/budgets/types'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
 import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceItem, RecurrenceStatus } from '~/components/recurrences/types'
@@ -211,8 +211,10 @@ export function recurrenceToRow(item: RecurrenceItem, userId: string): Record<st
 export function rowToBudget(row: Row): BudgetItem {
   return {
     amount: Number(row.amount),
+    amountPeriod: (row.amountPeriod ?? 'month') as BudgetPeriodType,
     ...(row.bucket ? { bucket: row.bucket as BudgetBucket } : {}),
     categoryId: row.categoryId,
+    currency: (row.currency ?? '') as string, // empty on legacy rows -> read path treats it as base
     ...(row.goalAmount != null ? { goalAmount: Number(row.goalAmount) } : {}),
     ...(row.goalDate != null ? { goalDate: Number(row.goalDate) } : {}),
     kind: (row.kind ?? 'expense') as BudgetKind,
@@ -225,8 +227,10 @@ export function rowToBudget(row: Row): BudgetItem {
 export function budgetToRow(item: BudgetItem, userId: string): Record<string, unknown> {
   return {
     amount: item.amount,
+    amountPeriod: item.amountPeriod,
     bucket: item.bucket ?? null,
     categoryId: item.categoryId,
+    currency: item.currency,
     goalAmount: item.goalAmount ?? null,
     goalDate: item.goalDate ?? null,
     kind: item.kind,

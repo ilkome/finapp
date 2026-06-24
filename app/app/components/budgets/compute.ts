@@ -1,7 +1,22 @@
-import type { BudgetRollover } from '~/components/budgets/types'
+import type { BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
 import type { Categories, CategoryId } from '~/components/categories/types'
 
 import { getCategorySubtreeIds } from '~/components/categories/utils'
+
+// Calendar-average occurrences per year, used to convert a budget amount between cadences. Fixed
+// factors (like Goodbudget/Actual) keep the conversion stable and predictable rather than depending
+// on the day count of a specific week/month.
+const PERIODS_PER_YEAR: Record<BudgetPeriodType, number> = { month: 12, week: 52, year: 1 }
+
+/**
+ * Re-express an amount stated per `from` cadence as the equivalent per `to` cadence.
+ * E.g. 1200/year -> 100/month; 50/week -> ~216.67/month. See plans/budgets-period-redesign.md.
+ */
+export function normalizeAmount(amount: number, from: BudgetPeriodType, to: BudgetPeriodType): number {
+  if (from === to)
+    return amount
+  return amount * (PERIODS_PER_YEAR[from] / PERIODS_PER_YEAR[to])
+}
 
 // Pure budget math (see plans/budgets.md §5, §7). Store-bound aggregation (getTotal over trns,
 // occurrence counting) is supplied via callbacks/inputs so everything here stays testable.
