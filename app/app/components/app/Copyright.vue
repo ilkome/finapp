@@ -1,18 +1,14 @@
-<script setup lang="ts">
-const { t } = useI18n()
-</script>
-
 <template>
   <a
-    class="interactive flex-center text-muted rounded-sm px-5 py-2 text-sm"
+    aria-label="ilko.me"
+    class="flex-center interactive text-muted hover:text-primary gap-2 rounded-full px-4 py-2 transition-colors"
     href="https://ilko.me"
   >
-    {{ t('app.madeBy.text') }}
+    <span class="text-sm">ilko.me</span>
     <Icon
-      class="mx-2 animate-[heartbeat_3s_ease-in-out_infinite] text-2xl text-[oklch(0.63_0.24_24.81)]"
+      class="animate-[heartbeat_3s_ease-in-out_infinite] text-2xl"
       name="mdi:heart"
     />
-    {{ t('app.madeBy.name') }}
   </a>
 </template>
 
