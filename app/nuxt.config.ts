@@ -151,6 +151,11 @@ export default defineNuxtConfig({
         )
       },
     },
+    // Declare the static (prerendered SPA) output in the framework config so the build is
+    // host-agnostic and overrides Vercel's serverless preset auto-detection - otherwise the
+    // default `vercel` preset emits a serverless fallback with no static index.html and a
+    // precache whose _nuxt hashes desync from the served chunks, breaking offline.
+    preset: 'static',
   },
 
   pwa: {

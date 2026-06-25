@@ -1,6 +1,7 @@
 {
   "installCommand": "pnpm install",
-  "buildCommand": "pnpm --filter app build",
+  "buildCommand": "pnpm --filter app generate",
   "outputDirectory": ".output/public",
-  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../package.json ../pnpm-lock.yaml ../pnpm-workspace.yaml"
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ../package.json ../pnpm-lock.yaml ../pnpm-workspace.yaml",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
