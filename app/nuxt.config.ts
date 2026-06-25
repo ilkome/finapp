@@ -101,8 +101,7 @@ export default defineNuxtConfig({
     clientBundle: {
       icons: [
         ...categoryIcons.flat(),
-        // Statically referenced names that `scan` misses (dynamic ternaries, @nuxt/ui
-        // defaults). Runtime iconify fetches pop in after first paint and shift layout.
+        // Runtime iconify fetches pop in after first paint and shift layout.
         'hugeicons:archive-01',
         'hugeicons:bank',
         'hugeicons:folder-library',
@@ -151,10 +150,6 @@ export default defineNuxtConfig({
         )
       },
     },
-    // Declare the static (prerendered SPA) output in the framework config so the build is
-    // host-agnostic and overrides Vercel's serverless preset auto-detection - otherwise the
-    // default `vercel` preset emits a serverless fallback with no static index.html and a
-    // precache whose _nuxt hashes desync from the served chunks, breaking offline.
     preset: 'static',
   },
 
@@ -210,12 +205,6 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      // wa-sqlite WASM (~2.5 MB) must be precached or the offline-first start breaks in prod;
-      // the default 2 MiB cap would silently drop it. Only the variant the worker actually
-      // loads is precached: the async non-cipher build, dot-hash name (`wa-sqlite-async.<hash>.wasm`)
-      // - the one referenced by the built glue chunk. The other 7 emitted variants (sync builds,
-      // `mc-` cipher builds - used only with an encryptionKey - and dash-hash duplicates) would
-      // add ~12 MB to every SW install.
       globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}', '**/wa-sqlite-async.*.wasm'],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
       navigateFallback: '/',
@@ -264,21 +253,6 @@ export default defineNuxtConfig({
   telemetry: false,
 
   vite: {
-    build: {
-      rollupOptions: {
-        output: {
-          // Force all reka-ui code into a single chunk so its internal
-          // createContext('ContextMenuRoot') etc. resolve to one Symbol
-          // across provider/inject. Otherwise @nuxt/ui's mixed imports
-          // ("reka-ui" vs "reka-ui/namespaced") let Rollup emit the
-          // underlying module twice, breaking inject in production.
-          manualChunks(id) {
-            if (id.includes('node_modules/reka-ui') || /reka-ui@[^/]+/.test(id))
-              return 'reka-ui'
-          },
-        },
-      },
-    },
     optimizeDeps: {
       // @powersync/web ships web workers + WASM that must not be pre-bundled.
       exclude: ['@powersync/web'],
