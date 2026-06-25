@@ -19,7 +19,8 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 
 ## Deploy
 
-- Always run `vercel deploy` from the monorepo root `apps/mono` (never from `app/`). The Vercel project's root directory is `app`.
+- Single Vercel project for the app, two environments by git branch: `main` → Production (prod Supabase backend), any other branch (use `dev`) → Preview (per-branch preview URL on the test Supabase backend). Pushing a branch auto-builds its Preview. Concrete project/backend identifiers live in Vercel env + the gitignored `.vercel/`, not here.
+- Manual deploys: run `vercel deploy` from the monorepo root `apps/mono` (never from `app/`; project root directory is `app`). No flag = Preview, `--prod` = Production.
 
 ## Conventions
 
