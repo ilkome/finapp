@@ -11,10 +11,10 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 
 - `pnpm dev` - Nuxt dev server on port 3050
 - Local backend (run once, in `app/`): `supabase start` (Postgres + Auth on :54321), then `docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync_setup.sql` (replication role + publication), then `docker compose -f powersync/docker-compose.yaml up -d` (PowerSync service on :8080)
-- `pnpm build` - SPA build
-- `pnpm generate` - static generation
+- `pnpm build` / `pnpm generate` - both run `nuxt generate` (static SPA, output `.output/public`)
 - `pnpm lint` / `pnpm lint:fix` - ESLint
 - `pnpm test` - Vitest
+- `pnpm test:e2e` - Playwright against the dev server; `pnpm test:e2e:prod` - Playwright against the prod build
 - `pnpm docs:dev` / `pnpm docs:build` - docs site
 
 ## Deploy
