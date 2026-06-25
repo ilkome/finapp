@@ -1,11 +1,14 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  align?: 'center' | 'end' | 'start'
   bottomSheetStyle?: Record<string, string>
   dragClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
   title?: string
-}>()
+}>(), {
+  align: 'start',
+})
 
 const emit = defineEmits<{
   closeModal: []
@@ -24,7 +27,7 @@ const open = ref(false)
     v-if="isLaptop"
     v-model:open="open"
     :content="{
-      align: 'start',
+      align: props.align,
       side: 'bottom',
     }"
     :ui="{
@@ -32,7 +35,7 @@ const open = ref(false)
     }"
     class="popoverGroup grow overflow-hidden"
   >
-    <slot name="trigger" />
+    <slot name="trigger" :isActive="open" />
 
     <template #content>
       <UiPopoverWrap
@@ -57,7 +60,7 @@ const open = ref(false)
     class="grow"
     @click="emit('openModal')"
   >
-    <slot name="trigger" />
+    <slot name="trigger" :isActive="props.isOpen" />
 
     <Teleport to="body">
       <BottomSheet
@@ -75,7 +78,7 @@ const open = ref(false)
 
             <div
               v-if="$slots.content"
-              class="scrollerBlock bottomSheetContentInside"
+              class="bottomSheetContentInside scrollerBlock"
             >
               <slot name="content" :close />
             </div>

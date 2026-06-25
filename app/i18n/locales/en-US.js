@@ -19,10 +19,6 @@ export default {
     about: 'About',
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
     loadError: 'Could not load your data. Check your connection and try again.',
-    madeBy: {
-      name: 'by Ilya Komichev',
-      text: 'Made with',
-    },
     retry: 'Try again',
     toggleSidebar: 'Toggle sidebar',
     version: 'Version',
@@ -239,6 +235,10 @@ export default {
   login: {
     description: 'Powerful open-source finance application',
     error: 'Login failed. Please try again.',
+    menu: {
+      documentation: 'Documentation',
+      title: 'Menu',
+    },
     openDemo: 'Open Demo',
     or: 'or',
     signInWithGoogle: 'Sign in with Google',
@@ -408,6 +408,7 @@ export default {
     color: 'Change theme color',
     dark: 'Dark',
     light: 'Light',
+    palette: 'Color palette',
     picker: {
       neutral: 'Background color',
       primary: 'Primary color',
