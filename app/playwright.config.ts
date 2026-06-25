@@ -11,6 +11,9 @@ export default defineConfig({
   reporter: [['html', { open: 'never' }], ['list']],
   retries: 0,
   testDir: './tests/e2e',
+  // The reka-ui inject smoke test only means something against a production
+  // build; it runs via playwright.prod.config.ts, not this dev-server config.
+  testIgnore: /context-menu-smoke\.spec\.ts/,
   use: {
     baseURL: 'http://localhost:3050',
     screenshot: 'only-on-failure',
