@@ -33,6 +33,10 @@ export const useBudgetsStore = defineStore('budgets', () => {
 
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
+  // Render gate that avoids the empty-state flash during PowerSync hydration. Demo bypasses the
+  // watch (isLoaded never flips), so it counts as ready immediately.
+  const isReady = computed(() => isLoaded.value || isDemo.value)
+
   const activeItems = computed(() => {
     const out: Budgets = {}
     for (const [id, b] of Object.entries(items.value ?? {})) {
@@ -108,6 +112,29 @@ export const useBudgetsStore = defineStore('budgets', () => {
     writeBudget(id, { ...budget, status: 'archived' })
   }
 
+  /** An active budget already occupying this budget's category+kind slot (excluding itself). */
+  function activeConflictFor(budget: BudgetItem, selfId: BudgetId): BudgetId | undefined {
+    for (const [id, b] of Object.entries(items.value ?? {})) {
+      if (id !== selfId && b.status === 'active' && b.kind === budget.kind && b.categoryId === budget.categoryId)
+        return id
+    }
+    return undefined
+  }
+
+  // Restore an archived budget. Refuses when an active budget already covers the same category+kind
+  // (two active budgets on one category double-count its spend); returns the conflicting id so the
+  // caller can offer to archive it. See plans/budgets-recurrences-followup.md (A2).
+  function unarchiveBudget(id: BudgetId): { conflictId?: BudgetId, ok: boolean } {
+    const budget = items.value?.[id]
+    if (!budget)
+      return { ok: false }
+    const conflictId = activeConflictFor(budget, id)
+    if (conflictId)
+      return { conflictId, ok: false }
+    writeBudget(id, { ...budget, status: 'active' })
+    return { ok: true }
+  }
+
   /** The assigned override for a budget+period, or undefined (then budgets.amount applies). */
   function findAssignmentId(budgetId: BudgetId, periodStart: number): BudgetAssignmentId | undefined {
     for (const [id, a] of Object.entries(assignments.value ?? {})) {
@@ -138,17 +165,38 @@ export const useBudgetsStore = defineStore('budgets', () => {
     })
   }
 
+  /** Drop the per-period override so the budget's normalized default applies again. */
+  function clearAssignment(budgetId: BudgetId, periodStart: number) {
+    const id = findAssignmentId(budgetId, periodStart)
+    if (!id)
+      return
+    const prev = assignments.value
+    const next = { ...(assignments.value ?? {}) }
+    delete next[id]
+    assignments.value = next
+    if (isDemo.value)
+      return
+    deleteRow('budget_assignments', id).catch((e) => {
+      assignments.value = prev
+      logger.error('clearAssignment failed', e)
+      showErrorToast('budgets.errors.saveFailed')
+    })
+  }
+
   return {
     activeItems,
     archiveBudget,
     assignmentFor,
     assignments,
+    clearAssignment,
     hasItems,
     initBudgets,
     isLoaded,
+    isReady,
     items,
     removeBudget,
     saveBudget,
     setAssignment,
+    unarchiveBudget,
   }
 })

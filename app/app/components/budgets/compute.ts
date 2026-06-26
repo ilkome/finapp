@@ -1,4 +1,7 @@
-import type { BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
+import { UTCDate } from '@date-fns/utc'
+import { differenceInCalendarMonths, differenceInCalendarWeeks, differenceInCalendarYears } from 'date-fns'
+
+import type { BudgetKind, BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
 import type { Categories, CategoryId } from '~/components/categories/types'
 
 import { getCategorySubtreeIds } from '~/components/categories/utils'
@@ -24,6 +27,19 @@ export function normalizeAmount(amount: number, from: BudgetPeriodType, to: Budg
 /** `available = carriedIn + assigned - activity` (activity is positive spend for expense budgets). */
 export function computeAvailable(carriedIn: number, assigned: number, activity: number): number {
   return carriedIn + assigned - activity
+}
+
+/**
+ * "Bad overage" state. Only an expense budget can be over-budget; for an income budget, receiving
+ * more than expected is the goal, not a problem - so income is never flagged over. See [[budgets]].
+ */
+export function isOverBudget(kind: BudgetKind, available: number): boolean {
+  return kind === 'expense' && available < 0
+}
+
+/** Income budgets are goals: reached once received (activity) meets or beats the expected amount. */
+export function isGoalReached(kind: BudgetKind, assigned: number, activity: number): boolean {
+  return kind === 'income' && assigned > 0 && activity >= assigned
 }
 
 /**
@@ -79,6 +95,14 @@ export function toAssignPool(incomeForPeriod: number, totalAssigned: number, car
 }
 
 /**
+ * Amount actually movable out of a budget's assignment: never more than what's assigned, never
+ * negative. Move-money must conserve - the destination receives exactly what the source gives up.
+ */
+export function movableAmount(assigned: number, requested: number): number {
+  return Math.max(0, Math.min(requested, assigned))
+}
+
+/**
  * Category ids a budget owns for activity aggregation: its subtree EXCEPT any descendant that has
  * its own budget (that descendant - and its whole subtree - is owned by that budget, so it is
  * never double-counted in the parent). See plans/budgets.md §5 "Overlapping budgets rule".
@@ -116,4 +140,28 @@ export function paceMarker(assigned: number, daysElapsed: number, daysInPeriod: 
   if (daysInPeriod <= 0)
     return 0
   return assigned * (Math.min(daysElapsed, daysInPeriod) / daysInPeriod)
+}
+
+/**
+ * Whole periods from `fromMs` to `goalMs`, clamped to >= 1 so a target always has a fundable
+ * per-period set-aside (a goal due this period, or already past, still asks for the full amount once).
+ */
+export function periodsUntilGoal(fromMs: number, goalMs: number, periodType: BudgetPeriodType): number {
+  const from = new UTCDate(fromMs)
+  const to = new UTCDate(goalMs)
+  const diff = periodType === 'year'
+    ? differenceInCalendarYears(to, from)
+    : periodType === 'week'
+      ? differenceInCalendarWeeks(to, from)
+      : differenceInCalendarMonths(to, from)
+  return Math.max(1, diff)
+}
+
+/**
+ * Sinking-fund set-aside: how much to put aside each period to reach `goalAmount` by `goalMs`,
+ * counting from `fromMs`. Flat division (does not re-spread what's already saved), so it stays a
+ * pure function of the goal and the calendar. See plans/budgets-recurrences-improvements.md (1.2).
+ */
+export function targetSetAside(goalAmount: number, fromMs: number, goalMs: number, periodType: BudgetPeriodType): number {
+  return goalAmount / periodsUntilGoal(fromMs, goalMs, periodType)
 }

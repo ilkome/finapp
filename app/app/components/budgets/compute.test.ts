@@ -7,12 +7,22 @@ import {
   budgetOwnedCategoryIds,
   carriedIn,
   computeAvailable,
+  isGoalReached,
+  isOverBudget,
+  movableAmount,
   normalizeAmount,
   paceMarker,
+  periodsUntilGoal,
   projectedPeriodEnd,
   safeToSpend,
+  targetSetAside,
   toAssignPool,
 } from './compute'
+
+// Civil-day epochs (UTC midnight) used by the target-by-date math.
+const JAN_1 = Date.UTC(2026, 0, 1)
+const APR_1 = Date.UTC(2026, 3, 1)
+const DEC_1 = Date.UTC(2026, 11, 1)
 
 function cat(parentId: string | 0): Categories[string] {
   return { color: '#fff', icon: 'i', name: 'n', parentId, showInLastUsed: true, showInQuickSelector: false }
@@ -41,6 +51,58 @@ describe('computeAvailable', () => {
     expect(computeAvailable(0, 1000, 300)).toBe(700)
     expect(computeAvailable(200, 1000, 300)).toBe(900)
     expect(computeAvailable(0, 1000, 1300)).toBe(-300)
+  })
+})
+
+describe('isOverBudget', () => {
+  it('expense is over only when available is negative', () => {
+    expect(isOverBudget('expense', -1)).toBe(true)
+    expect(isOverBudget('expense', 0)).toBe(false)
+    expect(isOverBudget('expense', 100)).toBe(false)
+  })
+  it('income is never over - receiving more than expected is the goal, not a problem', () => {
+    expect(isOverBudget('income', -500)).toBe(false)
+    expect(isOverBudget('income', 100)).toBe(false)
+  })
+})
+
+describe('isGoalReached', () => {
+  it('income goal is reached once received meets or beats expected', () => {
+    expect(isGoalReached('income', 1000, 999)).toBe(false)
+    expect(isGoalReached('income', 1000, 1000)).toBe(true)
+    expect(isGoalReached('income', 1000, 1500)).toBe(true)
+  })
+  it('a zero/absent target is never reached', () => {
+    expect(isGoalReached('income', 0, 0)).toBe(false)
+  })
+  it('expense budgets are never a goal', () => {
+    expect(isGoalReached('expense', 1000, 2000)).toBe(false)
+  })
+})
+
+describe('periodsUntilGoal', () => {
+  it('counts whole months to the goal', () => {
+    expect(periodsUntilGoal(JAN_1, DEC_1, 'month')).toBe(11)
+    expect(periodsUntilGoal(JAN_1, APR_1, 'month')).toBe(3)
+  })
+  it('clamps to at least 1 for a goal in the current or a past period', () => {
+    expect(periodsUntilGoal(JAN_1, JAN_1, 'month')).toBe(1)
+    expect(periodsUntilGoal(APR_1, JAN_1, 'month')).toBe(1)
+  })
+  it('respects the period type', () => {
+    expect(periodsUntilGoal(JAN_1, DEC_1, 'year')).toBe(1)
+    // Jan 1 -> Apr 1 2026 spans 13 calendar-week boundaries.
+    expect(periodsUntilGoal(JAN_1, APR_1, 'week')).toBe(13)
+  })
+})
+
+describe('targetSetAside', () => {
+  it('spreads the goal evenly across the remaining periods', () => {
+    expect(targetSetAside(1100, JAN_1, DEC_1, 'month')).toBe(100)
+    expect(targetSetAside(1200, JAN_1, APR_1, 'month')).toBe(400)
+  })
+  it('asks for the full amount when the goal is due this period', () => {
+    expect(targetSetAside(500, JAN_1, JAN_1, 'month')).toBe(500)
   })
 })
 
@@ -99,6 +161,19 @@ describe('safeToSpend & toAssignPool', () => {
   it('toAssignPool = income + carried - assigned', () => {
     expect(toAssignPool(3000, 2500)).toBe(500)
     expect(toAssignPool(3000, 2500, 200)).toBe(700)
+  })
+})
+
+describe('movableAmount', () => {
+  it('moves the full request when the source assignment covers it', () => {
+    expect(movableAmount(500, 200)).toBe(200)
+  })
+  it('caps the move at the source assignment so money is never invented', () => {
+    expect(movableAmount(50, 150)).toBe(50)
+  })
+  it('never returns a negative amount', () => {
+    expect(movableAmount(0, 100)).toBe(0)
+    expect(movableAmount(-10, 100)).toBe(0)
   })
 })
 
