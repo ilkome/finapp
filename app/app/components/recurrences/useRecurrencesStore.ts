@@ -43,6 +43,10 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
 
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
+  // Render gate that avoids the empty-state flash during PowerSync hydration. Demo bypasses the
+  // watch (isLoaded never flips), so it counts as ready immediately.
+  const isReady = computed(() => isLoaded.value || isDemo.value)
+
   const activeItems = computed(() => {
     const out: Recurrences = {}
     for (const [id, r] of Object.entries(items.value ?? {})) {
@@ -232,6 +236,7 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     hasItems,
     initRecurrences,
     isLoaded,
+    isReady,
     items,
     removeRecurrence,
     runCatchUp,

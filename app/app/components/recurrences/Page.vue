@@ -18,11 +18,11 @@ const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const trnsFormStore = useTrnsFormStore()
 const { totals } = useRecurrenceTotals()
+const { openDocs } = useDocsLink()
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 
 const editingId = ref<RecurrenceId | undefined>()
-const showHelp = ref(false)
 
 function openEdit(id: RecurrenceId) {
   editingId.value = id
@@ -56,112 +56,107 @@ function fmtDay(day: number) {
     <UiHeader>
       <UiHeaderTitle>{{ t('recurrences.title') }}</UiHeaderTitle>
       <template #actions>
-        <UiActionButton :ariaLabel="t('recurrences.help.open')" @click="showHelp = true">
+        <UiActionButton :ariaLabel="t('recurrences.add')" @click="trnsFormStore.openFormForCreateRecurrence()">
+          <Icon name="lucide:plus" size="22" />
+        </UiActionButton>
+        <UiActionButton :ariaLabel="t('recurrences.help.open')" @click="openDocs('guide/recurrences')">
           <Icon name="lucide:circle-help" size="20" />
         </UiActionButton>
       </template>
     </UiHeader>
 
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
-      <!-- Add -->
-      <button
-        type="button"
-        class="bg-primary/15 text-primary hover:bg-primary/25 flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm"
-        @click="trnsFormStore.openFormForCreateRecurrence()"
-      >
-        <Icon name="lucide:plus" size="18" />
-        {{ t('recurrences.add') }}
-      </button>
-
-      <!-- Totals -->
-      <div v-if="recurrencesStore.hasItems" class="grid grid-cols-2 gap-2">
-        <div class="bg-elevated rounded-md px-3 py-2">
-          <div class="text-2xs text-muted">
-            {{ t('recurrences.totals.monthly') }}
-          </div>
-          <Amount v-if="totals.monthly.expense !== 0" :amount="totals.monthly.expense" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Expense" isShowMinus variant="sm" />
-          <Amount v-if="totals.monthly.income !== 0" :amount="totals.monthly.income" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Income" colorize="income" variant="sm" />
-          <div v-if="totals.monthly.expense === 0 && totals.monthly.income === 0" class="text-muted text-sm">
-            –
-          </div>
-        </div>
-        <div class="bg-elevated rounded-md px-3 py-2">
-          <div class="text-2xs text-muted">
-            {{ t('recurrences.totals.yearly') }}
-          </div>
-          <Amount v-if="totals.yearly.expense !== 0" :amount="totals.yearly.expense" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Expense" isShowMinus variant="sm" />
-          <Amount v-if="totals.yearly.income !== 0" :amount="totals.yearly.income" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Income" colorize="income" variant="sm" />
-          <div v-if="totals.yearly.expense === 0 && totals.yearly.income === 0" class="text-muted text-sm">
-            –
-          </div>
-        </div>
-      </div>
-
-      <!-- Pending to confirm -->
-      <div v-if="pending.length">
-        <div class="text-2xs text-muted mb-1 px-1 tracking-wide uppercase">
-          {{ t('recurrences.pending.title') }} ({{ pending.length }})
-        </div>
-        <div class="grid gap-1">
-          <div
-            v-for="p in pending"
-            :key="`${p.id}:${p.day}`"
-            class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2"
-          >
-            <div class="min-w-0 grow">
-              <div class="text-highlighted truncate text-sm">
-                {{ recurrencesStore.items?.[p.id]?.desc ?? p.rule.categoryId }}
-              </div>
-              <div class="text-2xs text-muted">
-                {{ fmtDay(p.day) }}
-              </div>
+      <template v-if="recurrencesStore.isReady">
+        <!-- Normalized recurring totals (committed cashflow over the next 12 months). -->
+        <div v-if="recurrencesStore.hasItems" class="grid grid-cols-2 gap-2">
+          <div class="bg-elevated rounded-md px-3 py-2">
+            <UiTextSubtitle>{{ t('recurrences.totals.monthly') }}</UiTextSubtitle>
+            <Amount v-if="totals.monthly.expense !== 0" :amount="totals.monthly.expense" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Expense" isShowMinus variant="sm" />
+            <Amount v-if="totals.monthly.income !== 0" :amount="totals.monthly.income" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Income" colorize="income" variant="sm" />
+            <div v-if="totals.monthly.expense === 0 && totals.monthly.income === 0" class="text-muted text-sm">
+              {{ t('base.noData') }}
             </div>
-            <Amount
-              :amount="p.rule.amount"
-              :currencyCode="walletsStore.items?.[p.rule.walletId]?.currency ?? 'USD'"
-              :isShowBaseRate="false"
-              :type="p.rule.type"
-              variant="sm"
-            />
-            <button
-              type="button"
-              class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
-              @click="recurrencesStore.confirmOccurrence(p.id, p.day)"
-            >
-              {{ t('recurrences.actions.confirm') }}
-            </button>
-            <button
-              type="button"
-              class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
-              @click="recurrencesStore.skipOccurrence(p.id, p.day)"
-            >
-              {{ t('recurrences.actions.skip') }}
-            </button>
+          </div>
+          <div class="bg-elevated rounded-md px-3 py-2">
+            <UiTextSubtitle>{{ t('recurrences.totals.yearly') }}</UiTextSubtitle>
+            <Amount v-if="totals.yearly.expense !== 0" :amount="totals.yearly.expense" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Expense" isShowMinus variant="sm" />
+            <Amount v-if="totals.yearly.income !== 0" :amount="totals.yearly.income" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Income" colorize="income" variant="sm" />
+            <div v-if="totals.yearly.expense === 0 && totals.yearly.income === 0" class="text-muted text-sm">
+              {{ t('base.noData') }}
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Empty state -->
-      <div v-if="!recurrencesStore.hasItems" class="flex-center grow flex-col py-10 text-center">
-        <Icon name="lucide:repeat" size="40" class="text-muted mb-2" />
-        <div class="text-muted text-sm">
-          {{ t('recurrences.empty') }}
+        <!-- Pending to confirm -->
+        <div v-if="pending.length">
+          <UiTextSubtitle class="mb-1 px-1 tracking-wide uppercase">
+            {{ t('recurrences.pending.title') }} ({{ pending.length }})
+          </UiTextSubtitle>
+          <div class="grid gap-1">
+            <div
+              v-for="p in pending"
+              :key="`${p.id}:${p.day}`"
+              class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2"
+            >
+              <div class="min-w-0 grow">
+                <div class="text-highlighted truncate text-sm">
+                  {{ recurrencesStore.items?.[p.id]?.desc ?? p.rule.categoryId }}
+                </div>
+                <div class="text-2xs text-muted">
+                  {{ fmtDay(p.day) }}
+                </div>
+              </div>
+              <Amount
+                :amount="p.rule.amount"
+                :currencyCode="walletsStore.items?.[p.rule.walletId]?.currency ?? 'USD'"
+                :isShowBaseRate="false"
+                :type="p.rule.type"
+                variant="sm"
+              />
+              <button
+                type="button"
+                class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
+                @click="recurrencesStore.confirmOccurrence(p.id, p.day)"
+              >
+                {{ t('recurrences.actions.confirm') }}
+              </button>
+              <button
+                type="button"
+                class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
+                @click="recurrencesStore.skipOccurrence(p.id, p.day)"
+              >
+                {{ t('recurrences.actions.skip') }}
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- List -->
-      <RecurrencesList v-else @edit="openEdit" />
+        <!-- Upcoming timeline (forward occurrences, with due-soon highlight) -->
+        <RecurrencesUpcoming v-if="recurrencesStore.hasItems" />
+
+        <!-- Empty state -->
+        <div v-if="!recurrencesStore.hasItems" class="flex-center grow flex-col gap-3 py-10 text-center">
+          <Icon name="lucide:repeat" size="40" class="text-muted" />
+          <div class="text-muted text-sm">
+            {{ t('recurrences.empty') }}
+          </div>
+          <UiButtonAccent rounded @click="trnsFormStore.openFormForCreateRecurrence()">
+            {{ t('recurrences.add') }}
+          </UiButtonAccent>
+          <div class="text-2xs text-muted max-w-xs text-balance">
+            {{ t('recurrences.addHint') }}
+          </div>
+        </div>
+
+        <!-- List -->
+        <RecurrencesList v-else @edit="openEdit" />
+      </template>
     </div>
 
     <RecurrencesForm
       v-if="editingId"
       :recurrenceId="editingId"
       @closed="editingId = undefined"
-    />
-
-    <RecurrencesHelp
-      v-if="showHelp"
-      @closed="showHelp = false"
     />
   </UiPage>
 </template>

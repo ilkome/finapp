@@ -5,6 +5,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { civilDayKey, toCivilDayEpoch } from '~/components/date/utils'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
+import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -23,6 +24,7 @@ const walletsStore = useWalletsStore()
 const existing = computed(() => recurrencesStore.items?.[props.recurrenceId])
 const category = computed(() => existing.value ? categoriesStore.items?.[existing.value.categoryId] : undefined)
 const wallet = computed(() => existing.value ? walletsStore.items?.[existing.value.walletId] : undefined)
+const typeLabel = computed(() => existing.value?.type === TrnType.Income ? t('money.income') : t('money.expense'))
 
 // Editable schedule fields (category/wallet/type stay fixed - they define the series identity).
 const amount = ref<string>(existing.value ? String(existing.value.amount) : '')
@@ -33,6 +35,12 @@ const autoCreate = ref<boolean>(existing.value?.autoCreate ?? true)
 const endMode = ref<RecurrenceEndMode>(existing.value?.endMode ?? 'never')
 const endCount = ref<number | null>(existing.value?.endCount ?? null)
 const endDateEpoch = ref<number | null>(existing.value?.endDate ?? null)
+
+const endModeOptions = computed(() => [
+  { label: t('recurrences.end.never'), value: 'never' },
+  { label: t('recurrences.end.date'), value: 'date' },
+  { label: t('recurrences.end.count'), value: 'count' },
+])
 
 const endDateInput = computed({
   get: () => (endDateEpoch.value != null ? civilDayKey(endDateEpoch.value) : ''),
@@ -49,7 +57,7 @@ const endDateInput = computed({
 const amountNumber = computed(() => Number.parseFloat(amount.value))
 const canSave = computed(() => Number.isFinite(amountNumber.value) && amountNumber.value > 0 && interval.value >= 1)
 
-function onSave() {
+function onSave(close: () => void) {
   const prev = existing.value
   if (!prev || !canSave.value)
     return
@@ -66,130 +74,141 @@ function onSave() {
     updatedAt: Date.now(),
   }
   recurrencesStore.saveRecurrence(values, props.recurrenceId)
-  emit('closed')
+  close()
 }
 </script>
 
 <template>
   <BottomSheetModal @closed="emit('closed')">
-    <UiTitleModal>
-      {{ t('recurrences.editTitle') }}
-    </UiTitleModal>
+    <template #default="{ close }">
+      <UiTitleModal>
+        {{ t('recurrences.editTitle') }}
+      </UiTitleModal>
 
-    <div class="bottomSheetContentInside grid gap-4 px-3 pb-6">
-      <!-- Series context (read-only) -->
-      <div class="bg-elevated/30 flex items-center gap-2 rounded-md px-3 py-2">
-        <div
-          class="flex size-7 shrink-0 items-center justify-center rounded-full"
-          :style="{ background: category?.color ?? 'var(--ui-bg-accented)' }"
-        >
-          <Icon :name="category?.icon ?? 'lucide:repeat'" size="16" class="text-white" />
-        </div>
-        <div class="min-w-0">
-          <div class="text-highlighted truncate text-sm">
-            {{ category?.name ?? existing?.categoryId }}
+      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-5 px-3 py-2">
+        <!-- Series context (read-only: category/wallet/type define the series identity). -->
+        <div class="grid gap-1">
+          <div class="bg-elevated/30 flex items-center gap-2 rounded-md px-3 py-2">
+            <div
+              class="flex size-7 shrink-0 items-center justify-center rounded-full"
+              :style="{ background: category?.color ?? 'var(--ui-bg-accented)' }"
+            >
+              <Icon :name="category?.icon ?? 'lucide:repeat'" size="16" class="text-white" />
+            </div>
+            <div class="min-w-0">
+              <div class="text-highlighted truncate text-sm">
+                {{ category?.name ?? existing?.categoryId }}
+              </div>
+              <div class="text-2xs text-muted truncate">
+                {{ wallet?.name }} · {{ typeLabel }}<template v-if="wallet?.currency">
+                  · {{ wallet.currency }}
+                </template>
+              </div>
+            </div>
           </div>
-          <div class="text-2xs text-muted">
-            {{ wallet?.name }}
+          <div class="text-2xs text-muted flex items-center gap-1 px-1">
+            <Icon name="lucide:lock" size="12" />
+            {{ t('recurrences.form.lockedHint') }}
           </div>
         </div>
-      </div>
 
-      <!-- Amount -->
-      <div class="grid gap-1">
-        <div class="text-2xs text-muted tracking-wide uppercase">
-          {{ t('recurrences.form.amount') }}
-        </div>
-        <FormInput
-          v-model="amount"
-          :placeholder="t('recurrences.form.amount')"
-          type="number"
-        />
-      </div>
+        <!-- Amount -->
+        <FormElement>
+          <template #label>
+            {{ t('recurrences.form.amount') }}
+          </template>
+          <FormInput
+            v-model="amount"
+            :placeholder="t('recurrences.form.amount')"
+            type="number"
+          />
+        </FormElement>
 
-      <!-- Frequency -->
-      <div class="grid gap-1">
-        <div class="text-2xs text-muted tracking-wide uppercase">
-          {{ t('recurrences.form.repeat') }}
+        <!-- Frequency -->
+        <FormElement>
+          <template #label>
+            {{ t('recurrences.form.repeat') }}
+          </template>
+          <UiTabsBar>
+            <UiTabsItemPill
+              v-for="f in recurrenceFreqs"
+              :key="f"
+              :isActive="freq === f"
+              @click="freq = f"
+            >
+              {{ t(`recurrences.freq.${f}`) }}
+            </UiTabsItemPill>
+          </UiTabsBar>
+        </FormElement>
+
+        <!-- Interval -->
+        <FormElement>
+          <template #label>
+            {{ t('recurrences.form.every') }}
+          </template>
+          <div class="flex items-center gap-2">
+            <UiNumberStepper
+              :modelValue="interval"
+              :min="1"
+              @update:modelValue="interval = $event"
+            />
+            <span class="text-muted text-sm">{{ t(`recurrences.unit.${freq}`, interval) }}</span>
+          </div>
+        </FormElement>
+
+        <!-- Options -->
+        <div class="grid gap-1">
+          <UiSwitchItem
+            v-if="freq === 'month'"
+            :checkboxValue="monthLastDay"
+            :title="t('recurrences.form.monthLastDay')"
+            @click="monthLastDay = !monthLastDay"
+          />
+          <UiSwitchItem
+            :checkboxValue="autoCreate"
+            :title="t('recurrences.form.autoCreate')"
+            @click="autoCreate = !autoCreate"
+          />
         </div>
-        <div class="flex flex-wrap gap-1">
-          <button
-            v-for="f in recurrenceFreqs"
-            :key="f"
-            type="button"
-            class="grow rounded-md px-3 py-2 text-sm"
-            :class="freq === f ? 'bg-primary/70 text-icon-primary' : 'bg-elevated/30 text-muted hover:bg-elevated/50'"
-            @click="freq = f"
+
+        <!-- End condition -->
+        <FormElement>
+          <template #label>
+            {{ t('recurrences.form.ends') }}
+          </template>
+          <FormSelect
+            :options="endModeOptions"
+            :value="endMode"
+            @change="(v: string) => endMode = v as RecurrenceEndMode"
+          />
+          <input
+            v-if="endMode === 'date'"
+            v-model="endDateInput"
+            type="date"
+            class="bg-elevated/40 text-highlighted mt-2 rounded-sm px-3 py-2 text-sm"
           >
-            {{ t(`recurrences.freq.${f}`) }}
-          </button>
-        </div>
+          <div v-if="endMode === 'count'" class="mt-2 flex items-center gap-2">
+            <UiNumberStepper
+              :modelValue="endCount ?? 1"
+              :min="1"
+              @update:modelValue="endCount = $event"
+            />
+            <span class="text-muted text-sm">{{ t('recurrences.end.countPlaceholder') }}</span>
+          </div>
+        </FormElement>
       </div>
 
-      <!-- Interval -->
-      <label class="text-muted flex items-center gap-2 text-sm">
-        {{ t('recurrences.form.every') }}
-        <input
-          v-model.number="interval"
-          type="number"
-          min="1"
-          class="bg-elevated/40 text-highlighted w-16 rounded-sm px-2 py-1 text-center"
-        >
-        {{ t(`recurrences.unit.${freq}`, interval) }}
-      </label>
-
-      <label v-if="freq === 'month'" class="text-muted flex items-center gap-2 text-sm">
-        <input v-model="monthLastDay" type="checkbox" class="size-4">
-        {{ t('recurrences.form.monthLastDay') }}
-      </label>
-
-      <label class="text-muted flex items-center gap-2 text-sm">
-        <input v-model="autoCreate" type="checkbox" class="size-4">
-        {{ t('recurrences.form.autoCreate') }}
-      </label>
-
-      <!-- End condition -->
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-muted text-sm">{{ t('recurrences.form.ends') }}</span>
-        <select v-model="endMode" class="bg-elevated/40 text-highlighted rounded-sm px-2 py-1 text-sm">
-          <option value="never">
-            {{ t('recurrences.end.never') }}
-          </option>
-          <option value="date">
-            {{ t('recurrences.end.date') }}
-          </option>
-          <option value="count">
-            {{ t('recurrences.end.count') }}
-          </option>
-        </select>
-
-        <input
-          v-if="endMode === 'date'"
-          v-model="endDateInput"
-          type="date"
-          class="bg-elevated/40 text-highlighted rounded-sm px-2 py-1 text-sm"
-        >
-        <input
-          v-if="endMode === 'count'"
-          v-model.number="endCount"
-          type="number"
-          min="1"
-          class="bg-elevated/40 text-highlighted w-20 rounded-sm px-2 py-1 text-sm"
-          :placeholder="t('recurrences.end.countPlaceholder')"
-        >
-      </div>
-
-      <!-- Actions -->
-      <div class="mt-2 flex items-center gap-2">
-        <button
-          type="button"
-          class="bg-primary text-icon-primary grow rounded-md px-3 py-2 text-sm disabled:opacity-40"
+      <!-- Pinned footer (lives in the sheet's auto row, never scrolls away) -->
+      <div class="bottomSheetContentBottom">
+        <UiButtonAccent
+          class="sm:max-w-xs"
+          rounded
           :disabled="!canSave"
-          @click="onSave"
+          @click="onSave(close)"
         >
-          {{ t('recurrences.form.save') }}
-        </button>
+          {{ t('base.save') }}
+        </UiButtonAccent>
       </div>
-    </div>
+    </template>
   </BottomSheetModal>
 </template>
