@@ -29,9 +29,9 @@ const groups = computed(() => {
   <div class="grid gap-4">
     <div v-for="status in order" :key="status">
       <template v-if="groups[status].length">
-        <div class="text-2xs text-muted mb-1 px-1 tracking-wide uppercase">
+        <UiTextSubtitle class="mb-1 px-1 tracking-wide uppercase">
           {{ t(`recurrences.status.${status}`) }} ({{ groups[status].length }})
-        </div>
+        </UiTextSubtitle>
         <div class="grid gap-1">
           <RecurrencesItem
             v-for="entry in groups[status]"
