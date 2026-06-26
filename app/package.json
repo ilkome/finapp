@@ -1,7 +1,7 @@
 {
   "name": "@finapp/app",
   "type": "module",
-  "version": "8.0.7",
+  "version": "8.1.0",
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "description": "Finapp helps you easily track and manage personal finances.",
