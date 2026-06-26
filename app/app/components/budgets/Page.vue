@@ -7,17 +7,20 @@ import { budgetPeriodTypes } from '~/components/budgets/types'
 import { useBudgetPeriod } from '~/components/budgets/useBudgetPeriod'
 import { useBudgetProgress } from '~/components/budgets/useBudgetProgress'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { formatByLocale, getStartOf } from '~/components/date/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { locale, t } = useI18n()
 const budgetsStore = useBudgetsStore()
-const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 
+const { openDocs } = useDocsLink()
 const period = useBudgetPeriod()
-const { progressFor, safeToSpendTotal } = useBudgetProgress(period)
+const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, safeToSpendTotal, toAssignTotal } = useBudgetProgress(period)
+
+// "To assign" is an envelope figure (income - assigned). Without period income it's just -assigned,
+// which is confusing in limits mode, so only surface it once income lands this period. (A4)
+const showToAssign = computed(() => periodIncomeTotal.value > 0)
 
 // Paging into the past stops at the period holding the earliest transaction - older periods have
 // no activity, so the same limit against zero spend is pointless. No transactions -> stay put.
@@ -45,7 +48,6 @@ function goPrev() {
 useHead({ title: t('budgets.title') })
 
 const showForm = ref(false)
-const showHelp = ref(false)
 const editingId = ref<BudgetId | undefined>()
 
 function openCreate() {
@@ -61,6 +63,23 @@ function openEdit(id: BudgetId) {
 function onFormClosed() {
   showForm.value = false
   editingId.value = undefined
+}
+
+// Move money: the opened budget is the destination; the sheet picks the source.
+const movingToId = ref<BudgetId | undefined>()
+function openMove(id: BudgetId) {
+  movingToId.value = id
+}
+
+// Per-budget history sheet.
+const historyId = ref<BudgetId | undefined>()
+function openHistory(id: BudgetId) {
+  historyId.value = id
+}
+function onMoveConfirm(fromId: BudgetId, amount: number) {
+  if (movingToId.value)
+    moveMoney(fromId, movingToId.value, amount)
+  movingToId.value = undefined
 }
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
@@ -85,7 +104,10 @@ function setPeriodType(type: BudgetPeriodType) {
     <UiHeader>
       <UiHeaderTitle>{{ t('budgets.title') }}</UiHeaderTitle>
       <template #actions>
-        <UiActionButton :ariaLabel="t('budgets.help.open')" @click="showHelp = true">
+        <UiActionButton :ariaLabel="t('budgets.add')" @click="openCreate">
+          <Icon name="lucide:plus" size="22" />
+        </UiActionButton>
+        <UiActionButton :ariaLabel="t('budgets.help.open')" @click="openDocs('guide/budgets')">
           <Icon name="lucide:circle-help" size="20" />
         </UiActionButton>
       </template>
@@ -95,86 +117,85 @@ function setPeriodType(type: BudgetPeriodType) {
       <!-- Period type + navigation -->
       <div class="flex flex-wrap items-center justify-between gap-2">
         <div class="flex gap-1">
-          <button
+          <UiTabsItemPill
             v-for="type in budgetPeriodTypes"
             :key="type"
-            type="button"
-            class="rounded-md px-3 py-1.5 text-xs"
-            :class="period.periodType.value === type ? 'bg-primary/70 text-icon-primary' : 'bg-elevated/40 text-muted hover:bg-elevated/60'"
+            :isActive="period.periodType.value === type"
+            variant="outline"
             @click="setPeriodType(type)"
           >
             {{ t(`budgets.period.${type}`) }}
-          </button>
+          </UiTabsItemPill>
         </div>
 
         <div class="flex items-center gap-1">
-          <button
-            type="button"
-            class="bg-elevated/40 text-muted hover:bg-elevated/60 flex size-8 items-center justify-center rounded-md disabled:opacity-30"
-            :aria-label="t('base.previous')"
+          <UiActionButton
+            :ariaLabel="t('base.previous')"
+            :class="{ 'pointer-events-none opacity-30': !canGoPrev }"
             :disabled="!canGoPrev"
             @click="goPrev"
           >
-            <Icon name="lucide:chevron-left" size="18" />
-          </button>
-          <button
-            type="button"
-            class="bg-elevated/40 text-highlighted hover:bg-elevated/60 min-w-[8rem] rounded-md px-3 py-1.5 text-center text-xs"
-            @click="period.reset()"
-          >
+            <Icon name="lucide:chevron-left" size="20" />
+          </UiActionButton>
+          <UiActionButton variant="text" @click="period.reset()">
             {{ periodLabel }}
-          </button>
-          <button
-            type="button"
-            class="bg-elevated/40 text-muted hover:bg-elevated/60 flex size-8 items-center justify-center rounded-md disabled:opacity-30"
-            :aria-label="t('base.next')"
+          </UiActionButton>
+          <UiActionButton
+            :ariaLabel="t('base.next')"
+            :class="{ 'pointer-events-none opacity-30': period.offset.value >= 0 }"
             :disabled="period.offset.value >= 0"
             @click="period.next()"
           >
-            <Icon name="lucide:chevron-right" size="18" />
-          </button>
+            <Icon name="lucide:chevron-right" size="20" />
+          </UiActionButton>
         </div>
       </div>
 
-      <!-- Hero: safe to spend -->
-      <div v-if="budgetsStore.hasItems" class="bg-elevated rounded-md px-4 py-3">
-        <div class="text-2xs text-muted tracking-wide uppercase">
-          {{ t('budgets.hero.safeToSpend') }}
+      <template v-if="budgetsStore.isReady">
+        <!-- Hero: safe to spend + to assign -->
+        <template v-if="budgetsStore.hasItems">
+          <div class="grid grid-cols-1 gap-2" :class="{ 'sm:grid-cols-2': showToAssign }">
+            <StatSumItem
+              :amount="safeToSpendTotal"
+              :title="t('budgets.hero.safeToSpend')"
+              :type="safeToSpendTotal < 0 ? 'expense' : 'income'"
+            />
+            <StatSumItem
+              v-if="showToAssign"
+              :amount="toAssignTotal"
+              :title="t('budgets.hero.toAssign')"
+              :type="toAssignTotal < 0 ? 'expense' : 'income'"
+            />
+          </div>
+          <div class="-mt-2 flex justify-end">
+            <UiActionButton variant="text" size="sm" @click="copyLastPeriod">
+              <Icon name="lucide:copy" size="14" class="mr-1" />
+              {{ t('budgets.autoAssign') }}
+            </UiActionButton>
+          </div>
+        </template>
+
+        <!-- Empty -->
+        <div v-if="!budgetsStore.hasItems" class="flex-center grow flex-col gap-3 py-10 text-center">
+          <Icon name="lucide:wallet" size="40" class="text-muted" />
+          <div class="text-muted text-sm">
+            {{ t('budgets.empty') }}
+          </div>
+          <UiButtonAccent rounded @click="openCreate">
+            {{ t('budgets.add') }}
+          </UiButtonAccent>
         </div>
-        <Amount
-          :amount="safeToSpendTotal"
-          :colorize="safeToSpendTotal < 0 ? 'expense' : 'income'"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          align="left"
-          variant="xl"
+
+        <!-- List -->
+        <BudgetsList
+          v-else
+          :periodStart="period.range.value.start"
+          :progressFor="progressFor"
+          @edit="openEdit"
+          @history="openHistory"
+          @move="openMove"
         />
-      </div>
-
-      <!-- Add -->
-      <button
-        type="button"
-        class="bg-primary/15 text-primary hover:bg-primary/25 flex items-center justify-center gap-2 rounded-md px-3 py-2 text-sm"
-        @click="openCreate"
-      >
-        <Icon name="lucide:plus" size="18" />
-        {{ t('budgets.add') }}
-      </button>
-
-      <!-- Empty -->
-      <div v-if="!budgetsStore.hasItems" class="flex-center grow flex-col py-10 text-center">
-        <Icon name="lucide:wallet" size="40" class="text-muted mb-2" />
-        <div class="text-muted text-sm">
-          {{ t('budgets.empty') }}
-        </div>
-      </div>
-
-      <!-- List -->
-      <BudgetsList
-        v-else
-        :progressFor="progressFor"
-        @edit="openEdit"
-      />
+      </template>
     </div>
 
     <BudgetsForm
@@ -183,9 +204,20 @@ function setPeriodType(type: BudgetPeriodType) {
       @closed="onFormClosed"
     />
 
-    <BudgetsHelp
-      v-if="showHelp"
-      @closed="showHelp = false"
+    <BudgetsMoveMoney
+      v-if="movingToId"
+      :toId="movingToId"
+      :progressFor="progressFor"
+      @confirm="onMoveConfirm"
+      @closed="movingToId = undefined"
+    />
+
+    <BudgetsHistory
+      v-if="historyId"
+      :budgetId="historyId"
+      :history="historyFor(historyId)"
+      :periodType="period.periodType.value"
+      @closed="historyId = undefined"
     />
   </UiPage>
 </template>
