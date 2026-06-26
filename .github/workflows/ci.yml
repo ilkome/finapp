@@ -39,4 +39,10 @@ jobs:
         run: pnpm --filter @finapp/app exec playwright install --with-deps chromium
       - if: steps.pw-cache.outputs.cache-hit == 'true'
         run: pnpm --filter @finapp/app exec playwright install-deps chromium
+      # The demo smoke runs without a backend, but the build still needs a valid
+      # supabaseUrl or createClient() throws and the login page never mounts.
       - run: pnpm --filter @finapp/app test:e2e:prod
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: e2e-dummy-anon-key
+          VITE_POWERSYNC_URL: https://example.powersync.journeyapps.com
