@@ -56,76 +56,40 @@ export default {
   },
 
   budgets: {
-    actions: { delete: 'Delete', edit: 'Edit', save: 'Save' },
     add: 'Add budget',
+    archive: 'Archive',
+    archived: 'Archived',
+    assign: {
+      forPeriod: 'this period',
+      reset: 'Reset',
+    },
+    autoAssign: 'Copy last period',
     carried: 'rolled over',
     committed: 'committed to recurring',
-    confirm: { deleteText: 'This removes the limit. Your transactions are kept.', deleteTitle: 'Delete budget?' },
+    confirm: { deleteText: 'This removes the limit. Your transactions are kept.', deleteTitle: 'Delete budget?', unarchiveText: 'An active budget for {category} already exists. Restore this one and archive the other?', unarchiveTitle: 'Restore budget?' },
     empty: 'No budgets yet. Add a limit for a category.',
     errors: { deleteFailed: 'Could not delete budget', saveFailed: 'Could not save budget' },
-    form: { amount: 'Amount per period', amountPer: 'Amount per {period}', cadence: 'Budget rhythm', category: 'Category', currency: 'Currency', kind: 'Type', rollover: 'Rollover', selectCategory: 'Select category', subtreeHint: 'Covers this category and all subcategories (except any with their own budget).' },
-    help: {
-      amount: {
-        body: 'Each budget has its own rhythm - weekly, monthly or yearly - chosen next to the amount. Enter the amount for one such period (for example 100 a month, or 1200 a year), in your main currency. The page then shows it sliced to whatever timeframe you are viewing.',
-        title: 'The amount and its rhythm',
-      },
-      bar: {
-        body: 'The bar fills toward your limit and turns fully red if you go over. The small vertical mark is your pace - where your spending should be by today if you spread the limit evenly across the period. If the fill is past the mark, you are spending faster than planned.',
-        title: 'The bar and the pace mark',
-      },
-      committed: {
-        body: 'Planned recurring payments due in this period that have not happened yet. They are set aside so you do not spend money already promised to a bill.',
-        title: 'Committed to recurring',
-      },
-      currency: {
-        body: 'You pick the currency a budget is set in (your main currency by default). It is converted to your current main currency for the bar and totals, and spending in other currencies is converted too - so one budget covers everything, and changing your main currency later keeps budgets correct.',
-        title: 'Currencies',
-      },
-      intro: {
-        body: 'A budget sets a spending limit for a category over a period of time. As you add transactions, the app shows how much you have spent, how much is left, and whether you are on track.',
-        title: 'What budgets do',
-      },
-      manage: {
-        body: 'Use "Add budget" to create one: pick a category, the type (expense or income), an amount, and a rollover rule. Tap Edit on a budget to change it, or delete it from the edit form - your transactions are kept.',
-        title: 'Add and edit',
-      },
-      open: 'How budgets work',
-      parent: {
-        body: 'Budget a parent category and it covers that whole branch - all its subcategories count toward the one limit. If a subcategory has its own budget, it is tracked separately and not counted twice in the parent.',
-        title: 'Parent categories',
-      },
-      period: {
-        body: 'The buttons at the top choose the timeframe everything is shown in. Each budget keeps its own rhythm, so switching the timeframe simply re-slices every budget to it: a 1200 / year budget shows as 100 a month or about 23 a week. The arrows page through time; the middle button jumps back to now.',
-        title: 'Week, month or year',
-      },
-      projected: {
-        body: 'An estimate of how much you will have spent by the end of the period if you keep going at the current rate.',
-        title: 'Projected',
-      },
-      rollover: {
-        body: 'Choose what happens to a period\'s leftover:\nNo rollover - each period starts fresh.\nRoll over surplus - money you did not spend is added to the next period.\nRoll over surplus & deficit - both unspent money and overspending carry over.\nThe ↺ line on a budget shows what was carried in from earlier periods.',
-        title: 'Rollover',
-      },
-      safeToSpend: {
-        body: 'The number at the top is your free-to-spend money: what is left across all expense budgets after setting aside the recurring payments still due this period.',
-        title: 'Safe to spend',
-      },
-      triad: {
-        body: 'Spent - what you spent in this category and its subcategories during the period.\nAssigned - your limit.\nAvailable - what is left: assigned plus any rollover, minus spent. It turns red when you go over.',
-        title: 'Spent, Assigned, Available',
-      },
-    },
+    form: { amount: 'Amount per period', amountPer: 'Amount per {period}', cadence: 'Budget rhythm', category: 'Category', categoryTaken: '{kind} budget for this category already exists.', currency: 'Currency', goalAmount: 'Goal amount', goalDate: 'Target date', kind: 'Type', rollover: 'Rollover', selectCategory: 'Select category', setAsideHint: 'Set aside ≈ {amount} {currency}/month', subtreeHint: 'Covers this category and all subcategories (except any with their own budget).', targetToggle: 'Target by date' },
+    goalReached: 'Goal reached',
+    help: { open: 'How budgets work' },
     hero: { safeToSpend: 'Safe to spend', toAssign: 'To assign' },
+    history: { action: 'History', empty: 'No spending history yet.', title: 'History' },
     kind: { expense: 'Expense', income: 'Income' },
     mode: { envelope: 'Envelope', fifty_thirty_twenty: '50/30/20', limits: 'Limits' },
+    move: { action: 'Move money', amount: 'Amount ({currency})', from: 'From', into: 'Into', noSource: 'No other budgets to move from.', title: 'Move money' },
     overBudget: 'Over budget',
     pace: 'Pace',
     period: { month: 'Month', week: 'Week', year: 'Year' },
     periodUnit: { month: 'month', week: 'week', year: 'year' },
     projected: 'Projected',
     rollover: { none: 'No rollover', surplus: 'Roll over surplus', surplus_deficit: 'Roll over surplus & deficit' },
+    target: { by: 'by {date}', reached: 'Funded' },
     title: 'Budgets',
-    triad: { assigned: 'Assigned', available: 'Available', spent: 'Spent' },
+    triad: {
+      expense: { activity: 'Spent', assigned: 'Assigned', remaining: 'Available' },
+      income: { activity: 'Received', assigned: 'Expected', remaining: 'Left to receive' },
+    },
+    unarchive: 'Unarchive',
   },
 
   categories: {
@@ -371,14 +335,13 @@ export default {
     actions: {
       cancel: 'Cancel',
       confirm: 'Confirm',
-      delete: 'Delete',
-      edit: 'Edit',
       pause: 'Pause',
       resume: 'Resume',
       skip: 'Skip',
       skipNext: 'Skip next',
     },
     add: 'Add recurring',
+    addHint: 'Opens the transaction form with Repeat turned on.',
     confirm: {
       cancelText: 'Stops future transactions. Already-created ones stay.',
       cancelTitle: 'Cancel this series?',
@@ -395,55 +358,13 @@ export default {
       autoCreate: 'Create automatically (off = confirm each time)',
       ends: 'Ends',
       every: 'Every',
+      lockedHint: 'Category, wallet and type are fixed for the series. Delete and recreate to change them.',
       monthLastDay: 'Last day of month',
       repeat: 'Repeat',
       save: 'Save',
     },
     freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
-    help: {
-      autoManual: {
-        body: 'You choose this per rule. Automatic - the app creates the transaction itself on each date. Manual - it waits for you and appears under "Pending to confirm". Use automatic for fixed bills, manual when the amount varies.',
-        title: 'Automatic or confirm',
-      },
-      budgetsLink: {
-        body: 'Recurring payments still due in the current budget period are set aside - they lower your "safe to spend" so upcoming bills are not counted as free money.',
-        title: 'Link with budgets',
-      },
-      create: {
-        body: 'Turn on "Repeat" while adding a transaction - that transaction becomes the first one in the series, and the rest follow your schedule. Open a rule from this page to change the amount, schedule, or end.',
-        title: 'Creating one',
-      },
-      ends: {
-        body: 'A series can run forever, stop on a date, or stop after a set number of times.',
-        title: 'When it ends',
-      },
-      forecast: {
-        body: 'Operations that have not happened yet still show up in your statistics and forecast for the period ahead, so you can see what is coming before it lands.',
-        title: 'Seen ahead of time',
-      },
-      frequency: {
-        body: 'Repeat every day, week, month or year, and every few of them - for example every 2 weeks or every 3 months. For monthly rules you can also pin them to the last day of the month.',
-        title: 'How often',
-      },
-      intro: {
-        body: 'Recurring operations are your regular income and expenses - salary, rent, subscriptions - so you do not have to enter them by hand every time.',
-        title: 'What this is for',
-      },
-      manage: {
-        body: 'Pause a series to stop it for a while and resume later, or cancel it for good. You can skip a single date without touching the rest. Deleting a rule keeps the transactions it already created.',
-        title: 'Pause, skip, cancel',
-      },
-      open: 'How recurring works',
-      pending: {
-        body: 'Due manual operations wait here. Confirm to create the transaction (you can adjust the amount first), or Skip to dismiss that one date.',
-        title: 'Pending to confirm',
-      },
-      title: 'How recurring works',
-      totals: {
-        body: 'These show your combined recurring load converted to a per-month and a per-year amount, across currencies, so you can see the weight of your regular commitments.',
-        title: 'Totals at the top',
-      },
-    },
+    help: { open: 'How recurring works' },
     manual: 'confirm',
     next: 'next',
     pending: { title: 'Pending to confirm' },
@@ -452,6 +373,7 @@ export default {
     title: 'Recurring',
     totals: { monthly: 'Per month', yearly: 'Per year' },
     unit: { day: 'day | days', month: 'month | months', week: 'week | weeks', year: 'year | years' },
+    upcoming: { days: '{count} days', dueSoon: '{count} due soon', title: 'Upcoming' },
   },
 
   search: {
