@@ -6,11 +6,15 @@ import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnItem, Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
+import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { localInstantToCivilDay } from '~/components/date/utils'
+import { localInstantToCivilDay, todayCivilDayEpoch } from '~/components/date/utils'
+import { buildDemoBudgets, buildDemoRecurrences, buildRecurrenceTrns } from '~/components/demo/budgetsData'
 import currencies from '~/components/demo/currencies.json'
-import { data, expenseRules, incomeRules, oneOffExpenses, salaryConfig, transferRules } from '~/components/demo/data'
+import { data, expenseRules, incomeRules, oneOffExpenses, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub } from '~/components/demo/data'
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -61,6 +65,8 @@ export function useDemo() {
   const currenciesStore = useCurrenciesStore()
   const walletsStore = useWalletsStore()
   const trnsStore = useTrnsStore()
+  const budgetsStore = useBudgetsStore()
+  const recurrencesStore = useRecurrencesStore()
 
   async function generateDemoData(locale: LocaleSlug) {
     await localforage.clear()
@@ -87,6 +93,10 @@ export function useDemo() {
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
     const endDate = Date.now()
     const activeWalletIds = walletsStore.sortedIds.filter(id => !data.wallets[id]?.isArchived)
+    // Everyday expenses are paid from the RUB spending wallets. Amounts are RUB-scale, so leaving
+    // them on the USD/EUR/crypto wallets would record e.g. a 5000 grocery as $5000 and wreck the
+    // base-currency stats and budgets. Income/transfers still use the other wallets.
+    const spendingWalletIds = [walletCashRub, walletDebitRub, walletCreditRub]
 
     const trns: Trns = {}
     let trnIndex = 0
@@ -107,7 +117,7 @@ export function useDemo() {
       }
 
       const amount = roundAmount(randInt(rule.min, rule.max))
-      const walletId = rule.walletIds ? randItem(rule.walletIds) : randItem(activeWalletIds)
+      const walletId = rule.walletIds ? randItem(rule.walletIds) : randItem(spendingWalletIds)
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
@@ -133,7 +143,7 @@ export function useDemo() {
           continue
 
         const amount = roundAmount(randInt(oneOff.min, oneOff.max))
-        const walletId = oneOff.walletIds ? randItem(oneOff.walletIds) : randItem(activeWalletIds)
+        const walletId = oneOff.walletIds ? randItem(oneOff.walletIds) : randItem(spendingWalletIds)
 
         trns[trnIndex++] = {
           amount,
@@ -251,7 +261,30 @@ export function useDemo() {
       trn.enteredAt = instant
     }
 
+    // Budgets + recurrences (the features the demo showcases). Recurrence dates are already civil
+    // days, so they are merged AFTER the snapping loop above (re-snapping a UTC-midnight epoch
+    // through local time could shift it by a day).
+    const now = Date.now()
+    const todayEpoch = todayCivilDayEpoch()
+    const startEpoch = localInstantToCivilDay(startDate)
+
+    const rubPerUsd = (currencies as Record<string, number>).RUB ?? 97
+    const { assignments, budgets } = buildDemoBudgets(todayEpoch, now, locale, rubPerUsd)
+    const recurrences = buildDemoRecurrences(todayEpoch, now, locale)
+    Object.assign(trns, buildRecurrenceTrns(recurrences, startEpoch, todayEpoch, now))
+
     trnsStore.setTrns(trns)
+    budgetsStore.setBudgets(budgets)
+    budgetsStore.setAssignments(assignments)
+    recurrencesStore.setItems(recurrences)
+
+    // Persist immediately so a reload right after generation restores them (the store-level demo
+    // persist is debounced and only fires on later edits).
+    await Promise.all([
+      localforage.setItem(STORAGE_KEYS.budgets, budgets),
+      localforage.setItem(STORAGE_KEYS.budgetAssignments, assignments),
+      localforage.setItem(STORAGE_KEYS.recurrences, recurrences),
+    ])
   }
 
   return {

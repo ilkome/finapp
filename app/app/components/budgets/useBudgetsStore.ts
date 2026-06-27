@@ -9,8 +9,9 @@ import { generateId } from '~~/utils/generateId'
 import type { BudgetAssignmentId, BudgetAssignmentItem, BudgetAssignments, BudgetId, BudgetItem, BudgetMode, Budgets } from '~/components/budgets/types'
 
 import { useDemo } from '~/components/demo/useDemo'
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { resolveWriteUid } from '~/composables/useAuthSession'
-import { showErrorToast } from '~/composables/useStoreSync'
+import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
@@ -30,6 +31,18 @@ export const useBudgetsStore = defineStore('budgets', () => {
   const isLoaded = ref(false)
   let budgetsWatch: AbortController | null = null
   let assignmentsWatch: AbortController | null = null
+
+  // Demo mode has no backend: mirror trns/wallets and persist mutations to localforage.
+  const persistBudgets = createDebouncedPersist<Budgets>(STORAGE_KEYS.budgets)
+  const persistAssignments = createDebouncedPersist<BudgetAssignments>(STORAGE_KEYS.budgetAssignments)
+
+  /** Hydrate from the demo cache (loadDemoFromCache); the watch is bypassed in demo. */
+  function setBudgets(values: Budgets | null) {
+    items.value = values
+  }
+  function setAssignments(values: BudgetAssignments | null) {
+    assignments.value = values
+  }
 
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
@@ -74,9 +87,12 @@ export const useBudgetsStore = defineStore('budgets', () => {
   function writeBudget(id: BudgetId, values: BudgetItem) {
     const withDate = { ...values, updatedAt: Date.now() }
     const prev = items.value
-    items.value = { ...(items.value ?? {}), [id]: withDate }
-    if (isDemo.value)
+    const next = { ...(items.value ?? {}), [id]: withDate }
+    items.value = next
+    if (isDemo.value) {
+      persistBudgets(next)
       return
+    }
     upsertRow('budgets', id, budgetToRow(withDate, resolveWriteUid(uid.value))).catch((e) => {
       items.value = prev
       logger.error('saveBudget failed', e)
@@ -96,8 +112,10 @@ export const useBudgetsStore = defineStore('budgets', () => {
     const next = { ...(items.value ?? {}) }
     delete next[id]
     items.value = next
-    if (isDemo.value)
+    if (isDemo.value) {
+      persistBudgets(next)
       return
+    }
     deleteRow('budgets', id).catch((e) => {
       items.value = prev
       logger.error('removeBudget failed', e)
@@ -155,9 +173,12 @@ export const useBudgetsStore = defineStore('budgets', () => {
     const id = existingId ?? generateId()
     const values: BudgetAssignmentItem = { assigned, budgetId, periodStart, updatedAt: Date.now() }
     const prev = assignments.value
-    assignments.value = { ...(assignments.value ?? {}), [id]: values }
-    if (isDemo.value)
+    const next = { ...(assignments.value ?? {}), [id]: values }
+    assignments.value = next
+    if (isDemo.value) {
+      persistAssignments(next)
       return
+    }
     upsertRow('budget_assignments', id, budgetAssignmentToRow(values, resolveWriteUid(uid.value))).catch((e) => {
       assignments.value = prev
       logger.error('setAssignment failed', e)
@@ -174,8 +195,10 @@ export const useBudgetsStore = defineStore('budgets', () => {
     const next = { ...(assignments.value ?? {}) }
     delete next[id]
     assignments.value = next
-    if (isDemo.value)
+    if (isDemo.value) {
+      persistAssignments(next)
       return
+    }
     deleteRow('budget_assignments', id).catch((e) => {
       assignments.value = prev
       logger.error('clearAssignment failed', e)
@@ -197,6 +220,8 @@ export const useBudgetsStore = defineStore('budgets', () => {
     removeBudget,
     saveBudget,
     setAssignment,
+    setAssignments,
+    setBudgets,
     unarchiveBudget,
   }
 })

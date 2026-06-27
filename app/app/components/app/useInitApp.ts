@@ -1,8 +1,10 @@
 import localforage from 'localforage'
 import { connectPowerSync, getLocalDbOwner, hasAnyLocalData, waitForFirstSync } from '~~/services/powersync/db'
 
+import type { BudgetAssignments, Budgets } from '~/components/budgets/types'
 import type { Categories } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
+import type { Recurrences } from '~/components/recurrences/types'
 import type { Trns } from '~/components/trns/types'
 import type { User, UserSettingsCache } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
@@ -141,13 +143,16 @@ export function useInitApp() {
 
   // Demo mode keeps its own localforage-backed cache (no backend).
   async function loadDemoFromCache() {
-    const [user, rawUserSettings, rawCurrencies, categories, wallets, trns] = await Promise.all([
+    const [user, rawUserSettings, rawCurrencies, categories, wallets, trns, budgets, budgetAssignments, recurrences] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem(STORAGE_KEYS.userSettings),
       localforage.getItem<{ rates?: unknown }>(STORAGE_KEYS.currencies),
       localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
       localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
       localforage.getItem<Trns | null>(STORAGE_KEYS.trns),
+      localforage.getItem<Budgets | null>(STORAGE_KEYS.budgets),
+      localforage.getItem<BudgetAssignments | null>(STORAGE_KEYS.budgetAssignments),
+      localforage.getItem<Recurrences | null>(STORAGE_KEYS.recurrences),
     ])
 
     userStore.setUser(user ?? null)
@@ -166,6 +171,9 @@ export function useInitApp() {
     walletsStore.setWallets(wallets ?? null)
     categoriesStore.setCategories(categories ?? null)
     trnsStore.setTrns(trns ?? null)
+    budgetsStore.setBudgets(budgets ?? null)
+    budgetsStore.setAssignments(budgetAssignments ?? null)
+    recurrencesStore.setItems(recurrences ?? null)
   }
 
   // Offline-first: local PowerSync SQLite is the only data source the UI reads. This arms the live
