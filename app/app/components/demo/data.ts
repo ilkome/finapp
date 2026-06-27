@@ -23,44 +23,44 @@ type DemoWalletItem = Partial<Omit<WalletItem, 'color' | 'currency' | 'desc' | '
 }
 
 // --- Category IDs ---
-const catFood = 'demo_cat_food'
-const catFoodGroceries = 'demo_cat_food_groceries'
-const catFoodCafe = 'demo_cat_food_cafe'
-const catFoodDelivery = 'demo_cat_food_delivery'
+export const catFood = 'demo_cat_food'
+export const catFoodGroceries = 'demo_cat_food_groceries'
+export const catFoodCafe = 'demo_cat_food_cafe'
+export const catFoodDelivery = 'demo_cat_food_delivery'
 
-const catTransport = 'demo_cat_transport'
-const catTransportFuel = 'demo_cat_transport_fuel'
-const catTransportPublic = 'demo_cat_transport_public'
-const catTransportParking = 'demo_cat_transport_parking'
-const catTransportService = 'demo_cat_transport_service'
+export const catTransport = 'demo_cat_transport'
+export const catTransportFuel = 'demo_cat_transport_fuel'
+export const catTransportPublic = 'demo_cat_transport_public'
+export const catTransportParking = 'demo_cat_transport_parking'
+export const catTransportService = 'demo_cat_transport_service'
 
-const catHome = 'demo_cat_home'
-const catHomeRent = 'demo_cat_home_rent'
-const catHomeElectricity = 'demo_cat_home_electricity'
-const catHomeInternet = 'demo_cat_home_internet'
-const catHomeWater = 'demo_cat_home_water'
+export const catHome = 'demo_cat_home'
+export const catHomeRent = 'demo_cat_home_rent'
+export const catHomeElectricity = 'demo_cat_home_electricity'
+export const catHomeInternet = 'demo_cat_home_internet'
+export const catHomeWater = 'demo_cat_home_water'
 
-const catHealth = 'demo_cat_health'
-const catHealthPharmacy = 'demo_cat_health_pharmacy'
-const catHealthDoctor = 'demo_cat_health_doctor'
+export const catHealth = 'demo_cat_health'
+export const catHealthPharmacy = 'demo_cat_health_pharmacy'
+export const catHealthDoctor = 'demo_cat_health_doctor'
 
-const catEntertainment = 'demo_cat_entertainment'
-const catEntertainmentSubscriptions = 'demo_cat_entertainment_subs'
-const catEntertainmentMovies = 'demo_cat_entertainment_movies'
-const catEntertainmentHobby = 'demo_cat_entertainment_hobby'
+export const catEntertainment = 'demo_cat_entertainment'
+export const catEntertainmentSubscriptions = 'demo_cat_entertainment_subs'
+export const catEntertainmentMovies = 'demo_cat_entertainment_movies'
+export const catEntertainmentHobby = 'demo_cat_entertainment_hobby'
 
-const catClothing = 'demo_cat_clothing'
-const catSport = 'demo_cat_sport'
-const catEducation = 'demo_cat_education'
-const catTravel = 'demo_cat_travel'
-const catPets = 'demo_cat_pets'
-const catGifts = 'demo_cat_gifts'
-const catFamily = 'demo_cat_family'
+export const catClothing = 'demo_cat_clothing'
+export const catSport = 'demo_cat_sport'
+export const catEducation = 'demo_cat_education'
+export const catTravel = 'demo_cat_travel'
+export const catPets = 'demo_cat_pets'
+export const catGifts = 'demo_cat_gifts'
+export const catFamily = 'demo_cat_family'
 
-const catSalary = 'demo_cat_salary'
-const catFreelance = 'demo_cat_freelance'
-const catInvestments = 'demo_cat_investments'
-const catCashback = 'demo_cat_cashback'
+export const catSalary = 'demo_cat_salary'
+export const catFreelance = 'demo_cat_freelance'
+export const catInvestments = 'demo_cat_investments'
+export const catCashback = 'demo_cat_cashback'
 
 // --- Wallet IDs ---
 export const walletCashRub = 'demo_w_cash_rub'
@@ -503,11 +503,8 @@ export const expenseRules: DemoExpenseRule[] = [
   { categoryId: catTransportParking, max: 500, min: 100, weight: 4 },
   { categoryId: catTransportService, desc: { en: 'Oil change', ru: 'Замена масла' }, max: 15000, min: 3000, weight: 1 },
 
-  // Home - monthly bills
-  { categoryId: catHomeRent, max: 55000, min: 45000, weight: 2 },
-  { categoryId: catHomeElectricity, max: 3000, min: 800, weight: 1 },
-  { categoryId: catHomeInternet, max: 1200, min: 800, weight: 1 },
-  { categoryId: catHomeWater, max: 1500, min: 400, weight: 1 },
+  // Home monthly bills (rent, electricity, internet, water) are seeded as recurrences instead,
+  // so the Home budgets track the fixed bills cleanly - see demo/budgetsData.ts.
 
   // Health
   { categoryId: catHealthPharmacy, max: 3000, min: 200, weight: 3 },
@@ -520,7 +517,7 @@ export const expenseRules: DemoExpenseRule[] = [
 
   // Standalone (with seasonality)
   { categoryId: catClothing, max: 15000, min: 1000, seasonMonths: [2, 3, 8, 9], walletIds: [walletDebitRub, walletCreditRub], weight: 2 },
-  { categoryId: catSport, desc: { en: 'Gym', ru: 'Зал' }, max: 5000, min: 2000, weight: 2 },
+  // Gym is seeded as a recurrence (see demo/budgetsData.ts), so the Sport budget tracks it cleanly.
   { categoryId: catEducation, max: 10000, min: 1000, seasonMonths: [8, 9, 0, 1], weight: 1 },
   { categoryId: catTravel, max: 40000, min: 8000, seasonMonths: [5, 6, 7, 11], walletIds: [walletDebitRub, walletCreditRub], weight: 1 },
   { categoryId: catPets, max: 5000, min: 300, weight: 2 },

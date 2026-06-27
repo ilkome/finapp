@@ -10,12 +10,13 @@ import type { TrnItem } from '~/components/trns/types'
 
 import { civilDayKey, todayCivilDayEpoch } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
+import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'
 import { occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
-import { showErrorToast } from '~/composables/useStoreSync'
+import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
@@ -40,6 +41,9 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
   const items = shallowRef<Recurrences | null>(null)
   const isLoaded = ref(false)
   let watchController: AbortController | null = null
+
+  // Demo mode has no backend: persist rule mutations to localforage (matches trns/budgets).
+  const persistRecurrences = createDebouncedPersist<Recurrences>(STORAGE_KEYS.recurrences)
 
   const hasItems = computed(() => Object.keys(items.value ?? {}).length > 0)
 
@@ -100,9 +104,12 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
   function writeRecurrence(id: RecurrenceId, values: RecurrenceItem) {
     const withDate = { ...values, updatedAt: Date.now() }
     const prev = items.value
-    setItems({ ...(items.value ?? {}), [id]: withDate })
-    if (isDemo.value)
+    const next = { ...(items.value ?? {}), [id]: withDate }
+    setItems(next)
+    if (isDemo.value) {
+      persistRecurrences(next)
       return
+    }
     upsertRow('recurrences', id, recurrenceToRow(withDate, resolveWriteUid(uid.value))).catch((e) => {
       setItems(prev)
       logger.error('saveRecurrence failed', e)
@@ -164,8 +171,10 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     const next = { ...(items.value ?? {}) }
     delete next[id]
     setItems(next)
-    if (isDemo.value)
+    if (isDemo.value) {
+      persistRecurrences(next)
       return
+    }
     deleteRow('recurrences', id).catch((e) => {
       setItems(prev)
       logger.error('removeRecurrence failed', e)
