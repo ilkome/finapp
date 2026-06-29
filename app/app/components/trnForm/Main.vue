@@ -72,6 +72,8 @@ const walletId = computed(() =>
         :bottomSheetStyle="{ maxHeight }"
       />
 
+      <TrnFormRepeat v-if="trnsFormStore.values.trnType !== TrnType.Transfer && !trnsFormStore.values.trnId" />
+
       <TrnFormMainCalculator />
     </div>
   </div>

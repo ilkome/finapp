@@ -1,5 +1,7 @@
+import type { BudgetAssignmentItem, BudgetBucket, BudgetItem, BudgetKind, BudgetPeriodType, BudgetRollover, BudgetStatus } from '~/components/budgets/types'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
+import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceItem, RecurrenceStatus } from '~/components/recurrences/types'
 import type { TrnItem } from '~/components/trns/types'
 import type { WalletItem, WalletType } from '~/components/wallets/types'
 
@@ -19,6 +21,8 @@ export function rowToTrn(row: Row): TrnItem {
     date: Number(row.date),
     updatedAt: ts(row.updatedAt),
     ...(row.desc ? { desc: row.desc as string } : {}),
+    ...(row.enteredAt != null ? { enteredAt: Number(row.enteredAt) } : {}),
+    ...(row.recurrenceId ? { recurrenceId: row.recurrenceId as string } : {}),
   }
 
   if (type === TrnType.Transfer) {
@@ -93,10 +97,12 @@ export function trnToRow(item: TrnItem, userId: string): Record<string, unknown>
     categoryId: item.categoryId ?? null,
     date: item.date,
     desc: item.desc ?? null,
+    enteredAt: item.enteredAt ?? null,
     expenseAmount: null as number | null,
     expenseWalletId: null as string | null,
     incomeAmount: null as number | null,
     incomeWalletId: null as string | null,
+    recurrenceId: item.recurrenceId ?? null,
     type: item.type,
     updatedAt: item.updatedAt ?? Date.now(),
     userId,
@@ -142,6 +148,113 @@ export function categoryToRow(item: CategoryItem, userId: string): Record<string
     parentId: item.parentId ? String(item.parentId) : null, // 0/'' root sentinel -> null
     showInLastUsed: item.showInLastUsed ? 1 : 0,
     showInQuickSelector: item.showInQuickSelector ? 1 : 0,
+    updatedAt: item.updatedAt ?? Date.now(),
+    userId,
+  }
+}
+
+export function rowToRecurrence(row: Row): RecurrenceItem {
+  let skipDates: string[] = []
+  if (row.skipDates) {
+    try {
+      const parsed = JSON.parse(row.skipDates as string)
+      if (Array.isArray(parsed))
+        skipDates = parsed as string[]
+    }
+    catch { /* keep [] */ }
+  }
+
+  return {
+    amount: Number(row.amount),
+    anchorDate: Number(row.anchorDate),
+    autoCreate: !!row.autoCreate,
+    categoryId: row.categoryId,
+    ...(row.desc ? { desc: row.desc as string } : {}),
+    ...(row.endCount != null ? { endCount: Number(row.endCount) } : {}),
+    ...(row.endDate != null ? { endDate: Number(row.endDate) } : {}),
+    endMode: (row.endMode ?? 'never') as RecurrenceEndMode,
+    freq: row.freq as RecurrenceFreq,
+    interval: Number(row.interval ?? 1),
+    ...(row.lastGeneratedDate != null ? { lastGeneratedDate: Number(row.lastGeneratedDate) } : {}),
+    monthLastDay: !!row.monthLastDay,
+    skipDates,
+    status: (row.status ?? 'active') as RecurrenceStatus,
+    type: Number(row.type) as RecurrenceItem['type'],
+    updatedAt: ts(row.updatedAt),
+    walletId: row.walletId,
+  }
+}
+
+export function recurrenceToRow(item: RecurrenceItem, userId: string): Record<string, unknown> {
+  return {
+    amount: item.amount,
+    anchorDate: item.anchorDate,
+    autoCreate: item.autoCreate ? 1 : 0,
+    categoryId: item.categoryId,
+    desc: item.desc ?? null,
+    endCount: item.endCount ?? null,
+    endDate: item.endDate ?? null,
+    endMode: item.endMode,
+    freq: item.freq,
+    interval: item.interval,
+    lastGeneratedDate: item.lastGeneratedDate ?? null,
+    monthLastDay: item.monthLastDay ? 1 : 0,
+    skipDates: JSON.stringify(item.skipDates ?? []),
+    status: item.status,
+    type: item.type,
+    updatedAt: item.updatedAt ?? Date.now(),
+    userId,
+    walletId: item.walletId,
+  }
+}
+
+export function rowToBudget(row: Row): BudgetItem {
+  return {
+    amount: Number(row.amount),
+    amountPeriod: (row.amountPeriod ?? 'month') as BudgetPeriodType,
+    ...(row.bucket ? { bucket: row.bucket as BudgetBucket } : {}),
+    categoryId: row.categoryId,
+    currency: (row.currency ?? '') as string, // empty on legacy rows -> read path treats it as base
+    ...(row.goalAmount != null ? { goalAmount: Number(row.goalAmount) } : {}),
+    ...(row.goalDate != null ? { goalDate: Number(row.goalDate) } : {}),
+    kind: (row.kind ?? 'expense') as BudgetKind,
+    rollover: (row.rollover ?? 'none') as BudgetRollover,
+    status: (row.status ?? 'active') as BudgetStatus,
+    updatedAt: ts(row.updatedAt),
+  }
+}
+
+export function budgetToRow(item: BudgetItem, userId: string): Record<string, unknown> {
+  return {
+    amount: item.amount,
+    amountPeriod: item.amountPeriod,
+    bucket: item.bucket ?? null,
+    categoryId: item.categoryId,
+    currency: item.currency,
+    goalAmount: item.goalAmount ?? null,
+    goalDate: item.goalDate ?? null,
+    kind: item.kind,
+    rollover: item.rollover,
+    status: item.status,
+    updatedAt: item.updatedAt ?? Date.now(),
+    userId,
+  }
+}
+
+export function rowToBudgetAssignment(row: Row): BudgetAssignmentItem {
+  return {
+    assigned: Number(row.assigned),
+    budgetId: row.budgetId,
+    periodStart: Number(row.periodStart),
+    updatedAt: ts(row.updatedAt),
+  }
+}
+
+export function budgetAssignmentToRow(item: BudgetAssignmentItem, userId: string): Record<string, unknown> {
+  return {
+    assigned: item.assigned,
+    budgetId: item.budgetId,
+    periodStart: item.periodStart,
     updatedAt: item.updatedAt ?? Date.now(),
     userId,
   }

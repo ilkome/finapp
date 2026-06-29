@@ -1,5 +1,18 @@
 @utility interactive {
-  @apply select-none hover:bg-elevated/50;
+  /* The project's custom `hover` variant (main.css) is declared after this file is
+     imported, so it isn't resolvable inside @apply here. Inline its expansion
+     (hover-capable pointer + active) directly to stay import-order-independent. */
+  @apply select-none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @apply bg-elevated/50;
+    }
+  }
+
+  &:active {
+    @apply bg-elevated/50;
+  }
 }
 
 @utility flex-center {

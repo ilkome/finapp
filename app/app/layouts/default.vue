@@ -87,7 +87,7 @@ defineShortcuts({
       <UButton
         size="xl"
         class="min-w-52 justify-center rounded-full px-8 py-3"
-        @click="initApp"
+        @click="() => { initApp() }"
       >
         {{ t('app.retry') }}
       </UButton>

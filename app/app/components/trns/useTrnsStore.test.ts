@@ -15,7 +15,7 @@ import { toastAddMock } from '~/test-utils/setup-store'
 const h = vi.hoisted(() => {
   const watchCallbacks: ((rows: any[]) => void)[] = []
   return {
-    auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' }, user: { value: null } },
+    auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' as string | null }, user: { value: null } },
     deleteRow: vi.fn(),
     demo: { value: false },
     upsertRow: vi.fn(),

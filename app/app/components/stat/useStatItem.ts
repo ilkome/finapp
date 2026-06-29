@@ -6,20 +6,26 @@ import { differenceInDays } from 'date-fns'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateProvider } from '~/components/date/types'
+import type { ChartType } from '~/components/stat/chart/types'
 import type { CategoryPieDatum } from '~/components/stat/chart/useCategorySeriesBuilder'
 import type { FilterProvider } from '~/components/stat/filter/types'
 import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
+import { getTotal } from '~/components/amount/getTotal'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { useForecastMode } from '~/components/recurrences/useForecastMode'
+import { useForecastSeries } from '~/components/recurrences/useForecastSeries'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/useCategorySeriesBuilder'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
 import { resolveChartType, resolveGrouped } from '~/components/stat/useStatConfig'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type ChartPieGroup = {
   pieData: CategoryPieDatum[]
@@ -48,8 +54,20 @@ export function useStatItem({
   const { t } = useI18n()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
+  const walletsStore = useWalletsStore()
+  const currenciesStore = useCurrenciesStore()
   const { computeTotalForTrnsIds } = useAmount()
   const { createSeriesItem, withMarkArea } = useStatChart()
+
+  // Forecast layer: future recurrence occurrences bucketed into the same intervals/range, toggled
+  // by the global forecastMode (off / separate / merged). See plans/recurrences.md §9.
+  const forecastMode = useForecastMode()
+  const isForecastOn = computed(() => forecastMode.value !== 'off')
+  const forecast = useForecastSeries({
+    filter,
+    intervals: computed(() => statDate.intervalsInRange.value),
+    range: computed(() => statDate.range.value),
+  })
 
   const statItemStorageKey = computed(() =>
     `finapp-${statDate.params.value.intervalsBy}-${storageKey.value}-${(filter?.categoriesIds?.value ?? []).join(',')}`,
@@ -92,6 +110,63 @@ export function useStatItem({
     if (!hasCategoryFilter.value)
       return intervalsData.value
     return bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, computeTotalForTrnsIds)
+  })
+
+  // --- Forecast merge: when forecast is on, the chart/category breakdown read a projected dataset
+  // (actuals + forecast). Totals keep the actual `rangeTotal` and expose forecast separately so the
+  // sum row can render fact / forecast / projected per mode.
+  function addTotals(a: TotalReturns, b: TotalReturns): TotalReturns {
+    return {
+      adjustment: a.adjustment + b.adjustment,
+      expense: a.expense + b.expense,
+      expenseTransfers: a.expenseTransfers + b.expenseTransfers,
+      income: a.income + b.income,
+      incomeTransfers: a.incomeTransfers + b.incomeTransfers,
+      sum: a.sum + b.sum,
+      sumTransfers: a.sumTransfers + b.sumTransfers,
+    }
+  }
+
+  const mergedItems = computed<Record<TrnId, TrnItem>>(() =>
+    isForecastOn.value ? { ...(trnsStore.items ?? {}), ...forecast.forecastItems.value } : (trnsStore.items ?? {}),
+  )
+
+  // Total over a merged (actuals + forecast) id set; forecast ids resolve only in `mergedItems`.
+  function computeTotalMerged(ids?: TrnId[]): TotalReturns {
+    return getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      trnsIds: ids,
+      trnsItems: mergedItems.value,
+      walletsItems: walletsStore.items ?? {},
+    })
+  }
+
+  const mergedIntervalsData = computed<IntervalData[]>(() => {
+    const actual = intervalsDataWithFilteredCategories.value
+    if (!isForecastOn.value)
+      return actual
+    const fc = forecast.forecastIntervalsData.value
+    return actual.map((a, i) => {
+      const f = fc[i]
+      return f
+        ? { range: a.range, total: addTotals(a.total, f.total), trnsIds: [...a.trnsIds, ...f.trnsIds] }
+        : a
+    })
+  })
+
+  // Dataset the chart + category breakdown consume: projected when forecast is on, else actuals.
+  const effectiveIntervals = computed(() => isForecastOn.value ? mergedIntervalsData.value : intervalsDataWithFilteredCategories.value)
+  const effectiveItems = computed(() => isForecastOn.value ? mergedItems.value : (trnsStore.items ?? {}))
+  const effectiveComputeTotal = computed(() => isForecastOn.value ? computeTotalMerged : computeTotalForTrnsIds)
+
+  // Forecast total for the viewed scope (selected interval, else whole range).
+  const forecastRangeTotal = computed<TotalReturns | undefined>(() => {
+    if (!isForecastOn.value)
+      return undefined
+    if (isIntervalSelected.value)
+      return forecast.forecastIntervalsData.value[statDate.params.value.intervalSelected]?.total
+    return forecast.forecastTotal.value
   })
 
   const baseTrnsIdsForSelection = computed(() =>
@@ -142,6 +217,16 @@ export function useStatItem({
     return intervals.reduce((acc, i) => acc + i.total[typeSlug], 0) / intervals.length
   }
 
+  // Ghost forecast series (separate mode): muted, named "<type> · forecast", same chart type.
+  function makeForecastSeries(typeSlug: SeriesSlug, totals: TotalReturns[], chartType: ChartType): ChartSeries {
+    return {
+      color: 'var(--ui-text-dimmed)',
+      data: totals.map(i => Math.abs(i[typeSlug])),
+      name: `${t(`money.${typeSlug}`)} · ${t('stat.forecast.short')}`,
+      type: chartType,
+    }
+  }
+
   const categoriesBreakdownType = computed<SeriesSlug>(() => {
     if (statTab.value === 'expense')
       return 'expense'
@@ -174,7 +259,7 @@ export function useStatItem({
   })
 
   const chartSeries = computed<ChartSeries[]>(() => {
-    const intervals = intervalsDataWithFilteredCategories.value
+    const intervals = effectiveIntervals.value
     const selectedInterval = intervals[statDate.params.value.intervalSelected]
     // Bar/line series never use the `pie` type; the donut renders from
     // `chartPieGroups`, so collapse pie -> bar for the axis-based series here.
@@ -187,13 +272,23 @@ export function useStatItem({
       baseSeries = buildCategoriesSeries({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
-        computeTotalForTrnsIds,
+        computeTotalForTrnsIds: effectiveComputeTotal.value,
         filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
         intervals,
         isGrouped: categoryBreakdownFilter.value.isGrouped,
-        trnsItems: trnsStore.items ?? {},
+        trnsItems: effectiveItems.value,
         type: categoriesBreakdownType.value,
       })
+    }
+    else if (forecastMode.value === 'separate') {
+      // Actual series solid + a distinct ghost forecast series per shown type.
+      const actualIntervals = intervalsDataWithFilteredCategories.value
+      const actualTotals = actualIntervals.map(g => g.total)
+      const forecastTotals = forecast.forecastIntervalsData.value.map(g => g.total)
+      baseSeries = typesToShow.value.flatMap(t => [
+        createSeriesItem(t, actualTotals, computeSeriesAverage(t, actualIntervals)),
+        makeForecastSeries(t, forecastTotals, chartType),
+      ])
     }
     else {
       const intervalTotals = intervals.map(g => g.total)
@@ -215,11 +310,11 @@ export function useStatItem({
   function buildPieGroup(type: SeriesSlug): CategoryPieDatum[] {
     return buildCategoriesPieData({
       categoriesItems: categoriesStore.items ?? {},
-      computeTotalForTrnsIds,
+      computeTotalForTrnsIds: effectiveComputeTotal.value,
       filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
-      intervals: intervalsDataWithFilteredCategories.value,
+      intervals: effectiveIntervals.value,
       isGrouped: categoryBreakdownFilter.value.isGrouped,
-      trnsItems: trnsStore.items ?? {},
+      trnsItems: effectiveItems.value,
       type,
     }, t('stat.config.chart.other'))
   }
@@ -260,6 +355,8 @@ export function useStatItem({
     chartXAxisLabels,
     filteredCategoriesIds,
     filteredType,
+    forecastMode,
+    forecastRangeTotal,
     isPeriodOneDay,
     onClickSumItem,
     onSetCategoryFilter,

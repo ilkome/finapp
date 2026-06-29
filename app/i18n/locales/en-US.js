@@ -55,6 +55,43 @@ export default {
     yes: 'Yes',
   },
 
+  budgets: {
+    add: 'Add budget',
+    archive: 'Archive',
+    archived: 'Archived',
+    assign: {
+      forPeriod: 'this period',
+      reset: 'Reset',
+    },
+    autoAssign: 'Copy last period',
+    carried: 'rolled over',
+    committed: 'committed to recurring',
+    confirm: { deleteText: 'This removes the limit. Your transactions are kept.', deleteTitle: 'Delete budget?', unarchiveText: 'An active budget for {category} already exists. Restore this one and archive the other?', unarchiveTitle: 'Restore budget?' },
+    empty: 'No budgets yet. Add a limit for a category.',
+    errors: { deleteFailed: 'Could not delete budget', saveFailed: 'Could not save budget' },
+    form: { amount: 'Amount per period', amountPer: 'Amount per {period}', cadence: 'Budget rhythm', category: 'Category', categoryTaken: '{kind} budget for this category already exists.', currency: 'Currency', goalAmount: 'Goal amount', goalDate: 'Target date', kind: 'Type', rollover: 'Rollover', selectCategory: 'Select category', setAsideHint: 'Set aside ≈ {amount} {currency}/month', subtreeHint: 'Covers this category and all subcategories (except any with their own budget).', targetToggle: 'Target by date' },
+    goalReached: 'Goal reached',
+    help: { open: 'How budgets work' },
+    hero: { safeToSpend: 'Safe to spend', toAssign: 'To assign' },
+    history: { action: 'History', empty: 'No spending history yet.', title: 'History' },
+    kind: { expense: 'Expense', income: 'Income' },
+    mode: { envelope: 'Envelope', fifty_thirty_twenty: '50/30/20', limits: 'Limits' },
+    move: { action: 'Move money', amount: 'Amount ({currency})', from: 'From', into: 'Into', noSource: 'No other budgets to move from.', title: 'Move money' },
+    overBudget: 'Over budget',
+    pace: 'Pace',
+    period: { month: 'Month', week: 'Week', year: 'Year' },
+    periodUnit: { month: 'month', week: 'week', year: 'year' },
+    projected: 'Projected',
+    rollover: { none: 'No rollover', surplus: 'Roll over surplus', surplus_deficit: 'Roll over surplus & deficit' },
+    target: { by: 'by {date}', reached: 'Funded' },
+    title: 'Budgets',
+    triad: {
+      expense: { activity: 'Spent', assigned: 'Assigned', remaining: 'Available' },
+      income: { activity: 'Received', assigned: 'Expected', remaining: 'Left to receive' },
+    },
+    unarchive: 'Unarchive',
+  },
+
   categories: {
     actions: {
       addToFavorites: 'Add to favorites',
@@ -124,6 +161,8 @@ export default {
     search: {
       placeholder: 'Search',
     },
+    selectParent: 'Whole «{name}»',
+    selectParentHint: 'incl. all subcategories',
     title: 'Categories',
   },
 
@@ -245,6 +284,11 @@ export default {
     title: 'Login',
   },
 
+  menu: {
+    documentation: 'Documentation',
+    title: 'Menu',
+  },
+
   money: {
     all: 'Total',
     average: 'Average',
@@ -285,6 +329,51 @@ export default {
     intro: 'Add your first income or expense',
     introCategories: 'Add a category, for example, "Food" or "Salary"',
     introWallets: 'Start tracking your finances by adding your first wallet',
+  },
+
+  recurrences: {
+    actions: {
+      cancel: 'Cancel',
+      confirm: 'Confirm',
+      pause: 'Pause',
+      resume: 'Resume',
+      skip: 'Skip',
+      skipNext: 'Skip next',
+    },
+    add: 'Add recurring',
+    addHint: 'Opens the transaction form with Repeat turned on.',
+    confirm: {
+      cancelText: 'Stops future transactions. Already-created ones stay.',
+      cancelTitle: 'Cancel this series?',
+      deleteText: 'Removes the rule entirely. Already-created transactions stay.',
+      deleteTitle: 'Delete this series?',
+    },
+    editTitle: 'Edit recurrence',
+    empty: 'No recurring transactions yet. Toggle "Repeat" when adding a transaction.',
+    end: { count: 'After N', countPlaceholder: 'count', date: 'On date', never: 'Never' },
+    errors: { deleteFailed: 'Could not delete recurrence', saveFailed: 'Could not save recurrence' },
+    everyOne: { day: 'Every day', month: 'Every month', week: 'Every week', year: 'Every year' },
+    form: {
+      amount: 'Amount',
+      autoCreate: 'Create automatically (off = confirm each time)',
+      ends: 'Ends',
+      every: 'Every',
+      lockedHint: 'Category, wallet and type are fixed for the series. Delete and recreate to change them.',
+      monthLastDay: 'Last day of month',
+      repeat: 'Repeat',
+      save: 'Save',
+    },
+    freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
+    help: { open: 'How recurring works' },
+    manual: 'confirm',
+    next: 'next',
+    pending: { title: 'Pending to confirm' },
+    status: { active: 'Active', cancelled: 'Cancelled', paused: 'Paused' },
+    summary: { until: 'until' },
+    title: 'Recurring',
+    totals: { monthly: 'Per month', yearly: 'Per year' },
+    unit: { day: 'day | days', month: 'month | months', week: 'week | weeks', year: 'year | years' },
+    upcoming: { days: '{count} days', dueSoon: '{count} due soon', title: 'Upcoming' },
   },
 
   search: {
@@ -383,6 +472,16 @@ export default {
         subtitle: 'Top {count}',
         title: 'Wallets',
       },
+    },
+    forecast: {
+      mode: {
+        merged: 'Projected total',
+        off: 'Off',
+        separate: 'Fact + forecast',
+      },
+      projected: 'Projected',
+      short: 'forecast',
+      title: 'Forecast',
     },
     title: 'Dashboard',
   },

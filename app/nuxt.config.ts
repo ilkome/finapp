@@ -104,6 +104,8 @@ export default defineNuxtConfig({
         // Runtime iconify fetches pop in after first paint and shift layout.
         'hugeicons:archive-01',
         'hugeicons:bank',
+        'hugeicons:calendar-03',
+        'hugeicons:chart-histogram',
         'hugeicons:folder-library',
         'hugeicons:laptop-programming',
         'hugeicons:menu-01',
