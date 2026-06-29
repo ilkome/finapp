@@ -3,10 +3,15 @@ import { AnimatePresence, Motion } from 'motion-v'
 
 import type { LocaleSlug } from '~/components/locale/types'
 
+import { useDemo } from '~/components/demo/useDemo'
 import { useTheme } from '~/components/theme/useTheme'
 import { useUserStore } from '~/components/user/useUserStore'
 
 type Panel = 'language' | 'palette' | 'root' | 'theme'
+
+// Session actions (enable demo / sign out) are only meaningful for an authenticated
+// user mid-onboarding; the login page renders this menu without them.
+const { sessionActions = false } = defineProps<{ sessionActions?: boolean }>()
 
 const GITHUB_URL = 'https://github.com/ilkome/finapp'
 const DOCS_URL = 'https://finapp-docs.ilko.me/'
@@ -18,8 +23,16 @@ const THEME_ICONS: Record<string, string> = {
 }
 
 const { locale, t } = useI18n()
+const router = useRouter()
 const userStore = useUserStore()
+const { generateDemoData, isDemo } = useDemo()
 const { options: themeOptions, preference: themePreference, setTheme } = useTheme()
+
+async function enableDemo() {
+  isDemo.value = 'true'
+  await generateDemoData(locale.value)
+  router.push('/dashboard')
+}
 
 const isOpen = ref(false)
 const activePanel = ref<Panel>('root')
@@ -132,6 +145,32 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                 <span class="grow font-medium">{{ t('theme.palette') }}</span>
                 <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
               </button>
+
+              <template v-if="sessionActions">
+                <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
+
+                <button
+                  :class="rowClass"
+                  type="button"
+                  @click="() => { enableDemo(); close() }"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <UIcon name="mdi:play-box-outline" class="text-muted size-5" />
+                  </span>
+                  <span class="grow font-medium">{{ t('login.openDemo') }}</span>
+                </button>
+
+                <button
+                  :class="rowClass"
+                  type="button"
+                  @click="userStore.signOut()"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <UIcon name="i-lucide-log-out" class="text-muted size-5" />
+                  </span>
+                  <span class="grow font-medium">{{ t('user.logout') }}</span>
+                </button>
+              </template>
 
               <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
 

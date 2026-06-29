@@ -2,17 +2,23 @@
 import { useDemo } from '~/components/demo/useDemo'
 import { isSearchOpen } from '~/components/search/useSearch'
 import { useUserStore } from '~/components/user/useUserStore'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
 const emit = defineEmits<{ close: [] }>()
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const userStore = useUserStore()
-const { isDemo } = useDemo()
+const { generateDemoData, isDemo } = useDemo()
 
 function onSearchClick() {
   emit('close')
   nextTick(() => {
     isSearchOpen.value = true
   })
+}
+
+async function updateDemo() {
+  await generateDemoData(locale.value)
+  showSuccessToast('demo.updated')
 }
 </script>
 
@@ -31,7 +37,7 @@ function onSearchClick() {
       <div class="bottomSheetContent">
         <div class="bottomSheetContentInside px-3 pt-4 pb-2">
           <div
-            v-if="!isDemo"
+            v-if="userStore.currentUser"
             class="border-default mx-2 border-b pt-2 pb-2"
           >
             <UserViewLogout />
@@ -55,10 +61,18 @@ function onSearchClick() {
 
           <div
             v-if="isDemo"
-            class="px-3 py-2"
+            class="grid gap-2 px-3 py-2"
           >
             <UiButtonAccent
               rounded
+              @click="updateDemo"
+            >
+              {{ t('demo.update') }}
+            </UiButtonAccent>
+
+            <UiButtonAccent
+              rounded
+              variant="outline"
               @click="userStore.signOut"
             >
               {{ t('demo.exit') }}
