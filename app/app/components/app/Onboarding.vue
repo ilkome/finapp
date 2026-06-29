@@ -20,7 +20,13 @@ const introText = computed(() => {
 </script>
 
 <template>
-  <div class="onboarding flex min-h-svh items-center justify-center">
+  <div class="onboarding mx-auto grid size-full min-h-svh max-w-xl grid-rows-[auto_1fr] px-2 py-3">
+    <div class="flex items-center justify-end">
+      <div class="w-fit max-md:fixed max-md:top-5 max-md:right-5 max-md:z-30">
+        <LayoutHeaderMenu sessionActions />
+      </div>
+    </div>
+
     <div class="flex-center flex-col gap-6 px-4 text-center">
       <UiLogo size="lg" />
 
