@@ -164,8 +164,19 @@ export function rowToRecurrence(row: Row): RecurrenceItem {
     catch { /* keep [] */ }
   }
 
+  let amountHistory: RecurrenceItem['amountHistory']
+  if (row.amountHistory) {
+    try {
+      const parsed = JSON.parse(row.amountHistory as string)
+      if (Array.isArray(parsed) && parsed.length)
+        amountHistory = parsed as RecurrenceItem['amountHistory']
+    }
+    catch { /* leave undefined */ }
+  }
+
   return {
     amount: Number(row.amount),
+    ...(amountHistory ? { amountHistory } : {}),
     anchorDate: Number(row.anchorDate),
     autoCreate: !!row.autoCreate,
     categoryId: row.categoryId,
@@ -188,6 +199,7 @@ export function rowToRecurrence(row: Row): RecurrenceItem {
 export function recurrenceToRow(item: RecurrenceItem, userId: string): Record<string, unknown> {
   return {
     amount: item.amount,
+    amountHistory: JSON.stringify(item.amountHistory ?? []),
     anchorDate: item.anchorDate,
     autoCreate: item.autoCreate ? 1 : 0,
     categoryId: item.categoryId,

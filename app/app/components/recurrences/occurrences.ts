@@ -17,6 +17,27 @@ export function occurrenceTrnId(ruleId: RecurrenceId, dayEpoch: number): string 
   return `${ruleId}:${civilDayKey(dayEpoch)}`
 }
 
+/**
+ * Amount effective on `dayEpoch`: the latest price-history entry whose `from` is on/before the
+ * day, falling back to the earliest known price (days before the first entry) or the scalar
+ * `amount` when there is no history. See plans/recurrences.md (request 4).
+ */
+export function effectiveAmountFor(rule: RecurrenceItem, dayEpoch: number): number {
+  const history = rule.amountHistory
+  if (!history?.length)
+    return rule.amount
+  const day = civilDayStart(dayEpoch)
+  const sorted = [...history].sort((a, b) => a.from - b.from)
+  let amount = sorted[0]!.amount
+  for (const entry of sorted) {
+    if (civilDayStart(entry.from) <= day)
+      amount = entry.amount
+    else
+      break
+  }
+  return amount
+}
+
 /** The n-th occurrence civil day (n >= 0; n = 0 is the anchor), clamp/last-day aware. */
 export function nthOccurrence(rule: RecurrenceItem, n: number): number {
   const anchor = civilDayStart(rule.anchorDate)

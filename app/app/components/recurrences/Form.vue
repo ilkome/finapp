@@ -2,7 +2,8 @@
 import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { civilDayKey, toCivilDayEpoch } from '~/components/date/utils'
+import { civilDayKey, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
+import { nextOccurrence } from '~/components/recurrences/occurrences'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
@@ -16,10 +17,12 @@ const emit = defineEmits<{
   closed: []
 }>()
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
+
+const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 
 const existing = computed(() => recurrencesStore.items?.[props.recurrenceId])
 const category = computed(() => existing.value ? categoriesStore.items?.[existing.value.categoryId] : undefined)
@@ -57,13 +60,58 @@ const endDateInput = computed({
 const amountNumber = computed(() => Number.parseFloat(amount.value))
 const canSave = computed(() => Number.isFinite(amountNumber.value) && amountNumber.value > 0 && interval.value >= 1)
 
+// Price change: a new amount takes effect from a chosen day (default today), recorded in history.
+const amountChanged = computed(() => existing.value != null && amountNumber.value !== existing.value.amount)
+const effectiveFromEpoch = ref<number>(todayCivilDayEpoch())
+const effectiveFromInput = computed({
+  get: () => civilDayKey(effectiveFromEpoch.value),
+  set: (v: string) => {
+    if (!v)
+      return
+    const [y, m, d] = v.split('-').map(Number)
+    effectiveFromEpoch.value = toCivilDayEpoch(y!, m! - 1, d!)
+  },
+})
+
+// Change the next charge date (re-anchors the cadence from there). Empty = keep current schedule.
+const rescheduleEpoch = ref<number | null>(null)
+const rescheduleInput = computed({
+  get: () => (rescheduleEpoch.value != null ? civilDayKey(rescheduleEpoch.value) : ''),
+  set: (v: string) => {
+    if (!v) {
+      rescheduleEpoch.value = null
+      return
+    }
+    const [y, m, d] = v.split('-').map(Number)
+    rescheduleEpoch.value = toCivilDayEpoch(y!, m! - 1, d!)
+  },
+})
+
+const nextChargeLabel = computed(() => {
+  if (!existing.value)
+    return ''
+  const next = nextOccurrence(existing.value, todayCivilDayEpoch())
+  return next != null ? formatByLocale(next, 'd MMM yyyy', dateLocale.value) : t('recurrences.form.noNext')
+})
+
+// Price history, newest first (seed the current price when it was never changed).
+const priceHistory = computed(() => {
+  const rule = existing.value
+  if (!rule)
+    return []
+  const list = rule.amountHistory?.length
+    ? [...rule.amountHistory]
+    : [{ amount: rule.amount, from: rule.anchorDate }]
+  return list.sort((a, b) => b.from - a.from)
+})
+
 function onSave(close: () => void) {
   const prev = existing.value
   if (!prev || !canSave.value)
     return
+  // Schedule/options/end conditions (amount and price history are handled separately below).
   const values: RecurrenceItem = {
     ...prev,
-    amount: amountNumber.value,
     autoCreate: autoCreate.value,
     endCount: endMode.value === 'count' ? endCount.value : null,
     endDate: endMode.value === 'date' ? endDateEpoch.value : null,
@@ -74,6 +122,10 @@ function onSave(close: () => void) {
     updatedAt: Date.now(),
   }
   recurrencesStore.saveRecurrence(values, props.recurrenceId)
+  if (amountChanged.value)
+    recurrencesStore.changeAmount(props.recurrenceId, amountNumber.value, effectiveFromEpoch.value)
+  if (rescheduleEpoch.value != null)
+    recurrencesStore.rescheduleFrom(props.recurrenceId, rescheduleEpoch.value)
   close()
 }
 </script>
@@ -122,6 +174,54 @@ function onSave(close: () => void) {
             :placeholder="t('recurrences.form.amount')"
             type="number"
           />
+          <!-- When the price changes, record from which day it applies (default today). -->
+          <label v-if="amountChanged" class="text-2xs text-muted mt-2 flex items-center gap-2">
+            {{ t('recurrences.form.effectiveFrom') }}
+            <input
+              v-model="effectiveFromInput"
+              type="date"
+              class="bg-elevated/40 text-highlighted rounded-sm px-2 py-1"
+            >
+          </label>
+        </FormElement>
+
+        <!-- Price history -->
+        <FormElement v-if="priceHistory.length > 1">
+          <template #label>
+            {{ t('recurrences.form.priceHistory') }}
+          </template>
+          <div class="grid gap-1">
+            <div
+              v-for="(p, i) in priceHistory"
+              :key="p.from"
+              class="text-2xs flex items-center justify-between"
+              :class="i === 0 ? 'text-highlighted' : 'text-muted'"
+            >
+              <span>{{ t('recurrences.form.priceFrom') }} {{ formatByLocale(p.from, 'd MMM yyyy', dateLocale) }}</span>
+              <Amount
+                :amount="p.amount"
+                :currencyCode="wallet?.currency ?? 'USD'"
+                :isShowBaseRate="false"
+                :type="existing?.type ?? TrnType.Expense"
+                variant="sm"
+              />
+            </div>
+          </div>
+        </FormElement>
+
+        <!-- Next charge date (re-anchors the cadence from a chosen day) -->
+        <FormElement>
+          <template #label>
+            {{ t('recurrences.form.nextCharge') }}
+          </template>
+          <div class="flex items-center gap-2">
+            <input
+              v-model="rescheduleInput"
+              type="date"
+              class="bg-elevated/40 text-highlighted rounded-sm px-3 py-2 text-sm"
+            >
+            <span class="text-2xs text-muted">{{ t('recurrences.form.currentNext') }} {{ nextChargeLabel }}</span>
+          </div>
         </FormElement>
 
         <!-- Frequency -->

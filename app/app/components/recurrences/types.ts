@@ -13,10 +13,21 @@ export type RecurrenceEndMode = typeof recurrenceEndModes[number]
 export const recurrenceStatuses = ['active', 'paused', 'cancelled'] as const
 export type RecurrenceStatus = typeof recurrenceStatuses[number]
 
+// One dated price of a series: `amount` applies to occurrences on/after `from` (civil day),
+// until the next entry. Enables a price-change history (request 4).
+export const amountChangeSchema = z.object({
+  amount: z.number().positive(),
+  from: z.number(),
+})
+export type AmountChange = z.infer<typeof amountChangeSchema>
+
 // A recurrence is expense or income only (no transfer). Currency derives from the wallet,
 // like trns. anchorDate / endDate are civil days (UTC-midnight ms-epoch). See plans/recurrences.md.
 export const recurrenceItemSchema = z.object({
   amount: z.number().positive(),
+  // Dated price history (ascending by `from`); the scalar `amount` mirrors the current entry.
+  // Absent/empty means the price never changed.
+  amountHistory: z.array(amountChangeSchema).optional(),
   anchorDate: z.number(),
   autoCreate: z.boolean(),
   categoryId: z.string().min(1),

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RecurrenceFreq } from '~/components/recurrences/types'
 
-import { civilDayKey, formatByLocale, toCivilDayEpoch } from '~/components/date/utils'
+import { civilDayKey, civilDayStart, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -10,6 +10,10 @@ const trnsFormStore = useTrnsFormStore()
 const repeat = computed(() => trnsFormStore.repeat)
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+
+// The trn's date is the series start. A future start is not created now - it appears on its date.
+const isFutureStart = computed(() => civilDayStart(trnsFormStore.values.date) > todayCivilDayEpoch())
+const startLabel = computed(() => formatByLocale(trnsFormStore.values.date, 'd MMM yyyy', dateLocale.value))
 
 // Plain-language echo of the rule so the user can trust what they configured.
 const summary = computed(() => {
@@ -74,6 +78,12 @@ const endDateInput = computed({
 
     <!-- Config -->
     <div v-if="repeat.enabled" class="grid gap-3 px-3 pt-1 pb-3">
+      <!-- Future start: nothing is created now; the first payment appears on its date. -->
+      <div v-if="isFutureStart" class="bg-default text-2xs text-muted flex items-center gap-1.5 rounded-sm px-2 py-1.5">
+        <Icon name="lucide:clock" size="14" />
+        {{ t('recurrences.form.futureStart', { date: startLabel }) }}
+      </div>
+
       <!-- Frequency -->
       <div class="flex flex-wrap gap-1">
         <button

@@ -1,7 +1,7 @@
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { dueOccurrences, occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { dueOccurrences, effectiveAmountFor, occurrenceTrnId } from '~/components/recurrences/occurrences'
 
 // Idempotent generation shared by the client catch-up (on app open) and mirrored by the edge
 // cron. Both compute the same deterministic trn ids, so concurrent/offline writes converge on
@@ -10,7 +10,7 @@ import { dueOccurrences, occurrenceTrnId } from '~/components/recurrences/occurr
 /** Build the trn that materializes one occurrence of a rule (deterministic id is set by caller). */
 export function buildOccurrenceTrn(rule: RecurrenceItem, ruleId: RecurrenceId, dayEpoch: number, now: number): TrnItem {
   return {
-    amount: rule.amount,
+    amount: effectiveAmountFor(rule, dayEpoch),
     categoryId: rule.categoryId,
     date: dayEpoch,
     ...(rule.desc ? { desc: rule.desc } : {}),

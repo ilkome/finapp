@@ -5,6 +5,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { maxHeight = '60vh' } = defineProps<{
@@ -14,10 +15,22 @@ const { maxHeight = '60vh' } = defineProps<{
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
+const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const walletId = computed(() =>
   trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
 )
+
+// Show "Repeat" for non-transfers when creating, or when editing a trn that is not already
+// part of a series (converting an existing trn into a recurring one - request 2).
+const canRepeat = computed(() => {
+  if (trnsFormStore.values.trnType === TrnType.Transfer)
+    return false
+  const trnId = trnsFormStore.values.trnId
+  if (!trnId)
+    return true
+  return !trnsStore.items?.[trnId]?.recurrenceId
+})
 </script>
 
 <template>
@@ -72,7 +85,7 @@ const walletId = computed(() =>
         :bottomSheetStyle="{ maxHeight }"
       />
 
-      <TrnFormRepeat v-if="trnsFormStore.values.trnType !== TrnType.Transfer && !trnsFormStore.values.trnId" />
+      <TrnFormRepeat v-if="canRepeat" />
 
       <TrnFormMainCalculator />
     </div>

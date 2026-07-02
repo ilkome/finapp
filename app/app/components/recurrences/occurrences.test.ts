@@ -4,7 +4,7 @@ import type { RecurrenceItem } from '~/components/recurrences/types'
 
 import { TrnType } from '~/components/trns/types'
 
-import { dueOccurrences, nextOccurrence, occurrencesInRange, occurrenceTrnId } from './occurrences'
+import { dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceTrnId } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -122,5 +122,39 @@ describe('dueOccurrences (catch-up)', () => {
   it('is empty when nothing is due', () => {
     const r = rule({ anchorDate: U(2024, 0, 1), freq: 'month', lastGeneratedDate: U(2024, 3, 1) })
     expect(dueOccurrences(r, U(2024, 3, 1))).toEqual([])
+  })
+
+  it('generates nothing before a future start, then the anchor once due', () => {
+    const r = rule({ anchorDate: U(2024, 5, 1), freq: 'month', lastGeneratedDate: null })
+    expect(dueOccurrences(r, U(2024, 4, 15))).toEqual([])
+    expect(dueOccurrences(r, U(2024, 5, 1))).toEqual([U(2024, 5, 1)])
+  })
+})
+
+describe('effectiveAmountFor', () => {
+  it('returns the scalar amount when there is no history', () => {
+    const r = rule({ amount: 100 })
+    expect(effectiveAmountFor(r, U(2024, 5, 1))).toBe(100)
+  })
+
+  it('picks the price effective on the day, holding until the next change', () => {
+    const r = rule({
+      amount: 600,
+      amountHistory: [
+        { amount: 500, from: U(2024, 0, 1) },
+        { amount: 600, from: U(2024, 6, 1) },
+      ],
+    })
+    expect(effectiveAmountFor(r, U(2024, 5, 30))).toBe(500)
+    expect(effectiveAmountFor(r, U(2024, 6, 1))).toBe(600)
+    expect(effectiveAmountFor(r, U(2024, 8, 1))).toBe(600)
+  })
+
+  it('falls back to the earliest price for days before the first entry', () => {
+    const r = rule({
+      amount: 600,
+      amountHistory: [{ amount: 500, from: U(2024, 6, 1) }],
+    })
+    expect(effectiveAmountFor(r, U(2024, 0, 1))).toBe(500)
   })
 })

@@ -6,13 +6,13 @@ import { recurrenceToRow, rowToRecurrence, trnToRow } from '~~/services/powersyn
 import { generateId } from '~~/utils/generateId'
 
 import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem, Recurrences, RecurrenceStatus } from '~/components/recurrences/types'
-import type { TrnItem } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { civilDayKey, todayCivilDayEpoch } from '~/components/date/utils'
+import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'
-import { occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
@@ -128,14 +128,20 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
 
   /**
    * Primary creation path (the trn form "Repeat" toggle): turn the entered trn into a
-   * recurrence whose first occurrence IS that trn (shared deterministic id, so generation
-   * never double-creates it). See plans/recurrences.md §9.
+   * recurrence whose start date is the trn's date. See plans/recurrences.md §9.
+   *
+   * If the start is today or in the past, the entered trn IS the first occurrence (shared
+   * deterministic id, so generation never double-creates it). If the start is in the FUTURE,
+   * nothing is materialized now: the first occurrence appears on its date via catch-up (auto)
+   * or in the pending list (manual). So a "schedule for later" trn stays out of history and
+   * balances until it is due (requests 1 & 3).
    */
   function createFromTrn(trn: TrnItem, config: RepeatConfig): RecurrenceId | undefined {
     if (trn.type === TrnType.Transfer || !('amount' in trn))
       return undefined
 
     const anchorDate = trn.date
+    const isFutureStart = civilDayStart(anchorDate) > todayCivilDayEpoch()
     const rule: RecurrenceItem = {
       amount: trn.amount,
       anchorDate,
@@ -147,8 +153,9 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
       endMode: config.endMode,
       freq: config.freq,
       interval: config.interval,
-      // The entered trn is the first occurrence, so generation resumes after the anchor.
-      lastGeneratedDate: anchorDate,
+      // Past/today start: the entered trn is the first occurrence, so generation resumes after
+      // it. Future start: nothing generated yet, so the anchor itself is still due.
+      lastGeneratedDate: isFutureStart ? null : anchorDate,
       monthLastDay: config.monthLastDay ?? false,
       skipDates: [],
       status: 'active',
@@ -158,9 +165,52 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     }
 
     const ruleId = saveRecurrence(rule)
-    // Persist the entered trn under the deterministic id, linked to the rule.
-    trnsStore.saveTrn({ id: occurrenceTrnId(ruleId, anchorDate), values: { ...trn, recurrenceId: ruleId } })
+    if (!isFutureStart) {
+      // Persist the entered trn under the deterministic id, linked to the rule.
+      trnsStore.saveTrn({ id: occurrenceTrnId(ruleId, anchorDate), values: { ...trn, recurrenceId: ruleId } })
+    }
     // Fill any further due occurrences if the anchor is in the past (autoCreate).
+    scheduleCatchUp()
+    return ruleId
+  }
+
+  /**
+   * Convert an EXISTING trn into a recurring one (request 2): create a rule from the trn's
+   * values and keep the trn as the first occurrence (its id is preserved and linked). Generation
+   * resumes strictly after this occurrence, so the anchor is never re-created under another id.
+   */
+  function createFromExistingTrn(trnId: TrnId, trn: TrnItem, config: RepeatConfig): RecurrenceId | undefined {
+    if (trn.type === TrnType.Transfer || !('amount' in trn))
+      return undefined
+
+    const anchorDate = trn.date
+    // Generate forward only: resume from today (so months between an old trn and now are NOT
+    // backfilled as look-alike duplicates), but never before the anchor (so the existing trn -
+    // which keeps its own id - is not re-created under a deterministic occurrence id).
+    const lastGeneratedDate = Math.max(civilDayStart(anchorDate), todayCivilDayEpoch())
+    const rule: RecurrenceItem = {
+      amount: trn.amount,
+      anchorDate,
+      autoCreate: config.autoCreate,
+      categoryId: trn.categoryId,
+      ...(trn.desc ? { desc: trn.desc } : {}),
+      ...(config.endCount != null ? { endCount: config.endCount } : {}),
+      ...(config.endDate != null ? { endDate: config.endDate } : {}),
+      endMode: config.endMode,
+      freq: config.freq,
+      interval: config.interval,
+      lastGeneratedDate,
+      monthLastDay: config.monthLastDay ?? false,
+      skipDates: [],
+      status: 'active',
+      type: trn.type,
+      updatedAt: Date.now(),
+      walletId: trn.walletId,
+    }
+
+    const ruleId = saveRecurrence(rule)
+    // Keep the original trn (and its id); just link it to the new rule.
+    trnsStore.saveTrn({ id: trnId, values: { ...trn, recurrenceId: ruleId } })
     scheduleCatchUp()
     return ruleId
   }
@@ -212,6 +262,57 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
   }
 
   /**
+   * Change the series price effective from `fromDay` (request 4). Records the change in the
+   * price history (seeding the original price on first change), updates the scalar `amount` to
+   * whatever is effective today, and rewrites already-generated occurrences on/after `fromDay`
+   * to the new price (occurrences before it keep their old price).
+   */
+  function changeAmount(id: RecurrenceId, newAmount: number, fromDay: number) {
+    const rule = items.value?.[id]
+    if (!rule || !(newAmount > 0))
+      return
+    const from = civilDayStart(fromDay)
+    const history = rule.amountHistory?.length
+      ? [...rule.amountHistory]
+      : [{ amount: rule.amount, from: civilDayStart(rule.anchorDate) }]
+    const existing = history.findIndex(e => civilDayStart(e.from) === from)
+    if (existing >= 0)
+      history[existing] = { amount: newAmount, from }
+    else
+      history.push({ amount: newAmount, from })
+    history.sort((a, b) => a.from - b.from)
+
+    const next: RecurrenceItem = { ...rule, amountHistory: history }
+    next.amount = effectiveAmountFor(next, todayCivilDayEpoch())
+    writeRecurrence(id, next)
+
+    // Rewrite already-generated, on/after-`from` occurrences to the newly-effective price.
+    const trns = trnsStore.items ?? {}
+    for (const [trnId, trn] of Object.entries(trns)) {
+      if (trn.recurrenceId !== id || !('amount' in trn) || civilDayStart(trn.date) < from)
+        continue
+      const amount = effectiveAmountFor(next, trn.date)
+      if (trn.amount !== amount)
+        trnsStore.saveTrn({ id: trnId, values: { ...trn, amount } })
+    }
+  }
+
+  /**
+   * Move the next charge to `newDay` and continue the cadence from there (request 4, simple
+   * re-anchor). Already-generated occurrences stay; future ones follow the new phase. See
+   * plans/recurrences-schedule-history.md for the richer dated-schedule alternative.
+   */
+  function rescheduleFrom(id: RecurrenceId, newDay: number) {
+    const rule = items.value?.[id]
+    if (!rule)
+      return
+    const anchorDate = civilDayStart(newDay)
+    // Resume generation from just before the new anchor so it (and only it onward) can fire.
+    writeRecurrence(id, { ...rule, anchorDate, lastGeneratedDate: addCivilDays(anchorDate, -1) })
+    scheduleCatchUp()
+  }
+
+  /**
    * Idempotent client catch-up (offline immediacy): materialize all due occurrences for active
    * autoCreate rules up to the device's civil today. Safe to run repeatedly and alongside the
    * edge cron (deterministic ids converge). See plans/recurrences.md §6.
@@ -240,7 +341,9 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
 
   return {
     activeItems,
+    changeAmount,
     confirmOccurrence,
+    createFromExistingTrn,
     createFromTrn,
     hasItems,
     initRecurrences,
@@ -248,6 +351,7 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     isReady,
     items,
     removeRecurrence,
+    rescheduleFrom,
     runCatchUp,
     saveRecurrence,
     setItems,

@@ -27,8 +27,7 @@ async function onClickSubmit() {
 
   const rep = trnsFormStore.repeat
   if (rep.enabled && trnFormData.values.type !== TrnType.Transfer) {
-    // "Repeat" on: create a recurrence whose first occurrence is this trn (shared id).
-    recurrencesStore.createFromTrn(trnFormData.values, {
+    const config = {
       autoCreate: rep.autoCreate,
       endCount: rep.endMode === 'count' ? rep.endCount : null,
       endDate: rep.endMode === 'date' ? rep.endDate : null,
@@ -36,7 +35,13 @@ async function onClickSubmit() {
       freq: rep.freq,
       interval: rep.interval,
       monthLastDay: rep.monthLastDay,
-    })
+    }
+    // Editing an existing trn with "Repeat" on: convert it into a recurring series (keeps its id).
+    // Otherwise create a fresh series whose first occurrence is this trn (shared deterministic id).
+    if (trnsFormStore.values.trnId)
+      recurrencesStore.createFromExistingTrn(trnFormData.id, trnFormData.values, config)
+    else
+      recurrencesStore.createFromTrn(trnFormData.values, config)
   }
   else {
     trnsStore.saveTrn({

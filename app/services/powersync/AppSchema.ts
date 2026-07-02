@@ -59,6 +59,7 @@ const trns = new Table(
 const recurrences = new Table(
   {
     amount: column.real,
+    amountHistory: column.text, // JSON array of { from: civilDay, amount } (price history)
     anchorDate: column.integer, // civil day (UTC-midnight ms-epoch)
     autoCreate: column.integer, // 0/1
     categoryId: column.text,
