@@ -9,6 +9,7 @@ const props = defineProps<{
   getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   ids: CategoryId[]
   onNew?: () => void
+  selectedIds?: CategoryId[]
 }>()
 
 const emit = defineEmits<{
@@ -37,6 +38,7 @@ function select(id: CategoryId) {
       :class="itemClasses"
       :category="categoriesStore.items[categoryId]!"
       :contextMenuItems="props.getContextMenuItems?.(categoryId)"
+      :selectedIds="props.selectedIds"
       isShowParent
       stacked
       @click="select(categoryId)"

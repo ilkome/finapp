@@ -7,6 +7,10 @@ import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpa
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
+  // Flows inside a parent scroller instead of owning height/scroll.
+  embedded?: boolean
+  // Hides the built-in search (a parent provides a global one).
+  hideSearch?: boolean
   selectedIds?: CategoryId[]
 }>()
 
@@ -110,15 +114,24 @@ function onRootClick(rootId: CategoryId) {
 }
 
 onMounted(async () => {
+  if (props.hideSearch)
+    return
   await nextTick()
   searchInput.value?.focus()
 })
 </script>
 
 <template>
-  <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 py-2">
+  <div :class="props.embedded ? 'relative flex flex-col' : 'relative flex h-full min-h-0 flex-col overflow-hidden'">
+    <div
+      class="flex items-center gap-2 px-3 py-2"
+      :class="[
+        props.embedded ? '' : 'bg-default sticky top-0 z-20',
+        props.hideSearch ? 'justify-end' : '',
+      ]"
+    >
       <input
+        v-if="!props.hideSearch"
         ref="searchInput"
         v-model="search"
         type="text"
@@ -145,7 +158,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4">
+    <div :class="props.embedded ? 'px-3 pt-1 pb-4' : 'scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4'">
       <div
         v-if="hasNoMatches"
         class="text-muted p-4 text-center"

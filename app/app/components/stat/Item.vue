@@ -122,6 +122,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
 
     <div class="grid min-w-0 content-start gap-3">
       <StatDateNavigation>
+        <StatFilterButton />
         <StatFilterSelected
           v-if="filter.isShow.value"
           isShowCategories

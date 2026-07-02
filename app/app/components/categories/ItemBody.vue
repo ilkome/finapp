@@ -17,6 +17,7 @@ const props = defineProps<{
   leftMenuButton?: boolean
   leftMenuItems?: ContextMenuItem[][]
   lineWidth?: number
+  selectedIds?: CategoryId[]
   stacked?: boolean
   to?: string
 }>()
@@ -29,6 +30,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
+
+// Multi-select (filter) highlights every id in selectedIds; single-select falls
+// back to the activeItemId match.
+const isActive = computed(() =>
+  props.selectedIds
+    ? props.selectedIds.includes(props.categoryId)
+    : props.activeItemId === props.categoryId,
+)
 
 const childCategoriesIds = computed(() => categoriesStore.getChildrenIds(props.categoryId))
 const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
@@ -59,7 +68,7 @@ function onRowClick(e: Event) {
 <template>
   <UiElement
     v-if="props.leftMenuButton && props.category"
-    :isActive="props.activeItemId === props.categoryId"
+    :isActive="isActive"
     :class="props.class"
     :lineWidth="props.lineWidth"
     :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"
@@ -110,7 +119,7 @@ function onRowClick(e: Event) {
 
   <UiElement
     v-else-if="props.category"
-    :isActive="props.activeItemId === props.categoryId"
+    :isActive="isActive"
     :class="props.class"
     :lineWidth="props.lineWidth"
     :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"

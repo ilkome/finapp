@@ -81,9 +81,23 @@ export function useFilter() {
     router.push({ query: undefined })
   }
 
+  // Atomic apply of both wallet + category selections in a single navigation.
+  // Chaining the per-key setters would race: each reads route.query before the
+  // previous push lands, so later pushes drop earlier changes.
+  function applyFilter(nextWallets: WalletId[], nextCategories: CategoryId[]) {
+    router.push({
+      query: {
+        ...route.query,
+        filterCategories: nextCategories.length ? nextCategories : undefined,
+        filterWallets: nextWallets.length ? nextWallets : undefined,
+      },
+    })
+  }
+
   const isShow = computed(() => categories.ids.value.length > 0 || wallets.ids.value.length > 0)
 
   return {
+    applyFilter,
     categoriesIds: categories.ids,
     clearFilter,
     isShow,

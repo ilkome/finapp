@@ -14,6 +14,7 @@ const props = defineProps<{
   disabledIds?: WalletId[]
   filterAtTop?: boolean
   hide?: () => void
+  hideSearch?: boolean
   selectedIds?: WalletId[]
   withHeader?: boolean
 }>()
@@ -96,7 +97,7 @@ function onClickNew() {
 }
 
 onMounted(async () => {
-  if (!props.withHeader)
+  if (!props.withHeader || props.hideSearch)
     return
   await nextTick()
   searchInput.value?.focus()
@@ -108,8 +109,10 @@ onMounted(async () => {
     <div
       v-if="props.withHeader"
       class="bg-default flex items-center gap-2 py-2"
+      :class="{ 'justify-end': props.hideSearch }"
     >
       <input
+        v-if="!props.hideSearch"
         ref="searchInput"
         v-model="search"
         type="text"
