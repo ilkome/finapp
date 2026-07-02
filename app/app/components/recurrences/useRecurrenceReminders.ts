@@ -1,12 +1,17 @@
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { todayCivilDayEpoch } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
-import { REMINDER_OFFSETS, upcomingReminders } from '~/components/recurrences/reminders'
+import { upcomingReminders } from '~/components/recurrences/reminders'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useSupabase, useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('recurrence-reminders')
+
+// Translator is passed in by the caller: this composable is driven from a Nuxt plugin (not a
+// component setup), where useI18n() is unavailable and would throw MUST_BE_CALL_SETUP_TOP.
+type Translate = (key: string, params?: Record<string, unknown>) => string
 
 /**
  * Queue due-soon reminders for the current user's active recurrences (request 4). The client owns
@@ -16,7 +21,6 @@ const logger = createLogger('recurrence-reminders')
  * occurrence + offset.
  */
 export function useRecurrenceReminders() {
-  const { t } = useI18n()
   const { isDemo } = useDemo()
   const supabase = useSupabase()
   const { uid } = useSupabaseAuth()
@@ -24,13 +28,13 @@ export function useRecurrenceReminders() {
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
 
-  function offsetLabel(offset: number): string {
+  function offsetLabel(t: Translate, offset: number): string {
     return offset === 0
       ? t('recurrences.reminders.today')
       : offset === 1 ? t('recurrences.reminders.tomorrow') : t('recurrences.reminders.inDays', { count: offset })
   }
 
-  async function sync(): Promise<void> {
+  async function sync(t: Translate): Promise<void> {
     if (isDemo.value || !recurrencesStore.items || !uid.value)
       return
 
@@ -44,7 +48,7 @@ export function useRecurrenceReminders() {
       const currency = walletsStore.items?.[rule.walletId]?.currency ?? ''
       const name = category?.name ?? rule.desc ?? t('recurrences.reminders.title')
       return {
-        body: `${name} · ${r.amount} ${currency} · ${offsetLabel(r.offset)}`.trim(),
+        body: `${name} · ${r.amount} ${currency} · ${offsetLabel(t, r.offset)}`.trim(),
         fireDate: r.fireDate,
         id: r.id,
         title: t('recurrences.reminders.title'),
@@ -77,5 +81,5 @@ export function useRecurrenceReminders() {
       await supabase.from('push_reminders').delete().in('id', stale)
   }
 
-  return { REMINDER_OFFSETS, sync }
+  return { sync }
 }
