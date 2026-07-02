@@ -1,18 +1,18 @@
 import { useRecurrenceReminders } from '~/components/recurrences/useRecurrenceReminders'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 
-// Fire local due-soon reminders whenever recurrence rules load or change (app open + realtime).
-// Delivery while the app is closed is a follow-up (plans/push-notifications.md).
+// Re-queue due-soon reminders whenever recurrence rules load or change (app open + realtime). The
+// server cron (send-reminders) delivers them as Web Push, so they arrive even when the app is closed.
 export default defineNuxtPlugin(() => {
   const recurrencesStore = useRecurrencesStore()
-  const { run } = useRecurrenceReminders()
+  const { sync } = useRecurrenceReminders()
 
   let timer: ReturnType<typeof setTimeout> | null = null
   watch(() => recurrencesStore.items, () => {
     if (timer)
       clearTimeout(timer)
     timer = setTimeout(() => {
-      void run()
-    }, 500)
+      void sync()
+    }, 800)
   }, { immediate: true })
 })

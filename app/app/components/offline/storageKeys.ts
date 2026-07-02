@@ -3,7 +3,6 @@ export const STORAGE_KEYS = {
   budgets: 'finapp.budgets',
   categories: 'finapp.categories',
   currencies: 'finapp.currencies',
-  recurrenceReminders: 'finapp.recurrenceReminders',
   recurrences: 'finapp.recurrences',
   trns: 'finapp.trns',
   user: 'finapp.user',
