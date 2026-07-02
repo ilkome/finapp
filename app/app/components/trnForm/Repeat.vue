@@ -11,9 +11,21 @@ const repeat = computed(() => trnsFormStore.repeat)
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 
-// The trn's date is the series start. A future start is not created now - it appears on its date.
+// The trn's date is the subscription start. Editing this field moves the transaction date.
+const isCreate = computed(() => !trnsFormStore.values.trnId)
 const isFutureStart = computed(() => civilDayStart(trnsFormStore.values.date) > todayCivilDayEpoch())
+const isPastStart = computed(() => civilDayStart(trnsFormStore.values.date) < todayCivilDayEpoch())
 const startLabel = computed(() => formatByLocale(trnsFormStore.values.date, 'd MMM yyyy', dateLocale.value))
+
+const startDateInput = computed({
+  get: () => civilDayKey(trnsFormStore.values.date),
+  set: (v: string) => {
+    if (!v)
+      return
+    const [y, m, d] = v.split('-').map(Number)
+    trnsFormStore.values.date = toCivilDayEpoch(y!, m! - 1, d!)
+  },
+})
 
 // Plain-language echo of the rule so the user can trust what they configured.
 const summary = computed(() => {
@@ -78,10 +90,31 @@ const endDateInput = computed({
 
     <!-- Config -->
     <div v-if="repeat.enabled" class="grid gap-3 px-3 pt-1 pb-3">
+      <!-- Subscription start date (= the transaction date). Past or future allowed. -->
+      <label v-if="isCreate" class="text-muted flex items-center justify-between gap-2 text-sm">
+        {{ t('recurrences.form.startDate') }}
+        <input
+          v-model="startDateInput"
+          type="date"
+          class="bg-default text-highlighted rounded-sm px-2 py-1"
+        >
+      </label>
+
       <!-- Future start: nothing is created now; the first payment appears on its date. -->
       <div v-if="isFutureStart" class="bg-default text-2xs text-muted flex items-center gap-1.5 rounded-sm px-2 py-1.5">
         <Icon name="lucide:clock" size="14" />
         {{ t('recurrences.form.futureStart', { date: startLabel }) }}
+      </div>
+
+      <!-- Past start: choose whether to create every payment from the start up to today. -->
+      <div v-if="isCreate && isPastStart" class="grid gap-1">
+        <label class="text-muted flex items-center gap-2 text-sm">
+          <input v-model="repeat.backfill" type="checkbox" class="size-4">
+          {{ t('recurrences.form.backfill') }}
+        </label>
+        <div class="text-2xs text-muted pl-6">
+          {{ repeat.backfill ? t('recurrences.form.backfillOnHint') : t('recurrences.form.backfillOffHint') }}
+        </div>
       </div>
 
       <!-- Frequency -->

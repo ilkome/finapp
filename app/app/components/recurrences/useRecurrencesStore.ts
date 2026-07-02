@@ -12,7 +12,7 @@ import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'
-import { effectiveAmountFor, occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
@@ -23,6 +23,9 @@ import { createLogger } from '~/utils/logger'
 // Config captured from the trn form's "Repeat" toggle (the trn supplies type/amount/wallet/category/date).
 export type RepeatConfig = {
   autoCreate: boolean
+  // Past start only: create every occurrence from the start date up to today. When false, no past
+  // transactions are created - the subscription is only tracked going forward.
+  backfill?: boolean
   endCount?: number | null
   endDate?: number | null
   endMode: RecurrenceEndMode
@@ -127,21 +130,32 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
   }
 
   /**
-   * Primary creation path (the trn form "Repeat" toggle): turn the entered trn into a
-   * recurrence whose start date is the trn's date. See plans/recurrences.md §9.
+   * Primary creation path (the trn form "Repeat" toggle): turn the entered trn into a recurrence
+   * whose START DATE is the trn's date. Behavior by start date (requests 1 & 3):
    *
-   * If the start is today or in the past, the entered trn IS the first occurrence (shared
-   * deterministic id, so generation never double-creates it). If the start is in the FUTURE,
-   * nothing is materialized now: the first occurrence appears on its date via catch-up (auto)
-   * or in the pending list (manual). So a "schedule for later" trn stays out of history and
-   * balances until it is due (requests 1 & 3).
+   * - Future start: nothing is materialized now. The first occurrence appears on its date via
+   *   catch-up (auto) or the pending list (manual) - stays out of history/balances until due.
+   * - Today start: today's occurrence is created now.
+   * - Past start with backfill: every occurrence from the start through today is created now
+   *   (the full history), regardless of autoCreate.
+   * - Past start without backfill: nothing is created now; the subscription is only tracked from
+   *   its next future occurrence (the start date still fixes the cadence phase).
+   *
+   * Occurrences use the deterministic occurrence id, so ongoing catch-up / the edge cron never
+   * double-create them.
    */
   function createFromTrn(trn: TrnItem, config: RepeatConfig): RecurrenceId | undefined {
     if (trn.type === TrnType.Transfer || !('amount' in trn))
       return undefined
 
-    const anchorDate = trn.date
-    const isFutureStart = civilDayStart(anchorDate) > todayCivilDayEpoch()
+    const anchorDate = civilDayStart(trn.date)
+    const today = todayCivilDayEpoch()
+    const isFuture = anchorDate > today
+    const isPast = anchorDate < today
+    const backfill = config.backfill ?? true
+    // Create occurrences now for a today start, or a past start when backfilling.
+    const materializeNow = !isFuture && (!isPast || backfill)
+
     const rule: RecurrenceItem = {
       amount: trn.amount,
       anchorDate,
@@ -153,9 +167,9 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
       endMode: config.endMode,
       freq: config.freq,
       interval: config.interval,
-      // Past/today start: the entered trn is the first occurrence, so generation resumes after
-      // it. Future start: nothing generated yet, so the anchor itself is still due.
-      lastGeneratedDate: isFutureStart ? null : anchorDate,
+      // Future / materialize-now: null so the anchor (and range) generate. Past without backfill:
+      // today, so only future occurrences are ever created.
+      lastGeneratedDate: (isFuture || materializeNow) ? null : today,
       monthLastDay: config.monthLastDay ?? false,
       skipDates: [],
       status: 'active',
@@ -165,11 +179,17 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     }
 
     const ruleId = saveRecurrence(rule)
-    if (!isFutureStart) {
-      // Persist the entered trn under the deterministic id, linked to the rule.
-      trnsStore.saveTrn({ id: occurrenceTrnId(ruleId, anchorDate), values: { ...trn, recurrenceId: ruleId } })
+
+    if (materializeNow) {
+      // Create the anchor and, for a backfilled past start, every occurrence through today.
+      const days = occurrencesInRange(rule, { end: today, start: anchorDate })
+      const now = Date.now()
+      for (const day of days)
+        trnsStore.saveTrn({ id: occurrenceTrnId(ruleId, day), values: buildOccurrenceTrn(rule, ruleId, day, now) })
+      if (days.length)
+        writeRecurrence(ruleId, { ...rule, lastGeneratedDate: days[days.length - 1]! })
     }
-    // Fill any further due occurrences if the anchor is in the past (autoCreate).
+    // Keep ongoing catch-up going for future auto-create occurrences.
     scheduleCatchUp()
     return ruleId
   }

@@ -369,6 +369,9 @@ export default {
     form: {
       amount: 'Amount',
       autoCreate: 'Create automatically (off = confirm each time)',
+      backfill: 'Create past payments',
+      backfillOffHint: 'Only track this subscription from its next payment - no past transactions.',
+      backfillOnHint: 'Creates every payment from the start date up to today.',
       currentNext: 'now:',
       effectiveFrom: 'From',
       ends: 'Ends',
@@ -382,6 +385,7 @@ export default {
       priceHistory: 'Price history',
       repeat: 'Repeat',
       save: 'Save',
+      startDate: 'Start date',
     },
     freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
     help: { open: 'How recurring works' },

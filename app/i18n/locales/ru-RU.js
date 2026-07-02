@@ -369,6 +369,9 @@ export default {
     form: {
       amount: 'Сумма',
       autoCreate: 'Создавать автоматически (выкл = подтверждать каждый раз)',
+      backfill: 'Создать прошлые платежи',
+      backfillOffHint: 'Отслеживать подписку только со следующего платежа - без прошлых операций.',
+      backfillOnHint: 'Создаст все платежи с даты начала по сегодня.',
       currentNext: 'сейчас:',
       effectiveFrom: 'С даты',
       ends: 'Окончание',
@@ -382,6 +385,7 @@ export default {
       priceHistory: 'История цены',
       repeat: 'Повтор',
       save: 'Сохранить',
+      startDate: 'Дата начала',
     },
     freq: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
     help: { open: 'Как работают повторения' },

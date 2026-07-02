@@ -29,6 +29,7 @@ async function onClickSubmit() {
   if (rep.enabled && trnFormData.values.type !== TrnType.Transfer) {
     const config = {
       autoCreate: rep.autoCreate,
+      backfill: rep.backfill,
       endCount: rep.endMode === 'count' ? rep.endCount : null,
       endDate: rep.endMode === 'date' ? rep.endDate : null,
       endMode: rep.endMode,

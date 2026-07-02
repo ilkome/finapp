@@ -56,9 +56,12 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     description: false,
   })
 
-  // "Repeat" toggle: turns the trn being entered into a recurrence (plans/recurrences.md §9).
+  // "Repeat" toggle: turns the trn being entered into a recurrence (plans/recurrences.md §9). The
+  // subscription start date is the trn's own date; `backfill` decides whether a PAST start also
+  // creates every occurrence up to today.
   type RepeatState = {
     autoCreate: boolean
+    backfill: boolean
     enabled: boolean
     endCount: number | null
     endDate: number | null
@@ -68,7 +71,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     monthLastDay: boolean
   }
   function defaultRepeat(): RepeatState {
-    return { autoCreate: true, enabled: false, endCount: null, endDate: null, endMode: 'never', freq: 'month', interval: 1, monthLastDay: false }
+    return { autoCreate: true, backfill: true, enabled: false, endCount: null, endDate: null, endMode: 'never', freq: 'month', interval: 1, monthLastDay: false }
   }
   const repeat = ref<RepeatState>(defaultRepeat())
 
