@@ -206,7 +206,6 @@ export default defineNuxtConfig({
     },
     registerType: 'autoUpdate',
     workbox: {
-      importScripts: ['/sw-push.js'],
       globIgnores: ['**/200*', '**/404*'],
       // The wa-sqlite WASM must be precached or the offline-first start breaks in prod; it sits
       // just over Workbox's 2 MiB default cap (hence the raised limit below), which would otherwise
@@ -217,6 +216,7 @@ export default defineNuxtConfig({
       // The manifestTransforms guard below fails the build if the precache entry ever stops matching
       // (e.g. an upstream rename), so this never regresses to a broken offline start unnoticed.
       globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}', '**/wa-sqlite-async.*.wasm'],
+      importScripts: ['/sw-push.js'],
       manifestTransforms: [(entries) => {
         const hasWasm = entries.some(e => /wa-sqlite-async\..*\.wasm$/.test(e.url))
         if (!hasWasm)

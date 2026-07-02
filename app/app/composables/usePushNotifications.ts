@@ -1,4 +1,4 @@
-import { useSupabaseAuth, useSupabase } from '~/composables/useSupabase'
+import { useSupabase, useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('push')
@@ -22,9 +22,9 @@ export function usePushNotifications() {
 
   const isSupported = computed(() =>
     import.meta.client
-    && 'serviceWorker' in navigator
-    && 'PushManager' in window
-    && 'Notification' in window,
+      && 'serviceWorker' in navigator
+      && 'PushManager' in window
+      && 'Notification' in window,
   )
 
   // iOS only delivers Web Push to a PWA installed to the home screen.
@@ -33,9 +33,9 @@ export function usePushNotifications() {
   )
   const isStandalone = computed(() =>
     import.meta.client
-    && (window.matchMedia('(display-mode: standalone)').matches
+      && (window.matchMedia('(display-mode: standalone)').matches
       // iOS Safari exposes a non-standard standalone flag.
-      || (window.navigator as { standalone?: boolean }).standalone === true),
+        || (window.navigator as { standalone?: boolean }).standalone === true),
   )
   const needsInstallForIos = computed(() => isIos.value && !isStandalone.value)
 
@@ -71,8 +71,8 @@ export function usePushNotifications() {
 
       const reg = await navigator.serviceWorker.ready
       const sub = await reg.pushManager.subscribe({
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey) as BufferSource,
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
       })
 
       const json = sub.toJSON()
@@ -80,13 +80,13 @@ export function usePushNotifications() {
       const { error } = await supabase
         .from('push_subscriptions')
         .upsert({
-          userId: uid.value,
+          auth: json.keys?.auth,
+          createdAt: now,
           endpoint: sub.endpoint,
           p256dh: json.keys?.p256dh,
-          auth: json.keys?.auth,
-          userAgent: navigator.userAgent,
-          createdAt: now,
           updatedAt: now,
+          userAgent: navigator.userAgent,
+          userId: uid.value,
         }, { onConflict: 'endpoint' })
 
       if (error) {
@@ -131,11 +131,11 @@ export function usePushNotifications() {
   }
 
   return {
-    isSupported,
-    isSubscribed,
     isBusy,
-    permission,
+    isSubscribed,
+    isSupported,
     needsInstallForIos,
+    permission,
     refresh,
     subscribe,
     unsubscribe,

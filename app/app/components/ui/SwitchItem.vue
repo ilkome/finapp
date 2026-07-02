@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
+  busy?: boolean
   checkboxValue: boolean
   title: string
-  busy?: boolean
 }>()
 
 const emit = defineEmits<{
