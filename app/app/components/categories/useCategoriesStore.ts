@@ -7,7 +7,7 @@ import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isSystemCategoryId } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -63,8 +63,19 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const trnsStore = useTrnsStore()
   const { isDemo } = useDemo()
   const { uid } = useSupabaseAuth()
+  const nuxtApp = useNuxtApp()
 
   const items = shallowRef<Categories>({ adjustment, transfer })
+
+  // Localized display names for the synthetic system categories. Set via $i18n
+  // (never useI18n() here: outside setup it throws vue-i18n code 26) and refreshed
+  // on locale change so the name follows the app language everywhere category.name
+  // is rendered (list, search, stat grouping, trns list).
+  watch(() => nuxtApp.$i18n.locale.value, () => {
+    adjustment.name = nuxtApp.$i18n.t('trnForm.adjustmentTitle')
+    transfer.name = nuxtApp.$i18n.t('trnForm.transferTitle')
+    items.value = { ...items.value }
+  }, { immediate: true })
   const hasItems = computed(() =>
     Object.keys(items.value).some(id => id !== 'transfer' && id !== 'adjustment'),
   )
@@ -177,7 +188,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   })
 
   const categoriesIdsForTrnValues = computed<CategoryId[]>(() =>
-    transactibleIds.value.filter(id => id !== 'transfer'),
+    transactibleIds.value.filter(id => !isSystemCategoryId(id)),
   )
 
   const debouncedPersist = createDebouncedPersist<Categories>(STORAGE_KEYS.categories)

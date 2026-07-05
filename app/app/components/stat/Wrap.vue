@@ -40,12 +40,12 @@ const datedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const expenseTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   trnsIds: datedTrnsIds.value,
-  trnsTypes: [TrnType.Expense, TrnType.Transfer],
+  trnsTypes: [TrnType.Expense],
 }))
 
 const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   trnsIds: datedTrnsIds.value,
-  trnsTypes: [TrnType.Income, TrnType.Transfer],
+  trnsTypes: [TrnType.Income],
 }))
 </script>
 

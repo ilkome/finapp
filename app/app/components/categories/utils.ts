@@ -1,5 +1,15 @@
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
+/**
+ * System categories are synthetic (not real user rows): 'transfer' holds wallet
+ * transfers, 'adjustment' holds balance corrections. Their transactions are kept
+ * out of category lists, quick selectors and statistics; they surface only in the
+ * transactions list under their own tabs.
+ */
+export function isSystemCategoryId(id?: CategoryId | null): boolean {
+  return id === 'transfer' || id === 'adjustment'
+}
+
 export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId[]) {
   if (!items)
     return []

@@ -3,7 +3,7 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, IntervalData, SeriesSlug } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
+import { getParentCategoryIdOrUndefined, isSystemCategoryId } from '~/components/categories/utils'
 
 /** Neutral grey used for the aggregated "Other" slice/series. */
 const OTHER_SLICE_COLOR = 'var(--ui-text-dimmed)'
@@ -62,8 +62,8 @@ function resolveCategoryId(
 /**
  * Single source of truth for category breakdown numbers.
  * Buckets transactions per interval by display category, then sums each
- * category's total across the whole range. Transfers and out-of-filter
- * categories are excluded. Both the bar/line series and the pie slices are
+ * category's total across the whole range. System categories (transfer,
+ * adjustment) and out-of-filter categories are excluded. Both the bar/line series and the pie slices are
  * derived from this so their numbers always agree.
  */
 export function aggregateCategoryTotals({
@@ -82,7 +82,7 @@ export function aggregateCategoryTotals({
     const bucket: Record<CategoryId, TrnId[]> = {}
     for (const trnId of interval.trnsIds) {
       const rawCategoryId = trnsItems[trnId]?.categoryId
-      if (!rawCategoryId || rawCategoryId === 'transfer')
+      if (!rawCategoryId || isSystemCategoryId(rawCategoryId))
         continue
       if (filterSet && !filterSet.has(rawCategoryId))
         continue
