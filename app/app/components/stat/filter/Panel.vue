@@ -138,7 +138,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
 </script>
 
 <template>
-  <div class="grid h-full max-h-[75dvh] min-h-0 w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden">
+  <div class="grid max-h-[75dvh] min-h-[50dvh] w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden">
     <div class="flex items-center gap-2 px-3 py-2">
       <input
         v-model="search"

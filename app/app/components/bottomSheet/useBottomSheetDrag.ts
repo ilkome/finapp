@@ -129,13 +129,27 @@ export function useBottomSheetDrag({
     }
   })
 
+  function firstVisibleScroller(root: HTMLElement | null | undefined): HTMLElement | null {
+    const nodes = root?.querySelectorAll<HTMLElement>('.scrollerBlock')
+    for (const el of nodes ?? []) {
+      if (el.offsetParent !== null)
+        return el
+    }
+    return null
+  }
+
   function contentHasScroll(event: Event): boolean {
-    const swiperSlide = drag.value?.querySelector('.swiper-slide-active')
+    // A swiper keeps `swiper-slide-active` on its active slide even when the
+    // whole swiper is display:none (e.g. hidden behind search results). Skip a
+    // hidden slide so we test the scroller that's actually on screen, not the
+    // stale one whose scrollTop is pinned to 0.
+    const active = drag.value?.querySelector('.swiper-slide-active')
+    const swiperSlide = active instanceof HTMLElement && active.offsetParent !== null ? active : null
     const scrollerInSlide = swiperSlide?.querySelector('.scrollerBlock')
     if (scrollerInSlide)
       return scrollerInSlide.scrollTop > 0 && event.type.includes('touch')
 
-    const scroller = drag.value?.querySelector('.scrollerBlock')
+    const scroller = firstVisibleScroller(drag.value)
     if (!swiperSlide && scroller)
       return scroller.scrollTop > 0 && event.type.includes('touch')
 
