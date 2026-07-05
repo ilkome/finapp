@@ -113,15 +113,17 @@ onMounted(async () => {
     initialSlide: 0,
     longSwipesMs: 60,
     longSwipesRatio: 0.1,
-    // Recalculate widths when the bottom sheet finishes animating in.
-    observeParents: true,
-    observer: true,
     on: {
       slideChange: sw => activeTabIdx.value = sw.activeIndex,
     },
     shortSwipes: false,
     slidesPerView: 1,
   })
+  // No `observer`/`observeParents`: the bottom sheet mutates the `transform` of
+  // an ancestor `.drag` on every open/drag frame, which a Swiper observer would
+  // answer with an update() each frame - janky slide switches plus disrupted
+  // in-sheet scrolling. Recalc once after the open animation settles instead.
+  requestAnimationFrame(() => sliderObj.value?.update())
 })
 
 // Swiper measures 0 while hidden behind search results; refresh on return.
