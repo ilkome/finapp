@@ -15,6 +15,7 @@ const isOpen = ref(false)
   <BottomSheetOrDropdown
     :title="props.title"
     :isOpen="isOpen"
+    :snapPoints="[0.3, 0.9]"
     isShowCloseBtn
     @openModal="isOpen = true"
     @closeModal="isOpen = false"
@@ -44,8 +45,14 @@ const isOpen = ref(false)
       </UTooltip>
     </template>
 
-    <template #custom="{ close }">
-      <div class="grid h-full max-h-[60dvh] grid-rows-[1fr_auto] overflow-hidden">
+    <template #custom="{ close, isExpanded }">
+      <div
+        class="grid grid-rows-[1fr_auto] overflow-hidden"
+        :class="[
+          isExpanded === undefined ? 'h-full max-h-[60dvh]' : 'h-full',
+          { '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': isExpanded === false },
+        ]"
+      >
         <slot :close="close" />
 
         <div class="px-3 py-2">

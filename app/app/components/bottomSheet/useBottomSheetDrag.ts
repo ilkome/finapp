@@ -81,6 +81,11 @@ export function useBottomSheetDrag({
   const lastMoveY = ref(0)
   const lastMoveT = ref(0)
   const velocity = ref(0)
+  // Resting translateY of the detent the current gesture began from, and whether
+  // that was the expanded detent - both frozen at drag start so mid-gesture
+  // crossings don't flip scroll<->drag arbitration.
+  const dragStartOffset = ref(0)
+  const startedExpanded = ref(false)
 
   const detentMode = computed(() => {
     const points = snapPoints?.value
@@ -253,6 +258,11 @@ export function useBottomSheetDrag({
         return
       }
 
+      if (detentMode.value) {
+        dragStartOffset.value = -initialY.value
+        startedExpanded.value = dragStartOffset.value <= EXPANDED_EPS
+      }
+
       clientY.value = getClientY(event)
       initialY.value = clientY.value + initialY.value
       isDragging.value = true
@@ -265,9 +275,35 @@ export function useBottomSheetDrag({
     }
   }
 
+  function sampleVelocity(y: number) {
+    const now = performance.now()
+    const dt = now - lastMoveT.value
+    if (dt > 0)
+      velocity.value = Math.max(-5, Math.min(5, (y - lastMoveY.value) / dt))
+    lastMoveY.value = y
+    lastMoveT.value = now
+  }
+
   function onDragging(event: Event): void {
     if (disabled.value || !isDragging.value)
       return
+
+    if (detentMode.value) {
+      const y = getClientY(event)
+      // From the expanded detent the inner list owns vertical scrolling: hand off
+      // as soon as the finger moves up or the list is already scrolled. Only a
+      // downward drag at the top edge stays with the sheet (to dismiss).
+      if (startedExpanded.value && !isHandler.value
+        && (contentHasScroll(event) || y < clientY.value)) {
+        isDragging.value = false
+        initialY.value = 0
+        clientY.value = 0
+        return
+      }
+      clientY.value = y
+      sampleVelocity(y)
+      return
+    }
 
     if (contentHasScroll(event) && !isHandler.value) {
       isDragging.value = false
@@ -276,17 +312,8 @@ export function useBottomSheetDrag({
       return
     }
 
-    if (isDragging.value) {
+    if (isDragging.value)
       clientY.value = getClientY(event)
-      if (detentMode.value) {
-        const now = performance.now()
-        const dt = now - lastMoveT.value
-        if (dt > 0)
-          velocity.value = Math.max(-5, Math.min(5, (clientY.value - lastMoveY.value) / dt))
-        lastMoveY.value = clientY.value
-        lastMoveT.value = now
-      }
-    }
   }
 
   function snapToFraction(f: number) {
@@ -296,40 +323,29 @@ export function useBottomSheetDrag({
   }
 
   function snapOnDragEnd() {
-    // Detents by resting translateY, ascending: expanded (0) ... most collapsed.
-    const detents = detentFractions.value
-      .map(f => ({ f, offset: -restingInitialY(f) }))
-      .sort((a, b) => a.offset - b.offset)
-    const lowest = detents[detents.length - 1]!
     const current = Math.max(0, dragDistance.value)
+    const delta = current - dragStartOffset.value // + moved down, - moved up
     const flickDown = velocity.value > FLICK_VELOCITY
     const flickUp = velocity.value < -FLICK_VELOCITY
-    const EPS = 2
+    const threshold = settings.pixelsNeedToDragForClose
 
-    // Dismiss only when dragged well past the most-collapsed detent, or flicked
-    // down while already resting at/below it.
-    if (
-      current - lowest.offset > settings.pixelsNeedToDragForClose
-      || (flickDown && current >= lowest.offset - EPS)
-    ) {
+    // Downward always dismisses - no intermediate collapse on the way out.
+    if (flickDown || delta > threshold) {
       close()
       return
     }
 
-    // A flick moves one detent in its direction; otherwise snap to the nearest.
-    let target
-    if (flickDown) {
-      target = detents.find(d => d.offset > current + EPS) ?? lowest
-    }
-    else if (flickUp) {
-      target = [...detents].reverse().find(d => d.offset < current - EPS) ?? detents[0]!
-    }
-    else {
-      target = detents.reduce((best, d) =>
-        Math.abs(d.offset - current) < Math.abs(best.offset - current) ? d : best, detents[0]!)
+    // Upward from a collapsed detent expands to full.
+    if (flickUp || delta < -threshold) {
+      snapToFraction(expandedFraction.value)
+      return
     }
 
-    snapToFraction(target.f)
+    // Too small to commit: settle back onto the detent the gesture began from.
+    const startFraction = detentFractions.value.find(
+      f => Math.abs(-restingInitialY(f) - dragStartOffset.value) < 0.5,
+    ) ?? collapsedFraction.value
+    snapToFraction(startFraction)
   }
 
   function onDragEnd() {
