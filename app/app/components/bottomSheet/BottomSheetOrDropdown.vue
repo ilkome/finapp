@@ -5,6 +5,9 @@ const props = withDefaults(defineProps<{
   dragClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
+  // Detent snap points for the mobile bottom sheet; ignored by the desktop
+  // popover. See BottomSheet's `snapPoints`.
+  snapPoints?: number[]
   title?: string
 }>(), {
   align: 'start',
@@ -68,9 +71,10 @@ const open = ref(false)
         isShow
         :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
         :dragStyle="props.bottomSheetStyle"
+        :snapPoints="props.snapPoints"
         @closed="emit('closeModal')"
       >
-        <template #default="{ close }">
+        <template #default="{ close, isExpanded }">
           <div class="bottomSheetContent">
             <UiTitleModal v-if="props.title">
               {{ props.title }}
@@ -80,13 +84,14 @@ const open = ref(false)
               v-if="$slots.content"
               class="bottomSheetContentInside scrollerBlock"
             >
-              <slot name="content" :close />
+              <slot name="content" :close :isExpanded />
             </div>
 
             <slot
               v-if="$slots.custom"
               name="custom"
               :close
+              :isExpanded
             />
           </div>
         </template>

@@ -15,7 +15,17 @@ type UseBottomSheetDragParams = {
     pixelOffsetToStartClosing: number
     pixelsNeedToDragForClose: number
   }
+  // Ascending viewport-height fractions (0,1]; last = expanded/rendered height,
+  // earlier entries are collapsed detents. Absent => classic single-state sheet.
+  snapPoints?: Ref<number[] | undefined>
+  windowHeight: Ref<number>
 }
+
+// Finger speed (px/ms) past which a flick overrides position-based snapping.
+const FLICK_VELOCITY = 0.6
+// Distance from the resting collapsed offset within which the sheet reads as
+// fully expanded, so inner scrolling takes over instead of sheet drag.
+const EXPANDED_EPS = 1
 
 function getClientY(event: Event): number {
   return 'touches' in event
@@ -51,6 +61,8 @@ export function useBottomSheetDrag({
   emit,
   handlerRef,
   settings,
+  snapPoints,
+  windowHeight,
 }: UseBottomSheetDragParams) {
   const initialY = ref(0)
   const clientY = ref(0)
@@ -65,9 +77,43 @@ export function useBottomSheetDrag({
 
   const dragDistance = computed(() => clientY.value - initialY.value)
 
-  const dragOffset = computed(() =>
-    disabled.value || isHandler.value ? 0 : settings.pixelOffsetToStartClosing,
+  // Finger velocity, sampled between drag frames; only read in detent mode.
+  const lastMoveY = ref(0)
+  const lastMoveT = ref(0)
+  const velocity = ref(0)
+
+  const detentMode = computed(() => {
+    const points = snapPoints?.value
+    return (
+      Array.isArray(points)
+      && points.length >= 2
+      && points.every(f => typeof f === 'number' && f > 0 && f <= 1)
+    )
+  })
+
+  const detentFractions = computed(() => (detentMode.value ? snapPoints!.value! : []))
+  const expandedFraction = computed(() =>
+    detentFractions.value[detentFractions.value.length - 1] ?? 1,
   )
+  const collapsedFraction = computed(() => detentFractions.value[0] ?? 1)
+
+  // A detent is a resting translateY offset that slides the fixed-height,
+  // bottom-anchored `.drag` partly below the screen. To show fraction `f` of the
+  // viewport, translate down by (expanded - f) * windowHeight; since at rest
+  // clientY=0 and dragDistance = -initialY, that offset is the resting initialY.
+  function restingInitialY(f: number): number {
+    return -((expandedFraction.value - f) * windowHeight.value)
+  }
+
+  const isExpanded = computed(() =>
+    detentMode.value && Math.abs(dragDistance.value) <= EXPANDED_EPS,
+  )
+
+  const dragOffset = computed(() => {
+    if (detentMode.value)
+      return 0
+    return disabled.value || isHandler.value ? 0 : settings.pixelOffsetToStartClosing
+  })
 
   watch(dragDistance, (current, prev) => {
     direction.value = current > prev ? 'down' : 'up'
@@ -90,6 +136,19 @@ export function useBottomSheetDrag({
   )
 
   const overlayStyles = computed(() => {
+    // Detent mode: keep the backdrop fully dim across the collapsed<->expanded
+    // range; fade only when dragged below the collapsed detent toward dismissal.
+    if (detentMode.value) {
+      const collapsedOffset = -restingInitialY(collapsedFraction.value)
+      const closedOffset
+        = (drag.value?.clientHeight ?? 0) + (handlerRef.value?.clientHeight ?? 0)
+      const d = Math.max(0, dragDistance.value)
+      if (d <= collapsedOffset)
+        return { opacity: 1 }
+      const span = Math.max(1, closedOffset - collapsedOffset)
+      return { opacity: Math.min(1, Math.max(0, 1 - (d - collapsedOffset) / span)) }
+    }
+
     if (dragDistance.value <= dragOffset.value)
       return
 
@@ -108,10 +167,26 @@ export function useBottomSheetDrag({
 
   const dragStyles = computed(() => {
     if (!opened.value) {
+      // Detent sheets rest partly down, so start fully below the fold and slide
+      // up on open; the plain 30px offset would make them drop in from the top.
+      const closedTransform = detentMode.value
+        ? `translateY(${expandedFraction.value * windowHeight.value}px)`
+        : 'translateY(30px)'
       return {
         ...dragStyle.value,
         opacity: 0,
-        transform: 'translateY(30px)',
+        transform: closedTransform,
+      }
+    }
+
+    // Detent mode follows the finger 1:1 but never lifts above the expanded
+    // detent (translateY < 0); an over-drag up hands off to inner scroll.
+    if (detentMode.value) {
+      const clamped = Math.max(0, dragDistance.value)
+      return {
+        ...dragStyle.value,
+        opacity: 1,
+        transform: clamped === 0 ? '' : `translateY(${clamped}px)`,
       }
     }
 
@@ -139,6 +214,11 @@ export function useBottomSheetDrag({
   }
 
   function contentHasScroll(event: Event): boolean {
+    // Below the expanded detent the sheet owns the drag (up-drag expands it),
+    // so never hand off to inner scroll until fully expanded.
+    if (detentMode.value && !isExpanded.value)
+      return false
+
     // A swiper keeps `swiper-slide-active` on its active slide even when the
     // whole swiper is display:none (e.g. hidden behind search results). Skip a
     // hidden slide so we test the scroller that's actually on screen, not the
@@ -176,6 +256,12 @@ export function useBottomSheetDrag({
       clientY.value = getClientY(event)
       initialY.value = clientY.value + initialY.value
       isDragging.value = true
+
+      if (detentMode.value) {
+        lastMoveY.value = clientY.value
+        lastMoveT.value = performance.now()
+        velocity.value = 0
+      }
     }
   }
 
@@ -190,13 +276,70 @@ export function useBottomSheetDrag({
       return
     }
 
-    if (isDragging.value)
+    if (isDragging.value) {
       clientY.value = getClientY(event)
+      if (detentMode.value) {
+        const now = performance.now()
+        const dt = now - lastMoveT.value
+        if (dt > 0)
+          velocity.value = Math.max(-5, Math.min(5, (clientY.value - lastMoveY.value) / dt))
+        lastMoveY.value = clientY.value
+        lastMoveT.value = now
+      }
+    }
+  }
+
+  function snapToFraction(f: number) {
+    resetDrag()
+    opened.value = true
+    initialY.value = restingInitialY(f)
+  }
+
+  function snapOnDragEnd() {
+    // Detents by resting translateY, ascending: expanded (0) ... most collapsed.
+    const detents = detentFractions.value
+      .map(f => ({ f, offset: -restingInitialY(f) }))
+      .sort((a, b) => a.offset - b.offset)
+    const lowest = detents[detents.length - 1]!
+    const current = Math.max(0, dragDistance.value)
+    const flickDown = velocity.value > FLICK_VELOCITY
+    const flickUp = velocity.value < -FLICK_VELOCITY
+    const EPS = 2
+
+    // Dismiss only when dragged well past the most-collapsed detent, or flicked
+    // down while already resting at/below it.
+    if (
+      current - lowest.offset > settings.pixelsNeedToDragForClose
+      || (flickDown && current >= lowest.offset - EPS)
+    ) {
+      close()
+      return
+    }
+
+    // A flick moves one detent in its direction; otherwise snap to the nearest.
+    let target
+    if (flickDown) {
+      target = detents.find(d => d.offset > current + EPS) ?? lowest
+    }
+    else if (flickUp) {
+      target = [...detents].reverse().find(d => d.offset < current - EPS) ?? detents[0]!
+    }
+    else {
+      target = detents.reduce((best, d) =>
+        Math.abs(d.offset - current) < Math.abs(best.offset - current) ? d : best, detents[0]!)
+    }
+
+    snapToFraction(target.f)
   }
 
   function onDragEnd() {
     if (disabled.value || !isDragging.value)
       return
+
+    if (detentMode.value) {
+      snapOnDragEnd()
+      return
+    }
 
     if (shouldClose(dragDistance.value, settings.pixelsNeedToDragForClose, direction.value))
       close()
@@ -223,7 +366,7 @@ export function useBottomSheetDrag({
   function open() {
     resetDrag()
     opened.value = true
-    initialY.value = 0
+    initialY.value = detentMode.value ? restingInitialY(collapsedFraction.value) : 0
   }
 
   let stopTransitionListener: (() => void) | null = null
@@ -288,9 +431,11 @@ export function useBottomSheetDrag({
 
   return {
     close,
+    detentMode,
     dragStyles,
     init,
     isDragging,
+    isExpanded,
     opened,
     overflowClasses: computed(() => ({
       'transition-opacity duration-100': !isDragging.value && opened.value,

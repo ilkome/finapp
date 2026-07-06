@@ -10,6 +10,13 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 import 'swiper/css'
 
+const props = defineProps<{
+  // Detent sheet state: `false` = collapsed (suppress inner scroll so an up-drag
+  // expands the sheet), `true` = expanded (fill height, scroll normally).
+  // `undefined` = desktop popover (no detents): keep intrinsic min/max height.
+  isExpanded?: boolean
+}>()
+
 const emit = defineEmits<{
   close: []
 }>()
@@ -138,7 +145,13 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
 </script>
 
 <template>
-  <div class="grid max-h-[75dvh] min-h-[50dvh] w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden">
+  <div
+    class="grid w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden"
+    :class="[
+      props.isExpanded === undefined ? 'max-h-[75dvh] min-h-[50dvh]' : 'h-full',
+      { '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': props.isExpanded === false },
+    ]"
+  >
     <div class="flex items-center gap-2 px-3 py-2">
       <input
         v-model="search"

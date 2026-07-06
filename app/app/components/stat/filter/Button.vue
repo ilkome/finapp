@@ -10,6 +10,7 @@ const isOpen = ref(false)
 <template>
   <BottomSheetOrDropdown
     :isOpen="isOpen"
+    :snapPoints="[0.3, 0.9]"
     :title="t('base.filters')"
     isShowCloseBtn
     @closeModal="isOpen = false"
@@ -30,8 +31,8 @@ const isOpen = ref(false)
       </UTooltip>
     </template>
 
-    <template #custom="{ close }">
-      <StatFilterPanel @close="close" />
+    <template #custom="{ close, isExpanded }">
+      <StatFilterPanel :isExpanded="isExpanded" @close="close" />
     </template>
   </BottomSheetOrDropdown>
 </template>

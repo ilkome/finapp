@@ -7,6 +7,10 @@ const props = defineProps<{
   dragClassesCustom?: string
   dragStyle?: Record<string, string>
   isShow?: boolean
+  // Ascending viewport-height fractions (0,1]; last = expanded/rendered height,
+  // earlier entries are collapsed detents. Enables the iOS/Android-style sheet
+  // that opens partway and expands on drag. Absent => classic single-state sheet.
+  snapPoints?: number[]
 }>()
 
 const emit = defineEmits<{
@@ -27,9 +31,11 @@ const { height: windowHeight } = useWindowSize()
 
 const {
   close,
+  detentMode,
   dragStyles,
   init,
   isDragging,
+  isExpanded,
   opened,
   overflowClasses,
   overlayStyles,
@@ -42,6 +48,17 @@ const {
   emit,
   handlerRef,
   settings,
+  snapPoints: toRef(() => props.snapPoints),
+  windowHeight,
+})
+
+// In detent mode the sheet renders at a fixed height (the last/expanded snap
+// point) so collapsed offsets are deterministic; detents slide it via transform.
+const detentStyle = computed(() => {
+  const points = props.snapPoints
+  if (!Array.isArray(points) || points.length < 2)
+    return null
+  return { height: `${points[points.length - 1]! * 100}dvh` }
 })
 
 const isBodyLocked = useBodyScrollLock(false)
@@ -73,10 +90,12 @@ onBeforeUnmount(() => {
 
 const dragClasses = computed(() => [
   {
+    'duration-100': !isDragging.value && opened.value && !detentMode.value,
+    // Detents travel further than a close nudge, so ease them a touch slower.
+    'duration-300': !isDragging.value && opened.value && detentMode.value,
     'pointer-events-none': isDragging.value && dragStyles.value.transform,
     'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
-    'transition-opacity transition-transform duration-100':
-      !isDragging.value && opened.value,
+    'transition-opacity transition-transform': !isDragging.value && opened.value,
   },
   props.dragClassesCustom,
 ])
@@ -98,7 +117,7 @@ const dragClasses = computed(() => [
     <div
       ref="drag"
       :class="dragClasses"
-      :style="dragStyles"
+      :style="[dragStyles, detentStyle]"
       class="drag pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
       @click.stop=""
     >
@@ -109,7 +128,7 @@ const dragClasses = computed(() => [
         </slot>
       </div>
 
-      <slot :close="close" />
+      <slot :close="close" :isExpanded="isExpanded" />
     </div>
   </div>
 </template>
