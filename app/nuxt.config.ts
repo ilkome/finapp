@@ -16,23 +16,57 @@ export default defineNuxtConfig({
         { href: 'https://finapp.ilko.me/', rel: 'canonical' },
       ],
       meta: [
-        { content: 'Open-source personal finance app. Track expenses, manage wallets, and analyze your spending. Works offline, syncs across devices.', name: 'description' },
+        {
+          content:
+            'Open-source personal finance app. Track expenses, manage wallets, and analyze your spending. Works offline, syncs across devices.',
+          name: 'description',
+        },
         { content: 'Personal Finance Manager', property: 'og:title' },
-        { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', property: 'og:description' },
+        {
+          content:
+            'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.',
+          property: 'og:description',
+        },
         { content: 'website', property: 'og:type' },
         { content: 'Finapp', property: 'og:site_name' },
         { content: 'https://finapp.ilko.me/', property: 'og:url' },
-        { content: 'https://finapp.ilko.me/og-image.png', property: 'og:image' },
+        {
+          content: 'https://finapp.ilko.me/og-image.png',
+          property: 'og:image',
+        },
         { content: '1200', property: 'og:image:width' },
         { content: '630', property: 'og:image:height' },
         { content: 'image/png', property: 'og:image:type' },
-        { content: 'Finapp dashboard with expense and income analytics', property: 'og:image:alt' },
+        {
+          content: 'Finapp dashboard with expense and income analytics',
+          property: 'og:image:alt',
+        },
         { content: 'en_US', property: 'og:locale' },
         { content: 'summary_large_image', name: 'twitter:card' },
         { content: 'Personal Finance Manager', name: 'twitter:title' },
-        { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', name: 'twitter:description' },
-        { content: 'https://finapp.ilko.me/og-image.png', name: 'twitter:image' },
-        { content: 'Finapp dashboard with expense and income analytics', name: 'twitter:image:alt' },
+        {
+          content:
+            'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.',
+          name: 'twitter:description',
+        },
+        {
+          content: 'https://finapp.ilko.me/og-image.png',
+          name: 'twitter:image',
+        },
+        {
+          content: 'Finapp dashboard with expense and income analytics',
+          name: 'twitter:image:alt',
+        },
+      ],
+      // Paint the root canvas in the system theme before CSS/JS load, so the SPA start is a
+      // solid themed screen (no skeleton, no white flash) until Vue mounts. Colors match the
+      // app background (light / dark). Persisted color mode is not readable before JS, so this
+      // follows prefers-color-scheme.
+      style: [
+        {
+          innerHTML:
+            'html{background:#fbfbfb;color-scheme:light dark}@media(prefers-color-scheme:dark){html{background:#171717}}',
+        },
       ],
       title: 'Personal Finance Manager',
     },
@@ -101,7 +135,6 @@ export default defineNuxtConfig({
     clientBundle: {
       icons: [
         ...categoryIcons.flat(),
-        // Runtime iconify fetches pop in after first paint and shift layout.
         'hugeicons:archive-01',
         'hugeicons:bank',
         'hugeicons:calendar-03',
@@ -136,27 +169,6 @@ export default defineNuxtConfig({
   ],
 
   nitro: {
-    hooks: {
-      // Make the sizable entry Tailwind stylesheet non-render-blocking so the SPA loading
-      // skeleton (inline-styled) paints on HTML arrival instead of waiting for that CSS to
-      // download. The app itself renders only after its JS bundle executes - slower than the
-      // CSS fetch - so styles are in place by mount (no FOUC); <noscript> keeps it blocking
-      // when JS is off. Rewrites the statically generated HTML (index/200/404).
-      'prerender:generate': (route: { contents?: string, fileName?: string }) => {
-        if (typeof route.contents !== 'string' || !route.fileName?.endsWith('.html'))
-          return
-        route.contents = route.contents.replace(
-          /<link rel="stylesheet" href="([^"]+)"([^>]*)>/g,
-          (_m, href, rest) =>
-            `<link rel="stylesheet" href="${href}"${rest} media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${href}"${rest}></noscript>`,
-        )
-      },
-    },
-    // Flat prerender filenames (`dashboard.html`, not `dashboard/index.html`) so each route is
-    // precached under a key that a clean-URL navigation (`/dashboard`) resolves to via Workbox's
-    // default cleanURLs match. Defense-in-depth alongside navigateFallback below; the two together
-    // survived a silent regression where the subfolder-index default broke the installed PWA's
-    // offline start (start_url is /dashboard).
     prerender: {
       autoSubfolderIndex: false,
     },
@@ -176,38 +188,46 @@ export default defineNuxtConfig({
     manifest: {
       background_color: '#171717',
       display: 'standalone',
-      icons: [{
-        sizes: '192x192',
-        src: 'pwa-192x192.png',
-        type: 'image/png',
-      }, {
-        sizes: '512x512',
-        src: 'pwa-512x512.png',
-        type: 'image/png',
-      }, {
-        purpose: 'any',
-        sizes: '512x512',
-        src: 'pwa-512x512.png',
-        type: 'image/png',
-      }, {
-        purpose: 'maskable',
-        sizes: '192x192',
-        src: 'pwa-192x192.png',
-        type: 'image/png',
-      }],
+      icons: [
+        {
+          sizes: '192x192',
+          src: 'pwa-192x192.png',
+          type: 'image/png',
+        },
+        {
+          sizes: '512x512',
+          src: 'pwa-512x512.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'any',
+          sizes: '512x512',
+          src: 'pwa-512x512.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'maskable',
+          sizes: '192x192',
+          src: 'pwa-192x192.png',
+          type: 'image/png',
+        },
+      ],
       id: '/',
       name: 'Finapp',
-      screenshots: [{
-        form_factor: 'wide',
-        sizes: '1920x1080',
-        src: 'screenshot-desktop.png',
-        type: 'image/png',
-      }, {
-        form_factor: 'narrow',
-        sizes: '750x1334',
-        src: 'screenshot-mobile.png',
-        type: 'image/png',
-      }],
+      screenshots: [
+        {
+          form_factor: 'wide',
+          sizes: '1920x1080',
+          src: 'screenshot-desktop.png',
+          type: 'image/png',
+        },
+        {
+          form_factor: 'narrow',
+          sizes: '750x1334',
+          src: 'screenshot-mobile.png',
+          type: 'image/png',
+        },
+      ],
       short_name: 'Finapp',
       start_url: '/dashboard',
       theme_color: '#171717',
@@ -215,29 +235,25 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      // The wa-sqlite WASM must be precached or the offline-first start breaks in prod; it sits
-      // just over Workbox's 2 MiB default cap (hence the raised limit below), which would otherwise
-      // drop it silently. Only the variant the worker actually loads is precached: the async
-      // non-cipher build, dot-hash name (`wa-sqlite-async.<hash>.wasm`). The other emitted variants
-      // (sync builds, `mc-` cipher builds - used only with an encryptionKey, which db.ts does not set
-      // - and dash-hash duplicates) together would add several MB to every SW install.
-      // The manifestTransforms guard below fails the build if the precache entry ever stops matching
-      // (e.g. an upstream rename), so this never regresses to a broken offline start unnoticed.
-      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}', '**/wa-sqlite-async.*.wasm'],
+      globPatterns: [
+        '**/*.{js,json,css,html,png,svg,ico,woff2}',
+        '**/wa-sqlite-async.*.wasm',
+      ],
       importScripts: ['/sw-push.js'],
-      manifestTransforms: [(entries) => {
-        const hasWasm = entries.some(e => /wa-sqlite-async\..*\.wasm$/.test(e.url))
-        if (!hasWasm)
-          throw new Error('PWA precache manifest is missing the wa-sqlite WASM - offline-first start would break in prod. Check the wasm filename/glob in nuxt.config.ts.')
-        return { manifest: entries }
-      }],
+      manifestTransforms: [
+        (entries) => {
+          const hasWasm = entries.some(e =>
+            /wa-sqlite-async\..*\.wasm$/.test(e.url),
+          )
+          if (!hasWasm) {
+            throw new Error(
+              'PWA precache manifest is missing the wa-sqlite WASM - offline-first start would break in prod. Check the wasm filename/glob in nuxt.config.ts.',
+            )
+          }
+          return { manifest: entries }
+        },
+      ],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-      // Fall back to the precached app shell for any navigation that isn't itself a precached route.
-      // Must be '/index.html', not '/': createHandlerBoundToURL resolves the fallback against a
-      // precache KEY at SW startup, and the manifest only contains 'index.html' (there is no '/'
-      // entry unless the root is prerendered as a literal '/' file). Bound to '/', the handler never
-      // resolves and the SPA fallback silently does nothing - every non-root cold offline navigation
-      // then misses and fails.
       navigateFallback: '/index.html',
       runtimeCaching: [
         {
@@ -279,6 +295,10 @@ export default defineNuxtConfig({
       vapidPublicKey: process.env.VITE_VAPID_PUBLIC_KEY,
     },
   },
+
+  // No SPA loading template: show a plain themed screen (app.head style above) until Vue mounts
+  // instead of a skeleton that flickers for a moment before the real UI replaces it.
+  spaLoadingTemplate: false,
 
   ssr: false,
 
