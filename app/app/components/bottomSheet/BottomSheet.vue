@@ -7,9 +7,10 @@ const props = defineProps<{
   dragClassesCustom?: string
   dragStyle?: Record<string, string>
   isShow?: boolean
-  // Ascending viewport-height fractions (0,1]; last = expanded/rendered height,
-  // earlier entries are collapsed detents. Enables the iOS/Android-style sheet
-  // that opens partway and expands on drag. Absent => classic single-state sheet.
+  // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
+  // largest is the expanded/rendered height, the rest are collapsed detents.
+  // Enables the iOS/Android-style sheet that opens partway and expands on drag.
+  // Absent => classic single-state sheet.
   snapPoints?: number[]
 }>()
 
@@ -52,13 +53,16 @@ const {
   windowHeight,
 })
 
-// In detent mode the sheet renders at a fixed height (the last/expanded snap
+// In detent mode the sheet renders at a fixed height (the largest/expanded snap
 // point) so collapsed offsets are deterministic; detents slide it via transform.
+// Snap points accept viewport fractions (<= 1) or absolute pixels (> 1).
 const detentStyle = computed(() => {
   const points = props.snapPoints
   if (!Array.isArray(points) || points.length < 2)
     return null
-  return { height: `${points[points.length - 1]! * 100}dvh` }
+  const wh = windowHeight.value || 1
+  const expanded = Math.min(1, Math.max(...points.map(v => (v > 1 ? v / wh : v))))
+  return { height: `${expanded * 100}dvh` }
 })
 
 const isBodyLocked = useBodyScrollLock(false)

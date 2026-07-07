@@ -15,8 +15,9 @@ type UseBottomSheetDragParams = {
     pixelOffsetToStartClosing: number
     pixelsNeedToDragForClose: number
   }
-  // Ascending viewport-height fractions (0,1]; last = expanded/rendered height,
-  // earlier entries are collapsed detents. Absent => classic single-state sheet.
+  // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
+  // largest is the expanded/rendered height, the rest are collapsed detents.
+  // Absent => classic single-state sheet.
   snapPoints?: Ref<number[] | undefined>
   windowHeight: Ref<number>
 }
@@ -92,11 +93,21 @@ export function useBottomSheetDrag({
     return (
       Array.isArray(points)
       && points.length >= 2
-      && points.every(f => typeof f === 'number' && f > 0 && f <= 1)
+      && points.every(f => typeof f === 'number' && f > 0)
     )
   })
 
-  const detentFractions = computed(() => (detentMode.value ? snapPoints!.value! : []))
+  // Snap points accept viewport fractions (<= 1) or absolute pixels (> 1),
+  // resolved to fractions of the current viewport, clamped and sorted ascending.
+  const detentFractions = computed(() => {
+    if (!detentMode.value)
+      return []
+    const wh = windowHeight.value || 1
+    return snapPoints!.value!
+      .map(v => (v > 1 ? v / wh : v))
+      .map(f => Math.min(1, Math.max(0.05, f)))
+      .sort((a, b) => a - b)
+  })
   const expandedFraction = computed(() =>
     detentFractions.value[detentFractions.value.length - 1] ?? 1,
   )

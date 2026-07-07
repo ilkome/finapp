@@ -10,7 +10,7 @@ const isOpen = ref(false)
 <template>
   <BottomSheetOrDropdown
     :isOpen="isOpen"
-    :snapPoints="[0.3, 0.9]"
+    :snapPoints="[400, 0.98]"
     :title="t('base.filters')"
     isShowCloseBtn
     @closeModal="isOpen = false"
