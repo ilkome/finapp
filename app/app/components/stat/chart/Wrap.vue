@@ -65,31 +65,34 @@ function onChangePeriod(period: Period) {
       </div>
     </div>
 
-    <div
-      v-if="isPie && isChartMountReady"
-      class="grid gap-4"
-      :class="{ '@sm/stat:grid-cols-2': props.pieGroups.length > 1 }"
-    >
-      <LazyStatChartPieView
-        v-for="group in props.pieGroups"
-        :key="group.type"
-        :pieData="group.pieData"
-        :showLegend="props.pieGroups.length === 1"
-        :typeLabel="t(`money.${group.type}`)"
-        @clickCategory="emit('clickCategory', $event)"
+    <!-- Reserve the chart height on this always-present box (min-h so the pie view can grow taller).
+         The height must live here, not on a v-else placeholder that the idle mount swaps out: the
+         chart is a lazy component, so between isChartMountReady flipping and its chunk resolving the
+         box would otherwise collapse for a frame and shift the whole page (CLS). -->
+    <div class="min-h-40 @3xl/stat:min-h-52">
+      <div
+        v-if="isPie && isChartMountReady"
+        class="grid gap-4"
+        :class="{ '@sm/stat:grid-cols-2': props.pieGroups.length > 1 }"
+      >
+        <LazyStatChartPieView
+          v-for="group in props.pieGroups"
+          :key="group.type"
+          :pieData="group.pieData"
+          :showLegend="props.pieGroups.length === 1"
+          :typeLabel="t(`money.${group.type}`)"
+          @clickCategory="emit('clickCategory', $event)"
+        />
+      </div>
+
+      <LazyStatChartView
+        v-else-if="isChartMountReady"
+        :chartType
+        :period="statDate.params.value.intervalsBy"
+        :series="props.series"
+        :xAxisLabels="props.xAxisLabels"
+        @click="onClickChart"
       />
     </div>
-
-    <LazyStatChartView
-      v-else-if="isChartMountReady"
-      :chartType
-      :period="statDate.params.value.intervalsBy"
-      :series="props.series"
-      :xAxisLabels="props.xAxisLabels"
-      @click="onClickChart"
-    />
-
-    <!-- Space-reserving placeholder: same height as the chart, so the idle mount doesn't shift layout. -->
-    <div v-else class="h-40 @3xl/stat:h-52" />
   </div>
 </template>
