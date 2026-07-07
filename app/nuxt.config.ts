@@ -152,6 +152,14 @@ export default defineNuxtConfig({
         )
       },
     },
+    // Flat prerender filenames (`dashboard.html`, not `dashboard/index.html`) so each route is
+    // precached under a key that a clean-URL navigation (`/dashboard`) resolves to via Workbox's
+    // default cleanURLs match. Defense-in-depth alongside navigateFallback below; the two together
+    // survived a silent regression where the subfolder-index default broke the installed PWA's
+    // offline start (start_url is /dashboard).
+    prerender: {
+      autoSubfolderIndex: false,
+    },
     preset: 'static',
   },
 
@@ -162,7 +170,7 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: false,
-      navigateFallback: '/',
+      navigateFallback: '/index.html',
       suppressWarnings: false,
     },
     manifest: {
@@ -224,7 +232,13 @@ export default defineNuxtConfig({
         return { manifest: entries }
       }],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-      navigateFallback: '/',
+      // Fall back to the precached app shell for any navigation that isn't itself a precached route.
+      // Must be '/index.html', not '/': createHandlerBoundToURL resolves the fallback against a
+      // precache KEY at SW startup, and the manifest only contains 'index.html' (there is no '/'
+      // entry unless the root is prerendered as a literal '/' file). Bound to '/', the handler never
+      // resolves and the SPA fallback silently does nothing - every non-root cold offline navigation
+      // then misses and fails.
+      navigateFallback: '/index.html',
       runtimeCaching: [
         {
           handler: 'CacheFirst',
