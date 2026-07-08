@@ -15,7 +15,7 @@ const isOpen = ref(false)
   <BottomSheetOrDropdown
     :title="props.title"
     :isOpen="isOpen"
-    :snapPoints="[400, 0.98]"
+    :snapPoints="[500, 0.98]"
     isShowCloseBtn
     @openModal="isOpen = true"
     @closeModal="isOpen = false"
