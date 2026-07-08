@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { useBodyScrollLock } from 'reka-ui'
 
+import { registerSheet } from '~/composables/useSheetHistory'
+
 import { useBottomSheetDrag } from './useBottomSheetDrag'
 
 const props = defineProps<{
   dragClassesCustom?: string
   dragStyle?: Record<string, string>
+  // Opt in to browser-Back-to-close: pushes a synthetic history entry while
+  // open so the Back gesture animate-closes this sheet. See useSheetHistory.
+  history?: boolean
   isShow?: boolean
   // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
   // largest is the expanded/rendered height, the rest are collapsed detents.
@@ -67,17 +72,34 @@ const detentStyle = computed(() => {
 
 const isBodyLocked = useBodyScrollLock(false)
 
+// Browser-Back-to-close wiring (opt-in via `history`). Register when visible,
+// unregister (consuming the synthetic history entry) when hidden. For nested
+// sheets `isShow` is static true and mount/unmount is the open/close signal, so
+// register runs via the immediate watch and cleanup via onBeforeUnmount.
+let unregisterHistory: (() => void) | null = null
+function registerHistory() {
+  if (!props.history || unregisterHistory)
+    return
+  unregisterHistory = registerSheet(() => close())
+}
+function deregisterHistory() {
+  unregisterHistory?.()
+  unregisterHistory = null
+}
+
 watch(
   () => props.isShow,
   (value) => {
     if (value) {
       isBodyLocked.value = true
       init()
+      registerHistory()
     }
 
     if (!value) {
       isBodyLocked.value = false
       removeEvents()
+      deregisterHistory()
     }
 
     if (!value && opened.value) {
@@ -90,6 +112,7 @@ watch(
 onBeforeUnmount(() => {
   isBodyLocked.value = false
   removeEvents()
+  deregisterHistory()
 })
 
 const dragClasses = computed(() => [

@@ -29,6 +29,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
     :isOpen="isShow"
     :title="props.title"
     dragClassesCustom="bottomSheetDragClassesCustom h-full"
+    history
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"

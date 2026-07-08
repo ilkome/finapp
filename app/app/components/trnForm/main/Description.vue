@@ -25,6 +25,7 @@ function onSave(close: () => void) {
     :title="t('trnForm.description.title')"
     class="shrink-0 !grow-0"
     dragClassesCustom="bottomSheetDragClassesCustom"
+    history
     isShowCloseBtn
     @closeModal="trnsFormStore.closeTrnFormModal('description')"
     @openModal="trnsFormStore.openTrnFormModal('description')"

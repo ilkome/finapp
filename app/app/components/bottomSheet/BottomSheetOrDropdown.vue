@@ -3,6 +3,9 @@ const props = withDefaults(defineProps<{
   align?: 'center' | 'end' | 'start'
   bottomSheetStyle?: Record<string, string>
   dragClassesCustom?: string
+  // Forward browser-Back-to-close to the mobile bottom sheet (see BottomSheet's
+  // `history`); ignored by the desktop popover.
+  history?: boolean
   isOpen?: boolean
   isShowCloseBtn?: boolean
   // Detent snap points for the mobile bottom sheet; ignored by the desktop
@@ -69,6 +72,7 @@ const open = ref(false)
       <BottomSheet
         v-if="props.isOpen"
         isShow
+        :history="props.history"
         :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
         :dragStyle="props.bottomSheetStyle"
         :snapPoints="props.snapPoints"
