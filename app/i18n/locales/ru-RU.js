@@ -394,6 +394,7 @@ export default {
     help: { open: 'Как работают повторения' },
     manual: 'подтверждение',
     next: 'далее',
+    partOfSeries: 'Часть регулярного платежа',
     pending: { title: 'Ожидают подтверждения' },
     reminders: { inDays: 'через {count} дн.', title: 'Скоро платёж', today: 'сегодня', tomorrow: 'завтра' },
     status: { active: 'Активные', cancelled: 'Отменённые', paused: 'На паузе' },

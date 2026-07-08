@@ -151,7 +151,11 @@ export const useTrnsStore = defineStore('trns', () => {
   function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
     // enteredAt is stamped once at creation and preserved across edits (audit/ordering only).
     const enteredAt = values.enteredAt ?? items.value?.[id]?.enteredAt ?? Date.now()
-    const valuesWithEditDate = { ...values, enteredAt, updatedAt: Date.now() }
+    // Preserve the recurrence link across edits: the trn form rebuilds values from scratch and
+    // does not carry recurrenceId, so a plain edit of an occurrence would otherwise orphan it
+    // from its rule (and let catch-up re-materialize a duplicate).
+    const recurrenceId = values.recurrenceId ?? items.value?.[id]?.recurrenceId
+    const valuesWithEditDate = { ...values, ...(recurrenceId ? { recurrenceId } : {}), enteredAt, updatedAt: Date.now() }
     const prev = items.value
 
     // Optimistic update (instant UI). In real mode the watch re-emits the same shape.

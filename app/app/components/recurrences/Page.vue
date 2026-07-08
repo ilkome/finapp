@@ -28,6 +28,22 @@ function openEdit(id: RecurrenceId) {
   editingId.value = id
 }
 
+// Deep link from the transaction form ("part of a recurring series"): ?edit=<ruleId> opens the
+// editor once the rule exists locally, then the query is cleared so a refresh does not reopen it.
+const route = useRoute()
+const router = useRouter()
+watch(
+  () => [route.query.edit, recurrencesStore.items] as const,
+  ([edit]) => {
+    const id = Array.isArray(edit) ? edit[0] : edit
+    if (id && recurrencesStore.items?.[id as RecurrenceId]) {
+      openEdit(id as RecurrenceId)
+      router.replace({ query: {} })
+    }
+  },
+  { immediate: true },
+)
+
 useHead({ title: t('recurrences.title') })
 
 // Manual (autoCreate=false) active rules with due, unrealized, unskipped occurrences.

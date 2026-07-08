@@ -394,6 +394,7 @@ export default {
     help: { open: 'How recurring works' },
     manual: 'confirm',
     next: 'next',
+    partOfSeries: 'Part of a recurring series',
     pending: { title: 'Pending to confirm' },
     reminders: { inDays: 'in {count} days', title: 'Upcoming payment', today: 'today', tomorrow: 'tomorrow' },
     status: { active: 'Active', cancelled: 'Cancelled', paused: 'Paused' },

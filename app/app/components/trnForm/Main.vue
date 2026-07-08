@@ -86,6 +86,7 @@ const canRepeat = computed(() => {
       />
 
       <TrnFormRepeat v-if="canRepeat" />
+      <TrnFormRecurrenceLink v-else-if="trnsFormStore.values.trnId" />
 
       <TrnFormMainCalculator />
     </div>

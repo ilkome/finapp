@@ -253,6 +253,9 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function setValues(props: Values) {
+    // Start every form session from a clean Repeat state: closing without submitting does not run
+    // onClear, so a left-on toggle would otherwise leak into the next trn and create a stray rule.
+    repeat.value = defaultRepeat()
     values.trnId = null
 
     if (props.action === 'create') {
