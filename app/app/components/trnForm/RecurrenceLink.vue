@@ -28,8 +28,11 @@ async function openSeries() {
   const id = rule.value?.id
   if (!id)
     return
-  trnsFormStore.onClose()
+  // Navigate first, THEN close the form. On mobile the form is a bottom sheet with a synthetic
+  // history entry (useSheetHistory); closing it first fires history.go(-1), which would race the
+  // route change and drop the ?edit query. Letting the router guard unwind the sheet keeps it.
   await navigateTo({ path: '/recurrences', query: { edit: id } })
+  trnsFormStore.onClose()
 }
 </script>
 
