@@ -367,8 +367,12 @@ export default {
     confirm: {
       cancelText: 'Stops future transactions. Already-created ones stay.',
       cancelTitle: 'Cancel this series?',
+      confirmAllText: 'Creates {count} transactions from the due payments. You can edit or delete them afterwards.',
+      confirmAllTitle: 'Confirm {count} payments?',
       deleteText: 'Removes the rule entirely. Already-created transactions stay.',
       deleteTitle: 'Delete this series?',
+      skipAllText: 'Skips {count} due payments so they are not created. This cannot be undone here.',
+      skipAllTitle: 'Skip {count} payments?',
     },
     editTitle: 'Edit recurrence',
     empty: 'No recurring transactions yet. Toggle "Repeat" when adding a transaction.',

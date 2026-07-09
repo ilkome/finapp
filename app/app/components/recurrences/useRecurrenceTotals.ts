@@ -3,7 +3,7 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, todayCivilDayEpoch } from '~/components/date/utils'
-import { effectiveAmountFor, occurrencesInRange } from '~/components/recurrences/occurrences'
+import { committedNativeInRange } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -27,14 +27,13 @@ export function useRecurrenceTotals() {
     const perCurrency: Record<CurrencyCode, { expense: number, income: number }> = {}
 
     for (const rule of Object.values(recurrencesStore.activeItems)) {
-      const occ = occurrencesInRange(rule, { end, start })
-      if (!occ.length)
+      // Priced per occurrence (not a flat amount * count), so a mid-window price change or partial
+      // coverage reports the true committed total. Shared with the drill-down + "by cost" sort.
+      const nativeYearly = committedNativeInRange(rule, { end, start })
+      if (!nativeYearly)
         continue
 
       const currency = walletsStore.items?.[rule.walletId]?.currency ?? base
-      // Sum the price effective on each occurrence day (not a flat amount * count), so a rule with a
-      // mid-window price change or partial coverage reports its true committed total.
-      const nativeYearly = occ.reduce((sum, day) => sum + effectiveAmountFor(rule, day), 0)
       const baseYearly = getAmountInRate({ amount: nativeYearly, baseCurrencyCode: base, currencyCode: currency, rates })
 
       const bucket = (perCurrency[currency] ??= { expense: 0, income: 0 })

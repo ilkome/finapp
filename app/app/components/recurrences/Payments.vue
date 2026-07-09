@@ -8,7 +8,7 @@ import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
-import { dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -87,10 +87,15 @@ const pending = computed(() => {
 const occurrences = computed<TimelineOccurrence[]>(() => {
   const today = todayEpoch.value
   const trns = trnsStore.items ?? {}
+  // Occurrences already surfaced by the "due to confirm" block above (manual, unconfirmed) must not
+  // reappear here - the past-only guard misses a rule whose occurrence lands exactly today.
+  const pendingKeys = new Set(pending.value.map(keyOf))
   const range = { end: addCivilDays(today, horizon.value), start: addCivilDays(today, -RECENT_DAYS) }
   const out: TimelineOccurrence[] = []
   for (const [id, rule] of rules.value) {
     for (const day of occurrencesInRange(rule, range)) {
+      if (pendingKeys.has(`${id}:${day}`))
+        continue
       const status = occurrenceStatus(rule, id, day, trns, today)
       if (day < today && status.state !== 'paid' && status.state !== 'drift')
         continue
@@ -101,8 +106,12 @@ const occurrences = computed<TimelineOccurrence[]>(() => {
 })
 
 // Draft amount per pending row (variable bills - utilities, etc.): editable before confirming, seeded
-// with the price effective that day. Pruned as rows are confirmed/skipped so stale drafts don't linger.
+// (unrounded) with the price effective that day. `editedKeys` marks rows the user actually changed, so
+// an untouched Confirm passes no override and the store materializes the exact effective amount (no
+// 2-decimal rounding drift for >2-dp fiat / crypto, no spurious "price changed"). Both maps are pruned
+// as rows are confirmed/skipped so stale entries don't linger.
 const amountDrafts = reactive<Record<string, string>>({})
+const editedKeys = reactive(new Set<string>())
 function keyOf(o: Occurrence) {
   return `${o.id}:${o.day}`
 }
@@ -112,24 +121,33 @@ watch(pending, (list) => {
     const k = keyOf(p)
     live.add(k)
     if (!(k in amountDrafts))
-      amountDrafts[k] = String(Math.round(effectiveAmountFor(p.rule, p.day) * 100) / 100)
+      amountDrafts[k] = String(effectiveAmountFor(p.rule, p.day))
   }
   for (const k of Object.keys(amountDrafts)) {
-    if (!live.has(k))
+    if (!live.has(k)) {
       delete amountDrafts[k]
+      editedKeys.delete(k)
+    }
   }
 }, { immediate: true })
 
-// Confirm one occurrence with its (possibly edited) amount; a blank/invalid draft falls back to the
-// rule's effective price via the store default.
+// Confirm one occurrence. Untouched row -> no amount override, so the store keeps the exact effective
+// price. Edited row -> the parsed draft (blank/non-positive falls back to the store default).
 function confirmPending(p: Occurrence) {
-  const raw = Number.parseFloat(amountDrafts[keyOf(p)] ?? '')
+  const k = keyOf(p)
+  if (!editedKeys.has(k)) {
+    recurrencesStore.confirmOccurrence(p.id, p.day)
+    return
+  }
+  const raw = Number.parseFloat(amountDrafts[k] ?? '')
   const amount = Number.isFinite(raw) && raw > 0 ? raw : undefined
   recurrencesStore.confirmOccurrence(p.id, p.day, amount)
 }
 
-// Bulk actions snapshot the list first: confirming/skipping mutates the store and reactively shrinks
-// `pending` mid-loop, which would otherwise skip every other row.
+// Bulk actions are confirmed first (skip-all is irreversible - there's no un-skip UI - and confirm-all
+// materializes N trns at once). They snapshot the list before looping: confirming/skipping mutates the
+// store and reactively shrinks `pending` mid-loop, which would otherwise skip every other row.
+const bulkAction = ref<'confirm' | 'skip' | null>(null)
 function confirmAll() {
   for (const p of [...pending.value])
     confirmPending(p)
@@ -137,6 +155,12 @@ function confirmAll() {
 function skipAll() {
   for (const p of [...pending.value])
     recurrencesStore.skipOccurrence(p.id, p.day)
+}
+function runBulk() {
+  if (bulkAction.value === 'confirm')
+    confirmAll()
+  else if (bulkAction.value === 'skip')
+    skipAll()
 }
 
 function statusDotClass(state: OccurrenceStatus['state']) {
@@ -175,9 +199,8 @@ const summary = computed(() => {
   if (!rule)
     return undefined
   const start = todayCivilDayEpoch()
-  const count = occurrencesInRange(rule, { end: addCivilDays(start, 365), start }).length
   const yearlyBase = getAmountInRate({
-    amount: rule.amount * count,
+    amount: committedNativeInRange(rule, { end: addCivilDays(start, 365), start }),
     baseCurrencyCode: currenciesStore.base,
     currencyCode: walletCurrency(rule),
     rates: currenciesStore.rates,
@@ -261,14 +284,14 @@ function fmtDay(day: number) {
           <button
             type="button"
             class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
-            @click="confirmAll"
+            @click="bulkAction = 'confirm'"
           >
             {{ t('recurrences.actions.confirmAll') }}
           </button>
           <button
             type="button"
             class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
-            @click="skipAll"
+            @click="bulkAction = 'skip'"
           >
             {{ t('recurrences.actions.skipAll') }}
           </button>
@@ -299,7 +322,9 @@ function fmtDay(day: number) {
             v-model="amountDrafts[keyOf(p)]"
             type="number"
             inputmode="decimal"
+            :aria-label="t('recurrences.form.amount')"
             class="bg-default text-highlighted w-20 rounded-sm px-2 py-1 text-right text-sm"
+            @input="editedKeys.add(keyOf(p))"
             @keydown.enter="confirmPending(p)"
           >
           <span class="text-2xs text-muted">{{ walletCurrency(p.rule) }}</span>
@@ -373,5 +398,14 @@ function fmtDay(day: number) {
         </div>
       </div>
     </div>
+
+    <LayoutConfirmModal
+      v-if="bulkAction"
+      :title="t(bulkAction === 'skip' ? 'recurrences.confirm.skipAllTitle' : 'recurrences.confirm.confirmAllTitle', { count: pending.length })"
+      :description="t(bulkAction === 'skip' ? 'recurrences.confirm.skipAllText' : 'recurrences.confirm.confirmAllText', { count: pending.length })"
+      :confirmLabel="t(bulkAction === 'skip' ? 'recurrences.actions.skipAll' : 'recurrences.actions.confirmAll')"
+      @closed="bulkAction = null"
+      @confirm="runBulk"
+    />
   </div>
 </template>

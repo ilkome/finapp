@@ -4,7 +4,7 @@ import type { RecurrenceItem } from '~/components/recurrences/types'
 
 import { TrnType } from '~/components/trns/types'
 
-import { dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceTrnId } from './occurrences'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -156,5 +156,67 @@ describe('effectiveAmountFor', () => {
       amountHistory: [{ amount: 500, from: U(2024, 6, 1) }],
     })
     expect(effectiveAmountFor(r, U(2024, 0, 1))).toBe(500)
+  })
+})
+
+describe('occurrenceStatus', () => {
+  const today = U(2024, 5, 15)
+  const trnsFor = (day: number, amount?: number) => ({ [occurrenceTrnId('r', day)]: amount === undefined ? {} : { amount } })
+
+  it('is paid when a matching trn sits at the effective price', () => {
+    const r = rule({ amount: 100 })
+    const day = U(2024, 5, 10)
+    const s = occurrenceStatus(r, 'r', day, trnsFor(day, 100), today)
+    expect(s).toMatchObject({ actual: 100, expected: 100, state: 'paid' })
+  })
+
+  it('is drift when the trn amount differs from the scalar price', () => {
+    const r = rule({ amount: 100 })
+    const day = U(2024, 5, 10)
+    expect(occurrenceStatus(r, 'r', day, trnsFor(day, 120), today).state).toBe('drift')
+  })
+
+  it('compares against the amount-history-effective price, not the scalar', () => {
+    // On 10 Jun the effective price is 500 (history), while the scalar is 600.
+    const r = rule({ amount: 600, amountHistory: [{ amount: 500, from: U(2024, 0, 1) }, { amount: 600, from: U(2024, 6, 1) }] })
+    const day = U(2024, 5, 10)
+    expect(occurrenceStatus(r, 'r', day, trnsFor(day, 500), today).state).toBe('paid')
+    expect(occurrenceStatus(r, 'r', day, trnsFor(day, 600), today).state).toBe('drift')
+  })
+
+  it('is overdue for a past unmaterialized day and upcoming for a future one', () => {
+    const r = rule({ amount: 100 })
+    expect(occurrenceStatus(r, 'r', U(2024, 5, 10), {}, today).state).toBe('overdue')
+    expect(occurrenceStatus(r, 'r', U(2024, 5, 20), {}, today).state).toBe('upcoming')
+  })
+
+  it('treats an occurrence landing exactly today as overdue', () => {
+    const r = rule({ amount: 100 })
+    expect(occurrenceStatus(r, 'r', today, {}, today).state).toBe('overdue')
+  })
+
+  it('falls through to overdue when the matched trn carries no amount', () => {
+    const r = rule({ amount: 100 })
+    const day = U(2024, 5, 10)
+    expect(occurrenceStatus(r, 'r', day, trnsFor(day), today).state).toBe('overdue')
+  })
+})
+
+describe('committedNativeInRange', () => {
+  it('sums the flat scalar when there is no price history', () => {
+    const r = rule({ amount: 100, freq: 'month' })
+    // Jan..Apr 2024 = 4 monthly occurrences
+    expect(committedNativeInRange(r, { end: U(2024, 3, 1), start: U(2024, 0, 1) })).toBe(400)
+  })
+
+  it('prices each occurrence at its effective amount across a mid-window change', () => {
+    const r = rule({ amount: 200, amountHistory: [{ amount: 100, from: U(2024, 0, 1) }, { amount: 200, from: U(2024, 2, 1) }], freq: 'month' })
+    // Jan,Feb @100 + Mar,Apr @200 = 600, vs a flat amount*count of 800
+    expect(committedNativeInRange(r, { end: U(2024, 3, 1), start: U(2024, 0, 1) })).toBe(600)
+  })
+
+  it('is zero when no occurrence falls in the range', () => {
+    const r = rule({ amount: 100, anchorDate: U(2024, 0, 1), freq: 'month' })
+    expect(committedNativeInRange(r, { end: U(2023, 11, 1), start: U(2023, 6, 1) })).toBe(0)
   })
 })

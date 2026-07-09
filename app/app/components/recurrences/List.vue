@@ -4,7 +4,7 @@ import type { RecurrenceId, RecurrenceItem, RecurrenceStatus } from '~/component
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, todayCivilDayEpoch } from '~/components/date/utils'
-import { nextOccurrence, occurrencesInRange } from '~/components/recurrences/occurrences'
+import { committedNativeInRange, nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -26,14 +26,15 @@ const currenciesStore = useCurrenciesStore()
 const order: RecurrenceStatus[] = ['active', 'paused', 'cancelled']
 
 // Committed cost over the next 365 civil days, in base currency - the ranking key for "biggest".
+// Priced per occurrence so the sort agrees with the totals card when a price change is scheduled.
 function annualBaseCost(rule: RecurrenceItem): number {
   const start = todayCivilDayEpoch()
-  const count = occurrencesInRange(rule, { end: addCivilDays(start, 365), start }).length
-  if (!count)
+  const native = committedNativeInRange(rule, { end: addCivilDays(start, 365), start })
+  if (!native)
     return 0
   const currency = walletsStore.items?.[rule.walletId]?.currency ?? currenciesStore.base
   return getAmountInRate({
-    amount: rule.amount * count,
+    amount: native,
     baseCurrencyCode: currenciesStore.base,
     currencyCode: currency,
     rates: currenciesStore.rates,

@@ -71,6 +71,16 @@ export function occurrenceStatus(
   return { expected, state: dayEpoch <= todayEpoch ? 'overdue' : 'upcoming', trnId }
 }
 
+/**
+ * Native-currency total of the rule's occurrences in `range`, priced per occurrence via
+ * `effectiveAmountFor` (amount-history aware) rather than a flat `amount * count`. Single source of
+ * truth for "committed cost over a window" - the totals card, the per-subscription drill-down and
+ * the "by cost" sort all call it, so a future-dated price change can't make them disagree.
+ */
+export function committedNativeInRange(rule: RecurrenceItem, range: Range): number {
+  return occurrencesInRange(rule, range).reduce((sum, day) => sum + effectiveAmountFor(rule, day), 0)
+}
+
 /** The n-th occurrence civil day (n >= 0; n = 0 is the anchor), clamp/last-day aware. */
 export function nthOccurrence(rule: RecurrenceItem, n: number): number {
   const anchor = civilDayStart(rule.anchorDate)
