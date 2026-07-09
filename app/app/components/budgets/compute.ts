@@ -95,11 +95,12 @@ export function toAssignPool(incomeForPeriod: number, totalAssigned: number, car
 }
 
 /**
- * Amount actually movable out of a budget's assignment: never more than what's assigned, never
- * negative. Move-money must conserve - the destination receives exactly what the source gives up.
+ * Amount actually movable out of a budget: never more than `cap` (the source's AVAILABLE balance,
+ * not its assignment - so already-spent money can't be moved), never negative. Move-money must
+ * conserve: the destination receives exactly what the source gives up.
  */
-export function movableAmount(assigned: number, requested: number): number {
-  return Math.max(0, Math.min(requested, assigned))
+export function movableAmount(cap: number, requested: number): number {
+  return Math.max(0, Math.min(requested, cap))
 }
 
 /**

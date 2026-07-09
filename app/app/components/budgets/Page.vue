@@ -16,7 +16,7 @@ const trnsStore = useTrnsStore()
 
 const { openDocs } = useDocsLink()
 const period = useBudgetPeriod()
-const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, safeToSpendTotal, toAssignTotal } = useBudgetProgress(period)
+const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
 
 // "To assign" is an envelope figure (income - assigned). Without period income it's just -assigned,
 // which is confusing in limits mode, so only surface it once income lands this period. (A4)
@@ -49,6 +49,7 @@ useHead({ title: t('budgets.title') })
 
 const showForm = ref(false)
 const editingId = ref<BudgetId | undefined>()
+const confirmAutoAssign = ref(false)
 
 function openCreate() {
   editingId.value = undefined
@@ -75,6 +76,12 @@ function openMove(id: BudgetId) {
 const historyId = ref<BudgetId | undefined>()
 function openHistory(id: BudgetId) {
   historyId.value = id
+}
+
+// Drill-through: the transactions behind a budget's "Spent" figure this period.
+const trnsId = ref<BudgetId | undefined>()
+function openTrns(id: BudgetId) {
+  trnsId.value = id
 }
 function onMoveConfirm(fromId: BudgetId, amount: number) {
   if (movingToId.value)
@@ -168,7 +175,7 @@ function setPeriodType(type: BudgetPeriodType) {
             />
           </div>
           <div class="-mt-2 flex justify-end">
-            <UiActionButton variant="text" size="sm" @click="copyLastPeriod">
+            <UiActionButton variant="text" size="sm" @click="confirmAutoAssign = true">
               <Icon name="lucide:copy" size="14" class="mr-1" />
               {{ t('budgets.autoAssign') }}
             </UiActionButton>
@@ -194,6 +201,7 @@ function setPeriodType(type: BudgetPeriodType) {
           @edit="openEdit"
           @history="openHistory"
           @move="openMove"
+          @trns="openTrns"
         />
       </template>
     </div>
@@ -218,6 +226,23 @@ function setPeriodType(type: BudgetPeriodType) {
       :history="historyFor(historyId)"
       :periodType="period.periodType.value"
       @closed="historyId = undefined"
+    />
+
+    <BudgetsTrns
+      v-if="trnsId"
+      :budgetId="trnsId"
+      :periodLabel="periodLabel"
+      :trnsIds="trnsIdsFor(trnsId)"
+      @closed="trnsId = undefined"
+    />
+
+    <LayoutConfirmModal
+      v-if="confirmAutoAssign"
+      :title="t('budgets.confirm.autoAssignTitle')"
+      :description="t('budgets.confirm.autoAssignText')"
+      :confirmLabel="t('budgets.autoAssign')"
+      @closed="confirmAutoAssign = false"
+      @confirm="copyLastPeriod"
     />
   </UiPage>
 </template>

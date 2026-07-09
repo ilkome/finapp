@@ -16,6 +16,7 @@ const emit = defineEmits<{
   edit: [id: BudgetId]
   history: [id: BudgetId]
   move: [id: BudgetId]
+  trns: [id: BudgetId]
 }>()
 
 const { t } = useI18n()
@@ -92,6 +93,7 @@ function groupLabel(key: GroupKey) {
               @edit="emit('edit', $event)"
               @history="emit('history', $event)"
               @move="emit('move', $event)"
+              @trns="emit('trns', $event)"
             />
           </template>
         </div>

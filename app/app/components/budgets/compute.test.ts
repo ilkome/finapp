@@ -165,13 +165,14 @@ describe('safeToSpend & toAssignPool', () => {
 })
 
 describe('movableAmount', () => {
-  it('moves the full request when the source assignment covers it', () => {
+  it('moves the full request when the source available covers it', () => {
     expect(movableAmount(500, 200)).toBe(200)
   })
-  it('caps the move at the source assignment so money is never invented', () => {
+  it('caps the move at the source available so already-spent money is never moved', () => {
+    // e.g. assigned 1000 but only 50 available (950 spent): at most 50 can leave.
     expect(movableAmount(50, 150)).toBe(50)
   })
-  it('never returns a negative amount', () => {
+  it('never returns a negative amount (source already overspent)', () => {
     expect(movableAmount(0, 100)).toBe(0)
     expect(movableAmount(-10, 100)).toBe(0)
   })

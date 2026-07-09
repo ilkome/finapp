@@ -43,16 +43,31 @@ const candidates = computed(() => {
 const fromId = ref<BudgetId | undefined>()
 const amount = ref<string>('')
 
-// Prefill with the destination's shortfall (what it takes to bring it back to zero).
+// What the selected source can actually give up (its available balance, base currency, never < 0).
+const sourceAvailable = computed(() => Math.max(0, candidates.value.find(c => c.id === fromId.value)?.available ?? 0))
+const amountNumber = computed(() => Number.parseFloat(amount.value))
+
+// Prefill with the destination's shortfall, but never more than the source can spare.
 onMounted(() => {
+  fromId.value = candidates.value.find(c => c.available > 0)?.id ?? candidates.value[0]?.id
   const shortfall = -(toProgress.value?.available ?? 0)
   if (shortfall > 0)
-    amount.value = String(Math.ceil(shortfall))
-  fromId.value = candidates.value.find(c => c.available > 0)?.id ?? candidates.value[0]?.id
+    amount.value = String(Math.min(Math.ceil(shortfall), Math.floor(sourceAvailable.value)))
 })
 
-const amountNumber = computed(() => Number.parseFloat(amount.value))
-const canMove = computed(() => !!fromId.value && Number.isFinite(amountNumber.value) && amountNumber.value > 0)
+// Re-clamp when the source changes so the amount can never exceed what the new source has available.
+watch(fromId, () => {
+  if (amountNumber.value > sourceAvailable.value)
+    amount.value = String(Math.floor(sourceAvailable.value))
+})
+
+function fillMax() {
+  amount.value = String(Math.floor(sourceAvailable.value))
+}
+
+const canMove = computed(() =>
+  !!fromId.value && Number.isFinite(amountNumber.value) && amountNumber.value > 0 && amountNumber.value <= sourceAvailable.value,
+)
 
 function onConfirm(close: () => void) {
   if (!canMove.value || !fromId.value)
@@ -109,7 +124,7 @@ function onConfirm(close: () => void) {
           </div>
         </FormElement>
 
-        <!-- Amount (base currency) -->
+        <!-- Amount (base currency), capped at what the source has available -->
         <FormElement v-if="candidates.length">
           <template #label>
             {{ t('budgets.move.amount', { currency: currenciesStore.base }) }}
@@ -118,6 +133,14 @@ function onConfirm(close: () => void) {
             v-model="amount"
             type="number"
           />
+          <button
+            type="button"
+            class="text-2xs text-muted hover:text-highlighted mt-1 flex items-center gap-1"
+            @click="fillMax"
+          >
+            {{ t('budgets.move.available') }}
+            <Amount :amount="sourceAvailable" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
+          </button>
         </FormElement>
       </div>
 

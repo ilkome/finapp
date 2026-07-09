@@ -19,6 +19,7 @@ const emit = defineEmits<{
   edit: [id: BudgetId]
   history: [id: BudgetId]
   move: [id: BudgetId]
+  trns: [id: BudgetId]
 }>()
 
 const { locale, t } = useI18n()
@@ -85,6 +86,12 @@ function resetAssign() {
   editingAssign.value = false
 }
 
+// One-tap fund a sinking-fund target: set this period's set-aside as a real assignment (in the
+// budget's own currency) so it accumulates toward the goal instead of showing frozen progress.
+function fundTarget() {
+  budgetsStore.setAssignment(props.id, props.periodStart, props.progress.assignedRaw)
+}
+
 const category = computed(() => categoriesStore.items?.[props.budget.categoryId])
 // Show the parent under a subcategory budget (mirrors the trn form) so it's clear which level is budgeted.
 const parentCategory = computed(() => category.value?.parentId ? categoriesStore.items?.[category.value.parentId] : undefined)
@@ -143,10 +150,13 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
 
       <!-- Triad: expense = Spent/Assigned/Available; income = Received/Expected/Left to receive. -->
       <div class="text-2xs mt-2 flex items-center justify-between gap-2">
-        <div class="text-muted">
-          {{ t(`budgets.triad.${budget.kind}.activity`) }}
+        <button type="button" class="text-muted hover:text-highlighted text-left" @click.stop="emit('trns', props.id)">
+          <span class="inline-flex items-center gap-0.5">
+            {{ t(`budgets.triad.${budget.kind}.activity`) }}
+            <Icon name="lucide:chevron-right" size="10" class="text-muted/40" />
+          </span>
           <Amount :amount="progress.activity" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
-        </div>
+        </button>
         <button type="button" class="text-muted hover:text-highlighted text-left" @click.stop="openAssign">
           <span class="inline-flex items-center gap-0.5">
             {{ t(`budgets.triad.${budget.kind}.assigned`) }}
@@ -213,7 +223,13 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
           <Amount :amount="progress.committed" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
           {{ t('budgets.committed') }}
         </span>
-        <span v-if="isOver" class="text-error">{{ t('budgets.overBudget') }}</span>
+        <button v-if="isOver" type="button" class="text-error inline-flex items-center gap-1" @click.stop="emit('move', props.id)">
+          {{ t('budgets.overBudget') }}
+          <span class="inline-flex items-center gap-0.5 underline">
+            <Icon name="lucide:arrow-left-right" size="10" />
+            {{ t('budgets.move.cover') }}
+          </span>
+        </button>
         <span v-if="isGoalReached" class="text-success flex items-center gap-1">
           {{ t('budgets.goalReached') }}
           <Amount v-if="surplus > 0" :amount="surplus" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :isShowPlus="true" align="left" variant="xs" />
@@ -240,6 +256,17 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
             :style="{ width: `${targetPct}%` }"
           />
         </div>
+        <!-- Fund this period's set-aside so the target actually accumulates. -->
+        <button
+          v-if="!progress.hasAssignment && !progress.target.reached"
+          type="button"
+          class="bg-primary/15 text-primary text-2xs mt-1.5 flex items-center gap-1 rounded-sm px-2 py-1"
+          @click.stop="fundTarget"
+        >
+          <Icon name="lucide:circle-plus" size="12" />
+          {{ t('budgets.target.fund') }}
+          <Amount :amount="progress.assigned" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
+        </button>
       </div>
     </div>
   </UiContextMenuMy>

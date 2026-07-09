@@ -2,6 +2,7 @@ import type { BudgetId, BudgetItem } from '~/components/budgets/types'
 import type { BudgetPeriodProvider } from '~/components/budgets/useBudgetPeriod'
 import type { CategoryId } from '~/components/categories/types'
 import type { Range } from '~/components/date/types'
+import type { TrnId } from '~/components/trns/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
 import { budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodsUntilGoal, projectedPeriodEnd, safeToSpend, targetSetAside, toAssignPool } from '~/components/budgets/compute'
@@ -73,10 +74,23 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     return new Set(budgetOwnedCategoryIds(categoriesStore.items ?? {}, budget.categoryId, budgetedCategoryIds.value))
   }
 
+  // Trn ids booked to the budget's owned categories within `range` (drill-through / activity).
+  function activityIdsInRange(owned: Set<CategoryId>, range: Range): TrnId[] {
+    return trnsStore.getStoreTrnsIds({ dates: range })
+      .filter(id => owned.has(trnsStore.items?.[id]?.categoryId as CategoryId))
+  }
+
+  // The current period's transactions behind a budget's "Spent" figure (for the drill-through sheet).
+  function trnsIdsFor(budgetId: BudgetId): TrnId[] {
+    const budget = budgetsStore.items?.[budgetId]
+    if (!budget)
+      return []
+    return activityIdsInRange(ownedSet(budget), period.range.value)
+  }
+
   // Spend (or income) booked to the budget's owned categories within `range`, in base currency.
   function activityInRange(budget: BudgetItem, owned: Set<CategoryId>, range: Range): number {
-    const inRange = trnsStore.getStoreTrnsIds({ dates: range })
-    const ids = inRange.filter(id => owned.has(trnsStore.items?.[id]?.categoryId as CategoryId))
+    const ids = activityIdsInRange(owned, range)
     const total = getTotal({
       baseCurrencyCode: currenciesStore.base,
       rates: currenciesStore.rates,
@@ -202,6 +216,10 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       rollover: budget.rollover,
     })
     const available = computeAvailable(carried, assigned, activity)
+    // A target's "saved" is only REAL funding: accumulated explicit assignments (carried) plus this
+    // period's explicit funding, minus spend - never the synthetic set-aside (which would show fake
+    // progress and make the Fund button a no-op). See review MEDIUM-2 / finding 2.
+    const targetSaved = carried + explicitAssignedBase(budgetId, budget, range.start) - activity
 
     return {
       activity,
@@ -215,7 +233,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       isOver: isOverBudget(budget.kind, available),
       pace: paceMarker(assigned, period.daysElapsed.value, period.daysInPeriod.value),
       projected: projectedPeriodEnd(activity, period.daysElapsed.value, period.daysInPeriod.value),
-      target: buildTarget(budget, range.start, available),
+      target: buildTarget(budget, range.start, isTarget ? targetSaved : available),
     }
   }
 
@@ -274,9 +292,11 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     const rates = currenciesStore.rates
     const fromAssigned = rawAssigned(fromId, from, start)
     const fromDelta = getAmountInRate({ amount: baseAmount, baseCurrencyCode: from.currency || base, currencyCode: base, rates })
-    // Conserve money: the source can give at most its current assignment, so cap the move there and
-    // credit the destination only with what was actually removed (base -> dest currency). MEDIUM-1.
-    const movedFromOwn = movableAmount(fromAssigned, fromDelta)
+    // Conserve money: the source can give at most its current AVAILABLE balance (carried + assigned -
+    // spent), never money already spent. Cap the move there, reduce the source assignment by what was
+    // removed, and credit the destination only with that amount (base -> dest currency). MEDIUM-1.
+    const availableOwn = getAmountInRate({ amount: progressFor(fromId)?.available ?? 0, baseCurrencyCode: from.currency || base, currencyCode: base, rates })
+    const movedFromOwn = movableAmount(availableOwn, fromDelta)
     const movedBase = getAmountInRate({ amount: movedFromOwn, baseCurrencyCode: base, currencyCode: from.currency || base, rates })
     const toDelta = getAmountInRate({ amount: movedBase, baseCurrencyCode: to.currency || base, currencyCode: base, rates })
     budgetsStore.setAssignment(fromId, start, fromAssigned - movedFromOwn)
@@ -299,6 +319,9 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
   }
 
   // Auto-assign (2.1): copy the most recent prior period's assigned amounts onto the viewed period.
+  // Non-destructive: only fills budgets that have no explicit override yet this period (so a manual
+  // tweak just made is never clobbered), and skips sinking-fund targets (their set-aside must stay
+  // synthetic, not be frozen into a hard override). See review 2.1.
   function copyLastPeriod() {
     const prev = period.periodStartsBefore.value.at(-1)
     if (prev == null)
@@ -306,6 +329,8 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     const cur = period.range.value.start
     for (const id of Object.keys(budgetsStore.activeItems)) {
       const budget = budgetsStore.activeItems[id]!
+      if (isTargetBudget(budget) || budgetsStore.assignmentFor(id, cur) !== undefined)
+        continue
       budgetsStore.setAssignment(id, cur, rawAssigned(id, budget, prev))
     }
   }
@@ -318,5 +343,6 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     progressFor,
     safeToSpendTotal,
     toAssignTotal,
+    trnsIdsFor,
   }
 }
