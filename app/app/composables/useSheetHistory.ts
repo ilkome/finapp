@@ -50,7 +50,12 @@ function scheduleReconcile() {
   if (reconcileScheduled)
     return
   reconcileScheduled = true
-  queueMicrotask(reconcile)
+  // Macrotask, not microtask: a router navigation triggered in the same tick as
+  // a sheet close (close-and-navigate) runs its guard in a microtask, which must
+  // see the not-yet-shrunk syntheticDepth so it consumes the entry via replace().
+  // A microtask reconcile could shrink first and fire history.go, which races the
+  // navigation and wins as a Back.
+  setTimeout(reconcile, 0)
 }
 
 function onPopState() {

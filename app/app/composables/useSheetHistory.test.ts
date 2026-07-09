@@ -9,7 +9,7 @@ let guard: Guard | undefined
 let push: ReturnType<typeof vi.fn>
 let replace: ReturnType<typeof vi.fn>
 
-const flush = () => new Promise<void>(r => queueMicrotask(() => r()))
+const flush = () => new Promise<void>(r => setTimeout(r, 0))
 
 async function load(): Promise<Mod> {
   vi.resetModules()
