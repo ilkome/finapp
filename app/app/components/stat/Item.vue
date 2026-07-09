@@ -211,7 +211,6 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           isShowFilterByType
           isShowIncome
           isShowTransfers
-          @click="modalSource === 'quickView' ? closeModal() : undefined"
         />
       </div>
     </BottomSheetModal>
