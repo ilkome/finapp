@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
+import type { OccurrenceStatus } from '~/components/recurrences/occurrences'
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
-import { dueOccurrences, nextOccurrence, occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -34,9 +35,15 @@ const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 const horizons = [30, 60, 90] as const
 const horizon = useStorage<number>('finapp.recurrences.horizon', 60)
 
+// Show the last couple of weeks of already-realized charges alongside the forward schedule, so a
+// silently changed price or a just-paid bill is visible without leaving the page.
+const RECENT_DAYS = 14
+
+const todayEpoch = computed(() => todayCivilDayEpoch())
 const soonCutoff = computed(() => addCivilDays(todayCivilDayEpoch(), 7))
 
 type Occurrence = { day: number, id: RecurrenceId, rule: RecurrenceItem }
+type TimelineOccurrence = Occurrence & { status: OccurrenceStatus }
 
 // Active rules, narrowed to the tapped subscription when a filter is set.
 const rules = computed<[RecurrenceId, RecurrenceItem][]>(() => {
@@ -73,20 +80,84 @@ const pending = computed(() => {
   return out.sort((a, b) => a.day - b.day)
 })
 
-// Forward occurrences (tomorrow .. +horizon), oldest first.
-const occurrences = computed<Occurrence[]>(() => {
-  const today = todayCivilDayEpoch()
-  const range = { end: addCivilDays(today, horizon.value), start: addCivilDays(today, 1) }
-  const out: Occurrence[] = []
+// Timeline: recently-realized charges (last RECENT_DAYS) + the forward schedule (.. +horizon),
+// oldest first, each tagged with its realized status. Past days appear only once materialized
+// (paid or price-drifted) - still-unconfirmed past occurrences belong to the "due to confirm" block
+// above, so they aren't duplicated here.
+const occurrences = computed<TimelineOccurrence[]>(() => {
+  const today = todayEpoch.value
+  const trns = trnsStore.items ?? {}
+  const range = { end: addCivilDays(today, horizon.value), start: addCivilDays(today, -RECENT_DAYS) }
+  const out: TimelineOccurrence[] = []
   for (const [id, rule] of rules.value) {
-    for (const day of occurrencesInRange(rule, range))
-      out.push({ day, id, rule })
+    for (const day of occurrencesInRange(rule, range)) {
+      const status = occurrenceStatus(rule, id, day, trns, today)
+      if (day < today && status.state !== 'paid' && status.state !== 'drift')
+        continue
+      out.push({ day, id, rule, status })
+    }
   }
   return out.sort((a, b) => a.day - b.day)
 })
 
+// Draft amount per pending row (variable bills - utilities, etc.): editable before confirming, seeded
+// with the price effective that day. Pruned as rows are confirmed/skipped so stale drafts don't linger.
+const amountDrafts = reactive<Record<string, string>>({})
+function keyOf(o: Occurrence) {
+  return `${o.id}:${o.day}`
+}
+watch(pending, (list) => {
+  const live = new Set<string>()
+  for (const p of list) {
+    const k = keyOf(p)
+    live.add(k)
+    if (!(k in amountDrafts))
+      amountDrafts[k] = String(Math.round(effectiveAmountFor(p.rule, p.day) * 100) / 100)
+  }
+  for (const k of Object.keys(amountDrafts)) {
+    if (!live.has(k))
+      delete amountDrafts[k]
+  }
+}, { immediate: true })
+
+// Confirm one occurrence with its (possibly edited) amount; a blank/invalid draft falls back to the
+// rule's effective price via the store default.
+function confirmPending(p: Occurrence) {
+  const raw = Number.parseFloat(amountDrafts[keyOf(p)] ?? '')
+  const amount = Number.isFinite(raw) && raw > 0 ? raw : undefined
+  recurrencesStore.confirmOccurrence(p.id, p.day, amount)
+}
+
+// Bulk actions snapshot the list first: confirming/skipping mutates the store and reactively shrinks
+// `pending` mid-loop, which would otherwise skip every other row.
+function confirmAll() {
+  for (const p of [...pending.value])
+    confirmPending(p)
+}
+function skipAll() {
+  for (const p of [...pending.value])
+    recurrencesStore.skipOccurrence(p.id, p.day)
+}
+
+function statusDotClass(state: OccurrenceStatus['state']) {
+  switch (state) {
+    case 'paid': return 'bg-income-1'
+    case 'drift': return 'bg-warning'
+    case 'overdue': return 'bg-expense-1'
+    default: return 'bg-neutral-400/50'
+  }
+}
+function statusLabel(state: OccurrenceStatus['state']) {
+  switch (state) {
+    case 'paid': return t('recurrences.payments.paid')
+    case 'drift': return t('recurrences.payments.priceChanged')
+    case 'overdue': return t('recurrences.overdue')
+    default: return ''
+  }
+}
+
 const groups = computed(() => {
-  const map = new Map<number, Occurrence[]>()
+  const map = new Map<number, TimelineOccurrence[]>()
   for (const o of occurrences.value) {
     const arr = map.get(o.day) ?? []
     arr.push(o)
@@ -95,7 +166,7 @@ const groups = computed(() => {
   return [...map.entries()].map(([day, items]) => ({ day, items }))
 })
 
-const soonCount = computed(() => occurrences.value.filter(o => o.day <= soonCutoff.value).length)
+const soonCount = computed(() => occurrences.value.filter(o => o.day >= todayEpoch.value && o.day <= soonCutoff.value).length)
 const isEmpty = computed(() => !pending.value.length && !occurrences.value.length)
 
 // Drill-down for the tapped subscription: committed yearly cost + next charge + a price-change hint.
@@ -181,9 +252,28 @@ function fmtDay(day: number) {
 
     <!-- Due & unconfirmed (overdue) -->
     <div v-if="pending.length" class="mb-3">
-      <UiTextSubtitle class="text-expense-1/80 mb-1 px-1 tracking-wide uppercase">
-        {{ t('recurrences.pending.title') }} ({{ pending.length }})
-      </UiTextSubtitle>
+      <div class="mb-1 flex items-center gap-2 px-1">
+        <UiTextSubtitle class="text-expense-1/80 tracking-wide uppercase">
+          {{ t('recurrences.pending.title') }} ({{ pending.length }})
+        </UiTextSubtitle>
+        <span class="grow" />
+        <template v-if="pending.length > 1">
+          <button
+            type="button"
+            class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
+            @click="confirmAll"
+          >
+            {{ t('recurrences.actions.confirmAll') }}
+          </button>
+          <button
+            type="button"
+            class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
+            @click="skipAll"
+          >
+            {{ t('recurrences.actions.skipAll') }}
+          </button>
+        </template>
+      </div>
       <div class="grid gap-1">
         <div
           v-for="p in pending"
@@ -205,17 +295,18 @@ function fmtDay(day: number) {
               {{ fmtDay(p.day) }} · {{ t('recurrences.overdue') }}
             </div>
           </div>
-          <Amount
-            :amount="p.rule.amount"
-            :currencyCode="walletCurrency(p.rule)"
-            :isShowBaseRate="false"
-            :type="p.rule.type"
-            variant="sm"
-          />
+          <input
+            v-model="amountDrafts[keyOf(p)]"
+            type="number"
+            inputmode="decimal"
+            class="bg-default text-highlighted w-20 rounded-sm px-2 py-1 text-right text-sm"
+            @keydown.enter="confirmPending(p)"
+          >
+          <span class="text-2xs text-muted">{{ walletCurrency(p.rule) }}</span>
           <button
             type="button"
             class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
-            @click="recurrencesStore.confirmOccurrence(p.id, p.day)"
+            @click="confirmPending(p)"
           >
             {{ t('recurrences.actions.confirm') }}
           </button>
@@ -230,12 +321,12 @@ function fmtDay(day: number) {
       </div>
     </div>
 
-    <!-- Forward timeline -->
+    <!-- Timeline: recent realized + upcoming, status-colored -->
     <div v-if="occurrences.length" class="grid gap-2">
       <div v-for="group in groups" :key="group.day">
         <div
           class="text-2xs mb-0.5 px-1"
-          :class="group.day <= soonCutoff ? 'text-primary font-medium' : 'text-muted'"
+          :class="group.day >= todayEpoch && group.day <= soonCutoff ? 'text-primary font-medium' : 'text-muted'"
         >
           {{ fmtDay(group.day) }}
         </div>
@@ -256,12 +347,22 @@ function fmtDay(day: number) {
               <div class="text-highlighted truncate text-sm">
                 {{ ruleName(o.rule) }}
               </div>
-              <div v-if="!o.rule.autoCreate" class="text-2xs text-muted">
-                {{ t('recurrences.manual') }}
+              <div
+                v-if="!o.rule.autoCreate || o.status.state === 'drift'"
+                class="text-2xs flex items-center gap-1"
+                :class="o.status.state === 'drift' ? 'text-warning' : 'text-muted'"
+              >
+                <span v-if="!o.rule.autoCreate">{{ t('recurrences.manual') }}</span>
+                <span v-if="o.status.state === 'drift'">{{ t('recurrences.payments.priceChanged') }}</span>
               </div>
             </div>
+            <span
+              class="size-1.5 shrink-0 rounded-full"
+              :class="statusDotClass(o.status.state)"
+              :title="statusLabel(o.status.state)"
+            />
             <Amount
-              :amount="o.rule.amount"
+              :amount="o.status.actual ?? o.status.expected"
               :colorize="o.rule.type === TrnType.Income ? 'income' : undefined"
               :currencyCode="walletCurrency(o.rule)"
               :isShowBaseRate="false"

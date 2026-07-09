@@ -330,6 +330,21 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     budgetsStore.setAssignment(toId, start, rawAssigned(toId, to, start) + toDelta)
   }
 
+  // Pull an over-assignment back down ("Fix this" on a negative to-assign pool): reduce one budget's
+  // assignment by `baseAmount` (base currency), converted to the budget's own currency and floored at
+  // 0. Mirrors moveMoney's source half with no destination - the freed money returns to the pool.
+  function reduceAssignment(budgetId: BudgetId, baseAmount: number) {
+    const budget = budgetsStore.items?.[budgetId]
+    if (!budget || !(baseAmount > 0))
+      return
+    const start = period.range.value.start
+    const base = currenciesStore.base
+    const rates = currenciesStore.rates
+    const raw = rawAssigned(budgetId, budget, start)
+    const deltaOwn = getAmountInRate({ amount: baseAmount, baseCurrencyCode: budget.currency || base, currencyCode: base, rates })
+    budgetsStore.setAssignment(budgetId, start, Math.max(0, raw - deltaOwn))
+  }
+
   // Per-budget history (2.3): assigned vs actual for each prior period plus the current one,
   // oldest first. Recomputed on the fly (history is small) so it never goes stale offline.
   function historyFor(budgetId: BudgetId): { activity: number, assigned: number, periodStart: number }[] {
@@ -368,6 +383,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     moveMoney,
     periodIncomeTotal,
     progressFor,
+    reduceAssignment,
     safeToSpendTotal,
     toAssignTotal,
     trnsIdsFor,

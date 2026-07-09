@@ -3,13 +3,14 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, todayCivilDayEpoch } from '~/components/date/utils'
-import { occurrencesInRange } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, occurrencesInRange } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-// Normalized committed recurring totals over the next 365 civil days, converted to base
-// currency (monthly = yearly / 12, clamp-aware via the occurrence count). See plans/recurrences.md §10.
+// Committed recurring cashflow over the next 365 civil days, priced per occurrence (amount-history
+// aware) and converted to base currency. Monthly is the smoothed 12-month average (yearly / 12), not
+// a single calendar month's charges. See plans/recurrences.md §10.
 export function useRecurrenceTotals() {
   const recurrencesStore = useRecurrencesStore()
   const walletsStore = useWalletsStore()
@@ -26,12 +27,14 @@ export function useRecurrenceTotals() {
     const perCurrency: Record<CurrencyCode, { expense: number, income: number }> = {}
 
     for (const rule of Object.values(recurrencesStore.activeItems)) {
-      const count = occurrencesInRange(rule, { end, start }).length
-      if (!count)
+      const occ = occurrencesInRange(rule, { end, start })
+      if (!occ.length)
         continue
 
       const currency = walletsStore.items?.[rule.walletId]?.currency ?? base
-      const nativeYearly = rule.amount * count
+      // Sum the price effective on each occurrence day (not a flat amount * count), so a rule with a
+      // mid-window price change or partial coverage reports its true committed total.
+      const nativeYearly = occ.reduce((sum, day) => sum + effectiveAmountFor(rule, day), 0)
       const baseYearly = getAmountInRate({ amount: nativeYearly, baseCurrencyCode: base, currencyCode: currency, rates })
 
       const bucket = (perCurrency[currency] ??= { expense: 0, income: 0 })

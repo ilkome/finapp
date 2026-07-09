@@ -78,7 +78,7 @@ useHead({ title: t('recurrences.title') })
 
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
       <template v-if="recurrencesStore.isReady">
-        <!-- Normalized recurring totals (committed cashflow over the next 12 months). -->
+        <!-- Committed recurring cashflow over the next 12 months; monthly is the smoothed average (yearly / 12). -->
         <div v-if="recurrencesStore.hasItems" class="grid grid-cols-2 gap-2">
           <div class="bg-elevated rounded-md px-3 py-2">
             <UiTextSubtitle>{{ t('recurrences.totals.monthly') }}</UiTextSubtitle>

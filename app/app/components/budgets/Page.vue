@@ -16,7 +16,7 @@ const trnsStore = useTrnsStore()
 
 const { openDocs } = useDocsLink()
 const period = useBudgetPeriod()
-const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
+const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, reduceAssignment, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
 
 // "To assign" is an envelope figure (income - assigned). Without period income it's just -assigned,
 // which is confusing in limits mode, so only surface it once income lands this period. (A4)
@@ -81,6 +81,7 @@ useHead({ title: t('budgets.title') })
 const showForm = ref(false)
 const editingId = ref<BudgetId | undefined>()
 const confirmAutoAssign = ref(false)
+const showReduceAssign = ref(false)
 
 function openCreate() {
   editingId.value = undefined
@@ -194,7 +195,17 @@ function setPeriodType(type: BudgetPeriodType) {
               :type="toAssignTotal < 0 ? 'expense' : 'income'"
             />
           </div>
-          <div class="-mt-2 flex justify-end">
+          <div class="-mt-2 flex justify-end gap-1">
+            <UiActionButton
+              v-if="showToAssign && toAssignTotal < 0"
+              class="text-error"
+              variant="text"
+              size="sm"
+              @click="showReduceAssign = true"
+            >
+              <Icon name="lucide:wand-2" size="14" class="mr-1" />
+              {{ t('budgets.toAssign.fix') }}
+            </UiActionButton>
             <UiActionButton variant="text" size="sm" @click="confirmAutoAssign = true">
               <Icon name="lucide:copy" size="14" class="mr-1" />
               {{ t('budgets.autoAssign') }}
@@ -238,6 +249,14 @@ function setPeriodType(type: BudgetPeriodType) {
       :progressFor="progressFor"
       @confirm="onMoveConfirm"
       @closed="movingToId = undefined"
+    />
+
+    <BudgetsReduceAssign
+      v-if="showReduceAssign"
+      :overBase="-toAssignTotal"
+      :progressFor="progressFor"
+      :reduceAssignment="reduceAssignment"
+      @closed="showReduceAssign = false"
     />
 
     <BudgetsHistory

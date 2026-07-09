@@ -38,6 +38,39 @@ export function effectiveAmountFor(rule: RecurrenceItem, dayEpoch: number): numb
   return amount
 }
 
+export type OccurrenceState = 'drift' | 'overdue' | 'paid' | 'upcoming'
+
+export type OccurrenceStatus = {
+  /** Amount of the materialized trn, when one exists. */
+  actual?: number
+  /** Price expected for the day (amount-history aware). */
+  expected: number
+  state: OccurrenceState
+  /** Deterministic id of the trn that would (or does) materialize this day. */
+  trnId: string
+}
+
+/**
+ * Realized status of one occurrence day, joining the rule to already-materialized trns: paid (a trn
+ * exists at the expected price), drift (paid but the amount differs from the price effective that
+ * day - a silent price change or a manual edit), overdue (past, no trn) or upcoming (future). The
+ * lookup uses the deterministic occurrence id, matching how the rest of the engine detects "paid".
+ */
+export function occurrenceStatus(
+  rule: RecurrenceItem,
+  ruleId: RecurrenceId,
+  dayEpoch: number,
+  trns: Record<string, { amount?: number } | undefined>,
+  todayEpoch: number,
+): OccurrenceStatus {
+  const trnId = occurrenceTrnId(ruleId, dayEpoch)
+  const expected = effectiveAmountFor(rule, dayEpoch)
+  const trn = trns[trnId]
+  if (trn && trn.amount != null)
+    return { actual: trn.amount, expected, state: trn.amount === expected ? 'paid' : 'drift', trnId }
+  return { expected, state: dayEpoch <= todayEpoch ? 'overdue' : 'upcoming', trnId }
+}
+
 /** The n-th occurrence civil day (n >= 0; n = 0 is the anchor), clamp/last-day aware. */
 export function nthOccurrence(rule: RecurrenceItem, n: number): number {
   const anchor = civilDayStart(rule.anchorDate)
