@@ -18,7 +18,7 @@ const stack: SheetEntry[] = []
 let syntheticDepth = 0
 
 let poppingSelf = false
-let pendingNav: string | null = null
+let unwinding = false
 let reconcileScheduled = false
 let router: Router | null = null
 let installed = false
@@ -56,11 +56,6 @@ function scheduleReconcile() {
 function onPopState() {
   if (poppingSelf) {
     poppingSelf = false
-    if (pendingNav) {
-      const to = pendingNav
-      pendingNav = null
-      router?.push(to)
-    }
     return
   }
 
@@ -105,13 +100,17 @@ export function installSheetHistory(r: Router): void {
   if (window.history.state?.__sheet)
     window.history.replaceState({ ...window.history.state, __sheet: undefined }, '')
 
-  // Navigating away closes every open sheet and drains their synthetic entries
-  // in one shot, then reissues the navigation once history is clean. Being the
-  // single authority here is what makes "close sheet + navigate in the same
-  // tick" (e.g. search select) race-free - a sheet never fights history.go
-  // against the router, because the router's own history change is gated behind
-  // this guard.
+  // Navigating away closes every open sheet. The topmost synthetic entry we sit
+  // on is consumed by re-issuing the navigation as a replace(): this avoids the
+  // history.go()+popstate dance, which vue-router would interpret as its own
+  // Back navigation and race against the re-issue (leaving the user in place).
+  // Deeper synthetic entries (rare - only with 2+ sheets open) are skipped by
+  // the forward-bounce on a later Back.
   r.beforeEach((to, from) => {
+    if (unwinding) {
+      unwinding = false
+      return true
+    }
     if (to.fullPath === from.fullPath)
       return true
     if (stack.length === 0 && syntheticDepth === 0)
@@ -122,8 +121,9 @@ export function installSheetHistory(r: Router): void {
       removed[k]!.requestClose()
 
     if (syntheticDepth > 0) {
-      pendingNav = to.fullPath
-      popEntries(syntheticDepth)
+      syntheticDepth = 0
+      unwinding = true
+      queueMicrotask(() => router?.replace(to.fullPath))
       return false
     }
     return true

@@ -7,6 +7,7 @@ type Guard = (to: { fullPath: string }, from: { fullPath: string }) => boolean |
 let popstate: ((e: PopStateEvent) => void) | undefined
 let guard: Guard | undefined
 let push: ReturnType<typeof vi.fn>
+let replace: ReturnType<typeof vi.fn>
 
 const flush = () => new Promise<void>(r => queueMicrotask(() => r()))
 
@@ -15,6 +16,7 @@ async function load(): Promise<Mod> {
   popstate = undefined
   guard = undefined
   push = vi.fn()
+  replace = vi.fn()
   vi.spyOn(window, 'addEventListener').mockImplementation((type, fn) => {
     if ((type as string) === 'popstate')
       popstate = fn as (e: PopStateEvent) => void
@@ -23,6 +25,7 @@ async function load(): Promise<Mod> {
   mod.installSheetHistory({
     beforeEach: (fn: Guard) => { guard = fn },
     push,
+    replace,
   } as never)
   return mod
 }
@@ -92,7 +95,7 @@ describe('useSheetHistory', () => {
     expect(closeA).toHaveBeenCalledTimes(1)
   })
 
-  it('closes sheets and reissues the navigation on route change', async () => {
+  it('closes sheets and replaces the synthetic entry on route change (no history.go)', async () => {
     const mod = await load()
     const close = vi.fn()
     mod.registerSheet(close)
@@ -100,11 +103,14 @@ describe('useSheetHistory', () => {
 
     const result = guard!({ fullPath: '/x' }, { fullPath: '/y' })
     expect(close).toHaveBeenCalledTimes(1)
-    expect(window.history.go).toHaveBeenCalledWith(-1)
     expect(result).toBe(false)
+    expect(window.history.go).not.toHaveBeenCalled()
 
-    back() // popstate emitted by history.go
-    expect(push).toHaveBeenCalledWith('/x')
+    await flush() // deferred router.replace
+    expect(replace).toHaveBeenCalledWith('/x')
+
+    // the replace re-enters the guard and must be let through
+    expect(guard!({ fullPath: '/x' }, { fullPath: '/y' })).toBe(true)
   })
 
   it('allows navigation without touching history when no synthetic entry exists yet', async () => {
@@ -116,6 +122,7 @@ describe('useSheetHistory', () => {
     expect(close).toHaveBeenCalledTimes(1)
     expect(result).toBe(true)
     expect(window.history.go).not.toHaveBeenCalled()
+    expect(replace).not.toHaveBeenCalled()
   })
 
   it('bounces a Forward into a consumed synthetic entry', async () => {
