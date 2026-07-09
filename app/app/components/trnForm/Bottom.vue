@@ -74,7 +74,6 @@ onMounted(init)
 <template>
   <BottomSheet
     :isShow="isShow"
-    history
     dragClassesCustom="bottomSheetDragClassesCustom max-h-[98dvh]"
     @closed="trnsFormStore.onClose()"
   >

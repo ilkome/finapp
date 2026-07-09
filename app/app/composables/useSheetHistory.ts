@@ -1,38 +1,56 @@
 import type { Router } from 'vue-router'
 
 /**
- * Maps the browser Back gesture (Android hardware back, iOS edge-swipe, desktop
- * Back button) onto "close the top bottom sheet", so nested sheets feel native.
- *
- * Invariant: sheet *visibility* is owned by each sheet's own state. This module
- * is only a Back-catcher - a LIFO stack of synthetic history entries, one per
- * open sheet. We never derive open state from history, so a Forward into a
- * consumed entry is inert (nothing re-opens). Closing by Back calls the same
- * animated `requestClose` the swipe uses, so both dismiss paths look identical.
- *
- * The synthetic entries are pushed with `history.pushState` at the *current*
- * URL (no navigation), which vue-router tolerates: it only reacts to popstate,
- * and a same-URL popstate resolves to the same route. We spread the existing
- * `history.state` so vue-router's own fields survive on the entry.
+ * Browser Back closes the top bottom sheet instead of navigating the page, so
+ * nested sheets dismiss like native iOS/Android sheets. Sheet visibility stays
+ * owned by each sheet; this module mirrors the open-sheet stack onto synthetic
+ * same-URL history entries and animate-closes the top sheet on Back.
  */
 
 type SheetEntry = { requestClose: () => void }
 
 const stack: SheetEntry[] = []
 
-// Set while WE call history.back()/go() to consume our own entries, so the
-// resulting popstate is swallowed instead of being treated as a user Back.
+// Synthetic entries actually pushed, tracked apart from stack.length so a burst
+// of open/close in one tick reconciles to a single net history change - closing
+// one sheet while opening another (e.g. menu -> search) leaves history untouched
+// instead of racing a pop against a push.
+let syntheticDepth = 0
+
 let poppingSelf = false
-
-// A route navigation requested while sheets were open, deferred until their
-// synthetic entries are unwound (see installSheetHistory's beforeEach).
 let pendingNav: string | null = null
-
+let reconcileScheduled = false
 let router: Router | null = null
 let installed = false
 
 function pushEntry() {
   window.history.pushState({ ...window.history.state, __sheet: true }, '')
+  syntheticDepth += 1
+}
+
+function popEntries(count: number) {
+  poppingSelf = true
+  syntheticDepth -= count
+  window.history.go(-count)
+}
+
+function reconcile() {
+  reconcileScheduled = false
+  const diff = stack.length - syntheticDepth
+  if (diff > 0) {
+    for (let i = 0; i < diff; i++)
+      pushEntry()
+  }
+  else if (diff < 0) {
+    popEntries(-diff)
+  }
+}
+
+function scheduleReconcile() {
+  if (reconcileScheduled)
+    return
+  reconcileScheduled = true
+  queueMicrotask(reconcile)
 }
 
 function onPopState() {
@@ -46,40 +64,36 @@ function onPopState() {
     return
   }
 
-  // Genuine user Back/Forward. Back with a sheet open: the browser already
-  // dropped our top entry, so just animate-close that sheet. Forward or an
-  // empty stack: inert - let the router own it.
-  const top = stack.pop()
-  top?.requestClose()
+  if (stack.length === 0) {
+    // Forward into an already-consumed synthetic entry: bounce back so it can
+    // neither re-open a sheet nor strand a phantom entry.
+    if (window.history.state?.__sheet) {
+      poppingSelf = true
+      window.history.back()
+    }
+    return
+  }
+
+  syntheticDepth -= 1
+  stack.pop()?.requestClose()
 }
 
-/**
- * Register an open sheet. Returns an unregister fn to call when it closes by a
- * non-Back path (swipe/X/overlay/Esc) - that consumes the synthetic entry so
- * history returns to exactly the pre-sheet state.
- */
 export function registerSheet(requestClose: () => void): () => void {
   const entry: SheetEntry = { requestClose }
   stack.push(entry)
-  pushEntry()
+  scheduleReconcile()
 
   return () => {
     const i = stack.indexOf(entry)
     if (i === -1)
-      return // already removed by a Back that consumed the entry
-
-    // Normally the top; splice covers the defensive case of a lower sheet
-    // closing first (its children, if any, close with it).
+      return
     const removed = stack.splice(i)
     for (let k = removed.length - 1; k >= 1; k--)
       removed[k]!.requestClose()
-
-    poppingSelf = true
-    window.history.go(-removed.length)
+    scheduleReconcile()
   }
 }
 
-/** Install the single global popstate listener + navigation guards. Idempotent. */
 export function installSheetHistory(r: Router): void {
   if (installed)
     return
@@ -88,25 +102,30 @@ export function installSheetHistory(r: Router): void {
 
   window.addEventListener('popstate', onPopState)
 
-  // A reload while a sheet was open lands on a synthetic entry. Sheets boot
-  // closed, so strip the stale marker to keep history clean.
   if (window.history.state?.__sheet)
     window.history.replaceState({ ...window.history.state, __sheet: undefined }, '')
 
-  // Navigating to another page while sheets are open (rare - the sheet overlay
-  // blocks in-app links, but guards programmatic pushes) would strand the
-  // synthetic entries mid-stack. Unwind them first, then reissue the nav.
+  // Navigating away closes every open sheet and drains their synthetic entries
+  // in one shot, then reissues the navigation once history is clean. Being the
+  // single authority here is what makes "close sheet + navigate in the same
+  // tick" (e.g. search select) race-free - a sheet never fights history.go
+  // against the router, because the router's own history change is gated behind
+  // this guard.
   r.beforeEach((to, from) => {
-    if (stack.length === 0 || to.fullPath === from.fullPath)
+    if (to.fullPath === from.fullPath)
+      return true
+    if (stack.length === 0 && syntheticDepth === 0)
       return true
 
     const removed = stack.splice(0)
     for (let k = removed.length - 1; k >= 0; k--)
       removed[k]!.requestClose()
 
-    pendingNav = to.fullPath
-    poppingSelf = true
-    window.history.go(-removed.length)
-    return false
+    if (syntheticDepth > 0) {
+      pendingNav = to.fullPath
+      popEntries(syntheticDepth)
+      return false
+    }
+    return true
   })
 }

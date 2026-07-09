@@ -1,28 +1,29 @@
 // @vitest-environment happy-dom
-import type { Router } from 'vue-router'
-
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// The module is a singleton (module-level stack + one popstate listener). Each
-// test re-imports it fresh and captures the popstate handler instead of
-// dispatching on window, so listeners never accumulate across tests.
 type Mod = typeof import('./useSheetHistory')
+type Guard = (to: { fullPath: string }, from: { fullPath: string }) => boolean | void
 
 let popstate: ((e: PopStateEvent) => void) | undefined
+let guard: Guard | undefined
+let push: ReturnType<typeof vi.fn>
 
-function fakeRouter() {
-  return { beforeEach: vi.fn(), push: vi.fn() } as unknown as Router
-}
+const flush = () => new Promise<void>(r => queueMicrotask(() => r()))
 
 async function load(): Promise<Mod> {
   vi.resetModules()
   popstate = undefined
+  guard = undefined
+  push = vi.fn()
   vi.spyOn(window, 'addEventListener').mockImplementation((type, fn) => {
     if ((type as string) === 'popstate')
       popstate = fn as (e: PopStateEvent) => void
   })
   const mod = await import('./useSheetHistory')
-  mod.installSheetHistory(fakeRouter())
+  mod.installSheetHistory({
+    beforeEach: (fn: Guard) => { guard = fn },
+    push,
+  } as never)
   return mod
 }
 
@@ -33,6 +34,8 @@ function back() {
 beforeEach(() => {
   vi.spyOn(window.history, 'pushState').mockImplementation(() => {})
   vi.spyOn(window.history, 'go').mockImplementation(() => {})
+  vi.spyOn(window.history, 'back').mockImplementation(() => {})
+  vi.spyOn(window.history, 'replaceState').mockImplementation(() => {})
 })
 
 afterEach(() => {
@@ -40,10 +43,37 @@ afterEach(() => {
 })
 
 describe('useSheetHistory', () => {
-  it('pushes a synthetic entry when a sheet registers', async () => {
+  it('defers the synthetic push to a microtask, then pushes once per open sheet', async () => {
     const mod = await load()
     mod.registerSheet(vi.fn())
-    expect(window.history.pushState).toHaveBeenCalledTimes(1)
+    mod.registerSheet(vi.fn())
+    expect(window.history.pushState).not.toHaveBeenCalled()
+    await flush()
+    expect(window.history.pushState).toHaveBeenCalledTimes(2)
+  })
+
+  it('consumes the synthetic entry when a sheet closes', async () => {
+    const mod = await load()
+    const unregister = mod.registerSheet(vi.fn())
+    await flush()
+    unregister()
+    await flush()
+    expect(window.history.go).toHaveBeenCalledWith(-1)
+  })
+
+  it('leaves history untouched when one sheet closes as another opens', async () => {
+    const mod = await load()
+    const unregisterA = mod.registerSheet(vi.fn())
+    await flush()
+    vi.mocked(window.history.pushState).mockClear()
+    vi.mocked(window.history.go).mockClear()
+
+    unregisterA()
+    mod.registerSheet(vi.fn())
+    await flush()
+
+    expect(window.history.pushState).not.toHaveBeenCalled()
+    expect(window.history.go).not.toHaveBeenCalled()
   })
 
   it('closes sheets in LIFO order on Back', async () => {
@@ -52,6 +82,7 @@ describe('useSheetHistory', () => {
     const closeB = vi.fn()
     mod.registerSheet(closeA)
     mod.registerSheet(closeB)
+    await flush()
 
     back()
     expect(closeB).toHaveBeenCalledTimes(1)
@@ -61,40 +92,46 @@ describe('useSheetHistory', () => {
     expect(closeA).toHaveBeenCalledTimes(1)
   })
 
-  it('consumes the synthetic entry when closed by a non-Back path', async () => {
-    const mod = await load()
-    const unregister = mod.registerSheet(vi.fn())
-    unregister()
-    expect(window.history.go).toHaveBeenCalledWith(-1)
-  })
-
-  it('does not double-consume history when Back already closed the sheet', async () => {
+  it('closes sheets and reissues the navigation on route change', async () => {
     const mod = await load()
     const close = vi.fn()
-    const unregister = mod.registerSheet(close)
+    mod.registerSheet(close)
+    await flush()
 
-    back()
+    const result = guard!({ fullPath: '/x' }, { fullPath: '/y' })
     expect(close).toHaveBeenCalledTimes(1)
+    expect(window.history.go).toHaveBeenCalledWith(-1)
+    expect(result).toBe(false)
 
-    vi.mocked(window.history.go).mockClear()
-    unregister()
+    back() // popstate emitted by history.go
+    expect(push).toHaveBeenCalledWith('/x')
+  })
+
+  it('allows navigation without touching history when no synthetic entry exists yet', async () => {
+    const mod = await load()
+    const close = vi.fn()
+    mod.registerSheet(close) // registered but reconcile microtask not flushed
+
+    const result = guard!({ fullPath: '/x' }, { fullPath: '/y' })
+    expect(close).toHaveBeenCalledTimes(1)
+    expect(result).toBe(true)
     expect(window.history.go).not.toHaveBeenCalled()
   })
 
-  it('swallows the popstate caused by its own history.go', async () => {
-    const mod = await load()
-    const closeA = vi.fn()
-    const closeB = vi.fn()
-    mod.registerSheet(closeA)
-    const unregisterB = mod.registerSheet(closeB)
-
-    unregisterB() // sets poppingSelf, history.go is mocked (no real popstate)
-    back() // simulate the popstate that history.go would emit
-    expect(closeA).not.toHaveBeenCalled() // swallowed, did not close the sheet below
+  it('bounces a Forward into a consumed synthetic entry', async () => {
+    await load()
+    vi.spyOn(window.history, 'state', 'get').mockReturnValue({ __sheet: true })
+    back()
+    expect(window.history.back).toHaveBeenCalled()
   })
 
-  it('does nothing on Back when no sheet is open', async () => {
-    await load()
-    expect(() => back()).not.toThrow()
+  it('strips a stale synthetic marker left by a reload', async () => {
+    vi.resetModules()
+    push = vi.fn()
+    vi.spyOn(window, 'addEventListener').mockImplementation(() => {})
+    vi.spyOn(window.history, 'state', 'get').mockReturnValue({ __sheet: true })
+    const mod = await import('./useSheetHistory')
+    mod.installSheetHistory({ beforeEach: () => {}, push } as never)
+    expect(window.history.replaceState).toHaveBeenCalled()
   })
 })

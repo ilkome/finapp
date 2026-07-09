@@ -36,7 +36,6 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       :title="t('common.date')"
       :isOpen="isShow"
       class="grow"
-      history
       isShowCloseBtn
       @openModal="isShow = true"
       @closeModal="isShow = false"
