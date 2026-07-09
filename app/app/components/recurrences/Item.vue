@@ -2,6 +2,7 @@
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
 import { nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrenceMenuItems } from '~/components/recurrences/useRecurrenceMenuItems'
@@ -9,24 +10,29 @@ import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStor
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { id, rule } = defineProps<{
+const { id, rule, selectedId } = defineProps<{
   id: RecurrenceId
   rule: RecurrenceItem
+  selectedId?: RecurrenceId
 }>()
 
 const emit = defineEmits<{
   edit: [id: RecurrenceId]
+  select: [id: RecurrenceId]
 }>()
 
 const { locale, t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
+const currenciesStore = useCurrenciesStore()
 const m = useRecurrenceMenuItems()
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 const category = computed(() => categoriesStore.items?.[rule.categoryId])
 const wallet = computed(() => walletsStore.items?.[rule.walletId])
+const isActive = computed(() => rule.status === 'active')
+const isSelected = computed(() => selectedId === id)
 
 const periodLabel = computed(() => {
   const unit = t(`recurrences.unit.${rule.freq}`, rule.interval)
@@ -60,17 +66,19 @@ const contextMenuItems = computed(() => {
 <template>
   <UiContextMenuMy :items="contextMenuItems">
     <div
-      class="bg-elevated interactive rounded-md px-3 py-2"
-      :class="{ 'opacity-60': rule.status !== 'active' }"
-      @click="emit('edit', id)"
+      class="bg-elevated interactive rounded-md border px-3 py-2"
+      :class="isSelected ? 'border-primary/40' : 'border-transparent'"
+      :style="rule.status !== 'active' ? { opacity: 0.6 } : undefined"
+      @click="isActive ? emit('select', id) : emit('edit', id)"
     >
       <div class="flex items-center gap-2">
-        <div
-          class="flex size-8 shrink-0 items-center justify-center rounded-full"
-          :style="{ background: category?.color ?? 'var(--ui-bg-accented)' }"
-        >
-          <Icon :name="category?.icon ?? 'lucide:repeat'" size="18" class="text-white" />
-        </div>
+        <UiIconBase
+          :name="category?.icon ?? 'lucide:repeat'"
+          :color="category?.color"
+          :size="18"
+          class="size-8 shrink-0 p-1.5"
+          invert
+        />
 
         <div class="min-w-0 grow">
           <div class="text-highlighted truncate text-sm">
@@ -93,11 +101,17 @@ const contextMenuItems = computed(() => {
 
         <Amount
           :amount="rule.amount"
-          :currencyCode="wallet?.currency ?? 'USD'"
+          :currencyCode="wallet?.currency ?? currenciesStore.base"
           :isShowBaseRate="false"
           :type="rule.type"
           :colorize="rule.type === TrnType.Income ? 'income' : undefined"
           variant="sm"
+        />
+        <Icon
+          v-if="isActive"
+          :name="isSelected ? 'lucide:filter-x' : 'lucide:chevron-right'"
+          size="16"
+          :class="isSelected ? 'text-primary' : 'text-muted'"
         />
       </div>
     </div>

@@ -1,19 +1,47 @@
 <script setup lang="ts">
-import type { RecurrenceId, RecurrenceStatus } from '~/components/recurrences/types'
+import type { RecurrenceId, RecurrenceItem, RecurrenceStatus } from '~/components/recurrences/types'
 
+import { getAmountInRate } from '~/components/amount/getTotal'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { addCivilDays, todayCivilDayEpoch } from '~/components/date/utils'
+import { nextOccurrence, occurrencesInRange } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
+const { selectedId, sortMode = 'date' } = defineProps<{
+  selectedId?: RecurrenceId
+  sortMode?: 'cost' | 'date'
+}>()
 
 const emit = defineEmits<{
   edit: [id: RecurrenceId]
+  select: [id: RecurrenceId]
 }>()
 
 const { t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
+const walletsStore = useWalletsStore()
+const currenciesStore = useCurrenciesStore()
 
 const order: RecurrenceStatus[] = ['active', 'paused', 'cancelled']
 
+// Committed cost over the next 365 civil days, in base currency - the ranking key for "biggest".
+function annualBaseCost(rule: RecurrenceItem): number {
+  const start = todayCivilDayEpoch()
+  const count = occurrencesInRange(rule, { end: addCivilDays(start, 365), start }).length
+  if (!count)
+    return 0
+  const currency = walletsStore.items?.[rule.walletId]?.currency ?? currenciesStore.base
+  return getAmountInRate({
+    amount: rule.amount * count,
+    baseCurrencyCode: currenciesStore.base,
+    currencyCode: currency,
+    rates: currenciesStore.rates,
+  })
+}
+
 const groups = computed(() => {
-  const buckets: Record<RecurrenceStatus, { id: string, rule: typeof items[string] }[]> = {
+  const buckets: Record<RecurrenceStatus, { id: string, rule: RecurrenceItem }[]> = {
     active: [],
     cancelled: [],
     paused: [],
@@ -21,6 +49,17 @@ const groups = computed(() => {
   const items = recurrencesStore.items ?? {}
   for (const [id, rule] of Object.entries(items))
     buckets[rule.status].push({ id, rule })
+
+  const today = todayCivilDayEpoch()
+  for (const status of order) {
+    buckets[status].sort((a, b) => {
+      if (sortMode === 'cost')
+        return annualBaseCost(b.rule) - annualBaseCost(a.rule)
+      // By next charge date, soonest first; rules with no upcoming charge sink to the bottom.
+      return (nextOccurrence(a.rule, today) ?? Number.POSITIVE_INFINITY)
+        - (nextOccurrence(b.rule, today) ?? Number.POSITIVE_INFINITY)
+    })
+  }
   return buckets
 })
 </script>
@@ -38,7 +77,9 @@ const groups = computed(() => {
             :id="entry.id"
             :key="entry.id"
             :rule="entry.rule"
+            :selectedId="selectedId"
             @edit="emit('edit', $event)"
+            @select="emit('select', $event)"
           />
         </div>
       </template>

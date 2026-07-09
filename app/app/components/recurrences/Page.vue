@@ -1,26 +1,20 @@
 <script setup lang="ts">
-import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
+import { useStorage } from '@vueuse/core'
+
+import type { RecurrenceId } from '~/components/recurrences/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
-import { occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useRecurrenceTotals } from '~/components/recurrences/useRecurrenceTotals'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
-const trnsStore = useTrnsStore()
-const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const trnsFormStore = useTrnsFormStore()
 const { totals } = useRecurrenceTotals()
 const { openDocs } = useDocsLink()
-
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 
 const editingId = ref<RecurrenceId | undefined>()
 
@@ -28,8 +22,29 @@ function openEdit(id: RecurrenceId) {
   editingId.value = id
 }
 
+// Тap an active subscription to filter Платежи to just its occurrences; re-tap (or the chip) clears.
+const selectedRuleId = ref<RecurrenceId | undefined>()
+const paymentsEl = ref<HTMLElement | null>(null)
+function onSelect(id: RecurrenceId) {
+  if (selectedRuleId.value === id) {
+    selectedRuleId.value = undefined
+    return
+  }
+  selectedRuleId.value = id
+  nextTick(() => paymentsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+}
+// Drop a stale filter if the subscription is deleted or no longer active.
+watch(() => selectedRuleId.value && recurrencesStore.activeItems[selectedRuleId.value], (rule) => {
+  if (selectedRuleId.value && !rule)
+    selectedRuleId.value = undefined
+})
+
+const sortMode = useStorage<'cost' | 'date'>('finapp.recurrences.sortMode', 'date')
+const sortModes = ['date', 'cost'] as const
+const activeCount = computed(() => Object.keys(recurrencesStore.activeItems).length)
+
 // Deep link from the transaction form ("part of a recurring series"): ?edit=<ruleId> opens the
-// editor once the rule exists locally, then the query is cleared so a refresh does not reopen it.
+// editor once the rule exists locally, then only that key is cleared so a refresh does not reopen it.
 const route = useRoute()
 const router = useRouter()
 watch(
@@ -38,33 +53,13 @@ watch(
     const id = Array.isArray(edit) ? edit[0] : edit
     if (id && recurrencesStore.items?.[id as RecurrenceId]) {
       openEdit(id as RecurrenceId)
-      router.replace({ query: {} })
+      router.replace({ query: { ...route.query, edit: undefined } })
     }
   },
   { immediate: true },
 )
 
 useHead({ title: t('recurrences.title') })
-
-// Manual (autoCreate=false) active rules with due, unrealized, unskipped occurrences.
-const pending = computed(() => {
-  const today = todayCivilDayEpoch()
-  const trns = trnsStore.items ?? {}
-  const out: { day: number, id: string, rule: RecurrenceItem }[] = []
-  for (const [id, rule] of Object.entries(recurrencesStore.items ?? {})) {
-    if (rule.status !== 'active' || rule.autoCreate)
-      continue
-    for (const day of occurrencesInRange(rule, { end: today, start: rule.anchorDate })) {
-      if (!trns[occurrenceTrnId(id, day)])
-        out.push({ day, id, rule })
-    }
-  }
-  return out.sort((a, b) => a.day - b.day)
-})
-
-function fmtDay(day: number) {
-  return formatByLocale(day, 'd MMM yyyy', dateLocale.value)
-}
 </script>
 
 <template>
@@ -103,53 +98,6 @@ function fmtDay(day: number) {
           </div>
         </div>
 
-        <!-- Pending to confirm -->
-        <div v-if="pending.length">
-          <UiTextSubtitle class="mb-1 px-1 tracking-wide uppercase">
-            {{ t('recurrences.pending.title') }} ({{ pending.length }})
-          </UiTextSubtitle>
-          <div class="grid gap-1">
-            <div
-              v-for="p in pending"
-              :key="`${p.id}:${p.day}`"
-              class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2"
-            >
-              <div class="min-w-0 grow">
-                <div class="text-highlighted truncate text-sm">
-                  {{ recurrencesStore.items?.[p.id]?.desc ?? p.rule.categoryId }}
-                </div>
-                <div class="text-2xs text-muted">
-                  {{ fmtDay(p.day) }}
-                </div>
-              </div>
-              <Amount
-                :amount="p.rule.amount"
-                :currencyCode="walletsStore.items?.[p.rule.walletId]?.currency ?? 'USD'"
-                :isShowBaseRate="false"
-                :type="p.rule.type"
-                variant="sm"
-              />
-              <button
-                type="button"
-                class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
-                @click="recurrencesStore.confirmOccurrence(p.id, p.day)"
-              >
-                {{ t('recurrences.actions.confirm') }}
-              </button>
-              <button
-                type="button"
-                class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
-                @click="recurrencesStore.skipOccurrence(p.id, p.day)"
-              >
-                {{ t('recurrences.actions.skip') }}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Upcoming timeline (forward occurrences, with due-soon highlight) -->
-        <RecurrencesUpcoming v-if="recurrencesStore.hasItems" />
-
         <!-- Empty state -->
         <div v-if="!recurrencesStore.hasItems" class="flex-center grow flex-col gap-3 py-10 text-center">
           <Icon name="lucide:repeat" size="40" class="text-muted" />
@@ -164,8 +112,42 @@ function fmtDay(day: number) {
           </div>
         </div>
 
-        <!-- List -->
-        <RecurrencesList v-else @edit="openEdit" />
+        <template v-else>
+          <!-- Подписки: the recurring commitments (rules) -->
+          <div>
+            <div class="mb-1 flex items-center gap-2 px-1">
+              <UiTextSubtitle class="tracking-wide uppercase">
+                {{ t('recurrences.subscriptions.title') }}
+              </UiTextSubtitle>
+              <span class="grow" />
+              <div v-if="activeCount > 1" class="flex gap-1">
+                <UiTabsItemPill
+                  v-for="mode in sortModes"
+                  :key="mode"
+                  :isActive="sortMode === mode"
+                  variant="outline"
+                  @click="sortMode = mode"
+                >
+                  {{ t(`recurrences.sort.${mode}`) }}
+                </UiTabsItemPill>
+              </div>
+            </div>
+            <RecurrencesList
+              :selectedId="selectedRuleId"
+              :sortMode="sortMode"
+              @edit="openEdit"
+              @select="onSelect"
+            />
+          </div>
+
+          <!-- Платежи: the upcoming individual charges (occurrences) -->
+          <div ref="paymentsEl">
+            <RecurrencesPayments
+              :filterId="selectedRuleId"
+              @clearFilter="selectedRuleId = undefined"
+            />
+          </div>
+        </template>
       </template>
     </div>
 

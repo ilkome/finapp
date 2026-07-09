@@ -202,6 +202,10 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
   function createFromExistingTrn(trnId: TrnId, trn: TrnItem, config: RepeatConfig): RecurrenceId | undefined {
     if (trn.type === TrnType.Transfer || !('amount' in trn))
       return undefined
+    // The trn is already an occurrence of a series: never spawn a second rule (which would orphan
+    // the first and re-link the trn). Schedule changes go through the rule editor (RecurrenceLink).
+    if (trn.recurrenceId && items.value?.[trn.recurrenceId])
+      return trn.recurrenceId
 
     const anchorDate = trn.date
     // Generate forward only: resume from today (so months between an old trn and now are NOT
