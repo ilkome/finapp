@@ -33,6 +33,8 @@ const goalDateLabel = computed(() => props.progress.target ? formatByLocale(prop
 const targetPct = computed(() => props.progress.target ? Math.round(props.progress.target.pct * 100) : 0)
 
 const isArchived = computed(() => props.budget.status === 'archived')
+// "Snoozed" = an explicit 0 assignment this period, so the budget asks for nothing (YNAB Snooze).
+const isSnoozed = computed(() => props.progress.hasAssignment && props.progress.assignedRaw === 0)
 const confirmDelete = ref(false)
 function askDelete() {
   confirmDelete.value = true
@@ -61,6 +63,9 @@ const contextMenuItems = computed(() => {
   if (!isArchived.value) {
     primary.push(m.move(props.id, id => emit('move', id)))
     primary.push(m.history(props.id, id => emit('history', id)))
+    primary.push(isSnoozed.value
+      ? m.unskip(props.id, id => budgetsStore.clearAssignment(id, props.periodStart))
+      : m.skip(props.id, id => budgetsStore.setAssignment(id, props.periodStart, 0)))
   }
   primary.push(lifecycle)
   return [primary, [m.delete(props.id, askDelete)]]
@@ -199,9 +204,10 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
           :class="barClass"
           :style="{ width: `${fillPct}%` }"
         />
-        <!-- Pace = where spending "should" be by now; contrasts against both the track and the fill. -->
+        <!-- Pace = where spending "should" be by now; contrasts against both the track and the fill.
+             Kept visible at 100% (end of period) - that's exactly when the pace check matters most. -->
         <div
-          v-if="pacePct > 0 && pacePct < 100"
+          v-if="pacePct > 0"
           class="bg-inverted ring-default absolute -top-1 h-4 w-[3px] -translate-x-1/2 rounded-full ring-1"
           :style="{ left: `${pacePct}%` }"
           :title="t('budgets.pace')"

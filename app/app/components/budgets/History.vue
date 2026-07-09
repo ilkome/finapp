@@ -30,8 +30,9 @@ const name = computed(() => {
   return (catId && categoriesStore.items?.[catId]?.name) || catId || props.budgetId
 })
 
-// Only periods that actually had spend (most recent first); leading empty periods add no signal.
-const rows = computed(() => props.history.filter(r => r.activity > 0).reverse())
+// Periods with spend OR an assignment (most recent first): a funded-but-unspent period is still
+// signal (you set money aside), only truly empty leading periods are dropped.
+const rows = computed(() => props.history.filter(r => r.activity > 0 || r.assigned > 0).reverse())
 
 function label(periodStart: number) {
   const fmt = props.periodType === 'year' ? 'yyyy' : props.periodType === 'week' ? 'd MMM' : 'LLL yyyy'

@@ -86,6 +86,7 @@ export default {
     periodUnit: { month: 'месяц', week: 'неделю', year: 'год' },
     projected: 'Прогноз',
     rollover: { none: 'Без переноса', surplus: 'Переносить остаток', surplus_deficit: 'Переносить остаток и перерасход' },
+    skip: 'Пропустить период',
     target: { by: 'до {date}', fund: 'Отложить', reached: 'Накоплено' },
     title: 'Бюджеты',
     triad: {
@@ -94,6 +95,7 @@ export default {
     },
     trns: { empty: 'Нет транзакций за период.' },
     unarchive: 'Из архива',
+    unskip: 'Вернуть период',
   },
 
   categories: {

@@ -22,8 +22,10 @@ const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, s
 // which is confusing in limits mode, so only surface it once income lands this period. (A4)
 const showToAssign = computed(() => periodIncomeTotal.value > 0)
 
-// Paging into the past stops at the period holding the earliest transaction - older periods have
-// no activity, so the same limit against zero spend is pointless. No transactions -> stay put.
+const hasActiveItems = computed(() => Object.keys(budgetsStore.activeItems).length > 0)
+
+// Paging into the past stops at the earliest period with activity OR an explicit assignment - older
+// periods carry no signal. A limit set in an otherwise-empty past period must stay reachable.
 const earliestTrnDate = computed(() => {
   let min = Number.POSITIVE_INFINITY
   for (const trn of Object.values(trnsStore.items ?? {})) {
@@ -33,16 +35,45 @@ const earliestTrnDate = computed(() => {
   return min === Number.POSITIVE_INFINITY ? null : min
 })
 
-const canGoPrev = computed(() => {
-  if (earliestTrnDate.value == null)
-    return false
-  const earliestPeriodStart = getStartOf(new UTCDate(earliestTrnDate.value), period.periodType.value).getTime()
-  return period.range.value.start > earliestPeriodStart
+const earliestAssignmentStart = computed(() => {
+  let min = Number.POSITIVE_INFINITY
+  for (const a of Object.values(budgetsStore.assignments ?? {})) {
+    if (a.periodStart < min)
+      min = a.periodStart
+  }
+  return min === Number.POSITIVE_INFINITY ? null : min
 })
+
+const earliestPeriodStart = computed(() => {
+  const bounds: number[] = []
+  if (earliestTrnDate.value != null)
+    bounds.push(getStartOf(new UTCDate(earliestTrnDate.value), period.periodType.value).getTime())
+  if (earliestAssignmentStart.value != null)
+    bounds.push(getStartOf(new UTCDate(earliestAssignmentStart.value), period.periodType.value).getTime())
+  return bounds.length ? Math.min(...bounds) : null
+})
+
+const canGoPrev = computed(() => earliestPeriodStart.value != null && period.range.value.start > earliestPeriodStart.value)
+
+// Forward paging: up to a year of periods ahead (plan / pre-assign / reach a goal date).
+const MAX_FUTURE_OFFSET = 12
+const canGoNext = computed(() => period.offset.value < MAX_FUTURE_OFFSET)
 
 function goPrev() {
   if (canGoPrev.value)
     period.prev()
+}
+function goNext() {
+  if (canGoNext.value)
+    period.next()
+}
+function onNav(action: 'next' | 'prev' | 'today') {
+  if (action === 'prev')
+    goPrev()
+  else if (action === 'next')
+    goNext()
+  else
+    period.reset()
 }
 
 useHead({ title: t('budgets.title') })
@@ -135,32 +166,21 @@ function setPeriodType(type: BudgetPeriodType) {
           </UiTabsItemPill>
         </div>
 
-        <div class="flex items-center gap-1">
-          <UiActionButton
-            :ariaLabel="t('base.previous')"
-            :class="{ 'pointer-events-none opacity-30': !canGoPrev }"
-            :disabled="!canGoPrev"
-            @click="goPrev"
-          >
-            <Icon name="lucide:chevron-left" size="20" />
-          </UiActionButton>
+        <DateNav
+          :isEnd="!canGoNext"
+          :isShowNavHome="period.offset.value !== 0"
+          :isStart="!canGoPrev"
+          @changeDate="onNav"
+        >
           <UiActionButton variant="text" @click="period.reset()">
             {{ periodLabel }}
           </UiActionButton>
-          <UiActionButton
-            :ariaLabel="t('base.next')"
-            :class="{ 'pointer-events-none opacity-30': period.offset.value >= 0 }"
-            :disabled="period.offset.value >= 0"
-            @click="period.next()"
-          >
-            <Icon name="lucide:chevron-right" size="20" />
-          </UiActionButton>
-        </div>
+        </DateNav>
       </div>
 
       <template v-if="budgetsStore.isReady">
-        <!-- Hero: safe to spend + to assign -->
-        <template v-if="budgetsStore.hasItems">
+        <!-- Hero: safe to spend + to assign (only meaningful with at least one active budget) -->
+        <template v-if="hasActiveItems">
           <div class="grid grid-cols-1 gap-2" :class="{ 'sm:grid-cols-2': showToAssign }">
             <StatSumItem
               :amount="safeToSpendTotal"
@@ -182,8 +202,8 @@ function setPeriodType(type: BudgetPeriodType) {
           </div>
         </template>
 
-        <!-- Empty -->
-        <div v-if="!budgetsStore.hasItems" class="flex-center grow flex-col gap-3 py-10 text-center">
+        <!-- Empty (no active budgets - archived-only falls here too, with the archived list below) -->
+        <div v-if="!hasActiveItems" class="flex-center grow flex-col gap-3 py-10 text-center">
           <Icon name="lucide:wallet" size="40" class="text-muted" />
           <div class="text-muted text-sm">
             {{ t('budgets.empty') }}
@@ -193,9 +213,9 @@ function setPeriodType(type: BudgetPeriodType) {
           </UiButtonAccent>
         </div>
 
-        <!-- List -->
+        <!-- List (active groups; archived group still shows when only archived budgets remain) -->
         <BudgetsList
-          v-else
+          v-if="budgetsStore.hasItems"
           :periodStart="period.range.value.start"
           :progressFor="progressFor"
           @edit="openEdit"

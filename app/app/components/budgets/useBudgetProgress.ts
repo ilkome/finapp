@@ -237,7 +237,32 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     }
   }
 
-  // Page hero (limits mode): discretionary money left after committed recurring spend.
+  // Committed recurring expense in categories that NO budget covers (so their upcoming bills still
+  // reduce discretionary money). Union of all budgets' owned categories, then sweep the rest.
+  function committedUnbudgeted(range: Range): number {
+    const budgeted = new Set<CategoryId>()
+    for (const id of Object.keys(budgetsStore.activeItems)) {
+      for (const c of ownedSet(budgetsStore.activeItems[id]!))
+        budgeted.add(c)
+    }
+    const base = currenciesStore.base
+    const rates = currenciesStore.rates
+    let sum = 0
+    for (const [ruleId, rule] of Object.entries(recurrencesStore.activeItems)) {
+      if (rule.type !== TrnType.Expense || budgeted.has(rule.categoryId))
+        continue
+      for (const day of occurrencesInRange(rule, range)) {
+        if (trnsStore.items?.[occurrenceTrnId(ruleId, day)])
+          continue
+        const currency = walletsStore.items?.[rule.walletId]?.currency ?? base
+        sum += getAmountInRate({ amount: rule.amount, baseCurrencyCode: base, currencyCode: currency, rates })
+      }
+    }
+    return sum
+  }
+
+  // Page hero (limits mode): discretionary money left after ALL committed recurring spend - both
+  // inside expense budgets and in categories with no budget at all.
   const safeToSpendTotal = computed(() => {
     let expenseAvailable = 0
     let committed = 0
@@ -252,7 +277,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       expenseAvailable += p.available
       committed += p.committed
     }
-    return safeToSpend(expenseAvailable, committed)
+    return safeToSpend(expenseAvailable, committed + committedUnbudgeted(period.range.value))
   })
 
   // Income received this period across all categories, in base currency (drives the to-assign pool).
@@ -274,8 +299,10 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     let assigned = 0
     for (const id of Object.keys(budgetsStore.activeItems)) {
       const budget = budgetsStore.activeItems[id]!
+      // A target counts only its REAL funding (explicit assignments), matching how safe-to-spend and
+      // the target overlay treat it - so an unfunded goal doesn't eat the to-assign pool. (review 4)
       if (budget.kind === 'expense')
-        assigned += effectiveAssigned(id, budget, start)
+        assigned += isTargetBudget(budget) ? explicitAssignedBase(id, budget, start) : effectiveAssigned(id, budget, start)
     }
     return toAssignPool(periodIncomeTotal.value, assigned)
   })

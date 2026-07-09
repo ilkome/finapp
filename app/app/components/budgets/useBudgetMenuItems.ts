@@ -48,11 +48,27 @@ export function useBudgetMenuItems() {
       }
     },
 
+    skip(budgetId: BudgetId, onSkip: (id: BudgetId) => void): Item {
+      return {
+        icon: 'lucide:bell-off',
+        label: t('budgets.skip'),
+        onSelect: () => onSkip(budgetId),
+      }
+    },
+
     unarchive(budgetId: BudgetId, onUnarchive: (id: BudgetId) => void): Item {
       return {
         icon: 'lucide:archive-restore',
         label: t('budgets.unarchive'),
         onSelect: () => onUnarchive(budgetId),
+      }
+    },
+
+    unskip(budgetId: BudgetId, onUnskip: (id: BudgetId) => void): Item {
+      return {
+        icon: 'lucide:bell',
+        label: t('budgets.unskip'),
+        onSelect: () => onUnskip(budgetId),
       }
     },
   }

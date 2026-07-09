@@ -57,9 +57,10 @@ export function useBudgetPeriod() {
   function prev() {
     offset.value -= 1
   }
+  // Forward navigation is allowed (plan a future period / pre-assign / reach a goal date); the page
+  // bounds how far ahead via a disabled Next button.
   function next() {
-    if (offset.value < 0)
-      offset.value += 1
+    offset.value += 1
   }
   function reset() {
     offset.value = 0

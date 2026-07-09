@@ -86,6 +86,7 @@ export default {
     periodUnit: { month: 'month', week: 'week', year: 'year' },
     projected: 'Projected',
     rollover: { none: 'No rollover', surplus: 'Roll over surplus', surplus_deficit: 'Roll over surplus & deficit' },
+    skip: 'Skip this period',
     target: { by: 'by {date}', fund: 'Set aside', reached: 'Funded' },
     title: 'Budgets',
     triad: {
@@ -94,6 +95,7 @@ export default {
     },
     trns: { empty: 'No transactions this period.' },
     unarchive: 'Unarchive',
+    unskip: 'Un-skip',
   },
 
   categories: {
