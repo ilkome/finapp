@@ -326,6 +326,33 @@ export function nextOccurrence(rule: RecurrenceItem, now: number): number | unde
 }
 
 /**
+ * Earliest next occurrence (strictly after `now`) across `entries`, plus every rule landing on that
+ * day (so same-day paydays aggregate instead of hiding one). Delegates to nextOccurrence, so it is
+ * skip-aware, end-aware and cancelled-safe for free. Deliberately type-agnostic - callers filter by
+ * rule type (e.g. income-only for the payday caption).
+ */
+export function earliestNextOccurrence(
+  entries: [RecurrenceId, RecurrenceItem][],
+  now: number,
+): { day: number, rules: [RecurrenceId, RecurrenceItem][] } | undefined {
+  let day: number | undefined
+  let rules: [RecurrenceId, RecurrenceItem][] = []
+  for (const entry of entries) {
+    const occ = nextOccurrence(entry[1], now)
+    if (occ == null)
+      continue
+    if (day == null || occ < day) {
+      day = occ
+      rules = [entry]
+    }
+    else if (occ === day) {
+      rules.push(entry)
+    }
+  }
+  return day == null ? undefined : { day, rules }
+}
+
+/**
  * Due occurrences to materialize for an autoCreate rule: every occurrence strictly after
  * `lastGeneratedDate` (or the anchor on first run) through `todayEpoch` inclusive. Materializing
  * EVERY missed occurrence (not just the first) avoids the Actual Budget catch-up bug.

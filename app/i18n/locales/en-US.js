@@ -86,6 +86,7 @@ export default {
     periodUnit: { month: 'month', week: 'week', year: 'year' },
     projected: 'Projected',
     rollover: { none: 'No rollover', surplus: 'Roll over surplus', surplus_deficit: 'Roll over surplus & deficit' },
+    safeSheet: { billsIn: 'Upcoming bills in budgets', billsOut: 'Upcoming bills outside budgets', caption: 'What is left to spend freely in {period}. Paid bills are already excluded.', leftIn: 'Left in budgets', payday: 'Payday {date}', perDay: '≈ {amount}/day', untilDate: 'until {date}' },
     skip: 'Skip this period',
     target: { by: 'by {date}', fund: 'Set aside', reached: 'Funded' },
     title: 'Budgets',

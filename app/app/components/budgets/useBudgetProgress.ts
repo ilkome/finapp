@@ -50,6 +50,16 @@ export type BudgetProgress = {
   target: BudgetTarget | null
 }
 
+// Decomposition of the safe-to-spend hero. The hero total derives from these same rows, so the
+// breakdown sheet and the headline can never disagree.
+export type SafeToSpendBreakdown = {
+  available: number
+  committedBudgeted: number
+  committedUnbudgeted: number
+  rows: { available: number, budgetId: BudgetId, committed: number }[]
+  total: number
+}
+
 /** A budget is a sinking-fund "target by date" when it carries both a goal amount and a goal date. */
 function isTargetBudget(budget: BudgetItem): boolean {
   return budget.goalAmount != null && budget.goalAmount > 0 && budget.goalDate != null
@@ -280,6 +290,9 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
 
   // Committed recurring expense in categories that NO budget covers (so their upcoming bills still
   // reduce discretionary money). Union of all budgets' owned categories, then sweep the rest.
+  // Known gap (H1, kept intentionally so the headline stays value-identical): an expense rule whose
+  // category is owned by an income or target budget lands in NEITHER term - the safe-to-spend loop
+  // skips those budgets, yet the budgeted union here still includes their owned sets. Fix deferred.
   function committedUnbudgeted(): number {
     const budgeted = new Set<CategoryId>()
     for (const id of Object.keys(budgetsStore.activeItems)) {
@@ -291,11 +304,11 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     return committedForRules(entries)
   }
 
-  // Page hero (limits mode): discretionary money left after ALL committed recurring spend - both
-  // inside expense budgets and in categories with no budget at all.
-  const safeToSpendTotal = computed(() => {
-    let expenseAvailable = 0
-    let committed = 0
+  // Page hero (limits mode) decomposed: discretionary money left after ALL committed recurring
+  // spend - both inside expense budgets and in categories with no budget at all. The sheet renders
+  // these rows and the hero reads `total`, so the two can never disagree.
+  const safeToSpendBreakdown = computed<SafeToSpendBreakdown>(() => {
+    const rows: SafeToSpendBreakdown['rows'] = []
     for (const id of Object.keys(budgetsStore.activeItems)) {
       const budget = budgetsStore.activeItems[id]!
       // Sinking-fund targets hold earmarked savings, not discretionary money. See review MEDIUM-3.
@@ -304,11 +317,15 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       const p = progressFor(id)
       if (!p)
         continue
-      expenseAvailable += p.available
-      committed += p.committed
+      rows.push({ available: p.available, budgetId: id, committed: p.committed })
     }
-    return safeToSpend(expenseAvailable, committed + committedUnbudgeted())
+    const unbudgeted = committedUnbudgeted()
+    const available = rows.reduce((s, r) => s + r.available, 0)
+    const committedBudgeted = rows.reduce((s, r) => s + r.committed, 0)
+    return { available, committedBudgeted, committedUnbudgeted: unbudgeted, rows, total: safeToSpend(available, committedBudgeted + unbudgeted) }
   })
+
+  const safeToSpendTotal = computed(() => safeToSpendBreakdown.value.total)
 
   // Income received this period across all categories, in base currency (drives the to-assign pool).
   const periodIncomeTotal = computed(() => {
@@ -421,6 +438,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     periodIncomeTotal,
     progressFor,
     reduceAssignment,
+    safeToSpendBreakdown,
     safeToSpendTotal,
     toAssignTotal,
     trnsIdsFor,

@@ -3,7 +3,7 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, todayCivilDayEpoch } from '~/components/date/utils'
-import { committedNativeInRange } from '~/components/recurrences/occurrences'
+import { committedNativeInRange, earliestNextOccurrence, effectiveAmountFor } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -16,6 +16,25 @@ export function useRecurrenceTotals() {
   const recurrencesStore = useRecurrencesStore()
   const walletsStore = useWalletsStore()
   const currenciesStore = useCurrenciesStore()
+
+  // Earliest upcoming income occurrence (payday), converted to base at the rule's wallet currency.
+  // Pure decoration for the safe-to-spend caption - it must NEVER enter any total (envelopes are
+  // period-funded; received income already feeds toAssign). activeItems excludes paused/cancelled.
+  const nextIncome = computed<{ amountBase: number, dayEpoch: number } | null>(() => {
+    const entries = Object.entries(recurrencesStore.activeItems)
+      .filter(([, rule]) => rule.type === TrnType.Income)
+    const hit = earliestNextOccurrence(entries, todayCivilDayEpoch())
+    if (!hit)
+      return null
+    const base = currenciesStore.base
+    const amountBase = hit.rules.reduce((sum, [, rule]) => sum + getAmountInRate({
+      amount: effectiveAmountFor(rule, hit.day),
+      baseCurrencyCode: base,
+      currencyCode: walletsStore.items?.[rule.walletId]?.currency ?? base,
+      rates: currenciesStore.rates,
+    }), 0)
+    return { amountBase, dayEpoch: hit.day }
+  })
 
   const totals = computed(() => {
     const start = todayCivilDayEpoch()
@@ -58,5 +77,5 @@ export function useRecurrenceTotals() {
     }
   })
 
-  return { totals }
+  return { nextIncome, totals }
 }

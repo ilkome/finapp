@@ -8,7 +8,7 @@ import { isTransfer, TrnType } from '~/components/trns/types'
 import type { OccurrenceMatchTrn } from './occurrences'
 
 import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -103,6 +103,40 @@ describe('nextOccurrence', () => {
   it('respects end and skip', () => {
     const r = rule({ anchorDate: U(2024, 0, 1), endCount: 2, endMode: 'count', freq: 'month' })
     expect(nextOccurrence(r, U(2024, 1, 1))).toBeUndefined()
+  })
+})
+
+describe('earliestNextOccurrence', () => {
+  it('picks the minimum next day across rules with different anchors', () => {
+    const a = rule({ anchorDate: U(2024, 0, 5), freq: 'month' })
+    const b = rule({ anchorDate: U(2024, 0, 20), freq: 'month' })
+    // At Jan 10, rule a next fires Feb 5 while rule b fires Jan 20 - b wins.
+    expect(earliestNextOccurrence([['a', a], ['b', b]], U(2024, 0, 10)))
+      .toEqual({ day: U(2024, 0, 20), rules: [['b', b]] })
+  })
+
+  it('returns every rule landing on the shared earliest day', () => {
+    const a = rule({ anchorDate: U(2024, 0, 15), freq: 'month' })
+    const b = rule({ anchorDate: U(2024, 0, 15), freq: 'month' })
+    const hit = earliestNextOccurrence([['a', a], ['b', b]], U(2024, 0, 1))
+    expect(hit?.day).toBe(U(2024, 0, 15))
+    expect(hit?.rules.map(([id]) => id)).toEqual(['a', 'b'])
+  })
+
+  it('ignores cancelled and already-ended rules', () => {
+    const cancelled = rule({ status: 'cancelled' })
+    const ended = rule({ anchorDate: U(2024, 0, 1), endDate: U(2024, 1, 1), endMode: 'date', freq: 'month' })
+    expect(earliestNextOccurrence([['c', cancelled], ['e', ended]], U(2024, 5, 1))).toBeUndefined()
+  })
+
+  it('returns undefined for empty entries', () => {
+    expect(earliestNextOccurrence([], U(2024, 0, 1))).toBeUndefined()
+  })
+
+  it('defers a rule past its skipped next day (delegation is skip-aware)', () => {
+    const r = rule({ anchorDate: U(2024, 0, 1), freq: 'month', skipDates: ['2024-02-01'] })
+    expect(earliestNextOccurrence([['r', r]], U(2024, 0, 15)))
+      .toEqual({ day: U(2024, 2, 1), rules: [['r', r]] })
   })
 })
 

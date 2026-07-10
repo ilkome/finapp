@@ -86,6 +86,7 @@ export default {
     periodUnit: { month: 'месяц', week: 'неделю', year: 'год' },
     projected: 'Прогноз',
     rollover: { none: 'Без переноса', surplus: 'Переносить остаток', surplus_deficit: 'Переносить остаток и перерасход' },
+    safeSheet: { billsIn: 'Предстоящие платежи в бюджетах', billsOut: 'Предстоящие платежи вне бюджетов', caption: 'Сколько можно свободно потратить за {period}. Оплаченные платежи уже исключены.', leftIn: 'Осталось в бюджетах', payday: 'Зарплата {date}', perDay: '≈ {amount}/день', untilDate: 'до {date}' },
     skip: 'Пропустить период',
     target: { by: 'до {date}', fund: 'Отложить', reached: 'Накоплено' },
     title: 'Бюджеты',

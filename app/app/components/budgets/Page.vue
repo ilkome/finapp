@@ -8,6 +8,7 @@ import { useBudgetPeriod } from '~/components/budgets/useBudgetPeriod'
 import { useBudgetProgress } from '~/components/budgets/useBudgetProgress'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { formatByLocale, getStartOf } from '~/components/date/utils'
+import { useRecurrenceTotals } from '~/components/recurrences/useRecurrenceTotals'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { locale, t } = useI18n()
@@ -16,7 +17,9 @@ const trnsStore = useTrnsStore()
 
 const { openDocs } = useDocsLink()
 const period = useBudgetPeriod()
-const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, reduceAssignment, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
+const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, reduceAssignment, safeToSpendBreakdown, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
+// Only nextIncome is read here - the composable's `totals` (a lazy 365-day walk) must stay unread.
+const { nextIncome } = useRecurrenceTotals()
 
 // "To assign" is an envelope figure (income - assigned). Without period income it's just -assigned,
 // which is confusing in limits mode, so only surface it once income lands this period. (A4)
@@ -82,6 +85,7 @@ const showForm = ref(false)
 const editingId = ref<BudgetId | undefined>()
 const confirmAutoAssign = ref(false)
 const showReduceAssign = ref(false)
+const showSafeSheet = ref(false)
 
 function openCreate() {
   editingId.value = undefined
@@ -131,6 +135,17 @@ const periodLabel = computed(() => {
     return formatByLocale(period.range.value.start, 'LLLL yyyy', dateLocale.value)
   return `${formatByLocale(period.range.value.start, 'd MMM', dateLocale.value)} – ${formatByLocale(period.range.value.end, 'd MMM', dateLocale.value)}`
 })
+
+// Payday + per-day are pure decoration on the CURRENT period only - they never enter the amount.
+const showNowCaption = computed(() => period.offset.value === 0)
+// daysElapsed already includes today, so this counts today..end inclusive (floored at 1 so the
+// last day still divides).
+const remainingDays = computed(() => Math.max(1, period.daysInPeriod.value - period.daysElapsed.value + 1))
+// A negative daily allowance is noise, so per-day only shows for a positive safe-to-spend.
+const perDay = computed(() => showNowCaption.value && safeToSpendTotal.value > 0
+  ? safeToSpendTotal.value / remainingDays.value
+  : null)
+const periodEndLabel = computed(() => formatByLocale(period.range.value.end, 'd MMM', dateLocale.value))
 
 function setPeriodType(type: BudgetPeriodType) {
   period.periodType.value = type
@@ -187,7 +202,11 @@ function setPeriodType(type: BudgetPeriodType) {
               :amount="safeToSpendTotal"
               :title="t('budgets.hero.safeToSpend')"
               :type="safeToSpendTotal < 0 ? 'expense' : 'income'"
-            />
+              class="cursor-pointer"
+              @click="showSafeSheet = true"
+            >
+              <Icon name="lucide:info" size="14" class="text-muted mb-1" />
+            </StatSumItem>
             <StatSumItem
               v-if="showToAssign"
               :amount="toAssignTotal"
@@ -195,7 +214,19 @@ function setPeriodType(type: BudgetPeriodType) {
               :type="toAssignTotal < 0 ? 'expense' : 'income'"
             />
           </div>
-          <div class="-mt-2 flex justify-end gap-1">
+          <div class="-mt-2 flex items-center justify-end gap-1">
+            <div v-if="showNowCaption" class="text-2xs text-muted mr-auto flex flex-wrap items-center gap-x-2">
+              <span v-if="perDay != null">
+                {{ t('budgets.safeSheet.perDay', { amount: Math.round(perDay) }) }} · {{ t('budgets.safeSheet.untilDate', { date: periodEndLabel }) }}
+              </span>
+              <NuxtLink
+                v-if="nextIncome"
+                class="hover:text-default"
+                to="/recurrences"
+              >
+                {{ t('budgets.safeSheet.payday', { date: formatByLocale(nextIncome.dayEpoch, 'd MMM', dateLocale) }) }}
+              </NuxtLink>
+            </div>
             <UiActionButton
               v-if="showToAssign && toAssignTotal < 0"
               class="text-error"
@@ -273,6 +304,16 @@ function setPeriodType(type: BudgetPeriodType) {
       :periodLabel="periodLabel"
       :trnsIds="trnsIdsFor(trnsId)"
       @closed="trnsId = undefined"
+    />
+
+    <BudgetsSafeToSpend
+      v-if="showSafeSheet"
+      :breakdown="safeToSpendBreakdown"
+      :payday="showNowCaption ? nextIncome : null"
+      :perDay="perDay"
+      :periodEnd="period.range.value.end"
+      :periodLabel="periodLabel"
+      @closed="showSafeSheet = false"
     />
 
     <LayoutConfirmModal
