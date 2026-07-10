@@ -410,6 +410,7 @@ export default {
     },
     freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
     help: { open: 'How recurring works' },
+    history: { nextCharge: 'Next charge', noChanges: 'Price never changed', noNext: 'No upcoming charge', open: 'Open price history', paidThisYear: 'Paid this year', title: 'Price history', wallet: 'Funding wallet' },
     manual: 'confirm',
     next: 'next',
     overdue: 'overdue',

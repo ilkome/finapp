@@ -53,6 +53,9 @@ const rules = computed<[RecurrenceId, RecurrenceItem][]>(() => {
 
 const filteredRule = computed(() => (filterId ? recurrencesStore.items?.[filterId] : undefined))
 
+// The subscription whose read-only price-history sheet is open (opened from the drill-down summary).
+const historyId = ref<RecurrenceId>()
+
 function categoryOf(rule: RecurrenceItem) {
   return categoriesStore.items?.[rule.categoryId]
 }
@@ -344,7 +347,13 @@ function fmtDay(day: number) {
           <Icon name="lucide:x" size="15" />
         </button>
       </div>
-      <div v-if="summary" class="bg-elevated/40 text-2xs text-muted flex flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md px-3 py-2">
+      <button
+        v-if="summary"
+        type="button"
+        class="bg-elevated/40 interactive text-2xs text-muted flex w-full flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md px-3 py-2 text-left"
+        :aria-label="t('recurrences.history.open')"
+        @click="historyId = filterId"
+      >
         <span class="flex items-center gap-1">
           ≈ <Amount
             :amount="summary.yearlyBase"
@@ -356,7 +365,9 @@ function fmtDay(day: number) {
         </span>
         <span v-if="summary.nextLabel">· {{ t('recurrences.next') }} {{ summary.nextLabel }}</span>
         <span v-if="summary.hasPriceHistory" class="text-primary">· {{ t('recurrences.payments.priceChanged') }}</span>
-      </div>
+        <span class="grow" />
+        <Icon name="lucide:chevron-right" size="14" class="text-muted" />
+      </button>
     </div>
 
     <div v-if="isEmpty" class="text-muted px-1 py-4 text-center text-sm">
@@ -508,6 +519,12 @@ function fmtDay(day: number) {
         </div>
       </div>
     </div>
+
+    <RecurrencesHistorySheet
+      v-if="historyId"
+      :recurrenceId="historyId"
+      @closed="historyId = undefined"
+    />
 
     <LayoutConfirmModal
       v-if="bulkAction"

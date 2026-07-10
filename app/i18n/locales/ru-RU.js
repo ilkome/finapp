@@ -410,6 +410,7 @@ export default {
     },
     freq: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
     help: { open: 'Как работают повторения' },
+    history: { nextCharge: 'Следующее списание', noChanges: 'Цена не менялась', noNext: 'Нет предстоящих списаний', open: 'Открыть историю цены', paidThisYear: 'Оплачено в этом году', title: 'История цены', wallet: 'Кошелёк списания' },
     manual: 'подтверждение',
     next: 'далее',
     overdue: 'просрочен',

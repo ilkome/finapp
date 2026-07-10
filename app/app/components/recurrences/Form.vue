@@ -5,7 +5,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { civilDayKey, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
-import { nextOccurrence } from '~/components/recurrences/occurrences'
+import { nextOccurrence, priceHistoryTimeline } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -102,16 +102,8 @@ const nextChargeLabel = computed(() => {
   return next != null ? formatByLocale(next, 'd MMM yyyy', dateLocale.value) : t('recurrences.form.noNext')
 })
 
-// Price history, newest first (seed the current price when it was never changed).
-const priceHistory = computed(() => {
-  const rule = existing.value
-  if (!rule)
-    return []
-  const list = rule.amountHistory?.length
-    ? [...rule.amountHistory]
-    : [{ amount: rule.amount, from: rule.anchorDate }]
-  return list.sort((a, b) => b.from - a.from)
-})
+// Show the timeline only once there is more than the single seeded (current) price.
+const hasPriceHistory = computed(() => !!existing.value && priceHistoryTimeline(existing.value).length > 1)
 
 function onSave(close: () => void) {
   const prev = existing.value
@@ -220,27 +212,15 @@ function onSave(close: () => void) {
         </FormElement>
 
         <!-- Price history -->
-        <FormElement v-if="priceHistory.length > 1">
+        <FormElement v-if="hasPriceHistory && existing">
           <template #label>
             {{ t('recurrences.form.priceHistory') }}
           </template>
-          <div class="grid gap-1">
-            <div
-              v-for="(p, i) in priceHistory"
-              :key="p.from"
-              class="text-2xs flex items-center justify-between"
-              :class="i === 0 ? 'text-highlighted' : 'text-muted'"
-            >
-              <span>{{ t('recurrences.form.priceFrom') }} {{ formatByLocale(p.from, 'd MMM yyyy', dateLocale) }}</span>
-              <Amount
-                :amount="p.amount"
-                :currencyCode="wallet?.currency ?? 'USD'"
-                :isShowBaseRate="false"
-                :type="existing?.type ?? TrnType.Expense"
-                variant="sm"
-              />
-            </div>
-          </div>
+          <RecurrencesPriceTimeline
+            :currency="wallet?.currency ?? 'USD'"
+            :rule="existing"
+            :type="existing.type"
+          />
         </FormElement>
 
         <!-- Next charge date (re-anchors the cadence from a chosen day) -->

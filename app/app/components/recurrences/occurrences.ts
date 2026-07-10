@@ -1,5 +1,5 @@
 import type { Range } from '~/components/date/types'
-import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
+import type { AmountChange, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
 import { addCivilDays, addCivilMonths, addCivilYears, civilDayKey, civilDayStart, lastDayOfMonthCivil } from '~/components/date/utils'
 
@@ -36,6 +36,23 @@ export function effectiveAmountFor(rule: RecurrenceItem, dayEpoch: number): numb
       break
   }
   return amount
+}
+
+export type PriceHistoryEntry = AmountChange & { deltaPct?: number }
+
+/**
+ * Full price timeline ascending by `from`, each entry annotated with its %-change vs the previous
+ * price. A rule with no history is seeded as a single entry from the scalar `amount` at the anchor,
+ * so callers always get at least one row. The first entry has no `deltaPct`.
+ */
+export function priceHistoryTimeline(rule: RecurrenceItem): PriceHistoryEntry[] {
+  const base = rule.amountHistory?.length ? [...rule.amountHistory] : [{ amount: rule.amount, from: civilDayStart(rule.anchorDate) }]
+  const sorted = base.sort((a, b) => a.from - b.from)
+  return sorted.map((entry, i) => {
+    const prev = sorted[i - 1]
+    const deltaPct = prev && prev.amount !== 0 ? (entry.amount - prev.amount) / prev.amount : undefined
+    return { ...entry, deltaPct }
+  })
 }
 
 export type OccurrenceState = 'drift' | 'overdue' | 'paid' | 'upcoming'
@@ -136,6 +153,21 @@ export function periodProgress(rule: RecurrenceItem, ruleId: RecurrenceId, range
     }
   }
   return { paidCount, paidNative, totalCount, totalNative }
+}
+
+/**
+ * How many of the rule's occurrences in `range` are already materialized by a trn carrying an
+ * amount (i.e. paid). A drift / re-priced trn still counts as paid - it realizes the day via the
+ * deterministic occurrence id, same as the rest of the engine.
+ */
+export function paidCountInRange(rule: RecurrenceItem, ruleId: RecurrenceId, range: Range, trns: Record<string, unknown>): number {
+  let n = 0
+  for (const day of occurrencesInRange(rule, range)) {
+    const trn = trns[occurrenceTrnId(ruleId, day)] as { amount?: number } | undefined
+    if (trn?.amount != null)
+      n++
+  }
+  return n
 }
 
 /** Minimal trn shape needed to decide whether a trn realizes an occurrence. */

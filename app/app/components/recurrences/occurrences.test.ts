@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
-import { addCivilDays } from '~/components/date/utils'
+import { addCivilDays, civilDayStart } from '~/components/date/utils'
 import { isTransfer, TrnType } from '~/components/trns/types'
 
 import type { OccurrenceMatchTrn } from './occurrences'
 
 import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, periodProgress, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, periodProgress, priceHistoryTimeline, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -347,6 +347,64 @@ describe('periodProgress', () => {
     const p = periodProgress(r, 'r', range, {}, today)
     // Jan,Feb @100 + Mar,Apr @200 = 600, not a flat amount*count of 800
     expect(p).toEqual({ paidCount: 0, paidNative: 0, totalCount: 4, totalNative: 600 })
+  })
+})
+
+describe('priceHistoryTimeline', () => {
+  it('seeds a single entry from the scalar amount at the anchor when there is no history', () => {
+    const r = rule({ amount: 100, anchorDate: U(2024, 0, 1) })
+    expect(priceHistoryTimeline(r)).toEqual([{ amount: 100, deltaPct: undefined, from: civilDayStart(U(2024, 0, 1)) }])
+  })
+
+  it('orders ascending and annotates each entry with its % change (first has none)', () => {
+    const r = rule({ amountHistory: [{ amount: 100, from: U(2024, 0, 1) }, { amount: 120, from: U(2024, 5, 1) }] })
+    const timeline = priceHistoryTimeline(r)
+    expect(timeline.map(e => e.amount)).toEqual([100, 120])
+    expect(timeline[0]!.deltaPct).toBeUndefined()
+    expect(timeline[1]!.deltaPct).toBeCloseTo(0.2)
+  })
+
+  it('reports a negative delta on a price decrease', () => {
+    const r = rule({ amountHistory: [{ amount: 200, from: U(2024, 0, 1) }, { amount: 150, from: U(2024, 5, 1) }] })
+    expect(priceHistoryTimeline(r)[1]!.deltaPct).toBeCloseTo(-0.25)
+  })
+
+  it('returns unsorted input sorted ascending by from', () => {
+    const r = rule({ amountHistory: [{ amount: 120, from: U(2024, 5, 1) }, { amount: 100, from: U(2024, 0, 1) }] })
+    const timeline = priceHistoryTimeline(r)
+    expect(timeline.map(e => e.from)).toEqual([U(2024, 0, 1), U(2024, 5, 1)])
+    expect(timeline.map(e => e.amount)).toEqual([100, 120])
+    expect(timeline[1]!.deltaPct).toBeCloseTo(0.2)
+  })
+})
+
+describe('paidCountInRange', () => {
+  // Default rule() is monthly anchored Jan 1 2024; a Jan..Apr range holds 4 occurrences (Jan..Apr 1).
+  const range = { end: U(2024, 3, 1), start: U(2024, 0, 1) }
+
+  it('counts only occurrences whose trn carries an amount', () => {
+    const r = rule({ amount: 100, freq: 'month' })
+    const trns = {
+      [occurrenceTrnId('r', U(2024, 0, 1))]: { amount: 100 },
+      [occurrenceTrnId('r', U(2024, 2, 1))]: { amount: 100 },
+    }
+    expect(paidCountInRange(r, 'r', range, trns)).toBe(2)
+  })
+
+  it('does not count a matched trn that carries no amount', () => {
+    const r = rule({ amount: 100, freq: 'month' })
+    const trns = { [occurrenceTrnId('r', U(2024, 1, 1))]: {} }
+    expect(paidCountInRange(r, 'r', range, trns)).toBe(0)
+  })
+
+  it('respects range bounds and skipDates', () => {
+    const r = rule({ amount: 100, freq: 'month', skipDates: ['2024-02-01'] })
+    const trns = {
+      [occurrenceTrnId('r', U(2024, 1, 1))]: { amount: 100 }, // Feb: paid but skipped -> not an occurrence
+      [occurrenceTrnId('r', U(2024, 2, 1))]: { amount: 100 }, // Mar: counts
+      [occurrenceTrnId('r', U(2024, 6, 1))]: { amount: 100 }, // Jul: outside the range
+    }
+    expect(paidCountInRange(r, 'r', range, trns)).toBe(1)
   })
 })
 
