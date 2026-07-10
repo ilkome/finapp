@@ -147,6 +147,12 @@ function confirmPending(p: Occurrence) {
   recurrencesStore.confirmOccurrence(p.id, p.day, amount)
 }
 
+// FormInput emits a string; mirror the old v-model + @input (set the draft, mark the row edited).
+function onDraftInput(p: Occurrence, value: string) {
+  amountDrafts[keyOf(p)] = value
+  editedKeys.add(keyOf(p))
+}
+
 // Inline "delay" quick action for an overdue manual row. `rescheduleFrom` re-anchors the WHOLE
 // series (shifts every future charge and collapses the rule's other overdue rows to the new
 // phase) - the honest effect of the already-implemented store method, matching Form.vue's
@@ -416,15 +422,17 @@ function fmtDay(day: number) {
                 {{ fmtDay(p.day) }} · {{ t('recurrences.overdue') }}
               </div>
             </div>
-            <input
-              v-model="amountDrafts[keyOf(p)]"
+            <FormInput
+              :modelValue="amountDrafts[keyOf(p)] ?? ''"
               type="number"
               inputmode="decimal"
+              min="0"
+              step="any"
               :aria-label="t('recurrences.form.amount')"
-              class="bg-default text-highlighted w-20 rounded-sm px-2 py-1 text-right text-sm"
-              @input="editedKeys.add(keyOf(p))"
+              class="!bg-default !min-h-0 !w-20 !rounded-sm !px-2 !py-1 text-right !text-sm"
+              @update:modelValue="(value: string) => onDraftInput(p, value)"
               @keydown.enter="confirmPending(p)"
-            >
+            />
             <span class="text-2xs text-muted">{{ walletCurrency(p.rule) }}</span>
             <button
               type="button"

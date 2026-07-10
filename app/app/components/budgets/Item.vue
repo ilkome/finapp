@@ -177,13 +177,15 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
 
       <!-- Per-period assignment override editor -->
       <div v-if="editingAssign" class="bg-default/60 mt-2 flex flex-wrap items-center gap-2 rounded-md p-2" @click.stop>
-        <input
+        <FormInput
           v-model="assignInput"
           type="number"
           inputmode="decimal"
-          class="bg-elevated text-highlighted w-24 rounded-sm px-2 py-1 text-sm"
+          min="0"
+          step="any"
+          class="!min-h-0 !w-28 !rounded-sm !px-3 !py-1.5 !text-sm"
           @keydown.enter="saveAssign"
-        >
+        />
         <span class="text-2xs text-muted">{{ assignCurrency }} · {{ t('budgets.assign.forPeriod') }}</span>
         <span class="grow" />
         <button type="button" class="bg-primary text-icon-primary text-2xs rounded-sm px-2 py-1" @click="saveAssign">
