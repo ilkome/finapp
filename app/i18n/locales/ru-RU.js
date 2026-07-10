@@ -414,7 +414,7 @@ export default {
     subscriptions: { title: 'Подписки' },
     summary: { until: 'до' },
     title: 'Регулярные',
-    totals: { monthly: 'В среднем / мес', yearly: 'В год' },
+    totals: { cycle: 'Сменить период', monthly: 'В среднем / мес', perDay: '/ день', weekly: 'В среднем / нед', yearly: 'В год' },
     unit: { day: 'день | дня | дней', month: 'месяц | месяца | месяцев', week: 'неделя | недели | недель', year: 'год | года | лет' },
     upcoming: { days: '{count} дн.', dueSoon: '{count} скоро', title: 'Предстоящие' },
   },

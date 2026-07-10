@@ -414,7 +414,7 @@ export default {
     subscriptions: { title: 'Subscriptions' },
     summary: { until: 'until' },
     title: 'Recurring',
-    totals: { monthly: 'Avg / month', yearly: 'Per year' },
+    totals: { cycle: 'Change timeframe', monthly: 'Avg / month', perDay: '/ day', weekly: 'Avg / week', yearly: 'Per year' },
     unit: { day: 'day | days', month: 'month | months', week: 'week | weeks', year: 'year | years' },
     upcoming: { days: '{count} days', dueSoon: '{count} due soon', title: 'Upcoming' },
   },

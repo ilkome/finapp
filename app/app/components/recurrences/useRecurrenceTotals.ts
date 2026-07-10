@@ -9,8 +9,9 @@ import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 // Committed recurring cashflow over the next 365 civil days, priced per occurrence (amount-history
-// aware) and converted to base currency. Monthly is the smoothed 12-month average (yearly / 12), not
-// a single calendar month's charges. See plans/recurrences.md §10.
+// aware) and converted to base currency. yearly is the true committed 12-month sum; smoothed
+// per-cadence framings (monthly/weekly/daily) are derived at the view via scaleByCadence. perCurrency
+// holds NATIVE (unconverted) yearly totals per wallet currency. See plans/recurrences.md §10.
 export function useRecurrenceTotals() {
   const recurrencesStore = useRecurrencesStore()
   const walletsStore = useWalletsStore()
@@ -48,11 +49,6 @@ export function useRecurrenceTotals() {
     }
 
     return {
-      monthly: {
-        expense: yearlyExpense / 12,
-        income: yearlyIncome / 12,
-        net: (yearlyIncome - yearlyExpense) / 12,
-      },
       perCurrency,
       yearly: {
         expense: yearlyExpense,
