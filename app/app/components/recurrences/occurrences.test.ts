@@ -3,10 +3,11 @@ import { describe, expect, it } from 'vitest'
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
 import { addCivilDays } from '~/components/date/utils'
-import { TrnType } from '~/components/trns/types'
+import { isTransfer, TrnType } from '~/components/trns/types'
 
 import type { OccurrenceMatchTrn } from './occurrences'
 
+import { buildOccurrenceTrn } from './generate'
 import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
@@ -108,6 +109,31 @@ describe('nextOccurrence', () => {
 describe('occurrenceTrnId', () => {
   it('is deterministic from ruleId + civil day', () => {
     expect(occurrenceTrnId('abc', U(2024, 2, 5))).toBe('abc:2024-03-05')
+  })
+
+  // R12 invariant: editing a rule's category/wallet must not re-key already-generated trns, so the
+  // deterministic id excludes them - it depends only on ruleId + day.
+  it('is unchanged when the rule category/wallet differ', () => {
+    const day = U(2024, 2, 5)
+    const a = rule({ categoryId: 'catA', walletId: 'wA' })
+    const b = rule({ categoryId: 'catB', walletId: 'wB' })
+    expect(occurrenceTrnId('rule', day)).toBe(occurrenceTrnId('rule', day))
+    // Sanity: the differing fields are real, yet the id above is derived without them.
+    expect(a.categoryId).not.toBe(b.categoryId)
+    expect(a.walletId).not.toBe(b.walletId)
+  })
+})
+
+describe('buildOccurrenceTrn', () => {
+  // R12: future occurrences follow the edit because the trn is built from the current rule.
+  it('reflects the updated category/wallet on the generated trn', () => {
+    const edited = rule({ categoryId: 'newCat', walletId: 'newWallet' })
+    const trn = buildOccurrenceTrn(edited, 'rule', U(2024, 5, 1), 0)
+    expect(trn.categoryId).toBe('newCat')
+    // A generated occurrence is never a transfer, so it carries a single walletId.
+    expect(isTransfer(trn)).toBe(false)
+    if (!isTransfer(trn))
+      expect(trn.walletId).toBe('newWallet')
   })
 })
 
