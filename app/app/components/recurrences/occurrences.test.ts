@@ -8,7 +8,7 @@ import { isTransfer, TrnType } from '~/components/trns/types'
 import type { OccurrenceMatchTrn } from './occurrences'
 
 import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, periodProgress, priceHistoryTimeline, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -157,6 +157,55 @@ describe('dueOccurrences (catch-up)', () => {
     const r = rule({ anchorDate: U(2024, 5, 1), freq: 'month', lastGeneratedDate: null })
     expect(dueOccurrences(r, U(2024, 4, 15))).toEqual([])
     expect(dueOccurrences(r, U(2024, 5, 1))).toEqual([U(2024, 5, 1)])
+  })
+})
+
+describe('pendingConfirmOccurrences', () => {
+  const today = U(2024, 3, 28)
+  const manual = (over: Partial<RecurrenceItem> = {}) =>
+    rule({ anchorDate: U(2024, 0, 28), autoCreate: false, freq: 'month', ...over })
+
+  it('lists every unrealized due day ascending, including one due exactly today', () => {
+    const out = pendingConfirmOccurrences([['r1', manual()]], {}, today)
+    expect(out.map(o => o.day)).toEqual([U(2024, 0, 28), U(2024, 1, 28), U(2024, 2, 28), U(2024, 3, 28)])
+    expect(out.every(o => o.id === 'r1')).toBe(true)
+  })
+
+  it('excludes autoCreate and non-active rules', () => {
+    expect(pendingConfirmOccurrences([['r1', manual({ autoCreate: true })]], {}, today)).toEqual([])
+    expect(pendingConfirmOccurrences([['r1', manual({ status: 'paused' })]], {}, today)).toEqual([])
+    expect(pendingConfirmOccurrences([['r1', manual({ status: 'cancelled' })]], {}, today)).toEqual([])
+  })
+
+  it('excludes days already realized by the deterministic trn', () => {
+    const trns = { [occurrenceTrnId('r1', U(2024, 1, 28))]: { amount: 100 } }
+    expect(pendingConfirmOccurrences([['r1', manual()]], trns, today).map(o => o.day))
+      .toEqual([U(2024, 0, 28), U(2024, 2, 28), U(2024, 3, 28)])
+  })
+
+  it('starts strictly after lastGeneratedDate', () => {
+    const r = manual({ lastGeneratedDate: U(2024, 1, 28) })
+    expect(pendingConfirmOccurrences([['r1', r]], {}, today).map(o => o.day))
+      .toEqual([U(2024, 2, 28), U(2024, 3, 28)])
+  })
+
+  it('respects skipDates and endMode count', () => {
+    expect(pendingConfirmOccurrences([['r1', manual({ skipDates: ['2024-02-28'] })]], {}, today).map(o => o.day))
+      .toEqual([U(2024, 0, 28), U(2024, 2, 28), U(2024, 3, 28)])
+    expect(pendingConfirmOccurrences([['r1', manual({ endCount: 2, endMode: 'count' })]], {}, today).map(o => o.day))
+      .toEqual([U(2024, 0, 28), U(2024, 1, 28)])
+  })
+
+  it('sorts across multiple rules by day', () => {
+    const a = manual({ anchorDate: U(2024, 2, 10) }) // due Mar 10, Apr 10
+    const b = manual({ anchorDate: U(2024, 2, 20) }) // due Mar 20, Apr 20
+    const out = pendingConfirmOccurrences([['b', b], ['a', a]], {}, today)
+    expect(out.map(o => `${o.id}:${o.day}`)).toEqual([
+      `a:${U(2024, 2, 10)}`,
+      `b:${U(2024, 2, 20)}`,
+      `a:${U(2024, 3, 10)}`,
+      `b:${U(2024, 3, 20)}`,
+    ])
   })
 })
 

@@ -29,11 +29,17 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           )"
           @click="onClick(String(menuId))"
         >
-          <Icon
-            :name="item.icon"
-            class="leading-none"
-            size="22"
-          />
+          <div class="relative">
+            <Icon
+              :name="item.icon"
+              class="leading-none"
+              size="22"
+            />
+            <span
+              v-if="item.badge"
+              class="bg-expense-1 absolute -top-0.5 -right-1 size-1.5 rounded-full"
+            />
+          </div>
           <span
             v-if="isShowMenuLabels"
             class="text-2xs leading-tight font-medium"

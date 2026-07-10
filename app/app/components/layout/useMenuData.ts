@@ -1,9 +1,11 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type MenuItem = {
+  badge?: number
   icon: string
   name: string
   tooltip?: {
@@ -21,6 +23,7 @@ export function useMenuData() {
   const trnsFormStore = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
+  const recurrencesStore = useRecurrencesStore()
   const route = useRoute()
 
   const items = computed<Record<string, MenuItem>>(() => {
@@ -50,6 +53,7 @@ export function useMenuData() {
         name: t('currencies.page.title'),
       },
       recurrences: {
+        badge: recurrencesStore.dueConfirmCount,
         icon: 'hugeicons:calendar-03',
         name: t('recurrences.title'),
       },
@@ -82,7 +86,8 @@ export function useMenuData() {
     categories: items.value.categories!,
     trnForm: { ...items.value.trnForm!, name: t('base.add') },
     dashboard: items.value.dashboard!,
-    menu: { icon: 'hugeicons:menu-01', name: t('base.menu') },
+    // The hamburger dot derives from the recurrences badge: it opens the sheet that holds that entry.
+    menu: { badge: items.value.recurrences!.badge, icon: 'hugeicons:menu-01', name: t('base.menu') },
   }))
 
   const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'dashboard'])

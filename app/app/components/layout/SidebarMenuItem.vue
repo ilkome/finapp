@@ -10,7 +10,10 @@ const { isShowText = true, item, menuId, position } = defineProps<{
   position?: 'bottom'
 }>()
 
+const { t } = useI18n()
 const { checkIsActive, onClick } = useMenuData()
+
+const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.badge))
 </script>
 
 <template>
@@ -21,11 +24,15 @@ const { checkIsActive, onClick } = useMenuData()
     )"
     @click="onClick(menuId)"
   >
-    <div class="flex min-w-8 items-center justify-center">
+    <div class="relative flex min-w-8 items-center justify-center">
       <Icon
         :name="item.icon"
         :size="position === 'bottom' ? '26' : '22'"
         class="text-lg leading-none"
+      />
+      <span
+        v-if="item.badge && !isShowText"
+        class="bg-expense-1 absolute top-0 right-1 size-1.5 rounded-full"
       />
     </div>
 
@@ -35,5 +42,13 @@ const { checkIsActive, onClick } = useMenuData()
     >
       {{ item.name }}
     </div>
+
+    <span
+      v-if="isShowText && item.badge"
+      :title="t('recurrences.pending.title')"
+      class="bg-expense-1/15 text-expense-1 text-2xs rounded-full px-1.5 py-0.5 font-medium tabular-nums"
+    >
+      {{ badgeLabel }}
+    </span>
   </div>
 </template>

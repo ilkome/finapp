@@ -8,7 +8,7 @@ import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~/components/date/utils'
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, periodProgress } from '~/components/recurrences/occurrences'
+import { committedNativeInRange, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, pendingConfirmOccurrences, periodProgress } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -66,22 +66,11 @@ function walletCurrency(rule: RecurrenceItem) {
   return walletsStore.items?.[rule.walletId]?.currency ?? currenciesStore.base
 }
 
-// Manual (confirm-each) due occurrences with no trn yet: strictly after lastGeneratedDate (via
-// dueOccurrences), so a past-start + backfill-off rule no longer floods the list with history.
-const pending = computed(() => {
-  const today = todayCivilDayEpoch()
-  const trns = trnsStore.items ?? {}
-  const out: Occurrence[] = []
-  for (const [id, rule] of rules.value) {
-    if (rule.autoCreate)
-      continue
-    for (const day of dueOccurrences(rule, today)) {
-      if (!trns[occurrenceTrnId(id, day)])
-        out.push({ day, id, rule })
-    }
-  }
-  return out.sort((a, b) => a.day - b.day)
-})
+// Manual (confirm-each) due occurrences with no trn yet: strictly after lastGeneratedDate, so a
+// past-start + backfill-off rule doesn't flood the list with history.
+const pending = computed<Occurrence[]>(() =>
+  pendingConfirmOccurrences(rules.value, trnsStore.items ?? {}, todayCivilDayEpoch()),
+)
 
 // Timeline: recently-realized charges (last RECENT_DAYS) + the forward schedule (.. +horizon),
 // oldest first, each tagged with its realized status. Past days appear only once materialized

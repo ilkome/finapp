@@ -12,7 +12,7 @@ import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'
-import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId, pendingConfirmOccurrences } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
@@ -62,6 +62,13 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     }
     return out
   })
+
+  // Menu badge: due-to-confirm occurrences of active manual rules, via the same helper as the
+  // Payments list so they can never disagree. todayCivilDayEpoch() is non-reactive by design
+  // (same pattern as every other consumer): the count refreshes on any rules/trns change or reload.
+  const dueConfirmCount = computed(() =>
+    pendingConfirmOccurrences(Object.entries(items.value ?? {}), trnsStore.items ?? {}, todayCivilDayEpoch()).length,
+  )
 
   function setItems(values: Recurrences | null) {
     items.value = values
@@ -369,6 +376,7 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     confirmOccurrence,
     createFromExistingTrn,
     createFromTrn,
+    dueConfirmCount,
     hasItems,
     initRecurrences,
     isLoaded,

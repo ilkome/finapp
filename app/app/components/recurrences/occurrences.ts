@@ -338,3 +338,27 @@ export function dueOccurrences(rule: RecurrenceItem, todayEpoch: number): number
     return []
   return occurrencesInRange(rule, { end: todayEpoch, start })
 }
+
+export type PendingOccurrence = { day: number, id: RecurrenceId, rule: RecurrenceItem }
+
+/**
+ * Manual (confirm-each) occurrences due through `todayEpoch` (inclusive - due-today counts)
+ * with no materializing trn yet, ascending by day. Single source of truth for the Payments
+ * "due to confirm" list and the menu badge, so the badge always equals the list it opens.
+ */
+export function pendingConfirmOccurrences(
+  rules: [RecurrenceId, RecurrenceItem][],
+  trns: Record<string, unknown>,
+  todayEpoch: number,
+): PendingOccurrence[] {
+  const out: PendingOccurrence[] = []
+  for (const [id, rule] of rules) {
+    if (rule.status !== 'active' || rule.autoCreate)
+      continue
+    for (const day of dueOccurrences(rule, todayEpoch)) {
+      if (!trns[occurrenceTrnId(id, day)])
+        out.push({ day, id, rule })
+    }
+  }
+  return out.sort((a, b) => a.day - b.day)
+}
