@@ -4,7 +4,9 @@ import type { RecurrenceItem } from '~/components/recurrences/types'
 
 import { TrnType } from '~/components/trns/types'
 
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from './occurrences'
+import type { OccurrenceMatchTrn } from './occurrences'
+
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -218,5 +220,64 @@ describe('committedNativeInRange', () => {
   it('is zero when no occurrence falls in the range', () => {
     const r = rule({ amount: 100, anchorDate: U(2024, 0, 1), freq: 'month' })
     expect(committedNativeInRange(r, { end: U(2023, 11, 1), start: U(2023, 6, 1) })).toBe(0)
+  })
+})
+
+describe('unrealizedOccurrenceDays', () => {
+  // Default rule() is monthly anchored Jan 1 2024, so June holds exactly one occurrence (Jun 1).
+  const june = { end: U(2024, 5, 30), start: U(2024, 5, 1) }
+  const cand = (over: Partial<OccurrenceMatchTrn>): OccurrenceMatchTrn => ({
+    amount: 100,
+    date: U(2024, 5, 5),
+    id: 't',
+    recurrenceId: undefined,
+    type: TrnType.Expense,
+    ...over,
+  })
+
+  it('excludes an occurrence already materialized by its deterministic trn', () => {
+    const r = rule({ freq: 'month' })
+    const trns = { [occurrenceTrnId('r', U(2024, 5, 1))]: { amount: 100 } }
+    expect(unrealizedOccurrenceDays(r, 'r', june, trns, [], new Set())).toEqual([])
+  })
+
+  it('excludes an unlinked look-alike (same type + exact expected amount) and consumes it', () => {
+    const r = rule({ freq: 'month' })
+    const consumed = new Set<string>()
+    const out = unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ id: 't1' })], consumed)
+    expect(out).toEqual([])
+    expect(consumed.has('t1')).toBe(true)
+  })
+
+  it('keeps the day when the candidate amount differs from the expected price', () => {
+    const r = rule({ freq: 'month' })
+    expect(unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ amount: 120 })], new Set()))
+      .toEqual([U(2024, 5, 1)])
+  })
+
+  it('excludes a linked trn (recurrenceId === ruleId, same day) regardless of amount', () => {
+    const r = rule({ freq: 'month' })
+    const linked = cand({ amount: 999, date: U(2024, 5, 1), id: 't2', recurrenceId: 'r' })
+    expect(unrealizedOccurrenceDays(r, 'r', june, {}, [linked], new Set())).toEqual([])
+  })
+
+  it('consumes each candidate at most once (two occurrences, one look-alike)', () => {
+    const r = rule({ freq: 'month' })
+    const range = { end: U(2024, 6, 30), start: U(2024, 5, 1) } // Jun 1 + Jul 1
+    const out = unrealizedOccurrenceDays(r, 'r', range, {}, [cand({ id: 't3' })], new Set())
+    expect(out).toEqual([U(2024, 6, 1)])
+  })
+
+  it('does not match a look-alike of the wrong type', () => {
+    const r = rule({ freq: 'month' }) // Expense rule
+    expect(unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ type: TrnType.Income })], new Set()))
+      .toEqual([U(2024, 5, 1)])
+  })
+
+  it('matches against the amount-history effective price, not the scalar', () => {
+    // On Jun 1 the effective price is 500 (600 starts Jul 1); the scalar is 600.
+    const r = rule({ amount: 600, amountHistory: [{ amount: 500, from: U(2024, 0, 1) }, { amount: 600, from: U(2024, 6, 1) }], freq: 'month' })
+    expect(unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ amount: 500 })], new Set())).toEqual([])
+    expect(unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ amount: 600 })], new Set())).toEqual([U(2024, 5, 1)])
   })
 })

@@ -60,12 +60,13 @@ export function occurrenceStatus(
   rule: RecurrenceItem,
   ruleId: RecurrenceId,
   dayEpoch: number,
-  trns: Record<string, { amount?: number } | undefined>,
+  // Accepts the raw store map (Trns includes transfers with no `amount`); we only read `amount`.
+  trns: Record<string, unknown>,
   todayEpoch: number,
 ): OccurrenceStatus {
   const trnId = occurrenceTrnId(ruleId, dayEpoch)
   const expected = effectiveAmountFor(rule, dayEpoch)
-  const trn = trns[trnId]
+  const trn = trns[trnId] as { amount?: number } | undefined
   if (trn && trn.amount != null)
     return { actual: trn.amount, expected, state: trn.amount === expected ? 'paid' : 'drift', trnId }
   return { expected, state: dayEpoch <= todayEpoch ? 'overdue' : 'upcoming', trnId }
@@ -79,6 +80,56 @@ export function occurrenceStatus(
  */
 export function committedNativeInRange(rule: RecurrenceItem, range: Range): number {
   return occurrencesInRange(rule, range).reduce((sum, day) => sum + effectiveAmountFor(rule, day), 0)
+}
+
+/** Minimal trn shape needed to decide whether a trn realizes an occurrence. */
+export type OccurrenceMatchTrn = {
+  amount: number
+  date: number
+  id: string
+  recurrenceId?: string
+  type: number
+}
+
+/**
+ * Occurrence days in `range` NOT yet realized by a trn, so committed-cost math counts each upcoming
+ * bill once. An occurrence is realized when EITHER its deterministic trn exists (materialized or
+ * confirmed - fast path), OR an unconsumed candidate matches it: a linked instance (`recurrenceId ===
+ * ruleId` on the same civil day, e.g. a createFromExistingTrn anchor) or a hand-entered look-alike
+ * (unlinked, same type, exact effective price). `candidates` must already be scoped to the rule's
+ * category and `range`; `consumed` is shared across rules so one trn realizes at most one occurrence.
+ * Fixes the budget double-count where a hand-entered bill was counted as spend AND as committed.
+ * Deliberately conservative: a drift / different-currency amount stays unmatched (still committed)
+ * rather than risk falsely releasing a genuinely-unpaid bill.
+ */
+export function unrealizedOccurrenceDays(
+  rule: RecurrenceItem,
+  ruleId: RecurrenceId,
+  range: Range,
+  trns: Record<string, unknown>,
+  candidates: OccurrenceMatchTrn[],
+  consumed: Set<string>,
+): number[] {
+  const out: number[] = []
+  for (const day of occurrencesInRange(rule, range)) {
+    if (trns[occurrenceTrnId(ruleId, day)])
+      continue
+    const dayStart = civilDayStart(day)
+    const expected = effectiveAmountFor(rule, day)
+    const match = candidates.find(t =>
+      !consumed.has(t.id)
+      && (
+        (t.recurrenceId === ruleId && civilDayStart(t.date) === dayStart)
+        || (t.recurrenceId == null && t.type === rule.type && t.amount === expected)
+      ),
+    )
+    if (match) {
+      consumed.add(match.id)
+      continue
+    }
+    out.push(day)
+  }
+  return out
 }
 
 /** The n-th occurrence civil day (n >= 0; n = 0 is the anchor), clamp/last-day aware. */
