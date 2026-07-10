@@ -6,7 +6,7 @@ import { TrnType } from '~/components/trns/types'
 
 import type { OccurrenceMatchTrn } from './occurrences'
 
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -201,6 +201,48 @@ describe('occurrenceStatus', () => {
     const r = rule({ amount: 100 })
     const day = U(2024, 5, 10)
     expect(occurrenceStatus(r, 'r', day, trnsFor(day), today).state).toBe('overdue')
+  })
+})
+
+describe('isStaleSubscription', () => {
+  // Default rule() is monthly anchored Jan 1 2024, so with today mid-June the recent-periods window
+  // (today - 3 intervals) holds the Apr/May/Jun 1 occurrences; the latest 2 are May 1 + Jun 1.
+  const today = U(2024, 5, 15)
+  const trnsFor = (day: number, amount = 100) => ({ [occurrenceTrnId('r', day)]: { amount } })
+
+  it('flags a manual monthly rule with no realized payments', () => {
+    const r = rule({ autoCreate: false })
+    expect(isStaleSubscription(r, 'r', {}, today)).toBe(true)
+  })
+
+  it('still flags when only the oldest due occurrence is paid (slice(-2) recency)', () => {
+    const r = rule({ autoCreate: false })
+    expect(isStaleSubscription(r, 'r', trnsFor(U(2024, 3, 1)), today)).toBe(true)
+  })
+
+  it('does not flag when the most recent due occurrence is paid', () => {
+    const r = rule({ autoCreate: false })
+    expect(isStaleSubscription(r, 'r', trnsFor(U(2024, 5, 1)), today)).toBe(false)
+  })
+
+  it('never flags autoCreate rules (always self-materialized)', () => {
+    const r = rule({ autoCreate: true })
+    expect(isStaleSubscription(r, 'r', {}, today)).toBe(false)
+  })
+
+  it('never flags paused or cancelled rules', () => {
+    expect(isStaleSubscription(rule({ autoCreate: false, status: 'paused' }), 'r', {}, today)).toBe(false)
+    expect(isStaleSubscription(rule({ autoCreate: false, status: 'cancelled' }), 'r', {}, today)).toBe(false)
+  })
+
+  it('never flags a brand-new rule with fewer than 2 due occurrences', () => {
+    const r = rule({ anchorDate: U(2024, 5, 1), autoCreate: false })
+    expect(isStaleSubscription(r, 'r', {}, today)).toBe(false)
+  })
+
+  it('is skip-aware: skipping the recent due days drops them below the threshold', () => {
+    const r = rule({ autoCreate: false, skipDates: ['2024-05-01', '2024-06-01'] })
+    expect(isStaleSubscription(r, 'r', {}, today)).toBe(false)
   })
 })
 

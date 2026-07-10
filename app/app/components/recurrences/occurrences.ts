@@ -72,6 +72,37 @@ export function occurrenceStatus(
   return { expected, state: dayEpoch <= todayEpoch ? 'overdue' : 'upcoming', trnId }
 }
 
+// Rough length of one interval in days, deliberately OVER-estimating month/year so the
+// "recent periods" window can never clip an occurrence. Matches the no-default switch of nthOccurrence.
+function intervalDays(rule: RecurrenceItem): number {
+  switch (rule.freq) {
+    case 'day':
+      return rule.interval
+    case 'week':
+      return rule.interval * 7
+    case 'month':
+      return rule.interval * 31
+    case 'year':
+      return rule.interval * 366
+  }
+}
+
+/**
+ * Cancel candidate: an active confirm-each rule whose 2 most recent already-due occurrences both went
+ * unrealized (no trn). autoCreate rules are excluded - the catch-up runner always self-materializes
+ * them, so they can't genuinely go stale. Skip-aware (skipped days aren't "due"). Requires >= 2 due
+ * occurrences so a brand-new rule is never flagged.
+ */
+export function isStaleSubscription(rule: RecurrenceItem, ruleId: RecurrenceId, trns: Record<string, unknown>, todayEpoch: number): boolean {
+  if (rule.status !== 'active' || rule.autoCreate)
+    return false
+  const start = addCivilDays(todayEpoch, -intervalDays(rule) * 3)
+  const due = occurrencesInRange(rule, { end: todayEpoch, start })
+  if (due.length < 2)
+    return false
+  return due.slice(-2).every(day => occurrenceStatus(rule, ruleId, day, trns, todayEpoch).state === 'overdue')
+}
+
 /**
  * Native-currency total of the rule's occurrences in `range`, priced per occurrence via
  * `effectiveAmountFor` (amount-history aware) rather than a flat `amount * count`. Single source of

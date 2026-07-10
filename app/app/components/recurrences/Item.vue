@@ -4,10 +4,11 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
-import { nextOccurrence } from '~/components/recurrences/occurrences'
+import { isStaleSubscription, nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrenceMenuItems } from '~/components/recurrences/useRecurrenceMenuItems'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { id, rule, selectedId } = defineProps<{
@@ -26,6 +27,7 @@ const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
+const trnsStore = useTrnsStore()
 const m = useRecurrenceMenuItems()
 
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
@@ -43,6 +45,7 @@ const periodLabel = computed(() => {
 
 const next = computed(() => nextOccurrence(rule, todayCivilDayEpoch()))
 const nextLabel = computed(() => (next.value ? formatByLocale(next.value, 'd MMM yyyy', dateLocale.value) : undefined))
+const isStale = computed(() => isStaleSubscription(rule, id, trnsStore.items ?? {}, todayCivilDayEpoch()))
 
 const confirmCancel = ref(false)
 const confirmDelete = ref(false)
@@ -96,6 +99,7 @@ const contextMenuItems = computed(() => {
             <template v-if="!rule.autoCreate">
               · {{ t('recurrences.manual') }}
             </template>
+            <span v-if="isStale" class="bg-warning/15 text-warning ml-1 rounded-full px-1.5 py-px" :title="t('recurrences.stale.hint')">{{ t('recurrences.stale.flag') }}</span>
           </div>
         </div>
 

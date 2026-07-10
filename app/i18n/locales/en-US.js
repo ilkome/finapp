@@ -410,6 +410,7 @@ export default {
     pending: { title: 'Due to confirm' },
     reminders: { firstCharge: { title: 'First charge soon' }, inDays: 'in {count} days', priceHike: { title: 'Price going up' }, title: 'Upcoming payment', today: 'today', tomorrow: 'tomorrow' },
     sort: { cost: 'By cost', date: 'By date' },
+    stale: { flag: 'Cancel candidate', hint: 'No payment in the last 2 expected periods - confirm or cancel.' },
     status: { active: 'Active', cancelled: 'Cancelled', paused: 'Paused' },
     subscriptions: { title: 'Subscriptions' },
     summary: { until: 'until' },

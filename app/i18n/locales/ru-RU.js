@@ -410,6 +410,7 @@ export default {
     pending: { title: 'Ожидают подтверждения' },
     reminders: { firstCharge: { title: 'Скоро первое списание' }, inDays: 'через {count} дн.', priceHike: { title: 'Цена вырастет' }, title: 'Скоро платёж', today: 'сегодня', tomorrow: 'завтра' },
     sort: { cost: 'По сумме', date: 'По дате' },
+    stale: { flag: 'Кандидат на отмену', hint: 'Нет платежей за 2 последних периода - подтвердите или отмените.' },
     status: { active: 'Активные', cancelled: 'Отменённые', paused: 'На паузе' },
     subscriptions: { title: 'Подписки' },
     summary: { until: 'до' },
