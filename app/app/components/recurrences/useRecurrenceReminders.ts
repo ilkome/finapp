@@ -1,3 +1,5 @@
+import type { ReminderKind, UpcomingReminder } from '~/components/recurrences/reminders'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { todayCivilDayEpoch } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
@@ -34,6 +36,20 @@ export function useRecurrenceReminders() {
       : offset === 1 ? t('recurrences.reminders.tomorrow') : t('recurrences.reminders.inDays', { count: offset })
   }
 
+  function reminderTitle(t: Translate, kind: ReminderKind): string {
+    if (kind === 'firstCharge')
+      return t('recurrences.reminders.firstCharge.title')
+    if (kind === 'priceHike')
+      return t('recurrences.reminders.priceHike.title')
+    return t('recurrences.reminders.title')
+  }
+
+  function reminderBody(t: Translate, r: UpcomingReminder, name: string, currency: string): string {
+    if (r.kind === 'priceHike')
+      return `${name} · ${r.previousAmount} → ${r.amount} ${currency} · ${offsetLabel(t, r.offset)}`.trim()
+    return `${name} · ${r.amount} ${currency} · ${offsetLabel(t, r.offset)}`.trim()
+  }
+
   async function sync(t: Translate): Promise<void> {
     if (isDemo.value || !recurrencesStore.items || !uid.value)
       return
@@ -48,10 +64,10 @@ export function useRecurrenceReminders() {
       const currency = walletsStore.items?.[rule.walletId]?.currency ?? ''
       const name = category?.name ?? rule.desc ?? t('recurrences.reminders.title')
       return {
-        body: `${name} · ${r.amount} ${currency} · ${offsetLabel(t, r.offset)}`.trim(),
+        body: reminderBody(t, r, name, currency),
         fireDate: r.fireDate,
         id: r.id,
-        title: t('recurrences.reminders.title'),
+        title: reminderTitle(t, r.kind),
         updatedAt: now,
         userId: uid.value,
       }
