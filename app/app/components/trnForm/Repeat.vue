@@ -1,8 +1,5 @@
 <script setup lang="ts">
-import type { RecurrenceFreq } from '~/components/recurrences/types'
-
 import { civilDayKey, civilDayStart, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
-import { recurrenceFreqs } from '~/components/recurrences/types'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const { locale, t } = useI18n()
@@ -41,22 +38,6 @@ const summary = computed(() => {
   else if (r.endMode === 'count' && r.endCount)
     parts.push(`${r.endCount}×`)
   return parts.join(' · ')
-})
-
-function setFreq(freq: RecurrenceFreq) {
-  repeat.value.freq = freq
-}
-
-const endDateInput = computed({
-  get: () => (repeat.value.endDate != null ? civilDayKey(repeat.value.endDate) : ''),
-  set: (v: string) => {
-    if (!v) {
-      repeat.value.endDate = null
-      return
-    }
-    const [y, m, d] = v.split('-').map(Number)
-    repeat.value.endDate = toCivilDayEpoch(y!, m! - 1, d!)
-  },
 })
 </script>
 
@@ -117,74 +98,8 @@ const endDateInput = computed({
         </div>
       </div>
 
-      <!-- Frequency -->
-      <div class="flex flex-wrap gap-1">
-        <button
-          v-for="f in recurrenceFreqs"
-          :key="f"
-          type="button"
-          :class="repeat.freq === f ? 'bg-primary text-icon-primary' : 'bg-default text-muted'"
-          class="rounded-sm px-3 py-1.5 text-sm"
-          @click="setFreq(f)"
-        >
-          {{ t(`recurrences.freq.${f}`) }}
-        </button>
-      </div>
-
-      <!-- Interval -->
-      <label class="text-muted flex items-center gap-2 text-sm">
-        {{ t('recurrences.form.every') }}
-        <input
-          v-model.number="repeat.interval"
-          type="number"
-          min="1"
-          class="bg-default text-highlighted w-16 rounded-sm px-2 py-1 text-center"
-        >
-        {{ t(`recurrences.unit.${repeat.freq}`, repeat.interval) }}
-      </label>
-
-      <!-- Month: last day -->
-      <label v-if="repeat.freq === 'month'" class="text-muted flex items-center gap-2 text-sm">
-        <input v-model="repeat.monthLastDay" type="checkbox" class="size-4">
-        {{ t('recurrences.form.monthLastDay') }}
-      </label>
-
-      <!-- Auto-create vs confirm -->
-      <label class="text-muted flex items-center gap-2 text-sm">
-        <input v-model="repeat.autoCreate" type="checkbox" class="size-4">
-        {{ t('recurrences.form.autoCreate') }}
-      </label>
-
-      <!-- End condition -->
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-muted text-sm">{{ t('recurrences.form.ends') }}</span>
-        <select v-model="repeat.endMode" class="bg-default text-highlighted rounded-sm px-2 py-1 text-sm">
-          <option value="never">
-            {{ t('recurrences.end.never') }}
-          </option>
-          <option value="date">
-            {{ t('recurrences.end.date') }}
-          </option>
-          <option value="count">
-            {{ t('recurrences.end.count') }}
-          </option>
-        </select>
-
-        <input
-          v-if="repeat.endMode === 'date'"
-          v-model="endDateInput"
-          type="date"
-          class="bg-default text-highlighted rounded-sm px-2 py-1 text-sm"
-        >
-        <input
-          v-if="repeat.endMode === 'count'"
-          v-model.number="repeat.endCount"
-          type="number"
-          min="1"
-          class="bg-default text-highlighted w-20 rounded-sm px-2 py-1 text-sm"
-          :placeholder="t('recurrences.end.countPlaceholder')"
-        >
-      </div>
+      <!-- Schedule (frequency / interval / options / end condition) -->
+      <RecurrencesScheduleEditor v-model="trnsFormStore.repeat" />
     </div>
   </div>
 </template>

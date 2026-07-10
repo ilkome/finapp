@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
+import type { RecurrenceId, RecurrenceItem, RecurrenceSchedule } from '~/components/recurrences/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { civilDayKey, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
 import { nextOccurrence } from '~/components/recurrences/occurrences'
-import { recurrenceFreqs } from '~/components/recurrences/types'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -31,34 +30,18 @@ const typeLabel = computed(() => existing.value?.type === TrnType.Income ? t('mo
 
 // Editable schedule fields (category/wallet/type stay fixed - they define the series identity).
 const amount = ref<string>(existing.value ? String(existing.value.amount) : '')
-const freq = ref<RecurrenceFreq>(existing.value?.freq ?? 'month')
-const interval = ref<number>(existing.value?.interval ?? 1)
-const monthLastDay = ref<boolean>(existing.value?.monthLastDay ?? false)
-const autoCreate = ref<boolean>(existing.value?.autoCreate ?? true)
-const endMode = ref<RecurrenceEndMode>(existing.value?.endMode ?? 'never')
-const endCount = ref<number | null>(existing.value?.endCount ?? null)
-const endDateEpoch = ref<number | null>(existing.value?.endDate ?? null)
-
-const endModeOptions = computed(() => [
-  { label: t('recurrences.end.never'), value: 'never' },
-  { label: t('recurrences.end.date'), value: 'date' },
-  { label: t('recurrences.end.count'), value: 'count' },
-])
-
-const endDateInput = computed({
-  get: () => (endDateEpoch.value != null ? civilDayKey(endDateEpoch.value) : ''),
-  set: (v: string) => {
-    if (!v) {
-      endDateEpoch.value = null
-      return
-    }
-    const [y, m, d] = v.split('-').map(Number)
-    endDateEpoch.value = toCivilDayEpoch(y!, m! - 1, d!)
-  },
+const schedule = reactive<RecurrenceSchedule>({
+  autoCreate: existing.value?.autoCreate ?? true,
+  endCount: existing.value?.endCount ?? null,
+  endDate: existing.value?.endDate ?? null,
+  endMode: existing.value?.endMode ?? 'never',
+  freq: existing.value?.freq ?? 'month',
+  interval: existing.value?.interval ?? 1,
+  monthLastDay: existing.value?.monthLastDay ?? false,
 })
 
 const amountNumber = computed(() => Number.parseFloat(amount.value))
-const canSave = computed(() => Number.isFinite(amountNumber.value) && amountNumber.value > 0 && interval.value >= 1)
+const canSave = computed(() => Number.isFinite(amountNumber.value) && amountNumber.value > 0 && schedule.interval >= 1)
 
 // Price change: a new amount takes effect from a chosen day (default today), recorded in history.
 const amountChanged = computed(() => existing.value != null && amountNumber.value !== existing.value.amount)
@@ -112,13 +95,13 @@ function onSave(close: () => void) {
   // Schedule/options/end conditions (amount and price history are handled separately below).
   const values: RecurrenceItem = {
     ...prev,
-    autoCreate: autoCreate.value,
-    endCount: endMode.value === 'count' ? endCount.value : null,
-    endDate: endMode.value === 'date' ? endDateEpoch.value : null,
-    endMode: endMode.value,
-    freq: freq.value,
-    interval: interval.value,
-    monthLastDay: freq.value === 'month' ? monthLastDay.value : false,
+    autoCreate: schedule.autoCreate,
+    endCount: schedule.endMode === 'count' ? schedule.endCount : null,
+    endDate: schedule.endMode === 'date' ? schedule.endDate : null,
+    endMode: schedule.endMode,
+    freq: schedule.freq,
+    interval: schedule.interval,
+    monthLastDay: schedule.freq === 'month' ? schedule.monthLastDay : false,
     updatedAt: Date.now(),
   }
   recurrencesStore.saveRecurrence(values, props.recurrenceId)
@@ -224,78 +207,8 @@ function onSave(close: () => void) {
           </div>
         </FormElement>
 
-        <!-- Frequency -->
-        <FormElement>
-          <template #label>
-            {{ t('recurrences.form.repeat') }}
-          </template>
-          <UiTabsBar>
-            <UiTabsItemPill
-              v-for="f in recurrenceFreqs"
-              :key="f"
-              :isActive="freq === f"
-              @click="freq = f"
-            >
-              {{ t(`recurrences.freq.${f}`) }}
-            </UiTabsItemPill>
-          </UiTabsBar>
-        </FormElement>
-
-        <!-- Interval -->
-        <FormElement>
-          <template #label>
-            {{ t('recurrences.form.every') }}
-          </template>
-          <div class="flex items-center gap-2">
-            <UiNumberStepper
-              :modelValue="interval"
-              :min="1"
-              @update:modelValue="interval = $event"
-            />
-            <span class="text-muted text-sm">{{ t(`recurrences.unit.${freq}`, interval) }}</span>
-          </div>
-        </FormElement>
-
-        <!-- Options -->
-        <div class="grid gap-1">
-          <UiSwitchItem
-            v-if="freq === 'month'"
-            :checkboxValue="monthLastDay"
-            :title="t('recurrences.form.monthLastDay')"
-            @click="monthLastDay = !monthLastDay"
-          />
-          <UiSwitchItem
-            :checkboxValue="autoCreate"
-            :title="t('recurrences.form.autoCreate')"
-            @click="autoCreate = !autoCreate"
-          />
-        </div>
-
-        <!-- End condition -->
-        <FormElement>
-          <template #label>
-            {{ t('recurrences.form.ends') }}
-          </template>
-          <FormSelect
-            :options="endModeOptions"
-            :value="endMode"
-            @change="(v: string) => endMode = v as RecurrenceEndMode"
-          />
-          <input
-            v-if="endMode === 'date'"
-            v-model="endDateInput"
-            type="date"
-            class="bg-elevated/40 text-highlighted mt-2 rounded-sm px-3 py-2 text-sm"
-          >
-          <div v-if="endMode === 'count'" class="mt-2 flex items-center gap-2">
-            <UiNumberStepper
-              :modelValue="endCount ?? 1"
-              :min="1"
-              @update:modelValue="endCount = $event"
-            />
-            <span class="text-muted text-sm">{{ t('recurrences.end.countPlaceholder') }}</span>
-          </div>
-        </FormElement>
+        <!-- Schedule (frequency / interval / options / end condition) -->
+        <RecurrencesScheduleEditor v-model="schedule" />
       </div>
 
       <!-- Pinned footer (lives in the sheet's auto row, never scrolls away) -->

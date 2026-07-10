@@ -13,6 +13,20 @@ export type RecurrenceEndMode = typeof recurrenceEndModes[number]
 export const recurrenceStatuses = ['active', 'paused', 'cancelled'] as const
 export type RecurrenceStatus = typeof recurrenceStatuses[number]
 
+// The 7 editable schedule fields shared by both editors (trnForm Repeat "create" and
+// recurrences Form "edit"). It is the exact intersection of the create-side `RepeatState`
+// (which adds enabled/backfill) and the edit-side refs, so both parents satisfy it and can
+// hand the same reactive object to <RecurrencesScheduleEditor>.
+export type RecurrenceSchedule = {
+  autoCreate: boolean
+  endCount: number | null
+  endDate: number | null
+  endMode: RecurrenceEndMode
+  freq: RecurrenceFreq
+  interval: number
+  monthLastDay: boolean
+}
+
 // One dated price of a series: `amount` applies to occurrences on/after `from` (civil day),
 // until the next entry. Enables a price-change history (request 4).
 export const amountChangeSchema = z.object({
