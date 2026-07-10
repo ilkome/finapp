@@ -71,6 +71,11 @@ export function lastDayOfMonthCivil(ms: number): number {
   return startOfDay(lastDayOfMonth(u(ms))).getTime()
 }
 
+/** First civil day (UTC-midnight) of the month containing `ms`. */
+export function startOfMonthCivil(ms: number): number {
+  return startOfMonth(u(ms)).getTime()
+}
+
 /** Same civil day? Compares UTC calendar days. */
 export function isSameCivilDay(a: number, b: number): boolean {
   return civilDayStart(a) === civilDayStart(b)

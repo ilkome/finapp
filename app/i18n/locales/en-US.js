@@ -414,7 +414,7 @@ export default {
     next: 'next',
     overdue: 'overdue',
     partOfSeries: 'Part of a recurring series',
-    payments: { empty: 'No payments in this period', only: 'Only', paid: 'paid', priceChanged: 'price changed', title: 'Payments' },
+    payments: { empty: 'No payments in this period', only: 'Only', paid: 'paid', priceChanged: 'price changed', progressLeft: 'left', progressPaid: 'paid', thisMonth: 'This month', title: 'Payments' },
     pending: { title: 'Due to confirm' },
     reminders: { firstCharge: { title: 'First charge soon' }, inDays: 'in {count} days', priceHike: { title: 'Price going up' }, title: 'Upcoming payment', today: 'today', tomorrow: 'tomorrow' },
     sort: { cost: 'By cost', date: 'By date' },

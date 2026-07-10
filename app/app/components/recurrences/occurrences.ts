@@ -113,6 +113,31 @@ export function committedNativeInRange(rule: RecurrenceItem, range: Range): numb
   return occurrencesInRange(rule, range).reduce((sum, day) => sum + effectiveAmountFor(rule, day), 0)
 }
 
+export type PeriodProgress = { paidCount: number, paidNative: number, totalCount: number, totalNative: number }
+
+/**
+ * Paid-vs-scheduled split of the rule's occurrences in `range`, native currency only (the caller
+ * converts to base). "Paid" means a trn already materializes the day (drift counted as paid at its
+ * ACTUAL amount, not the expected price), so `totalNative` = paid actuals + still-scheduled expecteds.
+ */
+export function periodProgress(rule: RecurrenceItem, ruleId: RecurrenceId, range: Range, trns: Record<string, unknown>, todayEpoch: number): PeriodProgress {
+  let paidCount = 0
+  let paidNative = 0
+  let totalCount = 0
+  let totalNative = 0
+  for (const day of occurrencesInRange(rule, range)) {
+    const status = occurrenceStatus(rule, ruleId, day, trns, todayEpoch)
+    const amount = status.actual ?? status.expected
+    totalCount++
+    totalNative += amount
+    if (status.state === 'paid' || status.state === 'drift') {
+      paidCount++
+      paidNative += amount
+    }
+  }
+  return { paidCount, paidNative, totalCount, totalNative }
+}
+
 /** Minimal trn shape needed to decide whether a trn realizes an occurrence. */
 export type OccurrenceMatchTrn = {
   amount: number

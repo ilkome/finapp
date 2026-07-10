@@ -414,7 +414,7 @@ export default {
     next: 'далее',
     overdue: 'просрочен',
     partOfSeries: 'Часть регулярного платежа',
-    payments: { empty: 'Нет платежей в этом периоде', only: 'Только', paid: 'оплачен', priceChanged: 'цена менялась', title: 'Платежи' },
+    payments: { empty: 'Нет платежей в этом периоде', only: 'Только', paid: 'оплачен', priceChanged: 'цена менялась', progressLeft: 'осталось', progressPaid: 'оплачено', thisMonth: 'В этом месяце', title: 'Платежи' },
     pending: { title: 'Ожидают подтверждения' },
     reminders: { firstCharge: { title: 'Скоро первое списание' }, inDays: 'через {count} дн.', priceHike: { title: 'Цена вырастет' }, title: 'Скоро платёж', today: 'сегодня', tomorrow: 'завтра' },
     sort: { cost: 'По сумме', date: 'По дате' },

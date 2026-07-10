@@ -7,8 +7,8 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { addCivilDays, addCivilMonths, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from '~/components/recurrences/occurrences'
+import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~/components/date/utils'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, periodProgress } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -236,6 +236,46 @@ const summary = computed(() => {
   }
 })
 
+// Copilot-style "this month" progress: how much of the current CALENDAR month's EXPENSE bills is
+// already paid vs still scheduled, in base currency. Independent of the 30/60/90 timeline horizon;
+// respects the active rule filter. drift counts as paid at its actual amount (see periodProgress).
+const monthProgress = computed(() => {
+  const start = startOfMonthCivil(todayEpoch.value)
+  const end = lastDayOfMonthCivil(todayEpoch.value)
+  const trns = trnsStore.items ?? {}
+  let paidBase = 0
+  let totalBase = 0
+  let paidCount = 0
+  let totalCount = 0
+  for (const [id, rule] of rules.value) {
+    if (rule.type !== TrnType.Expense)
+      continue
+    const p = periodProgress(rule, id, { end, start }, trns, todayEpoch.value)
+    if (!p.totalCount)
+      continue
+    const toBase = (amount: number) => getAmountInRate({
+      amount,
+      baseCurrencyCode: currenciesStore.base,
+      currencyCode: walletCurrency(rule),
+      rates: currenciesStore.rates,
+    })
+    paidBase += toBase(p.paidNative)
+    totalBase += toBase(p.totalNative)
+    paidCount += p.paidCount
+    totalCount += p.totalCount
+  }
+  if (totalCount === 0)
+    return undefined
+  return {
+    leftBase: totalBase - paidBase,
+    paidBase,
+    paidCount,
+    pct: totalBase > 0 ? Math.min(100, Math.round(paidBase / totalBase * 100)) : 0,
+    totalBase,
+    totalCount,
+  }
+})
+
 function fmtDay(day: number) {
   return formatByLocale(day, 'EEE, d MMM', dateLocale.value)
 }
@@ -261,6 +301,33 @@ function fmtDay(day: number) {
         >
           {{ t('recurrences.upcoming.days', { count: h }) }}
         </UiTabsItemPill>
+      </div>
+    </div>
+
+    <!-- This-month paid vs left (current calendar month, expense bills, base currency) -->
+    <div v-if="monthProgress" class="mb-2 grid gap-1 px-1">
+      <div class="text-2xs text-muted flex items-center gap-1">
+        <span>{{ t('recurrences.payments.thisMonth') }}</span>
+        <span>{{ monthProgress.paidCount }}/{{ monthProgress.totalCount }}</span>
+        <span class="grow" />
+        <Amount
+          :amount="monthProgress.paidBase"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          variant="xs"
+        />
+        <span>{{ t('recurrences.payments.progressPaid') }}</span>
+        <span>·</span>
+        <Amount
+          :amount="monthProgress.leftBase"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          variant="xs"
+        />
+        <span>{{ t('recurrences.payments.progressLeft') }}</span>
+      </div>
+      <div class="bg-default relative h-1.5 rounded-full">
+        <div class="bg-income-1 h-full rounded-full transition-all" :style="{ width: `${monthProgress.pct}%` }" />
       </div>
     </div>
 

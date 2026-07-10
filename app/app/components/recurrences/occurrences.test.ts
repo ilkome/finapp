@@ -8,7 +8,7 @@ import { isTransfer, TrnType } from '~/components/trns/types'
 import type { OccurrenceMatchTrn } from './occurrences'
 
 import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, dueOccurrences, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, periodProgress, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -306,6 +306,47 @@ describe('committedNativeInRange', () => {
   it('is zero when no occurrence falls in the range', () => {
     const r = rule({ amount: 100, anchorDate: U(2024, 0, 1), freq: 'month' })
     expect(committedNativeInRange(r, { end: U(2023, 11, 1), start: U(2023, 6, 1) })).toBe(0)
+  })
+})
+
+describe('periodProgress', () => {
+  // Default rule() is monthly anchored Jan 1 2024; a Jan..Apr range holds 4 occurrences (Jan..Apr 1).
+  const range = { end: U(2024, 3, 1), start: U(2024, 0, 1) }
+  const today = U(2024, 5, 15)
+
+  it('counts every occurrence as unpaid total when no trn realizes any', () => {
+    const r = rule({ amount: 100, freq: 'month' })
+    const p = periodProgress(r, 'r', range, {}, today)
+    expect(p).toEqual({ paidCount: 0, paidNative: 0, totalCount: 4, totalNative: 400 })
+  })
+
+  it('counts an occurrence paid when a matching trn sits at the expected price', () => {
+    const r = rule({ amount: 100, freq: 'month' })
+    const trns = { [occurrenceTrnId('r', U(2024, 1, 1))]: { amount: 100 } }
+    const p = periodProgress(r, 'r', range, trns, today)
+    expect(p).toEqual({ paidCount: 1, paidNative: 100, totalCount: 4, totalNative: 400 })
+  })
+
+  it('counts a drift trn as paid at its ACTUAL amount (paid + total use the trn value, not expected)', () => {
+    const r = rule({ amount: 100, freq: 'month' })
+    const trns = { [occurrenceTrnId('r', U(2024, 1, 1))]: { amount: 120 } }
+    const p = periodProgress(r, 'r', range, trns, today)
+    // paid = one drift @120; total = three unpaid @100 + one drift @120
+    expect(p).toEqual({ paidCount: 1, paidNative: 120, totalCount: 4, totalNative: 420 })
+  })
+
+  it('excludes a skipped occurrence from both paid and total (even if a trn exists for that day)', () => {
+    const r = rule({ amount: 100, freq: 'month', skipDates: ['2024-02-01'] })
+    const trns = { [occurrenceTrnId('r', U(2024, 1, 1))]: { amount: 100 } }
+    const p = periodProgress(r, 'r', range, trns, today)
+    expect(p).toEqual({ paidCount: 0, paidNative: 0, totalCount: 3, totalNative: 300 })
+  })
+
+  it('prices each occurrence at its effective amount across a mid-range change', () => {
+    const r = rule({ amount: 200, amountHistory: [{ amount: 100, from: U(2024, 0, 1) }, { amount: 200, from: U(2024, 2, 1) }], freq: 'month' })
+    const p = periodProgress(r, 'r', range, {}, today)
+    // Jan,Feb @100 + Mar,Apr @200 = 600, not a flat amount*count of 800
+    expect(p).toEqual({ paidCount: 0, paidNative: 0, totalCount: 4, totalNative: 600 })
   })
 })
 
