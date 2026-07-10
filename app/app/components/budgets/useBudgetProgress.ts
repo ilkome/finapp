@@ -7,7 +7,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import type { TrnId } from '~/components/trns/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodsUntilGoal, projectedPeriodEnd, safeToSpend, targetSaved, targetSetAside, toAssignPool } from '~/components/budgets/compute'
+import { assignedPoolContribution, budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodsUntilGoal, projectedPeriodEnd, reducedAssignment, safeToSpend, targetSaved, targetSetAside, toAssignPool } from '~/components/budgets/compute'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -320,9 +320,16 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     for (const id of Object.keys(budgetsStore.activeItems)) {
       const budget = budgetsStore.activeItems[id]!
       // A target counts only its REAL funding (explicit assignments), matching how safe-to-spend and
-      // the target overlay treat it - so an unfunded goal doesn't eat the to-assign pool. (review 4)
-      if (budget.kind === 'expense')
-        assigned += isTargetBudget(budget) ? explicitAssignedBase(id, budget, start) : effectiveAssigned(id, budget, start)
+      // the target overlay treat it - so an unfunded goal doesn't eat the to-assign pool. The
+      // contribution rule (assignedPoolContribution) is shared with the ReduceAssign sheet so the
+      // pool and the sheet cannot drift apart. (review 4)
+      if (budget.kind === 'expense') {
+        assigned += assignedPoolContribution({
+          assigned: effectiveAssigned(id, budget, start),
+          hasAssignment: budgetsStore.assignmentFor(id, start) !== undefined,
+          isTarget: isTargetBudget(budget),
+        })
+      }
     }
     return toAssignPool(periodIncomeTotal.value, assigned)
   })
@@ -362,7 +369,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     const rates = currenciesStore.rates
     const raw = rawAssigned(budgetId, budget, start)
     const deltaOwn = getAmountInRate({ amount: baseAmount, baseCurrencyCode: budget.currency || base, currencyCode: base, rates })
-    budgetsStore.setAssignment(budgetId, start, Math.max(0, raw - deltaOwn))
+    budgetsStore.setAssignment(budgetId, start, reducedAssignment(raw, deltaOwn))
   }
 
   // Per-budget history (2.3): assigned vs actual for each prior period plus the current one,

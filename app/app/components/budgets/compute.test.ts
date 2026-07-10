@@ -2,11 +2,15 @@ import { describe, expect, it } from 'vitest'
 
 import type { Categories } from '~/components/categories/types'
 
+import type { ReduceCandidateInput } from './compute'
+
 import {
   applyRollover,
+  assignedPoolContribution,
   budgetOwnedCategoryIds,
   carriedIn,
   computeAvailable,
+  greedyReduceCuts,
   isGoalReached,
   isOverBudget,
   movableAmount,
@@ -14,6 +18,8 @@ import {
   paceMarker,
   periodsUntilGoal,
   projectedPeriodEnd,
+  reduceCandidates,
+  reducedAssignment,
   safeToSpend,
   targetSaved,
   targetSetAside,
@@ -227,5 +233,143 @@ describe('projectedPeriodEnd & paceMarker', () => {
     expect(paceMarker(900, 10, 30)).toBe(300)
     expect(paceMarker(900, 40, 30)).toBe(900) // clamp elapsed to period
     expect(paceMarker(900, 10, 0)).toBe(0)
+  })
+})
+
+describe('assignedPoolContribution', () => {
+  it('a plain expense budget contributes its assigned amount', () => {
+    expect(assignedPoolContribution({ assigned: 500, hasAssignment: false, isTarget: false })).toBe(500)
+  })
+  it('an unfunded target contributes 0 - its synthetic set-aside never entered the pool', () => {
+    expect(assignedPoolContribution({ assigned: 450, hasAssignment: false, isTarget: true })).toBe(0)
+  })
+  it('a funded target contributes exactly its explicit funding', () => {
+    expect(assignedPoolContribution({ assigned: 300, hasAssignment: true, isTarget: true })).toBe(300)
+  })
+  it('an explicit override on a plain budget still contributes assigned', () => {
+    expect(assignedPoolContribution({ assigned: 250, hasAssignment: true, isTarget: false })).toBe(250)
+  })
+})
+
+describe('reduceCandidates', () => {
+  it('lists expense budgets most-assigned first', () => {
+    const inputs: ReduceCandidateInput[] = [
+      { assigned: 200, hasAssignment: false, id: 'b', isTarget: false, kind: 'expense' },
+      { assigned: 800, hasAssignment: false, id: 'a', isTarget: false, kind: 'expense' },
+      { assigned: 500, hasAssignment: false, id: 'c', isTarget: false, kind: 'expense' },
+    ]
+    expect(reduceCandidates(inputs)).toEqual([
+      { assigned: 800, id: 'a' },
+      { assigned: 500, id: 'c' },
+      { assigned: 200, id: 'b' },
+    ])
+  })
+  it('excludes income budgets even with assigned > 0', () => {
+    expect(reduceCandidates([{ assigned: 900, hasAssignment: false, id: 'salary', isTarget: false, kind: 'income' }]))
+      .toEqual([])
+  })
+  it('excludes unfunded targets, keeps funded ones', () => {
+    const inputs: ReduceCandidateInput[] = [
+      { assigned: 450, hasAssignment: false, id: 'car_unfunded', isTarget: true, kind: 'expense' },
+      { assigned: 300, hasAssignment: true, id: 'vacation_funded', isTarget: true, kind: 'expense' },
+    ]
+    expect(reduceCandidates(inputs)).toEqual([{ assigned: 300, id: 'vacation_funded' }])
+  })
+  it('drops zero assignments', () => {
+    expect(reduceCandidates([{ assigned: 0, hasAssignment: false, id: 'idle', isTarget: false, kind: 'expense' }]))
+      .toEqual([])
+  })
+  it('drops negative assignments (moveMoney with rollover carry can drive a raw assignment below 0)', () => {
+    expect(reduceCandidates([{ assigned: -200, hasAssignment: true, id: 'drained', isTarget: false, kind: 'expense' }]))
+      .toEqual([])
+  })
+})
+
+describe('greedyReduceCuts', () => {
+  const candidates = [{ assigned: 500, id: 'a' }, { assigned: 200, id: 'b' }]
+
+  it('takes the whole cut from the largest candidate when it covers the overage', () => {
+    expect(greedyReduceCuts(300, candidates)).toEqual([{ cut: 300, id: 'a' }])
+  })
+  it('spans candidates largest-first until balanced', () => {
+    expect(greedyReduceCuts(600, candidates)).toEqual([{ cut: 500, id: 'a' }, { cut: 100, id: 'b' }])
+  })
+  it('cuts everything when candidates run out', () => {
+    const cuts = greedyReduceCuts(1000, candidates)
+    expect(cuts).toEqual([{ cut: 500, id: 'a' }, { cut: 200, id: 'b' }])
+    expect(cuts.reduce((s, c) => s + c.cut, 0)).toBe(700)
+  })
+  it('never cuts more than a candidate has assigned', () => {
+    for (const { cut, id } of greedyReduceCuts(1000, candidates))
+      expect(cut).toBeLessThanOrEqual(candidates.find(c => c.id === id)!.assigned)
+  })
+  it('treats sub-half-cent residue as balanced', () => {
+    expect(greedyReduceCuts(0.004, candidates)).toEqual([])
+    expect(greedyReduceCuts(0.006, candidates)).toEqual([{ cut: 0.006, id: 'a' }])
+  })
+  it('returns no cuts for a balanced or positive pool', () => {
+    expect(greedyReduceCuts(0, candidates)).toEqual([])
+    expect(greedyReduceCuts(-100, candidates)).toEqual([])
+  })
+  it('returns no cuts with no candidates', () => {
+    expect(greedyReduceCuts(300, [])).toEqual([])
+  })
+})
+
+describe('reducedAssignment', () => {
+  it('subtracts the delta from the raw assignment', () => {
+    expect(reducedAssignment(500, 200)).toBe(300)
+  })
+  it('floors at 0 when the delta exceeds the raw assignment', () => {
+    expect(reducedAssignment(100, 250)).toBe(0)
+  })
+  it('an exact drain hits 0', () => {
+    expect(reducedAssignment(200, 200)).toBe(0)
+  })
+  it('reduces regardless of spend - the floor is on raw, not available', () => {
+    // A fully-spent budget can still free its assignment back to the pool (available goes negative).
+    expect(reducedAssignment(400, 150)).toBe(250)
+  })
+})
+
+describe('reduce-assignment mirrors toAssignTotal', () => {
+  const budgets: ReduceCandidateInput[] = [
+    { assigned: 800, hasAssignment: false, id: 'food', isTarget: false, kind: 'expense' },
+    { assigned: 300, hasAssignment: true, id: 'vacation_funded', isTarget: true, kind: 'expense' },
+    { assigned: 450, hasAssignment: false, id: 'car_unfunded', isTarget: true, kind: 'expense' },
+    { assigned: 900, hasAssignment: false, id: 'salary', isTarget: false, kind: 'income' },
+  ]
+  // What toAssignTotal subtracts from the pool: 800 (plain) + 300 (funded target) = 1100.
+  const totalAssigned = budgets
+    .filter(b => b.kind === 'expense')
+    .reduce((s, b) => s + assignedPoolContribution(b), 0)
+
+  it('candidate contributions sum to exactly what the pool subtracts', () => {
+    expect(reduceCandidates(budgets).reduce((s, c) => s + c.assigned, 0)).toBe(totalAssigned)
+  })
+
+  it('greedy cuts cancel the over-assignment and rebalance the pool to 0', () => {
+    const income = 400
+    const over = -toAssignPool(income, totalAssigned) // 700 over-assigned
+    const cuts = greedyReduceCuts(over, reduceCandidates(budgets))
+    const cutTotal = cuts.reduce((s, c) => s + c.cut, 0)
+    expect(cutTotal).toBeCloseTo(over, 9)
+    expect(toAssignPool(income, totalAssigned - cutTotal)).toBeCloseTo(0, 9)
+  })
+
+  it('a negative assignment shrinks the pool but not the candidates, and greedy still covers the overage', () => {
+    const withNegative: ReduceCandidateInput[] = [
+      ...budgets,
+      { assigned: -200, hasAssignment: true, id: 'drained', isTarget: false, kind: 'expense' },
+    ]
+    // The pool counts the negative contribution (900); candidates skip it, so they can cover more.
+    const negTotal = withNegative
+      .filter(b => b.kind === 'expense')
+      .reduce((s, b) => s + assignedPoolContribution(b), 0)
+    const listed = reduceCandidates(withNegative)
+    expect(listed.reduce((s, c) => s + c.assigned, 0)).toBeGreaterThan(negTotal)
+    const over = -toAssignPool(400, negTotal) // 500 over-assigned
+    const cuts = greedyReduceCuts(over, listed)
+    expect(cuts.reduce((s, c) => s + c.cut, 0)).toBeCloseTo(over, 9)
   })
 })

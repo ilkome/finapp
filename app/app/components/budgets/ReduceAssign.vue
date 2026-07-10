@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { ReduceCandidateInput } from '~/components/budgets/compute'
 import type { BudgetId } from '~/components/budgets/types'
 import type { BudgetProgress } from '~/components/budgets/useBudgetProgress'
 
+import { greedyReduceCuts, reduceCandidates } from '~/components/budgets/compute'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -27,34 +29,28 @@ function nameOf(id: BudgetId) {
   return (catId && categoriesStore.items?.[catId]?.name) || catId || id
 }
 
-// Expense budgets whose assignment actually feeds the to-assign pool, most-assigned first. A
-// sinking-fund target only counts when it carries a real funding override - its synthetic set-aside
-// never entered the pool, so reducing it wouldn't help. Mirrors toAssignTotal's accounting.
+// Expense budgets whose assignment actually feeds the to-assign pool, most-assigned first. The
+// contribution rule (assignedPoolContribution, inside reduceCandidates) is shared with
+// toAssignTotal so the sheet mirrors the pool's accounting by construction.
 const candidates = computed(() => {
-  const out: { assigned: number, id: BudgetId, name: string }[] = []
+  const inputs: ReduceCandidateInput[] = []
   for (const [id, b] of Object.entries(budgetsStore.activeItems)) {
+    // Pre-filter so progressFor (the expensive part) never runs for income budgets.
     if (b.kind !== 'expense')
       continue
     const p = props.progressFor(id)
     if (!p)
       continue
-    const contributing = p.target != null && !p.hasAssignment ? 0 : p.assigned
-    if (contributing > 0)
-      out.push({ assigned: contributing, id, name: nameOf(id) })
+    inputs.push({ assigned: p.assigned, hasAssignment: p.hasAssignment, id, isTarget: p.target != null, kind: b.kind })
   }
-  return out.sort((a, b) => b.assigned - a.assigned)
+  return reduceCandidates(inputs).map(c => ({ ...c, name: nameOf(c.id) }))
 })
 
-// Trim the largest assignments in turn until the pool is balanced (or candidates run out).
+// Trim the largest assignments in turn until the pool is balanced (or candidates run out). All cuts
+// come from the same pre-mutation snapshot: the computed only recomputes after setAssignment fires.
 function autoFix(close: () => void) {
-  let remaining = props.overBase
-  for (const c of [...candidates.value]) {
-    if (remaining <= 0.005)
-      break
-    const cut = Math.min(remaining, c.assigned)
-    props.reduceAssignment(c.id, cut)
-    remaining -= cut
-  }
+  for (const { cut, id } of greedyReduceCuts(props.overBase, candidates.value))
+    props.reduceAssignment(id, cut)
   close()
 }
 

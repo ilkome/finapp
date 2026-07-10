@@ -1,7 +1,7 @@
 import { UTCDate } from '@date-fns/utc'
 import { differenceInCalendarMonths, differenceInCalendarWeeks, differenceInCalendarYears } from 'date-fns'
 
-import type { BudgetKind, BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
+import type { BudgetId, BudgetKind, BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
 import type { Categories, CategoryId } from '~/components/categories/types'
 
 import { getCategorySubtreeIds } from '~/components/categories/utils'
@@ -176,4 +176,60 @@ export function targetSetAside(goalAmount: number, fromMs: number, goalMs: numbe
  */
 export function targetSaved(kind: BudgetKind, opts: { activity: number, fundedThisPeriod: number, priorSaved: number }): number {
   return kind === 'income' ? opts.priorSaved + opts.activity : opts.priorSaved + opts.fundedThisPeriod - opts.activity
+}
+
+export type ReduceCandidate = { assigned: number, id: BudgetId }
+export type ReduceCandidateInput = { assigned: number, hasAssignment: boolean, id: BudgetId, isTarget: boolean, kind: BudgetKind }
+export type ReduceCut = { cut: number, id: BudgetId }
+
+/**
+ * How much of a budget's assignment feeds the to-assign pool. A sinking-fund target counts only
+ * when it carries a real funding override (hasAssignment) - its synthetic set-aside never entered
+ * the pool. For a funded target `assigned` (the effective assignment in base) IS its explicit
+ * funding, since the override wins in rawAssigned. Shared by toAssignTotal and the ReduceAssign
+ * sheet so the two cannot drift apart.
+ */
+export function assignedPoolContribution(opts: { assigned: number, hasAssignment: boolean, isTarget: boolean }): number {
+  return opts.isTarget && !opts.hasAssignment ? 0 : opts.assigned
+}
+
+/** Expense budgets whose assignment actually feeds the pool, most-assigned first (base currency). */
+export function reduceCandidates(inputs: ReduceCandidateInput[]): ReduceCandidate[] {
+  const out: ReduceCandidate[] = []
+  for (const b of inputs) {
+    if (b.kind !== 'expense')
+      continue
+    const contributing = assignedPoolContribution(b)
+    if (contributing > 0)
+      out.push({ assigned: contributing, id: b.id })
+  }
+  return out.sort((a, b) => b.assigned - a.assigned)
+}
+
+/**
+ * Greedy trim: cut the largest assignments in turn until `overBase` is balanced or candidates run
+ * out. A remainder at or under 0.005 (half a minor currency unit of float residue) counts as
+ * balanced. All amounts in base currency.
+ */
+export function greedyReduceCuts(overBase: number, candidates: ReduceCandidate[]): ReduceCut[] {
+  const cuts: ReduceCut[] = []
+  let remaining = overBase
+  for (const c of candidates) {
+    if (remaining <= 0.005)
+      break
+    const cut = Math.min(remaining, c.assigned)
+    cuts.push({ cut, id: c.id })
+    remaining -= cut
+  }
+  return cuts
+}
+
+/**
+ * New raw assignment (budget's OWN currency) after pulling `deltaOwn` back to the pool, floored at
+ * 0. Deliberately NOT capped at available: already-spent money still frees its assignment, possibly
+ * sending available negative - reduce returns money to the pool, it does not conserve like
+ * movableAmount.
+ */
+export function reducedAssignment(currentRaw: number, deltaOwn: number): number {
+  return Math.max(0, currentRaw - deltaOwn)
 }
