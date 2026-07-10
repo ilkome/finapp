@@ -7,7 +7,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { addCivilDays, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
+import { addCivilDays, addCivilMonths, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
 import { committedNativeInRange, dueOccurrences, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
@@ -142,6 +142,29 @@ function confirmPending(p: Occurrence) {
   const raw = Number.parseFloat(amountDrafts[k] ?? '')
   const amount = Number.isFinite(raw) && raw > 0 ? raw : undefined
   recurrencesStore.confirmOccurrence(p.id, p.day, amount)
+}
+
+// Inline "delay" quick action for an overdue manual row. `rescheduleFrom` re-anchors the WHOLE
+// series (shifts every future charge and collapses the rule's other overdue rows to the new
+// phase) - the honest effect of the already-implemented store method, matching Form.vue's
+// "Next charge date". Presets are based on TODAY (not the overdue p.day) so the new date is always
+// in the future and the row leaves the overdue list.
+const delayFor = ref<string | null>(null)
+function toggleDelay(p: Occurrence) {
+  const k = keyOf(p)
+  delayFor.value = delayFor.value === k ? null : k
+}
+function delayPresets() {
+  const t0 = todayEpoch.value
+  return [
+    { day: addCivilDays(t0, 1), label: t('recurrences.delay.tomorrow') },
+    { day: addCivilDays(t0, 7), label: t('recurrences.delay.week') },
+    { day: addCivilMonths(t0, 1), label: t('recurrences.delay.month') },
+  ]
+}
+function delayTo(p: Occurrence, newDay: number) {
+  recurrencesStore.rescheduleFrom(p.id, newDay)
+  delayFor.value = null
 }
 
 // Bulk actions are confirmed first (skip-all is irreversible - there's no un-skip UI - and confirm-all
@@ -298,50 +321,70 @@ function fmtDay(day: number) {
         </template>
       </div>
       <div class="grid gap-1">
-        <div
-          v-for="p in pending"
-          :key="`${p.id}:${p.day}`"
-          class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2"
-        >
-          <UiIconBase
-            :name="categoryOf(p.rule)?.icon ?? 'lucide:repeat'"
-            :color="categoryOf(p.rule)?.color"
-            :size="15"
-            class="size-7 shrink-0 p-1.5"
-            invert
-          />
-          <div class="min-w-0 grow">
-            <div class="text-highlighted truncate text-sm">
-              {{ ruleName(p.rule) }}
+        <div v-for="p in pending" :key="`${p.id}:${p.day}`" class="grid gap-1">
+          <div class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2">
+            <UiIconBase
+              :name="categoryOf(p.rule)?.icon ?? 'lucide:repeat'"
+              :color="categoryOf(p.rule)?.color"
+              :size="15"
+              class="size-7 shrink-0 p-1.5"
+              invert
+            />
+            <div class="min-w-0 grow">
+              <div class="text-highlighted truncate text-sm">
+                {{ ruleName(p.rule) }}
+              </div>
+              <div class="text-2xs text-expense-1/80">
+                {{ fmtDay(p.day) }} · {{ t('recurrences.overdue') }}
+              </div>
             </div>
-            <div class="text-2xs text-expense-1/80">
-              {{ fmtDay(p.day) }} · {{ t('recurrences.overdue') }}
-            </div>
+            <input
+              v-model="amountDrafts[keyOf(p)]"
+              type="number"
+              inputmode="decimal"
+              :aria-label="t('recurrences.form.amount')"
+              class="bg-default text-highlighted w-20 rounded-sm px-2 py-1 text-right text-sm"
+              @input="editedKeys.add(keyOf(p))"
+              @keydown.enter="confirmPending(p)"
+            >
+            <span class="text-2xs text-muted">{{ walletCurrency(p.rule) }}</span>
+            <button
+              type="button"
+              class="bg-default text-muted hover:text-highlighted rounded-sm p-1.5"
+              :aria-label="t('recurrences.actions.delay')"
+              @click="toggleDelay(p)"
+            >
+              <Icon name="lucide:clock" size="14" />
+            </button>
+            <button
+              type="button"
+              class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
+              @click="confirmPending(p)"
+            >
+              {{ t('recurrences.actions.confirm') }}
+            </button>
+            <button
+              type="button"
+              class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
+              @click="recurrencesStore.skipOccurrence(p.id, p.day)"
+            >
+              {{ t('recurrences.actions.skip') }}
+            </button>
           </div>
-          <input
-            v-model="amountDrafts[keyOf(p)]"
-            type="number"
-            inputmode="decimal"
-            :aria-label="t('recurrences.form.amount')"
-            class="bg-default text-highlighted w-20 rounded-sm px-2 py-1 text-right text-sm"
-            @input="editedKeys.add(keyOf(p))"
-            @keydown.enter="confirmPending(p)"
+          <div
+            v-if="delayFor === keyOf(p)"
+            class="bg-elevated/50 flex flex-wrap items-center gap-1 rounded-md px-3 py-2"
           >
-          <span class="text-2xs text-muted">{{ walletCurrency(p.rule) }}</span>
-          <button
-            type="button"
-            class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
-            @click="confirmPending(p)"
-          >
-            {{ t('recurrences.actions.confirm') }}
-          </button>
-          <button
-            type="button"
-            class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
-            @click="recurrencesStore.skipOccurrence(p.id, p.day)"
-          >
-            {{ t('recurrences.actions.skip') }}
-          </button>
+            <span class="text-2xs text-muted mr-1">{{ t('recurrences.delay.title') }}</span>
+            <UiTabsItemPill
+              v-for="opt in delayPresets()"
+              :key="opt.day"
+              variant="outline"
+              @click="delayTo(p, opt.day)"
+            >
+              {{ opt.label }}
+            </UiTabsItemPill>
+          </div>
         </div>
       </div>
     </div>

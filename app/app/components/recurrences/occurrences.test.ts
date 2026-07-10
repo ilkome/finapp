@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
+import { addCivilDays } from '~/components/date/utils'
 import { TrnType } from '~/components/trns/types'
 
 import type { OccurrenceMatchTrn } from './occurrences'
@@ -130,6 +131,23 @@ describe('dueOccurrences (catch-up)', () => {
     const r = rule({ anchorDate: U(2024, 5, 1), freq: 'month', lastGeneratedDate: null })
     expect(dueOccurrences(r, U(2024, 4, 15))).toEqual([])
     expect(dueOccurrences(r, U(2024, 5, 1))).toEqual([U(2024, 5, 1)])
+  })
+})
+
+describe('reschedule re-anchor', () => {
+  // Engine effect of the store's rescheduleFrom (thin Pinia glue): re-anchoring the whole series to
+  // `newDay` clears the rule's overdue backlog and makes the delayed day the next charge.
+  const today = U(2024, 5, 15)
+
+  it('clears overdue backlog and next-charges on the delayed day', () => {
+    const overdue = rule({ anchorDate: U(2024, 0, 1), autoCreate: false, freq: 'month', lastGeneratedDate: U(2024, 0, 1) })
+    // Sanity: the rule is overdue today before the delay.
+    expect(dueOccurrences(overdue, today).length).toBeGreaterThan(0)
+
+    const newDay = addCivilDays(today, 7)
+    const reanchored = rule({ ...overdue, anchorDate: newDay, lastGeneratedDate: addCivilDays(newDay, -1) })
+    expect(dueOccurrences(reanchored, today)).toEqual([])
+    expect(nextOccurrence(reanchored, today)).toBe(newDay)
   })
 })
 
