@@ -142,15 +142,13 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     })
   }
 
-  // Shared committed-cost core: sums each rule's still-unrealized occurrences in `range`, counting a
-  // hand-entered or linked instance of a bill as realized (via unrealizedOccurrenceDays) so a paid
-  // bill is never double-subtracted from safe-to-spend. `consumed` is shared across all rules so one
-  // trn realizes at most one occurrence. Candidates are indexed by category from the in-range trns.
-  function committedForRules(entries: [RecurrenceId, RecurrenceItem][], range: Range): number {
-    const base = currenciesStore.base
-    const rates = currenciesStore.rates
+  // Candidate trns for occurrence matching in the viewed period, indexed by category. Shared by
+  // committedRemaining (called once per budget) and committedUnbudgeted so one trns scan serves all
+  // calls instead of one scan per call. Downstream must treat the arrays as read-only - the Map is
+  // cached across calls (unrealizedOccurrenceDays only reads them).
+  const occurrenceCandidates = computed(() => {
     const byCategory = new Map<CategoryId, OccurrenceMatchTrn[]>()
-    for (const id of trnsStore.getStoreTrnsIds({ dates: range })) {
+    for (const id of trnsStore.getStoreTrnsIds({ dates: period.range.value })) {
       const t = trnsStore.items?.[id]
       if (!t || t.type === TrnType.Transfer)
         continue
@@ -158,10 +156,22 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       list.push({ amount: t.amount, date: t.date, id, recurrenceId: t.recurrenceId, type: t.type })
       byCategory.set(t.categoryId, list)
     }
+    return byCategory
+  })
+
+  // Shared committed-cost core: sums each rule's still-unrealized occurrences in the viewed period,
+  // counting a hand-entered or linked instance of a bill as realized (via unrealizedOccurrenceDays)
+  // so a paid bill is never double-subtracted from safe-to-spend. `consumed` stays per call so one
+  // budget's matching never eats a trn another budget needs, while one trn still realizes at most
+  // one occurrence within a call.
+  function committedForRules(entries: [RecurrenceId, RecurrenceItem][]): number {
+    const base = currenciesStore.base
+    const rates = currenciesStore.rates
+    const range = period.range.value
     const consumed = new Set<TrnId>()
     let sum = 0
     for (const [ruleId, rule] of entries) {
-      const candidates = byCategory.get(rule.categoryId) ?? []
+      const candidates = occurrenceCandidates.value.get(rule.categoryId) ?? []
       for (const _day of unrealizedOccurrenceDays(rule, ruleId, range, trnsStore.items ?? {}, candidates, consumed)) {
         const currency = walletsStore.items?.[rule.walletId]?.currency ?? base
         sum += getAmountInRate({ amount: rule.amount, baseCurrencyCode: base, currencyCode: currency, rates })
@@ -172,11 +182,11 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
 
   // Committed recurring spend in the period not yet realized (no matching trn). Safe-to-spend
   // subtracts it so discretionary money excludes known upcoming bills.
-  function committedRemaining(budget: BudgetItem, owned: Set<CategoryId>, range: Range): number {
+  function committedRemaining(budget: BudgetItem, owned: Set<CategoryId>): number {
     const wantType = budget.kind === 'income' ? TrnType.Income : TrnType.Expense
     const entries = Object.entries(recurrencesStore.activeItems)
       .filter(([, rule]) => rule.type === wantType && owned.has(rule.categoryId))
-    return committedForRules(entries, range)
+    return committedForRules(entries)
   }
 
   // Rollover starts at the first prior period with activity or an explicit assignment, so a fresh
@@ -258,7 +268,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       assignedRaw,
       available,
       carried,
-      committed: committedRemaining(budget, owned, range),
+      committed: committedRemaining(budget, owned),
       hasAssignment: override !== undefined,
       isGoalReached: isGoalReached(budget.kind, assigned, activity),
       isOver: isOverBudget(budget.kind, available),
@@ -270,7 +280,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
 
   // Committed recurring expense in categories that NO budget covers (so their upcoming bills still
   // reduce discretionary money). Union of all budgets' owned categories, then sweep the rest.
-  function committedUnbudgeted(range: Range): number {
+  function committedUnbudgeted(): number {
     const budgeted = new Set<CategoryId>()
     for (const id of Object.keys(budgetsStore.activeItems)) {
       for (const c of ownedSet(budgetsStore.activeItems[id]!))
@@ -278,7 +288,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     }
     const entries = Object.entries(recurrencesStore.activeItems)
       .filter(([, rule]) => rule.type === TrnType.Expense && !budgeted.has(rule.categoryId))
-    return committedForRules(entries, range)
+    return committedForRules(entries)
   }
 
   // Page hero (limits mode): discretionary money left after ALL committed recurring spend - both
@@ -297,7 +307,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       expenseAvailable += p.available
       committed += p.committed
     }
-    return safeToSpend(expenseAvailable, committed + committedUnbudgeted(period.range.value))
+    return safeToSpend(expenseAvailable, committed + committedUnbudgeted())
   })
 
   // Income received this period across all categories, in base currency (drives the to-assign pool).
