@@ -262,9 +262,10 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
             :style="{ width: `${targetPct}%` }"
           />
         </div>
-        <!-- Fund this period's set-aside so the target actually accumulates. -->
+        <!-- Fund this period's set-aside so the target actually accumulates. Expense targets only:
+             an income savings goal accumulates received income, there is nothing to hand-fund. -->
         <button
-          v-if="!progress.hasAssignment && !progress.target.reached"
+          v-if="budget.kind !== 'income' && !progress.hasAssignment && !progress.target.reached"
           type="button"
           class="bg-primary/15 text-primary text-2xs mt-1.5 flex items-center gap-1 rounded-sm px-2 py-1"
           @click.stop="fundTarget"

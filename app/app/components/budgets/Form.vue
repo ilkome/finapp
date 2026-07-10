@@ -31,13 +31,14 @@ const amountPeriod = ref<BudgetPeriodType>(existing.value?.amountPeriod ?? 'mont
 const currency = ref<string>(existing.value?.currency || currenciesStore.base)
 const rollover = ref<BudgetRollover>(existing.value?.rollover ?? 'none')
 
-// Sinking-fund "target by date" (expense only): save goalAmount by goalDate; the per-period
-// set-aside is computed, and the budget accumulates (forced surplus rollover).
+// "Target by date": reach goalAmount by goalDate. Expense = sinking fund (save up, forced surplus
+// rollover); income = savings goal (accumulate received income, stands per-period with no rollover).
 const isTarget = ref<boolean>(!!(existing.value?.goalAmount && existing.value?.goalDate))
 const goalAmount = ref<string>(existing.value?.goalAmount ? String(existing.value.goalAmount) : '')
 const goalDateEpoch = ref<number | null>(existing.value?.goalDate ?? null)
 const goalAmountNumber = computed(() => Number.parseFloat(goalAmount.value))
-const isTargetActive = computed(() => kind.value === 'expense' && isTarget.value)
+const isTargetActive = computed(() => isTarget.value)
+const isIncome = computed(() => kind.value === 'income')
 
 const goalDateInput = computed({
   get: () => (goalDateEpoch.value != null ? civilDayKey(goalDateEpoch.value) : ''),
@@ -105,8 +106,10 @@ function onSave(close: () => void) {
     goalAmount: isT ? goalAmountNumber.value : null,
     goalDate: isT ? goalDateEpoch.value : null,
     kind: kind.value,
-    // A sinking fund must accumulate across periods, so a target forces surplus rollover.
-    rollover: isT ? 'surplus' : rollover.value,
+    // An expense sinking fund must accumulate real funding across periods, so it forces surplus
+    // rollover. An income savings goal accumulates received income in the overlay instead, so its
+    // per-period triad (expected vs received) stands alone with no rollover.
+    rollover: isT ? (kind.value === 'income' ? 'none' : 'surplus') : rollover.value,
     // Preserve the lifecycle status (editing an archived budget must not silently un-archive it).
     status: existing.value?.status ?? 'active',
     updatedAt: Date.now(),
@@ -171,9 +174,8 @@ function onSave(close: () => void) {
           </UiTabsBar>
         </FormElement>
 
-        <!-- Target by date (sinking fund), expense only -->
+        <!-- Target by date: sinking fund (expense) or savings goal (income) -->
         <UiSwitchItem
-          v-if="kind === 'expense'"
           :checkboxValue="isTarget"
           :title="t('budgets.form.targetToggle')"
           @click="isTarget = !isTarget"
@@ -204,7 +206,7 @@ function onSave(close: () => void) {
             >
             <div v-if="setAsideHint != null" class="text-2xs text-muted flex items-center gap-1 px-1 pt-1">
               <Icon name="lucide:piggy-bank" size="12" />
-              {{ t('budgets.form.setAsideHint', { amount: setAsideHint, currency }) }}
+              {{ t(isIncome ? 'budgets.form.receiveHint' : 'budgets.form.setAsideHint', { amount: setAsideHint, currency }) }}
             </div>
           </FormElement>
         </template>

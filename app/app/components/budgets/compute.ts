@@ -166,3 +166,14 @@ export function periodsUntilGoal(fromMs: number, goalMs: number, periodType: Bud
 export function targetSetAside(goalAmount: number, fromMs: number, goalMs: number, periodType: BudgetPeriodType): number {
   return goalAmount / periodsUntilGoal(fromMs, goalMs, periodType)
 }
+
+/**
+ * Accumulated progress toward a "target by date" goal, by kind.
+ * - expense: real funding set aside and not yet spent (`priorSaved + fundedThisPeriod - activity`).
+ *   `activity` is spend, so a purchase draws the fund down.
+ * - income: money that has actually arrived toward the goal (`priorSaved + activity`); `activity` is
+ *   income received, and `fundedThisPeriod` is ignored - you don't hand-fund income you receive.
+ */
+export function targetSaved(kind: BudgetKind, opts: { activity: number, fundedThisPeriod: number, priorSaved: number }): number {
+  return kind === 'income' ? opts.priorSaved + opts.activity : opts.priorSaved + opts.fundedThisPeriod - opts.activity
+}

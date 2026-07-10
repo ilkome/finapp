@@ -15,6 +15,7 @@ import {
   periodsUntilGoal,
   projectedPeriodEnd,
   safeToSpend,
+  targetSaved,
   targetSetAside,
   toAssignPool,
 } from './compute'
@@ -103,6 +104,18 @@ describe('targetSetAside', () => {
   })
   it('asks for the full amount when the goal is due this period', () => {
     expect(targetSetAside(500, JAN_1, JAN_1, 'month')).toBe(500)
+  })
+})
+
+describe('targetSaved', () => {
+  it('income accumulates received income (funding ignored)', () => {
+    expect(targetSaved('income', { activity: 300, fundedThisPeriod: 0, priorSaved: 700 })).toBe(1000)
+  })
+  it('income never subtracts receipts, even with a stray fundedThisPeriod', () => {
+    expect(targetSaved('income', { activity: 100, fundedThisPeriod: 999, priorSaved: 0 })).toBe(100)
+  })
+  it('expense = priorSaved + funded - spend', () => {
+    expect(targetSaved('expense', { activity: 200, fundedThisPeriod: 400, priorSaved: 500 })).toBe(700)
   })
 })
 

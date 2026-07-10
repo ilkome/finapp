@@ -7,7 +7,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import type { TrnId } from '~/components/trns/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodsUntilGoal, projectedPeriodEnd, safeToSpend, targetSetAside, toAssignPool } from '~/components/budgets/compute'
+import { budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodsUntilGoal, projectedPeriodEnd, safeToSpend, targetSaved, targetSetAside, toAssignPool } from '~/components/budgets/compute'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -235,10 +235,22 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       rollover: budget.rollover,
     })
     const available = computeAvailable(carried, assigned, activity)
-    // A target's "saved" is only REAL funding: accumulated explicit assignments (carried) plus this
-    // period's explicit funding, minus spend - never the synthetic set-aside (which would show fake
-    // progress and make the Fund button a no-op). See review MEDIUM-2 / finding 2.
-    const targetSaved = carried + explicitAssignedBase(budgetId, budget, range.start) - activity
+    // A target's "saved" is kind-aware. Expense: only REAL funding - accumulated explicit
+    // assignments (carried) plus this period's explicit funding, minus spend - never the synthetic
+    // set-aside (which would show fake progress and make the Fund button a no-op). Income: cumulative
+    // RECEIVED, since received income (not funding) is what accumulates toward the goal.
+    // See review MEDIUM-2 / finding 2.
+    const isIncomeTarget = isTarget && budget.kind === 'income'
+    // Income target: cumulative RECEIVED across the visible prior periods (mirrors the carried walk),
+    // since received income is what accumulates toward the goal.
+    const priorReceived = isIncomeTarget
+      ? period.periodStartsBefore.value.reduce((s, ps) => s + activityInRange(budget, owned, period.rangeForStart(ps)), 0)
+      : carried
+    const savedForTarget = targetSaved(budget.kind, {
+      activity,
+      fundedThisPeriod: explicitAssignedBase(budgetId, budget, range.start),
+      priorSaved: isIncomeTarget ? priorReceived : carried,
+    })
 
     return {
       activity,
@@ -252,7 +264,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       isOver: isOverBudget(budget.kind, available),
       pace: paceMarker(assigned, period.daysElapsed.value, period.daysInPeriod.value),
       projected: projectedPeriodEnd(activity, period.daysElapsed.value, period.daysInPeriod.value),
-      target: buildTarget(budget, range.start, isTarget ? targetSaved : available),
+      target: buildTarget(budget, range.start, isTarget ? savedForTarget : available),
     }
   }
 
