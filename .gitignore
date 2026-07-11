@@ -59,6 +59,14 @@ graphify-out
 # Local planning scratch (not source)
 plans/
 
+# Bank import raw data (personal financial data pulled from bank web APIs - never commit)
+/alfa-*.json
+/sber-*.json
+/tbank-*.json
+/ozon-*.json
+/yandex-*.json
+app/scripts/bankImport/.*secrets*
+
 # Vercel CLI link (local)
 .vercel
 # PowerSync Cloud config (local; redeploy via `powersync deploy`)
