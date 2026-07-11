@@ -11,7 +11,7 @@ import { assignedPoolContribution, budgetOwnedCategoryIds, carriedIn, computeAva
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { unrealizedOccurrenceDays } from '~/components/recurrences/occurrences'
+import { committedNativeInRange, unrealizedOccurrenceDays } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -339,9 +339,9 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     }).income
   })
 
-  // To-assign pool (1.4): income received this period minus what every expense budget assigns. The
-  // page only surfaces it when there's period income - without it the figure is just -assigned. (A4)
-  const toAssignTotal = computed(() => {
+  // What every expense budget assigns this period, in base currency (the pool's subtracted side,
+  // also the hero's "assigned" legend row).
+  const assignedPoolTotal = computed<number>(() => {
     const start = period.range.value.start
     let assigned = 0
     for (const id of Object.keys(budgetsStore.activeItems)) {
@@ -358,7 +358,31 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
         })
       }
     }
-    return toAssignPool(periodIncomeTotal.value, assigned)
+    return assigned
+  })
+
+  // To-assign pool (1.4): income received this period minus what every expense budget assigns.
+  const toAssignTotal = computed(() => toAssignPool(periodIncomeTotal.value, assignedPoolTotal.value))
+
+  // Expected income for the VIEWED period from active income rules, priced per occurrence
+  // (amount-history / skip / end aware) and converted per rule wallet currency. Pure caption
+  // decoration - it must never enter toAssignTotal or safe-to-spend (same contract as nextIncome,
+  // useRecurrenceTotals).
+  const expectedPeriodIncomeTotal = computed(() => {
+    const range = period.range.value
+    const base = currenciesStore.base
+    const rates = currenciesStore.rates
+    let sum = 0
+    for (const rule of Object.values(recurrencesStore.activeItems)) {
+      if (rule.type !== TrnType.Income)
+        continue
+      const native = committedNativeInRange(rule, range)
+      if (!native)
+        continue
+      const currency = walletsStore.items?.[rule.walletId]?.currency ?? base
+      sum += getAmountInRate({ amount: native, baseCurrencyCode: base, currencyCode: currency, rates })
+    }
+    return sum
   })
 
   // Move money between two budgets for the viewed period (2.2): one's assignment drops, the other's
@@ -432,7 +456,9 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
   }
 
   return {
+    assignedPoolTotal,
     copyLastPeriod,
+    expectedPeriodIncomeTotal,
     historyFor,
     moveMoney,
     periodIncomeTotal,

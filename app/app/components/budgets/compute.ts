@@ -94,6 +94,24 @@ export function toAssignPool(incomeForPeriod: number, totalAssigned: number, car
   return incomeForPeriod + carriedPool - totalAssigned
 }
 
+export type ToAssignCardState = 'hidden' | 'planOnly' | 'pool'
+
+/**
+ * How the hero to-assign card presents itself. Real income drives the pool regardless of sign;
+ * without income the pool is just -assigned, so the card reframes to the plan ("Assigned so far")
+ * instead of hiding or faking a deficit; with neither there is nothing honest to show. planOnly is
+ * reachable for any plain expense limit because rawAssigned falls back to the normalized budget
+ * amount (useBudgetProgress), while targets without explicit funding contribute 0
+ * (assignedPoolContribution).
+ */
+export function toAssignCardState(periodIncome: number, assignedPool: number): ToAssignCardState {
+  if (periodIncome > 0)
+    return 'pool'
+  if (assignedPool > 0)
+    return 'planOnly'
+  return 'hidden'
+}
+
 /**
  * Amount actually movable out of a budget: never more than `cap` (the source's AVAILABLE balance,
  * not its assignment - so already-spent money can't be moved), never negative. Move-money must

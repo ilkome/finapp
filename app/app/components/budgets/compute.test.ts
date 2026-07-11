@@ -23,6 +23,7 @@ import {
   safeToSpend,
   targetSaved,
   targetSetAside,
+  toAssignCardState,
   toAssignPool,
 } from './compute'
 
@@ -180,6 +181,24 @@ describe('safeToSpend & toAssignPool', () => {
   it('toAssignPool = income + carried - assigned', () => {
     expect(toAssignPool(3000, 2500)).toBe(500)
     expect(toAssignPool(3000, 2500, 200)).toBe(700)
+  })
+})
+
+describe('toAssignCardState', () => {
+  it('real income with assignments is the pool', () => {
+    expect(toAssignCardState(3000, 2500)).toBe('pool')
+  })
+  it('real income with nothing assigned is still the pool', () => {
+    expect(toAssignCardState(3000, 0)).toBe('pool')
+  })
+  it('a negative pool is still real - the Fix path owns the deficit', () => {
+    expect(toAssignCardState(100, 5000)).toBe('pool')
+  })
+  it('zero income with assignments reframes to the plan', () => {
+    expect(toAssignCardState(0, 2500)).toBe('planOnly')
+  })
+  it('neither income nor assignments hides the card', () => {
+    expect(toAssignCardState(0, 0)).toBe('hidden')
   })
 })
 

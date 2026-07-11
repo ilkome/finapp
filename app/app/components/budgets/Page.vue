@@ -3,27 +3,37 @@ import { UTCDate } from '@date-fns/utc'
 
 import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
 
+import { toAssignCardState } from '~/components/budgets/compute'
 import { budgetPeriodTypes } from '~/components/budgets/types'
 import { useBudgetPeriod } from '~/components/budgets/useBudgetPeriod'
 import { useBudgetProgress } from '~/components/budgets/useBudgetProgress'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
-import { formatByLocale, getStartOf } from '~/components/date/utils'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { formatByLocale, getStartOf, todayCivilDayEpoch } from '~/components/date/utils'
 import { useRecurrenceTotals } from '~/components/recurrences/useRecurrenceTotals'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { locale, t } = useI18n()
 const budgetsStore = useBudgetsStore()
+const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 
 const { openDocs } = useDocsLink()
 const period = useBudgetPeriod()
-const { copyLastPeriod, historyFor, moveMoney, periodIncomeTotal, progressFor, reduceAssignment, safeToSpendBreakdown, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
+const { assignedPoolTotal, copyLastPeriod, expectedPeriodIncomeTotal, historyFor, moveMoney, periodIncomeTotal, progressFor, reduceAssignment, safeToSpendBreakdown, safeToSpendTotal, toAssignTotal, trnsIdsFor } = useBudgetProgress(period)
 // Only nextIncome is read here - the composable's `totals` (a lazy 365-day walk) must stay unread.
 const { nextIncome } = useRecurrenceTotals()
 
-// "To assign" is an envelope figure (income - assigned). Without period income it's just -assigned,
-// which is confusing in limits mode, so only surface it once income lands this period. (A4)
-const showToAssign = computed(() => periodIncomeTotal.value > 0)
+// With period income the card is the real pool; with zero income it reframes to the assigned plan
+// (neutral) instead of hiding, so the hero is honest in both directions. Hidden only when there is
+// neither income nor assignment.
+const toAssignState = computed(() => toAssignCardState(periodIncomeTotal.value, assignedPoolTotal.value))
+const showToAssign = computed(() => toAssignState.value !== 'hidden')
+
+// Past periods can never receive the expected income, so the note would be dishonest there.
+const showExpectedIncomeNote = computed(() => toAssignState.value === 'planOnly'
+  && expectedPeriodIncomeTotal.value > 0
+  && period.range.value.end >= todayCivilDayEpoch())
 
 const hasActiveItems = computed(() => Object.keys(budgetsStore.activeItems).length > 0)
 
@@ -209,26 +219,56 @@ function setPeriodType(type: BudgetPeriodType) {
             </StatSumItem>
             <StatSumItem
               v-if="showToAssign"
-              :amount="toAssignTotal"
-              :title="t('budgets.hero.toAssign')"
-              :type="toAssignTotal < 0 ? 'expense' : 'income'"
-            />
+              :amount="toAssignState === 'pool' ? toAssignTotal : assignedPoolTotal"
+              :title="toAssignState === 'pool' ? t('budgets.hero.toAssign') : t('budgets.hero.assignedSoFar')"
+              :type="toAssignState === 'pool' ? (toAssignTotal < 0 ? 'expense' : 'income') : 'netIncome'"
+            >
+              <div class="text-2xs text-muted mb-1 grid gap-0.5">
+                <div class="flex items-center justify-between gap-2">
+                  <span>{{ t('budgets.toAssign.receivedLabel') }}</span>
+                  <Amount
+                    :amount="periodIncomeTotal"
+                    :currencyCode="currenciesStore.base"
+                    :isShowBaseRate="false"
+                    align="left"
+                    variant="xs"
+                  />
+                </div>
+                <div class="flex items-center justify-between gap-2">
+                  <span>{{ t('budgets.toAssign.assignedLabel') }}</span>
+                  <Amount
+                    :amount="assignedPoolTotal"
+                    :currencyCode="currenciesStore.base"
+                    :isShowBaseRate="false"
+                    align="left"
+                    variant="xs"
+                  />
+                </div>
+              </div>
+            </StatSumItem>
           </div>
           <div class="-mt-2 flex items-center justify-end gap-1">
-            <div v-if="showNowCaption" class="text-2xs text-muted mr-auto flex flex-wrap items-center gap-x-2">
+            <div v-if="showNowCaption || showExpectedIncomeNote" class="text-2xs text-muted mr-auto flex flex-wrap items-center gap-x-2">
               <span v-if="perDay != null">
                 {{ t('budgets.safeSheet.perDay', { amount: Math.round(perDay) }) }} · {{ t('budgets.safeSheet.untilDate', { date: periodEndLabel }) }}
               </span>
               <NuxtLink
-                v-if="nextIncome"
+                v-if="showNowCaption && nextIncome"
                 class="hover:text-default"
                 to="/recurrences"
               >
                 {{ t('budgets.safeSheet.payday', { date: formatByLocale(nextIncome.dayEpoch, 'd MMM', dateLocale) }) }}
               </NuxtLink>
+              <NuxtLink
+                v-if="showExpectedIncomeNote"
+                class="hover:text-default"
+                to="/recurrences"
+              >
+                {{ t('budgets.toAssign.expectedNote', { amount: Math.round(expectedPeriodIncomeTotal) }) }}
+              </NuxtLink>
             </div>
             <UiActionButton
-              v-if="showToAssign && toAssignTotal < 0"
+              v-if="toAssignState === 'pool' && toAssignTotal < 0"
               class="text-error"
               variant="text"
               size="sm"
