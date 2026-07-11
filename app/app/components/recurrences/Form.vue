@@ -4,7 +4,7 @@ import type { RecurrenceId, RecurrenceItem, RecurrenceSchedule } from '~/compone
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { civilDayKey, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
+import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
 import { nextOccurrence, priceHistoryTimeline } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
@@ -71,29 +71,16 @@ const canSave = computed(() => Number.isFinite(amountNumber.value) && amountNumb
 // Price change: a new amount takes effect from a chosen day (default today), recorded in history.
 const amountChanged = computed(() => existing.value != null && amountNumber.value !== existing.value.amount)
 const effectiveFromEpoch = ref<number>(todayCivilDayEpoch())
-const effectiveFromInput = computed({
-  get: () => civilDayKey(effectiveFromEpoch.value),
-  set: (v: string) => {
-    if (!v)
-      return
-    const [y, m, d] = v.split('-').map(Number)
-    effectiveFromEpoch.value = toCivilDayEpoch(y!, m! - 1, d!)
+const effectiveFrom = computed({
+  get: (): number | null => effectiveFromEpoch.value,
+  set: (v: number | null) => {
+    if (v != null)
+      effectiveFromEpoch.value = v
   },
 })
 
 // Change the next charge date (re-anchors the cadence from there). Empty = keep current schedule.
 const rescheduleEpoch = ref<number | null>(null)
-const rescheduleInput = computed({
-  get: () => (rescheduleEpoch.value != null ? civilDayKey(rescheduleEpoch.value) : ''),
-  set: (v: string) => {
-    if (!v) {
-      rescheduleEpoch.value = null
-      return
-    }
-    const [y, m, d] = v.split('-').map(Number)
-    rescheduleEpoch.value = toCivilDayEpoch(y!, m! - 1, d!)
-  },
-})
 
 const nextChargeLabel = computed(() => {
   if (!existing.value)
@@ -201,14 +188,12 @@ function onSave(close: () => void) {
             type="number"
           />
           <!-- When the price changes, record from which day it applies (default today). -->
-          <label v-if="amountChanged" class="text-2xs text-muted mt-2 flex items-center gap-2">
-            {{ t('recurrences.form.effectiveFrom') }}
-            <input
-              v-model="effectiveFromInput"
-              type="date"
-              class="bg-elevated/40 text-highlighted rounded-sm px-2 py-1"
-            >
-          </label>
+          <div v-if="amountChanged" class="mt-2 grid gap-1">
+            <div class="text-2xs text-muted">
+              {{ t('recurrences.form.effectiveFrom') }}
+            </div>
+            <FormDate v-model="effectiveFrom" />
+          </div>
         </FormElement>
 
         <!-- Price history -->
@@ -228,12 +213,8 @@ function onSave(close: () => void) {
           <template #label>
             {{ t('recurrences.form.nextCharge') }}
           </template>
-          <div class="flex items-center gap-2">
-            <input
-              v-model="rescheduleInput"
-              type="date"
-              class="bg-elevated/40 text-highlighted rounded-sm px-3 py-2 text-sm"
-            >
+          <div class="grid gap-1">
+            <FormDate v-model="rescheduleEpoch" clearable />
             <span class="text-2xs text-muted">{{ t('recurrences.form.currentNext') }} {{ nextChargeLabel }}</span>
           </div>
         </FormElement>

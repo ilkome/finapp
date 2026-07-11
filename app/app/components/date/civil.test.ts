@@ -1,3 +1,4 @@
+import { CalendarDate } from '@internationalized/date'
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -9,8 +10,10 @@ import {
   epochToCivilParts,
   getEndOf,
   getStartOf,
+  getUCalendarCivilDate,
   isSameCivilDay,
   lastDayOfMonthCivil,
+  parseUCalendarDate,
   toCivilDayEpoch,
 } from '~/components/date/utils'
 
@@ -72,5 +75,23 @@ describe('civil-day helpers', () => {
 
   it('end-of-day is one ms before next midnight', () => {
     expect(getEndOf(new Date(Date.UTC(2024, 2, 15)), 'day').getTime()).toBe(Date.UTC(2024, 2, 15) + DAY - 1)
+  })
+})
+
+describe('calendarDate bridge (UCalendar picker)', () => {
+  it('parseUCalendarDate reads a civil-day epoch as UTC calendar parts', () => {
+    const d = parseUCalendarDate(Date.UTC(2026, 0, 31))
+    expect(d.year).toBe(2026)
+    expect(d.month).toBe(1)
+    expect(d.day).toBe(31)
+  })
+
+  it('getUCalendarCivilDate maps a CalendarDate to a UTC-midnight epoch', () => {
+    expect(getUCalendarCivilDate(new CalendarDate(2026, 1, 1))).toBe(Date.UTC(2026, 0, 1))
+  })
+
+  it('round-trips a civil-day epoch through CalendarDate (leap day)', () => {
+    const ms = Date.UTC(2024, 1, 29)
+    expect(getUCalendarCivilDate(parseUCalendarDate(ms))).toBe(ms)
   })
 })

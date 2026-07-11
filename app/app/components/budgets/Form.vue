@@ -7,7 +7,7 @@ import { budgetKinds, budgetPeriodTypes, budgetRollovers } from '~/components/bu
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { civilDayKey, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
+import { todayCivilDayEpoch } from '~/components/date/utils'
 
 const props = defineProps<{
   budgetId?: BudgetId
@@ -39,18 +39,6 @@ const goalDateEpoch = ref<number | null>(existing.value?.goalDate ?? null)
 const goalAmountNumber = computed(() => Number.parseFloat(goalAmount.value))
 const isTargetActive = computed(() => isTarget.value)
 const isIncome = computed(() => kind.value === 'income')
-
-const goalDateInput = computed({
-  get: () => (goalDateEpoch.value != null ? civilDayKey(goalDateEpoch.value) : ''),
-  set: (v: string) => {
-    if (!v) {
-      goalDateEpoch.value = null
-      return
-    }
-    const [y, m, d] = v.split('-').map(Number)
-    goalDateEpoch.value = toCivilDayEpoch(y!, m! - 1, d!)
-  },
-})
 
 // Representative monthly set-aside shown as a hint (the item recomputes per the viewed period).
 const setAsideHint = computed(() => {
@@ -199,11 +187,7 @@ function onSave(close: () => void) {
             <template #label>
               {{ t('budgets.form.goalDate') }}
             </template>
-            <input
-              v-model="goalDateInput"
-              type="date"
-              class="bg-elevated/30 text-highlighted min-h-[42px] rounded-md px-3 py-2 text-sm"
-            >
+            <FormDate v-model="goalDateEpoch" clearable />
             <div v-if="setAsideHint != null" class="text-2xs text-muted flex items-center gap-1 px-1 pt-1">
               <Icon name="lucide:piggy-bank" size="12" />
               {{ t(isIncome ? 'budgets.form.receiveHint' : 'budgets.form.setAsideHint', { amount: setAsideHint, currency }) }}

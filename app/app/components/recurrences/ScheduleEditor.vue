@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { RecurrenceEndMode, RecurrenceSchedule } from '~/components/recurrences/types'
 
-import { civilDayKey, toCivilDayEpoch } from '~/components/date/utils'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 
 // Both parents (trnForm Repeat "create" and recurrences Form "edit") pass the SAME reactive
@@ -17,15 +16,10 @@ const endModeOptions = computed(() => [
   { label: t('recurrences.end.count'), value: 'count' },
 ])
 
-const endDateInput = computed({
-  get: () => (model.value.endDate != null ? civilDayKey(model.value.endDate) : ''),
-  set: (v: string) => {
-    if (!v) {
-      model.value.endDate = null
-      return
-    }
-    const [y, m, d] = v.split('-').map(Number)
-    model.value.endDate = toCivilDayEpoch(y!, m! - 1, d!)
+const endDate = computed({
+  get: () => model.value.endDate,
+  set: (v: number | null) => {
+    model.value.endDate = v
   },
 })
 </script>
@@ -89,12 +83,12 @@ const endDateInput = computed({
         :value="model.endMode"
         @change="(v: string) => model.endMode = v as RecurrenceEndMode"
       />
-      <input
+      <FormDate
         v-if="model.endMode === 'date'"
-        v-model="endDateInput"
-        type="date"
-        class="bg-elevated/40 text-highlighted mt-2 rounded-sm px-3 py-2 text-sm"
-      >
+        v-model="endDate"
+        clearable
+        class="mt-2"
+      />
       <div v-if="model.endMode === 'count'" class="mt-2 flex items-center gap-2">
         <UiNumberStepper
           :modelValue="model.endCount ?? 1"

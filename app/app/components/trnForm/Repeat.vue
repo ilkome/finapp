@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { civilDayKey, civilDayStart, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
+import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const { locale, t } = useI18n()
@@ -14,13 +14,11 @@ const isFutureStart = computed(() => civilDayStart(trnsFormStore.values.date) > 
 const isPastStart = computed(() => civilDayStart(trnsFormStore.values.date) < todayCivilDayEpoch())
 const startLabel = computed(() => formatByLocale(trnsFormStore.values.date, 'd MMM yyyy', dateLocale.value))
 
-const startDateInput = computed({
-  get: () => civilDayKey(trnsFormStore.values.date),
-  set: (v: string) => {
-    if (!v)
-      return
-    const [y, m, d] = v.split('-').map(Number)
-    trnsFormStore.values.date = toCivilDayEpoch(y!, m! - 1, d!)
+const startDate = computed({
+  get: () => trnsFormStore.values.date,
+  set: (v: number | null) => {
+    if (v != null)
+      trnsFormStore.values.date = v
   },
 })
 
@@ -72,14 +70,12 @@ const summary = computed(() => {
     <!-- Config -->
     <div v-if="repeat.enabled" class="grid gap-3 px-3 pt-1 pb-3">
       <!-- Subscription start date (= the transaction date). Past or future allowed. -->
-      <label v-if="isCreate" class="text-muted flex items-center justify-between gap-2 text-sm">
-        {{ t('recurrences.form.startDate') }}
-        <input
-          v-model="startDateInput"
-          type="date"
-          class="bg-default text-highlighted rounded-sm px-2 py-1"
-        >
-      </label>
+      <div v-if="isCreate" class="grid gap-1">
+        <div class="text-muted text-sm">
+          {{ t('recurrences.form.startDate') }}
+        </div>
+        <FormDate v-model="startDate" />
+      </div>
 
       <!-- Future start: nothing is created now; the first payment appears on its date. -->
       <div v-if="isFutureStart" class="bg-default text-2xs text-muted flex items-center gap-1.5 rounded-sm px-2 py-1.5">
