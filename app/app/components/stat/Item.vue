@@ -49,8 +49,12 @@ const {
   selectedAndFilteredTrnsIds,
   selectedTrnsIds,
   selectedTypeForSum,
+  statExcludedIds,
   statItemStorageKey,
 } = useStatItem({
+  // Exclude flagged categories only on the default aggregate: not on a single-category
+  // page, and not when the top filter already narrows to categories.
+  applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),
   filter,
   statConfig,
   statDate,
@@ -147,6 +151,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
 
       <StatCategoriesRoundSection
         v-if="isRoundShow && hasCategoriesData && (selectedTrnsIds.length > 0 || filteredCategoriesIds.length > 0)"
+        :excludedCategoriesIds="statExcludedIds"
         :filteredCategoriesIds
         :isOneCategory="isOneCategory"
         :preCategoriesIds="props.preCategoriesIds"
@@ -166,6 +171,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
         >
           <StatCategoriesDetailedSection
             v-if="(isListShow || isVerticalShow) && hasCategoriesData"
+            :excludedCategoriesIds="statExcludedIds"
             :isOneCategory="isOneCategory"
             :preCategoriesIds="props.preCategoriesIds"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"

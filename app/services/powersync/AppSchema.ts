@@ -8,6 +8,7 @@ const categories = new Table(
   {
     color: column.text,
     icon: column.text,
+    isExcludeFromStats: column.integer, // 0/1 - drop from dashboard stats/charts
     name: column.text,
     parentId: column.text, // null = root (mapped to 0 in the client item shape)
     showInLastUsed: column.integer,

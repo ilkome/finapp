@@ -21,6 +21,7 @@ import { createLogger } from '~/utils/logger'
 const adjustment: CategoryItem = {
   color: '',
   icon: 'mdi:plus-minus',
+  isExcludeFromStats: true,
   name: 'Adjustment',
   parentId: 0,
   showInLastUsed: false,
@@ -30,6 +31,7 @@ const adjustment: CategoryItem = {
 const transfer: CategoryItem = {
   color: '',
   icon: 'mdi:repeat',
+  isExcludeFromStats: true,
   name: 'Transfer',
   parentId: 0,
   showInLastUsed: false,
@@ -41,6 +43,7 @@ type CategoriesStore = {
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
   categoriesRootIds: ComputedRef<CategoryId[]>
   deleteCategory: (id: CategoryId, trnsIds?: TrnId[]) => Promise<void> | void
+  excludedFromStatsIds: ComputedRef<Set<CategoryId>>
   favoriteCategoriesIds: ComputedRef<CategoryId[]>
   getChildrenIds: (categoryId: CategoryId) => CategoryId[]
   getChildrenIdsOrParent: (categoryId: CategoryId) => CategoryId[]
@@ -147,6 +150,13 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       .filter(id => items.value[id]?.showInQuickSelector)
       .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
+
+  // Categories excluded from dashboard stats/charts. Includes the two system
+  // categories via their `isExcludeFromStats: true` default. Leaf-only flag, so
+  // transaction category ids match directly - no parent->child expansion needed.
+  const excludedFromStatsIds = computed<Set<CategoryId>>(() =>
+    new Set(categoriesIds.value.filter(id => items.value[id]?.isExcludeFromStats)),
+  )
 
   const recentCategoriesIds = computed(() => {
     if (!hasItems.value || !trnsStore.hasItems)
@@ -398,6 +408,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     categoriesIdsForTrnValues,
     categoriesRootIds,
     deleteCategory,
+    excludedFromStatsIds,
     favoriteCategoriesIds,
     getChildrenIds,
     getChildrenIdsOrParent,

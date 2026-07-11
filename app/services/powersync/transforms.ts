@@ -69,6 +69,7 @@ export function rowToCategory(row: Row): CategoryItem {
   return {
     color: row.color,
     icon: row.icon,
+    isExcludeFromStats: !!row.isExcludeFromStats,
     name: row.name,
     parentId: (row.parentId ?? 0) as CategoryId | 0, // null -> 0 (root sentinel)
     showInLastUsed: !!row.showInLastUsed,
@@ -144,6 +145,7 @@ export function categoryToRow(item: CategoryItem, userId: string): Record<string
   return {
     color: item.color,
     icon: item.icon,
+    isExcludeFromStats: item.isExcludeFromStats ? 1 : 0,
     name: item.name,
     parentId: item.parentId ? String(item.parentId) : null, // 0/'' root sentinel -> null
     showInLastUsed: item.showInLastUsed ? 1 : 0,

@@ -14,9 +14,10 @@ export function useStatCategories() {
 
   const computeValue = (trnsIds: TrnId[]) => computeTotalForTrnsIds(trnsIds).sum
 
-  function computeCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[]): CategoryWithData[] {
+  function computeCategoriesWithData(trnsIds: TrnId[], isGrouped?: boolean, preCategoriesIds?: CategoryId[], excludedCategoriesIds?: ReadonlySet<CategoryId>): CategoryWithData[] {
     const collected = collectCategoriesByTrns({
       categoriesItems: categoriesStore.items,
+      excludedCategoriesIds,
       preCategoriesIds,
       trnsIds,
       trnsItems: trnsStore.items ?? {},

@@ -365,6 +365,12 @@ async function onSave() {
           :title="t('categories.form.recentCategory')"
           @click="emit('update', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
+        <UiSwitchItem
+          v-if="!hasChildren"
+          :checkboxValue="!!props.categoryForm.isExcludeFromStats"
+          :title="t('categories.form.excludeFromStats')"
+          @click="emit('update', 'isExcludeFromStats', !props.categoryForm.isExcludeFromStats)"
+        />
       </div>
     </div>
 

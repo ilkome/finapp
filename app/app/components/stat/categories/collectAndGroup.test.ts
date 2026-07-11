@@ -47,6 +47,21 @@ describe('collectCategoriesByTrns', () => {
     expect(Object.keys(result)).toEqual([])
   })
 
+  it('skips categories in excludedCategoriesIds (trns and preCategoriesIds)', () => {
+    const result = collectCategoriesByTrns({
+      categoriesItems: categories,
+      excludedCategoriesIds: new Set(['groceries', 'salary']),
+      preCategoriesIds: ['salary', 'transport'],
+      trnsIds: ['t1', 't2', 't3', 't4', 't5'],
+      trnsItems,
+    })
+
+    expect(result.groceries).toBeUndefined()
+    expect(result.salary).toBeUndefined()
+    expect(result.restaurants!.trnsIds).toEqual(['t3'])
+    expect(result.transport!.trnsIds).toEqual(['t5'])
+  })
+
   it('skips transactions with missing categories', () => {
     const result = collectCategoriesByTrns({
       categoriesItems: categories,

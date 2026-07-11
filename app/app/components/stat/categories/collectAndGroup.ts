@@ -22,11 +22,12 @@ export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData)
 
 export function collectCategoriesByTrns(params: {
   categoriesItems: Categories
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   preCategoriesIds?: CategoryId[]
   trnsIds: TrnId[]
   trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
 }): CategoriesWithData {
-  const { categoriesItems, preCategoriesIds, trnsIds, trnsItems } = params
+  const { categoriesItems, excludedCategoriesIds, preCategoriesIds, trnsIds, trnsItems } = params
 
   const result: CategoriesWithData = {}
 
@@ -35,6 +36,8 @@ export function collectCategoriesByTrns(params: {
     const category = categoryId && categoriesItems[categoryId]
 
     if (!categoryId || !category || isSystemCategoryId(categoryId))
+      continue
+    if (excludedCategoriesIds?.has(categoryId))
       continue
 
     result[categoryId] ??= {
@@ -49,7 +52,7 @@ export function collectCategoriesByTrns(params: {
   if (preCategoriesIds) {
     for (const catId of preCategoriesIds) {
       const category = categoriesItems[catId]
-      if (!category)
+      if (!category || excludedCategoriesIds?.has(catId))
         continue
 
       result[catId] ??= {

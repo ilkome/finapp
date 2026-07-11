@@ -141,6 +141,7 @@ export default {
         okWithTrns: `Category and {trns} transactions deleted`,
         title: 'Delete category?',
       },
+      excludeFromStats: 'Exclude from statistics',
       favoriteCategory: 'Favorite category',
       icon: {
         desc: 'Choose any icon from',

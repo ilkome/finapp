@@ -141,6 +141,7 @@ export default {
         okWithTrns: `Категория удалена и {trns}`,
         title: 'Удалить категорию?',
       },
+      excludeFromStats: 'Не учитывать в статистике',
       favoriteCategory: 'Избранная категория',
       icon: {
         desc: 'Используйте любую иконку из набора',

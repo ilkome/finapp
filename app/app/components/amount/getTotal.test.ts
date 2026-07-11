@@ -159,6 +159,44 @@ describe('total of Transactions', () => {
     expect(total.sum).toEqual(0)
   })
 
+  it('excludedCategoriesIds drops matching income/expense from totals', () => {
+    const trnsIds = [
+      'transactionIncomeWalletCashUSD1000',
+      'transactionExpenseWalletCashUSD400',
+    ]
+
+    const total = getTotal({
+      excludedCategoriesIds: new Set(['expense']),
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.income).toEqual(1000)
+    expect(total.expense).toEqual(0)
+    expect(total.sum).toEqual(1000)
+  })
+
+  it('excludedCategoriesIds leaves transfer/adjustment buckets untouched', () => {
+    const trnsIds = [
+      'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
+      'adjustmentIncomeWalletCashUSD200',
+    ]
+
+    const total = getTotal({
+      excludedCategoriesIds: new Set(['transfer', 'adjustment']),
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.incomeTransfers).toEqual(40)
+    expect(total.expenseTransfers).toEqual(40)
+    expect(total.adjustment).toEqual(200)
+    expect(total.income).toEqual(0)
+    expect(total.expense).toEqual(0)
+  })
+
   it('total of Transfers when no Wallets filter provided', () => {
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',

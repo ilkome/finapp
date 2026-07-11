@@ -33,6 +33,7 @@ export type ChartPieGroup = {
 }
 
 type UseStatItemParams = {
+  applyStatsExclusion?: ComputedRef<boolean>
   filter: FilterProvider
   statConfig: StatConfigProvider
   statDate: StatDateProvider
@@ -43,6 +44,7 @@ type UseStatItemParams = {
 }
 
 export function useStatItem({
+  applyStatsExclusion,
   filter,
   statConfig,
   statDate,
@@ -102,8 +104,33 @@ export function useStatItem({
     })
   })
 
+  // Categories dropped from totals/charts on the default dashboard aggregate.
+  // Off (undefined) whenever the user explicitly narrows: per-category page /
+  // top category filter (via applyStatsExclusion) or an in-chart drill.
+  const statExcludedIds = computed<ReadonlySet<CategoryId> | undefined>(() =>
+    (applyStatsExclusion?.value && !hasCategoryFilter.value)
+      ? categoriesStore.excludedFromStatsIds
+      : undefined,
+  )
+
+  // Interval/range totals that drop excluded categories while keeping every
+  // interval's trnsIds intact (transaction lists stay complete). Falls back to
+  // the plain total when nothing is excluded.
+  function computeTotalForStat(ids?: TrnId[]): TotalReturns {
+    if (!statExcludedIds.value)
+      return computeTotalForTrnsIds(ids)
+    return getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      excludedCategoriesIds: statExcludedIds.value,
+      rates: currenciesStore.rates,
+      trnsIds: ids,
+      trnsItems: trnsStore.items ?? {},
+      walletsItems: walletsStore.items ?? {},
+    })
+  }
+
   const intervalsData = computed(() =>
-    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, computeTotalForTrnsIds),
+    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, computeTotalForStat),
   )
 
   const intervalsDataWithFilteredCategories = computed(() => {
@@ -192,7 +219,8 @@ export function useStatItem({
     const ids = isIntervalSelected.value
       ? intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIdsWithFilteredCategories.value
-    return computeTotalForTrnsIds(ids)
+    // computeTotalForStat is a no-op when a drill/filter is active (statExcludedIds undefined).
+    return computeTotalForStat(ids)
   })
 
   const averageTotal = computed(() => {
@@ -273,6 +301,7 @@ export function useStatItem({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
         computeTotalForTrnsIds: effectiveComputeTotal.value,
+        excludedCategoriesIds: statExcludedIds.value,
         filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
         intervals,
         isGrouped: categoryBreakdownFilter.value.isGrouped,
@@ -311,6 +340,7 @@ export function useStatItem({
     return buildCategoriesPieData({
       categoriesItems: categoriesStore.items ?? {},
       computeTotalForTrnsIds: effectiveComputeTotal.value,
+      excludedCategoriesIds: statExcludedIds.value,
       filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
       intervals: effectiveIntervals.value,
       isGrouped: categoryBreakdownFilter.value.isGrouped,
@@ -364,6 +394,7 @@ export function useStatItem({
     selectedAndFilteredTrnsIds,
     selectedTrnsIds,
     selectedTypeForSum,
+    statExcludedIds,
     statItemStorageKey,
   }
 }

@@ -15,6 +15,8 @@ const DEFAULT_PIE_TOP_N = 8
 type AggregateParams = {
   categoriesItems: Categories
   computeTotalForTrnsIds: (ids: TrnId[]) => { expense: number, income: number, sum: number }
+  /** Categories dropped from the breakdown (dashboard "exclude from stats"); undefined when a drill/filter is active. */
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   filterCategoriesIds?: CategoryId[]
   intervals: IntervalData[]
   isGrouped: boolean
@@ -69,6 +71,7 @@ function resolveCategoryId(
 export function aggregateCategoryTotals({
   categoriesItems,
   computeTotalForTrnsIds,
+  excludedCategoriesIds,
   filterCategoriesIds,
   intervals,
   isGrouped,
@@ -83,6 +86,8 @@ export function aggregateCategoryTotals({
     for (const trnId of interval.trnsIds) {
       const rawCategoryId = trnsItems[trnId]?.categoryId
       if (!rawCategoryId || isSystemCategoryId(rawCategoryId))
+        continue
+      if (excludedCategoriesIds?.has(rawCategoryId))
         continue
       if (filterSet && !filterSet.has(rawCategoryId))
         continue
@@ -118,6 +123,7 @@ export function buildCategoriesSeries({
   categoriesItems,
   chartType,
   computeTotalForTrnsIds,
+  excludedCategoriesIds,
   filterCategoriesIds,
   intervals,
   isGrouped,
@@ -127,6 +133,7 @@ export function buildCategoriesSeries({
   const { orderedCategoryIds, perIntervalByCategory } = aggregateCategoryTotals({
     categoriesItems,
     computeTotalForTrnsIds,
+    excludedCategoriesIds,
     filterCategoriesIds,
     intervals,
     isGrouped,
@@ -155,12 +162,13 @@ export function buildCategoriesSeries({
  * aggregation as the bar series.
  */
 export function buildCategoriesPieData(
-  { categoriesItems, computeTotalForTrnsIds, filterCategoriesIds, intervals, isGrouped, topN = DEFAULT_PIE_TOP_N, trnsItems, type }: BuildPieParams,
+  { categoriesItems, computeTotalForTrnsIds, excludedCategoriesIds, filterCategoriesIds, intervals, isGrouped, topN = DEFAULT_PIE_TOP_N, trnsItems, type }: BuildPieParams,
   otherLabel: string,
 ): CategoryPieDatum[] {
   const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
     categoriesItems,
     computeTotalForTrnsIds,
+    excludedCategoriesIds,
     filterCategoriesIds,
     intervals,
     isGrouped,

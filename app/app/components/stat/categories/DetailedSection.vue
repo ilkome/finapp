@@ -9,6 +9,7 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
@@ -34,15 +35,15 @@ const isListGrouped = computed(() => resolveGrouped(catsList.value.isGrouped, st
 const isLines = computed(() => catsList.value.isLines)
 
 // Categories data (lazy — each variant computed only when accessed)
-const groupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], true))
-const ungroupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], false))
+const groupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], true, undefined, props.excludedCategoriesIds))
+const ungroupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], false, undefined, props.excludedCategoriesIds))
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
   const rawGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
   const isGrouped = resolveGrouped(rawGrouped, statConfig.config.value.grouping)
 
   if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds?.length)
-    return computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds)
+    return computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds, props.excludedCategoriesIds)
 
   return isGrouped ? groupedCategories.value : ungroupedCategories.value
 })

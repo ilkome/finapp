@@ -1,3 +1,4 @@
+import type { CategoryId } from '~/components/categories/types'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
@@ -26,6 +27,8 @@ export function getAmountInRate({
 
 type TotalProps = {
   baseCurrencyCode?: CurrencyCode
+  /** Category ids to drop from income/expense (dashboard "exclude from stats"). Balances never pass this. */
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   rates?: Rates
   trnsIds?: TrnId[]
   trnsItems: Record<TrnId, TrnItem>
@@ -74,6 +77,9 @@ export function getTotal(props: TotalProps): TotalReturns {
         adjustment += trn.type === TrnType.Income ? amount : -amount
         continue
       }
+      // Excluded-from-stats categories are kept in balances/lists but not counted here.
+      if (props.excludedCategoriesIds?.has(trn.categoryId))
+        continue
       const wallet = walletsItems[trn.walletId]
       const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
 

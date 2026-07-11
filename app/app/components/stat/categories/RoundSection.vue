@@ -8,6 +8,7 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   filteredCategoriesIds: CategoryId[]
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
@@ -59,7 +60,7 @@ const mergedPreCategoriesIds = computed(() => {
   return ids
 })
 
-const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped.value, mergedPreCategoriesIds.value))
+const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped.value, mergedPreCategoriesIds.value, props.excludedCategoriesIds))
 const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
 

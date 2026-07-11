@@ -102,6 +102,20 @@ describe('aggregateCategoryTotals', () => {
     expect(categoryTotals.c01).toBe(100)
     expect(categoryTotals.transfer).toBeUndefined()
   })
+
+  it('drops categories in excludedCategoriesIds', () => {
+    const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
+      ...baseParams,
+      excludedCategoriesIds: new Set(['c01', 'c03']),
+      intervals: singleInterval(allTrnIds),
+    })
+
+    expect(orderedCategoryIds).not.toContain('c01')
+    expect(orderedCategoryIds).not.toContain('c03')
+    expect(categoryTotals.c01).toBeUndefined()
+    expect(categoryTotals.c03).toBeUndefined()
+    expect(categoryTotals.c02).toBe(90)
+  })
 })
 
 describe('buildCategoriesPieData', () => {
