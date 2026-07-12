@@ -80,6 +80,12 @@ function openAssign() {
   assignInput.value = String(Math.round(props.progress.assignedRaw * 100) / 100)
   editingAssign.value = true
 }
+// The list keeps this instance mounted across period navigation, so a stale editor left open would
+// write the old period's amount to the newly-viewed period (setAssignment uses props.periodStart).
+// Close it when the period changes; the user reopens against the correct period's value.
+watch(() => props.periodStart, () => {
+  editingAssign.value = false
+})
 function saveAssign() {
   const n = Number.parseFloat(assignInput.value)
   if (Number.isFinite(n) && n >= 0)

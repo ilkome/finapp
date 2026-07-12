@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest'
 
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
-import { addCivilDays, civilDayStart } from '~/components/date/utils'
+import { addCivilDays, addCivilMonths, civilDayStart } from '~/components/date/utils'
 import { isTransfer, TrnType } from '~/components/trns/types'
 
 import type { OccurrenceMatchTrn } from './occurrences'
 
 import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, remainingEndCount, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, DEFAULT_END_DATE_MONTHS, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, remainingEndCount, seedEndField, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -288,6 +288,36 @@ describe('remainingEndCount (re-anchor quota)', () => {
   it('returns null for non-count end modes', () => {
     expect(remainingEndCount(rule({ endMode: 'never' }), 'r1', {}, U(2024, 5, 20))).toBeNull()
     expect(remainingEndCount(rule({ endDate: U(2025, 0, 1), endMode: 'date' }), 'r1', {}, U(2024, 5, 20))).toBeNull()
+  })
+})
+
+describe('seedEndField (commit the shown end default)', () => {
+  const now = U(2024, 5, 15)
+
+  it('seeds count=1 so a count rule is never zero-occurrence', () => {
+    expect(seedEndField('count', { endCount: null, endDate: null }, now))
+      .toEqual({ endCount: 1, endDate: null })
+  })
+
+  it('seeds a concrete end date one year out so a date rule never runs forever', () => {
+    expect(seedEndField('date', { endCount: null, endDate: null }, now))
+      .toEqual({ endCount: null, endDate: addCivilMonths(U(2024, 5, 15), DEFAULT_END_DATE_MONTHS) })
+  })
+
+  it('never overwrites a real value the user already set', () => {
+    const filled = { endCount: 5, endDate: U(2025, 0, 1) }
+    expect(seedEndField('count', filled, now)).toBe(filled)
+    expect(seedEndField('date', filled, now)).toBe(filled)
+  })
+
+  it('leaves both fields untouched for endMode never', () => {
+    const state = { endCount: null, endDate: null }
+    expect(seedEndField('never', state, now)).toBe(state)
+  })
+
+  it('normalizes now to its civil day (no intra-day drift)', () => {
+    const seeded = seedEndField('date', { endCount: null, endDate: null }, U(2024, 5, 15) + 3600_000)
+    expect(seeded.endDate).toBe(addCivilMonths(U(2024, 5, 15), DEFAULT_END_DATE_MONTHS))
   })
 })
 

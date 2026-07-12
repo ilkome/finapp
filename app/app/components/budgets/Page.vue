@@ -210,10 +210,15 @@ function setPeriodType(type: BudgetPeriodType) {
           <div class="grid grid-cols-1 gap-2" :class="{ 'sm:grid-cols-2': showToAssign }">
             <StatSumItem
               :amount="safeToSpendTotal"
+              :aria-label="t('budgets.hero.safeToSpend')"
               :title="t('budgets.hero.safeToSpend')"
               :type="safeToSpendTotal < 0 ? 'expense' : 'income'"
-              class="cursor-pointer"
+              class="focus-visible:ring-primary cursor-pointer focus-visible:ring-2 focus-visible:outline-none"
+              role="button"
+              tabindex="0"
               @click="showSafeSheet = true"
+              @keydown.enter.prevent="showSafeSheet = true"
+              @keydown.space.prevent="showSafeSheet = true"
             >
               <Icon name="lucide:info" size="14" class="text-muted mb-1" />
             </StatSumItem>

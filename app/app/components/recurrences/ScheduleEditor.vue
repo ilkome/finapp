@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { RecurrenceEndMode, RecurrenceSchedule } from '~/components/recurrences/types'
 
+import { todayCivilDayEpoch } from '~/components/date/utils'
+import { seedEndField } from '~/components/recurrences/occurrences'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 
 // Both parents (trnForm Repeat "create" and recurrences Form "edit") pass the SAME reactive
@@ -9,6 +11,16 @@ import { recurrenceFreqs } from '~/components/recurrences/types'
 const model = defineModel<RecurrenceSchedule>({ required: true })
 
 const { t } = useI18n()
+
+// Commit the default the active end control already shows the moment the mode is chosen (and repair
+// a legacy rule opened in count/date mode with a null field via immediate), so we never persist a
+// 'count' rule that generates nothing or a 'date' rule that never ends. Only the null active field
+// is touched, so an existing value is never clobbered.
+watch(() => model.value.endMode, (mode) => {
+  const seeded = seedEndField(mode, model.value, todayCivilDayEpoch())
+  model.value.endCount = seeded.endCount
+  model.value.endDate = seeded.endDate
+}, { immediate: true })
 
 const endModeOptions = computed(() => [
   { label: t('recurrences.end.never'), value: 'never' },
@@ -83,10 +95,11 @@ const endDate = computed({
         :value="model.endMode"
         @change="(v: string) => model.endMode = v as RecurrenceEndMode"
       />
+      <!-- No `clearable`: the way to remove an end date is End = Never; clearing here would null
+           endDate while still in 'date' mode and silently make the series run forever. -->
       <FormDate
         v-if="model.endMode === 'date'"
         v-model="endDate"
-        clearable
         class="mt-2"
       />
       <div v-if="model.endMode === 'count'" class="mt-2 flex items-center gap-2">

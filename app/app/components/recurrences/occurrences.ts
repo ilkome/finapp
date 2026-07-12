@@ -1,5 +1,5 @@
 import type { Range } from '~/components/date/types'
-import type { AmountChange, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
+import type { AmountChange, RecurrenceEndMode, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
 import { addCivilDays, addCivilMonths, addCivilYears, civilDayKey, civilDayStart, lastDayOfMonthCivil } from '~/components/date/utils'
 
@@ -184,6 +184,28 @@ export function remainingEndCount(rule: RecurrenceItem, ruleId: RecurrenceId, tr
   if (end < start)
     return rule.endCount
   return Math.max(0, rule.endCount - paidCountInRange(rule, ruleId, { end, start }, trns))
+}
+
+/** Default end-date when a user switches to "ends on a date" without picking one: one year out. */
+export const DEFAULT_END_DATE_MONTHS = 12
+
+/**
+ * The end field a mode implies when it is still unset, so the editor commits the default it already
+ * SHOWS (the count stepper's '1', a concrete end date) instead of persisting null. A 'count' rule
+ * with null endCount generates zero occurrences (endIndexExclusive -> 0), and a 'date' rule with
+ * null endDate never ends (endDateInclusive -> +Infinity); both silently contradict the user. Only
+ * the active mode's field is seeded, and only when null, so a real value is never overwritten.
+ */
+export function seedEndField(
+  mode: RecurrenceEndMode,
+  current: { endCount: number | null, endDate: number | null },
+  now: number,
+): { endCount: number | null, endDate: number | null } {
+  if (mode === 'count' && current.endCount == null)
+    return { ...current, endCount: 1 }
+  if (mode === 'date' && current.endDate == null)
+    return { ...current, endDate: addCivilMonths(civilDayStart(now), DEFAULT_END_DATE_MONTHS) }
+  return current
 }
 
 /** Minimal trn shape needed to decide whether a trn realizes an occurrence. */
