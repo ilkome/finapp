@@ -26,8 +26,11 @@ export const toastAddMock = vi.fn()
 
 vi.stubGlobal('useToast', () => ({ add: toastAddMock }))
 vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
-vi.stubGlobal('useNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
-vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: { t: (key: string) => key } }))
+// locale must be a ref: useCategoriesStore watches $i18n.locale.value at store creation
+const i18nStub = { locale: ref('en-US'), t: (key: string) => key }
+
+vi.stubGlobal('useNuxtApp', () => ({ $i18n: i18nStub }))
+vi.stubGlobal('tryUseNuxtApp', () => ({ $i18n: i18nStub }))
 
 vi.mock('~/components/demo/useDemo', () => ({
   useDemo: () => ({ isDemo: { value: false } }),
