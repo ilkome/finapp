@@ -38,7 +38,9 @@ export function useRecurrenceTotals() {
 
   const totals = computed(() => {
     const start = todayCivilDayEpoch()
-    const end = addCivilDays(start, 365)
+    // occurrencesInRange is end-inclusive, so +364 spans exactly 365 days; +365 would count an
+    // annual charge twice (today and today-next-year) and a monthly one 13 times on its billing day.
+    const end = addCivilDays(start, 364)
     const base = currenciesStore.base
     const rates = currenciesStore.rates
 

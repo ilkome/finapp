@@ -8,7 +8,7 @@ import { isTransfer, TrnType } from '~/components/trns/types'
 import type { OccurrenceMatchTrn } from './occurrences'
 
 import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, unrealizedOccurrenceDays } from './occurrences'
+import { committedNativeInRange, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, remainingEndCount, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -257,6 +257,37 @@ describe('reschedule re-anchor', () => {
     const reanchored = rule({ ...overdue, anchorDate: newDay, lastGeneratedDate: addCivilDays(newDay, -1) })
     expect(dueOccurrences(reanchored, today)).toEqual([])
     expect(nextOccurrence(reanchored, today)).toBe(newDay)
+  })
+})
+
+describe('remainingEndCount (re-anchor quota)', () => {
+  const counted = (over: Partial<RecurrenceItem> = {}) =>
+    rule({ anchorDate: U(2024, 0, 5), endCount: 6, endMode: 'count', freq: 'month', ...over })
+  const paidTrns = (ruleId: string, days: number[]) =>
+    Object.fromEntries(days.map(d => [occurrenceTrnId(ruleId, d), { amount: 100 }]))
+
+  it('subtracts only charges already paid before the new anchor', () => {
+    const trns = paidTrns('r1', [U(2024, 0, 5), U(2024, 1, 5), U(2024, 2, 5)])
+    expect(remainingEndCount(counted(), 'r1', trns, U(2024, 5, 20))).toBe(3)
+  })
+
+  it('unpaid overdue occurrences do not consume quota', () => {
+    // 6-charge series, nothing ever paid: delaying keeps the full quota.
+    expect(remainingEndCount(counted(), 'r1', {}, U(2024, 5, 20))).toBe(6)
+  })
+
+  it('a fully paid series has no quota left', () => {
+    const days = [U(2024, 0, 5), U(2024, 1, 5), U(2024, 2, 5), U(2024, 3, 5), U(2024, 4, 5), U(2024, 5, 5)]
+    expect(remainingEndCount(counted(), 'r1', paidTrns('r1', days), U(2024, 6, 20))).toBe(0)
+  })
+
+  it('re-anchoring before the original anchor keeps the full quota', () => {
+    expect(remainingEndCount(counted(), 'r1', paidTrns('r1', [U(2024, 0, 5)]), U(2023, 11, 1))).toBe(6)
+  })
+
+  it('returns null for non-count end modes', () => {
+    expect(remainingEndCount(rule({ endMode: 'never' }), 'r1', {}, U(2024, 5, 20))).toBeNull()
+    expect(remainingEndCount(rule({ endDate: U(2025, 0, 1), endMode: 'date' }), 'r1', {}, U(2024, 5, 20))).toBeNull()
   })
 })
 

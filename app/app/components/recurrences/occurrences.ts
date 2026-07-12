@@ -170,6 +170,22 @@ export function paidCountInRange(rule: RecurrenceItem, ruleId: RecurrenceId, ran
   return n
 }
 
+/**
+ * Remaining charge quota when an endMode='count' series is re-anchored to `newAnchor`: the total
+ * quota minus charges already REALIZED before the new anchor. Unpaid (overdue) occurrences do not
+ * consume quota - re-anchoring collapses them into the new schedule, so the user still gets the
+ * charges they paid for. Returns null for other end modes (nothing to adjust).
+ */
+export function remainingEndCount(rule: RecurrenceItem, ruleId: RecurrenceId, trns: Record<string, unknown>, newAnchor: number): number | null {
+  if (rule.endMode !== 'count' || rule.endCount == null)
+    return null
+  const start = civilDayStart(rule.anchorDate)
+  const end = addCivilDays(civilDayStart(newAnchor), -1)
+  if (end < start)
+    return rule.endCount
+  return Math.max(0, rule.endCount - paidCountInRange(rule, ruleId, { end, start }, trns))
+}
+
 /** Minimal trn shape needed to decide whether a trn realizes an occurrence. */
 export type OccurrenceMatchTrn = {
   amount: number

@@ -11,7 +11,7 @@ import { assignedPoolContribution, budgetOwnedCategoryIds, carriedIn, computeAva
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { committedNativeInRange, unrealizedOccurrenceDays } from '~/components/recurrences/occurrences'
+import { committedNativeInRange, effectiveAmountFor, unrealizedOccurrenceDays } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -182,9 +182,11 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     let sum = 0
     for (const [ruleId, rule] of entries) {
       const candidates = occurrenceCandidates.value.get(rule.categoryId) ?? []
-      for (const _day of unrealizedOccurrenceDays(rule, ruleId, range, trnsStore.items ?? {}, candidates, consumed)) {
+      for (const day of unrealizedOccurrenceDays(rule, ruleId, range, trnsStore.items ?? {}, candidates, consumed)) {
         const currency = walletsStore.items?.[rule.walletId]?.currency ?? base
-        sum += getAmountInRate({ amount: rule.amount, baseCurrencyCode: base, currencyCode: currency, rates })
+        // Price at the day's effective amount (amount-history aware): the scalar rule.amount goes
+        // stale after a future-dated price change and would disagree with the trn actually charged.
+        sum += getAmountInRate({ amount: effectiveAmountFor(rule, day), baseCurrencyCode: base, currencyCode: currency, rates })
       }
     }
     return sum
@@ -288,15 +290,19 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     }
   }
 
-  // Committed recurring expense in categories that NO budget covers (so their upcoming bills still
-  // reduce discretionary money). Union of all budgets' owned categories, then sweep the rest.
-  // Known gap (H1, kept intentionally so the headline stays value-identical): an expense rule whose
-  // category is owned by an income or target budget lands in NEITHER term - the safe-to-spend loop
-  // skips those budgets, yet the budgeted union here still includes their owned sets. Fix deferred.
+  // Committed recurring expense in categories whose bills no safe-to-spend envelope answers for
+  // (so those upcoming bills still reduce discretionary money). A category shields its bills only
+  // when its budget participates in the picture: expense envelopes are summed by the hero loop, and
+  // sinking-fund targets are deliberately outside it WHOLE (earmarked money pays their bills). An
+  // INCOME budget holds no spendable envelope, so its categories' expense bills sweep in here -
+  // previously they vanished from both terms (the H1 gap).
   function committedUnbudgeted(): number {
     const budgeted = new Set<CategoryId>()
     for (const id of Object.keys(budgetsStore.activeItems)) {
-      for (const c of ownedSet(budgetsStore.activeItems[id]!))
+      const budget = budgetsStore.activeItems[id]!
+      if (budget.kind !== 'expense')
+        continue
+      for (const c of ownedSet(budget))
         budgeted.add(c)
     }
     const entries = Object.entries(recurrencesStore.activeItems)
@@ -328,10 +334,14 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
   const safeToSpendTotal = computed(() => safeToSpendBreakdown.value.total)
 
   // Income received this period across all categories, in base currency (drives the to-assign pool).
+  // Excluded-from-stats categories are dropped: a single-leg transfer between own accounts (type
+  // Income, category 'transfer') or user-excluded income is not assignable money - counting it would
+  // flip the card to the real-pool state and inflate what there is to distribute.
   const periodIncomeTotal = computed(() => {
     const inRange = trnsStore.getStoreTrnsIds({ dates: period.range.value })
     return getTotal({
       baseCurrencyCode: currenciesStore.base,
+      excludedCategoriesIds: categoriesStore.excludedFromStatsIds,
       rates: currenciesStore.rates,
       trnsIds: inRange,
       trnsItems: trnsStore.items ?? {},

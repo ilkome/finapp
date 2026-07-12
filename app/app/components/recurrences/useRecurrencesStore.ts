@@ -12,7 +12,7 @@ import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'
-import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId, pendingConfirmOccurrences } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId, pendingConfirmOccurrences, remainingEndCount } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
@@ -338,8 +338,11 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     if (!rule)
       return
     const anchorDate = civilDayStart(newDay)
+    // An endMode='count' quota is counted from the anchor, so a bare re-anchor would reset it and
+    // silently extend the series; keep only the not-yet-paid remainder.
+    const endCount = remainingEndCount(rule, id, trnsStore.items ?? {}, anchorDate) ?? rule.endCount
     // Resume generation from just before the new anchor so it (and only it onward) can fire.
-    writeRecurrence(id, { ...rule, anchorDate, lastGeneratedDate: addCivilDays(anchorDate, -1) })
+    writeRecurrence(id, { ...rule, anchorDate, endCount, lastGeneratedDate: addCivilDays(anchorDate, -1) })
     scheduleCatchUp()
   }
 
