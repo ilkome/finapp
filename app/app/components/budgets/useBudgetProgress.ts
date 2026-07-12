@@ -7,7 +7,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import type { TrnId } from '~/components/trns/types'
 
 import { getAmountInRate, getTotal } from '~/components/amount/getTotal'
-import { assignedPoolContribution, budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodsUntilGoal, projectedPeriodEnd, reducedAssignment, safeToSpend, targetSaved, targetSetAside, toAssignPool } from '~/components/budgets/compute'
+import { assignedPoolContribution, budgetOwnedCategoryIds, carriedIn, computeAvailable, isGoalReached, isOverBudget, movableAmount, normalizeAmount, paceMarker, periodStartsFrom, periodsUntilGoal, projectedPeriodEnd, reducedAssignment, safeToSpend, targetSaved, targetSetAside, toAssignPool } from '~/components/budgets/compute'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -214,6 +214,28 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     return firstActive === -1 ? [] : priors.slice(firstActive)
   }
 
+  // Full-history walk starts for a target budget. Goal dates are unbounded, so the walk can't use
+  // the 12-period rollover window (each new period would push the oldest contribution out and
+  // "saved" would regress). Floored at the budget's earliest real data point: the first explicit
+  // assignment (assignments is an id-keyed map of { assigned, budgetId, periodStart } rows, so scan
+  // values by budgetId) or the first trn in the owned categories, whichever is earlier. No data ->
+  // empty walk (fresh target). Cost is bounded by actual data and paid by targets only; plain
+  // budgets keep the cheap 12-period window (History already walks 12 per open).
+  function targetWalkStarts(budgetId: BudgetId, owned: Set<CategoryId>): number[] {
+    let floor: number | undefined
+    for (const a of Object.values(budgetsStore.assignments ?? {})) {
+      if (a.budgetId === budgetId && (floor === undefined || a.periodStart < floor))
+        floor = a.periodStart
+    }
+    for (const t of Object.values(trnsStore.items ?? {})) {
+      if (owned.has(t.categoryId) && (floor === undefined || t.date < floor))
+        floor = t.date
+    }
+    if (floor === undefined)
+      return []
+    return periodStartsFrom(floor, period.range.value.start, period.periodType.value)
+  }
+
   // Sinking-fund overlay: how much is accumulated toward the goal and how far the date is.
   function buildTarget(budget: BudgetItem, periodStart: number, available: number): BudgetTarget | null {
     if (!isTargetBudget(budget))
@@ -253,7 +275,8 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
       // A target carries only real funding (explicit assignments); a plain budget carries its
       // effective assignment. See review MEDIUM-2.
       assignedForPeriod: ps => isTarget ? explicitAssignedBase(budgetId, budget, ps) : effectiveAssigned(budgetId, budget, ps),
-      periodStarts: rolloverStarts(budgetId, budget, owned),
+      // Targets walk their whole real history; the 12-period rollover window stays for plain budgets.
+      periodStarts: isTarget ? targetWalkStarts(budgetId, owned) : rolloverStarts(budgetId, budget, owned),
       rollover: budget.rollover,
     })
     const available = computeAvailable(carried, assigned, activity)
@@ -263,10 +286,11 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
     // RECEIVED, since received income (not funding) is what accumulates toward the goal.
     // See review MEDIUM-2 / finding 2.
     const isIncomeTarget = isTarget && budget.kind === 'income'
-    // Income target: cumulative RECEIVED across the visible prior periods (mirrors the carried walk),
-    // since received income is what accumulates toward the goal.
+    // Income target: everything RECEIVED before the viewed period, as ONE range scan over all
+    // history. Exact and cheap: activity sums are additive over a partition and income targets
+    // have no rollover clamping, so a single range equals a per-period walk with no window cap.
     const priorReceived = isIncomeTarget
-      ? period.periodStartsBefore.value.reduce((s, ps) => s + activityInRange(budget, owned, period.rangeForStart(ps)), 0)
+      ? activityInRange(budget, owned, { end: range.start - 1, start: 0 })
       : carried
     const savedForTarget = targetSaved(budget.kind, {
       activity,

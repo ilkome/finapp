@@ -1,10 +1,11 @@
 import { UTCDate } from '@date-fns/utc'
-import { differenceInCalendarMonths, differenceInCalendarWeeks, differenceInCalendarYears } from 'date-fns'
+import { add, differenceInCalendarMonths, differenceInCalendarWeeks, differenceInCalendarYears } from 'date-fns'
 
 import type { BudgetId, BudgetKind, BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
 import type { Categories, CategoryId } from '~/components/categories/types'
 
 import { getCategorySubtreeIds } from '~/components/categories/utils'
+import { getStartOf, toDuration } from '~/components/date/utils'
 
 // Calendar-average occurrences per year, used to convert a budget amount between cadences. Fixed
 // factors (like Goodbudget/Actual) keep the conversion stable and predictable rather than depending
@@ -79,6 +80,25 @@ export function carriedIn(opts: {
     carried = applyRollover(rollover, priorAvailable)
   }
   return carried
+}
+
+/**
+ * Ascending period starts stepping by `periodType`, from the period containing `fromMs` up to but
+ * EXCLUDING the period containing `toExclusiveMs`. Boundaries use the same UTC civil rules as the
+ * period range (getStartOf; weeks start Monday). Deliberately unbounded: a target-by-date walk must
+ * cover the budget's whole real history, or the oldest contributions silently fall out of a capped
+ * window and "saved" regresses with no user action.
+ */
+export function periodStartsFrom(fromMs: number, toExclusiveMs: number, periodType: BudgetPeriodType): number[] {
+  const bound = getStartOf(new UTCDate(toExclusiveMs), periodType).getTime()
+  const starts: number[] = []
+  // Cursor stays on exact period starts, so stepping by one period needs no re-normalization.
+  let cursor = getStartOf(new UTCDate(fromMs), periodType).getTime()
+  while (cursor < bound) {
+    starts.push(cursor)
+    cursor = add(new UTCDate(cursor), toDuration(periodType, 1)).getTime()
+  }
+  return starts
 }
 
 /**

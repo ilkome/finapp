@@ -16,6 +16,7 @@ import {
   movableAmount,
   normalizeAmount,
   paceMarker,
+  periodStartsFrom,
   periodsUntilGoal,
   projectedPeriodEnd,
   reduceCandidates,
@@ -171,6 +172,50 @@ describe('carriedIn', () => {
       periodStarts,
       rollover: 'surplus_deficit',
     })).toBe(-1000)
+  })
+})
+
+describe('periodStartsFrom', () => {
+  it('month steps across a year wrap, excluding the bound period', () => {
+    expect(periodStartsFrom(Date.UTC(2025, 10, 1), Date.UTC(2026, 1, 15), 'month')).toEqual([
+      Date.UTC(2025, 10, 1),
+      Date.UTC(2025, 11, 1),
+      Date.UTC(2026, 0, 1),
+    ])
+  })
+
+  it('week steps start on Monday (getStartOf weekStartsOn: 1)', () => {
+    // Wed Jan 7 2026 normalizes to Mon Jan 5; Wed Jan 21 sits in the excluded week of Mon Jan 19.
+    expect(periodStartsFrom(Date.UTC(2026, 0, 7), Date.UTC(2026, 0, 21), 'week')).toEqual([
+      Date.UTC(2026, 0, 5),
+      Date.UTC(2026, 0, 12),
+    ])
+  })
+
+  it('year steps', () => {
+    expect(periodStartsFrom(Date.UTC(2023, 5, 20), Date.UTC(2026, 2, 1), 'year')).toEqual([
+      Date.UTC(2023, 0, 1),
+      Date.UTC(2024, 0, 1),
+      Date.UTC(2025, 0, 1),
+    ])
+  })
+
+  it('fromMs mid-period normalizes to its period start', () => {
+    expect(periodStartsFrom(Date.UTC(2026, 0, 15), Date.UTC(2026, 1, 10), 'month')).toEqual([
+      Date.UTC(2026, 0, 1),
+    ])
+  })
+
+  it('empty when fromMs falls in the bound period or after it', () => {
+    expect(periodStartsFrom(Date.UTC(2026, 0, 2), Date.UTC(2026, 0, 20), 'month')).toEqual([])
+    expect(periodStartsFrom(Date.UTC(2026, 5, 1), Date.UTC(2026, 0, 1), 'month')).toEqual([])
+  })
+
+  it('spans 40 periods with no 12-period cap', () => {
+    const starts = periodStartsFrom(Date.UTC(2023, 1, 10), Date.UTC(2026, 5, 3), 'month')
+    expect(starts).toHaveLength(40)
+    expect(starts[0]).toBe(Date.UTC(2023, 1, 1))
+    expect(starts.at(-1)).toBe(Date.UTC(2026, 4, 1))
   })
 })
 
