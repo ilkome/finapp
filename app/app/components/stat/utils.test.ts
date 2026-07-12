@@ -1,6 +1,20 @@
 import { describe, expect, it } from 'vitest'
 
-import { getSelectedType, getSelectedTypeForSum, getTypesToShow } from '~/components/stat/utils'
+import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
+import { TrnType } from '~/components/trns/types'
+
+describe('getTypesMapping', () => {
+  it('includes transfers in the all/summary views so the transaction list can show them', () => {
+    expect(getTypesMapping('summary')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
+    expect(getTypesMapping('split')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
+    expect(getTypesMapping('netIncome')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
+  })
+
+  it('keeps expense/income views pure (no transfers)', () => {
+    expect(getTypesMapping('expense')).toEqual([TrnType.Expense])
+    expect(getTypesMapping('income')).toEqual([TrnType.Income])
+  })
+})
 
 describe('getSelectedType', () => {
   it('returns filteredType for summary tab', () => {

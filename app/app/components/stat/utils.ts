@@ -3,14 +3,16 @@ import type { SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/s
 import { TrnType } from '~/components/trns/types'
 
 export function getTypesMapping(slug: SeriesSlugSelected | StatTabSlug): TrnType[] {
-  // Transfers are excluded from statistics: they only move money between the
-  // user's own wallets and would inflate expense/income totals and charts.
+  // Transfers stay out of charts and period totals (getTotal keeps them in their own buckets
+  // and the category breakdown skips system categories). They ARE included in the transaction
+  // list under the "all"/summary views so TrnsList's "Transfers" tab works; the expense/income
+  // tabs stay pure so drilling into a type never mixes transfers in.
   const typeMapping: Record<SeriesSlugSelected | StatTabSlug, TrnType[]> = {
     expense: [TrnType.Expense],
     income: [TrnType.Income],
-    netIncome: [TrnType.Expense, TrnType.Income],
-    split: [TrnType.Expense, TrnType.Income],
-    summary: [TrnType.Expense, TrnType.Income],
+    netIncome: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
+    split: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
+    summary: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
   }
 
   return typeMapping[slug]
