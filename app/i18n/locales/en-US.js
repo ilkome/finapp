@@ -451,6 +451,7 @@ export default {
   },
 
   stat: {
+    analytics: 'Analytics',
     average: {
       forLast: 'for the last periods',
     },

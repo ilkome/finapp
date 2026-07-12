@@ -9,6 +9,9 @@ import { nextForecastMode, useForecastMode } from '~/components/recurrences/useF
 import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
+  // Defaults to shown; drill-down leaf pages pass false to hide the category-breakdown
+  // controls (grouping / rounds / list / vertical) when the category has no children.
+  hasCategoryBreakdown?: boolean
   isShowWallets?: boolean
   selectedTrnsIds?: TrnId[]
 }>()
@@ -28,13 +31,16 @@ const isCatsRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
 const isCatsListShow = computed(() => statConfig.config.value.catsList.isShow)
 
 const hasTrnsConfig = computed(() => props.selectedTrnsIds !== undefined)
+const showCategoryConfig = computed(() => hasTrnsConfig.value && props.hasCategoryBreakdown !== false)
 
 const availablePanels = computed<StatConfigPanelId[]>(() => {
   const panels: StatConfigPanelId[] = ['root', 'statAverage']
   if (props.isShowWallets)
     panels.push('wallets')
   if (hasTrnsConfig.value)
-    panels.push('grouping', 'chart', 'catsRound', 'catsList', 'vertical')
+    panels.push('chart')
+  if (showCategoryConfig.value)
+    panels.push('grouping', 'catsRound', 'catsList', 'vertical')
   return panels
 })
 
@@ -223,6 +229,9 @@ const rows = computed<RootRow[]>(() => {
       title: t('stat.config.chartShow.title'),
       toggle: toggleChartShow,
     })
+  }
+
+  if (showCategoryConfig.value) {
     list.push({
       key: 'grouping',
       panel: 'grouping',
@@ -250,6 +259,9 @@ const rows = computed<RootRow[]>(() => {
       title: t('stat.config.categories.vertical.title'),
       toggle: () => toggleSection('vertical', statConfig.config.value.vertical.isShow),
     })
+  }
+
+  if (hasTrnsConfig.value) {
     list.push({
       isShow: statConfig.config.value.trns.isShow,
       key: 'trns',

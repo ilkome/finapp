@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData } from '~/components/stat/types'
 
@@ -10,6 +11,7 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 import { getTrnTypeByAmount } from '~/components/trns/types'
 
 const props = defineProps<{
+  getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   insideClass?: string
   insideStyle?: string
   isActive?: boolean
@@ -22,6 +24,8 @@ const props = defineProps<{
     expense: number
     income: number
   }
+  // Drill-down mode: a context menu owns long-press, so quick-create is disabled.
+  menuMode?: boolean
   stacked?: boolean
 }>()
 
@@ -52,6 +56,11 @@ const barStyle = computed(() =>
 const { longPressRef } = useCategoryLongPress(
   () => props.item.id,
   () => emit('click', props.item.id),
+  { disableCreate: () => !!props.menuMode },
+)
+
+const menuItems = computed(() =>
+  props.menuMode ? props.getContextMenuItems?.(props.item.id) : undefined,
 )
 
 function onAmountClick(e: MouseEvent) {
@@ -61,89 +70,93 @@ function onAmountClick(e: MouseEvent) {
 </script>
 
 <template>
-  <div
+  <UiContextMenuOptional
     v-if="category"
-    ref="longPressRef"
-    :class="[props.insideClass, {
-      '-bg-elevated ': props.isActive,
-    }]"
-    :style="props.insideStyle"
-    class="relative"
+    :items="menuItems"
   >
-    <slot name="before" />
-    <UiElement
-      :isActive="props.isActive"
-      :lineWidth="props.lineWidth"
+    <div
+      ref="longPressRef"
+      :class="[props.insideClass, {
+        '-bg-elevated ': props.isActive,
+      }]"
+      :style="props.insideStyle"
       class="relative"
-      insideClasses="!min-h-[44px]"
     >
-      <template #line>
-        <div
-          v-if="isLines"
-          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-[52px]"
-        >
-          <div class="bg-accented overflow-hidden rounded-lg">
-            <div
-              :style="barStyle"
-              class="h-1 opacity-60"
-            />
+      <slot name="before" />
+      <UiElement
+        :isActive="props.isActive"
+        :lineWidth="props.lineWidth"
+        class="relative"
+        insideClasses="!min-h-[44px]"
+      >
+        <template #line>
+          <div
+            v-if="isLines"
+            class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-[52px]"
+          >
+            <div class="bg-accented overflow-hidden rounded-lg">
+              <div
+                :style="barStyle"
+                class="h-1 opacity-60"
+              />
+            </div>
           </div>
+        </template>
+
+        <template #leftIcon>
+          <UiIconBase
+            v-if="isRoundIcon"
+            :color="category?.color"
+            :name="category?.icon"
+            invert
+          />
+          <UiIconBase
+            v-else
+            :color="category?.color"
+            :name="category?.icon"
+            class="ml-1 !w-6"
+          />
+        </template>
+
+        <div
+          :class="{ '!pb-2': isLines }"
+          class="flex grow items-center gap-1"
+        >
+          <CategoriesName
+            :category
+            :childrenCount="isShowChevron ? undefined : props.item.categories?.length"
+            :isShowParent="props.isShowParent"
+            :parentCategory
+            :stacked="props.stacked"
+          />
+
+          <Icon
+            v-if="isShowChevron && hasChildren"
+            :name="props.isExpanded ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+            size="18"
+            class="text-muted"
+          />
         </div>
-      </template>
 
-      <template #leftIcon>
-        <UiIconBase
-          v-if="isRoundIcon"
-          :color="category?.color"
-          :name="category?.icon"
-          invert
-        />
-        <UiIconBase
-          v-else
-          :color="category?.color"
-          :name="category?.icon"
-          class="ml-1 !w-6"
-        />
-      </template>
+        <div
+          v-if="props.item.value !== 0"
+          :class="{ '!pb-2': isLines }"
+          class="-my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm px-2"
+          @click="onAmountClick"
+          @pointerdown.stop
+        >
+          <Amount
+            :amount="props.item.value"
+            :type="getTrnTypeByAmount(props.item.value)"
+            :currencyCode="currenciesStore.base"
+            :isShowBaseRate="false"
+            :isShowSymbol="false"
+            colorize="income"
+          />
+        </div>
+      </UiElement>
 
-      <div
-        :class="{ '!pb-2': isLines }"
-        class="flex grow items-center gap-1"
-      >
-        <CategoriesName
-          :category
-          :childrenCount="isShowChevron ? undefined : props.item.categories?.length"
-          :isShowParent="props.isShowParent"
-          :parentCategory
-          :stacked="props.stacked"
-        />
-
-        <Icon
-          v-if="isShowChevron && hasChildren"
-          :name="props.isExpanded ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-          size="18"
-          class="text-muted"
-        />
-      </div>
-
-      <div
-        v-if="props.item.value !== 0"
-        :class="{ '!pb-2': isLines }"
-        class="-my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm px-2"
-        @click="onAmountClick"
-        @pointerdown.stop
-      >
-        <Amount
-          :amount="props.item.value"
-          :type="getTrnTypeByAmount(props.item.value)"
-          :currencyCode="currenciesStore.base"
-          :isShowBaseRate="false"
-          :isShowSymbol="false"
-          colorize="income"
-        />
-      </div>
-    </UiElement>
-
-    <slot />
-  </div>
+      <slot />
+    </div>
+  </UiContextMenuOptional>
 </template>

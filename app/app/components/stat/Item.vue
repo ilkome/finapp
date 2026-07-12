@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId } from '~/components/categories/types'
 import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
@@ -10,6 +11,10 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   categoryId?: CategoryId
+  // When set, a category click navigates to `${categoryLinkBase}/${id}` (drill-down pages)
+  // instead of the /categories page or the quick-view modal.
+  categoryLinkBase?: string
+  getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   hasChildren?: boolean
   preCategoriesIds?: CategoryId[]
   statTab: StatTabSlug
@@ -84,6 +89,11 @@ function closeModal() {
 }
 
 function onClickCategory(clickedCategoryId: CategoryId) {
+  // Drill-down mode: navigate to a per-category page. The target scopes itself via
+  // getChildrenIdsOrParent(routeId), so we do NOT carry the id into the filter.
+  if (props.categoryLinkBase)
+    return useRouter().push(`${props.categoryLinkBase}/${clickedCategoryId}`)
+
   if (props.categoryId) {
     filter.setCategoryId(clickedCategoryId)
 
@@ -156,6 +166,8 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
         :isOneCategory="isOneCategory"
         :preCategoriesIds="props.preCategoriesIds"
         :selectedTrnsIds
+        :navigateOnClick="!!props.categoryLinkBase"
+        :getContextMenuItems="props.getContextMenuItems"
         @clickCategory="onClickCategory"
         @setCategoryFilter="onSetCategoryFilter"
       />
@@ -177,6 +189,8 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
             :storageKey="statItemStorageKey"
             :type="props.type ?? 'netIncome'"
+            :navigateOnClick="!!props.categoryLinkBase"
+            :getContextMenuItems="props.getContextMenuItems"
             @clickCategory="onClickCategory"
             @setCategoryFilter="onSetCategoryFilter"
           />

@@ -17,6 +17,8 @@ const props = defineProps<{
   configWallets?: boolean
   filterCategories?: boolean
   filterWallets?: boolean
+  // Drill-down leaf pages pass false to hide the category-breakdown config controls.
+  hasCategoryBreakdown?: boolean
   hideTabs?: boolean
   preCategoriesIds?: CategoryId[]
   trnsIds?: TrnId[]
@@ -78,6 +80,7 @@ function onClickWallet(walletId: WalletId) {
           <StatConfigView
             :isShowWallets="!!configWallets"
             :selectedTrnsIds="categoryConfigTrnsIds"
+            :hasCategoryBreakdown="props.hasCategoryBreakdown"
           />
         </StatConfigModal>
 
