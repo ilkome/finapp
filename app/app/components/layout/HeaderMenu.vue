@@ -5,13 +5,19 @@ import type { LocaleSlug } from '~/components/locale/types'
 
 import { useDemo } from '~/components/demo/useDemo'
 import { useTheme } from '~/components/theme/useTheme'
+import { useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useUserStore } from '~/components/user/useUserStore'
 
-type Panel = 'language' | 'palette' | 'root' | 'theme'
+type Panel = 'appearance' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
 
 // Session actions (enable demo / sign out) are only meaningful for an authenticated
 // user mid-onboarding; the login page renders this menu without them.
 const { sessionActions = false } = defineProps<{ sessionActions?: boolean }>()
+
+const PANEL_CHILDREN: Partial<Record<'root' | Panel, Panel[]>> = {
+  appearance: ['primary', 'neutral', 'radius'],
+  root: ['locale', 'theme', 'appearance'],
+}
 
 const GITHUB_URL = 'https://github.com/ilkome/finapp'
 const DOCS_URL = 'https://finapp-docs.ilko.me/'
@@ -27,6 +33,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const { generateDemoData, isDemo } = useDemo()
 const { options: themeOptions, preference: themePreference, setTheme } = useTheme()
+const { blackAsPrimary, neutral, primary, radius } = useThemeOptions()
 
 async function enableDemo() {
   isDemo.value = 'true'
@@ -35,8 +42,10 @@ async function enableDemo() {
 }
 
 const isOpen = ref(false)
-const activePanel = ref<Panel>('root')
 const direction = ref<1 | -1>(1)
+
+const panelStack = ref<Panel[]>([])
+const activePanel = computed<'root' | Panel>(() => panelStack.value.at(-1) ?? 'root')
 
 const localeOptions = computed(() => [
   { label: t('locale.ru'), value: 'ru' as LocaleSlug },
@@ -45,33 +54,61 @@ const localeOptions = computed(() => [
 
 const localeLabel = computed(() => t(`locale.${locale.value}`))
 const themeLabel = computed(() => themeOptions.find(o => o.value === themePreference.value)?.label ?? '')
+const primaryLabel = computed(() => blackAsPrimary.value ? 'Black' : primary.value)
 
-const panelTitle = computed(() => {
-  switch (activePanel.value) {
-    case 'language':
-      return t('locale.title')
-    case 'theme':
-      return t('theme.picker.theme')
-    case 'palette':
-      return t('theme.palette')
-    default:
-      return ''
-  }
-})
+const panelMeta = computed<Record<Panel, { icon?: string, title: string, value?: string }>>(() => ({
+  appearance: {
+    icon: 'i-lucide-paintbrush',
+    title: t('theme.title'),
+  },
+  locale: {
+    icon: 'lucide:languages',
+    title: t('locale.title'),
+    value: localeLabel.value,
+  },
+  neutral: {
+    icon: 'i-lucide-swatch-book',
+    title: t('theme.picker.neutral'),
+    value: neutral.value,
+  },
+  primary: {
+    icon: 'i-lucide-palette',
+    title: t('theme.picker.primary'),
+    value: primaryLabel.value,
+  },
+  radius: {
+    icon: 'i-lucide-square-round-corner',
+    title: t('theme.picker.radius'),
+    value: String(radius.value),
+  },
+  theme: {
+    icon: THEME_ICONS[themePreference.value],
+    title: t('theme.picker.theme'),
+    value: themeLabel.value,
+  },
+}))
 
-function open(panel: Exclude<Panel, 'root'>) {
+const panelTitle = computed(() =>
+  activePanel.value === 'root' ? '' : panelMeta.value[activePanel.value].title,
+)
+
+const childRows = computed(() =>
+  (PANEL_CHILDREN[activePanel.value] ?? []).map(id => ({ id, ...panelMeta.value[id] })),
+)
+
+function open(panel: Panel) {
   direction.value = 1
-  activePanel.value = panel
+  panelStack.value = [...panelStack.value, panel]
 }
 
 function back() {
   direction.value = -1
-  activePanel.value = 'root'
+  panelStack.value = panelStack.value.slice(0, -1)
 }
 
 // Reopen always lands on the root list, never a stale sub-panel.
 function resetToRoot() {
-  activePanel.value = 'root'
+  panelStack.value = []
   direction.value = 1
 }
 
@@ -93,17 +130,22 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
     @openModal="() => { resetToRoot(); isOpen = true }"
     @closeModal="isOpen = false"
   >
+    <!-- On desktop BottomSheetOrDropdown drives UPopover's own open state and never
+         emits openModal, so the reset has to hang off the trigger's click. A custom
+         trigger must bind resetToRoot too, or reopening lands on a stale sub-panel. -->
     <template #trigger="{ isActive }">
-      <UButton
-        :aria-label="t('login.menu.title')"
-        :variant="isActive ? 'soft' : 'ghost'"
-        class="text-muted max-md:border-default/80 max-md:bg-default/20 max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
-        color="neutral"
-        icon="i-lucide-menu"
-        size="lg"
-        square
-        @click="resetToRoot"
-      />
+      <slot name="trigger" :isActive :resetToRoot>
+        <UButton
+          :aria-label="t('login.menu.title')"
+          :variant="isActive ? 'soft' : 'ghost'"
+          class="text-muted max-md:border-default/80 max-md:bg-default/20 max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
+          color="neutral"
+          icon="i-lucide-menu"
+          size="lg"
+          square
+          @click="resetToRoot"
+        />
+      </slot>
     </template>
 
     <template #content="{ close }">
@@ -118,35 +160,37 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
             exit="exit"
             :transition="panelTransition"
           >
-            <!-- Root list -->
-            <div v-if="activePanel === 'root'" class="grid gap-0.5">
-              <button :class="rowClass" type="button" @click="open('language')">
+            <div v-if="childRows.length" class="grid gap-0.5">
+              <div
+                v-if="activePanel !== 'root'"
+                :aria-label="t('base.previous')"
+                role="button"
+                tabindex="0"
+                class="hover:bg-elevated/50 mb-1 flex items-center gap-2 rounded-sm p-2"
+                @click="back"
+                @keydown.enter.prevent="back"
+                @keydown.space.prevent="back"
+              >
+                <UIcon name="lucide:chevron-left" class="text-muted size-5" />
+                <span class="text-toned grow text-sm font-medium">{{ panelTitle }}</span>
+              </div>
+
+              <button
+                v-for="row in childRows"
+                :key="row.id"
+                :class="rowClass"
+                type="button"
+                @click="open(row.id)"
+              >
                 <span class="flex min-w-7 justify-center">
-                  <UIcon name="lucide:languages" class="text-muted size-5" />
+                  <UIcon :name="row.icon" class="text-muted size-5" />
                 </span>
-                <span class="grow font-medium">{{ t('locale.title') }}</span>
-                <span class="text-dimmed text-xs">{{ localeLabel }}</span>
+                <span class="grow font-medium">{{ row.title }}</span>
+                <span class="text-dimmed text-xs capitalize">{{ row.value }}</span>
                 <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
               </button>
 
-              <button :class="rowClass" type="button" @click="open('theme')">
-                <span class="flex min-w-7 justify-center">
-                  <UIcon :name="THEME_ICONS[themePreference]" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">{{ t('theme.picker.theme') }}</span>
-                <span class="text-dimmed text-xs">{{ themeLabel }}</span>
-                <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
-              </button>
-
-              <button :class="rowClass" type="button" @click="open('palette')">
-                <span class="flex min-w-7 justify-center">
-                  <UIcon name="i-lucide-swatch-book" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">{{ t('theme.palette') }}</span>
-                <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
-              </button>
-
-              <template v-if="sessionActions">
+              <template v-if="activePanel === 'root' && sessionActions">
                 <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
 
                 <button
@@ -172,38 +216,39 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                 </button>
               </template>
 
-              <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
+              <template v-if="activePanel === 'root'">
+                <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
 
-              <a
-                :class="rowClass"
-                :href="GITHUB_URL"
-                rel="noopener"
-                target="_blank"
-                @click="close"
-              >
-                <span class="flex min-w-7 justify-center">
-                  <UIcon name="mdi:github" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">GitHub</span>
-                <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
-              </a>
+                <a
+                  :class="rowClass"
+                  :href="GITHUB_URL"
+                  rel="noopener"
+                  target="_blank"
+                  @click="close"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <UIcon name="mdi:github" class="text-muted size-5" />
+                  </span>
+                  <span class="grow font-medium">GitHub</span>
+                  <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
+                </a>
 
-              <a
-                :class="rowClass"
-                :href="DOCS_URL"
-                rel="noopener"
-                target="_blank"
-                @click="close"
-              >
-                <span class="flex min-w-7 justify-center">
-                  <UIcon name="lucide:book-open" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">{{ t('login.menu.documentation') }}</span>
-                <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
-              </a>
+                <a
+                  :class="rowClass"
+                  :href="DOCS_URL"
+                  rel="noopener"
+                  target="_blank"
+                  @click="close"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <UIcon name="lucide:book-open" class="text-muted size-5" />
+                  </span>
+                  <span class="grow font-medium">{{ t('login.menu.documentation') }}</span>
+                  <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
+                </a>
+              </template>
             </div>
 
-            <!-- Sub-panels -->
             <div v-else>
               <div
                 :aria-label="t('base.previous')"
@@ -219,7 +264,7 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
               </div>
 
               <!-- Language -->
-              <div v-if="activePanel === 'language'" class="grid gap-0.5">
+              <div v-if="activePanel === 'locale'" class="grid gap-0.5">
                 <button
                   v-for="opt in localeOptions"
                   :key="opt.value"
@@ -257,9 +302,19 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                 </button>
               </div>
 
-              <!-- Palette -->
+              <!-- Primary color -->
+              <div v-else-if="activePanel === 'primary'" class="px-2 pb-1">
+                <ThemePickerPrimary />
+              </div>
+
+              <!-- Background color -->
+              <div v-else-if="activePanel === 'neutral'" class="px-2 pb-1">
+                <ThemePickerNeutral />
+              </div>
+
+              <!-- Rounding -->
               <div v-else class="px-2 pb-1">
-                <ThemePickerPanel />
+                <ThemePickerRadius />
               </div>
             </div>
           </Motion>

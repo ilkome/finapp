@@ -278,7 +278,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
     <div class="px-3 py-2">
       <UiButtonAccent
         :disabled="!hasPending"
-        class="rounded-full"
+        rounded
         @click="apply"
       >
         {{ t('base.apply') }}

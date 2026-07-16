@@ -56,7 +56,10 @@ const isOpen = ref(false)
         <slot :close="close" />
 
         <div class="px-3 py-2">
-          <UiButtonAccent class="rounded-full" @click="close">
+          <UiButtonAccent
+            rounded
+            @click="close"
+          >
             {{ t('base.apply') }}
           </UiButtonAccent>
         </div>

@@ -18,7 +18,7 @@ const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.bad
 
 <template>
   <div
-    :class="cn('group interactive flex min-h-[44px] items-center rounded-sm px-2 py-1.5 md:min-h-[38px]',
+    :class="cn('group interactive flex min-h-11 items-center rounded-md px-2 py-1.5 md:min-h-9.5',
                checkIsActive(menuId) ? 'text-primary' : 'text-muted',
                isShowText && 'gap-3',
     )"
