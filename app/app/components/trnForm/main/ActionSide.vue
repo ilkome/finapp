@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useVibrate } from '@vueuse/core'
 
+import { occurrenceTrnId } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
@@ -25,8 +26,17 @@ async function onClickSubmit() {
   if (!trnFormData)
     return
 
+  const occ = trnsFormStore.occurrenceContext
   const rep = trnsFormStore.repeat
-  if (rep.enabled && trnFormData.values.type !== TrnType.Transfer) {
+  // Paying a recurrence occurrence early: settle it under the deterministic occurrence id (+ link)
+  // so that day flips to "paid". Takes priority over Repeat (which stays off in this flow).
+  if (occ && trnFormData.values.type !== TrnType.Transfer) {
+    trnsStore.saveTrn({
+      id: occurrenceTrnId(occ.ruleId, occ.day),
+      values: { ...trnFormData.values, recurrenceId: occ.ruleId },
+    })
+  }
+  else if (rep.enabled && trnFormData.values.type !== TrnType.Transfer) {
     const config = {
       autoCreate: rep.autoCreate,
       backfill: rep.backfill,

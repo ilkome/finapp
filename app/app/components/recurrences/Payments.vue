@@ -10,6 +10,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~/components/date/utils'
 import { committedNativeInRange, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, pendingConfirmOccurrences, periodProgress } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
+import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -24,6 +25,7 @@ const emit = defineEmits<{
 
 const { locale, t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
+const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
@@ -199,6 +201,19 @@ function statusLabel(state: OccurrenceStatus['state']) {
     case 'overdue': return t('recurrences.overdue')
     default: return ''
   }
+}
+
+function payEarly(o: TimelineOccurrence) {
+  trnsFormStore.openFormForOccurrence({
+    amount: o.status.expected,
+    categoryId: o.rule.categoryId,
+    date: todayEpoch.value,
+    day: o.day,
+    desc: o.rule.desc,
+    ruleId: o.id,
+    type: o.rule.type,
+    walletId: o.rule.walletId,
+  })
 }
 
 const groups = computed(() => {
@@ -478,6 +493,13 @@ function fmtDay(day: number) {
             v-for="o in group.items"
             :key="`${o.id}:${o.day}`"
             class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2"
+            :class="o.status.state === 'upcoming' ? 'interactive cursor-pointer' : ''"
+            :role="o.status.state === 'upcoming' ? 'button' : undefined"
+            :tabindex="o.status.state === 'upcoming' ? 0 : undefined"
+            :aria-label="o.status.state === 'upcoming' ? t('recurrences.actions.payEarly') : undefined"
+            @click="o.status.state === 'upcoming' && payEarly(o)"
+            @keydown.enter="o.status.state === 'upcoming' && payEarly(o)"
+            @keydown.space.prevent="o.status.state === 'upcoming' && payEarly(o)"
           >
             <UiIconBase
               :name="categoryOf(o.rule)?.icon ?? 'lucide:repeat'"
@@ -511,6 +533,12 @@ function fmtDay(day: number) {
               :isShowBaseRate="false"
               :type="o.rule.type"
               variant="sm"
+            />
+            <Icon
+              v-if="o.status.state === 'upcoming'"
+              name="lucide:chevron-right"
+              size="14"
+              class="text-muted shrink-0"
             />
           </div>
         </div>

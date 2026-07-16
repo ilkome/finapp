@@ -1,7 +1,7 @@
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { RecurrenceEndMode, RecurrenceFreq } from '~/components/recurrences/types'
+import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceId } from '~/components/recurrences/types'
 import type { TrnFormUi } from '~/components/trnForm/types'
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
 import type { TransferSide, TrnFormValues, TrnId, TrnItem } from '~/components/trns/types'
@@ -74,6 +74,11 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     return { autoCreate: true, backfill: true, enabled: false, endCount: null, endDate: null, endMode: 'never', freq: 'month', interval: 1, monthLastDay: false }
   }
   const repeat = ref<RepeatState>(defaultRepeat())
+
+  // Set while the form is opened to pay one recurrence occurrence early: fixes the occurrence
+  // identity (rule + due day) so the saved trn lands on the deterministic occurrence id regardless
+  // of an edited form date, flipping that occurrence to "paid". Cleared on every open/clear/reset.
+  const occurrenceContext = ref<{ day: number, ruleId: RecurrenceId } | null>(null)
 
   function closeTrnFormModal(name: keyof typeof modal.value) {
     modal.value[name] = false
@@ -221,6 +226,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.desc = undefined
     values.trnId = null
     repeat.value = defaultRepeat()
+    occurrenceContext.value = null
   }
 
   function $reset() {
@@ -236,6 +242,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.trnType = TrnType.Expense
     values.walletId = null
     repeat.value = defaultRepeat()
+    occurrenceContext.value = null
 
     ui.value = {
       isShow: false,
@@ -253,9 +260,11 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   function setValues(props: Values) {
-    // Start every form session from a clean Repeat state: closing without submitting does not run
-    // onClear, so a left-on toggle would otherwise leak into the next trn and create a stray rule.
+    // Start every form session from a clean Repeat / occurrence state: closing without submitting
+    // does not run onClear, so a left-on toggle (or a stale occurrence link) would otherwise leak
+    // into the next trn and create a stray rule / mislink an occurrence.
     repeat.value = defaultRepeat()
+    occurrenceContext.value = null
     values.trnId = null
 
     if (props.action === 'create') {
@@ -376,6 +385,30 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     repeat.value.enabled = true
   }
 
+  // Pay one recurrence occurrence early: open a normal create form pre-filled from the rule and
+  // remember which occurrence it settles. ActionSide saves under the deterministic occurrence id so
+  // that day flips to "paid". `date` defaults to today (paying now) but stays editable; the
+  // occurrence identity is pinned to `day`, so editing the date never breaks the link.
+  function openFormForOccurrence(p: {
+    amount: number
+    categoryId: CategoryId
+    date: number
+    day: number
+    desc?: string
+    ruleId: RecurrenceId
+    type: TrnType
+    walletId: WalletId
+  }) {
+    openFormForCreate()
+    occurrenceContext.value = { day: p.day, ruleId: p.ruleId }
+    values.trnType = p.type
+    values.categoryId = p.categoryId
+    values.walletId = p.walletId
+    values.date = p.date
+    values.desc = p.desc
+    setAmountAt(0, String(p.amount))
+  }
+
   function openFormForDuplicate(trnId: TrnId) {
     const trn = trnsStore.items?.[trnId] as TrnItem
 
@@ -400,6 +433,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     copyTransferAmount,
     isSameCurrencyTransfer,
     modal,
+    occurrenceContext,
     onChangeAmount,
     onChangeCountSum,
     onChangeTransferAmountSynced,
@@ -414,6 +448,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     openFormForCreateRecurrence,
     openFormForDuplicate,
     openFormForEdit,
+    openFormForOccurrence,
     openTrnFormModal,
     repeat,
     shouldShowSum,

@@ -175,6 +175,64 @@ describe('useTrnsFormStore', () => {
     })
   })
 
+  describe('openFormForOccurrence', () => {
+    it('opens a create form pre-filled from the occurrence and pins the occurrence context', () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForOccurrence({
+        amount: 150,
+        categoryId: 'c2',
+        date: 1700000000000,
+        day: 1701000000000,
+        desc: 'Rent',
+        ruleId: 'rule1',
+        type: TrnType.Income,
+        walletId: 'w2',
+      })
+
+      expect(store.ui.isShow).toBe(true)
+      expect(store.values.trnId).toBeNull()
+      expect(store.values.trnType).toBe(TrnType.Income)
+      expect(store.values.categoryId).toBe('c2')
+      expect(store.values.walletId).toBe('w2')
+      expect(store.values.date).toBe(1700000000000)
+      expect(store.values.desc).toBe('Rent')
+      expect(store.values.amount[0]).toBe(150)
+      expect(store.occurrenceContext).toEqual({ day: 1701000000000, ruleId: 'rule1' })
+      expect(store.repeat.enabled).toBe(false)
+    })
+
+    it('clears the occurrence context on the next open and on clear', () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForOccurrence({
+        amount: 10,
+        categoryId: 'c1',
+        date: 1700000000000,
+        day: 1701000000000,
+        ruleId: 'rule1',
+        type: TrnType.Expense,
+        walletId: 'w1',
+      })
+      expect(store.occurrenceContext).not.toBeNull()
+
+      store.openFormForCreate()
+      expect(store.occurrenceContext).toBeNull()
+
+      store.openFormForOccurrence({
+        amount: 10,
+        categoryId: 'c1',
+        date: 1700000000000,
+        day: 1701000000000,
+        ruleId: 'rule1',
+        type: TrnType.Expense,
+        walletId: 'w1',
+      })
+      store.onClear()
+      expect(store.occurrenceContext).toBeNull()
+    })
+  })
+
   describe('openFormForEdit', () => {
     it('does nothing if trn not found', () => {
       const store = useTrnsFormStore()

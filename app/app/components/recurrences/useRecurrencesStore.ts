@@ -363,8 +363,12 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
       if (!trns.length)
         continue
       try {
-        for (const t of trns)
+        for (const t of trns) {
+          // Skip already-materialized days so an early-paid trn (possibly edited) isn't clobbered.
+          if (trnsStore.items?.[t.id])
+            continue
           await upsertRow('trns', t.id, trnToRow(t.values, writeUid))
+        }
         writeRecurrence(id, { ...rule, lastGeneratedDate })
       }
       catch (e) {

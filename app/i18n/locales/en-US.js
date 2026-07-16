@@ -362,6 +362,7 @@ export default {
       confirmAll: 'Confirm all',
       delay: 'Delay',
       pause: 'Pause',
+      payEarly: 'Pay now',
       resume: 'Resume',
       skip: 'Skip',
       skipAll: 'Skip all',

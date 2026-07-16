@@ -362,6 +362,7 @@ export default {
       confirmAll: 'Подтвердить все',
       delay: 'Отложить',
       pause: 'Пауза',
+      payEarly: 'Внести',
       resume: 'Возобновить',
       skip: 'Пропустить',
       skipAll: 'Пропустить все',
