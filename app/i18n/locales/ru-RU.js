@@ -452,7 +452,6 @@ export default {
   },
 
   stat: {
-    analytics: 'Аналитика',
     average: {
       forLast: 'за прошлые периоды',
     },

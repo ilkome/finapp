@@ -85,7 +85,8 @@ provide(filterKey, filter)
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
 const categoryDetailHistoryPattern = /^\/categories\/[^/]+$/
-const preCategoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
+const childrenIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
+// Falls back to [self] so a leaf category still scopes its own trns query
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
 
 const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -221,8 +222,6 @@ async function onDeleteConfirm() {
       : undefined)
   }, 300)
 }
-
-const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
 </script>
 
 <template>
@@ -231,8 +230,9 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
       v-model:activeTab="activeTab"
       :backSkipPattern="categoryDetailHistoryPattern"
       :backTo="category.parentId ? `/categories/${category.parentId}` : '/categories'"
+      :hasCategoryBreakdown="childrenIds.length > 0"
       :hideTabs="!!singleTrnType"
-      :preCategoriesIds
+      :preCategoriesIds="childrenIds"
       :trnsIds
       configCategories
       filterWallets
@@ -286,7 +286,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
       class="grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList
-        :ids="categoriesIds"
+        :ids="childrenIds"
         :getContextMenuItems="getCategoryContextMenuItems"
         :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
       />
@@ -295,8 +295,7 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
     <StatWrap
       :activeTab
       :categoryId
-      :hasChildren="categoriesIdsOrParent.length > 1"
-      :preCategoriesIds
+      :preCategoriesIds="childrenIds"
       :range="statDate.range.value"
       :storageKey
       :trnsIds

@@ -8,9 +8,6 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 export function useCategoryLongPress(
   categoryId: () => CategoryId,
   onShortPress: () => void,
-  // On the /stat drill-down pages a context menu owns long-press, so the
-  // quick-create gesture is disabled to avoid a double action on touch.
-  opts?: { disableCreate?: () => boolean },
 ) {
   const statDate = inject(statDateKey)!
   const categoriesStore = useCategoriesStore()
@@ -21,9 +18,6 @@ export function useCategoryLongPress(
   onLongPress(
     longPressRef,
     () => {
-      if (opts?.disableCreate?.())
-        return
-
       const isTransactible = categoriesStore.isTransactible(categoryId())
       if (!isTransactible)
         return

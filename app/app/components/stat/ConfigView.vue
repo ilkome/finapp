@@ -8,13 +8,16 @@ import type { TrnId } from '~/components/trns/types'
 import { nextForecastMode, useForecastMode } from '~/components/recurrences/useForecastMode'
 import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
 
-const props = defineProps<{
-  // Defaults to shown; drill-down leaf pages pass false to hide the category-breakdown
-  // controls (grouping / rounds / list / vertical) when the category has no children.
+// hasCategoryBreakdown needs an explicit `true` default: an absent Boolean prop would
+// otherwise cast to false and hide the category-breakdown controls (grouping / rounds /
+// list / vertical) on every page that never opts out. Only leaf categories pass false.
+const props = withDefaults(defineProps<{
   hasCategoryBreakdown?: boolean
   isShowWallets?: boolean
   selectedTrnsIds?: TrnId[]
-}>()
+}>(), {
+  hasCategoryBreakdown: true,
+})
 
 const activePanel = inject(statConfigPanelKey, ref<StatConfigPanelId>('root'))
 
@@ -31,7 +34,7 @@ const isCatsRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
 const isCatsListShow = computed(() => statConfig.config.value.catsList.isShow)
 
 const hasTrnsConfig = computed(() => props.selectedTrnsIds !== undefined)
-const showCategoryConfig = computed(() => hasTrnsConfig.value && props.hasCategoryBreakdown !== false)
+const showCategoryConfig = computed(() => hasTrnsConfig.value && props.hasCategoryBreakdown)
 
 const availablePanels = computed<StatConfigPanelId[]>(() => {
   const panels: StatConfigPanelId[] = ['root', 'statAverage']

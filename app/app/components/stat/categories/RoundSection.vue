@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 
@@ -11,10 +10,7 @@ import { resolveGrouped } from '~/components/stat/useStatConfig'
 const props = defineProps<{
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   filteredCategoriesIds: CategoryId[]
-  getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   isOneCategory?: boolean
-  // Drill-down mode: chips still filter on tap, but long-press opens a context menu.
-  navigateOnClick?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
 }>()
@@ -82,8 +78,6 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
       class="transition-opacity"
       isShowAmount
       :isShowParent="false"
-      :menuMode="props.navigateOnClick"
-      :getContextMenuItems="props.getContextMenuItems"
       @click="emit('setCategoryFilter', item.id)"
     />
   </div>

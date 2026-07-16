@@ -10,19 +10,22 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = defineProps<{
+// Defaults to true so pages that always have a breakdown need not pass it; an absent
+// Boolean prop would cast to false and forward that to StatConfigView.
+const props = withDefaults(defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
   configCategories?: boolean
   configWallets?: boolean
   filterCategories?: boolean
   filterWallets?: boolean
-  // Drill-down leaf pages pass false to hide the category-breakdown config controls.
   hasCategoryBreakdown?: boolean
   hideTabs?: boolean
   preCategoriesIds?: CategoryId[]
   trnsIds?: TrnId[]
-}>()
+}>(), {
+  hasCategoryBreakdown: true,
+})
 
 const activeTab = defineModel<StatTabSlug>('activeTab')
 
@@ -78,9 +81,9 @@ function onClickWallet(walletId: WalletId) {
 
         <StatConfigModal>
           <StatConfigView
+            :hasCategoryBreakdown
             :isShowWallets="!!configWallets"
             :selectedTrnsIds="categoryConfigTrnsIds"
-            :hasCategoryBreakdown="props.hasCategoryBreakdown"
           />
         </StatConfigModal>
 

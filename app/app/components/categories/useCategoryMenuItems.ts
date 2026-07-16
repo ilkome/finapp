@@ -47,15 +47,14 @@ export function useCategoryMenuItems() {
     },
 
     // Open is only meaningful for root categories (subcategories don't have detail pages).
-    // `base` lets callers retarget the drill route (e.g. the /stat drill-down pages).
-    open(categoryId: CategoryId, opts?: { base?: string }): Item | null {
+    open(categoryId: CategoryId): Item | null {
       const cat = categoriesStore.items[categoryId]
       if (!cat || cat.parentId !== 0)
         return null
       return {
         icon: 'lucide:square-arrow-out-up-right',
         label: t('base.open'),
-        onSelect: () => router.push(`${opts?.base ?? '/categories'}/${categoryId}`),
+        onSelect: () => router.push(`/categories/${categoryId}`),
       }
     },
 

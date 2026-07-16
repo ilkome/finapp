@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
@@ -12,8 +11,6 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = defineProps<{
   activeTab: StatTabSlug
   categoryId?: CategoryId
-  categoryLinkBase?: string
-  getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   hasChildren?: boolean
   preCategoriesIds?: CategoryId[]
   storageKey: string
@@ -26,8 +23,6 @@ const statDate = inject(statDateKey)!
 
 const sharedItemProps = computed(() => ({
   categoryId: props.categoryId,
-  categoryLinkBase: props.categoryLinkBase,
-  getContextMenuItems: props.getContextMenuItems,
   hasChildren: props.hasChildren,
   preCategoriesIds: props.preCategoriesIds,
   statTab: props.activeTab,

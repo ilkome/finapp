@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
@@ -11,10 +10,7 @@ import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   excludedCategoriesIds?: ReadonlySet<CategoryId>
-  getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   isOneCategory?: boolean
-  // Drill-down mode: clicking a parent navigates to its page instead of expanding inline.
-  navigateOnClick?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
@@ -80,7 +76,7 @@ const {
 )
 
 function onParentClick(item: CategoryWithData) {
-  if (!props.navigateOnClick && item.categories?.length)
+  if (item.categories?.length)
     toggleCategory(item.id)
   else
     emit('clickCategory', item.id)
@@ -199,8 +195,6 @@ function onToggleListGrouping() {
                   isShowChevron
                   :maxCategoryValues="linesMaxValues"
                   :lineWidth="isLines ? 0 : 1"
-                  :menuMode="props.navigateOnClick"
-                  :getContextMenuItems="props.getContextMenuItems"
                   class="grow"
                   @click="onParentClick(item)"
                   @amountClick="emit('clickCategory', item.id)"
@@ -221,8 +215,6 @@ function onToggleListGrouping() {
                   :item="itemInside"
                   :maxCategoryValues="childrenMaxValues"
                   :lineWidth="isLines ? 0 : 1"
-                  :menuMode="props.navigateOnClick"
-                  :getContextMenuItems="props.getContextMenuItems"
                   class="grow"
                   @click="emit('clickCategory', itemInside.id)"
                   @amountClick="emit('clickCategory', itemInside.id)"

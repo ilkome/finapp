@@ -40,10 +40,6 @@ export function useMenuData() {
         icon: 'lucide:chart-no-axes-combined',
         name: t('stat.title'),
       },
-      stat: {
-        icon: 'lucide:chart-pie',
-        name: t('stat.analytics'),
-      },
       wallets: {
         icon: 'hugeicons:wallet-01',
         name: t('wallets.name'),
