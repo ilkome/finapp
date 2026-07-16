@@ -58,10 +58,6 @@ export default defineNuxtConfig({
           name: 'twitter:image:alt',
         },
       ],
-      // Paint the root canvas in the system theme before CSS/JS load, so the SPA start is a
-      // solid themed screen (no skeleton, no white flash) until Vue mounts. Colors match the
-      // app background (light / dark). Persisted color mode is not readable before JS, so this
-      // follows prefers-color-scheme.
       style: [
         {
           innerHTML:
@@ -83,7 +79,7 @@ export default defineNuxtConfig({
 
   devtools: {
     timeline: {
-      enabled: true,
+      enabled: false,
     },
   },
 
@@ -296,12 +292,8 @@ export default defineNuxtConfig({
     },
   },
 
-  // No SPA loading template: show a plain themed screen (app.head style above) until Vue mounts
-  // instead of a skeleton that flickers for a moment before the real UI replaces it.
   spaLoadingTemplate: false,
-
   ssr: false,
-
   telemetry: false,
 
   vite: {
@@ -312,12 +304,24 @@ export default defineNuxtConfig({
         'localforage',
         '@supabase/supabase-js',
         'date-fns',
+        'date-fns/locale',
+        '@date-fns/utc',
         'zod/v4',
         'es-toolkit',
         '@internationalized/date',
-        'date-fns/locale',
         'reka-ui',
         'reka-ui/namespaced',
+        'echarts/core',
+        'echarts/charts',
+        'echarts/components',
+        'echarts/renderers',
+        'vue-echarts',
+        'motion-v',
+        'clsx',
+        'tailwind-merge',
+        'tailwindcss/colors',
+        'swiper',
+        'swiper/modules',
       ],
     },
     worker: {

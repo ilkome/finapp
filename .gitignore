@@ -58,14 +58,10 @@ graphify-out
 
 # Local planning scratch (not source)
 plans/
-
-# Bank import raw data (personal financial data pulled from bank web APIs - never commit)
-/alfa-*.json
-/sber-*.json
-/tbank-*.json
-/ozon-*.json
-/yandex-*.json
-app/scripts/bankImport/.*secrets*
+# Impeccable skill critique output (local, regenerated)
+.impeccable/
+# Stray Supabase CLI temp at repo root (real config lives in app/supabase)
+/supabase/
 
 # Vercel CLI link (local)
 .vercel

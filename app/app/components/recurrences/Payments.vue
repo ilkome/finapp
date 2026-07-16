@@ -138,7 +138,7 @@ function confirmPending(p: Occurrence) {
   recurrencesStore.confirmOccurrence(p.id, p.day, amount)
 }
 
-// FormInput emits a string; mirror the old v-model + @input (set the draft, mark the row edited).
+// FormInput emits a string; capture it and mark the row edited.
 function onDraftInput(p: Occurrence, value: string) {
   amountDrafts[keyOf(p)] = value
   editedKeys.add(keyOf(p))

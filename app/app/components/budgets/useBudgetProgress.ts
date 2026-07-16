@@ -318,8 +318,7 @@ export function useBudgetProgress(period: BudgetPeriodProvider) {
   // (so those upcoming bills still reduce discretionary money). A category shields its bills only
   // when its budget participates in the picture: expense envelopes are summed by the hero loop, and
   // sinking-fund targets are deliberately outside it WHOLE (earmarked money pays their bills). An
-  // INCOME budget holds no spendable envelope, so its categories' expense bills sweep in here -
-  // previously they vanished from both terms (the H1 gap).
+  // INCOME budget holds no spendable envelope, so its categories' expense bills sweep in here.
   function committedUnbudgeted(): number {
     const budgeted = new Set<CategoryId>()
     for (const id of Object.keys(budgetsStore.activeItems)) {
