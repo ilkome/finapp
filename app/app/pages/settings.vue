@@ -47,7 +47,7 @@ function onGenerateDemoData() {
     <div class="pageWrapper">
       <div class="grid gap-4 px-2 pt-2 pb-12 @3xl/main:max-w-lg">
         <!-- Theme -->
-        <ThemePicker inline />
+        <ThemePicker />
 
         <!-- Language -->
         <UiSettingsCard :title="t('locale.title')">

@@ -562,10 +562,8 @@ export default {
   },
 
   theme: {
-    color: 'Change theme color',
     dark: 'Dark',
     light: 'Light',
-    palette: 'Color palette',
     picker: {
       neutral: 'Background color',
       primary: 'Primary color',

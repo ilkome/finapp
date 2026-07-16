@@ -1,50 +1,20 @@
 <script setup lang="ts">
-import colors from 'tailwindcss/colors'
+import { BLACK_PRIMARY, capitalize, swatchPalette, useThemeOptions } from '~/components/theme/useThemeOptions'
 
-import { omit } from '#ui/utils'
-
-const props = defineProps<{
-  inline?: boolean
-}>()
-
-const appConfig = useAppConfig()
 const colorMode = useColorMode()
 const { t } = useI18n()
-const neutralColors = ['slate', 'gray', 'zinc', 'neutral', 'stone']
-const neutral = computed({
-  get() {
-    return appConfig.ui.colors.neutral
-  },
-  set(option) {
-    appConfig.ui.colors.neutral = option
-    window.localStorage.setItem('nuxt-ui-neutral', appConfig.ui.colors.neutral)
-  },
-})
+const {
+  blackAsPrimary,
+  neutral,
+  neutralColors,
+  primary,
+  primaryColors,
+  radius,
+  radiuses,
+  setBlackAsPrimary,
+} = useThemeOptions()
 
-const colorsToOmit = ['inherit', 'current', 'transparent', 'black', 'white', ...neutralColors]
-const primaryColors = Object.keys(omit(colors, colorsToOmit as (keyof typeof colors)[]))
-const primary = computed({
-  get() {
-    return appConfig.ui.colors.primary
-  },
-  set(option) {
-    appConfig.ui.colors.primary = option
-    window.localStorage.setItem('nuxt-ui-primary', appConfig.ui.colors.primary)
-    setBlackAsPrimary(false)
-  },
-})
-
-const radiuses = [0, 0.25, 0.375, 0.5]
 const radiusItems = radiuses.map(r => ({ label: String(r), value: r }))
-const radius = computed({
-  get() {
-    return appConfig.theme.radius
-  },
-  set(option) {
-    appConfig.theme.radius = option
-    window.localStorage.setItem('nuxt-ui-radius', String(appConfig.theme.radius))
-  },
-})
 
 const modeItems = computed(() => [
   { icon: 'i-lucide-sun', label: t('theme.light'), value: 'light' },
@@ -63,18 +33,13 @@ const selectedModeItem = computed(() =>
   modeItems.value.find(m => m.value === modePreference.value),
 )
 
-function capitalize(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1)
-}
-
-const BLACK_PRIMARY = '__black__'
 const primaryItems = computed(() => [
   { label: 'Black', value: BLACK_PRIMARY },
   ...primaryColors.map(c => ({ label: capitalize(c), value: c })),
 ])
 const primarySelected = computed({
   get() {
-    return appConfig.theme.blackAsPrimary ? BLACK_PRIMARY : primary.value
+    return blackAsPrimary.value ? BLACK_PRIMARY : primary.value
   },
   set(option) {
     if (option === BLACK_PRIMARY) {
@@ -88,19 +53,10 @@ const primarySelected = computed({
 })
 
 const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(c), value: c })))
-
-function setBlackAsPrimary(value: boolean) {
-  appConfig.theme.blackAsPrimary = value
-  window.localStorage.setItem('nuxt-ui-black-as-primary', String(value))
-}
 </script>
 
 <template>
-  <!-- Inline mode: dropdowns inside a settings card -->
-  <UiSettingsCard
-    v-if="props.inline"
-    :title="t('theme.title')"
-  >
+  <UiSettingsCard :title="t('theme.title')">
     <div class="grid gap-3">
       <!-- Theme mode -->
       <div class="flex flex-col items-start gap-1">
@@ -173,8 +129,8 @@ function setBlackAsPrimary(value: boolean) {
             <span
               class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
               :style="{
-                '--color-light': `var(--color-${neutral}-500)`,
-                '--color-dark': `var(--color-${neutral}-400)`,
+                '--color-light': `var(--color-${swatchPalette(neutral)}-500)`,
+                '--color-dark': `var(--color-${swatchPalette(neutral)}-400)`,
               }"
             />
           </template>
@@ -182,8 +138,8 @@ function setBlackAsPrimary(value: boolean) {
             <span
               class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
               :style="{
-                '--color-light': `var(--color-${item.value}-500)`,
-                '--color-dark': `var(--color-${item.value}-400)`,
+                '--color-light': `var(--color-${swatchPalette(item.value)}-500)`,
+                '--color-dark': `var(--color-${swatchPalette(item.value)}-400)`,
               }"
             />
           </template>
@@ -215,32 +171,4 @@ function setBlackAsPrimary(value: boolean) {
       </div>
     </div>
   </UiSettingsCard>
-
-  <!-- Popover mode: button with popover -->
-  <UPopover
-    v-else
-    :content="{
-      align: 'start',
-      side: 'bottom',
-    }"
-    :ui="{ content: 'w-72 px-6 py-4 flex flex-col gap-4 max-h-[var(--reka-popper-available-height,80dvh)] overflow-y-auto' }"
-  >
-    <template #default="{ open }">
-      <UTooltip :text="t('theme.color')">
-        <UButton
-          :aria-label="t('theme.color')"
-          :variant="open ? 'soft' : 'ghost'"
-          color="neutral"
-          class="text-muted"
-          icon="i-lucide-swatch-book"
-          size="lg"
-          square
-        />
-      </UTooltip>
-    </template>
-
-    <template #content>
-      <ThemePickerPanel />
-    </template>
-  </UPopover>
 </template>

@@ -1,10 +1,14 @@
 <script setup lang="ts">
-defineProps<{
+import { swatchPalette } from '~/components/theme/useThemeOptions'
+
+const { chip } = defineProps<{
   chip?: string
   icon?: string
   label: string
   selected?: boolean
 }>()
+
+const palette = computed(() => chip ? swatchPalette(chip) : undefined)
 </script>
 
 <template>
@@ -22,8 +26,8 @@ defineProps<{
         <span
           class="inline-block size-2 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
           :style="{
-            '--color-light': `var(--color-${chip}-500)`,
-            '--color-dark': `var(--color-${chip}-400)`,
+            '--color-light': `var(--color-${palette}-500)`,
+            '--color-dark': `var(--color-${palette}-400)`,
           }"
         />
       </slot>

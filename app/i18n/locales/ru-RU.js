@@ -562,10 +562,8 @@ export default {
   },
 
   theme: {
-    color: 'Сменить цвет оформления',
     dark: 'Темная',
     light: 'Светлая',
-    palette: 'Цветовая палитра',
     picker: {
       neutral: 'Фоновый цвет',
       primary: 'Основной цвет',
