@@ -68,8 +68,6 @@ onDeactivated(() => {
       :trnsIds
       configCategories
       configWallets
-      filterCategories
-      filterWallets
     >
       <template #title>
         <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>

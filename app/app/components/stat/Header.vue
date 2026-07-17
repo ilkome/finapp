@@ -17,8 +17,6 @@ const props = withDefaults(defineProps<{
   backTo?: string
   configCategories?: boolean
   configWallets?: boolean
-  filterCategories?: boolean
-  filterWallets?: boolean
   hasCategoryBreakdown?: boolean
   hideTabs?: boolean
   preCategoriesIds?: CategoryId[]
@@ -73,12 +71,6 @@ function onClickWallet(walletId: WalletId) {
 
     <template #actions>
       <div class="flex items-center">
-        <StatFilterSelector
-          v-if="filterCategories || filterWallets"
-          :isShowCategories="!!filterCategories"
-          :isShowWallets="!!filterWallets"
-        />
-
         <StatConfigModal>
           <StatConfigView
             :hasCategoryBreakdown

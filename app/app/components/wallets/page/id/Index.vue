@@ -118,7 +118,6 @@ async function onDeleteConfirm() {
       backTo="/wallets"
       :trnsIds
       configCategories
-      filterCategories
     >
       <template #title>
         <UiHeaderTitle>

@@ -235,7 +235,6 @@ async function onDeleteConfirm() {
       :preCategoriesIds="childrenIds"
       :trnsIds
       configCategories
-      filterWallets
     >
       <template #title>
         <CategoriesHeader
