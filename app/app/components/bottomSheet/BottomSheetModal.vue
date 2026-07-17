@@ -11,9 +11,8 @@ defineEmits<{
       dragClassesCustom="bottomSheetDragClassesCustom min-h-[50dvh]"
       @closed="$emit('closed')"
     >
-      <template #handler="{ close }">
+      <template #handler>
         <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
       </template>
 
       <template #default="{ close }">

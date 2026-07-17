@@ -77,9 +77,8 @@ onMounted(init)
     dragClassesCustom="bottomSheetDragClassesCustom max-h-[98dvh]"
     @closed="trnsFormStore.onClose()"
   >
-    <template #handler="{ close }">
+    <template #handler>
       <BottomSheetHandler />
-      <BottomSheetClose @click="close" />
     </template>
 
     <div class="trnForm bg-default @container/trnForm">

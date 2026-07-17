@@ -54,7 +54,7 @@ watch(isShow, async (v) => {
     >
       <div class="relative h-full overflow-hidden rounded-l-xl shadow-2xl">
         <div class="absolute top-2 right-2">
-          <BottomSheetClose @click="trnsFormStore.onClose()" />
+          <UiButtonClose @click="trnsFormStore.onClose()" />
         </div>
 
         <div ref="sliderRef" class="swiper-container bg-default h-full">

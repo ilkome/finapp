@@ -42,10 +42,6 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     :ui="{ overlay: 'z-[70]', content: 'z-[70] max-w-sm divide-y-0', footer: 'justify-between' }"
     @after:leave="onClosed"
   >
-    <template #close>
-      <BottomSheetClose />
-    </template>
-
     <template v-if="description || highlight" #body>
       <div class="text-muted">
         {{ description }}

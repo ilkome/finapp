@@ -68,9 +68,8 @@ function onBottomSheetClosed() {
       dragClassesCustom="bottomSheetDragClassesCustom"
       @closed="onBottomSheetClosed"
     >
-      <template #handler="{ close }">
+      <template #handler>
         <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
       </template>
 
       <template #default>

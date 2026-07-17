@@ -51,8 +51,6 @@ function onClose() {
         class="grid gap-4 overflow-y-auto"
         style="max-height: var(--reka-popper-available-height, 80dvh)"
       >
-        <BottomSheetClose @click="close" />
-
         <slot :close="close" />
       </div>
     </template>

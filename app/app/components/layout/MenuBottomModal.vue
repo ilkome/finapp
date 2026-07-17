@@ -29,9 +29,8 @@ async function updateDemo() {
       dragClassesCustom="bottomSheetDragClassesCustom"
       @closed="emit('close')"
     >
-      <template #handler="{ close }">
+      <template #handler>
         <BottomSheetHandler />
-        <BottomSheetClose @click="close" />
       </template>
 
       <div class="bottomSheetContent">
