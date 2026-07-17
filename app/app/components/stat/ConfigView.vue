@@ -43,7 +43,7 @@ const availablePanels = computed<StatConfigPanelId[]>(() => {
   if (hasTrnsConfig.value)
     panels.push('chart')
   if (showCategoryConfig.value)
-    panels.push('grouping', 'catsRound', 'catsList', 'vertical')
+    panels.push('catsRound', 'catsList', 'vertical')
   return panels
 })
 
@@ -58,8 +58,6 @@ const panelTitle = computed<string>(() => {
       return t('stat.config.wallets.title')
     case 'statAverage':
       return t('stat.config.statAverage.title')
-    case 'grouping':
-      return t('stat.config.grouping.label')
     case 'chart':
       return t('stat.config.chartShow.title')
     case 'catsRound':
@@ -79,8 +77,6 @@ const panelDescription = computed<string>(() => {
       return t('stat.config.wallets.description')
     case 'statAverage':
       return t('stat.config.statAverage.description')
-    case 'grouping':
-      return t('stat.config.grouping.description')
     case 'catsRound':
       return t('stat.config.categories.rounds.description')
     case 'catsList':
@@ -236,12 +232,6 @@ const rows = computed<RootRow[]>(() => {
 
   if (showCategoryConfig.value) {
     list.push({
-      key: 'grouping',
-      panel: 'grouping',
-      subtitle: t(`stat.config.grouping.${statConfig.config.value.grouping}`),
-      title: t('stat.config.grouping.label'),
-    })
-    list.push({
       isShow: isCatsRoundShow.value,
       key: 'catsRound',
       panel: 'catsRound',
@@ -352,9 +342,6 @@ function onRowActivate(row: RootRow) {
           />
           <StatConfigPanelsStatAverage
             v-else-if="activePanel === 'statAverage'"
-          />
-          <StatConfigPanelsGrouping
-            v-else-if="activePanel === 'grouping'"
           />
           <StatConfigPanelsChart
             v-else-if="activePanel === 'chart'"

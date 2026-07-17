@@ -22,7 +22,7 @@ import { useForecastSeries } from '~/components/recurrences/useForecastSeries'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/useCategorySeriesBuilder'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
-import { resolveChartType, resolveGrouped } from '~/components/stat/useStatConfig'
+import { resolveChartType } from '~/components/stat/useStatConfig'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -277,7 +277,7 @@ export function useStatItem({
     if (ids.length === 0) {
       return {
         filterCategoriesIds: undefined as CategoryId[] | undefined,
-        isGrouped: resolveGrouped(statConfig.config.value.chart.isGrouped, statConfig.config.value.grouping),
+        isGrouped: statConfig.config.value.chart.isGrouped,
       }
     }
     return {

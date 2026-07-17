@@ -6,7 +6,6 @@ import type { TrnId } from '~/components/trns/types'
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   excludedCategoriesIds?: ReadonlySet<CategoryId>
@@ -31,7 +30,7 @@ const catsList = computed(() => statConfig.config.value.catsList)
 const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
 const isVerticalGrouped = computed(() => statConfig.config.value.vertical.isGrouped)
 const isListShow = computed(() => catsList.value.isShow)
-const isListGrouped = computed(() => resolveGrouped(catsList.value.isGrouped, statConfig.config.value.grouping))
+const isListGrouped = computed(() => catsList.value.isGrouped)
 const isLines = computed(() => catsList.value.isLines)
 
 // Categories data (lazy — each variant computed only when accessed)
@@ -39,8 +38,7 @@ const groupedCategories = computed(() => computeCategoriesWithData(props.selecte
 const ungroupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], false, undefined, props.excludedCategoriesIds))
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
-  const rawGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
-  const isGrouped = resolveGrouped(rawGrouped, statConfig.config.value.grouping)
+  const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
 
   if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds?.length)
     return computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds, props.excludedCategoriesIds)
@@ -83,10 +81,6 @@ function onParentClick(item: CategoryWithData) {
 }
 
 function onToggleListGrouping() {
-  if (statConfig.config.value.grouping !== 'auto') {
-    statConfig.updateConfig('grouping', 'auto')
-    return
-  }
   statConfig.updateConfig('catsList', { isGrouped: !isListGrouped.value })
 }
 </script>

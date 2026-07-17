@@ -14,7 +14,6 @@ export type StatConfigPanelId
   = | 'root'
     | 'wallets'
     | 'statAverage'
-    | 'grouping'
     | 'chart'
     | 'catsRound'
     | 'catsList'

@@ -11,17 +11,6 @@ import { applyConfigUpdate } from '~/components/stat/statConfig'
 
 export const chartViewOptions = ['half', 'full'] as const
 
-export const groupingModes = ['auto', 'parents', 'children'] as const
-export type GroupingMode = typeof groupingModes[number]
-
-export function resolveGrouped(raw: boolean, grouping: GroupingMode): boolean {
-  if (grouping === 'parents')
-    return true
-  if (grouping === 'children')
-    return false
-  return raw
-}
-
 export type ChartMode = 'aggregated' | 'categories'
 
 /**
@@ -58,7 +47,6 @@ export const ConfigSchema = z.object({
   date: z.object({
     isShowQuick: z.boolean(),
   }),
-  grouping: z.enum(groupingModes),
   isChartShow: z.boolean(),
   isShowEmptyCategories: z.boolean(),
   statAverage: z.object({
@@ -119,7 +107,6 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       isShowQuick: false,
     },
 
-    grouping: 'auto',
     isChartShow: true,
 
     isShowEmptyCategories: false,

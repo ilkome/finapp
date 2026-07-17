@@ -5,7 +5,6 @@ import type { TrnId } from '~/components/trns/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
   excludedCategoriesIds?: ReadonlySet<CategoryId>
@@ -24,7 +23,7 @@ const { computeCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
-const isGrouped = computed(() => resolveGrouped(statConfig.config.value.catsRound.isGrouped, statConfig.config.value.grouping))
+const isGrouped = computed(() => statConfig.config.value.catsRound.isGrouped)
 const isShowFavorites = computed(() => statConfig.config.value.catsRound.isShowFavorites)
 const isShowRecent = computed(() => statConfig.config.value.catsRound.isShowRecent)
 

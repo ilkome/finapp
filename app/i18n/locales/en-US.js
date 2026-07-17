@@ -179,6 +179,7 @@ export default {
 
   chart: {
     empty: 'No data for this period',
+    label: 'Chart',
     types: {
       bar: 'Bars',
       line: 'Lines',
@@ -501,13 +502,6 @@ export default {
         quick: {
           label: 'Date selector slider',
         },
-      },
-      grouping: {
-        auto: 'Auto',
-        children: 'With children',
-        description: 'Auto - each block uses its own setting.\nParents only - subcategory amounts roll up into the parent.\nWith children - every subcategory shown as a separate row.',
-        label: 'Categories grouping',
-        parents: 'Parents only',
       },
       menu: {
         label: 'Page Settings',

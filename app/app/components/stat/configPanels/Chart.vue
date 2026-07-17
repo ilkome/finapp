@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { chartViewOptions, resolveChartType, resolveGrouped } from '~/components/stat/useStatConfig'
+import { chartViewOptions, resolveChartType } from '~/components/stat/useStatConfig'
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 const { chartTypeOptions } = useStatChart()
 
 const isChartShow = computed(() => statConfig.config.value.isChartShow)
-const grouping = computed(() => statConfig.config.value.grouping)
-const isAutoGrouping = computed(() => grouping.value === 'auto')
-const isChartGrouped = computed(() => resolveGrouped(statConfig.config.value.chart.isGrouped, grouping.value))
+const isChartGrouped = computed(() => statConfig.config.value.chart.isGrouped)
 const isCategoriesMode = computed(() => statConfig.config.value.chart.mode === 'categories')
 const activeChartType = computed(() => resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode))
 const isPie = computed(() => activeChartType.value === 'pie')
@@ -19,14 +17,6 @@ const isPie = computed(() => activeChartType.value === 'pie')
 const visibleChartTypeOptions = computed(() =>
   chartTypeOptions.value.filter(option => !option.categoriesOnly || isCategoriesMode.value),
 )
-
-function toggleGroupedWithReset(currentEffective: boolean) {
-  if (!isAutoGrouping.value) {
-    statConfig.updateConfig('grouping', 'auto')
-    return
-  }
-  statConfig.updateConfig('chart', { isGrouped: !currentEffective })
-}
 </script>
 
 <template>
@@ -54,7 +44,7 @@ function toggleGroupedWithReset(currentEffective: boolean) {
       v-if="statConfig.config.value.chart.mode === 'categories'"
       :checkboxValue="isChartGrouped"
       :title="t('stat.config.chart.groupByParent')"
-      @click="toggleGroupedWithReset(isChartGrouped)"
+      @click="statConfig.updateConfig('chart', { isGrouped: !isChartGrouped })"
     />
 
     <div class="grid gap-4 pt-4">

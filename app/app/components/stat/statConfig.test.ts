@@ -31,7 +31,6 @@ const defaultConfig: MiniItemConfig = {
   date: {
     isShowQuick: false,
   },
-  grouping: 'auto',
   isChartShow: true,
   isShowEmptyCategories: false,
   statAverage: {

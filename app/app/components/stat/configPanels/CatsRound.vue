@@ -1,24 +1,13 @@
 <script setup lang="ts">
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
-const grouping = computed(() => statConfig.config.value.grouping)
-const isAutoGrouping = computed(() => grouping.value === 'auto')
 const isCatsRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
-const isCatsRoundGrouped = computed(() => resolveGrouped(statConfig.config.value.catsRound.isGrouped, grouping.value))
+const isCatsRoundGrouped = computed(() => statConfig.config.value.catsRound.isGrouped)
 const isShowFavorites = computed(() => statConfig.config.value.catsRound.isShowFavorites)
 const isShowRecent = computed(() => statConfig.config.value.catsRound.isShowRecent)
-
-function toggleGroupedWithReset(currentEffective: boolean) {
-  if (!isAutoGrouping.value) {
-    statConfig.updateConfig('grouping', 'auto')
-    return
-  }
-  statConfig.updateConfig('catsRound', { isGrouped: !currentEffective })
-}
 </script>
 
 <template>
@@ -29,7 +18,7 @@ function toggleGroupedWithReset(currentEffective: boolean) {
     <UiSwitchItem
       :checkboxValue="isCatsRoundGrouped"
       :title="t('stat.config.categories.rounds.groupByParent')"
-      @click="toggleGroupedWithReset(isCatsRoundGrouped)"
+      @click="statConfig.updateConfig('catsRound', { isGrouped: !isCatsRoundGrouped })"
     />
     <UiSwitchItem
       :checkboxValue="isShowFavorites"
