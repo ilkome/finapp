@@ -38,6 +38,38 @@ describe('upcomingReminders - due rows (unchanged)', () => {
   })
 })
 
+describe('upcomingReminders - paid occurrences', () => {
+  it('emits no due rows for an occurrence already materialized (paid early)', () => {
+    const today = U(2024, 5, 15)
+    const rows = upcomingReminders({ r: rule({ anchorDate: U(2024, 0, 1) }) }, today, { 'r:2024-07-01': {} })
+    expect(rows).toHaveLength(0)
+  })
+
+  it('emits no firstCharge once the anchor charge is paid', () => {
+    const today = U(2024, 5, 15)
+    const rows = upcomingReminders({ r: rule({ anchorDate: U(2024, 5, 25) }) }, today, { 'r:2024-06-25': {} })
+    expect(rows.some(x => x.kind === 'firstCharge')).toBe(false)
+  })
+
+  it('emits no priceHike once the first re-priced charge is paid', () => {
+    const today = U(2024, 5, 15)
+    const rows = upcomingReminders({
+      r: rule({
+        amount: 600,
+        amountHistory: [{ amount: 500, from: U(2024, 0, 1) }, { amount: 600, from: U(2024, 6, 1) }],
+        anchorDate: U(2024, 0, 1),
+      }),
+    }, today, { 'r:2024-07-01': {} })
+    expect(rows.some(x => x.kind === 'priceHike')).toBe(false)
+  })
+
+  it('leaves other occurrences alone', () => {
+    const today = U(2024, 5, 15)
+    const rows = upcomingReminders({ r: rule({ anchorDate: U(2024, 0, 1) }) }, today, { 'r:2024-08-01': {} })
+    expect(rows.map(x => x.id).sort()).toEqual(['r:2024-07-01:0', 'r:2024-07-01:1', 'r:2024-07-01:3'])
+  })
+})
+
 describe('upcomingReminders - firstCharge', () => {
   it('fires the lead time before a future anchor more than the lead time out', () => {
     const today = U(2024, 5, 15)

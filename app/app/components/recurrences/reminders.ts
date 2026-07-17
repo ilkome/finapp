@@ -1,7 +1,7 @@
 import type { RecurrenceId, RecurrenceItem, Recurrences } from '~/components/recurrences/types'
 
 import { addCivilDays, civilDayKey, civilDayStart } from '~/components/date/utils'
-import { effectiveAmountFor, occurrencesInRange } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
 
 // Due-soon reminders (request 4): remind 3 days before, the day before, and on the day of each
 // upcoming occurrence. The client computes these (it owns the occurrence engine) and queues them in
@@ -33,14 +33,25 @@ export type UpcomingReminder = {
   ruleId: RecurrenceId
 }
 
-/** Reminders to queue for active rules over the next `horizonDays`, skipping any already in the past. */
-export function upcomingReminders(rules: Recurrences, todayEpoch: number, horizonDays = REMINDER_HORIZON_DAYS): UpcomingReminder[] {
+/** An occurrence already materialized by a trn (auto-created, confirmed or paid early) needs no reminder. */
+function isPaid(ruleId: RecurrenceId, occ: number, trns: Record<string, unknown>): boolean {
+  return trns[occurrenceTrnId(ruleId, occ)] != null
+}
+
+/**
+ * Reminders to queue for active rules over the next `horizonDays`, skipping any already in the past
+ * or already paid. `trns` is the raw store map (only key presence is read); the caller re-syncs on
+ * trn changes, so paying early both stops new reminders and prunes the queued ones.
+ */
+export function upcomingReminders(rules: Recurrences, todayEpoch: number, trns: Record<string, unknown> = {}, horizonDays = REMINDER_HORIZON_DAYS): UpcomingReminder[] {
   const out: UpcomingReminder[] = []
   const end = addCivilDays(todayEpoch, horizonDays)
   for (const [ruleId, rule] of Object.entries(rules)) {
     if (rule.status !== 'active')
       continue
     for (const occ of occurrencesInRange(rule, { end, start: todayEpoch })) {
+      if (isPaid(ruleId, occ, trns))
+        continue
       for (const offset of REMINDER_OFFSETS) {
         const fireDate = addCivilDays(occ, -offset)
         if (fireDate < todayEpoch)
@@ -48,10 +59,10 @@ export function upcomingReminders(rules: Recurrences, todayEpoch: number, horizo
         out.push({ amount: effectiveAmountFor(rule, occ), fireDate, id: `${ruleId}:${civilDayKey(occ)}:${offset}`, kind: 'due', occ, offset, ruleId })
       }
     }
-    const firstCharge = firstChargeReminder(ruleId, rule, todayEpoch, end)
+    const firstCharge = firstChargeReminder(ruleId, rule, todayEpoch, end, trns)
     if (firstCharge)
       out.push(firstCharge)
-    const priceHike = priceHikeReminder(ruleId, rule, todayEpoch, end)
+    const priceHike = priceHikeReminder(ruleId, rule, todayEpoch, end, trns)
     if (priceHike)
       out.push(priceHike)
   }
@@ -64,12 +75,12 @@ export function upcomingReminders(rules: Recurrences, todayEpoch: number, horizo
  * near anchor still fires once. Only for series whose anchor is today or later (past anchors have
  * already started charging).
  */
-function firstChargeReminder(ruleId: RecurrenceId, rule: RecurrenceItem, todayEpoch: number, end: number): UpcomingReminder | null {
+function firstChargeReminder(ruleId: RecurrenceId, rule: RecurrenceItem, todayEpoch: number, end: number, trns: Record<string, unknown>): UpcomingReminder | null {
   const anchor = civilDayStart(rule.anchorDate)
   if (anchor < todayEpoch)
     return null
   const firstOcc = occurrencesInRange(rule, { end, start: anchor }).at(0)
-  if (firstOcc == null)
+  if (firstOcc == null || isPaid(ruleId, firstOcc, trns))
     return null
   const fireDate = Math.max(todayEpoch, addCivilDays(firstOcc, -LEAD_TIME_DAYS))
   const offset = Math.round((firstOcc - fireDate) / DAY_MS)
@@ -82,7 +93,7 @@ function firstChargeReminder(ruleId: RecurrenceId, rule: RecurrenceItem, todayEp
  * price (clamped to today). Fires once per hike (keyed by the entry's `from`), only while that higher
  * charge is still upcoming.
  */
-function priceHikeReminder(ruleId: RecurrenceId, rule: RecurrenceItem, todayEpoch: number, end: number): UpcomingReminder | null {
+function priceHikeReminder(ruleId: RecurrenceId, rule: RecurrenceItem, todayEpoch: number, end: number, trns: Record<string, unknown>): UpcomingReminder | null {
   const history = rule.amountHistory
   if (!history || history.length < 2)
     return null
@@ -93,7 +104,7 @@ function priceHikeReminder(ruleId: RecurrenceId, rule: RecurrenceItem, todayEpoc
     return null
   const from = civilDayStart(latest.from)
   const firstAtNew = occurrencesInRange(rule, { end, start: from }).at(0)
-  if (firstAtNew == null || firstAtNew < todayEpoch)
+  if (firstAtNew == null || firstAtNew < todayEpoch || isPaid(ruleId, firstAtNew, trns))
     return null
   const fireDate = Math.max(todayEpoch, addCivilDays(firstAtNew, -LEAD_TIME_DAYS))
   const offset = Math.round((firstAtNew - fireDate) / DAY_MS)

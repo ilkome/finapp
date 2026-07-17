@@ -5,6 +5,7 @@ import { todayCivilDayEpoch } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { upcomingReminders } from '~/components/recurrences/reminders'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useSupabase, useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
@@ -28,7 +29,13 @@ export function useRecurrenceReminders() {
   const { uid } = useSupabaseAuth()
   const recurrencesStore = useRecurrencesStore()
   const categoriesStore = useCategoriesStore()
+  const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
+
+  // The caller re-syncs on every trn change (an occurrence paid early must drop its queued pushes),
+  // which is far more often than the reminder set actually moves. Skip the Supabase round-trip when
+  // the computed rows are identical to the last synced ones.
+  let lastSignature = ''
 
   function offsetLabel(t: Translate, offset: number): string {
     return offset === 0
@@ -56,7 +63,7 @@ export function useRecurrenceReminders() {
 
     const today = todayCivilDayEpoch()
     const now = Date.now()
-    const reminders = upcomingReminders(recurrencesStore.items, today)
+    const reminders = upcomingReminders(recurrencesStore.items, today, trnsStore.items ?? {})
 
     const rows = reminders.map((r) => {
       const rule = recurrencesStore.items![r.ruleId]!
@@ -72,6 +79,11 @@ export function useRecurrenceReminders() {
         userId: uid.value,
       }
     })
+
+    // updatedAt is excluded: it changes every call and would defeat the check.
+    const signature = `${today}|${rows.map(r => `${r.id}~${r.fireDate}~${r.title}~${r.body}`).join('|')}`
+    if (signature === lastSignature)
+      return
 
     if (rows.length) {
       // sentAt is omitted, so upserting an already-delivered row does not resurrect it.
@@ -93,8 +105,14 @@ export function useRecurrenceReminders() {
     if (selErr)
       return
     const stale = (existing ?? []).map(e => e.id as string).filter(id => !validIds.has(id))
-    if (stale.length)
-      await supabase.from('push_reminders').delete().in('id', stale)
+    if (stale.length) {
+      const { error } = await supabase.from('push_reminders').delete().in('id', stale)
+      if (error)
+        return
+    }
+
+    // Only a fully applied sync may short-circuit the next one.
+    lastSignature = signature
   }
 
   return { sync }
