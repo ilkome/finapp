@@ -109,8 +109,12 @@ export const defaultSeriesConfig = {
     opacity: 0.1,
   },
   barMaxWidth: '12',
+  // ponytail: floor bar height so a large outlier (e.g. a salary day) doesn't
+  // flatten every other day to an invisible stub; small days stay visible,
+  // large ones stay honest. Ceiling: floored slivers aren't comparable to each
+  // other. Log scale is out - daily data has zero days and log(0) breaks it.
+  barMinHeight: 2,
   barMinWidth: '1',
-  borderColor: 'blue',
   cursor: 'default',
   emphasis: {
     disabled: true,
