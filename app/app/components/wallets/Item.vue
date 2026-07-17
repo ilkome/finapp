@@ -4,6 +4,10 @@ import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
+  // Classes for the visible item element. Use this (not a fallthrough `class`)
+  // so it reaches the body in the context-menu branch, whose root is a
+  // renderless ContextMenuRoot that would otherwise swallow it.
+  bodyClass?: string
   compact?: boolean
   contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
@@ -26,6 +30,7 @@ const emit = defineEmits<{
 <template>
   <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <WalletsItemBody
+      :class="props.bodyClass"
       :activeItemId="props.activeItemId"
       :compact="props.compact"
       :insideClasses="props.insideClasses"
@@ -44,6 +49,7 @@ const emit = defineEmits<{
 
   <WalletsItemBody
     v-else
+    :class="props.bodyClass"
     :activeItemId="props.activeItemId"
     :compact="props.compact"
     :insideClasses="props.insideClasses"

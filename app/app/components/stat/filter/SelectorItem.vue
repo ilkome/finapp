@@ -9,12 +9,18 @@ const props = defineProps<{
 const { t } = useI18n()
 
 const isOpen = ref(false)
+
+// Touch: keep the drag-to-expand detent. Mouse (no gesture): open a full,
+// scrollable sheet - `undefined` disables the detent.
+const isTouch = useMediaQuery('(pointer: coarse)')
+const snapPoints = computed(() => isTouch.value ? [500, 0.98] : undefined)
 </script>
 
 <template>
   <BottomSheetOrDropdown
     :title="props.title"
     :isOpen="isOpen"
+    :snapPoints="snapPoints"
     isShowCloseBtn
     @openModal="isOpen = true"
     @closeModal="isOpen = false"

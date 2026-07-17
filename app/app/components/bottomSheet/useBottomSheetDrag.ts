@@ -75,6 +75,13 @@ export function useBottomSheetDrag({
   const isHandler = ref(false)
   const disabled = ref(true)
   const opened = ref(false)
+  // The finger has moved past a tap threshold this gesture. Used to gate the
+  // sheet's `pointer-events-none`: a collapsed detent is always transform-shifted,
+  // so keying that off `isDragging` (set on touchstart) would swallow the click
+  // of a plain tap on inner controls (e.g. the filter tabs).
+  const dragMoved = ref(false)
+  const startFingerY = ref(0)
+  const MOVE_THRESHOLD = 8
 
   const dragDistance = computed(() => clientY.value - initialY.value)
 
@@ -280,6 +287,8 @@ export function useBottomSheetDrag({
 
       clientY.value = getClientY(event)
       initialY.value = clientY.value + initialY.value
+      startFingerY.value = clientY.value
+      dragMoved.value = false
       isDragging.value = true
 
       if (detentMode.value) {
@@ -315,6 +324,8 @@ export function useBottomSheetDrag({
         clientY.value = 0
         return
       }
+      if (Math.abs(y - startFingerY.value) > MOVE_THRESHOLD)
+        dragMoved.value = true
       clientY.value = y
       sampleVelocity(y)
       return
@@ -327,8 +338,12 @@ export function useBottomSheetDrag({
       return
     }
 
-    if (isDragging.value)
-      clientY.value = getClientY(event)
+    if (isDragging.value) {
+      const y = getClientY(event)
+      if (Math.abs(y - startFingerY.value) > MOVE_THRESHOLD)
+        dragMoved.value = true
+      clientY.value = y
+    }
   }
 
   function snapToFraction(f: number) {
@@ -381,6 +396,7 @@ export function useBottomSheetDrag({
   function resetDrag() {
     clientY.value = 0
     isDragging.value = false
+    dragMoved.value = false
   }
 
   function setInitialY() {
@@ -463,6 +479,7 @@ export function useBottomSheetDrag({
   return {
     close,
     detentMode,
+    dragMoved,
     dragStyles,
     init,
     isDragging,

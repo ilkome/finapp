@@ -170,7 +170,7 @@ onMounted(async () => {
               :walletId
               :wallet="walletsStore.itemsComputed[walletId]!"
               :lineWidth="4"
-              class="group/item min-w-0 flex-1"
+              bodyClass="group/item min-w-0 flex-1"
               isShowIcon
               isShowCreditLimit
             />

@@ -26,6 +26,10 @@ const filter = inject(filterKey)!
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 
+// Global search across both entities; also cleared on reset.
+const search = ref('')
+const searchQuery = computed(() => search.value.trim().toLowerCase())
+
 // Staged selection: mutated locally, written to the URL only on Apply.
 const pendingWallets = ref<WalletId[]>([...filter.walletsIds.value])
 const pendingCategories = ref<CategoryId[]>([...filter.categoriesIds.value])
@@ -64,15 +68,13 @@ function apply() {
 }
 
 function reset() {
+  search.value = ''
   pendingWallets.value = []
   pendingCategories.value = []
   filter.applyFilter([], [])
 }
 
 // --- Global search across both entities -------------------------------------
-const search = ref('')
-const searchQuery = computed(() => search.value.trim().toLowerCase())
-
 const walletResults = computed<WalletId[]>(() => {
   const q = searchQuery.value
   if (!q)
@@ -107,7 +109,9 @@ const hasNoResults = computed(() =>
 // --- Swiper tabs ------------------------------------------------------------
 const activeTabIdx = ref(0)
 const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = ref<Swiper | null>(null)
+// shallowRef, not ref: a plain ref deep-reactive-proxies the Swiper instance,
+// which corrupts its internal DOM/state so slideTo() (tab clicks) stops working.
+const sliderObj = shallowRef<Swiper | null>(null)
 
 function goToTab(idx: number) {
   activeTabIdx.value = idx
@@ -132,13 +136,6 @@ onMounted(async () => {
   // in-sheet scrolling. Recalc once after the open animation settles instead.
   requestAnimationFrame(() => sliderObj.value?.update())
 })
-
-// The sheet/popover reaches its final size after mount (open animation, or the
-// popover measuring available space), leaving slides at a stale width/height -
-// wallets render narrow and the popover can't scroll. Re-measure on real size
-// changes only; a `transform` drag doesn't change border-box size, so this
-// stays quiet during the gestures the Swiper observer would have thrashed on.
-useResizeObserver(sliderRef, () => sliderObj.value?.update())
 
 // Swiper measures 0 while hidden behind search results; refresh on return.
 watch(searchQuery, async (q) => {
@@ -226,7 +223,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
            own height while the swiper is hidden via v-show. -->
       <div
         v-if="searchQuery"
-        class="scrollerBlock max-h-[46dvh] overflow-y-auto px-2 pb-2"
+        class="scrollerBlock h-full overflow-y-auto px-2 pb-2"
       >
         <div
           v-if="hasNoResults"

@@ -2,6 +2,7 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useFilterSummary } from '~/components/stat/filter/useFilterSummary'
 import { filterKey } from '~/components/stat/injectionKeys'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -13,34 +14,8 @@ const props = defineProps<{
 const filter = inject(filterKey)!
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
+const { displayCategoryIds } = useFilterSummary()
 const itemClasses = 'bg-elevated/30 rounded-sm shrink-0'
-
-const displayCategoryIds = computed<CategoryId[]>(() => {
-  const selected = new Set(filter?.categoriesIds?.value ?? [])
-  if (!selected.size)
-    return []
-
-  const consumed = new Set<CategoryId>()
-  const result: CategoryId[] = []
-
-  for (const rootId of categoriesStore.categoriesRootIds) {
-    const children = categoriesStore.getChildrenIds(rootId)
-    if (!children.length)
-      continue
-
-    if (children.every(id => selected.has(id))) {
-      result.push(rootId)
-      children.forEach(id => consumed.add(id))
-    }
-  }
-
-  for (const id of (filter?.categoriesIds?.value ?? [])) {
-    if (!consumed.has(id))
-      result.push(id)
-  }
-
-  return result
-})
 
 function onCategoryClick(categoryId: CategoryId) {
   const children = categoriesStore.getChildrenIds(categoryId)

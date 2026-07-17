@@ -34,7 +34,7 @@ const { height: windowHeight } = useWindowSize()
 
 const {
   close,
-  detentMode,
+  dragMoved,
   dragStyles,
   init,
   isDragging,
@@ -112,10 +112,8 @@ onBeforeUnmount(() => {
 
 const dragClasses = computed(() => [
   {
-    'duration-100': !isDragging.value && opened.value && !detentMode.value,
-    // Detents travel further than a close nudge, so ease them a touch slower.
-    'duration-300': !isDragging.value && opened.value && detentMode.value,
-    'pointer-events-none': isDragging.value && dragStyles.value.transform,
+    'duration-100': !isDragging.value && opened.value,
+    'pointer-events-none': dragMoved.value && dragStyles.value.transform,
     'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
     'transition-opacity transition-transform': !isDragging.value && opened.value,
   },
@@ -144,9 +142,8 @@ const dragClasses = computed(() => [
       @click.stop=""
     >
       <div ref="handlerRef">
-        <slot name="handler" :close="close">
+        <slot name="handler">
           <BottomSheetHandler />
-          <BottomSheetClose @click="close" />
         </slot>
       </div>
 
