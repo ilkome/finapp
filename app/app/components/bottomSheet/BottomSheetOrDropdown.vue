@@ -5,6 +5,10 @@ const props = withDefaults(defineProps<{
   dragClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
+  // Opt-in only: makes the mobile trigger wrapper a keyboard-focusable button.
+  // Off by default because most callers pass an interactive trigger (e.g.
+  // UiActionButton); enabling it there would nest one button in another.
+  keyboardTrigger?: boolean
   // Detent snap points for the mobile bottom sheet; ignored by the desktop
   // popover. See BottomSheet's `snapPoints`.
   snapPoints?: number[]
@@ -44,6 +48,7 @@ const open = ref(false)
       <UiPopoverWrap
         :title="props.title"
         :isShowCloseBtn="props.isShowCloseBtn"
+        :scroll="!$slots.custom"
         @close="() => open = false"
       >
         <slot
@@ -61,7 +66,11 @@ const open = ref(false)
   <div
     v-else
     class="grow"
+    :role="props.keyboardTrigger ? 'button' : undefined"
+    :tabindex="props.keyboardTrigger ? 0 : undefined"
     @click="emit('openModal')"
+    @keydown.enter.prevent="props.keyboardTrigger && emit('openModal')"
+    @keydown.space.prevent="props.keyboardTrigger && emit('openModal')"
   >
     <slot name="trigger" :isActive="props.isOpen" />
 

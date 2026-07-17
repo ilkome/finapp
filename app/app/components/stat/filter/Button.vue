@@ -1,34 +1,37 @@
 <script setup lang="ts">
-import { filterKey } from '~/components/stat/injectionKeys'
+import { useFilterSummary } from '~/components/stat/filter/useFilterSummary'
 
-const filter = inject(filterKey)!
 const { t } = useI18n()
+const { summaryText } = useFilterSummary()
 
 const isOpen = ref(false)
 </script>
 
 <template>
   <BottomSheetOrDropdown
+    class="flex grow-0 gap-1"
     :isOpen="isOpen"
-    :snapPoints="[500, 0.98]"
     :title="t('base.filters')"
     isShowCloseBtn
+    keyboardTrigger
     @closeModal="isOpen = false"
     @openModal="isOpen = true"
   >
-    <template #trigger>
-      <UTooltip :text="t('base.filters')">
-        <UChip
-          :show="filter.isShow.value"
-          color="secondary"
-          inset
-          size="xs"
-        >
-          <UiActionButton :ariaLabel="t('base.filters')">
-            <Icon name="lucide:list-filter" size="20" />
-          </UiActionButton>
-        </UChip>
-      </UTooltip>
+    <template #trigger="{ isActive }">
+      <UiTitleCollapse
+        class="text-md bg-elevated/30 !grow-0"
+        isShown
+      >
+        <span class="flex items-center gap-1">
+          <span class="text-nowrap">{{ summaryText }}</span>
+          <Icon
+            name="lucide:chevron-down"
+            size="18"
+            class="text-muted shrink-0 transition-transform"
+            :class="isActive && 'rotate-180'"
+          />
+        </span>
+      </UiTitleCollapse>
     </template>
 
     <template #custom="{ close, isExpanded }">

@@ -1,8 +1,13 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   isShowCloseBtn?: boolean
+  // Off when the slotted content manages its own scrolling (avoids a second,
+  // nested scrollbar). On by default for plain content that relies on this wrap.
+  scroll?: boolean
   title?: string
-}>()
+}>(), {
+  scroll: true,
+})
 
 const emit = defineEmits<{
   close: []
@@ -20,14 +25,15 @@ const emit = defineEmits<{
       {{ props.title }}
     </UiTitleModal>
 
-    <BottomSheetClose
+    <UiButtonClose
       v-if="props.isShowCloseBtn"
       @click="emit('close')"
     />
 
     <div
       v-if="$slots.default"
-      class="scroller overflow-y-auto px-2 py-px"
+      :class="props.scroll ? 'scroller overflow-y-auto' : 'grid min-h-0 overflow-hidden'"
+      class="px-2 py-px"
     >
       <slot />
     </div>

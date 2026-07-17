@@ -121,8 +121,11 @@ export function useBottomSheetDrag({
     return -((expandedFraction.value - f) * windowHeight.value)
   }
 
+  // Boolean only in detent mode (true = expanded, false = collapsed); `undefined`
+  // for a classic sheet, so consumers keep intrinsic height and normal scrolling
+  // instead of the collapsed-detent scroll suppression.
   const isExpanded = computed(() =>
-    detentMode.value && Math.abs(dragDistance.value) <= EXPANDED_EPS,
+    detentMode.value ? Math.abs(dragDistance.value) <= EXPANDED_EPS : undefined,
   )
 
   const dragOffset = computed(() => {
@@ -183,10 +186,11 @@ export function useBottomSheetDrag({
 
   const dragStyles = computed(() => {
     if (!opened.value) {
-      // Detent sheets rest partly down, so start fully below the fold and slide
-      // up on open; the plain 30px offset would make them drop in from the top.
+      // Open with the same small rise + fade as the classic sheet: start 30px
+      // below the collapsed resting offset, not fully below the fold. A plain
+      // 30px offset would sit above the rest and drop in from the top instead.
       const closedTransform = detentMode.value
-        ? `translateY(${expandedFraction.value * windowHeight.value}px)`
+        ? `translateY(${-restingInitialY(collapsedFraction.value) + 30}px)`
         : 'translateY(30px)'
       return {
         ...dragStyle.value,

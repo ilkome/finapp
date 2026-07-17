@@ -133,6 +133,13 @@ onMounted(async () => {
   requestAnimationFrame(() => sliderObj.value?.update())
 })
 
+// The sheet/popover reaches its final size after mount (open animation, or the
+// popover measuring available space), leaving slides at a stale width/height -
+// wallets render narrow and the popover can't scroll. Re-measure on real size
+// changes only; a `transform` drag doesn't change border-box size, so this
+// stays quiet during the gestures the Swiper observer would have thrashed on.
+useResizeObserver(sliderRef, () => sliderObj.value?.update())
+
 // Swiper measures 0 while hidden behind search results; refresh on return.
 watch(searchQuery, async (q) => {
   if (!q) {
@@ -148,7 +155,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
   <div
     class="grid w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden"
     :class="[
-      props.isExpanded === undefined ? 'max-h-[75dvh] min-h-[50dvh]' : 'h-full',
+      props.isExpanded === undefined ? 'max-h-[85dvh] min-h-[50dvh]' : 'h-full',
       { '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': props.isExpanded === false },
     ]"
   >
