@@ -35,20 +35,18 @@ const availableIntervals = computed(() => {
     value: 'year',
   }].filter(i => i.isShow)
 })
-
-const selectedPeriod = ref(props.period)
 </script>
 
 <template>
   <USelect
     v-if="availableIntervals.length > 1"
-    v-model="selectedPeriod"
+    :modelValue="period"
     :items="availableIntervals"
     :ui="{
       base: 'ring-0 text-muted text-2xs hover:bg-elevated',
       trailingIcon: 'size-4',
       content: 'w-24',
     }"
-    @change="emit('changePeriod', selectedPeriod)"
+    @update:modelValue="emit('changePeriod', $event as Period)"
   />
 </template>

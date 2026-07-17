@@ -65,7 +65,7 @@ function onAmountClick(e: MouseEvent) {
     v-if="category"
     ref="longPressRef"
     :class="[props.insideClass, {
-      '-bg-elevated ': props.isActive,
+      'bg-elevated': props.isActive,
     }]"
     :style="props.insideStyle"
     class="relative"
