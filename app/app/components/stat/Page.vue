@@ -7,7 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useStatDate } from '~/components/date/useStatDate'
 import { useFilter } from '~/components/stat/filter/useFilter'
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { filterKey, statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -17,6 +17,9 @@ const trnsStore = useTrnsStore()
 
 const filter = useFilter()
 provide(filterKey, filter)
+
+// Dashboard: header scrolls away, the date/filter nav row pins to the top.
+provide(statStickyNavKey, true)
 
 const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
 const storageKey = computed(() => `dashboard-${activeTab.value}`)
@@ -66,6 +69,7 @@ onDeactivated(() => {
     <StatHeader
       v-model:activeTab="activeTab"
       :trnsIds
+      :sticky="false"
       configCategories
       configWallets
     >

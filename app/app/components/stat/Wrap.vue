@@ -21,11 +21,16 @@ const props = defineProps<{
 const trnsStore = useTrnsStore()
 const statDate = inject(statDateKey)!
 
+const { width } = useWindowSize()
+// Mobile has no per-type tabs (see Header/Menu), so always show the combined
+// summary view.
+const effectiveTab = computed<StatTabSlug>(() => width.value > 766 ? props.activeTab : 'summary')
+
 const sharedItemProps = computed(() => ({
   categoryId: props.categoryId,
   hasChildren: props.hasChildren,
   preCategoriesIds: props.preCategoriesIds,
-  statTab: props.activeTab,
+  statTab: effectiveTab.value,
   storageKey: props.storageKey,
   walletId: props.walletId,
 }))
@@ -51,7 +56,7 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 <template>
   <div
-    v-if="props.activeTab === 'split'"
+    v-if="effectiveTab === 'split'"
     class="grid max-w-7xl gap-8 px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8 @3xl/page:grid-cols-2 @3xl/page:gap-8"
   >
     <StatItem

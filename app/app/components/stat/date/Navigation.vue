@@ -4,7 +4,6 @@ import { sub } from 'date-fns'
 import { getEndOf, getStartOf, toDuration } from '~/components/date/utils'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
-const { t } = useI18n()
 const statDate = inject(statDateKey)!
 
 const isShowNav = computed(() =>
@@ -50,7 +49,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="items-top flex grow items-center gap-2 overflow-x-auto py-2 pb-0">
+  <div class="flex grow items-center gap-2 overflow-x-auto pt-2">
     <DateNav
       v-if="isShowNav && !statDate.params.value.customDate"
       :isEnd
@@ -58,57 +57,10 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       :isStart
       @changeDate="changeDate"
     >
-      <BottomSheetOrDropdown
-        :title="t('dates.select')"
-        :isOpen="statDate.modal.value.dateSelector"
-        class="flex grow-0 gap-1"
-        isShowCloseBtn
-        @openModal="statDate.modal.value.dateSelector = true"
-        @closeModal="statDate.modal.value.dateSelector = false"
-      >
-        <template #trigger>
-          <UiTitleCollapse
-            class="text-md !grow-0"
-            isShown
-          >
-            <StatDateRange />
-          </UiTitleCollapse>
-        </template>
-
-        <template #content="{ close }">
-          <StatDateSelector
-            class="min-w-[362px] pb-2"
-            @close="close"
-          />
-        </template>
-      </BottomSheetOrDropdown>
+      <StatDateRangeSelector />
     </DateNav>
 
-    <BottomSheetOrDropdown
-      v-else
-      :title="t('dates.select')"
-      :isOpen="statDate.modal.value.dateSelector"
-      class="flex grow-0 gap-1"
-      isShowCloseBtn
-      @openModal="statDate.modal.value.dateSelector = true"
-      @closeModal="statDate.modal.value.dateSelector = false"
-    >
-      <template #trigger>
-        <UiTitleCollapse
-          class="text-md !grow-0"
-          isShown
-        >
-          <StatDateRange />
-        </UiTitleCollapse>
-      </template>
-
-      <template #content="{ close }">
-        <StatDateSelector
-          class="min-w-[362px] pb-2 md:px-3"
-          @close="close"
-        />
-      </template>
-    </BottomSheetOrDropdown>
+    <StatDateRangeSelector v-else />
 
     <slot />
   </div>

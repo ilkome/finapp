@@ -2,10 +2,11 @@
 import { useSearch } from '~/components/search/useSearch'
 import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { backSkipPattern, backTo, hideSearch } = defineProps<{
+const { backSkipPattern, backTo, hideSearch, sticky = true } = defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
   hideSearch?: boolean
+  sticky?: boolean
 }>()
 
 const { isSearchOpen } = useSearch()
@@ -25,7 +26,10 @@ function onBack() {
 </script>
 
 <template>
-  <div class="bg-default/90 sticky top-0 z-20 mb-2 backdrop-blur">
+  <div
+    class="bg-default/90 mb-2 backdrop-blur"
+    :class="sticky && 'sticky top-0 z-20'"
+  >
     <div class="border-accented grid min-h-12 max-w-7xl items-center border-b p-2 lg:p-4">
       <div class="flex grow items-center">
         <button

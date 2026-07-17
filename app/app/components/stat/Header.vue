@@ -20,12 +20,18 @@ const props = withDefaults(defineProps<{
   hasCategoryBreakdown?: boolean
   hideTabs?: boolean
   preCategoriesIds?: CategoryId[]
+  sticky?: boolean
   trnsIds?: TrnId[]
 }>(), {
   hasCategoryBreakdown: true,
+  sticky: true,
 })
 
 const activeTab = defineModel<StatTabSlug>('activeTab')
+
+// Tabs only fit on wide screens; mobile shows the combined summary view instead.
+const { width } = useWindowSize()
+const showTabs = computed(() => width.value > 766)
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
@@ -66,7 +72,7 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <UiHeader :backSkipPattern="backSkipPattern" :backTo="backTo">
+  <UiHeader :backSkipPattern="backSkipPattern" :backTo="backTo" :sticky="props.sticky">
     <slot name="title" />
 
     <template #actions>
@@ -100,7 +106,7 @@ function onClickWallet(walletId: WalletId) {
       </div>
     </template>
 
-    <template v-if="activeTab && !props.hideTabs" #selected>
+    <template v-if="activeTab && !props.hideTabs && showTabs" #selected>
       <StatMenu
         :active="activeTab"
         @click="(id: StatTabSlug) => activeTab = id"

@@ -4,7 +4,7 @@ import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { filterKey, statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useStatItem } from '~/components/stat/useStatItem'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -23,6 +23,8 @@ const { t } = useI18n()
 const filter = inject(filterKey)!
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
+// Dashboard pins the nav row + sum tiles to the top with the header's background.
+const stickyNav = inject(statStickyNavKey, false)
 const trnsStore = useTrnsStore()
 
 const isOneCategory = computed(() => !!props.categoryId)
@@ -125,29 +127,34 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
     />
 
     <div class="grid min-w-0 content-start gap-3">
-      <StatDateNavigation>
-        <StatFilterButton />
-        <StatFilterSelected
-          v-if="filter.isShow.value"
-          isShowCategories
-          isShowWallets
-        />
-      </StatDateNavigation>
+      <div
+        class="grid gap-3"
+        :class="stickyNav && 'bg-default/90 sticky top-0 z-10 -mx-2 px-2 pb-2 backdrop-blur lg:-mx-4 lg:px-4'"
+      >
+        <StatDateNavigation>
+          <StatFilterButton />
+          <StatFilterSelected
+            v-if="filter.isShow.value"
+            isShowCategories
+            isShowWallets
+          />
+        </StatDateNavigation>
 
-      <StatSumWrap
-        v-if="shouldShowAmounts"
-        :averageTotal
-        :categoryId="props.categoryId"
-        :filteredType="filteredType"
-        :forecastMode="forecastMode"
-        :forecastTotal="forecastRangeTotal"
-        :total="rangeTotal"
-        :trnsIds
-        :type="selectedTypeForSum"
-        :walletId
-        @click="onClickSumItemWrap"
-        @clickAverage="statConfig.updateConfig('statAverage', { isShow: !isShowAverage })"
-      />
+        <StatSumWrap
+          v-if="shouldShowAmounts"
+          :averageTotal
+          :categoryId="props.categoryId"
+          :filteredType="filteredType"
+          :forecastMode="forecastMode"
+          :forecastTotal="forecastRangeTotal"
+          :total="rangeTotal"
+          :trnsIds
+          :type="selectedTypeForSum"
+          :walletId
+          @click="onClickSumItemWrap"
+          @clickAverage="statConfig.updateConfig('statAverage', { isShow: !isShowAverage })"
+        />
+      </div>
 
       <StatCategoriesRoundSection
         v-if="isRoundShow && hasCategoriesData && (selectedTrnsIds.length > 0 || filteredCategoriesIds.length > 0)"
