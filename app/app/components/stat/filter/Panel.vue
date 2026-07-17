@@ -156,6 +156,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
       <input
         v-model="search"
         type="text"
+        :aria-label="t('base.search')"
         class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
         :placeholder="t('base.search')"
       >

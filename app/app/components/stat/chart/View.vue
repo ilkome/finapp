@@ -47,8 +47,15 @@ use([
   TooltipComponent,
 ])
 
-const { locale } = useI18n()
+const { locale, t } = useI18n()
 const chartRef = ref()
+
+// The chart is an SVG the screen reader can't read; label it as an image. The
+// underlying numbers are exposed in the summary tiles and category list.
+const chartAriaLabel = computed(() => {
+  const names = series.map(s => s.name).filter(Boolean).join(', ')
+  return names ? `${t('chart.label')}: ${names}` : t('chart.label')
+})
 
 function getFormatForChart(periodName: Period) {
   switch (periodName) {
@@ -110,6 +117,8 @@ function buildChartSeries(series: ChartSeries[]) {
 <template>
   <div
     class="h-40 @3xl/stat:h-52"
+    role="img"
+    :aria-label="chartAriaLabel"
     @click="onClickChart"
   >
     <VChart

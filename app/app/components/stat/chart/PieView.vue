@@ -98,7 +98,11 @@ function onClickSlice(params: ECElementEvent) {
     class="flex items-center justify-center gap-4"
     :class="{ '@3xl/stat:justify-start': showLegend }"
   >
-    <div class="relative size-40 shrink-0 @3xl/stat:size-52">
+    <div
+      class="relative size-40 shrink-0 @3xl/stat:size-52"
+      role="img"
+      :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`"
+    >
       <VChart
         :option
         :updateOptions="{ notMerge: true }"

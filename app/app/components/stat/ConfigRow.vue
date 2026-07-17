@@ -50,6 +50,7 @@ defineEmits<{
       role="switch"
       tabindex="0"
       :aria-checked="isShow"
+      :aria-label="title"
       class="flex shrink-0 items-center rounded-r-sm pr-3 pl-4"
       :class="hasPanel && 'hover:bg-accented'"
       @click.stop="$emit('toggle')"
