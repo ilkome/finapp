@@ -1,6 +1,6 @@
 // Pulled into the Workbox SW via workbox.importScripts (nuxt.config.ts).
 
-self.addEventListener('push', (event) => {
+globalThis.addEventListener('push', (event) => {
   let data = {}
   try {
     data = event.data ? event.data.json() : {}
@@ -18,15 +18,15 @@ self.addEventListener('push', (event) => {
     icon: data.icon || '/pwa-192x192.png',
   }
 
-  event.waitUntil(self.registration.showNotification(title, options))
+  event.waitUntil(globalThis.registration.showNotification(title, options))
 })
 
-self.addEventListener('notificationclick', (event) => {
+globalThis.addEventListener('notificationclick', (event) => {
   event.notification.close()
   const target = (event.notification.data && event.notification.data.url) || '/dashboard'
 
   event.waitUntil(
-    self.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
+    globalThis.clients.matchAll({ includeUncontrolled: true, type: 'window' }).then((clients) => {
       for (const client of clients) {
         // Focus an existing window and route it to the target instead of opening a new tab.
         if ('focus' in client) {
@@ -34,8 +34,8 @@ self.addEventListener('notificationclick', (event) => {
           return client.focus()
         }
       }
-      if (self.clients.openWindow)
-        return self.clients.openWindow(target)
+      if (globalThis.clients.openWindow)
+        return globalThis.clients.openWindow(target)
     }),
   )
 })
