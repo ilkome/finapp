@@ -34,11 +34,11 @@ const trnsStore = useTrnsStore()
 // Mobile chart reveal, scrubbed to the document scroll over the zone [page top .. header pin]:
 //  - fade: the chart fades + lifts as it scrolls out through the top (scrub, both ways),
 //    starting the instant you scroll from the very top.
-//  - snap: on finger-lift (touchend - a drag fires pointercancel, not pointerup) our own tween
-//    finishes the gesture: down docks the categories, up reveals the chart to the top; an
-//    up-fling from the categories that coasts in is finished to the top too. We avoid GSAP's
-//    ScrollTrigger snap on purpose - going up it eases scrollTop against the still-running native
-//    fling (two writers per frame), and that fight is the jitter still being chased.
+//  - snap: on finger-lift (touchend - a drag fires pointercancel, not pointerup) our tween
+//    finishes the gesture ONLY when released inside the zone: down docks the categories, up
+//    reveals the chart. We never snap mid-fling - easing scrollTop against a live native fling
+//    (two threads, per frame) was the jitter - so an up-fling that coasts in from the categories
+//    just rests where momentum dies, and a second pull completes the reveal.
 const chartTrigger = ref<HTMLElement | null>(null)
 const chartFx = ref<HTMLElement | null>(null)
 if (stickyNav && import.meta.client) {
@@ -71,18 +71,13 @@ if (stickyNav && import.meta.client) {
         start: 0,
       })
 
-      // Snapping is driven entirely by our own tweens (see block comment above) - never GSAP's
-      // ScrollTrigger snap, which fights the native fling and jitters.
+      // Snap runs only on finger-lift, never mid-fling (that fight was the jitter) - see comment.
       let dir = 0
       let prevY = scroller.scrollTop
-      let touching = false
-      let startedInZone = false
-      let taken = false // this gesture's scroll has been handed to a snap tween
       let armed = false // the touch began on the page, not on a modal/overlay above it
 
       // Duration tracks distance (~constant velocity) so a short snap stays quick, not sluggish.
       const snapTo = (target: number) => {
-        taken = true
         gsap.to(scroller, {
           duration: gsap.utils.clamp(0.3, 0.45, Math.abs(target - scroller.scrollTop) / 800),
           ease: 'apple',
@@ -95,34 +90,23 @@ if (stickyNav && import.meta.client) {
         if (y !== prevY)
           dir = y > prevY ? 1 : -1
         prevY = y
-        // Up-fling from the categories coasting into the reveal zone: finish it to the top in one
-        // motion (with the momentum, nothing to fight) so it locks there instead of drifting.
-        if (armed && !touching && !taken && !startedInZone && dir < 0 && y > 0 && y < pinAt())
-          snapTo(0)
       }
-      // A fresh touch reclaims control mid-snap; remember whether it began inside the zone.
       // Ignore touches that start on a modal/sheet (all teleported to <body>, outside the page
       // scroller) - otherwise scrolling a sheet would snap the chart behind it.
       const onTouchStart = (e: TouchEvent) => {
         armed = !!(e.target as Element | null)?.closest?.('#pageScroll')
-        if (!armed)
-          return
-        dir = 0
-        taken = false
-        touching = true
-        gsap.killTweensOf(scroller)
-        startedInZone = scroller.scrollTop <= pinAt() + 1
+        if (armed)
+          gsap.killTweensOf(scroller)
       }
       const onTouchEnd = () => {
         if (!armed)
           return
-        touching = false
         const pin = pinAt()
         const y = scroller.scrollTop
         if (y <= 0 || y >= pin)
           return
-        // Inside the zone on release: finish the way the finger was going - down docks the
-        // categories, up reveals the chart and locks at the very top.
+        // Released inside the zone: finish the way the finger was going - down docks the
+        // categories, up reveals the chart. No mid-fling takeover, so nothing fights the fling.
         snapTo(dir > 0 ? pin : 0)
       }
       window.addEventListener('scroll', onScroll, { passive: true })
