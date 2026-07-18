@@ -78,6 +78,7 @@ if (stickyNav && import.meta.client) {
       let touching = false
       let startedInZone = false
       let taken = false // this gesture's scroll has been handed to a snap tween
+      let armed = false // the touch began on the page, not on a modal/overlay above it
 
       // Duration tracks distance (~constant velocity) so a short snap stays quick, not sluggish.
       const snapTo = (target: number) => {
@@ -96,11 +97,16 @@ if (stickyNav && import.meta.client) {
         prevY = y
         // Up-fling from the categories coasting into the reveal zone: finish it to the top in one
         // motion (with the momentum, nothing to fight) so it locks there instead of drifting.
-        if (!touching && !taken && !startedInZone && dir < 0 && y > 0 && y < pinAt())
+        if (armed && !touching && !taken && !startedInZone && dir < 0 && y > 0 && y < pinAt())
           snapTo(0)
       }
       // A fresh touch reclaims control mid-snap; remember whether it began inside the zone.
-      const onTouchStart = () => {
+      // Ignore touches that start on a modal/sheet (all teleported to <body>, outside the page
+      // scroller) - otherwise scrolling a sheet would snap the chart behind it.
+      const onTouchStart = (e: TouchEvent) => {
+        armed = !!(e.target as Element | null)?.closest?.('#pageScroll')
+        if (!armed)
+          return
         dir = 0
         taken = false
         touching = true
@@ -108,6 +114,8 @@ if (stickyNav && import.meta.client) {
         startedInZone = scroller.scrollTop <= pinAt() + 1
       }
       const onTouchEnd = () => {
+        if (!armed)
+          return
         touching = false
         const pin = pinAt()
         const y = scroller.scrollTop
