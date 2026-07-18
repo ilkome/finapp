@@ -64,8 +64,8 @@ if (stickyNav && import.meta.client) {
         prevY = window.scrollY
       }
       gsap.to(window, {
-        duration: 0.5,
-        ease: 'power2.out',
+        duration: 0.3,
+        ease: 'power3.out',
         onComplete: done,
         onInterrupt: done,
         scrollTo: { autoKill: true, y: pinAt },
