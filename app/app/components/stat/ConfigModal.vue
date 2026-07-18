@@ -24,6 +24,7 @@ function onClose() {
   <BottomSheetOrDropdown
     :title="t('stat.config.menu.label')"
     :isOpen
+    :unmountOnHide="false"
     isShowCloseBtn
     @openModal="isOpen = true"
     @closeModal="onClose"

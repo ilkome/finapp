@@ -13,8 +13,14 @@ const props = withDefaults(defineProps<{
   // popover. See BottomSheet's `snapPoints`.
   snapPoints?: number[]
   title?: string
+  // Keep content mounted while closed so its state (scroll, inputs, active tab)
+  // survives reopen and reopening is instant. Desktop: passthrough to UPopover.
+  // Mobile: the sheet mounts on first open, then hides via `isShow` instead of
+  // remounting.
+  unmountOnHide?: boolean
 }>(), {
   align: 'start',
+  unmountOnHide: true,
 })
 
 const emit = defineEmits<{
@@ -27,12 +33,21 @@ const { pointerType } = usePointer()
 const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
 
 const open = ref(false)
+
+// When keeping content mounted, the mobile sheet is rendered once it first opens
+// and then shown/hidden via `isShow` instead of remounted, so its state survives.
+const hasOpened = ref(false)
+watch(() => props.isOpen, (value) => {
+  if (value)
+    hasOpened.value = true
+}, { immediate: true })
 </script>
 
 <template>
   <UPopover
     v-if="isLaptop"
     v-model:open="open"
+    :unmountOnHide="props.unmountOnHide"
     :content="{
       align: props.align,
       side: 'bottom',
@@ -76,8 +91,8 @@ const open = ref(false)
 
     <Teleport to="body">
       <BottomSheet
-        v-if="props.isOpen"
-        isShow
+        v-if="props.unmountOnHide ? props.isOpen : hasOpened"
+        :isShow="props.unmountOnHide ? true : props.isOpen"
         :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
         :dragStyle="props.bottomSheetStyle"
         :snapPoints="props.snapPoints"

@@ -18,6 +18,7 @@ const snapPoints = computed(() => isTouch.value ? [500, 0.98] : undefined)
     :isOpen="isOpen"
     :snapPoints="snapPoints"
     :title="t('base.filters')"
+    :unmountOnHide="false"
     isShowCloseBtn
     keyboardTrigger
     @closeModal="isOpen = false"

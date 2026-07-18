@@ -9,6 +9,7 @@ const statDate = inject(statDateKey)!
   <BottomSheetOrDropdown
     :title="t('dates.select')"
     :isOpen="statDate.modal.value.dateSelector"
+    :unmountOnHide="false"
     class="flex grow-0 gap-1"
     isShowCloseBtn
     keyboardTrigger
