@@ -28,6 +28,10 @@ const FLICK_VELOCITY = 0.6
 // fully expanded, so inner scrolling takes over instead of sheet drag.
 const EXPANDED_EPS = 1
 
+// Controls whose first tap must not be consumed by the drag gesture. Plain
+// `div @click` rows are intentionally excluded so drag/scroll still starts on them.
+const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea, label, [role="button"], [role="tab"], [role="switch"]'
+
 function getClientY(event: Event): number {
   return 'touches' in event
     ? Math.round(event.touches[0]!.clientY)
@@ -274,6 +278,14 @@ export function useBottomSheetDrag({
       isHandler.value = event.target.classList.contains('handler')
       const isTarget = event.target.closest('.drag')
       const hasScroll = contentHasScroll(event)
+
+      // Never hijack a tap on an interactive control (e.g. the Apply button in
+      // the sheet footer, which sits outside the scroller so `hasScroll` can't
+      // guard it). Engaging the drag here swallows the control's first click.
+      if (!isHandler.value && event.target.closest(INTERACTIVE_SELECTOR)) {
+        isDragging.value = false
+        return
+      }
 
       if ((!isTarget || hasScroll) && !isHandler.value) {
         isDragging.value = false
