@@ -21,6 +21,7 @@ export default {
     loadError: 'Could not load your data. Check your connection and try again.',
     retry: 'Try again',
     toggleSidebar: 'Toggle sidebar',
+    updateCache: 'Update cache',
     version: 'Version',
   },
 
