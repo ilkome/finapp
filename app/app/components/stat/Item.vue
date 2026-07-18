@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap'
+import { CustomEase } from 'gsap/CustomEase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -30,17 +31,20 @@ const statConfig = inject(statConfigKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const trnsStore = useTrnsStore()
 
-// Mobile: scroll-linked chart reveal. Two ScrollTriggers over the document scroll:
-//  - fade: as the chart itself scrolls out through the top it eases up + fades (scrub, both
-//    ways), so it fades only while actually leaving - not while still fully in view.
-//  - snap: over [page top .. header pin], snaps on release to either end. delay:0 so it
-//    fires the instant the finger lifts (no wait), directional so it completes the way the
-//    finger was going: swipe down -> categories at the top, swipe up -> all the way to 0
-//    (the full page top, header included), not just to where the chart sits.
+// Mobile chart reveal, scrubbed to the document scroll over the zone [page top .. header pin]:
+//  - fade: the chart fades + lifts as it scrolls out through the top (scrub, both ways),
+//    starting the instant you scroll from the very top.
+//  - snap: on finger-lift (touchend - a drag fires pointercancel, not pointerup) our own tween
+//    finishes the gesture: down docks the categories, up reveals the chart to the top; an
+//    up-fling from the categories that coasts in is finished to the top too. We avoid GSAP's
+//    ScrollTrigger snap on purpose - going up it eases scrollTop against the still-running native
+//    fling (two writers per frame), and that fight is the jitter still being chased.
 const chartTrigger = ref<HTMLElement | null>(null)
 const chartFx = ref<HTMLElement | null>(null)
 if (stickyNav && import.meta.client) {
-  gsap.registerPlugin(ScrollTrigger)
+  gsap.registerPlugin(ScrollTrigger, CustomEase)
+  // iOS sheet / scroll-deceleration curve: fast start, long soft settle.
+  CustomEase.create('apple', 'M0,0 C0.32,0.72 0,1 1,1')
   const mm = gsap.matchMedia()
   onMounted(() => {
     mm.add('(max-width: 767px)', () => {
@@ -48,6 +52,8 @@ if (stickyNav && import.meta.client) {
       const fx = chartFx.value
       if (!trigger || !fx)
         return
+
+      const scroller = document.scrollingElement as HTMLElement
 
       // document offset of the chart's bottom = where the sticky header pins.
       const pinAt = () => {
@@ -57,19 +63,70 @@ if (stickyNav && import.meta.client) {
         return Math.round(y)
       }
 
+      // Chart fade + lift as it scrolls out through the top (scrub, both ways).
       ScrollTrigger.create({
         animation: gsap.to(fx, { ease: 'none', opacity: 0, yPercent: -30 }),
-        end: 'bottom top',
-        scrub: true,
-        start: 'top top',
-        trigger,
-      })
-
-      ScrollTrigger.create({
         end: pinAt,
-        snap: { delay: 0, duration: { max: 0.25, min: 0.1 }, ease: 'power2.out', snapTo: [0, 1] },
+        scrub: true,
         start: 0,
       })
+
+      // Snapping is driven entirely by our own tweens (see block comment above) - never GSAP's
+      // ScrollTrigger snap, which fights the native fling and jitters.
+      let dir = 0
+      let prevY = scroller.scrollTop
+      let touching = false
+      let startedInZone = false
+      let taken = false // this gesture's scroll has been handed to a snap tween
+
+      // Duration tracks distance (~constant velocity) so a short snap stays quick, not sluggish.
+      const snapTo = (target: number) => {
+        taken = true
+        gsap.to(scroller, {
+          duration: gsap.utils.clamp(0.3, 0.45, Math.abs(target - scroller.scrollTop) / 800),
+          ease: 'apple',
+          overwrite: true,
+          scrollTop: target,
+        })
+      }
+      const onScroll = () => {
+        const y = scroller.scrollTop
+        if (y !== prevY)
+          dir = y > prevY ? 1 : -1
+        prevY = y
+        // Up-fling from the categories coasting into the reveal zone: finish it to the top in one
+        // motion (with the momentum, nothing to fight) so it locks there instead of drifting.
+        if (!touching && !taken && !startedInZone && dir < 0 && y > 0 && y < pinAt())
+          snapTo(0)
+      }
+      // A fresh touch reclaims control mid-snap; remember whether it began inside the zone.
+      const onTouchStart = () => {
+        dir = 0
+        taken = false
+        touching = true
+        gsap.killTweensOf(scroller)
+        startedInZone = scroller.scrollTop <= pinAt() + 1
+      }
+      const onTouchEnd = () => {
+        touching = false
+        const pin = pinAt()
+        const y = scroller.scrollTop
+        if (y <= 0 || y >= pin)
+          return
+        // Inside the zone on release: finish the way the finger was going - down docks the
+        // categories, up reveals the chart and locks at the very top.
+        snapTo(dir > 0 ? pin : 0)
+      }
+      window.addEventListener('scroll', onScroll, { passive: true })
+      window.addEventListener('touchstart', onTouchStart, { passive: true })
+      window.addEventListener('touchend', onTouchEnd, { passive: true })
+
+      return () => {
+        window.removeEventListener('scroll', onScroll)
+        window.removeEventListener('touchstart', onTouchStart)
+        window.removeEventListener('touchend', onTouchEnd)
+        gsap.killTweensOf(scroller)
+      }
     })
   })
   onUnmounted(() => mm.revert())
