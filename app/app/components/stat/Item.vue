@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import gsap from 'gsap'
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
@@ -30,53 +30,34 @@ const statConfig = inject(statConfigKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const trnsStore = useTrnsStore()
 
-// Mobile: the first downward swipe from the very top eased-scrolls past the chart to the
-// categories block (GSAP). Scrolling back up is free - the chart just reappears, no gated
-// animation (autoKill drops the tween the instant the user scrolls the other way).
-const headerRef = ref<HTMLElement | null>(null)
+// Mobile: scroll-linked chart reveal. As you scroll from the top, the chart eases up and
+// fades (opacity + parallax) in lockstep with the finger - scrub both ways, so it comes
+// back if you scroll up. Native continuous scroll throughout; the only programmatic bit is
+// the snap: release it past halfway and ScrollTrigger finishes the scroll to the next block
+// (categories at the top), release below halfway and it settles back to the full chart.
+const chartTrigger = ref<HTMLElement | null>(null)
+const chartFx = ref<HTMLElement | null>(null)
 if (stickyNav && import.meta.client) {
-  gsap.registerPlugin(ScrollToPlugin)
-  // pinAt = document offset where the sticky header pins (i.e. chart fully scrolled away).
-  function pinOffset(el: HTMLElement) {
-    let y = 0
-    for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null)
-      y += n.offsetTop
-    return Math.round(y)
-  }
-
-  let prevY = 0
-  let animating = false
-  function onScroll() {
-    const header = headerRef.value
-    const y = window.scrollY
-    if (animating || !header || window.innerWidth > 767) {
-      prevY = y
-      return
-    }
-    const fromTop = prevY <= 4
-    const goingDown = y > prevY
-    prevY = y
-    const pinAt = pinOffset(header)
-    if (fromTop && goingDown && y > 4 && y < pinAt) {
-      animating = true
-      const done = () => {
-        animating = false
-        prevY = window.scrollY
-      }
-      gsap.to(window, {
-        duration: 0.3,
-        ease: 'power3.out',
-        onComplete: done,
-        onInterrupt: done,
-        scrollTo: { autoKill: true, y: pinAt },
-      })
-    }
-  }
+  gsap.registerPlugin(ScrollTrigger)
+  const mm = gsap.matchMedia()
   onMounted(() => {
-    prevY = window.scrollY
-    document.addEventListener('scroll', onScroll, { passive: true })
+    mm.add('(max-width: 767px)', () => {
+      if (!chartTrigger.value || !chartFx.value)
+        return
+      const fade = gsap.to(chartFx.value, { ease: 'none', opacity: 0, yPercent: -30 })
+      ScrollTrigger.create({
+        animation: fade,
+        end: 'bottom top', // chart fully scrolled past = header pins
+        scrub: true,
+        // directional (default): release completes the scroll in the way the finger was
+        // going - swipe down past a bit -> next block, swipe up -> back to the full chart.
+        snap: { duration: { max: 0.3, min: 0.15 }, ease: 'power2.out', snapTo: [0, 1] },
+        start: 'top top', // chart top at viewport top = page top
+        trigger: chartTrigger.value,
+      })
+    })
   })
-  onUnmounted(() => document.removeEventListener('scroll', onScroll))
+  onUnmounted(() => mm.revert())
 }
 
 const isOneCategory = computed(() => !!props.categoryId)
@@ -169,18 +150,21 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
 
 <template>
   <div class="@container/stat">
-    <StatChartWrap
-      v-if="shouldShowAmounts"
-      :pieGroups="chartPieGroups"
-      :series="chartSeries"
-      :xAxisLabels="chartXAxisLabels"
-      class="pb-3"
-      @clickCategory="onSetCategoryFilter"
-    />
+    <div ref="chartTrigger">
+      <div ref="chartFx">
+        <StatChartWrap
+          v-if="shouldShowAmounts"
+          :pieGroups="chartPieGroups"
+          :series="chartSeries"
+          :xAxisLabels="chartXAxisLabels"
+          class="pb-3"
+          @clickCategory="onSetCategoryFilter"
+        />
+      </div>
+    </div>
 
     <div class="grid min-w-0 content-start gap-3">
       <div
-        ref="headerRef"
         class="grid gap-3"
         :class="stickyNav && 'bg-default/90 sticky top-0 z-10 -mx-2 px-2 pb-2 backdrop-blur lg:-mx-4 lg:px-4'"
       >
