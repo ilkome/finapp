@@ -1,7 +1,7 @@
 {
   "name": "@finapp/app",
   "type": "module",
-  "version": "8.3.0-beta.58",
+  "version": "8.3.0-beta.59",
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "description": "Finapp helps you easily track and manage personal finances.",
@@ -44,6 +44,7 @@
     "@supabase/supabase-js": "^2.108.2",
     "echarts": "^6.1.0",
     "fuse.js": "^7.4.2",
+    "gsap": "^3.15.0",
     "localforage": "^1.10.0",
     "motion-v": "^2.3.0",
     "pinia": "^3.0.4",

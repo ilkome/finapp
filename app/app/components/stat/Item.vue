@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import gsap from 'gsap'
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
@@ -26,6 +29,55 @@ const statConfig = inject(statConfigKey)!
 // Dashboard pins the nav row + sum tiles to the top with the header's background.
 const stickyNav = inject(statStickyNavKey, false)
 const trnsStore = useTrnsStore()
+
+// Mobile: the first downward swipe from the very top eased-scrolls past the chart to the
+// categories block (GSAP). Scrolling back up is free - the chart just reappears, no gated
+// animation (autoKill drops the tween the instant the user scrolls the other way).
+const headerRef = ref<HTMLElement | null>(null)
+if (stickyNav && import.meta.client) {
+  gsap.registerPlugin(ScrollToPlugin)
+  // pinAt = document offset where the sticky header pins (i.e. chart fully scrolled away).
+  function pinOffset(el: HTMLElement) {
+    let y = 0
+    for (let n: HTMLElement | null = el; n; n = n.offsetParent as HTMLElement | null)
+      y += n.offsetTop
+    return Math.round(y)
+  }
+
+  let prevY = 0
+  let animating = false
+  function onScroll() {
+    const header = headerRef.value
+    const y = window.scrollY
+    if (animating || !header || window.innerWidth > 767) {
+      prevY = y
+      return
+    }
+    const fromTop = prevY <= 4
+    const goingDown = y > prevY
+    prevY = y
+    const pinAt = pinOffset(header)
+    if (fromTop && goingDown && y > 4 && y < pinAt) {
+      animating = true
+      const done = () => {
+        animating = false
+        prevY = window.scrollY
+      }
+      gsap.to(window, {
+        duration: 0.5,
+        ease: 'power2.out',
+        onComplete: done,
+        onInterrupt: done,
+        scrollTo: { autoKill: true, y: pinAt },
+      })
+    }
+  }
+  onMounted(() => {
+    prevY = window.scrollY
+    document.addEventListener('scroll', onScroll, { passive: true })
+  })
+  onUnmounted(() => document.removeEventListener('scroll', onScroll))
+}
 
 const isOneCategory = computed(() => !!props.categoryId)
 const shouldShowAmounts = computed(() => !props.categoryId || props.categoryId !== 'transfer')
@@ -128,6 +180,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
 
     <div class="grid min-w-0 content-start gap-3">
       <div
+        ref="headerRef"
         class="grid gap-3"
         :class="stickyNav && 'bg-default/90 sticky top-0 z-10 -mx-2 px-2 pb-2 backdrop-blur lg:-mx-4 lg:px-4'"
       >
