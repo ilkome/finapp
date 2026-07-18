@@ -30,11 +30,13 @@ const statConfig = inject(statConfigKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const trnsStore = useTrnsStore()
 
-// Mobile: scroll-linked chart reveal. As you scroll from the top, the chart eases up and
-// fades (opacity + parallax) in lockstep with the finger - scrub both ways, so it comes
-// back if you scroll up. Native continuous scroll throughout; the only programmatic bit is
-// the snap: release it past halfway and ScrollTrigger finishes the scroll to the next block
-// (categories at the top), release below halfway and it settles back to the full chart.
+// Mobile: scroll-linked chart reveal. Two ScrollTriggers over the document scroll:
+//  - fade: as the chart itself scrolls out through the top it eases up + fades (scrub, both
+//    ways), so it fades only while actually leaving - not while still fully in view.
+//  - snap: over [page top .. header pin], snaps on release to either end. delay:0 so it
+//    fires the instant the finger lifts (no wait), directional so it completes the way the
+//    finger was going: swipe down -> categories at the top, swipe up -> all the way to 0
+//    (the full page top, header included), not just to where the chart sits.
 const chartTrigger = ref<HTMLElement | null>(null)
 const chartFx = ref<HTMLElement | null>(null)
 if (stickyNav && import.meta.client) {
@@ -42,18 +44,31 @@ if (stickyNav && import.meta.client) {
   const mm = gsap.matchMedia()
   onMounted(() => {
     mm.add('(max-width: 767px)', () => {
-      if (!chartTrigger.value || !chartFx.value)
+      const trigger = chartTrigger.value
+      const fx = chartFx.value
+      if (!trigger || !fx)
         return
-      const fade = gsap.to(chartFx.value, { ease: 'none', opacity: 0, yPercent: -30 })
+
+      // document offset of the chart's bottom = where the sticky header pins.
+      const pinAt = () => {
+        let y = trigger.offsetHeight
+        for (let n: HTMLElement | null = trigger; n; n = n.offsetParent as HTMLElement | null)
+          y += n.offsetTop
+        return Math.round(y)
+      }
+
       ScrollTrigger.create({
-        animation: fade,
-        end: 'bottom top', // chart fully scrolled past = header pins
+        animation: gsap.to(fx, { ease: 'none', opacity: 0, yPercent: -30 }),
+        end: 'bottom top',
         scrub: true,
-        // directional (default): release completes the scroll in the way the finger was
-        // going - swipe down past a bit -> next block, swipe up -> back to the full chart.
-        snap: { duration: { max: 0.3, min: 0.15 }, ease: 'power2.out', snapTo: [0, 1] },
-        start: 'top top', // chart top at viewport top = page top
-        trigger: chartTrigger.value,
+        start: 'top top',
+        trigger,
+      })
+
+      ScrollTrigger.create({
+        end: pinAt,
+        snap: { delay: 0, duration: { max: 0.25, min: 0.1 }, ease: 'power2.out', snapTo: [0, 1] },
+        start: 0,
       })
     })
   })
