@@ -5,18 +5,12 @@ const props = withDefaults(defineProps<{
   dragClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
-  // Opt-in only: makes the mobile trigger wrapper a keyboard-focusable button.
-  // Off by default because most callers pass an interactive trigger (e.g.
-  // UiActionButton); enabling it there would nest one button in another.
+  // Makes the mobile trigger wrapper a keyboard-focusable button; nests a button
+  // if the trigger is already interactive, so opt-in only.
   keyboardTrigger?: boolean
-  // Detent snap points for the mobile bottom sheet; ignored by the desktop
-  // popover. See BottomSheet's `snapPoints`.
   snapPoints?: number[]
   title?: string
-  // Keep content mounted while closed so its state (scroll, inputs, active tab)
-  // survives reopen and reopening is instant. Desktop: passthrough to UPopover.
-  // Mobile: the sheet mounts on first open, then hides via `isShow` instead of
-  // remounting.
+  // Keep content mounted while hidden so state survives reopen.
   unmountOnHide?: boolean
 }>(), {
   align: 'start',
@@ -34,8 +28,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 
 const open = ref(false)
 
-// When keeping content mounted, the mobile sheet is rendered once it first opens
-// and then shown/hidden via `isShow` instead of remounted, so its state survives.
+// Latches on first open so the kept-mounted sheet renders once, then toggles via isShow.
 const hasOpened = ref(false)
 watch(() => props.isOpen, (value) => {
   if (value)
