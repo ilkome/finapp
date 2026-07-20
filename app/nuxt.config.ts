@@ -285,6 +285,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      // Vercel sets VERCEL_ENV=production only for the main-branch prod deploy;
+      // absent locally, 'preview' for branch deploys.
+      isProd: process.env.VERCEL_ENV === 'production',
       powersyncUrl: process.env.VITE_POWERSYNC_URL,
       supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
       supabaseUrl: process.env.VITE_SUPABASE_URL,

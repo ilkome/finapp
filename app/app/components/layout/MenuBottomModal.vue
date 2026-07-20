@@ -10,6 +10,7 @@ const emit = defineEmits<{ close: [] }>()
 const { locale, t } = useI18n()
 const userStore = useUserStore()
 const { generateDemoData, isDemo } = useDemo()
+const config = useRuntimeConfig()
 
 function onSearchClick() {
   emit('close')
@@ -23,10 +24,7 @@ async function updateDemo() {
   showSuccessToast('demo.updated')
 }
 
-// Force a fresh build: drop the workbox precache and re-check the service worker, then
-// reload so the new SW + network-fetched assets take over. autoUpdate normally handles
-// this, but a manual escape hatch helps when a stale cache is stuck.
-async function forceUpdateCache() {
+async function clearCachesAndReload() {
   if ('serviceWorker' in navigator)
     await navigator.serviceWorker.getRegistration().then(reg => reg?.update())
   if ('caches' in window)
@@ -91,15 +89,19 @@ async function forceUpdateCache() {
             </UiButtonAccent>
           </div>
 
-          <div class="grid justify-items-center gap-1 px-3 pt-2 pb-1">
-            <button
-              type="button"
-              class="interactive text-muted flex items-center gap-1.5 rounded-sm px-2 py-1 text-xs"
-              @click="forceUpdateCache"
-            >
-              <Icon name="lucide:refresh-cw" size="14" />
-              {{ t('app.updateCache') }}
-            </button>
+          <div
+            v-if="!config.public.isProd"
+            class="grid justify-items-center gap-1 px-3 pt-2 pb-1"
+          >
+            <UButton
+              :label="t('app.updateCache')"
+              class="text-muted"
+              color="neutral"
+              icon="lucide:refresh-cw"
+              size="xs"
+              variant="ghost"
+              @click="clearCachesAndReload"
+            />
 
             <div class="text-muted text-center text-xs">
               {{ t('app.version') }} {{ pkg.version }}
