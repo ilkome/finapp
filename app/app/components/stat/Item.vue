@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import gsap from 'gsap'
-import { CustomEase } from 'gsap/CustomEase'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -31,20 +30,16 @@ const statConfig = inject(statConfigKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const trnsStore = useTrnsStore()
 
-// Mobile chart reveal, scrubbed to the document scroll over the zone [page top .. header pin]:
-//  - fade: the chart fades + lifts as it scrolls out through the top (scrub, both ways),
-//    starting the instant you scroll from the very top.
-//  - snap: on finger-lift (touchend - a drag fires pointercancel, not pointerup) our tween
-//    finishes the gesture ONLY when released inside the zone: down docks the categories, up
-//    reveals the chart. We never snap mid-fling - easing scrollTop against a live native fling
-//    (two threads, per frame) was the jitter - so an up-fling that coasts in from the categories
-//    just rests where momentum dies, and a second pull completes the reveal.
+// Mobile chart reveal over the zone [page top .. header pin]:
+//  - fade: the chart fades + lifts as it scrolls out through the top (GSAP scrub, both ways).
+//  - snap: once the native scroll fully settles (finger up + momentum dead) inside the zone, one
+//    native smooth-scroll commits to chart-shown (0) or docked (pin). This is how T-Bank's mobile
+//    web stays glassy: it never writes scrollTop while the fling is live, so nothing races it.
+//    Our earlier per-frame rAF tween easing scrollTop against the iOS fling was the jitter.
 const chartTrigger = ref<HTMLElement | null>(null)
 const chartFx = ref<HTMLElement | null>(null)
 if (stickyNav && import.meta.client) {
-  gsap.registerPlugin(ScrollTrigger, CustomEase)
-  // iOS sheet / scroll-deceleration curve: fast start, long soft settle.
-  CustomEase.create('apple', 'M0,0 C0.32,0.72 0,1 1,1')
+  gsap.registerPlugin(ScrollTrigger)
   const mm = gsap.matchMedia()
   onMounted(() => {
     mm.add('(max-width: 767px)', () => {
@@ -71,53 +66,42 @@ if (stickyNav && import.meta.client) {
         start: 0,
       })
 
-      // Snap runs only on finger-lift, never mid-fling (that fight was the jitter) - see comment.
-      let dir = 0
-      let prevY = scroller.scrollTop
-      let armed = false // the touch began on the page, not on a modal/overlay above it
-
-      // Duration tracks distance (~constant velocity) so a short snap stays quick, not sluggish.
-      const snapTo = (target: number) => {
-        gsap.to(scroller, {
-          duration: gsap.utils.clamp(0.3, 0.45, Math.abs(target - scroller.scrollTop) / 800),
-          ease: 'apple',
-          overwrite: true,
-          scrollTop: target,
-        })
-      }
-      const onScroll = () => {
-        const y = scroller.scrollTop
-        if (y !== prevY)
-          dir = y > prevY ? 1 : -1
-        prevY = y
-      }
-      // Ignore touches that start on a modal/sheet (all teleported to <body>, outside the page
-      // scroller) - otherwise scrolling a sheet would snap the chart behind it.
-      const onTouchStart = (e: TouchEvent) => {
-        armed = !!(e.target as Element | null)?.closest?.('#pageScroll')
-        if (armed)
-          gsap.killTweensOf(scroller)
-      }
-      const onTouchEnd = () => {
-        if (!armed)
+      // Native snap: fire only after the scroll goes idle (finger up + momentum dead), then let
+      // the browser own the animation. `touching` blocks any snap while a finger is down; the
+      // debounce fires ~100ms after the last scroll event, i.e. once the iOS fling has died.
+      let touching = false
+      let idle: ReturnType<typeof setTimeout> | undefined
+      const settle = () => {
+        if (touching)
           return
         const pin = pinAt()
         const y = scroller.scrollTop
-        if (y <= 0 || y >= pin)
-          return
-        // Released inside the zone: finish the way the finger was going - down docks the
-        // categories, up reveals the chart. No mid-fling takeover, so nothing fights the fling.
-        snapTo(dir > 0 ? pin : 0)
+        if (y <= 2 || y >= pin - 2)
+          return // already at a rest point, or scrolled past the zone into the list
+        // ponytail: nearest edge (pin/2). Bias the threshold if committing to the docked state
+        // should feel easier than returning to the chart.
+        window.scrollTo({ behavior: 'smooth', top: y < pin / 2 ? 0 : pin })
       }
-      window.addEventListener('scroll', onScroll, { passive: true })
+      const schedule = () => {
+        clearTimeout(idle)
+        idle = setTimeout(settle, 100)
+      }
+      const onTouchStart = () => {
+        touching = true
+        clearTimeout(idle)
+      }
+      const onTouchEnd = () => {
+        touching = false
+      }
+      window.addEventListener('scroll', schedule, { passive: true })
       window.addEventListener('touchstart', onTouchStart, { passive: true })
       window.addEventListener('touchend', onTouchEnd, { passive: true })
 
       return () => {
-        window.removeEventListener('scroll', onScroll)
+        clearTimeout(idle)
+        window.removeEventListener('scroll', schedule)
         window.removeEventListener('touchstart', onTouchStart)
         window.removeEventListener('touchend', onTouchEnd)
-        gsap.killTweensOf(scroller)
       }
     })
   })
