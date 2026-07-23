@@ -37,7 +37,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       <WalletsItem
         :walletId
         :wallet="walletsStore.itemsComputed[walletId]!"
-        insideClasses="!min-h-[46px]"
+        insideClasses="min-h-11.5!"
         isShowIcon
         isShowCreditLimit
         compact

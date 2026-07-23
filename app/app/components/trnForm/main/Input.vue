@@ -30,13 +30,13 @@ const { t } = useI18n()
 
     <FormInput
       :class="{
-        '!text-income-1 placeholder:!text-income-1': highlight === 'income',
-        '!text-expense-1 placeholder:!text-expense-1': highlight === 'expense',
+        'text-income-1! placeholder:text-income-1!': highlight === 'income',
+        'text-expense-1! placeholder:text-expense-1!': highlight === 'expense',
         'text-center': !isTransfer,
       }"
       :placeholder="t('trnForm.enterAmount')"
       :modelValue="amountRaw"
-      class="swiper-no-swiping font-secondary border-transparent bg-transparent pt-6 pb-2 text-center !text-3xl placeholder:text-3xl"
+      class="swiper-no-swiping font-secondary border-transparent bg-transparent pt-6 pb-2 text-center text-3xl! placeholder:text-3xl"
       inputmode="tel"
       @update:modelValue="(value: string) => emit('change', value || '')"
     />

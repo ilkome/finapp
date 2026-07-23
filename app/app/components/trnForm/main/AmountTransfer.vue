@@ -104,7 +104,7 @@ watch(
               :class="[{
                 'bg-elevated': trnsFormStore.values.transferType === item.transferType,
               }]"
-              class="text-highlighted/70 interactive flex min-h-[44px] w-1/2 grow items-center rounded-sm px-3 py-2 text-sm lg:min-h-[42px]"
+              class="text-highlighted/70 interactive flex min-h-11 w-1/2 grow items-center rounded-sm px-3 py-2 text-sm lg:min-h-10.5"
             >
               {{ t(`trnForm.transfer.${slug}Label`) }}
             </div>

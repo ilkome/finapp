@@ -37,7 +37,7 @@ function onCategoryClick(categoryId: CategoryId) {
         :class="itemClasses"
         :walletId="walletId"
         :wallet="walletsStore.itemsComputed[walletId]!"
-        insideClasses="!min-h-[38px]"
+        insideClasses="min-h-9.5!"
         compact
         isShowIcon
         isShowCreditLimit
@@ -53,7 +53,7 @@ function onCategoryClick(categoryId: CategoryId) {
         :categoryId="categoryId"
         :class="itemClasses"
         stacked
-        insideClasses="!min-h-[38px]"
+        insideClasses="min-h-9.5!"
         @click="onCategoryClick(categoryId)"
       />
     </template>

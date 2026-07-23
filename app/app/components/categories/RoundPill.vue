@@ -38,7 +38,7 @@ const parentCategory = computed(() => {
         :name="category.icon"
         :color="category.color"
         :size="14"
-        class="!w-6 p-1"
+        class="w-6! p-1"
         invert
       />
       <UiIconBase
@@ -46,7 +46,7 @@ const parentCategory = computed(() => {
         :name="category.icon"
         :color="category.color"
         :size="14"
-        class="!w-6 p-1"
+        class="w-6! p-1"
       />
     </div>
 

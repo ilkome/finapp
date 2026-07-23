@@ -19,7 +19,7 @@ const formattedDate = computed(() => {
     </div>
 
     <div class="text-muted">
-      <div class="text-2xs pb-[2px] leading-none">
+      <div class="text-2xs pb-0.5 leading-none">
         {{ formattedDate.weekday }}
       </div>
 

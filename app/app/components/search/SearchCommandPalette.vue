@@ -186,7 +186,7 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
                   :colorize="getTransfer(rawItem as SearchResultItem)?.incomeAmount === getTransfer(rawItem as SearchResultItem)?.expenseAmount ? undefined : 'expense'"
                   :currencyCode="getTransfer(rawItem as SearchResultItem)!.expenseWallet.currency"
                   :type="TrnType.Expense"
-                  class="!flex items-center gap-2"
+                  class="flex! items-center gap-2"
                   variant="sm"
                 />
 
@@ -196,7 +196,7 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
                     :currencyCode="getTransfer(rawItem as SearchResultItem)!.incomeWallet.currency"
                     :type="TrnType.Income"
                     colorize="income"
-                    class="!flex items-center gap-2"
+                    class="flex! items-center gap-2"
                     variant="sm"
                   />
                 </template>

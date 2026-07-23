@@ -27,16 +27,16 @@ function onBack() {
 
 <template>
   <div
-    class="bg-default/90 mb-2 backdrop-blur"
-    :class="sticky && 'sticky top-0 z-20'"
+    class="mb-2 bg-default/90 backdrop-blur"
+    :class="sticky && 'md:sticky md:top-0 md:z-20'"
   >
-    <div class="border-accented grid min-h-12 max-w-7xl items-center border-b p-2 lg:p-4">
+    <div class="grid min-h-12 max-w-7xl items-center border-accented p-2 pb-0 md:border-b lg:p-4">
       <div class="flex grow items-center">
         <button
           v-if="backTo"
           type="button"
           :aria-label="$t('base.previous')"
-          class="interactive text-muted flex min-h-[42px] min-w-[42px] shrink-0 cursor-default items-center justify-center rounded-full text-xl"
+          class="flex min-h-10.5 min-w-10.5 shrink-0 cursor-default items-center justify-center rounded-full interactive text-xl text-muted"
           @click="onBack"
         >
           <Icon name="lucide:arrow-left" size="20" />
@@ -67,7 +67,7 @@ function onBack() {
 
       <div
         v-if="$slots.selected"
-        class="-mb-2 grid lg:-mb-4"
+        class="grid lg:-mb-4"
       >
         <slot name="selected" />
       </div>

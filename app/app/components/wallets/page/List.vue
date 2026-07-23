@@ -252,7 +252,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
                   :isShown
                   @click="toggleMap(groupPrimary)"
                 >
-                  <div class="font-tertiary !text-toned text-base leading-none font-semibold">
+                  <div class="font-tertiary text-toned! text-base leading-none font-semibold">
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 

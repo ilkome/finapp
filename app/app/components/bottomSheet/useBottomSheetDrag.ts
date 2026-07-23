@@ -200,13 +200,17 @@ export function useBottomSheetDrag({
       // Open with the same small rise + fade as the classic sheet: start 30px
       // below the collapsed resting offset, not fully below the fold. A plain
       // 30px offset would sit above the rest and drop in from the top instead.
+      const collapsedOffset = -restingInitialY(collapsedFraction.value)
       const closedTransform = detentMode.value
-        ? `translateY(${-restingInitialY(collapsedFraction.value) + 30}px)`
+        ? `translateY(${collapsedOffset + 30}px)`
         : 'translateY(30px)'
       return {
         ...dragStyle.value,
-        opacity: 0,
-        transform: closedTransform,
+        // How far the sheet is slid below its expanded rest; children (e.g. a
+        // pinned footer) counter-translate by this to stay at the screen bottom.
+        '--sheet-ty': `${collapsedOffset + 30}px`,
+        'opacity': 0,
+        'transform': closedTransform,
       }
     }
 
@@ -216,8 +220,9 @@ export function useBottomSheetDrag({
       const clamped = Math.max(0, dragDistance.value)
       return {
         ...dragStyle.value,
-        opacity: 1,
-        transform: clamped === 0 ? '' : `translateY(${clamped}px)`,
+        '--sheet-ty': `${clamped}px`,
+        'opacity': 1,
+        'transform': clamped === 0 ? '' : `translateY(${clamped}px)`,
       }
     }
 

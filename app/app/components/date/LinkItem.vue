@@ -14,7 +14,7 @@ const emit = defineEmits<{
   <div
     :class="cn(
       'flex items-center text-nowrap rounded-sm text-xs leading-none px-3',
-      'interactive flex items-center justify-center min-h-[32px]',
+      'interactive flex items-center justify-center min-h-8',
       props.variant === 'small' ? 'px-2 text-2xs text-muted' : 'bg-accented',
       props.isActive ? 'text-primary' : '',
     )"

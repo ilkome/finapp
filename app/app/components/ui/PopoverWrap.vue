@@ -1,12 +1,10 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   isShowCloseBtn?: boolean
-  // Off when the slotted content manages its own scrolling (avoids a second,
-  // nested scrollbar). On by default for plain content that relies on this wrap.
-  scroll?: boolean
+  isShowScroll?: boolean
   title?: string
 }>(), {
-  scroll: true,
+  isShowScroll: true,
 })
 
 const emit = defineEmits<{
@@ -16,9 +14,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    :class="cn('grid',
-               (props.title || props.isShowCloseBtn) && 'grid-rows-[auto_1fr]',
-    )"
+    class="flex flex-col overflow-hidden"
     style="max-height: var(--reka-popper-available-height, 60dvh)"
   >
     <UiTitleModal v-if="props.title">
@@ -32,8 +28,8 @@ const emit = defineEmits<{
 
     <div
       v-if="$slots.default"
-      :class="props.scroll ? 'scroller overflow-y-auto' : 'grid min-h-0 overflow-hidden'"
-      class="px-2 py-px"
+      :class="props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden'"
+      class="min-h-0 px-2 py-px"
     >
       <slot />
     </div>

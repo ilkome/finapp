@@ -5,14 +5,10 @@ export default defineAppConfig({
         .replace(/stroke-width="[^"]*"/g, `stroke-width="1.75"`)
     },
   },
-  theme: {
-    blackAsPrimary: true,
-    radius: 0.375,
-  },
   ui: {
     calendar: {
       slots: {
-        body: '!flex-col !space-y-8',
+        body: 'flex-col! space-y-8!',
         cellTrigger: 'data-[disabled]:hover:bg-transparent data-today:bg-primary/10',
         root: 'p-2 pt-0',
       },
@@ -31,7 +27,7 @@ export default defineAppConfig({
     },
     modal: {
       slots: {
-        overlay: '!bg-overlay',
+        overlay: 'bg-overlay!',
       },
     },
     popover: {
@@ -45,12 +41,12 @@ export default defineAppConfig({
         variant: 'outline',
       },
       slots: {
-        base: 'min-h-[42px] px-4 min-w-[160px]',
+        base: 'min-h-10.5 px-4 min-w-40',
         item: 'hover:bg-elevated/50 rounded-sm',
       },
       variants: {
         variant: {
-          outline: 'bg-elevated/30 hover:!bg-elevated/50',
+          outline: 'bg-elevated/30 hover:bg-elevated/50!',
         },
       },
     },

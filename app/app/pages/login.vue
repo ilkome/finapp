@@ -137,7 +137,7 @@ watch(
           {{ t("login.description") }}
         </div>
 
-        <div class="grid min-w-[320px] items-center gap-3 pt-22">
+        <div class="grid min-w-80 items-center gap-3 pt-22">
           <button
             class="shiny-pro"
             :disabled="isLoading"

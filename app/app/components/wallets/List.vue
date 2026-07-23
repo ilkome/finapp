@@ -48,7 +48,7 @@ onMounted(() => stateLimit.value = limit)
       name="toggle"
     >
       <div
-        class="interactive flex-center text-muted -mt-px min-h-[42px] rounded-sm px-2 py-1.5 text-xs"
+        class="interactive flex-center text-muted -mt-px min-h-10.5 rounded-sm px-2 py-1.5 text-xs"
         @click="toggle"
       >
         <template v-if="stateLimit > 0">

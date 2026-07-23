@@ -12,7 +12,7 @@ const currenciesStore = useCurrenciesStore()
 
 <template>
   <div
-    class="flex min-h-[42px] min-w-[42px] grow-0 items-center gap-1 py-1 lg:gap-1"
+    class="flex min-h-10.5 min-w-10.5 grow-0 items-center gap-1 py-1 lg:gap-1"
   >
     <UiTextSubtitle>{{ props.title }}</UiTextSubtitle>
 

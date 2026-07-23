@@ -5,12 +5,9 @@ const props = withDefaults(defineProps<{
   dragClassesCustom?: string
   isOpen?: boolean
   isShowCloseBtn?: boolean
-  // Makes the mobile trigger wrapper a keyboard-focusable button; nests a button
-  // if the trigger is already interactive, so opt-in only.
   keyboardTrigger?: boolean
   snapPoints?: number[]
   title?: string
-  // Keep content mounted while hidden so state survives reopen.
   unmountOnHide?: boolean
 }>(), {
   align: 'start',
@@ -28,7 +25,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 
 const open = ref(false)
 
-// Latches on first open so the kept-mounted sheet renders once, then toggles via isShow.
+// Render the kept-mounted sheet only once it has first opened.
 const hasOpened = ref(false)
 watch(() => props.isOpen, (value) => {
   if (value)
@@ -56,7 +53,7 @@ watch(() => props.isOpen, (value) => {
       <UiPopoverWrap
         :title="props.title"
         :isShowCloseBtn="props.isShowCloseBtn"
-        :scroll="!$slots.custom"
+        :isShowScroll="!$slots.custom"
         @close="() => open = false"
       >
         <slot

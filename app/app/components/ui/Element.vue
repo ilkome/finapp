@@ -14,7 +14,7 @@ const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
 
 const elementClasses = computed(() => cn(
-  'interactive uiElement flex grow border border-transparent items-center gap-3 overflow-hidden rounded-md px-2 py-1.5 min-h-[42px] -my-[1px]',
+  'interactive uiElement flex grow border border-transparent items-center gap-3 overflow-hidden rounded-md px-2 py-1.5 min-h-10.5 -my-0.25',
   props.insideClasses,
   { 'relative z-10 bg-elevated/30 border-primary/30': props.isActive },
 ))
@@ -42,10 +42,9 @@ const elementClasses = computed(() => cn(
     <div
       v-if="lineWidth"
       :class="{
-        'ml-12': lineWidth === 1,
-        'ml-[48px]': lineWidth === 2,
+        'ml-12': lineWidth === 1 || lineWidth === 2,
         'group-last/trn:hidden': lineWidth === 3,
-        'ml-[48px] group-last/item:hidden': lineWidth === 4,
+        'ml-12 group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
       class="bg-elevated/50 mx-2 h-px"
@@ -61,6 +60,6 @@ a.uiElementLink {
 }
 
 [data-state='open'] > .uiElement {
-  @apply !bg-accented;
+  @apply bg-accented!;
 }
 </style>

@@ -5,7 +5,7 @@ import type { LocaleSlug } from '~/components/locale/types'
 
 import { useDemo } from '~/components/demo/useDemo'
 import { useTheme } from '~/components/theme/useTheme'
-import { useThemeOptions } from '~/components/theme/useThemeOptions'
+import { capitalize, swatchPalette, useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useUserStore } from '~/components/user/useUserStore'
 
 type Panel = 'appearance' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
@@ -33,7 +33,7 @@ const router = useRouter()
 const userStore = useUserStore()
 const { generateDemoData, isDemo } = useDemo()
 const { options: themeOptions, preference: themePreference, setTheme } = useTheme()
-const { blackAsPrimary, neutral, primary, radius } = useThemeOptions()
+const { blackAsPrimary, neutral, neutralColors, primary, primaryColors, radius, radiuses, setBlackAsPrimary } = useThemeOptions()
 
 async function enableDemo() {
   isDemo.value = 'true'
@@ -120,7 +120,7 @@ const panelVariants = {
 }
 const panelTransition = { duration: 0.12, ease: [0.4, 0, 0.2, 1] as const }
 
-const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-elevated/50'
+const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-elevated/50'
 </script>
 
 <template>
@@ -138,7 +138,7 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
         <UButton
           :aria-label="t('login.menu.title')"
           :variant="isActive ? 'soft' : 'ghost'"
-          class="text-muted max-md:border-default/80 max-md:bg-default/20 max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
+          class="text-muted max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:border-default/80 max-md:bg-default/20 max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
           color="neutral"
           icon="i-lucide-menu"
           size="lg"
@@ -166,13 +166,13 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                 :aria-label="t('base.previous')"
                 role="button"
                 tabindex="0"
-                class="hover:bg-elevated/50 mb-1 flex items-center gap-2 rounded-sm p-2"
+                class="mb-1 flex items-center gap-2 rounded-sm p-2 hover:bg-elevated/50"
                 @click="back"
                 @keydown.enter.prevent="back"
                 @keydown.space.prevent="back"
               >
-                <UIcon name="lucide:chevron-left" class="text-muted size-5" />
-                <span class="text-toned grow text-sm font-medium">{{ panelTitle }}</span>
+                <UIcon name="lucide:chevron-left" class="size-5 text-muted" />
+                <span class="grow text-sm font-medium text-toned">{{ panelTitle }}</span>
               </div>
 
               <button
@@ -183,15 +183,15 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                 @click="open(row.id)"
               >
                 <span class="flex min-w-7 justify-center">
-                  <UIcon :name="row.icon" class="text-muted size-5" />
+                  <UIcon :name="row.icon" class="size-5 text-muted" />
                 </span>
                 <span class="grow font-medium">{{ row.title }}</span>
-                <span class="text-dimmed text-xs capitalize">{{ row.value }}</span>
-                <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
+                <span class="text-xs text-dimmed capitalize">{{ row.value }}</span>
+                <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
               </button>
 
               <template v-if="activePanel === 'root' && sessionActions">
-                <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
+                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
                 <button
                   :class="rowClass"
@@ -199,7 +199,7 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="() => { enableDemo(); close() }"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon name="mdi:play-box-outline" class="text-muted size-5" />
+                    <UIcon name="mdi:play-box-outline" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ t('login.openDemo') }}</span>
                 </button>
@@ -210,14 +210,14 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="userStore.signOut()"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon name="i-lucide-log-out" class="text-muted size-5" />
+                    <UIcon name="i-lucide-log-out" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ t('user.logout') }}</span>
                 </button>
               </template>
 
               <template v-if="activePanel === 'root'">
-                <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
+                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
                 <a
                   :class="rowClass"
@@ -227,10 +227,10 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="close"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon name="mdi:github" class="text-muted size-5" />
+                    <UIcon name="mdi:github" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">GitHub</span>
-                  <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
+                  <UIcon name="lucide:external-link" class="size-4 shrink-0 text-dimmed" />
                 </a>
 
                 <a
@@ -241,10 +241,10 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="close"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon name="lucide:book-open" class="text-muted size-5" />
+                    <UIcon name="lucide:book-open" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ t('login.menu.documentation') }}</span>
-                  <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
+                  <UIcon name="lucide:external-link" class="size-4 shrink-0 text-dimmed" />
                 </a>
               </template>
             </div>
@@ -254,13 +254,13 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                 :aria-label="t('base.previous')"
                 role="button"
                 tabindex="0"
-                class="hover:bg-elevated/50 mb-1 flex items-center gap-2 rounded-sm p-2"
+                class="mb-1 flex items-center gap-2 rounded-sm p-2 hover:bg-elevated/50"
                 @click="back"
                 @keydown.enter.prevent="back"
                 @keydown.space.prevent="back"
               >
-                <UIcon name="lucide:chevron-left" class="text-muted size-5" />
-                <span class="text-toned grow text-sm font-medium">{{ panelTitle }}</span>
+                <UIcon name="lucide:chevron-left" class="size-5 text-muted" />
+                <span class="grow text-sm font-medium text-toned">{{ panelTitle }}</span>
               </div>
 
               <!-- Language -->
@@ -276,7 +276,7 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   <UIcon
                     v-if="locale === opt.value"
                     name="lucide:check"
-                    class="text-primary size-4 shrink-0"
+                    class="size-4 shrink-0 text-primary"
                   />
                 </button>
               </div>
@@ -291,30 +291,109 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="setTheme(opt.value)"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon :name="THEME_ICONS[opt.value]" class="text-muted size-5" />
+                    <UIcon :name="THEME_ICONS[opt.value]" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ opt.label }}</span>
                   <UIcon
                     v-if="themePreference === opt.value"
                     name="lucide:check"
-                    class="text-primary size-4 shrink-0"
+                    class="size-4 shrink-0 text-primary"
                   />
                 </button>
               </div>
 
               <!-- Primary color -->
-              <div v-else-if="activePanel === 'primary'" class="px-2 pb-1">
-                <ThemePickerPrimary />
+              <div v-else-if="activePanel === 'primary'" class="grid gap-0.5">
+                <button
+                  :class="rowClass"
+                  type="button"
+                  @click="setBlackAsPrimary(true)"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span class="size-5 shrink-0 rounded-full bg-black dark:bg-white" />
+                  </span>
+                  <span class="grow font-medium">Black</span>
+                  <UIcon
+                    v-if="blackAsPrimary"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
+
+                <button
+                  v-for="color in primaryColors"
+                  :key="color"
+                  :class="rowClass"
+                  type="button"
+                  @click="primary = color"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span
+                      class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
+                      :style="{
+                        '--chip-light': `var(--color-${color}-500)`,
+                        '--chip-dark': `var(--color-${color}-400)`,
+                      }"
+                    />
+                  </span>
+                  <span class="grow font-medium capitalize">{{ capitalize(color) }}</span>
+                  <UIcon
+                    v-if="!blackAsPrimary && primary === color"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
               </div>
 
               <!-- Background color -->
-              <div v-else-if="activePanel === 'neutral'" class="px-2 pb-1">
-                <ThemePickerNeutral />
+              <div v-else-if="activePanel === 'neutral'" class="grid gap-0.5">
+                <button
+                  v-for="color in neutralColors"
+                  :key="color"
+                  :class="rowClass"
+                  type="button"
+                  @click="neutral = color"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span
+                      class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
+                      :style="{
+                        '--chip-light': `var(--color-${swatchPalette(color)}-500)`,
+                        '--chip-dark': `var(--color-${swatchPalette(color)}-400)`,
+                      }"
+                    />
+                  </span>
+                  <span class="grow font-medium capitalize">{{ capitalize(color) }}</span>
+                  <UIcon
+                    v-if="neutral === color"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
               </div>
 
               <!-- Rounding -->
-              <div v-else class="px-2 pb-1">
-                <ThemePickerRadius />
+              <div v-else class="grid gap-0.5">
+                <button
+                  v-for="option in radiuses"
+                  :key="option"
+                  :class="rowClass"
+                  type="button"
+                  @click="radius = option"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span
+                      class="size-5 shrink-0 bg-elevated ring-1 ring-accented"
+                      :style="{ borderRadius: `${option}rem` }"
+                    />
+                  </span>
+                  <span class="grow font-medium">{{ option }}</span>
+                  <UIcon
+                    v-if="radius === option"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
               </div>
             </div>
           </Motion>

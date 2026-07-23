@@ -75,12 +75,12 @@ function onAmountClick(e: MouseEvent) {
       :isActive="props.isActive"
       :lineWidth="props.lineWidth"
       class="relative"
-      insideClasses="!min-h-[44px]"
+      insideClasses="min-h-11!"
     >
       <template #line>
         <div
           v-if="isLines"
-          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-[52px]"
+          class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-13"
         >
           <div class="bg-accented overflow-hidden rounded-lg">
             <div
@@ -102,12 +102,12 @@ function onAmountClick(e: MouseEvent) {
           v-else
           :color="category?.color"
           :name="category?.icon"
-          class="ml-1 !w-6"
+          class="ml-1 w-6!"
         />
       </template>
 
       <div
-        :class="{ '!pb-2': isLines }"
+        :class="{ 'pb-2!': isLines }"
         class="flex grow items-center gap-1"
       >
         <CategoriesName
@@ -128,7 +128,7 @@ function onAmountClick(e: MouseEvent) {
 
       <div
         v-if="props.item.value !== 0"
-        :class="{ '!pb-2': isLines }"
+        :class="{ 'pb-2!': isLines }"
         class="-my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm px-2"
         @click="onAmountClick"
         @pointerdown.stop

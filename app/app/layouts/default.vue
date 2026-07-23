@@ -46,8 +46,9 @@ onMounted(() => {
 const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
+  showShell.value && 'bg-muted',
   showShell.value && (isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
-  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-[360px]',
+  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
 ))
 
 useAsyncData('app', initApp)

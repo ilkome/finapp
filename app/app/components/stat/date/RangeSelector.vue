@@ -18,7 +18,7 @@ const statDate = inject(statDateKey)!
   >
     <template #trigger="{ isActive }">
       <UiTitleCollapse
-        class="text-md bg-elevated/30 !grow-0"
+        class="text-md bg-elevated grow-0!"
         isShown
       >
         <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
@@ -35,7 +35,7 @@ const statDate = inject(statDateKey)!
 
     <template #content="{ close }">
       <StatDateSelector
-        class="min-w-0 pb-2 md:min-w-[362px] md:px-3"
+        class="min-w-0 pb-2 md:min-w-90.5 md:px-3"
         @close="close"
       />
     </template>

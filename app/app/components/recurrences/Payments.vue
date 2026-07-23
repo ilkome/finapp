@@ -433,7 +433,7 @@ function fmtDay(day: number) {
               min="0"
               step="any"
               :aria-label="t('recurrences.form.amount')"
-              class="!bg-default !min-h-0 !w-20 !rounded-sm !px-2 !py-1 text-right !text-sm"
+              class="bg-default! min-h-0! w-20! rounded-sm! px-2! py-1! text-right text-sm!"
               @update:modelValue="(value: string) => onDraftInput(p, value)"
               @keydown.enter="confirmPending(p)"
             />

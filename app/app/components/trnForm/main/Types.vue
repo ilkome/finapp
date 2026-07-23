@@ -18,7 +18,7 @@ function isItActive(amountType: TrnType) {
 </script>
 
 <template>
-  <UiTabsBar class="!gap-0">
+  <UiTabsBar class="gap-0!">
     <UiTabsItemPill
       :isActive="isItActive(0)"
       @click="setAmountType(0)"

@@ -29,7 +29,7 @@ const isExpanded = ref(false)
 
     <button
       type="button"
-      class="interactive text-muted flex min-h-[32px] min-w-[32px] shrink-0 items-center justify-center rounded-sm"
+      class="interactive text-muted flex min-h-8 min-w-8 shrink-0 items-center justify-center rounded-sm"
       @click="isExpanded = !isExpanded"
     >
       <Icon

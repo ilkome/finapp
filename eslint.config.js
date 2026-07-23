@@ -44,14 +44,18 @@ export default [
     ],
   },
   {
+    // v4.2 ships configs.recommended as a single object scoped to js/ts only (no .vue) and with
+    // its own languageOptions - spreading it would strip the Vue parser. Register the plugin
+    // ourselves against .vue too and reuse just its ruleset.
+    files: ['**/*.vue', '**/*.{js,jsx,ts,tsx}'],
+    plugins: { tailwindcss: tailwind },
+    rules: tailwind.configs.recommended.rules,
     settings: {
       tailwindcss: {
-        config: {},
-        cssFiles: ['app/app/assets/css/**/*.css'],
+        cssConfigPath: `${import.meta.dirname}/app/app/assets/css/main.css`,
       },
     },
   },
-  ...tailwind.configs['flat/recommended'],
   ...await extend(withNuxt(
     antfu({
       formatters: {

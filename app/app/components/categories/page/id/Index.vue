@@ -295,7 +295,6 @@ async function onDeleteConfirm() {
       :activeTab
       :categoryId
       :preCategoriesIds="childrenIds"
-      :range="statDate.range.value"
       :storageKey
       :trnsIds
     />

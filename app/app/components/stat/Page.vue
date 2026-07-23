@@ -82,7 +82,6 @@ onDeactivated(() => {
 
     <StatWrap
       :activeTab
-      :range="statDate.range.value"
       :storageKey
       :trnsIds
       hasChildren

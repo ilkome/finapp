@@ -126,7 +126,7 @@ function onClickWallet(walletId: WalletId) {
             :walletId
             :wallet="walletsStore.itemsComputed?.[walletId]!"
             :isShowIcon="statConfig.config.value.wallets.isShowIcon"
-            insideClasses="!min-h-[38px]"
+            insideClasses="min-h-9.5!"
             compact
             @click="onClickWallet(walletId)"
           />

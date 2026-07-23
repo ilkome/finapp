@@ -50,7 +50,7 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
     <template #trigger>
       <button
         type="button"
-        class="bg-elevated/30 hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 flex min-h-[42px] w-full items-center gap-2 rounded-md border border-transparent px-4 py-2 text-left text-base font-normal outline-none"
+        class="bg-elevated/30 hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent px-4 py-2 text-left text-base font-normal outline-none"
       >
         <span :class="props.modelValue != null ? 'text-highlighted' : 'text-muted'">
           {{ label }}

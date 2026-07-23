@@ -17,7 +17,7 @@ const emit = defineEmits<{
 
     <div
       :class="cn(
-        'relative h-5 w-10 rounded-xl py-px px-[2px] transition-colors ease-in-out',
+        'relative h-5 w-10 rounded-xl py-px px-0.5 transition-colors ease-in-out',
         value ? 'bg-primary' : 'bg-elevated',
       )"
     >

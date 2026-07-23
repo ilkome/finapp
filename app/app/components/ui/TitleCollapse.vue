@@ -12,7 +12,7 @@ const emit = defineEmits<{
 <template>
   <div
     :class="cn(
-      'flex grow items-center gap-2 rounded-md min-h-[42px] min-w-[42px] pb-0 !font-tertiary !text-base font-semibold leading-none tracking-wide',
+      'flex grow items-center gap-2 rounded-full min-h-10.5 min-w-10.5 pb-0 font-tertiary! text-base! font-semibold leading-none tracking-wide',
       props.arrow === 'right' ? 'justify-between px-4' : 'px-3',
       !props.isHideArrow && 'interactive',
     )"

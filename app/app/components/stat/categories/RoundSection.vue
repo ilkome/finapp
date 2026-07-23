@@ -72,7 +72,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
       :class="{
         'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
         'opacity-50': !filteredSet.has(item.id) && item.value === 0,
-        '!border-primary': filteredSet.has(item.id),
+        'border-primary!': filteredSet.has(item.id),
       }"
       class="transition-opacity"
       isShowAmount

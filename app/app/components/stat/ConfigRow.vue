@@ -14,7 +14,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="hover:bg-elevated/50 flex min-h-[52px] items-stretch rounded-sm text-sm">
+  <div class="hover:bg-elevated/50 flex min-h-13 items-stretch rounded-sm text-sm">
     <div
       role="button"
       tabindex="0"

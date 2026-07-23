@@ -43,8 +43,8 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
 <template>
   <div
     :class="{
-      '!text-expense-1': colorize === 'expense' && type === 0,
-      '!text-income-1': colorize === 'income' && type === 1,
+      'text-expense-1!': colorize === 'expense' && type === 0,
+      'text-income-1!': colorize === 'income' && type === 1,
       'text-2xs': variant === '2xs',
       'text-xs': variant === 'xs',
       'text-sm': variant === 'sm',

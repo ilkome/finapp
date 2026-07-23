@@ -17,7 +17,7 @@ const props = defineProps<{
     :class="cn(
       'flex-center text-icon-primary aspect-square overflow-hidden',
       props.invert && cn('rounded-full w-7 p-1.5', props.class),
-      props.invert && !props.color && 'bg-muted !text-muted',
+      props.invert && !props.color && 'bg-muted text-muted!',
     )"
   >
     <Icon

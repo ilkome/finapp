@@ -8,7 +8,7 @@ const { openFormForCreate, ui } = useTrnsFormStore()
   <div
     v-if="!ui.isShow"
     class="
-      group to-elevated fixed top-0 right-0 h-full w-[300px]
+      group to-elevated fixed top-0 right-0 h-full w-75
       items-end justify-end from-transparent
       transition hover:bg-gradient-to-r xl:flex
     "

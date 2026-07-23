@@ -28,7 +28,7 @@ const contextMenuItems = computed(() => [[{
     <UiElement
       :lineWidth="props.isBase ? 6 : 0"
       class="group"
-      insideClasses="!min-h-[44px]"
+      insideClasses="min-h-11!"
     >
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">

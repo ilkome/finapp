@@ -5,7 +5,9 @@ import { omit } from '#ui/utils'
 // Tailwind ships these next to the real palettes, but none of them is a usable accent.
 const NON_PALETTE_COLORS = ['inherit', 'current', 'transparent', 'black', 'white']
 
-const NEUTRAL_COLORS = ['slate', 'gray', 'zinc', 'neutral', 'stone']
+// slate/gray/zinc/neutral/stone are Tailwind palettes; taupe/mauve/mist/olive are
+// the extra neutrals @nuxt/ui's docs offer - their palettes live in `theme.css`.
+const NEUTRAL_COLORS = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
 const RADIUSES = [0, 0.25, 0.375, 0.5]
 
 const PRIMARY_COLORS = Object.keys(
@@ -29,15 +31,20 @@ export function swatchPalette(color: string) {
 }
 
 /**
- * Appearance options backed by appConfig, persisted under the `nuxt-ui-*` keys
- * that `app/plugins/theme.ts` reads back on boot.
+ * Appearance options, mirroring @nuxt/ui's docs `useTheme`. radius and
+ * black-as-primary are `useLocalStorage` refs (self-hydrating, no boot plugin);
+ * primary/neutral live in appConfig (the module reads them to emit colour
+ * classes) and are restored by `app/plugins/theme.ts` before first paint.
+ * `style` is the head-injected CSS that applies radius and the black accent.
  */
 export function useThemeOptions() {
   const appConfig = useAppConfig()
 
+  const radius = useLocalStorage('nuxt-ui-radius', 0.375)
+  const blackAsPrimary = useLocalStorage('nuxt-ui-black-as-primary', true)
+
   function setBlackAsPrimary(value: boolean) {
-    appConfig.theme.blackAsPrimary = value
-    window.localStorage.setItem('nuxt-ui-black-as-primary', String(value))
+    blackAsPrimary.value = value
   }
 
   const primary = computed({
@@ -61,18 +68,18 @@ export function useThemeOptions() {
     },
   })
 
-  const radius = computed({
-    get() {
-      return appConfig.theme.radius
-    },
-    set(option: number) {
-      appConfig.theme.radius = option
-      window.localStorage.setItem('nuxt-ui-radius', String(option))
-    },
-  })
+  const radiusStyle = computed(() => `:root { --ui-radius: ${radius.value}rem; }`)
+  const blackAsPrimaryStyle = computed(() =>
+    blackAsPrimary.value ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}',
+  )
+
+  const style = [
+    { id: 'nuxt-ui-radius', innerHTML: radiusStyle, tagPriority: -2 },
+    { id: 'nuxt-ui-black-as-primary', innerHTML: blackAsPrimaryStyle, tagPriority: -2 },
+  ]
 
   return {
-    blackAsPrimary: computed(() => appConfig.theme.blackAsPrimary),
+    blackAsPrimary: computed(() => blackAsPrimary.value),
     neutral,
     neutralColors: NEUTRAL_COLORS,
     primary,
@@ -80,5 +87,6 @@ export function useThemeOptions() {
     radius,
     radiuses: RADIUSES,
     setBlackAsPrimary,
+    style,
   }
 }

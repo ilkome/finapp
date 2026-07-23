@@ -55,7 +55,7 @@ async function clearCachesAndReload() {
 
           <div class="py-4">
             <div
-              class="interactive text-muted flex min-h-[44px] items-center gap-3 rounded-sm px-2 py-1.5 md:min-h-[38px]"
+              class="interactive text-muted flex min-h-11 items-center gap-3 rounded-sm px-2 py-1.5 md:min-h-9.5"
               @click="onSearchClick"
             >
               <div class="flex min-w-8 items-center justify-center">

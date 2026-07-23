@@ -605,7 +605,7 @@ async function onSave() {
         <CategoriesList
           :activeItemId="props.categoryForm.parentId"
           :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-          class="!gap-x-1"
+          class="gap-x-1!"
           @click="id => onParentSelect(id, close)"
         />
       </div>

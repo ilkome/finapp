@@ -18,7 +18,6 @@ const trnsFormStore = useTrnsFormStore()
 const { totals } = useRecurrenceTotals()
 const { openDocs } = useDocsLink()
 
-// Tap the totals card to cycle the timeframe the headline is scaled to; per-day is a fixed caption.
 const cadence = useStorage<RecurrenceCadence>('finapp.recurrences.cadence', 'monthly')
 const current = computed(() => ({
   expense: scaleByCadence(totals.value.yearly.expense, cadence.value),
@@ -26,8 +25,7 @@ const current = computed(() => ({
   perDayExpense: scaleByCadence(totals.value.yearly.expense, 'daily'),
   perDayIncome: scaleByCadence(totals.value.yearly.income, 'daily'),
 }))
-// perCurrency holds NATIVE yearly totals, so these rows won't sum to the base headline when rates
-// apply - each row labels its own currency. Gate on >1 so a single-currency user sees no duplicate.
+
 const currencyRows = computed(() => Object.entries(totals.value.perCurrency))
 const showPerCurrency = computed(() => currencyRows.value.length > 1)
 
@@ -37,7 +35,6 @@ function openEdit(id: RecurrenceId) {
   editingId.value = id
 }
 
-// Тap an active subscription to filter Платежи to just its occurrences; re-tap (or the chip) clears.
 const selectedRuleId = ref<RecurrenceId | undefined>()
 const paymentsEl = ref<HTMLElement | null>(null)
 function onSelect(id: RecurrenceId) {
@@ -48,7 +45,7 @@ function onSelect(id: RecurrenceId) {
   selectedRuleId.value = id
   nextTick(() => paymentsEl.value?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
 }
-// Drop a stale filter if the subscription is deleted or no longer active.
+
 watch(() => selectedRuleId.value && recurrencesStore.activeItems[selectedRuleId.value], (rule) => {
   if (selectedRuleId.value && !rule)
     selectedRuleId.value = undefined
@@ -58,8 +55,6 @@ const sortMode = useStorage<'cost' | 'date'>('finapp.recurrences.sortMode', 'dat
 const sortModes = ['date', 'cost'] as const
 const activeCount = computed(() => Object.keys(recurrencesStore.activeItems).length)
 
-// Deep link from the transaction form ("part of a recurring series"): ?edit=<ruleId> opens the
-// editor once the rule exists locally, then only that key is cleared so a refresh does not reopen it.
 const route = useRoute()
 const router = useRouter()
 watch(
@@ -93,7 +88,6 @@ useHead({ title: t('recurrences.title') })
 
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
       <template v-if="recurrencesStore.isReady">
-        <!-- Committed recurring cashflow over the next 12 months; tap to cycle the headline timeframe. -->
         <button
           v-if="recurrencesStore.hasItems"
           type="button"
@@ -114,7 +108,6 @@ useHead({ title: t('recurrences.title') })
             <Amount v-if="current.income !== 0" :amount="current.income" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Income" colorize="income" variant="sm" />
           </template>
 
-          <!-- Supplementary per-day framing (yearly / 365), outside the tap cycle. -->
           <div v-if="current.perDayExpense !== 0 || current.perDayIncome !== 0" class="text-2xs text-muted mt-0.5 flex items-center gap-1">
             <span>≈</span>
             <Amount v-if="current.perDayExpense !== 0" :amount="current.perDayExpense" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :type="TrnType.Expense" isShowMinus variant="2xs" />
@@ -122,7 +115,6 @@ useHead({ title: t('recurrences.title') })
             <span>{{ t('recurrences.totals.perDay') }}</span>
           </div>
 
-          <!-- NATIVE per-currency breakdown; rows won't sum to the base headline when rates apply. -->
           <div v-if="showPerCurrency" class="text-2xs text-muted mt-1 flex flex-wrap gap-x-3 gap-y-0.5">
             <div v-for="[cur, v] in currencyRows" :key="cur" class="flex items-center gap-1">
               <span class="uppercase">{{ cur }}</span>
@@ -133,7 +125,10 @@ useHead({ title: t('recurrences.title') })
         </button>
 
         <!-- Empty state -->
-        <div v-if="!recurrencesStore.hasItems" class="flex-center grow flex-col gap-3 py-10 text-center">
+        <div
+          v-if="!recurrencesStore.hasItems"
+          class="flex-center grow flex-col gap-3 py-10 text-center"
+        >
           <Icon name="lucide:repeat" size="40" class="text-muted" />
           <div class="text-muted text-sm">
             {{ t('recurrences.empty') }}
@@ -147,7 +142,6 @@ useHead({ title: t('recurrences.title') })
         </div>
 
         <template v-else>
-          <!-- Подписки: the recurring commitments (rules) -->
           <div>
             <div class="mb-1 flex items-center gap-2 px-1">
               <UiTextSubtitle class="tracking-wide uppercase">
@@ -174,7 +168,6 @@ useHead({ title: t('recurrences.title') })
             />
           </div>
 
-          <!-- Платежи: the upcoming individual charges (occurrences) -->
           <div ref="paymentsEl">
             <RecurrencesPayments
               :filterId="selectedRuleId"

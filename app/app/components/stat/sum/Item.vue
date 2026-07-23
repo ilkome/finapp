@@ -40,9 +40,9 @@ const currenciesStore = useCurrenciesStore()
           :amount="props.amount"
           :currencyCode="currenciesStore.base"
           :class="{
-            '!text-income-1': props.amount > 0 && props.type !== 'netIncome',
-            '!text-expense-1': props.amount < 0 && props.type !== 'netIncome',
-            '!text-2xl': props.plain,
+            'text-income-1!': props.amount > 0 && props.type !== 'netIncome',
+            'text-expense-1!': props.amount < 0 && props.type !== 'netIncome',
+            'text-2xl!': props.plain,
           }"
           align="left"
           variant="xl"
@@ -58,7 +58,7 @@ const currenciesStore = useCurrenciesStore()
         <div
           v-for="(averageItem, slug) in props.averageTotal"
           :key="slug"
-          class="grid gap-1 pb-[2px]"
+          class="grid gap-1 pb-0.5"
         >
           <UiTextSubtitle>{{ t('money.average') }} <br> {{ t(`dates.${slug}.simple`) }}</UiTextSubtitle>
 
@@ -66,8 +66,8 @@ const currenciesStore = useCurrenciesStore()
             :amount="type === 'expense' ? -averageItem : averageItem"
             :currencyCode="currenciesStore.base"
             :class="{
-              '!text-income-1': type === 'income',
-              '!text-expense-1': type === 'expense',
+              'text-income-1!': type === 'income',
+              'text-expense-1!': type === 'expense',
             }"
             align="left"
           />

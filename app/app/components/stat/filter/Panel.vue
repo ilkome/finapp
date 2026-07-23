@@ -11,9 +11,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import 'swiper/css'
 
 const props = defineProps<{
-  // Detent sheet state: `false` = collapsed (suppress inner scroll so an up-drag
-  // expands the sheet), `true` = expanded (fill height, scroll normally).
-  // `undefined` = desktop popover (no detents): keep intrinsic min/max height.
   isExpanded?: boolean
 }>()
 
@@ -26,7 +23,6 @@ const filter = inject(filterKey)!
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 
-// Global search across both entities; also cleared on reset.
 const search = ref('')
 const searchQuery = computed(() => search.value.trim().toLowerCase())
 
@@ -74,7 +70,6 @@ function reset() {
   filter.applyFilter([], [])
 }
 
-// --- Global search across both entities -------------------------------------
 const walletResults = computed<WalletId[]>(() => {
   const q = searchQuery.value
   if (!q)
@@ -106,7 +101,6 @@ const hasNoResults = computed(() =>
   !!searchQuery.value && walletResults.value.length === 0 && categoryResults.value.length === 0,
 )
 
-// --- Swiper tabs ------------------------------------------------------------
 const activeTabIdx = ref(0)
 const sliderRef = ref<HTMLElement | null>(null)
 // shallowRef, not ref: a plain ref deep-reactive-proxies the Swiper instance,
@@ -152,7 +146,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
   <div
     class="grid w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden"
     :class="[
-      props.isExpanded === undefined ? 'max-h-[85dvh] min-h-[50dvh]' : 'h-full',
+      props.isExpanded === undefined ? 'max-h-[85dvh] min-h-[50dvh]' : 'relative h-full [&_.scrollerBlock]:pb-24',
       { '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': props.isExpanded === false },
     ]"
   >
@@ -161,7 +155,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
         v-model="search"
         type="text"
         :aria-label="t('base.search')"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
         :placeholder="t('base.search')"
       >
       <UiActionButton
@@ -203,6 +197,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
           <div class="swiper-wrapper">
             <div class="swiper-slide h-full w-full">
               <StatFilterPanelWalletsTab
+                :filterAtTop="props.isExpanded !== undefined"
                 :selectedIds="pendingWallets"
                 @selected="toggleWallet"
               />
@@ -219,8 +214,6 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
         </div>
       </div>
 
-      <!-- Global search results. In-flow (not absolute) so it gives the row its
-           own height while the swiper is hidden via v-show. -->
       <div
         v-if="searchQuery"
         class="scrollerBlock h-full overflow-y-auto px-2 pb-2"
@@ -280,10 +273,22 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
       </div>
     </div>
 
-    <div class="px-3 py-2">
+    <div
+      class="px-3 py-2"
+      :class="props.isExpanded !== undefined && 'absolute inset-x-0 bottom-0 z-10'"
+      :style="props.isExpanded !== undefined
+        ? { transform: 'translateY(calc(-1 * var(--sheet-ty, 0px)))' }
+        : undefined"
+    >
+      <div
+        v-if="props.isExpanded !== undefined"
+        class="pointer-events-none absolute inset-0 -z-10"
+        style="background: linear-gradient(to bottom, transparent, var(--ui-bg))"
+      />
       <UiButtonAccent
         :disabled="!hasPending"
         rounded
+        size="xl"
         @click="apply"
       >
         {{ t('base.apply') }}

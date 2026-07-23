@@ -61,7 +61,7 @@ export default defineNuxtConfig({
       style: [
         {
           innerHTML:
-            'html{background:#fbfbfb;color-scheme:light dark}@media(prefers-color-scheme:dark){html{background:#171717}}',
+            'html{background:#fff;color-scheme:light dark}@media(prefers-color-scheme:dark){html{background:#171717}}',
         },
       ],
       title: 'Personal Finance Manager',

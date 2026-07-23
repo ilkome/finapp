@@ -18,7 +18,7 @@ const emit = defineEmits<{
   <UiElement
     v-if="props.trnItem"
     :lineWidth="props.compact ? 3 : 0"
-    :insideClasses="props.compact ? 'py-2 min-h-[32px]' : 'py-3 min-h-[38px]'"
+    :insideClasses="props.compact ? 'py-2 min-h-8' : 'py-3 min-h-9.5'"
     @click="emit('click')"
   >
     <template v-if="!compact" #leftIcon>
@@ -107,7 +107,7 @@ const emit = defineEmits<{
               :colorize="trnItem.incomeAmount === trnItem.expenseAmount ? undefined : 'expense'"
               :currencyCode="trnItem.expenseWallet.currency"
               :type="TrnType.Expense"
-              class="!flex items-center gap-2"
+              class="flex! items-center gap-2"
               variant="sm"
             />
 
@@ -117,7 +117,7 @@ const emit = defineEmits<{
                 :currencyCode="trnItem.incomeWallet.currency"
                 :type="TrnType.Income"
                 colorize="income"
-                class="!flex items-center gap-2"
+                class="flex! items-center gap-2"
                 variant="sm"
               />
             </template>

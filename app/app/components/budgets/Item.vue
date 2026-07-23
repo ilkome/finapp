@@ -189,7 +189,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
           inputmode="decimal"
           min="0"
           step="any"
-          class="!min-h-0 !w-28 !rounded-sm !px-3 !py-1.5 !text-sm"
+          class="min-h-0! w-28! rounded-sm! px-3! py-1.5! text-sm!"
           @keydown.enter="saveAssign"
         />
         <span class="text-2xs text-muted">{{ assignCurrency }} · {{ t('budgets.assign.forPeriod') }}</span>
@@ -216,7 +216,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
              Kept visible at 100% (end of period) - that's exactly when the pace check matters most. -->
         <div
           v-if="pacePct > 0"
-          class="bg-inverted ring-default absolute -top-1 h-4 w-[3px] -translate-x-1/2 rounded-full ring-1"
+          class="bg-inverted ring-default absolute -top-1 h-4 w-0.75 -translate-x-1/2 rounded-full ring-1"
           :style="{ left: `${pacePct}%` }"
           :title="t('budgets.pace')"
         />

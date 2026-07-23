@@ -54,7 +54,7 @@ function onBottomSheetClosed() {
   >
     <template #content>
       <SearchCommandPalette
-        class="h-[70dvh] min-h-[400px] px-2"
+        class="h-[70dvh] min-h-100 px-2"
         @select="onSelect"
       />
     </template>

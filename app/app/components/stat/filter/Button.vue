@@ -26,7 +26,7 @@ const snapPoints = computed(() => isTouch.value ? [500, 0.98] : undefined)
   >
     <template #trigger="{ isActive }">
       <UiTitleCollapse
-        class="text-md bg-elevated/30 !grow-0"
+        class="text-md bg-elevated/30 grow-0!"
         isShown
       >
         <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">

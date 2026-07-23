@@ -16,7 +16,7 @@ const isShown = useStorage(`ui-toggle-${props.storageKey}`, props.initStatus)
   >
     <div class="-my-px overflow-hidden">
       <div
-        class="interactive flex min-h-[42px] items-center rounded-sm"
+        class="interactive flex min-h-10.5 items-center rounded-sm"
       >
         <slot
           name="header"

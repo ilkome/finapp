@@ -2,6 +2,7 @@
 import type { WalletId } from '~/components/wallets/types'
 
 defineProps<{
+  filterAtTop?: boolean
   selectedIds: WalletId[]
 }>()
 
@@ -12,6 +13,7 @@ const emit = defineEmits<{
 
 <template>
   <WalletsSelector
+    :filterAtTop="filterAtTop"
     :selectedIds="selectedIds"
     class="px-2"
     hideSearch

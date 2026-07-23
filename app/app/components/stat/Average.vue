@@ -73,7 +73,7 @@ const amountColorize = computed(() => {
 <template>
   <div class="grid gap-4">
     <div class="grid w-full grow gap-1">
-      <UiTextSubtitle class="!leading-3 text-nowrap">
+      <UiTextSubtitle class="leading-3! text-nowrap">
         {{ t('money.average') }}
         <br>{{ t('stat.average.forLast') }}
       </UiTextSubtitle>

@@ -50,7 +50,7 @@ watch(isShow, async (v) => {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-[360px] py-4"
+      class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-90 py-4"
     >
       <div class="relative h-full overflow-hidden rounded-l-xl shadow-2xl">
         <div class="absolute top-2 right-2">
@@ -64,7 +64,7 @@ watch(isShow, async (v) => {
               <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
-                  class="!pb-0"
+                  class="pb-0!"
                 />
                 <div
                   v-if="trnsFormStore.values.trnType !== TrnType.Transfer"

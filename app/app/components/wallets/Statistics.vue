@@ -55,7 +55,7 @@ const itemsGrouped = computed(() => [
           :isActive="props.activeType === item.id"
           :lineWidth="3"
           class="group"
-          insideClasses="!min-h-[44px]"
+          insideClasses="min-h-11!"
           @click="emit('click', item.id)"
         >
           <div class="text-muted grow pl-1 text-sm leading-none">

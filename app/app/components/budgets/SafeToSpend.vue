@@ -62,7 +62,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
             <span class="text-muted">{{ name(row.budgetId) }}</span>
             <Amount
               :amount="row.available"
-              :class="{ '!text-expense-1': row.available < 0 }"
+              :class="{ 'text-expense-1!': row.available < 0 }"
               :currencyCode="currenciesStore.base"
               :isShowBaseRate="false"
               align="left"
@@ -114,8 +114,8 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
           <Amount
             :amount="props.breakdown.total"
             :class="{
-              '!text-income-1': props.breakdown.total > 0,
-              '!text-expense-1': props.breakdown.total < 0,
+              'text-income-1!': props.breakdown.total > 0,
+              'text-expense-1!': props.breakdown.total < 0,
             }"
             :currencyCode="currenciesStore.base"
             :isShowBaseRate="false"

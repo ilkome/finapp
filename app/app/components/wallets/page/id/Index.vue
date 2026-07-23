@@ -192,7 +192,6 @@ async function onDeleteConfirm() {
 
     <StatWrap
       :activeTab
-      :range="statDate.range.value"
       :storageKey
       :trnsIds
       :walletId

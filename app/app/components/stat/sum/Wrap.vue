@@ -39,7 +39,7 @@ const isShowForecast = computed(() =>
 const projectedSum = computed(() => props.total.sum + (props.forecastTotal?.sum ?? 0))
 
 const className = computed(() => cn(
-  'min-w-min min-h-[42px] flex items-center',
+  'min-w-min min-h-10.5 flex items-center',
   {
     interactive: props.type === 'summary',
   },

@@ -45,8 +45,8 @@ const canRepeat = computed(() => {
       <div class="flex items-center gap-1">
         <TrnFormDate />
         <TrnFormMainDescription />
-        <TrnFormRecurrenceCreate v-if="canRepeat" />
-        <TrnFormRecurrenceLink v-else-if="trnsFormStore.values.trnId" />
+        <TrnFormRecurrencesCreate v-if="canRepeat" />
+        <TrnFormRecurrencesLink v-else-if="trnsFormStore.values.trnId" />
       </div>
 
       <TrnFormMainTypes />

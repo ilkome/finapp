@@ -1,7 +1,7 @@
 import type { Range } from '~/components/date/types'
 import type { AmountChange, RecurrenceEndMode, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
-import { addCivilDays, addCivilMonths, addCivilYears, civilDayKey, civilDayStart, lastDayOfMonthCivil } from '~/components/date/utils'
+import { addCivilDays, addCivilMonths, addCivilYears, civilDayKey, civilDayStart, epochToCivilParts, lastDayOfMonthCivil } from '~/components/date/utils'
 
 // Pure civil-date occurrence engine. Occurrences are NEVER stored; they are computed
 // deterministically from the rule (no timezone involved). See plans/recurrences.md §4.
@@ -277,9 +277,9 @@ export function nthOccurrence(rule: RecurrenceItem, n: number): number {
 }
 
 function monthsBetween(aMs: number, bMs: number): number {
-  const a = new Date(aMs)
-  const b = new Date(bMs)
-  return (b.getUTCFullYear() - a.getUTCFullYear()) * 12 + (b.getUTCMonth() - a.getUTCMonth())
+  const a = epochToCivilParts(aMs)
+  const b = epochToCivilParts(bMs)
+  return (b.year - a.year) * 12 + (b.month - a.month)
 }
 
 // First index whose occurrence is >= ms (so callers don't linearly scan from the anchor over
@@ -297,7 +297,7 @@ function firstIndexOnOrAfter(rule: RecurrenceItem, ms: number): number {
   else if (rule.freq === 'month')
     approx = Math.floor(monthsBetween(anchor, ms) / rule.interval)
   else
-    approx = Math.floor((new Date(ms).getUTCFullYear() - new Date(anchor).getUTCFullYear()) / rule.interval)
+    approx = Math.floor((epochToCivilParts(ms).year - epochToCivilParts(anchor).year) / rule.interval)
 
   let n = Math.max(0, approx - 2)
   let steps = 0

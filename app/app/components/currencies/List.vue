@@ -56,7 +56,7 @@ const list = computed(() => {
           :isActive="active === 'all'"
           :lineWidth="6"
           class="group"
-          insideClasses="!min-h-[44px]"
+          insideClasses="min-h-11!"
           @click="emit('select', 'all')"
         >
           <div class="flex items-center">
@@ -78,7 +78,7 @@ const list = computed(() => {
           :isActive="currencyCode === active"
           :lineWidth="6"
           class="group"
-          insideClasses="!min-h-[44px]"
+          insideClasses="min-h-11!"
           @click="emit('select', currencyCode)"
         >
           <div class="flex items-center">

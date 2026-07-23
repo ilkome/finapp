@@ -61,7 +61,7 @@ const sidebarCategoryIds = computed(() => {
 <template>
   <aside
     :class="{ 'md:w-72': props.isShowSidebar }"
-    class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden transition-all duration-300 ease-in-out md:block"
+    class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden bg-elevated/25 transition-all duration-300 ease-in-out md:block"
   >
     <div class="flex h-full flex-col overflow-hidden">
       <div
@@ -78,7 +78,7 @@ const sidebarCategoryIds = computed(() => {
         >
           <UiActionButton
             :ariaLabel="t('app.toggleSidebar')"
-            class="text-muted shrink-0"
+            class="shrink-0 text-muted"
             @click="emit('toggleSidebar')"
           >
             <Icon :name="props.isShowSidebar ? 'lucide:panel-left-close' : 'lucide:panel-left'" size="18" />

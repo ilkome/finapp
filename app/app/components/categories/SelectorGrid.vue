@@ -47,7 +47,7 @@ function select(id: CategoryId) {
     <button
       v-if="props.onNew"
       type="button"
-      :class="cn('interactive flex min-h-[46px] items-center gap-3 px-2 py-1.5 -my-[1px]', itemClasses)"
+      :class="cn('interactive flex min-h-11.5 items-center gap-3 px-2 py-1.5 -my-0.25', itemClasses)"
       :aria-label="t('categories.new')"
       @click="props.onNew"
     >
