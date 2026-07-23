@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
+import type { OccurrenceMatchTrn } from '~/components/recurrences/occurrences'
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
 import { addCivilDays, addCivilMonths, civilDayStart } from '~/components/date/utils'
+import { buildOccurrenceTrn } from '~/components/recurrences/generate'
+import { committedNativeInRange, DEFAULT_END_DATE_MONTHS, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, matchExistingOccurrences, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, remainingEndCount, seedEndField, unrealizedOccurrenceDays } from '~/components/recurrences/occurrences'
 import { isTransfer, TrnType } from '~/components/trns/types'
-
-import type { OccurrenceMatchTrn } from './occurrences'
-
-import { buildOccurrenceTrn } from './generate'
-import { committedNativeInRange, DEFAULT_END_DATE_MONTHS, dueOccurrences, earliestNextOccurrence, effectiveAmountFor, isStaleSubscription, nextOccurrence, occurrencesInRange, occurrenceStatus, occurrenceTrnId, paidCountInRange, pendingConfirmOccurrences, periodProgress, priceHistoryTimeline, remainingEndCount, seedEndField, unrealizedOccurrenceDays } from './occurrences'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 
@@ -608,5 +606,32 @@ describe('unrealizedOccurrenceDays', () => {
     const r = rule({ amount: 600, amountHistory: [{ amount: 500, from: U(2024, 0, 1) }, { amount: 600, from: U(2024, 6, 1) }], freq: 'month' })
     expect(unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ amount: 500 })], new Set())).toEqual([])
     expect(unrealizedOccurrenceDays(r, 'r', june, {}, [cand({ amount: 600 })], new Set())).toEqual([U(2024, 5, 1)])
+  })
+})
+
+describe('matchExistingOccurrences', () => {
+  const trn = (id: string, date: number): OccurrenceMatchTrn => ({ amount: 100, date, id, type: TrnType.Expense })
+
+  it('matches drifted monthly trns to their nearest occurrence, one per day', () => {
+    const r = rule({ anchorDate: U(2024, 0, 10), freq: 'month', interval: 1 })
+    // Paid on the 8th / 12th / 9th - each within the ~13-day window of the 10th.
+    const candidates = [trn('a', U(2024, 0, 8)), trn('b', U(2024, 1, 12)), trn('c', U(2024, 2, 9))]
+    expect(matchExistingOccurrences(r, candidates)).toEqual([
+      { day: U(2024, 0, 10), trnId: 'a' },
+      { day: U(2024, 1, 10), trnId: 'b' },
+      { day: U(2024, 2, 10), trnId: 'c' },
+    ])
+  })
+
+  it('excludes a trn outside the drift window', () => {
+    const r = rule({ anchorDate: U(2024, 0, 10), freq: 'month', interval: 1 })
+    // 15 days off the nearest occurrence (> floor(31 * 0.45) = 13).
+    expect(matchExistingOccurrences(r, [trn('far', U(2024, 0, 25))])).toEqual([])
+  })
+
+  it('keeps the closest when two trns fall near one occurrence', () => {
+    const r = rule({ anchorDate: U(2024, 0, 10), freq: 'month', interval: 1 })
+    const candidates = [trn('near', U(2024, 0, 11)), trn('farther', U(2024, 0, 6))]
+    expect(matchExistingOccurrences(r, candidates)).toEqual([{ day: U(2024, 0, 10), trnId: 'near' }])
   })
 })

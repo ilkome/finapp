@@ -258,6 +258,52 @@ export function unrealizedOccurrenceDays(
   return out
 }
 
+/**
+ * Drift window (± days) for matching an already-existing trn to an occurrence when adopting past
+ * history. 0.45 * interval keeps adjacent occurrence windows non-overlapping, so a drifted date can
+ * never be ambiguous between two occurrences.
+ */
+export function occurrenceToleranceDays(rule: RecurrenceItem): number {
+  return Math.max(0, Math.floor(intervalDays(rule) * 0.45))
+}
+
+/** The rule's occurrence day nearest to `dateEpoch` within the drift window, or undefined. */
+export function nearestOccurrenceDay(rule: RecurrenceItem, dateEpoch: number): number | undefined {
+  const tol = occurrenceToleranceDays(rule)
+  const day = civilDayStart(dateEpoch)
+  const occ = occurrencesInRange(rule, { end: addCivilDays(day, tol), start: addCivilDays(day, -tol) })
+  if (!occ.length)
+    return undefined
+  return occ.reduce((best, d) => (Math.abs(d - day) < Math.abs(best - day) ? d : best))
+}
+
+export type ProposedAdoption = { day: number, trnId: string }
+
+/**
+ * Assign already-existing candidate trns to the rule's occurrence days (drift-tolerant), one trn per
+ * day, nearest-match first. Candidates must be pre-scoped to the rule's category + type. Used both to
+ * pre-select the adoption list and to re-key the trns on confirm. Returns matches ascending by day.
+ */
+export function matchExistingOccurrences(rule: RecurrenceItem, candidates: OccurrenceMatchTrn[]): ProposedAdoption[] {
+  const scored = candidates
+    .map((t) => {
+      const day = nearestOccurrenceDay(rule, t.date)
+      return day == null ? null : { day, dist: Math.abs(civilDayStart(t.date) - day), trnId: t.id }
+    })
+    .filter((x): x is { day: number, dist: number, trnId: string } => x != null)
+    .sort((a, b) => a.dist - b.dist)
+
+  const usedDays = new Set<number>()
+  const out: ProposedAdoption[] = []
+  for (const s of scored) {
+    if (usedDays.has(s.day))
+      continue
+    usedDays.add(s.day)
+    out.push({ day: s.day, trnId: s.trnId })
+  }
+  return out.sort((a, b) => a.day - b.day)
+}
+
 /** The n-th occurrence civil day (n >= 0; n = 0 is the anchor), clamp/last-day aware. */
 export function nthOccurrence(rule: RecurrenceItem, n: number): number {
   const anchor = civilDayStart(rule.anchorDate)

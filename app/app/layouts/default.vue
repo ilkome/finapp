@@ -115,6 +115,7 @@ defineShortcuts({
       </div>
 
       <SearchModal v-if="showShell" />
+      <RecurrencesAdoptPastSheet v-if="showShell" />
 
       <template v-if="showShell">
         <TrnFormFloatOpener v-if="width >= 767" />

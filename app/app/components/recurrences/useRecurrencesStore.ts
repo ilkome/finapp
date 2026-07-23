@@ -5,6 +5,7 @@ import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
 import { recurrenceToRow, rowToRecurrence, trnToRow } from '~~/services/powersync/transforms'
 import { generateId } from '~~/utils/generateId'
 
+import type { OccurrenceMatchTrn } from '~/components/recurrences/occurrences'
 import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem, Recurrences, RecurrenceStatus } from '~/components/recurrences/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
@@ -12,7 +13,7 @@ import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'
-import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId, pendingConfirmOccurrences, remainingEndCount } from '~/components/recurrences/occurrences'
+import { effectiveAmountFor, matchExistingOccurrences, occurrencesInRange, occurrenceTrnId, pendingConfirmOccurrences, remainingEndCount } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
@@ -44,6 +45,8 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
   const items = shallowRef<Recurrences | null>(null)
   const isLoaded = ref(false)
   let watchController: AbortController | null = null
+
+  const pendingAdoption = shallowRef<{ candidateIds: TrnId[], preselectedIds: TrnId[], ruleId: RecurrenceId } | null>(null)
 
   // Demo mode has no backend: persist rule mutations to localforage (matches trns/budgets).
   const persistRecurrences = createDebouncedPersist<Recurrences>(STORAGE_KEYS.recurrences)
@@ -201,23 +204,26 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     return ruleId
   }
 
-  /**
-   * Convert an EXISTING trn into a recurring one (request 2): create a rule from the trn's
-   * values and keep the trn as the first occurrence (its id is preserved and linked). Generation
-   * resumes strictly after this occurrence, so the anchor is never re-created under another id.
-   */
+  function linkTrnAsOccurrence(ruleId: RecurrenceId, day: number, trnId: TrnId, trn: TrnItem) {
+    const newId = occurrenceTrnId(ruleId, day)
+    if (newId === trnId) {
+      trnsStore.saveTrn({ id: trnId, values: { ...trn, recurrenceId: ruleId } })
+      return
+    }
+    trnsStore.saveTrn({ id: newId, values: { ...trn, recurrenceId: ruleId } })
+    trnsStore.deleteTrn(trnId)
+  }
+
   function createFromExistingTrn(trnId: TrnId, trn: TrnItem, config: RepeatConfig): RecurrenceId | undefined {
     if (trn.type === TrnType.Transfer || !('amount' in trn))
       return undefined
-    // The trn is already an occurrence of a series: never spawn a second rule (which would orphan
-    // the first and re-link the trn). Schedule changes go through the rule editor (RecurrenceLink).
     if (trn.recurrenceId && items.value?.[trn.recurrenceId])
       return trn.recurrenceId
 
     const anchorDate = trn.date
     // Generate forward only: resume from today (so months between an old trn and now are NOT
-    // backfilled as look-alike duplicates), but never before the anchor (so the existing trn -
-    // which keeps its own id - is not re-created under a deterministic occurrence id).
+    // backfilled as look-alike duplicates), but never before the anchor (whose occurrence is the
+    // re-keyed existing trn, not a freshly generated one).
     const lastGeneratedDate = Math.max(civilDayStart(anchorDate), todayCivilDayEpoch())
     const rule: RecurrenceItem = {
       amount: trn.amount,
@@ -240,10 +246,74 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     }
 
     const ruleId = saveRecurrence(rule)
-    // Keep the original trn (and its id); just link it to the new rule.
-    trnsStore.saveTrn({ id: trnId, values: { ...trn, recurrenceId: ruleId } })
+    linkTrnAsOccurrence(ruleId, civilDayStart(anchorDate), trnId, trn)
     scheduleCatchUp()
     return ruleId
+  }
+
+  /**
+   * After converting an existing trn (openAdoption(ruleId, anchorTrnId)), gather the other already-
+   * created look-alikes (same category + type, unlinked, not future) and match them to the rule's
+   * occurrence days (drift-tolerant). Opens the "Link past payments?" sheet only when there is
+   * something to adopt; price-stable matches are pre-selected.
+   */
+  function openAdoption(ruleId: RecurrenceId, anchorTrnId: TrnId) {
+    const rule = items.value?.[ruleId]
+    if (!rule) {
+      pendingAdoption.value = null
+      return
+    }
+    const today = todayCivilDayEpoch()
+    const trns = trnsStore.items ?? {}
+    const candidates: OccurrenceMatchTrn[] = []
+    for (const [id, t] of Object.entries(trns)) {
+      if (id === anchorTrnId || !('amount' in t) || t.recurrenceId != null)
+        continue
+      if (t.categoryId !== rule.categoryId || t.type !== rule.type || civilDayStart(t.date) > today)
+        continue
+      candidates.push({ amount: t.amount, date: t.date, id, recurrenceId: t.recurrenceId, type: t.type })
+    }
+    const matches = matchExistingOccurrences(rule, candidates)
+    if (!matches.length) {
+      pendingAdoption.value = null
+      return
+    }
+    const preselectedIds = matches
+      .filter(m => (trns[m.trnId] as { amount?: number }).amount === effectiveAmountFor(rule, m.day))
+      .map(m => m.trnId)
+    pendingAdoption.value = { candidateIds: matches.map(m => m.trnId), preselectedIds, ruleId }
+  }
+
+  /**
+   * Adopt the user-chosen past trns into the series: re-key each to its occurrence and advance
+   * generation past the latest adopted day (so a paid-early current period is never re-created).
+   */
+  function adoptOccurrences(ruleId: RecurrenceId, selectedTrnIds: TrnId[]) {
+    pendingAdoption.value = null
+    const rule = items.value?.[ruleId]
+    if (!rule)
+      return
+    const trns = trnsStore.items ?? {}
+    const candidates: OccurrenceMatchTrn[] = []
+    for (const id of selectedTrnIds) {
+      const t = trns[id]
+      if (t && 'amount' in t)
+        candidates.push({ amount: t.amount, date: t.date, id, recurrenceId: t.recurrenceId, type: t.type })
+    }
+    const matches = matchExistingOccurrences(rule, candidates)
+    if (!matches.length)
+      return
+    let maxDay = rule.lastGeneratedDate ?? 0
+    for (const { day, trnId } of matches) {
+      const trn = trns[trnId]
+      if (!trn)
+        continue
+      linkTrnAsOccurrence(ruleId, day, trnId, trn)
+      if (day > maxDay)
+        maxDay = day
+    }
+    writeRecurrence(ruleId, { ...rule, lastGeneratedDate: maxDay })
+    scheduleCatchUp()
   }
 
   /** Delete the rule only; already-generated trns are kept. */
@@ -379,6 +449,7 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
 
   return {
     activeItems,
+    adoptOccurrences,
     changeAmount,
     confirmOccurrence,
     createFromExistingTrn,
@@ -389,6 +460,8 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     isLoaded,
     isReady,
     items,
+    openAdoption,
+    pendingAdoption,
     removeRecurrence,
     rescheduleFrom,
     runCatchUp,

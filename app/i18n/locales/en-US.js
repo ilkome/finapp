@@ -378,6 +378,12 @@ export default {
     },
     add: 'Add recurring',
     addHint: 'Opens the transaction form with Repeat turned on.',
+    adopt: {
+      cancel: 'Not now',
+      confirm: 'Link {count}',
+      subtitle: 'Found {count} earlier payments that look like this one. Pick the ones that belong to this series.',
+      title: 'Link past payments?',
+    },
     confirm: {
       cancelText: 'Stops future transactions. Already-created ones stay.',
       cancelTitle: 'Cancel this series?',
@@ -423,7 +429,7 @@ export default {
     },
     freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
     help: { open: 'How recurring works' },
-    history: { nextCharge: 'Next charge', noChanges: 'Price never changed', noNext: 'No upcoming charge', open: 'Open price history', paidThisYear: 'Paid this year', title: 'Price history', wallet: 'Funding wallet' },
+    history: { allTrns: 'All transactions', nextCharge: 'Next charge', noChanges: 'Price never changed', noNext: 'No upcoming charge', open: 'Open price history', paidThisYear: 'Paid this year', title: 'Price history', wallet: 'Funding wallet' },
     manual: 'confirm',
     next: 'next',
     overdue: 'overdue',

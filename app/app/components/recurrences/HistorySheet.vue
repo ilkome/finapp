@@ -52,6 +52,14 @@ const paidThisYear = computed(() => {
 })
 
 const hasPriceHistory = computed(() => !!rule.value && priceHistoryTimeline(rule.value).length > 1)
+
+// Every trn belonging to this series (newest first) for the "All transactions" list.
+const linkedTrnIds = computed(() =>
+  Object.entries(trnsStore.items ?? {})
+    .filter(([, t]) => t.recurrenceId === props.recurrenceId)
+    .sort((a, b) => b[1].date - a[1].date)
+    .map(([id]) => id),
+)
 </script>
 
 <template>
@@ -114,6 +122,14 @@ const hasPriceHistory = computed(() => !!rule.value && priceHistoryTimeline(rule
         <div v-else class="text-2xs text-muted">
           {{ t('recurrences.history.noChanges') }}
         </div>
+      </div>
+
+      <!-- All transactions of this series -->
+      <div v-if="linkedTrnIds.length" class="grid gap-1.5">
+        <UiTextSubtitle class="tracking-wide uppercase">
+          {{ t('recurrences.history.allTrns') }}
+        </UiTextSubtitle>
+        <TrnsList :trnsIds="linkedTrnIds" isShowDates />
       </div>
     </div>
   </BottomSheetModal>

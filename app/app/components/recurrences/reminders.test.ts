@@ -2,9 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
+import { upcomingReminders } from '~/components/recurrences/reminders'
 import { TrnType } from '~/components/trns/types'
-
-import { upcomingReminders } from './reminders'
 
 const U = (y: number, m: number, d: number) => Date.UTC(y, m, d)
 

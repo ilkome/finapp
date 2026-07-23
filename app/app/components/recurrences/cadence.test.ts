@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { nextCadence, scaleByCadence } from './cadence'
+import { nextCadence, scaleByCadence } from '~/components/recurrences/cadence'
 
 describe('scaleByCadence', () => {
   it('returns the full yearly sum unchanged', () => {

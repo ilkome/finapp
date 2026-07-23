@@ -19,6 +19,8 @@ const {
   isShowHeader,
   isShowIncome,
   isShowTransfers,
+  selectable,
+  selectedTrnIds = [],
   size = 30,
   trnsIds = [],
 } = defineProps<{
@@ -31,12 +33,15 @@ const {
   isShowHeader?: boolean
   isShowIncome?: boolean
   isShowTransfers?: boolean
+  selectable?: boolean
+  selectedTrnIds?: TrnId[]
   size?: number
   trnsIds?: TrnId[]
 }>()
 
 const emit = defineEmits<{
   click: []
+  toggleSelect: [id: TrnId]
 }>()
 
 const currenciesStore = useCurrenciesStore()
@@ -261,10 +266,13 @@ function onOpenTrnForm(date: number) {
           v-if="trnItemsMap.get(trnId)"
           :compact="compact"
           :date="(formatDate(trnItemsMap.get(trnId)!.date, 'trnItem') as string)"
+          :isSelected="selectedTrnIds.includes(trnId)"
+          :selectable="selectable"
           :trnId="trnId"
           :trnItem="trnItemsMap.get(trnId)!"
           class="group/trn group"
           @click="emit('click')"
+          @toggleSelect="emit('toggleSelect', trnId)"
         />
       </template>
     </div>
@@ -324,8 +332,11 @@ function onOpenTrnForm(date: number) {
               :trnId="trnId"
               :trnItem="trnItemsMap.get(trnId)!"
               :date="(formatDate(trnItemsMap.get(trnId)!.date, 'trnItem') as string)"
+              :isSelected="selectedTrnIds.includes(trnId)"
+              :selectable="selectable"
               class="group"
               @click="emit('click')"
+              @toggleSelect="emit('toggleSelect', trnId)"
             />
           </template>
         </div>

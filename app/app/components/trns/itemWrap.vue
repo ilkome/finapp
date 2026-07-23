@@ -9,12 +9,15 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps<{
   compact?: boolean
   date?: string
+  isSelected?: boolean
+  selectable?: boolean
   trnId: TrnId
   trnItem: TrnItemFull
 }>()
 
 const emit = defineEmits<{
   click: []
+  toggleSelect: []
 }>()
 
 const { t } = useI18n()
@@ -55,19 +58,40 @@ function handleDeleteConfirm() {
 </script>
 
 <template>
-  <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
+  <div
+    v-if="selectable"
+    v-bind="$attrs"
+    class="flex items-center gap-2 pl-3"
+    @click="emit('toggleSelect')"
+  >
+    <input
+      type="checkbox"
+      :checked="isSelected"
+      class="pointer-events-none size-5 shrink-0"
+    >
     <TrnsItem
       :compact="props.compact"
       :trnItem
       :date
-      @click="click"
+      class="grow"
     />
-  </UiContextMenuMy>
+  </div>
 
-  <LayoutConfirmModal
-    v-if="showDeleteConfirm"
-    :title="t('trnForm.delete.alert')"
-    @closed="showDeleteConfirm = false"
-    @confirm="handleDeleteConfirm"
-  />
+  <template v-else>
+    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
+      <TrnsItem
+        :compact="props.compact"
+        :trnItem
+        :date
+        @click="click"
+      />
+    </UiContextMenuMy>
+
+    <LayoutConfirmModal
+      v-if="showDeleteConfirm"
+      :title="t('trnForm.delete.alert')"
+      @closed="showDeleteConfirm = false"
+      @confirm="handleDeleteConfirm"
+    />
+  </template>
 </template>

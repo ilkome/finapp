@@ -49,10 +49,15 @@ async function onClickSubmit() {
     }
     // Editing an existing trn with "Repeat" on: convert it into a recurring series (keeps its id).
     // Otherwise create a fresh series whose first occurrence is this trn (shared deterministic id).
-    if (trnsFormStore.values.trnId)
-      recurrencesStore.createFromExistingTrn(trnFormData.id, trnFormData.values, config)
-    else
+    if (trnsFormStore.values.trnId) {
+      const ruleId = recurrencesStore.createFromExistingTrn(trnFormData.id, trnFormData.values, config)
+      // Offer to adopt the already-created past look-alikes of this series (drift-tolerant match).
+      if (ruleId)
+        recurrencesStore.openAdoption(ruleId, trnFormData.id)
+    }
+    else {
       recurrencesStore.createFromTrn(trnFormData.values, config)
+    }
   }
   else {
     trnsStore.saveTrn({
