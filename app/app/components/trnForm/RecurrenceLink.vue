@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -7,6 +8,7 @@ const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const recurrencesStore = useRecurrencesStore()
+const isShow = ref(false)
 
 // The linked rule, when the edited trn is an occurrence of an existing series.
 const rule = computed(() => {
@@ -17,11 +19,7 @@ const rule = computed(() => {
 
 const periodLabel = computed(() => {
   const r = rule.value?.item
-  if (!r)
-    return ''
-  return r.interval === 1
-    ? t(`recurrences.everyOne.${r.freq}`)
-    : `${t('recurrences.form.every')} ${r.interval} ${t(`recurrences.unit.${r.freq}`, r.interval)}`
+  return r ? recurrenceEveryLabel(t, r.freq, r.interval) : ''
 })
 
 async function openSeries() {
@@ -37,22 +35,40 @@ async function openSeries() {
 </script>
 
 <template>
-  <button
+  <BottomSheetOrDropdown
     v-if="rule?.item"
-    type="button"
-    class="bg-elevated flex w-full items-center gap-2 rounded-md px-3 py-2 text-left"
-    @click="openSeries"
+    :isOpen="isShow"
+    :title="t('recurrences.form.repeat')"
+    class="shrink-0 !grow-0"
+    dragClassesCustom="bottomSheetDragClassesCustom"
+    isShowCloseBtn
+    @closeModal="isShow = false"
+    @openModal="isShow = true"
   >
-    <Icon name="lucide:repeat" size="18" class="text-muted" />
-    <div class="grow">
-      <div class="text-highlighted text-sm">
-        {{ t('recurrences.form.repeat') }} · {{ periodLabel }}
+    <template #trigger>
+      <UiActionButton class="relative overflow-visible">
+        <Icon name="lucide:repeat" size="20" />
+        <div class="bg-primary absolute top-0 right-0 aspect-square w-2.5 rounded-full" />
+      </UiActionButton>
+    </template>
+
+    <template #content>
+      <div class="grid min-w-80 gap-4 px-2 pb-4 md:pb-0">
+        <div>
+          <div class="text-highlighted text-sm">
+            {{ t('recurrences.form.repeat') }} · {{ periodLabel }}
+          </div>
+          <div class="text-2xs text-muted">
+            {{ t('recurrences.partOfSeries') }}
+          </div>
+        </div>
+
+        <div class="flex-center">
+          <UiButtonAccent rounded @click="openSeries">
+            {{ t('recurrences.editTitle') }}
+          </UiButtonAccent>
+        </div>
       </div>
-      <div class="text-2xs text-muted">
-        {{ t('recurrences.partOfSeries') }}
-      </div>
-    </div>
-    <span class="text-2xs text-muted">{{ t('recurrences.editTitle') }}</span>
-    <Icon name="lucide:chevron-right" size="18" class="text-muted" />
-  </button>
+    </template>
+  </BottomSheetOrDropdown>
 </template>

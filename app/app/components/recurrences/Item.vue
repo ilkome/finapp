@@ -4,6 +4,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
+import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { isStaleSubscription, nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrenceMenuItems } from '~/components/recurrences/useRecurrenceMenuItems'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
@@ -36,12 +37,7 @@ const wallet = computed(() => walletsStore.items?.[rule.walletId])
 const isActive = computed(() => rule.status === 'active')
 const isSelected = computed(() => selectedId === id)
 
-const periodLabel = computed(() => {
-  const unit = t(`recurrences.unit.${rule.freq}`, rule.interval)
-  return rule.interval === 1
-    ? t(`recurrences.everyOne.${rule.freq}`)
-    : `${t('recurrences.form.every')} ${rule.interval} ${unit}`
-})
+const periodLabel = computed(() => recurrenceEveryLabel(t, rule.freq, rule.interval))
 
 const next = computed(() => nextOccurrence(rule, todayCivilDayEpoch()))
 const nextLabel = computed(() => (next.value ? formatByLocale(next.value, 'd MMM yyyy', dateLocale.value) : undefined))
