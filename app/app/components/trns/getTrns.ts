@@ -10,11 +10,12 @@ export function filterTrnsIds(props: TrnsGetterProps) {
 
   const walletsSet = props.walletsIds?.length ? new Set(props.walletsIds) : null
   const categoriesSet = props.categoriesIds?.length ? new Set(props.categoriesIds) : null
+  const recurrencesSet = props.recurrenceIds?.length ? new Set(props.recurrenceIds) : null
   const typesSet = Array.isArray(props.trnsTypes) ? new Set(props.trnsTypes) : null
   const start = props.dates?.start
   const end = props.dates?.end
 
-  const hasFilters = typesSet || start !== undefined || end !== undefined || walletsSet || categoriesSet
+  const hasFilters = typesSet || start !== undefined || end !== undefined || walletsSet || categoriesSet || recurrencesSet
 
   const result = hasFilters
     ? trnsIds.filter((id) => {
@@ -35,6 +36,8 @@ export function filterTrnsIds(props: TrnsGetterProps) {
             return false
         }
         if (categoriesSet && !categoriesSet.has(trn.categoryId))
+          return false
+        if (recurrencesSet && (trn.recurrenceId == null || !recurrencesSet.has(trn.recurrenceId)))
           return false
         return true
       })

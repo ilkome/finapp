@@ -6,7 +6,7 @@ import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard']
+const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard', 'RecurrencesId']
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()

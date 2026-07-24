@@ -8,14 +8,12 @@ import { committedNativeInRange, nextOccurrence } from '~/components/recurrences
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { selectedId, sortMode = 'date' } = defineProps<{
-  selectedId?: RecurrenceId
+const { sortMode = 'date' } = defineProps<{
   sortMode?: 'cost' | 'date'
 }>()
 
 const emit = defineEmits<{
   edit: [id: RecurrenceId]
-  select: [id: RecurrenceId]
 }>()
 
 const { t } = useI18n()
@@ -78,9 +76,7 @@ const groups = computed(() => {
             :id="entry.id"
             :key="entry.id"
             :rule="entry.rule"
-            :selectedId="selectedId"
             @edit="emit('edit', $event)"
-            @select="emit('select', $event)"
           />
         </div>
       </template>

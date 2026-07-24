@@ -12,18 +12,17 @@ import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { id, rule, selectedId } = defineProps<{
+const { id, rule } = defineProps<{
   id: RecurrenceId
   rule: RecurrenceItem
-  selectedId?: RecurrenceId
 }>()
 
 const emit = defineEmits<{
   edit: [id: RecurrenceId]
-  select: [id: RecurrenceId]
 }>()
 
 const { locale, t } = useI18n()
+const router = useRouter()
 const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
@@ -34,8 +33,6 @@ const m = useRecurrenceMenuItems()
 const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 const category = computed(() => categoriesStore.items?.[rule.categoryId])
 const wallet = computed(() => walletsStore.items?.[rule.walletId])
-const isActive = computed(() => rule.status === 'active')
-const isSelected = computed(() => selectedId === id)
 
 const periodLabel = computed(() => recurrenceEveryLabel(t, rule.freq, rule.interval))
 
@@ -65,10 +62,9 @@ const contextMenuItems = computed(() => {
 <template>
   <UiContextMenuMy :items="contextMenuItems">
     <div
-      class="bg-elevated interactive rounded-md border px-3 py-2"
-      :class="isSelected ? 'border-primary/40' : 'border-transparent'"
+      class="rounded-md border border-transparent interactive bg-elevated px-3 py-2"
       :style="rule.status !== 'active' ? { opacity: 0.6 } : undefined"
-      @click="isActive ? emit('select', id) : emit('edit', id)"
+      @click="router.push(`/recurrences/${id}`)"
     >
       <div class="flex items-center gap-2">
         <UiIconBase
@@ -80,7 +76,7 @@ const contextMenuItems = computed(() => {
         />
 
         <div class="min-w-0 grow">
-          <div class="text-highlighted truncate text-sm">
+          <div class="truncate text-sm text-highlighted">
             {{ category?.name ?? rule.categoryId }}
             <span v-if="rule.desc" class="text-muted"> · {{ rule.desc }}</span>
           </div>
@@ -95,7 +91,7 @@ const contextMenuItems = computed(() => {
             <template v-if="!rule.autoCreate">
               · {{ t('recurrences.manual') }}
             </template>
-            <span v-if="isStale" class="bg-warning/15 text-warning ml-1 rounded-full px-1.5 py-px" :title="t('recurrences.stale.hint')">{{ t('recurrences.stale.flag') }}</span>
+            <span v-if="isStale" class="ml-1 rounded-full bg-warning/15 px-1.5 py-px text-warning" :title="t('recurrences.stale.hint')">{{ t('recurrences.stale.flag') }}</span>
           </div>
         </div>
 
@@ -108,10 +104,9 @@ const contextMenuItems = computed(() => {
           variant="sm"
         />
         <Icon
-          v-if="isActive"
-          :name="isSelected ? 'lucide:filter-x' : 'lucide:chevron-right'"
+          name="lucide:chevron-right"
           size="16"
-          :class="isSelected ? 'text-primary' : 'text-muted'"
+          class="text-muted"
         />
       </div>
     </div>

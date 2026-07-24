@@ -83,6 +83,7 @@ export type TrnsGetterProps = {
     end: number
     start: number
   }
+  recurrenceIds?: string[]
   sort?: boolean
   trnsIds?: TrnId[]
   trnsItems?: Trns
