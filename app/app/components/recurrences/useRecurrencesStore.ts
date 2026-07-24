@@ -6,7 +6,7 @@ import { recurrenceToRow, rowToRecurrence, trnToRow } from '~~/services/powersyn
 import { generateId } from '~~/utils/generateId'
 
 import type { OccurrenceMatchTrn } from '~/components/recurrences/occurrences'
-import type { RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem, Recurrences, RecurrenceStatus } from '~/components/recurrences/types'
+import type { AmountChange, RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem, Recurrences, RecurrenceStatus } from '~/components/recurrences/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/components/date/utils'
@@ -381,16 +381,35 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
       history[existing] = { amount: newAmount, from }
     else
       history.push({ amount: newAmount, from })
-    history.sort((a, b) => a.from - b.from)
+    setAmountHistory(id, history)
+  }
 
-    const next: RecurrenceItem = { ...rule, amountHistory: history }
-    next.amount = effectiveAmountFor(next, todayCivilDayEpoch())
+  /**
+   * Replace the whole price history - used to correct a mistaken effective-from date or drop an
+   * erroneous change. Normalizes/sorts entries, re-derives the scalar `amount`, and reprices every
+   * already-generated occurrence to its now-effective amount. Collapsing to a single base price
+   * clears the history (the rule is "never changed" again).
+   */
+  function setAmountHistory(id: RecurrenceId, history: AmountChange[]) {
+    const rule = items.value?.[id]
+    if (!rule)
+      return
+    const normalized = history
+      .filter(e => e.amount > 0)
+      .map(e => ({ amount: e.amount, from: civilDayStart(e.from) }))
+      .sort((a, b) => a.from - b.from)
+
+    // Derive the scalar from the full history (base entry included) BEFORE collapsing, so deleting
+    // the last change reverts `amount` to the base price rather than keeping the stale changed one.
+    const amount = effectiveAmountFor({ ...rule, amountHistory: normalized }, todayCivilDayEpoch())
+    const next: RecurrenceItem = { ...rule, amount, amountHistory: normalized.length > 1 ? normalized : undefined }
     writeRecurrence(id, next)
 
-    // Rewrite already-generated, on/after-`from` occurrences to the newly-effective price.
+    // Reprice every already-generated occurrence - editing a date can shift prices in both
+    // directions, so we can't scope to a single cutoff like the append path once could.
     const trns = trnsStore.items ?? {}
     for (const [trnId, trn] of Object.entries(trns)) {
-      if (trn.recurrenceId !== id || !('amount' in trn) || civilDayStart(trn.date) < from)
+      if (trn.recurrenceId !== id || !('amount' in trn))
         continue
       const amount = effectiveAmountFor(next, trn.date)
       if (trn.amount !== amount)
@@ -466,6 +485,7 @@ export const useRecurrencesStore = defineStore('recurrences', () => {
     rescheduleFrom,
     runCatchUp,
     saveRecurrence,
+    setAmountHistory,
     setItems,
     setStatus,
     skipOccurrence,

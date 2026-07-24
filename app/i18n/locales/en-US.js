@@ -410,6 +410,7 @@ export default {
       currencyChangeHint: 'New wallet is in {currency}; existing amounts are now shown in it.',
       currentNext: 'now:',
       editKeepsHint: 'Already-created transactions keep their old category and wallet.',
+      editPriceDate: 'Edit change date',
       effectiveFrom: 'From',
       ends: 'Ends',
       every: 'Every',

@@ -410,6 +410,7 @@ export default {
       currencyChangeHint: 'Новый кошелёк в {currency}; существующие суммы теперь показаны в этой валюте.',
       currentNext: 'сейчас:',
       editKeepsHint: 'Уже созданные операции сохранят прежние категорию и кошелёк.',
+      editPriceDate: 'Изменить дату изменения',
       effectiveFrom: 'С даты',
       ends: 'Окончание',
       every: 'Каждые',

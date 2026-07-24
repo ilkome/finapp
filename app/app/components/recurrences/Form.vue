@@ -92,6 +92,33 @@ const nextChargeLabel = computed(() => {
 // Show the timeline only once there is more than the single seeded (current) price.
 const hasPriceHistory = computed(() => !!existing.value && priceHistoryTimeline(existing.value).length > 1)
 
+// Correct a mistaken effective-from date on an existing price change (identified by its `from`).
+const editingFrom = ref<number | null>(null)
+const editingDate = ref<number | null>(null)
+
+function onEditPriceDate(from: number) {
+  editingFrom.value = from
+  editingDate.value = from
+}
+function onSaveEditedDate(close: () => void) {
+  const history = existing.value?.amountHistory
+  if (history && editingFrom.value != null && editingDate.value != null) {
+    const from = editingFrom.value
+    const to = editingDate.value
+    recurrencesStore.setAmountHistory(
+      props.recurrenceId,
+      history.map(e => e.from === from ? { ...e, from: to } : e),
+    )
+  }
+  editingFrom.value = null
+  close()
+}
+function onRemovePrice(from: number) {
+  const history = existing.value?.amountHistory
+  if (history)
+    recurrencesStore.setAmountHistory(props.recurrenceId, history.filter(e => e.from !== from))
+}
+
 function onSave(close: () => void) {
   const prev = existing.value
   if (!prev || !canSave.value)
@@ -126,7 +153,7 @@ function onSave(close: () => void) {
         {{ t('recurrences.editTitle') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-5 px-3 py-2">
+      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-5 px-3 py-2">
         <!-- Category (editable: steers future occurrences only) -->
         <FormElement>
           <template #label>
@@ -162,15 +189,15 @@ function onSave(close: () => void) {
             </template>
           </UiButtonWithRight>
           <div class="grid gap-1 px-1 pt-1">
-            <div class="text-2xs text-muted flex items-center gap-1">
+            <div class="flex items-center gap-1 text-2xs text-muted">
               <Icon name="lucide:lock" size="12" />
               {{ typeLabel }} · {{ t('recurrences.form.lockedHint') }}
             </div>
-            <div class="text-2xs text-muted flex items-center gap-1">
+            <div class="flex items-center gap-1 text-2xs text-muted">
               <Icon name="lucide:info" size="12" />
               {{ t('recurrences.form.editKeepsHint') }}
             </div>
-            <div v-if="currencyChanged" class="text-2xs text-warning flex items-center gap-1">
+            <div v-if="currencyChanged" class="flex items-center gap-1 text-2xs text-warning">
               <Icon name="lucide:triangle-alert" size="12" />
               {{ t('recurrences.form.currencyChangeHint', { currency: wallet?.currency }) }}
             </div>
@@ -203,8 +230,11 @@ function onSave(close: () => void) {
           </template>
           <RecurrencesPriceTimeline
             :currency="wallet?.currency ?? 'USD'"
+            editable
             :rule="existing"
             :type="existing.type"
+            @edit="onEditPriceDate"
+            @remove="onRemovePrice"
           />
         </FormElement>
 
@@ -259,6 +289,33 @@ function onSave(close: () => void) {
             @selected="onSelectWallet"
           />
         </div>
+      </BottomSheetModal>
+
+      <BottomSheetModal
+        v-if="editingFrom != null"
+        @closed="editingFrom = null"
+      >
+        <template #default="{ close: closeEdit }">
+          <UiTitleModal>
+            {{ t('recurrences.form.editPriceDate') }}
+          </UiTitleModal>
+          <div class="bottomSheetContentInside grid content-start gap-3 px-3 py-2">
+            <div class="text-2xs text-muted">
+              {{ t('recurrences.form.effectiveFrom') }}
+            </div>
+            <FormDate v-model="editingDate" />
+          </div>
+          <div class="bottomSheetContentBottom">
+            <UiButtonAccent
+              class="sm:max-w-xs"
+              rounded
+              :disabled="editingDate == null"
+              @click="onSaveEditedDate(closeEdit)"
+            >
+              {{ t('base.save') }}
+            </UiButtonAccent>
+          </div>
+        </template>
       </BottomSheetModal>
     </template>
   </BottomSheetModal>
