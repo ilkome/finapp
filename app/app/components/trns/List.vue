@@ -291,7 +291,7 @@ function onOpenTrnForm(date: number) {
           :class="{ 'border-accented': isShowGroupSum && groupTrnsIds.length > 1 }"
           class="flex items-center gap-2 px-3 py-1"
         >
-          <DateTrns
+          <TrnsDateHeader
             :date="+date"
             class="grow"
             @click="onOpenTrnForm(+date)"

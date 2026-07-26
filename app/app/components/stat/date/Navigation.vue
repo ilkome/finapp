@@ -50,7 +50,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
 <template>
   <div class="flex grow items-center gap-2 overflow-x-auto pt-2">
-    <DateNav
+    <UiNavArrows
       v-if="isShowNav && !statDate.params.value.customDate"
       :isEnd
       :isShowNavHome
@@ -58,7 +58,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       @changeDate="changeDate"
     >
       <StatDateRangeSelector />
-    </DateNav>
+    </UiNavArrows>
 
     <StatDateRangeSelector v-else />
 

@@ -192,7 +192,7 @@ function setPeriodType(type: BudgetPeriodType) {
           </UiTabsItemPill>
         </div>
 
-        <DateNav
+        <UiNavArrows
           :isEnd="!canGoNext"
           :isShowNavHome="period.offset.value !== 0"
           :isStart="!canGoPrev"
@@ -201,7 +201,7 @@ function setPeriodType(type: BudgetPeriodType) {
           <UiActionButton variant="text" @click="period.reset()">
             {{ periodLabel }}
           </UiActionButton>
-        </DateNav>
+        </UiNavArrows>
       </div>
 
       <template v-if="budgetsStore.isReady">

@@ -25,7 +25,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
 </script>
 
 <template>
-  <DateNav
+  <UiNavArrows
     class="grow"
     :isShowNavHome="!isToday"
     :isEnd="isToday"
@@ -57,5 +57,5 @@ function changeDate(way: 'prev' | 'next' | 'today') {
         </div>
       </template>
     </BottomSheetOrDropdown>
-  </DateNav>
+  </UiNavArrows>
 </template>
