@@ -3,7 +3,6 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { compareCategoryIds } from '~/components/categories/utils'
-import { todayCivilDayEpoch } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const categoriesStore = useCategoriesStore()
@@ -31,17 +30,7 @@ const categoryIds = computed(() => {
 })
 
 function onClick(categoryId: CategoryId) {
-  if (!categoriesStore.isTransactible(categoryId))
-    return
-
-  trnsFormStore.openFormForCreate()
-  trnsFormStore.$patch((state) => {
-    state.values.amount = [0, 0, 0]
-    state.values.amountRaw = ['', '', '']
-    state.values.categoryId = categoryId
-    state.ui.isShow = true
-    state.values.date = todayCivilDayEpoch()
-  })
+  trnsFormStore.openFormForCategory(categoryId)
 }
 </script>
 

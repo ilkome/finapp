@@ -1,6 +1,5 @@
 import type { CategoryId } from '~/components/categories/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { todayCivilDayEpoch } from '~/components/date/utils'
 import { statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -10,7 +9,6 @@ export function useCategoryLongPress(
   onShortPress: () => void,
 ) {
   const statDate = inject(statDateKey)!
-  const categoriesStore = useCategoriesStore()
   const trnsFormStore = useTrnsFormStore()
 
   const longPressRef = ref(null)
@@ -18,25 +16,12 @@ export function useCategoryLongPress(
   onLongPress(
     longPressRef,
     () => {
-      const isTransactible = categoriesStore.isTransactible(categoryId())
-      if (!isTransactible)
-        return
+      const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'
+      const date = isDayDate && statDate.selectedInterval.value?.start
+        ? statDate.selectedInterval.value.start
+        : todayCivilDayEpoch()
 
-      trnsFormStore.openFormForCreate()
-      trnsFormStore.$patch((state) => {
-        state.values.amount = [0, 0, 0]
-        state.values.amountRaw = ['', '', '']
-        state.values.categoryId = categoryId()
-        state.ui.isShow = true
-
-        const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'
-        if (isDayDate && statDate.selectedInterval.value?.start) {
-          state.values.date = statDate.selectedInterval.value.start
-        }
-        else {
-          state.values.date = todayCivilDayEpoch()
-        }
-      })
+      trnsFormStore.openFormForCategory(categoryId(), date)
     },
     {
       onMouseUp: (duration: number, distance: number, isLongPress: boolean) => {

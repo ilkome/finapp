@@ -156,7 +156,7 @@ async function onDeleteConfirm() {
         v-if="wallet.type !== 'credit'"
         class="md:max-w-lg"
       >
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('money.balance')"
@@ -164,17 +164,17 @@ async function onDeleteConfirm() {
       </div>
 
       <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.debt')"
         />
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="walletCreditLimit - (-total)"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.available')"
         />
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="walletCreditLimit"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.limit')"

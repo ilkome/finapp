@@ -378,6 +378,19 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     ui.value.isShow = true
   }
 
+  // Shared by the round-categories quick-add row and the categories long-press gesture: open a
+  // fresh create form pre-filled with a single category and no amount yet.
+  function openFormForCategory(categoryId: CategoryId, date: number = todayCivilDayEpoch()) {
+    if (!categoriesStore.isTransactible(categoryId))
+      return
+
+    openFormForCreate()
+    values.amount = [0, 0, 0]
+    values.amountRaw = ['', '', '']
+    values.categoryId = categoryId
+    values.date = date
+  }
+
   // Entry point from the Recurrences section: the trn form is the creation path for a recurrence
   // (its first occurrence is the entered trn), so open it for create with "Repeat" pre-enabled.
   function openFormForCreateRecurrence() {
@@ -444,6 +457,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     onClose,
     onSubmit,
     onTransferWalletSelected,
+    openFormForCategory,
     openFormForCreate,
     openFormForCreateRecurrence,
     openFormForDuplicate,

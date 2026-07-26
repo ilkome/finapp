@@ -316,7 +316,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
       <div v-else class="mx-auto grid w-full max-w-150 content-start justify-items-center gap-4">
         <TrnsNoTrns />
 
-        <StatCategoriesRoundRecent />
+        <CategoriesQuickAdd />
       </div>
     </div>
 
