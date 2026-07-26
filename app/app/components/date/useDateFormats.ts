@@ -1,8 +1,6 @@
 import { differenceInDays } from 'date-fns'
 
-import type { PeriodNameWithAll } from '~/components/stat/filter/types'
-
-import { civilDayStart, formatByLocale, getEndOf, getStartOf, todayCivilDayEpoch } from '~/components/date/utils'
+import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 type FullDateParts = {
@@ -17,17 +15,6 @@ type FullDateParts = {
 export function useDateFormats() {
   const { locale, t } = useI18n()
   const { formatDateToStringWithLast } = useGetDateRange(t, locale.value)
-
-  function getDates(periodName: PeriodNameWithAll, date: number) {
-    if (periodName === 'all')
-      return
-
-    const filterDate = new Date(date)
-    const start = getStartOf(filterDate, periodName).getTime()
-    const end = getEndOf(filterDate, periodName).getTime()
-
-    return { end, start }
-  }
 
   function formatDate(value: number, type: 'trnItem'): string | undefined
   function formatDate(value: number, type: 'full'): FullDateParts | undefined
@@ -57,6 +44,5 @@ export function useDateFormats() {
 
   return {
     formatDate,
-    getDates,
   }
 }

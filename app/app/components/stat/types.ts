@@ -4,11 +4,9 @@ import type { Range } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { TrnId } from '~/components/trns/types'
 
-export type MoneyTypeSlug = 'expense' | 'income'
 export type StatTabSlug = 'income' | 'expense' | 'summary' | 'split'
 export type SeriesSlug = 'income' | 'expense'
 export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
-export type MoneyTypeNumber = 0 | 1 | 2
 
 export type StatConfigPanelId
   = | 'root'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/amount/types'
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'

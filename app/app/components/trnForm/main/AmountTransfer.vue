@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MoneyTypeSlug } from '~/components/stat/types'
+import type { MoneyTypeSlug } from '~/components/amount/types'
 import type { TransferSide } from '~/components/trns/types'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'

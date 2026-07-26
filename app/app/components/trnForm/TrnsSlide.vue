@@ -5,7 +5,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useDateFormats } from '~/components/date/useDateFormats'
+import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -17,7 +17,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { getDates } = useDateFormats()
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -28,7 +27,8 @@ const filterBy = useStorage<FilterBy>('filterBy', 'wallet')
 const trnsIds = computed(() => {
   const walletsIds: WalletId[] = []
   let categoriesIds: CategoryId[] = []
-  const dates = getDates('day', trnsFormStore.values.date)
+  const filterDate = new Date(trnsFormStore.values.date)
+  const dates = { end: getEndOf(filterDate, 'day').getTime(), start: getStartOf(filterDate, 'day').getTime() }
 
   if (filterBy.value === 'wallet' && trnsFormStore.values.walletId)
     walletsIds.push(trnsFormStore.values.walletId)
