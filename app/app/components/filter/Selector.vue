@@ -10,9 +10,7 @@ const props = defineProps<{
 const filter = inject(filterKey)!
 const { t } = useI18n()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 </script>
 
 <template>

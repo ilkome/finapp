@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStorage, useWindowSize } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
 
@@ -28,9 +28,7 @@ const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 
 const search = ref('')
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
@@ -221,12 +219,12 @@ onMounted(async () => {
 
 <template>
   <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 py-2">
+    <div class="sticky top-0 z-20 flex items-center gap-2 bg-default px-3 py-2">
       <input
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">
@@ -275,7 +273,7 @@ onMounted(async () => {
       <template v-if="filter === 'all'">
         <div
           v-if="hasNoMatches"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('categories.form.children.noMatches') }}
         </div>
@@ -309,7 +307,7 @@ onMounted(async () => {
               <button
                 v-if="props.selectableParents"
                 type="button"
-                class="hover:bg-elevated/40 mb-1 flex w-full items-center gap-2 rounded-md p-2 text-left"
+                class="mb-1 flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-elevated/40"
                 :class="props.activeItemId === rootId ? 'bg-elevated/60' : ''"
                 @click="onSelect(rootId)"
               >
@@ -320,7 +318,7 @@ onMounted(async () => {
                   <Icon :name="categoriesStore.items[rootId]?.icon ?? 'lucide:folder'" size="15" class="text-white" />
                 </div>
                 <div class="min-w-0">
-                  <div class="text-highlighted truncate text-sm">
+                  <div class="truncate text-sm text-highlighted">
                     {{ t('categories.selectParent', { name: categoriesStore.items[rootId]?.name }) }}
                   </div>
                   <div class="text-2xs text-muted">
@@ -363,7 +361,7 @@ onMounted(async () => {
       <template v-else>
         <div
           v-if="hasNoMatches"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('categories.form.children.noMatches') }}
         </div>
@@ -378,7 +376,7 @@ onMounted(async () => {
           />
 
           <div v-if="filteredRecent.length > 0">
-            <div class="font-tertiary sticky top-0 z-10 pt-5 pb-4 text-lg leading-none font-semibold">
+            <div class="sticky top-0 z-10 pt-5 pb-4 font-tertiary text-lg leading-none font-semibold">
               {{ t('categories.recentCategories') }}
             </div>
             <CategoriesSelectorGrid

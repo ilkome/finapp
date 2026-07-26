@@ -4,6 +4,7 @@ import type { NavigationMenuItem } from '@nuxt/ui'
 import type { StatTabSlug } from '~/components/stat/types'
 
 import { tabsNavUi } from '~/components/menu/Tabs'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   active: StatTabSlug
@@ -14,7 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const { width } = useWindowSize()
+const statConfig = inject(statConfigKey)!
 
 const menu = computed<NavigationMenuItem[]>(() => {
   const make = (value: StatTabSlug, label: string): NavigationMenuItem => ({
@@ -30,7 +31,7 @@ const menu = computed<NavigationMenuItem[]>(() => {
     make('income', t('money.income')),
   ]
 
-  if (width.value > 766)
+  if (statConfig.showTabs.value)
     all.push(make('split', t('money.split')))
 
   return all

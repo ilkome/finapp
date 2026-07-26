@@ -23,9 +23,7 @@ const { t } = useI18n()
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 
 const editingCategoryId = ref<CategoryId | null>(null)
 const isCreatingNewCategory = ref(false)

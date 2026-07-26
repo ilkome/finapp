@@ -148,8 +148,13 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
       config.value = result
   }
 
+  // Tabs only fit on a laptop with a mouse; mobile (and a wide touchscreen) shows
+  // the combined summary view instead. One rule, read by Menu/Header/Wrap.
+  const showTabs = useIsLaptop()
+
   return {
     config,
+    showTabs,
     updateConfig,
   }
 }

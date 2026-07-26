@@ -4,7 +4,7 @@ import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { statDateKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -19,12 +19,12 @@ const props = defineProps<{
 }>()
 
 const trnsStore = useTrnsStore()
+const statConfig = inject(statConfigKey)!
 const statDate = inject(statDateKey)!
 
-const { width } = useWindowSize()
 // Mobile has no per-type tabs (see Header/Menu), so always show the combined
 // summary view.
-const effectiveTab = computed<StatTabSlug>(() => width.value > 766 ? props.activeTab : 'summary')
+const effectiveTab = computed<StatTabSlug>(() => statConfig.showTabs.value ? props.activeTab : 'summary')
 
 const sharedItemProps = computed(() => ({
   categoryId: props.categoryId,

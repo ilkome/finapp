@@ -30,10 +30,6 @@ const props = withDefaults(defineProps<{
 
 const activeTab = defineModel<StatTabSlug>('activeTab')
 
-// Tabs only fit on wide screens; mobile shows the combined summary view instead.
-const { width } = useWindowSize()
-const showTabs = computed(() => width.value > 766)
-
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
 const statDate = inject(statDateKey)!
@@ -107,7 +103,7 @@ function onClickWallet(walletId: WalletId) {
       </div>
     </template>
 
-    <template v-if="activeTab && !props.hideTabs && showTabs" #selected>
+    <template v-if="activeTab && !props.hideTabs && statConfig.showTabs.value" #selected>
       <StatMenu
         :active="activeTab"
         @click="(id: StatTabSlug) => activeTab = id"

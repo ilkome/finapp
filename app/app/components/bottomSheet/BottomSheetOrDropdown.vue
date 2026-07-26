@@ -19,9 +19,7 @@ const emit = defineEmits<{
   openModal: []
 }>()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 
 const open = ref(false)
 

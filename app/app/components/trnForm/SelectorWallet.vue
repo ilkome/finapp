@@ -18,9 +18,7 @@ const walletsStore = useWalletsStore()
 
 const isShow = ref(false)
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 </script>
 
 <template>

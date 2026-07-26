@@ -8,9 +8,7 @@ const { t } = useI18n()
 const { isSearchOpen, onMenuClick, searchTerm } = useSearch()
 const trnsFormStore = useTrnsFormStore()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isDesktop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isDesktop = useIsLaptop()
 
 function onSelect(item: SearchResultItem) {
   isSearchOpen.value = false
