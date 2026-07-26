@@ -1,5 +1,6 @@
-import type { useStatDate } from '~/components/date/useStatDate'
 import type { Period, Range } from '~~/utils/date/types'
+
+import type { useStatDate } from '~/components/stat/date/useStatDate'
 
 export type StatDateParams = {
   customDate: false | Range

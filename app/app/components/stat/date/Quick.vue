@@ -7,20 +7,20 @@ const isExpanded = ref(false)
 
 <template>
   <div class="flex items-center overflow-x-auto">
-    <DateRanges
+    <StatDateRanges
       :itemProps="{ variant: 'small' }"
       :statDate
       view="periods"
     />
 
     <template v-if="isExpanded">
-      <DateRanges
+      <StatDateRanges
         :itemProps="{ variant: 'small' }"
         :statDate
         view="presets"
       />
 
-      <DateRanges
+      <StatDateRanges
         :itemProps="{ variant: 'small' }"
         :statDate
         view="maximum"
@@ -29,7 +29,7 @@ const isExpanded = ref(false)
 
     <button
       type="button"
-      class="interactive text-muted flex min-h-8 min-w-8 shrink-0 items-center justify-center rounded-sm"
+      class="flex min-h-8 min-w-8 shrink-0 items-center justify-center rounded-sm interactive text-muted"
       @click="isExpanded = !isExpanded"
     >
       <Icon

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DateLinkItemProps } from '~/components/date/LinkItem.vue'
-import type { IntervalGroupedLabel, StatDateProvider } from '~/components/date/types'
+import type { IntervalGroupedLabel, StatDateProvider } from '~/components/stat/date/types'
 
 const props = defineProps<{
   isShowRangeAdjust?: boolean
@@ -123,7 +123,7 @@ function selectMaxRange(isSkipEmpty = false) {
     </template>
 
     <template v-if="props.isShowRangeAdjust">
-      <div class="border-default bg-default flex gap-1 rounded-sm border p-px">
+      <div class="flex gap-1 rounded-sm border border-default bg-default p-px">
         <DateLinkItem
           v-bind="props.itemProps"
           @click="props.statDate.minusRange"

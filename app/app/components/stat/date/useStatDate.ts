@@ -1,13 +1,12 @@
+import type { Range } from '~~/utils/date/types'
+
 import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 import defu from 'defu'
 
-import type { Grouped, IntervalGroupedLabel, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
-import type { Range } from '~~/utils/date/types'
+import type { Grouped, IntervalGroupedLabel, StatDateParams, StatDateParamsQuery } from '~/components/stat/date/types'
 
-import { calculateBestIntervalsBy, getIntervalsInRange } from '~/components/date/utils'
-
-import { computeDateRange, defaultStatDateParams, parseStatDateQueryParams } from './statDateParams'
+import { calculateBestIntervalsBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
 
 export function useStatDate({
   initParams,

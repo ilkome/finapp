@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { Grouped } from '~/components/date/types'
 import type { Range } from '~~/utils/date/types'
 
 import { getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
+
+import type { Grouped } from '~/components/stat/date/types'
+
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const emit = defineEmits<{
@@ -71,7 +73,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
     >
       <!-- Presets -->
       <div class="grid gap-4">
-        <DateRanges
+        <StatDateRanges
           :statDate
           isShowRangeAdjust
           view="periods"
@@ -79,7 +81,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
         />
 
         <div class="flex flex-wrap gap-1">
-          <DateRanges
+          <StatDateRanges
             :statDate
             view="presets"
             @close="emit('close')"
@@ -87,7 +89,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
         </div>
 
         <div class="flex flex-wrap gap-1">
-          <DateRanges
+          <StatDateRanges
             :statDate
             view="maximum"
             @close="emit('close')"
@@ -112,7 +114,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
               {{ t(`dates.${item.intervalsBy}.simple`) }}
             </DateLinkItem>
 
-            <div class="border-default bg-default flex gap-1 rounded-sm border p-px">
+            <div class="flex gap-1 rounded-sm border border-default bg-default p-px">
               <DateLinkItem @click="statDate.delInterval">
                 -
               </DateLinkItem>

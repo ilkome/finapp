@@ -5,7 +5,7 @@ import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useStatDate } from '~/components/date/useStatDate'
+import { useStatDate } from '~/components/stat/date/useStatDate'
 import { useFilter } from '~/components/stat/filter/useFilter'
 import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'

@@ -1,6 +1,6 @@
 import type { InjectionKey, Ref } from 'vue'
 
-import type { StatDateProvider } from '~/components/date/types'
+import type { StatDateProvider } from '~/components/stat/date/types'
 import type { FilterProvider } from '~/components/stat/filter/types'
 import type { StatConfigPanelId } from '~/components/stat/types'
 import type { StatConfigProvider } from '~/components/stat/useStatConfig'

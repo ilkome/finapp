@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
-
-import type { IntervalsInRangeProps } from '~/components/date/types'
-
-import { getIntervalsInRange } from '~/components/date/utils'
 import { getEndOf, getStartOf } from '~~/utils/date/period'
+
+import type { IntervalsInRangeProps } from '~/components/stat/date/types'
+
+import { getIntervalsInRange } from '~/components/stat/date/params'
 
 // Civil-day model: boundaries are computed in UTC (see plans/civil-date-migration.md).
 const monthStart = (y: number, m: number) => Date.UTC(y, m, 1)

@@ -1,8 +1,9 @@
+import type { Range } from '~~/utils/date/types'
+
 import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fns'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { StatDateParams } from '~/components/date/types'
-import type { Range } from '~~/utils/date/types'
+import type { StatDateParams } from '~/components/stat/date/types'
 import type { IntervalData } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 

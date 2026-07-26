@@ -1,10 +1,11 @@
+import type { Range } from '~~/utils/date/types'
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, ref, watch } from 'vue'
 
-import type { StatDateParams } from '~/components/date/types'
-import type { Range } from '~~/utils/date/types'
+import type { StatDateParams } from '~/components/stat/date/types'
 
-import { defaultStatDateParams } from './statDateParams'
+import { defaultStatDateParams } from './params'
 
 // Stub Nuxt auto-imports
 vi.stubGlobal('computed', computed)
