@@ -5,7 +5,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { filterKey } from '~/components/stat/injectionKeys'
+import { filterKey } from '~/components/filter/injectionKeys'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 import 'swiper/css'
@@ -155,7 +155,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
         v-model="search"
         type="text"
         :aria-label="t('base.search')"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('base.search')"
       >
       <UiActionButton
@@ -192,18 +192,18 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
 
         <div
           ref="sliderRef"
-          class="swiper h-full min-h-0 w-full min-w-0 overflow-hidden"
+          class="swiper size-full min-h-0 min-w-0 overflow-hidden"
         >
           <div class="swiper-wrapper">
-            <div class="swiper-slide h-full w-full">
-              <StatFilterPanelWalletsTab
+            <div class="swiper-slide size-full">
+              <FilterPanelWalletsTab
                 :filterAtTop="props.isExpanded !== undefined"
                 :selectedIds="pendingWallets"
                 @selected="toggleWallet"
               />
             </div>
-            <div class="swiper-slide h-full w-full">
-              <StatFilterPanelCategoriesTab
+            <div class="swiper-slide size-full">
+              <FilterPanelCategoriesTab
                 :selectedIds="pendingCategories"
                 @removeCategories="removeCategories"
                 @selected="toggleCategory"
@@ -220,7 +220,7 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
       >
         <div
           v-if="hasNoResults"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('search.noResults') }}
         </div>
@@ -232,11 +232,11 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
           <div
             v-for="walletId in walletResults"
             :key="walletId"
-            class="hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent"
+            class="flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
             @click="toggleWallet(walletId)"
           >
             <div
-              class="flex-center relative w-10 shrink-0 self-stretch pl-2"
+              class="relative flex-center w-10 shrink-0 self-stretch pl-2"
               @click.stop
             >
               <div

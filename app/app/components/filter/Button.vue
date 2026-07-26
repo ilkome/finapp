@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useFilterSummary } from '~/components/stat/filter/useFilterSummary'
+import { useFilterSummary } from '~/components/filter/useFilterSummary'
 
 const { t } = useI18n()
 const { summaryText } = useFilterSummary()
@@ -26,7 +26,7 @@ const snapPoints = computed(() => isTouch.value ? [500, 0.98] : undefined)
   >
     <template #trigger="{ isActive }">
       <UiTitleCollapse
-        class="text-md bg-elevated/30 grow-0!"
+        class="text-md grow-0! bg-elevated/30"
         isShown
       >
         <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
@@ -34,7 +34,7 @@ const snapPoints = computed(() => isTouch.value ? [500, 0.98] : undefined)
           <Icon
             name="lucide:chevron-down"
             size="18"
-            class="text-muted shrink-0 transition-transform"
+            class="shrink-0 text-muted transition-transform"
             :class="isActive && 'rotate-180'"
           />
         </span>
@@ -42,7 +42,7 @@ const snapPoints = computed(() => isTouch.value ? [500, 0.98] : undefined)
     </template>
 
     <template #custom="{ close, isExpanded }">
-      <StatFilterPanel :isExpanded="isExpanded" @close="close" />
+      <FilterPanel :isExpanded="isExpanded" @close="close" />
     </template>
   </BottomSheetOrDropdown>
 </template>

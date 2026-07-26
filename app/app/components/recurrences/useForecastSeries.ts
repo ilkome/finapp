@@ -1,8 +1,8 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { Range } from '~~/utils/date/types'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { Range } from '~~/utils/date/types'
-import type { FilterProvider } from '~/components/stat/filter/types'
+import type { FilterProvider } from '~/components/filter/types'
 import type { IntervalData } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 

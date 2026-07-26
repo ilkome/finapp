@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { filterKey } from '~/components/stat/injectionKeys'
+import { filterKey } from '~/components/filter/injectionKeys'
 
 const props = defineProps<{
   isShowCategories?: boolean
@@ -17,7 +17,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
 
 <template>
   <div :class="props.labelMode ? 'grid' : 'flex items-center'">
-    <StatFilterSelectorItem
+    <FilterSelectorItem
       v-if="props.isShowWallets"
       :hasSelection="filter?.walletsIds.value.length > 0"
       :labelMode="props.labelMode"
@@ -30,9 +30,9 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         class="min-w-80 px-2"
         @selected="filter.toggleWalletId"
       />
-    </StatFilterSelectorItem>
+    </FilterSelectorItem>
 
-    <StatFilterSelectorItem
+    <FilterSelectorItem
       v-if="props.isShowCategories"
       :hasSelection="filter?.categoriesIds.value.length > 0"
       :labelMode="props.labelMode"
@@ -46,6 +46,6 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
         @setCategories="filter.setCategories"
         @removeCategories="filter.removeCategories"
       />
-    </StatFilterSelectorItem>
+    </FilterSelectorItem>
   </div>
 </template>

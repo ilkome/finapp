@@ -2,8 +2,8 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useFilterSummary } from '~/components/stat/filter/useFilterSummary'
-import { filterKey } from '~/components/stat/injectionKeys'
+import { filterKey } from '~/components/filter/injectionKeys'
+import { useFilterSummary } from '~/components/filter/useFilterSummary'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{

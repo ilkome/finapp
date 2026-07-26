@@ -7,7 +7,8 @@ import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey, statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
+import { filterKey } from '~/components/filter/injectionKeys'
+import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useStatItem } from '~/components/stat/useStatItem'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -244,8 +245,8 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
       >
         <div ref="dateFx" class="min-w-0">
           <StatDateNavigation>
-            <StatFilterButton />
-            <StatFilterSelected
+            <FilterButton />
+            <FilterSelected
               v-if="filter.isShow.value"
               isShowCategories
               isShowWallets

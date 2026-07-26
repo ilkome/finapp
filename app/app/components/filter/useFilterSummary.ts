@@ -1,7 +1,7 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { filterKey } from '~/components/stat/injectionKeys'
+import { filterKey } from '~/components/filter/injectionKeys'
 
 /**
  * Human summary of the active stat filter, plus the rolled-up category list it

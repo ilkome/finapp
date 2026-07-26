@@ -5,9 +5,10 @@ import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
+import { filterKey } from '~/components/filter/injectionKeys'
+import { useFilter } from '~/components/filter/useFilter'
 import { useStatDate } from '~/components/stat/date/useStatDate'
-import { useFilter } from '~/components/stat/filter/useFilter'
-import { filterKey, statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
