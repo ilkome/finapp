@@ -1,6 +1,6 @@
 import type { RecurrenceId, RecurrenceItem, Recurrences } from '~/components/recurrences/types'
 
-import { addCivilDays, civilDayKey, civilDayStart } from '~/components/date/utils'
+import { addCivilDays, civilDayKey, civilDayStart } from '~~/utils/date/civil'
 import { effectiveAmountFor, occurrencesInRange, occurrenceTrnId } from '~/components/recurrences/occurrences'
 
 // Due-soon reminders (request 4): remind 3 days before, the day before, and on the day of each

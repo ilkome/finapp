@@ -7,7 +7,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~/components/date/utils'
+import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { committedNativeInRange, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, pendingConfirmOccurrences, periodProgress } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'

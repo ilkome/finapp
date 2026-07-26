@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { sub } from 'date-fns'
 
-import { getEndOf, getStartOf, toDuration } from '~/components/date/utils'
+import { getEndOf, getStartOf, toDuration } from '~~/utils/date/period'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!

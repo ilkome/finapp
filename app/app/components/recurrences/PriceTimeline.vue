@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
-import { formatByLocale } from '~/components/date/utils'
+import { formatByLocale } from '~~/utils/date/civil'
 import { priceHistoryTimeline } from '~/components/recurrences/occurrences'
 import { TrnType } from '~/components/trns/types'
 

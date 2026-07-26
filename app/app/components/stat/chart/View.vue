@@ -6,11 +6,11 @@ import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
-import type { Period } from '~/components/date/types'
+import type { Period } from '~~/utils/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { formatByLocale } from '~/components/date/utils'
+import { formatByLocale } from '~~/utils/date/civil'
 import { config, defaultSeriesConfig } from '~/components/stat/chart/config'
 import { formatChartAmount } from '~/components/stat/chart/utils'
 

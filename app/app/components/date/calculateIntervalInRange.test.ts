@@ -1,8 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import type { IntervalsInRangeProps, Range } from '~/components/date/types'
+import type { IntervalsInRangeProps } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
-import { calculateIntervalInRange, getEndOf, getStartOf } from '~/components/date/utils'
+import { calculateIntervalInRange } from '~/components/date/utils'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 
 // Civil-day model: boundaries are computed in UTC (see plans/civil-date-migration.md),
 // so expectations use Date.UTC, not local-time date-fns helpers.

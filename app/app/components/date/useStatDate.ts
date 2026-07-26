@@ -2,7 +2,8 @@ import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 import defu from 'defu'
 
-import type { Grouped, IntervalGroupedLabel, Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
+import type { Grouped, IntervalGroupedLabel, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
 import { calculateBestIntervalsBy, getIntervalsInRange } from '~/components/date/utils'
 

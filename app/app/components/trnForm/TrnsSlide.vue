@@ -5,7 +5,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { getEndOf, getStartOf } from '~/components/date/utils'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 

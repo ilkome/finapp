@@ -1,14 +1,5 @@
 import type { useStatDate } from '~/components/date/useStatDate'
-
-export const periods = ['day', 'week', 'month', 'year'] as const
-export type Period = typeof periods[number]
-
-export type DateUTC = number
-
-export type Range = {
-  end: DateUTC
-  start: DateUTC
-}
+import type { Period, Range } from '~~/utils/date/types'
 
 export type StatDateParams = {
   customDate: false | Range

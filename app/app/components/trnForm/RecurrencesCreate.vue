@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
+import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 

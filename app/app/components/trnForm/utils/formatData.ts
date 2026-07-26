@@ -1,6 +1,6 @@
 import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
 
-import { todayCivilDayEpoch } from '~/components/date/utils'
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { TrnType } from '~/components/trns/types'
 
 function formatTransaction(props: TrnFormValues): Transaction | false {

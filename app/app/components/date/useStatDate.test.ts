@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, ref, watch } from 'vue'
 
-import type { Range, StatDateParams } from '~/components/date/types'
+import type { StatDateParams } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
 import { defaultStatDateParams } from './statDateParams'
 

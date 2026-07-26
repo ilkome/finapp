@@ -4,7 +4,8 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 
-import { formatByLocale, getUCalendarCivilDate, parseUCalendarDate } from '~/components/date/utils'
+import { formatByLocale } from '~~/utils/date/civil'
+import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
 
 const props = defineProps<{
   clearable?: boolean

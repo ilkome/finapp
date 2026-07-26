@@ -1,6 +1,6 @@
 import { differenceInDays } from 'date-fns'
 
-import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
+import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 
 type FullDateParts = {

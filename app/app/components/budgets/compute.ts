@@ -5,7 +5,7 @@ import type { BudgetId, BudgetKind, BudgetPeriodType, BudgetRollover } from '~/c
 import type { Categories, CategoryId } from '~/components/categories/types'
 
 import { getCategorySubtreeIds } from '~/components/categories/utils'
-import { getStartOf, toDuration } from '~/components/date/utils'
+import { getStartOf, toDuration } from '~~/utils/date/period'
 
 // Calendar-average occurrences per year, used to convert a budget amount between cadences. Fixed
 // factors (like Goodbudget/Actual) keep the conversion stable and predictable rather than depending

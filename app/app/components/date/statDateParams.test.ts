@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
-import type { Range, StatDateParams } from '~/components/date/types'
+import type { StatDateParams } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
 import { computeDateRange, defaultStatDateParams, parseStatDateQueryParams } from './statDateParams'
 

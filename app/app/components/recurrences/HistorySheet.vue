@@ -3,7 +3,7 @@ import type { RecurrenceId } from '~/components/recurrences/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { epochToCivilParts, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~/components/date/utils'
+import { epochToCivilParts, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { nextOccurrence, paidCountInRange, priceHistoryTimeline } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'

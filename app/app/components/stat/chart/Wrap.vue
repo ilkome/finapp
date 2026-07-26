@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { Period } from '~/components/date/types'
+import type { Period } from '~~/utils/date/types'
 import type { ChartSeries } from '~/components/stat/types'
 import type { ChartPieGroup } from '~/components/stat/useStatItem'
 

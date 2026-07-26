@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { Grouped, Range } from '~/components/date/types'
+import type { Grouped } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
-import { getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
+import { getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const emit = defineEmits<{

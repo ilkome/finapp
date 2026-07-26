@@ -4,7 +4,7 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 
-import { getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
+import { getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{

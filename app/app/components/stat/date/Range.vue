@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Range } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
 import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
 import { statDateKey } from '~/components/stat/injectionKeys'

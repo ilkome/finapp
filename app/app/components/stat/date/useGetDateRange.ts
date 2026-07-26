@@ -1,10 +1,12 @@
 import { UTCDate } from '@date-fns/utc'
 import { isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, isSameWeek as dfIsSameWeek, isSameYear as dfIsSameYear, sub } from 'date-fns'
 
-import type { Period, Range, StatDateParams } from '~/components/date/types'
+import type { StatDateParams } from '~/components/date/types'
+import type { Period, Range } from '~~/utils/date/types'
 import type { LocaleSlug } from '~/components/locale/types'
 
-import { formatByLocale, todayCivilDayEpoch, toDuration } from '~/components/date/utils'
+import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { toDuration } from '~~/utils/date/period'
 
 type DateFormatParams = {
   by: StatDateParams['rangeBy']

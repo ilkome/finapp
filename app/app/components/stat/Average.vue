@@ -2,14 +2,14 @@
 import { sub } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { Range } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { getEndOf, getStartOf, toDuration } from '~/components/date/utils'
+import { getEndOf, getStartOf, toDuration } from '~~/utils/date/period'
 import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { getTrnTypeByAmount, TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'

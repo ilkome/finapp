@@ -4,7 +4,7 @@ import type { RecurrenceId, RecurrenceItem, RecurrenceSchedule } from '~/compone
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
+import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { nextOccurrence, priceHistoryTimeline } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'

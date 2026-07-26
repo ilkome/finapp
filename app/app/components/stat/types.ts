@@ -1,6 +1,6 @@
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import type { Range } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { TrnId } from '~/components/trns/types'
 

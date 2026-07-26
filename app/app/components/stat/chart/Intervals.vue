@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { differenceInDays } from 'date-fns'
 
-import type { Period, Range } from '~/components/date/types'
+import type { Period, Range } from '~~/utils/date/types'
 
 const props = defineProps<{
   period: Period

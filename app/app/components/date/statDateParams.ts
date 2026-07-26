@@ -1,9 +1,11 @@
 import { z } from 'zod/v4'
 
-import type { Range, StatDateParams, StatDateParamsQuery } from '~/components/date/types'
+import type { StatDateParams, StatDateParamsQuery } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 
-import { periods } from '~/components/date/types'
-import { calculateIntervalInRange, getEndOf } from '~/components/date/utils'
+import { calculateIntervalInRange } from '~/components/date/utils'
+import { getEndOf } from '~~/utils/date/period'
+import { periods } from '~~/utils/date/types'
 
 const queryParamsSchema = z.object({
   intervalsBy: z.enum(periods).optional(),

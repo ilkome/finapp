@@ -4,11 +4,11 @@ import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
 import { trnToRow } from '~~/services/powersync/transforms'
 
-import type { Range } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { getEndOf, getStartOf } from '~/components/date/utils'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { filterTrnsIds } from '~/components/trns/getTrns'

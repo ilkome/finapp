@@ -4,7 +4,7 @@ import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale } from '~/components/date/utils'
+import { formatByLocale } from '~~/utils/date/civil'
 
 type Row = { activity: number, assigned: number, periodStart: number }
 

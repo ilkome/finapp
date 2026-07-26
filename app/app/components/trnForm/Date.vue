@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useDateFormats } from '~/components/date/useDateFormats'
-import { addCivilDays, isSameCivilDay, todayCivilDayEpoch } from '~/components/date/utils'
+import { addCivilDays, isSameCivilDay, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const { t } = useI18n()

@@ -1,6 +1,6 @@
 import type { CategoryId } from '~/components/categories/types'
 
-import { todayCivilDayEpoch } from '~/components/date/utils'
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 

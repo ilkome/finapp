@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RecurrenceEndMode, RecurrenceSchedule } from '~/components/recurrences/types'
 
-import { todayCivilDayEpoch } from '~/components/date/utils'
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { seedEndField } from '~/components/recurrences/occurrences'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 

@@ -9,7 +9,7 @@ import type { OccurrenceMatchTrn } from '~/components/recurrences/occurrences'
 import type { AmountChange, RecurrenceEndMode, RecurrenceFreq, RecurrenceId, RecurrenceItem, Recurrences, RecurrenceStatus } from '~/components/recurrences/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~/components/date/utils'
+import { addCivilDays, civilDayKey, civilDayStart, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { buildOccurrenceTrn, generateForRule } from '~/components/recurrences/generate'

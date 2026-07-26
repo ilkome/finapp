@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, ref } from 'vue'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { Range } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 import type { IntervalData } from '~/components/stat/types'
 
 // ---------------------------------------------------------------------------

@@ -3,7 +3,7 @@ import type { RecurrenceId, RecurrenceItem, RecurrenceStatus } from '~/component
 
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { addCivilDays, todayCivilDayEpoch } from '~/components/date/utils'
+import { addCivilDays, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { committedNativeInRange, nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'

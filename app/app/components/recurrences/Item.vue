@@ -3,7 +3,7 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale, todayCivilDayEpoch } from '~/components/date/utils'
+import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { isStaleSubscription, nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrenceMenuItems } from '~/components/recurrences/useRecurrenceMenuItems'

@@ -1,7 +1,7 @@
-import type { Range } from '~/components/date/types'
+import type { Range } from '~~/utils/date/types'
 import type { AmountChange, RecurrenceEndMode, RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
-import { addCivilDays, addCivilMonths, addCivilYears, civilDayKey, civilDayStart, epochToCivilParts, lastDayOfMonthCivil } from '~/components/date/utils'
+import { addCivilDays, addCivilMonths, addCivilYears, civilDayKey, civilDayStart, epochToCivilParts, lastDayOfMonthCivil } from '~~/utils/date/civil'
 
 // Pure civil-date occurrence engine. Occurrences are NEVER stored; they are computed
 // deterministically from the rule (no timezone involved). See plans/recurrences.md §4.

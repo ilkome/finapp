@@ -7,7 +7,7 @@ import { budgetKinds, budgetPeriodTypes, budgetRollovers } from '~/components/bu
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { todayCivilDayEpoch } from '~/components/date/utils'
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
 
 const props = defineProps<{
   budgetId?: BudgetId

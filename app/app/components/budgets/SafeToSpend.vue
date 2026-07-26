@@ -5,7 +5,7 @@ import type { SafeToSpendBreakdown } from '~/components/budgets/useBudgetProgres
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale } from '~/components/date/utils'
+import { formatByLocale } from '~~/utils/date/civil'
 
 const props = defineProps<{
   breakdown: SafeToSpendBreakdown
