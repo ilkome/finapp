@@ -4,8 +4,7 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
-import { seriesOptions } from '~/components/stat/chart/config'
-import { createMarkAreaData } from '~/components/stat/chart/utils'
+import { seriesOptions } from '~/components/stat/chart/options'
 
 export function useStatChart() {
   const { t } = useI18n()
@@ -59,16 +58,24 @@ export function useStatChart() {
     if (!markedDate)
       return series
 
+    const markAreaData: {
+      data: [{ xAxis: string }, { xAxis: string }][]
+      itemStyle: { color: string, opacity: number }
+    } = {
+      data: [[{ xAxis: `${markedDate}` }, { xAxis: `${markedDate}` }]],
+      itemStyle: { color: 'var(--chart-line)', opacity: 1 },
+    }
+
     if (chartType === 'bar') {
       if (series[0])
-        series[0].markArea = createMarkAreaData(markedDate)
+        series[0].markArea = markAreaData
       return series
     }
 
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
     const markAreaSeries: ChartSeries = {
       data: [],
-      markArea: createMarkAreaData(markedDate),
+      markArea: markAreaData,
       markedArea: 'markedArea',
       name: 'markArea',
       type: 'bar',

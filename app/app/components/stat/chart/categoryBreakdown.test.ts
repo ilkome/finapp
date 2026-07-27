@@ -9,7 +9,7 @@ import {
   buildCategoriesPieData,
   buildCategoriesSeries,
   OTHER_SLICE_ID,
-} from '~/components/stat/chart/useCategorySeriesBuilder'
+} from '~/components/stat/chart/categoryBreakdown'
 
 // Each trn maps 1:1 to a category with a fixed expense amount.
 const amounts: Record<TrnId, number> = {

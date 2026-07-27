@@ -8,10 +8,10 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { CategoryPieDatum } from '~/components/stat/chart/useCategorySeriesBuilder'
+import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 
-import { OTHER_SLICE_ID } from '~/components/stat/chart/useCategorySeriesBuilder'
-import { formatChartAmount } from '~/components/stat/chart/utils'
+import { OTHER_SLICE_ID } from '~/components/stat/chart/categoryBreakdown'
+import { formatChartAmount } from '~/components/stat/chart/format'
 
 type PieTooltipParam = {
   color: string

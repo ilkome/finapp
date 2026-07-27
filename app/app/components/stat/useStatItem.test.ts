@@ -74,7 +74,7 @@ vi.mock('~/components/categories/useCategoriesStore', () => ({
   }),
 }))
 
-vi.mock('~/components/stat/chart/useCategorySeriesBuilder', () => ({
+vi.mock('~/components/stat/chart/categoryBreakdown', () => ({
   buildCategoriesSeries: () => [],
 }))
 

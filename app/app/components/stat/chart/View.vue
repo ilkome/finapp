@@ -12,10 +12,8 @@ import { formatByLocale } from '~~/utils/date/civil'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { config } from '~/components/stat/chart/config'
-import { getFormatForChart } from '~/components/stat/chart/format'
-import { buildChartSeries } from '~/components/stat/chart/options'
-import { formatChartAmount } from '~/components/stat/chart/utils'
+import { formatChartAmount, getFormatForChart } from '~/components/stat/chart/format'
+import { baseOption, buildChartSeries } from '~/components/stat/chart/options'
 
 type TooltipParam = {
   color: string
@@ -61,7 +59,7 @@ const chartAriaLabel = computed(() => {
 })
 
 const option = computed(() => {
-  const data = defu(config, {
+  const data = defu(baseOption, {
     series: buildChartSeries(series, chartType),
     xAxis: {
       data: xAxisLabels,
