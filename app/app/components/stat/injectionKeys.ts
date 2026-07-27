@@ -1,8 +1,8 @@
 import type { InjectionKey, Ref } from 'vue'
 
+import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { StatConfigPanelId } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 
 export const statDateKey: InjectionKey<StatDateProvider> = Symbol('statDate')
 export const statConfigKey: InjectionKey<StatConfigProvider> = Symbol('statConfig')

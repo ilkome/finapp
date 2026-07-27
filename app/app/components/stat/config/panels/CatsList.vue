@@ -5,8 +5,6 @@ const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
 const isCatsListShow = computed(() => statConfig.config.value.categories.list.isShow)
-const isLines = computed(() => statConfig.config.value.categories.list.isLines)
-const isRoundIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
 </script>
 
 <template>
@@ -14,15 +12,13 @@ const isRoundIcon = computed(() => statConfig.config.value.categories.list.isRou
     class="grid gap-0.5 transition-opacity"
     :class="{ 'pointer-events-none opacity-50': !isCatsListShow }"
   >
-    <UiSwitchItem
-      :checkboxValue="isLines"
+    <StatConfigSwitch
+      path="categories.list.isLines"
       :title="t('stat.catButtons.isLines')"
-      @click="statConfig.updateConfig('categories', { list: { isLines: !isLines } })"
     />
-    <UiSwitchItem
-      :checkboxValue="isRoundIcon"
+    <StatConfigSwitch
+      path="categories.list.isRoundIcon"
       :title="t('stat.catButtons.isRoundIcon')"
-      @click="statConfig.updateConfig('categories', { list: { isRoundIcon: !isRoundIcon } })"
     />
   </div>
 </template>

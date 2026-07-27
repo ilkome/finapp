@@ -1,16 +1,17 @@
 <script setup lang="ts">
+import type { Period } from '~~/utils/date/types'
+
 import defu from 'defu'
 import { BarChart, LineChart } from 'echarts/charts'
 import { GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
+import { formatByLocale } from '~~/utils/date/civil'
 
-import type { Period } from '~~/utils/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { formatByLocale } from '~~/utils/date/civil'
 import { config, defaultSeriesConfig } from '~/components/stat/chart/config'
 import { formatChartAmount } from '~/components/stat/chart/utils'
 
@@ -134,24 +135,24 @@ function buildChartSeries(series: ChartSeries[]) {
       autoresize
     >
       <template #tooltip="params">
-        <div class="bg-elevated rounded-md px-2 pt-2">
-          <div class="text-muted pb-2 text-xs">
+        <div class="rounded-md bg-elevated px-2 pt-2">
+          <div class="pb-2 text-xs text-muted">
             {{ formatByLocale(new Date(+(params as TooltipParam[])[0]!.name), getFormatForChart(period), locale) }}
           </div>
 
           <div class="grid gap-0">
             <div
               v-for="(param, i) in (params as TooltipParam[])" :key="i"
-              class="border-default flex items-center justify-between gap-4 border-b pb-1 last:border-b-0"
+              class="flex items-center justify-between gap-4 border-b border-default pb-1 last:border-b-0"
             >
               <div class="flex items-center gap-2">
                 <div class="size-2.5 rounded-full" :style="`background: ${param.color}`" />
-                <div class="text-muted text-sm">
+                <div class="text-sm text-muted">
                   {{ param.seriesName }}
                 </div>
               </div>
 
-              <div class="font-secondary text-highlighted text-right text-lg">
+              <div class="text-right font-secondary text-lg text-highlighted">
                 {{ formatChartAmount(param.value, locale) }}
               </div>
             </div>

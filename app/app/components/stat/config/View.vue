@@ -2,11 +2,16 @@
 import { useElementSize } from '@vueuse/core'
 import { AnimatePresence, Motion } from 'motion-v'
 
+import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { nextForecastMode, useForecastMode } from '~/components/recurrences/useForecastMode'
+import { PANELS } from '~/components/stat/config/panels/registry'
+import { buildConfigPatch, getConfigValue } from '~/components/stat/config/schema'
 import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
+
+type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
 // hasCategoryBreakdown needs an explicit `true` default: an absent Boolean prop would
 // otherwise cast to false and hide the category-breakdown controls (grouping / rounds /
@@ -29,10 +34,6 @@ function cycleForecast() {
   forecastMode.value = nextForecastMode(forecastMode.value)
 }
 
-const isChartShow = computed(() => statConfig.config.value.chart.isShow)
-const isCatsRoundShow = computed(() => statConfig.config.value.categories.round.isShow)
-const isCatsListShow = computed(() => statConfig.config.value.categories.list.isShow)
-
 const hasTrnsConfig = computed(() => props.selectedTrnsIds !== undefined)
 const showCategoryConfig = computed(() => hasTrnsConfig.value && props.hasCategoryBreakdown)
 
@@ -52,38 +53,22 @@ watch(availablePanels, (panels) => {
     activePanel.value = 'root'
 }, { immediate: true })
 
-const panelTitle = computed<string>(() => {
-  switch (activePanel.value) {
-    case 'wallets':
-      return t('stat.config.wallets.title')
-    case 'statAverage':
-      return t('stat.config.statAverage.title')
-    case 'chart':
-      return t('stat.config.chartShow.title')
-    case 'catsRound':
-      return t('stat.config.categories.rounds.title')
-    case 'catsList':
-      return t('stat.config.categories.list.title')
-    case 'vertical':
-      return t('stat.config.categories.vertical.title')
-    default:
-      return ''
-  }
-})
+function panelIsShow(panel: ConfigPanelId): boolean {
+  return getConfigValue(statConfig.config.value, PANELS[panel].showPath) as boolean
+}
+
+function togglePanel(panel: ConfigPanelId) {
+  const [key, ...rest] = PANELS[panel].showPath.split('.') as [keyof MiniItemConfig, ...string[]]
+  statConfig.updateConfig(key, buildConfigPatch(rest, !panelIsShow(panel)) as never)
+}
+
+const panelTitle = computed<string>(() => activePanel.value === 'root' ? '' : t(PANELS[activePanel.value].titleKey))
 
 const panelDescription = computed<string>(() => {
-  switch (activePanel.value) {
-    case 'wallets':
-      return t('stat.config.wallets.description')
-    case 'statAverage':
-      return t('stat.config.statAverage.description')
-    case 'catsRound':
-      return t('stat.config.categories.rounds.description')
-    case 'catsList':
-      return t('stat.config.categories.list.description')
-    default:
-      return ''
-  }
+  if (activePanel.value === 'root')
+    return ''
+  const { descKey } = PANELS[activePanel.value]
+  return descKey ? t(descKey) : ''
 })
 
 const direction = ref<1 | -1>(1)
@@ -102,54 +87,13 @@ function back() {
   activePanel.value = 'root'
 }
 
-function toggleSection<K extends 'average' | 'chart' | 'wallets'>(key: K, current: boolean) {
-  statConfig.updateConfig(key, { isShow: !current } as never)
-}
-
-function toggleCategoriesSection(sub: 'bars' | 'list' | 'round', current: boolean) {
-  statConfig.updateConfig('categories', { [sub]: { isShow: !current } })
-}
-
-const panelToggleValue = computed<boolean | undefined>(() => {
-  switch (activePanel.value) {
-    case 'wallets':
-      return statConfig.config.value.wallets.isShow
-    case 'statAverage':
-      return statConfig.config.value.average.isShow
-    case 'chart':
-      return isChartShow.value
-    case 'catsRound':
-      return isCatsRoundShow.value
-    case 'catsList':
-      return isCatsListShow.value
-    case 'vertical':
-      return statConfig.config.value.categories.bars.isShow
-    default:
-      return undefined
-  }
-})
+const panelToggleValue = computed<boolean | undefined>(() =>
+  activePanel.value === 'root' ? undefined : panelIsShow(activePanel.value),
+)
 
 function togglePanelSection() {
-  switch (activePanel.value) {
-    case 'wallets':
-      toggleSection('wallets', statConfig.config.value.wallets.isShow)
-      break
-    case 'statAverage':
-      toggleSection('average', statConfig.config.value.average.isShow)
-      break
-    case 'chart':
-      toggleSection('chart', isChartShow.value)
-      break
-    case 'catsRound':
-      toggleCategoriesSection('round', isCatsRoundShow.value)
-      break
-    case 'catsList':
-      toggleCategoriesSection('list', isCatsListShow.value)
-      break
-    case 'vertical':
-      toggleCategoriesSection('bars', statConfig.config.value.categories.bars.isShow)
-      break
-  }
+  if (activePanel.value !== 'root')
+    togglePanel(activePanel.value)
 }
 
 const rootRef = ref<HTMLElement>()
@@ -191,67 +135,40 @@ type RootRow = {
   cycle?: () => void
   isShow?: boolean
   key: string
-  panel?: Exclude<StatConfigPanelId, 'root'>
+  panel?: ConfigPanelId
   subtitle?: string
   title: string
   toggle?: () => void
 }
 
+function panelRow(panel: ConfigPanelId): RootRow {
+  const def = PANELS[panel]
+  const count = def.countPath ? getConfigValue(statConfig.config.value, def.countPath) as number : undefined
+  return {
+    isShow: panelIsShow(panel),
+    key: panel,
+    panel,
+    subtitle: def.subtitleKey ? t(def.subtitleKey, { count }) : undefined,
+    title: t(def.titleKey),
+    toggle: () => togglePanel(panel),
+  }
+}
+
 const rows = computed<RootRow[]>(() => {
   const list: RootRow[] = []
 
-  if (props.isShowWallets) {
-    list.push({
-      isShow: statConfig.config.value.wallets.isShow,
-      key: 'wallets',
-      panel: 'wallets',
-      subtitle: t('stat.config.wallets.subtitle', { count: statConfig.config.value.wallets.count }),
-      title: t('stat.config.wallets.title'),
-      toggle: () => toggleSection('wallets', statConfig.config.value.wallets.isShow),
-    })
-  }
+  if (props.isShowWallets)
+    list.push(panelRow('wallets'))
 
-  list.push({
-    isShow: statConfig.config.value.average.isShow,
-    key: 'statAverage',
-    panel: 'statAverage',
-    subtitle: t('stat.config.statAverage.subtitle', { count: statConfig.config.value.average.count }),
-    title: t('stat.config.statAverage.title'),
-    toggle: () => toggleSection('average', statConfig.config.value.average.isShow),
-  })
+  list.push(panelRow('statAverage'))
 
-  if (hasTrnsConfig.value) {
-    list.push({
-      isShow: isChartShow.value,
-      key: 'chart',
-      panel: 'chart',
-      title: t('stat.config.chartShow.title'),
-      toggle: () => toggleSection('chart', isChartShow.value),
-    })
-  }
+  if (hasTrnsConfig.value)
+    list.push(panelRow('chart'))
 
   if (showCategoryConfig.value) {
-    list.push({
-      isShow: isCatsRoundShow.value,
-      key: 'catsRound',
-      panel: 'catsRound',
-      title: t('stat.config.categories.rounds.title'),
-      toggle: () => toggleCategoriesSection('round', isCatsRoundShow.value),
-    })
-    list.push({
-      isShow: isCatsListShow.value,
-      key: 'catsList',
-      panel: 'catsList',
-      title: t('stat.config.categories.list.title'),
-      toggle: () => toggleCategoriesSection('list', isCatsListShow.value),
-    })
-    list.push({
-      isShow: statConfig.config.value.categories.bars.isShow,
-      key: 'vertical',
-      panel: 'vertical',
-      title: t('stat.config.categories.vertical.title'),
-      toggle: () => toggleCategoriesSection('bars', statConfig.config.value.categories.bars.isShow),
-    })
+    list.push(panelRow('catsRound'))
+    list.push(panelRow('catsList'))
+    list.push(panelRow('vertical'))
   }
 
   if (hasTrnsConfig.value) {
@@ -340,7 +257,7 @@ function onRowActivate(row: RootRow) {
           <StatConfigPanelsWallets
             v-if="activePanel === 'wallets'"
           />
-          <StatConfigPanelsStatAverage
+          <StatConfigPanelsAverage
             v-else-if="activePanel === 'statAverage'"
           />
           <StatConfigPanelsChart

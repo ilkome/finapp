@@ -7,9 +7,9 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilter } from '~/components/filter/useFilter'
+import { useStatConfig } from '~/components/stat/config/useStatConfig'
 import { useStatDate } from '~/components/stat/date/useStatDate'
 import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
-import { useStatConfig } from '~/components/stat/useStatConfig'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()

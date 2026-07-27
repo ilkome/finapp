@@ -26,7 +26,7 @@ const currenciesStore = useCurrenciesStore()
       props.plain
         ? 'px-1 pb-1'
         : 'flex-1 flex-wrap rounded-sm border border-transparent bg-elevated/30 px-3 py-2 @2xl/stat:max-w-max',
-      props.isActive && 'bg-elevated/30 border-primary/40',
+      props.isActive && 'border-primary/40 bg-elevated/30',
     )"
     @click="(e: Event) => emit('click', e)"
   >

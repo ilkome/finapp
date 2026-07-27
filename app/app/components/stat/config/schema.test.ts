@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { MiniItemConfig } from '~/components/stat/useStatConfig'
+import type { MiniItemConfig } from './schema'
 
-import { ConfigSchema } from '~/components/stat/useStatConfig'
-
-import { applyConfigUpdate } from './statConfig'
+import { applyConfigUpdate, ConfigSchema } from './schema'
 
 const defaultConfig: MiniItemConfig = {
   average: {
@@ -33,10 +31,10 @@ const defaultConfig: MiniItemConfig = {
     view: 'list',
   },
   chart: {
+    isByCategories: false,
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
-    mode: 'aggregated',
     type: 'bar',
     view: 'full',
   },

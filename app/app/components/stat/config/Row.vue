@@ -14,7 +14,7 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="hover:bg-elevated/50 flex min-h-13 items-stretch rounded-sm text-sm">
+  <div class="flex min-h-13 items-stretch rounded-sm text-sm hover:bg-elevated/50">
     <div
       role="button"
       tabindex="0"
@@ -29,13 +29,13 @@ defineEmits<{
         <Icon
           v-if="hasPanel"
           name="lucide:chevron-right"
-          class="text-muted shrink-0"
+          class="shrink-0 text-muted"
           size="18"
         />
       </div>
       <span
         v-if="subtitle"
-        class="text-dimmed text-xs"
+        class="text-xs text-dimmed"
       >
         {{ subtitle }}
       </span>
@@ -43,7 +43,7 @@ defineEmits<{
     <div
       v-if="hasToggle && hasPanel"
       aria-hidden="true"
-      class="bg-accented my-4 w-px shrink-0"
+      class="my-4 w-px shrink-0 bg-accented"
     />
     <div
       v-if="hasToggle"

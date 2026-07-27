@@ -110,19 +110,19 @@ function onClickSlice(params: ECElementEvent) {
         @click="onClickSlice"
       >
         <template #tooltip="params">
-          <div class="bg-elevated rounded-md px-3 py-2">
+          <div class="rounded-md bg-elevated px-3 py-2">
             <div class="flex items-center gap-2">
               <div class="size-2.5 rounded-full" :style="`background: ${(params as PieTooltipParam).color}`" />
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 {{ (params as PieTooltipParam).name }}
               </div>
             </div>
 
             <div class="flex items-baseline justify-between gap-4 pt-1">
-              <div class="font-secondary text-highlighted text-lg">
+              <div class="font-secondary text-lg text-highlighted">
                 {{ formatChartAmount((params as PieTooltipParam).value, locale) }}
               </div>
-              <div class="text-muted text-xs">
+              <div class="text-xs text-muted">
                 {{ (params as PieTooltipParam).percent }}%
               </div>
             </div>
@@ -131,7 +131,7 @@ function onClickSlice(params: ECElementEvent) {
       </VChart>
 
       <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <div class="font-secondary text-highlighted text-lg leading-tight">
+        <div class="font-secondary text-lg leading-tight text-highlighted">
           {{ formatChartAmount(total, locale) }}
         </div>
         <div class="text-2xs text-muted">
@@ -154,16 +154,16 @@ function onClickSlice(params: ECElementEvent) {
       >
         <div class="flex min-w-0 items-center gap-2">
           <div class="size-2.5 shrink-0 rounded-full" :style="`background: ${item.color}`" />
-          <div class="text-muted truncate text-sm">
+          <div class="truncate text-sm text-muted">
             {{ item.name }}
           </div>
         </div>
 
         <div class="flex shrink-0 items-baseline gap-2">
-          <div class="font-secondary text-highlighted text-sm">
+          <div class="font-secondary text-sm text-highlighted">
             {{ formatChartAmount(item.value, locale) }}
           </div>
-          <div class="text-2xs text-dimmed w-8 text-right">
+          <div class="w-8 text-right text-2xs text-dimmed">
             {{ percentOf(item.value) }}%
           </div>
         </div>
@@ -173,7 +173,7 @@ function onClickSlice(params: ECElementEvent) {
 
   <div
     v-else
-    class="text-muted flex h-40 items-center justify-center text-sm @3xl/stat:h-52"
+    class="flex h-40 items-center justify-center text-sm text-muted @3xl/stat:h-52"
   >
     {{ t('chart.empty') }}
   </div>

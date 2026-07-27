@@ -5,8 +5,8 @@ import type { CategoryId } from '~/components/categories/types'
 import type { ChartSeries } from '~/components/stat/types'
 import type { ChartPieGroup } from '~/components/stat/useStatItem'
 
+import { resolveChartType } from '~/components/stat/config/schema'
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { resolveChartType } from '~/components/stat/useStatConfig'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -28,7 +28,7 @@ const trnsFormStore = useTrnsFormStore()
 const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartView = computed(() => statConfig.config.value.chart.view)
-const chartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.mode))
+const chartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.isByCategories))
 const isPie = computed(() => chartType.value === 'pie')
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 

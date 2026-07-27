@@ -18,7 +18,7 @@ const statDate = inject(statDateKey)!
   >
     <template #trigger="{ isActive }">
       <UiTitleCollapse
-        class="text-md bg-elevated grow-0!"
+        class="text-md grow-0! bg-elevated"
         isShown
       >
         <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
@@ -26,7 +26,7 @@ const statDate = inject(statDateKey)!
           <Icon
             name="lucide:chevron-down"
             size="18"
-            class="text-muted shrink-0 transition-transform"
+            class="shrink-0 text-muted transition-transform"
             :class="isActive && 'rotate-180'"
           />
         </span>

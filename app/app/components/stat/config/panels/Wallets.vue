@@ -20,8 +20,7 @@ const walletsStore = useWalletsStore()
     />
 
     <StatConfigSwitch
-      configKey="wallets"
-      field="isShowIcon"
+      path="wallets.isShowIcon"
       :title="t('stat.config.wallets.showIcon')"
     />
   </div>

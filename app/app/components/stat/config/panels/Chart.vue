@@ -4,17 +4,16 @@ import type { TabsItem } from '@nuxt/ui'
 import type { ChartType } from '~/components/stat/chart/types'
 
 import { useStatChart } from '~/components/stat/chart/useStatChart'
+import { chartViewOptions, resolveChartType } from '~/components/stat/config/schema'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { chartViewOptions, resolveChartType } from '~/components/stat/useStatConfig'
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 const { chartTypeOptions } = useStatChart()
 
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
-const isChartGrouped = computed(() => statConfig.config.value.chart.isGrouped)
-const isCategoriesMode = computed(() => statConfig.config.value.chart.mode === 'categories')
-const activeChartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.mode))
+const isCategoriesMode = computed(() => statConfig.config.value.chart.isByCategories)
+const activeChartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.isByCategories))
 const isPie = computed(() => activeChartType.value === 'pie')
 
 // Pie is only meaningful for the per-category breakdown.
@@ -36,26 +35,22 @@ const chartTypeItems = computed<TabsItem[]>(() => visibleChartTypeOptions.value.
     :class="{ 'pointer-events-none opacity-50': !isChartShow }"
   >
     <StatConfigSwitch
-      configKey="date"
-      field="isShowQuick"
+      path="date.isShowQuick"
       :title="t('stat.config.date.quick.label')"
     />
     <StatConfigSwitch
       v-if="!isPie"
-      configKey="chart"
-      field="isShowAverage"
+      path="chart.isShowAverage"
       :title="t('stat.config.chart.average.label')"
     />
-    <UiSwitchItem
-      :checkboxValue="statConfig.config.value.chart.mode === 'categories'"
+    <StatConfigSwitch
+      path="chart.isByCategories"
       :title="t('stat.config.chart.byCategories')"
-      @click="statConfig.updateConfig('chart', { mode: statConfig.config.value.chart.mode === 'categories' ? 'aggregated' : 'categories' })"
     />
-    <UiSwitchItem
-      v-if="statConfig.config.value.chart.mode === 'categories'"
-      :checkboxValue="isChartGrouped"
+    <StatConfigSwitch
+      v-if="statConfig.config.value.chart.isByCategories"
+      path="chart.isGrouped"
       :title="t('stat.config.chart.groupByParent')"
-      @click="statConfig.updateConfig('chart', { isGrouped: !isChartGrouped })"
     />
 
     <div class="grid gap-4 pt-4">

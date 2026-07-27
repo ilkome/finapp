@@ -36,15 +36,15 @@ const { longPressRef } = useCategoryLongPress(
   <div
     v-if="category"
     ref="longPressRef"
-    class="hover:bg-elevated rounded-sm p-1 pt-5 pb-2"
+    class="rounded-sm p-1 pt-5 pb-2 hover:bg-elevated"
   >
-    <div class="bg-elevated flex h-28 items-end rounded-sm">
+    <div class="flex h-28 items-end rounded-sm bg-elevated">
       <div
         class="relative w-7 rounded-t"
         :style="barStyle"
       >
         <div
-          :class="cn('font-secondary absolute top-[-14px] w-full text-center text-xs leading-none',
+          :class="cn('absolute top-[-14px] w-full text-center font-secondary text-xs leading-none',
                      props.item.value > 0 && 'text-income-1',
           )"
         >

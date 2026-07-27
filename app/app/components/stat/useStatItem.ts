@@ -8,9 +8,9 @@ import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { CategoryPieDatum } from '~/components/stat/chart/useCategorySeriesBuilder'
+import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
-import type { StatConfigProvider } from '~/components/stat/useStatConfig'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getTotal } from '~/components/amount/getTotal'
@@ -21,8 +21,8 @@ import { useForecastMode } from '~/components/recurrences/useForecastMode'
 import { useForecastSeries } from '~/components/recurrences/useForecastSeries'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/useCategorySeriesBuilder'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
+import { resolveChartType } from '~/components/stat/config/schema'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
-import { resolveChartType } from '~/components/stat/useStatConfig'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -291,12 +291,12 @@ export function useStatItem({
     const selectedInterval = intervals[statDate.params.value.intervalSelected]
     // Bar/line series never use the `pie` type; the donut renders from
     // `chartPieGroups`, so collapse pie -> bar for the axis-based series here.
-    const rawChartType = resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.mode)
+    const rawChartType = resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.isByCategories)
     const chartType = rawChartType === 'pie' ? 'bar' : rawChartType
 
     let baseSeries: ChartSeries[]
 
-    if (statConfig.config.value.chart.mode === 'categories') {
+    if (statConfig.config.value.chart.isByCategories) {
       baseSeries = buildCategoriesSeries({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
@@ -352,7 +352,7 @@ export function useStatItem({
   // Summary tab shows expense + income donuts side by side; every other tab
   // shows a single donut for the active breakdown type.
   const chartPieGroups = computed<ChartPieGroup[]>(() => {
-    if (statConfig.config.value.chart.mode !== 'categories')
+    if (!statConfig.config.value.chart.isByCategories)
       return []
 
     if (statTab.value === 'summary') {

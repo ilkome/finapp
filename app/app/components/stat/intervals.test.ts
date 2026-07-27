@@ -1,7 +1,8 @@
+import type { Range } from '~~/utils/date/types'
+
 import { describe, expect, it } from 'vitest'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { Range } from '~~/utils/date/types'
 import type { TrnItem } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'

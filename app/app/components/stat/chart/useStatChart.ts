@@ -1,5 +1,6 @@
-import type { TotalReturns } from '~/components/amount/getTotal'
 import type { DateUTC } from '~~/utils/date/types'
+
+import type { TotalReturns } from '~/components/amount/getTotal'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 

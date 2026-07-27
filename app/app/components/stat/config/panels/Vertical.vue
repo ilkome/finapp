@@ -5,7 +5,6 @@ const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
 const isShow = computed(() => statConfig.config.value.categories.bars.isShow)
-const isGrouped = computed(() => statConfig.config.value.categories.bars.isGrouped)
 </script>
 
 <template>
@@ -13,10 +12,9 @@ const isGrouped = computed(() => statConfig.config.value.categories.bars.isGroup
     class="grid gap-0.5 transition-opacity"
     :class="{ 'pointer-events-none opacity-50': !isShow }"
   >
-    <UiSwitchItem
-      :checkboxValue="isGrouped"
+    <StatConfigSwitch
+      path="categories.bars.isGrouped"
       :title="t('stat.config.categories.vertical.groupByParent')"
-      @click="statConfig.updateConfig('categories', { bars: { isGrouped: !isGrouped } })"
     />
   </div>
 </template>
