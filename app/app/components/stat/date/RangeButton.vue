@@ -22,7 +22,7 @@ const statDate = inject(statDateKey)!
         isShown
       >
         <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
-          <StatDateRange />
+          <StatDateRangeLabel />
           <Icon
             name="lucide:chevron-down"
             size="18"
@@ -34,7 +34,7 @@ const statDate = inject(statDateKey)!
     </template>
 
     <template #content="{ close }">
-      <StatDateSelector
+      <StatDateRangePicker
         class="min-w-0 pb-2 md:min-w-90.5 md:px-3"
         @close="close"
       />

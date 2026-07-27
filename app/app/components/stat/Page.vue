@@ -81,7 +81,7 @@ onDeactivated(() => {
 
     <BudgetsDashboardCard class="mx-2 mb-2 max-w-7xl lg:mx-4" />
 
-    <StatWrap
+    <StatLayout
       :activeTab
       :storageKey
       :trnsIds

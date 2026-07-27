@@ -7,7 +7,7 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { IntervalData } from '~/components/stat/types'
 
 // ---------------------------------------------------------------------------
-// Stub Nuxt/Vue auto-imports used by useStatItem
+// Stub Nuxt/Vue auto-imports used by useStatReport
 // ---------------------------------------------------------------------------
 vi.stubGlobal('computed', computed)
 vi.stubGlobal('ref', ref)
@@ -24,7 +24,7 @@ const zeroTotal: TotalReturns = {
   sumTransfers: 0,
 }
 
-// Forecast layer: mock so importing useStatItem does not pull in the recurrences store chain
+// Forecast layer: mock so importing useStatReport does not pull in the recurrences store chain
 // (which loads Nuxt-runtime composables). Off by default keeps the actuals-only path under test.
 vi.mock('~/components/recurrences/useForecastMode', () => ({
   useForecastMode: () => ref('off'),
@@ -57,7 +57,7 @@ vi.mock('@vueuse/core', () => ({
 }))
 
 // ---------------------------------------------------------------------------
-// Mock stores / composables used inside useStatItem
+// Mock stores / composables used inside useStatReport
 // ---------------------------------------------------------------------------
 const getStoreTrnsIdsMock = vi.fn(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
 
@@ -130,7 +130,7 @@ vi.mock('~/components/stat/intervals', async (importOriginal) => {
 // ---------------------------------------------------------------------------
 // Import after mocks
 // ---------------------------------------------------------------------------
-const { useStatItem } = await import('~/components/stat/useStatItem')
+const { useStatReport } = await import('~/components/stat/useStatReport')
 
 // ---------------------------------------------------------------------------
 // Helpers to build mock params
@@ -177,7 +177,7 @@ function makeStatConfig() {
   }
 }
 
-function createStatItem(overrides?: {
+function createStatReport(overrides?: {
   filterCategories?: string[]
   intervalSelected?: number
   intervalsInRange?: Range[]
@@ -194,7 +194,7 @@ function createStatItem(overrides?: {
     type,
   } = overrides ?? {}
 
-  return useStatItem({
+  return useStatReport({
     filter: makeFilter(filterCategories) as any,
     statConfig: makeStatConfig() as any,
     statDate: makeStatDate({
@@ -216,7 +216,7 @@ function createStatItem(overrides?: {
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
-describe('useStatItem', () => {
+describe('useStatReport', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     getStoreTrnsIdsMock.mockImplementation(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
@@ -232,7 +232,7 @@ describe('useStatItem', () => {
         { end: 400, start: 300 },
       ]
 
-      const item = createStatItem({
+      const item = createStatReport({
         intervalsInRange: intervals,
         trnsIds: ['t1', 't2'],
       })
@@ -252,7 +252,7 @@ describe('useStatItem', () => {
         { end: 200, start: 100 },
       ]
 
-      const item = createStatItem({
+      const item = createStatReport({
         intervalSelected: 0,
         intervalsInRange: intervals,
         trnsIds: ['t1', 't2'],
@@ -278,7 +278,7 @@ describe('useStatItem', () => {
     it('uses rangeTrnsIds when no interval is selected', () => {
       const rangeTrnsIds = ['t1', 't2', 't3']
 
-      const item = createStatItem({
+      const item = createStatReport({
         intervalSelected: -1,
         trnsIds: rangeTrnsIds,
       })
@@ -309,7 +309,7 @@ describe('useStatItem', () => {
         trnsIds: intervalTrnsIds,
       }])
 
-      const item = createStatItem({
+      const item = createStatReport({
         intervalSelected: 0,
         intervalsInRange: intervals,
         trnsIds: ['t1', 't2', 't3'],
@@ -331,7 +331,7 @@ describe('useStatItem', () => {
   // -------------------------------------------------------------------------
   describe('onClickSumItem', () => {
     it('sets filteredType to the clicked type', () => {
-      const item = createStatItem()
+      const item = createStatReport()
 
       // Default filteredType is 'netIncome'
       expect(item.filteredType.value).toBe('netIncome')
@@ -341,7 +341,7 @@ describe('useStatItem', () => {
     })
 
     it('toggles back to netIncome when clicking the same type', () => {
-      const item = createStatItem()
+      const item = createStatReport()
 
       item.onClickSumItem('expense')
       expect(item.filteredType.value).toBe('expense')
@@ -351,7 +351,7 @@ describe('useStatItem', () => {
     })
 
     it('switches between types', () => {
-      const item = createStatItem()
+      const item = createStatReport()
 
       item.onClickSumItem('income')
       expect(item.filteredType.value).toBe('income')
@@ -369,7 +369,7 @@ describe('useStatItem', () => {
   // -------------------------------------------------------------------------
   describe('onSetCategoryFilter', () => {
     it('sets the category filter when empty', () => {
-      const item = createStatItem()
+      const item = createStatReport()
 
       expect(item.filteredCategoriesIds.value).toEqual([])
 
@@ -378,7 +378,7 @@ describe('useStatItem', () => {
     })
 
     it('clears filter when the same category is clicked again', () => {
-      const item = createStatItem()
+      const item = createStatReport()
 
       item.onSetCategoryFilter('cat1')
       expect(item.filteredCategoriesIds.value).toEqual(['cat1'])
@@ -388,7 +388,7 @@ describe('useStatItem', () => {
     })
 
     it('replaces filter when a different category is clicked', () => {
-      const item = createStatItem()
+      const item = createStatReport()
 
       item.onSetCategoryFilter('cat1')
       expect(item.filteredCategoriesIds.value).toEqual(['cat1'])
@@ -403,17 +403,17 @@ describe('useStatItem', () => {
   // -------------------------------------------------------------------------
   describe('selectedTypeForSum', () => {
     it('returns summary for summary tab', () => {
-      const item = createStatItem({ statTab: 'summary' })
+      const item = createStatReport({ statTab: 'summary' })
       expect(item.selectedTypeForSum.value).toBe('summary')
     })
 
     it('returns statTab for expense tab', () => {
-      const item = createStatItem({ statTab: 'expense' })
+      const item = createStatReport({ statTab: 'expense' })
       expect(item.selectedTypeForSum.value).toBe('expense')
     })
 
     it('returns type for split tab', () => {
-      const item = createStatItem({ statTab: 'split', type: 'income' })
+      const item = createStatReport({ statTab: 'split', type: 'income' })
       expect(item.selectedTypeForSum.value).toBe('income')
     })
   })
@@ -423,7 +423,7 @@ describe('useStatItem', () => {
   // -------------------------------------------------------------------------
   describe('isPeriodOneDay', () => {
     it('returns false for month range', () => {
-      const item = createStatItem()
+      const item = createStatReport()
       expect(item.isPeriodOneDay.value).toBe(false)
     })
   })

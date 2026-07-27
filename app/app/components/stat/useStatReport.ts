@@ -32,7 +32,7 @@ export type ChartPieGroup = {
   type: SeriesSlug
 }
 
-type UseStatItemParams = {
+type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
   filter: FilterProvider
   statConfig: StatConfigProvider
@@ -43,7 +43,7 @@ type UseStatItemParams = {
   type: ComputedRef<SeriesSlugSelected | undefined>
 }
 
-export function useStatItem({
+export function useStatReport({
   applyStatsExclusion,
   filter,
   statConfig,
@@ -52,7 +52,7 @@ export function useStatItem({
   storageKey,
   trnsIds,
   type,
-}: UseStatItemParams) {
+}: UseStatReportParams) {
   const { t } = useI18n()
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()

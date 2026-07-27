@@ -193,7 +193,7 @@ async function onDeleteConfirm() {
       </UiTextMuted>
     </div>
 
-    <StatWrap
+    <StatLayout
       :activeTab
       :storageKey
       :trnsIds

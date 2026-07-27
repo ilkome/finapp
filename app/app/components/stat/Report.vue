@@ -7,7 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useScrollReveal } from '~/components/stat/useScrollReveal'
-import { useStatItem } from '~/components/stat/useStatItem'
+import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
 
 const props = defineProps<{
@@ -51,7 +51,7 @@ const {
   selectedTypeForSum,
   statExcludedIds,
   statItemStorageKey,
-} = useStatItem({
+} = useStatReport({
   // Exclude flagged categories only on the default aggregate: not on a single-category
   // page, and not when the top filter already narrows to categories.
   applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),

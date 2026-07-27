@@ -3,7 +3,7 @@ import type { Period } from '~~/utils/date/types'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { ChartSeries } from '~/components/stat/types'
-import type { ChartPieGroup } from '~/components/stat/useStatItem'
+import type { ChartPieGroup } from '~/components/stat/useStatReport'
 
 import { resolveChartType } from '~/components/stat/config/schema'
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
@@ -54,10 +54,10 @@ function onChangePeriod(period: Period) {
       v-if="!isPie"
       class="-mb-1 flex justify-end"
     >
-      <StatDateQuick v-if="isShowQuick" />
+      <StatDateQuickRanges v-if="isShowQuick" />
 
       <div class="h-7">
-        <StatChartIntervals
+        <StatChartIntervalSelect
           :class="{ 'border-l border-accented': isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
@@ -86,7 +86,7 @@ function onChangePeriod(period: Period) {
         />
       </div>
 
-      <LazyStatChartView
+      <LazyStatChartAxisView
         v-else-if="isChartMountReady"
         :chartType
         :period="statDate.params.value.intervalsBy"

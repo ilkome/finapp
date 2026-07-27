@@ -59,20 +59,20 @@ const incomeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     v-if="effectiveTab === 'split'"
     class="grid max-w-7xl gap-8 px-2 pb-24 lg:px-4 xl:py-2 2xl:px-8 @3xl/page:grid-cols-2 @3xl/page:gap-8"
   >
-    <StatItem
+    <StatReport
       v-bind="sharedItemProps"
       :trnsIds="expenseTrnsIds"
       type="expense"
     />
 
-    <StatItem
+    <StatReport
       v-bind="sharedItemProps"
       :trnsIds="incomeTrnsIds"
       type="income"
     />
   </div>
 
-  <StatItem
+  <StatReport
     v-else
     v-bind="sharedItemProps"
     :trnsIds="datedTrnsIds"

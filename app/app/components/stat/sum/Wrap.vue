@@ -71,7 +71,7 @@ function onClick(type: SeriesSlugSelected) {
         :type="item.type"
         @click="onClick(item.type)"
       >
-        <StatAverage
+        <StatSumAverage
           v-if="isShowAverage"
           :categoryId
           :trnsIds
@@ -90,7 +90,7 @@ function onClick(type: SeriesSlugSelected) {
         plain
         @click="emit('clickAverage')"
       >
-        <StatAverage
+        <StatSumAverage
           v-if="isShowAverage"
           :categoryId
           :statTabSlug="(props.type ?? 'netIncome') as SeriesSlugSelected"

@@ -120,7 +120,7 @@ function onDeleteConfirm() {
       </template>
     </StatHeader>
 
-    <StatWrap
+    <StatLayout
       :activeTab
       :categoryId="rule.categoryId"
       :storageKey

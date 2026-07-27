@@ -39,10 +39,10 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       :isStart
       @changeDate="changeDate"
     >
-      <StatDateRangeSelector />
+      <StatDateRangeButton />
     </UiNavArrows>
 
-    <StatDateRangeSelector v-else />
+    <StatDateRangeButton v-else />
 
     <slot />
   </div>

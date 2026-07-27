@@ -294,7 +294,7 @@ async function onDeleteConfirm() {
       />
     </div>
 
-    <StatWrap
+    <StatLayout
       :activeTab
       :categoryId
       :preCategoriesIds="childrenIds"
