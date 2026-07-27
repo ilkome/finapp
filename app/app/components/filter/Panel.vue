@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 
-import Swiper from 'swiper'
-
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
+import { searchCategories, searchWallets } from '~/components/filter/search'
+import { useSwiperTabs } from '~/components/filter/useSwiperTabs'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-
-import 'swiper/css'
 
 const props = defineProps<{
   isExpanded?: boolean
@@ -72,81 +70,23 @@ function reset() {
   filter.applyFilter([], [])
 }
 
-const walletResults = computed<WalletId[]>(() => {
-  const q = searchQuery.value
-  if (!q)
-    return []
-  return Object.keys(walletsStore.itemsComputed).filter((id) => {
-    const wallet = walletsStore.itemsComputed[id]
-    return wallet && !wallet.isArchived && wallet.name.toLowerCase().includes(q)
-  })
-})
+const walletResults = computed<WalletId[]>(() => searchWallets(searchQuery.value, walletsStore.itemsComputed))
 
-const categoryResults = computed<CategoryId[]>(() => {
-  const q = searchQuery.value
-  if (!q)
-    return []
-  const items = categoriesStore.items
-  const ids: CategoryId[] = []
-  for (const id in items) {
-    const cat = items[id]
-    if (!cat || id === 'transfer' || id === 'adjustment' || categoriesStore.hasChildren(id))
-      continue
-    const parent = items[cat.parentId]
-    if (cat.name.toLowerCase().includes(q) || parent?.name.toLowerCase().includes(q))
-      ids.push(id)
-  }
-  return ids.sort((a, b) => (items[a]?.name ?? '').localeCompare(items[b]?.name ?? ''))
-})
+const categoryResults = computed<CategoryId[]>(() =>
+  searchCategories(searchQuery.value, categoriesStore.items, categoriesStore.hasChildren),
+)
 
 const hasNoResults = computed(() =>
   !!searchQuery.value && walletResults.value.length === 0 && categoryResults.value.length === 0,
 )
 
-const activeTabIdx = ref(0)
 const sliderRef = ref<HTMLElement | null>(null)
-// shallowRef, not ref: a plain ref deep-reactive-proxies the Swiper instance,
-// which corrupts its internal DOM/state so slideTo() (tab clicks) stops working.
-const sliderObj = shallowRef<Swiper | null>(null)
-
-function goToTab(idx: number) {
-  activeTabIdx.value = idx
-  sliderObj.value?.slideTo(idx)
-}
+const { activeTabIdx, goToTab } = useSwiperTabs(sliderRef, searchQuery)
 
 const tabItems = computed<TabsItem[]>(() => [
   { label: t('wallets.title'), value: 0 },
   { label: t('categories.title'), value: 1 },
 ])
-
-onMounted(async () => {
-  await nextTick()
-  sliderObj.value = new Swiper(sliderRef.value!, {
-    initialSlide: 0,
-    longSwipesMs: 60,
-    longSwipesRatio: 0.1,
-    on: {
-      slideChange: sw => activeTabIdx.value = sw.activeIndex,
-    },
-    shortSwipes: false,
-    slidesPerView: 1,
-  })
-  // No `observer`/`observeParents`: the bottom sheet mutates the `transform` of
-  // an ancestor `.drag` on every open/drag frame, which a Swiper observer would
-  // answer with an update() each frame - janky slide switches plus disrupted
-  // in-sheet scrolling. Recalc once after the open animation settles instead.
-  requestAnimationFrame(() => sliderObj.value?.update())
-})
-
-// Swiper measures 0 while hidden behind search results; refresh on return.
-watch(searchQuery, async (q) => {
-  if (!q) {
-    await nextTick()
-    sliderObj.value?.update()
-  }
-})
-
-onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
 </script>
 
 <template>
