@@ -78,14 +78,14 @@ function onClickCategory(clickedCategoryId: CategoryId) {
   if (props.categoryId) {
     filter.setCategoryId(clickedCategoryId)
 
-    const baseParams = {
-      filterCategories: filter.categoriesIds.value.join(','),
-      filterWallets: props.walletId ? props.walletId : filter.walletsIds.value.join(','),
-      storageKey: props.storageKey ?? '',
-    }
-
-    const queryParams = new URLSearchParams({ ...baseParams }).toString()
-    return useRouter().push(`/categories/${clickedCategoryId}?${queryParams}`)
+    return useRouter().push({
+      path: `/categories/${clickedCategoryId}`,
+      query: {
+        filterCategories: filter.categoriesIds.value.join(','),
+        filterWallets: props.walletId ? props.walletId : filter.walletsIds.value.join(','),
+        storageKey: props.storageKey ?? '',
+      },
+    })
   }
 
   openQuickViewForCategory(clickedCategoryId)
