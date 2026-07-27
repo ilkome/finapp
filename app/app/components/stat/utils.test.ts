@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
+import { getSelectedType, getSelectedTypeForSum, getSortedFilterWalletsIds, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { TrnType } from '~/components/trns/types'
 
 describe('getTypesMapping', () => {
@@ -78,5 +78,19 @@ describe('getTypesToShow', () => {
 
   it('falls back to both types for split without type', () => {
     expect(getTypesToShow('split', 'netIncome', undefined)).toEqual(['income', 'expense'])
+  })
+})
+
+describe('getSortedFilterWalletsIds', () => {
+  it('shows filtered wallets past the configured count', () => {
+    expect(getSortedFilterWalletsIds(['w5'], ['w1', 'w2', 'w3', 'w4', 'w5'], true, 2)).toEqual(['w1', 'w2', 'w5'])
+  })
+
+  it('shows only the top N when nothing is filtered', () => {
+    expect(getSortedFilterWalletsIds([], ['w1', 'w2', 'w3'], true, 2)).toEqual(['w1', 'w2'])
+  })
+
+  it('falls back to the filtered ids when the section is hidden', () => {
+    expect(getSortedFilterWalletsIds(['w3'], ['w1', 'w2', 'w3'], false, 2)).toEqual(['w3'])
   })
 })

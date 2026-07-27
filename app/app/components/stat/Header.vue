@@ -6,7 +6,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { getTypesMapping } from '~/components/stat/utils'
+import { getSortedFilterWalletsIds, getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -39,13 +39,12 @@ const trnsStore = useTrnsStore()
 
 const isPopoverOpen = ref(false)
 
-const sortedFilterWalletsIds = computed(() => {
-  const filteredIds = filter.walletsIds.value
-  const showedIds = statConfig.config.value.wallets.isShow
-    ? walletsStore.sortedIds.slice(0, statConfig.config.value.wallets.count)
-    : filteredIds
-  return [...new Set([...showedIds, ...filteredIds])]
-})
+const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
+  filter.walletsIds.value,
+  walletsStore.sortedIds,
+  statConfig.config.value.wallets.isShow,
+  statConfig.config.value.wallets.count,
+))
 
 const categoryConfigTrnsIds = computed(() => {
   if (!props.configCategories || !props.trnsIds)

@@ -1,4 +1,5 @@
 import type { SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { WalletId } from '~/components/wallets/types'
 
 import { TrnType } from '~/components/trns/types'
 
@@ -70,4 +71,18 @@ export function getTypesToShow(
   if (type && type !== 'netIncome')
     return [type]
   return ['income', 'expense']
+}
+
+/**
+ * Wallets to render in the header strip: the configured top N, plus any
+ * filtered wallet even past that count, so an active filter is never hidden.
+ */
+export function getSortedFilterWalletsIds(
+  filteredIds: WalletId[],
+  sortedIds: WalletId[],
+  isShow: boolean,
+  count: number,
+): WalletId[] {
+  const showedIds = isShow ? sortedIds.slice(0, count) : filteredIds
+  return [...new Set([...showedIds, ...filteredIds])]
 }
