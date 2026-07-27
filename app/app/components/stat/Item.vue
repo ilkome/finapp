@@ -32,11 +32,6 @@ const { chartFx, chartTrigger, dateFx, sumsFx } = useScrollReveal(stickyNav)
 
 const isOneCategory = computed(() => !!props.categoryId)
 const shouldShowAmounts = computed(() => !props.categoryId || props.categoryId !== 'transfer')
-const isRoundShow = computed(() => statConfig.config.value.categories.round.isShow)
-const isListShow = computed(() => statConfig.config.value.categories.list.isShow)
-const isVerticalShow = computed(() => statConfig.config.value.categories.bars.isShow)
-const isShowAverage = computed(() => statConfig.config.value.average.isShow)
-const isTrnsShow = computed(() => statConfig.config.value.trns.isShow)
 
 const {
   averageTotal,
@@ -70,7 +65,7 @@ const {
 })
 
 const hasCategoriesData = computed(() => props.hasChildren || (props.preCategoriesIds ?? []).length > 0)
-const shouldUseTwoColumnLayout = computed(() => props.statTab !== 'split' && isListShow.value)
+const shouldUseTwoColumnLayout = computed(() => props.statTab !== 'split' && statConfig.config.value.categories.list.isShow)
 
 const { closeModal, modalSource, modalTrnsIds, openFullTrns, openQuickViewForCategory } = useTrnsQuickView(selectedAndFilteredTrnsIds)
 
@@ -143,13 +138,13 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
             :type="selectedTypeForSum"
             :walletId
             @click="onClickSumItemWrap"
-            @clickAverage="statConfig.updateConfig('average', { isShow: !isShowAverage })"
+            @clickAverage="statConfig.updateConfig('average', { isShow: !statConfig.config.value.average.isShow })"
           />
         </div>
       </div>
 
       <StatCategoriesRoundSection
-        v-if="isRoundShow && hasCategoriesData && (selectedTrnsIds.length > 0 || filteredCategoriesIds.length > 0)"
+        v-if="statConfig.config.value.categories.round.isShow && hasCategoriesData && (selectedTrnsIds.length > 0 || filteredCategoriesIds.length > 0)"
         :excludedCategoriesIds="statExcludedIds"
         :filteredCategoriesIds
         :isOneCategory="isOneCategory"
@@ -169,7 +164,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           }"
         >
           <StatCategoriesDetailedSection
-            v-if="(isListShow || isVerticalShow) && hasCategoriesData"
+            v-if="(statConfig.config.value.categories.list.isShow || statConfig.config.value.categories.bars.isShow) && hasCategoriesData"
             :excludedCategoriesIds="statExcludedIds"
             :isOneCategory="isOneCategory"
             :preCategoriesIds="props.preCategoriesIds"
@@ -181,7 +176,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
           />
 
           <StatTrns
-            v-if="isTrnsShow"
+            v-if="statConfig.config.value.trns.isShow"
             :isPeriodOneDay="isPeriodOneDay"
             :selectedTrnsIds="selectedAndFilteredTrnsIds"
             :storageKey="statItemStorageKey"
