@@ -163,7 +163,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
             'grid gap-5 @3xl/stat:grid-cols-2 @3xl/stat:gap-6': shouldUseTwoColumnLayout,
           }"
         >
-          <StatCategoriesDetailedSection
+          <StatCategoriesBreakdown
             v-if="(statConfig.config.value.categories.list.isShow || statConfig.config.value.categories.bars.isShow) && hasCategoriesData"
             :excludedCategoriesIds="statExcludedIds"
             :isOneCategory="isOneCategory"
