@@ -45,6 +45,12 @@ const className = computed(() => cn(
   },
 ))
 
+const summaryItems = computed<{ amount: number, isActive: boolean, type: SeriesSlugSelected }[]>(() => [
+  { amount: -props.total.expense, isActive: props.filteredType === 'expense', type: 'expense' },
+  { amount: props.total.income, isActive: props.filteredType === 'income', type: 'income' },
+  { amount: props.total.sum, isActive: false, type: 'netIncome' },
+])
+
 function onClick(type: SeriesSlugSelected) {
   emit('click', type)
 }
@@ -57,49 +63,20 @@ function onClick(type: SeriesSlugSelected) {
       class="flex flex-wrap gap-2 @2xl/stat:justify-start"
     >
       <StatSumItem
-        :amount="-total.expense"
-        :isActive="filteredType === 'expense'"
+        v-for="item in summaryItems"
+        :key="item.type"
+        :amount="item.amount"
+        :isActive="item.isActive"
         :class="className"
-        type="expense"
-        @click="onClick('expense')"
+        :type="item.type"
+        @click="onClick(item.type)"
       >
         <StatAverage
           v-if="isShowAverage"
           :categoryId
           :trnsIds
           :walletId
-          statTabSlug="expense"
-        />
-      </StatSumItem>
-
-      <StatSumItem
-        :amount="total.income"
-        :isActive="filteredType === 'income'"
-        :class="className"
-        type="income"
-        @click="onClick('income')"
-      >
-        <StatAverage
-          v-if="isShowAverage"
-          :categoryId
-          :trnsIds
-          :walletId
-          statTabSlug="income"
-        />
-      </StatSumItem>
-
-      <StatSumItem
-        :amount="total.sum"
-        :class="className"
-        type="netIncome"
-        @click="onClick('netIncome')"
-      >
-        <StatAverage
-          v-if="isShowAverage"
-          :categoryId
-          :trnsIds
-          :walletId
-          statTabSlug="netIncome"
+          :statTabSlug="item.type"
         />
       </StatSumItem>
     </div>
