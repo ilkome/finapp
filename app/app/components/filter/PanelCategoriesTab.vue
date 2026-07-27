@@ -15,7 +15,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="scrollerBlock h-full overflow-y-auto pb-2">
+  <div class="h-full scrollerBlock overflow-y-auto pb-2">
     <CategoriesFavorites
       :selectedIds="selectedIds"
       @selected="id => emit('selected', id)"

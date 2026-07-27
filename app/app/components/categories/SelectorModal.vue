@@ -269,7 +269,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4">
+    <div class="h-full scrollerBlock overflow-y-auto px-3 pt-1 pb-4">
       <template v-if="filter === 'all'">
         <div
           v-if="hasNoMatches"

@@ -127,7 +127,7 @@ onMounted(async () => {
 
     <div class="relative grid min-h-0 flex-1 overflow-hidden">
       <div
-        class="scrollerBlock h-full overflow-y-auto py-px"
+        class="h-full scrollerBlock overflow-y-auto py-px"
         :class="{
           'pb-16': !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,

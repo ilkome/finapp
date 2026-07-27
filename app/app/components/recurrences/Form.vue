@@ -270,7 +270,7 @@ function onSave(close: () => void) {
         v-if="isPickingCategory"
         @closed="isPickingCategory = false"
       >
-        <div class="bottomSheetContentInside scrollerBlock h-[70vh]">
+        <div class="bottomSheetContentInside h-[70vh] scrollerBlock">
           <CategoriesSelectorModal
             :activeItemId="categoryId"
             @selected="onSelectCategory"
@@ -282,7 +282,7 @@ function onSave(close: () => void) {
         v-if="isPickingWallet"
         @closed="isPickingWallet = false"
       >
-        <div class="bottomSheetContentInside scrollerBlock h-[70vh]">
+        <div class="bottomSheetContentInside h-[70vh] scrollerBlock">
           <WalletsSelector
             :activeItemId="walletId"
             withHeader

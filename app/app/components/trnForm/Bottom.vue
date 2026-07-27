@@ -98,7 +98,7 @@ onMounted(init)
 
           <!-- Main -->
           <div class="swiper-slide getHeight bg-default">
-            <div class="scrollerBlock h-full overflow-y-auto">
+            <div class="h-full scrollerBlock overflow-y-auto">
               <div class="max-h-[98dvh]">
                 <TrnFormMain
                   :maxHeight
@@ -112,7 +112,7 @@ onMounted(init)
             class="swiper-slide bg-default"
             :style="{ height: maxHeight }"
           >
-            <div class="scrollerBlock h-full overflow-y-auto">
+            <div class="h-full scrollerBlock overflow-y-auto">
               <div class="grid gap-4 pb-4">
                 <TrnFormSelectionWalletsFast />
                 <TrnFormSelectionCategoriesFast

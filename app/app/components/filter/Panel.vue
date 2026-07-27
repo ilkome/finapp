@@ -155,7 +155,7 @@ const tabItems = computed<TabsItem[]>(() => [
 
       <div
         v-if="searchQuery"
-        class="scrollerBlock h-full overflow-y-auto px-2 pb-2"
+        class="h-full scrollerBlock overflow-y-auto px-2 pb-2"
       >
         <div
           v-if="hasNoResults"

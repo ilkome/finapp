@@ -40,20 +40,12 @@
   @apply flex items-center justify-center p-2;
 }
 
+/* `scrollerBlock` paints nothing: scroll areas keep the platform's own overlay
+   scrollbar, same as the page itself. The class stays as a behavioural marker -
+   useBottomSheetDrag queries it to decide whether a drag belongs to the sheet or
+   to the inner scroll, and to reset scrollTop on open. Do not delete the class
+   from markup, and do not restyle the bar here. `scrollbar-width: auto` is the
+   initial value; it is here only so the utility stays declared for tooling. */
 @utility scrollerBlock {
-  &::-webkit-scrollbar {
-    @apply w-1.5 h-1.5;
-  }
-
-  &::-webkit-scrollbar-track {
-    @apply bg-transparent rounded-[10px];
-  }
-
-  &::-webkit-scrollbar-thumb {
-    @apply bg-gray-500 rounded-[10px];
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-600;
-  }
+  scrollbar-width: auto;
 }
