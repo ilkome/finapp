@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { formatByLocale } from '~~/utils/date/civil'
+
 import type { BudgetId } from '~/components/budgets/types'
 import type { SafeToSpendBreakdown } from '~/components/budgets/useBudgetProgress'
 
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale } from '~~/utils/date/civil'
 
 const props = defineProps<{
   breakdown: SafeToSpendBreakdown
@@ -42,9 +43,9 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
         {{ t('budgets.hero.safeToSpend') }} · {{ props.periodLabel }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-3 px-3 py-2">
+      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-3 px-3 py-2">
         <div class="grid gap-1">
-          <div class="text-2xs flex items-center justify-between">
+          <div class="flex items-center justify-between text-2xs">
             <span class="text-muted">{{ t('budgets.safeSheet.leftIn') }}</span>
             <Amount
               :amount="props.breakdown.available"
@@ -57,7 +58,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
           <div
             v-for="row in props.breakdown.rows"
             :key="row.budgetId"
-            class="text-2xs flex items-center justify-between pl-2"
+            class="flex items-center justify-between pl-2 text-2xs"
           >
             <span class="text-muted">{{ name(row.budgetId) }}</span>
             <Amount
@@ -72,7 +73,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
         </div>
 
         <div v-if="props.breakdown.committedBudgeted > 0" class="grid gap-1">
-          <div class="text-2xs flex items-center justify-between">
+          <div class="flex items-center justify-between text-2xs">
             <span class="text-muted">{{ t('budgets.safeSheet.billsIn') }}</span>
             <Amount
               :amount="-props.breakdown.committedBudgeted"
@@ -85,7 +86,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
           <div
             v-for="row in billRows"
             :key="row.budgetId"
-            class="text-2xs flex items-center justify-between pl-2"
+            class="flex items-center justify-between pl-2 text-2xs"
           >
             <span class="text-muted">{{ name(row.budgetId) }}</span>
             <Amount
@@ -98,7 +99,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
           </div>
         </div>
 
-        <div v-if="props.breakdown.committedUnbudgeted > 0" class="text-2xs flex items-center justify-between">
+        <div v-if="props.breakdown.committedUnbudgeted > 0" class="flex items-center justify-between text-2xs">
           <span class="text-muted">{{ t('budgets.safeSheet.billsOut') }}</span>
           <Amount
             :amount="-props.breakdown.committedUnbudgeted"
@@ -109,7 +110,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
           />
         </div>
 
-        <div class="border-default flex items-center justify-between border-t pt-2 text-sm">
+        <div class="flex items-center justify-between border-t border-default pt-2 text-sm">
           <span>{{ t('budgets.hero.safeToSpend') }}</span>
           <Amount
             :amount="props.breakdown.total"
@@ -124,14 +125,14 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
           />
         </div>
 
-        <div class="text-2xs text-muted grid gap-1">
+        <div class="grid gap-1 text-2xs text-muted">
           <div>{{ t('budgets.safeSheet.caption', { period: props.periodLabel }) }}</div>
           <div v-if="props.perDay != null">
             {{ t('budgets.safeSheet.perDay', { amount: Math.round(props.perDay) }) }} · {{ t('budgets.safeSheet.untilDate', { date: formatByLocale(props.periodEnd, 'd MMM', dateLocale) }) }}
           </div>
           <NuxtLink
             v-if="props.payday"
-            class="hover:text-default flex items-center gap-1"
+            class="flex items-center gap-1 hover:text-default"
             to="/recurrences"
           >
             {{ t('budgets.safeSheet.payday', { date: formatByLocale(props.payday.dayEpoch, 'd MMM', dateLocale) }) }}

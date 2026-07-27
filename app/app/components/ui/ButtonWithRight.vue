@@ -11,7 +11,7 @@ const emit = defineEmits<{
       insideClasses="max-w-lg w-full min-h-[42px]! bg-elevated/30 hover:bg-elevated/50 rounded-md px-4 @xs/element:pr-3 block @xs/element:flex @xs/element:flex-wrap gap-0 gap-x-2"
       @click="(e: Event) => emit('click', e)"
     >
-      <div class="text-muted text-sm">
+      <div class="text-sm text-muted">
         <slot name="label" />
       </div>
 

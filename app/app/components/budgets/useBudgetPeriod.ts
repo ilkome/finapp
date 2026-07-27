@@ -1,12 +1,12 @@
+import type { Range } from '~~/utils/date/types'
+
 import { UTCDate } from '@date-fns/utc'
 import { useStorage } from '@vueuse/core'
 import { differenceInDays, sub } from 'date-fns'
-
-import type { BudgetPeriodType } from '~/components/budgets/types'
-import type { Range } from '~~/utils/date/types'
-
 import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { getEndOf, getStartOf, toDuration } from '~~/utils/date/period'
+
+import type { BudgetPeriodType } from '~/components/budgets/types'
 
 // How many prior periods the rollover walk may reach back over (bounded so the walk is cheap;
 // leading empty periods are trimmed per-budget in useBudgetProgress).

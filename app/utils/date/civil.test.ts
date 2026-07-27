@@ -1,6 +1,6 @@
 import { CalendarDate } from '@internationalized/date'
 import { describe, expect, it } from 'vitest'
-
+import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
 import {
   addCivilDays,
   addCivilMonths,
@@ -12,7 +12,6 @@ import {
   lastDayOfMonthCivil,
   toCivilDayEpoch,
 } from '~~/utils/date/civil'
-import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
 import { getEndOf, getStartOf } from '~~/utils/date/period'
 
 const DAY = 86_400_000

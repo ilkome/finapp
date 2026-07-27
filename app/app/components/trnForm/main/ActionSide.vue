@@ -76,9 +76,9 @@ async function onClickSubmit() {
 <template>
   <div
     :class="cn(
-      'flex w-12 @xs/trnForm:w-14 @sm/trnForm:w-16 size-full items-center justify-center rounded-sm p-1 py-4 text-center transition hover:scale-1.02',
+      'hover:scale-1.02 flex size-full w-12 items-center justify-center rounded-sm p-1 py-4 text-center transition @xs/trnForm:w-14 @sm/trnForm:w-16',
       !isMath && isSubmittable
-        ? 'bg-primary/50 hover:bg-primary/80 text-icon-primary'
+        ? 'bg-primary/50 text-icon-primary hover:bg-primary/80'
         : 'bg-elevated! text-highlighted hover:bg-elevated/30',
       (!isSubmittable || isMath) && 'text-muted',
     )"

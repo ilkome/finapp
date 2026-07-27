@@ -17,10 +17,10 @@ const { safeToSpendTotal } = useBudgetProgress(period)
   <NuxtLink
     v-if="budgetsStore.hasItems"
     to="/budgets"
-    class="bg-elevated hover:bg-elevated/70 flex items-center justify-between gap-3 rounded-md px-4 py-3"
+    class="flex items-center justify-between gap-3 rounded-md bg-elevated px-4 py-3 hover:bg-elevated/70"
   >
     <div>
-      <div class="text-2xs text-muted tracking-wide uppercase">
+      <div class="text-2xs tracking-wide text-muted uppercase">
         {{ t('budgets.title') }} · {{ t('budgets.hero.safeToSpend') }}
       </div>
       <Amount

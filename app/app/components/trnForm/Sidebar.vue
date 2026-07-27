@@ -57,11 +57,11 @@ watch(isShow, async (v) => {
           <UiButtonClose @click="trnsFormStore.onClose()" />
         </div>
 
-        <div ref="sliderRef" class="swiper-container bg-default h-full">
+        <div ref="sliderRef" class="swiper-container h-full bg-default">
           <div class="swiper-wrapper">
             <!-- Main -->
             <div class="swiper-slide h-full">
-              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
+              <div class="grid scrollerBlock h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
                   class="pb-0!"
@@ -83,7 +83,7 @@ watch(isShow, async (v) => {
               :style="{ height: '100%' }"
             >
               <div class="scrollerBlock h-full overflow-y-auto overscroll-contain">
-                <UiTitleSection class="bg-default sticky top-0 z-10 px-4 pt-5 pb-3 md:text-xl">
+                <UiTitleSection class="sticky top-0 z-10 bg-default px-4 pt-5 pb-3 md:text-xl">
                   {{ t('trns.history') }}
                 </UiTitleSection>
 

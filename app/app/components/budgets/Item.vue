@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatByLocale } from '~~/utils/date/civil'
+
 import type { BudgetId, BudgetItem } from '~/components/budgets/types'
 import type { BudgetProgress } from '~/components/budgets/useBudgetProgress'
 
@@ -6,7 +8,6 @@ import { useBudgetMenuItems } from '~/components/budgets/useBudgetMenuItems'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale } from '~~/utils/date/civil'
 
 const props = defineProps<{
   budget: BudgetItem
@@ -130,7 +131,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
 
 <template>
   <UiContextMenuMy :items="contextMenuItems">
-    <div class="bg-elevated interactive rounded-md px-3 py-2" :class="{ 'opacity-60': isArchived }" @click="emit('edit', props.id)">
+    <div class="rounded-md interactive bg-elevated px-3 py-2" :class="{ 'opacity-60': isArchived }" @click="emit('edit', props.id)">
       <div class="flex items-center gap-2">
         <div
           class="flex size-8 shrink-0 items-center justify-center rounded-full"
@@ -140,10 +141,10 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
         </div>
 
         <div class="min-w-0 grow">
-          <div class="text-highlighted truncate text-sm">
+          <div class="truncate text-sm text-highlighted">
             {{ category?.name ?? props.budget.categoryId }}
           </div>
-          <div v-if="parentCategory" class="text-2xs text-muted truncate leading-none">
+          <div v-if="parentCategory" class="truncate text-2xs leading-none text-muted">
             {{ parentCategory.name }}
           </div>
           <div class="text-2xs text-muted">
@@ -160,15 +161,15 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
       </div>
 
       <!-- Triad: expense = Spent/Assigned/Available; income = Received/Expected/Left to receive. -->
-      <div class="text-2xs mt-2 flex items-center justify-between gap-2">
-        <button type="button" class="text-muted hover:text-highlighted text-left" @click.stop="emit('trns', props.id)">
+      <div class="mt-2 flex items-center justify-between gap-2 text-2xs">
+        <button type="button" class="text-left text-muted hover:text-highlighted" @click.stop="emit('trns', props.id)">
           <span class="inline-flex items-center gap-0.5">
             {{ t(`budgets.triad.${budget.kind}.activity`) }}
             <Icon name="lucide:chevron-right" size="10" class="text-muted/40" />
           </span>
           <Amount :amount="progress.activity" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
         </button>
-        <button type="button" class="text-muted hover:text-highlighted text-left" @click.stop="openAssign">
+        <button type="button" class="text-left text-muted hover:text-highlighted" @click.stop="openAssign">
           <span class="inline-flex items-center gap-0.5">
             {{ t(`budgets.triad.${budget.kind}.assigned`) }}
             <Icon name="lucide:pencil" size="9" :class="progress.hasAssignment ? 'text-primary' : 'text-muted/40'" />
@@ -182,7 +183,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
       </div>
 
       <!-- Per-period assignment override editor -->
-      <div v-if="editingAssign" class="bg-default/60 mt-2 flex flex-wrap items-center gap-2 rounded-md p-2" @click.stop>
+      <div v-if="editingAssign" class="mt-2 flex flex-wrap items-center gap-2 rounded-md bg-default/60 p-2" @click.stop>
         <FormInput
           v-model="assignInput"
           type="number"
@@ -194,19 +195,19 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
         />
         <span class="text-2xs text-muted">{{ assignCurrency }} · {{ t('budgets.assign.forPeriod') }}</span>
         <span class="grow" />
-        <button type="button" class="bg-primary text-icon-primary text-2xs rounded-sm px-2 py-1" @click="saveAssign">
+        <button type="button" class="rounded-sm bg-primary px-2 py-1 text-2xs text-icon-primary" @click="saveAssign">
           {{ t('base.save') }}
         </button>
-        <button v-if="progress.hasAssignment" type="button" class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1" @click="resetAssign">
+        <button v-if="progress.hasAssignment" type="button" class="rounded-sm bg-default px-2 py-1 text-2xs text-muted hover:text-highlighted" @click="resetAssign">
           {{ t('budgets.assign.reset') }}
         </button>
-        <button type="button" class="text-2xs text-muted hover:text-highlighted px-2 py-1" @click="editingAssign = false">
+        <button type="button" class="px-2 py-1 text-2xs text-muted hover:text-highlighted" @click="editingAssign = false">
           {{ t('base.cancel') }}
         </button>
       </div>
 
       <!-- Progress bar with pace marker -->
-      <div class="bg-default relative mt-2 h-2 rounded-full">
+      <div class="relative mt-2 h-2 rounded-full bg-default">
         <div
           class="h-full rounded-full transition-all"
           :class="barClass"
@@ -216,14 +217,14 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
              Kept visible at 100% (end of period) - that's exactly when the pace check matters most. -->
         <div
           v-if="pacePct > 0"
-          class="bg-inverted ring-default absolute -top-1 h-4 w-0.75 -translate-x-1/2 rounded-full ring-1"
+          class="absolute -top-1 h-4 w-0.75 -translate-x-1/2 rounded-full bg-inverted ring-1 ring-default"
           :style="{ left: `${pacePct}%` }"
           :title="t('budgets.pace')"
         />
       </div>
 
       <!-- Rollover + projection + committed -->
-      <div class="text-2xs text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5">
+      <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-2xs text-muted">
         <span v-if="progress.carried !== 0" class="flex items-center gap-1">
           <Icon name="lucide:rotate-ccw" size="11" />
           {{ t('budgets.carried') }}
@@ -237,14 +238,14 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
           <Amount :amount="progress.committed" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
           {{ t('budgets.committed') }}
         </span>
-        <button v-if="isOver" type="button" class="text-error inline-flex items-center gap-1" @click.stop="emit('move', props.id)">
+        <button v-if="isOver" type="button" class="inline-flex items-center gap-1 text-error" @click.stop="emit('move', props.id)">
           {{ t('budgets.overBudget') }}
           <span class="inline-flex items-center gap-0.5 underline">
             <Icon name="lucide:arrow-left-right" size="10" />
             {{ t('budgets.move.cover') }}
           </span>
         </button>
-        <span v-if="isGoalReached" class="text-success flex items-center gap-1">
+        <span v-if="isGoalReached" class="flex items-center gap-1 text-success">
           {{ t('budgets.goalReached') }}
           <Amount v-if="surplus > 0" :amount="surplus" :currencyCode="currenciesStore.base" :isShowBaseRate="false" :isShowPlus="true" align="left" variant="xs" />
         </span>
@@ -253,7 +254,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
       <!-- Sinking-fund target: accumulated set-aside toward the goal by the goal date. -->
       <div v-if="progress.target" class="mt-1.5">
         <div
-          class="text-2xs flex flex-wrap items-center gap-x-1.5 gap-y-0.5"
+          class="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-2xs"
           :class="progress.target.reached ? 'text-success' : 'text-primary'"
         >
           <Icon :name="progress.target.reached ? 'lucide:check' : 'lucide:target'" size="11" />
@@ -263,7 +264,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
           <span v-if="progress.target.reached">· {{ t('budgets.target.reached') }}</span>
           <span v-else class="text-muted">· {{ targetPct }}% · {{ t('budgets.target.by', { date: goalDateLabel }) }}</span>
         </div>
-        <div class="bg-default mt-1 h-1 rounded-full">
+        <div class="mt-1 h-1 rounded-full bg-default">
           <div
             class="h-full rounded-full transition-all"
             :class="progress.target.reached ? 'bg-success' : 'bg-primary'"
@@ -275,7 +276,7 @@ const barClass = computed(() => isOver.value ? 'bg-error' : isGoalReached.value 
         <button
           v-if="budget.kind !== 'income' && !progress.hasAssignment && !progress.target.reached"
           type="button"
-          class="bg-primary/15 text-primary text-2xs mt-1.5 flex items-center gap-1 rounded-sm px-2 py-1"
+          class="mt-1.5 flex items-center gap-1 rounded-sm bg-primary/15 px-2 py-1 text-2xs text-primary"
           @click.stop="fundTarget"
         >
           <Icon name="lucide:circle-plus" size="12" />

@@ -56,7 +56,7 @@ const walletCreditLimit = computed(() =>
     <!-- Main -->
     <template v-if="!props.compact">
       <div class="grid grow gap-1 overflow-hidden">
-        <div class="text-muted truncate text-sm leading-none font-medium tracking-wide">
+        <div class="truncate text-sm leading-none font-medium tracking-wide text-muted">
           {{ wallet.name }}
         </div>
 
@@ -129,7 +129,7 @@ const walletCreditLimit = computed(() =>
     <!-- Alternative -->
     <template v-if="props.compact">
       <div class="grid grow gap-0.5 overflow-hidden">
-        <div class="text-muted truncate text-xs leading-none">
+        <div class="truncate text-xs leading-none text-muted">
           {{ wallet.name }}
         </div>
 
@@ -157,7 +157,7 @@ const walletCreditLimit = computed(() =>
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center group-hover:bg-accented absolute right-0 h-full rounded-md px-3"
+        class="sortHandle absolute right-0 flex-center h-full rounded-md px-3 group-hover:bg-accented"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

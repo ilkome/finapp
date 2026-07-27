@@ -18,13 +18,13 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
       :style="{ paddingBottom: `max(8px, calc(env(safe-area-inset-bottom) - 12px))` }"
     >
       <div
-        class="border-default/80 bg-default/20 mx-auto -mt-2 flex max-w-sm items-stretch overflow-hidden rounded-full border shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+        class="mx-auto -mt-2 flex max-w-sm items-stretch overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
       >
         <div
           v-for="(item, menuId) in itemsBottom"
           :key="menuId"
           :class="cn(
-            'interactive flex min-h-11 basis-0 grow flex-col items-center justify-center gap-0.5 rounded py-1.5',
+            'flex min-h-11 grow basis-0 flex-col items-center justify-center gap-0.5 rounded interactive py-1.5',
             checkIsActive(String(menuId)) ? 'text-primary' : 'text-muted',
           )"
           @click="onClick(String(menuId))"
@@ -37,7 +37,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
             />
             <span
               v-if="item.badge"
-              class="bg-expense-1 absolute -top-0.5 -right-1 size-1.5 rounded-full"
+              class="absolute -top-0.5 -right-1 size-1.5 rounded-full bg-expense-1"
             />
           </div>
           <span

@@ -19,15 +19,15 @@ function handleClick() {
 <template>
   <div
     :class="cn(
-      'hover:bg-elevated/50 flex grow items-center gap-3 rounded-sm p-2 text-sm',
+      'flex grow items-center gap-3 rounded-sm p-2 text-sm hover:bg-elevated/50',
       busy && 'pointer-events-none opacity-60',
     )"
     @click="handleClick"
   >
-    <Icon v-if="busy" name="lucide:loader-circle" class="text-muted size-5 animate-spin" />
+    <Icon v-if="busy" name="lucide:loader-circle" class="size-5 animate-spin text-muted" />
     <FormSwitch v-else :value="checkboxValue" />
 
-    <div class="text-muted grow">
+    <div class="grow text-muted">
       {{ title }}
     </div>
   </div>

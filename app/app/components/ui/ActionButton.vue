@@ -18,10 +18,10 @@ const emit = defineEmits<{
     :aria-label="ariaLabel"
     :disabled="disabled"
     :class="cn(
-      'interactive data-[state=open]:bg-accented! flex min-w-10.5 cursor-default items-center justify-center rounded-md',
+      'flex min-w-10.5 cursor-default items-center justify-center rounded-md interactive data-[state=open]:bg-accented!',
       size === 'md' ? 'min-h-10.5' : 'min-h-8',
-      variant === 'icon' && 'text-muted text-xl',
-      variant === 'text' && 'text-highlighted px-3 text-sm',
+      variant === 'icon' && 'text-xl text-muted',
+      variant === 'text' && 'px-3 text-sm text-highlighted',
       isActive && 'bg-elevated/30',
       disabled && 'pointer-events-none opacity-30',
     )"

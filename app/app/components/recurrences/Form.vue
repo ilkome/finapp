@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { RecurrenceId, RecurrenceItem, RecurrenceSchedule } from '~/components/recurrences/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { nextOccurrence, priceHistoryTimeline } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { TrnType } from '~/components/trns/types'

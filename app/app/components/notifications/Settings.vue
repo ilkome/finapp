@@ -38,7 +38,7 @@ async function toggle() {
 
 <template>
   <UiSettingsCard :title="t('notifications.title')" :description="t('notifications.description')">
-    <div v-if="!isSupported" class="text-muted text-sm">
+    <div v-if="!isSupported" class="text-sm text-muted">
       {{ t('notifications.unsupported') }}
     </div>
 
@@ -50,10 +50,10 @@ async function toggle() {
         @click="toggle"
       />
 
-      <div v-if="needsInstallForIos" class="text-muted px-2 pt-1 text-xs">
+      <div v-if="needsInstallForIos" class="px-2 pt-1 text-xs text-muted">
         {{ t('notifications.iosHint') }}
       </div>
-      <div v-else-if="permission === 'denied'" class="text-error px-2 pt-1 text-xs">
+      <div v-else-if="permission === 'denied'" class="px-2 pt-1 text-xs text-error">
         {{ t('notifications.permissionDenied') }}
       </div>
     </template>

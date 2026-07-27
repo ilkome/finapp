@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { formatByLocale } from '~~/utils/date/civil'
+
 import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
 
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale } from '~~/utils/date/civil'
 
 type Row = { activity: number, assigned: number, periodStart: number }
 
@@ -52,8 +53,8 @@ function pct(row: Row) {
         {{ t('budgets.history.title') }} · {{ name }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-3 px-3 py-2">
-        <div v-if="!rows.length" class="text-muted py-6 text-center text-sm">
+      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-3 px-3 py-2">
+        <div v-if="!rows.length" class="py-6 text-center text-sm text-muted">
           {{ t('budgets.history.empty') }}
         </div>
 
@@ -62,7 +63,7 @@ function pct(row: Row) {
           :key="row.periodStart"
           class="grid gap-1"
         >
-          <div class="text-2xs flex items-center justify-between">
+          <div class="flex items-center justify-between text-2xs">
             <span class="text-muted">{{ label(row.periodStart) }}</span>
             <span class="flex items-center gap-1" :class="row.activity > row.assigned ? 'text-error' : 'text-muted'">
               <Amount :amount="row.activity" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
@@ -70,7 +71,7 @@ function pct(row: Row) {
               <Amount :amount="row.assigned" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
             </span>
           </div>
-          <div class="bg-default h-2 rounded-full">
+          <div class="h-2 rounded-full bg-default">
             <div
               class="h-full rounded-full"
               :class="row.activity > row.assigned ? 'bg-error' : 'bg-primary'"

@@ -81,12 +81,12 @@ onMounted(init)
       <BottomSheetHandler />
     </template>
 
-    <div class="trnForm bg-default @container/trnForm">
+    <div class="trnForm @container/trnForm bg-default">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide bg-default h-full overflow-y-auto"
+            class="swiper-slide h-full overflow-y-auto bg-default"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide

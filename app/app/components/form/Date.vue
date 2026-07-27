@@ -4,8 +4,8 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 
-import { formatByLocale } from '~~/utils/date/civil'
 import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
+import { formatByLocale } from '~~/utils/date/civil'
 
 const props = defineProps<{
   clearable?: boolean
@@ -51,12 +51,12 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
     <template #trigger>
       <button
         type="button"
-        class="bg-elevated/30 hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent px-4 py-2 text-left text-base font-normal outline-none"
+        class="m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-left text-base font-normal outline-none hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
       >
         <span :class="props.modelValue != null ? 'text-highlighted' : 'text-muted'">
           {{ label }}
         </span>
-        <Icon name="lucide:calendar" size="16" class="text-muted ml-auto shrink-0" />
+        <Icon name="lucide:calendar" size="16" class="ml-auto shrink-0 text-muted" />
       </button>
     </template>
 
@@ -71,7 +71,7 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
         <div v-if="props.clearable && props.modelValue != null" class="flex justify-end px-3 pb-3">
           <button
             type="button"
-            class="text-muted hover:text-highlighted text-sm"
+            class="text-sm text-muted hover:text-highlighted"
             @click="onClear(close)"
           >
             {{ t('base.clear') }}

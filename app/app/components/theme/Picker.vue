@@ -60,7 +60,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
     <div class="grid gap-3">
       <!-- Theme mode -->
       <div class="flex flex-col items-start gap-1">
-        <span class="text-muted text-xs">{{ t('theme.picker.theme') }}</span>
+        <span class="text-xs text-muted">{{ t('theme.picker.theme') }}</span>
         <USelectMenu
           v-model="modePreference"
           :items="modeItems"
@@ -78,7 +78,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
 
       <!-- Primary color -->
       <div class="flex flex-col items-start gap-1">
-        <span class="text-muted text-xs">{{ t('theme.picker.primary') }}</span>
+        <span class="text-xs text-muted">{{ t('theme.picker.primary') }}</span>
         <USelectMenu
           v-model="primarySelected"
           :items="primaryItems"
@@ -118,7 +118,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
 
       <!-- Neutral color -->
       <div class="flex flex-col items-start gap-1">
-        <span class="text-muted text-xs">{{ t('theme.picker.neutral') }}</span>
+        <span class="text-xs text-muted">{{ t('theme.picker.neutral') }}</span>
         <USelectMenu
           v-model="neutral"
           :items="neutralItems"
@@ -148,7 +148,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
 
       <!-- Radius -->
       <div class="flex flex-col items-start gap-1">
-        <span class="text-muted text-xs">{{ t('theme.picker.radius') }}</span>
+        <span class="text-xs text-muted">{{ t('theme.picker.radius') }}</span>
         <USelectMenu
           v-model="radius"
           :items="radiusItems"
@@ -157,13 +157,13 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
         >
           <template #leading>
             <span
-              class="bg-elevated size-5"
+              class="size-5 bg-elevated"
               :style="{ borderRadius: `${radius}rem` }"
             />
           </template>
           <template #item-leading="{ item }">
             <span
-              class="bg-elevated size-5"
+              class="size-5 bg-elevated"
               :style="{ borderRadius: `${item.value}rem` }"
             />
           </template>

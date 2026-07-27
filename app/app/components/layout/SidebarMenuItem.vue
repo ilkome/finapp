@@ -18,7 +18,7 @@ const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.bad
 
 <template>
   <div
-    :class="cn('group interactive flex min-h-11 items-center rounded-md px-2 py-1.5 md:min-h-9.5',
+    :class="cn('group flex min-h-11 items-center rounded-md interactive px-2 py-1.5 md:min-h-9.5',
                checkIsActive(menuId) ? 'text-primary' : 'text-muted',
                isShowText && 'gap-3',
     )"
@@ -32,7 +32,7 @@ const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.bad
       />
       <span
         v-if="item.badge && !isShowText"
-        class="bg-expense-1 absolute top-0 right-1 size-1.5 rounded-full"
+        class="absolute top-0 right-1 size-1.5 rounded-full bg-expense-1"
       />
     </div>
 
@@ -46,7 +46,7 @@ const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.bad
     <span
       v-if="isShowText && item.badge"
       :title="t('recurrences.pending.title')"
-      class="bg-expense-1/15 text-expense-1 text-2xs rounded-full px-1.5 py-0.5 font-medium tabular-nums"
+      class="rounded-full bg-expense-1/15 px-1.5 py-0.5 text-2xs font-medium text-expense-1 tabular-nums"
     >
       {{ badgeLabel }}
     </span>

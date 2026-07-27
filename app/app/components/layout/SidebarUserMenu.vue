@@ -221,7 +221,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
 
     <template #radius-leading="{ item }">
       <span
-        class="bg-elevated ring-accented size-5 shrink-0 ring-1"
+        class="size-5 shrink-0 bg-elevated ring-1 ring-accented"
         :style="{ borderRadius: `${(item as any).radius}rem` }"
       />
     </template>

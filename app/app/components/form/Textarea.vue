@@ -14,7 +14,7 @@ const emit = defineEmits<{
   <textarea
     :placeholder="props.placeholder"
     :value="props.modelValue"
-    class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary m-0 w-full rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+    class="m-0 w-full rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary"
     @input="(event: Event) => emit('update:modelValue', (event.target as HTMLTextAreaElement).value)"
   />
 </template>

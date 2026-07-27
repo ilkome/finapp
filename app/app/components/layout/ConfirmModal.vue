@@ -45,7 +45,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     <template v-if="description || highlight" #body>
       <div class="text-muted">
         {{ description }}
-        <span v-if="highlight" class="text-error font-medium">
+        <span v-if="highlight" class="font-medium text-error">
           {{ highlight }}
         </span>
       </div>

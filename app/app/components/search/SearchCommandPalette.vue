@@ -111,12 +111,12 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
           :name="getWallet(rawItem as SearchResultItem)?.name ?? ''"
         />
         <div class="grid grow gap-1">
-          <div class="text-toned text-sm leading-none font-medium tracking-wide text-nowrap">
+          <div class="text-sm leading-none font-medium tracking-wide text-nowrap text-toned">
             {{ getWallet(rawItem as SearchResultItem)?.name }}
           </div>
           <div
             v-if="getWallet(rawItem as SearchResultItem)?.desc"
-            class="text-2xs text-muted leading-none"
+            class="text-2xs leading-none text-muted"
           >
             {{ getWallet(rawItem as SearchResultItem)?.desc }}
           </div>
@@ -150,7 +150,7 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
                   stacked
                 />
                 <div class="flex items-center gap-2">
-                  <div class="text-2xs text-muted leading-none">
+                  <div class="text-2xs leading-none text-muted">
                     {{ getTransaction(rawItem as SearchResultItem)?.wallet?.name }}
                   </div>
                 </div>
@@ -174,7 +174,7 @@ function getTransfer(item: SearchResultItem): TransferFull | undefined {
               v-if="getTransfer(rawItem as SearchResultItem)"
               class="grid gap-1"
             >
-              <div class="text-toned flex items-center gap-1 text-sm leading-none">
+              <div class="flex items-center gap-1 text-sm leading-none text-toned">
                 <span class="font-semibold">{{ getTransfer(rawItem as SearchResultItem)?.expenseWallet?.name }}</span>
                 <Icon name="lucide:move-right" size="16" />
                 <span class="font-semibold">{{ getTransfer(rawItem as SearchResultItem)?.incomeWallet?.name }}</span>

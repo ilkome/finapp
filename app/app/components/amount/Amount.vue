@@ -51,7 +51,7 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       'text-xl': variant === 'xl',
       'text-base': variant === 'base',
     }"
-    class="font-secondary grid gap-1 leading-none"
+    class="grid gap-1 font-secondary leading-none"
     @click="(e: Event) => emit('click', e)"
   >
     <AmountItem

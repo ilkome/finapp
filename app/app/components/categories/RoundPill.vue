@@ -21,7 +21,7 @@ const parentCategory = computed(() => {
 <template>
   <div
     v-if="category"
-    class="bg-elevated/10 hover:bg-elevated/30 relative flex items-center overflow-hidden rounded-2xl border p-1 pr-3"
+    class="relative flex items-center overflow-hidden rounded-2xl border bg-elevated/10 p-1 pr-3 hover:bg-elevated/30"
     :class="[
       props.isIconBg ? 'gap-2' : 'gap-1',
       props.isActive ? 'border-primary/60 bg-elevated/30' : 'border-transparent',

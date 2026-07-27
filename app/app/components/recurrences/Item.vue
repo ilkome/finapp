@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { isStaleSubscription, nextOccurrence } from '~/components/recurrences/occurrences'
 import { useRecurrenceMenuItems } from '~/components/recurrences/useRecurrenceMenuItems'

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -41,7 +42,7 @@ const summary = computed(() => {
   <BottomSheetOrDropdown
     :isOpen="isShow"
     :title="t('recurrences.form.repeat')"
-    class="shrink-0 !grow-0"
+    class="shrink-0 grow-0!"
     dragClassesCustom="bottomSheetDragClassesCustom"
     isShowCloseBtn
     @closeModal="isShow = false"
@@ -52,7 +53,7 @@ const summary = computed(() => {
         <Icon name="lucide:repeat" size="20" />
         <div
           v-if="repeat.enabled"
-          class="bg-primary absolute top-0 right-0 aspect-square w-2.5 rounded-full"
+          class="absolute top-0 right-0 aspect-square w-2.5 rounded-full bg-primary"
         />
       </UiActionButton>
     </template>
@@ -61,12 +62,12 @@ const summary = computed(() => {
       <div class="grid min-w-80 gap-3 px-2 pb-4 md:pb-0">
         <button
           type="button"
-          class="bg-elevated flex w-full items-center gap-2 rounded-md px-3 py-2 text-left"
+          class="flex w-full items-center gap-2 rounded-md bg-elevated px-3 py-2 text-left"
           @click="repeat.enabled = !repeat.enabled"
         >
           <Icon name="lucide:repeat" size="18" class="text-muted" />
           <div class="grow">
-            <div class="text-highlighted text-sm">
+            <div class="text-sm text-highlighted">
               {{ t('recurrences.form.repeat') }}
             </div>
             <div v-if="repeat.enabled" class="text-2xs text-muted">
@@ -86,23 +87,23 @@ const summary = computed(() => {
 
         <div v-if="repeat.enabled" class="grid gap-3">
           <div v-if="isCreate" class="grid gap-1">
-            <div class="text-muted text-sm">
+            <div class="text-sm text-muted">
               {{ t('recurrences.form.startDate') }}
             </div>
             <FormDate v-model="startDate" />
           </div>
 
-          <div v-if="isFutureStart" class="bg-default text-2xs text-muted flex items-center gap-1.5 rounded-sm px-2 py-1.5">
+          <div v-if="isFutureStart" class="flex items-center gap-1.5 rounded-sm bg-default px-2 py-1.5 text-2xs text-muted">
             <Icon name="lucide:clock" size="14" />
             {{ t('recurrences.form.futureStart', { date: startLabel }) }}
           </div>
 
           <div v-if="isCreate && isPastStart" class="grid gap-1">
-            <label class="text-muted flex items-center gap-2 text-sm">
+            <label class="flex items-center gap-2 text-sm text-muted">
               <input v-model="repeat.backfill" type="checkbox" class="size-4">
               {{ t('recurrences.form.backfill') }}
             </label>
-            <div class="text-2xs text-muted pl-6">
+            <div class="pl-6 text-2xs text-muted">
               {{ repeat.backfill ? t('recurrences.form.backfillOnHint') : t('recurrences.form.backfillOffHint') }}
             </div>
           </div>

@@ -2,6 +2,7 @@ import antfu from '@antfu/eslint-config'
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
 import { extend } from 'eslint-flat-config-utils'
 import tailwind from 'eslint-plugin-tailwindcss'
+import { join } from 'node:path'
 
 function withNuxt(...customs) {
   return createConfigForNuxt({
@@ -52,7 +53,7 @@ export default [
     rules: tailwind.configs.recommended.rules,
     settings: {
       tailwindcss: {
-        cssConfigPath: `${import.meta.dirname}/app/app/assets/css/main.css`,
+        cssConfigPath: join(import.meta.dirname, 'app/app/assets/css/main.css'),
       },
     },
   },

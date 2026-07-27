@@ -1,7 +1,8 @@
+import type { Range } from '~~/utils/date/types'
+
 import type { BudgetId, BudgetItem } from '~/components/budgets/types'
 import type { BudgetPeriodProvider } from '~/components/budgets/useBudgetPeriod'
 import type { CategoryId } from '~/components/categories/types'
-import type { Range } from '~~/utils/date/types'
 import type { OccurrenceMatchTrn } from '~/components/recurrences/occurrences'
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 import type { TrnId } from '~/components/trns/types'

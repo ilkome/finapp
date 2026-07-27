@@ -1,3 +1,4 @@
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -8,7 +9,6 @@ import type { TransferSide, TrnFormValues, TrnId, TrnItem } from '~/components/t
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 import { validate } from '~/components/trnForm/utils/validate'

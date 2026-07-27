@@ -97,7 +97,7 @@ function onRowClick(e: Event) {
         v-if="showInlineChevron"
         :name="props.isExpanded ? 'lucide:chevron-down' : 'lucide:chevron-right'"
         size="18"
-        class="text-muted shrink-0"
+        class="shrink-0 text-muted"
       />
     </div>
 
@@ -108,7 +108,7 @@ function onRowClick(e: Event) {
     >
       <button
         type="button"
-        class="flex-center text-muted hover:bg-elevated/50 -my-1 -mr-1 size-9 shrink-0 rounded-sm"
+        class="-my-1 -mr-1 flex-center size-9 shrink-0 rounded-sm text-muted hover:bg-elevated/50"
         :aria-label="t('base.moreOptions')"
         @click.stop.prevent
       >
@@ -148,7 +148,7 @@ function onRowClick(e: Event) {
     <button
       v-if="showRightChevron"
       type="button"
-      class="flex-center text-muted hover:bg-elevated/50 -mr-1 size-9 shrink-0 rounded-sm"
+      class="-mr-1 flex-center size-9 shrink-0 rounded-sm text-muted hover:bg-elevated/50"
       :aria-label="t('base.toggleExpand')"
       @click="onToggleClick"
     >

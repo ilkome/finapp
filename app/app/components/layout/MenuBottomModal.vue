@@ -48,14 +48,14 @@ async function clearCachesAndReload() {
         <div class="bottomSheetContentInside px-3 pt-4 pb-2">
           <div
             v-if="userStore.currentUser"
-            class="border-default mx-2 border-b py-2"
+            class="mx-2 border-b border-default py-2"
           >
             <UserViewLogout />
           </div>
 
           <div class="py-4">
             <div
-              class="interactive text-muted flex min-h-11 items-center gap-3 rounded-sm px-2 py-1.5 md:min-h-9.5"
+              class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-muted md:min-h-9.5"
               @click="onSearchClick"
             >
               <div class="flex min-w-8 items-center justify-center">
@@ -103,7 +103,7 @@ async function clearCachesAndReload() {
               @click="clearCachesAndReload"
             />
 
-            <div class="text-muted text-center text-xs">
+            <div class="text-center text-xs text-muted">
               {{ t('app.version') }} {{ pkg.version }}
             </div>
           </div>

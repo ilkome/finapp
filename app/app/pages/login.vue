@@ -133,7 +133,7 @@ watch(
     >
       <div class="flex flex-col items-center justify-center">
         <UiLogo size="lg" />
-        <div class="text-muted pt-1 text-sm">
+        <div class="pt-1 text-sm text-muted">
           {{ t("login.description") }}
         </div>
 

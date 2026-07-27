@@ -39,7 +39,7 @@ async function openSeries() {
     v-if="rule?.item"
     :isOpen="isShow"
     :title="t('recurrences.form.repeat')"
-    class="shrink-0 !grow-0"
+    class="shrink-0 grow-0!"
     dragClassesCustom="bottomSheetDragClassesCustom"
     isShowCloseBtn
     @closeModal="isShow = false"
@@ -48,14 +48,14 @@ async function openSeries() {
     <template #trigger>
       <UiActionButton class="relative overflow-visible">
         <Icon name="lucide:repeat" size="20" />
-        <div class="bg-primary absolute top-0 right-0 aspect-square w-2.5 rounded-full" />
+        <div class="absolute top-0 right-0 aspect-square w-2.5 rounded-full bg-primary" />
       </UiActionButton>
     </template>
 
     <template #content>
       <div class="grid min-w-80 gap-4 px-2 pb-4 md:pb-0">
         <div>
-          <div class="text-highlighted text-sm">
+          <div class="text-sm text-highlighted">
             {{ t('recurrences.form.repeat') }} · {{ periodLabel }}
           </div>
           <div class="text-2xs text-muted">

@@ -45,7 +45,7 @@ const dimensions = computed(() => {
       size="sm"
     />
 
-    <div class="mt-3 overflow-hidden rounded-lg border border-[var(--ui-border)]">
+    <div class="mt-3 overflow-hidden rounded-lg border border-default">
       <ProseImg
         :key="`${activeTab}-${name}`"
         :src="srcFor(activeTab)"

@@ -1,7 +1,8 @@
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import type { ReminderKind, UpcomingReminder } from '~/components/recurrences/reminders'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { useDemo } from '~/components/demo/useDemo'
 import { upcomingReminders } from '~/components/recurrences/reminders'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'

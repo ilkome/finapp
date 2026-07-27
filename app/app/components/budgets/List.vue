@@ -65,7 +65,7 @@ function groupLabel(key: GroupKey) {
         </UiTextSubtitle>
 
         <!-- Group subtotal (rolled up once there are several budgets) -->
-        <div v-if="key !== 'archived' && groups[key].length > 1" class="text-2xs text-muted mb-1 flex flex-wrap items-center gap-x-3 px-1">
+        <div v-if="key !== 'archived' && groups[key].length > 1" class="mb-1 flex flex-wrap items-center gap-x-3 px-1 text-2xs text-muted">
           <span class="flex items-center gap-1">
             {{ t(`budgets.triad.${key}.activity`) }}
             <Amount :amount="subtotals[key].activity" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />

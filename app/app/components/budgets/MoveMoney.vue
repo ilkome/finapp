@@ -84,11 +84,11 @@ function onConfirm(close: () => void) {
         {{ t('budgets.move.title') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-4 px-3 py-2">
+      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-4 px-3 py-2">
         <!-- Destination -->
-        <div class="bg-elevated/30 flex items-center justify-between gap-2 rounded-md px-3 py-2">
+        <div class="flex items-center justify-between gap-2 rounded-md bg-elevated/30 px-3 py-2">
           <span class="text-2xs text-muted">{{ t('budgets.move.into') }}</span>
-          <span class="text-highlighted text-sm">{{ nameOf(props.toId) }}</span>
+          <span class="text-sm text-highlighted">{{ nameOf(props.toId) }}</span>
           <span class="grow" />
           <Amount
             v-if="toProgress"
@@ -119,7 +119,7 @@ function onConfirm(close: () => void) {
               <Amount :amount="c.available" :currencyCode="currenciesStore.base" :isShowBaseRate="false" align="left" variant="xs" />
             </button>
           </div>
-          <div v-else class="text-muted text-sm">
+          <div v-else class="text-sm text-muted">
             {{ t('budgets.move.noSource') }}
           </div>
         </FormElement>
@@ -135,7 +135,7 @@ function onConfirm(close: () => void) {
           />
           <button
             type="button"
-            class="text-2xs text-muted hover:text-highlighted mt-1 flex items-center gap-1"
+            class="mt-1 flex items-center gap-1 text-2xs text-muted hover:text-highlighted"
             @click="fillMax"
           >
             {{ t('budgets.move.available') }}

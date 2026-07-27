@@ -33,7 +33,7 @@ const name = computed(() => {
       </UiTitleModal>
 
       <div class="bottomSheetContentInside scrollerBlock px-3 py-2">
-        <div v-if="!trnsIds.length" class="text-muted py-6 text-center text-sm">
+        <div v-if="!trnsIds.length" class="py-6 text-center text-sm text-muted">
           {{ t('budgets.trns.empty') }}
         </div>
         <TrnsList

@@ -68,9 +68,9 @@ function reduceOne(id: BudgetId, assigned: number) {
         {{ t('budgets.toAssign.title') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-4 px-3 py-2">
+      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-4 px-3 py-2">
         <!-- How far over income the assignments run -->
-        <div class="bg-elevated/30 flex items-center justify-between gap-2 rounded-md px-3 py-2">
+        <div class="flex items-center justify-between gap-2 rounded-md bg-elevated/30 px-3 py-2">
           <span class="text-2xs text-muted">{{ t('budgets.toAssign.over') }}</span>
           <span class="grow" />
           <Amount
@@ -83,7 +83,7 @@ function reduceOne(id: BudgetId, assigned: number) {
           />
         </div>
 
-        <div class="text-2xs text-muted px-1">
+        <div class="px-1 text-2xs text-muted">
           {{ t('budgets.toAssign.text') }}
         </div>
 
@@ -97,7 +97,7 @@ function reduceOne(id: BudgetId, assigned: number) {
               v-for="c in candidates"
               :key="c.id"
               type="button"
-              class="bg-elevated/30 text-muted hover:bg-elevated/50 flex items-center justify-between gap-2 rounded-md px-3 py-2 text-left text-sm"
+              class="flex items-center justify-between gap-2 rounded-md bg-elevated/30 px-3 py-2 text-left text-sm text-muted hover:bg-elevated/50"
               @click="reduceOne(c.id, c.assigned)"
             >
               <span class="truncate">{{ c.name }}</span>
@@ -107,7 +107,7 @@ function reduceOne(id: BudgetId, assigned: number) {
               </span>
             </button>
           </div>
-          <div v-else class="text-muted text-sm">
+          <div v-else class="text-sm text-muted">
             {{ t('budgets.move.noSource') }}
           </div>
         </FormElement>

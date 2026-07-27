@@ -126,7 +126,7 @@ onMounted(async () => {
     <div
       class="flex items-center gap-2 px-3 py-2"
       :class="[
-        props.embedded ? '' : 'bg-default sticky top-0 z-20',
+        props.embedded ? '' : 'sticky top-0 z-20 bg-default',
         props.hideSearch ? 'justify-end' : '',
       ]"
     >
@@ -135,7 +135,7 @@ onMounted(async () => {
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50 m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">
@@ -161,7 +161,7 @@ onMounted(async () => {
     <div :class="props.embedded ? 'px-3 pt-1 pb-4' : 'scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4'">
       <div
         v-if="hasNoMatches"
-        class="text-muted p-4 text-center"
+        class="p-4 text-center text-muted"
       >
         {{ t('categories.form.children.noMatches') }}
       </div>
@@ -171,9 +171,9 @@ onMounted(async () => {
           v-for="rootId in filteredRootIds"
           :key="rootId"
         >
-          <div class="group hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent">
+          <div class="group flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent">
             <div
-              class="flex-center relative w-8 shrink-0 self-stretch pl-2"
+              class="relative flex-center w-8 shrink-0 self-stretch pl-2"
               @click.stop
             >
               <div
@@ -210,11 +210,11 @@ onMounted(async () => {
               <div
                 v-for="childId in visibleChildrenIds(rootId)"
                 :key="childId"
-                class="group hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent"
+                class="group flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
                 @click="emit('selected', childId)"
               >
                 <div
-                  class="flex-center relative w-8 shrink-0 self-stretch pl-2"
+                  class="relative flex-center w-8 shrink-0 self-stretch pl-2"
                   @click.stop
                 >
                   <div
