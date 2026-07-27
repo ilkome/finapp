@@ -8,7 +8,7 @@ import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useScrollReveal } from '~/components/stat/useScrollReveal'
 import { useStatItem } from '~/components/stat/useStatItem'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
 
 const props = defineProps<{
   categoryId?: CategoryId
@@ -27,7 +27,6 @@ const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 // Dashboard pins the nav row + sum tiles to the top with the header's background.
 const stickyNav = inject(statStickyNavKey, false)
-const trnsStore = useTrnsStore()
 
 const { chartFx, chartTrigger, dateFx, sumsFx } = useScrollReveal(stickyNav)
 
@@ -73,21 +72,7 @@ const {
 const hasCategoriesData = computed(() => props.hasChildren || (props.preCategoriesIds ?? []).length > 0)
 const shouldUseTwoColumnLayout = computed(() => props.statTab !== 'split' && isListShow.value)
 
-// Modal state: 'quickView' shows snapshot trnsIds, 'fullTrns' shows reactive selectedAndFilteredTrnsIds
-const modalSource = ref<'fullTrns' | 'quickView' | null>(null)
-const quickViewTrnsIds = ref<TrnId[]>([])
-const modalTrnsIds = computed(() => {
-  if (modalSource.value === 'quickView')
-    return quickViewTrnsIds.value
-  if (modalSource.value === 'fullTrns')
-    return selectedAndFilteredTrnsIds.value
-  return []
-})
-
-function closeModal() {
-  modalSource.value = null
-  quickViewTrnsIds.value = []
-}
+const { closeModal, modalSource, modalTrnsIds, openFullTrns, openQuickViewForCategory } = useTrnsQuickView(selectedAndFilteredTrnsIds)
 
 function onClickCategory(clickedCategoryId: CategoryId) {
   if (props.categoryId) {
@@ -103,17 +88,12 @@ function onClickCategory(clickedCategoryId: CategoryId) {
     return useRouter().push(`/categories/${clickedCategoryId}?${queryParams}`)
   }
 
-  quickViewTrnsIds.value = trnsStore.getStoreTrnsIds({
-    categoriesIds: [clickedCategoryId],
-    sort: true,
-    trnsIds: selectedAndFilteredTrnsIds.value,
-  })
-  modalSource.value = 'quickView'
+  openQuickViewForCategory(clickedCategoryId)
 }
 
 function onClickSumItemWrap(type: SeriesSlugSelected) {
   if (type === 'netIncome')
-    modalSource.value = 'fullTrns'
+    openFullTrns()
 
   onClickSumItem(type)
 }
