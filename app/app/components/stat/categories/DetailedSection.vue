@@ -4,6 +4,7 @@ import type { CategoryWithData, SeriesSlugSelected, StatTabSlug } from '~/compon
 import type { TrnId } from '~/components/trns/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
+import { getMaxCategoryValues } from '~/components/stat/categories/barUtils'
 import { useStatCategories } from '~/components/stat/categories/useStatCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
@@ -55,12 +56,6 @@ const verticalMaxValues = computed(() => getMaxCategoryValues(verticalCategories
 const linesCategories = computed<CategoryWithData[]>(() => isListGrouped.value ? groupedCategories.value : ungroupedCategories.value)
 const linesMaxValues = computed(() => getMaxCategoryValues(linesCategories.value))
 const childrenMaxValues = computed(() => getMaxCategoryValues(categoriesWithData.value))
-
-function getMaxCategoryValues(categories: CategoryWithData[]) {
-  const income = categories.find(c => c.value > 0)?.value ?? 0
-  const expense = categories.find(c => c.value < 0)?.value ?? 0
-  return { expense: Math.abs(expense), income }
-}
 
 // Expand/collapse state
 const {
