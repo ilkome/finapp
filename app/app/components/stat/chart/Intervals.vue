@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Period, Range } from '~~/utils/date/types'
 
-import { differenceInDays } from 'date-fns'
+import { availableGranularities } from '~/components/stat/chart/granularity'
 
 const props = defineProps<{
   period: Period
@@ -14,27 +14,19 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const availableIntervals = computed(() => {
-  const dayDiff = differenceInDays(props.range.end, props.range.start)
+const labels: Record<Period, string> = {
+  day: 'dates.day.simple',
+  month: 'dates.month.simple',
+  week: 'dates.week.simple',
+  year: 'dates.year.simple',
+}
 
-  return [{
-    isShow: props.period !== 'day' || dayDiff > 7,
-    label: t('dates.day.simple'),
-    value: 'day',
-  }, {
-    isShow: dayDiff >= 7,
-    label: t('dates.week.simple'),
-    value: 'week',
-  }, {
-    isShow: dayDiff >= 30,
-    label: t('dates.month.simple'),
-    value: 'month',
-  }, {
-    isShow: dayDiff >= 400,
-    label: t('dates.year.simple'),
-    value: 'year',
-  }].filter(i => i.isShow)
-})
+const availableIntervals = computed(() =>
+  availableGranularities(props.period, props.range).map(value => ({
+    label: t(labels[value]),
+    value,
+  })),
+)
 </script>
 
 <template>
