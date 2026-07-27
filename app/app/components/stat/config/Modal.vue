@@ -30,21 +30,11 @@ function onClose() {
     @closeModal="onClose"
   >
     <template #trigger>
-      <UiHeaderLink
-        v-if="props.labelMode"
+      <UiTriggerButton
         icon="lucide:settings-2"
-      >
-        {{ t('stat.config.menu.label') }}
-      </UiHeaderLink>
-
-      <UTooltip
-        v-else
-        :text="t('stat.config.menu.label')"
-      >
-        <UiActionButton :ariaLabel="t('stat.config.menu.label')">
-          <Icon name="lucide:settings-2" size="20" />
-        </UiActionButton>
-      </UTooltip>
+        :labelMode="props.labelMode"
+        :title="t('stat.config.menu.label')"
+      />
     </template>
 
     <template #content="{ close }">

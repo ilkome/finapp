@@ -23,28 +23,12 @@ const snapPoints = useSheetSnapPoints()
     @closeModal="isOpen = false"
   >
     <template #trigger>
-      <UiHeaderLink
-        v-if="props.labelMode"
+      <UiTriggerButton
+        :hasSelection="props.hasSelection"
         :icon="props.icon"
-      >
-        {{ props.title }}
-      </UiHeaderLink>
-
-      <UTooltip
-        v-else
-        :text="props.title"
-      >
-        <UChip
-          :show="props.hasSelection"
-          color="secondary"
-          inset
-          size="xs"
-        >
-          <UiActionButton :ariaLabel="props.title">
-            <Icon :name="props.icon" size="20" />
-          </UiActionButton>
-        </UChip>
-      </UTooltip>
+        :labelMode="props.labelMode"
+        :title="props.title"
+      />
     </template>
 
     <template #custom="{ close, isExpanded }">
