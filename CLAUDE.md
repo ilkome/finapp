@@ -27,10 +27,13 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 - Components: PascalCase, grouped by feature in `components/[feature]/`
 - UI primitives in `components/ui/`
 - Imports use `~/` alias (resolves to `app/app/`)
+- Framework-free code (no Vue, no Nuxt) lives in `app/utils/`, imported explicitly via `~~/utils/...` - never via Nuxt's implicit `~/utils` auto-import, so a generic name like `getStartOf` stays traceable at the callsite
 - ESLint flat config with `@antfu/eslint-config`, Perfectionist for sorting
 - Prettier with Tailwind plugin, single quotes, no semicolons, trailing commas
 - i18n: `no_prefix` strategy, two locales (en-US, ru-RU)
 - Always run `pnpm lint:fix` before committing
+- `nuxi typecheck` does not check templates: a deleted or renamed auto-imported component fails only at runtime. After removing one, grep its auto-import name across `app/app/`
+- There are no visual or component tests. Green `typecheck` + `test` says nothing about the UI; anything that moves pixels needs a pass in the running app
 
 ## Backend: Supabase + PowerSync
 
