@@ -126,6 +126,19 @@ export function getTotal(props: TotalProps): TotalReturns {
   }
 }
 
+/** Merges two totals field by field - used to combine actuals with a forecast total. */
+export function addTotals(a: TotalReturns, b: TotalReturns): TotalReturns {
+  return {
+    adjustment: a.adjustment + b.adjustment,
+    expense: a.expense + b.expense,
+    expenseTransfers: a.expenseTransfers + b.expenseTransfers,
+    income: a.income + b.income,
+    incomeTransfers: a.incomeTransfers + b.incomeTransfers,
+    sum: a.sum + b.sum,
+    sumTransfers: a.sumTransfers + b.sumTransfers,
+  }
+}
+
 /**
  * Single-pass wallet balance computation. O(N) instead of O(W×N).
  * For each wallet, returns: income - expense + transfers + adjustments.

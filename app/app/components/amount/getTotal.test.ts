@@ -5,7 +5,7 @@ import { walletsItems } from '~~/mocks/wallets'
 
 import type { TrnId } from '~/components/trns/types'
 
-import { getTotal, getWalletsTotals } from '~/components/amount/getTotal'
+import { addTotals, getTotal, getWalletsTotals } from '~/components/amount/getTotal'
 
 describe('total of Transactions', () => {
   it('correct empty result and correct total structure', () => {
@@ -216,6 +216,62 @@ describe('total of Transactions', () => {
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(40)
     expect(total.sumTransfers).toEqual(0)
+  })
+})
+
+describe('addTotals', () => {
+  it('sums every field of two totals', () => {
+    const a = {
+      adjustment: 1,
+      expense: 2,
+      expenseTransfers: 3,
+      income: 4,
+      incomeTransfers: 5,
+      sum: 6,
+      sumTransfers: 7,
+    }
+    const b = {
+      adjustment: 10,
+      expense: 20,
+      expenseTransfers: 30,
+      income: 40,
+      incomeTransfers: 50,
+      sum: 60,
+      sumTransfers: 70,
+    }
+
+    expect(addTotals(a, b)).toEqual({
+      adjustment: 11,
+      expense: 22,
+      expenseTransfers: 33,
+      income: 44,
+      incomeTransfers: 55,
+      sum: 66,
+      sumTransfers: 77,
+    })
+  })
+
+  it('is a no-op when merging with a zero total', () => {
+    const zero = {
+      adjustment: 0,
+      expense: 0,
+      expenseTransfers: 0,
+      income: 0,
+      incomeTransfers: 0,
+      sum: 0,
+      sumTransfers: 0,
+    }
+    const a = {
+      adjustment: 1,
+      expense: 2,
+      expenseTransfers: 3,
+      income: 4,
+      incomeTransfers: 5,
+      sum: 6,
+      sumTransfers: 7,
+    }
+
+    expect(addTotals(a, zero)).toEqual(a)
   })
 })
 

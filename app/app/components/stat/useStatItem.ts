@@ -13,7 +13,7 @@ import type { StatDateProvider } from '~/components/stat/date/types'
 import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { getTotal } from '~/components/amount/getTotal'
+import { addTotals, getTotal } from '~/components/amount/getTotal'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -142,18 +142,6 @@ export function useStatItem({
   // --- Forecast merge: when forecast is on, the chart/category breakdown read a projected dataset
   // (actuals + forecast). Totals keep the actual `rangeTotal` and expose forecast separately so the
   // sum row can render fact / forecast / projected per mode.
-  function addTotals(a: TotalReturns, b: TotalReturns): TotalReturns {
-    return {
-      adjustment: a.adjustment + b.adjustment,
-      expense: a.expense + b.expense,
-      expenseTransfers: a.expenseTransfers + b.expenseTransfers,
-      income: a.income + b.income,
-      incomeTransfers: a.incomeTransfers + b.incomeTransfers,
-      sum: a.sum + b.sum,
-      sumTransfers: a.sumTransfers + b.sumTransfers,
-    }
-  }
-
   const mergedItems = computed<Record<TrnId, TrnItem>>(() =>
     isForecastOn.value ? { ...(trnsStore.items ?? {}), ...forecast.forecastItems.value } : (trnsStore.items ?? {}),
   )
