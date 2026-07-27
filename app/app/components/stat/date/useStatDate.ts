@@ -93,12 +93,12 @@ export function useStatDate({
     })
   }
 
-  function addInterval() {
+  function plusGranularity() {
     resetCustomAndMaxRangeParams()
     ++params.value.granularityDuration
   }
 
-  function delInterval() {
+  function minusGranularity() {
     resetCustomAndMaxRangeParams()
     if (params.value.granularityDuration > 1)
       --params.value.granularityDuration
@@ -132,26 +132,26 @@ export function useStatDate({
     params.value.granularityBy = granularityBy
   }
 
-  function setInterval({ granularityBy, granularityDuration }: Grouped) {
+  function setGranularity({ granularityBy, granularityDuration }: Grouped) {
     resetCustomAndMaxRangeParams()
     params.value.granularityBy = granularityBy
     params.value.granularityDuration = granularityDuration
   }
 
   return {
-    addInterval,
-    delInterval,
     intervalsInRange,
     maxRange,
+    minusGranularity,
     minusRange,
     modal,
     params,
+    plusGranularity,
     plusRange,
     range,
     selectedInterval,
     selectInterval,
+    setGranularity,
     setGranularityBy,
-    setInterval,
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,

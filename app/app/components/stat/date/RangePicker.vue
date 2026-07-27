@@ -21,7 +21,7 @@ const viewTabItems = computed<TabsItem[]>(() => [
   { label: t('dates.calendar.calendar'), value: 'calendar' },
 ])
 
-const intervals = computed<Grouped[]>(() => [{
+const granularities = computed<Grouped[]>(() => [{
   granularityBy: 'day',
   granularityDuration: 1,
 }, {
@@ -35,19 +35,19 @@ const intervals = computed<Grouped[]>(() => [{
   granularityDuration: 1,
 }])
 
-const intervalItems = computed<TabsItem[]>(() => intervals.value.map(item => ({
+const granularityItems = computed<TabsItem[]>(() => granularities.value.map(item => ({
   label: t(`dates.${item.granularityBy}.simple`),
   value: item.granularityBy,
 })))
 
-function selectInterval(grouped: Grouped) {
-  statDate.setInterval(grouped)
+function selectGranularity(grouped: Grouped) {
+  statDate.setGranularity(grouped)
 }
 
-function onSelectIntervalBy(granularityBy: string | number) {
-  const grouped = intervals.value.find(i => i.granularityBy === granularityBy)
+function onSelectGranularityBy(granularityBy: string | number) {
+  const grouped = granularities.value.find(i => i.granularityBy === granularityBy)
   if (grouped)
-    selectInterval(grouped)
+    selectGranularity(grouped)
 }
 
 const dateRange = ref({
@@ -108,7 +108,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
       <!-- Grouped by -->
       <div class="grid gap-3">
         <UiTitleSection size="sm" class="px-1">
-          {{ t('dates.calendar.intervalsGrouped') }}
+          {{ t('dates.calendar.granularity') }}
         </UiTitleSection>
 
         <div class="grid gap-2">
@@ -116,15 +116,15 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
             <UTabs
               :content="false"
               size="sm"
-              :items="intervalItems"
+              :items="granularityItems"
               :modelValue="statDate.params.value.granularityBy"
-              @update:modelValue="onSelectIntervalBy"
+              @update:modelValue="onSelectGranularityBy"
             />
 
             <UiInlineStepper
               :value="statDate.params.value.granularityDuration"
-              @dec="statDate.delInterval"
-              @inc="statDate.addInterval"
+              @dec="statDate.minusGranularity"
+              @inc="statDate.plusGranularity"
             />
           </div>
         </div>

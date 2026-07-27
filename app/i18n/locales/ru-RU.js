@@ -228,7 +228,7 @@ export default {
   dates: {
     calendar: {
       calendar: 'Календарь',
-      intervalsGrouped: 'Группировка',
+      granularity: 'Группировка',
       presets: 'Пресеты',
     },
     day: {

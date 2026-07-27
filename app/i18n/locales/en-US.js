@@ -228,7 +228,7 @@ export default {
   dates: {
     calendar: {
       calendar: 'Calendar',
-      intervalsGrouped: 'Grouped by',
+      granularity: 'Grouped by',
       presets: 'Presets',
     },
     day: {
