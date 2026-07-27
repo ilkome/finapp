@@ -44,8 +44,8 @@ describe('selectInterval', () => {
 
   beforeEach(() => {
     statDate = createStatDate({
-      intervalsBy: 'month',
-      intervalsDuration: 1,
+      granularityBy: 'month',
+      granularityDuration: 1,
       intervalSelected: -1,
       rangeBy: 'year',
       rangeDuration: 1,
@@ -85,17 +85,17 @@ describe('selectInterval', () => {
   })
 })
 
-describe('setIntervalsBy', () => {
-  it('changes intervalsBy and resets custom params', () => {
+describe('setGranularityBy', () => {
+  it('changes granularityBy and resets custom params', () => {
     const statDate = createStatDate({
-      intervalsBy: 'day',
+      granularityBy: 'day',
       isShowMaxRange: true,
       isSkipEmpty: true,
     })
 
-    statDate.setIntervalsBy('week')
+    statDate.setGranularityBy('week')
 
-    expect(statDate.params.value.intervalsBy).toBe('week')
+    expect(statDate.params.value.granularityBy).toBe('week')
     expect(statDate.params.value.isShowMaxRange).toBe(false)
     expect(statDate.params.value.isSkipEmpty).toBe(false)
   })

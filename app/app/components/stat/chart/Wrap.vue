@@ -39,7 +39,7 @@ function onClickChart(idx: number) {
 }
 
 function onChangePeriod(period: Period) {
-  statDate.setIntervalsBy(period)
+  statDate.setGranularityBy(period)
 }
 </script>
 
@@ -59,7 +59,7 @@ function onChangePeriod(period: Period) {
       <div class="h-7">
         <StatChartIntervalSelect
           :class="{ 'border-l border-accented': isShowQuick }"
-          :period="statDate.params.value.intervalsBy"
+          :period="statDate.params.value.granularityBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"
         />
@@ -89,7 +89,7 @@ function onChangePeriod(period: Period) {
       <LazyStatChartAxisView
         v-else-if="isChartMountReady"
         :chartType
-        :period="statDate.params.value.intervalsBy"
+        :period="statDate.params.value.granularityBy"
         :series="props.series"
         :xAxisLabels="props.xAxisLabels"
         @click="onClickChart"

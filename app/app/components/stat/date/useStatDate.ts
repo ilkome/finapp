@@ -6,7 +6,7 @@ import defu from 'defu'
 
 import type { Grouped, IntervalGroupedLabel, StatDateParams, StatDateParamsQuery } from '~/components/stat/date/types'
 
-import { calculateBestIntervalsBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
+import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
 
 export function useStatDate({
   initParams,
@@ -40,8 +40,8 @@ export function useStatDate({
   )
 
   const intervalsInRange = computed(() => getIntervalsInRange({
-    intervalsBy: params.value.intervalsBy,
-    intervalsDuration: params.value.intervalsDuration,
+    granularityBy: params.value.granularityBy,
+    granularityDuration: params.value.granularityDuration,
     range: range.value,
   }))
 
@@ -58,8 +58,8 @@ export function useStatDate({
   function setRangeByPeriod(igl: IntervalGroupedLabel) {
     resetCustomAndMaxRangeParams()
 
-    params.value.intervalsBy = igl.intervalsBy
-    params.value.intervalsDuration = igl.intervalsDuration
+    params.value.granularityBy = igl.granularityBy
+    params.value.granularityDuration = igl.granularityDuration
 
     params.value.rangeDuration = igl.rangeDuration
     params.value.rangeBy = igl.rangeBy
@@ -75,17 +75,17 @@ export function useStatDate({
 
     params.value.rangeBy = 'day'
     params.value.rangeDuration = differenceInDays(r.end, r.start) + 1
-    params.value.intervalsBy = 'day'
-    params.value.intervalsDuration = 1
+    params.value.granularityBy = 'day'
+    params.value.granularityDuration = 1
   }
 
   function setMaxRange(isSkipEmpty = false) {
     const rangeDuration = differenceInDays(maxRange.value.end, maxRange.value.start)
-    const intervalsBy = calculateBestIntervalsBy(maxRange.value)
+    const granularityBy = calculateBestGranularityBy(maxRange.value)
 
     setRangeByPeriod({
-      intervalsBy,
-      intervalsDuration: 1,
+      granularityBy,
+      granularityDuration: 1,
       isShowMaxRange: true,
       isSkipEmpty,
       rangeBy: 'day',
@@ -95,13 +95,13 @@ export function useStatDate({
 
   function addInterval() {
     resetCustomAndMaxRangeParams()
-    ++params.value.intervalsDuration
+    ++params.value.granularityDuration
   }
 
   function delInterval() {
     resetCustomAndMaxRangeParams()
-    if (params.value.intervalsDuration > 1)
-      --params.value.intervalsDuration
+    if (params.value.granularityDuration > 1)
+      --params.value.granularityDuration
   }
 
   function modifyRange(modification: number) {
@@ -127,15 +127,15 @@ export function useStatDate({
     return interval?.start
   }
 
-  function setIntervalsBy(intervalsBy: Grouped['intervalsBy']) {
+  function setGranularityBy(granularityBy: Grouped['granularityBy']) {
     resetCustomAndMaxRangeParams()
-    params.value.intervalsBy = intervalsBy
+    params.value.granularityBy = granularityBy
   }
 
-  function setInterval({ intervalsBy, intervalsDuration }: Grouped) {
+  function setInterval({ granularityBy, granularityDuration }: Grouped) {
     resetCustomAndMaxRangeParams()
-    params.value.intervalsBy = intervalsBy
-    params.value.intervalsDuration = intervalsDuration
+    params.value.granularityBy = granularityBy
+    params.value.granularityDuration = granularityDuration
   }
 
   return {
@@ -150,8 +150,8 @@ export function useStatDate({
     range,
     selectedInterval,
     selectInterval,
+    setGranularityBy,
     setInterval,
-    setIntervalsBy,
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,

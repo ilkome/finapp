@@ -9,19 +9,19 @@ import { periods } from '~~/utils/date/types'
 import type { IntervalsInRangeProps, StatDateParams, StatDateParamsQuery } from '~/components/stat/date/types'
 
 export function calculateIntervalInRange(params: IntervalsInRangeProps): Range {
-  const offset = (params.rangeOffset ?? 0) * params.intervalsDuration
-  const baseDate = sub(u(params.range.end), toDuration(params.intervalsBy, offset))
+  const offset = (params.rangeOffset ?? 0) * params.granularityDuration
+  const baseDate = sub(u(params.range.end), toDuration(params.granularityBy, offset))
 
   return {
-    end: getEndOf(baseDate, params.intervalsBy).getTime(),
+    end: getEndOf(baseDate, params.granularityBy).getTime(),
     start: getStartOf(
-      sub(baseDate, toDuration(params.intervalsBy, params.intervalsDuration - 1)),
-      params.intervalsBy,
+      sub(baseDate, toDuration(params.granularityBy, params.granularityDuration - 1)),
+      params.granularityBy,
     ).getTime(),
   }
 }
 
-export function calculateBestIntervalsBy(range: Range): Period {
+export function calculateBestGranularityBy(range: Range): Period {
   const rangeDuration = differenceInDays(range.end, range.start)
   return rangeDuration > 400
     ? 'year'
@@ -55,8 +55,8 @@ export function getIntervalsInRange(params: IntervalsInRangeProps) {
 }
 
 const queryParamsSchema = z.object({
-  intervalsBy: z.enum(periods).optional(),
-  intervalsDuration: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
+  granularityBy: z.enum(periods).optional(),
+  granularityDuration: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
   intervalSelected: z.string().transform(val => Number(val)).pipe(z.number().int()).optional(),
   isShowMaxRange: z.string().transform(val => val === 'true').optional(),
   isSkipEmpty: z.string().transform(val => val === 'true').optional(),
@@ -67,8 +67,8 @@ const queryParamsSchema = z.object({
 
 export const defaultStatDateParams: StatDateParams = {
   customDate: false,
-  intervalsBy: 'day',
-  intervalsDuration: 1,
+  granularityBy: 'day',
+  granularityDuration: 1,
   intervalSelected: -1,
   isShowMaxRange: false,
   isSkipEmpty: false,
@@ -92,10 +92,10 @@ export function parseStatDateQueryParams(
   const data = parsed.data
   const result = { ...currentParams }
 
-  if (data.intervalsBy !== undefined)
-    result.intervalsBy = data.intervalsBy
-  if (data.intervalsDuration !== undefined)
-    result.intervalsDuration = data.intervalsDuration
+  if (data.granularityBy !== undefined)
+    result.granularityBy = data.granularityBy
+  if (data.granularityDuration !== undefined)
+    result.granularityDuration = data.granularityDuration
   if (data.intervalSelected !== undefined)
     result.intervalSelected = data.intervalSelected
   if (data.rangeBy !== undefined)
@@ -132,8 +132,8 @@ export function computeDateRange(
   }
 
   return calculateIntervalInRange({
-    intervalsBy: params.rangeBy,
-    intervalsDuration: params.rangeDuration,
+    granularityBy: params.rangeBy,
+    granularityDuration: params.rangeDuration,
     range: {
       end: now,
       start: now,

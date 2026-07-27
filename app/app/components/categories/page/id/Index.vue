@@ -10,7 +10,7 @@ import { isMenuableCategory, useCategoryMenuItems } from '~/components/categorie
 import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/config/useStatConfig'
-import { calculateBestIntervalsBy } from '~/components/stat/date/params'
+import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { useStatDate } from '~/components/stat/date/useStatDate'
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { getTypesMapping } from '~/components/stat/utils'
@@ -154,8 +154,8 @@ provide(statConfigKey, statConfig)
 
 const statDate = useStatDate({
   initParams: {
-    intervalsBy: calculateBestIntervalsBy(maxRange.value),
-    intervalsDuration: 1,
+    granularityBy: calculateBestGranularityBy(maxRange.value),
+    granularityDuration: 1,
     isShowMaxRange: true,
     isSkipEmpty: true,
     rangeBy: 'day',

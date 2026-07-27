@@ -192,18 +192,18 @@ describe('computeAverageTotal', () => {
 
 describe('isPeriodOneDay', () => {
   it('returns true for rangeBy=day with duration=1', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 1 })).toBe(true)
+    expect(isPeriodOneDay({ granularityBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 1 })).toBe(true)
   })
 
-  it('returns true for intervalsBy=day with selected interval', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'day', intervalSelected: 3, rangeBy: 'month', rangeDuration: 1 })).toBe(true)
+  it('returns true for granularityBy=day with selected interval', () => {
+    expect(isPeriodOneDay({ granularityBy: 'day', intervalSelected: 3, rangeBy: 'month', rangeDuration: 1 })).toBe(true)
   })
 
   it('returns false for multi-day range without day interval selected', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 7 })).toBe(false)
+    expect(isPeriodOneDay({ granularityBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 7 })).toBe(false)
   })
 
   it('returns false for week range', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'week', intervalSelected: -1, rangeBy: 'week', rangeDuration: 1 })).toBe(false)
+    expect(isPeriodOneDay({ granularityBy: 'week', intervalSelected: -1, rangeBy: 'week', rangeDuration: 1 })).toBe(false)
   })
 })

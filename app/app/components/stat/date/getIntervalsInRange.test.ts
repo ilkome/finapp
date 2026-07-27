@@ -14,8 +14,8 @@ const dayEnd = (y: number, m: number, d: number) => Date.UTC(y, m, d + 1) - 1
 describe('getIntervalsInRange', () => {
   it('should return correct grouped ranges for months', () => {
     const params: IntervalsInRangeProps = {
-      intervalsBy: 'month',
-      intervalsDuration: 1,
+      granularityBy: 'month',
+      granularityDuration: 1,
       range: { end: monthEnd(2024, 2), start: monthStart(2024, 0) },
       rangeOffset: 0,
     }
@@ -30,8 +30,8 @@ describe('getIntervalsInRange', () => {
 
   it('should handle partial ranges correctly', () => {
     const params: IntervalsInRangeProps = {
-      intervalsBy: 'month',
-      intervalsDuration: 1,
+      granularityBy: 'month',
+      granularityDuration: 1,
       range: { end: monthEnd(2024, 2), start: monthStart(2024, 0) },
       rangeOffset: 0,
     }
@@ -46,8 +46,8 @@ describe('getIntervalsInRange', () => {
 
   it('should calculate range for 3 months period with intervals by 1 week', () => {
     const params: IntervalsInRangeProps = {
-      intervalsBy: 'week',
-      intervalsDuration: 1,
+      granularityBy: 'week',
+      granularityDuration: 1,
       range: { end: dayStart(2024, 3, 30), start: dayStart(2024, 1, 1) },
       rangeOffset: 0,
     }

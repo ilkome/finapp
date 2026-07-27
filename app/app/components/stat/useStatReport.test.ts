@@ -144,7 +144,7 @@ function makeStatDate(overrides?: Partial<{
   const defaults = {
     intervalsInRange: [] as Range[],
     params: {
-      intervalsBy: 'month' as const,
+      granularityBy: 'month' as const,
       intervalSelected: -1,
       rangeBy: 'year' as const,
       rangeDuration: 1,
@@ -200,7 +200,7 @@ function createStatReport(overrides?: {
     statDate: makeStatDate({
       intervalsInRange,
       params: {
-        intervalsBy: 'month',
+        granularityBy: 'month',
         intervalSelected,
         rangeBy: 'year',
         rangeDuration: 1,

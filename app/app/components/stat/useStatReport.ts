@@ -72,7 +72,7 @@ export function useStatReport({
   })
 
   const statItemStorageKey = computed(() =>
-    `finapp-${statDate.params.value.intervalsBy}-${storageKey.value}-${(filter?.categoriesIds?.value ?? []).join(',')}`,
+    `finapp-${statDate.params.value.granularityBy}-${storageKey.value}-${(filter?.categoriesIds?.value ?? []).join(',')}`,
   )
 
   const filteredType = useStorage<SeriesSlugSelected>(

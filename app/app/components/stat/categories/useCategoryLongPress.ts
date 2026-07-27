@@ -17,7 +17,7 @@ export function useCategoryLongPress(
   onLongPress(
     longPressRef,
     () => {
-      const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.intervalsBy === 'day'
+      const isDayDate = statDate.params.value.intervalSelected !== -1 && statDate.params.value.granularityBy === 'day'
       const date = isDayDate && statDate.selectedInterval.value?.start
         ? statDate.selectedInterval.value.start
         : todayCivilDayEpoch()

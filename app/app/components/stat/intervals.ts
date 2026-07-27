@@ -83,7 +83,7 @@ export function computeAverageTotal(
 /**
  * Check if the current period represents a single day.
  */
-export function isPeriodOneDay(params: Pick<StatDateParams, 'intervalsBy' | 'intervalSelected' | 'rangeBy' | 'rangeDuration'>): boolean {
+export function isPeriodOneDay(params: Pick<StatDateParams, 'granularityBy' | 'intervalSelected' | 'rangeBy' | 'rangeDuration'>): boolean {
   return (params.rangeBy === 'day' && params.rangeDuration === 1)
-    || (params.intervalsBy === 'day' && params.intervalSelected !== -1)
+    || (params.granularityBy === 'day' && params.intervalSelected !== -1)
 }

@@ -15,8 +15,8 @@ describe('calculateIntervalInRange', () => {
   describe('fixed dates (utc civil days)', () => {
     it('should calculate range for 1 month period', () => {
       const params: IntervalsInRangeProps = {
-        intervalsBy: 'month',
-        intervalsDuration: 1,
+        granularityBy: 'month',
+        granularityDuration: 1,
         range: { end: Date.UTC(2024, 2, 15), start: Date.UTC(2024, 2, 1) },
         rangeOffset: 0,
       }
@@ -29,8 +29,8 @@ describe('calculateIntervalInRange', () => {
 
     it('should calculate range for 3 months period', () => {
       const params: IntervalsInRangeProps = {
-        intervalsBy: 'month',
-        intervalsDuration: 3,
+        granularityBy: 'month',
+        granularityDuration: 3,
         range: { end: Date.UTC(2024, 2, 15), start: Date.UTC(2024, 0, 1) },
         rangeOffset: 0,
       }
@@ -43,8 +43,8 @@ describe('calculateIntervalInRange', () => {
 
     it('should calculate range for 7 days period', () => {
       const params: IntervalsInRangeProps = {
-        intervalsBy: 'day',
-        intervalsDuration: 7,
+        granularityBy: 'day',
+        granularityDuration: 7,
         range: { end: Date.UTC(2024, 2, 15), start: Date.UTC(2024, 2, 9) },
         rangeOffset: 0,
       }
@@ -57,8 +57,8 @@ describe('calculateIntervalInRange', () => {
 
     it('should calculate range for 1 year period', () => {
       const params: IntervalsInRangeProps = {
-        intervalsBy: 'year',
-        intervalsDuration: 1,
+        granularityBy: 'year',
+        granularityDuration: 1,
         range: { end: Date.UTC(2024, 2, 15), start: Date.UTC(2024, 1, 1) },
         rangeOffset: 0,
       }
@@ -71,8 +71,8 @@ describe('calculateIntervalInRange', () => {
 
     it('should calculate range for 2 weeks period', () => {
       const params: IntervalsInRangeProps = {
-        intervalsBy: 'week',
-        intervalsDuration: 2,
+        granularityBy: 'week',
+        granularityDuration: 2,
         range: { end: Date.UTC(2024, 10, 15), start: Date.UTC(2024, 10, 8) },
         rangeOffset: 0,
       }
@@ -90,7 +90,7 @@ describe('calculateIntervalInRange', () => {
     const range: Range = { end: now, start: now }
 
     it('should calculate range for this month', () => {
-      const result = calculateIntervalInRange({ intervalsBy: 'month', intervalsDuration: 1, range, rangeOffset: 0 })
+      const result = calculateIntervalInRange({ granularityBy: 'month', granularityDuration: 1, range, rangeOffset: 0 })
       expect(result).toEqual({
         end: getEndOf(new Date(now), 'month').getTime(),
         start: getStartOf(new Date(now), 'month').getTime(),
@@ -98,7 +98,7 @@ describe('calculateIntervalInRange', () => {
     })
 
     it('should calculate range for this week', () => {
-      const result = calculateIntervalInRange({ intervalsBy: 'week', intervalsDuration: 1, range, rangeOffset: 0 })
+      const result = calculateIntervalInRange({ granularityBy: 'week', granularityDuration: 1, range, rangeOffset: 0 })
       expect(result).toEqual({
         end: getEndOf(new Date(now), 'week').getTime(),
         start: getStartOf(new Date(now), 'week').getTime(),
@@ -106,7 +106,7 @@ describe('calculateIntervalInRange', () => {
     })
 
     it('should calculate range last week', () => {
-      const result = calculateIntervalInRange({ intervalsBy: 'week', intervalsDuration: 1, range, rangeOffset: 1 })
+      const result = calculateIntervalInRange({ granularityBy: 'week', granularityDuration: 1, range, rangeOffset: 1 })
       const lastWeek = new Date(getStartOf(new Date(now), 'week').getTime() - 7 * 86_400_000)
       expect(result).toEqual({
         end: getEndOf(lastWeek, 'week').getTime(),

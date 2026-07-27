@@ -9,7 +9,7 @@ import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilter } from '~/components/filter/useFilter'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useStatConfig } from '~/components/stat/config/useStatConfig'
-import { calculateBestIntervalsBy } from '~/components/stat/date/params'
+import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { useStatDate } from '~/components/stat/date/useStatDate'
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { TrnType } from '~/components/trns/types'
@@ -46,8 +46,8 @@ provide(statConfigKey, statConfig)
 
 const statDate = useStatDate({
   initParams: {
-    intervalsBy: calculateBestIntervalsBy(maxRange.value),
-    intervalsDuration: 1,
+    granularityBy: calculateBestGranularityBy(maxRange.value),
+    granularityDuration: 1,
     isShowMaxRange: true,
     isSkipEmpty: true,
     rangeBy: 'day',

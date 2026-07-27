@@ -4,8 +4,8 @@ import type { useStatDate } from '~/components/stat/date/useStatDate'
 
 export type StatDateParams = {
   customDate: false | Range
-  intervalsBy: Period
-  intervalsDuration: number
+  granularityBy: Period
+  granularityDuration: number
   intervalSelected: number
   isShowMaxRange: boolean
   isSkipEmpty: boolean
@@ -16,8 +16,8 @@ export type StatDateParams = {
 
 export type StatDateParamsQuery = {
   customDate: string
-  intervalsBy: Period
-  intervalsDuration: string
+  granularityBy: Period
+  granularityDuration: string
   intervalSelected: string
   isShowMaxRange: string
   isSkipEmpty: string
@@ -26,13 +26,13 @@ export type StatDateParamsQuery = {
   rangeOffset: string
 }
 
-export type IntervalsInRangeProps = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'> & {
+export type IntervalsInRangeProps = Pick<StatDateParams, 'granularityBy' | 'granularityDuration'> & {
   range: Range
   rangeOffset?: number
 }
 
 type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
-export type Grouped = Pick<StatDateParams, 'intervalsBy' | 'intervalsDuration'>
+export type Grouped = Pick<StatDateParams, 'granularityBy' | 'granularityDuration'>
 
 export type IntervalGroupedLabel = Grouped & Interval & {
   isShowMaxRange?: boolean

@@ -22,30 +22,30 @@ const viewTabItems = computed<TabsItem[]>(() => [
 ])
 
 const intervals = computed<Grouped[]>(() => [{
-  intervalsBy: 'day',
-  intervalsDuration: 1,
+  granularityBy: 'day',
+  granularityDuration: 1,
 }, {
-  intervalsBy: 'week',
-  intervalsDuration: 1,
+  granularityBy: 'week',
+  granularityDuration: 1,
 }, {
-  intervalsBy: 'month',
-  intervalsDuration: 1,
+  granularityBy: 'month',
+  granularityDuration: 1,
 }, {
-  intervalsBy: 'year',
-  intervalsDuration: 1,
+  granularityBy: 'year',
+  granularityDuration: 1,
 }])
 
 const intervalItems = computed<TabsItem[]>(() => intervals.value.map(item => ({
-  label: t(`dates.${item.intervalsBy}.simple`),
-  value: item.intervalsBy,
+  label: t(`dates.${item.granularityBy}.simple`),
+  value: item.granularityBy,
 })))
 
 function selectInterval(grouped: Grouped) {
   statDate.setInterval(grouped)
 }
 
-function onSelectIntervalBy(intervalsBy: string | number) {
-  const grouped = intervals.value.find(i => i.intervalsBy === intervalsBy)
+function onSelectIntervalBy(granularityBy: string | number) {
+  const grouped = intervals.value.find(i => i.granularityBy === granularityBy)
   if (grouped)
     selectInterval(grouped)
 }
@@ -117,12 +117,12 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
               :content="false"
               size="sm"
               :items="intervalItems"
-              :modelValue="statDate.params.value.intervalsBy"
+              :modelValue="statDate.params.value.granularityBy"
               @update:modelValue="onSelectIntervalBy"
             />
 
             <UiInlineStepper
-              :value="statDate.params.value.intervalsDuration"
+              :value="statDate.params.value.granularityDuration"
               @dec="statDate.delInterval"
               @inc="statDate.addInterval"
             />

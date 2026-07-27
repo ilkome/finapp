@@ -20,10 +20,10 @@ const range = computed<Range>(() => {
 
 const date = computed(() => {
   const isIntervalSelected = statDate.params.value.intervalSelected !== -1
-  const intervalsBy = isIntervalSelected ? statDate.params.value.intervalsBy : statDate.params.value.rangeBy
-  const rangeDuration = isIntervalSelected ? statDate.params.value.intervalsDuration : statDate.params.value.rangeDuration
+  const granularityBy = isIntervalSelected ? statDate.params.value.granularityBy : statDate.params.value.rangeBy
+  const rangeDuration = isIntervalSelected ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration
 
-  return `${formatRange(range.value, intervalsBy, rangeDuration)}`
+  return `${formatRange(range.value, granularityBy, rangeDuration)}`
 })
 </script>
 
