@@ -29,9 +29,9 @@ function cycleForecast() {
   forecastMode.value = nextForecastMode(forecastMode.value)
 }
 
-const isChartShow = computed(() => statConfig.config.value.isChartShow)
-const isCatsRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
-const isCatsListShow = computed(() => statConfig.config.value.catsList.isShow)
+const isChartShow = computed(() => statConfig.config.value.chart.isShow)
+const isCatsRoundShow = computed(() => statConfig.config.value.categories.round.isShow)
+const isCatsListShow = computed(() => statConfig.config.value.categories.list.isShow)
 
 const hasTrnsConfig = computed(() => props.selectedTrnsIds !== undefined)
 const showCategoryConfig = computed(() => hasTrnsConfig.value && props.hasCategoryBreakdown)
@@ -102,12 +102,12 @@ function back() {
   activePanel.value = 'root'
 }
 
-function toggleSection<K extends 'catsList' | 'catsRound' | 'statAverage' | 'vertical' | 'wallets'>(key: K, current: boolean) {
+function toggleSection<K extends 'average' | 'chart' | 'wallets'>(key: K, current: boolean) {
   statConfig.updateConfig(key, { isShow: !current } as never)
 }
 
-function toggleChartShow() {
-  statConfig.updateConfig('isChartShow', !isChartShow.value)
+function toggleCategoriesSection(sub: 'bars' | 'list' | 'round', current: boolean) {
+  statConfig.updateConfig('categories', { [sub]: { isShow: !current } })
 }
 
 const panelToggleValue = computed<boolean | undefined>(() => {
@@ -115,7 +115,7 @@ const panelToggleValue = computed<boolean | undefined>(() => {
     case 'wallets':
       return statConfig.config.value.wallets.isShow
     case 'statAverage':
-      return statConfig.config.value.statAverage.isShow
+      return statConfig.config.value.average.isShow
     case 'chart':
       return isChartShow.value
     case 'catsRound':
@@ -123,7 +123,7 @@ const panelToggleValue = computed<boolean | undefined>(() => {
     case 'catsList':
       return isCatsListShow.value
     case 'vertical':
-      return statConfig.config.value.vertical.isShow
+      return statConfig.config.value.categories.bars.isShow
     default:
       return undefined
   }
@@ -135,19 +135,19 @@ function togglePanelSection() {
       toggleSection('wallets', statConfig.config.value.wallets.isShow)
       break
     case 'statAverage':
-      toggleSection('statAverage', statConfig.config.value.statAverage.isShow)
+      toggleSection('average', statConfig.config.value.average.isShow)
       break
     case 'chart':
-      toggleChartShow()
+      toggleSection('chart', isChartShow.value)
       break
     case 'catsRound':
-      toggleSection('catsRound', isCatsRoundShow.value)
+      toggleCategoriesSection('round', isCatsRoundShow.value)
       break
     case 'catsList':
-      toggleSection('catsList', isCatsListShow.value)
+      toggleCategoriesSection('list', isCatsListShow.value)
       break
     case 'vertical':
-      toggleSection('vertical', statConfig.config.value.vertical.isShow)
+      toggleCategoriesSection('bars', statConfig.config.value.categories.bars.isShow)
       break
   }
 }
@@ -212,12 +212,12 @@ const rows = computed<RootRow[]>(() => {
   }
 
   list.push({
-    isShow: statConfig.config.value.statAverage.isShow,
+    isShow: statConfig.config.value.average.isShow,
     key: 'statAverage',
     panel: 'statAverage',
-    subtitle: t('stat.config.statAverage.subtitle', { count: statConfig.config.value.statAverage.count }),
+    subtitle: t('stat.config.statAverage.subtitle', { count: statConfig.config.value.average.count }),
     title: t('stat.config.statAverage.title'),
-    toggle: () => toggleSection('statAverage', statConfig.config.value.statAverage.isShow),
+    toggle: () => toggleSection('average', statConfig.config.value.average.isShow),
   })
 
   if (hasTrnsConfig.value) {
@@ -226,7 +226,7 @@ const rows = computed<RootRow[]>(() => {
       key: 'chart',
       panel: 'chart',
       title: t('stat.config.chartShow.title'),
-      toggle: toggleChartShow,
+      toggle: () => toggleSection('chart', isChartShow.value),
     })
   }
 
@@ -236,21 +236,21 @@ const rows = computed<RootRow[]>(() => {
       key: 'catsRound',
       panel: 'catsRound',
       title: t('stat.config.categories.rounds.title'),
-      toggle: () => toggleSection('catsRound', isCatsRoundShow.value),
+      toggle: () => toggleCategoriesSection('round', isCatsRoundShow.value),
     })
     list.push({
       isShow: isCatsListShow.value,
       key: 'catsList',
       panel: 'catsList',
       title: t('stat.config.categories.list.title'),
-      toggle: () => toggleSection('catsList', isCatsListShow.value),
+      toggle: () => toggleCategoriesSection('list', isCatsListShow.value),
     })
     list.push({
-      isShow: statConfig.config.value.vertical.isShow,
+      isShow: statConfig.config.value.categories.bars.isShow,
       key: 'vertical',
       panel: 'vertical',
       title: t('stat.config.categories.vertical.title'),
-      toggle: () => toggleSection('vertical', statConfig.config.value.vertical.isShow),
+      toggle: () => toggleCategoriesSection('bars', statConfig.config.value.categories.bars.isShow),
     })
   }
 
@@ -313,7 +313,7 @@ function onRowActivate(row: RootRow) {
             <div
               v-if="i > 0"
               aria-hidden="true"
-              class="bg-elevated/50 mx-2 h-px"
+              class="mx-2 h-px bg-elevated/50"
             />
             <StatConfigRow
               :hasPanel="!!row.panel"

@@ -12,17 +12,17 @@ const props = defineProps<{
 const statConfig = inject(statConfigKey)!
 
 const isChecked = computed((): boolean => {
-  const val = statConfig.config.value[props.configKey]
-  if (props.field && typeof val === 'object')
+  const val = statConfig.config.value[props.configKey] as unknown
+  if (props.field && typeof val === 'object' && val !== null)
     return (val as Record<string, boolean>)[props.field] ?? false
   return val as boolean
 })
 
 function toggle() {
   if (props.field)
-    statConfig.updateConfig(props.configKey, { [props.field]: !isChecked.value })
+    statConfig.updateConfig(props.configKey, { [props.field]: !isChecked.value } as never)
   else
-    statConfig.updateConfig(props.configKey, !isChecked.value)
+    statConfig.updateConfig(props.configKey, !isChecked.value as never)
 }
 </script>
 

@@ -42,7 +42,9 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const statConfig = useStatConfig({
   props: {
-    isShowEmptyCategories: true,
+    categories: {
+      isShowEmpty: true,
+    },
     wallets: {
       isShow: false,
     },
@@ -59,7 +61,7 @@ const statDate = useStatDate({
 provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
-  statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
+  statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
 })
 
 useHead({ title: wallet.value?.name })

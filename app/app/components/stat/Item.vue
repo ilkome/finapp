@@ -137,10 +137,10 @@ if (stickyNav && import.meta.client) {
 
 const isOneCategory = computed(() => !!props.categoryId)
 const shouldShowAmounts = computed(() => !props.categoryId || props.categoryId !== 'transfer')
-const isRoundShow = computed(() => statConfig.config.value.catsRound.isShow)
-const isListShow = computed(() => statConfig.config.value.catsList.isShow)
-const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
-const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
+const isRoundShow = computed(() => statConfig.config.value.categories.round.isShow)
+const isListShow = computed(() => statConfig.config.value.categories.list.isShow)
+const isVerticalShow = computed(() => statConfig.config.value.categories.bars.isShow)
+const isShowAverage = computed(() => statConfig.config.value.average.isShow)
 const isTrnsShow = computed(() => statConfig.config.value.trns.isShow)
 
 const {
@@ -267,7 +267,7 @@ function onClickSumItemWrap(type: SeriesSlugSelected) {
             :type="selectedTypeForSum"
             :walletId
             @click="onClickSumItemWrap"
-            @clickAverage="statConfig.updateConfig('statAverage', { isShow: !isShowAverage })"
+            @clickAverage="statConfig.updateConfig('average', { isShow: !isShowAverage })"
           />
         </div>
       </div>

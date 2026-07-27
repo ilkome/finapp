@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { CategoryId } from '~/components/categories/types'
 import type { Period } from '~~/utils/date/types'
+
+import type { CategoryId } from '~/components/categories/types'
 import type { ChartSeries } from '~/components/stat/types'
 import type { ChartPieGroup } from '~/components/stat/useStatItem'
 
@@ -25,9 +26,9 @@ const trnsFormStore = useTrnsFormStore()
 
 // Charts mount on the first idle frame so echarts doesn't compete with the LCP render.
 const isChartMountReady = useIdleMount()
-const isChartShow = computed(() => statConfig.config.value.isChartShow)
-const chartView = computed(() => statConfig.config.value.chartView)
-const chartType = computed(() => resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode))
+const isChartShow = computed(() => statConfig.config.value.chart.isShow)
+const chartView = computed(() => statConfig.config.value.chart.view)
+const chartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.mode))
 const isPie = computed(() => chartType.value === 'pie')
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
@@ -57,7 +58,7 @@ function onChangePeriod(period: Period) {
 
       <div class="h-7">
         <StatChartIntervals
-          :class="{ 'border-accented border-l': isShowQuick }"
+          :class="{ 'border-l border-accented': isShowQuick }"
           :period="statDate.params.value.intervalsBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"

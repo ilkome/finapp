@@ -26,9 +26,9 @@ const { computeCategoriesWithData } = useStatCategories()
 const statConfig = inject(statConfigKey)!
 
 // Config
-const catsList = computed(() => statConfig.config.value.catsList)
-const isVerticalShow = computed(() => statConfig.config.value.vertical.isShow)
-const isVerticalGrouped = computed(() => statConfig.config.value.vertical.isGrouped)
+const catsList = computed(() => statConfig.config.value.categories.list)
+const isVerticalShow = computed(() => statConfig.config.value.categories.bars.isShow)
+const isVerticalGrouped = computed(() => statConfig.config.value.categories.bars.isGrouped)
 const isListShow = computed(() => catsList.value.isShow)
 const isListGrouped = computed(() => catsList.value.isGrouped)
 const isLines = computed(() => catsList.value.isLines)
@@ -38,9 +38,9 @@ const groupedCategories = computed(() => computeCategoriesWithData(props.selecte
 const ungroupedCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], false, undefined, props.excludedCategoriesIds))
 
 const categoriesWithData = computed<CategoryWithData[]>(() => {
-  const isGrouped = statConfig.config.value[statConfig.config.value.catsView === 'list' ? 'catsList' : 'catsRound'].isGrouped
+  const isGrouped = statConfig.config.value.categories[statConfig.config.value.categories.view === 'list' ? 'list' : 'round'].isGrouped
 
-  if (statConfig.config.value.isShowEmptyCategories && props.preCategoriesIds?.length)
+  if (statConfig.config.value.categories.isShowEmpty && props.preCategoriesIds?.length)
     return computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped, props.preCategoriesIds, props.excludedCategoriesIds)
 
   return isGrouped ? groupedCategories.value : ungroupedCategories.value
@@ -81,7 +81,7 @@ function onParentClick(item: CategoryWithData) {
 }
 
 function onToggleListGrouping() {
-  statConfig.updateConfig('catsList', { isGrouped: !isListGrouped.value })
+  statConfig.updateConfig('categories', { list: { isGrouped: !isListGrouped.value } })
 }
 
 const isVerticalShown = useStoredToggle(`${props.storageKey}-${props.type}-vertical`, true)
@@ -110,7 +110,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
         >
           <StatCategoriesGroupingToggle
             :isGrouped="isVerticalGrouped"
-            @toggle="statConfig.config.value.vertical.isGrouped = !isVerticalGrouped"
+            @toggle="statConfig.config.value.categories.bars.isGrouped = !isVerticalGrouped"
           />
         </div>
       </div>
@@ -150,7 +150,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           class="flex items-center gap-1"
         >
           <UiActionButton
-            v-if="statConfig.config.value.catsView === 'list' && !props.isOneCategory && isListGrouped"
+            v-if="statConfig.config.value.categories.view === 'list' && !props.isOneCategory && isListGrouped"
             :ariaLabel="$t('base.toggleFolders')"
             @click="toggleAllCategories"
           >

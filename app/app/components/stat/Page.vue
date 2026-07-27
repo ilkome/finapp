@@ -41,7 +41,7 @@ const statDate = useStatDate({ key: storageKey.value, maxRange, queryParams: rou
 provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
-  statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
+  statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
 })
 
 const lastFilter = useStorage<{

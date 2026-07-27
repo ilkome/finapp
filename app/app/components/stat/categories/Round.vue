@@ -20,7 +20,7 @@ const emit = defineEmits<{
 const currenciesStore = useCurrenciesStore()
 const statConfig = inject(statConfigKey)!
 
-const isIconBg = computed(() => statConfig.config.value.catsRound.isIconBg)
+const isIconBg = computed(() => statConfig.config.value.categories.round.isIconBg)
 
 const { longPressRef } = useCategoryLongPress(
   () => props.item.id,

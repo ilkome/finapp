@@ -23,41 +23,43 @@ export function resolveChartType(raw: ChartType, mode: ChartMode): ChartType {
 }
 
 export const ConfigSchema = z.object({
-  catsList: z.object({
-    isGrouped: z.boolean(),
-    isLines: z.boolean(),
-    isRoundIcon: z.boolean(),
-    isShow: z.boolean(),
-  }),
-  catsRound: z.object({
-    isGrouped: z.boolean(),
-    isIconBg: z.boolean(),
-    isShow: z.boolean(),
-    isShowFavorites: z.boolean(),
-    isShowRecent: z.boolean(),
-  }),
-  catsView: z.enum(['list', 'round']),
-  chart: z.object({
-    isGrouped: z.boolean(),
-    isShowAverage: z.boolean(),
-    mode: z.enum(['aggregated', 'categories']),
-  }),
-  chartType: z.enum(chartTypes),
-  chartView: z.enum(chartViewOptions),
-  date: z.object({
-    isShowQuick: z.boolean(),
-  }),
-  isChartShow: z.boolean(),
-  isShowEmptyCategories: z.boolean(),
-  statAverage: z.object({
+  average: z.object({
     count: z.number(),
     isShow: z.boolean(),
   }),
-  trns: z.object({
-    isShow: z.boolean(),
+  categories: z.object({
+    bars: z.object({
+      isGrouped: z.boolean(),
+      isShow: z.boolean(),
+    }),
+    isShowEmpty: z.boolean(),
+    list: z.object({
+      isGrouped: z.boolean(),
+      isLines: z.boolean(),
+      isRoundIcon: z.boolean(),
+      isShow: z.boolean(),
+    }),
+    round: z.object({
+      isGrouped: z.boolean(),
+      isIconBg: z.boolean(),
+      isShow: z.boolean(),
+      isShowFavorites: z.boolean(),
+      isShowRecent: z.boolean(),
+    }),
+    view: z.enum(['list', 'round']),
   }),
-  vertical: z.object({
+  chart: z.object({
     isGrouped: z.boolean(),
+    isShow: z.boolean(),
+    isShowAverage: z.boolean(),
+    mode: z.enum(['aggregated', 'categories']),
+    type: z.enum(chartTypes),
+    view: z.enum(chartViewOptions),
+  }),
+  date: z.object({
+    isShowQuick: z.boolean(),
+  }),
+  trns: z.object({
     isShow: z.boolean(),
   }),
   wallets: z.object({
@@ -82,47 +84,48 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   })
 
   const config = useStorage<MiniItemConfig>(configStorageKey.value, {
-    catsList: {
-      isGrouped: true,
-      isLines: true,
-      isRoundIcon: true,
-      isShow: true,
-    },
-    catsRound: {
-      isGrouped: false,
-      isIconBg: true,
-      isShow: true,
-      isShowFavorites: false,
-      isShowRecent: false,
-    },
-    catsView: 'list',
-    chart: {
-      isGrouped: true,
-      isShowAverage: false,
-      mode: 'aggregated',
-    },
-    chartType: 'bar',
-    chartView: 'full',
-    date: {
-      isShowQuick: false,
-    },
-
-    isChartShow: true,
-
-    isShowEmptyCategories: false,
-
-    statAverage: {
+    average: {
       count: 10,
       isShow: false,
     },
 
-    trns: {
-      isShow: true,
+    categories: {
+      bars: {
+        isGrouped: false,
+        isShow: false,
+      },
+      isShowEmpty: false,
+      list: {
+        isGrouped: true,
+        isLines: true,
+        isRoundIcon: true,
+        isShow: true,
+      },
+      round: {
+        isGrouped: false,
+        isIconBg: true,
+        isShow: true,
+        isShowFavorites: false,
+        isShowRecent: false,
+      },
+      view: 'list',
     },
 
-    vertical: {
-      isGrouped: false,
-      isShow: false,
+    chart: {
+      isGrouped: true,
+      isShow: true,
+      isShowAverage: false,
+      mode: 'aggregated',
+      type: 'bar',
+      view: 'full',
+    },
+
+    date: {
+      isShowQuick: false,
+    },
+
+    trns: {
+      isShow: true,
     },
 
     wallets: {
@@ -137,12 +140,12 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   if (props) {
     Object.entries(props).forEach(([key, value]) => {
       if (value !== undefined) {
-        updateConfig(key as keyof MiniItemConfig, value)
+        updateConfig(key as keyof MiniItemConfig, value as never)
       }
     })
   }
 
-  function updateConfig(key: keyof MiniItemConfig, value: Partial<MiniItemConfig[keyof MiniItemConfig]>) {
+  function updateConfig<K extends keyof MiniItemConfig>(key: K, value: DeepPartial<MiniItemConfig[K]>) {
     const result = applyConfigUpdate(config.value, key, value)
     if (result)
       config.value = result

@@ -30,7 +30,7 @@ const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 const currenciesStore = useCurrenciesStore()
 
-const isShowAverage = computed(() => statConfig.config.value.statAverage.isShow)
+const isShowAverage = computed(() => statConfig.config.value.average.isShow)
 
 // Forecast row: shown only when forecast is on and the period actually has projected occurrences.
 const isShowForecast = computed(() =>
@@ -39,7 +39,7 @@ const isShowForecast = computed(() =>
 const projectedSum = computed(() => props.total.sum + (props.forecastTotal?.sum ?? 0))
 
 const className = computed(() => cn(
-  'min-w-min min-h-10.5 flex items-center',
+  'flex min-h-10.5 min-w-min items-center',
   {
     interactive: props.type === 'summary',
   },
@@ -125,7 +125,7 @@ function onClick(type: SeriesSlugSelected) {
 
     <div
       v-if="isShowForecast"
-      class="text-2xs text-muted mt-1 flex flex-wrap items-center gap-x-3 gap-y-1"
+      class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-2xs text-muted"
     >
       <span class="tracking-wide uppercase">{{ t('stat.forecast.title') }}</span>
       <span v-if="forecastMode === 'separate'" class="flex items-center gap-1">
@@ -139,7 +139,7 @@ function onClick(type: SeriesSlugSelected) {
           variant="xs"
         />
       </span>
-      <span class="text-highlighted flex items-center gap-1">
+      <span class="flex items-center gap-1 text-highlighted">
         {{ t('stat.forecast.projected') }}
         <Amount
           :amount="projectedSum"

@@ -23,9 +23,9 @@ const { computeCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
-const isGrouped = computed(() => statConfig.config.value.catsRound.isGrouped)
-const isShowFavorites = computed(() => statConfig.config.value.catsRound.isShowFavorites)
-const isShowRecent = computed(() => statConfig.config.value.catsRound.isShowRecent)
+const isGrouped = computed(() => statConfig.config.value.categories.round.isGrouped)
+const isShowFavorites = computed(() => statConfig.config.value.categories.round.isShowFavorites)
+const isShowRecent = computed(() => statConfig.config.value.categories.round.isShowRecent)
 
 const mergedPreCategoriesIds = computed(() => {
   const ids: CategoryId[] = []

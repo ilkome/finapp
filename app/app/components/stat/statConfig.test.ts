@@ -7,42 +7,44 @@ import { ConfigSchema } from '~/components/stat/useStatConfig'
 import { applyConfigUpdate } from './statConfig'
 
 const defaultConfig: MiniItemConfig = {
-  catsList: {
-    isGrouped: true,
-    isLines: true,
-    isRoundIcon: true,
-    isShow: true,
-  },
-  catsRound: {
-    isGrouped: false,
-    isIconBg: true,
-    isShow: true,
-    isShowFavorites: true,
-    isShowRecent: true,
-  },
-  catsView: 'list',
-  chart: {
-    isGrouped: true,
-    isShowAverage: false,
-    mode: 'aggregated',
-  },
-  chartType: 'bar',
-  chartView: 'full',
-  date: {
-    isShowQuick: false,
-  },
-  isChartShow: true,
-  isShowEmptyCategories: false,
-  statAverage: {
+  average: {
     count: 10,
     isShow: false,
   },
+  categories: {
+    bars: {
+      isGrouped: false,
+      isShow: false,
+    },
+    isShowEmpty: false,
+    list: {
+      isGrouped: true,
+      isLines: true,
+      isRoundIcon: true,
+      isShow: true,
+    },
+    round: {
+      isGrouped: false,
+      isIconBg: true,
+      isShow: true,
+      isShowFavorites: true,
+      isShowRecent: true,
+    },
+    view: 'list',
+  },
+  chart: {
+    isGrouped: true,
+    isShow: true,
+    isShowAverage: false,
+    mode: 'aggregated',
+    type: 'bar',
+    view: 'full',
+  },
+  date: {
+    isShowQuick: false,
+  },
   trns: {
     isShow: true,
-  },
-  vertical: {
-    isGrouped: false,
-    isShow: false,
   },
   wallets: {
     count: 6,
@@ -57,22 +59,22 @@ describe('configSchema', () => {
   })
 
   it('rejects invalid chartType', () => {
-    const invalid = { ...defaultConfig, chartType: 'invalid' }
+    const invalid = { ...defaultConfig, chart: { ...defaultConfig.chart, type: 'invalid' } }
     expect(ConfigSchema.safeParse(invalid).success).toBe(false)
   })
 
-  it('rejects invalid catsView', () => {
-    const invalid = { ...defaultConfig, catsView: 'grid' }
+  it('rejects invalid categories view', () => {
+    const invalid = { ...defaultConfig, categories: { ...defaultConfig.categories, view: 'grid' } }
     expect(ConfigSchema.safeParse(invalid).success).toBe(false)
   })
 
   it('rejects missing required field', () => {
-    const { isChartShow: _, ...incomplete } = defaultConfig
+    const { chart: _, ...incomplete } = defaultConfig
     expect(ConfigSchema.safeParse(incomplete).success).toBe(false)
   })
 
   it('rejects non-boolean in nested object', () => {
-    const invalid = { ...defaultConfig, catsList: { ...defaultConfig.catsList, isShow: 'yes' } }
+    const invalid = { ...defaultConfig, categories: { ...defaultConfig.categories, list: { ...defaultConfig.categories.list, isShow: 'yes' } } }
     expect(ConfigSchema.safeParse(invalid).success).toBe(false)
   })
 
@@ -84,30 +86,31 @@ describe('configSchema', () => {
 
 describe('applyConfigUpdate', () => {
   it('updates a primitive value', () => {
-    const result = applyConfigUpdate(defaultConfig, 'isChartShow', false as any)
+    const result = applyConfigUpdate(defaultConfig, 'chart', { isShow: false })
     expect(result).not.toBeNull()
-    expect(result!.isChartShow).toBe(false)
+    expect(result!.chart.isShow).toBe(false)
   })
 
-  it('updates chartType', () => {
-    const result = applyConfigUpdate(defaultConfig, 'chartType', 'line' as any)
+  it('updates chart.type', () => {
+    const result = applyConfigUpdate(defaultConfig, 'chart', { type: 'line' } as any)
     expect(result).not.toBeNull()
-    expect(result!.chartType).toBe('line')
+    expect(result!.chart.type).toBe('line')
   })
 
-  it('updates chartView', () => {
-    const result = applyConfigUpdate(defaultConfig, 'chartView', 'half' as any)
+  it('updates chart.view', () => {
+    const result = applyConfigUpdate(defaultConfig, 'chart', { view: 'half' } as any)
     expect(result).not.toBeNull()
-    expect(result!.chartView).toBe('half')
+    expect(result!.chart.view).toBe('half')
   })
 
   it('deep-merges nested object', () => {
-    const result = applyConfigUpdate(defaultConfig, 'catsList', { isGrouped: false })
+    const result = applyConfigUpdate(defaultConfig, 'categories', { list: { isGrouped: false } })
     expect(result).not.toBeNull()
-    expect(result!.catsList.isGrouped).toBe(false)
+    expect(result!.categories.list.isGrouped).toBe(false)
     // Other fields preserved via defu
-    expect(result!.catsList.isShow).toBe(true)
-    expect(result!.catsList.isLines).toBe(true)
+    expect(result!.categories.list.isShow).toBe(true)
+    expect(result!.categories.list.isLines).toBe(true)
+    expect(result!.categories.round).toEqual(defaultConfig.categories.round)
   })
 
   it('deep-merges wallets count', () => {
@@ -118,7 +121,7 @@ describe('applyConfigUpdate', () => {
   })
 
   it('returns null for invalid value', () => {
-    const result = applyConfigUpdate(defaultConfig, 'chartType', 'invalid' as any)
+    const result = applyConfigUpdate(defaultConfig, 'chart', { type: 'invalid' } as any)
     expect(result).toBeNull()
   })
 
@@ -128,16 +131,16 @@ describe('applyConfigUpdate', () => {
   })
 
   it('does not mutate original config', () => {
-    const original = { ...defaultConfig, isChartShow: true }
-    applyConfigUpdate(original, 'isChartShow', false as any)
-    expect(original.isChartShow).toBe(true)
+    const original = { ...defaultConfig, chart: { ...defaultConfig.chart, isShow: true } }
+    applyConfigUpdate(original, 'chart', { isShow: false })
+    expect(original.chart.isShow).toBe(true)
   })
 
   it('preserves other keys when updating one', () => {
-    const result = applyConfigUpdate(defaultConfig, 'isShowEmptyCategories', true as any)
+    const result = applyConfigUpdate(defaultConfig, 'categories', { isShowEmpty: true })
     expect(result).not.toBeNull()
-    expect(result!.isShowEmptyCategories).toBe(true)
-    expect(result!.chartType).toBe('bar')
-    expect(result!.catsList).toEqual(defaultConfig.catsList)
+    expect(result!.categories.isShowEmpty).toBe(true)
+    expect(result!.chart.type).toBe('bar')
+    expect(result!.categories.list).toEqual(defaultConfig.categories.list)
   })
 })

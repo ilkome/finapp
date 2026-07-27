@@ -291,7 +291,7 @@ export function useStatItem({
     const selectedInterval = intervals[statDate.params.value.intervalSelected]
     // Bar/line series never use the `pie` type; the donut renders from
     // `chartPieGroups`, so collapse pie -> bar for the axis-based series here.
-    const rawChartType = resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode)
+    const rawChartType = resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.mode)
     const chartType = rawChartType === 'pie' ? 'bar' : rawChartType
 
     let baseSeries: ChartSeries[]

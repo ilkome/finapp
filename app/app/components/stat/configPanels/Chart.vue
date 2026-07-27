@@ -11,10 +11,10 @@ const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 const { chartTypeOptions } = useStatChart()
 
-const isChartShow = computed(() => statConfig.config.value.isChartShow)
+const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const isChartGrouped = computed(() => statConfig.config.value.chart.isGrouped)
 const isCategoriesMode = computed(() => statConfig.config.value.chart.mode === 'categories')
-const activeChartType = computed(() => resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode))
+const activeChartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.mode))
 const isPie = computed(() => activeChartType.value === 'pie')
 
 // Pie is only meaningful for the per-category breakdown.
@@ -69,8 +69,8 @@ const chartTypeItems = computed<TabsItem[]>(() => visibleChartTypeOptions.value.
         <UTabs
           :content="false"
           :items="chartViewItems"
-          :modelValue="statConfig.config.value.chartView"
-          @update:modelValue="(v) => statConfig.updateConfig('chartView', v as typeof chartViewOptions[number])"
+          :modelValue="statConfig.config.value.chart.view"
+          @update:modelValue="(v) => statConfig.updateConfig('chart', { view: v as typeof chartViewOptions[number] })"
         />
       </div>
 
@@ -82,7 +82,7 @@ const chartTypeItems = computed<TabsItem[]>(() => visibleChartTypeOptions.value.
           :content="false"
           :items="chartTypeItems"
           :modelValue="activeChartType"
-          @update:modelValue="(v) => statConfig.updateConfig('chartType', v as ChartType)"
+          @update:modelValue="(v) => statConfig.updateConfig('chart', { type: v as ChartType })"
         />
       </div>
     </div>

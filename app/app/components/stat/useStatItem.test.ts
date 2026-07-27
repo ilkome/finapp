@@ -1,8 +1,9 @@
+import type { Range } from '~~/utils/date/types'
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, ref } from 'vue'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { Range } from '~~/utils/date/types'
 import type { IntervalData } from '~/components/stat/types'
 
 // ---------------------------------------------------------------------------
@@ -171,8 +172,7 @@ function makeFilter(categoriesIds: string[] = []) {
 function makeStatConfig() {
   return {
     config: computed(() => ({
-      chart: { isShowAverage: false },
-      chartType: 'bar' as const,
+      chart: { isShowAverage: false, type: 'bar' as const },
     })),
   }
 }

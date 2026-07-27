@@ -36,8 +36,8 @@ const statConfig = inject(statConfigKey)!
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
-const isLines = computed(() => statConfig.config.value.catsList.isLines)
-const isRoundIcon = computed(() => statConfig.config.value.catsList.isRoundIcon)
+const isLines = computed(() => statConfig.config.value.categories.list.isLines)
+const isRoundIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
 
 const category = computed(() => categoriesStore.items[props.item.id])
 const parentCategory = computed(() => {
@@ -82,7 +82,7 @@ function onAmountClick(e: MouseEvent) {
           v-if="isLines"
           class="absolute bottom-2 left-0 w-full overflow-hidden rounded-lg pr-3 pl-13"
         >
-          <div class="bg-accented overflow-hidden rounded-lg">
+          <div class="overflow-hidden rounded-lg bg-accented">
             <div
               :style="barStyle"
               class="h-1 opacity-60"

@@ -4,8 +4,8 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
-const isShow = computed(() => statConfig.config.value.vertical.isShow)
-const isGrouped = computed(() => statConfig.config.value.vertical.isGrouped)
+const isShow = computed(() => statConfig.config.value.categories.bars.isShow)
+const isGrouped = computed(() => statConfig.config.value.categories.bars.isGrouped)
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const isGrouped = computed(() => statConfig.config.value.vertical.isGrouped)
     <UiSwitchItem
       :checkboxValue="isGrouped"
       :title="t('stat.config.categories.vertical.groupByParent')"
-      @click="statConfig.updateConfig('vertical', { isGrouped: !isGrouped })"
+      @click="statConfig.updateConfig('categories', { bars: { isGrouped: !isGrouped } })"
     />
   </div>
 </template>

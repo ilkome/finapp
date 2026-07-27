@@ -135,15 +135,17 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const statConfig = useStatConfig({
   props: {
-    catsList: {
-      isGrouped: false,
-    },
-    catsRound: {
-      isGrouped: false,
-    },
-    isShowEmptyCategories: true,
-    vertical: {
-      isGrouped: false,
+    categories: {
+      bars: {
+        isGrouped: false,
+      },
+      isShowEmpty: true,
+      list: {
+        isGrouped: false,
+      },
+      round: {
+        isGrouped: false,
+      },
     },
   },
   storageKey: storageKey.value,
@@ -166,9 +168,9 @@ const statDate = useStatDate({
 provide(statDateKey, statDate)
 
 onActivated(() => {
-  statConfig.updateConfig('catsList', { isGrouped: false })
-  statConfig.updateConfig('catsRound', { isGrouped: false })
-  statConfig.updateConfig('vertical', { isGrouped: false })
+  statConfig.updateConfig('categories', { list: { isGrouped: false } })
+  statConfig.updateConfig('categories', { round: { isGrouped: false } })
+  statConfig.updateConfig('categories', { bars: { isGrouped: false } })
 
   if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value

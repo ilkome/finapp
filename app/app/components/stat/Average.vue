@@ -31,7 +31,7 @@ const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const { computeTotalForTrnsIds } = useAmount()
 
-const averageConfig = computed(() => statConfig.config.value.statAverage.count)
+const averageConfig = computed(() => statConfig.config.value.average.count)
 
 const untilDate = computed(() => getEndOf(sub(new Date(), toDuration(statDate.params.value.rangeBy, statDate.params.value.rangeDuration)), statDate.params.value.rangeBy))
 

@@ -4,7 +4,9 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
-const isCatsListShow = computed(() => statConfig.config.value.catsList.isShow)
+const isCatsListShow = computed(() => statConfig.config.value.categories.list.isShow)
+const isLines = computed(() => statConfig.config.value.categories.list.isLines)
+const isRoundIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
 </script>
 
 <template>
@@ -12,15 +14,15 @@ const isCatsListShow = computed(() => statConfig.config.value.catsList.isShow)
     class="grid gap-0.5 transition-opacity"
     :class="{ 'pointer-events-none opacity-50': !isCatsListShow }"
   >
-    <StatConfigSwitch
-      configKey="catsList"
-      field="isLines"
+    <UiSwitchItem
+      :checkboxValue="isLines"
       :title="t('stat.catButtons.isLines')"
+      @click="statConfig.updateConfig('categories', { list: { isLines: !isLines } })"
     />
-    <StatConfigSwitch
-      configKey="catsList"
-      field="isRoundIcon"
+    <UiSwitchItem
+      :checkboxValue="isRoundIcon"
       :title="t('stat.catButtons.isRoundIcon')"
+      @click="statConfig.updateConfig('categories', { list: { isRoundIcon: !isRoundIcon } })"
     />
   </div>
 </template>
