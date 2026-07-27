@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useDateFormats } from '~/components/date/useDateFormats'
+import { useDateFormats } from '~/composables/useDateFormats'
 
 const props = defineProps<{
   date: number
@@ -19,7 +19,7 @@ const formattedDate = computed(() => {
     </div>
 
     <div class="text-muted">
-      <div class="text-2xs pb-0.5 leading-none">
+      <div class="pb-0.5 text-2xs leading-none">
         {{ formattedDate.weekday }}
       </div>
 

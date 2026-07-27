@@ -7,10 +7,10 @@ import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useDateFormats } from '~/composables/useDateFormats'
 
 const {
   compact,

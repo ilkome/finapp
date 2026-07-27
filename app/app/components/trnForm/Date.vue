@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { useDateFormats } from '~/components/date/useDateFormats'
 import { addCivilDays, isSameCivilDay, todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useDateFormats } from '~/composables/useDateFormats'
 
 const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
@@ -41,8 +42,8 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       @closeModal="isShow = false"
     >
       <template #trigger>
-        <UiActionButton class="text-muted grid size-full content-center justify-start! px-2 text-left">
-          <div class="text-highlighted text-sm">
+        <UiActionButton class="grid size-full content-center justify-start! px-2 text-left text-muted">
+          <div class="text-sm text-highlighted">
             {{ formattedDate?.day }} {{ formattedDate?.month }}
           </div>
           <div class="font-regular text-2xs leading-none">

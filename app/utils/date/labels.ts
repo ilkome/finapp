@@ -1,8 +1,8 @@
 import type { Period, Range } from '~~/utils/date/types'
 
 import { UTCDate } from '@date-fns/utc'
-import { isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, isSameWeek as dfIsSameWeek, isSameYear as dfIsSameYear, sub } from 'date-fns'
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, isSameWeek as dfIsSameWeek, isSameYear as dfIsSameYear, differenceInDays, sub } from 'date-fns'
+import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { toDuration } from '~~/utils/date/period'
 
 import type { LocaleSlug } from '~/components/locale/types'
@@ -39,7 +39,7 @@ function subOnePeriod(date: Date, by: Period): Date {
   return sub(u(date), toDuration(by, 1))
 }
 
-export function useGetDateRange(t: (key: string, choice?: number) => string, locale?: LocaleSlug) {
+export function createRangeFormatter(t: (key: string, choice?: number) => string, locale?: LocaleSlug) {
   const today = new Date(todayCivilDayEpoch())
 
   function formatYearRange({ duration, end, start }: DateFormatParams): string {
@@ -107,7 +107,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     }
   }
 
-  function formatDateToStringWithLast(params: DateFormatParams, isShowMaxRange?: boolean): string {
+  function formatRangeWithLast(params: DateFormatParams, isShowMaxRange?: boolean): string {
     const { by, duration, end, start } = params
 
     if (duration === 1) {
@@ -127,7 +127,7 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     return formatByPeriod(params)
   }
 
-  function formatDateToString(params: DateFormatParams): string {
+  function formatRangeShort(params: DateFormatParams): string {
     const { by, duration, start } = params
 
     if (duration === 1 && isSamePeriod(start, today, by)) {
@@ -143,8 +143,8 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
     return formatByPeriod(params)
   }
 
-  function getStringDateRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration']) {
-    return formatDateToString({
+  function formatRange(range: Range, by: StatDateParams['rangeBy'], duration: StatDateParams['rangeDuration']) {
+    return formatRangeShort({
       by,
       duration,
       end: new Date(range.end),
@@ -153,8 +153,42 @@ export function useGetDateRange(t: (key: string, choice?: number) => string, loc
   }
 
   return {
-    formatDateToString,
-    formatDateToStringWithLast,
-    getStringDateRange,
+    formatRange,
+    formatRangeShort,
+    formatRangeWithLast,
+  }
+}
+
+export type TrnDateParts = {
+  day: string
+  full: string
+  month: string
+  week: string
+  weekday: string
+  year: string
+}
+
+export function formatTrnDateLabel(value: number, type: 'trnItem' | 'full', t: (key: string, choice?: number) => string, locale?: LocaleSlug): string | TrnDateParts | undefined {
+  if (!value)
+    return undefined
+
+  const { formatRangeWithLast } = createRangeFormatter(t, locale)
+  const date = new Date(value)
+  // Compare civil days (UTC-midnight) so "today"/"yesterday" labels are timezone-stable.
+  const diff = differenceInDays(todayCivilDayEpoch(), civilDayStart(value))
+
+  switch (type) {
+    case 'full':
+      return {
+        day: formatByLocale(date, 'd', locale),
+        full: formatByLocale(date, 'dd.MM.yyyy HH:mm', locale),
+        month: formatByLocale(date, 'MMM', locale),
+        week: formatByLocale(date, 'dd.MM', locale),
+        weekday: `${diff < 2 ? `${formatRangeWithLast({ by: 'day', duration: 1, end: date, start: date })}, ` : ''} ${formatByLocale(date, 'EEEE', locale)}`,
+        year: formatByLocale(date, 'yyyy', locale),
+      }
+
+    case 'trnItem':
+      return formatRangeWithLast({ by: 'day', duration: 1, end: date, start: date })
   }
 }

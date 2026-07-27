@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import type { Range } from '~~/utils/date/types'
 
-import { useGetDateRange } from '~/components/stat/date/useGetDateRange'
+import { createRangeFormatter } from '~~/utils/date/labels'
+
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
 const { locale, t } = useI18n()
 
-const { getStringDateRange } = useGetDateRange(t, locale.value)
+const { formatRange } = createRangeFormatter(t, locale.value)
 
 const range = computed<Range>(() => {
   return statDate.params.value.intervalSelected !== -1
@@ -22,7 +23,7 @@ const date = computed(() => {
   const intervalsBy = isIntervalSelected ? statDate.params.value.intervalsBy : statDate.params.value.rangeBy
   const rangeDuration = isIntervalSelected ? statDate.params.value.intervalsDuration : statDate.params.value.rangeDuration
 
-  return `${getStringDateRange(range.value, intervalsBy, rangeDuration)}`
+  return `${formatRange(range.value, intervalsBy, rangeDuration)}`
 })
 </script>
 
@@ -31,7 +32,7 @@ const date = computed(() => {
     {{ date }}
     <data
       v-if="statDate.params.value.isShowMaxRange && statDate.params.value.intervalSelected === -1"
-      class="bg-elevated text-2xs text-muted inline-flex w-auto items-center rounded-sm px-1 py-px leading-none"
+      class="inline-flex w-auto items-center rounded-sm bg-elevated px-1 py-px text-2xs leading-none text-muted"
     >max</data>
   </div>
 </template>
