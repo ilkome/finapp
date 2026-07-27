@@ -142,25 +142,11 @@ function onSelectMaxRangeKey(key: string | number) {
     />
 
     <template v-if="props.isShowRangeAdjust">
-      <div class="flex gap-1 rounded-sm border border-default bg-default p-px">
-        <button
-          type="button"
-          class="flex min-h-8 min-w-8 items-center justify-center rounded-sm interactive text-xs leading-none"
-          @click="props.statDate.minusRange"
-        >
-          -
-        </button>
-        <div class="flex min-h-8 min-w-6 items-center justify-center rounded-full px-1 text-xs leading-none text-default">
-          {{ props.statDate.params.value.rangeDuration }}
-        </div>
-        <button
-          type="button"
-          class="flex min-h-8 min-w-8 items-center justify-center rounded-sm interactive text-xs leading-none"
-          @click="props.statDate.plusRange"
-        >
-          +
-        </button>
-      </div>
+      <UiInlineStepper
+        :value="props.statDate.params.value.rangeDuration"
+        @dec="props.statDate.minusRange"
+        @inc="props.statDate.plusRange"
+      />
     </template>
 
     <UTabs

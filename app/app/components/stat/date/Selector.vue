@@ -121,25 +121,11 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
               @update:modelValue="onSelectIntervalBy"
             />
 
-            <div class="flex gap-1 rounded-sm border border-default bg-default p-px">
-              <button
-                type="button"
-                class="flex min-h-8 min-w-8 items-center justify-center rounded-sm interactive text-xs leading-none"
-                @click="statDate.delInterval"
-              >
-                -
-              </button>
-              <div class="flex min-h-8 min-w-6 items-center justify-center rounded-full px-1 text-xs leading-none text-default">
-                {{ statDate.params.value.intervalsDuration }}
-              </div>
-              <button
-                type="button"
-                class="flex min-h-8 min-w-8 items-center justify-center rounded-sm interactive text-xs leading-none"
-                @click="statDate.addInterval"
-              >
-                +
-              </button>
-            </div>
+            <UiInlineStepper
+              :value="statDate.params.value.intervalsDuration"
+              @dec="statDate.delInterval"
+              @inc="statDate.addInterval"
+            />
           </div>
         </div>
       </div>
