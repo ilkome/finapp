@@ -12,7 +12,9 @@ import { formatByLocale } from '~~/utils/date/civil'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { config, defaultSeriesConfig } from '~/components/stat/chart/config'
+import { config } from '~/components/stat/chart/config'
+import { getFormatForChart } from '~/components/stat/chart/format'
+import { buildChartSeries } from '~/components/stat/chart/options'
 import { formatChartAmount } from '~/components/stat/chart/utils'
 
 type TooltipParam = {
@@ -58,21 +60,9 @@ const chartAriaLabel = computed(() => {
   return names ? `${t('chart.label')}: ${names}` : t('chart.label')
 })
 
-function getFormatForChart(periodName: Period) {
-  switch (periodName) {
-    case 'day':
-    case 'week':
-      return 'd MMM'
-    case 'month':
-      return 'MMM'
-    case 'year':
-      return 'yyyy'
-  }
-}
-
 const option = computed(() => {
   const data = defu(config, {
-    series: buildChartSeries(series),
+    series: buildChartSeries(series, chartType),
     xAxis: {
       data: xAxisLabels,
       type: 'category',
@@ -102,22 +92,6 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
   ])
 
   emit('click', index)
-}
-
-function buildChartSeries(series: ChartSeries[]) {
-  return series
-    .map((item: ChartSeries) => {
-      const isBar = (chartType || item.type) === 'bar'
-      return {
-        ...defu(defaultSeriesConfig, item),
-        // Zero = no trns that period; render no bar (null), not a floored stub.
-        // Lines keep 0 as a real point so they stay connected.
-        data: isBar ? item.data.map(v => (v === 0 ? null : v)) : item.data,
-        label: defaultSeriesConfig.label,
-        stack: isBar ? 'b' : false,
-        type: item.markedArea ? 'bar' : (chartType || item.type),
-      }
-    })
 }
 </script>
 
