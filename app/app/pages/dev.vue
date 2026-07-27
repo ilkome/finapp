@@ -107,21 +107,16 @@
 
         <div>
           <h1 class="mb-2 border-b border-default pb-1">
-            UiToggle
+            UCollapsible
           </h1>
 
           <div class="grid gap-4">
-            <UiToggle>
-              UiToggle
-            </UiToggle>
-
-            <UiToggleWithStorage>
-              UiToggleWithStorage
-            </UiToggleWithStorage>
-
-            <UiToggleControlled isShown>
-              UiToggleControlled
-            </UiToggleControlled>
+            <UCollapsible defaultOpen>
+              UCollapsible
+              <template #content>
+                UCollapsible content
+              </template>
+            </UCollapsible>
           </div>
         </div>
 

@@ -233,58 +233,52 @@ const groupNavItems = computed<TabsItem[]>(() =>
             v-if="groupedBy !== 'none' && groupedWalletsWithIds"
             class="grid gap-4"
           >
-            <UiToggleControlled
+            <UCollapsible
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
                 'rounded-sm bg-elevated/30': !hasGroups(content.groups),
               }"
-              :isShown="
-                walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
-              "
+              :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
             >
-              <template #header="{ isShown }">
-                <UiTitleDropRight
-                  :isShown
-                  @click="toggleMap(groupPrimary)"
-                >
-                  <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-                    {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
-                  </div>
-
-                  <div class="ml-auto opacity-60">
-                    <Amount
-                      :amount="countWalletsSum(content.ids)"
-                      :currencyCode="currenciesStore.base"
-                      :isShowBaseRate="false"
-                      variant="sm"
-                    />
-                    <Amount
-                      v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                      :amount="countWalletsSum(content.ids, false)"
-                      :currencyCode="groupPrimary"
-                      :isShowBaseRate="false"
-                      variant="2xs"
-                    />
-                  </div>
-                </UiTitleDropRight>
-              </template>
-
-              <div
-                v-if="hasGroups(content.groups)"
-                class="grid gap-2 pl-6"
+              <UiTitleDropRight
+                :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
+                @click="toggleMap(groupPrimary)"
               >
-                <UiToggleControlled
-                  v-for="(ids, groupSecondary) in content.groups"
-                  :key="groupSecondary"
-                  :isShown="
-                    walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
-                  "
-                  class="group grid gap-1 rounded-xl bg-elevated/30"
+                <div class="font-tertiary text-base leading-none font-semibold text-toned!">
+                  {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
+                </div>
+
+                <div class="ml-auto opacity-60">
+                  <Amount
+                    :amount="countWalletsSum(content.ids)"
+                    :currencyCode="currenciesStore.base"
+                    :isShowBaseRate="false"
+                    variant="sm"
+                  />
+                  <Amount
+                    v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                    :amount="countWalletsSum(content.ids, false)"
+                    :currencyCode="groupPrimary"
+                    :isShowBaseRate="false"
+                    variant="2xs"
+                  />
+                </div>
+              </UiTitleDropRight>
+
+              <template #content>
+                <div
+                  v-if="hasGroups(content.groups)"
+                  class="grid gap-2 pl-6"
                 >
-                  <template #header="{ isShown }">
+                  <UCollapsible
+                    v-for="(ids, groupSecondary) in content.groups"
+                    :key="groupSecondary"
+                    :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
+                    class="group grid gap-1 rounded-xl bg-elevated/30"
+                  >
                     <UiTitleDropRight
-                      :isShown
+                      :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
                       @click="toggleMap(groupPrimary, groupSecondary)"
                     >
                       <div class="font-tertiary text-base leading-none font-semibold">
@@ -305,26 +299,28 @@ const groupNavItems = computed<TabsItem[]>(() =>
                         />
                       </div>
                     </UiTitleDropRight>
-                  </template>
 
+                    <template #content>
+                      <WalletsPageListItem
+                        v-for="walletId in ids"
+                        :key="walletId"
+                        :walletId
+                        @delete="requestDelete"
+                      />
+                    </template>
+                  </UCollapsible>
+                </div>
+
+                <div v-else>
                   <WalletsPageListItem
-                    v-for="walletId in ids"
+                    v-for="walletId in content.ids"
                     :key="walletId"
                     :walletId
                     @delete="requestDelete"
                   />
-                </UiToggleControlled>
-              </div>
-
-              <div v-else>
-                <WalletsPageListItem
-                  v-for="walletId in content.ids"
-                  :key="walletId"
-                  :walletId
-                  @delete="requestDelete"
-                />
-              </div>
-            </UiToggleControlled>
+                </div>
+              </template>
+            </UCollapsible>
           </div>
         </div>
       </div>
