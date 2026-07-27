@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import type { TrnType } from '~/components/trns/types'
+import type { TabsItem } from '@nuxt/ui'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
@@ -12,33 +13,24 @@ function setAmountType(amountType: TrnType) {
   trnsFormStore.onChangeTrnType(amountType)
 }
 
-function isItActive(amountType: TrnType) {
-  return trnsFormStore.values.trnType === amountType
-}
+const items = computed<TabsItem[]>(() => {
+  const all: TabsItem[] = [
+    { label: t('money.expense'), value: TrnType.Expense },
+    { label: t('money.income'), value: TrnType.Income },
+  ]
+
+  if (walletsStore.sortedIds.length > 1)
+    all.push({ label: t('trnForm.transferTitle'), value: TrnType.Transfer })
+
+  return all
+})
 </script>
 
 <template>
-  <UiTabsBar class="gap-0!">
-    <UiTabsItemPill
-      :isActive="isItActive(0)"
-      @click="setAmountType(0)"
-    >
-      {{ t('money.expense') }}
-    </UiTabsItemPill>
-
-    <UiTabsItemPill
-      :isActive="isItActive(1)"
-      @click="setAmountType(1)"
-    >
-      {{ t('money.income') }}
-    </UiTabsItemPill>
-
-    <UiTabsItemPill
-      v-if="walletsStore.sortedIds.length > 1"
-      :isActive="isItActive(2)"
-      @click="setAmountType(2)"
-    >
-      {{ t('trnForm.transferTitle') }}
-    </UiTabsItemPill>
-  </UiTabsBar>
+  <UTabs
+    :content="false"
+    :items="items"
+    :modelValue="trnsFormStore.values.trnType"
+    @update:modelValue="(v) => setAmountType(v as TrnType)"
+  />
 </template>

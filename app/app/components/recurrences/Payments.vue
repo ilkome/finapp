@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import { useStorage } from '@vueuse/core'
+import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { OccurrenceStatus } from '~/components/recurrences/occurrences'
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
@@ -7,7 +10,6 @@ import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/type
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { committedNativeInRange, effectiveAmountFor, nextOccurrence, occurrencesInRange, occurrenceStatus, pendingConfirmOccurrences, periodProgress } from '~/components/recurrences/occurrences'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -36,6 +38,7 @@ const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
 // Period selection persists across visits (was an ephemeral ref before).
 const horizons = [30, 60, 90] as const
 const horizon = useStorage<number>('finapp.recurrences.horizon', 60)
+const horizonItems = computed<TabsItem[]>(() => horizons.map(h => ({ label: t('recurrences.upcoming.days', { count: h }), value: h })))
 
 // Show the last couple of weeks of already-realized charges alongside the forward schedule, so a
 // silently changed price or a just-paid bill is visible without leaving the page.
@@ -161,6 +164,10 @@ function delayPresets() {
     { day: addCivilDays(t0, 7), label: t('recurrences.delay.week') },
     { day: addCivilMonths(t0, 1), label: t('recurrences.delay.month') },
   ]
+}
+
+function delayPresetItems(): TabsItem[] {
+  return delayPresets().map(opt => ({ label: opt.label, value: opt.day }))
 }
 function delayTo(p: Occurrence, newDay: number) {
   recurrencesStore.rescheduleFrom(p.id, newDay)
@@ -300,26 +307,21 @@ function fmtDay(day: number) {
       <UiTextSubtitle class="tracking-wide uppercase">
         {{ t('recurrences.payments.title') }}
       </UiTextSubtitle>
-      <span v-if="soonCount" class="bg-primary/15 text-primary text-2xs rounded-full px-1.5 py-0.5">
+      <span v-if="soonCount" class="rounded-full bg-primary/15 px-1.5 py-0.5 text-2xs text-primary">
         {{ t('recurrences.upcoming.dueSoon', { count: soonCount }) }}
       </span>
       <span class="grow" />
-      <div class="flex gap-1">
-        <UiTabsItemPill
-          v-for="h in horizons"
-          :key="h"
-          :isActive="horizon === h"
-          variant="outline"
-          @click="horizon = h"
-        >
-          {{ t('recurrences.upcoming.days', { count: h }) }}
-        </UiTabsItemPill>
-      </div>
+      <UTabs
+        v-model="horizon"
+        :content="false"
+        size="xs"
+        :items="horizonItems"
+      />
     </div>
 
     <!-- This-month paid vs left (current calendar month, expense bills, base currency) -->
     <div v-if="monthProgress" class="mb-2 grid gap-1 px-1">
-      <div class="text-2xs text-muted flex items-center gap-1">
+      <div class="flex items-center gap-1 text-2xs text-muted">
         <span>{{ t('recurrences.payments.thisMonth') }}</span>
         <span>{{ monthProgress.paidCount }}/{{ monthProgress.totalCount }}</span>
         <span class="grow" />
@@ -339,8 +341,8 @@ function fmtDay(day: number) {
         />
         <span>{{ t('recurrences.payments.progressLeft') }}</span>
       </div>
-      <div class="bg-default relative h-1.5 rounded-full">
-        <div class="bg-income-1 h-full rounded-full transition-all" :style="{ width: `${monthProgress.pct}%` }" />
+      <div class="relative h-1.5 rounded-full bg-default">
+        <div class="h-full rounded-full bg-income-1 transition-all" :style="{ width: `${monthProgress.pct}%` }" />
       </div>
     </div>
 
@@ -350,7 +352,7 @@ function fmtDay(day: number) {
         <span class="text-2xs text-muted">{{ t('recurrences.payments.only') }}</span>
         <button
           type="button"
-          class="bg-primary/15 text-primary interactive flex items-center gap-1 rounded-full py-1 pr-1.5 pl-2.5 text-sm"
+          class="flex items-center gap-1 rounded-full interactive bg-primary/15 py-1 pr-1.5 pl-2.5 text-sm text-primary"
           @click="emit('clearFilter')"
         >
           <span class="max-w-[60vw] truncate">{{ ruleName(filteredRule) }}</span>
@@ -360,7 +362,7 @@ function fmtDay(day: number) {
       <button
         v-if="summary"
         type="button"
-        class="bg-elevated/40 interactive text-2xs text-muted flex w-full flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md px-3 py-2 text-left"
+        class="flex w-full flex-wrap items-center gap-x-3 gap-y-0.5 rounded-md interactive bg-elevated/40 px-3 py-2 text-left text-2xs text-muted"
         :aria-label="t('recurrences.history.open')"
         @click="historyId = filterId"
       >
@@ -380,28 +382,28 @@ function fmtDay(day: number) {
       </button>
     </div>
 
-    <div v-if="isEmpty" class="text-muted px-1 py-4 text-center text-sm">
+    <div v-if="isEmpty" class="px-1 py-4 text-center text-sm text-muted">
       {{ t('recurrences.payments.empty') }}
     </div>
 
     <!-- Due & unconfirmed (overdue) -->
     <div v-if="pending.length" class="mb-3">
       <div class="mb-1 flex items-center gap-2 px-1">
-        <UiTextSubtitle class="text-expense-1/80 tracking-wide uppercase">
+        <UiTextSubtitle class="tracking-wide text-expense-1/80 uppercase">
           {{ t('recurrences.pending.title') }} ({{ pending.length }})
         </UiTextSubtitle>
         <span class="grow" />
         <template v-if="pending.length > 1">
           <button
             type="button"
-            class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
+            class="rounded-sm bg-primary/60 px-2 py-1 text-2xs text-icon-primary hover:bg-primary/80"
             @click="bulkAction = 'confirm'"
           >
             {{ t('recurrences.actions.confirmAll') }}
           </button>
           <button
             type="button"
-            class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
+            class="rounded-sm bg-default px-2 py-1 text-2xs text-muted hover:text-highlighted"
             @click="bulkAction = 'skip'"
           >
             {{ t('recurrences.actions.skipAll') }}
@@ -410,7 +412,7 @@ function fmtDay(day: number) {
       </div>
       <div class="grid gap-1">
         <div v-for="p in pending" :key="`${p.id}:${p.day}`" class="grid gap-1">
-          <div class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2">
+          <div class="flex items-center gap-2 rounded-md bg-elevated px-3 py-2">
             <UiIconBase
               :name="categoryOf(p.rule)?.icon ?? 'lucide:repeat'"
               :color="categoryOf(p.rule)?.color"
@@ -419,7 +421,7 @@ function fmtDay(day: number) {
               invert
             />
             <div class="min-w-0 grow">
-              <div class="text-highlighted truncate text-sm">
+              <div class="truncate text-sm text-highlighted">
                 {{ ruleName(p.rule) }}
               </div>
               <div class="text-2xs text-expense-1/80">
@@ -433,14 +435,14 @@ function fmtDay(day: number) {
               min="0"
               step="any"
               :aria-label="t('recurrences.form.amount')"
-              class="bg-default! min-h-0! w-20! rounded-sm! px-2! py-1! text-right text-sm!"
+              class="min-h-0! w-20! rounded-sm! bg-default! px-2! py-1! text-right text-sm!"
               @update:modelValue="(value: string) => onDraftInput(p, value)"
               @keydown.enter="confirmPending(p)"
             />
             <span class="text-2xs text-muted">{{ walletCurrency(p.rule) }}</span>
             <button
               type="button"
-              class="bg-default text-muted hover:text-highlighted rounded-sm p-1.5"
+              class="rounded-sm bg-default p-1.5 text-muted hover:text-highlighted"
               :aria-label="t('recurrences.actions.delay')"
               @click="toggleDelay(p)"
             >
@@ -448,14 +450,14 @@ function fmtDay(day: number) {
             </button>
             <button
               type="button"
-              class="bg-primary/60 text-2xs text-icon-primary hover:bg-primary/80 rounded-sm px-2 py-1"
+              class="rounded-sm bg-primary/60 px-2 py-1 text-2xs text-icon-primary hover:bg-primary/80"
               @click="confirmPending(p)"
             >
               {{ t('recurrences.actions.confirm') }}
             </button>
             <button
               type="button"
-              class="bg-default text-2xs text-muted hover:text-highlighted rounded-sm px-2 py-1"
+              class="rounded-sm bg-default px-2 py-1 text-2xs text-muted hover:text-highlighted"
               @click="recurrencesStore.skipOccurrence(p.id, p.day)"
             >
               {{ t('recurrences.actions.skip') }}
@@ -463,17 +465,15 @@ function fmtDay(day: number) {
           </div>
           <div
             v-if="delayFor === keyOf(p)"
-            class="bg-elevated/50 flex flex-wrap items-center gap-1 rounded-md px-3 py-2"
+            class="flex flex-wrap items-center gap-1 rounded-md bg-elevated/50 px-3 py-2"
           >
-            <span class="text-2xs text-muted mr-1">{{ t('recurrences.delay.title') }}</span>
-            <UiTabsItemPill
-              v-for="opt in delayPresets()"
-              :key="opt.day"
-              variant="outline"
-              @click="delayTo(p, opt.day)"
-            >
-              {{ opt.label }}
-            </UiTabsItemPill>
+            <span class="mr-1 text-2xs text-muted">{{ t('recurrences.delay.title') }}</span>
+            <UTabs
+              :content="false"
+              size="xs"
+              :items="delayPresetItems()"
+              @update:modelValue="(v) => delayTo(p, v as number)"
+            />
           </div>
         </div>
       </div>
@@ -483,7 +483,7 @@ function fmtDay(day: number) {
     <div v-if="occurrences.length" class="grid gap-2">
       <div v-for="group in groups" :key="group.day">
         <div
-          class="text-2xs mb-0.5 px-1"
+          class="mb-0.5 px-1 text-2xs"
           :class="group.day >= todayEpoch && group.day <= soonCutoff ? 'text-primary font-medium' : 'text-muted'"
         >
           {{ fmtDay(group.day) }}
@@ -492,7 +492,7 @@ function fmtDay(day: number) {
           <div
             v-for="o in group.items"
             :key="`${o.id}:${o.day}`"
-            class="bg-elevated flex items-center gap-2 rounded-md px-3 py-2"
+            class="flex items-center gap-2 rounded-md bg-elevated px-3 py-2"
             :class="o.status.state === 'upcoming' ? 'interactive cursor-pointer' : ''"
             :role="o.status.state === 'upcoming' ? 'button' : undefined"
             :tabindex="o.status.state === 'upcoming' ? 0 : undefined"
@@ -509,12 +509,12 @@ function fmtDay(day: number) {
               invert
             />
             <div class="min-w-0 grow">
-              <div class="text-highlighted truncate text-sm">
+              <div class="truncate text-sm text-highlighted">
                 {{ ruleName(o.rule) }}
               </div>
               <div
                 v-if="!o.rule.autoCreate || o.status.state === 'drift'"
-                class="text-2xs flex items-center gap-1"
+                class="flex items-center gap-1 text-2xs"
                 :class="o.status.state === 'drift' ? 'text-warning' : 'text-muted'"
               >
                 <span v-if="!o.rule.autoCreate">{{ t('recurrences.manual') }}</span>
@@ -538,7 +538,7 @@ function fmtDay(day: number) {
               v-if="o.status.state === 'upcoming'"
               name="lucide:chevron-right"
               size="14"
-              class="text-muted shrink-0"
+              class="shrink-0 text-muted"
             />
           </div>
         </div>

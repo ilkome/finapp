@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { RadioGroupItem, TabsItem } from '@nuxt/ui'
+
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import type { BudgetId, BudgetItem, BudgetKind, BudgetPeriodType, BudgetRollover } from '~/components/budgets/types'
 import type { CategoryId } from '~/components/categories/types'
 
@@ -7,7 +11,6 @@ import { budgetKinds, budgetPeriodTypes, budgetRollovers } from '~/components/bu
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { todayCivilDayEpoch } from '~~/utils/date/civil'
 
 const props = defineProps<{
   budgetId?: BudgetId
@@ -52,6 +55,10 @@ const amountLabel = computed(() => t('budgets.form.amountPer', { period: t(`budg
 
 const isPickingCategory = ref(false)
 const isPickingCurrency = ref(false)
+
+const kindItems = computed<TabsItem[]>(() => budgetKinds.map(k => ({ label: t(`budgets.kind.${k}`), value: k })))
+const amountPeriodItems = computed<TabsItem[]>(() => budgetPeriodTypes.map(p => ({ label: t(`budgets.period.${p}`), value: p })))
+const rolloverItems = computed<RadioGroupItem[]>(() => budgetRollovers.map(r => ({ label: t(`budgets.rollover.${r}`), value: r })))
 
 const category = computed(() => categoryId.value ? categoriesStore.items?.[categoryId.value] : undefined)
 const categoryHasChildren = computed(() => !!categoryId.value && categoriesStore.hasChildren(categoryId.value))
@@ -115,7 +122,7 @@ function onSave(close: () => void) {
         {{ props.budgetId ? t('base.edit') : t('budgets.add') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock grid content-start gap-5 px-3 py-2">
+      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-5 px-3 py-2">
         <!-- Category -->
         <FormElement>
           <template #label>
@@ -135,11 +142,11 @@ function onSave(close: () => void) {
               </span>
             </template>
           </UiButtonWithRight>
-          <div v-if="categoryHasChildren" class="text-2xs text-muted flex items-center gap-1 px-1 pt-1">
+          <div v-if="categoryHasChildren" class="flex items-center gap-1 px-1 pt-1 text-2xs text-muted">
             <Icon name="lucide:info" size="12" />
             {{ t('budgets.form.subtreeHint') }}
           </div>
-          <div v-if="categoryTaken" class="text-2xs text-error flex items-center gap-1 px-1 pt-1">
+          <div v-if="categoryTaken" class="flex items-center gap-1 px-1 pt-1 text-2xs text-error">
             <Icon name="lucide:triangle-alert" size="12" />
             {{ t('budgets.form.categoryTaken', { kind: t(`budgets.kind.${kind}`) }) }}
           </div>
@@ -150,16 +157,11 @@ function onSave(close: () => void) {
           <template #label>
             {{ t('budgets.form.kind') }}
           </template>
-          <UiTabsBar>
-            <UiTabsItemPill
-              v-for="k in budgetKinds"
-              :key="k"
-              :isActive="kind === k"
-              @click="kind = k"
-            >
-              {{ t(`budgets.kind.${k}`) }}
-            </UiTabsItemPill>
-          </UiTabsBar>
+          <UTabs
+            v-model="kind"
+            :content="false"
+            :items="kindItems"
+          />
         </FormElement>
 
         <!-- Target by date: sinking fund (expense) or savings goal (income) -->
@@ -188,7 +190,7 @@ function onSave(close: () => void) {
               {{ t('budgets.form.goalDate') }}
             </template>
             <FormDate v-model="goalDateEpoch" clearable />
-            <div v-if="setAsideHint != null" class="text-2xs text-muted flex items-center gap-1 px-1 pt-1">
+            <div v-if="setAsideHint != null" class="flex items-center gap-1 px-1 pt-1 text-2xs text-muted">
               <Icon name="lucide:piggy-bank" size="12" />
               {{ t(isIncome ? 'budgets.form.receiveHint' : 'budgets.form.setAsideHint', { amount: setAsideHint, currency }) }}
             </div>
@@ -201,16 +203,11 @@ function onSave(close: () => void) {
             <template #label>
               {{ t('budgets.form.cadence') }}
             </template>
-            <UiTabsBar>
-              <UiTabsItemPill
-                v-for="p in budgetPeriodTypes"
-                :key="p"
-                :isActive="amountPeriod === p"
-                @click="amountPeriod = p"
-              >
-                {{ t(`budgets.period.${p}`) }}
-              </UiTabsItemPill>
-            </UiTabsBar>
+            <UTabs
+              v-model="amountPeriod"
+              :content="false"
+              :items="amountPeriodItems"
+            />
           </FormElement>
 
           <!-- Amount -->
@@ -243,17 +240,12 @@ function onSave(close: () => void) {
           <template #label>
             {{ t('budgets.form.rollover') }}
           </template>
-          <div class="flex flex-wrap gap-1">
-            <UiTabsItemPill
-              v-for="r in budgetRollovers"
-              :key="r"
-              :isActive="rollover === r"
-              variant="outline"
-              @click="rollover = r"
-            >
-              {{ t(`budgets.rollover.${r}`) }}
-            </UiTabsItemPill>
-          </div>
+          <URadioGroup
+            v-model="rollover"
+            indicator="hidden"
+            :items="rolloverItems"
+            orientation="horizontal"
+          />
         </FormElement>
       </div>
 

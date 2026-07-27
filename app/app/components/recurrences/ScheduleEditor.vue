@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import type { RecurrenceEndMode, RecurrenceSchedule } from '~/components/recurrences/types'
+import type { TabsItem } from '@nuxt/ui'
 
 import { todayCivilDayEpoch } from '~~/utils/date/civil'
+
+import type { RecurrenceEndMode, RecurrenceSchedule } from '~/components/recurrences/types'
+
 import { seedEndField } from '~/components/recurrences/occurrences'
 import { recurrenceFreqs } from '~/components/recurrences/types'
 
@@ -34,6 +37,8 @@ const endDate = computed({
     model.value.endDate = v
   },
 })
+
+const freqItems = computed<TabsItem[]>(() => recurrenceFreqs.map(f => ({ label: t(`recurrences.freq.${f}`), value: f })))
 </script>
 
 <template>
@@ -43,16 +48,11 @@ const endDate = computed({
       <template #label>
         {{ t('recurrences.form.repeat') }}
       </template>
-      <UiTabsBar>
-        <UiTabsItemPill
-          v-for="f in recurrenceFreqs"
-          :key="f"
-          :isActive="model.freq === f"
-          @click="model.freq = f"
-        >
-          {{ t(`recurrences.freq.${f}`) }}
-        </UiTabsItemPill>
-      </UiTabsBar>
+      <UTabs
+        v-model="model.freq"
+        :content="false"
+        :items="freqItems"
+      />
     </FormElement>
 
     <!-- Interval -->
@@ -66,7 +66,7 @@ const endDate = computed({
           :min="1"
           @update:modelValue="model.interval = $event"
         />
-        <span class="text-muted text-sm">{{ t(`recurrences.unit.${model.freq}`, model.interval) }}</span>
+        <span class="text-sm text-muted">{{ t(`recurrences.unit.${model.freq}`, model.interval) }}</span>
       </div>
     </FormElement>
 
@@ -108,7 +108,7 @@ const endDate = computed({
           :min="1"
           @update:modelValue="model.endCount = $event"
         />
-        <span class="text-muted text-sm">{{ t('recurrences.end.countPlaceholder') }}</span>
+        <span class="text-sm text-muted">{{ t('recurrences.end.countPlaceholder') }}</span>
       </div>
     </FormElement>
   </div>

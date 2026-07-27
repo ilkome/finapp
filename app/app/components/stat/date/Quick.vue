@@ -8,20 +8,20 @@ const isExpanded = ref(false)
 <template>
   <div class="flex items-center overflow-x-auto">
     <StatDateRanges
-      :itemProps="{ variant: 'small' }"
+      size="xs"
       :statDate
       view="periods"
     />
 
     <template v-if="isExpanded">
       <StatDateRanges
-        :itemProps="{ variant: 'small' }"
+        size="xs"
         :statDate
         view="presets"
       />
 
       <StatDateRanges
-        :itemProps="{ variant: 'small' }"
+        size="xs"
         :statDate
         view="maximum"
       />

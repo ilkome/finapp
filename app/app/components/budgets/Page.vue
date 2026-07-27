@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import { UTCDate } from '@date-fns/utc'
+import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { getStartOf } from '~~/utils/date/period'
 
 import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
 
@@ -9,8 +13,6 @@ import { useBudgetPeriod } from '~/components/budgets/useBudgetPeriod'
 import { useBudgetProgress } from '~/components/budgets/useBudgetProgress'
 import { useBudgetsStore } from '~/components/budgets/useBudgetsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
-import { getStartOf } from '~~/utils/date/period'
 import { useRecurrenceTotals } from '~/components/recurrences/useRecurrenceTotals'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -162,6 +164,8 @@ function setPeriodType(type: BudgetPeriodType) {
   period.periodType.value = type
   period.reset()
 }
+
+const periodTypeItems = computed<TabsItem[]>(() => budgetPeriodTypes.map(type => ({ label: t(`budgets.period.${type}`), value: type })))
 </script>
 
 <template>
@@ -181,17 +185,13 @@ function setPeriodType(type: BudgetPeriodType) {
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
       <!-- Period type + navigation -->
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <div class="flex gap-1">
-          <UiTabsItemPill
-            v-for="type in budgetPeriodTypes"
-            :key="type"
-            :isActive="period.periodType.value === type"
-            variant="outline"
-            @click="setPeriodType(type)"
-          >
-            {{ t(`budgets.period.${type}`) }}
-          </UiTabsItemPill>
-        </div>
+        <UTabs
+          :content="false"
+          size="xs"
+          :items="periodTypeItems"
+          :modelValue="period.periodType.value"
+          @update:modelValue="(v) => setPeriodType(v as BudgetPeriodType)"
+        />
 
         <UiNavArrows
           :isEnd="!canGoNext"
@@ -214,14 +214,14 @@ function setPeriodType(type: BudgetPeriodType) {
               :aria-label="t('budgets.hero.safeToSpend')"
               :title="t('budgets.hero.safeToSpend')"
               :type="safeToSpendTotal < 0 ? 'expense' : 'income'"
-              class="focus-visible:ring-primary cursor-pointer focus-visible:ring-2 focus-visible:outline-none"
+              class="cursor-pointer focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
               role="button"
               tabindex="0"
               @click="showSafeSheet = true"
               @keydown.enter.prevent="showSafeSheet = true"
               @keydown.space.prevent="showSafeSheet = true"
             >
-              <Icon name="lucide:info" size="14" class="text-muted mb-1" />
+              <Icon name="lucide:info" size="14" class="mb-1 text-muted" />
             </StatSumItem>
             <StatSumItem
               v-if="showToAssign"
@@ -229,7 +229,7 @@ function setPeriodType(type: BudgetPeriodType) {
               :title="toAssignState === 'pool' ? t('budgets.hero.toAssign') : t('budgets.hero.assignedSoFar')"
               :type="toAssignState === 'pool' ? (toAssignTotal < 0 ? 'expense' : 'income') : 'netIncome'"
             >
-              <div class="text-2xs text-muted mb-1 grid gap-0.5">
+              <div class="mb-1 grid gap-0.5 text-2xs text-muted">
                 <div class="flex items-center justify-between gap-2">
                   <span>{{ t('budgets.toAssign.receivedLabel') }}</span>
                   <Amount
@@ -254,7 +254,7 @@ function setPeriodType(type: BudgetPeriodType) {
             </StatSumItem>
           </div>
           <div class="-mt-2 flex items-center justify-end gap-1">
-            <div v-if="showNowCaption || showExpectedIncomeNote" class="text-2xs text-muted mr-auto flex flex-wrap items-center gap-x-2">
+            <div v-if="showNowCaption || showExpectedIncomeNote" class="mr-auto flex flex-wrap items-center gap-x-2 text-2xs text-muted">
               <span v-if="perDay != null">
                 {{ t('budgets.safeSheet.perDay', { amount: Math.round(perDay) }) }} · {{ t('budgets.safeSheet.untilDate', { date: periodEndLabel }) }}
               </span>
@@ -277,7 +277,6 @@ function setPeriodType(type: BudgetPeriodType) {
               v-if="toAssignState === 'pool' && toAssignTotal < 0"
               class="text-error"
               variant="text"
-              size="sm"
               @click="showReduceAssign = true"
             >
               <Icon name="lucide:wand-2" size="14" class="mr-1" />
@@ -293,7 +292,7 @@ function setPeriodType(type: BudgetPeriodType) {
         <!-- Empty (no active budgets - archived-only falls here too, with the archived list below) -->
         <div v-if="!hasActiveItems" class="flex-center grow flex-col gap-3 py-10 text-center">
           <Icon name="lucide:wallet" size="40" class="text-muted" />
-          <div class="text-muted text-sm">
+          <div class="text-sm text-muted">
             {{ t('budgets.empty') }}
           </div>
           <UiButtonAccent rounded @click="openCreate">

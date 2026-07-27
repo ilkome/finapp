@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+import type { TabsItem } from '@nuxt/ui'
 
 import type { StatTabSlug } from '~/components/stat/types'
 
-import { tabsNavUi } from '~/components/menu/Tabs'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
@@ -17,22 +16,15 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
-const menu = computed<NavigationMenuItem[]>(() => {
-  const make = (value: StatTabSlug, label: string): NavigationMenuItem => ({
-    active: props.active === value,
-    label,
-    onSelect: () => onClickStatMenu(value),
-    value,
-  })
-
-  const all = [
-    make('summary', t('money.summary')),
-    make('expense', t('money.expense')),
-    make('income', t('money.income')),
+const menu = computed<TabsItem[]>(() => {
+  const all: TabsItem[] = [
+    { label: t('money.summary'), value: 'summary' },
+    { label: t('money.expense'), value: 'expense' },
+    { label: t('money.income'), value: 'income' },
   ]
 
   if (statConfig.showTabs.value)
-    all.push(make('split', t('money.split')))
+    all.push({ label: t('money.split'), value: 'split' })
 
   return all
 })
@@ -49,10 +41,11 @@ watch(() => props.active, () => {
 </script>
 
 <template>
-  <UNavigationMenu
+  <UTabs
+    :content="false"
     :items="menu"
-    highlight
+    :modelValue="active"
     class="w-full"
-    :ui="tabsNavUi"
+    @update:modelValue="(v) => onClickStatMenu(v as StatTabSlug)"
   />
 </template>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -56,6 +58,11 @@ const sidebarCategoryIds = computed(() => {
 
   return ids.sort((a, b) => compareCategoryIds(a, b, categoriesStore.items))
 })
+
+const tabItems = computed<TabsItem[]>(() => [
+  { label: t('wallets.name'), value: 'wallets' },
+  { label: t('categories.name'), value: 'categories' },
+])
 </script>
 
 <template>
@@ -100,21 +107,13 @@ const sidebarCategoryIds = computed(() => {
           <LayoutSidebarMenu class="px-2 pb-2" />
 
           <div class="px-2 pb-6">
-            <div class="flex gap-1 pb-2 pl-1">
-              <UiTabsItemPill
-                variant="outline"
-                :isActive="activeTab === 'wallets'"
-                @click="activeTab = 'wallets'"
-              >
-                {{ t('wallets.name') }}
-              </UiTabsItemPill>
-              <UiTabsItemPill
-                variant="outline"
-                :isActive="activeTab === 'categories'"
-                @click="activeTab = 'categories'"
-              >
-                {{ t('categories.name') }}
-              </UiTabsItemPill>
+            <div class="pb-2 pl-1">
+              <UTabs
+                v-model="activeTab"
+                :content="false"
+                size="xs"
+                :items="tabItems"
+              />
             </div>
 
             <!-- Wallets -->

@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+import type { TabsItem } from '@nuxt/ui'
 
 import { useStorage } from '@vueuse/core'
 
 import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { tabsNavUi } from '~/components/menu/Tabs'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
@@ -66,13 +65,9 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
 
-const groupNavItems = computed<NavigationMenuItem[]>(() =>
+const groupNavItems = computed<TabsItem[]>(() =>
   groupTabs.value.map(item => ({
-    active: item.id === groupedBy.value,
     label: item.label,
-    onSelect: () => {
-      groupedBy.value = item.id
-    },
     value: item.id,
   })),
 )
@@ -182,11 +177,12 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
 
       <div class="@3xl/main:max-w-sm">
         <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2 ">
-          <UNavigationMenu
+          <UTabs
+            :content="false"
             :items="groupNavItems"
-            highlight
+            :modelValue="groupedBy"
             class="w-full"
-            :ui="tabsNavUi"
+            @update:modelValue="(v) => groupedBy = v as WalletsGroupedBy"
           />
 
           <div
@@ -241,7 +237,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'bg-elevated/30 rounded-sm': !hasGroups(content.groups),
+                'rounded-sm bg-elevated/30': !hasGroups(content.groups),
               }"
               :isShown="
                 walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
@@ -252,7 +248,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
                   :isShown
                   @click="toggleMap(groupPrimary)"
                 >
-                  <div class="font-tertiary text-toned! text-base leading-none font-semibold">
+                  <div class="font-tertiary text-base leading-none font-semibold text-toned!">
                     {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                   </div>
 
@@ -284,7 +280,7 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
                   :isShown="
                     walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
                   "
-                  class="bg-elevated/30 group grid gap-1 rounded-xl"
+                  class="group grid gap-1 rounded-xl bg-elevated/30"
                 >
                   <template #header="{ isShown }">
                     <UiTitleDropRight

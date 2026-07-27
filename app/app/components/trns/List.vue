@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
+import { getStartOf } from '~~/utils/date/period'
+
 import type { TrnId, TrnsViewType } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDateFormats } from '~/components/date/useDateFormats'
-import { getStartOf } from '~~/utils/date/period'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -142,6 +145,8 @@ function setFilterBy(type: TrnsViewType | 'all') {
   filterBy.value = filterBy.value === type ? 'all' : (type ?? 'all')
 }
 
+const typeFilterItems = computed<TabsItem[]>(() => typeFilters.value.map(item => ({ label: item.name, value: item.slug })))
+
 const groupedTrns = computed(() => paginatedTrnsIds.value
   .reduce((acc, trnId) => {
     const trn = trnsStore.items?.[trnId]
@@ -202,20 +207,15 @@ function onOpenTrnForm(date: number) {
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UiTabsScroll
+    <UTabs
       v-if="isShowFilterByType && realTypesCount > 1"
+      :content="false"
+      size="xs"
       class="mb-2"
-    >
-      <UiTabsItemPill
-        v-for="filterItem in typeFilters"
-        :key="filterItem.slug"
-        variant="outline"
-        :isActive="filterBy === filterItem.slug"
-        @click="setFilterBy(filterItem.slug)"
-      >
-        {{ filterItem.name }}
-      </UiTabsItemPill>
-    </UiTabsScroll>
+      :items="typeFilterItems"
+      :modelValue="filterBy"
+      @update:modelValue="(v) => setFilterBy(v as TrnsViewType | 'all')"
+    />
 
     <!-- With Description -->
     <div
@@ -238,7 +238,7 @@ function onOpenTrnForm(date: number) {
       <!-- Group Sum -->
       <div
         v-if="isShowGroupSum && paginatedTrnsIds.length > 1"
-        class="border-accented border-b pr-3 pb-2 opacity-60"
+        class="border-b border-accented pr-3 pb-2 opacity-60"
       >
         <Amount
           v-if="paginatedTotal.income !== 0"
@@ -285,7 +285,7 @@ function onOpenTrnForm(date: number) {
       <div
         v-for="(groupTrnsIds, date) in groupedTrns"
         :key="date"
-        class="_rounded-lg _border-b border-accented overflow-hidden pb-2 last:border-b-0 last:pb-px"
+        class="_rounded-lg _border-b overflow-hidden border-accented pb-2 last:border-b-0 last:pb-px"
       >
         <div
           :class="{ 'border-accented': isShowGroupSum && groupTrnsIds.length > 1 }"
@@ -349,7 +349,7 @@ function onOpenTrnForm(date: number) {
       class="px-2 pt-1"
     >
       <div
-        class="flex-center text-muted hover:bg-accented bg-elevated rounded-sm px-5 py-2 text-sm"
+        class="flex-center rounded-sm bg-elevated px-5 py-2 text-sm text-muted hover:bg-accented"
         @click="pageNumber = ++pageNumber"
       >
         {{ t('trns.more') }} {{ paginatedTrnsIds.length }} /

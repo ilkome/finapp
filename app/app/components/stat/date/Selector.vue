@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
 import type { Range } from '~~/utils/date/types'
 
 import { getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
@@ -14,10 +15,11 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const statDate = inject(statDateKey)!
 
-const tabs = {
-  items: ref(['presets', 'calendar']),
-  selected: ref('presets'),
-}
+const viewTab = ref<'presets' | 'calendar'>('presets')
+const viewTabItems = computed<TabsItem[]>(() => [
+  { label: t('dates.calendar.presets'), value: 'presets' },
+  { label: t('dates.calendar.calendar'), value: 'calendar' },
+])
 
 const intervals = computed<Grouped[]>(() => [{
   intervalsBy: 'day',
@@ -33,8 +35,19 @@ const intervals = computed<Grouped[]>(() => [{
   intervalsDuration: 1,
 }])
 
+const intervalItems = computed<TabsItem[]>(() => intervals.value.map(item => ({
+  label: t(`dates.${item.intervalsBy}.simple`),
+  value: item.intervalsBy,
+})))
+
 function selectInterval(grouped: Grouped) {
   statDate.setInterval(grouped)
+}
+
+function onSelectIntervalBy(intervalsBy: string | number) {
+  const grouped = intervals.value.find(i => i.intervalsBy === intervalsBy)
+  if (grouped)
+    selectInterval(grouped)
 }
 
 const dateRange = ref({
@@ -55,20 +68,15 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
 
 <template>
   <div>
-    <UiTabsBar class="mb-2">
-      <UiTabsItemFill
-        v-for="tab in tabs.items.value"
-        :key="tab"
-        :title="t(tab)"
-        :isActive="tabs.selected.value === tab"
-        @click="tabs.selected.value = tab"
-      >
-        {{ t(`dates.calendar.${tab}`) }}
-      </UiTabsItemFill>
-    </UiTabsBar>
+    <UTabs
+      v-model="viewTab"
+      :content="false"
+      class="mb-2"
+      :items="viewTabItems"
+    />
 
     <div
-      v-if="tabs.selected.value === 'presets'"
+      v-if="viewTab === 'presets'"
       class="grid gap-6 pt-4"
     >
       <!-- Presets -->
@@ -104,26 +112,33 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
         </UiTitleSection>
 
         <div class="grid gap-2">
-          <div class="flex flex-wrap gap-1">
-            <DateLinkItem
-              v-for="item in intervals"
-              :key="item.intervalsBy"
-              :isActive="item.intervalsBy === statDate.params.value.intervalsBy"
-              @click="selectInterval(item)"
-            >
-              {{ t(`dates.${item.intervalsBy}.simple`) }}
-            </DateLinkItem>
+          <div class="flex flex-wrap items-center gap-1">
+            <UTabs
+              :content="false"
+              size="sm"
+              :items="intervalItems"
+              :modelValue="statDate.params.value.intervalsBy"
+              @update:modelValue="onSelectIntervalBy"
+            />
 
             <div class="flex gap-1 rounded-sm border border-default bg-default p-px">
-              <DateLinkItem @click="statDate.delInterval">
+              <button
+                type="button"
+                class="flex min-h-8 min-w-8 items-center justify-center rounded-sm interactive text-xs leading-none"
+                @click="statDate.delInterval"
+              >
                 -
-              </DateLinkItem>
-              <DateLinkItemNoBg>
+              </button>
+              <div class="flex min-h-8 min-w-6 items-center justify-center rounded-full px-1 text-xs leading-none text-default">
                 {{ statDate.params.value.intervalsDuration }}
-              </DateLinkItemNoBg>
-              <DateLinkItem @click="statDate.addInterval">
+              </div>
+              <button
+                type="button"
+                class="flex min-h-8 min-w-8 items-center justify-center rounded-sm interactive text-xs leading-none"
+                @click="statDate.addInterval"
+              >
                 +
-              </DateLinkItem>
+              </button>
             </div>
           </div>
         </div>
@@ -132,7 +147,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
 
     <!-- @vue-ignore -->
     <UCalendar
-      v-if="tabs.selected.value === 'calendar'"
+      v-if="viewTab === 'calendar'"
       v-model="dateRange"
       :maxValue="getUCalendarToday()"
       :numberOfMonths="2"

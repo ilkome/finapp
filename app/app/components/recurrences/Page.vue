@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import { useStorage } from '@vueuse/core'
 
 import type { RecurrenceCadence } from '~/components/recurrences/cadence'
@@ -37,6 +39,7 @@ function openEdit(id: RecurrenceId) {
 
 const sortMode = useStorage<'cost' | 'date'>('finapp.recurrences.sortMode', 'date')
 const sortModes = ['date', 'cost'] as const
+const sortModeItems = computed<TabsItem[]>(() => sortModes.map(mode => ({ label: t(`recurrences.sort.${mode}`), value: mode })))
 const activeCount = computed(() => Object.keys(recurrencesStore.activeItems).length)
 
 const route = useRoute()
@@ -132,17 +135,13 @@ useHead({ title: t('recurrences.title') })
                 {{ t('recurrences.subscriptions.title') }}
               </UiTextSubtitle>
               <span class="grow" />
-              <div v-if="activeCount > 1" class="flex gap-1">
-                <UiTabsItemPill
-                  v-for="mode in sortModes"
-                  :key="mode"
-                  :isActive="sortMode === mode"
-                  variant="outline"
-                  @click="sortMode = mode"
-                >
-                  {{ t(`recurrences.sort.${mode}`) }}
-                </UiTabsItemPill>
-              </div>
+              <UTabs
+                v-if="activeCount > 1"
+                v-model="sortMode"
+                :content="false"
+                size="xs"
+                :items="sortModeItems"
+              />
             </div>
             <RecurrencesList
               :sortMode="sortMode"

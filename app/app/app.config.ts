@@ -35,6 +35,12 @@ export default defineAppConfig({
         content: 'w-[22rem] max-w-sm',
       },
     },
+    radioGroup: {
+      slots: {
+        fieldset: 'flex-wrap gap-1',
+        item: 'bg-elevated/30 rounded-sm',
+      },
+    },
     selectMenu: {
       defaultVariants: {
         size: 'lg',
@@ -48,6 +54,15 @@ export default defineAppConfig({
         variant: {
           outline: 'bg-elevated/30 hover:bg-elevated/50!',
         },
+      },
+    },
+    tabs: {
+      defaultVariants: {
+        variant: 'pill',
+      },
+      slots: {
+        list: 'bg-elevated/30',
+        trigger: 'grow',
       },
     },
     toast: {

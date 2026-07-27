@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
+import type { ChartType } from '~/components/stat/chart/types'
+
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { chartViewOptions, resolveChartType } from '~/components/stat/useStatConfig'
@@ -17,6 +21,13 @@ const isPie = computed(() => activeChartType.value === 'pie')
 const visibleChartTypeOptions = computed(() =>
   chartTypeOptions.value.filter(option => !option.categoriesOnly || isCategoriesMode.value),
 )
+
+const chartViewItems = computed<TabsItem[]>(() => chartViewOptions.map(view => ({ label: t(`stat.config.chartView.${view}`), value: view })))
+const chartTypeItems = computed<TabsItem[]>(() => visibleChartTypeOptions.value.map(item => ({
+  icon: item.icon.replace('lucide:', 'i-lucide-'),
+  label: item.label,
+  value: item.value,
+})))
 </script>
 
 <template>
@@ -55,37 +66,24 @@ const visibleChartTypeOptions = computed(() =>
         <UiTitleSection size="sm" class="px-1">
           {{ t('stat.config.chartView.label') }}
         </UiTitleSection>
-        <UiTabsBar>
-          <UiTabsItemPill
-            v-for="view in chartViewOptions"
-            :key="view"
-            variant="outline"
-            :isActive="statConfig.config.value.chartView === view"
-            class="grow"
-            @click="statConfig.updateConfig('chartView', view)"
-          >
-            {{ t(`stat.config.chartView.${view}`) }}
-          </UiTabsItemPill>
-        </UiTabsBar>
+        <UTabs
+          :content="false"
+          :items="chartViewItems"
+          :modelValue="statConfig.config.value.chartView"
+          @update:modelValue="(v) => statConfig.updateConfig('chartView', v as typeof chartViewOptions[number])"
+        />
       </div>
 
       <div class="grid gap-2">
         <UiTitleSection size="sm" class="px-1">
           {{ t('stat.config.chart.type.label') }}
         </UiTitleSection>
-        <UiTabsBar>
-          <UiTabsItemPill
-            v-for="item in visibleChartTypeOptions"
-            :key="item.value"
-            variant="outline"
-            :isActive="activeChartType === item.value"
-            class="flex grow gap-1"
-            @click="statConfig.updateConfig('chartType', item.value)"
-          >
-            <Icon :name="item.icon" :size="16" />
-            {{ item.label }}
-          </UiTabsItemPill>
-        </UiTabsBar>
+        <UTabs
+          :content="false"
+          :items="chartTypeItems"
+          :modelValue="activeChartType"
+          @update:modelValue="(v) => statConfig.updateConfig('chartType', v as ChartType)"
+        />
       </div>
     </div>
   </div>

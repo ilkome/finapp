@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import Swiper from 'swiper'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -112,6 +114,11 @@ function goToTab(idx: number) {
   sliderObj.value?.slideTo(idx)
 }
 
+const tabItems = computed<TabsItem[]>(() => [
+  { label: t('wallets.title'), value: 0 },
+  { label: t('categories.title'), value: 1 },
+])
+
 onMounted(async () => {
   await nextTick()
   sliderObj.value = new Swiper(sliderRef.value!, {
@@ -174,20 +181,12 @@ onBeforeUnmount(() => sliderObj.value?.destroy(true, true))
         class="grid h-full min-h-0 grid-rows-[auto_1fr]"
       >
         <div class="px-3 pb-2">
-          <UiTabsBar>
-            <UiTabsItemPill
-              :isActive="activeTabIdx === 0"
-              @click="goToTab(0)"
-            >
-              {{ t('wallets.title') }}
-            </UiTabsItemPill>
-            <UiTabsItemPill
-              :isActive="activeTabIdx === 1"
-              @click="goToTab(1)"
-            >
-              {{ t('categories.title') }}
-            </UiTabsItemPill>
-          </UiTabsBar>
+          <UTabs
+            :content="false"
+            :items="tabItems"
+            :modelValue="activeTabIdx"
+            @update:modelValue="(v) => goToTab(v as number)"
+          />
         </div>
 
         <div

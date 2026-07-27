@@ -4,39 +4,39 @@
       <div class="grid gap-12">
         <div>
           <!-- Colors -->
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             Colors
           </h1>
 
           <div class="grid gap-4">
             <div class="grid gap-2">
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex-center bg-default size-20">
+                <div class="flex-center size-20 bg-default">
                   default
                 </div>
-                <div class="flex-center bg-muted size-20">
+                <div class="flex-center size-20 bg-muted">
                   muted
                 </div>
-                <div class="flex-center bg-elevated size-20">
+                <div class="flex-center size-20 bg-elevated">
                   elevated
                 </div>
-                <div class="flex-center bg-accented size-20">
+                <div class="flex-center size-20 bg-accented">
                   accented
                 </div>
-                <div class="flex-center bg-inverted text-inverted size-20">
+                <div class="flex-center size-20 bg-inverted text-inverted">
                   inverted
                 </div>
               </div>
             </div>
 
             <div class="grid gap-2">
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 Texts
               </div>
-              <div class="bg-default flex flex-col gap-1 p-4">
+              <div class="flex flex-col gap-1 bg-default p-4">
                 <span class="text-highlighted">text-highlighted</span>
                 <span class="text-toned">text-toned</span>
                 <span class="text-default">text-default</span>
@@ -46,11 +46,11 @@
             </div>
 
             <div class="grid gap-2">
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 Primary
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="bg-primary size-20" />
+                <div class="size-20 bg-primary" />
               </div>
             </div>
           </div>
@@ -58,7 +58,7 @@
 
         <!-- UiTitle -->
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiTitle
           </h1>
 
@@ -90,7 +90,7 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiText
           </h1>
 
@@ -106,7 +106,7 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiToggle
           </h1>
 
@@ -126,7 +126,7 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiItem
           </h1>
 
@@ -146,57 +146,23 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
-            UiTabs
+          <h1 class="mb-2 border-b border-default pb-1">
+            UTabs
           </h1>
 
           <div class="grid gap-4">
-            <UiTabsBar>
-              UiTabsBar
-            </UiTabsBar>
+            <UTabs
+              :content="false"
+              :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }]"
+              defaultValue="one"
+            />
 
-            <UiTabsScroll>
-              UiTabsScroll
-            </UiTabsScroll>
-          </div>
-        </div>
-
-        <div>
-          <h1 class="border-default mb-2 border-b pb-1">
-            UiTabsItem
-          </h1>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div class="grid gap-4">
-              <UiTabsItemFill>
-                UiTabsItemFill
-              </UiTabsItemFill>
-
-              <UiTabsItemPill>
-                UiTabsItemPill
-              </UiTabsItemPill>
-
-              <UiTabsItemPill variant="outline">
-                UiTabsItemPill outline
-              </UiTabsItemPill>
-            </div>
-
-            <div class="grid gap-4">
-              <UiTabsItemFill isActive>
-                UiTabsItemFill
-              </UiTabsItemFill>
-
-              <UiTabsItemPill isActive>
-                UiTabsItemPill
-              </UiTabsItemPill>
-
-              <UiTabsItemPill
-                variant="outline"
-                isActive
-              >
-                UiTabsItemPill outline
-              </UiTabsItemPill>
-            </div>
+            <URadioGroup
+              defaultValue="one"
+              indicator="hidden"
+              :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }]"
+              orientation="horizontal"
+            />
           </div>
         </div>
       </div>
@@ -204,13 +170,13 @@
       <div>
         <!-- Calendar -->
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             Calendar
           </h1>
 
           <div class="grid gap-4">
             <UCalendar />
-            <div class="bg-muted h-px" />
+            <div class="h-px bg-muted" />
             <UCalendar
               class="@container/calendar"
               :numberOfMonths="2"
