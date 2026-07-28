@@ -76,12 +76,14 @@ const typeCounts = computed(() => {
       counts.adjustment++
       continue
     }
+    if (trn.categoryId === 'transfer') {
+      counts.transfer++
+      continue
+    }
     if (trn.type === TrnType.Expense)
       counts.expense++
     else if (trn.type === TrnType.Income)
       counts.income++
-    else if (trn.type === TrnType.Transfer)
-      counts.transfer++
   }
   return counts
 })
@@ -122,8 +124,10 @@ const filteredByTypeIds = computed(() => {
   return (trnsIds ?? []).filter((id) => {
     if (filterBy.value === 'adjustment')
       return trnsStore.items?.[id]?.categoryId === 'adjustment'
+    if (filterBy.value === 'transfer')
+      return trnsStore.items?.[id]?.categoryId === 'transfer'
 
-    return trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
+    return trnsStore.items?.[id]?.categoryId !== 'transfer' && trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
   })
 })
 

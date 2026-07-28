@@ -86,7 +86,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     for (const trnId of Object.keys(items.value!)) {
       const trn = items.value![trnId]
-      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
+      if (!trn || trn.categoryId === 'transfer' || trn.categoryId === 'adjustment')
         continue
       if (trn.date > latestDate) {
         latestDate = trn.date
