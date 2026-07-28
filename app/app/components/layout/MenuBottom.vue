@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 import { useMenuData } from '~/components/layout/useMenuData'
 
-const { checkIsActive, items, itemsBottom, onClick } = useMenuData()
+const { checkIsActive, itemsBottom, onClick } = useMenuData()
 const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 </script>
 
@@ -35,7 +35,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
               <Icon
                 :name="item.icon"
                 class="leading-none"
-                size="22"
+                :size="isShowMenuLabels ? 22 : 28"
               />
               <span
                 v-if="item.badge"
@@ -51,14 +51,14 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           </div>
         </div>
 
-        <!-- Add button: separate round button -->
+        <!-- Add button: borderless plus, height matches the pill via items-stretch -->
         <div
-          class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          class="flex w-12 shrink-0 items-center justify-center interactive text-primary"
           @click="onClick('trnForm')"
         >
           <Icon
-            :name="items.trnForm!.icon"
-            size="22"
+            name="lucide:plus"
+            :size="isShowMenuLabels ? 28 : 32"
           />
         </div>
       </div>
