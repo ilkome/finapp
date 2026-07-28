@@ -185,3 +185,40 @@ describe('setGranularityBy', () => {
     expect(statDate.params.value.isSkipEmpty).toBe(false)
   })
 })
+
+describe('stale persisted payload (pre granularityBy rename)', () => {
+  it('backfills granularity defaults and does not throw when reading range/intervals', async () => {
+    // Simulates a payload persisted before the intervalsBy -> granularityBy rename: it still
+    // has the old keys but never had granularityBy/granularityDuration written to storage.
+    const stalePayload = {
+      customDate: false,
+      intervalsBy: 'month',
+      intervalsDuration: 1,
+      intervalSelected: -1,
+      isShowMaxRange: false,
+      isSkipEmpty: false,
+      rangeBy: 'year',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    } as unknown as StatDateParams
+
+    vi.resetModules()
+    vi.doMock('@vueuse/core', () => ({
+      useStorage: (_key: string, _defaultValue: any) => ref(stalePayload),
+    }))
+
+    const { useStatDate: useStatDateWithStalePayload } = await import('./useStatDate')
+
+    const maxRange = computed<Range>(() => ({
+      end: new Date('2024-12-31').getTime(),
+      start: new Date('2024-01-01').getTime(),
+    }))
+
+    const statDate = useStatDateWithStalePayload({ key: 'stale-test', maxRange })
+
+    expect(statDate.params.value.granularityBy).toBe(defaultStatDateParams.granularityBy)
+    expect(statDate.params.value.granularityDuration).toBe(defaultStatDateParams.granularityDuration)
+    expect(() => statDate.intervalsInRange.value).not.toThrow()
+    expect(() => statDate.range.value).not.toThrow()
+  })
+})

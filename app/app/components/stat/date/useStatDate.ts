@@ -23,9 +23,11 @@ export function useStatDate({
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
   })
 
-  if (Object.keys(params.value).length === 0) {
-    params.value = defu(initParams ?? {}, defaultStatDateParams)
-  }
+  // Backfill defaults on every load, not just the first: a payload stored before a param
+  // rename keeps the dead key and misses the new one, and an undefined Period crashes date math.
+  params.value = Object.keys(params.value).length === 0
+    ? defu(initParams ?? {}, defaultStatDateParams)
+    : defu(params.value, defaultStatDateParams)
 
   const modal = ref({
     dateSelector: false,
