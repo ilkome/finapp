@@ -8,6 +8,7 @@ import type { TrnId, TrnsViewType } from '~/components/trns/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { getFilteredByTypeIds, getTypeCounts } from '~/components/trns/tabClassification'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useDateFormats } from '~/composables/useDateFormats'
@@ -66,27 +67,7 @@ type TypeFilter = {
   type: TrnType | undefined
 }
 
-const typeCounts = computed(() => {
-  const counts = { adjustment: 0, expense: 0, income: 0, transfer: 0 }
-  for (const id of trnsIds) {
-    const trn = trnsStore.items?.[id]
-    if (!trn)
-      continue
-    if (trn.categoryId === 'adjustment') {
-      counts.adjustment++
-      continue
-    }
-    if (trn.categoryId === 'transfer') {
-      counts.transfer++
-      continue
-    }
-    if (trn.type === TrnType.Expense)
-      counts.expense++
-    else if (trn.type === TrnType.Income)
-      counts.income++
-  }
-  return counts
-})
+const typeCounts = computed(() => getTypeCounts(trnsIds, trnsStore.items))
 
 const realTypesCount = computed(() => {
   const c = typeCounts.value
@@ -117,19 +98,9 @@ const selectedTypeFilter = computed(() => {
   return typeFilters.value.find(item => item.slug === filterBy.value)
 })
 
-const filteredByTypeIds = computed(() => {
-  if (filterBy.value === 'all')
-    return trnsIds ?? []
-
-  return (trnsIds ?? []).filter((id) => {
-    if (filterBy.value === 'adjustment')
-      return trnsStore.items?.[id]?.categoryId === 'adjustment'
-    if (filterBy.value === 'transfer')
-      return trnsStore.items?.[id]?.categoryId === 'transfer'
-
-    return trnsStore.items?.[id]?.categoryId !== 'transfer' && trnsStore.items?.[id]?.type === selectedTypeFilter.value?.type
-  })
-})
+const filteredByTypeIds = computed(() =>
+  getFilteredByTypeIds(trnsIds, trnsStore.items, filterBy.value, selectedTypeFilter.value?.type),
+)
 
 const isTrnsWithDesc = computed(() => filteredByTypeIds.value.some(id => trnsStore.items?.[id]?.desc))
 const isAllTrnsWithDesc = computed(() => filteredByTypeIds.value.every(id => trnsStore.items?.[id]?.desc))
