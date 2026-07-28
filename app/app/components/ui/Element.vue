@@ -39,6 +39,9 @@ const elementClasses = computed(() => cn(
       <slot name="line" />
     </div>
 
+    <!-- Separator. `group-last:hidden` means "last row of the block", so the CALLER must put
+         `group` on the row element, not on a wrapper. An expanded parent hides its own separator
+         with [&_.uiElementLine]:bg-transparent instead of dropping lineWidth. -->
     <div
       v-if="lineWidth"
       :class="{

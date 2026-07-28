@@ -99,34 +99,30 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
       }"
       class="pt-2"
     >
-      <UCollapsible
+      <template
         v-for="item in linesCategories"
         :key="item.id"
-        :open="isExpanded(item.id)"
-        class="group"
       >
-        <div class="-mt-px flex items-stretch justify-between">
-          <StatCategoriesLine
-            :isShowParent="props.isOneCategory ? false : !isListGrouped"
-            :stacked="!props.isOneCategory && !isListGrouped"
-            :item="item"
-            :isExpanded="isExpanded(item.id)"
-            isShowChevron
-            :maxCategoryValues="linesMaxValues"
-            :lineWidth="isLines ? 0 : 1"
-            class="grow"
-            @click="onParentClick(item)"
-            @amountClick="emit('clickCategory', item.id)"
-          />
-        </div>
+        <StatCategoriesLine
+          :isShowParent="props.isOneCategory ? false : !isListGrouped"
+          :stacked="!props.isOneCategory && !isListGrouped"
+          :item="item"
+          :isExpanded="isExpanded(item.id)"
+          isShowChevron
+          :maxCategoryValues="linesMaxValues"
+          :lineWidth="isLines ? 0 : 1"
+          :class="`group ${isExpanded(item.id) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
+          @click="onParentClick(item)"
+          @amountClick="emit('clickCategory', item.id)"
+        />
 
-        <template #content>
-          <!-- Inside -->
-          <div
-            v-if="item.categories?.length"
-            class="mt-[-2px] ml-5 -translate-x-px pb-3 pl-3"
-          >
-            <div class="grid">
+        <UCollapsible
+          v-if="item.categories?.length"
+          :open="isExpanded(item.id)"
+          :ui="{ content: 'overflow-hidden' }"
+        >
+          <template #content>
+            <div class="ml-5 pb-1 pl-3">
               <StatCategoriesLine
                 v-for="itemInside in item.categories"
                 :key="itemInside.id"
@@ -134,14 +130,14 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
                 :item="itemInside"
                 :maxCategoryValues="childrenMaxValues"
                 :lineWidth="isLines ? 0 : 1"
-                class="grow"
+                class="group"
                 @click="emit('clickCategory', itemInside.id)"
                 @amountClick="emit('clickCategory', itemInside.id)"
               />
             </div>
-          </div>
-        </template>
-      </UCollapsible>
+          </template>
+        </UCollapsible>
+      </template>
     </div>
   </div>
 </template>
