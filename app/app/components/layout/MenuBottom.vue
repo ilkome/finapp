@@ -56,7 +56,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           class="flex shrink-0 items-stretch overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
         >
           <div
-            class="flex aspect-square h-full items-center justify-center interactive text-muted"
+            class="flex w-11 shrink-0 items-center justify-center interactive text-muted"
             @click="onClick('menu')"
           >
             <div class="relative flex">
@@ -72,7 +72,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
             </div>
           </div>
           <div
-            class="flex aspect-square h-full items-center justify-center interactive text-primary"
+            class="flex w-11 shrink-0 items-center justify-center interactive text-primary"
             @click="onClick('trnForm')"
           >
             <Icon
