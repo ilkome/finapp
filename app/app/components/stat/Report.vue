@@ -20,7 +20,6 @@ const props = defineProps<{
   walletId?: WalletId
 }>()
 
-const { t } = useI18n()
 const filter = inject(filterKey)!
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
@@ -29,33 +28,7 @@ const stickyNav = inject(statStickyNavKey, false)
 
 const { chartFx, chartTrigger, dateFx, sumsFx } = useScrollReveal(stickyNav)
 
-const {
-  averageTotal,
-  chartPieGroups,
-  chartSeries,
-  chartXAxisLabels,
-  closeModal,
-  filteredCategoriesIds,
-  filteredType,
-  forecastMode,
-  forecastRangeTotal,
-  hasCategoriesData,
-  isOneCategory,
-  isPeriodOneDay,
-  modalSource,
-  modalTrnsIds,
-  onClickCategory,
-  onClickSumItemWrap,
-  onSetCategoryFilter,
-  rangeTotal,
-  selectedAndFilteredTrnsIds,
-  selectedTrnsIds,
-  selectedTypeForSum,
-  shouldShowAmounts,
-  shouldUseTwoColumnLayout,
-  statExcludedIds,
-  statItemStorageKey,
-} = useStatReportContext({
+const ctx = useStatReportContext({
   // Exclude flagged categories only on the default aggregate: not on a single-category
   // page, and not when the top filter already narrows to categories.
   applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),
@@ -77,14 +50,7 @@ const {
   <div class="@container/stat">
     <div ref="chartTrigger">
       <div ref="chartFx">
-        <StatChartWrap
-          v-if="shouldShowAmounts"
-          :pieGroups="chartPieGroups"
-          :series="chartSeries"
-          :xAxisLabels="chartXAxisLabels"
-          class="pb-3"
-          @clickCategory="onSetCategoryFilter"
-        />
+        <StatReportChart :ctx="ctx" />
       </div>
     </div>
 
@@ -105,93 +71,11 @@ const {
         </div>
 
         <div ref="sumsFx" class="min-w-0">
-          <StatSumWrap
-            v-if="shouldShowAmounts"
-            :averageTotal
-            :categoryId="props.categoryId"
-            :filteredType="filteredType"
-            :forecastMode="forecastMode"
-            :forecastTotal="forecastRangeTotal"
-            :total="rangeTotal"
-            :trnsIds
-            :type="selectedTypeForSum"
-            :walletId
-            @click="onClickSumItemWrap"
-            @clickAverage="statConfig.updateConfig('average', { isShow: !statConfig.config.value.average.isShow })"
-          />
+          <StatReportSums :ctx="ctx" />
         </div>
       </div>
 
-      <StatCategoriesRoundSection
-        v-if="statConfig.config.value.categories.round.isShow && hasCategoriesData && (selectedTrnsIds.length > 0 || filteredCategoriesIds.length > 0)"
-        :excludedCategoriesIds="statExcludedIds"
-        :filteredCategoriesIds
-        :isOneCategory="isOneCategory"
-        :preCategoriesIds="props.preCategoriesIds"
-        :selectedTrnsIds
-        @clickCategory="onClickCategory"
-        @setCategoryFilter="onSetCategoryFilter"
-      />
-
-      <div
-        v-if="selectedTrnsIds.length > 0"
-        class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
-      >
-        <div
-          :class="{
-            'grid gap-5 @3xl/stat:grid-cols-2 @3xl/stat:gap-6': shouldUseTwoColumnLayout,
-          }"
-        >
-          <StatCategoriesBreakdown
-            v-if="(statConfig.config.value.categories.list.isShow || statConfig.config.value.categories.bars.isShow) && hasCategoriesData"
-            :excludedCategoriesIds="statExcludedIds"
-            :isOneCategory="isOneCategory"
-            :preCategoriesIds="props.preCategoriesIds"
-            :selectedTrnsIds="selectedAndFilteredTrnsIds"
-            :storageKey="statItemStorageKey"
-            :type="props.type ?? 'netIncome'"
-            @clickCategory="onClickCategory"
-            @setCategoryFilter="onSetCategoryFilter"
-          />
-
-          <StatTrns
-            v-if="statConfig.config.value.trns.isShow"
-            :isPeriodOneDay="isPeriodOneDay"
-            :selectedTrnsIds="selectedAndFilteredTrnsIds"
-            :storageKey="statItemStorageKey"
-            class="@3xl/stat:order-1"
-          />
-        </div>
-      </div>
-
-      <div v-else class="mx-auto grid w-full max-w-150 content-start justify-items-center gap-4">
-        <TrnsNoTrns />
-
-        <CategoriesQuickAdd />
-      </div>
+      <StatReportDetails :ctx="ctx" />
     </div>
-
-    <BottomSheetModal
-      v-if="modalSource"
-      @closed="closeModal"
-    >
-      <UiTitleModal>
-        {{ t('trns.title') }} {{ modalTrnsIds.length > 0 ? modalTrnsIds.length : '' }}
-      </UiTitleModal>
-
-      <div class="bottomSheetContentInside scrollerBlock">
-        <TrnsList
-          :isShowDates="!isPeriodOneDay"
-          :isShowGroupSum="!isPeriodOneDay"
-          :size="50"
-          :trnsIds="modalTrnsIds"
-          isShowExpense
-          isShowFilterByDesc
-          isShowFilterByType
-          isShowIncome
-          isShowTransfers
-        />
-      </div>
-    </BottomSheetModal>
   </div>
 </template>
