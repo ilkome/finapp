@@ -84,7 +84,6 @@ export function useMenuData() {
   const itemsBottom = computed<Record<string, MenuItem>>(() => ({
     wallets: items.value.wallets!,
     categories: items.value.categories!,
-    trnForm: { ...items.value.trnForm!, name: t('base.add') },
     dashboard: items.value.dashboard!,
     // The hamburger dot derives from the recurrences badge: it opens the sheet that holds that entry.
     menu: { badge: items.value.recurrences!.badge, icon: 'hugeicons:menu-01', name: t('base.menu') },
