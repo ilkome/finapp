@@ -61,6 +61,16 @@ describe('isEnd', () => {
     const range: Range = { end: getEndOf(now, 'year').getTime() + 1, start: 0 }
     expect(isEnd(params, range, now)).toBe(true)
   })
+
+  it('with explicit by/duration is false for a past day interval', () => {
+    const range: Range = { end: getEndOf(now, 'day').getTime() - 1000, start: 0 }
+    expect(isEnd(base, range, now, 'day', 1)).toBe(false)
+  })
+
+  it('with explicit by/duration is true for today\'s day interval', () => {
+    const range: Range = { end: getEndOf(now, 'day').getTime(), start: 0 }
+    expect(isEnd(base, range, now, 'day', 1)).toBe(true)
+  })
 })
 
 describe('isStart', () => {
