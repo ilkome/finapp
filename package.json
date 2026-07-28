@@ -36,7 +36,8 @@
     "test:e2e:real": "pnpm --filter @finapp/app test:e2e:real",
     "test:e2e:report": "pnpm --filter @finapp/app test:e2e:report",
     "test:e2e:ui": "pnpm --filter @finapp/app test:e2e:ui",
-    "typecheck": "pnpm -r --if-present typecheck"
+    "typecheck": "pnpm -r --if-present typecheck",
+    "verify": "pnpm lint:fix && pnpm typecheck && pnpm test"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
