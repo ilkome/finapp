@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 import { useMenuData } from '~/components/layout/useMenuData'
 
-const { checkIsActive, itemsBottom, onClick } = useMenuData()
+const { checkIsActive, itemsBottom, menuItem, onClick } = useMenuData()
 const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 </script>
 
@@ -51,10 +51,28 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           </div>
         </div>
 
-        <!-- Add button: stretched wrapper sets the height (matches pill), inner circle is 1:1 off that -->
-        <div class="shrink-0">
+        <!-- Right block: menu + add, icon-only. Each cell is 1:1 off the capsule height (= pill height). -->
+        <div
+          class="flex shrink-0 items-stretch overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+        >
           <div
-            class="flex aspect-square h-full items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+            class="flex aspect-square h-full items-center justify-center interactive text-muted"
+            @click="onClick('menu')"
+          >
+            <div class="relative flex">
+              <Icon
+                :name="menuItem.icon"
+                class="leading-none"
+                :size="isShowMenuLabels ? 22 : 26"
+              />
+              <span
+                v-if="menuItem.badge"
+                class="absolute -top-0.5 -right-1 size-1.5 rounded-full bg-expense-1"
+              />
+            </div>
+          </div>
+          <div
+            class="flex aspect-square h-full items-center justify-center interactive text-primary"
             @click="onClick('trnForm')"
           >
             <Icon

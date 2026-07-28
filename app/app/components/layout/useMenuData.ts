@@ -85,8 +85,13 @@ export function useMenuData() {
     wallets: items.value.wallets!,
     categories: items.value.categories!,
     dashboard: items.value.dashboard!,
-    // The hamburger dot derives from the recurrences badge: it opens the sheet that holds that entry.
-    menu: { badge: items.value.recurrences!.badge, icon: 'hugeicons:menu-01', name: t('base.menu') },
+  }))
+
+  // The hamburger dot derives from the recurrences badge: it opens the sheet that holds that entry.
+  const menuItem = computed<MenuItem>(() => ({
+    badge: items.value.recurrences!.badge,
+    icon: 'hugeicons:menu-01',
+    name: t('base.menu'),
   }))
 
   const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'dashboard'])
@@ -125,6 +130,7 @@ export function useMenuData() {
     items,
     itemsBottom,
     itemsModal,
+    menuItem,
     onClick,
     checkIsActive,
     isMenuOpen,
