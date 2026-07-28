@@ -32,7 +32,7 @@ export type ChartPieGroup = {
   type: SeriesSlug
 }
 
-type UseStatReportParams = {
+export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
   filter: FilterProvider
   statConfig: StatConfigProvider

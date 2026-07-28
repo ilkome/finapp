@@ -7,8 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 import { useScrollReveal } from '~/components/stat/useScrollReveal'
-import { useStatReport } from '~/components/stat/useStatReport'
-import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
+import { useStatReportContext } from '~/components/stat/useStatReportContext'
 
 const props = defineProps<{
   categoryId?: CategoryId
@@ -30,68 +29,48 @@ const stickyNav = inject(statStickyNavKey, false)
 
 const { chartFx, chartTrigger, dateFx, sumsFx } = useScrollReveal(stickyNav)
 
-const isOneCategory = computed(() => !!props.categoryId)
-const shouldShowAmounts = computed(() => !props.categoryId || props.categoryId !== 'transfer')
-
 const {
   averageTotal,
   chartPieGroups,
   chartSeries,
   chartXAxisLabels,
+  closeModal,
   filteredCategoriesIds,
   filteredType,
   forecastMode,
   forecastRangeTotal,
+  hasCategoriesData,
+  isOneCategory,
   isPeriodOneDay,
-  onClickSumItem,
+  modalSource,
+  modalTrnsIds,
+  onClickCategory,
+  onClickSumItemWrap,
   onSetCategoryFilter,
   rangeTotal,
   selectedAndFilteredTrnsIds,
   selectedTrnsIds,
   selectedTypeForSum,
+  shouldShowAmounts,
+  shouldUseTwoColumnLayout,
   statExcludedIds,
   statItemStorageKey,
-} = useStatReport({
+} = useStatReportContext({
   // Exclude flagged categories only on the default aggregate: not on a single-category
   // page, and not when the top filter already narrows to categories.
   applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),
+  categoryId: computed(() => props.categoryId),
   filter,
+  hasChildren: computed(() => props.hasChildren),
+  preCategoriesIds: computed(() => props.preCategoriesIds),
   statConfig,
   statDate,
   statTab: computed(() => props.statTab),
   storageKey: computed(() => props.storageKey),
   trnsIds: computed(() => props.trnsIds),
   type: computed(() => props.type),
+  walletId: computed(() => props.walletId),
 })
-
-const hasCategoriesData = computed(() => props.hasChildren || (props.preCategoriesIds ?? []).length > 0)
-const shouldUseTwoColumnLayout = computed(() => props.statTab !== 'split' && statConfig.config.value.categories.list.isShow)
-
-const { closeModal, modalSource, modalTrnsIds, openFullTrns, openQuickViewForCategory } = useTrnsQuickView(selectedAndFilteredTrnsIds)
-
-function onClickCategory(clickedCategoryId: CategoryId) {
-  if (props.categoryId) {
-    filter.setCategoryId(clickedCategoryId)
-
-    return useRouter().push({
-      path: `/categories/${clickedCategoryId}`,
-      query: {
-        filterCategories: filter.categoriesIds.value.join(','),
-        filterWallets: props.walletId ? props.walletId : filter.walletsIds.value.join(','),
-        storageKey: props.storageKey ?? '',
-      },
-    })
-  }
-
-  openQuickViewForCategory(clickedCategoryId)
-}
-
-function onClickSumItemWrap(type: SeriesSlugSelected) {
-  if (type === 'netIncome')
-    openFullTrns()
-
-  onClickSumItem(type)
-}
 </script>
 
 <template>
