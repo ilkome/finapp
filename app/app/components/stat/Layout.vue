@@ -101,11 +101,11 @@ const income = useStatReportContext({
     </div>
 
     <div class="grid gap-8 @3xl/page:grid-cols-2">
-      <div class="grid min-w-0 content-start gap-3">
+      <div class="@container/stat grid min-w-0 content-start gap-3">
         <StatReportSums :ctx="expense" />
         <StatReportDetails :ctx="expense" />
       </div>
-      <div class="grid min-w-0 content-start gap-3">
+      <div class="@container/stat grid min-w-0 content-start gap-3">
         <StatReportSums :ctx="income" />
         <StatReportDetails :ctx="income" />
       </div>
