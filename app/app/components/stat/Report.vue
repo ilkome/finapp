@@ -60,14 +60,7 @@ const ctx = useStatReportContext({
         :class="stickyNav && 'bg-default/90 sticky top-0 z-10 -mx-2 px-2 backdrop-blur lg:-mx-4 lg:px-4 lg:pb-2'"
       >
         <div ref="dateFx" class="min-w-0">
-          <StatDateNavigation>
-            <FilterButton />
-            <FilterSelected
-              v-if="filter.isShow.value"
-              isShowCategories
-              isShowWallets
-            />
-          </StatDateNavigation>
+          <StatDateFilterRow />
         </div>
 
         <div ref="sumsFx" class="min-w-0">
