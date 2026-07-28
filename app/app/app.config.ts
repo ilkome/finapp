@@ -60,9 +60,13 @@ export default defineAppConfig({
       defaultVariants: {
         variant: 'pill',
       },
-      slots: {
-        list: 'bg-elevated/30',
-        trigger: 'grow',
+      variants: {
+        variant: {
+          pill: {
+            list: 'bg-elevated/30',
+            trigger: 'grow',
+          },
+        },
       },
     },
     toast: {

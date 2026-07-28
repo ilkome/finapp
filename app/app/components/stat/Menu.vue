@@ -46,6 +46,7 @@ watch(() => props.active, () => {
     :items="menu"
     :modelValue="active"
     class="w-full"
+    variant="link"
     @update:modelValue="(v) => onClickStatMenu(v as StatTabSlug)"
   />
 </template>

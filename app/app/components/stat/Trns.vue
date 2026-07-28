@@ -17,6 +17,7 @@ const shown = useStoredToggle(`${props.storageKey}-trns`, true)
     <UCollapsible
       v-if="selectedTrnsIds.length > 0"
       v-model:open="shown"
+      :unmountOnHide="false"
     >
       <UiTitleCollapse :isShown="shown">
         {{ t('trns.title') }} {{ (!shown && selectedTrnsIds.length > 0) ? selectedTrnsIds.length : '' }}
