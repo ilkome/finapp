@@ -6,6 +6,21 @@ on:
   pull_request:
 
 jobs:
+  checks:
+    name: lint + typecheck + unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm --filter @finapp/app exec vitest run
+
   deps:
     name: reka-ui single version
     runs-on: ubuntu-latest
