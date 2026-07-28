@@ -13,8 +13,9 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 - Local backend (run once, in `app/`): `supabase start` (Postgres + Auth on :54321), then `docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync_setup.sql` (replication role + publication), then `docker compose -f powersync/docker-compose.yaml up -d` (PowerSync service on :8080)
 - `pnpm build` / `pnpm generate` - both run `nuxt generate` (static SPA, output `.output/public`)
 - `pnpm lint` / `pnpm lint:fix` - ESLint
-- `pnpm test` - Vitest
-- `pnpm test:e2e` - Playwright against the dev server; `pnpm test:e2e:prod` - Playwright against the prod build
+- `pnpm test` - Vitest (**watch mode** - use `pnpm --filter @finapp/app exec vitest run` for a one-shot)
+- `pnpm verify` - the pre-push gate: `lint:fix` + `typecheck` + one-shot Vitest, in one command
+- `pnpm test:e2e` - Playwright dev server, `demo` project (all specs incl. `stat-smoke`, `budgets-smoke`); `pnpm test:e2e:prod` - Playwright prod build, **only** `context-menu-smoke`
 - `pnpm docs:dev` / `pnpm docs:build` - docs site
 
 ## Deploy
@@ -34,6 +35,7 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 - Always run `pnpm lint:fix` before committing. It **rewrites files** (Perfectionist re-sorts object keys and imports), so re-read a file after running it if you plan to edit it again
 - `nuxi typecheck` does not check templates: a deleted or renamed auto-imported component fails only at runtime. After removing one, grep its auto-import name across `app/app/`
 - There are no visual or component tests. Green `typecheck` + `test` says nothing about the UI; anything that moves pixels needs a pass in the running app
+- CI (`.github/workflows/ci.yml`) gates on: `checks` (lint + typecheck + unit tests), `deps` (single reka-ui version), `e2e-prod` (prod-build context-menu smoke). The dev-server e2e suite (`test:e2e`, demo project) is **not** in CI yet - run it locally after UI changes
 - Behavioural rules hidden inside `.vue` templates escape the test suite. Prefer extracting `(input) -> output` logic into a plain `.ts` module next to the component and unit-testing it there (see `trns/getTrns.ts`, `amount/getTotal.ts`)
 - A composable that persists a typed shape to `localStorage` must backfill defaults on **every** load, not just the first (`defu(stored, defaults)`), or a payload stored before a key rename comes back missing the new key. Seeding `useStorage(key, {})` defeats `mergeDefaults` - seed it with the real defaults. When renaming a persisted key, ship a test that seeds a pre-rename payload (template: `stat/date/useStatDate.test.ts`)
 
