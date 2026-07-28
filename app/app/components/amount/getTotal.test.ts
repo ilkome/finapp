@@ -197,6 +197,51 @@ describe('total of Transactions', () => {
     expect(total.expense).toEqual(0)
   })
 
+  it('single-leg transfer lands in transfer buckets, not income/expense', () => {
+    const trnsIds = [
+      'singleLegTransferExpenseWalletCashUSD50',
+      'singleLegTransferIncomeWalletCashUSD60',
+    ]
+
+    const total = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.income).toEqual(0)
+    expect(total.expense).toEqual(0)
+    expect(total.incomeTransfers).toEqual(60)
+    expect(total.expenseTransfers).toEqual(50)
+  })
+
+  it('single-leg transfer counts only when its wallet is in the walletsIds filter', () => {
+    const trnsIds = [
+      'singleLegTransferExpenseWalletCashUSD50',
+      'singleLegTransferIncomeWalletCashUSD60',
+    ]
+
+    const included = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsIds: ['walletCashUSD'],
+      walletsItems,
+    })
+
+    expect(included.incomeTransfers).toEqual(60)
+    expect(included.expenseTransfers).toEqual(50)
+
+    const excluded = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsIds: ['walletRUB'],
+      walletsItems,
+    })
+
+    expect(excluded.incomeTransfers).toEqual(0)
+    expect(excluded.expenseTransfers).toEqual(0)
+  })
+
   it('total of Transfers when no Wallets filter provided', () => {
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
@@ -319,6 +364,18 @@ describe('getWalletsTotals', () => {
     })
 
     expect(totals.get('walletCashUSD')).toBe(150)
+  })
+
+  it('single-leg transfer moves the wallet balance by the full amount', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: trnsItems.singleLegTransferExpenseWalletCashUSD50!,
+        t2: trnsItems.singleLegTransferIncomeWalletCashUSD60!,
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletCashUSD')).toBe(10)
   })
 
   it('computes full balance for walletCashUSD with mixed trns', () => {

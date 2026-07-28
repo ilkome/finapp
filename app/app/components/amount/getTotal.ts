@@ -77,6 +77,19 @@ export function getTotal(props: TotalProps): TotalReturns {
         adjustment += trn.type === TrnType.Income ? amount : -amount
         continue
       }
+      // Single-leg transfer (bank import, counterparty account not in finapp): moves money
+      // between accounts, so it belongs in the transfer buckets - never income/expense.
+      if (trn.categoryId === 'transfer') {
+        if (!walletsSet || walletsSet.has(trn.walletId)) {
+          const wallet = walletsItems[trn.walletId]
+          const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
+          if (trn.type === TrnType.Income)
+            incomeTransfers += sum
+          else
+            expenseTransfers += sum
+        }
+        continue
+      }
       // Excluded-from-stats categories are kept in balances/lists but not counted here.
       if (props.excludedCategoriesIds?.has(trn.categoryId))
         continue
