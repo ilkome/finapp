@@ -47,7 +47,19 @@ export function useStatDate({
 
   const selectedInterval = computed(() => intervalsInRange.value[params.value.intervalSelected])
 
-  watch(range, () => params.value.intervalSelected = -1)
+  // Set right before a range change that must land on an edge interval instead of the whole
+  // range (arrow stepping past the first/last interval - see stepInterval).
+  let landOn: 'first' | 'last' | null = null
+
+  watch(range, () => {
+    const intervals = intervalsInRange.value
+    params.value.intervalSelected = landOn === 'first'
+      ? 0
+      : landOn === 'last'
+        ? Math.max(intervals.length - 1, 0)
+        : -1
+    landOn = null
+  })
 
   function resetCustomAndMaxRangeParams() {
     params.value.customDate = false
@@ -127,6 +139,22 @@ export function useStatDate({
     return interval?.start
   }
 
+  /**
+   * Arrow step while an interval is selected: walk intervals inside the range, and at either
+   * edge roll into the neighbouring range landing on its opposite edge interval (last day of
+   * the previous month, first day of the next). Bounds are enforced by the caller's
+   * isStart/isEnd, same as plain range stepping.
+   */
+  function stepInterval(direction: 1 | -1) {
+    const next = params.value.intervalSelected + direction
+    if (next >= 0 && next < intervalsInRange.value.length) {
+      params.value.intervalSelected = next
+      return
+    }
+    landOn = direction === 1 ? 'first' : 'last'
+    params.value.rangeOffset -= direction
+  }
+
   function setGranularityBy(granularityBy: Grouped['granularityBy']) {
     resetCustomAndMaxRangeParams()
     params.value.granularityBy = granularityBy
@@ -155,5 +183,6 @@ export function useStatDate({
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,
+    stepInterval,
   }
 }

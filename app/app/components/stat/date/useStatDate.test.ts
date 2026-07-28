@@ -1,7 +1,7 @@
 import type { Range } from '~~/utils/date/types'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { computed, ref, watch } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
 import type { StatDateParams } from '~/components/stat/date/types'
 
@@ -82,6 +82,91 @@ describe('selectInterval', () => {
 
     expect(statDate.params.value.intervalSelected).toBe(999)
     expect(result).toBeUndefined()
+  })
+})
+
+describe('stepInterval', () => {
+  it('steps within the range without touching rangeOffset', () => {
+    const statDate = createStatDate({
+      granularityBy: 'day',
+      granularityDuration: 1,
+      intervalSelected: 14,
+      rangeBy: 'month',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+
+    statDate.stepInterval(-1)
+
+    expect(statDate.params.value.intervalSelected).toBe(13)
+    expect(statDate.params.value.rangeOffset).toBe(0)
+  })
+
+  it('rolls back into the previous month landing on its last day', async () => {
+    const statDate = createStatDate({
+      granularityBy: 'day',
+      granularityDuration: 1,
+      intervalSelected: 0,
+      rangeBy: 'month',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+
+    statDate.stepInterval(-1)
+    await nextTick()
+
+    expect(statDate.params.value.rangeOffset).toBe(1)
+    expect(statDate.params.value.intervalSelected).toBe(statDate.intervalsInRange.value.length - 1)
+  })
+
+  it('rolls forward into the next month landing on its first day', async () => {
+    const statDate = createStatDate({
+      granularityBy: 'day',
+      granularityDuration: 1,
+      rangeBy: 'month',
+      rangeDuration: 1,
+      rangeOffset: 1,
+    })
+    statDate.params.value.intervalSelected = statDate.intervalsInRange.value.length - 1
+
+    statDate.stepInterval(1)
+    await nextTick()
+
+    expect(statDate.params.value.rangeOffset).toBe(0)
+    expect(statDate.params.value.intervalSelected).toBe(0)
+  })
+
+  it('rolls back into the previous year landing on December when stepping months', async () => {
+    const statDate = createStatDate({
+      granularityBy: 'month',
+      granularityDuration: 1,
+      intervalSelected: 0,
+      rangeBy: 'year',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+
+    statDate.stepInterval(-1)
+    await nextTick()
+
+    expect(statDate.params.value.rangeOffset).toBe(1)
+    expect(statDate.params.value.intervalSelected).toBe(11)
+  })
+
+  it('leaves other range-changing paths resetting intervalSelected to -1', async () => {
+    const statDate = createStatDate({
+      granularityBy: 'day',
+      granularityDuration: 1,
+      intervalSelected: 5,
+      rangeBy: 'month',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+
+    statDate.plusRange()
+    await nextTick()
+
+    expect(statDate.params.value.intervalSelected).toBe(-1)
   })
 })
 
