@@ -35,7 +35,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
               <Icon
                 :name="item.icon"
                 class="leading-none"
-                :size="isShowMenuLabels ? 22 : 28"
+                :size="isShowMenuLabels ? 22 : 26"
               />
               <span
                 v-if="item.badge"
@@ -51,15 +51,17 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           </div>
         </div>
 
-        <!-- Add button: separate round button, height matches the pill via items-stretch -->
-        <div
-          class="flex w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
-          @click="onClick('trnForm')"
-        >
-          <Icon
-            name="lucide:plus"
-            :size="isShowMenuLabels ? 28 : 32"
-          />
+        <!-- Add button: stretched wrapper sets the height (matches pill), inner circle is 1:1 off that -->
+        <div class="shrink-0">
+          <div
+            class="flex aspect-square h-full items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+            @click="onClick('trnForm')"
+          >
+            <Icon
+              name="lucide:plus"
+              :size="isShowMenuLabels ? 28 : 32"
+            />
+          </div>
         </div>
       </div>
     </div>
