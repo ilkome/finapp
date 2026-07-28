@@ -22,7 +22,9 @@ export function filterTrnsIds(props: TrnsGetterProps) {
         const trn = props.trnsItems?.[id]
         if (!trn)
           return false
-        if (typesSet && !typesSet.has(trn.type))
+        // A single-leg transfer is an Expense/Income row on the system 'transfer' category;
+        // filter it as a transfer so the expense/income tabs stay pure.
+        if (typesSet && !typesSet.has(trn.categoryId === 'transfer' ? TrnType.Transfer : trn.type))
           return false
         if (start !== undefined && trn.date < start)
           return false
