@@ -14,13 +14,15 @@ export function getFormatForChart(periodName: Period) {
 
 const compactFormatter = new Intl.NumberFormat('en', { notation: 'compact' })
 
-export function formatCompactChartAmount(amount: number) {
-  return compactFormatter.format(amount)
+export function formatCompactChartAmount(amount: number | string | undefined) {
+  // echarts reports empty datapoints as undefined / '-'; Intl renders those as "не число".
+  const n = Number(amount)
+  return compactFormatter.format(Number.isFinite(n) ? n : 0)
 }
 
 const amountFormatters = new Map<string, Intl.NumberFormat>()
 
-export function formatChartAmount(amount: number, locale = 'en') {
+export function formatChartAmount(amount: number | string | undefined, locale = 'en') {
   let formatter = amountFormatters.get(locale)
   if (!formatter) {
     formatter = new Intl.NumberFormat(locale, {
@@ -29,5 +31,7 @@ export function formatChartAmount(amount: number, locale = 'en') {
     })
     amountFormatters.set(locale, formatter)
   }
-  return formatter.format(amount)
+  // echarts reports empty datapoints as undefined / '-'; Intl renders those as "не число".
+  const n = Number(amount)
+  return formatter.format(Number.isFinite(n) ? n : 0)
 }
