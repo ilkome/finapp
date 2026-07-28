@@ -31,9 +31,21 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 - ESLint flat config with `@antfu/eslint-config`, Perfectionist for sorting
 - Prettier with Tailwind plugin, single quotes, no semicolons, trailing commas
 - i18n: `no_prefix` strategy, two locales (en-US, ru-RU)
-- Always run `pnpm lint:fix` before committing
+- Always run `pnpm lint:fix` before committing. It **rewrites files** (Perfectionist re-sorts object keys and imports), so re-read a file after running it if you plan to edit it again
 - `nuxi typecheck` does not check templates: a deleted or renamed auto-imported component fails only at runtime. After removing one, grep its auto-import name across `app/app/`
 - There are no visual or component tests. Green `typecheck` + `test` says nothing about the UI; anything that moves pixels needs a pass in the running app
+- Behavioural rules hidden inside `.vue` templates escape the test suite. Prefer extracting `(input) -> output` logic into a plain `.ts` module next to the component and unit-testing it there (see `trns/getTrns.ts`, `amount/getTotal.ts`)
+- A composable that persists a typed shape to `localStorage` must backfill defaults on **every** load, not just the first (`defu(stored, defaults)`), or a payload stored before a key rename comes back missing the new key. Seeding `useStorage(key, {})` defeats `mergeDefaults` - seed it with the real defaults. When renaming a persisted key, ship a test that seeds a pre-rename payload (template: `stat/date/useStatDate.test.ts`)
+
+## Beta versioning (dev)
+
+- A **user-facing feature** commit on `dev` bumps `app/package.json` to the next `8.3.0-beta.N` and carries a `(beta N)` tag in the commit subject. `/settings` shows `pkg.version`. Refactor / move / test-only commits do **not** bump.
+- Batch one beta bump at the end of a body of work unless told otherwise. Push to `origin dev` only when asked.
+
+## Working from plans
+
+- Feature/refactor work is specified in `plans/*.md` (gitignored - local only, so a subagent won't find them via git history; pass the path explicitly). Each plan's header should carry a `Status:` line (proposed / implemented / deferred) - keep it current, and verify status against `git log` + the code before starting, since a plan may have been shipped without its header updated.
+- To implement a plan, act as an **orchestrator**: read `plans/_orchestrator-prompt.md` first and follow it - subagents (sonnet) write code, you plan, review the diff yourself before committing, and commit one step at a time.
 
 ## Backend: Supabase + PowerSync
 
