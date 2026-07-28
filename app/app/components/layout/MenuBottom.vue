@@ -20,13 +20,13 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
       <div class="mx-auto -mt-2 flex max-w-sm items-stretch gap-2">
         <!-- Pill capsule: standard nav items -->
         <div
-          class="flex grow items-stretch overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          class="flex h-12 min-w-0 grow items-stretch overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
         >
           <div
             v-for="(item, menuId) in itemsBottom"
             :key="menuId"
             :class="cn(
-              'flex min-h-11 grow basis-0 flex-col items-center justify-center gap-0.5 rounded interactive py-1.5',
+              'flex h-full grow basis-0 flex-col items-center justify-center gap-0.5 rounded interactive',
               checkIsActive(String(menuId)) ? 'text-primary' : 'text-muted',
             )"
             @click="onClick(String(menuId))"
@@ -51,33 +51,31 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           </div>
         </div>
 
-        <!-- Right block: menu + add, icon-only. Each cell is 1:1 off the capsule height (= pill height). -->
+        <!-- Add circle -->
         <div
-          class="flex shrink-0 items-stretch overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          @click="onClick('trnForm')"
         >
-          <div
-            class="flex w-11 shrink-0 items-center justify-center interactive text-muted"
-            @click="onClick('menu')"
-          >
-            <div class="relative flex">
-              <Icon
-                :name="menuItem.icon"
-                class="leading-none"
-                :size="isShowMenuLabels ? 22 : 26"
-              />
-              <span
-                v-if="menuItem.badge"
-                class="absolute -top-0.5 -right-1 size-1.5 rounded-full bg-expense-1"
-              />
-            </div>
-          </div>
-          <div
-            class="flex w-11 shrink-0 items-center justify-center interactive text-primary"
-            @click="onClick('trnForm')"
-          >
+          <Icon
+            name="lucide:plus"
+            :size="isShowMenuLabels ? 28 : 32"
+          />
+        </div>
+
+        <!-- Menu circle, far right. -->
+        <div
+          class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-muted shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          @click="onClick('menu')"
+        >
+          <div class="relative flex">
             <Icon
-              name="lucide:plus"
-              :size="isShowMenuLabels ? 28 : 32"
+              :name="menuItem.icon"
+              class="leading-none"
+              :size="isShowMenuLabels ? 22 : 26"
+            />
+            <span
+              v-if="menuItem.badge"
+              class="absolute -top-0.5 -right-1 size-1.5 rounded-full bg-expense-1"
             />
           </div>
         </div>
