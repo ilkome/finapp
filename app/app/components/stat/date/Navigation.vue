@@ -6,27 +6,36 @@ const statDate = inject(statDateKey)!
 
 const isShowNav = computed(() => computeIsShowNav(statDate.params.value, statDate.range.value, statDate.maxRange.value, new Date()))
 
-const isEnd = computed(() => computeIsEnd(statDate.params.value, statDate.range.value, new Date()))
+const isIntervalStep = computed(() => statDate.params.value.intervalSelected !== -1)
 
-const isStart = computed(() => computeIsStart(statDate.range.value, statDate.maxRange.value))
+// The window the arrows actually move, and the unit they move it by.
+const navRange = computed(() => (isIntervalStep.value && statDate.selectedInterval.value) || statDate.range.value)
+const navBy = computed(() => isIntervalStep.value ? statDate.params.value.granularityBy : statDate.params.value.rangeBy)
+const navDuration = computed(() => isIntervalStep.value ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration)
+
+const isEnd = computed(() => computeIsEnd(statDate.params.value, navRange.value, new Date(), navBy.value, navDuration.value))
+
+const isStart = computed(() => computeIsStart(navRange.value, statDate.maxRange.value))
 
 const isShowNavHome = computed(() => computeIsShowNavHome(statDate.params.value, statDate.range.value, new Date()))
 
 function changeDate(way: 'next' | 'prev' | 'today') {
-  if (way === 'next' && !isEnd.value) {
-    statDate.params.value.rangeOffset = statDate.params.value.rangeOffset - 1
-    return
-  }
-
-  if (way === 'prev' && !isStart.value) {
-    statDate.params.value.rangeOffset = statDate.params.value.rangeOffset + 1
-    return
-  }
-
   if (way === 'today') {
     statDate.params.value.rangeOffset = 0
     statDate.params.value.intervalSelected = -1
+    return
   }
+
+  if (way === 'next' ? isEnd.value : isStart.value)
+    return
+
+  const direction = way === 'next' ? 1 : -1
+  // An interval is selected -> the arrows step intervals (days inside a month, months
+  // inside a year) and roll into the neighbouring range at the edges.
+  if (statDate.params.value.intervalSelected !== -1)
+    statDate.stepInterval(direction)
+  else
+    statDate.params.value.rangeOffset -= direction
 }
 </script>
 
