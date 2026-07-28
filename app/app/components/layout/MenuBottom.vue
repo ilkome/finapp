@@ -31,7 +31,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
             )"
             @click="onClick(String(menuId))"
           >
-            <div class="relative">
+            <div class="relative flex">
               <Icon
                 :name="item.icon"
                 class="leading-none"
@@ -51,9 +51,9 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
           </div>
         </div>
 
-        <!-- Add button: borderless plus, height matches the pill via items-stretch -->
+        <!-- Add button: separate round button, height matches the pill via items-stretch -->
         <div
-          class="flex w-12 shrink-0 items-center justify-center interactive text-primary"
+          class="flex w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
           @click="onClick('trnForm')"
         >
           <Icon
