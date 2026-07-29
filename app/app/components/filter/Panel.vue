@@ -122,6 +122,7 @@ const tabItems = computed<TabsItem[]>(() => [
       >
         <div class="px-3 pb-2">
           <UiTabs
+            isEqual
             :items="tabItems"
             :modelValue="activeTabIdx"
             @update:modelValue="(v) => goToTab(v as number)"

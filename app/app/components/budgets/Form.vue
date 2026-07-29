@@ -159,6 +159,7 @@ function onSave(close: () => void) {
           </template>
           <UiTabs
             v-model="kind"
+            isEqual
             :items="kindItems"
           />
         </FormElement>
@@ -204,6 +205,7 @@ function onSave(close: () => void) {
             </template>
             <UiTabs
               v-model="amountPeriod"
+              isEqual
               :items="amountPeriodItems"
             />
           </FormElement>

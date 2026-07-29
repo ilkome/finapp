@@ -70,6 +70,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
   <div>
     <UiTabs
       v-model="viewTab"
+      isEqual
       class="mb-2"
       :items="viewTabItems"
     />

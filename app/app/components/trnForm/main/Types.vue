@@ -28,6 +28,7 @@ const items = computed<TabsItem[]>(() => {
 
 <template>
   <UiTabs
+    isEqual
     :items="items"
     :modelValue="trnsFormStore.values.trnType"
     @update:modelValue="(v) => setAmountType(v as TrnType)"
