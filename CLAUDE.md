@@ -47,7 +47,8 @@ Personal finance app. Nuxt 4, Vue 3, Pinia, @nuxt/ui v4 (Tailwind CSS v4), Supab
 ## Working from plans
 
 - Feature/refactor work is specified in `plans/*.md` (gitignored - local only, so a subagent won't find them via git history; pass the path explicitly). Each plan's header should carry a `Status:` line (proposed / implemented / deferred) - keep it current, and verify status against `git log` + the code before starting, since a plan may have been shipped without its header updated.
-- To implement a plan, act as an **orchestrator**: read `ORCHESTRATOR.md` (repo root) first and follow it - subagents (sonnet) write code, you plan, review the diff yourself before committing, and commit one step at a time.
+- To implement a plan, act as an **orchestrator**: read `ORCHESTRATOR.md` (repo root) first and follow it - subagents write code, you plan, review the diff yourself before committing, and commit one step at a time.
+- Spawn those subagents as `subagent_type: "coder"` (`.claude/agents/coder.md` pins sonnet + `effort: low` + the mandatory rule block). A plain `general-purpose` agent inherits the session's effort instead, which defeats the high-effort-orchestrator / low-effort-coder split.
 
 ## Backend: Supabase + PowerSync
 
