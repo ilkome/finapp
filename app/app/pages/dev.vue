@@ -1,3 +1,16 @@
+<script setup lang="ts">
+const tabsPillValue = ref('two')
+const tabsPillEqualValue = ref('two')
+const tabsScrollValue = ref('item-3')
+const tabsLinkValue = ref('two')
+const tabsMdValue = ref('two')
+const tabsSmValue = ref('two')
+const tabsXsValue = ref('two')
+const tabsLastActiveValue = ref('item-15')
+
+const tabsScrollItems = Array.from({ length: 15 }, (_, i) => ({ label: `Item ${i + 1}`, value: `item-${i + 1}` }))
+</script>
+
 <template>
   <UiPage>
     <div class="grid grid-cols-[1fr_auto] items-start gap-8 p-3">
@@ -142,15 +155,53 @@
 
         <div>
           <h1 class="mb-2 border-b border-default pb-1">
-            UTabs
+            UiTabs
           </h1>
 
           <div class="grid gap-4">
-            <UTabs
-              :content="false"
-              :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }]"
-              defaultValue="one"
-            />
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                pill, 3 items (fills)
+              </div>
+              <UiTabs v-model="tabsPillValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                pill, 3 items, isEqual (identical boxes)
+              </div>
+              <UiTabs v-model="tabsPillEqualValue" isEqual :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                pill, ~15 items (scrolls)
+              </div>
+              <UiTabs v-model="tabsScrollValue" :items="tabsScrollItems" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                link variant
+              </div>
+              <UiTabs v-model="tabsLinkValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" variant="link" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                sizes: md / sm / xs
+              </div>
+              <UiTabs v-model="tabsMdValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" size="md" />
+              <UiTabs v-model="tabsSmValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" size="sm" />
+              <UiTabs v-model="tabsXsValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" size="xs" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                initial active item is the LAST one (mount-jump regression check)
+              </div>
+              <UiTabs v-model="tabsLastActiveValue" :items="tabsScrollItems" />
+            </div>
 
             <URadioGroup
               defaultValue="one"
