@@ -56,19 +56,6 @@ export default defineAppConfig({
         },
       },
     },
-    tabs: {
-      defaultVariants: {
-        variant: 'pill',
-      },
-      variants: {
-        variant: {
-          pill: {
-            list: 'bg-elevated/30',
-            trigger: 'grow',
-          },
-        },
-      },
-    },
     toast: {
       props: {
         close: false,
