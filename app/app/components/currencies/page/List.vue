@@ -134,9 +134,8 @@ const tabItems = computed<TabsItem[]>(() => [
       </div>
 
       <!-- Fiat / Crypto tabs -->
-      <UTabs
+      <UiTabs
         v-model="activeTab"
-        :content="false"
         size="xs"
         class="mt-4 mb-2"
         :items="tabItems"

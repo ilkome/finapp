@@ -121,8 +121,7 @@ const tabItems = computed<TabsItem[]>(() => [
         class="grid h-full min-h-0 grid-rows-[auto_1fr]"
       >
         <div class="px-3 pb-2">
-          <UTabs
-            :content="false"
+          <UiTabs
             :items="tabItems"
             :modelValue="activeTabIdx"
             @update:modelValue="(v) => goToTab(v as number)"

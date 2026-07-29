@@ -157,9 +157,8 @@ function onSave(close: () => void) {
           <template #label>
             {{ t('budgets.form.kind') }}
           </template>
-          <UTabs
+          <UiTabs
             v-model="kind"
-            :content="false"
             :items="kindItems"
           />
         </FormElement>
@@ -203,9 +202,8 @@ function onSave(close: () => void) {
             <template #label>
               {{ t('budgets.form.cadence') }}
             </template>
-            <UTabs
+            <UiTabs
               v-model="amountPeriod"
-              :content="false"
               :items="amountPeriodItems"
             />
           </FormElement>

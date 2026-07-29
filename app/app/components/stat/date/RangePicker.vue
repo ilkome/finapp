@@ -68,9 +68,8 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
 
 <template>
   <div>
-    <UTabs
+    <UiTabs
       v-model="viewTab"
-      :content="false"
       class="mb-2"
       :items="viewTabItems"
     />
@@ -113,8 +112,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
 
         <div class="grid gap-2">
           <div class="flex flex-wrap items-center gap-1">
-            <UTabs
-              :content="false"
+            <UiTabs
               size="sm"
               :items="granularityItems"
               :modelValue="statDate.params.value.granularityBy"

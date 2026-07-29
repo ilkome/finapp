@@ -185,8 +185,7 @@ const periodTypeItems = computed<TabsItem[]>(() => budgetPeriodTypes.map(type =>
     <div class="grid max-w-3xl gap-4 px-2 pb-10 lg:px-4">
       <!-- Period type + navigation -->
       <div class="flex flex-wrap items-center justify-between gap-2">
-        <UTabs
-          :content="false"
+        <UiTabs
           size="xs"
           :items="periodTypeItems"
           :modelValue="period.periodType.value"

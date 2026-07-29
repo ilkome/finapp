@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { TabsItem, TabsProps } from '@nuxt/ui'
+import type { TabsItem } from '@nuxt/ui'
 
 import type { IntervalGroupedLabel, StatDateProvider } from '~/components/stat/date/types'
 
 const props = withDefaults(defineProps<{
   isShowRangeAdjust?: boolean
-  size?: TabsProps['size']
+  size?: 'md' | 'sm' | 'xs'
   statDate: StatDateProvider
   view: 'periods' | 'presets' | 'maximum'
 }>(), { size: 'sm' })
@@ -132,9 +132,8 @@ function onSelectMaxRangeKey(key: string | number) {
 
 <template>
   <div class="flex shrink-0 items-center gap-1">
-    <UTabs
+    <UiTabs
       v-if="(view === 'periods' || view === 'presets') && rangeTabItems.length"
-      :content="false"
       :size
       :items="rangeTabItems"
       :modelValue="selectedRangeKey"
@@ -149,10 +148,9 @@ function onSelectMaxRangeKey(key: string | number) {
       />
     </template>
 
-    <UTabs
+    <UiTabs
 
       v-if="props.view === 'maximum'"
-      :content="false"
       :size
       :items="maxRangeItems"
       :modelValue="selectedMaxRangeKey"

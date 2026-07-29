@@ -108,9 +108,8 @@ const tabItems = computed<TabsItem[]>(() => [
 
           <div class="px-2 pb-6">
             <div class="pb-2 pl-1">
-              <UTabs
+              <UiTabs
                 v-model="activeTab"
-                :content="false"
                 size="xs"
                 :items="tabItems"
               />

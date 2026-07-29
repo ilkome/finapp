@@ -311,9 +311,8 @@ function fmtDay(day: number) {
         {{ t('recurrences.upcoming.dueSoon', { count: soonCount }) }}
       </span>
       <span class="grow" />
-      <UTabs
+      <UiTabs
         v-model="horizon"
-        :content="false"
         size="xs"
         :items="horizonItems"
       />
@@ -468,8 +467,7 @@ function fmtDay(day: number) {
             class="flex flex-wrap items-center gap-1 rounded-md bg-elevated/50 px-3 py-2"
           >
             <span class="mr-1 text-2xs text-muted">{{ t('recurrences.delay.title') }}</span>
-            <UTabs
-              :content="false"
+            <UiTabs
               size="xs"
               :items="delayPresetItems()"
               @update:modelValue="(v) => delayTo(p, v as number)"

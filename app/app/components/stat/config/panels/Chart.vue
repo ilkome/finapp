@@ -61,8 +61,7 @@ const chartTypeItems = computed<TabsItem[]>(() => visibleChartTypeOptions.value.
         <UiTitleSection size="sm" class="px-1">
           {{ t('stat.config.chartView.label') }}
         </UiTitleSection>
-        <UTabs
-          :content="false"
+        <UiTabs
           :items="chartViewItems"
           :modelValue="statConfig.config.value.chart.view"
           @update:modelValue="(v) => statConfig.updateConfig('chart', { view: v as typeof chartViewOptions[number] })"
@@ -73,8 +72,7 @@ const chartTypeItems = computed<TabsItem[]>(() => visibleChartTypeOptions.value.
         <UiTitleSection size="sm" class="px-1">
           {{ t('stat.config.chart.type.label') }}
         </UiTitleSection>
-        <UTabs
-          :content="false"
+        <UiTabs
           :items="chartTypeItems"
           :modelValue="activeChartType"
           @update:modelValue="(v) => statConfig.updateConfig('chart', { type: v as ChartType })"

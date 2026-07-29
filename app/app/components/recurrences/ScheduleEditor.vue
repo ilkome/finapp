@@ -48,9 +48,8 @@ const freqItems = computed<TabsItem[]>(() => recurrenceFreqs.map(f => ({ label: 
       <template #label>
         {{ t('recurrences.form.repeat') }}
       </template>
-      <UTabs
+      <UiTabs
         v-model="model.freq"
-        :content="false"
         :items="freqItems"
       />
     </FormElement>

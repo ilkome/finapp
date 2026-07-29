@@ -24,8 +24,7 @@ const items = computed<TabsItem[]>(() => [
 </script>
 
 <template>
-  <UTabs
-    :content="false"
+  <UiTabs
     class="@xl/page:px-0"
     :items="items"
     :modelValue="props.currencyFiltered"

@@ -177,8 +177,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
 
       <div class="@3xl/main:max-w-sm">
         <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2 ">
-          <UTabs
-            :content="false"
+          <UiTabs
             :items="groupNavItems"
             :modelValue="groupedBy"
             class="w-full"

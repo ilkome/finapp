@@ -41,8 +41,7 @@ watch(() => props.active, () => {
 </script>
 
 <template>
-  <UTabs
-    :content="false"
+  <UiTabs
     :items="menu"
     :modelValue="active"
     class="w-full"

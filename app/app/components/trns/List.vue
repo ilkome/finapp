@@ -182,9 +182,8 @@ function onOpenTrnForm(date: number) {
     <slot name="contentBefore" />
 
     <!-- Filter by type -->
-    <UTabs
+    <UiTabs
       v-if="isShowFilterByType && realTypesCount > 1"
-      :content="false"
       size="xs"
       class="mb-2"
       :items="typeFilterItems"

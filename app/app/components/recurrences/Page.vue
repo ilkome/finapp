@@ -135,10 +135,9 @@ useHead({ title: t('recurrences.title') })
                 {{ t('recurrences.subscriptions.title') }}
               </UiTextSubtitle>
               <span class="grow" />
-              <UTabs
+              <UiTabs
                 v-if="activeCount > 1"
                 v-model="sortMode"
-                :content="false"
                 size="xs"
                 :items="sortModeItems"
               />
