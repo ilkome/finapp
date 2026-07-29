@@ -6,26 +6,28 @@ const isExpanded = ref(false)
 </script>
 
 <template>
-  <div class="flex items-center overflow-x-auto">
-    <StatDateRanges
-      size="xs"
-      :statDate
-      view="periods"
-    />
-
-    <template v-if="isExpanded">
+  <div class="flex min-w-0 items-center">
+    <div class="flex min-w-0 items-center overflow-x-auto">
       <StatDateRanges
         size="xs"
         :statDate
-        view="presets"
+        view="periods"
       />
 
-      <StatDateRanges
-        size="xs"
-        :statDate
-        view="maximum"
-      />
-    </template>
+      <template v-if="isExpanded">
+        <StatDateRanges
+          size="xs"
+          :statDate
+          view="presets"
+        />
+
+        <StatDateRanges
+          size="xs"
+          :statDate
+          view="maximum"
+        />
+      </template>
+    </div>
 
     <button
       type="button"
