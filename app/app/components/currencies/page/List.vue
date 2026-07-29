@@ -143,7 +143,7 @@ const tabItems = computed<TabsItem[]>(() => [
       />
 
       <div v-if="activeList.length === 0" class="py-6 text-center text-sm text-muted">
-        {{ t('currencies.list.notFound') }}
+        {{ allRateCodes.length === 0 ? t('currencies.list.noRates') : t('currencies.list.notFound') }}
       </div>
 
       <div v-else>

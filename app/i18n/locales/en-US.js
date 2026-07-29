@@ -209,6 +209,7 @@ export default {
     base: 'Base currency',
     list: {
       all: 'All',
+      noRates: 'Exchange rates are not loaded',
       notFound: 'Currency not found...',
       search: 'Search',
       showAll: 'Show all wallets',
