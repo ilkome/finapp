@@ -83,9 +83,7 @@ const tabItems = computed<TabsItem[]>(() => [
           <TrnFormDate />
         </div>
 
-        <UTabs
-
-          :content="false"
+        <UiTabs
           class="mb-4"
           :items="tabItems"
           :modelValue="filterBy"

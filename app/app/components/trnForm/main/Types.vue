@@ -27,8 +27,7 @@ const items = computed<TabsItem[]>(() => {
 </script>
 
 <template>
-  <UTabs
-    :content="false"
+  <UiTabs
     :items="items"
     :modelValue="trnsFormStore.values.trnType"
     @update:modelValue="(v) => setAmountType(v as TrnType)"
