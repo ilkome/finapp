@@ -110,7 +110,7 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
   function formatRangeWithLast(params: DateFormatParams, isShowMaxRange?: boolean): string {
     const { by, duration, end, start } = params
 
-    if (duration === 1) {
+    if (!isShowMaxRange && duration === 1) {
       if (isSamePeriod(start, today, by))
         return t(`dates.${by}.current`)
 

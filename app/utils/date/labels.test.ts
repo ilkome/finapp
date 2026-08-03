@@ -105,8 +105,52 @@ describe('createRangeFormatter', () => {
       expect(formatRangeWithLast({ by: 'month', duration: 1, end: new Date(monthEnd(2025, 4)), start: new Date(Date.UTC(2025, 4, 1)) })).toBe('Last Month')
     })
 
+    it('shows "This Year" for current year', () => {
+      expect(formatRangeWithLast({ by: 'year', duration: 1, end: new Date(monthEnd(2025, 11)), start: new Date(Date.UTC(2025, 0, 1)) })).toBe('This Year')
+    })
+
+    it('shows "Last Year" for previous year', () => {
+      expect(formatRangeWithLast({ by: 'year', duration: 1, end: new Date(monthEnd(2024, 11)), start: new Date(Date.UTC(2024, 0, 1)) })).toBe('Last Year')
+    })
+
     it('shows "Last N periods" when end is in current period', () => {
       expect(formatRangeWithLast({ by: 'day', duration: 3, end: todayCivil, start: new Date(Date.UTC(2025, 5, 13)) })).toBe('Last 3 days')
+    })
+
+    it.each([
+      ['day', 3, new Date(Date.UTC(2025, 5, 13))],
+      ['month', 3, new Date(Date.UTC(2025, 3, 1))],
+      ['year', 3, new Date(Date.UTC(2023, 0, 1))],
+    ] as const)('shows "Last N periods" for current multi-%s ranges', (by, duration, start) => {
+      expect(formatRangeWithLast({ by, duration, end: todayCivil, start })).toBe(`Last ${duration} ${by}s`)
+    })
+
+    it('uses the translation choice for Russian plural forms', () => {
+      const ru = createRangeFormatter((key, choice) => {
+        if (key === 'dates.last.day')
+          return 'Последние'
+        if (key === 'dates.day.current')
+          return 'Сегодня'
+        if (key === 'dates.day.plural')
+          return ({ 1: 'день', 2: 'дня', 5: 'дней', 21: 'день' } as Record<number, string>)[choice!]!
+        return key
+      }, 'ru')
+
+      expect(ru.formatRangeWithLast({
+        by: 'day',
+        duration: 1,
+        end: todayCivil,
+        start: todayCivil,
+      })).toBe('Сегодня')
+
+      for (const duration of [2, 5, 21]) {
+        expect(ru.formatRangeWithLast({
+          by: 'day',
+          duration,
+          end: todayCivil,
+          start: new Date(Date.UTC(2025, 5, 15 - duration + 1)),
+        })).toBe(`Последние ${duration} ${({ 1: 'день', 2: 'дня', 5: 'дней', 21: 'день' } as Record<number, string>)[duration]}`)
+      }
     })
 
     it('shows "d MMMM" for single day in current year (not today/yesterday)', () => {
@@ -117,6 +161,33 @@ describe('createRangeFormatter', () => {
     it('shows "d MMM yyyy" for single day in past year', () => {
       const date = new Date(Date.UTC(2024, 5, 15))
       expect(formatRangeWithLast({ by: 'day', duration: 1, end: date, start: date })).toBe('15 Jun 2024')
+    })
+
+    it('falls back to calendar formatting for past ranges', () => {
+      expect(formatRangeWithLast({
+        by: 'month',
+        duration: 2,
+        end: new Date(monthEnd(2025, 3)),
+        start: new Date(Date.UTC(2025, 2, 1)),
+      })).toBe('Mar - Apr')
+    })
+
+    it('suppresses relative formatting for the overall max range', () => {
+      expect(formatRangeWithLast({
+        by: 'day',
+        duration: 3,
+        end: todayCivil,
+        start: new Date(Date.UTC(2025, 5, 13)),
+      }, true)).toBe('13-15 Jun')
+    })
+
+    it('suppresses singleton current and last labels for the overall max range', () => {
+      expect(formatRangeWithLast({
+        by: 'day',
+        duration: 1,
+        end: todayCivil,
+        start: new Date(Date.UTC(2025, 5, 14)),
+      }, true)).toBe('14-15 Jun')
     })
   })
 })
