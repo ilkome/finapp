@@ -12,6 +12,21 @@ type StatConfigParams = {
   storageKey: string
 }
 
+export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig): MiniItemConfig {
+  const stored = storageValue as { chart?: { type?: unknown } } | undefined
+  const config = defu(stored ?? {}, defaults) as MiniItemConfig
+  if (stored?.chart?.type !== 'pie')
+    return config
+
+  return {
+    ...config,
+    chart: {
+      ...config.chart,
+      type: 'bar',
+    },
+  }
+}
+
 export function useStatConfig({ props, storageKey }: StatConfigParams) {
   const configStorageKey = computed(() => {
     const query = useRouter().currentRoute.value.query
@@ -23,7 +38,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   // stat-hosting page calls this composable with its own storageKey - without
   // cloning, useStorage would seed each page's ref from the same nested objects.
   const config = useStorage<MiniItemConfig>(configStorageKey.value, structuredClone(defaultConfig), localStorage, {
-    mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
+    mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig),
   })
 
   if (props) {

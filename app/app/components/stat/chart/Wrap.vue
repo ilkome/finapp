@@ -1,25 +1,16 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
-import type { CategoryId } from '~/components/categories/types'
 import type { ChartSeries } from '~/components/stat/types'
-import type { ChartPieGroup } from '~/components/stat/useStatReport'
 
-import { resolveChartType } from '~/components/stat/config/schema'
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
-  pieGroups: ChartPieGroup[]
   series: ChartSeries[]
   xAxisLabels: number[]
 }>()
 
-const emit = defineEmits<{
-  clickCategory: [id: CategoryId]
-}>()
-
-const { t } = useI18n()
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
@@ -28,8 +19,7 @@ const trnsFormStore = useTrnsFormStore()
 const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartView = computed(() => statConfig.config.value.chart.view)
-const chartType = computed(() => resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.isByCategories))
-const isPie = computed(() => chartType.value === 'pie')
+const chartType = computed(() => statConfig.config.value.chart.type)
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
 function onClickChart(idx: number) {
@@ -47,13 +37,10 @@ function onChangePeriod(period: Period) {
   <div
     v-if="isChartShow"
     :class="{
-      '@3xl/main:max-w-xl': chartView === 'half' && !isPie,
+      '@3xl/main:max-w-xl': chartView === 'half',
     }"
   >
-    <div
-      v-if="!isPie"
-      class="-mb-1 flex justify-end"
-    >
+    <div class="-mb-1 flex justify-end">
       <StatDateQuickRanges v-if="isShowQuick" />
 
       <div class="h-7">
@@ -66,28 +53,12 @@ function onChangePeriod(period: Period) {
       </div>
     </div>
 
-    <!-- Reserve the chart height on this always-present box (min-h so the pie view can grow taller).
-         The height must live here, not on a v-else placeholder that the idle mount swaps out: the
+    <!-- Reserve the chart height on this always-present box. The height must live here, not on a placeholder that the idle mount swaps out: the
          chart is a lazy component, so between isChartMountReady flipping and its chunk resolving the
          box would otherwise collapse for a frame and shift the whole page (CLS). -->
     <div class="min-h-40 @3xl/stat:min-h-52">
-      <div
-        v-if="isPie && isChartMountReady"
-        class="grid gap-4"
-        :class="{ '@sm/stat:grid-cols-2': props.pieGroups.length > 1 }"
-      >
-        <LazyStatChartPieView
-          v-for="group in props.pieGroups"
-          :key="group.type"
-          :pieData="group.pieData"
-          :showLegend="props.pieGroups.length === 1"
-          :typeLabel="t(`money.${group.type}`)"
-          @clickCategory="emit('clickCategory', $event)"
-        />
-      </div>
-
       <LazyStatChartAxisView
-        v-else-if="isChartMountReady"
+        v-if="isChartMountReady"
         :chartType
         :period="statDate.params.value.granularityBy"
         :series="props.series"

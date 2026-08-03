@@ -3,20 +3,9 @@ import type { DeepPartial } from '~~/utils/types'
 import defu from 'defu'
 import { z } from 'zod/v4'
 
-import type { ChartType } from '~/components/stat/chart/types'
-
 import { chartTypes } from '~/components/stat/chart/types'
 
 export const chartViewOptions = ['half', 'full'] as const
-
-/**
- * Pie is only meaningful for the per-category breakdown. When the chart is
- * aggregated a stored `pie` selection falls back to `bar`, so switching the
- * mode never leaves the chart in an unrenderable state.
- */
-export function resolveChartType(raw: ChartType, isByCategories: boolean): ChartType {
-  return !isByCategories && raw === 'pie' ? 'bar' : raw
-}
 
 export const ConfigSchema = z.object({
   average: z.object({

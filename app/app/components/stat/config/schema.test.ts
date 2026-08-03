@@ -61,6 +61,11 @@ describe('configSchema', () => {
     expect(ConfigSchema.safeParse(invalid).success).toBe(false)
   })
 
+  it('rejects the removed pie chart type', () => {
+    const invalid = { ...defaultConfig, chart: { ...defaultConfig.chart, type: 'pie' } }
+    expect(ConfigSchema.safeParse(invalid).success).toBe(false)
+  })
+
   it('rejects invalid categories view', () => {
     const invalid = { ...defaultConfig, categories: { ...defaultConfig.categories, view: 'grid' } }
     expect(ConfigSchema.safeParse(invalid).success).toBe(false)
