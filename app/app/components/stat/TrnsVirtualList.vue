@@ -202,6 +202,7 @@ watch([
   }),
   () => props.ctx.params.statTab.value,
   () => props.ctx.filteredCategoriesIds.value.join(','),
+  () => props.ctx.filteredType.value,
   () => props.ctx.params.filter.categoriesIds.value.join(','),
   () => props.ctx.params.filter.walletsIds.value.join(','),
 ], () => nextTick(resetFeed))
