@@ -8,6 +8,7 @@ export const statDateKey: InjectionKey<StatDateProvider> = Symbol('statDate')
 export const statConfigKey: InjectionKey<StatConfigProvider> = Symbol('statConfig')
 export const statConfigPanelKey: InjectionKey<Ref<StatConfigPanelId>> = Symbol('statConfigPanel')
 export const statDashboardKey: InjectionKey<boolean> = Symbol('statDashboard')
+export const statPreservedCategoryScrollTopKey: InjectionKey<Readonly<Ref<number | null>>> = Symbol('statPreservedCategoryScrollTop')
 // Set on the dashboard so the date/filter nav row pins below the page header.
 export const statStickyNavKey: InjectionKey<boolean> = Symbol('statStickyNav')
 export const statStickyTopKey: InjectionKey<Readonly<Ref<number>>> = Symbol('statStickyTop')

@@ -5,6 +5,7 @@ import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { UseStatReportParams } from '~/components/stat/useStatReport'
 import type { WalletId } from '~/components/wallets/types'
 
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
 
@@ -18,11 +19,34 @@ type UseStatReportContextParams = UseStatReportParams & {
 export function useStatReportContext(params: UseStatReportContextParams) {
   const report = useStatReport(params)
   const quickView = useTrnsQuickView(report.selectedAndFilteredTrnsIds)
+  const categoriesStore = useCategoriesStore()
 
   const isOneCategory = computed(() => !!params.categoryId?.value)
+  const isCategoryFocus = computed(() =>
+    !params.categoryId?.value
+    && !params.walletId?.value
+    && params.statTab.value === 'summary'
+    && !params.type.value
+    && (report.filteredType.value === 'expense' || report.filteredType.value === 'income'),
+  )
   const shouldShowAmounts = computed(() => !params.categoryId?.value || params.categoryId.value !== 'transfer')
   const hasCategoriesData = computed(() => !!params.hasChildren?.value || (params.preCategoriesIds?.value ?? []).length > 0)
-  const shouldUseTwoColumnLayout = computed(() => params.statTab.value !== 'split' && params.statConfig.config.value.categories.list.isShow)
+  const focusedQuickCategoryId = computed(() => report.filteredCategoriesIds.value[0])
+  const focusedQuickCategoryHasChildren = computed(() => {
+    const categoryId = focusedQuickCategoryId.value
+    return !!categoryId && categoriesStore.hasChildren(categoryId)
+  })
+  const shouldShowCategoriesBreakdown = computed(() => {
+    if (focusedQuickCategoryId.value)
+      return focusedQuickCategoryHasChildren.value
+
+    return hasCategoriesData.value
+      && (params.statConfig.config.value.categories.list.isShow || params.statConfig.config.value.categories.bars.isShow)
+  })
+  const shouldUseTwoColumnLayout = computed(() =>
+    params.statTab.value !== 'split'
+    && (params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value),
+  )
 
   function onClickCategory(clickedCategoryId: CategoryId) {
     if (params.categoryId?.value) {
@@ -51,12 +75,15 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   return {
     ...report,
     ...quickView,
+    focusedQuickCategoryId,
     hasCategoriesData,
+    isCategoryFocus,
     isOneCategory,
     onClickCategory,
     onClickSumItemWrap,
     params,
     shouldShowAmounts,
+    shouldShowCategoriesBreakdown,
     shouldUseTwoColumnLayout,
   }
 }

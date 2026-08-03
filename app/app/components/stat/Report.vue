@@ -25,6 +25,9 @@ const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
+const stickySummary = useTemplateRef<HTMLElement>('stickySummary')
+const { height: stickySummaryHeight } = useElementSize(stickySummary)
+const categoriesStickyTop = computed(() => stickyTop.value + stickySummaryHeight.value + 12)
 
 const { chartFx, chartTrigger, dateFx, sumsFx } = useScrollReveal(stickyNav, stickyTop)
 
@@ -56,6 +59,7 @@ const ctx = useStatReportContext({
 
     <div class="grid min-w-0 content-start gap-3">
       <div
+        ref="stickySummary"
         data-stat-sticky-summary
         class="grid gap-3"
         :class="stickyNav && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur md:pt-2 lg:-mx-4 lg:px-4 lg:pb-2'"
@@ -70,7 +74,10 @@ const ctx = useStatReportContext({
         </div>
       </div>
 
-      <StatReportDetails :ctx="ctx" />
+      <StatReportDetails
+        :categoriesStickyTop
+        :ctx="ctx"
+      />
     </div>
   </div>
 </template>

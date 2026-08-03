@@ -8,6 +8,8 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   categoriesWithData: CategoryWithData[]
+  focusedCategories?: CategoryWithData[]
+  focusedChildCategoryId?: CategoryId
   groupedCategories: CategoryWithData[]
   isOneCategory?: boolean
   storageKey: string
@@ -17,6 +19,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   clickCategory: [categoryId: CategoryId]
+  setFocusedCategoryFilter: [categoryId: CategoryId]
 }>()
 
 const { t } = useI18n()
@@ -26,6 +29,7 @@ const catsList = computed(() => statConfig.config.value.categories.list)
 const isListShow = computed(() => catsList.value.isShow)
 const isListGrouped = computed(() => catsList.value.isGrouped)
 const isLines = computed(() => catsList.value.isLines)
+const isFocused = computed(() => props.focusedCategories !== undefined)
 
 const linesCategories = computed<CategoryWithData[]>(() => isListGrouped.value ? props.groupedCategories : props.ungroupedCategories)
 const linesMaxValues = computed(() => getMaxCategoryValues(linesCategories.value))
@@ -57,10 +61,10 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
 
 <template>
   <div
-    v-if="isListShow"
+    v-if="isListShow || isFocused"
     class="@3xl/main:max-w-md"
   >
-    <div class="flex items-center justify-between">
+    <div v-if="!isFocused" class="flex items-center justify-between">
       <UiTitleCollapse
         class="grow"
         :isShown="isListShown"
@@ -93,14 +97,30 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
     </div>
 
     <div
-      v-if="isListShown"
+      v-if="isFocused || isListShown"
       :class="{
         '@3xl/main:max-w-md': !isListGrouped,
       }"
       class="pt-2"
     >
+      <template v-if="isFocused">
+        <StatCategoriesLine
+          v-for="item in focusedCategories"
+          :key="item.id"
+          :isActive="props.focusedChildCategoryId === item.id"
+          :isShowParent="false"
+          :item="item"
+          :maxCategoryValues="childrenMaxValues"
+          :lineWidth="isLines ? 0 : 1"
+          class="group"
+          @click="emit('setFocusedCategoryFilter', item.id)"
+          @amountClick="emit('setFocusedCategoryFilter', item.id)"
+        />
+      </template>
+
       <template
         v-for="item in linesCategories"
+        v-else
         :key="item.id"
       >
         <StatCategoriesLine

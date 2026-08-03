@@ -5,13 +5,6 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getParentCategoryIdOrUndefined, isSystemCategoryId } from '~/components/categories/utils'
 
-/** Neutral grey used for the aggregated "Other" slice/series. */
-const OTHER_SLICE_COLOR = 'var(--ui-text-dimmed)'
-/** Synthetic id for the aggregated "Other" pie slice. Not a real category. */
-export const OTHER_SLICE_ID = '__other__'
-/** Default number of top categories shown before the rest roll up into "Other". */
-const DEFAULT_PIE_TOP_N = 8
-
 type AggregateParams = {
   categoriesItems: Categories
   computeTotalForTrnsIds: (ids: TrnId[]) => { expense: number, income: number, sum: number }
@@ -26,17 +19,11 @@ type AggregateParams = {
 
 type BuildSeriesParams = AggregateParams & {
   chartType: ChartType | undefined
-}
-
-type BuildPieParams = AggregateParams & {
-  topN?: number
+  otherName?: string
 }
 
 export type CategoryPieDatum = {
   color: string
-  id: CategoryId
-  isOther?: boolean
-  name: string
   value: number
 }
 
@@ -47,6 +34,13 @@ type AggregatedTotals = {
   orderedCategoryIds: CategoryId[]
   /** For each interval: displayCategoryId -> trnIds that fell into it. */
   perIntervalByCategory: Record<CategoryId, TrnId[]>[]
+}
+
+const HIGHLIGHTED_CATEGORIES_COUNT = 5
+const OTHER_CATEGORY_COLOR = 'var(--ui-text-dimmed)'
+
+function resolveCategoryColor(categoriesItems: Categories, categoryId: CategoryId): string {
+  return categoriesItems[categoryId]?.color ?? OTHER_CATEGORY_COLOR
 }
 
 function resolveCategoryId(
@@ -65,7 +59,7 @@ function resolveCategoryId(
  * Single source of truth for category breakdown numbers.
  * Buckets transactions per interval by display category, then sums each
  * category's total across the whole range. System categories (transfer,
- * adjustment) and out-of-filter categories are excluded. Both the bar/line series and the pie slices are
+ * adjustment) and out-of-filter categories are excluded. Both the bar/line series and focused donut are
  * derived from this so their numbers always agree.
  */
 export function aggregateCategoryTotals({
@@ -127,6 +121,7 @@ export function buildCategoriesSeries({
   filterCategoriesIds,
   intervals,
   isGrouped,
+  otherName = 'Other',
   trnsItems,
   type,
 }: BuildSeriesParams): ChartSeries[] {
@@ -141,29 +136,54 @@ export function buildCategoriesSeries({
     type,
   })
 
-  return orderedCategoryIds.map((catId): ChartSeries => {
+  const valuesByInterval = perIntervalByCategory.map(bucket => Object.fromEntries(
+    Object.entries(bucket).map(([categoryId, trnIds]) => [
+      categoryId,
+      computeTotalForTrnsIds(trnIds)[type],
+    ]),
+  ) as Record<CategoryId, number>)
+  const highlightedIdsByInterval = valuesByInterval.map(values => Object.entries(values)
+    .filter(([, value]) => value > 0)
+    .sort(([, valueA], [, valueB]) => valueB - valueA)
+    .slice(0, HIGHLIGHTED_CATEGORIES_COUNT)
+    .map(([categoryId]) => categoryId))
+  const highlightedSets = highlightedIdsByInterval.map(ids => new Set(ids))
+  const highlightedCategoryIds = orderedCategoryIds.filter(categoryId =>
+    highlightedSets.some(ids => ids.has(categoryId)),
+  )
+
+  const series = highlightedCategoryIds.map((catId): ChartSeries => {
     const category = categoriesItems[catId]
-    const data = perIntervalByCategory.map(bucket =>
-      bucket[catId] ? computeTotalForTrnsIds(bucket[catId])[type] : 0,
-    )
     return {
-      color: category?.color,
-      data,
+      color: resolveCategoryColor(categoriesItems, catId),
+      data: valuesByInterval.map((values, index) =>
+        highlightedSets[index]!.has(catId) ? (values[catId] ?? 0) : 0,
+      ),
       name: category?.name ?? catId,
       type: chartType ?? 'bar',
     }
   })
+
+  const otherData = valuesByInterval.map((values, index) => Object.entries(values)
+    .filter(([categoryId]) => !highlightedSets[index]!.has(categoryId))
+    .reduce((total, [, value]) => total + value, 0))
+  if (otherData.some(value => value > 0)) {
+    series.push({
+      color: OTHER_CATEGORY_COLOR,
+      data: otherData,
+      name: otherName,
+      type: chartType ?? 'bar',
+    })
+  }
+
+  return series
 }
 
 /**
- * Pie slices for the "by categories" donut: top-N categories by total,
- * descending, with the remainder rolled up into a single neutral "Other"
- * slice (labeled with the `otherLabel` argument). Numbers come from the same
- * aggregation as the bar series.
+ * Focused-donut slices, derived from the same aggregation as the bar series.
  */
 export function buildCategoriesPieData(
-  { categoriesItems, computeTotalForTrnsIds, excludedCategoriesIds, filterCategoriesIds, intervals, isGrouped, topN = DEFAULT_PIE_TOP_N, trnsItems, type }: BuildPieParams,
-  otherLabel: string,
+  { categoriesItems, computeTotalForTrnsIds, excludedCategoriesIds, filterCategoriesIds, intervals, isGrouped, trnsItems, type }: AggregateParams,
 ): CategoryPieDatum[] {
   const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
     categoriesItems,
@@ -176,29 +196,17 @@ export function buildCategoriesPieData(
     type,
   })
 
-  const top = orderedCategoryIds.slice(0, topN).map((catId): CategoryPieDatum => {
-    const category = categoriesItems[catId]
-    return {
-      color: category?.color ?? OTHER_SLICE_COLOR,
-      id: catId,
-      name: category?.name ?? catId,
+  const highlightedData = orderedCategoryIds
+    .slice(0, HIGHLIGHTED_CATEGORIES_COUNT)
+    .map((catId): CategoryPieDatum => ({
+      color: resolveCategoryColor(categoriesItems, catId),
       value: categoryTotals[catId]!,
-    }
-  })
+    }))
+  const otherValue = orderedCategoryIds
+    .slice(HIGHLIGHTED_CATEGORIES_COUNT)
+    .reduce((total, catId) => total + categoryTotals[catId]!, 0)
 
-  const restIds = orderedCategoryIds.slice(topN)
-  if (restIds.length === 0)
-    return top
-
-  const otherValue = restIds.reduce((acc, id) => acc + categoryTotals[id]!, 0)
-  return [
-    ...top,
-    {
-      color: OTHER_SLICE_COLOR,
-      id: OTHER_SLICE_ID,
-      isOther: true,
-      name: otherLabel,
-      value: otherValue,
-    },
-  ]
+  return otherValue > 0
+    ? [...highlightedData, { color: OTHER_CATEGORY_COLOR, value: otherValue }]
+    : highlightedData
 }

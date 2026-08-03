@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
+import { isStatTrnsNearEnd, resolveStatStickyBottom } from '~/components/stat/infinitePeriods'
+import { statPreservedCategoryScrollTopKey, statStickyTopKey } from '~/components/stat/injectionKeys'
 import { useStatInfinitePeriods } from '~/components/stat/useStatInfinitePeriods'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsListFilters } from '~/components/trns/useTrnsListFilters'
@@ -12,9 +14,11 @@ const props = defineProps<{
 
 const trnsStore = useTrnsStore()
 const { t } = useI18n()
+const stickyTop = inject(statStickyTopKey, ref(0))
+const preservedCategoryScrollTop = inject(statPreservedCategoryScrollTopKey, shallowRef<number | null>(null))
 
 const candidateIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: props.ctx.filteredCategoriesIds.value,
+  categoriesIds: props.ctx.effectiveFilteredCategoriesIds.value,
   sort: true,
   trnsIds: props.ctx.params.trnsIds.value,
   trnsTypes: props.ctx.selectedTypesMapping.value,
@@ -76,14 +80,13 @@ const transactionsCount = computed(() => infinite.rows.value.filter(row => row.t
 
 let scrollFrame: number | null = null
 let isFillingViewport = false
-let previousScrollTop = 0
 
 function getStickyBottom() {
   const stickySummary = document.querySelector<HTMLElement>('[data-stat-sticky-summary]')
   if (!stickySummary)
-    return 0
+    return stickyTop.value
   const rect = stickySummary.getBoundingClientRect()
-  return rect.top <= 0 ? rect.bottom : 0
+  return resolveStatStickyBottom(stickyTop.value, rect.top, rect.bottom)
 }
 
 function syncVirtualList() {
@@ -107,9 +110,7 @@ function syncVirtualList() {
     start,
   }
 
-  const isScrollingDown = scroller.scrollTop > previousScrollTop
-  previousScrollTop = scroller.scrollTop
-  if (isScrollingDown && scroller.scrollTop + window.innerHeight > scroller.scrollHeight - 600)
+  if (isStatTrnsNearEnd(scroller.scrollTop, window.innerHeight, scroller.scrollHeight))
     infinite.loadMore()
 
   nextTick(() => {
@@ -138,14 +139,12 @@ async function fillViewport() {
     for (let i = 0; i < 8; i++) {
       await nextTick()
       const scroller = document.scrollingElement
-      if (!scroller || scroller.scrollHeight > window.innerHeight + 200 || !infinite.canLoadMore.value || infinite.isExhausted.value)
+      const hasTransactions = transactionsCount.value > 0
+      if (!scroller || (hasTransactions && scroller.scrollHeight > window.innerHeight + 200) || !infinite.canLoadMore.value || infinite.isExhausted.value)
         break
 
-      const rowsCount = infinite.rows.value.length
       infinite.loadMore()
       await nextTick()
-      if (infinite.rows.value.length === rowsCount)
-        break
     }
   }
   finally {
@@ -174,23 +173,29 @@ function removePageListeners() {
 }
 
 function scrollPageToTop() {
-  previousScrollTop = 0
   window.scrollTo({ top: 0 })
 }
 
 function resetFeed() {
+  const preservedScrollTop = preservedCategoryScrollTop.value
+  const preserveScroll = preservedScrollTop !== null
   infinite.reset()
   visibleRange.value = { end: 20, start: 0 }
   nextTick(async () => {
-    scrollPageToTop()
+    if (!preserveScroll)
+      scrollPageToTop()
     scheduleVirtualListSync()
     await fillViewport()
+    if (preserveScroll) {
+      window.scrollTo({ top: preservedScrollTop })
+      scheduleVirtualListSync()
+    }
   })
 }
 
-watch([filterBy, isShowWithDesc], () => nextTick(resetFeed))
-watch([
-  () => JSON.stringify({
+const reportFilterState = computed(() => ({
+  childCategoryId: props.ctx.filteredChildCategoryId.value,
+  date: JSON.stringify({
     customDate: props.ctx.params.statDate.params.value.customDate,
     granularityBy: props.ctx.params.statDate.params.value.granularityBy,
     granularityDuration: props.ctx.params.statDate.params.value.granularityDuration,
@@ -200,17 +205,19 @@ watch([
     rangeDuration: props.ctx.params.statDate.params.value.rangeDuration,
     rangeOffset: props.ctx.params.statDate.params.value.rangeOffset,
   }),
-  () => props.ctx.params.statTab.value,
-  () => props.ctx.filteredCategoriesIds.value.join(','),
-  () => props.ctx.filteredType.value,
-  () => props.ctx.params.filter.categoriesIds.value.join(','),
-  () => props.ctx.params.filter.walletsIds.value.join(','),
-], () => nextTick(resetFeed))
+  filteredType: props.ctx.filteredType.value,
+  parentCategoriesIds: props.ctx.filteredCategoriesIds.value.join(','),
+  selectedCategoriesIds: props.ctx.params.filter.categoriesIds.value.join(','),
+  selectedWalletsIds: props.ctx.params.filter.walletsIds.value.join(','),
+  statTab: props.ctx.params.statTab.value,
+}))
+
+watch([filterBy, isShowWithDesc], () => resetFeed())
+watch(reportFilterState, () => resetFeed())
 watch(() => props.ctx.params.statDate.scrollRangeResetVersion.value, () => nextTick(resetFeed))
 watch(infinite.rows, () => nextTick(scheduleVirtualListSync))
 
 onMounted(() => {
-  previousScrollTop = document.scrollingElement?.scrollTop ?? 0
   infinite.loadMore()
   addPageListeners()
   nextTick(async () => {
@@ -220,7 +227,6 @@ onMounted(() => {
 })
 
 onActivated(() => {
-  previousScrollTop = document.scrollingElement?.scrollTop ?? 0
   addPageListeners()
   nextTick(async () => {
     scheduleVirtualListSync()
@@ -285,7 +291,7 @@ onBeforeUnmount(removePageListeners)
           </div>
 
           <TrnsNoTrns
-            v-else-if="row.data.type === 'end' && transactionsCount === 0"
+            v-else-if="row.data.type === 'end' && transactionsCount === 0 && !infinite.isBasePeriodEmpty.value"
           />
         </div>
       </div>

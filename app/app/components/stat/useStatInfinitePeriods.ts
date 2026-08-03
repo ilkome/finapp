@@ -6,6 +6,7 @@ import type { TrnsDisplayRow } from '~/components/trns/listRows'
 import type { TrnId } from '~/components/trns/types'
 
 import { computeDateRange } from '~/components/stat/date/params'
+import { filterAvailableTrnIds, hasUnloadedTrnIds } from '~/components/stat/infinitePeriods'
 import { buildTrnsDisplayRows } from '~/components/trns/listRows'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -29,7 +30,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   const baseOffset = computed(() => ctx.params.statDate.params.value.rangeOffset)
 
-  const canLoadMore = computed(() => {
+  const canScanPeriods = computed(() => {
     const p = ctx.params.statDate.params.value
     return options.isEnabled.value
       && !p.customDate
@@ -46,7 +47,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   function idsForRange(range: Range): TrnId[] {
     return trnsStore.getStoreTrnsIds({
-      categoriesIds: ctx.filteredCategoriesIds.value,
+      categoriesIds: ctx.effectiveFilteredCategoriesIds.value,
       dates: range,
       sort: true,
       trnsIds: ctx.params.trnsIds.value,
@@ -56,10 +57,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   function filteredIdsForRange(range: Range): TrnId[] {
     const periodIds = idsForRange(range)
-    if (options.filterByTypeIds.value.length === 0)
-      return periodIds
-    const visibleSet = new Set(options.filterByTypeIds.value)
-    return periodIds.filter(id => visibleSet.has(id))
+    return filterAvailableTrnIds(periodIds, options.filterByTypeIds.value)
   }
 
   const periods = computed(() => loadedOffsets.value.map(offset => ({
@@ -67,6 +65,13 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
     offset,
     range: rangeForOffset(offset),
   })))
+  const isBasePeriodEmpty = computed(() => periods.value[0]?.ids.length === 0)
+  const loadedTrnIds = computed(() => periods.value.flatMap(period => period.ids))
+  const canLoadMore = computed(() =>
+    canScanPeriods.value
+    && !isExhausted.value
+    && hasUnloadedTrnIds(options.filterByTypeIds.value, loadedTrnIds.value),
+  )
 
   const rows = computed<StatVirtualRow[]>(() => {
     const result: StatVirtualRow[] = []
@@ -82,7 +87,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
         .map(row => ({ ...row, offset: period.offset })))
     }
 
-    result.push(isExhausted.value || !canLoadMore.value ? { id: 'end', type: 'end' } : { id: 'loader', type: 'loader' })
+    result.push(!canLoadMore.value ? { id: 'end', type: 'end' } : { id: 'loader', type: 'loader' })
     return result
   })
 
@@ -131,6 +136,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   return {
     canLoadMore,
+    isBasePeriodEmpty,
     isExhausted,
     isLoading,
     loadMore,

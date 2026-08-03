@@ -1,180 +1,55 @@
 <script setup lang="ts">
-import type { ECElementEvent } from 'echarts/core'
-
 import { PieChart } from 'echarts/charts'
-import { TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
-import type { CategoryId } from '~/components/categories/types'
 import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 
-import { OTHER_SLICE_ID } from '~/components/stat/chart/categoryBreakdown'
 import { formatChartAmount } from '~/components/stat/chart/format'
 
-type PieTooltipParam = {
-  color: string
-  name: string
-  percent: number
-  value: number
-}
-
-type PieClickParam = {
-  data?: { id?: CategoryId, isOther?: boolean }
-}
-
-const { pieData, showLegend = true, typeLabel } = defineProps<{
+const { pieData, typeLabel } = defineProps<{
   pieData: CategoryPieDatum[]
-  showLegend?: boolean
   typeLabel: string
-}>()
-
-const emit = defineEmits<{
-  clickCategory: [id: CategoryId]
 }>()
 
 use([
   PieChart,
   SVGRenderer,
-  TooltipComponent,
 ])
 
-const { locale, t } = useI18n()
-
+const { locale } = useI18n()
+// The focused donut mounts when the user first chooses income or expense. Do
+// not animate that entrance, but enable normal ECharts transitions immediately
+// afterwards so period changes still feel responsive.
+const isInitialRender = ref(true)
 const total = computed(() => pieData.reduce((acc, item) => acc + item.value, 0))
-const hasData = computed(() => pieData.length > 0 && total.value > 0)
-
+const hasData = computed(() => total.value > 0)
 const option = computed(() => ({
+  animation: !isInitialRender.value,
+  animationDurationUpdate: 300,
   series: [{
-    avoidLabelOverlap: false,
-    center: ['50%', '50%'],
-    data: pieData.map(item => ({
-      cursor: item.isOther ? 'default' : 'pointer',
-      id: item.id,
-      isOther: item.isOther ?? false,
-      itemStyle: { color: item.color },
-      name: item.name,
-      value: item.value,
-    })),
-    emphasis: { focus: 'self' },
-    itemStyle: {
-      borderColor: 'var(--ui-bg)',
-      borderWidth: 2,
-    },
+    data: pieData.map(item => ({ itemStyle: { color: item.color }, value: item.value })),
+    emphasis: { disabled: true },
+    itemStyle: { borderColor: 'var(--ui-bg)', borderWidth: 1 },
     label: { show: false },
     labelLine: { show: false },
-    minAngle: 3,
-    radius: ['55%', '80%'],
+    radius: ['42%', '92%'],
+    silent: true,
     type: 'pie',
   }],
-  tooltip: {
-    // Donut lives in a narrow container; append to body and don't confine so
-    // tooltips for left-side slices aren't clipped by the chart bounds.
-    appendToBody: true,
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    confine: false,
-    padding: 0,
-    trigger: 'item',
-  },
 }))
 
-function percentOf(value: number) {
-  return total.value > 0 ? Math.round((value / total.value) * 100) : 0
-}
-
-function onClickSlice(params: ECElementEvent) {
-  const data = params?.data as PieClickParam['data']
-  if (!data?.id || data.isOther || data.id === OTHER_SLICE_ID)
-    return
-  emit('clickCategory', data.id)
-}
+onMounted(() => {
+  isInitialRender.value = false
+})
 </script>
 
 <template>
-  <div
-    v-if="hasData"
-    class="flex items-center justify-center gap-4"
-    :class="{ '@3xl/stat:justify-start': showLegend }"
-  >
-    <div
-      class="relative size-40 shrink-0 @3xl/stat:size-52"
-      role="img"
-      :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`"
-    >
-      <VChart
-        :option
-        :updateOptions="{ notMerge: true }"
-        autoresize
-        @click="onClickSlice"
-      >
-        <template #tooltip="params">
-          <div class="rounded-md bg-elevated px-3 py-2">
-            <div class="flex items-center gap-2">
-              <div class="size-2.5 rounded-full" :style="`background: ${(params as PieTooltipParam).color}`" />
-              <div class="text-sm text-muted">
-                {{ (params as PieTooltipParam).name }}
-              </div>
-            </div>
-
-            <div class="flex items-baseline justify-between gap-4 pt-1">
-              <div class="font-secondary text-lg text-highlighted">
-                {{ formatChartAmount((params as PieTooltipParam).value, locale) }}
-              </div>
-              <div class="text-xs text-muted">
-                {{ (params as PieTooltipParam).percent }}%
-              </div>
-            </div>
-          </div>
-        </template>
-      </VChart>
-
-      <div class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-        <div class="font-secondary text-lg leading-tight text-highlighted">
-          {{ formatChartAmount(total, locale) }}
-        </div>
-        <div class="text-2xs text-muted">
-          {{ typeLabel }}
-        </div>
-      </div>
-    </div>
-
-    <div
-      v-if="showLegend"
-      class="hidden min-w-0 grow content-start gap-0.5 @3xl/stat:grid"
-    >
-      <button
-        v-for="item in pieData"
-        :key="item.id"
-        type="button"
-        class="flex items-center justify-between gap-3 rounded-md px-2 py-1 text-left"
-        :class="item.isOther ? 'cursor-default' : 'hover:bg-elevated'"
-        @click="item.isOther ? undefined : emit('clickCategory', item.id)"
-      >
-        <div class="flex min-w-0 items-center gap-2">
-          <div class="size-2.5 shrink-0 rounded-full" :style="`background: ${item.color}`" />
-          <div class="truncate text-sm text-muted">
-            {{ item.name }}
-          </div>
-        </div>
-
-        <div class="flex shrink-0 items-baseline gap-2">
-          <div class="font-secondary text-sm text-highlighted">
-            {{ formatChartAmount(item.value, locale) }}
-          </div>
-          <div class="w-8 text-right text-2xs text-dimmed">
-            {{ percentOf(item.value) }}%
-          </div>
-        </div>
-      </button>
-    </div>
+  <div v-if="hasData" class="size-12 shrink-0" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`">
+    <VChart :option :updateOptions="{ notMerge: true }" autoresize />
   </div>
-
-  <div
-    v-else
-    class="flex h-40 items-center justify-center text-sm text-muted @3xl/stat:h-52"
-  >
-    {{ t('chart.empty') }}
+  <div v-else class="relative size-12 shrink-0" :aria-label="typeLabel" role="img">
+    <div class="absolute inset-[10%] rounded-full bg-muted/30" style="mask: radial-gradient(circle, transparent 36%, #000 38%)" />
   </div>
 </template>

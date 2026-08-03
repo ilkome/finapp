@@ -638,6 +638,8 @@ export default {
     },
     history: 'History',
     more: 'Show more',
+    noExpenses: 'No expenses',
+    noIncome: 'No income',
     noTrns: 'No transactions yet',
     plural: '0 transactions | {n} transaction | {n} transactions | {n} transactions',
     title: 'Transactions',

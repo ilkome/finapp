@@ -14,11 +14,20 @@ defineProps<{
     :filteredType="ctx.filteredType.value"
     :forecastMode="ctx.forecastMode.value"
     :forecastTotal="ctx.forecastRangeTotal.value"
+    :focusedType="ctx.isCategoryFocus.value ? ctx.filteredType.value : undefined"
     :total="ctx.rangeTotal.value"
     :trnsIds="ctx.params.trnsIds.value"
     :type="ctx.selectedTypeForSum.value"
     :walletId="ctx.params.walletId?.value"
     @click="ctx.onClickSumItemWrap"
     @clickAverage="ctx.params.statConfig.updateConfig('average', { isShow: !ctx.params.statConfig.config.value.average.isShow })"
-  />
+  >
+    <template #focusPie>
+      <LazyStatChartPieView
+        v-if="ctx.isCategoryFocus.value"
+        :pieData="ctx.focusedCategoryPieData.value"
+        :typeLabel="$t(`money.${ctx.filteredType.value}`)"
+      />
+    </template>
+  </StatSumWrap>
 </template>

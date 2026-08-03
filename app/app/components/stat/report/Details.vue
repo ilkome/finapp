@@ -1,14 +1,54 @@
 <script setup lang="ts">
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
-import { statDashboardKey } from '~/components/stat/injectionKeys'
+import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/infinitePeriods'
+import { statDashboardKey, statPreservedCategoryScrollTopKey } from '~/components/stat/injectionKeys'
 
-defineProps<{
+const props = defineProps<{
+  categoriesStickyTop?: number
   ctx: StatReportContext
 }>()
 
 const { t } = useI18n()
 const isDashboard = inject(statDashboardKey, false)
+const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
+const { height: categoriesHeight } = useElementSize(categoriesBreakdown)
+const { height: viewportHeight } = useWindowSize()
+const preservedCategoryScrollTop = shallowRef<number | null>(null)
+provide(statPreservedCategoryScrollTopKey, preservedCategoryScrollTop)
+let preserveScrollTimer: ReturnType<typeof setTimeout> | null = null
+const canStickCategories = computed(() =>
+  props.categoriesStickyTop !== undefined
+  && props.ctx.shouldUseTwoColumnLayout.value
+  && canStickStatCategories(props.categoriesStickyTop, categoriesHeight.value, viewportHeight.value),
+)
+
+function onSetChildCategoryFilter(categoryId: string) {
+  const categories = categoriesBreakdown.value
+  if (categories) {
+    const style = getComputedStyle(categories)
+    preservedCategoryScrollTop.value = isStatCategoriesPinned(
+      style.position,
+      categories.getBoundingClientRect().top,
+      Number.parseFloat(style.top),
+    )
+      ? document.scrollingElement?.scrollTop ?? 0
+      : null
+  }
+
+  if (preserveScrollTimer !== null)
+    clearTimeout(preserveScrollTimer)
+  preserveScrollTimer = setTimeout(() => {
+    preservedCategoryScrollTop.value = null
+    preserveScrollTimer = null
+  }, 1000)
+  props.ctx.onSetChildCategoryFilter(categoryId)
+}
+
+onBeforeUnmount(() => {
+  if (preserveScrollTimer !== null)
+    clearTimeout(preserveScrollTimer)
+})
 </script>
 
 <template>
@@ -32,17 +72,28 @@ const isDashboard = inject(statDashboardKey, false)
         'grid gap-5 @3xl/stat:grid-cols-2 @3xl/stat:gap-6': ctx.shouldUseTwoColumnLayout.value,
       }"
     >
-      <StatCategoriesBreakdown
-        v-if="(ctx.params.statConfig.config.value.categories.list.isShow || ctx.params.statConfig.config.value.categories.bars.isShow) && ctx.hasCategoriesData.value"
-        :excludedCategoriesIds="ctx.statExcludedIds.value"
-        :isOneCategory="ctx.isOneCategory.value"
-        :preCategoriesIds="ctx.params.preCategoriesIds?.value"
-        :selectedTrnsIds="ctx.selectedAndFilteredTrnsIds.value"
-        :storageKey="ctx.statItemStorageKey.value"
-        :type="ctx.params.type.value ?? 'netIncome'"
-        @clickCategory="ctx.onClickCategory"
-        @setCategoryFilter="ctx.onSetCategoryFilter"
-      />
+      <div
+        v-if="ctx.shouldShowCategoriesBreakdown.value"
+        ref="categoriesBreakdown"
+        data-stat-categories-breakdown
+        class="self-start"
+        :class="canStickCategories && '@3xl/stat:sticky'"
+        :style="canStickCategories ? { top: `${props.categoriesStickyTop}px` } : undefined"
+      >
+        <StatCategoriesBreakdown
+          :excludedCategoriesIds="ctx.statExcludedIds.value"
+          :focusedChildCategoryId="ctx.filteredChildCategoryId.value"
+          :focusedCategoryId="ctx.focusedQuickCategoryId.value"
+          :isOneCategory="ctx.isOneCategory.value"
+          :preCategoriesIds="ctx.params.preCategoriesIds?.value"
+          :selectedTrnsIds="ctx.selectedAndQuickFilteredTrnsIds.value"
+          :storageKey="ctx.statItemStorageKey.value"
+          :type="ctx.params.type.value ?? 'netIncome'"
+          @clickCategory="ctx.onClickCategory"
+          @setChildCategoryFilter="onSetChildCategoryFilter"
+          @setCategoryFilter="ctx.onSetCategoryFilter"
+        />
+      </div>
 
       <StatTrns
         v-if="ctx.params.statConfig.config.value.trns.isShow"

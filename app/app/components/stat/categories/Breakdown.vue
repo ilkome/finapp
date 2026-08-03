@@ -7,6 +7,8 @@ import { useCategoriesBreakdown } from '~/components/stat/categories/useCategori
 
 const props = defineProps<{
   excludedCategoriesIds?: ReadonlySet<CategoryId>
+  focusedCategoryId?: CategoryId
+  focusedChildCategoryId?: CategoryId
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
@@ -17,17 +19,21 @@ const props = defineProps<{
 const emit = defineEmits<{
   clickCategory: [categoryId: CategoryId]
   setCategoryFilter: [categoryId: CategoryId]
+  setChildCategoryFilter: [categoryId: CategoryId]
 }>()
 
-const { categoriesWithData, groupedCategories, ungroupedCategories } = useCategoriesBreakdown(props)
+const { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories } = useCategoriesBreakdown(props)
+const isFocused = computed(() => !!props.focusedCategoryId)
+const displayedCategories = computed(() => isFocused.value ? focusedCategories.value : categoriesWithData.value)
 </script>
 
 <template>
   <div
-    v-if="categoriesWithData.length > 0"
+    v-if="displayedCategories.length > 0"
     class="grid content-start gap-3 @3xl/main:max-w-lg"
   >
     <StatCategoriesVerticalSection
+      v-if="!isFocused"
       :groupedCategories
       :isOneCategory="props.isOneCategory"
       :storageKey="props.storageKey"
@@ -38,12 +44,15 @@ const { categoriesWithData, groupedCategories, ungroupedCategories } = useCatego
 
     <StatCategoriesListSection
       :categoriesWithData
+      :focusedChildCategoryId="props.focusedChildCategoryId"
+      :focusedCategories="isFocused ? focusedCategories : undefined"
       :groupedCategories
       :isOneCategory="props.isOneCategory"
       :storageKey="props.storageKey"
       :type="props.type"
       :ungroupedCategories
       @clickCategory="emit('clickCategory', $event)"
+      @setFocusedCategoryFilter="emit('setChildCategoryFilter', $event)"
     />
   </div>
 </template>

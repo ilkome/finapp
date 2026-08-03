@@ -8,7 +8,6 @@ import {
   aggregateCategoryTotals,
   buildCategoriesPieData,
   buildCategoriesSeries,
-  OTHER_SLICE_ID,
 } from '~/components/stat/chart/categoryBreakdown'
 
 // Each trn maps 1:1 to a category with a fixed expense amount.
@@ -119,51 +118,59 @@ describe('aggregateCategoryTotals', () => {
 })
 
 describe('buildCategoriesPieData', () => {
-  it('keeps top-N slices and rolls the rest into a single Other slice', () => {
+  it('groups categories after the largest five into one silent donut slice', () => {
     const pie = buildCategoriesPieData({
       ...baseParams,
       intervals: singleInterval(allTrnIds),
-      topN: 8,
-    }, 'Other')
+    })
 
-    expect(pie).toHaveLength(9)
-    expect(pie.slice(0, 8).map(s => s.id)).toEqual([
-      'c01',
-      'c02',
-      'c03',
-      'c04',
-      'c05',
-      'c06',
-      'c07',
-      'c08',
-    ])
-
-    const other = pie.at(-1)!
-    expect(other.id).toBe(OTHER_SLICE_ID)
-    expect(other.isOther).toBe(true)
-    expect(other.name).toBe('Other')
-    expect(other.value).toBe(30) // c09 (20) + c10 (10)
+    expect(pie).toHaveLength(6)
+    expect(pie.map(s => s.value)).toEqual([100, 90, 80, 70, 60, 150])
   })
 
-  it('omits the Other slice when categories fit within top-N', () => {
-    const pie = buildCategoriesPieData({
-      ...baseParams,
-      intervals: singleInterval(['t01', 't02', 't03']),
-      topN: 8,
-    }, 'Other')
-
-    expect(pie).toHaveLength(3)
-    expect(pie.some(s => s.isOther)).toBe(false)
-  })
-
-  it('uses the category color and name for each slice', () => {
+  it('uses the category color for each slice', () => {
     const pie = buildCategoriesPieData({
       ...baseParams,
       intervals: singleInterval(['t01']),
-      topN: 8,
-    }, 'Other')
+    })
 
-    expect(pie[0]).toMatchObject({ color: '#000000', id: 'c01', name: 'Cat 1', value: 100 })
+    expect(pie[0]).toEqual({ color: '#000000', value: 100 })
+  })
+
+  it('highlights five categories and uses one gray remainder in both chart views', () => {
+    const intervals = singleInterval(allTrnIds)
+    const expectedColors = [
+      '#000000',
+      '#000001',
+      '#000002',
+      '#000003',
+      '#000004',
+      'var(--ui-text-dimmed)',
+    ]
+
+    const pie = buildCategoriesPieData({ ...baseParams, intervals })
+    const series = buildCategoriesSeries({ ...baseParams, chartType: 'bar', intervals })
+
+    expect(pie.map(item => item.color)).toEqual(expectedColors)
+    expect(series.map(item => item.color)).toEqual(expectedColors)
+  })
+
+  it('selects the largest five separately in every chart interval', () => {
+    const intervals = [
+      singleInterval(['t01', 't02', 't03', 't04', 't05', 't06'])[0]!,
+      singleInterval(['t05', 't06', 't07', 't08', 't09', 't10'])[0]!,
+    ]
+    const series = buildCategoriesSeries({
+      ...baseParams,
+      chartType: 'bar',
+      intervals,
+      otherName: 'Other',
+    })
+    const other = series.find(item => item.name === 'Other')
+
+    expect(series.filter(item => item.name !== 'Other' && item.data[0]! > 0)).toHaveLength(5)
+    expect(series.filter(item => item.name !== 'Other' && item.data[1]! > 0)).toHaveLength(5)
+    expect(other?.data).toEqual([50, 10])
   })
 
   it('matches the bar series totals (single source of truth)', () => {
@@ -175,7 +182,7 @@ describe('buildCategoriesPieData', () => {
       0,
     )
 
-    const pie = buildCategoriesPieData({ ...baseParams, intervals, topN: 8 }, 'Other')
+    const pie = buildCategoriesPieData({ ...baseParams, intervals })
     const pieTotal = pie.reduce((acc, s) => acc + s.value, 0)
 
     expect(pieTotal).toBe(barTotal)
@@ -186,9 +193,8 @@ describe('buildCategoriesPieData', () => {
       ...baseParams,
       filterCategoriesIds: ['c01', 'c02'] as CategoryId[],
       intervals: singleInterval(allTrnIds),
-      topN: 8,
-    }, 'Other')
+    })
 
-    expect(pie.map(s => s.id)).toEqual(['c01', 'c02'])
+    expect(pie.map(s => s.value)).toEqual([100, 90])
   })
 })

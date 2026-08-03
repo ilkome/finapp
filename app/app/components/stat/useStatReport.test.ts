@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, ref } from 'vue'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
+import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 import type { IntervalData } from '~/components/stat/types'
 
 // ---------------------------------------------------------------------------
@@ -74,9 +75,12 @@ vi.mock('~/components/categories/useCategoriesStore', () => ({
   }),
 }))
 
-vi.mock('~/components/stat/chart/categoryBreakdown', () => ({
-  buildCategoriesSeries: () => [],
+const categoryBreakdownMocks = vi.hoisted(() => ({
+  buildCategoriesPieData: vi.fn<() => CategoryPieDatum[]>(() => []),
+  buildCategoriesSeries: vi.fn(() => []),
 }))
+
+vi.mock('~/components/stat/chart/categoryBreakdown', () => categoryBreakdownMocks)
 
 const computeTotalMock = vi.fn((): TotalReturns => ({
   adjustment: 0,
@@ -153,9 +157,10 @@ function makeStatDate(overrides?: Partial<{
     selectedInterval: undefined as Range | undefined,
   }
   const merged = { ...defaults, ...overrides }
+  const params = ref(merged.params)
   return {
     intervalsInRange: computed(() => merged.intervalsInRange),
-    params: computed(() => merged.params),
+    params,
     range: computed(() => merged.range),
     selectedInterval: computed(() => merged.selectedInterval),
   }
@@ -172,7 +177,7 @@ function makeFilter(categoriesIds: string[] = []) {
 function makeStatConfig() {
   return {
     config: computed(() => ({
-      chart: { isShowAverage: false, type: 'bar' as const },
+      chart: { isByCategories: false, isGrouped: false, isShowAverage: false, type: 'bar' as const },
     })),
   }
 }
@@ -219,13 +224,65 @@ function createStatReport(overrides?: {
 describe('useStatReport', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    categoryBreakdownMocks.buildCategoriesSeries.mockReturnValue([])
+    computeTotalMock.mockReturnValue({ ...zeroTotal })
     getStoreTrnsIdsMock.mockImplementation(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
+  })
+
+  it('builds focused category data for the selected actual interval and type', () => {
+    const intervals = [{ end: 200, start: 100 }, { end: 400, start: 300 }]
+    const report = createStatReport({ intervalSelected: 1, intervalsInRange: intervals, trnsIds: ['t1'] })
+    report.onClickSumItem('income')
+
+    void report.focusedCategoryPieData.value
+
+    expect(categoryBreakdownMocks.buildCategoriesPieData).toHaveBeenLastCalledWith(
+      expect.objectContaining({ intervals: [expect.objectContaining({ range: intervals[1] })], type: 'income' }),
+    )
+  })
+
+  it('switches the main chart to category series when a summary amount is focused', () => {
+    const report = createStatReport({
+      intervalsInRange: [{ end: 200, start: 100 }],
+      trnsIds: ['t1'],
+    })
+
+    report.onClickSumItem('expense')
+    void report.chartSeries.value
+
+    expect(categoryBreakdownMocks.buildCategoriesSeries).toHaveBeenLastCalledWith(
+      expect.objectContaining({ type: 'expense' }),
+    )
   })
 
   // -------------------------------------------------------------------------
   // hasCategoryFilter optimization
   // -------------------------------------------------------------------------
   describe('hasCategoryFilter optimization', () => {
+    it('keeps the date range when filtering by a category', () => {
+      getStoreTrnsIdsMock.mockImplementation(({ categoriesIds, dates, trnsIds }: {
+        categoriesIds?: string[]
+        dates?: Range
+        trnsIds?: string[]
+      }) => {
+        if (dates)
+          return ['in-range']
+        if (categoriesIds)
+          return trnsIds ?? []
+        return trnsIds ?? []
+      })
+
+      const item = createStatReport({ trnsIds: ['in-range', 'out-of-range'] })
+      item.onSetCategoryFilter('cat1')
+
+      void item.rangeTotal.value
+
+      expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
+        categoriesIds: ['cat1'],
+        trnsIds: ['in-range'],
+      }))
+    })
+
     it('reuses intervalsData when filteredCategoriesIds is empty', () => {
       const intervals: Range[] = [
         { end: 200, start: 100 },
@@ -395,6 +452,33 @@ describe('useStatReport', () => {
 
       item.onSetCategoryFilter('cat2')
       expect(item.filteredCategoriesIds.value).toEqual(['cat2'])
+    })
+
+    it('keeps the quick parent selected while a child becomes the effective filter', () => {
+      const item = createStatReport()
+
+      item.onSetCategoryFilter('parent')
+      item.onSetChildCategoryFilter('child')
+
+      expect(item.filteredCategoriesIds.value).toEqual(['parent'])
+      expect(item.filteredChildCategoryId.value).toBe('child')
+      expect(item.effectiveFilteredCategoriesIds.value).toEqual(['child'])
+
+      item.onSetChildCategoryFilter('child')
+      expect(item.filteredChildCategoryId.value).toBeUndefined()
+      expect(item.effectiveFilteredCategoriesIds.value).toEqual(['parent'])
+    })
+
+    it('clears the child filter when the quick category changes', () => {
+      const item = createStatReport()
+
+      item.onSetCategoryFilter('parent-1')
+      item.onSetChildCategoryFilter('child')
+      item.onSetCategoryFilter('parent-2')
+
+      expect(item.filteredCategoriesIds.value).toEqual(['parent-2'])
+      expect(item.filteredChildCategoryId.value).toBeUndefined()
+      expect(item.effectiveFilteredCategoriesIds.value).toEqual(['parent-2'])
     })
   })
 

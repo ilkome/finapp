@@ -6,7 +6,6 @@ import { differenceInDays } from 'date-fns'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
 import type { StatDateProvider } from '~/components/stat/date/types'
@@ -21,16 +20,10 @@ import { useForecastMode } from '~/components/recurrences/useForecastMode'
 import { useForecastSeries } from '~/components/recurrences/useForecastSeries'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
-import { resolveChartType } from '~/components/stat/config/schema'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-
-export type ChartPieGroup = {
-  pieData: CategoryPieDatum[]
-  type: SeriesSlug
-}
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
@@ -81,6 +74,10 @@ export function useStatReport({
   )
 
   const filteredCategoriesIds = ref<CategoryId[]>([])
+  const filteredChildCategoryId = ref<CategoryId>()
+  const effectiveFilteredCategoriesIds = computed(() =>
+    filteredChildCategoryId.value ? [filteredChildCategoryId.value] : filteredCategoriesIds.value,
+  )
 
   const selectedType = computed(() => getSelectedType(statTab.value, filteredType.value, type.value))
   const selectedTypeForSum = computed(() => getSelectedTypeForSum(statTab.value, type.value))
@@ -97,14 +94,14 @@ export function useStatReport({
     trnsIds: trnsIds.value,
   }))
 
-  const hasCategoryFilter = computed(() => filteredCategoriesIds.value.length > 0)
+  const hasCategoryFilter = computed(() => effectiveFilteredCategoriesIds.value.length > 0)
 
   const rangeTrnsIdsWithFilteredCategories = computed(() => {
     if (!hasCategoryFilter.value)
       return rangeTrnsIds.value
     return trnsStore.getStoreTrnsIds({
-      categoriesIds: filteredCategoriesIds.value,
-      trnsIds: trnsIds.value,
+      categoriesIds: effectiveFilteredCategoriesIds.value,
+      trnsIds: rangeTrnsIds.value,
     })
   })
 
@@ -201,6 +198,12 @@ export function useStatReport({
   }))
 
   const selectedAndFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+    categoriesIds: effectiveFilteredCategoriesIds.value,
+    sort: true,
+    trnsIds: baseTrnsIdsForSelection.value,
+    trnsTypes: selectedTypesMapping.value,
+  }))
+  const selectedAndQuickFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
     categoriesIds: filteredCategoriesIds.value,
     sort: true,
     trnsIds: baseTrnsIdsForSelection.value,
@@ -260,12 +263,17 @@ export function useStatReport({
       return filteredType.value
     return 'expense'
   })
+  const isCategorySumFocused = computed(() =>
+    statTab.value === 'summary'
+    && !type.value
+    && (filteredType.value === 'expense' || filteredType.value === 'income'),
+  )
 
   // Effective filter + grouping for the category breakdown (donut and bars).
   // Selecting a category drills into it: match its leaf (transactible) ids and
   // stop grouping, so a selected parent breaks down into its child slices.
   const categoryBreakdownFilter = computed(() => {
-    const ids = filteredCategoriesIds.value
+    const ids = effectiveFilteredCategoriesIds.value
     if (ids.length === 0) {
       return {
         filterCategoriesIds: undefined as CategoryId[] | undefined,
@@ -281,14 +289,11 @@ export function useStatReport({
   const chartSeries = computed<ChartSeries[]>(() => {
     const intervals = effectiveIntervals.value
     const selectedInterval = intervals[statDate.params.value.intervalSelected]
-    // Bar/line series never use the `pie` type; the donut renders from
-    // `chartPieGroups`, so collapse pie -> bar for the axis-based series here.
-    const rawChartType = resolveChartType(statConfig.config.value.chart.type, statConfig.config.value.chart.isByCategories)
-    const chartType = rawChartType === 'pie' ? 'bar' : rawChartType
+    const chartType = statConfig.config.value.chart.type
 
     let baseSeries: ChartSeries[]
 
-    if (statConfig.config.value.chart.isByCategories) {
+    if (statConfig.config.value.chart.isByCategories || isCategorySumFocused.value) {
       baseSeries = buildCategoriesSeries({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
@@ -297,6 +302,7 @@ export function useStatReport({
         filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
         intervals,
         isGrouped: categoryBreakdownFilter.value.isGrouped,
+        otherName: t('stat.config.chart.other'),
         trnsItems: effectiveItems.value,
         type: categoriesBreakdownType.value,
       })
@@ -328,41 +334,40 @@ export function useStatReport({
     intervalsDataWithFilteredCategories.value.map(i => i.range.start),
   )
 
-  function buildPieGroup(type: SeriesSlug): CategoryPieDatum[] {
-    return buildCategoriesPieData({
-      categoriesItems: categoriesStore.items ?? {},
-      computeTotalForTrnsIds: effectiveComputeTotal.value,
-      excludedCategoriesIds: statExcludedIds.value,
-      filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
-      intervals: effectiveIntervals.value,
-      isGrouped: categoryBreakdownFilter.value.isGrouped,
-      trnsItems: effectiveItems.value,
-      type,
-    }, t('stat.config.chart.other'))
-  }
-
-  // Summary tab shows expense + income donuts side by side; every other tab
-  // shows a single donut for the active breakdown type.
-  const chartPieGroups = computed<ChartPieGroup[]>(() => {
-    if (!statConfig.config.value.chart.isByCategories)
+  const focusedCategoryPieData = computed(() => {
+    if (filteredType.value !== 'expense' && filteredType.value !== 'income')
       return []
 
-    if (statTab.value === 'summary') {
-      return [
-        { pieData: buildPieGroup('expense'), type: 'expense' },
-        { pieData: buildPieGroup('income'), type: 'income' },
-      ]
-    }
+    const intervals = isIntervalSelected.value
+      ? [intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]!]
+      : intervalsDataWithFilteredCategories.value
 
-    return [{ pieData: buildPieGroup(categoriesBreakdownType.value), type: categoriesBreakdownType.value }]
+    return buildCategoriesPieData({
+      categoriesItems: categoriesStore.items ?? {},
+      computeTotalForTrnsIds,
+      excludedCategoriesIds: statExcludedIds.value,
+      filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
+      intervals,
+      isGrouped: categoryBreakdownFilter.value.isGrouped,
+      trnsItems: trnsStore.items ?? {},
+      type: filteredType.value,
+    })
   })
 
   function onSetCategoryFilter(categoryId: CategoryId) {
     if (filteredCategoriesIds.value.includes(categoryId)) {
       filteredCategoriesIds.value = []
+      filteredChildCategoryId.value = undefined
       return
     }
     filteredCategoriesIds.value = [categoryId]
+    filteredChildCategoryId.value = undefined
+  }
+
+  function onSetChildCategoryFilter(categoryId: CategoryId) {
+    filteredChildCategoryId.value = filteredChildCategoryId.value === categoryId
+      ? undefined
+      : categoryId
   }
 
   function onClickSumItem(clickedType: SeriesSlugSelected) {
@@ -372,18 +377,22 @@ export function useStatReport({
   return {
     averageTotal,
     categoriesBreakdownType,
-    chartPieGroups,
     chartSeries,
     chartXAxisLabels,
+    effectiveFilteredCategoriesIds,
     filteredCategoriesIds,
+    filteredChildCategoryId,
     filteredType,
+    focusedCategoryPieData,
     forecastMode,
     forecastRangeTotal,
     isPeriodOneDay,
     onClickSumItem,
     onSetCategoryFilter,
+    onSetChildCategoryFilter,
     rangeTotal,
     selectedAndFilteredTrnsIds,
+    selectedAndQuickFilteredTrnsIds,
     selectedTrnsIds,
     selectedTypeForSum,
     selectedTypesMapping,

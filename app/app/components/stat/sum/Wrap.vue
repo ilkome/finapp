@@ -13,6 +13,7 @@ const props = defineProps<{
   averageTotal?: Record<string, number>
   categoryId?: CategoryId
   filteredType: SeriesSlugSelected
+  focusedType?: SeriesSlugSelected
   forecastMode?: ForecastMode
   forecastTotal?: TotalReturns
   total: TotalReturns
@@ -40,6 +41,7 @@ const projectedSum = computed(() => props.total.sum + (props.forecastTotal?.sum 
 
 const className = computed(() => cn(
   'flex min-h-10.5 min-w-min items-center',
+  props.type === 'summary' && 'min-h-14',
   {
     interactive: props.type === 'summary',
   },
@@ -59,7 +61,23 @@ function onClick(type: SeriesSlugSelected) {
 <template>
   <div class="overflow-x-auto">
     <div
-      v-if="props.type === 'summary'"
+      v-if="props.type === 'summary' && props.focusedType"
+      class="relative flex h-14 w-full items-center rounded-sm interactive bg-elevated/30 px-3 py-0.5"
+      @click="onClick(props.focusedType)"
+    >
+      <UiButtonClose class="top-1/2 right-3 -translate-y-1/2" @click.stop="onClick(props.focusedType)" />
+      <StatSumItem
+        :amount="props.focusedType === 'income' ? total.income : -total.expense"
+        class="min-w-0 border-0! bg-transparent! p-0!"
+        :type="props.focusedType"
+      />
+      <div class="mr-10 ml-auto flex w-12 shrink-0 items-center justify-center">
+        <slot name="focusPie" />
+      </div>
+    </div>
+
+    <div
+      v-else-if="props.type === 'summary'"
       class="flex flex-wrap gap-2 @2xl/stat:justify-start"
     >
       <StatSumItem
