@@ -16,6 +16,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = withDefaults(defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
+  compactBottom?: boolean
   configCategories?: boolean
   configWallets?: boolean
   hasCategoryBreakdown?: boolean
@@ -68,7 +69,12 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <UiHeader :backSkipPattern="backSkipPattern" :backTo="backTo" :sticky="props.sticky">
+  <UiHeader
+    :backSkipPattern="backSkipPattern"
+    :backTo="backTo"
+    :compactBottom="props.compactBottom"
+    :sticky="props.sticky"
+  >
     <slot name="title" />
 
     <template #actions>

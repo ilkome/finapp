@@ -97,7 +97,7 @@ const income = useStatReportContext({
     </div>
 
     <div
-      :class="stickyNav && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur lg:-mx-4 lg:px-4 lg:pb-2'"
+      :class="stickyNav && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur md:pt-2 lg:-mx-4 lg:px-4 lg:pb-2'"
       :style="stickyNav ? { top: `${stickyTop}px` } : undefined"
     >
       <StatDateFilterRow />

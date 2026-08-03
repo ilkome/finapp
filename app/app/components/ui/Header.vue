@@ -2,9 +2,10 @@
 import { useSearch } from '~/components/search/useSearch'
 import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { backSkipPattern, backTo, hideSearch, sticky = true } = defineProps<{
+const { backSkipPattern, backTo, compactBottom = false, hideSearch, sticky = true } = defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
+  compactBottom?: boolean
   hideSearch?: boolean
   sticky?: boolean
 }>()
@@ -30,7 +31,10 @@ function onBack() {
     class="bg-default/90 backdrop-blur"
     :class="sticky && 'sticky top-0 z-20'"
   >
-    <div class="grid min-h-12 max-w-7xl items-center border-accented p-2 md:border-b lg:p-4">
+    <div
+      class="grid min-h-12 max-w-7xl items-center border-accented md:border-b"
+      :class="compactBottom ? 'px-2 pt-2 pb-px md:p-2 lg:p-4' : 'p-2 lg:p-4'"
+    >
       <div class="flex grow items-center">
         <button
           v-if="backTo"

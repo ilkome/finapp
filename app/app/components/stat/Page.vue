@@ -79,6 +79,7 @@ onDeactivated(() => {
       ref="statHeader"
       v-model:activeTab="activeTab"
       :trnsIds
+      compactBottom
       configCategories
       configWallets
     >
