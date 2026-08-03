@@ -19,7 +19,7 @@
     "build": "nuxt generate",
     "dev": "nuxt dev -p 3050 --public",
     "dev:prod": "nuxt dev -p 3050 --public --dotenv .env.prod",
-    "dev:dev": "nuxt dev -p 3050 --public --dotenv .env.dev",
+    "dev:cloud": "nuxt dev -p 3050 --public --dotenv .env.dev",
     "generate": "nuxt generate",
     "preview": "nuxt generate && nuxt preview",
     "typecheck": "nuxi typecheck",

@@ -74,10 +74,11 @@ export default defineNuxtConfig({
     preference: 'system',
   },
 
-  compatibilityDate: '2024-07-07',
+  compatibilityDate: '2026-07-30',
   css: [join(currentDir, './app/assets/css/main.css')],
 
   devtools: {
+    enabled: true,
     timeline: {
       enabled: false,
     },
