@@ -162,6 +162,7 @@ export default defineNuxtConfig({
         'lucide:network',
         'lucide:paintbrush',
         'lucide:palette',
+        'lucide:square-arrow-out-up-right',
         'lucide:square-round-corner',
         'lucide:sun',
         'lucide:swatch-book',
