@@ -58,6 +58,7 @@ type CategoriesStore = {
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<void> | void
   setCategories: (values: Categories | null) => void
+  sidebarCategoryIds: ComputedRef<CategoryId[]>
 }
 
 const logger = createLogger('categories')
@@ -195,6 +196,32 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
     return recentIds
       .sort((a, b) => compareCategoryIds(a, b, items.value))
+  })
+
+  const sidebarCategoryIds = computed(() => {
+    const seen = new Set<CategoryId>()
+    const ids: CategoryId[] = []
+
+    for (const id of favoriteCategoriesIds.value) {
+      if (!seen.has(id)) {
+        seen.add(id)
+        ids.push(id)
+      }
+    }
+
+    const remainingSlots = Math.max(0, 10 - ids.length)
+    let added = 0
+    for (const id of recentCategoriesIds.value) {
+      if (added >= remainingSlots)
+        break
+      if (!seen.has(id)) {
+        seen.add(id)
+        ids.push(id)
+        added++
+      }
+    }
+
+    return ids.sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
   const categoriesIdsForTrnValues = computed<CategoryId[]>(() =>
@@ -423,5 +450,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     recentCategoriesIds,
     saveCategory,
     setCategories,
+    sidebarCategoryIds,
   }
 })

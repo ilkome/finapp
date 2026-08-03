@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 
-import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { compareCategoryIds } from '~/components/categories/utils'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -33,31 +31,7 @@ function getWalletContextMenuItems(walletId: WalletId) {
 type SidebarTab = 'categories' | 'wallets'
 const activeTab = ref<SidebarTab>('wallets')
 
-const sidebarCategoryIds = computed(() => {
-  const seen = new Set<CategoryId>()
-  const ids: CategoryId[] = []
-
-  for (const id of categoriesStore.favoriteCategoriesIds) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-    }
-  }
-
-  const remainingSlots = Math.max(0, 10 - ids.length)
-  let added = 0
-  for (const id of categoriesStore.recentCategoriesIds) {
-    if (added >= remainingSlots)
-      break
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-      added++
-    }
-  }
-
-  return ids.sort((a, b) => compareCategoryIds(a, b, categoriesStore.items))
-})
+const sidebarWalletIds = computed(() => walletsStore.recentWalletIds.slice(0, 10))
 
 const tabItems = computed<TabsItem[]>(() => [
   { label: t('wallets.name'), value: 'wallets' },
@@ -70,7 +44,7 @@ const tabItems = computed<TabsItem[]>(() => [
     :class="{ 'md:w-72': props.isShowSidebar }"
     class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden bg-elevated/25 transition-all duration-300 ease-in-out md:block"
   >
-    <div class="flex h-full flex-col overflow-hidden">
+    <div class="relative flex h-full flex-col overflow-hidden">
       <div
         :class="props.isShowSidebar ? 'px-2 pt-5' : 'justify-center px-1 pt-3'"
         class="flex shrink-0 items-center gap-1"
@@ -102,7 +76,7 @@ const tabItems = computed<TabsItem[]>(() => [
 
         <div
           v-else
-          class="grid content-start gap-8 pt-3"
+          class="grid content-start gap-8 pt-3 pb-16"
         >
           <LayoutSidebarMenu class="px-2 pb-2" />
 
@@ -116,13 +90,13 @@ const tabItems = computed<TabsItem[]>(() => [
             </div>
 
             <!-- Wallets -->
-            <template v-if="activeTab === 'wallets' && walletsStore.recentWalletIds.length > 0">
+            <template v-if="activeTab === 'wallets' && sidebarWalletIds.length > 0">
               <WalletsItem
-                v-for="walletId in walletsStore.recentWalletIds.slice(0, 10)"
+                v-for="(walletId, index) in sidebarWalletIds"
                 :key="walletId"
                 :activeItemId="(route.params.id as string)"
                 :contextMenuItems="getWalletContextMenuItems(walletId as WalletId)"
-                :lineWidth="1"
+                :lineWidth="index === sidebarWalletIds.length - 1 ? 0 : 1"
                 :wallet="walletsStore.itemsComputed[walletId]!"
                 :walletId
                 class="group"
@@ -134,14 +108,14 @@ const tabItems = computed<TabsItem[]>(() => [
             </template>
 
             <!-- Categories -->
-            <template v-if="activeTab === 'categories' && sidebarCategoryIds.length > 0">
+            <template v-if="activeTab === 'categories' && categoriesStore.sidebarCategoryIds.length > 0">
               <CategoriesItem
-                v-for="categoryId in sidebarCategoryIds"
+                v-for="(categoryId, index) in categoriesStore.sidebarCategoryIds"
                 :key="categoryId"
                 :activeItemId="(route.params.id as string)"
-                :categoryId="(categoryId as CategoryId)"
+                :categoryId
                 :category="categoriesStore.items[categoryId]!"
-                :lineWidth="1"
+                :lineWidth="index === categoriesStore.sidebarCategoryIds.length - 1 ? 0 : 1"
                 isShowParent
                 stacked
                 :to="categoryId === route.params.id ? '/dashboard' : `/categories/${categoryId}`"
@@ -151,7 +125,7 @@ const tabItems = computed<TabsItem[]>(() => [
         </div>
       </div>
 
-      <div class="shrink-0 px-2 pt-1 pb-2">
+      <div class="pointer-events-none absolute right-0 bottom-0 left-0 z-10 px-2 pt-1 pb-2">
         <LayoutSidebarUserMenu :collapsed="!props.isShowSidebar" />
       </div>
     </div>

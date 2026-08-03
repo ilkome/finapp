@@ -5,6 +5,9 @@ import { useMenuData } from '~/components/layout/useMenuData'
 
 const { checkIsActive, itemsBottom, menuItem, onClick } = useMenuData()
 const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
+const itemInteractionClass = 'interactive transition-colors hover:bg-elevated/50! hover:text-primary active:bg-elevated/50! active:text-primary'
+const navItemClass = `flex h-full grow basis-0 flex-col items-center justify-center gap-0.5 rounded ${itemInteractionClass}`
+const circleItemClass = `flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 bg-default/20 text-muted shadow-lg backdrop-blur-xl dark:bg-neutral-800/50 ${itemInteractionClass}`
 </script>
 
 <template>
@@ -26,7 +29,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
             v-for="(item, menuId) in itemsBottom"
             :key="menuId"
             :class="cn(
-              'flex h-full grow basis-0 flex-col items-center justify-center gap-0.5 rounded interactive',
+              navItemClass,
               checkIsActive(String(menuId)) ? 'text-primary' : 'text-muted',
             )"
             @click="onClick(String(menuId))"
@@ -53,7 +56,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 
         <!-- Add circle -->
         <div
-          class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-primary shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          :class="circleItemClass"
           @click="onClick('trnForm')"
         >
           <Icon
@@ -64,7 +67,7 @@ const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 
         <!-- Menu circle, far right. -->
         <div
-          class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 interactive bg-default/20 text-muted shadow-lg backdrop-blur-xl dark:bg-neutral-800/50"
+          :class="circleItemClass"
           @click="onClick('menu')"
         >
           <div class="relative flex">

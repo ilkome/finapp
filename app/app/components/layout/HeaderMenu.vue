@@ -1,39 +1,42 @@
 <script setup lang="ts">
 import { AnimatePresence, Motion } from 'motion-v'
 
-import type { LocaleSlug } from '~/components/locale/types'
-
 import { useDemo } from '~/components/demo/useDemo'
-import { useTheme } from '~/components/theme/useTheme'
-import { capitalize, swatchPalette, useThemeOptions } from '~/components/theme/useThemeOptions'
-import { useUserStore } from '~/components/user/useUserStore'
+import {
+  USER_MENU_DOCS_URL,
+  USER_MENU_GITHUB_URL,
+  USER_MENU_PANEL_CHILDREN,
+  USER_MENU_THEME_ICONS,
+  useUserMenuData,
+  type UserMenuPanel,
+} from '~/components/layout/useUserMenuData'
+import { capitalize, swatchPalette } from '~/components/theme/useThemeOptions'
 
-type Panel = 'appearance' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
+type Panel = UserMenuPanel
 
 // Session actions (enable demo / sign out) are only meaningful for an authenticated
 // user mid-onboarding; the login page renders this menu without them.
 const { sessionActions = false } = defineProps<{ sessionActions?: boolean }>()
 
-const PANEL_CHILDREN: Partial<Record<'root' | Panel, Panel[]>> = {
-  appearance: ['primary', 'neutral', 'radius'],
-  root: ['locale', 'theme', 'appearance'],
-}
-
-const GITHUB_URL = 'https://github.com/ilkome/finapp'
-const DOCS_URL = 'https://finapp-docs.ilko.me/'
-
-const THEME_ICONS: Record<string, string> = {
-  dark: 'i-lucide-moon',
-  light: 'i-lucide-sun',
-  system: 'i-lucide-monitor',
-}
-
 const { locale, t } = useI18n()
 const router = useRouter()
-const userStore = useUserStore()
 const { generateDemoData, isDemo } = useDemo()
-const { options: themeOptions, preference: themePreference, setTheme } = useTheme()
-const { blackAsPrimary, neutral, neutralColors, primary, primaryColors, radius, radiuses, setBlackAsPrimary } = useThemeOptions()
+const {
+  blackAsPrimary,
+  localeOptions,
+  neutral,
+  neutralColors,
+  panelMeta,
+  primary,
+  primaryColors,
+  radius,
+  radiuses,
+  setBlackAsPrimary,
+  setTheme,
+  themeOptions,
+  themePreference,
+  userStore,
+} = useUserMenuData()
 
 async function enableDemo() {
   isDemo.value = 'true'
@@ -47,53 +50,12 @@ const direction = ref<1 | -1>(1)
 const panelStack = ref<Panel[]>([])
 const activePanel = computed<'root' | Panel>(() => panelStack.value.at(-1) ?? 'root')
 
-const localeOptions = computed(() => [
-  { label: t('locale.ru'), value: 'ru' as LocaleSlug },
-  { label: t('locale.en'), value: 'en' as LocaleSlug },
-])
-
-const localeLabel = computed(() => t(`locale.${locale.value}`))
-const themeLabel = computed(() => themeOptions.find(o => o.value === themePreference.value)?.label ?? '')
-const primaryLabel = computed(() => blackAsPrimary.value ? 'Black' : primary.value)
-
-const panelMeta = computed<Record<Panel, { icon?: string, title: string, value?: string }>>(() => ({
-  appearance: {
-    icon: 'i-lucide-paintbrush',
-    title: t('theme.title'),
-  },
-  locale: {
-    icon: 'lucide:languages',
-    title: t('locale.title'),
-    value: localeLabel.value,
-  },
-  neutral: {
-    icon: 'i-lucide-swatch-book',
-    title: t('theme.picker.neutral'),
-    value: neutral.value,
-  },
-  primary: {
-    icon: 'i-lucide-palette',
-    title: t('theme.picker.primary'),
-    value: primaryLabel.value,
-  },
-  radius: {
-    icon: 'i-lucide-square-round-corner',
-    title: t('theme.picker.radius'),
-    value: String(radius.value),
-  },
-  theme: {
-    icon: THEME_ICONS[themePreference.value],
-    title: t('theme.picker.theme'),
-    value: themeLabel.value,
-  },
-}))
-
 const panelTitle = computed(() =>
   activePanel.value === 'root' ? '' : panelMeta.value[activePanel.value].title,
 )
 
 const childRows = computed(() =>
-  (PANEL_CHILDREN[activePanel.value] ?? []).map(id => ({ id, ...panelMeta.value[id] })),
+  (USER_MENU_PANEL_CHILDREN[activePanel.value] ?? []).map(id => ({ id, ...panelMeta.value[id] })),
 )
 
 function open(panel: Panel) {
@@ -221,7 +183,7 @@ const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5
 
                 <a
                   :class="rowClass"
-                  :href="GITHUB_URL"
+                  :href="USER_MENU_GITHUB_URL"
                   rel="noopener"
                   target="_blank"
                   @click="close"
@@ -235,7 +197,7 @@ const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5
 
                 <a
                   :class="rowClass"
-                  :href="DOCS_URL"
+                  :href="USER_MENU_DOCS_URL"
                   rel="noopener"
                   target="_blank"
                   @click="close"
@@ -291,7 +253,7 @@ const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5
                   @click="setTheme(opt.value)"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon :name="THEME_ICONS[opt.value]" class="size-5 text-muted" />
+                    <UIcon :name="USER_MENU_THEME_ICONS[opt.value]" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ opt.label }}</span>
                   <UIcon
