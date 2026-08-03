@@ -27,10 +27,10 @@ function onBack() {
 
 <template>
   <div
-    class="mb-2 bg-default/90 backdrop-blur"
-    :class="sticky && 'md:sticky md:top-0 md:z-20'"
+    class="bg-default/90 backdrop-blur"
+    :class="sticky && 'sticky top-0 z-20'"
   >
-    <div class="grid min-h-12 max-w-7xl items-center border-accented p-2 pb-0 md:border-b lg:p-4">
+    <div class="grid min-h-12 max-w-7xl items-center border-accented p-2 md:border-b lg:p-4">
       <div class="flex grow items-center">
         <button
           v-if="backTo"

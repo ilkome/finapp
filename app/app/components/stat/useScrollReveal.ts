@@ -1,5 +1,9 @@
+import type { Ref } from 'vue'
+
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+
+const CHART_REVEAL_COMMIT_RATIO = 0.4
 
 // Mobile chart reveal over the zone [page top .. header pin]:
 //  - fade: the chart fades + lifts as it scrolls out through the top (GSAP scrub, both ways).
@@ -7,7 +11,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 //    native smooth-scroll commits to chart-shown (0) or docked (pin). This is how T-Bank's mobile
 //    web stays glassy: it never writes scrollTop while the fling is live, so nothing races it.
 //    Our earlier per-frame rAF tween easing scrollTop against the iOS fling was the jitter.
-export function useScrollReveal(stickyNav: boolean) {
+export function useScrollReveal(stickyNav: boolean, stickyTop: Readonly<Ref<number>>) {
   const chartTrigger = ref<HTMLElement | null>(null)
   const chartFx = ref<HTMLElement | null>(null)
   const dateFx = ref<HTMLElement | null>(null)
@@ -30,7 +34,7 @@ export function useScrollReveal(stickyNav: boolean) {
           let y = trigger.offsetHeight
           for (let n: HTMLElement | null = trigger; n; n = n.offsetParent as HTMLElement | null)
             y += n.offsetTop
-          return Math.round(y)
+          return Math.max(0, Math.round(y - stickyTop.value))
         }
 
         ScrollTrigger.create({
@@ -68,10 +72,10 @@ export function useScrollReveal(stickyNav: boolean) {
           const y = scroller.scrollTop
           if (y <= 2 || y >= pin - 2)
             return // already at a rest point, or scrolled past the zone into the list
-          // Commit in the LAST direction the finger moved, so "up, then down" ends up docking. Any
-          // amount of drag commits - resting half-open was the complaint - so there's no distance
-          // threshold; the nearest edge is only a fallback if no direction was ever registered.
-          const target = dir > 0 ? pin : dir < 0 ? 0 : (y < pin / 2 ? 0 : pin)
+          // A small upward gesture should not unexpectedly pull the user back to the page top.
+          // Reveal at least 40% of the chart to commit; otherwise restore the docked header.
+          const revealProgress = Math.max(0, Math.min(1, (pin - y) / Math.max(1, trigger.offsetHeight)))
+          const target = dir <= 0 && revealProgress >= CHART_REVEAL_COMMIT_RATIO ? 0 : pin
           window.scrollTo({ behavior: 'smooth', top: target })
         }
         const schedule = () => {
@@ -95,9 +99,11 @@ export function useScrollReveal(stickyNav: boolean) {
         window.addEventListener('scroll', schedule, { passive: true })
         window.addEventListener('touchstart', onTouchStart, { passive: true })
         window.addEventListener('touchend', onTouchEnd, { passive: true })
+        const stopStickyTopWatch = watch(stickyTop, () => ScrollTrigger.refresh())
 
         return () => {
           clearTimeout(idle)
+          stopStickyTopWatch()
           window.removeEventListener('scroll', schedule)
           window.removeEventListener('touchstart', onTouchStart)
           window.removeEventListener('touchend', onTouchEnd)

@@ -1,7 +1,7 @@
 import type { Range } from '~~/utils/date/types'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 
 import type { StatDateParams } from '~/components/stat/date/types'
 
@@ -10,6 +10,7 @@ import { defaultStatDateParams } from './params'
 // Stub Nuxt auto-imports
 vi.stubGlobal('computed', computed)
 vi.stubGlobal('ref', ref)
+vi.stubGlobal('shallowRef', shallowRef)
 vi.stubGlobal('watch', watch)
 
 // Stub localStorage for useStorage
@@ -183,6 +184,41 @@ describe('setGranularityBy', () => {
     expect(statDate.params.value.granularityBy).toBe('week')
     expect(statDate.params.value.isShowMaxRange).toBe(false)
     expect(statDate.params.value.isSkipEmpty).toBe(false)
+  })
+})
+
+describe('scroll range override', () => {
+  it('changes the effective range without persisting rangeOffset', () => {
+    const statDate = createStatDate({
+      rangeBy: 'month',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+
+    const baseStart = statDate.range.value.start
+
+    statDate.setScrollRangeOffset(1)
+
+    expect(statDate.params.value.rangeOffset).toBe(0)
+    expect(statDate.effectiveParams.value.rangeOffset).toBe(1)
+    expect(statDate.range.value.start).not.toBe(baseStart)
+    expect(statDate.isScrollRangeOverridden.value).toBe(true)
+  })
+
+  it('clears the scroll override after a manual period change', async () => {
+    const statDate = createStatDate({
+      rangeBy: 'month',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+
+    statDate.setScrollRangeOffset(1)
+    statDate.params.value.rangeOffset = 2
+    await nextTick()
+
+    expect(statDate.scrollRangeOffset.value).toBe(null)
+    expect(statDate.effectiveParams.value.rangeOffset).toBe(2)
+    expect(statDate.isScrollRangeOverridden.value).toBe(false)
   })
 })
 

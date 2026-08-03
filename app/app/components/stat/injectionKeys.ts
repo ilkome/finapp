@@ -7,6 +7,7 @@ import type { StatConfigPanelId } from '~/components/stat/types'
 export const statDateKey: InjectionKey<StatDateProvider> = Symbol('statDate')
 export const statConfigKey: InjectionKey<StatConfigProvider> = Symbol('statConfig')
 export const statConfigPanelKey: InjectionKey<Ref<StatConfigPanelId>> = Symbol('statConfigPanel')
-// Set on the dashboard so the date/filter nav row pins to the top (with the
-// header's background) while the page header scrolls away. Absent elsewhere.
+export const statDashboardKey: InjectionKey<boolean> = Symbol('statDashboard')
+// Set on the dashboard so the date/filter nav row pins below the page header.
 export const statStickyNavKey: InjectionKey<boolean> = Symbol('statStickyNav')
+export const statStickyTopKey: InjectionKey<Readonly<Ref<number>>> = Symbol('statStickyTop')

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
+
 import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -9,7 +11,7 @@ import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilter } from '~/components/filter/useFilter'
 import { useStatConfig } from '~/components/stat/config/useStatConfig'
 import { useStatDate } from '~/components/stat/date/useStatDate'
-import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statDashboardKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
@@ -19,8 +21,14 @@ const trnsStore = useTrnsStore()
 const filter = useFilter()
 provide(filterKey, filter)
 
-// Dashboard: header scrolls away, the date/filter nav row pins to the top.
+// Dashboard: the date/filter nav row pins immediately below the page header.
+provide(statDashboardKey, true)
 provide(statStickyNavKey, true)
+
+const statHeader = useTemplateRef<ComponentPublicInstance>('statHeader')
+const statHeaderElement = computed(() => statHeader.value?.$el as HTMLElement | undefined)
+const { height: statStickyTop } = useElementSize(statHeaderElement)
+provide(statStickyTopKey, statStickyTop)
 
 const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
 const storageKey = computed(() => `dashboard-${activeTab.value}`)
@@ -68,9 +76,9 @@ onDeactivated(() => {
 <template>
   <UiPage>
     <StatHeader
+      ref="statHeader"
       v-model:activeTab="activeTab"
       :trnsIds
-      :sticky="false"
       configCategories
       configWallets
     >

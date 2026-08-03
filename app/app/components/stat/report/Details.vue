@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
+import { statDashboardKey } from '~/components/stat/injectionKeys'
+
 defineProps<{
   ctx: StatReportContext
 }>()
 
 const { t } = useI18n()
+const isDashboard = inject(statDashboardKey, false)
 </script>
 
 <template>
@@ -21,7 +24,7 @@ const { t } = useI18n()
   />
 
   <div
-    v-if="ctx.selectedTrnsIds.value.length > 0"
+    v-if="ctx.selectedTrnsIds.value.length > 0 || (isDashboard && ctx.params.statTab.value !== 'split')"
     class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
   >
     <div
@@ -43,6 +46,7 @@ const { t } = useI18n()
 
       <StatTrns
         v-if="ctx.params.statConfig.config.value.trns.isShow"
+        :ctx="ctx"
         :isPeriodOneDay="ctx.isPeriodOneDay.value"
         :selectedTrnsIds="ctx.selectedAndFilteredTrnsIds.value"
         :storageKey="ctx.statItemStorageKey.value"

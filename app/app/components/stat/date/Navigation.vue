@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { isEnd as computeIsEnd, isShowNav as computeIsShowNav, isShowNavHome as computeIsShowNavHome, isStart as computeIsStart } from '~/components/stat/date/navigationPredicates'
-import { statDateKey } from '~/components/stat/injectionKeys'
+import { statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
+const stickyNav = inject(statStickyNavKey, false)
 
 const isShowNav = computed(() => computeIsShowNav(statDate.params.value, statDate.range.value, statDate.maxRange.value, new Date()))
 
@@ -23,6 +24,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
   if (way === 'today') {
     statDate.params.value.rangeOffset = 0
     statDate.params.value.intervalSelected = -1
+    statDate.resetScrollRange()
     return
   }
 
@@ -40,7 +42,10 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div class="flex grow items-center gap-2 overflow-x-auto pt-2">
+  <div
+    class="stat-date-navigation flex grow items-center gap-2 overflow-x-auto"
+    :class="stickyNav ? 'pt-0' : 'pt-2'"
+  >
     <UiNavArrows
       v-if="isShowNav && !statDate.params.value.customDate"
       :isEnd
@@ -56,3 +61,17 @@ function changeDate(way: 'next' | 'prev' | 'today') {
     <slot />
   </div>
 </template>
+
+<style scoped>
+@media (hover: none) and (pointer: coarse) {
+  .stat-date-navigation {
+    scrollbar-width: none;
+  }
+
+  .stat-date-navigation::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+}
+</style>

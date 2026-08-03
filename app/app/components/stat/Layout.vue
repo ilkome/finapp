@@ -5,7 +5,7 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
-import { statConfigKey, statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -24,8 +24,8 @@ const trnsStore = useTrnsStore()
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
 const statDate = inject(statDateKey)!
-// Dashboard pins the nav row + sum tiles to the top with the header's background.
 const stickyNav = inject(statStickyNavKey, false)
+const stickyTop = inject(statStickyTopKey, ref(0))
 
 // Mobile has no per-type tabs (see Header/Menu), so always show the combined
 // summary view.
@@ -96,7 +96,10 @@ const income = useStatReportContext({
       <StatReportChart :ctx="income" />
     </div>
 
-    <div :class="stickyNav && 'bg-default/90 sticky top-0 z-10 -mx-2 px-2 backdrop-blur lg:-mx-4 lg:px-4 lg:pb-2'">
+    <div
+      :class="stickyNav && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur lg:-mx-4 lg:px-4 lg:pb-2'"
+      :style="stickyNav ? { top: `${stickyTop}px` } : undefined"
+    >
       <StatDateFilterRow />
     </div>
 
@@ -115,7 +118,7 @@ const income = useStatReportContext({
   <StatReport
     v-else
     v-bind="sharedItemProps"
-    :trnsIds="datedTrnsIds"
+    :trnsIds="trnsIds"
     class="max-w-7xl p-2 pt-0 lg:px-4 2xl:px-8"
   />
 </template>

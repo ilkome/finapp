@@ -90,6 +90,10 @@ export function useStatReport({
   const isIntervalSelected = computed(() => statDate.params.value.intervalSelected >= 0)
 
   const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
+    dates: {
+      end: statDate.range.value.end,
+      start: statDate.range.value.start,
+    },
     trnsIds: trnsIds.value,
   }))
 
@@ -382,6 +386,7 @@ export function useStatReport({
     selectedAndFilteredTrnsIds,
     selectedTrnsIds,
     selectedTypeForSum,
+    selectedTypesMapping,
     statExcludedIds,
     statItemStorageKey,
   }

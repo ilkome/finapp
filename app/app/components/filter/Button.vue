@@ -23,7 +23,7 @@ const snapPoints = useSheetSnapPoints()
   >
     <template #trigger="{ isActive }">
       <UiTitleCollapse
-        class="text-md grow-0! bg-elevated/30"
+        class="text-md grow-0! bg-elevated"
         isShown
       >
         <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">

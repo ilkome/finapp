@@ -44,7 +44,9 @@ watch(() => props.active, () => {
   <UiTabs
     :items="menu"
     :modelValue="active"
+    align="left"
     class="w-full"
+    :itemGrow="false"
     variant="link"
     @update:modelValue="(v) => onClickStatMenu(v as StatTabSlug)"
   />

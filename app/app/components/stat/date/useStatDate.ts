@@ -37,9 +37,36 @@ export function useStatDate({
     params.value = parseStatDateQueryParams(queryParams, params.value)
   }
 
-  const range = computed<Range>(() =>
-    computeDateRange(params.value, maxRange.value, Date.now()),
-  )
+  const scrollRangeOffset = shallowRef<number | null>(null)
+  const scrollRangeResetVersion = shallowRef(0)
+
+  const effectiveParams = computed<StatDateParams>(() => ({
+    customDate: params.value.customDate,
+    granularityBy: params.value.granularityBy,
+    granularityDuration: params.value.granularityDuration,
+    intervalSelected: params.value.intervalSelected,
+    isShowMaxRange: params.value.isShowMaxRange,
+    isSkipEmpty: params.value.isSkipEmpty,
+    rangeBy: params.value.rangeBy,
+    rangeDuration: params.value.rangeDuration,
+    rangeOffset: scrollRangeOffset.value ?? params.value.rangeOffset,
+  }))
+
+  const range = computed<Range>(() => {
+    return computeDateRange({
+      customDate: params.value.customDate,
+      granularityBy: params.value.granularityBy,
+      granularityDuration: params.value.granularityDuration,
+      intervalSelected: -1,
+      isShowMaxRange: params.value.isShowMaxRange,
+      isSkipEmpty: params.value.isSkipEmpty,
+      rangeBy: params.value.rangeBy,
+      rangeDuration: params.value.rangeDuration,
+      rangeOffset: scrollRangeOffset.value ?? params.value.rangeOffset,
+    }, maxRange.value, Date.now())
+  })
+
+  const isScrollRangeOverridden = computed(() => scrollRangeOffset.value !== null && scrollRangeOffset.value !== params.value.rangeOffset)
 
   const intervalsInRange = computed(() => getIntervalsInRange({
     granularityBy: params.value.granularityBy,
@@ -62,6 +89,33 @@ export function useStatDate({
         : -1
     landOn = null
   })
+
+  watch(() => [
+    params.value.customDate,
+    params.value.granularityBy,
+    params.value.granularityDuration,
+    params.value.isShowMaxRange,
+    params.value.rangeBy,
+    params.value.rangeDuration,
+    params.value.rangeOffset,
+  ], () => {
+    clearScrollRangeOffset()
+  })
+
+  function setScrollRangeOffset(rangeOffset: number) {
+    if (params.value.intervalSelected !== -1)
+      params.value.intervalSelected = -1
+    scrollRangeOffset.value = rangeOffset
+  }
+
+  function clearScrollRangeOffset() {
+    scrollRangeOffset.value = null
+  }
+
+  function resetScrollRange() {
+    clearScrollRangeOffset()
+    scrollRangeResetVersion.value++
+  }
 
   function resetCustomAndMaxRangeParams() {
     params.value.customDate = false
@@ -169,7 +223,10 @@ export function useStatDate({
   }
 
   return {
+    clearScrollRangeOffset,
+    effectiveParams,
     intervalsInRange,
+    isScrollRangeOverridden,
     maxRange,
     minusGranularity,
     minusRange,
@@ -178,6 +235,9 @@ export function useStatDate({
     plusGranularity,
     plusRange,
     range,
+    resetScrollRange,
+    scrollRangeOffset,
+    scrollRangeResetVersion,
     selectedInterval,
     selectInterval,
     setGranularity,
@@ -185,6 +245,7 @@ export function useStatDate({
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,
+    setScrollRangeOffset,
     stepInterval,
   }
 }
