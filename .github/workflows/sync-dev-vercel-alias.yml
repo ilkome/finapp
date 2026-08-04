@@ -1,0 +1,96 @@
+name: Sync dev Vercel alias
+
+on:
+  push:
+    branches:
+      - dev
+
+concurrency:
+  group: sync-dev-vercel-alias
+  cancel-in-progress: true
+
+jobs:
+  sync-alias:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Point dev alias to the pushed deployment
+        uses: actions/github-script@v8
+        env:
+          VERCEL_ALIAS: finapp-git-dev-ilkome2.vercel.app
+          VERCEL_PROJECT_ID: prj_a8k0UO0jxQ4CkI1L7q18gpBtjiM8
+          VERCEL_TEAM_ID: team_Vui2TjlYdyW86VhROjt7XvVK
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        with:
+          script: |
+            const {
+              VERCEL_ALIAS,
+              VERCEL_PROJECT_ID,
+              VERCEL_TEAM_ID,
+              VERCEL_TOKEN,
+            } = process.env
+
+            const headers = {
+              Authorization: `Bearer ${VERCEL_TOKEN}`,
+              'Content-Type': 'application/json',
+            }
+            const query = new URLSearchParams({
+              limit: '10',
+              'meta-githubCommitSha': context.sha,
+              projectId: VERCEL_PROJECT_ID,
+              teamId: VERCEL_TEAM_ID,
+            })
+
+            let deployment
+
+            for (let attempt = 1; attempt <= 60; attempt += 1) {
+              const response = await fetch(
+                `https://api.vercel.com/v6/deployments?${query}`,
+                { headers },
+              )
+
+              if (!response.ok) {
+                throw new Error(
+                  `Unable to list Vercel deployments: ${response.status} ${await response.text()}`,
+                )
+              }
+
+              const { deployments = [] } = await response.json()
+              deployment = deployments.find(({ state }) => state === 'READY')
+
+              if (deployment) break
+
+              const failedDeployment = deployments.find(({ state }) =>
+                ['CANCELED', 'ERROR'].includes(state),
+              )
+
+              if (failedDeployment) {
+                throw new Error(
+                  `Vercel deployment ${failedDeployment.uid} finished with ${failedDeployment.state}`,
+                )
+              }
+
+              core.info(`Waiting for Vercel deployment (${attempt}/60)`)
+              await new Promise(resolve => setTimeout(resolve, 10_000))
+            }
+
+            if (!deployment) {
+              throw new Error(`No ready Vercel deployment found for ${context.sha}`)
+            }
+
+            const aliasResponse = await fetch(
+              `https://api.vercel.com/v2/deployments/${deployment.uid}/aliases?teamId=${VERCEL_TEAM_ID}`,
+              {
+                body: JSON.stringify({ alias: VERCEL_ALIAS }),
+                headers,
+                method: 'POST',
+              },
+            )
+
+            if (!aliasResponse.ok) {
+              throw new Error(
+                `Unable to assign Vercel alias: ${aliasResponse.status} ${await aliasResponse.text()}`,
+              )
+            }
+
+            core.info(`${VERCEL_ALIAS} now points to ${deployment.url}`)
