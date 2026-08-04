@@ -80,6 +80,7 @@ const transactionsCount = computed(() => infinite.rows.value.filter(row => row.t
 
 let scrollFrame: number | null = null
 let isFillingViewport = false
+let lastScrollTop = 0
 
 function getStickyBottom() {
   const stickySummary = document.querySelector<HTMLElement>('[data-stat-sticky-summary]')
@@ -110,7 +111,11 @@ function syncVirtualList() {
     start,
   }
 
-  if (isStatTrnsNearEnd(scroller.scrollTop, window.innerHeight, scroller.scrollHeight))
+  const currentScrollTop = scroller.scrollTop
+  const isScrollingDown = currentScrollTop > lastScrollTop
+  lastScrollTop = currentScrollTop
+
+  if (isScrollingDown && isStatTrnsNearEnd(currentScrollTop, window.innerHeight, scroller.scrollHeight))
     infinite.loadMore()
 
   nextTick(() => {
@@ -181,6 +186,7 @@ function resetFeed() {
   const preserveScroll = preservedScrollTop !== null
   infinite.reset()
   visibleRange.value = { end: 20, start: 0 }
+  lastScrollTop = 0
   nextTick(async () => {
     if (!preserveScroll)
       scrollPageToTop()
