@@ -8,7 +8,7 @@ import type { Router } from 'vue-router'
  */
 
 type ScrollPosition = { left: number, top: number }
-type SheetEntry = { requestClose: () => void, scroll: ScrollPosition }
+type SheetEntry = { requestClose: () => void, restoreScroll: boolean, scroll: ScrollPosition }
 
 const stack: SheetEntry[] = []
 
@@ -89,18 +89,26 @@ function onPopState() {
 }
 
 export function registerSheet(requestClose: () => void): () => void {
-  const entry: SheetEntry = { requestClose, scroll: getScrollPosition() }
+  const entry: SheetEntry = { requestClose, restoreScroll: true, scroll: getScrollPosition() }
+  let unregistered = false
   stack.push(entry)
   scheduleReconcile()
 
   return () => {
-    const i = stack.indexOf(entry)
-    if (i === -1)
+    if (unregistered)
       return
-    const removed = stack.splice(i)
-    for (let k = removed.length - 1; k >= 1; k--)
-      removed[k]!.requestClose()
-    scheduleReconcile()
+    unregistered = true
+
+    const i = stack.indexOf(entry)
+    if (i !== -1) {
+      const removed = stack.splice(i)
+      for (let k = removed.length - 1; k >= 1; k--)
+        removed[k]!.requestClose()
+      scheduleReconcile()
+    }
+
+    if (entry.restoreScroll)
+      window.scrollTo(entry.scroll)
   }
 }
 
@@ -132,8 +140,10 @@ export function installSheetHistory(r: Router): void {
       return true
 
     const removed = stack.splice(0)
-    for (let k = removed.length - 1; k >= 0; k--)
+    for (let k = removed.length - 1; k >= 0; k--) {
+      removed[k]!.restoreScroll = false
       removed[k]!.requestClose()
+    }
 
     if (syntheticDepth > 0) {
       syntheticDepth = 0

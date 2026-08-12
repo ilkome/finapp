@@ -80,7 +80,10 @@ export function useStatDate({
   // range (arrow stepping past the first/last interval - see stepInterval).
   let landOn: 'first' | 'last' | null = null
 
-  watch(range, () => {
+  watch(range, (nextRange, previousRange) => {
+    if (nextRange.start === previousRange.start && nextRange.end === previousRange.end)
+      return
+
     const intervals = intervalsInRange.value
     params.value.intervalSelected = landOn === 'first'
       ? 0

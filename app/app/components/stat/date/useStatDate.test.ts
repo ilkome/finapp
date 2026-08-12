@@ -171,6 +171,40 @@ describe('stepInterval', () => {
   })
 })
 
+describe('range invalidation', () => {
+  it('keeps the selected interval when transactions update without changing the date range', async () => {
+    const maxRange = shallowRef<Range>({
+      end: new Date('2024-12-31').getTime(),
+      start: new Date('2024-01-01').getTime(),
+    })
+    const statDate = useStatDate({
+      key: `max-range-test-${Math.random()}`,
+      maxRange: computed(() => maxRange.value),
+    })
+    Object.assign(statDate.params.value, defaultStatDateParams, {
+      granularityBy: 'week',
+      granularityDuration: 1,
+      rangeBy: 'day',
+      rangeDuration: 30,
+      rangeOffset: 0,
+    })
+    await nextTick()
+
+    const rangeBeforeUpdate = { ...statDate.range.value }
+    const penultimateInterval = statDate.intervalsInRange.value.length - 2
+    statDate.params.value.intervalSelected = penultimateInterval
+
+    maxRange.value = {
+      end: new Date('2025-01-01').getTime(),
+      start: new Date('2023-12-31').getTime(),
+    }
+    await nextTick()
+
+    expect(statDate.range.value).toEqual(rangeBeforeUpdate)
+    expect(statDate.params.value.intervalSelected).toBe(penultimateInterval)
+  })
+})
+
 describe('setGranularityBy', () => {
   it('changes granularityBy and resets custom params', () => {
     const statDate = createStatDate({

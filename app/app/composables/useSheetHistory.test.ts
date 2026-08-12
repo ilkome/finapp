@@ -35,6 +35,7 @@ function back() {
 }
 
 beforeEach(() => {
+  vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   vi.spyOn(window.history, 'pushState').mockImplementation(() => {})
   vi.spyOn(window.history, 'go').mockImplementation(() => {})
   vi.spyOn(window.history, 'back').mockImplementation(() => {})
@@ -79,11 +80,33 @@ describe('useSheetHistory', () => {
 
   it('consumes the synthetic entry when a sheet closes', async () => {
     const mod = await load()
+    vi.spyOn(document, 'scrollingElement', 'get').mockReturnValue({
+      scrollLeft: 12,
+      scrollTop: 840,
+    } as HTMLElement)
     const unregister = mod.registerSheet(vi.fn())
     await flush()
     unregister()
     await flush()
     expect(window.history.go).toHaveBeenCalledWith(-1)
+    expect(window.scrollTo).toHaveBeenCalledWith({ left: 12, top: 840 })
+  })
+
+  it('restores the opening position after Back finishes closing the sheet', async () => {
+    const mod = await load()
+    vi.spyOn(document, 'scrollingElement', 'get').mockReturnValue({
+      scrollLeft: 0,
+      scrollTop: 720,
+    } as HTMLElement)
+    const close = vi.fn()
+    const unregister = mod.registerSheet(close)
+    await flush()
+
+    back()
+    expect(close).toHaveBeenCalledTimes(1)
+    unregister()
+
+    expect(window.scrollTo).toHaveBeenCalledWith({ left: 0, top: 720 })
   })
 
   it('leaves history untouched when one sheet closes as another opens', async () => {
@@ -120,13 +143,15 @@ describe('useSheetHistory', () => {
   it('closes sheets and replaces the synthetic entry on route change (no history.go)', async () => {
     const mod = await load()
     const close = vi.fn()
-    mod.registerSheet(close)
+    const unregister = mod.registerSheet(close)
     await flush()
 
     const result = guard!({ fullPath: '/x' }, { fullPath: '/y' })
     expect(close).toHaveBeenCalledTimes(1)
     expect(result).toBe(false)
     expect(window.history.go).not.toHaveBeenCalled()
+    unregister()
+    expect(window.scrollTo).not.toHaveBeenCalled()
 
     await flush() // deferred router.replace
     expect(replace).toHaveBeenCalledWith('/x')
