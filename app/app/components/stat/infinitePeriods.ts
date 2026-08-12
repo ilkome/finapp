@@ -33,6 +33,17 @@ export function resolveCurrentPeriodEmptyKey(
   return 'trns.noTrns'
 }
 
+export function resolveStatFeedScrollTop(
+  preservedCategoryScrollTop: number | null,
+  currentScrollTop: number,
+  preserveCurrentScroll: boolean,
+): number | null {
+  if (preservedCategoryScrollTop !== null)
+    return preservedCategoryScrollTop
+
+  return preserveCurrentScroll ? currentScrollTop : null
+}
+
 export function resolveStatStickyBottom(
   stickyTop: number,
   summaryTop: number,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
-import { isStatTrnsNearEnd, resolveStatStickyBottom } from '~/components/stat/infinitePeriods'
+import { isStatTrnsNearEnd, resolveStatFeedScrollTop, resolveStatStickyBottom } from '~/components/stat/infinitePeriods'
 import { statPreservedCategoryScrollTopKey, statStickyTopKey } from '~/components/stat/injectionKeys'
 import { useStatInfinitePeriods } from '~/components/stat/useStatInfinitePeriods'
 import { TrnType } from '~/components/trns/types'
@@ -181,18 +181,22 @@ function scrollPageToTop() {
   window.scrollTo({ top: 0 })
 }
 
-function resetFeed() {
-  const preservedScrollTop = preservedCategoryScrollTop.value
-  const preserveScroll = preservedScrollTop !== null
+function resetFeed(preserveCurrentScroll = false) {
+  const currentScrollTop = document.scrollingElement?.scrollTop ?? 0
+  const preservedScrollTop = resolveStatFeedScrollTop(
+    preservedCategoryScrollTop.value,
+    currentScrollTop,
+    preserveCurrentScroll,
+  )
   infinite.reset()
   visibleRange.value = { end: 20, start: 0 }
   lastScrollTop = 0
   nextTick(async () => {
-    if (!preserveScroll)
+    if (preservedScrollTop === null)
       scrollPageToTop()
     scheduleVirtualListSync()
     await fillViewport()
-    if (preserveScroll) {
+    if (preservedScrollTop !== null) {
       window.scrollTo({ top: preservedScrollTop })
       scheduleVirtualListSync()
     }
@@ -218,7 +222,7 @@ const reportFilterState = computed(() => ({
   statTab: props.ctx.params.statTab.value,
 }))
 
-watch([filterBy, isShowWithDesc], () => resetFeed())
+watch([filterBy, isShowWithDesc], () => resetFeed(true))
 watch(reportFilterState, () => resetFeed())
 watch(() => props.ctx.params.statDate.scrollRangeResetVersion.value, () => nextTick(resetFeed))
 watch(infinite.rows, () => nextTick(scheduleVirtualListSync))

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isEnd as computeIsEnd, isShowNav as computeIsShowNav, isShowNavHome as computeIsShowNavHome, isStart as computeIsStart } from '~/components/stat/date/navigationPredicates'
+import { isEnd as computeIsEnd, isShowNav as computeIsShowNav, isShowNavHome as computeIsShowNavHome, isStart as computeIsStart, isLatestSelectedInterval } from '~/components/stat/date/navigationPredicates'
 import { statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
@@ -14,7 +14,15 @@ const navRange = computed(() => (isIntervalStep.value && statDate.selectedInterv
 const navBy = computed(() => isIntervalStep.value ? statDate.params.value.granularityBy : statDate.params.value.rangeBy)
 const navDuration = computed(() => isIntervalStep.value ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration)
 
-const isEnd = computed(() => computeIsEnd(statDate.params.value, navRange.value, new Date(), navBy.value, navDuration.value))
+const isEnd = computed(() => {
+  const now = new Date()
+  return isLatestSelectedInterval(
+    statDate.params.value.intervalSelected,
+    statDate.intervalsInRange.value.length,
+    statDate.range.value,
+    now,
+  ) || computeIsEnd(statDate.params.value, navRange.value, now, navBy.value, navDuration.value)
+})
 
 const isStart = computed(() => computeIsStart(navRange.value, statDate.maxRange.value))
 

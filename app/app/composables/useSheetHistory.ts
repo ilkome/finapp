@@ -7,7 +7,8 @@ import type { Router } from 'vue-router'
  * same-URL history entries and animate-closes the top sheet on Back.
  */
 
-type SheetEntry = { requestClose: () => void }
+type ScrollPosition = { left: number, top: number }
+type SheetEntry = { requestClose: () => void, scroll: ScrollPosition }
 
 const stack: SheetEntry[] = []
 
@@ -23,8 +24,17 @@ let reconcileScheduled = false
 let router: Router | null = null
 let installed = false
 
-function pushEntry() {
-  window.history.pushState({ ...window.history.state, __sheet: true }, '')
+function getScrollPosition(): ScrollPosition {
+  return {
+    left: document.scrollingElement?.scrollLeft ?? window.scrollX,
+    top: document.scrollingElement?.scrollTop ?? window.scrollY,
+  }
+}
+
+function pushEntry(scroll: ScrollPosition) {
+  const currentState = { ...window.history.state, scroll }
+  window.history.replaceState(currentState, '')
+  window.history.pushState({ ...currentState, __sheet: true, scroll: null }, '')
   syntheticDepth += 1
 }
 
@@ -38,8 +48,8 @@ function reconcile() {
   reconcileScheduled = false
   const diff = stack.length - syntheticDepth
   if (diff > 0) {
-    for (let i = 0; i < diff; i++)
-      pushEntry()
+    for (let i = syntheticDepth; i < stack.length; i++)
+      pushEntry(stack[i]!.scroll)
   }
   else if (diff < 0) {
     popEntries(-diff)
@@ -79,7 +89,7 @@ function onPopState() {
 }
 
 export function registerSheet(requestClose: () => void): () => void {
-  const entry: SheetEntry = { requestClose }
+  const entry: SheetEntry = { requestClose, scroll: getScrollPosition() }
   stack.push(entry)
   scheduleReconcile()
 

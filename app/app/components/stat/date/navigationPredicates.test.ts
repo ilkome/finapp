@@ -7,7 +7,7 @@ import type { StatDateParams } from '~/components/stat/date/types'
 
 import { defaultStatDateParams } from '~/components/stat/date/params'
 
-import { isEnd, isShowNav, isShowNavHome, isStart } from './navigationPredicates'
+import { isEnd, isLatestSelectedInterval, isShowNav, isShowNavHome, isStart } from './navigationPredicates'
 
 const now = new Date('2024-06-15T12:00:00Z')
 const base: StatDateParams = { ...defaultStatDateParams, rangeBy: 'month', rangeDuration: 1 }
@@ -70,6 +70,30 @@ describe('isEnd', () => {
   it('with explicit by/duration is true for today\'s day interval', () => {
     const range: Range = { end: getEndOf(now, 'day').getTime(), start: 0 }
     expect(isEnd(base, range, now, 'day', 1)).toBe(true)
+  })
+})
+
+describe('isLatestSelectedInterval', () => {
+  const rollingRange: Range = {
+    end: getEndOf(now, 'day').getTime(),
+    start: getStartOf(new Date('2024-05-17T12:00:00Z'), 'day').getTime(),
+  }
+
+  it('blocks the next arrow for the last clipped week of the current range', () => {
+    expect(isLatestSelectedInterval(4, 5, rollingRange, now)).toBe(true)
+  })
+
+  it('allows stepping to the next interval inside the current range', () => {
+    expect(isLatestSelectedInterval(3, 5, rollingRange, now)).toBe(false)
+  })
+
+  it('allows stepping forward from the last interval of a past range', () => {
+    const pastRange: Range = {
+      end: getEndOf(new Date('2024-05-16T12:00:00Z'), 'day').getTime(),
+      start: getStartOf(new Date('2024-04-17T12:00:00Z'), 'day').getTime(),
+    }
+
+    expect(isLatestSelectedInterval(4, 5, pastRange, now)).toBe(false)
   })
 })
 

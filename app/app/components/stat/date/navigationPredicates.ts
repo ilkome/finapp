@@ -15,6 +15,17 @@ export function isShowNav(params: StatDateParams, range: Range, maxRange: Range,
       || (range.start !== maxRange.start && range.end !== maxRange.end))
 }
 
+export function isLatestSelectedInterval(
+  intervalSelected: number,
+  intervalsCount: number,
+  range: Range,
+  now: Date,
+): boolean {
+  return intervalSelected >= 0
+    && intervalSelected === intervalsCount - 1
+    && range.end >= getEndOf(now, 'day').getTime()
+}
+
 /** `by`/`duration` = the unit the arrows step: the range normally, the interval while one is selected. */
 export function isEnd(
   params: StatDateParams,

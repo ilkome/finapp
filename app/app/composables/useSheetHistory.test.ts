@@ -55,6 +55,28 @@ describe('useSheetHistory', () => {
     expect(window.history.pushState).toHaveBeenCalledTimes(2)
   })
 
+  it('stores the page position before pushing a sheet history entry', async () => {
+    const mod = await load()
+    const scrollingElement = {
+      scrollLeft: 12,
+      scrollTop: 840,
+    } as HTMLElement
+    vi.spyOn(document, 'scrollingElement', 'get').mockReturnValue(scrollingElement)
+
+    mod.registerSheet(vi.fn())
+    scrollingElement.scrollTop = 0
+    await flush()
+
+    expect(window.history.replaceState).toHaveBeenCalledWith(
+      expect.objectContaining({ scroll: { left: 12, top: 840 } }),
+      '',
+    )
+    expect(window.history.pushState).toHaveBeenCalledWith(
+      expect.objectContaining({ __sheet: true, scroll: null }),
+      '',
+    )
+  })
+
   it('consumes the synthetic entry when a sheet closes', async () => {
     const mod = await load()
     const unregister = mod.registerSheet(vi.fn())
