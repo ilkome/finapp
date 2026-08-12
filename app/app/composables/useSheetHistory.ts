@@ -19,6 +19,7 @@ const stack: SheetEntry[] = []
 let syntheticDepth = 0
 
 let poppingSelf = false
+let pendingSelfPopRestore: ScrollPosition | null = null
 let unwinding = false
 let reconcileScheduled = false
 let router: Router | null = null
@@ -44,15 +45,25 @@ function popEntries(count: number) {
   window.history.go(-count)
 }
 
+function restoreScrollAfterNavigation(scroll: ScrollPosition) {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => window.scrollTo(scroll))
+  })
+}
+
 function reconcile() {
   reconcileScheduled = false
   const diff = stack.length - syntheticDepth
   if (diff > 0) {
+    pendingSelfPopRestore = null
     for (let i = syntheticDepth; i < stack.length; i++)
       pushEntry(stack[i]!.scroll)
   }
   else if (diff < 0) {
     popEntries(-diff)
+  }
+  else {
+    pendingSelfPopRestore = null
   }
 }
 
@@ -71,6 +82,10 @@ function scheduleReconcile() {
 function onPopState() {
   if (poppingSelf) {
     poppingSelf = false
+    if (pendingSelfPopRestore) {
+      restoreScrollAfterNavigation(pendingSelfPopRestore)
+      pendingSelfPopRestore = null
+    }
     return
   }
 
@@ -107,8 +122,13 @@ export function registerSheet(requestClose: () => void): () => void {
       scheduleReconcile()
     }
 
-    if (entry.restoreScroll)
-      window.scrollTo(entry.scroll)
+    if (!entry.restoreScroll)
+      return
+
+    if (i === -1)
+      restoreScrollAfterNavigation(entry.scroll)
+    else
+      pendingSelfPopRestore = entry.scroll
   }
 }
 
@@ -140,6 +160,7 @@ export function installSheetHistory(r: Router): void {
       return true
 
     const removed = stack.splice(0)
+    pendingSelfPopRestore = null
     for (let k = removed.length - 1; k >= 0; k--) {
       removed[k]!.restoreScroll = false
       removed[k]!.requestClose()

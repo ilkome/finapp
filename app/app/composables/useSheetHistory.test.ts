@@ -35,6 +35,10 @@ function back() {
 }
 
 beforeEach(() => {
+  vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+    callback(0)
+    return 1
+  })
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   vi.spyOn(window.history, 'pushState').mockImplementation(() => {})
   vi.spyOn(window.history, 'go').mockImplementation(() => {})
@@ -89,6 +93,9 @@ describe('useSheetHistory', () => {
     unregister()
     await flush()
     expect(window.history.go).toHaveBeenCalledWith(-1)
+    expect(window.scrollTo).not.toHaveBeenCalled()
+
+    back()
     expect(window.scrollTo).toHaveBeenCalledWith({ left: 12, top: 840 })
   })
 
