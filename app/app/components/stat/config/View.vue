@@ -2,13 +2,10 @@
 import { useElementSize } from '@vueuse/core'
 import { AnimatePresence, Motion } from 'motion-v'
 
-import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
-import type { TrnId } from '~/components/trns/types'
 
 import { nextForecastMode, useForecastMode } from '~/components/recurrences/useForecastMode'
 import { PANELS } from '~/components/stat/config/panels/registry'
-import { buildConfigPatch, getConfigValue } from '~/components/stat/config/schema'
 import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
@@ -18,8 +15,8 @@ type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 // list / vertical) on every page that never opts out. Only leaf categories pass false.
 const props = withDefaults(defineProps<{
   hasCategoryBreakdown?: boolean
+  hasTrnsConfig?: boolean
   isShowWallets?: boolean
-  selectedTrnsIds?: TrnId[]
 }>(), {
   hasCategoryBreakdown: true,
 })
@@ -34,14 +31,13 @@ function cycleForecast() {
   forecastMode.value = nextForecastMode(forecastMode.value)
 }
 
-const hasTrnsConfig = computed(() => props.selectedTrnsIds !== undefined)
-const showCategoryConfig = computed(() => hasTrnsConfig.value && props.hasCategoryBreakdown)
+const showCategoryConfig = computed(() => props.hasTrnsConfig && props.hasCategoryBreakdown)
 
 const availablePanels = computed<StatConfigPanelId[]>(() => {
   const panels: StatConfigPanelId[] = ['root', 'statAverage']
   if (props.isShowWallets)
     panels.push('wallets')
-  if (hasTrnsConfig.value)
+  if (props.hasTrnsConfig)
     panels.push('chart')
   if (showCategoryConfig.value)
     panels.push('catsRound', 'catsList', 'vertical')
@@ -54,12 +50,11 @@ watch(availablePanels, (panels) => {
 }, { immediate: true })
 
 function panelIsShow(panel: ConfigPanelId): boolean {
-  return getConfigValue(statConfig.config.value, PANELS[panel].showPath) as boolean
+  return PANELS[panel].getIsShow(statConfig.config.value)
 }
 
 function togglePanel(panel: ConfigPanelId) {
-  const [key, ...rest] = PANELS[panel].showPath.split('.') as [keyof MiniItemConfig, ...string[]]
-  statConfig.updateConfig(key, buildConfigPatch(rest, !panelIsShow(panel)) as never)
+  PANELS[panel].setIsShow(statConfig, !panelIsShow(panel))
 }
 
 const panelTitle = computed<string>(() => activePanel.value === 'root' ? '' : t(PANELS[activePanel.value].titleKey))
@@ -108,7 +103,7 @@ watchEffect(() => {
 })
 
 watch(
-  [locale, () => props.isShowWallets, () => props.selectedTrnsIds],
+  [locale, () => props.isShowWallets, () => props.hasTrnsConfig],
   () => {
     lastRootHeight.value = FALLBACK_MIN_HEIGHT
   },
@@ -143,7 +138,7 @@ type RootRow = {
 
 function panelRow(panel: ConfigPanelId): RootRow {
   const def = PANELS[panel]
-  const count = def.countPath ? getConfigValue(statConfig.config.value, def.countPath) as number : undefined
+  const count = def.getCount?.(statConfig.config.value)
   return {
     isShow: panelIsShow(panel),
     key: panel,
@@ -162,7 +157,7 @@ const rows = computed<RootRow[]>(() => {
 
   list.push(panelRow('statAverage'))
 
-  if (hasTrnsConfig.value)
+  if (props.hasTrnsConfig)
     list.push(panelRow('chart'))
 
   if (showCategoryConfig.value) {
@@ -171,7 +166,7 @@ const rows = computed<RootRow[]>(() => {
     list.push(panelRow('vertical'))
   }
 
-  if (hasTrnsConfig.value) {
+  if (props.hasTrnsConfig) {
     list.push({
       isShow: statConfig.config.value.trns.isShow,
       key: 'trns',

@@ -125,7 +125,7 @@ const tabItems = computed<TabsItem[]>(() => [
         </div>
       </div>
 
-      <div class="pointer-events-none absolute right-0 bottom-0 left-0 z-10 px-2 pt-1 pb-2">
+      <div class="pointer-events-none absolute inset-x-0 bottom-0 z-10 px-2 pt-1 pb-2">
         <LayoutSidebarUserMenu :collapsed="!props.isShowSidebar" />
       </div>
     </div>

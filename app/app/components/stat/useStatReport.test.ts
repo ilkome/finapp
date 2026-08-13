@@ -65,12 +65,19 @@ const getStoreTrnsIdsMock = vi.fn(({ trnsIds }: { sort?: boolean, trnsIds?: stri
 vi.mock('~/components/trns/useTrnsStore', () => ({
   useTrnsStore: () => ({
     getStoreTrnsIds: getStoreTrnsIdsMock,
-    items: {},
+    items: {
+      'in-range': { categoryId: 'cat1', date: 5, type: 0 },
+      'out-of-range': { categoryId: 'cat1', date: 1, type: 0 },
+      't1': { categoryId: 'cat1', date: 1, type: 0 },
+      't2': { categoryId: 'cat1', date: 3, type: 0 },
+      't3': { categoryId: 'cat2', date: 2, type: 0 },
+    },
   }),
 }))
 
 vi.mock('~/components/categories/useCategoriesStore', () => ({
   useCategoriesStore: () => ({
+    getTransactibleIds: (ids: string[]) => ids,
     items: {},
   }),
 }))
@@ -344,14 +351,7 @@ describe('useStatReport', () => {
       // When no interval selected, it should pass rangeTrnsIds
       void item.selectedTrnsIds.value
 
-      // getStoreTrnsIds is called multiple times:
-      // 1. rangeTrnsIds computed
-      // 2. selectedTrnsIds computed (which uses baseTrnsIdsForSelection = rangeTrnsIds)
-      const selectedCall = getStoreTrnsIdsMock.mock.calls.find(
-        call => call[0].sort === true,
-      )
-      expect(selectedCall).toBeDefined()
-      expect(selectedCall![0].trnsIds).toEqual(rangeTrnsIds)
+      expect(item.selectedTrnsIds.value).toEqual(['t2', 't3', 't1'])
     })
 
     it('uses interval trnsIds when an interval is selected', () => {
@@ -374,12 +374,7 @@ describe('useStatReport', () => {
 
       void item.selectedTrnsIds.value
 
-      // The selectedTrnsIds call (with sort: true) should receive interval trnsIds
-      const selectedCall = getStoreTrnsIdsMock.mock.calls.find(
-        call => call[0].sort === true,
-      )
-      expect(selectedCall).toBeDefined()
-      expect(selectedCall![0].trnsIds).toEqual(intervalTrnsIds)
+      expect(item.selectedTrnsIds.value).toEqual(intervalTrnsIds)
     })
   })
 

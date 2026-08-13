@@ -5,10 +5,9 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
-import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { getSortedFilterWalletsIds, getTypesMapping } from '~/components/stat/utils'
+import { statConfigKey } from '~/components/stat/injectionKeys'
+import { getSortedFilterWalletsIds } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 // Defaults to true so pages that always have a breakdown need not pass it; an absent
@@ -33,10 +32,8 @@ const activeTab = defineModel<StatTabSlug>('activeTab')
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
-const statDate = inject(statDateKey)!
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
-const trnsStore = useTrnsStore()
 
 const isPopoverOpen = ref(false)
 
@@ -46,21 +43,6 @@ const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
   statConfig.config.value.wallets.isShow,
   statConfig.config.value.wallets.count,
 ))
-
-const categoryConfigTrnsIds = computed(() => {
-  if (!props.configCategories || !props.trnsIds)
-    return undefined
-
-  return trnsStore.getStoreTrnsIds({
-    dates: {
-      end: statDate.range.value.end,
-      start: statDate.range.value.start,
-    },
-    sort: true,
-    trnsIds: props.trnsIds,
-    trnsTypes: activeTab.value ? getTypesMapping(activeTab.value) : undefined,
-  })
-})
 
 function onClickWallet(walletId: WalletId) {
   filter.toggleWalletId(walletId)
@@ -82,8 +64,8 @@ function onClickWallet(walletId: WalletId) {
         <StatConfigModal>
           <StatConfigView
             :hasCategoryBreakdown
+            :hasTrnsConfig="!!configCategories && trnsIds !== undefined"
             :isShowWallets="!!configWallets"
-            :selectedTrnsIds="categoryConfigTrnsIds"
           />
         </StatConfigModal>
 

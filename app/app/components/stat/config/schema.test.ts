@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 
 import type { MiniItemConfig } from './schema'
 
-import { applyConfigUpdate, ConfigSchema } from './schema'
+import { PANELS } from './panels/registry'
+import { applyConfigProps, applyConfigUpdate, ConfigSchema } from './schema'
 
 const defaultConfig: MiniItemConfig = {
   average: {
@@ -52,6 +53,16 @@ const defaultConfig: MiniItemConfig = {
 }
 
 describe('configSchema', () => {
+  it('applies nested props while preserving sibling fields', () => {
+    const result = applyConfigProps(defaultConfig, {
+      categories: { round: { isShowFavorites: false } },
+    })
+
+    expect(result.categories.round.isShowFavorites).toBe(false)
+    expect(result.categories.round.isShowRecent).toBe(defaultConfig.categories.round.isShowRecent)
+    expect(result.categories.list).toEqual(defaultConfig.categories.list)
+  })
+
   it('validates default config', () => {
     expect(ConfigSchema.safeParse(defaultConfig).success).toBe(true)
   })
@@ -145,5 +156,31 @@ describe('applyConfigUpdate', () => {
     expect(result!.categories.isShowEmpty).toBe(true)
     expect(result!.chart.type).toBe('bar')
     expect(result!.categories.list).toEqual(defaultConfig.categories.list)
+  })
+})
+
+describe('panel registry', () => {
+  it('reads and updates each panel visibility without changing unrelated values', () => {
+    for (const panel of Object.values(PANELS)) {
+      let config = structuredClone(defaultConfig)
+      const originalChartType = config.chart.type
+      const provider = {
+        config: { value: config },
+        updateConfig(key: keyof MiniItemConfig, value: any) {
+          config = applyConfigUpdate(config, key, value)!
+          this.config.value = config
+        },
+      }
+      const before = panel.getIsShow(config)
+      panel.setIsShow(provider as any, !before)
+
+      expect(panel.getIsShow(config)).toBe(!before)
+      expect(config.chart.type).toBe(originalChartType)
+    }
+  })
+
+  it('reads counts from the matching panel fields', () => {
+    expect(PANELS.wallets.getCount?.(defaultConfig)).toBe(defaultConfig.wallets.count)
+    expect(PANELS.statAverage.getCount?.(defaultConfig)).toBe(defaultConfig.average.count)
   })
 })

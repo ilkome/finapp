@@ -4,6 +4,9 @@ import { expect, test } from '@playwright/test'
 
 const startDemo = /demo|демо/i
 const transactionWallet = /Debit card|Credit card|Cash|Savings|Dollar account/
+const addTransaction = /^(Add transaction|Добавить операцию)$/
+const deleteTransaction = /Delete transaction\?|Удалить операцию\?/
+const deleteAction = /^(Delete|Удалить)$/
 
 type Geometry = {
   documentHeight: number
@@ -75,6 +78,72 @@ function expectStableGeometry(before: Geometry, after: Geometry) {
 }
 
 test.describe('Statistics measured virtual feed', () => {
+  test('mounts only active report contexts and balances viewport resources', async ({ context, page }) => {
+    await page.setViewportSize({ height: 900, width: 1440 })
+    await bootstrapDemo(page, context)
+
+    const report = page.locator('[data-stat-report-context-count]')
+    const feedState = page.locator('.stat-trns-virtual').locator('..')
+    await expect(report).toHaveAttribute('data-stat-report-context-count', '1')
+    await expect(feedState).toHaveAttribute('data-stat-listener-count', '11')
+
+    for (const name of [/^Expense$/, /^Income$/]) {
+      await page.getByRole('button', { name }).first().click()
+      await expect(report).toHaveAttribute('data-stat-report-context-count', '1')
+    }
+
+    await page.getByRole('button', { name: /^Split$/ }).first().click()
+    await expect(report).toHaveAttribute('data-stat-report-context-count', '2')
+    await page.getByRole('button', { name: /^Summary$/ }).first().click()
+    await expect(report).toHaveAttribute('data-stat-report-context-count', '1')
+    await expect(feedState).toHaveAttribute('data-stat-listener-count', '11')
+    expect(Number(await feedState.getAttribute('data-stat-observer-count'))).toBeLessThanOrEqual(2)
+  })
+
+  for (const viewport of [
+    { height: 844, width: 390 },
+    { height: 800, width: 768 },
+    { height: 800, width: 1024 },
+    { height: 900, width: 1440 },
+  ]) {
+    test(`keeps summary geometry stable across period transitions at ${viewport.width}x${viewport.height}`, async ({ context, page }) => {
+      await page.setViewportSize(viewport)
+      await bootstrapDemo(page, context)
+
+      const feed = page.locator('.stat-trns-virtual')
+      const feedState = feed.locator('..')
+      const summary = page.locator('[data-stat-sticky-summary]')
+      const initialOffset = Number(await feedState.getAttribute('data-stat-active-offset'))
+      const initialSummaryHeight = await summary.evaluate(element => element.getBoundingClientRect().height)
+
+      let activeOffset = initialOffset
+      for (let attempt = 0; attempt < 30 && activeOffset === initialOffset; attempt++) {
+        await page.mouse.wheel(0, 240)
+        await page.waitForTimeout(50)
+        activeOffset = Number(await feedState.getAttribute('data-stat-active-offset'))
+      }
+
+      expect(activeOffset).toBeGreaterThan(initialOffset)
+      const transitionCount = Number(await feedState.getAttribute('data-stat-active-transition-count'))
+      const loadCount = Number(await feedState.getAttribute('data-stat-load-count'))
+      await page.waitForTimeout(400)
+
+      expect(await summary.evaluate(element => element.getBoundingClientRect().height)).toBeCloseTo(initialSummaryHeight, 0)
+      expect(Number(await feedState.getAttribute('data-stat-active-offset'))).toBe(activeOffset)
+      expect(Number(await feedState.getAttribute('data-stat-active-transition-count'))).toBe(transitionCount)
+      expect(Number(await feedState.getAttribute('data-stat-load-count'))).toBe(loadCount)
+
+      for (let attempt = 0; attempt < 30 && activeOffset !== initialOffset; attempt++) {
+        await page.mouse.wheel(0, -120)
+        await page.waitForTimeout(50)
+        activeOffset = Number(await feedState.getAttribute('data-stat-active-offset'))
+      }
+
+      expect(activeOffset).toBe(initialOffset)
+      expect(Number(await feedState.getAttribute('data-stat-active-transition-count'))).toBe(transitionCount + 1)
+    })
+  }
+
   test('loads only while scrolling forward and preserves desktop scroll through editor reflow', async ({ context, page }) => {
     await page.setViewportSize({ height: 800, width: 1024 })
     await bootstrapDemo(page, context)
@@ -138,5 +207,43 @@ test.describe('Statistics measured virtual feed', () => {
     await page.goBack()
     await expect(page.locator('.trnForm')).toBeHidden()
     expectStableGeometry(opened, await geometry(page, row))
+  })
+
+  test('rebuilds the feed index once for create and delete', async ({ context, page }) => {
+    await page.setViewportSize({ height: 800, width: 1024 })
+    await bootstrapDemo(page, context)
+
+    const feedState = page.locator('.stat-trns-virtual').locator('..')
+    const buildCount = async () => Number(await feedState.getAttribute('data-stat-index-build-count'))
+    const rowBuildCount = async () => Number(await feedState.getAttribute('data-stat-row-build-count'))
+    const buildCountBeforeCreate = await buildCount()
+    const rowBuildCountBeforeCreate = await rowBuildCount()
+
+    await page.getByText(addTransaction, { exact: true }).click()
+    const form = page.locator('.trnForm')
+    await expect(form).toBeVisible()
+    await form.locator('input[inputmode="tel"]').first().fill('9876543')
+    await form.locator('[class*="bg-primary/50"]').click()
+
+    const transactionRow = page.locator('.stat-trns-virtual > [data-index]').filter({ hasText: '9 876 543' })
+    const createdAmount = transactionRow.getByText('9 876 543', { exact: true })
+    await expect(createdAmount).toBeVisible()
+    await expect.poll(buildCount).toBe(buildCountBeforeCreate + 1)
+    await expect.poll(rowBuildCount).toBe(rowBuildCountBeforeCreate + 1)
+    expect(Number(await feedState.getAttribute('data-stat-index-build-duration'))).toBeLessThan(50)
+
+    await page.keyboard.press('Escape')
+    await expect(form).toBeHidden()
+    await page.waitForTimeout(400)
+    await transactionRow.locator('.uiElement.interactive').click({ button: 'right' })
+    const deleteMenuItem = page.getByRole('menuitem', { name: deleteAction })
+    await expect(deleteMenuItem).toBeVisible()
+    await deleteMenuItem.dispatchEvent('click')
+    await page.getByRole('dialog', { name: deleteTransaction }).getByRole('button', { name: deleteAction }).click()
+
+    await expect(createdAmount).toHaveCount(0)
+    await expect.poll(buildCount).toBe(buildCountBeforeCreate + 2)
+    await expect.poll(rowBuildCount).toBe(rowBuildCountBeforeCreate + 2)
+    expect(Number(await feedState.getAttribute('data-stat-index-build-duration'))).toBeLessThan(50)
   })
 })

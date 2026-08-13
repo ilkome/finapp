@@ -128,14 +128,6 @@ export function applyConfigUpdate<K extends keyof MiniItemConfig>(
   return update as MiniItemConfig
 }
 
-/** Read a dot path (e.g. 'categories.round.isGrouped') off the config. */
-export function getConfigValue(config: MiniItemConfig, path: string): unknown {
-  return path.split('.').reduce<unknown>((acc, key) => (acc as Record<string, unknown> | undefined)?.[key], config)
-}
-
-/** Turn a dot path plus a value into the nested partial `updateConfig` expects. */
-export function buildConfigPatch(segments: string[], value: unknown): unknown {
-  if (segments.length === 0)
-    return value
-  return { [segments[0]!]: buildConfigPatch(segments.slice(1), value) }
+export function applyConfigProps(current: MiniItemConfig, props: DeepPartial<MiniItemConfig>): MiniItemConfig {
+  return ConfigSchema.parse(defu(props, current))
 }

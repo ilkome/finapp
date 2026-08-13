@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { TrnId } from '~/components/trns/types'
+import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useStatCategories } from '~/components/stat/categories/useStatCategories'
+import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
+  baseCategoryViews: CategoryViews
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   filteredCategoriesIds: CategoryId[]
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
-  selectedTrnsIds?: TrnId[]
 }>()
 
 const emit = defineEmits<{
@@ -19,7 +19,6 @@ const emit = defineEmits<{
   setCategoryFilter: [categoryId: CategoryId]
 }>()
 
-const { computeCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
@@ -59,7 +58,15 @@ const mergedPreCategoriesIds = computed(() => {
   return ids
 })
 
-const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped.value, mergedPreCategoriesIds.value, props.excludedCategoriesIds))
+const roundCategories = computed(() => {
+  const views = addEmptyCategoryViews(
+    props.baseCategoryViews,
+    categoriesStore.items,
+    mergedPreCategoriesIds.value,
+    props.excludedCategoriesIds,
+  )
+  return isGrouped.value ? views.grouped : views.ungrouped
+})
 const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
 

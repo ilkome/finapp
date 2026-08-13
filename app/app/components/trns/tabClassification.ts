@@ -4,6 +4,18 @@ import { TrnType } from '~/components/trns/types'
 
 type TypeCounts = { adjustment: number, expense: number, income: number, transfer: number }
 
+export function matchesTrnViewType(trn: TrnItem | undefined, filterBy: TrnsViewType | 'all'): boolean {
+  if (filterBy === 'all')
+    return !!trn
+  if (filterBy === 'adjustment')
+    return trn?.categoryId === 'adjustment'
+  if (filterBy === 'transfer')
+    return trn?.categoryId === 'transfer'
+  if (filterBy === 'expense')
+    return trn?.categoryId !== 'transfer' && trn?.type === TrnType.Expense
+  return trn?.categoryId !== 'transfer' && trn?.type === TrnType.Income
+}
+
 export function getTypeCounts(trnsIds: TrnId[], items: Record<TrnId, TrnItem> | null | undefined): TypeCounts {
   const counts: TypeCounts = { adjustment: 0, expense: 0, income: 0, transfer: 0 }
   for (const id of trnsIds) {
@@ -36,11 +48,10 @@ export function getFilteredByTypeIds(
     return trnsIds ?? []
 
   return (trnsIds ?? []).filter((id) => {
-    const trn = items?.[id]
-    if (filterBy === 'adjustment')
-      return trn?.categoryId === 'adjustment'
-    if (filterBy === 'transfer')
-      return trn?.categoryId === 'transfer'
-    return trn?.categoryId !== 'transfer' && trn?.type === selectedType
+    if (!matchesTrnViewType(items?.[id], filterBy))
+      return false
+    if (filterBy === 'expense' || filterBy === 'income')
+      return items?.[id]?.type === selectedType
+    return true
   })
 }

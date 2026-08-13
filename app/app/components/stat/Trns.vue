@@ -2,8 +2,8 @@
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 import type { TrnId } from '~/components/trns/types'
 
-import { resolveCurrentPeriodEmptyKey } from '~/components/stat/infinitePeriods'
 import { statDashboardKey } from '~/components/stat/injectionKeys'
+import { resolveCurrentPeriodEmptyKey } from '~/components/stat/statFeed'
 
 const props = defineProps<{
   ctx?: StatReportContext

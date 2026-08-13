@@ -22,6 +22,13 @@ defineProps<{
     @click="ctx.onClickSumItemWrap"
     @clickAverage="ctx.params.statConfig.updateConfig('average', { isShow: !ctx.params.statConfig.config.value.average.isShow })"
   >
+    <template #summaryPie="{ type }">
+      <LazyStatChartPieView
+        :pieData="ctx.summaryCategoryPieData.value[type]"
+        :typeLabel="$t(`money.${type}`)"
+      />
+    </template>
+
     <template #focusPie>
       <LazyStatChartPieView
         v-if="ctx.isCategoryFocus.value"

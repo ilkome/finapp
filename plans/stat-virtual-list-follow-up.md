@@ -2,7 +2,18 @@
 
 ## Status
 
-The measured window virtualizer is working in the current beta and should remain the baseline while this plan is implemented. The current two-frame active-period settling guard is intentionally retained until a deterministic replacement passes the complete regression matrix.
+Implemented on 2026-08-13. The measured window virtualizer remains the baseline. Stable summary geometry and an input-driven period transition state replaced the two-frame settling guard after the complete browser regression matrix passed.
+
+## Implementation result
+
+- Option A was selected. Summary cards use a breakpoint-driven one-row or three-row allocation that does not depend on amount width, and an enabled forecast always reserves its row.
+- Period transitions use a pure decision function with explicit state, event source, direction, and geometry.
+- Only wheel, touch, keyboard, or scrollbar input can drive a period transition. Resize, measurement, layout anchoring, and programmatic landing events cannot change the active offset.
+- The active offset changes at most once per animation frame, and returning to the base period clears the passive offset.
+- The existing sparse period lookup and forward-only history loading remain unchanged. Incremental row caching remains gated on a separate profiling result.
+- The follow-up performance refactor replaced per-period full-history filtering with a one-pass feed index after profiling confirmed the repeated reactive work.
+- Unit coverage includes idempotent forward and backward crossings, geometry-only updates, immediate reversal, and base-period clearing.
+- Browser coverage passes at `390x844`, `768x800`, `1024x800`, and `1440x900`, plus desktop editor open/close and mobile browser Back.
 
 ## Goals
 
@@ -27,23 +38,21 @@ The measured window virtualizer is working in the current beta and should remain
 - Period lookup uses the next matching transaction plus exponential and binary offset search.
 - Loaded offsets, searched frontier, exhaustion, and stale-result protection are generation-scoped.
 - The active period changes only after a page scroll event.
-- A two-frame settling guard currently prevents layout anchoring caused by summary changes from reversing the transition.
+- Active-period selection is driven only by explicit user scroll intent and a pure directional transition.
 
 ## Remaining risks
 
 ### Active-period feedback
 
-The active period controls the displayed sums. At some responsive widths, a new sum changes the sticky summary height. If the visible-period boundary uses that changing height, the boundary can move back across the same period transition.
-
-The current two-frame guard prevents the observed oscillation, but it is a timing heuristic. A fast reverse gesture could occur while the guard is active.
+Resolved by stable responsive summary rows plus the input-driven directional transition. Browser tests assert stable summary height, one committed transition, no passive reversal, and immediate reverse input at the affected widths.
 
 ### Repeated period filtering
 
-Each recomputation maps all loaded offsets and asks the transaction store for IDs in every range. This is acceptable for the current demo history, but CPU work grows with the number of materialized periods.
+Resolved by the index builder in `statFeed.ts`. Each rebuild visits the candidate IDs once, caches sparse range lookups, and supplies period buckets without per-period `getStoreTrnsIds` calls.
 
 ### Historical lookup scan
 
-Finding the next historical transaction scans the filtered ID list from the beginning. The date-to-offset search is logarithmic, but locating the next candidate is linear.
+Resolved in the same index traversal. The next transaction beyond the searched frontier is recorded while period buckets are built.
 
 ## Stage 1. Reproduce and instrument the boundary
 
@@ -136,6 +145,8 @@ Mount the feed with two adjacent periods whose sums produce different summary he
 Exit criterion: no amount flicker, scrollbar-height oscillation, blank feed, backward load, or missed reverse transition.
 
 ## Stage 5. Profile before optimizing data work
+
+Implemented on 2026-08-13. The full demo profile used 1,060 transactions and 137 loaded offsets. Index rebuilds measured 0.8 to 1.1 ms and flat-row rebuilds measured 0.5 to 1.1 ms during create, amount edit, and delete. Conditional row caching and granular change sets were not required.
 
 Measure append and active-period update costs with the full demo history. Record:
 

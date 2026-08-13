@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildStatVirtualRows, collectMaterializedStatOffsets } from '~/components/stat/infinitePeriods'
+import { buildStatVirtualRows } from '~/components/stat/statFeed'
 import { TrnType } from '~/components/trns/types'
 
 const periodSize = 100
@@ -36,12 +36,5 @@ describe('buildStatVirtualRows', () => {
     const moved = buildStatVirtualRows([{ ids: ['transaction'], offset: 2 }], { transaction }, false)
     expect(first.find(row => row.type === 'transaction')?.id).toBe('trn:transaction')
     expect(moved.find(row => row.type === 'transaction')?.id).toBe('trn:transaction')
-  })
-})
-
-describe('local-filter materialization', () => {
-  it('finds newly matching periods inside the preserved searched frontier', () => {
-    const dates = [rangeForOffset(1).start, rangeForOffset(19).start, rangeForOffset(36).start]
-    expect(collectMaterializedStatOffsets(dates, 0, 19, rangeForOffset)).toEqual([1, 19])
   })
 })

@@ -19,9 +19,7 @@ use([
 ])
 
 const { locale } = useI18n()
-// The focused donut mounts when the user first chooses income or expense. Do
-// not animate that entrance, but enable normal ECharts transitions immediately
-// afterwards so period changes still feel responsive.
+// Avoid entrance animation while enabling transitions for subsequent data updates.
 const isInitialRender = ref(true)
 const total = computed(() => pieData.reduce((acc, item) => acc + item.value, 0))
 const hasData = computed(() => total.value > 0)

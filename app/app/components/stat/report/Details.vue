@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
-import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/infinitePeriods'
+import { useAmount } from '~/components/amount/useAmount'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { buildCategoryViews } from '~/components/stat/categories/categoryViews'
 import { statDashboardKey, statPreservedCategoryScrollTopKey } from '~/components/stat/injectionKeys'
+import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/statFeed'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   categoriesStickyTop?: number
@@ -10,6 +14,9 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { computeTotalForTrnsIds } = useAmount()
+const categoriesStore = useCategoriesStore()
+const trnsStore = useTrnsStore()
 const isDashboard = inject(statDashboardKey, false)
 const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
 const { height: categoriesHeight } = useElementSize(categoriesBreakdown)
@@ -17,6 +24,16 @@ const { height: viewportHeight } = useWindowSize()
 const preservedCategoryScrollTop = shallowRef<number | null>(null)
 provide(statPreservedCategoryScrollTopKey, preservedCategoryScrollTop)
 let preserveScrollTimer: ReturnType<typeof setTimeout> | null = null
+const baseCategoryViews = computed(() => buildCategoryViews({
+  categoriesItems: categoriesStore.items,
+  computeValue: ids => computeTotalForTrnsIds(ids).sum,
+  excludedCategoriesIds: props.ctx.statExcludedIds.value,
+  trnsIds: props.ctx.selectedTrnsIds.value,
+  trnsItems: trnsStore.items ?? {},
+}))
+const quickCategoryViews = computed(() => props.ctx.filteredCategoriesIds.value.length === 0
+  ? baseCategoryViews.value
+  : undefined)
 const canStickCategories = computed(() =>
   props.categoriesStickyTop !== undefined
   && props.ctx.shouldUseTwoColumnLayout.value
@@ -54,11 +71,11 @@ onBeforeUnmount(() => {
 <template>
   <StatCategoriesRoundSection
     v-if="ctx.params.statConfig.config.value.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || ctx.filteredCategoriesIds.value.length > 0)"
+    :baseCategoryViews
     :excludedCategoriesIds="ctx.statExcludedIds.value"
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"
     :isOneCategory="ctx.isOneCategory.value"
     :preCategoriesIds="ctx.params.preCategoriesIds?.value"
-    :selectedTrnsIds="ctx.selectedTrnsIds.value"
     @clickCategory="ctx.onClickCategory"
     @setCategoryFilter="ctx.onSetCategoryFilter"
   />
@@ -81,6 +98,7 @@ onBeforeUnmount(() => {
         :style="canStickCategories ? { top: `${props.categoriesStickyTop}px` } : undefined"
       >
         <StatCategoriesBreakdown
+          :baseCategoryViews="quickCategoryViews"
           :excludedCategoriesIds="ctx.statExcludedIds.value"
           :focusedChildCategoryId="ctx.filteredChildCategoryId.value"
           :focusedCategoryId="ctx.focusedQuickCategoryId.value"
@@ -135,3 +153,4 @@ onBeforeUnmount(() => {
     </div>
   </BottomSheetModal>
 </template>
+    :baseCategoryViews

@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { StatFeedScope } from '~/components/stat/statFeedScope'
+import type { StatFeedScope } from '~/components/stat/types'
 
-import { isSameStatFeedScope } from '~/components/stat/statFeedScope'
+import { isSameStatFeedScope } from '~/components/stat/statFeed'
 
 const scope: StatFeedScope = {
   childCategoryId: undefined,

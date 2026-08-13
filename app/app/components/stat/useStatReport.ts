@@ -1,33 +1,23 @@
 import type { ComputedRef } from 'vue'
 
 import { useStorage } from '@vueuse/core'
-import { differenceInDays } from 'date-fns'
 
-import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { ChartType } from '~/components/stat/chart/types'
 import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
 import type { StatDateProvider } from '~/components/stat/date/types'
-import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
-import type { TrnId, TrnItem } from '~/components/trns/types'
+import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { TrnId } from '~/components/trns/types'
 
-import { addTotals, getTotal } from '~/components/amount/getTotal'
-import { useAmount } from '~/components/amount/useAmount'
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useForecastMode } from '~/components/recurrences/useForecastMode'
-import { useForecastSeries } from '~/components/recurrences/useForecastSeries'
-import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
-import { useStatChart } from '~/components/stat/chart/useStatChart'
-import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
-import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useStatReportChart } from '~/components/stat/report/useStatReportChart'
+import { useStatReportData } from '~/components/stat/report/useStatReportData'
+import { statDevMetrics } from '~/components/stat/statDevMetrics'
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
   filter: FilterProvider
+  isDateBounded?: boolean
   statConfig: StatConfigProvider
   statDate: StatDateProvider
   statTab: ComputedRef<StatTabSlug>
@@ -36,322 +26,48 @@ export type UseStatReportParams = {
   type: ComputedRef<SeriesSlugSelected | undefined>
 }
 
-export function useStatReport({
-  applyStatsExclusion,
-  filter,
-  statConfig,
-  statDate,
-  statTab,
-  storageKey,
-  trnsIds,
-  type,
-}: UseStatReportParams) {
-  const { t } = useI18n()
-  const trnsStore = useTrnsStore()
-  const categoriesStore = useCategoriesStore()
-  const walletsStore = useWalletsStore()
-  const currenciesStore = useCurrenciesStore()
-  const { computeTotalForTrnsIds } = useAmount()
-  const { createSeriesItem, withMarkArea } = useStatChart()
-
-  // Forecast layer: future recurrence occurrences bucketed into the same intervals/range, toggled
-  // by the global forecastMode (off / separate / merged). See plans/recurrences.md §9.
+export function useStatReport(params: UseStatReportParams) {
+  if (import.meta.dev) {
+    statDevMetrics.reportContextCount.value++
+    if (getCurrentScope())
+      onScopeDispose(() => statDevMetrics.reportContextCount.value--)
+  }
   const forecastMode = useForecastMode()
-  const isForecastOn = computed(() => forecastMode.value !== 'off')
-  const forecast = useForecastSeries({
-    filter,
-    intervals: computed(() => statDate.intervalsInRange.value),
-    range: computed(() => statDate.range.value),
-  })
-
   const statItemStorageKey = computed(() =>
-    `finapp-${statDate.params.value.granularityBy}-${storageKey.value}-${(filter?.categoriesIds?.value ?? []).join(',')}`,
+    `finapp-${params.statDate.params.value.granularityBy}-${params.storageKey.value}-${params.filter.categoriesIds.value.join(',')}`,
   )
-
   const filteredType = useStorage<SeriesSlugSelected>(
-    `finapp-filtered-type-${type.value}-${statItemStorageKey.value}`,
+    `finapp-filtered-type-${params.type.value}-${statItemStorageKey.value}`,
     'netIncome',
   )
-
   const filteredCategoriesIds = ref<CategoryId[]>([])
   const filteredChildCategoryId = ref<CategoryId>()
-  const effectiveFilteredCategoriesIds = computed(() =>
-    filteredChildCategoryId.value ? [filteredChildCategoryId.value] : filteredCategoriesIds.value,
-  )
+  const effectiveFilteredCategoriesIds = computed(() => filteredChildCategoryId.value
+    ? [filteredChildCategoryId.value]
+    : filteredCategoriesIds.value)
 
-  const selectedType = computed(() => getSelectedType(statTab.value, filteredType.value, type.value))
-  const selectedTypeForSum = computed(() => getSelectedTypeForSum(statTab.value, type.value))
-  const selectedTypesMapping = computed(() => getTypesMapping(selectedType.value))
-
-  const isPeriodOneDay = computed(() => isPeriodOneDayFn(statDate.params.value))
-  const isIntervalSelected = computed(() => statDate.params.value.intervalSelected >= 0)
-
-  const rangeTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-    dates: {
-      end: statDate.range.value.end,
-      start: statDate.range.value.start,
-    },
-    trnsIds: trnsIds.value,
-  }))
-
-  const hasCategoryFilter = computed(() => effectiveFilteredCategoriesIds.value.length > 0)
-
-  const rangeTrnsIdsWithFilteredCategories = computed(() => {
-    if (!hasCategoryFilter.value)
-      return rangeTrnsIds.value
-    return trnsStore.getStoreTrnsIds({
-      categoriesIds: effectiveFilteredCategoriesIds.value,
-      trnsIds: rangeTrnsIds.value,
-    })
+  const data = useStatReportData({
+    applyStatsExclusion: params.applyStatsExclusion,
+    effectiveFilteredCategoriesIds,
+    filter: params.filter,
+    filteredCategoriesIds,
+    filteredType,
+    forecastMode,
+    isDateBounded: params.isDateBounded,
+    statDate: params.statDate,
+    statTab: params.statTab,
+    trnsIds: params.trnsIds,
+    type: params.type,
   })
-
-  // Categories dropped from totals/charts on the default dashboard aggregate.
-  // Off (undefined) whenever the user explicitly narrows: per-category page /
-  // top category filter (via applyStatsExclusion) or an in-chart drill.
-  const statExcludedIds = computed<ReadonlySet<CategoryId> | undefined>(() =>
-    (applyStatsExclusion?.value && !hasCategoryFilter.value)
-      ? categoriesStore.excludedFromStatsIds
-      : undefined,
-  )
-
-  // Interval/range totals that drop excluded categories while keeping every
-  // interval's trnsIds intact (transaction lists stay complete). Falls back to
-  // the plain total when nothing is excluded.
-  function computeTotalForStat(ids?: TrnId[]): TotalReturns {
-    if (!statExcludedIds.value)
-      return computeTotalForTrnsIds(ids)
-    return getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      excludedCategoriesIds: statExcludedIds.value,
-      rates: currenciesStore.rates,
-      trnsIds: ids,
-      trnsItems: trnsStore.items ?? {},
-      walletsItems: walletsStore.items ?? {},
-    })
-  }
-
-  const intervalsData = computed(() =>
-    bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIds.value, statDate.intervalsInRange.value, computeTotalForStat),
-  )
-
-  const intervalsDataWithFilteredCategories = computed(() => {
-    if (!hasCategoryFilter.value)
-      return intervalsData.value
-    return bucketTrnsByIntervals(trnsStore.items ?? {}, rangeTrnsIdsWithFilteredCategories.value, statDate.intervalsInRange.value, computeTotalForTrnsIds)
-  })
-
-  // --- Forecast merge: when forecast is on, the chart/category breakdown read a projected dataset
-  // (actuals + forecast). Totals keep the actual `rangeTotal` and expose forecast separately so the
-  // sum row can render fact / forecast / projected per mode.
-  const mergedItems = computed<Record<TrnId, TrnItem>>(() =>
-    isForecastOn.value ? { ...(trnsStore.items ?? {}), ...forecast.forecastItems.value } : (trnsStore.items ?? {}),
-  )
-
-  // Total over a merged (actuals + forecast) id set; forecast ids resolve only in `mergedItems`.
-  function computeTotalMerged(ids?: TrnId[]): TotalReturns {
-    return getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
-      trnsIds: ids,
-      trnsItems: mergedItems.value,
-      walletsItems: walletsStore.items ?? {},
-    })
-  }
-
-  const mergedIntervalsData = computed<IntervalData[]>(() => {
-    const actual = intervalsDataWithFilteredCategories.value
-    if (!isForecastOn.value)
-      return actual
-    const fc = forecast.forecastIntervalsData.value
-    return actual.map((a, i) => {
-      const f = fc[i]
-      return f
-        ? { range: a.range, total: addTotals(a.total, f.total), trnsIds: [...a.trnsIds, ...f.trnsIds] }
-        : a
-    })
-  })
-
-  // Dataset the chart + category breakdown consume: projected when forecast is on, else actuals.
-  const effectiveIntervals = computed(() => isForecastOn.value ? mergedIntervalsData.value : intervalsDataWithFilteredCategories.value)
-  const effectiveItems = computed(() => isForecastOn.value ? mergedItems.value : (trnsStore.items ?? {}))
-  const effectiveComputeTotal = computed(() => isForecastOn.value ? computeTotalMerged : computeTotalForTrnsIds)
-
-  // Forecast total for the viewed scope (selected interval, else whole range).
-  const forecastRangeTotal = computed<TotalReturns | undefined>(() => {
-    if (!isForecastOn.value)
-      return undefined
-    if (isIntervalSelected.value)
-      return forecast.forecastIntervalsData.value[statDate.params.value.intervalSelected]?.total
-    return forecast.forecastTotal.value
-  })
-
-  const baseTrnsIdsForSelection = computed(() =>
-    isIntervalSelected.value
-      ? intervalsData.value[statDate.params.value.intervalSelected]?.trnsIds
-      : rangeTrnsIds.value,
-  )
-
-  const selectedTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-    sort: true,
-    trnsIds: baseTrnsIdsForSelection.value,
-    trnsTypes: selectedTypesMapping.value,
-  }))
-
-  const selectedAndFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-    categoriesIds: effectiveFilteredCategoriesIds.value,
-    sort: true,
-    trnsIds: baseTrnsIdsForSelection.value,
-    trnsTypes: selectedTypesMapping.value,
-  }))
-  const selectedAndQuickFilteredTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-    categoriesIds: filteredCategoriesIds.value,
-    sort: true,
-    trnsIds: baseTrnsIdsForSelection.value,
-    trnsTypes: selectedTypesMapping.value,
-  }))
-
-  const rangeTotal = computed(() => {
-    const ids = isIntervalSelected.value
-      ? intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]?.trnsIds
-      : rangeTrnsIdsWithFilteredCategories.value
-    // computeTotalForStat is a no-op when a drill/filter is active (statExcludedIds undefined).
-    return computeTotalForStat(ids)
-  })
-
-  const averageTotal = computed(() => {
-    if (differenceInDays(statDate.range.value.end, statDate.range.value.start) < 2)
-      return
-
-    const key: keyof TotalReturns = (!type.value || type.value === 'netIncome' || filteredType.value === 'netIncome') ? 'sum' : type.value
-    const sum = rangeTotal.value[key] ?? 0
-
-    const dateRange = isIntervalSelected.value
-      ? statDate.selectedInterval.value
-      : statDate.range.value
-
-    return computeAverageTotal(sum, dateRange!)
-  })
-
-  const typesToShow = computed(() => getTypesToShow(statTab.value, filteredType.value, type.value))
-
-  function computeSeriesAverage(typeSlug: SeriesSlug, intervals: IntervalData[]): number | false {
-    if (!statConfig.config.value.chart.isShowAverage || intervals.length === 0)
-      return false
-    return intervals.reduce((acc, i) => acc + i.total[typeSlug], 0) / intervals.length
-  }
-
-  // Ghost forecast series (separate mode): muted, named "<type> · forecast", same chart type.
-  function makeForecastSeries(typeSlug: SeriesSlug, totals: TotalReturns[], chartType: ChartType): ChartSeries {
-    return {
-      color: 'var(--ui-text-dimmed)',
-      data: totals.map(i => Math.abs(i[typeSlug])),
-      name: `${t(`money.${typeSlug}`)} · ${t('stat.forecast.short')}`,
-      type: chartType,
-    }
-  }
-
-  const categoriesBreakdownType = computed<SeriesSlug>(() => {
-    if (statTab.value === 'expense')
-      return 'expense'
-    if (statTab.value === 'income')
-      return 'income'
-    // Split renders one item per type ('expense' / 'income'); follow that prop
-    // so each column's donut/bars show its own side.
-    if (statTab.value === 'split' && (type.value === 'expense' || type.value === 'income'))
-      return type.value
-    if (filteredType.value === 'expense' || filteredType.value === 'income')
-      return filteredType.value
-    return 'expense'
-  })
-  const isCategorySumFocused = computed(() =>
-    statTab.value === 'summary'
-    && !type.value
-    && (filteredType.value === 'expense' || filteredType.value === 'income'),
-  )
-
-  // Effective filter + grouping for the category breakdown (donut and bars).
-  // Selecting a category drills into it: match its leaf (transactible) ids and
-  // stop grouping, so a selected parent breaks down into its child slices.
-  const categoryBreakdownFilter = computed(() => {
-    const ids = effectiveFilteredCategoriesIds.value
-    if (ids.length === 0) {
-      return {
-        filterCategoriesIds: undefined as CategoryId[] | undefined,
-        isGrouped: statConfig.config.value.chart.isGrouped,
-      }
-    }
-    return {
-      filterCategoriesIds: categoriesStore.getTransactibleIds(ids),
-      isGrouped: false,
-    }
-  })
-
-  const chartSeries = computed<ChartSeries[]>(() => {
-    const intervals = effectiveIntervals.value
-    const selectedInterval = intervals[statDate.params.value.intervalSelected]
-    const chartType = statConfig.config.value.chart.type
-
-    let baseSeries: ChartSeries[]
-
-    if (statConfig.config.value.chart.isByCategories || isCategorySumFocused.value) {
-      baseSeries = buildCategoriesSeries({
-        categoriesItems: categoriesStore.items ?? {},
-        chartType,
-        computeTotalForTrnsIds: effectiveComputeTotal.value,
-        excludedCategoriesIds: statExcludedIds.value,
-        filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
-        intervals,
-        isGrouped: categoryBreakdownFilter.value.isGrouped,
-        otherName: t('stat.config.chart.other'),
-        trnsItems: effectiveItems.value,
-        type: categoriesBreakdownType.value,
-      })
-    }
-    else if (forecastMode.value === 'separate') {
-      // Actual series solid + a distinct ghost forecast series per shown type.
-      const actualIntervals = intervalsDataWithFilteredCategories.value
-      const actualTotals = actualIntervals.map(g => g.total)
-      const forecastTotals = forecast.forecastIntervalsData.value.map(g => g.total)
-      baseSeries = typesToShow.value.flatMap(t => [
-        createSeriesItem(t, actualTotals, computeSeriesAverage(t, actualIntervals)),
-        makeForecastSeries(t, forecastTotals, chartType),
-      ])
-    }
-    else {
-      const intervalTotals = intervals.map(g => g.total)
-      baseSeries = typesToShow.value.map(t =>
-        createSeriesItem(t, intervalTotals, computeSeriesAverage(t, intervals)),
-      )
-    }
-
-    if (!selectedInterval?.range.start || statDate.params.value.intervalSelected < 0)
-      return baseSeries
-
-    return withMarkArea(baseSeries, selectedInterval.range.start, chartType)
-  })
-
-  const chartXAxisLabels = computed(() =>
-    intervalsDataWithFilteredCategories.value.map(i => i.range.start),
-  )
-
-  const focusedCategoryPieData = computed(() => {
-    if (filteredType.value !== 'expense' && filteredType.value !== 'income')
-      return []
-
-    const intervals = isIntervalSelected.value
-      ? [intervalsDataWithFilteredCategories.value[statDate.params.value.intervalSelected]!]
-      : intervalsDataWithFilteredCategories.value
-
-    return buildCategoriesPieData({
-      categoriesItems: categoriesStore.items ?? {},
-      computeTotalForTrnsIds,
-      excludedCategoriesIds: statExcludedIds.value,
-      filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
-      intervals,
-      isGrouped: categoryBreakdownFilter.value.isGrouped,
-      trnsItems: trnsStore.items ?? {},
-      type: filteredType.value,
-    })
+  const chart = useStatReportChart({
+    data,
+    effectiveFilteredCategoriesIds,
+    filteredType,
+    forecastMode,
+    statConfig: params.statConfig,
+    statDate: params.statDate,
+    statTab: params.statTab,
+    type: params.type,
   })
 
   function onSetCategoryFilter(categoryId: CategoryId) {
@@ -363,40 +79,36 @@ export function useStatReport({
     filteredCategoriesIds.value = [categoryId]
     filteredChildCategoryId.value = undefined
   }
-
   function onSetChildCategoryFilter(categoryId: CategoryId) {
-    filteredChildCategoryId.value = filteredChildCategoryId.value === categoryId
-      ? undefined
-      : categoryId
+    filteredChildCategoryId.value = filteredChildCategoryId.value === categoryId ? undefined : categoryId
   }
-
   function onClickSumItem(clickedType: SeriesSlugSelected) {
     filteredType.value = clickedType === filteredType.value ? 'netIncome' : clickedType
   }
 
   return {
-    averageTotal,
-    categoriesBreakdownType,
-    chartSeries,
-    chartXAxisLabels,
+    averageTotal: data.averageTotal,
+    chartSeries: chart.chartSeries,
+    chartXAxisLabels: chart.chartXAxisLabels,
     effectiveFilteredCategoriesIds,
     filteredCategoriesIds,
     filteredChildCategoryId,
     filteredType,
-    focusedCategoryPieData,
+    focusedCategoryPieData: chart.focusedCategoryPieData,
     forecastMode,
-    forecastRangeTotal,
-    isPeriodOneDay,
+    forecastRangeTotal: data.forecastRangeTotal,
+    isPeriodOneDay: data.isPeriodOneDay,
     onClickSumItem,
     onSetCategoryFilter,
     onSetChildCategoryFilter,
-    rangeTotal,
-    selectedAndFilteredTrnsIds,
-    selectedAndQuickFilteredTrnsIds,
-    selectedTrnsIds,
-    selectedTypeForSum,
-    selectedTypesMapping,
-    statExcludedIds,
+    rangeTotal: data.rangeTotal,
+    selectedAndFilteredTrnsIds: data.selectedAndFilteredTrnsIds,
+    selectedAndQuickFilteredTrnsIds: data.selectedAndQuickFilteredTrnsIds,
+    selectedTrnsIds: data.selectedTrnsIds,
+    selectedTypeForSum: data.selectedTypeForSum,
+    selectedTypesMapping: data.selectedTypesMapping,
+    statExcludedIds: data.statExcludedIds,
     statItemStorageKey,
+    summaryCategoryPieData: chart.summaryCategoryPieData,
   }
 }

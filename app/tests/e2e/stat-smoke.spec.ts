@@ -44,9 +44,9 @@ test.describe('Stat / dashboard smoke', () => {
 
     // §3 Tab switching: click Expense, then Income, then back to Summary.
     // Dashboard may render two StatMenu instances (split view); .first() scopes to the first.
-    const expenseTab = page.getByRole('tab', { name: T.expense }).first()
-    const incomeTab = page.getByRole('tab', { name: T.income }).first()
-    const summaryTab = page.getByRole('tab', { name: T.summary }).first()
+    const expenseTab = page.getByRole('button', { name: T.expense }).first()
+    const incomeTab = page.getByRole('button', { name: T.income }).first()
+    const summaryTab = page.getByRole('button', { name: T.summary }).first()
 
     await expect(expenseTab).toBeVisible({ timeout: 5_000 })
 

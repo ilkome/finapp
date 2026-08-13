@@ -1,11 +1,12 @@
+import type { MiniItemConfig } from '~/components/stat/config/schema'
+import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
 export type PanelDef = {
-  // Dot path to the field the row's subtitle interpolates as `{ count }`.
-  countPath?: string
   descKey?: string
-  // Dot path to the panel's own isShow boolean in MiniItemConfig.
-  showPath: string
+  getCount?: (config: MiniItemConfig) => number
+  getIsShow: (config: MiniItemConfig) => boolean
+  setIsShow: (provider: StatConfigProvider, value: boolean) => void
   subtitleKey?: string
   titleKey: string
 }
@@ -13,33 +14,39 @@ export type PanelDef = {
 export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
   catsList: {
     descKey: 'stat.config.categories.list.description',
-    showPath: 'categories.list.isShow',
+    getIsShow: config => config.categories.list.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('categories', { list: { isShow: value } }),
     titleKey: 'stat.config.categories.list.title',
   },
   catsRound: {
     descKey: 'stat.config.categories.rounds.description',
-    showPath: 'categories.round.isShow',
+    getIsShow: config => config.categories.round.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('categories', { round: { isShow: value } }),
     titleKey: 'stat.config.categories.rounds.title',
   },
   chart: {
-    showPath: 'chart.isShow',
+    getIsShow: config => config.chart.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('chart', { isShow: value }),
     titleKey: 'stat.config.chartShow.title',
   },
   statAverage: {
-    countPath: 'average.count',
     descKey: 'stat.config.statAverage.description',
-    showPath: 'average.isShow',
+    getCount: config => config.average.count,
+    getIsShow: config => config.average.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('average', { isShow: value }),
     subtitleKey: 'stat.config.statAverage.subtitle',
     titleKey: 'stat.config.statAverage.title',
   },
   vertical: {
-    showPath: 'categories.bars.isShow',
+    getIsShow: config => config.categories.bars.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('categories', { bars: { isShow: value } }),
     titleKey: 'stat.config.categories.vertical.title',
   },
   wallets: {
-    countPath: 'wallets.count',
     descKey: 'stat.config.wallets.description',
-    showPath: 'wallets.isShow',
+    getCount: config => config.wallets.count,
+    getIsShow: config => config.wallets.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('wallets', { isShow: value }),
     subtitleKey: 'stat.config.wallets.subtitle',
     titleKey: 'stat.config.wallets.title',
   },

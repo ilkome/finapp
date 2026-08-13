@@ -6,6 +6,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
+import { statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useScrollReveal } from '~/components/stat/useScrollReveal'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
 
@@ -19,6 +20,7 @@ const props = defineProps<{
   type?: SeriesSlugSelected
   walletId?: WalletId
 }>()
+const isDev = import.meta.dev
 
 const filter = inject(filterKey)!
 const statDate = inject(statDateKey)!
@@ -50,7 +52,17 @@ const ctx = useStatReportContext({
 </script>
 
 <template>
-  <div class="@container/stat">
+  <div
+    class="@container/stat"
+    :data-stat-category-aggregation-count="isDev ? statDevMetrics.categoryAggregationCount.value : undefined"
+    :data-stat-category-aggregation-duration="isDev ? statDevMetrics.categoryAggregationDuration.value.toFixed(2) : undefined"
+    :data-stat-category-visited-ids="isDev ? statDevMetrics.categoryVisitedIds.value : undefined"
+    :data-stat-report-context-count="isDev ? statDevMetrics.reportContextCount.value : undefined"
+    :data-stat-report-get-store-count="isDev ? statDevMetrics.getStoreTrnsIdsCount.value : undefined"
+    :data-stat-report-selection-count="isDev ? statDevMetrics.reportSelectionCount.value : undefined"
+    :data-stat-report-selection-duration="isDev ? statDevMetrics.reportSelectionDuration.value.toFixed(2) : undefined"
+    :data-stat-report-selection-visited-ids="isDev ? statDevMetrics.reportSelectionVisitedIds.value : undefined"
+  >
     <div ref="chartTrigger">
       <div ref="chartFx">
         <StatReportChart :ctx="ctx" />

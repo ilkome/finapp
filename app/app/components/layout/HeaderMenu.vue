@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { AnimatePresence, Motion } from 'motion-v'
 
+import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
+
 import { useDemo } from '~/components/demo/useDemo'
 import {
   USER_MENU_DOCS_URL,
   USER_MENU_GITHUB_URL,
   USER_MENU_PANEL_CHILDREN,
   USER_MENU_THEME_ICONS,
+
   useUserMenuData,
-  type UserMenuPanel,
 } from '~/components/layout/useUserMenuData'
 import { capitalize, swatchPalette } from '~/components/theme/useThemeOptions'
 

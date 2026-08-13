@@ -73,6 +73,11 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
     return filteredByTypeIds.value
   })
 
+  const localFilter = computed(() => ({
+    filterBy: filterBy.value,
+    showWithDesc: isShowWithDesc.value && isTrnsWithDesc.value,
+  }))
+
   const typeFilterItems = computed<TabsItem[]>(() => typeFilters.value.map(item => ({ label: item.name, value: item.slug })))
 
   function setFilterBy(type: TrnsViewType | 'all') {
@@ -85,6 +90,7 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
     isAllTrnsWithDesc,
     isShowWithDesc,
     isTrnsWithDesc,
+    localFilter,
     realTypesCount,
     selectedIds,
     setFilterBy,

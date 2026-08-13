@@ -1,58 +1,40 @@
 import type { Range } from '~~/utils/date/types'
 
-import type { TrnsDisplayRow } from '~/components/trns/listRows'
+import { isEqual } from 'es-toolkit'
+
+import type { BuildStatFeedIndexOptions, StatFeedIndex, StatFeedLocalFilter, StatFeedPeriod, StatFeedScope, StatPeriodRow, StatPeriodTransitionDirection, StatPeriodTransitionSource, StatPeriodTransitionState, StatVirtualRow, StatVisibleItem } from '~/components/stat/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 
 import { buildTrnsDisplayRows } from '~/components/trns/listRows'
+import { matchesTrnViewType } from '~/components/trns/tabClassification'
 
 type EmptyTransactionsKey = 'trns.noExpenses' | 'trns.noIncome' | 'trns.noTrns'
 
-export type StatVisibleItem = {
-  end: number
-  index: number
-  start: number
-}
-
-export type StatPeriodRow = {
-  id?: string
-  offset?: number
-}
-
-export type StatVirtualRow
-  = | { id: string, offset: number, type: 'periodAnchor' }
-    | (TrnsDisplayRow & { offset: number })
-    | { id: string, type: 'loader' }
-    | { id: string, type: 'end' }
-
-type StatPeriod = {
-  ids: TrnId[]
-  offset: number
-}
-
-export function canStickStatCategories(
-  stickyTop: number,
-  categoriesHeight: number,
-  viewportHeight: number,
-): boolean {
-  return categoriesHeight > 0 && stickyTop + categoriesHeight <= viewportHeight
-}
-
-export function filterAvailableTrnIds(periodIds: TrnId[], availableIds: TrnId[]): TrnId[] {
-  const availableSet = new Set(availableIds)
-  return periodIds.filter(id => availableSet.has(id))
-}
-
-export function hasUnloadedTrnIds(availableIds: TrnId[], loadedIds: TrnId[]): boolean {
-  const loadedSet = new Set(loadedIds)
-  return availableIds.some(id => !loadedSet.has(id))
-}
-
-export function uniqueSortedOffsets(offsets: readonly number[]): number[] {
+function uniqueSortedOffsets(offsets: readonly number[]): number[] {
   return [...new Set(offsets)].sort((left, right) => left - right)
 }
 
+function matchesLocalFilter(items: Trns, id: TrnId, filter: StatFeedLocalFilter): boolean {
+  const trn = items[id]
+  return matchesTrnViewType(trn, filter.filterBy)
+    && (!filter.showWithDesc || !!trn?.desc)
+}
+
+function sortIds(ids: readonly string[]) {
+  return [...ids].sort()
+}
+
+export function mergeStatOffsets(current: readonly number[], additions: readonly number[]) {
+  const offsets = uniqueSortedOffsets([...current, ...additions])
+  const changed = offsets.length !== current.length || offsets.some((offset, index) => offset !== current[index])
+  return {
+    changed,
+    offsets: changed ? offsets : current,
+  }
+}
+
 export function buildStatVirtualRows(
-  periods: readonly StatPeriod[],
+  periods: readonly StatFeedPeriod[],
   items: Trns | null | undefined,
   canLoadMore: boolean,
 ): StatVirtualRow[] {
@@ -116,16 +98,60 @@ export function findStatPeriodOffsetForDate(
   return null
 }
 
-export function collectMaterializedStatOffsets(
-  dates: readonly number[],
-  baseOffset: number,
-  searchedThroughOffset: number,
-  rangeForOffset: (offset: number) => Range,
-): number[] {
-  return uniqueSortedOffsets(dates.flatMap((date) => {
-    const offset = findStatPeriodOffsetForDate(date, baseOffset, rangeForOffset)
-    return offset !== null && offset >= baseOffset && offset <= searchedThroughOffset ? [offset] : []
-  }))
+export function buildStatFeedIndex(options: BuildStatFeedIndexOptions): StatFeedIndex {
+  const items = options.items ?? {}
+  const rangeCache = new Map<number, Range>()
+  const rangeForOffset = (offset: number) => {
+    const cached = rangeCache.get(offset)
+    if (cached)
+      return cached
+    const range = options.rangeForOffset(offset)
+    rangeCache.set(offset, range)
+    return range
+  }
+  const baseRange = rangeForOffset(options.baseOffset)
+  const frontierRange = rangeForOffset(options.searchedThroughOffset)
+  const idsByOffset = new Map<number, TrnId[]>()
+  let dateToOffsetLookups = 0
+  let nextHistoricalId: TrnId | null = null
+  let routedIds = 0
+  let visitedIds = 0
+
+  for (const id of options.candidateIds) {
+    visitedIds++
+    const trn = items[id]
+    if (!trn || !matchesLocalFilter(items, id, options.filter))
+      continue
+
+    if (trn.date >= frontierRange.start && trn.date <= baseRange.end) {
+      dateToOffsetLookups++
+      const offset = findStatPeriodOffsetForDate(trn.date, options.baseOffset, rangeForOffset)
+      if (offset !== null && offset <= options.searchedThroughOffset) {
+        const ids = idsByOffset.get(offset)
+        if (ids)
+          ids.push(id)
+        else
+          idsByOffset.set(offset, [id])
+        routedIds++
+        continue
+      }
+    }
+
+    if (!nextHistoricalId && trn.date >= options.minimumDate && trn.date < frontierRange.start)
+      nextHistoricalId = id
+  }
+
+  return {
+    idsByOffset,
+    materializedOffsets: [...idsByOffset.keys()].sort((left, right) => left - right),
+    metrics: {
+      dateToOffsetLookups,
+      periodRangeCount: rangeCache.size,
+      routedIds,
+      visitedIds,
+    },
+    nextHistoricalId,
+  }
 }
 
 export function canApplyStatLoadResult(
@@ -156,7 +182,7 @@ export function resolveVisibleStatPeriodOffset(options: {
   items: readonly StatVisibleItem[]
   previousOffset: number
   rows: readonly StatPeriodRow[]
-  scrollDirection?: 'backward' | 'forward' | null
+  scrollDirection?: StatPeriodTransitionDirection | null
   tolerance?: number
   visibleTop: number
 }): number {
@@ -186,6 +212,39 @@ export function resolveVisibleStatPeriodOffset(options: {
   }
 
   return nextOffset
+}
+
+export function resolveStatPeriodTransition(
+  state: Readonly<StatPeriodTransitionState>,
+  geometry: {
+    direction: StatPeriodTransitionDirection | null
+    items: readonly StatVisibleItem[]
+    rows: readonly StatPeriodRow[]
+    source: StatPeriodTransitionSource
+    visibleTop: number
+  },
+): StatPeriodTransitionState {
+  if (geometry.source !== 'scroll' || !geometry.direction)
+    return state
+
+  const activeOffset = resolveVisibleStatPeriodOffset({
+    items: geometry.items,
+    previousOffset: state.activeOffset,
+    rows: geometry.rows,
+    scrollDirection: geometry.direction,
+    visibleTop: geometry.visibleTop,
+  })
+  if (activeOffset === state.activeOffset && geometry.direction === state.direction)
+    return state
+
+  return {
+    activeOffset,
+    direction: geometry.direction,
+  }
+}
+
+export function resolveStatScrollRangeOffset(activeOffset: number, baseOffset: number): number | null {
+  return activeOffset === baseOffset ? null : activeOffset
 }
 
 export function resolveCurrentPeriodEmptyKey(
@@ -220,6 +279,14 @@ export function resolveStatStickyBottom(
   return summaryTop <= stickyTop + 1 ? summaryBottom : stickyTop
 }
 
+export function canStickStatCategories(
+  stickyTop: number,
+  categoriesHeight: number,
+  viewportHeight: number,
+): boolean {
+  return categoriesHeight > 0 && stickyTop + categoriesHeight <= viewportHeight
+}
+
 export function isStatCategoriesPinned(
   position: string,
   categoriesTop: number,
@@ -228,11 +295,19 @@ export function isStatCategoriesPinned(
   return position === 'sticky' && categoriesTop <= stickyTop + 1
 }
 
-export function isStatTrnsNearEnd(
-  scrollTop: number,
-  viewportHeight: number,
-  scrollHeight: number,
-  threshold = 600,
-): boolean {
-  return scrollTop + viewportHeight >= scrollHeight - threshold
+export function normalizeStatFeedScope(scope: StatFeedScope): StatFeedScope {
+  return {
+    ...scope,
+    date: {
+      ...scope.date,
+      customDate: scope.date.customDate ? { ...scope.date.customDate } : false,
+    },
+    parentCategoriesIds: sortIds(scope.parentCategoriesIds),
+    selectedCategoriesIds: sortIds(scope.selectedCategoriesIds),
+    selectedWalletsIds: sortIds(scope.selectedWalletsIds),
+  }
+}
+
+export function isSameStatFeedScope(left: StatFeedScope, right: StatFeedScope): boolean {
+  return isEqual(normalizeStatFeedScope(left), normalizeStatFeedScope(right))
 }

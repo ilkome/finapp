@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
+import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { useCategoriesBreakdown } from '~/components/stat/categories/useCategoriesBreakdown'
 
 const props = defineProps<{
+  baseCategoryViews?: CategoryViews
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   focusedCategoryId?: CategoryId
   focusedChildCategoryId?: CategoryId

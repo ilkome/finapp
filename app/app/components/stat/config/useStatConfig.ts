@@ -5,7 +5,7 @@ import defu from 'defu'
 
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 
-import { applyConfigUpdate, defaultConfig } from '~/components/stat/config/schema'
+import { applyConfigProps, applyConfigUpdate, defaultConfig } from '~/components/stat/config/schema'
 
 type StatConfigParams = {
   props?: DeepPartial<MiniItemConfig>
@@ -41,13 +41,8 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig),
   })
 
-  if (props) {
-    Object.entries(props).forEach(([key, value]) => {
-      if (value !== undefined) {
-        updateConfig(key as keyof MiniItemConfig, value as never)
-      }
-    })
-  }
+  if (props)
+    config.value = applyConfigProps(config.value, props)
 
   function updateConfig<K extends keyof MiniItemConfig>(key: K, value: DeepPartial<MiniItemConfig[K]>) {
     const result = applyConfigUpdate(config.value, key, value)

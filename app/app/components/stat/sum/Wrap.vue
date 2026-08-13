@@ -37,11 +37,12 @@ const isShowAverage = computed(() => statConfig.config.value.average.isShow)
 const isShowForecast = computed(() =>
   !!props.forecastMode && props.forecastMode !== 'off' && !!props.forecastTotal && props.forecastTotal.sum !== 0,
 )
+const isForecastEnabled = computed(() => !!props.forecastMode && props.forecastMode !== 'off')
 const projectedSum = computed(() => props.total.sum + (props.forecastTotal?.sum ?? 0))
 
 const className = computed(() => cn(
   'flex min-h-10.5 min-w-min items-center',
-  props.type === 'summary' && 'min-h-14',
+  props.type === 'summary' && 'flex-1 @2xl/stat:max-w-max',
   {
     interactive: props.type === 'summary',
   },
@@ -60,25 +61,24 @@ function onClick(type: SeriesSlugSelected) {
 
 <template>
   <div class="overflow-x-auto">
-    <div
+    <StatSumItem
       v-if="props.type === 'summary' && props.focusedType"
-      class="relative flex h-14 w-full items-center rounded-sm interactive bg-elevated/30 px-3 py-0.5"
+      :amount="props.focusedType === 'income' ? total.income : -total.expense"
+      class="w-full @2xl/stat:hidden"
+      :type="props.focusedType"
+      variant="summary"
       @click="onClick(props.focusedType)"
     >
       <UiButtonClose class="top-1/2 right-3 -translate-y-1/2" @click.stop="onClick(props.focusedType)" />
-      <StatSumItem
-        :amount="props.focusedType === 'income' ? total.income : -total.expense"
-        class="min-w-0 border-0! bg-transparent! p-0!"
-        :type="props.focusedType"
-      />
       <div class="mr-10 ml-auto flex w-12 shrink-0 items-center justify-center">
         <slot name="focusPie" />
       </div>
-    </div>
+    </StatSumItem>
 
     <div
-      v-else-if="props.type === 'summary'"
-      class="flex flex-wrap gap-2 @2xl/stat:justify-start"
+      v-if="props.type === 'summary'"
+      :class="props.focusedType ? 'hidden @2xl/stat:flex' : 'flex'"
+      class="flex-wrap gap-2 @2xl/stat:justify-start"
     >
       <StatSumItem
         v-for="item in summaryItems"
@@ -87,6 +87,7 @@ function onClick(type: SeriesSlugSelected) {
         :isActive="item.isActive"
         :class="className"
         :type="item.type"
+        variant="summary"
         @click="onClick(item.type)"
       >
         <StatSumAverage
@@ -96,6 +97,13 @@ function onClick(type: SeriesSlugSelected) {
           :walletId
           :statTabSlug="item.type"
         />
+
+        <div
+          v-if="item.type !== 'netIncome'"
+          class="ml-auto hidden w-12 shrink-0 items-center justify-center @2xl/stat:flex"
+        >
+          <slot name="summaryPie" :type="item.type" />
+        </div>
       </StatSumItem>
     </div>
 
@@ -105,7 +113,7 @@ function onClick(type: SeriesSlugSelected) {
         :class="className"
         :type="(props.type as SeriesSlugSelected)"
         :averageTotal="isShowAverage ? props.averageTotal : undefined"
-        plain
+        variant="plain"
         @click="emit('clickAverage')"
       >
         <StatSumAverage
@@ -119,17 +127,19 @@ function onClick(type: SeriesSlugSelected) {
     </div>
 
     <div
-      v-if="isShowForecast"
-      class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-2xs text-muted"
+      v-if="isForecastEnabled"
+      :aria-hidden="isShowForecast ? undefined : true"
+      :class="!isShowForecast && 'invisible'"
+      class="mt-1 grid grid-cols-1 items-center gap-x-3 gap-y-1 overflow-x-auto text-2xs text-muted @xl/stat:auto-cols-max @xl/stat:grid-flow-col @xl/stat:grid-cols-none"
     >
       <span class="tracking-wide uppercase">{{ t('stat.forecast.title') }}</span>
       <span v-if="forecastMode === 'separate'" class="flex items-center gap-1">
         {{ t('stat.forecast.short') }}
         <Amount
-          :amount="forecastTotal!.sum"
+          :amount="forecastTotal?.sum ?? 0"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
-          :isShowPlus="forecastTotal!.sum > 0"
+          :isShowPlus="(forecastTotal?.sum ?? 0) > 0"
           align="left"
           variant="xs"
         />

@@ -1,22 +1,21 @@
 <script setup lang="ts">
-import type { MiniItemConfig } from '~/components/stat/config/schema'
+import type { StatConfigBooleanPath } from '~/components/stat/config/switches'
 
-import { buildConfigPatch, getConfigValue } from '~/components/stat/config/schema'
+import { STAT_CONFIG_BOOLEAN_OPERATIONS } from '~/components/stat/config/switches'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
-  // Dot path to a boolean field in MiniItemConfig, e.g. 'categories.round.isGrouped'.
-  path: string
+  path: StatConfigBooleanPath
   title: string
 }>()
 
 const statConfig = inject(statConfigKey)!
 
-const isChecked = computed((): boolean => getConfigValue(statConfig.config.value, props.path) as boolean)
+const operation = computed(() => STAT_CONFIG_BOOLEAN_OPERATIONS[props.path])
+const isChecked = computed(() => operation.value.get(statConfig.config.value))
 
 function toggle() {
-  const [key, ...rest] = props.path.split('.') as [keyof MiniItemConfig, ...string[]]
-  statConfig.updateConfig(key, buildConfigPatch(rest, !isChecked.value) as never)
+  operation.value.set(statConfig, !isChecked.value)
 }
 </script>
 
