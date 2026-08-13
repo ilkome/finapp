@@ -18,7 +18,7 @@ const isShow = computed(() =>
 )
 
 const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = ref<Swiper | null>(null)
+const sliderObj = shallowRef<Swiper | null>(null)
 const maxHeight = ref('550px')
 
 let resizeObserver: ResizeObserver | null = null

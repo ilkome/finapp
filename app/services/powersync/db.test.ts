@@ -4,15 +4,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const disconnect = vi.fn(async () => {})
 const disconnectAndClear = vi.fn(async () => {})
 const getUploadQueueStats = vi.fn(async () => ({ count: 0, size: null }))
+const createDatabase = vi.fn()
 
 vi.mock('@powersync/web', () => {
   class PowerSyncDatabase {
     disconnect = disconnect
     disconnectAndClear = disconnectAndClear
     getUploadQueueStats = getUploadQueueStats
+
+    constructor(options: unknown) {
+      createDatabase(options)
+    }
   }
-  class WASQLiteOpenFactory {}
-  return { PowerSyncDatabase, WASQLiteOpenFactory, WASQLiteVFS: { IDBBatchAtomicVFS: 'idb' } }
+  return { PowerSyncDatabase }
 })
 vi.mock('~~/services/powersync/AppSchema', () => ({ AppSchema: {} }))
 
@@ -29,6 +33,16 @@ describe('pausePowerSync', () => {
     await pausePowerSync()
     expect(disconnect).toHaveBeenCalledTimes(1)
     expect(disconnectAndClear).not.toHaveBeenCalled()
+  })
+})
+
+describe('getPowerSyncDb', () => {
+  it('uses the PowerSync 2 database options API', async () => {
+    await getPowerSyncDb()
+    expect(createDatabase).toHaveBeenCalledWith({
+      database: { dbFilename: 'finapp.db' },
+      schema: {},
+    })
   })
 })
 

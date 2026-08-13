@@ -13,7 +13,7 @@ const trnsFormStore = useTrnsFormStore()
 const isShow = computed(() => trnsFormStore.ui.isShow)
 
 const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = ref<Swiper | null>(null)
+const sliderObj = shallowRef<Swiper | null>(null)
 
 function init() {
   if (!sliderObj.value) {

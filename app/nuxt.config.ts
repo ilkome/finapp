@@ -67,14 +67,13 @@ export default defineNuxtConfig({
       title: 'Personal Finance Manager',
     },
   },
-
   colorMode: {
     classSuffix: '',
     fallback: 'dark',
     preference: 'system',
   },
-
   compatibilityDate: '2026-07-30',
+
   css: [join(currentDir, './app/assets/css/main.css')],
 
   devtools: {
@@ -90,6 +89,9 @@ export default defineNuxtConfig({
     },
   },
 
+  experimental: {
+    ssrStreaming: true,
+  },
   fonts: {
     defaults: {
       subsets: ['cyrillic', 'latin', 'latin-ext'],
@@ -101,9 +103,8 @@ export default defineNuxtConfig({
       { global: true, name: 'Unica One' },
     ],
   },
-
   future: {
-    compatibilityVersion: 4,
+    compatibilityVersion: 5,
   },
 
   i18n: {

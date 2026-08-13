@@ -48,15 +48,14 @@ function clearLocalDbOwner(): void {
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ PowerSyncDatabase, WASQLiteOpenFactory, WASQLiteVFS }, { AppSchema }] = await Promise.all([
+    const [{ PowerSyncDatabase }, { AppSchema }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
     ])
     _db = new PowerSyncDatabase({
-      database: new WASQLiteOpenFactory({
+      database: {
         dbFilename: 'finapp.db',
-        vfs: WASQLiteVFS.IDBBatchAtomicVFS,
-      }),
+      },
       schema: AppSchema,
     })
     return _db
