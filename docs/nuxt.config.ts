@@ -10,4 +10,9 @@ export default defineNuxtConfig({
     }],
   },
   modules: ['@nuxtjs/i18n'],
+  nitro: {
+    prerender: {
+      failOnError: true,
+    },
+  },
 })
