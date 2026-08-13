@@ -26,7 +26,7 @@ export function buildTrnsDisplayRows(
       currentDate = date
       currentHeader = {
         date,
-        id: `date-${prefix}${date}`,
+        id: `date:${prefix}${date}`,
         trnsIds: [],
         type: 'dateHeader',
       }
@@ -35,7 +35,7 @@ export function buildTrnsDisplayRows(
 
     currentHeader?.trnsIds.push(trnId)
     rows.push({
-      id: `trn-${prefix}${trnId}`,
+      id: `trn:${prefix}${trnId}`,
       trnId,
       type: 'transaction',
     })

@@ -16,11 +16,11 @@ describe('buildTrnsDisplayRows', () => {
     })
 
     expect(rows).toEqual([
-      { date: Date.UTC(2026, 0, 1), id: `date-${Date.UTC(2026, 0, 1)}`, trnsIds: ['a', 'b'], type: 'dateHeader' },
-      { id: 'trn-a', trnId: 'a', type: 'transaction' },
-      { id: 'trn-b', trnId: 'b', type: 'transaction' },
-      { date: Date.UTC(2025, 11, 31), id: `date-${Date.UTC(2025, 11, 31)}`, trnsIds: ['c'], type: 'dateHeader' },
-      { id: 'trn-c', trnId: 'c', type: 'transaction' },
+      { date: Date.UTC(2026, 0, 1), id: `date:${Date.UTC(2026, 0, 1)}`, trnsIds: ['a', 'b'], type: 'dateHeader' },
+      { id: 'trn:a', trnId: 'a', type: 'transaction' },
+      { id: 'trn:b', trnId: 'b', type: 'transaction' },
+      { date: Date.UTC(2025, 11, 31), id: `date:${Date.UTC(2025, 11, 31)}`, trnsIds: ['c'], type: 'dateHeader' },
+      { id: 'trn:c', trnId: 'c', type: 'transaction' },
     ])
   })
 
@@ -30,8 +30,8 @@ describe('buildTrnsDisplayRows', () => {
     })
 
     expect(rows).toEqual([
-      { date: Date.UTC(2026, 0, 1), id: `date-${Date.UTC(2026, 0, 1)}`, trnsIds: ['a'], type: 'dateHeader' },
-      { id: 'trn-a', trnId: 'a', type: 'transaction' },
+      { date: Date.UTC(2026, 0, 1), id: `date:${Date.UTC(2026, 0, 1)}`, trnsIds: ['a'], type: 'dateHeader' },
+      { id: 'trn:a', trnId: 'a', type: 'transaction' },
     ])
   })
 
@@ -40,6 +40,6 @@ describe('buildTrnsDisplayRows', () => {
       a: { amount: 10, categoryId: 'expense', date: firstDay, type: TrnType.Expense, updatedAt: 1, walletId: 'wallet' },
     }, { idPrefix: '2-' })
 
-    expect(rows.map(row => row.id)).toEqual([`date-2-${Date.UTC(2026, 0, 1)}`, 'trn-2-a'])
+    expect(rows.map(row => row.id)).toEqual([`date:2-${Date.UTC(2026, 0, 1)}`, 'trn:2-a'])
   })
 })

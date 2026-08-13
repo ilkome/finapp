@@ -73,6 +73,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.108.2
         version: 2.108.2
+      '@tanstack/vue-virtual':
+        specifier: ^3.13.29
+        version: 3.13.29(vue@3.5.38(typescript@6.0.3))
       echarts:
         specifier: ^6.1.0
         version: 6.1.0

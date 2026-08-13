@@ -2,39 +2,40 @@ import type { ComputedRef } from 'vue'
 import type { Range } from '~~/utils/date/types'
 
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
-import type { TrnsDisplayRow } from '~/components/trns/listRows'
 import type { TrnId } from '~/components/trns/types'
 
 import { computeDateRange } from '~/components/stat/date/params'
-import { filterAvailableTrnIds, hasUnloadedTrnIds } from '~/components/stat/infinitePeriods'
-import { buildTrnsDisplayRows } from '~/components/trns/listRows'
+import { buildStatVirtualRows, canApplyStatLoadResult, collectMaterializedStatOffsets, filterAvailableTrnIds, findStatPeriodOffsetForDate, uniqueSortedOffsets } from '~/components/stat/infinitePeriods'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-export type StatVirtualRow
-  = | { id: string, offset: number, type: 'periodAnchor' }
-    | (TrnsDisplayRow & { offset: number })
-    | { id: string, type: 'loader' }
-    | { id: string, type: 'end' }
+export type StatFeedLoadReason = 'forward-scroll' | 'initial-fill' | 'manual'
 
-const SCAN_LIMIT = 18
+export type StatFeedLoadResult
+  = | { offset: number, status: 'appended' }
+    | { status: 'exhausted' }
+    | { status: 'ignored' }
 
 export function useStatInfinitePeriods(ctx: StatReportContext, options: {
   filterByTypeIds: ComputedRef<TrnId[]>
   isEnabled: ComputedRef<boolean>
 }) {
   const trnsStore = useTrnsStore()
-  const loadedOffsets = ref<number[]>([ctx.params.statDate.params.value.rangeOffset])
-  const isLoading = ref(false)
-  const isExhausted = ref(false)
-  const nextOffset = ref(ctx.params.statDate.params.value.rangeOffset + 1)
-
   const baseOffset = computed(() => ctx.params.statDate.params.value.rangeOffset)
+  const loadedOffsets = ref<number[]>([baseOffset.value])
+  const searchedThroughOffset = ref(baseOffset.value)
+  const referenceNow = ref(Date.now())
+  const generation = ref(0)
+  const localFilterGeneration = ref(0)
+  const exhaustedFilterGeneration = ref<number | null>(null)
+  const isLoading = ref(false)
+  const loadRequestCount = ref(0)
+  const lastLoadReason = ref<StatFeedLoadReason | null>(null)
 
   const canScanPeriods = computed(() => {
-    const p = ctx.params.statDate.params.value
+    const params = ctx.params.statDate.params.value
     return options.isEnabled.value
-      && !p.customDate
-      && !p.isShowMaxRange
+      && !params.customDate
+      && !params.isShowMaxRange
   })
 
   function rangeForOffset(offset: number): Range {
@@ -42,7 +43,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
       ...ctx.params.statDate.params.value,
       intervalSelected: -1,
       rangeOffset: offset,
-    }, ctx.params.statDate.maxRange.value, Date.now())
+    }, ctx.params.statDate.maxRange.value, referenceNow.value)
   }
 
   function idsForRange(range: Range): TrnId[] {
@@ -56,8 +57,35 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
   }
 
   function filteredIdsForRange(range: Range): TrnId[] {
-    const periodIds = idsForRange(range)
-    return filterAvailableTrnIds(periodIds, options.filterByTypeIds.value)
+    return filterAvailableTrnIds(idsForRange(range), options.filterByTypeIds.value)
+  }
+
+  function appendOffsets(offsets: readonly number[]) {
+    loadedOffsets.value = uniqueSortedOffsets([...loadedOffsets.value, ...offsets])
+  }
+
+  function findNextHistoricalTransaction() {
+    const frontierStart = rangeForOffset(searchedThroughOffset.value).start
+    const minimumDate = ctx.params.statDate.maxRange.value.start
+    for (const id of options.filterByTypeIds.value) {
+      const transaction = trnsStore.items?.[id]
+      if (transaction && transaction.date < frontierStart && transaction.date >= minimumDate)
+        return transaction
+    }
+    return undefined
+  }
+
+  function materializeSearchedOffsets() {
+    const dates = options.filterByTypeIds.value.flatMap((id) => {
+      const date = trnsStore.items?.[id]?.date
+      return date === undefined ? [] : [date]
+    })
+    appendOffsets(collectMaterializedStatOffsets(
+      dates,
+      baseOffset.value,
+      searchedThroughOffset.value,
+      rangeForOffset,
+    ))
   }
 
   const periods = computed(() => loadedOffsets.value.map(offset => ({
@@ -65,67 +93,70 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
     offset,
     range: rangeForOffset(offset),
   })))
-  const isBasePeriodEmpty = computed(() => periods.value[0]?.ids.length === 0)
-  const loadedTrnIds = computed(() => periods.value.flatMap(period => period.ids))
-  const canLoadMore = computed(() =>
-    canScanPeriods.value
-    && !isExhausted.value
-    && hasUnloadedTrnIds(options.filterByTypeIds.value, loadedTrnIds.value),
-  )
+  const basePeriod = computed(() => periods.value.find(period => period.offset === baseOffset.value))
+  const isBasePeriodEmpty = computed(() => (basePeriod.value?.ids.length ?? 0) === 0)
+  const isExhausted = computed(() => exhaustedFilterGeneration.value === localFilterGeneration.value
+    || !findNextHistoricalTransaction())
+  const canLoadMore = computed(() => canScanPeriods.value && !isExhausted.value)
 
-  const rows = computed<StatVirtualRow[]>(() => {
-    const result: StatVirtualRow[] = []
-
-    for (const period of periods.value) {
-      result.push({
-        id: `period-anchor-${period.offset}`,
-        offset: period.offset,
-        type: 'periodAnchor',
-      })
-
-      result.push(...buildTrnsDisplayRows(period.ids, trnsStore.items, { idPrefix: `${period.offset}-` })
-        .map(row => ({ ...row, offset: period.offset })))
-    }
-
-    result.push(!canLoadMore.value ? { id: 'end', type: 'end' } : { id: 'loader', type: 'loader' })
-    return result
-  })
+  const rows = computed(() => buildStatVirtualRows(periods.value, trnsStore.items, canLoadMore.value))
 
   function reset() {
+    generation.value++
+    localFilterGeneration.value = 0
+    exhaustedFilterGeneration.value = null
     loadedOffsets.value = [baseOffset.value]
-    isExhausted.value = false
-    nextOffset.value = baseOffset.value + 1
+    searchedThroughOffset.value = baseOffset.value
+    referenceNow.value = Date.now()
+    lastLoadReason.value = null
     ctx.params.statDate.clearScrollRangeOffset()
   }
 
-  function loadMore() {
-    if (!canLoadMore.value || isLoading.value || isExhausted.value)
-      return
+  function loadMore(reason: StatFeedLoadReason = 'manual'): StatFeedLoadResult {
+    if (!canScanPeriods.value || isLoading.value || exhaustedFilterGeneration.value === localFilterGeneration.value)
+      return { status: 'ignored' }
 
+    const requestGeneration = generation.value
+    const requestLocalFilterGeneration = localFilterGeneration.value
     isLoading.value = true
+    loadRequestCount.value++
+    lastLoadReason.value = reason
     try {
-      let candidate = Math.max(nextOffset.value, Math.max(...loadedOffsets.value) + 1)
-      for (let i = 0; i < SCAN_LIMIT; i++) {
-        const range = rangeForOffset(candidate)
-        if (range.end < ctx.params.statDate.maxRange.value.start) {
-          isExhausted.value = true
-          return
-        }
-
-        if (filteredIdsForRange(range).length > 0) {
-          loadedOffsets.value = [...loadedOffsets.value, candidate]
-          nextOffset.value = candidate + 1
-          return
-        }
-
-        candidate++
+      const target = findNextHistoricalTransaction()
+      if (!target) {
+        exhaustedFilterGeneration.value = requestLocalFilterGeneration
+        return { status: 'exhausted' }
       }
-      nextOffset.value = candidate
+
+      const offset = findStatPeriodOffsetForDate(target.date, baseOffset.value, rangeForOffset)
+      if (offset === null) {
+        exhaustedFilterGeneration.value = requestLocalFilterGeneration
+        return { status: 'exhausted' }
+      }
+
+      if (!canApplyStatLoadResult(
+        generation.value,
+        localFilterGeneration.value,
+        requestGeneration,
+        requestLocalFilterGeneration,
+      )) {
+        return { status: 'ignored' }
+      }
+
+      searchedThroughOffset.value = Math.max(searchedThroughOffset.value, offset)
+      appendOffsets([offset])
+      return { offset, status: 'appended' }
     }
     finally {
       isLoading.value = false
     }
   }
+
+  watch(options.filterByTypeIds, () => {
+    localFilterGeneration.value++
+    exhaustedFilterGeneration.value = null
+    materializeSearchedOffsets()
+  }, { flush: 'sync' })
 
   function setActiveOffset(offset: number) {
     if (offset === baseOffset.value)
@@ -136,12 +167,19 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   return {
     canLoadMore,
+    generation: readonly(generation),
     isBasePeriodEmpty,
     isExhausted,
     isLoading,
+    lastLoadReason: readonly(lastLoadReason),
+    loadedOffsets: readonly(loadedOffsets),
     loadMore,
+    loadRequestCount: readonly(loadRequestCount),
+    localFilterGeneration: readonly(localFilterGeneration),
+    referenceNow: readonly(referenceNow),
     reset,
     rows,
+    searchedThroughOffset: readonly(searchedThroughOffset),
     setActiveOffset,
   }
 }
