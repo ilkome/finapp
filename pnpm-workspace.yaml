@@ -10,6 +10,10 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: true
 overrides:
+  # Keep Docus and the workspace Nuxt runtime on one kit instance. Mixed kit
+  # versions create duplicate @nuxt/content contexts and break Zod schemas.
+  '@nuxt/kit': 4.4.8
+  vite: 7.3.5
   # Active CVE floors (verified via pnpm audit). The rest of the deps tree
   # already resolves above its advisories, so no other override is needed.
   esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
