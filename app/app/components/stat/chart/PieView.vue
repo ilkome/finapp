@@ -47,7 +47,4 @@ onMounted(() => {
   <div v-if="hasData" class="size-12 shrink-0" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`">
     <VChart :option :updateOptions="{ notMerge: true }" autoresize />
   </div>
-  <div v-else class="relative size-12 shrink-0" :aria-label="typeLabel" role="img">
-    <div class="absolute inset-[10%] rounded-full bg-muted/30" style="mask: radial-gradient(circle, transparent 36%, #000 38%)" />
-  </div>
 </template>
