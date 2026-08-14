@@ -56,7 +56,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
   >
     <UiNavArrows
       v-if="isShowNav && !statDate.params.value.customDate"
-      class="shrink-0 *:snap-start *:snap-always"
+      class="shrink-0 snap-start"
       hideInactiveArrows
       homeMatchesArrows
       :isEnd
@@ -64,12 +64,12 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       :isStart
       @changeDate="changeDate"
     >
-      <StatDateRangeButton class="snap-start snap-always" />
+      <StatDateRangeButton class="snap-start" />
     </UiNavArrows>
 
     <StatDateRangeButton
       v-else
-      class="shrink-0 snap-start snap-always"
+      class="shrink-0 snap-start"
     />
 
     <slot />

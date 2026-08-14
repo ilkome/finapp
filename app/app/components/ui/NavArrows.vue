@@ -18,7 +18,7 @@ const emit = defineEmits<{
       v-if="!hideInactiveArrows || !isStart"
       :ariaLabel="$t('base.previous')"
       :disabled="isStart"
-      class="bg-elevated/30"
+      class="bg-elevated"
       @click="emit('changeDate', 'prev')"
     >
       <Icon name="lucide:chevron-left" size="24" />
@@ -28,7 +28,7 @@ const emit = defineEmits<{
       v-if="!hideInactiveArrows || !isEnd"
       :ariaLabel="$t('base.next')"
       :disabled="isEnd"
-      class="bg-elevated/30"
+      class="bg-elevated"
       @click="emit('changeDate', 'next')"
     >
       <Icon name="lucide:chevron-left" size="24" class="rotate-180" />
@@ -37,7 +37,7 @@ const emit = defineEmits<{
     <UiActionButton
       v-if="isShowNavHome"
       :ariaLabel="$t('base.today')"
-      :class="homeMatchesArrows && 'bg-elevated/30'"
+      :class="homeMatchesArrows && 'bg-elevated'"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />
