@@ -5,18 +5,15 @@ const { isActive = false } = defineProps<{
 </script>
 
 <template>
-  <UiTitleCollapse
-    class="text-md grow-0! bg-elevated pr-2!"
-    isShown
+  <div
+    class="flex min-h-10.5 min-w-10.5 grow-0! items-center gap-1 rounded-full interactive bg-elevated px-3 pr-2!  pb-0 text-sm leading-none font-semibold"
   >
-    <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
-      <slot />
-      <Icon
-        name="lucide:chevron-down"
-        size="16"
-        class="shrink-0 text-muted transition-transform"
-        :class="isActive && 'rotate-180'"
-      />
-    </span>
-  </UiTitleCollapse>
+    <slot />
+    <Icon
+      name="lucide:chevron-down"
+      size="16"
+      class="shrink-0 text-muted transition-transform"
+      :class="isActive && 'rotate-180'"
+    />
+  </div>
 </template>
