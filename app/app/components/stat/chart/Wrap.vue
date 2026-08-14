@@ -31,6 +31,9 @@ function onClickChart(idx: number) {
 function onChangePeriod(period: Period) {
   statDate.setGranularityBy(period)
 }
+
+const canPanPast = computed(() => statDate.canPanRange('past'))
+const canPanFuture = computed(() => statDate.canPanRange('future'))
 </script>
 
 <template>
@@ -60,10 +63,14 @@ function onChangePeriod(period: Period) {
       <LazyStatChartAxisView
         v-if="isChartMountReady"
         :chartType
+        :canPanFuture
+        :canPanPast
+        :panOffset="statDate.params.value.rangePanOffset"
         :period="statDate.params.value.granularityBy"
         :series="props.series"
         :xAxisLabels="props.xAxisLabels"
         @click="onClickChart"
+        @pan="statDate.panRange"
       />
     </div>
   </div>

@@ -256,6 +256,40 @@ describe('scroll range override', () => {
   })
 })
 
+describe('range panning', () => {
+  it('moves by one chart interval, clears selection, and returns home', () => {
+    const statDate = createStatDate({
+      granularityBy: 'month',
+      granularityDuration: 1,
+      intervalSelected: 3,
+      rangeBy: 'year',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+    const initialRange = { ...statDate.range.value }
+
+    expect(statDate.panRange('past')).toBe(true)
+    expect(statDate.params.value.rangePanOffset).toBe(1)
+    expect(statDate.params.value.intervalSelected).toBe(-1)
+    expect(statDate.range.value.start).toBeLessThan(initialRange.start)
+
+    statDate.goHome()
+    expect(statDate.params.value.rangePanOffset).toBe(0)
+    expect(statDate.range.value).toEqual(initialRange)
+  })
+
+  it('resets a fine pan when changing granularity or range duration', () => {
+    const statDate = createStatDate({ rangePanOffset: 4 })
+
+    statDate.setGranularityBy('week')
+    expect(statDate.params.value.rangePanOffset).toBe(0)
+
+    statDate.params.value.rangePanOffset = 4
+    statDate.plusRange()
+    expect(statDate.params.value.rangePanOffset).toBe(0)
+  })
+})
+
 describe('stale persisted payload (pre granularityBy rename)', () => {
   it('backfills granularity defaults and does not throw when reading range/intervals', async () => {
     // Simulates a payload persisted before the intervalsBy -> granularityBy rename: it still
@@ -284,7 +318,10 @@ describe('stale persisted payload (pre granularityBy rename)', () => {
       start: new Date('2024-01-01').getTime(),
     }))
 
-    const statDate = useStatDateWithStalePayload({ key: 'stale-test', maxRange })
+    const statDate = useStatDateWithStalePayload({
+      key: 'stale-test',
+      maxRange,
+    })
 
     expect(statDate.params.value.granularityBy).toBe(defaultStatDateParams.granularityBy)
     expect(statDate.params.value.granularityDuration).toBe(defaultStatDateParams.granularityDuration)

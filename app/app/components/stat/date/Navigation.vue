@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { isEnd as computeIsEnd, isShowNav as computeIsShowNav, isShowNavHome as computeIsShowNavHome, isStart as computeIsStart, isLatestSelectedInterval } from '~/components/stat/date/navigationPredicates'
+import {
+  isEnd as computeIsEnd,
+  isShowNav as computeIsShowNav,
+  isShowNavHome as computeIsShowNavHome,
+  isStart as computeIsStart,
+  isLatestSelectedInterval,
+} from '~/components/stat/date/navigationPredicates'
 import { statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
@@ -11,17 +17,15 @@ const isIntervalStep = computed(() => statDate.params.value.intervalSelected !==
 
 // The window the arrows actually move, and the unit they move it by.
 const navRange = computed(() => (isIntervalStep.value && statDate.selectedInterval.value) || statDate.range.value)
-const navBy = computed(() => isIntervalStep.value ? statDate.params.value.granularityBy : statDate.params.value.rangeBy)
-const navDuration = computed(() => isIntervalStep.value ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration)
+const navBy = computed(() => (isIntervalStep.value ? statDate.params.value.granularityBy : statDate.params.value.rangeBy))
+const navDuration = computed(() => (isIntervalStep.value ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration))
 
 const isEnd = computed(() => {
   const now = new Date()
-  return isLatestSelectedInterval(
-    statDate.params.value.intervalSelected,
-    statDate.intervalsInRange.value.length,
-    statDate.range.value,
-    now,
-  ) || computeIsEnd(statDate.params.value, navRange.value, now, navBy.value, navDuration.value)
+  return (
+    isLatestSelectedInterval(statDate.params.value.intervalSelected, statDate.intervalsInRange.value.length, statDate.range.value, now)
+    || computeIsEnd(statDate.params.value, navRange.value, now, navBy.value, navDuration.value)
+  )
 })
 
 const isStart = computed(() => computeIsStart(navRange.value, statDate.maxRange.value))
@@ -30,9 +34,7 @@ const isShowNavHome = computed(() => computeIsShowNavHome(statDate.params.value,
 
 function changeDate(way: 'next' | 'prev' | 'today') {
   if (way === 'today') {
-    statDate.params.value.rangeOffset = 0
-    statDate.params.value.intervalSelected = -1
-    statDate.resetScrollRange()
+    statDate.goHome()
     return
   }
 
@@ -44,8 +46,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
   // inside a year) and roll into the neighbouring range at the edges.
   if (statDate.params.value.intervalSelected !== -1)
     statDate.stepInterval(direction)
-  else
-    statDate.params.value.rangeOffset -= direction
+  else statDate.stepRange(direction)
 }
 </script>
 
@@ -67,10 +68,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       <StatDateRangeButton class="snap-start" />
     </UiNavArrows>
 
-    <StatDateRangeButton
-      v-else
-      class="shrink-0 snap-start"
-    />
+    <StatDateRangeButton v-else class="shrink-0 snap-start" />
 
     <slot />
   </div>

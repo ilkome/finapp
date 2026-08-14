@@ -10,14 +10,7 @@ export type StatTabSlug = 'income' | 'expense' | 'summary' | 'split'
 export type SeriesSlug = 'income' | 'expense'
 export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
 
-export type StatConfigPanelId
-  = | 'root'
-    | 'wallets'
-    | 'statAverage'
-    | 'chart'
-    | 'catsRound'
-    | 'catsList'
-    | 'vertical'
+export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical'
 
 type CategoryWithDataBase = {
   id: CategoryId
@@ -96,6 +89,7 @@ export type StatFeedScope = {
     rangeBy: string
     rangeDuration: number
     rangeOffset: number
+    rangePanOffset: number
   }
   filteredType: string
   parentCategoriesIds: string[]

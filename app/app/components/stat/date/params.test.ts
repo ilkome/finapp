@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { StatDateParams } from '~/components/stat/date/types'
 
-import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, parseStatDateQueryParams } from './params'
+import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
 
 describe('parseStatDateQueryParams', () => {
   const base: StatDateParams = { ...defaultStatDateParams }
@@ -15,53 +15,40 @@ describe('parseStatDateQueryParams', () => {
   })
 
   it('merges valid rangeBy and rangeDuration', () => {
-    const result = parseStatDateQueryParams(
-      { rangeBy: 'month', rangeDuration: '3' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ rangeBy: 'month', rangeDuration: '3' }, base)
     expect(result.rangeBy).toBe('month')
     expect(result.rangeDuration).toBe(3)
     expect(result.granularityBy).toBe(base.granularityBy)
   })
 
   it('merges granularityBy and granularityDuration', () => {
-    const result = parseStatDateQueryParams(
-      { granularityBy: 'week', granularityDuration: '2' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ granularityBy: 'week', granularityDuration: '2' }, base)
     expect(result.granularityBy).toBe('week')
     expect(result.granularityDuration).toBe(2)
   })
 
   it('merges intervalSelected', () => {
-    const result = parseStatDateQueryParams(
-      { intervalSelected: '5' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ intervalSelected: '5' }, base)
     expect(result.intervalSelected).toBe(5)
   })
 
   it('merges rangeOffset', () => {
-    const result = parseStatDateQueryParams(
-      { rangeOffset: '-2' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ rangeOffset: '-2' }, base)
     expect(result.rangeOffset).toBe(-2)
   })
 
+  it('merges rangePanOffset', () => {
+    const result = parseStatDateQueryParams({ rangePanOffset: '3' }, base)
+    expect(result.rangePanOffset).toBe(3)
+  })
+
   it('merges boolean isShowMaxRange', () => {
-    const result = parseStatDateQueryParams(
-      { isShowMaxRange: 'true' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ isShowMaxRange: 'true' }, base)
     expect(result.isShowMaxRange).toBe(true)
   })
 
   it('merges boolean isSkipEmpty', () => {
-    const result = parseStatDateQueryParams(
-      { isSkipEmpty: 'true' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ isSkipEmpty: 'true' }, base)
     expect(result.isSkipEmpty).toBe(true)
   })
 
@@ -72,18 +59,12 @@ describe('parseStatDateQueryParams', () => {
   })
 
   it('ignores non-integer duration strings', () => {
-    const result = parseStatDateQueryParams(
-      { rangeDuration: '3.5' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ rangeDuration: '3.5' }, base)
     expect(result).toEqual(base)
   })
 
   it('applies zero values for numeric fields', () => {
-    const result = parseStatDateQueryParams(
-      { rangeDuration: '0' },
-      base,
-    )
+    const result = parseStatDateQueryParams({ rangeDuration: '0' }, base)
     expect(result.rangeDuration).toBe(0)
   })
 })
@@ -169,6 +150,28 @@ describe('computeDateRange', () => {
     expect(range1.end).toBeLessThan(range0.end)
   })
 
+  it('slides a current year by one month while preserving 12 month intervals', () => {
+    const params: StatDateParams = {
+      ...defaultStatDateParams,
+      granularityBy: 'month',
+      granularityDuration: 1,
+      rangeBy: 'year',
+      rangeDuration: 1,
+      rangePanOffset: 1,
+    }
+
+    const range = computeDateRange(params, maxRange, now)
+    const intervals = getIntervalsInRange({
+      granularityBy: params.granularityBy,
+      granularityDuration: params.granularityDuration,
+      range,
+    })
+
+    expect(new Date(range.start).toISOString()).toContain('2023-12-01')
+    expect(new Date(range.end).toISOString()).toContain('2024-11-30')
+    expect(intervals).toHaveLength(12)
+  })
+
   it('priority: customDate overrides isShowMaxRange', () => {
     const customDate: Range = {
       end: new Date('2024-02-28').getTime(),
@@ -193,12 +196,16 @@ describe('defaultStatDateParams', () => {
     expect(defaultStatDateParams.rangeDuration).toBe(14)
     expect(defaultStatDateParams.intervalSelected).toBe(-1)
     expect(defaultStatDateParams.rangeOffset).toBe(0)
+    expect(defaultStatDateParams.rangePanOffset).toBe(0)
   })
 })
 
 describe('calculateBestGranularityBy', () => {
   it('returns year for range > 400 days', () => {
-    const range = { end: new Date(2025, 5, 1).getTime(), start: new Date(2024, 0, 1).getTime() }
+    const range = {
+      end: new Date(2025, 5, 1).getTime(),
+      start: new Date(2024, 0, 1).getTime(),
+    }
     expect(calculateBestGranularityBy(range)).toBe('year')
   })
 
@@ -206,32 +213,57 @@ describe('calculateBestGranularityBy', () => {
     const start = new Date(2024, 0, 1)
     const end = new Date(start)
     end.setDate(end.getDate() + 401)
-    expect(calculateBestGranularityBy({ end: end.getTime(), start: start.getTime() })).toBe('year')
+    expect(
+      calculateBestGranularityBy({
+        end: end.getTime(),
+        start: start.getTime(),
+      }),
+    ).toBe('year')
   })
 
   it('returns month for range 81–400 days', () => {
     const start = new Date(2025, 0, 1)
     const end = new Date(2025, 6, 1) // ~181 days
-    expect(calculateBestGranularityBy({ end: end.getTime(), start: start.getTime() })).toBe('month')
+    expect(
+      calculateBestGranularityBy({
+        end: end.getTime(),
+        start: start.getTime(),
+      }),
+    ).toBe('month')
   })
 
   it('returns day for range <= 80 days', () => {
     const start = new Date(2025, 0, 1)
     const end = new Date(2025, 1, 15) // ~45 days
-    expect(calculateBestGranularityBy({ end: end.getTime(), start: start.getTime() })).toBe('day')
+    expect(
+      calculateBestGranularityBy({
+        end: end.getTime(),
+        start: start.getTime(),
+      }),
+    ).toBe('day')
   })
 
   it('returns month at boundary 400 days', () => {
     const start = new Date(2024, 0, 1)
     const end = new Date(start)
     end.setDate(end.getDate() + 400)
-    expect(calculateBestGranularityBy({ end: end.getTime(), start: start.getTime() })).toBe('month')
+    expect(
+      calculateBestGranularityBy({
+        end: end.getTime(),
+        start: start.getTime(),
+      }),
+    ).toBe('month')
   })
 
   it('returns day at boundary 80 days', () => {
     const start = new Date(2025, 0, 1)
     const end = new Date(start)
     end.setDate(end.getDate() + 80)
-    expect(calculateBestGranularityBy({ end: end.getTime(), start: start.getTime() })).toBe('day')
+    expect(
+      calculateBestGranularityBy({
+        end: end.getTime(),
+        start: start.getTime(),
+      }),
+    ).toBe('day')
   })
 })

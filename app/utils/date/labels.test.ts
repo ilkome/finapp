@@ -40,7 +40,7 @@ vi.useFakeTimers()
 vi.setSystemTime(fixedDate)
 
 describe('createRangeFormatter', () => {
-  const { formatRange, formatRangeWithLast } = createRangeFormatter(t)
+  const { formatRange, formatRangeExact, formatRangeWithLast } = createRangeFormatter(t)
 
   afterAll(() => {
     vi.useRealTimers()
@@ -48,12 +48,18 @@ describe('createRangeFormatter', () => {
 
   describe('year ranges', () => {
     it('should format current year', () => {
-      const range = { end: Date.UTC(2026, 0, 1) - 1, start: Date.UTC(2025, 0, 1) }
+      const range = {
+        end: Date.UTC(2026, 0, 1) - 1,
+        start: Date.UTC(2025, 0, 1),
+      }
       expect(formatRange(range, 'year', 1)).toBe('2025')
     })
 
     it('should format year range', () => {
-      const range = { end: Date.UTC(2023, 11, 31), start: Date.UTC(2021, 0, 1) }
+      const range = {
+        end: Date.UTC(2023, 11, 31),
+        start: Date.UTC(2021, 0, 1),
+      }
       expect(formatRange(range, 'year', 2)).toBe('2021 - 2023')
     })
   })
@@ -89,32 +95,81 @@ describe('createRangeFormatter', () => {
     const todayCivil = new Date(Date.UTC(2025, 5, 15))
 
     it('shows "Today" for current day', () => {
-      expect(formatRangeWithLast({ by: 'day', duration: 1, end: todayCivil, start: todayCivil })).toBe('Today')
+      expect(
+        formatRangeWithLast({
+          by: 'day',
+          duration: 1,
+          end: todayCivil,
+          start: todayCivil,
+        }),
+      ).toBe('Today')
     })
 
     it('shows "Yesterday" for previous day', () => {
       const yesterday = new Date(Date.UTC(2025, 5, 14))
-      expect(formatRangeWithLast({ by: 'day', duration: 1, end: yesterday, start: yesterday })).toBe('Yesterday')
+      expect(
+        formatRangeWithLast({
+          by: 'day',
+          duration: 1,
+          end: yesterday,
+          start: yesterday,
+        }),
+      ).toBe('Yesterday')
     })
 
     it('shows "This Month" for current month', () => {
-      expect(formatRangeWithLast({ by: 'month', duration: 1, end: new Date(monthEnd(2025, 5)), start: new Date(Date.UTC(2025, 5, 1)) })).toBe('This Month')
+      expect(
+        formatRangeWithLast({
+          by: 'month',
+          duration: 1,
+          end: new Date(monthEnd(2025, 5)),
+          start: new Date(Date.UTC(2025, 5, 1)),
+        }),
+      ).toBe('This Month')
     })
 
     it('shows "Last Month" for previous month', () => {
-      expect(formatRangeWithLast({ by: 'month', duration: 1, end: new Date(monthEnd(2025, 4)), start: new Date(Date.UTC(2025, 4, 1)) })).toBe('Last Month')
+      expect(
+        formatRangeWithLast({
+          by: 'month',
+          duration: 1,
+          end: new Date(monthEnd(2025, 4)),
+          start: new Date(Date.UTC(2025, 4, 1)),
+        }),
+      ).toBe('Last Month')
     })
 
     it('shows "This Year" for current year', () => {
-      expect(formatRangeWithLast({ by: 'year', duration: 1, end: new Date(monthEnd(2025, 11)), start: new Date(Date.UTC(2025, 0, 1)) })).toBe('This Year')
+      expect(
+        formatRangeWithLast({
+          by: 'year',
+          duration: 1,
+          end: new Date(monthEnd(2025, 11)),
+          start: new Date(Date.UTC(2025, 0, 1)),
+        }),
+      ).toBe('This Year')
     })
 
     it('shows "Last Year" for previous year', () => {
-      expect(formatRangeWithLast({ by: 'year', duration: 1, end: new Date(monthEnd(2024, 11)), start: new Date(Date.UTC(2024, 0, 1)) })).toBe('Last Year')
+      expect(
+        formatRangeWithLast({
+          by: 'year',
+          duration: 1,
+          end: new Date(monthEnd(2024, 11)),
+          start: new Date(Date.UTC(2024, 0, 1)),
+        }),
+      ).toBe('Last Year')
     })
 
     it('shows "Last N periods" when end is in current period', () => {
-      expect(formatRangeWithLast({ by: 'day', duration: 3, end: todayCivil, start: new Date(Date.UTC(2025, 5, 13)) })).toBe('Last 3 days')
+      expect(
+        formatRangeWithLast({
+          by: 'day',
+          duration: 3,
+          end: todayCivil,
+          start: new Date(Date.UTC(2025, 5, 13)),
+        }),
+      ).toBe('Last 3 days')
     })
 
     it.each([
@@ -136,20 +191,24 @@ describe('createRangeFormatter', () => {
         return key
       }, 'ru')
 
-      expect(ru.formatRangeWithLast({
-        by: 'day',
-        duration: 1,
-        end: todayCivil,
-        start: todayCivil,
-      })).toBe('Сегодня')
+      expect(
+        ru.formatRangeWithLast({
+          by: 'day',
+          duration: 1,
+          end: todayCivil,
+          start: todayCivil,
+        }),
+      ).toBe('Сегодня')
 
       for (const duration of [2, 5, 21]) {
-        expect(ru.formatRangeWithLast({
-          by: 'day',
-          duration,
-          end: todayCivil,
-          start: new Date(Date.UTC(2025, 5, 15 - duration + 1)),
-        })).toBe(`Последние ${duration} ${({ 1: 'день', 2: 'дня', 5: 'дней', 21: 'день' } as Record<number, string>)[duration]}`)
+        expect(
+          ru.formatRangeWithLast({
+            by: 'day',
+            duration,
+            end: todayCivil,
+            start: new Date(Date.UTC(2025, 5, 15 - duration + 1)),
+          }),
+        ).toBe(`Последние ${duration} ${({ 1: 'день', 2: 'дня', 5: 'дней', 21: 'день' } as Record<number, string>)[duration]}`)
       }
     })
 
@@ -164,30 +223,53 @@ describe('createRangeFormatter', () => {
     })
 
     it('falls back to calendar formatting for past ranges', () => {
-      expect(formatRangeWithLast({
-        by: 'month',
-        duration: 2,
-        end: new Date(monthEnd(2025, 3)),
-        start: new Date(Date.UTC(2025, 2, 1)),
-      })).toBe('Mar - Apr')
+      expect(
+        formatRangeWithLast({
+          by: 'month',
+          duration: 2,
+          end: new Date(monthEnd(2025, 3)),
+          start: new Date(Date.UTC(2025, 2, 1)),
+        }),
+      ).toBe('Mar - Apr')
     })
 
     it('suppresses relative formatting for the overall max range', () => {
-      expect(formatRangeWithLast({
-        by: 'day',
-        duration: 3,
-        end: todayCivil,
-        start: new Date(Date.UTC(2025, 5, 13)),
-      }, true)).toBe('13-15 Jun')
+      expect(
+        formatRangeWithLast(
+          {
+            by: 'day',
+            duration: 3,
+            end: todayCivil,
+            start: new Date(Date.UTC(2025, 5, 13)),
+          },
+          true,
+        ),
+      ).toBe('13-15 Jun')
     })
 
     it('suppresses singleton current and last labels for the overall max range', () => {
-      expect(formatRangeWithLast({
-        by: 'day',
-        duration: 1,
-        end: todayCivil,
-        start: new Date(Date.UTC(2025, 5, 14)),
-      }, true)).toBe('14-15 Jun')
+      expect(
+        formatRangeWithLast(
+          {
+            by: 'day',
+            duration: 1,
+            end: todayCivil,
+            start: new Date(Date.UTC(2025, 5, 14)),
+          },
+          true,
+        ),
+      ).toBe('14-15 Jun')
     })
+  })
+
+  it('formats a rolling 12-month window at month precision across years', () => {
+    expect(
+      formatRangeExact({
+        by: 'month',
+        duration: 12,
+        end: new Date(monthEnd(2025, 10)),
+        start: new Date(Date.UTC(2024, 11, 1)),
+      }),
+    ).toBe('Dec 2024 - Nov 2025')
   })
 })

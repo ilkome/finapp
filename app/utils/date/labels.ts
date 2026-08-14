@@ -28,10 +28,14 @@ function isSameMonth(a: Date, b: Date): boolean {
 
 function isSamePeriod(a: Date, b: Date, by: Period): boolean {
   switch (by) {
-    case 'year': return isSameYear(a, b)
-    case 'month': return isSameMonth(a, b)
-    case 'week': return dfIsSameWeek(u(a), u(b), { weekStartsOn: 1 })
-    case 'day': return dfIsSameDay(u(a), u(b))
+    case 'year':
+      return isSameYear(a, b)
+    case 'month':
+      return isSameMonth(a, b)
+    case 'week':
+      return dfIsSameWeek(u(a), u(b), { weekStartsOn: 1 })
+    case 'day':
+      return dfIsSameDay(u(a), u(b))
   }
 }
 
@@ -43,9 +47,7 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
   const today = new Date(todayCivilDayEpoch())
 
   function formatYearRange({ duration, end, start }: DateFormatParams): string {
-    return duration === 1
-      ? formatByLocale(start, 'yyyy', locale)
-      : `${formatByLocale(start, 'yyyy', locale)} - ${formatByLocale(end, 'yyyy', locale)}`
+    return duration === 1 ? formatByLocale(start, 'yyyy', locale) : `${formatByLocale(start, 'yyyy', locale)} - ${formatByLocale(end, 'yyyy', locale)}`
   }
 
   function formatMonthRange({ duration, end, start }: DateFormatParams): string {
@@ -100,10 +102,14 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
 
   function formatByPeriod(params: DateFormatParams): string {
     switch (params.by) {
-      case 'year': return formatYearRange(params)
-      case 'month': return formatMonthRange(params)
-      case 'week': return formatWeekRange(params)
-      case 'day': return formatDayRange(params)
+      case 'year':
+        return formatYearRange(params)
+      case 'month':
+        return formatMonthRange(params)
+      case 'week':
+        return formatWeekRange(params)
+      case 'day':
+        return formatDayRange(params)
     }
   }
 
@@ -124,6 +130,10 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
     if (!isShowMaxRange && isSamePeriod(end, today, by))
       return `${t(`dates.last.${by}`, duration)} ${duration} ${t(`dates.${by}.plural`, duration)}`
 
+    return formatByPeriod(params)
+  }
+
+  function formatRangeExact(params: DateFormatParams): string {
     return formatByPeriod(params)
   }
 
@@ -154,6 +164,7 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
 
   return {
     formatRange,
+    formatRangeExact,
     formatRangeShort,
     formatRangeWithLast,
   }
@@ -168,7 +179,12 @@ export type TrnDateParts = {
   year: string
 }
 
-export function formatTrnDateLabel(value: number, type: 'trnItem' | 'full', t: (key: string, choice?: number) => string, locale?: LocaleSlug): string | TrnDateParts | undefined {
+export function formatTrnDateLabel(
+  value: number,
+  type: 'trnItem' | 'full',
+  t: (key: string, choice?: number) => string,
+  locale?: LocaleSlug,
+): string | TrnDateParts | undefined {
   if (!value)
     return undefined
 
@@ -189,6 +205,11 @@ export function formatTrnDateLabel(value: number, type: 'trnItem' | 'full', t: (
       }
 
     case 'trnItem':
-      return formatRangeWithLast({ by: 'day', duration: 1, end: date, start: date })
+      return formatRangeWithLast({
+        by: 'day',
+        duration: 1,
+        end: date,
+        start: date,
+      })
   }
 }

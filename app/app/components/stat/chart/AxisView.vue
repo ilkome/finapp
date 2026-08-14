@@ -10,10 +10,12 @@ import VChart from 'vue-echarts'
 import { formatByLocale } from '~~/utils/date/civil'
 
 import type { ChartType } from '~/components/stat/chart/types'
+import type { StatRangePanDirection } from '~/components/stat/date/useStatDate'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatChartAmount, getFormatForChart } from '~/components/stat/chart/format'
 import { baseOption, buildChartSeries } from '~/components/stat/chart/options'
+import { useStatChartPan } from '~/components/stat/chart/useStatChartPan'
 
 type TooltipParam = {
   color: string
@@ -23,12 +25,18 @@ type TooltipParam = {
 }
 
 const {
+  canPanFuture = false,
+  canPanPast = false,
   chartType = 'line',
+  panOffset = 0,
   period,
   series,
   xAxisLabels,
 } = defineProps<{
+  canPanFuture?: boolean
+  canPanPast?: boolean
   chartType?: ChartType
+  panOffset?: number
   period: Period
   series: ChartSeries[]
   xAxisLabels: number[]
@@ -36,25 +44,28 @@ const {
 
 const emit = defineEmits<{
   click: [idx: number]
+  pan: [direction: StatRangePanDirection]
 }>()
 
-use([
-  BarChart,
-  GridComponent,
-  LineChart,
-  MarkAreaComponent,
-  MarkLineComponent,
-  SVGRenderer,
-  TooltipComponent,
-])
+use([BarChart, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, SVGRenderer, TooltipComponent])
 
 const { locale, t } = useI18n()
 const chartRef = ref()
+const pan = useStatChartPan({
+  canPan: direction => (direction === 'past' ? canPanPast : canPanFuture),
+  pan: (direction) => {
+    emit('pan', direction)
+    return true
+  },
+})
 
 // The chart is an SVG the screen reader can't read; label it as an image. The
 // underlying numbers are exposed in the summary tiles and category list.
 const chartAriaLabel = computed(() => {
-  const names = series.map(s => s.name).filter(Boolean).join(', ')
+  const names = series
+    .map(s => s.name)
+    .filter(Boolean)
+    .join(', ')
   return names ? `${t('chart.label')}: ${names}` : t('chart.label')
 })
 
@@ -77,17 +88,15 @@ const option = computed(() => {
   }
 
   const yAxis = data.yAxis as Record<string, any>
-  yAxis.axisPointer.label.formatter = (props: { value: number }) =>
-    formatChartAmount(+props.value, locale.value) ?? ''
+  yAxis.axisPointer.label.formatter = (props: { value: number }) => formatChartAmount(+props.value, locale.value) ?? ''
 
   return data
 })
 
 async function onClickChart(params: { offsetX: number, offsetY: number }) {
-  const [index] = chartRef.value.convertFromPixel('grid', [
-    params.offsetX,
-    params.offsetY,
-  ])
+  if (pan.consumeClick())
+    return
+  const [index] = chartRef.value.convertFromPixel('grid', [params.offsetX, params.offsetY])
 
   emit('click', index)
 }
@@ -95,17 +104,21 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
 
 <template>
   <div
-    class="h-40 @3xl/stat:h-52"
+    class="h-40 touch-pan-y @3xl/stat:h-52"
     role="img"
     :aria-label="chartAriaLabel"
+    :data-stat-chart-pan-offset="panOffset"
+    :data-stat-chart-pannable="canPanPast || canPanFuture ? 'true' : 'false'"
+    tabindex="0"
+    @keydown="pan.onKeyDown"
+    @pointercancel="pan.onPointerEnd"
+    @pointerdown="pan.onPointerDown"
+    @pointermove="pan.onPointerMove"
+    @pointerup="pan.onPointerEnd"
+    @wheel="pan.onWheel"
     @click="onClickChart"
   >
-    <VChart
-      ref="chartRef"
-      :option
-      :updateOptions="{ notMerge: true }"
-      autoresize
-    >
+    <VChart ref="chartRef" :option :updateOptions="{ notMerge: true }" autoresize>
       <template #tooltip="params">
         <div class="rounded-md bg-elevated px-2 pt-2">
           <div class="pb-2 text-xs text-muted">
@@ -114,7 +127,8 @@ async function onClickChart(params: { offsetX: number, offsetY: number }) {
 
           <div class="grid gap-0">
             <div
-              v-for="(param, i) in (params as TooltipParam[])" :key="i"
+              v-for="(param, i) in params as TooltipParam[]"
+              :key="i"
               class="flex items-center justify-between gap-4 border-b border-default pb-1 last:border-b-0"
             >
               <div class="flex items-center gap-2">

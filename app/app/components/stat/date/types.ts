@@ -12,6 +12,7 @@ export type StatDateParams = {
   rangeBy: Period
   rangeDuration: number
   rangeOffset: number
+  rangePanOffset: number
 }
 
 export type StatDateParamsQuery = {
@@ -24,6 +25,7 @@ export type StatDateParamsQuery = {
   rangeBy: Period
   rangeDuration: string
   rangeOffset: string
+  rangePanOffset: string
 }
 
 export type IntervalsInRangeProps = Pick<StatDateParams, 'granularityBy' | 'granularityDuration'> & {
@@ -34,10 +36,11 @@ export type IntervalsInRangeProps = Pick<StatDateParams, 'granularityBy' | 'gran
 type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
 export type Grouped = Pick<StatDateParams, 'granularityBy' | 'granularityDuration'>
 
-export type IntervalGroupedLabel = Grouped & Interval & {
-  isShowMaxRange?: boolean
-  isSkipEmpty?: boolean
-  label?: string
-}
+export type IntervalGroupedLabel = Grouped
+  & Interval & {
+    isShowMaxRange?: boolean
+    isSkipEmpty?: boolean
+    label?: string
+  }
 
 export type StatDateProvider = ReturnType<typeof useStatDate>

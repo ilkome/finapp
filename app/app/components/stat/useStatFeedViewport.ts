@@ -5,7 +5,13 @@ import type { StatFeedScope, StatPeriodTransitionState } from '~/components/stat
 import type { useStatInfinitePeriods } from '~/components/stat/useStatInfinitePeriods'
 import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
-import { isSameStatFeedScope, normalizeStatFeedScope, resolveStatFeedScrollTop, resolveStatPeriodTransition, resolveStatStickyBottom } from '~/components/stat/statFeed'
+import {
+  isSameStatFeedScope,
+  normalizeStatFeedScope,
+  resolveStatFeedScrollTop,
+  resolveStatPeriodTransition,
+  resolveStatStickyBottom,
+} from '~/components/stat/statFeed'
 
 export function useStatFeedViewport(params: {
   ctx: StatReportContext
@@ -212,15 +218,17 @@ export function useStatFeedViewport(params: {
       activeObserverCount.value++
     }
     lastPageScrollTop = document.scrollingElement?.scrollTop ?? window.scrollY
-    for (const [name, listener] of listeners)
-      window.addEventListener(name, listener as EventListener, { passive: true })
+    for (const [name, listener] of listeners) {
+      window.addEventListener(name, listener as EventListener, {
+        passive: true,
+      })
+    }
     activeListenerCount.value = listeners.length
   }
   function stopObservingGeometry() {
     resizeObserver?.disconnect()
     resizeObserver = undefined
-    for (const [name, listener] of listeners)
-      window.removeEventListener(name, listener as EventListener)
+    for (const [name, listener] of listeners) window.removeEventListener(name, listener as EventListener)
     activeListenerCount.value = 0
     activeObserverCount.value = 0
     if (activePeriodFrame !== null)
@@ -245,7 +253,10 @@ export function useStatFeedViewport(params: {
       isScrollbarDragging = false
       activePeriodTransitionCount.value = 0
       params.infinite.reset()
-      activePeriodState = { activeOffset: params.ctx.params.statDate.params.value.rangeOffset, direction: null }
+      activePeriodState = {
+        activeOffset: params.ctx.params.statDate.params.value.rangeOffset,
+        direction: null,
+      }
       await nextTick()
       updateGeometry()
       if (scroller && Math.abs(scroller.scrollTop - landingScrollTop) > 0.5)
@@ -273,6 +284,7 @@ export function useStatFeedViewport(params: {
       rangeBy: params.ctx.params.statDate.params.value.rangeBy,
       rangeDuration: params.ctx.params.statDate.params.value.rangeDuration,
       rangeOffset: params.ctx.params.statDate.params.value.rangeOffset,
+      rangePanOffset: params.ctx.params.statDate.params.value.rangePanOffset,
     },
     filteredType: params.ctx.filteredType.value,
     parentCategoriesIds: params.ctx.filteredCategoriesIds.value,
@@ -281,12 +293,19 @@ export function useStatFeedViewport(params: {
     statTab: params.ctx.params.statTab.value,
   }))
   let previousReportScope = normalizeStatFeedScope(reportScope.value)
-  watch(reportScope, (scope) => {
-    if (!isSameStatFeedScope(previousReportScope, scope))
-      void resetFeed()
-    previousReportScope = normalizeStatFeedScope(scope)
-  }, { deep: true })
-  watch(() => params.ctx.params.statDate.scrollRangeResetVersion.value, () => void resetFeed())
+  watch(
+    reportScope,
+    (scope) => {
+      if (!isSameStatFeedScope(previousReportScope, scope))
+        void resetFeed()
+      previousReportScope = normalizeStatFeedScope(scope)
+    },
+    { deep: true },
+  )
+  watch(
+    () => params.ctx.params.statDate.scrollRangeResetVersion.value,
+    () => void resetFeed(),
+  )
   watch(params.infinite.rows, () => nextTick(scheduleGeometryUpdate))
 
   async function start() {

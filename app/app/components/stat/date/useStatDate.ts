@@ -8,6 +8,8 @@ import type { Grouped, IntervalGroupedLabel, StatDateParams, StatDateParamsQuery
 
 import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
 
+export type StatRangePanDirection = 'future' | 'past'
+
 export function useStatDate({
   initParams,
   key,
@@ -25,9 +27,7 @@ export function useStatDate({
 
   // Backfill defaults on every load, not just the first: a payload stored before a param
   // rename keeps the dead key and misses the new one, and an undefined Period crashes date math.
-  params.value = Object.keys(params.value).length === 0
-    ? defu(initParams ?? {}, defaultStatDateParams)
-    : defu(params.value, defaultStatDateParams)
+  params.value = Object.keys(params.value).length === 0 ? defu(initParams ?? {}, defaultStatDateParams) : defu(params.value, defaultStatDateParams)
 
   const modal = ref({
     dateSelector: false,
@@ -50,29 +50,37 @@ export function useStatDate({
     rangeBy: params.value.rangeBy,
     rangeDuration: params.value.rangeDuration,
     rangeOffset: scrollRangeOffset.value ?? params.value.rangeOffset,
+    rangePanOffset: params.value.rangePanOffset,
   }))
 
   const range = computed<Range>(() => {
-    return computeDateRange({
-      customDate: params.value.customDate,
-      granularityBy: params.value.granularityBy,
-      granularityDuration: params.value.granularityDuration,
-      intervalSelected: -1,
-      isShowMaxRange: params.value.isShowMaxRange,
-      isSkipEmpty: params.value.isSkipEmpty,
-      rangeBy: params.value.rangeBy,
-      rangeDuration: params.value.rangeDuration,
-      rangeOffset: scrollRangeOffset.value ?? params.value.rangeOffset,
-    }, maxRange.value, Date.now())
+    return computeDateRange(
+      {
+        customDate: params.value.customDate,
+        granularityBy: params.value.granularityBy,
+        granularityDuration: params.value.granularityDuration,
+        intervalSelected: -1,
+        isShowMaxRange: params.value.isShowMaxRange,
+        isSkipEmpty: params.value.isSkipEmpty,
+        rangeBy: params.value.rangeBy,
+        rangeDuration: params.value.rangeDuration,
+        rangeOffset: scrollRangeOffset.value ?? params.value.rangeOffset,
+        rangePanOffset: params.value.rangePanOffset,
+      },
+      maxRange.value,
+      Date.now(),
+    )
   })
 
   const isScrollRangeOverridden = computed(() => scrollRangeOffset.value !== null && scrollRangeOffset.value !== params.value.rangeOffset)
 
-  const intervalsInRange = computed(() => getIntervalsInRange({
-    granularityBy: params.value.granularityBy,
-    granularityDuration: params.value.granularityDuration,
-    range: range.value,
-  }))
+  const intervalsInRange = computed(() =>
+    getIntervalsInRange({
+      granularityBy: params.value.granularityBy,
+      granularityDuration: params.value.granularityDuration,
+      range: range.value,
+    }),
+  )
 
   const selectedInterval = computed(() => intervalsInRange.value[params.value.intervalSelected])
 
@@ -85,25 +93,25 @@ export function useStatDate({
       return
 
     const intervals = intervalsInRange.value
-    params.value.intervalSelected = landOn === 'first'
-      ? 0
-      : landOn === 'last'
-        ? Math.max(intervals.length - 1, 0)
-        : -1
+    params.value.intervalSelected = landOn === 'first' ? 0 : landOn === 'last' ? Math.max(intervals.length - 1, 0) : -1
     landOn = null
   })
 
-  watch(() => [
-    params.value.customDate,
-    params.value.granularityBy,
-    params.value.granularityDuration,
-    params.value.isShowMaxRange,
-    params.value.rangeBy,
-    params.value.rangeDuration,
-    params.value.rangeOffset,
-  ], () => {
-    clearScrollRangeOffset()
-  })
+  watch(
+    () => [
+      params.value.customDate,
+      params.value.granularityBy,
+      params.value.granularityDuration,
+      params.value.isShowMaxRange,
+      params.value.rangeBy,
+      params.value.rangeDuration,
+      params.value.rangeOffset,
+      params.value.rangePanOffset,
+    ],
+    () => {
+      clearScrollRangeOffset()
+    },
+  )
 
   function setScrollRangeOffset(rangeOffset: number) {
     if (params.value.intervalSelected !== -1)
@@ -120,6 +128,52 @@ export function useStatDate({
     scrollRangeResetVersion.value++
   }
 
+  function resetRangePan() {
+    params.value.rangePanOffset = 0
+  }
+
+  function rangeFor(params: StatDateParams) {
+    return computeDateRange(params, maxRange.value, Date.now())
+  }
+
+  function canPanRange(direction: StatRangePanDirection) {
+    if (params.value.isShowMaxRange)
+      return false
+
+    const nextOffset = params.value.rangePanOffset + (direction === 'past' ? 1 : -1)
+    const nextRange = rangeFor({ ...params.value, rangePanOffset: nextOffset })
+    if (direction === 'past')
+      return nextRange.start >= maxRange.value.start
+
+    const latestRange = rangeFor({
+      ...params.value,
+      rangeOffset: 0,
+      rangePanOffset: 0,
+    })
+    return nextRange.end <= latestRange.end
+  }
+
+  function panRange(direction: StatRangePanDirection) {
+    if (!canPanRange(direction))
+      return false
+    clearScrollRangeOffset()
+    params.value.intervalSelected = -1
+    params.value.rangePanOffset += direction === 'past' ? 1 : -1
+    return true
+  }
+
+  function goHome() {
+    params.value.rangeOffset = 0
+    params.value.intervalSelected = -1
+    resetRangePan()
+    resetScrollRange()
+  }
+
+  function stepRange(direction: 1 | -1) {
+    resetRangePan()
+    params.value.rangeOffset -= direction
+  }
+
   function resetCustomAndMaxRangeParams() {
     params.value.customDate = false
     params.value.isShowMaxRange = false
@@ -128,6 +182,7 @@ export function useStatDate({
 
   function setRangeByPeriod(igl: IntervalGroupedLabel) {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
 
     params.value.granularityBy = igl.granularityBy
     params.value.granularityDuration = igl.granularityDuration
@@ -141,6 +196,7 @@ export function useStatDate({
 
   function setRangeByCalendar(r: Range) {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
     params.value.customDate = { ...r }
     params.value.rangeOffset = 0
 
@@ -151,6 +207,7 @@ export function useStatDate({
   }
 
   function setMaxRange(isSkipEmpty = false) {
+    resetRangePan()
     const rangeDuration = differenceInDays(maxRange.value.end, maxRange.value.start)
     const granularityBy = calculateBestGranularityBy(maxRange.value)
 
@@ -166,17 +223,20 @@ export function useStatDate({
 
   function plusGranularity() {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
     ++params.value.granularityDuration
   }
 
   function minusGranularity() {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
     if (params.value.granularityDuration > 1)
       --params.value.granularityDuration
   }
 
   function modifyRange(modification: number) {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
     if (params.value.rangeDuration === 1 && modification < 0)
       return
 
@@ -216,28 +276,34 @@ export function useStatDate({
 
   function setGranularityBy(granularityBy: Grouped['granularityBy']) {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
     params.value.granularityBy = granularityBy
   }
 
   function setGranularity({ granularityBy, granularityDuration }: Grouped) {
     resetCustomAndMaxRangeParams()
+    resetRangePan()
     params.value.granularityBy = granularityBy
     params.value.granularityDuration = granularityDuration
   }
 
   return {
+    canPanRange,
     clearScrollRangeOffset,
     effectiveParams,
+    goHome,
     intervalsInRange,
     isScrollRangeOverridden,
     maxRange,
     minusGranularity,
     minusRange,
     modal,
+    panRange,
     params,
     plusGranularity,
     plusRange,
     range,
+    resetRangePan,
     resetScrollRange,
     scrollRangeOffset,
     scrollRangeResetVersion,
@@ -250,5 +316,6 @@ export function useStatDate({
     setRangeByPeriod,
     setScrollRangeOffset,
     stepInterval,
+    stepRange,
   }
 }

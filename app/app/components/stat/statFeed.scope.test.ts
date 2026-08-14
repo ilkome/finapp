@@ -15,6 +15,7 @@ const scope: StatFeedScope = {
     rangeBy: 'month',
     rangeDuration: 1,
     rangeOffset: 0,
+    rangePanOffset: 0,
   },
   filteredType: 'netIncome',
   parentCategoriesIds: ['parent-a'],
@@ -26,11 +27,13 @@ const scope: StatFeedScope = {
 describe('isSameStatFeedScope', () => {
   it('ignores ID ordering without mutating source arrays', () => {
     const selectedCategoriesIds = ['category-b', 'category-a']
-    expect(isSameStatFeedScope(scope, {
-      ...scope,
-      selectedCategoriesIds,
-      selectedWalletsIds: ['wallet-b', 'wallet-a'],
-    })).toBe(true)
+    expect(
+      isSameStatFeedScope(scope, {
+        ...scope,
+        selectedCategoriesIds,
+        selectedWalletsIds: ['wallet-b', 'wallet-a'],
+      }),
+    ).toBe(true)
     expect(selectedCategoriesIds).toEqual(['category-b', 'category-a'])
   })
 
@@ -43,13 +46,23 @@ describe('isSameStatFeedScope', () => {
   })
 
   it('detects persistent date and filter changes', () => {
-    expect(isSameStatFeedScope(scope, {
-      ...scope,
-      date: { ...scope.date, rangeOffset: 1 },
-    })).toBe(false)
-    expect(isSameStatFeedScope(scope, {
-      ...scope,
-      selectedWalletsIds: ['wallet-c'],
-    })).toBe(false)
+    expect(
+      isSameStatFeedScope(scope, {
+        ...scope,
+        date: { ...scope.date, rangeOffset: 1 },
+      }),
+    ).toBe(false)
+    expect(
+      isSameStatFeedScope(scope, {
+        ...scope,
+        date: { ...scope.date, rangePanOffset: 1 },
+      }),
+    ).toBe(false)
+    expect(
+      isSameStatFeedScope(scope, {
+        ...scope,
+        selectedWalletsIds: ['wallet-c'],
+      }),
+    ).toBe(false)
   })
 })
