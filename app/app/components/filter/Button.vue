@@ -22,20 +22,9 @@ const snapPoints = useSheetSnapPoints()
     @openModal="isOpen = true"
   >
     <template #trigger="{ isActive }">
-      <UiTitleCollapse
-        class="text-md grow-0! bg-elevated"
-        isShown
-      >
-        <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
-          <span class="text-nowrap">{{ summaryText }}</span>
-          <Icon
-            name="lucide:chevron-down"
-            size="18"
-            class="shrink-0 text-muted transition-transform"
-            :class="isActive && 'rotate-180'"
-          />
-        </span>
-      </UiTitleCollapse>
+      <UiTitleDropdown :isActive>
+        <span class="text-nowrap">{{ summaryText }}</span>
+      </UiTitleDropdown>
     </template>
 
     <template #custom="{ close, isExpanded }">

@@ -17,20 +17,9 @@ const statDate = inject(statDateKey)!
     @closeModal="statDate.modal.value.dateSelector = false"
   >
     <template #trigger="{ isActive }">
-      <UiTitleCollapse
-        class="text-md grow-0! bg-elevated"
-        isShown
-      >
-        <span class="flex items-center gap-1 text-xs font-medium tracking-normal md:text-base md:font-semibold md:tracking-wide">
-          <StatDateRangeLabel />
-          <Icon
-            name="lucide:chevron-down"
-            size="18"
-            class="shrink-0 text-muted transition-transform"
-            :class="isActive && 'rotate-180'"
-          />
-        </span>
-      </UiTitleCollapse>
+      <UiTitleDropdown :isActive>
+        <StatDateRangeLabel />
+      </UiTitleDropdown>
     </template>
 
     <template #content="{ close }">
