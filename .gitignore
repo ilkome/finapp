@@ -10,6 +10,7 @@ dist
 
 # Node dependencies
 node_modules
+/.pnpm-store/
 
 # Logs
 logs
