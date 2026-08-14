@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
@@ -37,6 +39,17 @@ const trnsFormStore = useTrnsFormStore()
 
 const isPopoverOpen = ref(false)
 
+type UiHeaderInstance = ComponentPublicInstance & {
+  mainElement: HTMLElement | null
+  rootElement: HTMLElement | null
+}
+
+const uiHeader = useTemplateRef<UiHeaderInstance>('uiHeader')
+const stickyMainElement = computed(() => uiHeader.value?.mainElement)
+const stickyRootElement = computed(() => uiHeader.value?.rootElement)
+
+defineExpose({ stickyMainElement, stickyRootElement })
+
 const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
   filter.walletsIds.value,
   walletsStore.sortedIds,
@@ -52,9 +65,11 @@ function onClickWallet(walletId: WalletId) {
 
 <template>
   <UiHeader
+    ref="uiHeader"
     :backSkipPattern="backSkipPattern"
     :backTo="backTo"
     :compactBottom="props.compactBottom"
+    :mobileAfterScrolls="!!props.configWallets && statConfig.config.value.wallets.isShow"
     :sticky="props.sticky"
   >
     <slot name="title" />
@@ -101,7 +116,7 @@ function onClickWallet(walletId: WalletId) {
       v-if="statConfig.config.value.wallets.isShow"
       #after
     >
-      <div class="flex overflow-x-auto p-2 lg:px-4 2xl:px-8">
+      <div class="stat-wallets-scroll flex snap-x snap-mandatory scroll-px-2 overflow-x-auto p-2 lg:scroll-px-4 lg:px-4 2xl:scroll-px-8 2xl:px-8">
         <div class="flex shrink-0 gap-2">
           <WalletsItem
             v-for="walletId in sortedFilterWalletsIds"
@@ -110,6 +125,7 @@ function onClickWallet(walletId: WalletId) {
             :walletId
             :wallet="walletsStore.itemsComputed?.[walletId]!"
             :isShowIcon="statConfig.config.value.wallets.isShowIcon"
+            bodyClass="snap-start snap-always"
             insideClasses="min-h-9.5!"
             compact
             @click="onClickWallet(walletId)"
@@ -119,3 +135,13 @@ function onClickWallet(walletId: WalletId) {
     </template>
   </UiHeader>
 </template>
+
+<style scoped>
+.stat-wallets-scroll {
+  scrollbar-width: none;
+}
+
+.stat-wallets-scroll::-webkit-scrollbar {
+  display: none;
+}
+</style>

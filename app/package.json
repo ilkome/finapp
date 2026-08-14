@@ -49,7 +49,7 @@
     "localforage": "^1.10.0",
     "motion-v": "^2.3.0",
     "pinia": "^4.0.3",
-    "reka-ui": "2.10.3",
+    "reka-ui": "2.10.1",
     "swiper": "^14.1.0",
     "vaul-vue": "^0.4.1",
     "vite": "^8.2.1",

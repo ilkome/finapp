@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
 
-import { useStorage } from '@vueuse/core'
+import { useMediaQuery, useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
@@ -25,8 +25,16 @@ provide(filterKey, filter)
 provide(statDashboardKey, true)
 provide(statStickyNavKey, true)
 
-const statHeader = useTemplateRef<ComponentPublicInstance>('statHeader')
-const statHeaderElement = computed(() => statHeader.value?.$el as HTMLElement | undefined)
+type StatHeaderInstance = ComponentPublicInstance & {
+  stickyMainElement: HTMLElement | null
+  stickyRootElement: HTMLElement | null
+}
+
+const statHeader = useTemplateRef<StatHeaderInstance>('statHeader')
+const isDesktopHeader = useMediaQuery('(min-width: 768px)')
+const statHeaderElement = computed(() => isDesktopHeader.value
+  ? statHeader.value?.stickyRootElement
+  : statHeader.value?.stickyMainElement)
 const { height: statStickyTop } = useElementSize(statHeaderElement)
 provide(statStickyTopKey, statStickyTop)
 
