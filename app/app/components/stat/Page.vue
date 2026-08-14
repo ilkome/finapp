@@ -35,7 +35,9 @@ const isDesktopHeader = useMediaQuery('(min-width: 768px)')
 const statHeaderElement = computed(() => isDesktopHeader.value
   ? statHeader.value?.stickyRootElement
   : statHeader.value?.stickyMainElement)
-const { height: statStickyTop } = useElementSize(statHeaderElement)
+// The sticky offset must include the header padding, otherwise the summary is
+// positioned inside the header and its top edge is clipped beneath it.
+const { height: statStickyTop } = useElementSize(statHeaderElement, undefined, { box: 'border-box' })
 provide(statStickyTopKey, statStickyTop)
 
 const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
