@@ -89,9 +89,6 @@ export default defineNuxtConfig({
     },
   },
 
-  experimental: {
-    ssrStreaming: true,
-  },
   fonts: {
     defaults: {
       subsets: ['cyrillic', 'latin', 'latin-ext'],
@@ -104,7 +101,7 @@ export default defineNuxtConfig({
     ],
   },
   future: {
-    compatibilityVersion: 5,
+    compatibilityVersion: 4,
   },
 
   i18n: {

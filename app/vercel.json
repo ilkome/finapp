@@ -1,7 +1,13 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install",
   "buildCommand": "pnpm --filter app generate",
   "outputDirectory": ".output/public",
   "ignoreCommand": "exit 1",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [
+    {
+      "source": "/:path((?!_nuxt/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
