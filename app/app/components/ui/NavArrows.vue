@@ -1,5 +1,7 @@
 <script setup lang="ts">
-const { isEnd, isShowNavHome, isStart } = defineProps<{
+const { hideInactiveArrows = false, homeMatchesArrows = false, isEnd, isShowNavHome, isStart } = defineProps<{
+  hideInactiveArrows?: boolean
+  homeMatchesArrows?: boolean
   isEnd: boolean
   isShowNavHome: boolean
   isStart: boolean
@@ -13,6 +15,7 @@ const emit = defineEmits<{
 <template>
   <div class="flex items-center gap-1">
     <UiActionButton
+      v-if="!hideInactiveArrows || !isStart"
       :ariaLabel="$t('base.previous')"
       :disabled="isStart"
       class="bg-elevated/30"
@@ -22,6 +25,7 @@ const emit = defineEmits<{
     </UiActionButton>
 
     <UiActionButton
+      v-if="!hideInactiveArrows || !isEnd"
       :ariaLabel="$t('base.next')"
       :disabled="isEnd"
       class="bg-elevated/30"
@@ -33,6 +37,7 @@ const emit = defineEmits<{
     <UiActionButton
       v-if="isShowNavHome"
       :ariaLabel="$t('base.today')"
+      :class="homeMatchesArrows && 'bg-elevated/30'"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />

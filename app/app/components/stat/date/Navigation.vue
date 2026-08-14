@@ -51,35 +51,39 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
 <template>
   <div
-    class="stat-date-navigation flex grow items-center gap-2 overflow-x-auto"
+    class="stat-date-navigation -mx-2 flex grow snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:px-0"
     :class="stickyNav ? 'pt-0' : 'pt-2'"
   >
     <UiNavArrows
       v-if="isShowNav && !statDate.params.value.customDate"
+      class="shrink-0 *:snap-start *:snap-always"
+      hideInactiveArrows
+      homeMatchesArrows
       :isEnd
       :isShowNavHome
       :isStart
       @changeDate="changeDate"
     >
-      <StatDateRangeButton />
+      <StatDateRangeButton class="snap-start snap-always" />
     </UiNavArrows>
 
-    <StatDateRangeButton v-else />
+    <StatDateRangeButton
+      v-else
+      class="shrink-0 snap-start snap-always"
+    />
 
     <slot />
   </div>
 </template>
 
 <style scoped>
-@media (hover: none) and (pointer: coarse) {
-  .stat-date-navigation {
-    scrollbar-width: none;
-  }
+.stat-date-navigation {
+  scrollbar-width: none;
+}
 
-  .stat-date-navigation::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
-  }
+.stat-date-navigation::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
 }
 </style>

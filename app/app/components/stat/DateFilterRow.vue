@@ -6,9 +6,10 @@ const filter = inject(filterKey)!
 
 <template>
   <StatDateNavigation>
-    <FilterButton />
+    <FilterButton class="shrink-0 snap-start snap-always" />
     <FilterSelected
       v-if="filter.isShow.value"
+      class="snap-start snap-always *:snap-start *:snap-always"
       isShowCategories
       isShowWallets
     />
