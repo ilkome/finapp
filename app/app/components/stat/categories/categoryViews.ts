@@ -4,7 +4,7 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { collectCategoriesByTrns, flattenCategoriesWithValues, sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
-import { getStatMetricNow, statDevMetrics } from '~/components/stat/statDevMetrics'
+import { deferStatDevMetricsUpdate, getStatMetricNow, statDevMetrics } from '~/components/stat/statDevMetrics'
 
 export type CategoryViews = {
   grouped: CategoryWithData[]
@@ -52,9 +52,12 @@ export function buildCategoryViews(params: {
   const ungrouped = flattenCategoriesWithValues(collected, params.computeValue)
   const result = { grouped: groupLeafValues(ungrouped, params.categoriesItems), ungrouped }
   if (import.meta.dev) {
-    statDevMetrics.categoryAggregationCount.value++
-    statDevMetrics.categoryAggregationDuration.value = getStatMetricNow() - startedAt
-    statDevMetrics.categoryVisitedIds.value = params.trnsIds.length
+    const duration = getStatMetricNow() - startedAt
+    deferStatDevMetricsUpdate(() => {
+      statDevMetrics.categoryAggregationCount.value++
+      statDevMetrics.categoryAggregationDuration.value = duration
+      statDevMetrics.categoryVisitedIds.value = params.trnsIds.length
+    })
   }
   return result
 }

@@ -5,7 +5,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
-import { statDevMetrics } from '~/components/stat/statDevMetrics'
+import { deferStatDevMetricsUpdate, statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -28,8 +28,11 @@ const stickyNav = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 
 function getSplitTrnsIds(params: Parameters<typeof trnsStore.getStoreTrnsIds>[0]) {
-  if (isDev)
-    statDevMetrics.getStoreTrnsIdsCount.value++
+  if (isDev) {
+    deferStatDevMetricsUpdate(() => {
+      statDevMetrics.getStoreTrnsIdsCount.value++
+    })
+  }
   return trnsStore.getStoreTrnsIds(params)
 }
 

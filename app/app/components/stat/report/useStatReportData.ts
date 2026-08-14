@@ -16,7 +16,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useForecastSeries } from '~/components/recurrences/useForecastSeries'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
-import { getStatMetricNow, statDevMetrics } from '~/components/stat/statDevMetrics'
+import { deferStatDevMetricsUpdate, getStatMetricNow, statDevMetrics } from '~/components/stat/statDevMetrics'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { createTrnMatcher } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -51,9 +51,12 @@ export function buildSortedStatReportSelection(params: {
   }
 
   if (import.meta.dev) {
-    statDevMetrics.reportSelectionCount.value++
-    statDevMetrics.reportSelectionDuration.value = getStatMetricNow() - startedAt
-    statDevMetrics.reportSelectionVisitedIds.value = candidates.length
+    const duration = getStatMetricNow() - startedAt
+    deferStatDevMetricsUpdate(() => {
+      statDevMetrics.reportSelectionCount.value++
+      statDevMetrics.reportSelectionDuration.value = duration
+      statDevMetrics.reportSelectionVisitedIds.value = candidates.length
+    })
   }
   return selected
 }
@@ -126,16 +129,22 @@ export function useStatReportData(params: {
   const rangeTrnsIds = computed(() => {
     if (params.isDateBounded)
       return params.trnsIds.value
-    if (import.meta.dev)
-      statDevMetrics.getStoreTrnsIdsCount.value++
+    if (import.meta.dev) {
+      deferStatDevMetricsUpdate(() => {
+        statDevMetrics.getStoreTrnsIdsCount.value++
+      })
+    }
     return trnsStore.getStoreTrnsIds({ dates: params.statDate.range.value, trnsIds: params.trnsIds.value })
   })
   const hasCategoryFilter = computed(() => params.effectiveFilteredCategoriesIds.value.length > 0)
   const rangeTrnsIdsWithFilteredCategories = computed(() => {
     if (!hasCategoryFilter.value)
       return rangeTrnsIds.value
-    if (import.meta.dev)
-      statDevMetrics.getStoreTrnsIdsCount.value++
+    if (import.meta.dev) {
+      deferStatDevMetricsUpdate(() => {
+        statDevMetrics.getStoreTrnsIdsCount.value++
+      })
+    }
     return trnsStore.getStoreTrnsIds({ categoriesIds: params.effectiveFilteredCategoriesIds.value, trnsIds: rangeTrnsIds.value })
   })
   const statExcludedIds = computed<ReadonlySet<CategoryId> | undefined>(() =>

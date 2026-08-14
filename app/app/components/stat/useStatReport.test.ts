@@ -77,7 +77,7 @@ vi.mock('~/components/trns/useTrnsStore', () => ({
 
 vi.mock('~/components/categories/useCategoriesStore', () => ({
   useCategoriesStore: () => ({
-    getTransactibleIds: (ids: string[]) => ids,
+    getTransactibleIds: (ids: string[]) => ids.flatMap(id => id === 'parent' ? ['cat1'] : [id]),
     items: {},
   }),
 }))
@@ -462,6 +462,15 @@ describe('useStatReport', () => {
       item.onSetChildCategoryFilter('child')
       expect(item.filteredChildCategoryId.value).toBeUndefined()
       expect(item.effectiveFilteredCategoriesIds.value).toEqual(['parent'])
+    })
+
+    it('filters transactions by the transactible children of a quick parent', () => {
+      const item = createStatReport({ trnsIds: ['t1', 't2', 't3'] })
+
+      item.onSetCategoryFilter('parent')
+
+      expect(item.selectedAndFilteredTrnsIds.value).toEqual(['t2', 't1'])
+      expect(item.selectedAndQuickFilteredTrnsIds.value).toEqual(['t2', 't1'])
     })
 
     it('clears the child filter when the quick category changes', () => {

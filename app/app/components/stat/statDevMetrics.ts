@@ -11,6 +11,12 @@ export const statDevMetrics = {
   reportSelectionVisitedIds: shallowRef(0),
 }
 
+export function deferStatDevMetricsUpdate(update: () => void) {
+  // Metric writes can run while a computed value is being evaluated. Deferring
+  // them prevents the measured computation from subscribing to its own counters.
+  queueMicrotask(update)
+}
+
 export function getStatMetricNow() {
   return typeof performance === 'undefined' ? Date.now() : performance.now()
 }
