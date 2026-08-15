@@ -91,7 +91,6 @@ watch(isSearchOpen, async (isOpen) => {
 
           <SearchCommandPalette
             :class="isExpanded === undefined ? 'h-[70dvh] px-2' : 'h-full px-2'"
-            :scrollEnabled="isExpanded !== false"
             @select="onSelect"
           />
         </div>

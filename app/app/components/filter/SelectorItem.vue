@@ -34,10 +34,7 @@ const snapPoints = useSheetSnapPoints()
     <template #custom="{ close, isExpanded }">
       <div
         class="grid grid-rows-[1fr_auto] overflow-hidden"
-        :class="[
-          isExpanded === undefined ? 'h-full max-h-[60dvh]' : 'h-full',
-          { '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': isExpanded === false },
-        ]"
+        :class="isExpanded === undefined ? 'h-full max-h-[60dvh]' : 'h-full'"
       >
         <slot :close="close" />
 

@@ -92,10 +92,9 @@ const tabItems = computed<TabsItem[]>(() => [
 <template>
   <div
     class="grid w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden"
-    :class="[
-      props.isExpanded === undefined ? 'max-h-[85dvh] min-h-[50dvh]' : 'relative h-full [&_.scrollerBlock]:pb-24',
-      { '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': props.isExpanded === false },
-    ]"
+    :class="props.isExpanded === undefined
+      ? 'max-h-[85dvh] min-h-[50dvh]'
+      : 'relative h-full [&_.scrollerBlock]:pb-24'"
   >
     <div class="flex items-center gap-2 px-3 py-2">
       <input

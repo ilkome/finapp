@@ -9,12 +9,9 @@ import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = withDefaults(defineProps<{
+const props = defineProps<{
   class?: string
-  scrollEnabled?: boolean
-}>(), {
-  scrollEnabled: true,
-})
+}>()
 
 const emit = defineEmits<{
   select: [item: SearchResultItem]
@@ -27,7 +24,6 @@ const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
 const showDeleteConfirm = ref<TrnId | null>(null)
-const viewportClass = computed(() => `scrollerBlock overscroll-contain ${props.scrollEnabled ? 'overflow-y-auto' : 'overflow-y-hidden'}`)
 
 function getCategory(item: SearchResultItem) {
   return categoriesStore.items?.[item.entityId]
@@ -118,7 +114,7 @@ function handleDeleteConfirm() {
         },
       }"
       class="h-full min-h-0"
-      :ui="{ viewport: viewportClass }"
+      :ui="{ viewport: 'scrollerBlock overscroll-contain' }"
       @update:modelValue="emit('select', $event)"
     >
       <template #empty="{ searchTerm: currentSearchTerm }">

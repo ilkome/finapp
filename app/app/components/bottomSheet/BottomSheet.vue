@@ -114,6 +114,7 @@ onBeforeUnmount(() => {
 
 const dragClasses = computed(() => [
   {
+    '[&_.scrollerBlock]:touch-none [&_.scrollerBlock]:overflow-hidden': isExpanded.value === false,
     'duration-100': !isDragging.value && opened.value,
     'pointer-events-none': dragMoved.value && dragStyles.value.transform,
     'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
