@@ -1,6 +1,7 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useRecurrencesStore } from '~/components/recurrences/useRecurrencesStore'
+import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -24,6 +25,7 @@ export function useMenuData() {
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const recurrencesStore = useRecurrencesStore()
+  const { isSearchOpen } = useSearch()
   const route = useRoute()
 
   const items = computed<Record<string, MenuItem>>(() => {
@@ -34,6 +36,14 @@ export function useMenuData() {
         tooltip: {
           text: t('trnForm.createTrn'),
           kbds: ['meta', 'G'],
+        },
+      },
+      search: {
+        icon: 'lucide:search',
+        name: t('search.title'),
+        tooltip: {
+          text: t('search.title'),
+          kbds: ['meta', 'K'],
         },
       },
       dashboard: {
@@ -94,7 +104,7 @@ export function useMenuData() {
     name: t('base.menu'),
   }))
 
-  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'dashboard'])
+  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'search', 'dashboard'])
   const itemsModal = computed<Record<string, MenuItem>>(() =>
     Object.fromEntries(
       Object.entries(items.value).filter(([key]) => !bottomKeys.has(key)),
@@ -116,6 +126,11 @@ export function useMenuData() {
       else if (walletsStore.hasItems && categoriesStore.hasItems) {
         trnsFormStore.openFormForCreate()
       }
+      return
+    }
+
+    if (menuId === 'search') {
+      isSearchOpen.value = true
       return
     }
 

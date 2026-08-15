@@ -11,7 +11,20 @@ test('search opens empty with a focused input', async ({ context, page }) => {
   await page.getByRole('button', { name: T.startDemo }).click()
   await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
 
-  await page.getByRole('button', { name: /^(Search|Поиск)$/ }).first().click()
+  const header = page.locator('[data-ui-header-main]')
+  await expect(header.getByRole('button', { name: /^(Search|Поиск)$/ })).toHaveCount(0)
+
+  const sidebar = page.locator('aside')
+  const createTransaction = sidebar.getByText(/Add transaction|Создать транзакцию/, { exact: true })
+  const search = sidebar.getByText(/^(Search|Поиск)$/, { exact: true })
+  await expect(createTransaction).toBeVisible()
+  await expect(search).toBeVisible()
+  const createTransactionBox = await createTransaction.boundingBox()
+  const searchBox = await search.boundingBox()
+  expect(createTransactionBox).not.toBeNull()
+  expect(searchBox).not.toBeNull()
+  expect(searchBox!.y).toBeGreaterThan(createTransactionBox!.y)
+  await search.click()
 
   const palette = page.locator('[data-search-command-palette]')
   const input = palette.locator('input')

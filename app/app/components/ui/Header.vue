@@ -69,7 +69,7 @@ function onBack() {
             v-if="!hideSearch"
             :text="$t('search.title')"
             :kbds="['meta', 'K']"
-            class="hidden sm:flex"
+            class="hidden sm:flex md:hidden"
           >
             <UiActionButton
               :ariaLabel="$t('search.title')"
