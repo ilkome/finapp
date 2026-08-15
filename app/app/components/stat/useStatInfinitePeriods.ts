@@ -6,6 +6,7 @@ import type { StatReportContext } from '~/components/stat/useStatReportContext'
 import type { TrnId } from '~/components/trns/types'
 
 import { computeDateRange } from '~/components/stat/date/params'
+import { deferStatDevMetricsUpdate } from '~/components/stat/statDevMetrics'
 import { buildStatFeedIndex, buildStatVirtualRows, canApplyStatLoadResult, findStatPeriodOffsetForDate, mergeStatOffsets, resolveStatScrollRangeOffset } from '~/components/stat/statFeed'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -77,9 +78,14 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
       searchedThroughOffset: searchedThroughOffset.value,
     })
     if (import.meta.dev) {
-      indexBuildCount.value = ++indexBuildSequence
-      indexBuildDuration.value = now() - startedAt
-      indexVisitedIds.value = result.metrics.visitedIds
+      const buildCount = ++indexBuildSequence
+      const duration = now() - startedAt
+      const visitedIds = result.metrics.visitedIds
+      deferStatDevMetricsUpdate(() => {
+        indexBuildCount.value = buildCount
+        indexBuildDuration.value = duration
+        indexVisitedIds.value = visitedIds
+      })
     }
     return result
   })
@@ -104,8 +110,12 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
     const startedAt = now()
     const result = buildStatVirtualRows(periods.value, trnsStore.items, canLoadMore.value)
     if (import.meta.dev) {
-      rowBuildCount.value = ++rowBuildSequence
-      rowBuildDuration.value = now() - startedAt
+      const buildCount = ++rowBuildSequence
+      const duration = now() - startedAt
+      deferStatDevMetricsUpdate(() => {
+        rowBuildCount.value = buildCount
+        rowBuildDuration.value = duration
+      })
     }
     return result
   })

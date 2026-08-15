@@ -56,6 +56,9 @@ const stickyBottom = shallowRef(0)
 const isFillingViewport = shallowRef(false)
 const isReconciling = shallowRef(false)
 const transactionsCount = computed(() => infinite.rows.value.filter(row => row.type === 'transaction').length)
+const pendingRowMeasurements = new Set<Element>()
+let rowMeasurementFrame: number | null = null
+let shouldCleanRowMeasurements = false
 
 function estimateRowHeight(index: number) {
   const row = infinite.rows.value[index]
@@ -121,11 +124,32 @@ function rowAt(index: number): StatVirtualRow {
 function rowOffset(row: StatVirtualRow) {
   return 'offset' in row ? row.offset : undefined
 }
+function flushRowMeasurements() {
+  rowMeasurementFrame = null
+  if (shouldCleanRowMeasurements) {
+    virtualizer.value.measureElement(null)
+    shouldCleanRowMeasurements = false
+  }
+  for (const element of pendingRowMeasurements) {
+    if (element.isConnected)
+      virtualizer.value.measureElement(element)
+  }
+  pendingRowMeasurements.clear()
+}
 function measureRow(target: Element | ComponentPublicInstance | null) {
   const element = target && '$el' in target ? target.$el : target
   if (element instanceof Element)
-    virtualizer.value.measureElement(element)
+    pendingRowMeasurements.add(element)
+  else
+    shouldCleanRowMeasurements = true
+  if (rowMeasurementFrame === null)
+    rowMeasurementFrame = requestAnimationFrame(flushRowMeasurements)
 }
+onBeforeUnmount(() => {
+  if (rowMeasurementFrame !== null)
+    cancelAnimationFrame(rowMeasurementFrame)
+  pendingRowMeasurements.clear()
+})
 </script>
 
 <template>
