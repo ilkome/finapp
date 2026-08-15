@@ -49,6 +49,7 @@ function getChildrenIds(categoryId: CategoryId) {
         :isShowChevron="!!props.expanded && categoriesStore.hasChildren(categoryId)"
         :to="props.getTo?.(categoryId)"
         v-bind="categoriesItemProps"
+        :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
         :class="`group ${props.expanded?.isExpanded(categoryId) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
         @click="emit('click', categoryId)"
         @toggle="props.expanded?.toggle(categoryId)"
@@ -71,8 +72,8 @@ function getChildrenIds(categoryId: CategoryId) {
                 :contextMenuItems="props.getContextMenuItems?.(childId)"
                 :insideClasses="props.insideClasses"
                 :to="props.getTo?.(childId)"
-                :lineWidth="1"
                 v-bind="categoriesItemProps"
+                :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
                 class="group"
                 @click="emit('click', childId)"
               />

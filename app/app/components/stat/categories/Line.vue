@@ -74,7 +74,7 @@ function onAmountClick(e: MouseEvent) {
     <UiElement
       :isActive="props.isActive"
       :lineWidth="props.lineWidth"
-      class="relative"
+      class="relative [&_.uiElementLine]:block!"
       insideClasses="min-h-11!"
     >
       <template #line>

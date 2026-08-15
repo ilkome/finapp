@@ -28,7 +28,6 @@ const statConfig = inject(statConfigKey)!
 const catsList = computed(() => statConfig.config.value.categories.list)
 const isListShow = computed(() => catsList.value.isShow)
 const isListGrouped = computed(() => catsList.value.isGrouped)
-const isLines = computed(() => catsList.value.isLines)
 const isFocused = computed(() => props.focusedCategories !== undefined)
 
 const linesCategories = computed<CategoryWithData[]>(() => isListGrouped.value ? props.groupedCategories : props.ungroupedCategories)
@@ -111,7 +110,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           :isShowParent="false"
           :item="item"
           :maxCategoryValues="childrenMaxValues"
-          :lineWidth="isLines ? 0 : 1"
+          :lineWidth="1"
           class="group"
           @click="emit('setFocusedCategoryFilter', item.id)"
           @amountClick="emit('setFocusedCategoryFilter', item.id)"
@@ -130,7 +129,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           :isExpanded="isExpanded(item.id)"
           isShowChevron
           :maxCategoryValues="linesMaxValues"
-          :lineWidth="isLines ? 0 : 1"
+          :lineWidth="1"
           :class="`group ${isExpanded(item.id) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
           @click="onParentClick(item)"
           @amountClick="emit('clickCategory', item.id)"
@@ -149,7 +148,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
                 :isShowParent="!isListGrouped"
                 :item="itemInside"
                 :maxCategoryValues="childrenMaxValues"
-                :lineWidth="isLines ? 0 : 1"
+                :lineWidth="1"
                 class="group"
                 @click="emit('clickCategory', itemInside.id)"
                 @amountClick="emit('clickCategory', itemInside.id)"
