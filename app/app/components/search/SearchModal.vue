@@ -9,7 +9,7 @@ const { isSearchOpen, searchTerm } = useSearch()
 const trnsFormStore = useTrnsFormStore()
 
 const isDesktop = useIsLaptop()
-const snapPoints = useSheetSnapPoints()
+const snapPoints = useSheetSnapPoints(0.42)
 const hasSearch = computed(() => !!searchTerm.value.trim())
 
 function onSelect(item: SearchResultItem) {

@@ -289,7 +289,9 @@ export function useBottomSheetDrag({
       // Never hijack a tap on an interactive control (e.g. the Apply button in
       // the sheet footer, which sits outside the scroller so `hasScroll` can't
       // guard it). Engaging the drag here swallows the control's first click.
-      if (!isHandler.value && event.target.closest(INTERACTIVE_SELECTOR)) {
+      const interactiveTarget = event.target.closest(INTERACTIVE_SELECTOR)
+      const isListOption = interactiveTarget?.getAttribute('role') === 'option'
+      if (!isHandler.value && interactiveTarget && !isListOption) {
         isDragging.value = false
         return
       }
@@ -453,9 +455,11 @@ export function useBottomSheetDrag({
       return
 
     const stops = [
-      useEventListener(containerRef, 'touchstart', onDragStart),
-      useEventListener(containerRef, 'touchmove', onDragging),
-      useEventListener(containerRef, 'touchend', onDragEnd),
+      // Context-menu triggers may stop bubbling touch events during long-press
+      // detection, so the sheet observes the gesture before child components.
+      useEventListener(containerRef, 'touchstart', onDragStart, { capture: true }),
+      useEventListener(containerRef, 'touchmove', onDragging, { capture: true }),
+      useEventListener(containerRef, 'touchend', onDragEnd, { capture: true }),
       useEventListener(containerRef, 'mousedown', onDragStart),
       useEventListener(containerRef, 'mouseup', onDragEnd),
       useEventListener(document, 'mousemove', onDragging),

@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test'
+import { devices, expect, test } from '@playwright/test'
 
 const T = {
   searchPrompt: /Search categories, wallets, transactions|Поиск категорий, кошельков, транзакций/,
@@ -44,4 +44,61 @@ test('search opens empty with a focused input', async ({ context, page }) => {
   await expect(editMenuItem).toBeVisible()
   await editMenuItem.dispatchEvent('click')
   await expect(page.locator('.trnForm')).toBeVisible()
+})
+
+test.describe('mobile search sheet', () => {
+  const mobile = devices['iPhone 13']
+  test.use({
+    deviceScaleFactor: mobile.deviceScaleFactor,
+    hasTouch: mobile.hasTouch,
+    isMobile: mobile.isMobile,
+    userAgent: mobile.userAgent,
+    viewport: mobile.viewport,
+  })
+
+  test('opens compact and closes from a transaction drag', async ({ context, page }) => {
+    await context.clearCookies()
+    await page.goto('/login', { waitUntil: 'domcontentloaded' })
+    await page.getByRole('button', { name: T.startDemo }).click()
+    await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
+
+    const bottomNavigation = page.locator('.fixed.bottom-0.left-0.z-20')
+    await bottomNavigation.locator('.mx-auto > div').last().click()
+    const menuSheet = page.locator('.drag').last()
+    await menuSheet.getByText(/^(Search|Поиск)$/).click()
+
+    const palette = page.locator('[data-search-command-palette]')
+    const sheet = page.locator('.drag').filter({ has: palette })
+    await expect(palette).toBeVisible()
+    await expect.poll(async () => (await sheet.boundingBox())?.y ?? 0)
+      .toBeGreaterThan(mobile.viewport.height * 0.5)
+
+    await palette.locator('input').fill('Oil change')
+    const viewport = palette.locator('.scrollerBlock')
+    await expect.poll(async () => (await sheet.boundingBox())?.y ?? 1000).toBeLessThan(40)
+    await viewport.evaluate((el) => {
+      el.scrollTop = 0
+    })
+
+    const historyGroup = palette.getByRole('group').filter({ hasText: /History|История/ })
+    const transaction = historyGroup.getByRole('option').first()
+    const transactionContent = transaction.locator('div').first()
+    const box = await transactionContent.boundingBox()
+    expect(box).not.toBeNull()
+    const clientX = box!.x + box!.width / 2
+    const startY = box!.y + box!.height / 2
+
+    await transactionContent.dispatchEvent('touchstart', {
+      touches: [{ clientX, clientY: startY, identifier: 1 }],
+    })
+    await transactionContent.dispatchEvent('touchmove', {
+      touches: [{ clientX, clientY: startY + 120, identifier: 1 }],
+    })
+    await transactionContent.dispatchEvent('touchend', {
+      changedTouches: [{ clientX, clientY: startY + 120, identifier: 1 }],
+      touches: [],
+    })
+
+    await expect(palette).toHaveCount(0)
+  })
 })
