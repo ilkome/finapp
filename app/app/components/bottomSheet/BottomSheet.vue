@@ -8,6 +8,7 @@ import { useBottomSheetDrag } from './useBottomSheetDrag'
 const props = defineProps<{
   dragClassesCustom?: string
   dragStyle?: Record<string, string>
+  isExpanded?: boolean
   isShow?: boolean
   // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
   // largest is the expanded/rendered height, the rest are collapsed detents.
@@ -49,6 +50,7 @@ const {
   drag,
   dragStyle: toRef(() => props.dragStyle),
   emit,
+  expanded: toRef(() => props.isExpanded),
   handlerRef,
   settings,
   snapPoints: toRef(() => props.snapPoints),

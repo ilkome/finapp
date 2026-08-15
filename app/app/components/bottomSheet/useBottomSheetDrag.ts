@@ -10,6 +10,7 @@ type UseBottomSheetDragParams = {
   drag: Ref<HTMLElement | null>
   dragStyle: Ref<Record<string, string> | undefined>
   emit: (event: 'closed') => void
+  expanded: Ref<boolean | undefined>
   handlerRef: Ref<HTMLElement | null>
   settings: {
     pixelOffsetToStartClosing: number
@@ -64,6 +65,7 @@ export function useBottomSheetDrag({
   drag,
   dragStyle,
   emit,
+  expanded,
   handlerRef,
   settings,
   snapPoints,
@@ -492,6 +494,11 @@ export function useBottomSheetDrag({
       setTimeout(open, INIT_DELAY_MS)
     }, INIT_DELAY_MS)
   }
+
+  watch(expanded, (value) => {
+    if (value && detentMode.value && opened.value)
+      snapToFraction(expandedFraction.value)
+  })
 
   return {
     close,

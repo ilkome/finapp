@@ -452,7 +452,8 @@ export default {
 
   search: {
     noResults: 'Nothing found',
-    placeholder: 'Search categories, wallets, transactions...',
+    placeholder: 'Search...',
+    start: 'Search categories, wallets, transactions...',
     title: 'Search',
   },
 
