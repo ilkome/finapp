@@ -10,6 +10,7 @@ import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { useForecastMode } from '~/components/recurrences/useForecastMode'
+import { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import { useStatReportChart } from '~/components/stat/report/useStatReportChart'
 import { useStatReportData } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
@@ -46,8 +47,11 @@ export function useStatReport(params: UseStatReportParams) {
     ? [filteredChildCategoryId.value]
     : filteredCategoriesIds.value)
 
+  const chartWindow = useStatChartWindow({ statDate: params.statDate })
+
   const data = useStatReportData({
     applyStatsExclusion: params.applyStatsExclusion,
+    chartIntervals: chartWindow.bufferIntervals,
     effectiveFilteredCategoriesIds,
     filter: params.filter,
     filteredCategoriesIds,
@@ -89,6 +93,7 @@ export function useStatReport(params: UseStatReportParams) {
   return {
     averageTotal: data.averageTotal,
     chartSeries: chart.chartSeries,
+    chartWindow,
     chartXAxisLabels: chart.chartXAxisLabels,
     effectiveFilteredCategoriesIds,
     filteredCategoriesIds,

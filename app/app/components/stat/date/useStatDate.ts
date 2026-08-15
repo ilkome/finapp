@@ -153,13 +153,41 @@ export function useStatDate({
     return nextRange.end <= latestRange.end
   }
 
-  function panRange(direction: StatRangePanDirection) {
-    if (!canPanRange(direction))
+  function setRangePanOffset(nextOffset: number) {
+    if (params.value.isShowMaxRange || !Number.isInteger(nextOffset))
+      return false
+
+    const currentOffset = params.value.rangePanOffset
+    if (nextOffset === currentOffset)
+      return false
+
+    const direction = nextOffset > currentOffset ? 1 : -1
+    const latestRange = rangeFor({
+      ...params.value,
+      rangeOffset: 0,
+      rangePanOffset: 0,
+    })
+    let acceptedOffset = currentOffset
+    for (let candidate = currentOffset + direction; direction > 0 ? candidate <= nextOffset : candidate >= nextOffset; candidate += direction) {
+      const candidateRange = rangeFor({ ...params.value, rangePanOffset: candidate })
+      const isValid = direction > 0
+        ? candidateRange.start >= maxRange.value.start
+        : candidateRange.end <= latestRange.end
+      if (!isValid)
+        break
+      acceptedOffset = candidate
+    }
+
+    if (acceptedOffset === currentOffset)
       return false
     clearScrollRangeOffset()
     params.value.intervalSelected = -1
-    params.value.rangePanOffset += direction === 'past' ? 1 : -1
+    params.value.rangePanOffset = acceptedOffset
     return true
+  }
+
+  function panRange(direction: StatRangePanDirection) {
+    return setRangePanOffset(params.value.rangePanOffset + (direction === 'past' ? 1 : -1))
   }
 
   function goHome() {
@@ -314,6 +342,7 @@ export function useStatDate({
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,
+    setRangePanOffset,
     setScrollRangeOffset,
     stepInterval,
     stepRange,

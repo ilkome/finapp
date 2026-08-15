@@ -36,16 +36,12 @@ function getSplitTrnsIds(params: Parameters<typeof trnsStore.getStoreTrnsIds>[0]
   return trnsStore.getStoreTrnsIds(params)
 }
 
-const datedTrnsIds = computed(() => getSplitTrnsIds({
-  dates: statDate.range.value,
-  trnsIds: props.trnsIds,
-}))
 const expenseTrnsIds = computed(() => getSplitTrnsIds({
-  trnsIds: datedTrnsIds.value,
+  trnsIds: props.trnsIds,
   trnsTypes: [TrnType.Expense],
 }))
 const incomeTrnsIds = computed(() => getSplitTrnsIds({
-  trnsIds: datedTrnsIds.value,
+  trnsIds: props.trnsIds,
   trnsTypes: [TrnType.Income],
 }))
 
@@ -54,7 +50,7 @@ const commonParams = {
   categoryId: computed(() => props.categoryId),
   filter,
   hasChildren: computed(() => props.hasChildren),
-  isDateBounded: true,
+  isDateBounded: false,
   preCategoriesIds: computed(() => props.preCategoriesIds),
   statConfig,
   statDate,

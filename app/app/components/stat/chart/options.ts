@@ -1,4 +1,4 @@
-import type { GridComponentOption } from 'echarts'
+import type { GridComponentOption, InsideDataZoomComponentOption } from 'echarts'
 import type { BarSeriesOption, LineSeriesOption } from 'echarts/charts'
 import type { TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption } from 'echarts/core'
@@ -13,6 +13,7 @@ import { formatChartAmount, formatCompactChartAmount } from '~/components/stat/c
 type EChartsOption = ComposeOption<
   | TooltipComponentOption
   | GridComponentOption
+  | InsideDataZoomComponentOption
 >
 
 type SeriesOption = (BarSeriesOption | LineSeriesOption) & {
@@ -33,6 +34,8 @@ export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
 }
 
 export const baseOption: EChartsOption['baseOption'] = {
+  animation: false,
+
   grid: {
     bottom: '0',
     containLabel: true,
@@ -48,6 +51,7 @@ export const baseOption: EChartsOption['baseOption'] = {
     },
     backgroundColor: 'transparent',
     borderWidth: 0,
+    confine: true,
     padding: 0,
     trigger: 'axis',
   },
@@ -105,6 +109,17 @@ export const baseOption: EChartsOption['baseOption'] = {
     },
     type: 'value',
   },
+}
+
+export function filterChartTooltipParams<T extends { value: unknown }>(params: T[]): Array<T & { value: number }> {
+  return params.filter((param): param is T & { value: number } => typeof param.value === 'number' && Number.isFinite(param.value) && param.value !== 0)
+}
+
+export function resolveChartTooltipPosition(
+  point: [number, number],
+  viewSize: [number, number],
+): [number, number] {
+  return [point[0] > viewSize[0] / 2 ? 0 : viewSize[0] / 2, 0]
 }
 
 export const defaultSeriesConfig = {

@@ -65,8 +65,8 @@ export function useStatReportChart(params: {
   }
 
   const chartSeries = computed<ChartSeries[]>(() => {
-    const intervals = params.data.effectiveIntervals.value
-    const selectedInterval = intervals[params.statDate.params.value.intervalSelected]
+    const intervals = params.data.chartEffectiveIntervals.value
+    const selectedInterval = params.data.effectiveIntervals.value[params.statDate.params.value.intervalSelected]
     const chartType = params.statConfig.config.value.chart.type
     let series: ChartSeries[]
 
@@ -74,20 +74,20 @@ export function useStatReportChart(params: {
       series = buildCategoriesSeries({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
-        computeTotalForTrnsIds: params.data.effectiveComputeTotal.value,
+        computeTotalForTrnsIds: params.data.chartEffectiveComputeTotal.value,
         excludedCategoriesIds: params.data.statExcludedIds.value,
         filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
         intervals,
         isGrouped: categoryBreakdownFilter.value.isGrouped,
         otherName: t('stat.config.chart.other'),
-        trnsItems: params.data.effectiveItems.value,
+        trnsItems: params.data.chartEffectiveItems.value,
         type: categoriesBreakdownType.value,
       })
     }
     else if (params.forecastMode.value === 'separate') {
-      const actualIntervals = params.data.intervalsDataWithFilteredCategories.value
+      const actualIntervals = params.data.chartIntervalsDataWithFilteredCategories.value
       const actualTotals = actualIntervals.map(interval => interval.total)
-      const forecastTotals = params.data.forecast.forecastIntervalsData.value.map(interval => interval.total)
+      const forecastTotals = params.data.chartForecast.forecastIntervalsData.value.map(interval => interval.total)
       series = params.data.typesToShow.value.flatMap(typeSlug => [
         createSeriesItem(typeSlug, actualTotals, computeSeriesAverage(typeSlug, actualIntervals)),
         makeForecastSeries(typeSlug, forecastTotals),
@@ -105,7 +105,7 @@ export function useStatReportChart(params: {
       : series
   })
   const chartXAxisLabels = computed(() =>
-    params.data.intervalsDataWithFilteredCategories.value.map(interval => interval.range.start),
+    params.data.chartIntervalsDataWithFilteredCategories.value.map(interval => interval.range.start),
   )
   function buildCategoryPieData(type: 'expense' | 'income') {
     const intervals = params.data.isIntervalSelected.value

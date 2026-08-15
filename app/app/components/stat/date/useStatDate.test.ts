@@ -288,6 +288,35 @@ describe('range panning', () => {
     statDate.plusRange()
     expect(statDate.params.value.rangePanOffset).toBe(0)
   })
+
+  it('commits a multi-bucket pan atomically and clamps it to history', () => {
+    const statDate = createStatDate({
+      granularityBy: 'month',
+      granularityDuration: 1,
+      intervalSelected: 3,
+      rangeBy: 'year',
+      rangeDuration: 1,
+      rangeOffset: 0,
+    })
+    statDate.setScrollRangeOffset(2)
+
+    expect(statDate.setRangePanOffset(5)).toBe(true)
+    expect(statDate.params.value.rangePanOffset).toBe(5)
+    expect(statDate.params.value.intervalSelected).toBe(-1)
+    expect(statDate.scrollRangeOffset.value).toBeNull()
+
+    expect(statDate.setRangePanOffset(10_000)).toBe(true)
+    expect(statDate.range.value.start).toBeGreaterThanOrEqual(statDate.maxRange.value.start)
+  })
+
+  it('does not pan beyond the latest range or in maximum-history mode', () => {
+    const statDate = createStatDate()
+    expect(statDate.setRangePanOffset(-1)).toBe(false)
+    expect(statDate.params.value.rangePanOffset).toBe(0)
+
+    statDate.params.value.isShowMaxRange = true
+    expect(statDate.setRangePanOffset(1)).toBe(false)
+  })
 })
 
 describe('stale persisted payload (pre granularityBy rename)', () => {

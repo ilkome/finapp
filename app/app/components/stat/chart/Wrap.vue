@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
+import type { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
+  chartWindow: ReturnType<typeof useStatChartWindow>
   series: ChartSeries[]
   xAxisLabels: number[]
 }>()
@@ -22,8 +24,8 @@ const chartView = computed(() => statConfig.config.value.chart.view)
 const chartType = computed(() => statConfig.config.value.chart.type)
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
-function onClickChart(idx: number) {
-  const day = statDate.selectInterval(idx)
+async function onClickChart(intervalKey: number) {
+  const day = await props.chartWindow.selectIntervalByKey(intervalKey)
   if (day)
     trnsFormStore.values.date = day
 }
@@ -31,9 +33,6 @@ function onClickChart(idx: number) {
 function onChangePeriod(period: Period) {
   statDate.setGranularityBy(period)
 }
-
-const canPanPast = computed(() => statDate.canPanRange('past'))
-const canPanFuture = computed(() => statDate.canPanRange('future'))
 </script>
 
 <template>
@@ -63,14 +62,18 @@ const canPanFuture = computed(() => statDate.canPanRange('future'))
       <LazyStatChartAxisView
         v-if="isChartMountReady"
         :chartType
-        :canPanFuture
-        :canPanPast
+        :bufferSize="props.chartWindow.bufferIntervals.value.length"
+        :commitCount="props.chartWindow.commitCount.value"
+        :endValue="props.chartWindow.endValue.value"
+        :isPannable="props.chartWindow.isEnabled.value"
         :panOffset="statDate.params.value.rangePanOffset"
         :period="statDate.params.value.granularityBy"
         :series="props.series"
+        :startValue="props.chartWindow.startValue.value"
         :xAxisLabels="props.xAxisLabels"
         @click="onClickChart"
-        @pan="statDate.panRange"
+        @preview="props.chartWindow.onPreview"
+        @previewEnd="props.chartWindow.commitPreview()"
       />
     </div>
   </div>

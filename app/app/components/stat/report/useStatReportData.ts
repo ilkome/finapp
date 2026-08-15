@@ -1,4 +1,5 @@
 import type { ComputedRef, Ref } from 'vue'
+import type { Range } from '~~/utils/date/types'
 
 import { differenceInDays } from 'date-fns'
 
@@ -97,6 +98,7 @@ export function buildStatReportSelection(params: {
 
 export function useStatReportData(params: {
   applyStatsExclusion?: ComputedRef<boolean>
+  chartIntervals: ComputedRef<Range[]>
   effectiveFilteredCategoriesIds: ComputedRef<CategoryId[]>
   filter: FilterProvider
   filteredCategoriesIds: Ref<CategoryId[]>
@@ -118,6 +120,15 @@ export function useStatReportData(params: {
     filter: params.filter,
     intervals: computed(() => params.statDate.intervalsInRange.value),
     range: computed(() => params.statDate.range.value),
+  })
+  const chartRange = computed<Range>(() => ({
+    end: params.chartIntervals.value.at(-1)?.end ?? params.statDate.range.value.end,
+    start: params.chartIntervals.value[0]?.start ?? params.statDate.range.value.start,
+  }))
+  const chartForecast = useForecastSeries({
+    filter: params.filter,
+    intervals: params.chartIntervals,
+    range: chartRange,
   })
 
   const selectedType = computed(() => getSelectedType(params.statTab.value, params.filteredType.value, params.type.value))
@@ -179,18 +190,41 @@ export function useStatReportData(params: {
       )
     : intervalsData.value)
 
-  const mergedItems = computed<Record<TrnId, TrnItem>>(() => isForecastOn.value
-    ? { ...(trnsStore.items ?? {}), ...forecast.forecastItems.value }
-    : (trnsStore.items ?? {}))
-  function computeTotalMerged(ids?: TrnId[]): TotalReturns {
-    return getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      rates: currenciesStore.rates,
-      trnsIds: ids,
-      trnsItems: mergedItems.value,
-      walletsItems: walletsStore.items ?? {},
-    })
-  }
+  const chartRangeTrnsIds = computed(() => {
+    if (params.isDateBounded)
+      return params.trnsIds.value
+    if (import.meta.dev) {
+      deferStatDevMetricsUpdate(() => {
+        statDevMetrics.getStoreTrnsIdsCount.value++
+      })
+    }
+    return trnsStore.getStoreTrnsIds({ dates: chartRange.value, trnsIds: params.trnsIds.value })
+  })
+  const chartRangeTrnsIdsWithFilteredCategories = computed(() => {
+    if (!hasCategoryFilter.value)
+      return chartRangeTrnsIds.value
+    if (import.meta.dev) {
+      deferStatDevMetricsUpdate(() => {
+        statDevMetrics.getStoreTrnsIdsCount.value++
+      })
+    }
+    return trnsStore.getStoreTrnsIds({ categoriesIds: params.effectiveFilteredCategoriesIds.value, trnsIds: chartRangeTrnsIds.value })
+  })
+  const chartIntervalsData = computed(() => bucketTrnsByIntervals(
+    trnsStore.items ?? {},
+    chartRangeTrnsIds.value,
+    params.chartIntervals.value,
+    computeTotalForStat,
+  ))
+  const chartIntervalsDataWithFilteredCategories = computed(() => hasCategoryFilter.value
+    ? bucketTrnsByIntervals(
+        trnsStore.items ?? {},
+        chartRangeTrnsIdsWithFilteredCategories.value,
+        params.chartIntervals.value,
+        computeTotalForTrnsIds,
+      )
+    : chartIntervalsData.value)
+
   const mergedIntervalsData = computed<IntervalData[]>(() => {
     const actual = intervalsDataWithFilteredCategories.value
     if (!isForecastOn.value)
@@ -203,8 +237,32 @@ export function useStatReportData(params: {
     })
   })
   const effectiveIntervals = computed(() => isForecastOn.value ? mergedIntervalsData.value : intervalsDataWithFilteredCategories.value)
-  const effectiveItems = computed(() => isForecastOn.value ? mergedItems.value : (trnsStore.items ?? {}))
-  const effectiveComputeTotal = computed(() => isForecastOn.value ? computeTotalMerged : computeTotalForTrnsIds)
+  const chartMergedItems = computed<Record<TrnId, TrnItem>>(() => isForecastOn.value
+    ? { ...(trnsStore.items ?? {}), ...chartForecast.forecastItems.value }
+    : (trnsStore.items ?? {}))
+  function computeChartTotalMerged(ids?: TrnId[]): TotalReturns {
+    return getTotal({
+      baseCurrencyCode: currenciesStore.base,
+      rates: currenciesStore.rates,
+      trnsIds: ids,
+      trnsItems: chartMergedItems.value,
+      walletsItems: walletsStore.items ?? {},
+    })
+  }
+  const chartMergedIntervalsData = computed<IntervalData[]>(() => {
+    const actual = chartIntervalsDataWithFilteredCategories.value
+    if (!isForecastOn.value)
+      return actual
+    return actual.map((item, index) => {
+      const forecastItem = chartForecast.forecastIntervalsData.value[index]
+      return forecastItem
+        ? { range: item.range, total: addTotals(item.total, forecastItem.total), trnsIds: [...item.trnsIds, ...forecastItem.trnsIds] }
+        : item
+    })
+  })
+  const chartEffectiveIntervals = computed(() => isForecastOn.value ? chartMergedIntervalsData.value : chartIntervalsDataWithFilteredCategories.value)
+  const chartEffectiveItems = computed(() => isForecastOn.value ? chartMergedItems.value : (trnsStore.items ?? {}))
+  const chartEffectiveComputeTotal = computed(() => isForecastOn.value ? computeChartTotalMerged : computeTotalForTrnsIds)
   const forecastRangeTotal = computed<TotalReturns | undefined>(() => {
     if (!isForecastOn.value)
       return undefined
@@ -246,10 +304,13 @@ export function useStatReportData(params: {
 
   return {
     averageTotal,
+    chartEffectiveComputeTotal,
+    chartEffectiveIntervals,
+    chartEffectiveItems,
+    chartForecast,
+    chartIntervalsDataWithFilteredCategories,
     computeTotalForTrnsIds,
-    effectiveComputeTotal,
     effectiveIntervals,
-    effectiveItems,
     forecast,
     forecastRangeTotal,
     intervalsDataWithFilteredCategories,
