@@ -19,6 +19,12 @@ describe('isShowNav', () => {
     expect(isShowNav(params, range, range, now)).toBe(false)
   })
 
+  it('is true when an interval is selected in the maximum range', () => {
+    const params: StatDateParams = { ...base, intervalSelected: 2, isShowMaxRange: true }
+    const range: Range = { end: now.getTime(), start: now.getTime() - 1 }
+    expect(isShowNav(params, range, range, now)).toBe(true)
+  })
+
   it('is true when range.start is in the past', () => {
     const range: Range = { end: now.getTime(), start: now.getTime() - 1000 }
     const maxRange = range

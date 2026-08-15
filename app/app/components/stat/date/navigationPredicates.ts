@@ -10,9 +10,10 @@ function isSinglePastDay(by: Period, duration: number, range: Range, now: Date):
 }
 
 export function isShowNav(params: StatDateParams, range: Range, maxRange: Range, now: Date): boolean {
-  return !params.isShowMaxRange
-    && (range.start < now.getTime()
-      || (range.start !== maxRange.start && range.end !== maxRange.end))
+  return params.intervalSelected !== -1
+    || (!params.isShowMaxRange
+      && (range.start < now.getTime()
+        || (range.start !== maxRange.start && range.end !== maxRange.end)))
 }
 
 export function isLatestSelectedInterval(
