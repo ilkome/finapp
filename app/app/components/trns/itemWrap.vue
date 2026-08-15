@@ -35,7 +35,7 @@ const contextMenuItems = computed(() => [[
   {
     icon: 'lucide:copy',
     label: t('base.duplicate'),
-    onSelect: () => openFormForDuplicate(props.trnId),
+    onSelect: () => duplicate(),
   },
 ], [
   {
@@ -46,9 +46,16 @@ const contextMenuItems = computed(() => [[
   },
 ]])
 
-function click() {
+async function click() {
   emit('click')
+  await nextTick()
   openFormForEdit(props.trnId)
+}
+
+async function duplicate() {
+  emit('click')
+  await nextTick()
+  openFormForDuplicate(props.trnId)
 }
 
 function handleDeleteConfirm() {

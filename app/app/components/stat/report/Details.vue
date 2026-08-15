@@ -149,6 +149,7 @@ onBeforeUnmount(() => {
         isShowFilterByType
         isShowIncome
         isShowTransfers
+        @click="ctx.closeModal"
       />
     </div>
   </BottomSheetModal>
