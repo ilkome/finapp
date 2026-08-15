@@ -88,6 +88,7 @@ test.describe('mobile search sheet', () => {
 
     await palette.locator('input').fill('Oil change')
     const viewport = palette.locator('.scrollerBlock')
+    await expect(viewport).toHaveCSS('overflow-y', 'hidden')
     await expect.poll(async () => (await sheet.boundingBox())?.y ?? 0)
       .toBeGreaterThan(mobile.viewport.height * 0.5)
 
@@ -111,6 +112,7 @@ test.describe('mobile search sheet', () => {
     })
 
     await expect.poll(async () => (await sheet.boundingBox())?.y ?? 1000).toBeLessThan(40)
+    await expect(viewport).toHaveCSS('overflow-y', 'auto')
     await viewport.evaluate((el) => {
       el.scrollTop = 0
     })
