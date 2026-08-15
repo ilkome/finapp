@@ -1,5 +1,9 @@
 import type { Period } from '~~/utils/date/types'
 
+import { formatByLocale } from '~~/utils/date/civil'
+
+import type { LocaleSlug } from '~/components/locale/types'
+
 export function getFormatForChart(periodName: Period) {
   switch (periodName) {
     case 'day':
@@ -10,6 +14,21 @@ export function getFormatForChart(periodName: Period) {
     case 'year':
       return 'yyyy'
   }
+}
+
+export function formatChartAxisLabel(
+  date: number,
+  previousDate: number | undefined,
+  period: Period,
+  locale: LocaleSlug,
+) {
+  const label = formatByLocale(date, getFormatForChart(period), locale)
+  if (period === 'year' || previousDate === undefined)
+    return label
+
+  const year = formatByLocale(date, 'yyyy', locale)
+  const previousYear = formatByLocale(previousDate, 'yyyy', locale)
+  return year === previousYear ? label : `${year}\n${label}`
 }
 
 const compactFormatter = new Intl.NumberFormat('en', { notation: 'compact' })

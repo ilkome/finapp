@@ -12,7 +12,7 @@ import { formatByLocale } from '~~/utils/date/civil'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { formatChartAmount, getFormatForChart } from '~/components/stat/chart/format'
+import { formatChartAmount, formatChartAxisLabel, getFormatForChart } from '~/components/stat/chart/format'
 import { baseOption, buildChartSeries, filterChartTooltipParams, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 
 type TooltipParam = {
@@ -102,7 +102,11 @@ const option = computed(() => {
 
   const xAxis = data.xAxis as Record<string, any>
   xAxis.axisLabel.formatter = (date: string) => {
-    return formatByLocale(new Date(+date), getFormatForChart(period), locale.value)
+    const dateValue = +date
+    // ECharts reindexes visible ticks after dataZoom, so resolve the neighbour
+    // from the buffered category value instead of the formatter tick index.
+    const dataIndex = xAxisLabels.indexOf(dateValue)
+    return formatChartAxisLabel(dateValue, xAxisLabels[dataIndex - 1], period, locale.value)
   }
 
   xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
