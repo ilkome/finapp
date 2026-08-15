@@ -42,7 +42,7 @@ const trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>> = {
 const categoriesItems: Categories = Object.fromEntries(
   Array.from({ length: 10 }, (_, i) => {
     const id = `c${String(i + 1).padStart(2, '0')}`
-    return [id, { color: `#00000${i}`, name: `Cat ${i + 1}` }]
+    return [id, { color: `#00000${i}`, icon: `lucide:circle-${i}`, name: `Cat ${i + 1}` }]
   }),
 ) as unknown as Categories
 
@@ -170,6 +170,8 @@ describe('buildCategoriesPieData', () => {
 
     expect(series.filter(item => item.name !== 'Other' && item.data[0]! > 0)).toHaveLength(5)
     expect(series.filter(item => item.name !== 'Other' && item.data[1]! > 0)).toHaveLength(5)
+    expect(series.find(item => item.name === 'Cat 1')?.icon).toBe('lucide:circle-0')
+    expect(other?.icon).toBe('lucide:ellipsis')
     expect(other?.data).toEqual([50, 10])
   })
 

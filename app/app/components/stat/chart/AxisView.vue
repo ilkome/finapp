@@ -12,12 +12,14 @@ import { formatByLocale } from '~~/utils/date/civil'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { formatChartAmount, formatChartAxisLabel, getFormatForChart } from '~/components/stat/chart/format'
+import { formatChartAmount, formatChartAxisLabel, getFormatForChart, getTooltipFormatForChart } from '~/components/stat/chart/format'
 import { baseOption, buildChartSeries, filterChartTooltipParams, resolveChartTooltipPosition } from '~/components/stat/chart/options'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 type TooltipParam = {
   color: string
   name: string
+  seriesIndex: number
   seriesName: string
   value: number | null
 }
@@ -55,7 +57,9 @@ const emit = defineEmits<{
 use([BarChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, SVGRenderer, TooltipComponent])
 
 const { locale, t } = useI18n()
+const statConfig = inject(statConfigKey)!
 const isDev = import.meta.dev
+const isRoundCategoryIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
 const chartRef = ref()
 let pointerStartX = 0
 let pointerStartY = 0
@@ -238,6 +242,14 @@ function onClickChart(params: { offsetX: number, offsetY: number }) {
   if (intervalKey !== undefined)
     emit('click', intervalKey)
 }
+
+function getTooltipSeries(param: TooltipParam) {
+  return series[param.seriesIndex]
+}
+
+function getTooltipRows(params: unknown) {
+  return filterChartTooltipParams(params as TooltipParam[])
+}
 </script>
 
 <template>
@@ -270,31 +282,54 @@ function onClickChart(params: { offsetX: number, offsetY: number }) {
     >
       <template #tooltip="params">
         <div
-          class="rounded-md bg-elevated px-2 pt-2"
+          class="min-w-48 overflow-hidden rounded-md bg-default shadow-lg ring ring-default"
           :data-stat-chart-tooltip="isDev ? 'true' : undefined"
         >
-          <div class="pb-2 text-xs text-muted">
-            {{ formatByLocale(new Date(+(params as TooltipParam[])[0]!.name), getFormatForChart(period), locale) }}
+          <div class="border-b border-accented px-3 py-2 text-xs text-muted capitalize">
+            {{ formatByLocale(new Date(+(params as TooltipParam[])[0]!.name), getTooltipFormatForChart(period), locale) }}
           </div>
 
-          <div class="grid gap-0">
+          <div v-if="getTooltipRows(params).length">
             <div
-              v-for="(param, i) in filterChartTooltipParams(params as TooltipParam[])"
+              v-for="(param, i) in getTooltipRows(params)"
               :key="i"
-              class="flex items-center justify-between gap-4 border-b border-default pb-1 last:border-b-0"
+              class="flex min-h-11 items-center gap-2 border-b border-accented px-2 py-1 last:border-b-0"
+              :data-stat-chart-tooltip-icon="isDev ? getTooltipSeries(param)?.icon : undefined"
               :data-stat-chart-tooltip-value="isDev ? param.value : undefined"
             >
-              <div class="flex items-center gap-2">
+              <UiIconBase
+                v-if="getTooltipSeries(param)?.icon && isRoundCategoryIcon"
+                :color="param.color"
+                :name="getTooltipSeries(param)!.icon!"
+                class="w-7!"
+                invert
+              />
+              <UiIconBase
+                v-else-if="getTooltipSeries(param)?.icon"
+                :color="param.color"
+                :name="getTooltipSeries(param)!.icon!"
+                class="ml-1 w-6!"
+              />
+              <div v-else class="flex-center size-7 shrink-0">
                 <div class="size-2.5 rounded-full" :style="`background: ${param.color}`" />
-                <div class="text-sm text-muted">
-                  {{ param.seriesName }}
-                </div>
               </div>
 
-              <div class="text-right font-secondary text-lg text-highlighted">
+              <div class="min-w-0 grow truncate text-sm leading-none font-medium tracking-wide text-toned">
+                {{ param.seriesName }}
+              </div>
+
+              <div class="shrink-0 text-right font-secondary text-base text-highlighted">
                 {{ formatChartAmount(param.value, locale) }}
               </div>
             </div>
+          </div>
+
+          <div
+            v-else
+            class="p-3 text-sm text-muted"
+            :data-stat-chart-tooltip-empty="isDev ? 'true' : undefined"
+          >
+            {{ t('trns.noTrns') }}
           </div>
         </div>
       </template>

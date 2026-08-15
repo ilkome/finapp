@@ -16,6 +16,10 @@ export function getFormatForChart(periodName: Period) {
   }
 }
 
+export function getTooltipFormatForChart(periodName: Period) {
+  return periodName === 'month' ? 'LLLL yyyy' : getFormatForChart(periodName)
+}
+
 export function formatChartAxisLabel(
   date: number,
   previousDate: number | undefined,

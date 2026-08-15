@@ -28,6 +28,7 @@ export type CategoriesWithData = Record<CategoryId, CategoryWithData>
 export type ChartSeries = {
   color?: string
   data: number[]
+  icon?: string
   markArea?: {
     data: [{ xAxis: string }, { xAxis: string }][]
     itemStyle: { color: string, opacity: number }

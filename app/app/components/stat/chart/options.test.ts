@@ -49,6 +49,13 @@ describe('filterChartTooltipParams', () => {
       { name: 'income', value: -50 },
     ])
   })
+
+  it('returns an empty list when the hovered bucket has no transactions', () => {
+    expect(filterChartTooltipParams([
+      { name: 'food', value: 0 },
+      { name: 'income', value: null },
+    ])).toEqual([])
+  })
 })
 
 describe('resolveChartTooltipPosition', () => {

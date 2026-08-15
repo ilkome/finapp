@@ -499,7 +499,7 @@ export default {
         },
         byCategories: 'По категориям',
         groupByParent: 'Группировать по родителю',
-        other: 'Прочее',
+        other: 'Остальные',
         type: {
           label: 'Тип графика',
         },

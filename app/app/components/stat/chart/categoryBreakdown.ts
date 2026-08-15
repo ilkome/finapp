@@ -159,6 +159,7 @@ export function buildCategoriesSeries({
       data: valuesByInterval.map((values, index) =>
         highlightedSets[index]!.has(catId) ? (values[catId] ?? 0) : 0,
       ),
+      icon: category?.icon,
       name: category?.name ?? catId,
       type: chartType ?? 'bar',
     }
@@ -171,6 +172,7 @@ export function buildCategoriesSeries({
     series.push({
       color: OTHER_CATEGORY_COLOR,
       data: otherData,
+      icon: 'lucide:ellipsis',
       name: otherName,
       type: chartType ?? 'bar',
     })

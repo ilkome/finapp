@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { toCivilDayEpoch } from '~~/utils/date/civil'
 
-import { formatChartAmount, formatChartAxisLabel } from '~/components/stat/chart/format'
+import { formatChartAmount, formatChartAxisLabel, getTooltipFormatForChart } from '~/components/stat/chart/format'
 
 describe('formatChartAmount', () => {
   it('formats non-finite echarts empty-datapoint values as 0', () => {
@@ -40,5 +40,16 @@ describe('formatChartAxisLabel', () => {
     const currentYear = toCivilDayEpoch(2026, 0, 1)
 
     expect(formatChartAxisLabel(currentYear, previousYear, 'year', 'ru')).toBe('2026')
+  })
+})
+
+describe('getTooltipFormatForChart', () => {
+  it('uses the full standalone month and year for monthly buckets', () => {
+    expect(getTooltipFormatForChart('month')).toBe('LLLL yyyy')
+  })
+
+  it('keeps the existing format for other granularities', () => {
+    expect(getTooltipFormatForChart('day')).toBe('d MMM')
+    expect(getTooltipFormatForChart('year')).toBe('yyyy')
   })
 })
