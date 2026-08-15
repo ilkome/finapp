@@ -56,7 +56,7 @@ test.describe('mobile search sheet', () => {
     viewport: mobile.viewport,
   })
 
-  test('opens compact and closes from a transaction drag', async ({ context, page }) => {
+  test('expands on upward drag and closes from a transaction drag', async ({ context, page }) => {
     await context.clearCookies()
     await page.goto('/login', { waitUntil: 'domcontentloaded' })
     await page.getByRole('button', { name: T.startDemo }).click()
@@ -75,27 +75,46 @@ test.describe('mobile search sheet', () => {
 
     await palette.locator('input').fill('Oil change')
     const viewport = palette.locator('.scrollerBlock')
+    await expect.poll(async () => (await sheet.boundingBox())?.y ?? 0)
+      .toBeGreaterThan(mobile.viewport.height * 0.5)
+
+    const historyGroup = palette.getByRole('group').filter({ hasText: /History|История/ })
+    const transaction = historyGroup.getByRole('option').first()
+    const transactionContent = transaction.locator('div').first()
+    const collapsedBox = await transactionContent.boundingBox()
+    expect(collapsedBox).not.toBeNull()
+    const collapsedClientX = collapsedBox!.x + collapsedBox!.width / 2
+    const collapsedStartY = collapsedBox!.y + collapsedBox!.height / 2
+
+    await transactionContent.dispatchEvent('touchstart', {
+      touches: [{ clientX: collapsedClientX, clientY: collapsedStartY, identifier: 1 }],
+    })
+    await transactionContent.dispatchEvent('touchmove', {
+      touches: [{ clientX: collapsedClientX, clientY: collapsedStartY - 120, identifier: 1 }],
+    })
+    await transactionContent.dispatchEvent('touchend', {
+      changedTouches: [{ clientX: collapsedClientX, clientY: collapsedStartY - 120, identifier: 1 }],
+      touches: [],
+    })
+
     await expect.poll(async () => (await sheet.boundingBox())?.y ?? 1000).toBeLessThan(40)
     await viewport.evaluate((el) => {
       el.scrollTop = 0
     })
 
-    const historyGroup = palette.getByRole('group').filter({ hasText: /History|История/ })
-    const transaction = historyGroup.getByRole('option').first()
-    const transactionContent = transaction.locator('div').first()
-    const box = await transactionContent.boundingBox()
-    expect(box).not.toBeNull()
-    const clientX = box!.x + box!.width / 2
-    const startY = box!.y + box!.height / 2
+    const expandedBox = await transactionContent.boundingBox()
+    expect(expandedBox).not.toBeNull()
+    const expandedClientX = expandedBox!.x + expandedBox!.width / 2
+    const expandedStartY = expandedBox!.y + expandedBox!.height / 2
 
     await transactionContent.dispatchEvent('touchstart', {
-      touches: [{ clientX, clientY: startY, identifier: 1 }],
+      touches: [{ clientX: expandedClientX, clientY: expandedStartY, identifier: 2 }],
     })
     await transactionContent.dispatchEvent('touchmove', {
-      touches: [{ clientX, clientY: startY + 120, identifier: 1 }],
+      touches: [{ clientX: expandedClientX, clientY: expandedStartY + 120, identifier: 2 }],
     })
     await transactionContent.dispatchEvent('touchend', {
-      changedTouches: [{ clientX, clientY: startY + 120, identifier: 1 }],
+      changedTouches: [{ clientX: expandedClientX, clientY: expandedStartY + 120, identifier: 2 }],
       touches: [],
     })
 

@@ -10,7 +10,6 @@ const trnsFormStore = useTrnsFormStore()
 
 const isDesktop = useIsLaptop()
 const snapPoints = useSheetSnapPoints(0.42)
-const hasSearch = computed(() => !!searchTerm.value.trim())
 
 function onSelect(item: SearchResultItem) {
   isSearchOpen.value = false
@@ -76,7 +75,6 @@ watch(isSearchOpen, async (isOpen) => {
       v-if="!isDesktop && isSearchOpen"
       isShow
       dragClassesCustom="bottomSheetDragClassesCustom"
-      :isExpanded="hasSearch"
       :snapPoints="snapPoints"
       @closed="onBottomSheetClosed"
     >
