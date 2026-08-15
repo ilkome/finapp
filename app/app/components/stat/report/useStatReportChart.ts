@@ -66,7 +66,7 @@ export function useStatReportChart(params: {
 
   const chartSeries = computed<ChartSeries[]>(() => {
     const intervals = params.data.chartEffectiveIntervals.value
-    const selectedInterval = params.data.effectiveIntervals.value[params.statDate.params.value.intervalSelected]
+    const selectedInterval = params.statDate.selectedInterval.value
     const chartType = params.statConfig.config.value.chart.type
     let series: ChartSeries[]
 
@@ -100,8 +100,8 @@ export function useStatReportChart(params: {
       )
     }
 
-    return selectedInterval?.range.start && params.statDate.params.value.intervalSelected >= 0
-      ? withMarkArea(series, selectedInterval.range.start, chartType)
+    return selectedInterval?.start && params.statDate.params.value.intervalSelected >= 0
+      ? withMarkArea(series, selectedInterval.start, chartType)
       : series
   })
   const chartXAxisLabels = computed(() =>

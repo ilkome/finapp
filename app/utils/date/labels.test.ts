@@ -85,6 +85,11 @@ describe('createRangeFormatter', () => {
   })
 
   describe('day ranges', () => {
+    it('formats an exact single day without a duplicated range', () => {
+      const day = new Date(Date.UTC(2025, 5, 4))
+      expect(formatRangeExact({ by: 'day', duration: 1, end: day, start: day })).toBe('4 June')
+    })
+
     it('should format day range in same month', () => {
       const range = { end: dayEnd(2024, 2, 15), start: Date.UTC(2024, 2, 10) }
       expect(formatRange(range, 'day', 5)).toBe('10-15 Mar 2024')

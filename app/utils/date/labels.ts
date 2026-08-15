@@ -82,7 +82,10 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
     return `${formatByLocale(start, 'd MMM yyyy', locale)} - ${formatByLocale(end, 'd MMM yyyy', locale)}`
   }
 
-  function formatDayRange({ duration, end, start }: DateFormatParams): string {
+  function formatDayRange({ end, start }: DateFormatParams): string {
+    if (dfIsSameDay(u(start), u(end)))
+      return formatByLocale(start, isSameYear(start, today) ? 'd MMMM' : 'd MMM yyyy', locale)
+
     if (isSameYear(start, today)) {
       if (isSameMonth(start, end))
         return `${formatByLocale(start, 'd', locale)}-${formatByLocale(end, 'd MMM', locale)}`
@@ -90,8 +93,6 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
     }
 
     if (isSameYear(start, end)) {
-      if (duration === 1)
-        return formatByLocale(start, 'd MMM yyyy', locale)
       if (isSameMonth(start, end))
         return `${formatByLocale(start, 'd', locale)}-${formatByLocale(end, 'd MMM yyyy', locale)}`
       return `${formatByLocale(start, 'd MMM', locale)} - ${formatByLocale(end, 'd MMM yyyy', locale)}`
