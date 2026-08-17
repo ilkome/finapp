@@ -1,6 +1,5 @@
+import type { ComputedRef, Ref } from 'vue'
 import type { Period, Range } from '~~/utils/date/types'
-
-import type { useStatDate } from '~/components/stat/date/useStatDate'
 
 export type StatDateParams = {
   customDate: false | Range
@@ -28,6 +27,16 @@ export type StatDateParamsQuery = {
   rangePanOffset: string
 }
 
+export type StatRangePanDirection = 'future' | 'past'
+
+export type UseStatDateOptions = {
+  initParams?: Partial<StatDateParams>
+  key: string
+  maxRange: ComputedRef<Range>
+  queryParams?: Partial<StatDateParamsQuery>
+  storage?: Storage
+}
+
 export type IntervalsInRangeProps = Pick<StatDateParams, 'granularityBy' | 'granularityDuration'> & {
   range: Range
   rangeOffset?: number
@@ -43,4 +52,35 @@ export type IntervalGroupedLabel = Grouped
     label?: string
   }
 
-export type StatDateProvider = ReturnType<typeof useStatDate>
+export type StatDateProvider = {
+  canPanRange: (direction: StatRangePanDirection) => boolean
+  clearScrollRangeOffset: () => void
+  effectiveParams: ComputedRef<StatDateParams>
+  goHome: () => void
+  intervalsInRange: ComputedRef<Range[]>
+  isScrollRangeOverridden: ComputedRef<boolean>
+  maxRange: ComputedRef<Range>
+  minusGranularity: () => void
+  minusRange: () => void
+  modal: Ref<{ dateSelector: boolean }>
+  panRange: (direction: StatRangePanDirection) => boolean
+  params: Ref<StatDateParams>
+  plusGranularity: () => void
+  plusRange: () => void
+  range: ComputedRef<Range>
+  resetRangePan: () => void
+  resetScrollRange: () => void
+  scrollRangeOffset: Ref<number | null>
+  scrollRangeResetVersion: Ref<number>
+  selectedInterval: ComputedRef<Range | undefined>
+  selectInterval: (index: number) => number | undefined
+  setGranularity: (grouped: Grouped) => void
+  setGranularityBy: (granularityBy: Grouped['granularityBy']) => void
+  setMaxRange: (isSkipEmpty?: boolean) => void
+  setRangeByCalendar: (range: Range) => void
+  setRangeByPeriod: (interval: IntervalGroupedLabel) => void
+  setRangePanOffset: (offset: number) => boolean
+  setScrollRangeOffset: (offset: number) => void
+  stepInterval: (direction: 1 | -1) => void
+  stepRange: (direction: 1 | -1) => void
+}

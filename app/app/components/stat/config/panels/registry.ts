@@ -1,5 +1,5 @@
 import type { MiniItemConfig } from '~/components/stat/config/schema'
-import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
+import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
 export type PanelDef = {

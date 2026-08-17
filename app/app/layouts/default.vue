@@ -6,7 +6,10 @@ import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard', 'RecurrencesId']
+const keepalive = {
+  include: ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard', 'RecurrencesId'],
+  max: 20,
+}
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
@@ -109,7 +112,7 @@ defineShortcuts({
             :style="showShell ? 'padding-bottom: calc(64px + env(safe-area-inset-bottom))' : ''"
             class="@container/main flex-1 contain-paint md:pb-0!"
           >
-            <slot :keepalive="{ include: keepalive }" />
+            <slot :keepalive />
           </main>
         </div>
       </div>

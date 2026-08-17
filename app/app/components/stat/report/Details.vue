@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatReportContext } from '~/components/stat/useStatReportContext'
+import type { StatReportContext } from '~/components/stat/report/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -108,6 +108,7 @@ onBeforeUnmount(() => {
           :storageKey="ctx.statItemStorageKey.value"
           :type="ctx.params.type.value ?? 'netIncome'"
           @clickCategory="ctx.onClickCategory"
+          @openCategory="ctx.onOpenCategory"
           @setChildCategoryFilter="onSetChildCategoryFilter"
           @setCategoryFilter="ctx.onSetCategoryFilter"
         />

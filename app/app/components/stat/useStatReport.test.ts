@@ -305,10 +305,9 @@ describe('useStatReport', () => {
       const baseData = item.chartSeries.value
       void baseData
 
-      // bucketTrnsByIntervals should be called only once because
-      // Both committed and bounded chart datasets reuse their respective base aggregation when
-      // no category filter is active.
-      expect(bucketTrnsByIntervalsMock).toHaveBeenCalledTimes(2)
+      // chartSeries only evaluates the bounded chart dataset. The committed range dataset stays
+      // lazy until a range total or selection requests it.
+      expect(bucketTrnsByIntervalsMock).toHaveBeenCalledTimes(1)
     })
 
     it('calls bucketTrnsByIntervals twice when category filter is active and both paths accessed', () => {
@@ -330,9 +329,9 @@ describe('useStatReport', () => {
       // Access chartSeries to trigger intervalsDataWithFilteredCategories (separate call due to filter)
       void item.chartSeries.value
 
-      // The committed base and filtered datasets stay separate, while the bounded chart buffer
-      // adds one aggregation for its filtered interval list.
-      expect(bucketTrnsByIntervalsMock).toHaveBeenCalledTimes(3)
+      // The selected interval evaluates the committed base dataset and chartSeries evaluates the
+      // filtered bounded dataset. Their unused counterparts remain lazy.
+      expect(bucketTrnsByIntervalsMock).toHaveBeenCalledTimes(2)
     })
   })
 

@@ -1,31 +1,14 @@
-import type { ComputedRef } from 'vue'
-
 import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { FilterProvider } from '~/components/filter/types'
-import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
-import type { StatDateProvider } from '~/components/stat/date/types'
-import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
-import type { TrnId } from '~/components/trns/types'
+import type { SeriesSlugSelected, UseStatReportParams } from '~/components/stat/types'
+import type { TrnsListFilterState } from '~/components/trns/types'
 
 import { useForecastMode } from '~/components/recurrences/useForecastMode'
 import { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import { useStatReportChart } from '~/components/stat/report/useStatReportChart'
 import { useStatReportData } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
-
-export type UseStatReportParams = {
-  applyStatsExclusion?: ComputedRef<boolean>
-  filter: FilterProvider
-  isDateBounded?: boolean
-  statConfig: StatConfigProvider
-  statDate: StatDateProvider
-  statTab: ComputedRef<StatTabSlug>
-  storageKey: ComputedRef<string>
-  trnsIds: ComputedRef<TrnId[]>
-  type: ComputedRef<SeriesSlugSelected | undefined>
-}
 
 export function useStatReport(params: UseStatReportParams) {
   if (import.meta.dev) {
@@ -34,6 +17,10 @@ export function useStatReport(params: UseStatReportParams) {
       onScopeDispose(() => statDevMetrics.reportContextCount.value--)
   }
   const forecastMode = useForecastMode()
+  const trnsViewState: TrnsListFilterState = params.trnsViewState ?? {
+    filterBy: ref('all'),
+    isShowWithDesc: ref(false),
+  }
   const statItemStorageKey = computed(() =>
     `finapp-${params.statDate.params.value.granularityBy}-${params.storageKey.value}-${params.filter.categoriesIds.value.join(',')}`,
   )
@@ -115,5 +102,6 @@ export function useStatReport(params: UseStatReportParams) {
     statExcludedIds: data.statExcludedIds,
     statItemStorageKey,
     summaryCategoryPieData: chart.summaryCategoryPieData,
+    trnsViewState,
   }
 }

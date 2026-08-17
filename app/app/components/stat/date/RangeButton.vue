@@ -17,7 +17,7 @@ const statDate = inject(statDateKey)!
     @closeModal="statDate.modal.value.dateSelector = false"
   >
     <template #trigger="{ isActive }">
-      <UiTitleDropdown :isActive>
+      <UiTitleDropdown data-stat-date-range :isActive>
         <StatDateRangeLabel />
       </UiTitleDropdown>
     </template>

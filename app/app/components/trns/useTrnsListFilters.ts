@@ -1,7 +1,7 @@
 import type { TabsItem } from '@nuxt/ui'
 import type { ComputedRef } from 'vue'
 
-import type { TrnId, TrnsViewType } from '~/components/trns/types'
+import type { TrnId, TrnsListFilterState, TrnsViewType } from '~/components/trns/types'
 
 import { getFilteredByTypeIds, getTypeCounts } from '~/components/trns/tabClassification'
 import { TrnType } from '~/components/trns/types'
@@ -12,6 +12,7 @@ type UseTrnsListFiltersOptions = {
   showExpense: ComputedRef<boolean>
   showIncome: ComputedRef<boolean>
   showTransfers: ComputedRef<boolean>
+  state?: TrnsListFilterState
 }
 
 type TypeFilter = {
@@ -26,8 +27,8 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
   const trnsStore = useTrnsStore()
   const { t } = useI18n()
 
-  const isShowWithDesc = ref(false)
-  const filterBy = ref<TrnsViewType | 'all'>('all')
+  const isShowWithDesc = options.state?.isShowWithDesc ?? ref(false)
+  const filterBy = options.state?.filterBy ?? ref<TrnsViewType>('all')
 
   const typeCounts = computed(() => getTypeCounts(options.ids.value, trnsStore.items))
 

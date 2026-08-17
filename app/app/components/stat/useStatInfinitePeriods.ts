@@ -1,8 +1,8 @@
 import type { ComputedRef } from 'vue'
 import type { Range } from '~~/utils/date/types'
 
+import type { StatReportContext } from '~/components/stat/report/types'
 import type { StatFeedLocalFilter } from '~/components/stat/types'
-import type { StatReportContext } from '~/components/stat/useStatReportContext'
 import type { TrnId } from '~/components/trns/types'
 
 import { computeDateRange } from '~/components/stat/date/params'

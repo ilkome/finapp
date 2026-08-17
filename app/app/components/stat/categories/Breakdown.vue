@@ -20,6 +20,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   clickCategory: [categoryId: CategoryId]
+  openCategory: [categoryId: CategoryId]
   setCategoryFilter: [categoryId: CategoryId]
   setChildCategoryFilter: [categoryId: CategoryId]
 }>()
@@ -53,7 +54,7 @@ const displayedCategories = computed(() => isFocused.value ? focusedCategories.v
       :storageKey="props.storageKey"
       :type="props.type"
       :ungroupedCategories
-      @clickCategory="emit('clickCategory', $event)"
+      @openCategory="emit('openCategory', $event)"
       @setFocusedCategoryFilter="emit('setChildCategoryFilter', $event)"
     />
   </div>

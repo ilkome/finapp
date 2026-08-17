@@ -18,7 +18,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  clickCategory: [categoryId: CategoryId]
+  openCategory: [categoryId: CategoryId]
   setFocusedCategoryFilter: [categoryId: CategoryId]
 }>()
 
@@ -48,7 +48,7 @@ function onParentClick(item: CategoryWithData) {
   if (item.categories?.length)
     toggleCategory(item.id)
   else
-    emit('clickCategory', item.id)
+    emit('openCategory', item.id)
 }
 
 function isItemExpanded(item: CategoryWithData) {
@@ -136,7 +136,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           :lineWidth="1"
           :class="`group ${isItemExpanded(item) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
           @click="onParentClick(item)"
-          @amountClick="emit('clickCategory', item.id)"
+          @amountClick="emit('openCategory', item.id)"
         />
 
         <UCollapsible
@@ -154,8 +154,8 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
                 :maxCategoryValues="childrenMaxValues"
                 :lineWidth="1"
                 class="group"
-                @click="emit('clickCategory', itemInside.id)"
-                @amountClick="emit('clickCategory', itemInside.id)"
+                @click="emit('openCategory', itemInside.id)"
+                @amountClick="emit('openCategory', itemInside.id)"
               />
             </div>
           </template>

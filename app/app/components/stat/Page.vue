@@ -7,11 +7,9 @@ import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStatConfig } from '~/components/stat/config/useStatConfig'
-import { useStatDate } from '~/components/stat/date/useStatDate'
-import { statConfigKey, statDashboardKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
+import { statDashboardKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
+import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
@@ -19,7 +17,6 @@ const route = useRoute()
 const trnsStore = useTrnsStore()
 
 const filter = useFilter()
-provide(filterKey, filter)
 
 // Dashboard: the date/filter nav row pins immediately below the page header.
 provide(statDashboardKey, true)
@@ -50,13 +47,11 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({
-  storageKey: storageKey.value,
+const { statConfig } = useStatPageProviders({
+  config: { storageKey: storageKey.value },
+  date: { key: storageKey.value, maxRange, queryParams: route.query },
+  filter,
 })
-provide(statConfigKey, statConfig)
-
-const statDate = useStatDate({ key: storageKey.value, maxRange, queryParams: route.query })
-provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
   statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0

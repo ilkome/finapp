@@ -1,3 +1,5 @@
+import type { Ref } from 'vue'
+
 import { z } from 'zod/v4'
 
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
@@ -15,7 +17,18 @@ export function getTrnTypeByAmount(amount: number): TrnType {
   return amount > 0 ? TrnType.Income : TrnType.Expense
 }
 
-export type TrnsViewType = 'adjustment' | 'all' | 'expense' | 'income' | 'transfer'
+export const trnsViewTypes = ['adjustment', 'all', 'expense', 'income', 'transfer'] as const
+export type TrnsViewType = typeof trnsViewTypes[number]
+
+export type TrnsListFilterSnapshot = {
+  filterBy: TrnsViewType
+  isShowWithDesc: boolean
+}
+
+export type TrnsListFilterState = {
+  filterBy: Ref<TrnsViewType>
+  isShowWithDesc: Ref<boolean>
+}
 
 export type TransferSide = 'expense' | 'income'
 

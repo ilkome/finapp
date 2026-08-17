@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatReportContext } from '~/components/stat/useStatReportContext'
+import type { StatReportContext } from '~/components/stat/report/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { statDashboardKey } from '~/components/stat/injectionKeys'
@@ -63,6 +63,7 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
 
         <TrnsList
           v-else
+          :filterState="ctx?.trnsViewState"
           :isShowDates="!isPeriodOneDay"
           :isShowGroupSum="!isPeriodOneDay"
           :trnsIds="selectedTrnsIds"

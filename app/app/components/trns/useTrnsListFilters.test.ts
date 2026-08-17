@@ -87,6 +87,22 @@ describe('useTrnsListFilters', () => {
     expect(filters.selectedIds.value).toEqual(['expenseWithDesc', 'incomeWithDesc'])
   })
 
+  it('reuses externally owned filter state', () => {
+    const filterBy = ref<'all' | 'expense'>('expense')
+    const isShowWithDesc = ref(true)
+    const filters = useTrnsListFilters({
+      ids: computed(() => ['transactionExpenseWalletCashUSD400', 'expenseWithDesc', 'incomeWithDesc']),
+      showExpense: computed(() => true),
+      showIncome: computed(() => true),
+      showTransfers: computed(() => true),
+      state: { filterBy, isShowWithDesc },
+    })
+
+    expect(filters.selectedIds.value).toEqual(['expenseWithDesc'])
+    filters.setFilterBy('expense')
+    expect(filterBy.value).toBe('all')
+  })
+
   it('detects no descriptions and all descriptions', () => {
     const withoutDesc = createFilters(['transactionExpenseWalletCashUSD400'])
     expect(withoutDesc.filters.isTrnsWithDesc.value).toBe(false)

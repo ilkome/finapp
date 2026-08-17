@@ -1,11 +1,11 @@
 import type { ComputedRef } from 'vue'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { SeriesSlugSelected } from '~/components/stat/types'
-import type { UseStatReportParams } from '~/components/stat/useStatReport'
+import type { SeriesSlugSelected, UseStatReportParams } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
 import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
 
@@ -20,6 +20,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   const report = useStatReport(params)
   const quickView = useTrnsQuickView(report.selectedAndFilteredTrnsIds)
   const categoriesStore = useCategoriesStore()
+  const route = useRoute()
 
   const isOneCategory = computed(() => !!params.categoryId?.value)
   const isCategoryFocus = computed(() =>
@@ -49,21 +50,33 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   )
 
   function onClickCategory(clickedCategoryId: CategoryId) {
-    if (params.categoryId?.value) {
-      params.filter.setCategoryId(clickedCategoryId)
-
-      return useRouter().push({
-        path: `/categories/${clickedCategoryId}`,
-        query: {
-          filterCategories: params.filter.categoriesIds.value.join(','),
-          filterWallets: params.walletId?.value ? params.walletId.value : params.filter.walletsIds.value.join(','),
-          storageKey: params.storageKey.value ?? '',
-        },
-      })
-    }
-
     quickView.openQuickViewForCategory(clickedCategoryId)
   }
+
+  const navigationWalletsIds = computed(() => [...new Set([
+    ...(params.walletId?.value ? [params.walletId.value] : []),
+    ...params.filter.walletsIds.value,
+  ])])
+  const onOpenCategory = useStatCategoryNavigation({
+    categoriesIds: params.filter.categoriesIds,
+    snapshot: computed(() => {
+      const shouldCarryStatState = !params.categoryId?.value
+        || getStatSnapshotQueryId(route.query.statSnapshot) !== null
+        || isStatDrilldownQuery(route.query.statDrilldown)
+      return shouldCarryStatState
+        ? {
+            activeTab: params.statTab.value,
+            config: params.statConfig.config.value,
+            date: params.statDate.params.value,
+            trns: {
+              filterBy: report.trnsViewState.filterBy.value,
+              isShowWithDesc: report.trnsViewState.isShowWithDesc.value,
+            },
+          }
+        : null
+    }),
+    walletsIds: navigationWalletsIds,
+  })
 
   function onClickSumItemWrap(type: SeriesSlugSelected) {
     if (type === 'netIncome')
@@ -81,11 +94,10 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     isOneCategory,
     onClickCategory,
     onClickSumItemWrap,
+    onOpenCategory,
     params,
     shouldShowAmounts,
     shouldShowCategoriesBreakdown,
     shouldUseTwoColumnLayout,
   }
 }
-
-export type StatReportContext = ReturnType<typeof useStatReportContext>

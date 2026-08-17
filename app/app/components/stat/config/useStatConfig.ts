@@ -4,13 +4,9 @@ import { useStorage } from '@vueuse/core'
 import defu from 'defu'
 
 import type { MiniItemConfig } from '~/components/stat/config/schema'
+import type { StatConfigParams } from '~/components/stat/config/types'
 
 import { applyConfigProps, applyConfigUpdate, defaultConfig } from '~/components/stat/config/schema'
-
-type StatConfigParams = {
-  props?: DeepPartial<MiniItemConfig>
-  storageKey: string
-}
 
 export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig): MiniItemConfig {
   const stored = storageValue as { chart?: { type?: unknown } } | undefined
@@ -27,7 +23,7 @@ export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniI
   }
 }
 
-export function useStatConfig({ props, storageKey }: StatConfigParams) {
+export function useStatConfig({ initialConfig, props, storage, storageKey }: StatConfigParams) {
   const configStorageKey = computed(() => {
     const query = useRouter().currentRoute.value.query
     const queryKey = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
@@ -37,7 +33,7 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
   // structuredClone: `defaultConfig` is one shared module-level object, and every
   // stat-hosting page calls this composable with its own storageKey - without
   // cloning, useStorage would seed each page's ref from the same nested objects.
-  const config = useStorage<MiniItemConfig>(configStorageKey.value, structuredClone(defaultConfig), localStorage, {
+  const config = useStorage<MiniItemConfig>(configStorageKey.value, structuredClone(initialConfig ?? defaultConfig), storage ?? localStorage, {
     mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig),
   })
 
@@ -60,5 +56,3 @@ export function useStatConfig({ props, storageKey }: StatConfigParams) {
     updateConfig,
   }
 }
-
-export type StatConfigProvider = ReturnType<typeof useStatConfig>

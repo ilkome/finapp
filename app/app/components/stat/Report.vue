@@ -5,7 +5,7 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
-import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useScrollReveal } from '~/components/stat/useScrollReveal'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
@@ -25,6 +25,7 @@ const isDev = import.meta.dev
 const filter = inject(filterKey)!
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
+const trnsViewState = inject(statTrnsViewStateKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 const stickySummary = useTemplateRef<HTMLElement>('stickySummary')
@@ -46,6 +47,7 @@ const ctx = useStatReportContext({
   statTab: computed(() => props.statTab),
   storageKey: computed(() => props.storageKey),
   trnsIds: computed(() => props.trnsIds),
+  trnsViewState,
   type: computed(() => props.type),
   walletId: computed(() => props.walletId),
 })

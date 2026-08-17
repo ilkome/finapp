@@ -4,8 +4,8 @@ import type { ComponentPublicInstance } from 'vue'
 
 import { useWindowVirtualizer } from '@tanstack/vue-virtual'
 
+import type { StatReportContext } from '~/components/stat/report/types'
 import type { StatVirtualRow } from '~/components/stat/types'
-import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
 import { statPreservedCategoryScrollTopKey, statStickyTopKey } from '~/components/stat/injectionKeys'
 import { shouldRequestStatHistoryLoad } from '~/components/stat/statFeed'
@@ -43,6 +43,7 @@ const {
   showExpense: computed(() => true),
   showIncome: computed(() => true),
   showTransfers: computed(() => true),
+  state: props.ctx.trnsViewState,
 })
 const infinite = useStatInfinitePeriods(props.ctx, {
   candidateIds,

@@ -1,5 +1,5 @@
 import type { MiniItemConfig } from '~/components/stat/config/schema'
-import type { StatConfigProvider } from '~/components/stat/config/useStatConfig'
+import type { StatConfigProvider } from '~/components/stat/config/types'
 
 export type StatConfigBooleanPath
   = | 'categories.bars.isGrouped'

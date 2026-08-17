@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TrnsDisplayRow } from '~/components/trns/listRows'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnsListFilterState } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -10,6 +10,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const {
   compact,
+  filterState,
   isShowDates,
   isShowExpense,
   isShowFilterByDesc,
@@ -24,6 +25,7 @@ const {
   trnsIds = [],
 } = defineProps<{
   compact?: boolean
+  filterState?: TrnsListFilterState
   isShowDates?: boolean
   isShowExpense?: boolean
   isShowFilterByDesc?: boolean
@@ -64,6 +66,7 @@ const {
   showExpense: computed(() => !!isShowExpense),
   showIncome: computed(() => !!isShowIncome),
   showTransfers: computed(() => !!isShowTransfers),
+  state: filterState,
 })
 
 const paginatedTrnsIds = computed(() => selectedIds.value.slice(0, pageNumber.value * size))

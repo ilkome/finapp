@@ -4,7 +4,7 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
-import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { deferStatDevMetricsUpdate, statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
 import { TrnType } from '~/components/trns/types'
@@ -24,6 +24,7 @@ const trnsStore = useTrnsStore()
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
 const statDate = inject(statDateKey)!
+const trnsViewState = inject(statTrnsViewStateKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 
@@ -56,6 +57,7 @@ const commonParams = {
   statDate,
   statTab: computed(() => 'split' as const),
   storageKey: computed(() => props.storageKey),
+  trnsViewState,
   walletId: computed(() => props.walletId),
 }
 

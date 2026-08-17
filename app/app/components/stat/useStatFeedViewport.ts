@@ -1,9 +1,9 @@
 import type { Virtualizer } from '@tanstack/vue-virtual'
 import type { Ref, ShallowRef } from 'vue'
 
+import type { StatReportContext } from '~/components/stat/report/types'
 import type { StatFeedScope, StatPeriodTransitionState } from '~/components/stat/types'
 import type { useStatInfinitePeriods } from '~/components/stat/useStatInfinitePeriods'
-import type { StatReportContext } from '~/components/stat/useStatReportContext'
 
 import {
   isSameStatFeedScope,

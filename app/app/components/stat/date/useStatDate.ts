@@ -4,24 +4,18 @@ import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 import defu from 'defu'
 
-import type { Grouped, IntervalGroupedLabel, StatDateParams, StatDateParamsQuery } from '~/components/stat/date/types'
+import type { Grouped, IntervalGroupedLabel, StatDateParams, StatRangePanDirection, UseStatDateOptions } from '~/components/stat/date/types'
 
 import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
-
-export type StatRangePanDirection = 'future' | 'past'
 
 export function useStatDate({
   initParams,
   key,
   maxRange,
   queryParams,
-}: {
-  initParams?: Partial<StatDateParams>
-  key: string
-  maxRange: ComputedRef<Range>
-  queryParams?: Partial<StatDateParamsQuery>
-}) {
-  const params = useStorage<StatDateParams>(`${key}-params`, {} as StatDateParams, localStorage, {
+  storage,
+}: UseStatDateOptions) {
+  const params = useStorage<StatDateParams>(`${key}-params`, {} as StatDateParams, storage ?? localStorage, {
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
   })
 

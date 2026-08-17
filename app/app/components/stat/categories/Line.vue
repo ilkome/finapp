@@ -64,6 +64,7 @@ function onAmountClick(e: MouseEvent) {
   <div
     v-if="category"
     ref="longPressRef"
+    :data-stat-category-id="props.item.id"
     :class="[props.insideClass, {
       'bg-elevated': props.isActive,
     }]"
@@ -128,6 +129,7 @@ function onAmountClick(e: MouseEvent) {
 
       <div
         v-if="props.item.value !== 0"
+        data-stat-category-amount
         :class="{ 'pb-2!': isLines }"
         class="-my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm px-2"
         @click="onAmountClick"

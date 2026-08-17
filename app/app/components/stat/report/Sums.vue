@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatReportContext } from '~/components/stat/useStatReportContext'
+import type { StatReportContext } from '~/components/stat/report/types'
 
 defineProps<{
   ctx: StatReportContext

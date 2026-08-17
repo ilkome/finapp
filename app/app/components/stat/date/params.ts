@@ -100,6 +100,24 @@ const queryParamsSchema = z.object({
     .optional(),
 })
 
+const dateRangeSchema = z.object({
+  end: z.number(),
+  start: z.number(),
+})
+
+export const statDateParamsSchema: z.ZodType<StatDateParams> = z.object({
+  customDate: z.union([z.literal(false), dateRangeSchema]),
+  granularityBy: z.enum(periods),
+  granularityDuration: z.number().int().positive(),
+  intervalSelected: z.number().int(),
+  isShowMaxRange: z.boolean(),
+  isSkipEmpty: z.boolean(),
+  rangeBy: z.enum(periods),
+  rangeDuration: z.number().int().nonnegative(),
+  rangeOffset: z.number().int(),
+  rangePanOffset: z.number().int(),
+})
+
 export const defaultStatDateParams: StatDateParams = {
   customDate: false,
   granularityBy: 'day',
