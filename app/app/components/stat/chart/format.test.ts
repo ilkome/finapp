@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { toCivilDayEpoch } from '~~/utils/date/civil'
+import { epochToCivilParts, toCivilDayEpoch, todayCivilDayEpoch } from '~~/utils/date/civil'
 
-import { formatChartAmount, formatChartAxisLabel, getTooltipFormatForChart } from '~/components/stat/chart/format'
+import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel, getTooltipFormatForChart } from '~/components/stat/chart/format'
 
 describe('formatChartAmount', () => {
   it('formats non-finite echarts empty-datapoint values as 0', () => {
@@ -44,12 +44,26 @@ describe('formatChartAxisLabel', () => {
 })
 
 describe('getTooltipFormatForChart', () => {
-  it('uses the full standalone month and year for monthly buckets', () => {
-    expect(getTooltipFormatForChart('month')).toBe('LLLL yyyy')
+  it('uses the full standalone month for monthly buckets', () => {
+    expect(getTooltipFormatForChart('month')).toBe('LLLL')
   })
 
   it('keeps the existing format for other granularities', () => {
     expect(getTooltipFormatForChart('day')).toBe('d MMM')
     expect(getTooltipFormatForChart('year')).toBe('yyyy')
+  })
+})
+
+describe('formatChartTooltipLabel', () => {
+  const currentYear = epochToCivilParts(todayCivilDayEpoch()).year
+
+  it('omits the current year from sub-year periods', () => {
+    expect(formatChartTooltipLabel(toCivilDayEpoch(currentYear, 7, 17), 'day', 'en')).toBe('17 Aug')
+    expect(formatChartTooltipLabel(toCivilDayEpoch(currentYear, 7, 1), 'month', 'en')).toBe('August')
+  })
+
+  it('shows the year for sub-year periods outside the current year', () => {
+    expect(formatChartTooltipLabel(toCivilDayEpoch(currentYear - 1, 7, 17), 'day', 'en')).toBe(`17 Aug ${currentYear - 1}`)
+    expect(formatChartTooltipLabel(toCivilDayEpoch(currentYear - 1, 7, 1), 'month', 'en')).toBe(`August ${currentYear - 1}`)
   })
 })

@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { civilDayStart, formatDateWithOptionalYear, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import { recurrenceEveryLabel } from '~/components/recurrences/format'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const repeat = computed(() => trnsFormStore.repeat)
 const isShow = ref(false)
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 // The trn's date is the subscription start. Editing this field moves the transaction date.
 const isCreate = computed(() => !trnsFormStore.values.trnId)
 const isFutureStart = computed(() => civilDayStart(trnsFormStore.values.date) > todayCivilDayEpoch())
 const isPastStart = computed(() => civilDayStart(trnsFormStore.values.date) < todayCivilDayEpoch())
-const startLabel = computed(() => formatByLocale(trnsFormStore.values.date, 'd MMM yyyy', dateLocale.value))
+const startLabel = computed(() => formatDateWithOptionalYear(trnsFormStore.values.date, 'd MMM', dateLocale.value))
 
 const startDate = computed({
   get: () => trnsFormStore.values.date,
@@ -31,7 +31,7 @@ const summary = computed(() => {
   if (r.freq === 'month' && r.monthLastDay)
     parts.push(t('recurrences.form.monthLastDay').toLowerCase())
   if (r.endMode === 'date' && r.endDate != null)
-    parts.push(`${t('recurrences.summary.until')} ${formatByLocale(r.endDate, 'd MMM yyyy', dateLocale.value)}`)
+    parts.push(`${t('recurrences.summary.until')} ${formatDateWithOptionalYear(r.endDate, 'd MMM', dateLocale.value)}`)
   else if (r.endMode === 'count' && r.endCount)
     parts.push(`${r.endCount}×`)
   return parts.join(' · ')

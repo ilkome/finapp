@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { RecurrenceId, RecurrenceItem, RecurrenceSchedule } from '~/components/recurrences/types'
@@ -19,12 +19,12 @@ const emit = defineEmits<{
   closed: []
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 const existing = computed(() => recurrencesStore.items?.[props.recurrenceId])
 const typeLabel = computed(() => existing.value?.type === TrnType.Income ? t('money.income') : t('money.expense'))
@@ -87,7 +87,7 @@ const nextChargeLabel = computed(() => {
   if (!existing.value)
     return ''
   const next = nextOccurrence(existing.value, todayCivilDayEpoch())
-  return next != null ? formatByLocale(next, 'd MMM yyyy', dateLocale.value) : t('recurrences.form.noNext')
+  return next != null ? formatDateWithOptionalYear(next, 'd MMM', dateLocale.value) : t('recurrences.form.noNext')
 })
 
 // Show the timeline only once there is more than the single seeded (current) price.

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 import type { BudgetId, BudgetItem } from '~/components/budgets/types'
 import type { BudgetProgress } from '~/components/budgets/useBudgetProgress'
@@ -23,14 +23,14 @@ const emit = defineEmits<{
   trns: [id: BudgetId]
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const budgetsStore = useBudgetsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const m = useBudgetMenuItems()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
-const goalDateLabel = computed(() => props.progress.target ? formatByLocale(props.progress.target.goalDate, 'd MMM yyyy', dateLocale.value) : '')
+const dateLocale = useDateLocale()
+const goalDateLabel = computed(() => props.progress.target ? formatDateWithOptionalYear(props.progress.target.goalDate, 'd MMM', dateLocale.value) : '')
 const targetPct = computed(() => props.progress.target ? Math.round(props.progress.target.pct * 100) : 0)
 
 const isArchived = computed(() => props.budget.status === 'archived')

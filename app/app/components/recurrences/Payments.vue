@@ -2,7 +2,7 @@
 import type { TabsItem } from '@nuxt/ui'
 
 import { useStorage } from '@vueuse/core'
-import { addCivilDays, addCivilMonths, formatByLocale, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { addCivilDays, addCivilMonths, formatDateWithOptionalYear, lastDayOfMonthCivil, startOfMonthCivil, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { OccurrenceStatus } from '~/components/recurrences/occurrences'
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
@@ -25,7 +25,7 @@ const emit = defineEmits<{
   clearFilter: []
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
@@ -33,7 +33,7 @@ const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 // Period selection persists across visits (was an ephemeral ref before).
 const horizons = [30, 60, 90] as const
@@ -251,7 +251,7 @@ const summary = computed(() => {
   const next = nextOccurrence(rule, start)
   return {
     hasPriceHistory: (rule.amountHistory?.length ?? 0) > 1,
-    nextLabel: next != null ? formatByLocale(next, 'd MMM yyyy', dateLocale.value) : undefined,
+    nextLabel: next != null ? formatDateWithOptionalYear(next, 'd MMM', dateLocale.value) : undefined,
     yearlyBase,
   }
 })
@@ -297,7 +297,7 @@ const monthProgress = computed(() => {
 })
 
 function fmtDay(day: number) {
-  return formatByLocale(day, 'EEE, d MMM', dateLocale.value)
+  return formatDateWithOptionalYear(day, 'EEE, d MMM', dateLocale.value)
 }
 </script>
 

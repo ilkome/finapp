@@ -643,6 +643,7 @@ export default {
     noIncome: 'No income',
     noTrns: 'No transactions yet',
     plural: '0 transactions | {n} transaction | {n} transactions | {n} transactions',
+    previous: 'Previous transactions',
     title: 'Transactions',
   },
 

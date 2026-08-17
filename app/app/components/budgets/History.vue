@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale } from '~~/utils/date/civil'
+import { formatByLocale, formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
 
@@ -19,12 +19,12 @@ const emit = defineEmits<{
   closed: []
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const budgetsStore = useBudgetsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 const name = computed(() => {
   const catId = budgetsStore.items?.[props.budgetId]?.categoryId
@@ -36,8 +36,9 @@ const name = computed(() => {
 const rows = computed(() => props.history.filter(r => r.activity > 0 || r.assigned > 0).reverse())
 
 function label(periodStart: number) {
-  const fmt = props.periodType === 'year' ? 'yyyy' : props.periodType === 'week' ? 'd MMM' : 'LLL yyyy'
-  return formatByLocale(periodStart, fmt, dateLocale.value)
+  if (props.periodType === 'year')
+    return formatByLocale(periodStart, 'yyyy', dateLocale.value)
+  return formatDateWithOptionalYear(periodStart, props.periodType === 'week' ? 'd MMM' : 'LLL', dateLocale.value)
 }
 function pct(row: Row) {
   if (row.assigned <= 0)

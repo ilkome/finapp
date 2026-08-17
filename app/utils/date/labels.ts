@@ -2,7 +2,7 @@ import type { Period, Range } from '~~/utils/date/types'
 
 import { UTCDate } from '@date-fns/utc'
 import { isSameDay as dfIsSameDay, isSameMonth as dfIsSameMonth, isSameWeek as dfIsSameWeek, isSameYear as dfIsSameYear, differenceInDays, sub } from 'date-fns'
-import { civilDayStart, formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { civilDayStart, formatByLocale, isCurrentCivilYear, todayCivilDayEpoch } from '~~/utils/date/civil'
 import { toDuration } from '~~/utils/date/period'
 
 import type { LocaleSlug } from '~/components/locale/types'
@@ -173,11 +173,9 @@ export function createRangeFormatter(t: (key: string, choice?: number) => string
 
 export type TrnDateParts = {
   day: string
-  full: string
   month: string
-  week: string
   weekday: string
-  year: string
+  year?: string
 }
 
 export function formatTrnDateLabel(
@@ -198,11 +196,9 @@ export function formatTrnDateLabel(
     case 'full':
       return {
         day: formatByLocale(date, 'd', locale),
-        full: formatByLocale(date, 'dd.MM.yyyy HH:mm', locale),
         month: formatByLocale(date, 'MMM', locale),
-        week: formatByLocale(date, 'dd.MM', locale),
         weekday: `${diff < 2 ? `${formatRangeWithLast({ by: 'day', duration: 1, end: date, start: date })}, ` : ''} ${formatByLocale(date, 'EEEE', locale)}`,
-        year: formatByLocale(date, 'yyyy', locale),
+        year: isCurrentCivilYear(date) ? undefined : formatByLocale(date, 'yyyy', locale),
       }
 
     case 'trnItem':

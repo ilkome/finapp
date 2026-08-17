@@ -25,7 +25,9 @@ const formattedDate = computed(() => {
 
       <div class="flex gap-1 text-sm leading-none font-medium">
         <div>{{ formattedDate.month }}</div>
-        <div>{{ formattedDate.year }}</div>
+        <div v-if="formattedDate.year">
+          {{ formattedDate.year }}
+        </div>
       </div>
     </div>
   </div>

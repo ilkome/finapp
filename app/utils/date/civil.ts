@@ -1,6 +1,6 @@
 import { UTCDate } from '@date-fns/utc'
 import { getLocalTimeZone, today } from '@internationalized/date'
-import { addDays, addMonths, addYears, format, lastDayOfMonth, startOfDay, startOfMonth } from 'date-fns'
+import { addDays, addMonths, addYears, format, isSameYear, lastDayOfMonth, startOfDay, startOfMonth } from 'date-fns'
 import { ru } from 'date-fns/locale'
 
 import type { LocaleSlug } from '~/components/locale/types'
@@ -90,4 +90,21 @@ export function formatByLocale(date: Date | number, formatter: string, locale?: 
   const ms = date instanceof Date ? date.getTime() : date
   const formatOptions = locale === 'ru' ? { locale: ru } : {}
   return format(u(ms), formatter, formatOptions)
+}
+
+export function isCurrentCivilYear(date: Date | number): boolean {
+  const ms = date instanceof Date ? date.getTime() : date
+  return isSameYear(u(ms), u(todayCivilDayEpoch()))
+}
+
+export function formatDateWithOptionalYear(
+  date: Date | number,
+  formatter: string,
+  locale?: LocaleSlug,
+): string {
+  const ms = date instanceof Date ? date.getTime() : date
+  const displayFormat = isCurrentCivilYear(ms)
+    ? formatter
+    : `${formatter} yyyy`
+  return formatByLocale(ms, displayFormat, locale)
 }

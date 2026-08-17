@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 import type { RecurrenceItem } from '~/components/recurrences/types'
 
@@ -19,8 +19,8 @@ const emit = defineEmits<{
   remove: [from: number]
 }>()
 
-const { locale, t } = useI18n()
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const { t } = useI18n()
+const dateLocale = useDateLocale()
 
 // The engine returns ascending by date; show newest first.
 const rows = computed(() => [...priceHistoryTimeline(props.rule)].reverse())
@@ -49,9 +49,9 @@ function deltaClass(deltaPct: number) {
         @click="emit('edit', r.from)"
       >
         <Icon name="lucide:pencil" size="11" />
-        {{ t('recurrences.form.priceFrom') }} {{ formatByLocale(r.from, 'd MMM yyyy', dateLocale) }}
+        {{ t('recurrences.form.priceFrom') }} {{ formatDateWithOptionalYear(r.from, 'd MMM', dateLocale) }}
       </button>
-      <span v-else>{{ t('recurrences.form.priceFrom') }} {{ formatByLocale(r.from, 'd MMM yyyy', dateLocale) }}</span>
+      <span v-else>{{ t('recurrences.form.priceFrom') }} {{ formatDateWithOptionalYear(r.from, 'd MMM', dateLocale) }}</span>
       <div class="flex items-center gap-1.5">
         <span
           v-if="r.deltaPct != null"

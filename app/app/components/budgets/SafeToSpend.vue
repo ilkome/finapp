@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 import type { BudgetId } from '~/components/budgets/types'
 import type { SafeToSpendBreakdown } from '~/components/budgets/useBudgetProgress'
@@ -20,12 +20,12 @@ const emit = defineEmits<{
   closed: []
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const budgetsStore = useBudgetsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 function name(budgetId: BudgetId) {
   const catId = budgetsStore.items?.[budgetId]?.categoryId
@@ -128,14 +128,14 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
         <div class="grid gap-1 text-2xs text-muted">
           <div>{{ t('budgets.safeSheet.caption', { period: props.periodLabel }) }}</div>
           <div v-if="props.perDay != null">
-            {{ t('budgets.safeSheet.perDay', { amount: Math.round(props.perDay) }) }} · {{ t('budgets.safeSheet.untilDate', { date: formatByLocale(props.periodEnd, 'd MMM', dateLocale) }) }}
+            {{ t('budgets.safeSheet.perDay', { amount: Math.round(props.perDay) }) }} · {{ t('budgets.safeSheet.untilDate', { date: formatDateWithOptionalYear(props.periodEnd, 'd MMM', dateLocale) }) }}
           </div>
           <NuxtLink
             v-if="props.payday"
             class="flex items-center gap-1 hover:text-default"
             to="/recurrences"
           >
-            {{ t('budgets.safeSheet.payday', { date: formatByLocale(props.payday.dayEpoch, 'd MMM', dateLocale) }) }}
+            {{ t('budgets.safeSheet.payday', { date: formatDateWithOptionalYear(props.payday.dayEpoch, 'd MMM', dateLocale) }) }}
             <span>·</span>
             <Amount
               :amount="props.payday.amountBase"

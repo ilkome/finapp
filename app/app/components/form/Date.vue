@@ -5,7 +5,7 @@
 import type { CalendarDate } from '@internationalized/date'
 
 import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
-import { formatByLocale } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 const props = defineProps<{
   clearable?: boolean
@@ -18,13 +18,13 @@ const emit = defineEmits<{
   'update:modelValue': [value: number | null]
 }>()
 
-const { locale, t } = useI18n()
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const { t } = useI18n()
+const dateLocale = useDateLocale()
 const isOpen = ref(false)
 
 const calendarDate = computed(() => props.modelValue != null ? parseUCalendarDate(props.modelValue) : undefined)
 const label = computed(() => props.modelValue != null
-  ? formatByLocale(props.modelValue, 'd MMM yyyy', dateLocale.value)
+  ? formatDateWithOptionalYear(props.modelValue, 'd MMM', dateLocale.value)
   : (props.placeholder ?? t('base.selectDate')))
 
 function onClear(close: () => void) {

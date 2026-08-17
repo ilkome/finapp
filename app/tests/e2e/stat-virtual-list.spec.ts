@@ -151,6 +151,7 @@ test.describe('Statistics measured virtual feed', () => {
     const feed = page.locator('.stat-trns-virtual')
     await page.mouse.wheel(0, 1600)
     await expect.poll(async () => Number(await feed.locator('..').getAttribute('data-stat-load-count'))).toBeGreaterThan(0)
+    await expect(page.getByRole('heading', { name: /Previous transactions|Предыдущие транзакции/ })).toHaveCount(1)
 
     const loadCount = Number(await feed.locator('..').getAttribute('data-stat-load-count'))
     const heightBeforeBackwardScroll = await page.evaluate(() => document.scrollingElement?.scrollHeight ?? 0)

@@ -1,6 +1,6 @@
 import type { Period } from '~~/utils/date/types'
 
-import { formatByLocale } from '~~/utils/date/civil'
+import { formatByLocale, formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 import type { LocaleSlug } from '~/components/locale/types'
 
@@ -17,7 +17,14 @@ export function getFormatForChart(periodName: Period) {
 }
 
 export function getTooltipFormatForChart(periodName: Period) {
-  return periodName === 'month' ? 'LLLL yyyy' : getFormatForChart(periodName)
+  return periodName === 'month' ? 'LLLL' : getFormatForChart(periodName)
+}
+
+export function formatChartTooltipLabel(date: number, period: Period, locale: LocaleSlug) {
+  const formatter = getTooltipFormatForChart(period)
+  return period === 'year'
+    ? formatByLocale(date, formatter, locale)
+    : formatDateWithOptionalYear(date, formatter, locale)
 }
 
 export function formatChartAxisLabel(

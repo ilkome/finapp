@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { RecurrenceId, RecurrenceItem } from '~/components/recurrences/types'
 
@@ -22,7 +22,7 @@ const emit = defineEmits<{
   edit: [id: RecurrenceId]
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const router = useRouter()
 const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
@@ -31,14 +31,14 @@ const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 const m = useRecurrenceMenuItems()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 const category = computed(() => categoriesStore.items?.[rule.categoryId])
 const wallet = computed(() => walletsStore.items?.[rule.walletId])
 
 const periodLabel = computed(() => recurrenceEveryLabel(t, rule.freq, rule.interval))
 
 const next = computed(() => nextOccurrence(rule, todayCivilDayEpoch()))
-const nextLabel = computed(() => (next.value ? formatByLocale(next.value, 'd MMM yyyy', dateLocale.value) : undefined))
+const nextLabel = computed(() => (next.value ? formatDateWithOptionalYear(next.value, 'd MMM', dateLocale.value) : undefined))
 const isStale = computed(() => isStaleSubscription(rule, id, trnsStore.items ?? {}, todayCivilDayEpoch()))
 
 const confirmCancel = ref(false)

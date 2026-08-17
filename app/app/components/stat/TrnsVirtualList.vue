@@ -69,6 +69,8 @@ function estimateRowHeight(index: number) {
     return 1
   if (row.type === 'dateHeader')
     return 48
+  if (row.type === 'historyDivider')
+    return 48
   if (row.type === 'loader' || row.type === 'end')
     return 44
   const transaction = trnsStore.items?.[row.trnId]
@@ -215,6 +217,15 @@ onBeforeUnmount(() => {
             :isShowGroupSum="true"
             :row
           />
+
+          <div
+            v-else-if="row.type === 'historyDivider'"
+            class="px-3 pt-5 pb-1"
+          >
+            <h3 class="text-sm font-medium text-muted">
+              {{ t('trns.previous') }}
+            </h3>
+          </div>
 
           <div
             v-else-if="row.type === 'loader' && infinite.canLoadMore.value"

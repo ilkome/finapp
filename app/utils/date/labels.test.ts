@@ -1,5 +1,5 @@
 import { afterAll, describe, expect, it, vi } from 'vitest'
-import { createRangeFormatter } from '~~/utils/date/labels'
+import { createRangeFormatter, formatTrnDateLabel } from '~~/utils/date/labels'
 
 // Mock translation function
 function t(key: string) {
@@ -276,5 +276,18 @@ describe('createRangeFormatter', () => {
         start: new Date(Date.UTC(2024, 11, 1)),
       }),
     ).toBe('Dec 2024 - Nov 2025')
+  })
+
+  it('includes a year part only for transactions outside the current year', () => {
+    expect(formatTrnDateLabel(Date.UTC(2025, 5, 15), 'full', t, 'en')).toMatchObject({
+      day: '15',
+      month: 'Jun',
+      year: undefined,
+    })
+    expect(formatTrnDateLabel(Date.UTC(2024, 5, 15), 'full', t, 'en')).toMatchObject({
+      day: '15',
+      month: 'Jun',
+      year: '2024',
+    })
   })
 })

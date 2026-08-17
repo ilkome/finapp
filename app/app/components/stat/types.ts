@@ -146,6 +146,7 @@ export type StatPeriodTransitionState = {
 
 export type StatVirtualRow
   = | { id: string, offset: number, type: 'periodAnchor' }
+    | { id: string, offset: number, type: 'historyDivider' }
     | (TrnsDisplayRow & { offset: number })
     | { id: string, type: 'loader' }
     | { id: string, type: 'end' }

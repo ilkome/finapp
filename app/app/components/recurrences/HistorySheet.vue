@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { epochToCivilParts, formatByLocale, toCivilDayEpoch, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { epochToCivilParts, formatDateWithOptionalYear, toCivilDayEpoch, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { RecurrenceId } from '~/components/recurrences/types'
 
@@ -19,14 +19,14 @@ const emit = defineEmits<{
   closed: []
 }>()
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const recurrencesStore = useRecurrencesStore()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 const rule = computed(() => recurrencesStore.items?.[props.recurrenceId])
 const category = computed(() => rule.value ? categoriesStore.items?.[rule.value.categoryId] : undefined)
@@ -40,7 +40,7 @@ const nextChargeLabel = computed(() => {
   if (!rule.value)
     return t('recurrences.history.noNext')
   const next = nextOccurrence(rule.value, todayCivilDayEpoch())
-  return next != null ? formatByLocale(next, 'd MMM yyyy', dateLocale.value) : t('recurrences.history.noNext')
+  return next != null ? formatDateWithOptionalYear(next, 'd MMM', dateLocale.value) : t('recurrences.history.noNext')
 })
 
 // Paid so far in the current civil year (Jan 1 of today's UTC-civil year through today).

@@ -1,5 +1,5 @@
 import { CalendarDate } from '@internationalized/date'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
 import {
   addCivilDays,
@@ -8,6 +8,7 @@ import {
   civilDayKey,
   civilDayStart,
   epochToCivilParts,
+  formatDateWithOptionalYear,
   isSameCivilDay,
   lastDayOfMonthCivil,
   toCivilDayEpoch,
@@ -17,6 +18,10 @@ import { getEndOf, getStartOf } from '~~/utils/date/period'
 const DAY = 86_400_000
 
 describe('civil-day helpers', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('toCivilDayEpoch / epochToCivilParts round-trip in UTC', () => {
     const ms = toCivilDayEpoch(2024, 2, 15) // 2024-03-15
     expect(ms).toBe(Date.UTC(2024, 2, 15))
@@ -72,6 +77,15 @@ describe('civil-day helpers', () => {
 
   it('end-of-day is one ms before next midnight', () => {
     expect(getEndOf(new Date(Date.UTC(2024, 2, 15)), 'day').getTime()).toBe(Date.UTC(2024, 2, 15) + DAY - 1)
+  })
+
+  it('omits the current civil year and shows a different year', () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date('2026-08-17T12:00:00Z'))
+
+    expect(formatDateWithOptionalYear(Date.UTC(2026, 7, 17), 'd MMM', 'en')).toBe('17 Aug')
+    expect(formatDateWithOptionalYear(Date.UTC(2025, 7, 17), 'd MMM', 'en')).toBe('17 Aug 2025')
+    expect(formatDateWithOptionalYear(Date.UTC(2027, 0, 1), 'd MMM', 'ru')).toBe('1 янв. 2027')
   })
 })
 

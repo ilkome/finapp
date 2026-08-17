@@ -7,12 +7,11 @@ import { DataZoomInsideComponent, GridComponent, MarkAreaComponent, MarkLineComp
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
-import { formatByLocale } from '~~/utils/date/civil'
 
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { formatChartAmount, formatChartAxisLabel, getFormatForChart, getTooltipFormatForChart } from '~/components/stat/chart/format'
+import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { baseOption, buildChartSeries, filterChartTooltipParams, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
@@ -114,7 +113,7 @@ const option = computed(() => {
   }
 
   xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
-    return formatByLocale(new Date(+value), getFormatForChart(period), locale.value)
+    return formatChartTooltipLabel(+value, period, locale.value)
   }
 
   const yAxis = data.yAxis as Record<string, any>
@@ -286,7 +285,7 @@ function getTooltipRows(params: unknown) {
           :data-stat-chart-tooltip="isDev ? 'true' : undefined"
         >
           <div class="border-b border-accented px-3 py-2 text-xs text-muted capitalize">
-            {{ formatByLocale(new Date(+(params as TooltipParam[])[0]!.name), getTooltipFormatForChart(period), locale) }}
+            {{ formatChartTooltipLabel(+(params as TooltipParam[])[0]!.name, period, locale) }}
           </div>
 
           <div v-if="getTooltipRows(params).length">

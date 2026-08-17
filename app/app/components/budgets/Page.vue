@@ -2,7 +2,8 @@
 import type { TabsItem } from '@nuxt/ui'
 
 import { UTCDate } from '@date-fns/utc'
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { formatDateWithOptionalYear, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { createRangeFormatter } from '~~/utils/date/labels'
 import { getStartOf } from '~~/utils/date/period'
 
 import type { BudgetId, BudgetPeriodType } from '~/components/budgets/types'
@@ -16,7 +17,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useRecurrenceTotals } from '~/components/recurrences/useRecurrenceTotals'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const budgetsStore = useBudgetsStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
@@ -138,15 +139,16 @@ function onMoveConfirm(fromId: BudgetId, amount: number) {
   movingToId.value = undefined
 }
 
-const dateLocale = computed(() => locale.value.startsWith('ru') ? 'ru' : 'en')
+const dateLocale = useDateLocale()
 
 const periodLabel = computed(() => {
   const type = period.periodType.value
-  if (type === 'year')
-    return formatByLocale(period.range.value.start, 'yyyy', dateLocale.value)
-  if (type === 'month')
-    return formatByLocale(period.range.value.start, 'LLLL yyyy', dateLocale.value)
-  return `${formatByLocale(period.range.value.start, 'd MMM', dateLocale.value)} – ${formatByLocale(period.range.value.end, 'd MMM', dateLocale.value)}`
+  return createRangeFormatter(t, dateLocale.value).formatRangeExact({
+    by: type,
+    duration: 1,
+    end: new Date(period.range.value.end),
+    start: new Date(period.range.value.start),
+  })
 })
 
 // Payday + per-day are pure decoration on the CURRENT period only - they never enter the amount.
@@ -158,7 +160,7 @@ const remainingDays = computed(() => Math.max(1, period.daysInPeriod.value - per
 const perDay = computed(() => showNowCaption.value && safeToSpendTotal.value > 0
   ? safeToSpendTotal.value / remainingDays.value
   : null)
-const periodEndLabel = computed(() => formatByLocale(period.range.value.end, 'd MMM', dateLocale.value))
+const periodEndLabel = computed(() => formatDateWithOptionalYear(period.range.value.end, 'd MMM', dateLocale.value))
 
 function setPeriodType(type: BudgetPeriodType) {
   period.periodType.value = type
@@ -262,7 +264,7 @@ const periodTypeItems = computed<TabsItem[]>(() => budgetPeriodTypes.map(type =>
                 class="hover:text-default"
                 to="/recurrences"
               >
-                {{ t('budgets.safeSheet.payday', { date: formatByLocale(nextIncome.dayEpoch, 'd MMM', dateLocale) }) }}
+                {{ t('budgets.safeSheet.payday', { date: formatDateWithOptionalYear(nextIncome.dayEpoch, 'd MMM', dateLocale) }) }}
               </NuxtLink>
               <NuxtLink
                 v-if="showExpectedIncomeNote"

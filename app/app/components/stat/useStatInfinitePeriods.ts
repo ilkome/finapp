@@ -108,7 +108,12 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   const rows = computed(() => {
     const startedAt = now()
-    const result = buildStatVirtualRows(periods.value, trnsStore.items, canLoadMore.value)
+    const result = buildStatVirtualRows({
+      baseOffset: baseOffset.value,
+      canLoadMore: canLoadMore.value,
+      items: trnsStore.items,
+      periods: periods.value,
+    })
     if (import.meta.dev) {
       const buildCount = ++rowBuildSequence
       const duration = now() - startedAt

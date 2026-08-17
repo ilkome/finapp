@@ -33,15 +33,17 @@ export function mergeStatOffsets(current: readonly number[], additions: readonly
   }
 }
 
-export function buildStatVirtualRows(
-  periods: readonly StatFeedPeriod[],
-  items: Trns | null | undefined,
-  canLoadMore: boolean,
-): StatVirtualRow[] {
+export function buildStatVirtualRows(options: {
+  baseOffset: number
+  canLoadMore: boolean
+  items: Trns | null | undefined
+  periods: readonly StatFeedPeriod[]
+}): StatVirtualRow[] {
   const result: StatVirtualRow[] = []
   const seenTransactions = new Set<TrnId>()
+  let hasHistoryDivider = false
 
-  for (const period of periods) {
+  for (const period of options.periods) {
     result.push({
       id: `period:${period.offset}`,
       offset: period.offset,
@@ -54,11 +56,20 @@ export function buildStatVirtualRows(
       seenTransactions.add(id)
       return true
     })
-    result.push(...buildTrnsDisplayRows(uniqueIds, items)
-      .map(row => ({ ...row, offset: period.offset })))
+    const periodRows = buildTrnsDisplayRows(uniqueIds, options.items)
+      .map(row => ({ ...row, offset: period.offset }))
+    if (!hasHistoryDivider && period.offset > options.baseOffset && periodRows.some(row => row.type === 'transaction')) {
+      result.push({
+        id: 'feed:history-divider',
+        offset: period.offset,
+        type: 'historyDivider',
+      })
+      hasHistoryDivider = true
+    }
+    result.push(...periodRows)
   }
 
-  result.push(canLoadMore
+  result.push(options.canLoadMore
     ? { id: 'feed:loader', type: 'loader' }
     : { id: 'feed:end', type: 'end' })
   return result
