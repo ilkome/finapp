@@ -51,6 +51,10 @@ function onParentClick(item: CategoryWithData) {
     emit('clickCategory', item.id)
 }
 
+function isItemExpanded(item: CategoryWithData) {
+  return isListGrouped.value && !!item.categories?.length && isExpanded(item.id)
+}
+
 function onToggleListGrouping() {
   statConfig.updateConfig('categories', { list: { isGrouped: !isListGrouped.value } })
 }
@@ -126,18 +130,18 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           :isShowParent="props.isOneCategory ? false : !isListGrouped"
           :stacked="!props.isOneCategory && !isListGrouped"
           :item="item"
-          :isExpanded="isExpanded(item.id)"
+          :isExpanded="isItemExpanded(item)"
           isShowChevron
           :maxCategoryValues="linesMaxValues"
           :lineWidth="1"
-          :class="`group ${isExpanded(item.id) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
+          :class="`group ${isItemExpanded(item) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
           @click="onParentClick(item)"
           @amountClick="emit('clickCategory', item.id)"
         />
 
         <UCollapsible
           v-if="item.categories?.length"
-          :open="isExpanded(item.id)"
+          :open="isItemExpanded(item)"
           :ui="{ content: 'overflow-hidden' }"
         >
           <template #content>
