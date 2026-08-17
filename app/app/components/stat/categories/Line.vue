@@ -74,7 +74,7 @@ function onAmountClick(e: MouseEvent) {
     <slot name="before" />
     <UiElement
       :isActive="props.isActive"
-      :lineWidth="props.lineWidth"
+      :lineWidth="isLines ? 0 : props.lineWidth"
       class="relative [&_.uiElementLine]:block!"
       insideClasses="min-h-11!"
     >
