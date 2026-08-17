@@ -4,7 +4,7 @@ import type { StatReportContext } from '~/components/stat/report/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCategoryViews } from '~/components/stat/categories/categoryViews'
-import { statDashboardKey, statPreservedCategoryScrollTopKey } from '~/components/stat/injectionKeys'
+import { statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/statFeed'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -17,7 +17,7 @@ const { t } = useI18n()
 const { computeTotalForTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
-const isDashboard = inject(statDashboardKey, false)
+const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
 const { height: categoriesHeight } = useElementSize(categoriesBreakdown)
 const { height: viewportHeight } = useWindowSize()
@@ -81,7 +81,7 @@ onBeforeUnmount(() => {
   />
 
   <div
-    v-if="ctx.selectedTrnsIds.value.length > 0 || (isDashboard && ctx.params.statTab.value !== 'split')"
+    v-if="ctx.selectedTrnsIds.value.length > 0 || (isVirtualFeedHost && ctx.params.statTab.value !== 'split')"
     class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
   >
     <div

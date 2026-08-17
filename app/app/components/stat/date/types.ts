@@ -1,4 +1,4 @@
-import type { ComputedRef, Ref } from 'vue'
+import type { ComputedRef, MaybeRefOrGetter, Ref } from 'vue'
 import type { Period, Range } from '~~/utils/date/types'
 
 export type StatDateParams = {
@@ -31,7 +31,7 @@ export type StatRangePanDirection = 'future' | 'past'
 
 export type UseStatDateOptions = {
   initParams?: Partial<StatDateParams>
-  key: string
+  key: MaybeRefOrGetter<string>
   maxRange: ComputedRef<Range>
   queryParams?: Partial<StatDateParamsQuery>
   storage?: Storage

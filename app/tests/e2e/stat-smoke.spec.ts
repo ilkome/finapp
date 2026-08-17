@@ -18,6 +18,26 @@ async function bootstrapDemo(page: Page, context: BrowserContext) {
 }
 
 test.describe('Stat / dashboard smoke', () => {
+  test('keeps an independent period for each statistics tab', async ({ context, page }) => {
+    await bootstrapDemo(page, context)
+    await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
+
+    const dateRange = page.locator('[data-stat-date-range]').first()
+    const summaryPeriod = (await dateRange.textContent())?.trim()
+
+    await page.getByRole('button', { name: T.expense }).first().click()
+    await dateRange.click()
+    await page.getByRole('button', { name: /^(Month|Месяц)$/ }).first().click()
+    const expensePeriod = (await dateRange.textContent())?.trim()
+    expect(expensePeriod).not.toBe(summaryPeriod)
+
+    await page.getByRole('button', { name: T.summary }).first().click()
+    await expect(dateRange).toHaveText(summaryPeriod!)
+
+    await page.getByRole('button', { name: T.expense }).first().click()
+    await expect(dateRange).toHaveText(expensePeriod!)
+  })
+
   test('page loads with no errors, chart renders, tabs switch cleanly', async ({ context, page }) => {
     const consoleErrors: string[] = []
     const pageErrors: string[] = []

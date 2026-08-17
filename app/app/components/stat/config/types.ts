@@ -1,4 +1,4 @@
-import type { Ref } from 'vue'
+import type { MaybeRefOrGetter, Ref } from 'vue'
 import type { DeepPartial } from '~~/utils/types'
 
 import type { MiniItemConfig } from '~/components/stat/config/schema'
@@ -7,7 +7,7 @@ export type StatConfigParams = {
   initialConfig?: MiniItemConfig
   props?: DeepPartial<MiniItemConfig>
   storage?: Storage
-  storageKey: string
+  storageKey: MaybeRefOrGetter<string>
 }
 
 export type StatConfigProvider = {

@@ -2,7 +2,7 @@
 import type { StatReportContext } from '~/components/stat/report/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { statDashboardKey } from '~/components/stat/injectionKeys'
+import { statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { resolveCurrentPeriodEmptyKey } from '~/components/stat/statFeed'
 
 const props = defineProps<{
@@ -13,7 +13,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const isDashboard = inject(statDashboardKey, false)
+const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 
 const shown = useStoredToggle(`${props.storageKey}-trns`, true)
 const isQuickCategoryFocused = computed(() => (props.ctx?.filteredCategoriesIds.value.length ?? 0) > 0)
@@ -25,7 +25,7 @@ const isOpen = computed({
   },
 })
 const isVirtualEnabled = computed(() =>
-  isDashboard
+  isVirtualFeedHost
   && props.ctx
   && props.ctx.params.statTab.value !== 'split'
   && props.ctx.params.statDate.params.value.intervalSelected === -1,

@@ -1,7 +1,8 @@
+import type { MaybeRefOrGetter } from 'vue'
 import type { Range } from '~~/utils/date/types'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { computed, nextTick, ref, shallowRef, watch } from 'vue'
+import { computed, nextTick, ref, shallowRef, toValue, watch } from 'vue'
 
 import type { StatDateParams } from '~/components/stat/date/types'
 
@@ -20,9 +21,14 @@ vi.stubGlobal('localStorage', {
   setItem: vi.fn(),
 })
 
+const storageKeys = vi.hoisted(() => [] as unknown[])
+
 // Mock useStorage as a plain ref with defaults
 vi.mock('@vueuse/core', () => ({
-  useStorage: (_key: string, defaultValue: any) => ref(defaultValue),
+  useStorage: (key: unknown, defaultValue: any) => {
+    storageKeys.push(key)
+    return ref(defaultValue)
+  },
 }))
 
 const { useStatDate } = await import('./useStatDate')
@@ -83,6 +89,24 @@ describe('selectInterval', () => {
 
     expect(statDate.params.value.intervalSelected).toBe(999)
     expect(result).toBeUndefined()
+  })
+})
+
+describe('storage key', () => {
+  it('tracks a reactive page storage key', () => {
+    const pageStorageKey = ref('wallet-summary')
+    const maxRange = computed<Range>(() => ({
+      end: new Date('2024-12-31').getTime(),
+      start: new Date('2024-01-01').getTime(),
+    }))
+
+    useStatDate({ key: pageStorageKey, maxRange })
+
+    const storageKey = storageKeys.at(-1) as MaybeRefOrGetter<string>
+    expect(toValue(storageKey)).toBe('wallet-summary-params')
+
+    pageStorageKey.value = 'wallet-expense'
+    expect(toValue(storageKey)).toBe('wallet-expense-params')
   })
 })
 

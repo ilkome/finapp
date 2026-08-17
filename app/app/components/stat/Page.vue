@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import type { ComponentPublicInstance } from 'vue'
-
-import { useMediaQuery, useStorage } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/filter/useFilter'
-import { statDashboardKey, statStickyNavKey, statStickyTopKey } from '~/components/stat/injectionKeys'
+import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -17,25 +15,7 @@ const route = useRoute()
 const trnsStore = useTrnsStore()
 
 const filter = useFilter()
-
-// Dashboard: the date/filter nav row pins immediately below the page header.
-provide(statDashboardKey, true)
-provide(statStickyNavKey, true)
-
-type StatHeaderInstance = ComponentPublicInstance & {
-  stickyMainElement: HTMLElement | null
-  stickyRootElement: HTMLElement | null
-}
-
-const statHeader = useTemplateRef<StatHeaderInstance>('statHeader')
-const isDesktopHeader = useMediaQuery('(min-width: 768px)')
-const statHeaderElement = computed(() => isDesktopHeader.value
-  ? statHeader.value?.stickyRootElement
-  : statHeader.value?.stickyMainElement)
-// The sticky offset must include the header padding, otherwise the summary is
-// positioned inside the header and its top edge is clipped beneath it.
-const { height: statStickyTop } = useElementSize(statHeaderElement, undefined, { box: 'border-box' })
-provide(statStickyTopKey, statStickyTop)
+const { statHeader } = useStatPageHost()
 
 const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
 const storageKey = computed(() => `dashboard-${activeTab.value}`)
@@ -48,8 +28,8 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const { statConfig } = useStatPageProviders({
-  config: { storageKey: storageKey.value },
-  date: { key: storageKey.value, maxRange, queryParams: route.query },
+  config: { storageKey },
+  date: { key: storageKey, maxRange, queryParams: route.query },
   filter,
 })
 

@@ -5,10 +5,10 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { StatConfigParams, StatConfigProvider } from '~/components/stat/config/types'
-import type { StatDateProvider, UseStatDateOptions } from '~/components/stat/date/types'
+import type { StatConfigProvider } from '~/components/stat/config/types'
+import type { StatDateProvider } from '~/components/stat/date/types'
 import type { TrnsDisplayRow } from '~/components/trns/listRows'
-import type { TrnId, Trns, TrnsListFilterSnapshot, TrnsListFilterState, TrnsViewType } from '~/components/trns/types'
+import type { TrnId, Trns, TrnsListFilterState, TrnsViewType } from '~/components/trns/types'
 
 export const statTabSlugs = ['income', 'expense', 'summary', 'split'] as const
 export type StatTabSlug = typeof statTabSlugs[number]
@@ -16,13 +16,6 @@ export type SeriesSlug = 'income' | 'expense'
 export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
 
 export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical'
-
-export type StatPageProvidersOptions = {
-  config: StatConfigParams
-  date: UseStatDateOptions
-  filter: FilterProvider
-  initialTrnsViewState?: TrnsListFilterSnapshot
-}
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>

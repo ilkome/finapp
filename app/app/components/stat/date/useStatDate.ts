@@ -3,6 +3,7 @@ import type { Range } from '~~/utils/date/types'
 import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 import defu from 'defu'
+import { computed, toValue } from 'vue'
 
 import type { Grouped, IntervalGroupedLabel, StatDateParams, StatRangePanDirection, UseStatDateOptions } from '~/components/stat/date/types'
 
@@ -15,7 +16,8 @@ export function useStatDate({
   queryParams,
   storage,
 }: UseStatDateOptions) {
-  const params = useStorage<StatDateParams>(`${key}-params`, {} as StatDateParams, storage ?? localStorage, {
+  const paramsStorageKey = computed(() => `${toValue(key)}-params`)
+  const params = useStorage<StatDateParams>(paramsStorageKey, {} as StatDateParams, storage ?? localStorage, {
     mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
   })
 

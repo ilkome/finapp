@@ -78,6 +78,32 @@ function expectStableGeometry(before: Geometry, after: Geometry) {
 }
 
 test.describe('Statistics measured virtual feed', () => {
+  test('uses the shared virtual and sticky host on category and wallet pages', async ({ context, page }) => {
+    await page.setViewportSize({ height: 900, width: 1440 })
+    await bootstrapDemo(page, context)
+
+    for (const path of [
+      '/categories/demo_cat_food',
+      '/categories/demo_cat_food_groceries',
+      '/wallets/demo_w_debit_rub',
+    ]) {
+      await page.goto(path, { waitUntil: 'domcontentloaded' })
+
+      const feed = page.locator('.stat-trns-virtual')
+      const feedState = feed.locator('..')
+      const summary = page.locator('[data-stat-sticky-summary]')
+      await expect(feed).toBeVisible({ timeout: 15_000 })
+      await expect(feedState).toHaveAttribute('data-stat-listener-count', '11')
+      expect(await feed.locator(':scope > [data-index]').count()).toBeLessThanOrEqual(120)
+      expect(await summary.evaluate(element => getComputedStyle(element).position)).toBe('sticky')
+
+      const initialScrollTop = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
+      await page.mouse.wheel(0, 900)
+      await expect.poll(() => page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)).toBeGreaterThan(initialScrollTop)
+      expect(await feed.locator(':scope > [data-index]').count()).toBeLessThanOrEqual(120)
+    }
+  })
+
   test('mounts only active report contexts and balances viewport resources', async ({ context, page }) => {
     await page.setViewportSize({ height: 900, width: 1440 })
     await bootstrapDemo(page, context)

@@ -5,11 +5,9 @@ import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilter } from '~/components/filter/useFilter'
-import { useStatConfig } from '~/components/stat/config/useStatConfig'
-import { useStatDate } from '~/components/stat/date/useStatDate'
-import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
+import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -23,7 +21,7 @@ const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const filter = useFilter()
-provide(filterKey, filter)
+const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
@@ -35,30 +33,30 @@ const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
   trnsTypes: getTypesMapping(activeTab.value),
-  walletsIds: [walletId.value, ...filter?.walletsIds?.value],
+  walletsIds: [walletId.value],
 }))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({
-  props: {
-    categories: {
-      isShowEmpty: true,
+const { statConfig } = useStatPageProviders({
+  config: {
+    props: {
+      categories: {
+        isShowEmpty: true,
+      },
+      wallets: {
+        isShow: false,
+      },
     },
-    wallets: {
-      isShow: false,
-    },
+    storageKey,
   },
-  storageKey: storageKey.value,
+  date: {
+    key: storageKey,
+    maxRange,
+    queryParams: route.query,
+  },
+  filter,
 })
-provide(statConfigKey, statConfig)
-
-const statDate = useStatDate({
-  key: storageKey.value,
-  maxRange,
-  queryParams: route.query,
-})
-provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
   statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
@@ -116,6 +114,7 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="wallet">
     <StatHeader
+      ref="statHeader"
       v-model:activeTab="activeTab"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"

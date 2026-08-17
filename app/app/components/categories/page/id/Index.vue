@@ -10,6 +10,7 @@ import { isMenuableCategory, useCategoryMenuItems } from '~/components/categorie
 import { useFilter } from '~/components/filter/useFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
+import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -24,6 +25,7 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
+const { statHeader } = useStatPageHost()
 const deleteChildId = ref<CategoryId | null>(null)
 
 const deleteChildTrnsCount = computed(() => {
@@ -160,7 +162,7 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
           },
         },
     storage: isStatDrilldown ? sessionStorage : localStorage,
-    storageKey: storageKey.value,
+    storageKey,
   },
   date: {
     initParams: statSnapshot?.date ?? {
@@ -171,7 +173,7 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
       rangeBy: 'day',
       rangeDuration: differenceInDays(maxRange.value.end, maxRange.value.start),
     },
-    key: storageKey.value,
+    key: storageKey,
     maxRange,
     queryParams: route.query,
     storage: isStatDrilldown ? sessionStorage : localStorage,
@@ -259,10 +261,11 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="category">
     <StatHeader
+      ref="statHeader"
       v-model:activeTab="activeTab"
       :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
       :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
-      :configWallets="isStatDrilldown"
+      configWallets
       :hasCategoryBreakdown="childrenIds.length > 0"
       :hideTabs="!!singleTrnType"
       :preCategoriesIds="childrenIds"

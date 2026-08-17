@@ -1,12 +1,47 @@
-import { describe, expect, it } from 'vitest'
+import type { MaybeRefOrGetter } from 'vue'
+
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { ref, toValue } from 'vue'
 
 import { defaultConfig } from './schema'
-import { normalizeStoredStatConfig } from './useStatConfig'
+
+const storageKeys = vi.hoisted(() => [] as unknown[])
+const currentRoute = ref({ query: {} as Record<string, string> })
+
+vi.stubGlobal('localStorage', {})
+vi.stubGlobal('useIsLaptop', () => ref(true))
+vi.stubGlobal('useRouter', () => ({ currentRoute }))
+
+vi.mock('@vueuse/core', () => ({
+  useStorage: (key: unknown, defaultValue: unknown) => {
+    storageKeys.push(key)
+    return ref(defaultValue)
+  },
+}))
+
+const { normalizeStoredStatConfig, useStatConfig } = await import('./useStatConfig')
+
+beforeEach(() => {
+  currentRoute.value = { query: {} }
+  storageKeys.length = 0
+})
 
 describe('normalizeStoredStatConfig', () => {
   it('maps legacy pie chart configs to bar', () => {
     const config = normalizeStoredStatConfig({ chart: { type: 'pie' } }, structuredClone(defaultConfig))
 
     expect(config.chart.type).toBe('bar')
+  })
+
+  it('tracks a reactive page storage key', () => {
+    const pageStorageKey = ref('dashboard-summary')
+
+    useStatConfig({ storageKey: pageStorageKey })
+
+    const storageKey = storageKeys.at(-1) as MaybeRefOrGetter<string>
+    expect(toValue(storageKey)).toBe('finapp-dashboard-summary-')
+
+    pageStorageKey.value = 'dashboard-expense'
+    expect(toValue(storageKey)).toBe('finapp-dashboard-expense-')
   })
 })

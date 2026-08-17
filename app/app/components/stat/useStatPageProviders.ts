@@ -1,4 +1,4 @@
-import type { StatPageProvidersOptions } from '~/components/stat/types'
+import type { StatPageProvidersOptions } from '~/components/stat/page/types'
 import type { TrnsListFilterState } from '~/components/trns/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
