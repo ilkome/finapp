@@ -139,7 +139,10 @@ onBeforeUnmount(() => {
       {{ t('trns.title') }} {{ ctx.modalTrnsIds.value.length > 0 ? ctx.modalTrnsIds.value.length : '' }}
     </UiTitleModal>
 
-    <div class="bottomSheetContentInside scrollerBlock">
+    <div
+      class="bottomSheetContentInside scrollerBlock"
+      data-stat-trns-quick-view
+    >
       <TrnsList
         :isShowDates="!ctx.isPeriodOneDay.value"
         :isShowGroupSum="!ctx.isPeriodOneDay.value"

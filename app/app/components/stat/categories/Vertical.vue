@@ -36,6 +36,7 @@ const { longPressRef } = useCategoryLongPress(
   <div
     v-if="category"
     ref="longPressRef"
+    :data-stat-category-quick-view="props.item.id"
     class="rounded-sm p-1 pt-5 pb-2 hover:bg-elevated"
   >
     <div class="flex h-28 items-end rounded-sm bg-elevated">

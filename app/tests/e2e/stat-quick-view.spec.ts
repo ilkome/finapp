@@ -12,14 +12,27 @@ async function bootstrapDemo(page: Page, context: BrowserContext) {
   await page.waitForTimeout(800)
 }
 
-async function expectQuickViewReplaced(page: Page, context: BrowserContext) {
+async function expectQuickViewReplaced(page: Page, context: BrowserContext, isMobile = false) {
   await bootstrapDemo(page, context)
 
   const categories = page.locator('[data-stat-categories-breakdown]').first()
   await expect(categories).toBeVisible({ timeout: 15_000 })
-  await categories.locator('.uiElement.interactive').first().click()
+  await page.getByRole('button', { name: /Page Settings|Настройки страницы/ }).click()
+  const verticalRow = page.locator('[data-stat-config-row="vertical"]')
+  const verticalToggle = verticalRow.getByRole('switch')
+  if (await verticalToggle.getAttribute('aria-checked') !== 'true')
+    await verticalToggle.click()
+  if (isMobile)
+    await page.goBack()
+  else
+    await page.getByRole('button', { name: /Close|Закрыть/ }).click()
+  await expect(verticalRow).toBeHidden()
 
-  const quickView = page.locator('.drag').filter({ hasText: /Transactions|Транзакции/ }).last()
+  const quickViewTrigger = page.locator('[data-stat-category-quick-view]').first()
+  await expect(quickViewTrigger).toBeVisible()
+  await quickViewTrigger.click()
+
+  const quickView = page.locator('[data-stat-trns-quick-view]')
   await expect(quickView).toBeVisible()
 
   const transaction = quickView.locator('.uiElement.interactive').first()
@@ -46,6 +59,6 @@ test.describe('mobile category quick view', () => {
   })
 
   test('replaces a category transaction sheet with the mobile edit form', async ({ context, page }) => {
-    await expectQuickViewReplaced(page, context)
+    await expectQuickViewReplaced(page, context, true)
   })
 })

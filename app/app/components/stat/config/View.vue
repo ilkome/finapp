@@ -228,6 +228,7 @@ function onRowActivate(row: RootRow) {
               class="mx-2 h-px bg-elevated/50"
             />
             <StatConfigRow
+              :data-stat-config-row="row.key"
               :hasPanel="!!row.panel"
               :hasToggle="!!row.toggle"
               :isShow="row.isShow"
