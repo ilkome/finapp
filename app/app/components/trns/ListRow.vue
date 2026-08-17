@@ -38,7 +38,7 @@ const rowTotal = computed(() => props.row.type === 'dateHeader' && props.row.trn
   <div
     v-if="row.type === 'dateHeader'"
     :class="{ 'border-accented': isShowGroupSum && row.trnsIds.length > 1 }"
-    class="flex items-center gap-2 px-3 py-1"
+    class="flex items-center gap-2 px-3 pt-3 pb-1"
   >
     <TrnsDateHeader
       :date="row.date"

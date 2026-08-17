@@ -68,9 +68,9 @@ function estimateRowHeight(index: number) {
   if (row.type === 'periodAnchor')
     return 1
   if (row.type === 'dateHeader')
-    return 48
+    return 56
   if (row.type === 'historyDivider')
-    return 48
+    return 56
   if (row.type === 'loader' || row.type === 'end')
     return 44
   const transaction = trnsStore.items?.[row.trnId]
@@ -220,11 +220,11 @@ onBeforeUnmount(() => {
 
           <div
             v-else-if="row.type === 'historyDivider'"
-            class="px-3 pt-5 pb-1"
+            class="pt-3"
           >
-            <h3 class="text-sm font-medium text-muted">
-              {{ t('trns.previous') }}
-            </h3>
+            <UiTitleCollapse isHideArrow>
+              <h3>{{ t('trns.previous') }}</h3>
+            </UiTitleCollapse>
           </div>
 
           <div
