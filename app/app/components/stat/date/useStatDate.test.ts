@@ -230,9 +230,10 @@ describe('range invalidation', () => {
 })
 
 describe('setGranularityBy', () => {
-  it('changes granularityBy and resets custom params', () => {
+  it('changes grouping without resetting the selected maximum range', () => {
     const statDate = createStatDate({
       granularityBy: 'day',
+      intervalSelected: 4,
       isShowMaxRange: true,
       isSkipEmpty: true,
     })
@@ -240,8 +241,28 @@ describe('setGranularityBy', () => {
     statDate.setGranularityBy('week')
 
     expect(statDate.params.value.granularityBy).toBe('week')
-    expect(statDate.params.value.isShowMaxRange).toBe(false)
-    expect(statDate.params.value.isSkipEmpty).toBe(false)
+    expect(statDate.params.value.intervalSelected).toBe(-1)
+    expect(statDate.params.value.isShowMaxRange).toBe(true)
+    expect(statDate.params.value.isSkipEmpty).toBe(true)
+  })
+
+  it('preserves maximum range when changing grouping and its duration', () => {
+    const statDate = createStatDate({
+      granularityBy: 'day',
+      granularityDuration: 1,
+      isShowMaxRange: true,
+      rangeBy: 'day',
+      rangeDuration: 365,
+    })
+
+    statDate.setGranularity({ granularityBy: 'month', granularityDuration: 1 })
+    statDate.plusGranularity()
+
+    expect(statDate.params.value.granularityBy).toBe('month')
+    expect(statDate.params.value.granularityDuration).toBe(2)
+    expect(statDate.params.value.isShowMaxRange).toBe(true)
+    expect(statDate.params.value.rangeBy).toBe('day')
+    expect(statDate.params.value.rangeDuration).toBe(365)
   })
 })
 

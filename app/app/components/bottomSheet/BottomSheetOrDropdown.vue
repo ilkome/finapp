@@ -29,6 +29,15 @@ watch(() => props.isOpen, (value) => {
   if (value)
     hasOpened.value = true
 }, { immediate: true })
+
+function closeMobileSheet(closeSheet: () => void) {
+  if (props.unmountOnHide) {
+    closeSheet()
+    return
+  }
+
+  emit('closeModal')
+}
 </script>
 
 <template>
@@ -96,13 +105,13 @@ watch(() => props.isOpen, (value) => {
               v-if="$slots.content"
               class="bottomSheetContentInside scrollerBlock"
             >
-              <slot name="content" :close :isExpanded />
+              <slot name="content" :close="() => closeMobileSheet(close)" :isExpanded />
             </div>
 
             <slot
               v-if="$slots.custom"
               name="custom"
-              :close
+              :close="() => closeMobileSheet(close)"
               :isExpanded
             />
           </div>

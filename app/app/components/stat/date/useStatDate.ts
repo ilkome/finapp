@@ -245,15 +245,18 @@ export function useStatDate({
     })
   }
 
-  function plusGranularity() {
-    resetCustomAndMaxRangeParams()
+  function prepareGranularityChange() {
     resetRangePan()
+    params.value.intervalSelected = -1
+  }
+
+  function plusGranularity() {
+    prepareGranularityChange()
     ++params.value.granularityDuration
   }
 
   function minusGranularity() {
-    resetCustomAndMaxRangeParams()
-    resetRangePan()
+    prepareGranularityChange()
     if (params.value.granularityDuration > 1)
       --params.value.granularityDuration
   }
@@ -299,14 +302,12 @@ export function useStatDate({
   }
 
   function setGranularityBy(granularityBy: Grouped['granularityBy']) {
-    resetCustomAndMaxRangeParams()
-    resetRangePan()
+    prepareGranularityChange()
     params.value.granularityBy = granularityBy
   }
 
   function setGranularity({ granularityBy, granularityDuration }: Grouped) {
-    resetCustomAndMaxRangeParams()
-    resetRangePan()
+    prepareGranularityChange()
     params.value.granularityBy = granularityBy
     params.value.granularityDuration = granularityDuration
   }
