@@ -16,7 +16,7 @@
 Из корня репозитория:
 
 ```bash
-pnpm docs:dev
+pnpm dev:docs
 ```
 
 Запускается на `http://localhost:3051`.
@@ -26,7 +26,7 @@ pnpm docs:dev
 Из корня репозитория:
 
 ```bash
-pnpm docs:build
+pnpm build:docs
 ```
 
 ## Линтинг
