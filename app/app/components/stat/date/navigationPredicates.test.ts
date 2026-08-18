@@ -134,8 +134,12 @@ describe('isShowNavHome', () => {
     start: getStartOf(new Date('2024-05-15T12:00:00Z'), 'month').getTime(),
   }
 
-  it('is false when isShowMaxRange', () => {
+  it('is false in the maximum range when no interval is selected', () => {
     expect(isShowNavHome({ ...params, isShowMaxRange: true }, currentPeriod, now)).toBe(false)
+  })
+
+  it('is true when an interval is selected in the maximum range', () => {
+    expect(isShowNavHome({ ...params, intervalSelected: 2, isShowMaxRange: true }, currentPeriod, now)).toBe(true)
   })
 
   it('is true when an interval is selected, even on the current period', () => {

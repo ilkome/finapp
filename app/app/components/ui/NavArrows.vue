@@ -1,6 +1,7 @@
 <script setup lang="ts">
-const { hideInactiveArrows = false, homeMatchesArrows = false, isEnd, isShowNavHome, isStart } = defineProps<{
+const { hideInactiveArrows = false, homeAriaLabel, homeMatchesArrows = false, isEnd, isShowNavHome, isStart } = defineProps<{
   hideInactiveArrows?: boolean
+  homeAriaLabel?: string
   homeMatchesArrows?: boolean
   isEnd: boolean
   isShowNavHome: boolean
@@ -36,7 +37,7 @@ const emit = defineEmits<{
 
     <UiActionButton
       v-if="isShowNavHome"
-      :ariaLabel="$t('base.today')"
+      :ariaLabel="homeAriaLabel ?? $t('base.today')"
       :class="homeMatchesArrows && 'bg-elevated'"
       @click="emit('changeDate', 'today')"
     >

@@ -46,5 +46,6 @@ export function isShowNavHome(params: StatDateParams, range: Range, now: Date): 
   const start = getStartOf(sub(now, toDuration(params.rangeBy, params.rangeDuration - 1)), params.rangeBy).getTime()
   const end = getEndOf(now, params.rangeBy).getTime()
 
-  return !params.isShowMaxRange && (params.intervalSelected !== -1 || (range.start !== start && range.end !== end))
+  return params.intervalSelected !== -1
+    || (!params.isShowMaxRange && range.start !== start && range.end !== end)
 }

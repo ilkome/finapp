@@ -59,6 +59,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       v-if="isShowNav && !statDate.params.value.customDate"
       class="shrink-0 snap-start"
       hideInactiveArrows
+      :homeAriaLabel="$t('base.reset')"
       homeMatchesArrows
       :isEnd
       :isShowNavHome
