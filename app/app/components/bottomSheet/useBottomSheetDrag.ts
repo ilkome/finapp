@@ -87,6 +87,7 @@ export function useBottomSheetDrag({
   // of a plain tap on inner controls (e.g. the filter tabs).
   const dragMoved = ref(false)
   const startFingerY = ref(0)
+  const pendingInteractiveStartY = ref<number | null>(null)
   const MOVE_THRESHOLD = 8
 
   const dragDistance = computed(() => clientY.value - initialY.value)
@@ -274,7 +275,28 @@ export function useBottomSheetDrag({
     return false
   }
 
+  function beginDrag(startY: number, velocityY = startY): void {
+    if (detentMode.value) {
+      dragStartOffset.value = -initialY.value
+      startedExpanded.value = dragStartOffset.value <= EXPANDED_EPS
+    }
+
+    clientY.value = startY
+    initialY.value = startY + initialY.value
+    startFingerY.value = startY
+    dragMoved.value = false
+    isDragging.value = true
+
+    if (detentMode.value) {
+      lastMoveY.value = velocityY
+      lastMoveT.value = performance.now()
+      velocity.value = 0
+    }
+  }
+
   function onDragStart(event: Event): void {
+    pendingInteractiveStartY.value = null
+
     if (event.target instanceof Element && event.target.closest('.sortHandle'))
       return
 
@@ -293,6 +315,12 @@ export function useBottomSheetDrag({
       const isListOption = interactiveTarget?.getAttribute('role') === 'option'
       if (!isHandler.value && interactiveTarget && !isListOption) {
         isDragging.value = false
+
+        // Keep taps native, but arm a pointer drag so a deliberate vertical
+        // gesture that starts on a control can still dismiss the sheet.
+        if (isTarget && !hasScroll)
+          pendingInteractiveStartY.value = getClientY(event)
+
         return
       }
 
@@ -301,22 +329,7 @@ export function useBottomSheetDrag({
         return
       }
 
-      if (detentMode.value) {
-        dragStartOffset.value = -initialY.value
-        startedExpanded.value = dragStartOffset.value <= EXPANDED_EPS
-      }
-
-      clientY.value = getClientY(event)
-      initialY.value = clientY.value + initialY.value
-      startFingerY.value = clientY.value
-      dragMoved.value = false
-      isDragging.value = true
-
-      if (detentMode.value) {
-        lastMoveY.value = clientY.value
-        lastMoveT.value = performance.now()
-        velocity.value = 0
-      }
+      beginDrag(getClientY(event))
     }
   }
 
@@ -330,7 +343,25 @@ export function useBottomSheetDrag({
   }
 
   function onDragging(event: Event): void {
-    if (disabled.value || !isDragging.value)
+    if (disabled.value)
+      return
+
+    if (!isDragging.value && pendingInteractiveStartY.value !== null) {
+      const y = getClientY(event)
+      if (Math.abs(y - pendingInteractiveStartY.value) <= MOVE_THRESHOLD)
+        return
+
+      if (contentHasScroll(event)) {
+        pendingInteractiveStartY.value = null
+        return
+      }
+
+      const startY = pendingInteractiveStartY.value
+      pendingInteractiveStartY.value = null
+      beginDrag(startY, y)
+    }
+
+    if (!isDragging.value)
       return
 
     if (detentMode.value) {
@@ -400,6 +431,8 @@ export function useBottomSheetDrag({
   }
 
   function onDragEnd() {
+    pendingInteractiveStartY.value = null
+
     if (disabled.value || !isDragging.value)
       return
 
@@ -460,6 +493,7 @@ export function useBottomSheetDrag({
       useEventListener(containerRef, 'touchstart', onDragStart, { capture: true }),
       useEventListener(containerRef, 'touchmove', onDragging, { capture: true }),
       useEventListener(containerRef, 'touchend', onDragEnd, { capture: true }),
+      useEventListener(containerRef, 'touchcancel', onDragEnd, { capture: true }),
       useEventListener(containerRef, 'mousedown', onDragStart),
       useEventListener(containerRef, 'mouseup', onDragEnd),
       useEventListener(document, 'mousemove', onDragging),
