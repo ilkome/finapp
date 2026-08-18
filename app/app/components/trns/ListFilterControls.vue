@@ -27,7 +27,7 @@ const { t } = useI18n()
   <UiTabs
     v-if="isShowFilterByType && realTypesCount > 1"
     size="xs"
-    class="mb-2"
+    class="mb-2 [&>button]:py-[7px]"
     :items="typeFilterItems"
     :modelValue="filterBy"
     @update:modelValue="(v) => emit('setFilterBy', v as TrnsViewType | 'all')"
