@@ -34,6 +34,7 @@ const { generateDemoData, isDemo } = useDemo()
 const config = useRuntimeConfig()
 const {
   blackAsPrimary,
+  isDark,
   localeOptions,
   neutral,
   neutralColors,
@@ -46,6 +47,7 @@ const {
   setTheme,
   themeOptions,
   themePreference,
+  toggleTheme,
 } = useUserMenuData({ sessionActions: false })
 
 const activePanel = ref<'root' | Panel>('root')
@@ -128,9 +130,21 @@ async function clearCachesAndReload() {
                 <div v-if="activePanel === 'root'">
                   <div
                     v-if="userStore.currentUser"
-                    class="mx-2 border-b border-default py-2"
+                    class="mx-2 flex items-start gap-2 border-b border-default py-2"
                   >
-                    <UserViewLogout />
+                    <div class="min-w-0 grow">
+                      <UserViewLogout />
+                    </div>
+                    <UiActionButton
+                      :ariaLabel="t(isDark ? 'theme.light' : 'theme.dark')"
+                      class="shrink-0"
+                      @click="toggleTheme"
+                    >
+                      <Icon
+                        :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'"
+                        size="20"
+                      />
+                    </UiActionButton>
                   </div>
 
                   <div class="py-4">

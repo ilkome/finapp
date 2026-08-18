@@ -28,7 +28,13 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
   const { locale, t } = useI18n()
   const userStore = useUserStore()
   const { isDemo } = useDemo()
-  const { options: themeOptions, preference: themePreference, setTheme } = useTheme()
+  const {
+    isDark,
+    options: themeOptions,
+    preference: themePreference,
+    setTheme,
+    toggleTheme,
+  } = useTheme()
   const {
     blackAsPrimary,
     neutral,
@@ -236,6 +242,7 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
   return {
     blackAsPrimary,
     dropdownItems,
+    isDark,
     locale,
     localeOptions,
     neutral,
@@ -249,6 +256,7 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
     setTheme,
     themeOptions,
     themePreference,
+    toggleTheme,
     triggerAvatar,
     triggerLabel,
     userStore,
