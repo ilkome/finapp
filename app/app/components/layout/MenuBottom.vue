@@ -11,7 +11,7 @@ const circleItemClass = `flex size-12 shrink-0 items-center justify-center overf
 </script>
 
 <template>
-  <div class="pointer-events-none fixed bottom-0 left-0 z-20 w-full px-4 md:hidden">
+  <div class="pointer-events-none fixed bottom-0 left-0 z-20 w-full px-4 pb-1.5 md:hidden">
     <div
       class="absolute bottom-0 left-0 h-12 w-full"
       style="background: linear-gradient(to bottom, transparent, var(--ui-bg))"
