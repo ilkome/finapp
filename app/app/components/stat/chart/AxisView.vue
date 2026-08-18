@@ -56,6 +56,7 @@ const emit = defineEmits<{
 use([BarChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, SVGRenderer, TooltipComponent])
 
 const { locale, t } = useI18n()
+const { width: viewportWidth } = useWindowSize()
 const statConfig = inject(statConfigKey)!
 const isDev = import.meta.dev
 const isRoundCategoryIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
@@ -120,6 +121,7 @@ const option = computed(() => {
   yAxis.axisPointer.label.formatter = (props: { value: number }) => formatChartAmount(+props.value, locale.value) ?? ''
 
   const tooltip = data.tooltip as Record<string, any>
+  tooltip.show = viewportWidth.value >= 500
   tooltip.position = (
     point: [number, number],
     _params: unknown,
