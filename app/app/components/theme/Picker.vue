@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { BLACK_PRIMARY, capitalize, swatchPalette, useThemeOptions } from '~/components/theme/useThemeOptions'
+import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
 
 const colorMode = useColorMode()
 const { t } = useI18n()
+const isShowMenuLabels = useMenuLabelVisibility()
 const {
   blackAsPrimary,
   neutral,
@@ -169,6 +171,13 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
           </template>
         </USelectMenu>
       </div>
+
+      <UiSwitchItem
+        :checkboxValue="isShowMenuLabels"
+        :title="t('settings.menuLabels')"
+        class="border-t border-default pt-3 md:hidden"
+        @click="isShowMenuLabels = !isShowMenuLabels"
+      />
     </div>
   </UiSettingsCard>
 </template>

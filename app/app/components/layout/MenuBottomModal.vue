@@ -13,6 +13,7 @@ import {
 import { isSearchOpen } from '~/components/search/useSearch'
 import { capitalize, swatchPalette } from '~/components/theme/useThemeOptions'
 import { useUserStore } from '~/components/user/useUserStore'
+import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 type Panel = UserMenuPanel
@@ -30,6 +31,7 @@ const PANEL_PARENT: Record<Panel, 'root' | Panel> = {
 
 const { locale, t } = useI18n()
 const userStore = useUserStore()
+const isShowMenuLabels = useMenuLabelVisibility()
 const { generateDemoData, isDemo } = useDemo()
 const config = useRuntimeConfig()
 const {
@@ -249,6 +251,14 @@ async function clearCachesAndReload() {
                       <span class="text-xs text-dimmed capitalize">{{ row.value }}</span>
                       <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
                     </button>
+
+                    <UiSwitchItem
+                      v-if="activePanel === 'appearance'"
+                      :checkboxValue="isShowMenuLabels"
+                      :title="t('settings.menuLabels')"
+                      class="mt-1"
+                      @click="isShowMenuLabels = !isShowMenuLabels"
+                    />
                   </div>
 
                   <div v-else-if="activePanel === 'locale'" class="grid gap-0.5">

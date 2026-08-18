@@ -464,7 +464,6 @@ export default {
       saveFailed: 'Не удалось сохранить настройки',
     },
     menuLabels: 'Подписи в нижнем меню',
-    mobileMenu: 'Интерфейс',
     title: 'Настройки',
   },
 

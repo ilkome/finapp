@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import { useMenuData } from '~/components/layout/useMenuData'
+import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
 
 const { checkIsActive, itemsBottom, menuItem, onClick } = useMenuData()
-const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
+const isShowMenuLabels = useMenuLabelVisibility()
 const itemInteractionClass = 'interactive transition-colors hover:bg-elevated/50! hover:text-primary active:bg-elevated/50! active:text-primary'
 const navItemClass = `flex h-full grow basis-0 flex-col items-center justify-center gap-0.5 rounded ${itemInteractionClass}`
 const circleItemClass = `flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-default/80 bg-default/20 text-muted shadow-lg backdrop-blur-xl dark:bg-neutral-800/50 ${itemInteractionClass}`
