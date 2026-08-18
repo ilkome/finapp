@@ -50,7 +50,10 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
       v-model:open="isOpen"
       :unmountOnHide="false"
     >
-      <UiTitleCollapse v-if="!isQuickCategoryFocused" :isShown="shown">
+      <UiTitleCollapse
+        v-if="!isQuickCategoryFocused && selectedTrnsIds.length > 0"
+        :isShown="shown"
+      >
         {{ t('trns.title') }} {{ (!shown && selectedTrnsIds.length > 0) ? selectedTrnsIds.length : '' }}
       </UiTitleCollapse>
 

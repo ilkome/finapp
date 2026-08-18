@@ -107,7 +107,7 @@ function onOpenTrnForm(date: number) {
   <div class="min-w-0">
     <!-- Header -->
     <slot
-      v-if="isShowHeader"
+      v-if="isShowHeader && selectedIds.length > 0"
       name="header"
       :paginatedTrnsIds
       :selectedIds

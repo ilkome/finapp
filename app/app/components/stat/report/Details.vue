@@ -135,8 +135,8 @@ onBeforeUnmount(() => {
     v-if="ctx.modalSource.value"
     @closed="ctx.closeModal"
   >
-    <UiTitleModal>
-      {{ t('trns.title') }} {{ ctx.modalTrnsIds.value.length > 0 ? ctx.modalTrnsIds.value.length : '' }}
+    <UiTitleModal v-if="ctx.modalTrnsIds.value.length > 0">
+      {{ t('trns.title') }} {{ ctx.modalTrnsIds.value.length }}
     </UiTitleModal>
 
     <div
