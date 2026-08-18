@@ -3,6 +3,7 @@ import { useBodyScrollLock } from 'reka-ui'
 
 import { registerSheet } from '~/composables/useSheetHistory'
 
+import { resolveDetentFractions } from './geometry'
 import { useBottomSheetDrag } from './useBottomSheetDrag'
 
 const props = defineProps<{
@@ -40,6 +41,7 @@ const {
   init,
   isDragging,
   isExpanded,
+  onTransitionEnd,
   opened,
   overflowClasses,
   overlayStyles,
@@ -61,11 +63,10 @@ const {
 // point) so collapsed offsets are deterministic; detents slide it via transform.
 // Snap points accept viewport fractions (<= 1) or absolute pixels (> 1).
 const detentStyle = computed(() => {
-  const points = props.snapPoints
-  if (!Array.isArray(points) || points.length < 2)
+  const fractions = resolveDetentFractions(props.snapPoints, windowHeight.value)
+  if (fractions.length === 0)
     return null
-  const wh = windowHeight.value || 1
-  const expanded = Math.min(1, Math.max(...points.map(v => (v > 1 ? v / wh : v))))
+  const expanded = fractions[fractions.length - 1]!
   return { height: `${expanded * 100}dvh` }
 })
 
@@ -143,6 +144,7 @@ const dragClasses = computed(() => [
       :style="[dragStyles, detentStyle]"
       class="drag pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
       @click.stop=""
+      @transitionend="onTransitionEnd"
     >
       <div ref="handlerRef">
         <slot name="handler">

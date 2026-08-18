@@ -1,9 +1,19 @@
 import type { Ref } from 'vue'
 
-type Event = TouchEvent | MouseEvent
+import {
+  calcOverlayOpacity,
+  calcVisiblePercent,
+  EXPANDED_DETENT_EPSILON,
+  getRestingInitialY,
+  hasDetents,
+  PERCENT_BASE,
+  resolveDetentFractions,
+  resolveDetentRelease,
+  shouldCloseClassicSheet,
+} from './geometry'
 
-const PERCENT_BASE = 100
-const INIT_DELAY_MS = 10
+type DragInputEvent = TouchEvent | MouseEvent
+type SheetPhase = 'closed' | 'opening' | 'idle' | 'pending' | 'dragging' | 'closing'
 
 type UseBottomSheetDragParams = {
   containerRef: Ref<HTMLElement | null>
@@ -23,41 +33,15 @@ type UseBottomSheetDragParams = {
   windowHeight: Ref<number>
 }
 
-// Finger speed (px/ms) past which a flick overrides position-based snapping.
-const FLICK_VELOCITY = 0.6
-// Distance from the resting collapsed offset within which the sheet reads as
-// fully expanded, so inner scrolling takes over instead of sheet drag.
-const EXPANDED_EPS = 1
-
 // Controls whose first tap must not be consumed by the drag gesture. Plain
 // `div @click` rows are intentionally excluded so drag/scroll still starts on them.
 const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea, label, [role="button"], [role="tab"], [role="switch"]'
+const TRANSITION_FALLBACK_MS = 150
 
-function getClientY(event: Event): number {
+function getClientY(event: DragInputEvent): number {
   return 'touches' in event
     ? Math.round(event.touches[0]!.clientY)
     : event.clientY
-}
-
-function calcVisiblePercent(
-  containerHeight: number,
-  handlerHeight: number,
-  dragDistance: number,
-): number {
-  if (containerHeight === 0)
-    return 0
-  return Math.round(
-    (containerHeight + handlerHeight - dragDistance)
-    / (containerHeight / PERCENT_BASE),
-  )
-}
-
-function calcOverlayOpacity(visiblePercent: number): number {
-  return Math.min(1, Math.max(0, visiblePercent / PERCENT_BASE))
-}
-
-function shouldClose(dragDistance: number, threshold: number, direction: 'down' | 'up'): boolean {
-  return dragDistance >= threshold && direction === 'down'
 }
 
 export function useBottomSheetDrag({
@@ -73,22 +57,27 @@ export function useBottomSheetDrag({
 }: UseBottomSheetDragParams) {
   const initialY = ref(0)
   const clientY = ref(0)
-  // Must start as `true` so the visiblePercent watcher skips during init().
-  // Without this, setInitialY() → visiblePercent=0 → watcher sets disabled=true,
-  // undoing the disabled=false that init() sets right after.
-  const isDragging = ref(true)
+  const phase = ref<SheetPhase>('closed')
+  const isDragging = computed(() => phase.value === 'dragging')
+  const opened = computed(() => phase.value !== 'closed')
   const direction = ref<'down' | 'up'>('up')
   const isHandler = ref(false)
-  const disabled = ref(true)
-  const opened = ref(false)
   // The finger has moved past a tap threshold this gesture. Used to gate the
   // sheet's `pointer-events-none`: a collapsed detent is always transform-shifted,
   // so keying that off `isDragging` (set on touchstart) would swallow the click
   // of a plain tap on inner controls (e.g. the filter tabs).
   const dragMoved = ref(false)
   const startFingerY = ref(0)
-  const pendingInteractiveStartY = ref<number | null>(null)
   const MOVE_THRESHOLD = 8
+  let activeScroller: HTMLElement | null = null
+  let transitionTimer: ReturnType<typeof setTimeout> | null = null
+
+  function clearTransitionTimer() {
+    if (transitionTimer !== null) {
+      clearTimeout(transitionTimer)
+      transitionTimer = null
+    }
+  }
 
   const dragDistance = computed(() => clientY.value - initialY.value)
 
@@ -102,25 +91,12 @@ export function useBottomSheetDrag({
   const dragStartOffset = ref(0)
   const startedExpanded = ref(false)
 
-  const detentMode = computed(() => {
-    const points = snapPoints?.value
-    return (
-      Array.isArray(points)
-      && points.length >= 2
-      && points.every(f => typeof f === 'number' && f > 0)
-    )
-  })
+  const detentMode = computed(() => hasDetents(snapPoints?.value))
 
   // Snap points accept viewport fractions (<= 1) or absolute pixels (> 1),
   // resolved to fractions of the current viewport, clamped and sorted ascending.
   const detentFractions = computed(() => {
-    if (!detentMode.value)
-      return []
-    const wh = windowHeight.value || 1
-    return snapPoints!.value!
-      .map(v => (v > 1 ? v / wh : v))
-      .map(f => Math.min(1, Math.max(0.05, f)))
-      .sort((a, b) => a - b)
+    return resolveDetentFractions(snapPoints?.value, windowHeight.value)
   })
   const expandedFraction = computed(() =>
     detentFractions.value[detentFractions.value.length - 1] ?? 1,
@@ -132,20 +108,20 @@ export function useBottomSheetDrag({
   // viewport, translate down by (expanded - f) * windowHeight; since at rest
   // clientY=0 and dragDistance = -initialY, that offset is the resting initialY.
   function restingInitialY(f: number): number {
-    return -((expandedFraction.value - f) * windowHeight.value)
+    return getRestingInitialY(f, expandedFraction.value, windowHeight.value)
   }
 
   // Boolean only in detent mode (true = expanded, false = collapsed); `undefined`
   // for a classic sheet, so consumers keep intrinsic height and normal scrolling
   // instead of the collapsed-detent scroll suppression.
   const isExpanded = computed(() =>
-    detentMode.value ? Math.abs(dragDistance.value) <= EXPANDED_EPS : undefined,
+    detentMode.value ? Math.abs(dragDistance.value) <= EXPANDED_DETENT_EPSILON : undefined,
   )
 
   const dragOffset = computed(() => {
     if (detentMode.value)
       return 0
-    return disabled.value || isHandler.value ? 0 : settings.pixelOffsetToStartClosing
+    return phase.value !== 'dragging' || isHandler.value ? 0 : settings.pixelOffsetToStartClosing
   })
 
   watch(dragDistance, (current, prev) => {
@@ -252,59 +228,56 @@ export function useBottomSheetDrag({
     return null
   }
 
-  function contentHasScroll(event: Event): boolean {
+  function resolveScroller(target: EventTarget | null): HTMLElement | null {
+    if (target instanceof Element) {
+      const closest = target.closest<HTMLElement>('.scrollerBlock')
+      if (closest && closest.offsetParent !== null)
+        return closest
+    }
+
+    const active = drag.value?.querySelector('.swiper-slide-active')
+    const swiperSlide = active instanceof HTMLElement && active.offsetParent !== null ? active : null
+    return firstVisibleScroller(swiperSlide) ?? firstVisibleScroller(drag.value)
+  }
+
+  function contentHasScroll(event: DragInputEvent): boolean {
     // Below the expanded detent the sheet owns the drag (up-drag expands it),
     // so never hand off to inner scroll until fully expanded.
     if (detentMode.value && !isExpanded.value)
       return false
 
-    // A swiper keeps `swiper-slide-active` on its active slide even when the
-    // whole swiper is display:none (e.g. hidden behind search results). Skip a
-    // hidden slide so we test the scroller that's actually on screen, not the
-    // stale one whose scrollTop is pinned to 0.
-    const active = drag.value?.querySelector('.swiper-slide-active')
-    const swiperSlide = active instanceof HTMLElement && active.offsetParent !== null ? active : null
-    const scrollerInSlide = swiperSlide?.querySelector('.scrollerBlock')
-    if (scrollerInSlide)
-      return scrollerInSlide.scrollTop > 0 && event.type.includes('touch')
-
-    const scroller = firstVisibleScroller(drag.value)
-    if (!swiperSlide && scroller)
-      return scroller.scrollTop > 0 && event.type.includes('touch')
-
-    return false
+    activeScroller ??= resolveScroller(event.target)
+    return Boolean(activeScroller && activeScroller.scrollTop > 0)
   }
 
   function beginDrag(startY: number, velocityY = startY): void {
     if (detentMode.value) {
       dragStartOffset.value = -initialY.value
-      startedExpanded.value = dragStartOffset.value <= EXPANDED_EPS
+      startedExpanded.value = dragStartOffset.value <= EXPANDED_DETENT_EPSILON
     }
 
     clientY.value = startY
     initialY.value = startY + initialY.value
     startFingerY.value = startY
     dragMoved.value = false
-    isDragging.value = true
+    phase.value = 'dragging'
 
-    if (detentMode.value) {
-      lastMoveY.value = velocityY
-      lastMoveT.value = performance.now()
-      velocity.value = 0
-    }
+    lastMoveY.value = velocityY
+    lastMoveT.value = performance.now()
+    velocity.value = 0
   }
 
-  function onDragStart(event: Event): void {
-    pendingInteractiveStartY.value = null
+  function onDragStart(event: DragInputEvent): void {
+    if (phase.value !== 'idle')
+      return
+
+    activeScroller = resolveScroller(event.target)
 
     if (event.target instanceof Element && event.target.closest('.sortHandle'))
       return
 
-    if (disabled.value)
-      return
-
     if (event.target instanceof Element) {
-      isHandler.value = event.target.classList.contains('handler')
+      isHandler.value = Boolean(event.target.closest('.handler'))
       const isTarget = event.target.closest('.drag')
       const hasScroll = contentHasScroll(event)
 
@@ -314,18 +287,18 @@ export function useBottomSheetDrag({
       const interactiveTarget = event.target.closest(INTERACTIVE_SELECTOR)
       const isListOption = interactiveTarget?.getAttribute('role') === 'option'
       if (!isHandler.value && interactiveTarget && !isListOption) {
-        isDragging.value = false
-
         // Keep taps native, but arm a pointer drag so a deliberate vertical
         // gesture that starts on a control can still dismiss the sheet.
-        if (isTarget && !hasScroll)
-          pendingInteractiveStartY.value = getClientY(event)
+        if (isTarget && !hasScroll) {
+          startFingerY.value = getClientY(event)
+          phase.value = 'pending'
+        }
 
         return
       }
 
       if ((!isTarget || hasScroll) && !isHandler.value) {
-        isDragging.value = false
+        activeScroller = null
         return
       }
 
@@ -342,26 +315,22 @@ export function useBottomSheetDrag({
     lastMoveT.value = now
   }
 
-  function onDragging(event: Event): void {
-    if (disabled.value)
-      return
-
-    if (!isDragging.value && pendingInteractiveStartY.value !== null) {
+  function onDragging(event: DragInputEvent): void {
+    if (phase.value === 'pending') {
       const y = getClientY(event)
-      if (Math.abs(y - pendingInteractiveStartY.value) <= MOVE_THRESHOLD)
+      if (Math.abs(y - startFingerY.value) <= MOVE_THRESHOLD)
         return
 
       if (contentHasScroll(event)) {
-        pendingInteractiveStartY.value = null
+        phase.value = 'idle'
+        activeScroller = null
         return
       }
 
-      const startY = pendingInteractiveStartY.value
-      pendingInteractiveStartY.value = null
-      beginDrag(startY, y)
+      beginDrag(startFingerY.value, y)
     }
 
-    if (!isDragging.value)
+    if (phase.value !== 'dragging')
       return
 
     if (detentMode.value) {
@@ -371,9 +340,10 @@ export function useBottomSheetDrag({
       // downward drag at the top edge stays with the sheet (to dismiss).
       if (startedExpanded.value && !isHandler.value
         && (contentHasScroll(event) || y < clientY.value)) {
-        isDragging.value = false
+        phase.value = 'idle'
         initialY.value = 0
         clientY.value = 0
+        activeScroller = null
         return
       }
       if (Math.abs(y - startFingerY.value) > MOVE_THRESHOLD)
@@ -384,9 +354,10 @@ export function useBottomSheetDrag({
     }
 
     if (contentHasScroll(event) && !isHandler.value) {
-      isDragging.value = false
+      phase.value = 'idle'
       initialY.value = 0
       clientY.value = 0
+      activeScroller = null
       return
     }
 
@@ -395,30 +366,31 @@ export function useBottomSheetDrag({
       if (Math.abs(y - startFingerY.value) > MOVE_THRESHOLD)
         dragMoved.value = true
       clientY.value = y
+      sampleVelocity(y)
     }
   }
 
   function snapToFraction(f: number) {
     resetDrag()
-    opened.value = true
+    phase.value = 'idle'
     initialY.value = restingInitialY(f)
   }
 
   function snapOnDragEnd() {
     const current = Math.max(0, dragDistance.value)
-    const delta = current - dragStartOffset.value // + moved down, - moved up
-    const flickDown = velocity.value > FLICK_VELOCITY
-    const flickUp = velocity.value < -FLICK_VELOCITY
-    const threshold = settings.pixelsNeedToDragForClose
+    const decision = resolveDetentRelease(
+      current,
+      dragStartOffset.value,
+      velocity.value,
+      settings.pixelsNeedToDragForClose,
+    )
 
-    // Downward always dismisses - no intermediate collapse on the way out.
-    if (flickDown || delta > threshold) {
+    if (decision === 'close') {
       close()
       return
     }
 
-    // Upward from a collapsed detent expands to full.
-    if (flickUp || delta < -threshold) {
+    if (decision === 'expand') {
       snapToFraction(expandedFraction.value)
       return
     }
@@ -431,9 +403,13 @@ export function useBottomSheetDrag({
   }
 
   function onDragEnd() {
-    pendingInteractiveStartY.value = null
+    if (phase.value === 'pending') {
+      phase.value = 'idle'
+      activeScroller = null
+      return
+    }
 
-    if (disabled.value || !isDragging.value)
+    if (phase.value !== 'dragging')
       return
 
     if (detentMode.value) {
@@ -441,16 +417,23 @@ export function useBottomSheetDrag({
       return
     }
 
-    if (shouldClose(dragDistance.value, settings.pixelsNeedToDragForClose, direction.value))
+    if (shouldCloseClassicSheet(
+      dragDistance.value,
+      settings.pixelsNeedToDragForClose,
+      direction.value,
+      velocity.value,
+    )) {
       close()
-    else
+    }
+    else {
       open()
+    }
   }
 
   function resetDrag() {
     clientY.value = 0
-    isDragging.value = false
     dragMoved.value = false
+    activeScroller = null
   }
 
   function setInitialY() {
@@ -460,25 +443,42 @@ export function useBottomSheetDrag({
   }
 
   function close() {
+    if (phase.value === 'closed' || phase.value === 'closing')
+      return
+
     resetDrag()
+    clearTransitionTimer()
+    phase.value = 'closing'
     setInitialY()
+    transitionTimer = setTimeout(finishClose, TRANSITION_FALLBACK_MS)
   }
 
   function open() {
     resetDrag()
-    opened.value = true
+    phase.value = 'idle'
     initialY.value = detentMode.value ? restingInitialY(collapsedFraction.value) : 0
   }
 
-  let stopTransitionListener: (() => void) | null = null
-
-  function onTransitionEnd() {
+  function finishClose() {
+    clearTransitionTimer()
     const scrollerBlocks = drag.value?.querySelectorAll('.scrollerBlock')
     scrollerBlocks?.forEach(el => (el.scrollTop = 0))
-    stopTransitionListener?.()
-    stopTransitionListener = null
-    opened.value = false
+    phase.value = 'closed'
     emit('closed')
+  }
+
+  function onTransitionEnd(event: TransitionEvent) {
+    if (event.target !== drag.value || event.propertyName !== 'transform')
+      return
+
+    if (phase.value === 'opening') {
+      clearTransitionTimer()
+      phase.value = 'idle'
+      return
+    }
+
+    if (phase.value === 'closing')
+      finishClose()
   }
 
   let stopListeners: (() => void) | null = null
@@ -506,31 +506,46 @@ export function useBottomSheetDrag({
     }
   }
 
+  let initGeneration = 0
+  let openFrame: number | null = null
+
   function removeEvents() {
+    initGeneration++
+    if (openFrame !== null) {
+      cancelAnimationFrame(openFrame)
+      openFrame = null
+    }
+    clearTransitionTimer()
     stopListeners?.()
   }
 
-  watch(visiblePercent, () => {
-    if (isDragging.value)
+  async function init() {
+    removeEvents()
+    const generation = ++initGeneration
+    phase.value = 'closed'
+    await nextTick()
+    if (generation !== initGeneration)
       return
 
-    if (visiblePercent.value === 0) {
-      disabled.value = true
-      stopTransitionListener?.()
-      stopTransitionListener = useEventListener(drag, 'transitionend', onTransitionEnd, { passive: true })
-      return
-    }
+    setInitialY()
+    addEvents()
+    openFrame = requestAnimationFrame(() => {
+      if (generation !== initGeneration)
+        return
 
-    disabled.value = false
-  })
-
-  function init() {
-    setTimeout(() => {
-      setInitialY()
-      disabled.value = false
-      addEvents()
-      setTimeout(open, INIT_DELAY_MS)
-    }, INIT_DELAY_MS)
+      openFrame = requestAnimationFrame(() => {
+        openFrame = null
+        if (generation !== initGeneration)
+          return
+        phase.value = 'opening'
+        initialY.value = detentMode.value ? restingInitialY(collapsedFraction.value) : 0
+        transitionTimer = setTimeout(() => {
+          if (phase.value === 'opening')
+            phase.value = 'idle'
+          transitionTimer = null
+        }, TRANSITION_FALLBACK_MS)
+      })
+    })
   }
 
   watch(expanded, (value) => {
@@ -546,6 +561,7 @@ export function useBottomSheetDrag({
     init,
     isDragging,
     isExpanded,
+    onTransitionEnd,
     opened,
     overflowClasses: computed(() => ({
       'transition-opacity duration-100': !isDragging.value && opened.value,
