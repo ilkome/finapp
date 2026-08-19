@@ -110,10 +110,11 @@ function onClick(type: SeriesSlugSelected) {
     <div v-else class="flex items-center justify-start">
       <StatSumItem
         :amount="props.type === 'income' ? total.income : -((total as Record<string, number>)[props.type]!)"
+        class="w-full"
         :class="className"
         :type="(props.type as SeriesSlugSelected)"
         :averageTotal="isShowAverage ? props.averageTotal : undefined"
-        variant="plain"
+        variant="summary"
         @click="emit('clickAverage')"
       >
         <StatSumAverage
@@ -123,6 +124,13 @@ function onClick(type: SeriesSlugSelected) {
           :trnsIds
           :walletId
         />
+
+        <div
+          v-if="props.type === 'expense' || props.type === 'income'"
+          class="ml-auto flex w-12 shrink-0 items-center justify-center"
+        >
+          <slot name="summaryPie" :type="props.type" />
+        </div>
       </StatSumItem>
     </div>
 

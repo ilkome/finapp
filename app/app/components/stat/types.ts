@@ -4,7 +4,7 @@ import type { Range } from '~~/utils/date/types'
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
-import type { ChartType } from '~/components/stat/chart/types'
+import type { AxisChartType } from '~/components/stat/chart/types'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { TrnsDisplayRow } from '~/components/trns/listRows'
@@ -55,7 +55,7 @@ export type ChartSeries = {
   markedArea?: 'markedArea'
   markLine?: Record<string, unknown>
   name: string
-  type: ChartType
+  type: AxisChartType
 }
 
 export type IntervalData = {

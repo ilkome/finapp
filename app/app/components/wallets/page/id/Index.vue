@@ -26,8 +26,9 @@ const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
 const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
 const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
 const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
+const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 
-const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-${statSnapshotId}` : `${walletId.value}`)
+const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-wallet-${walletId.value}` : `${walletId.value}`)
 const legacyTab = localStorage.getItem(`${walletId.value}-tab`)?.replaceAll('"', '')
 const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `${walletId.value}-${legacyTab}` : undefined)
 
@@ -41,6 +42,7 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const { statConfig } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
+    storageQuery,
     legacyStorageKey,
     legacyTab,
     props: {

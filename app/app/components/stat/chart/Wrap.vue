@@ -22,6 +22,7 @@ const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartLayout = computed(() => statConfig.config.value.chart.layout)
 const chartType = computed(() => statConfig.config.value.chart.type)
+const axisChartType = computed(() => chartType.value === 'line' ? 'line' : 'bar')
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
 async function onClickChart(intervalKey: number) {
@@ -43,7 +44,10 @@ function onChangePeriod(period: Period) {
       'w-full @3xl/main:max-w-md': chartLayout === 'combined-narrow',
     }"
   >
-    <div class="-mb-1 flex justify-end">
+    <div
+      class="-mb-1 flex h-7 justify-end"
+      :class="{ invisible: chartType === 'pie' }"
+    >
       <StatDateQuickRanges v-if="isShowQuick" />
 
       <div class="h-7">
@@ -60,9 +64,16 @@ function onChangePeriod(period: Period) {
          chart is a lazy component, so between isChartMountReady flipping and its chunk resolving the
          box would otherwise collapse for a frame and shift the whole page (CLS). -->
     <div class="min-h-40 max-w-full min-w-0 @3xl/stat:min-h-52">
+      <LazyStatChartSimplePieView
+        v-if="isChartMountReady && chartType === 'pie'"
+        :endValue="props.chartWindow.endValue.value"
+        :series="props.series"
+        :startValue="props.chartWindow.startValue.value"
+        :xAxisLabels="props.xAxisLabels"
+      />
       <LazyStatChartAxisView
-        v-if="isChartMountReady"
-        :chartType
+        v-else-if="isChartMountReady"
+        :chartType="axisChartType"
         :bufferSize="props.chartWindow.bufferIntervals.value.length"
         :commitCount="props.chartWindow.commitCount.value"
         :endValue="props.chartWindow.endValue.value"

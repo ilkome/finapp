@@ -8,7 +8,7 @@ import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
-import type { ChartType } from '~/components/stat/chart/types'
+import type { AxisChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
@@ -36,7 +36,7 @@ const {
   xAxisLabels,
 } = defineProps<{
   bufferSize?: number
-  chartType?: ChartType
+  chartType?: AxisChartType
   commitCount?: number
   endValue?: number
   isPannable?: boolean

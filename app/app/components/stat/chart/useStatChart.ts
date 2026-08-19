@@ -11,12 +11,16 @@ export function useStatChart() {
 
   const chartTypeOptions = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
     icon: 'lucide:chart-column',
-    label: t('chart.types.bar'),
+    label: t('stat.view.chartType.bar.label'),
     value: 'bar',
   }, {
     icon: 'lucide:chart-line',
-    label: t('chart.types.line'),
+    label: t('stat.view.chartType.line.label'),
     value: 'line',
+  }, {
+    icon: 'lucide:chart-pie',
+    label: t('stat.view.chartType.pie.label'),
+    value: 'pie',
   }])
 
   function createSeriesItem(typeItem: SeriesSlug, data: TotalReturns[], average?: number | false): ChartSeries {

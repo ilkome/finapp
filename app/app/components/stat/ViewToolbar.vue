@@ -14,7 +14,7 @@ const chartLayoutOptions = computed(() => options('chartLayout', [
   { icon: 'i-lucide-panels-top-left', value: 'split' },
   { icon: 'i-lucide-layout-panel-top', value: 'combined-narrow' },
 ]))
-const chartTypeOptions = computed(() => options('chartType', [{ icon: 'i-lucide-chart-column', value: 'bar' }, { icon: 'i-lucide-chart-spline', value: 'line' }]))
+const chartTypeOptions = computed(() => options('chartType', [{ icon: 'i-lucide-chart-column', value: 'bar' }, { icon: 'i-lucide-chart-spline', value: 'line' }, { icon: 'i-lucide-chart-pie', value: 'pie' }]))
 const breakdownOptions = computed(() => options('breakdown', [{ icon: 'i-lucide-arrow-down-up', value: 'cashflow' }, { icon: 'i-hugeicons-folder-library', value: 'categories' }]))
 const pageLayoutOptions = computed(() => options('pageLayout', [{ icon: 'i-lucide-rows-3', value: 'combined' }, { icon: 'i-lucide-columns-2', value: 'split' }]))
 </script>

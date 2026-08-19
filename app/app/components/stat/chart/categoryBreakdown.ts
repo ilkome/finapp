@@ -125,6 +125,7 @@ export function buildCategoriesSeries({
   trnsItems,
   type,
 }: BuildSeriesParams): ChartSeries[] {
+  const axisChartType = chartType === 'line' ? 'line' : 'bar'
   const { orderedCategoryIds, perIntervalByCategory } = aggregateCategoryTotals({
     categoriesItems,
     computeTotalForTrnsIds,
@@ -161,7 +162,7 @@ export function buildCategoriesSeries({
       ),
       icon: category?.icon,
       name: category?.name ?? catId,
-      type: chartType ?? 'bar',
+      type: axisChartType,
     }
   })
 
@@ -174,7 +175,7 @@ export function buildCategoriesSeries({
       data: otherData,
       icon: 'lucide:ellipsis',
       name: otherName,
-      type: chartType ?? 'bar',
+      type: axisChartType,
     })
   }
 

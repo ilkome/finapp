@@ -88,6 +88,7 @@ const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrPar
 const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
 const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
 const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
+const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 
 const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: categoriesIdsOrParent.value,
@@ -118,7 +119,7 @@ const singleTrnType = computed<StatReportType | null>(() => {
 })
 
 const reportType = computed<StatReportType>(() => singleTrnType.value ?? statSnapshot?.reportType ?? 'combined')
-const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-${statSnapshotId}` : `page-${categoryId.value}`)
+const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-category-${categoryId.value}` : `page-${categoryId.value}`)
 const legacyTab = localStorage.getItem(`page-${categoryId.value}-tab`)?.replaceAll('"', '')
 const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `page-${categoryId.value}-${legacyTab}` : undefined)
 
@@ -133,6 +134,7 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const { statConfig, statDate, trnsViewState } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
+    storageQuery,
     legacyStorageKey,
     legacyTab,
     props: isStatDrilldown
@@ -255,6 +257,7 @@ async function onDeleteConfirm() {
       ref="statHeader"
       :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
       :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
+      compactBottom
       configWallets
       :hasCategoryBreakdown="childrenIds.length > 0"
       :preCategoriesIds="childrenIds"
@@ -307,6 +310,7 @@ async function onDeleteConfirm() {
     />
 
     <div
+      v-if="childrenIds.length > 0"
       class="grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList

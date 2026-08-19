@@ -58,7 +58,7 @@ export function useStatReportChart(params: {
       color: 'var(--ui-text-dimmed)',
       data: totals.map(total => Math.abs(total[typeSlug])),
       name: `${t(`money.${typeSlug}`)} · ${t('stat.forecast.short')}`,
-      type: params.statConfig.config.value.chart.type,
+      type: params.statConfig.config.value.chart.type === 'line' ? 'line' : 'bar',
     }
   }
 
@@ -98,7 +98,7 @@ export function useStatReportChart(params: {
       )
     }
 
-    return selectedInterval?.start && params.statDate.params.value.intervalSelected >= 0
+    return chartType !== 'pie' && selectedInterval?.start && params.statDate.params.value.intervalSelected >= 0
       ? withMarkArea(series, selectedInterval.start, chartType)
       : series
   })

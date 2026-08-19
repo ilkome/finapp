@@ -63,7 +63,7 @@ const breakdownItems = computed<TabsItem[]>(() => ['cashflow', 'categories'].map
 
       <div class="grid gap-2">
         <UiTitleSection size="sm" class="px-1">
-          {{ t('stat.config.chart.type.label') }}
+          {{ t('stat.view.chartType.title') }}
         </UiTitleSection>
         <UiTabs
           :items="chartTypeItems"

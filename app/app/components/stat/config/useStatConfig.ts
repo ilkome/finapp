@@ -23,7 +23,6 @@ export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniI
       ...stored?.chart,
       breakdown: stored?.chart?.breakdown ?? (stored?.chart?.isByCategories ? 'categories' : 'cashflow'),
       layout: storedLayout ?? legacyLayout,
-      type: stored?.chart?.type === 'pie' ? 'bar' : stored?.chart?.type,
     },
     page: {
       ...stored?.page,
@@ -34,9 +33,19 @@ export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniI
   return parsed.success ? parsed.data : structuredClone(defaults)
 }
 
-export function useStatConfig({ initialConfig, legacyStorageKey, legacyTab, props, storage, storageKey }: StatConfigParams) {
+export function useStatConfig({
+  initialConfig,
+  legacyStorageKey,
+  legacyTab,
+  props,
+  storage,
+  storageKey,
+  storageQuery,
+}: StatConfigParams) {
+  const route = useRouter().currentRoute
+  const configStorageQuery = computed(() => toValue(storageQuery) ?? route.value.query)
   const configStorageKey = computed(() => {
-    const query = useRouter().currentRoute.value.query
+    const query = configStorageQuery.value
     const queryKey = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
     return `finapp-${toValue(storageKey)}-${queryKey}`
   })
@@ -59,6 +68,9 @@ export function useStatConfig({ initialConfig, legacyStorageKey, legacyTab, prop
   const config = useStorage<MiniItemConfig>(configStorageKey, structuredClone(initialValue), resolvedStorage, {
     mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig, legacyTab),
   })
+
+  if (initialConfig !== undefined)
+    config.value = normalizeStoredStatConfig(initialConfig, initialValue, legacyTab)
 
   config.value = normalizeStoredStatConfig(config.value, initialValue, legacyTab)
 

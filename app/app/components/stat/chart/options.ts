@@ -5,7 +5,7 @@ import type { ComposeOption } from 'echarts/core'
 
 import defu from 'defu'
 
-import type { ChartType } from '~/components/stat/chart/types'
+import type { AxisChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatCompactChartAmount } from '~/components/stat/chart/format'
@@ -150,7 +150,7 @@ export const defaultSeriesConfig = {
   type: 'line',
 }
 
-export function buildChartSeries(series: ChartSeries[], chartType?: ChartType) {
+export function buildChartSeries(series: ChartSeries[], chartType?: AxisChartType) {
   return series
     .map((item: ChartSeries) => {
       const isBar = (chartType || item.type) === 'bar'

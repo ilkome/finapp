@@ -190,7 +190,7 @@ export default {
     types: {
       bar: 'Bars',
       line: 'Lines',
-      pie: 'Donut',
+      pie: 'Pie',
     },
   },
 
@@ -559,6 +559,7 @@ export default {
       chartType: {
         bar: { description: 'Display all series as bars', label: 'Bars' },
         line: { description: 'Display all series as lines', label: 'Lines' },
+        pie: { description: 'Display series shares as a pie chart', label: 'Pie' },
         title: 'Chart style',
       },
       pageLayout: {

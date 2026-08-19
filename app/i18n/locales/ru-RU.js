@@ -190,7 +190,7 @@ export default {
     types: {
       bar: 'Колонки',
       line: 'Линии',
-      pie: 'Кольцо',
+      pie: 'Круговая',
     },
   },
 
@@ -559,6 +559,7 @@ export default {
       chartType: {
         bar: { description: 'Показывать все серии столбцами', label: 'Столбцы' },
         line: { description: 'Показывать все серии линиями', label: 'Линии' },
+        pie: { description: 'Показывать доли серий круговой диаграммой', label: 'Круговая' },
         title: 'Вид графиков',
       },
       pageLayout: {
