@@ -33,6 +33,20 @@ describe('normalizeStoredStatConfig', () => {
     expect(config.chart.type).toBe('bar')
   })
 
+  it('migrates legacy chart and tab view settings', () => {
+    const config = normalizeStoredStatConfig({ chart: { isByCategories: true, type: 'line' } }, structuredClone(defaultConfig), 'split')
+
+    expect(config.chart).toMatchObject({ breakdown: 'categories', layout: 'split', type: 'line' })
+    expect(config.page.layout).toBe('split')
+  })
+
+  it('defaults independent layouts for non-split legacy tabs', () => {
+    const config = normalizeStoredStatConfig({ chart: { isByCategories: false } }, structuredClone(defaultConfig), 'summary')
+
+    expect(config.chart).toMatchObject({ breakdown: 'cashflow', layout: 'combined-wide' })
+    expect(config.page.layout).toBe('combined')
+  })
+
   it('tracks a reactive page storage key', () => {
     const pageStorageKey = ref('dashboard-summary')
 

@@ -2,7 +2,7 @@
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { ForecastMode } from '~/components/recurrences/useForecastMode'
-import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -18,7 +18,7 @@ const props = defineProps<{
   forecastTotal?: TotalReturns
   total: TotalReturns
   trnsIds: TrnId[]
-  type: SeriesSlugSelected | StatTabSlug
+  type: SeriesSlugSelected | 'summary'
   walletId?: WalletId
 }>()
 

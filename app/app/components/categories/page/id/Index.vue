@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabSlug } from '~/components/stat/types'
+import type { StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
@@ -12,7 +11,6 @@ import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
-import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -95,7 +93,7 @@ const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: categoriesIdsOrParent.value,
 }))
 
-const singleTrnType = computed<StatTabSlug | null>(() => {
+const singleTrnType = computed<StatReportType | null>(() => {
   const items = trnsStore.items
   if (!items)
     return null
@@ -119,24 +117,14 @@ const singleTrnType = computed<StatTabSlug | null>(() => {
   return null
 })
 
-const storedTab = useStorage<StatTabSlug>(
-  isStatDrilldown ? `stat-drilldown-${statSnapshotId}-tab` : `page-${categoryId.value}-tab`,
-  statSnapshot?.activeTab ?? 'summary',
-  isStatDrilldown ? sessionStorage : localStorage,
-)
-const activeTab = computed({
-  get: () => singleTrnType.value ?? storedTab.value,
-  set: (v: StatTabSlug) => { storedTab.value = v },
-})
-const storageKey = computed(() => isStatDrilldown
-  ? `stat-drilldown-${statSnapshotId}-${activeTab.value}`
-  : `page-${categoryId.value}-${activeTab.value}`,
-)
+const reportType = computed<StatReportType>(() => singleTrnType.value ?? statSnapshot?.reportType ?? 'combined')
+const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-${statSnapshotId}` : `page-${categoryId.value}`)
+const legacyTab = localStorage.getItem(`page-${categoryId.value}-tab`)?.replaceAll('"', '')
+const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `page-${categoryId.value}-${legacyTab}` : undefined)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
   trnsIds: allTrnsIds.value,
-  trnsTypes: getTypesMapping(activeTab.value),
   walletsIds: filter?.walletsIds?.value ?? [],
 }))
 
@@ -145,6 +133,8 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const { statConfig, statDate, trnsViewState } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
+    legacyStorageKey,
+    legacyTab,
     props: isStatDrilldown
       ? undefined
       : {
@@ -174,6 +164,7 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
       rangeDuration: differenceInDays(maxRange.value.end, maxRange.value.start),
     },
     key: storageKey,
+    legacyKey: legacyStorageKey,
     maxRange,
     queryParams: route.query,
     storage: isStatDrilldown ? sessionStorage : localStorage,
@@ -185,9 +176,9 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
 const openDrilldownCategory = useStatCategoryNavigation({
   categoriesIds: filter.categoriesIds,
   snapshot: computed(() => ({
-    activeTab: activeTab.value,
     config: statConfig.config.value,
     date: statDate.params.value,
+    reportType: reportType.value,
     trns: {
       filterBy: trnsViewState.filterBy.value,
       isShowWithDesc: trnsViewState.isShowWithDesc.value,
@@ -262,12 +253,10 @@ async function onDeleteConfirm() {
   <UiPage v-if="category">
     <StatHeader
       ref="statHeader"
-      v-model:activeTab="activeTab"
       :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
       :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
       configWallets
       :hasCategoryBreakdown="childrenIds.length > 0"
-      :hideTabs="!!singleTrnType"
       :preCategoriesIds="childrenIds"
       :trnsIds
       configCategories
@@ -329,11 +318,11 @@ async function onDeleteConfirm() {
     </div>
 
     <StatLayout
-      :activeTab
       :categoryId
       :preCategoriesIds="childrenIds"
       :storageKey
       :trnsIds
+      :reportType
     />
   </UiPage>
 </template>

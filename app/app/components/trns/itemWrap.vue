@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
+import { filterKey } from '~/components/filter/injectionKeys'
+import { statConfigKey, statDateKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { useStatCategoryNavigation, useStatWalletNavigation } from '~/components/stat/navigation'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { isTransfer, TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 defineOptions({ inheritAttrs: false })
@@ -21,30 +25,151 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
+const filter = inject(filterKey, null)
+const statConfig = inject(statConfigKey, null)
+const statDate = inject(statDateKey, null)
+const statTrnsViewState = inject(statTrnsViewStateKey, null)
 const trnsStore = useTrnsStore()
 const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
 
 const showDeleteConfirm = ref(false)
+const reportType = computed(() => {
+  if (props.trnItem.type === TrnType.Expense)
+    return 'expense' as const
+  if (props.trnItem.type === TrnType.Income)
+    return 'income' as const
+  return 'combined' as const
+})
+const navigationCategoriesIds = computed(() => filter?.categoriesIds.value ?? [])
+const navigationWalletsIds = computed(() => filter?.walletsIds.value ?? [])
+const statSnapshot = computed(() => {
+  if (!statConfig || !statDate || !statTrnsViewState)
+    return null
 
-const contextMenuItems = computed(() => [[
-  {
-    icon: 'lucide:pencil',
-    label: t('base.edit'),
-    onSelect: () => click(),
-  },
-  {
-    icon: 'lucide:copy',
-    label: t('base.duplicate'),
-    onSelect: () => duplicate(),
-  },
-], [
-  {
-    color: 'error' as const,
-    icon: 'lucide:trash-2',
-    label: t('base.delete'),
-    onSelect: () => { showDeleteConfirm.value = true },
-  },
-]])
+  return {
+    config: statConfig.config.value,
+    date: statDate.params.value,
+    reportType: reportType.value,
+    trns: {
+      filterBy: statTrnsViewState.filterBy.value,
+      isShowWithDesc: statTrnsViewState.isShowWithDesc.value,
+    },
+  }
+})
+const openStatCategory = useStatCategoryNavigation({
+  categoriesIds: navigationCategoriesIds,
+  snapshot: statSnapshot,
+  walletsIds: navigationWalletsIds,
+})
+const openStatWallet = useStatWalletNavigation({
+  categoriesIds: navigationCategoriesIds,
+  snapshot: statSnapshot,
+  walletsIds: navigationWalletsIds,
+})
+
+function filterByDate(date: number) {
+  if (statDate) {
+    router.push({
+      query: {
+        ...route.query,
+        customDate: `${date}`,
+      },
+    })
+    return
+  }
+
+  router.push({
+    path: '/dashboard',
+    query: { customDate: `${date}` },
+  })
+}
+
+function filterByCategory(categoryId: string) {
+  if (statSnapshot.value)
+    return openStatCategory(categoryId)
+
+  return router.push(`/categories/${categoryId}`)
+}
+
+function filterByWallet(walletId: string) {
+  if (statSnapshot.value)
+    return openStatWallet(walletId)
+
+  return router.push(`/wallets/${walletId}`)
+}
+
+const isCategoryPage = computed(() => /^\/categories\/[^/]+$/.test(route.path))
+const isWalletPage = computed(() => /^\/wallets\/[^/]+$/.test(route.path))
+
+const contextMenuItems = computed(() => {
+  const trnItem = props.trnItem
+  const filterItems = []
+
+  if (!isCategoryPage.value && trnItem.categoryId !== 'transfer') {
+    filterItems.push({
+      icon: 'hugeicons:folder-library',
+      label: t('trns.filter.byCategory'),
+      onSelect: () => filterByCategory(trnItem.categoryId),
+    })
+  }
+
+  if (!isWalletPage.value) {
+    if (isTransfer(trnItem)) {
+      const expenseWalletId = trnItem.expenseWalletId
+      const incomeWalletId = trnItem.incomeWalletId
+      filterItems.push({
+        children: [
+          {
+            label: trnItem.expenseWallet.name,
+            onSelect: () => filterByWallet(expenseWalletId),
+          },
+          {
+            label: trnItem.incomeWallet.name,
+            onSelect: () => filterByWallet(incomeWalletId),
+          },
+        ],
+        icon: 'hugeicons:wallet-01',
+        label: t('trns.filter.byWallet'),
+      })
+    }
+    else {
+      const walletId = trnItem.walletId
+      filterItems.push({
+        icon: 'hugeicons:wallet-01',
+        label: t('trns.filter.byWallet'),
+        onSelect: () => filterByWallet(walletId),
+      })
+    }
+  }
+
+  filterItems.push({
+    icon: 'lucide:calendar-days',
+    label: t('trns.filter.byDate'),
+    onSelect: () => filterByDate(trnItem.date),
+  })
+
+  return [[
+    {
+      icon: 'lucide:pencil',
+      label: t('base.edit'),
+      onSelect: () => click(),
+    },
+    {
+      icon: 'lucide:copy',
+      label: t('base.duplicate'),
+      onSelect: () => duplicate(),
+    },
+  ], filterItems, [
+    {
+      color: 'error' as const,
+      icon: 'lucide:trash-2',
+      label: t('base.delete'),
+      onSelect: () => { showDeleteConfirm.value = true },
+    },
+  ]]
+})
 
 async function click() {
   emit('click')
@@ -85,7 +210,7 @@ function handleDeleteConfirm() {
   </div>
 
   <template v-else>
-    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
+    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems" size="lg">
       <TrnsItem
         :compact="props.compact"
         :trnItem

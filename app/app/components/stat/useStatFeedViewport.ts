@@ -288,9 +288,9 @@ export function useStatFeedViewport(params: {
     },
     filteredType: params.ctx.filteredType.value,
     parentCategoriesIds: params.ctx.filteredCategoriesIds.value,
+    reportType: params.ctx.params.reportType.value,
     selectedCategoriesIds: params.ctx.params.filter.categoriesIds.value,
     selectedWalletsIds: params.ctx.params.filter.walletsIds.value,
-    statTab: params.ctx.params.statTab.value,
   }))
   let previousReportScope = normalizeStatFeedScope(reportScope.value)
   watch(

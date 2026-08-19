@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildStatCategoryRoute, isStatDrilldownQuery } from '~/components/stat/navigation/route'
+import { buildStatCategoryRoute, buildStatWalletRoute, isStatDrilldownQuery } from '~/components/stat/navigation/route'
 
 describe('statistics category route', () => {
   it('builds a filtered snapshot route and removes duplicate ids', () => {
@@ -35,6 +35,22 @@ describe('statistics category route', () => {
         filterWallets: undefined,
         statDrilldown: undefined,
         statSnapshot: undefined,
+      },
+    })
+  })
+
+  it('builds a wallet route with the inherited category filter', () => {
+    expect(buildStatWalletRoute({
+      categoriesIds: ['food', 'food', 'travel'],
+      isDrilldown: true,
+      snapshotId: 'snapshot-id',
+      walletId: 'cash',
+    })).toEqual({
+      path: '/wallets/cash',
+      query: {
+        filterCategories: 'food,travel',
+        statDrilldown: 'true',
+        statSnapshot: 'snapshot-id',
       },
     })
   })

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryViews } from '~/components/stat/categories/categoryViews'
-import type { SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { useCategoriesBreakdown } from '~/components/stat/categories/useCategoriesBreakdown'
@@ -12,10 +12,11 @@ const props = defineProps<{
   focusedCategoryId?: CategoryId
   focusedChildCategoryId?: CategoryId
   isOneCategory?: boolean
+  isTwoColumnLayout?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
-  type: SeriesSlugSelected | StatTabSlug
+  type: SeriesSlugSelected | 'summary'
 }>()
 
 const emit = defineEmits<{
@@ -39,6 +40,7 @@ const displayedCategories = computed(() => isFocused.value ? focusedCategories.v
       v-if="!isFocused"
       :groupedCategories
       :isOneCategory="props.isOneCategory"
+      :isTwoColumnLayout="props.isTwoColumnLayout"
       :storageKey="props.storageKey"
       :type="props.type"
       :ungroupedCategories

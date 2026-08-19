@@ -8,7 +8,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { ForecastMode } from '~/components/recurrences/useForecastMode'
 import type { StatDateProvider } from '~/components/stat/date/types'
-import type { IntervalData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { IntervalData, SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 
 import { addTotals, getTotal } from '~/components/amount/getTotal'
@@ -27,11 +27,6 @@ export type StatReportSelection = {
   filteredIds: TrnId[]
   quickFilteredIds: TrnId[]
   selectedIds: TrnId[]
-}
-
-export type StatReportSelectedRecord = {
-  categoryId: CategoryId
-  id: TrnId
 }
 
 export function buildSortedStatReportSelection(params: {
@@ -105,8 +100,9 @@ export function useStatReportData(params: {
   filteredType: Ref<SeriesSlugSelected>
   forecastMode: Ref<ForecastMode>
   isDateBounded?: boolean
+  reportType: ComputedRef<StatReportType>
+  selectionSource?: ComputedRef<StatReportSelectedRecord[]>
   statDate: StatDateProvider
-  statTab: ComputedRef<StatTabSlug>
   trnsIds: ComputedRef<TrnId[]>
   type: ComputedRef<SeriesSlugSelected | undefined>
 }) {
@@ -131,10 +127,10 @@ export function useStatReportData(params: {
     range: chartRange,
   })
 
-  const selectedType = computed(() => getSelectedType(params.statTab.value, params.filteredType.value, params.type.value))
-  const selectedTypeForSum = computed(() => getSelectedTypeForSum(params.statTab.value, params.type.value))
+  const selectedType = computed(() => getSelectedType(params.reportType.value, params.filteredType.value, params.type.value))
+  const selectedTypeForSum = computed(() => getSelectedTypeForSum(params.reportType.value, params.type.value))
   const selectedTypesMapping = computed(() => getTypesMapping(selectedType.value))
-  const typesToShow = computed(() => getTypesToShow(params.statTab.value, params.filteredType.value, params.type.value))
+  const typesToShow = computed(() => getTypesToShow(params.reportType.value, params.filteredType.value, params.type.value))
   const isPeriodOneDay = computed(() => isPeriodOneDayFn(params.statDate.params.value))
   const isIntervalSelected = computed(() => params.statDate.params.value.intervalSelected >= 0)
   const rangeTrnsIds = computed(() => {
@@ -273,11 +269,13 @@ export function useStatReportData(params: {
   const baseTrnsIdsForSelection = computed(() => isIntervalSelected.value
     ? intervalsData.value[params.statDate.params.value.intervalSelected]?.trnsIds
     : rangeTrnsIds.value)
-  const sortedSelection = computed(() => buildSortedStatReportSelection({
-    sourceIds: baseTrnsIdsForSelection.value,
-    trnsItems: trnsStore.items ?? {},
-    trnsTypes: selectedTypesMapping.value,
-  }))
+  const sortedSelection = computed(() => {
+    if (!params.selectionSource)
+      return buildSortedStatReportSelection({ sourceIds: baseTrnsIdsForSelection.value, trnsItems: trnsStore.items ?? {}, trnsTypes: selectedTypesMapping.value })
+
+    const allowedTypes = new Set(selectedTypesMapping.value)
+    return params.selectionSource.value.filter(record => allowedTypes.has(trnsStore.items?.[record.id]?.type as never))
+  })
   const selection = computed(() => projectStatReportSelection(
     sortedSelection.value,
     categoriesStore.getTransactibleIds(params.effectiveFilteredCategoriesIds.value),

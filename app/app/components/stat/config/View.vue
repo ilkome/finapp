@@ -6,7 +6,7 @@ import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { nextForecastMode, useForecastMode } from '~/components/recurrences/useForecastMode'
 import { PANELS } from '~/components/stat/config/panels/registry'
-import { statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
+import { statCanSplitKey, statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
@@ -25,6 +25,7 @@ const activePanel = inject(statConfigPanelKey, ref<StatConfigPanelId>('root'))
 
 const { locale, t } = useI18n()
 const statConfig = inject(statConfigKey)!
+const canSplit = inject(statCanSplitKey, computed(() => false))
 const forecastMode = useForecastMode()
 
 function cycleForecast() {
@@ -38,7 +39,7 @@ const availablePanels = computed<StatConfigPanelId[]>(() => {
   if (props.isShowWallets)
     panels.push('wallets')
   if (props.hasTrnsConfig)
-    panels.push('chart')
+    panels.push('chart', 'trns')
   if (showCategoryConfig.value)
     panels.push('catsRound', 'catsList', 'vertical')
   return panels
@@ -167,12 +168,7 @@ const rows = computed<RootRow[]>(() => {
   }
 
   if (props.hasTrnsConfig) {
-    list.push({
-      isShow: statConfig.config.value.trns.isShow,
-      key: 'trns',
-      title: t('trns.title'),
-      toggle: () => statConfig.updateConfig('trns', { isShow: !statConfig.config.value.trns.isShow }),
-    })
+    list.push(panelRow('trns'))
     list.push({
       cycle: cycleForecast,
       key: 'forecast',
@@ -183,6 +179,11 @@ const rows = computed<RootRow[]>(() => {
 
   return list
 })
+
+const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
+  label: t(`stat.view.pageLayout.${value}.label`),
+  value,
+})))
 
 function onRowActivate(row: RootRow) {
   if (row.panel)
@@ -259,6 +260,16 @@ function onRowActivate(row: RootRow) {
           <StatConfigPanelsChart
             v-else-if="activePanel === 'chart'"
           />
+          <div v-else-if="activePanel === 'trns' && canSplit" class="grid gap-2 pt-4">
+            <UiTitleSection size="sm" class="px-1">
+              {{ t('stat.view.pageLayout.title') }}
+            </UiTitleSection>
+            <UiTabs
+              :items="pageLayoutItems"
+              :modelValue="statConfig.config.value.page.layout"
+              @update:modelValue="(v) => statConfig.updateConfig('page', { layout: v as 'combined' | 'split' })"
+            />
+          </div>
           <StatConfigPanelsCatsRound
             v-else-if="activePanel === 'catsRound'"
           />

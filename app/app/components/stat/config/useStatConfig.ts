@@ -7,36 +7,60 @@ import { computed, toValue } from 'vue'
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { StatConfigParams } from '~/components/stat/config/types'
 
-import { applyConfigProps, applyConfigUpdate, defaultConfig } from '~/components/stat/config/schema'
+import { applyConfigProps, applyConfigUpdate, ConfigSchema, defaultConfig } from '~/components/stat/config/schema'
 
-export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig): MiniItemConfig {
-  const stored = storageValue as { chart?: { type?: unknown } } | undefined
-  const config = defu(stored ?? {}, defaults) as MiniItemConfig
-  if (stored?.chart?.type !== 'pie')
-    return config
-
-  return {
-    ...config,
+export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig, legacyTab?: unknown): MiniItemConfig {
+  const stored = storageValue as { chart?: { breakdown?: unknown, isByCategories?: unknown, layout?: unknown, type?: unknown, view?: unknown }, page?: { layout?: unknown } } | undefined
+  const legacyLayout = legacyTab === 'split' ? 'split' : 'combined-wide'
+  const storedLayout = stored?.chart?.layout === 'split'
+    ? 'split'
+    : stored?.chart?.layout === 'combined'
+      ? (stored?.chart?.view === 'half' ? 'combined-narrow' : 'combined-wide')
+      : stored?.chart?.layout
+  const migrated = {
+    ...stored,
     chart: {
-      ...config.chart,
-      type: 'bar',
+      ...stored?.chart,
+      breakdown: stored?.chart?.breakdown ?? (stored?.chart?.isByCategories ? 'categories' : 'cashflow'),
+      layout: storedLayout ?? legacyLayout,
+      type: stored?.chart?.type === 'pie' ? 'bar' : stored?.chart?.type,
+    },
+    page: {
+      ...stored?.page,
+      layout: stored?.page?.layout ?? legacyLayout,
     },
   }
+  const parsed = ConfigSchema.safeParse(defu(migrated, defaults))
+  return parsed.success ? parsed.data : structuredClone(defaults)
 }
 
-export function useStatConfig({ initialConfig, props, storage, storageKey }: StatConfigParams) {
+export function useStatConfig({ initialConfig, legacyStorageKey, legacyTab, props, storage, storageKey }: StatConfigParams) {
   const configStorageKey = computed(() => {
     const query = useRouter().currentRoute.value.query
     const queryKey = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
     return `finapp-${toValue(storageKey)}-${queryKey}`
   })
+  const resolvedStorage = storage ?? localStorage
+  const oldStorageKey = toValue(legacyStorageKey)
+  if (oldStorageKey) {
+    const currentKey = configStorageKey.value
+    const previousKey = currentKey.replace(`finapp-${toValue(storageKey)}-`, `finapp-${oldStorageKey}-`)
+    if (resolvedStorage.getItem(currentKey) === null) {
+      const previousValue = resolvedStorage.getItem(previousKey)
+      if (previousValue !== null)
+        resolvedStorage.setItem(currentKey, previousValue)
+    }
+  }
 
   // structuredClone: `defaultConfig` is one shared module-level object, and every
   // stat-hosting page calls this composable with its own storageKey - without
   // cloning, useStorage would seed each page's ref from the same nested objects.
-  const config = useStorage<MiniItemConfig>(configStorageKey, structuredClone(initialConfig ?? defaultConfig), storage ?? localStorage, {
-    mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig),
+  const initialValue = normalizeStoredStatConfig(initialConfig, defaultConfig, legacyTab)
+  const config = useStorage<MiniItemConfig>(configStorageKey, structuredClone(initialValue), resolvedStorage, {
+    mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig, legacyTab),
   })
+
+  config.value = normalizeStoredStatConfig(config.value, initialValue, legacyTab)
 
   if (props)
     config.value = applyConfigProps(config.value, props)
@@ -47,13 +71,8 @@ export function useStatConfig({ initialConfig, props, storage, storageKey }: Sta
       config.value = result
   }
 
-  // Tabs only fit on a laptop with a mouse; mobile (and a wide touchscreen) shows
-  // the combined summary view instead. One rule, read by Menu/Header/Wrap.
-  const showTabs = useIsLaptop()
-
   return {
     config,
-    showTabs,
     updateConfig,
   }
 }

@@ -24,9 +24,9 @@ class FailingStorage extends MemoryStorage {
 
 function snapshot() {
   return {
-    activeTab: 'summary' as const,
     config: structuredClone(defaultConfig),
     date: structuredClone(defaultStatDateParams),
+    reportType: 'combined' as const,
     trns: {
       filterBy: 'expense' as const,
       isShowWithDesc: true,
@@ -45,11 +45,11 @@ describe('statistics navigation snapshot storage', () => {
 
     expect(id).toBe('entry')
     expect(getStatNavigationSnapshot(id, { now: 100, storage })).toMatchObject({
-      activeTab: 'summary',
       config: { chart: { isShow: true } },
       date: { rangeOffset: 0 },
+      reportType: 'combined',
       trns: { filterBy: 'expense', isShowWithDesc: true },
-      version: 1,
+      version: 2,
     })
   })
 

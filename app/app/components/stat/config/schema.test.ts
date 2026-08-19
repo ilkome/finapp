@@ -32,15 +32,18 @@ const defaultConfig: MiniItemConfig = {
     view: 'list',
   },
   chart: {
-    isByCategories: false,
+    breakdown: 'cashflow',
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
+    layout: 'combined-wide',
     type: 'bar',
-    view: 'full',
   },
   date: {
     isShowQuick: false,
+  },
+  page: {
+    layout: 'combined',
   },
   trns: {
     isShow: true,
@@ -111,10 +114,10 @@ describe('applyConfigUpdate', () => {
     expect(result!.chart.type).toBe('line')
   })
 
-  it('updates chart.view', () => {
-    const result = applyConfigUpdate(defaultConfig, 'chart', { view: 'half' } as any)
+  it('updates chart layout mode', () => {
+    const result = applyConfigUpdate(defaultConfig, 'chart', { layout: 'combined-narrow' } as any)
     expect(result).not.toBeNull()
-    expect(result!.chart.view).toBe('half')
+    expect(result!.chart.layout).toBe('combined-narrow')
   })
 
   it('deep-merges nested object', () => {

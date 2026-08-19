@@ -26,7 +26,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   const isCategoryFocus = computed(() =>
     !params.categoryId?.value
     && !params.walletId?.value
-    && params.statTab.value === 'summary'
+    && params.reportType.value === 'combined'
     && !params.type.value
     && (report.filteredType.value === 'expense' || report.filteredType.value === 'income'),
   )
@@ -45,8 +45,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
       && (params.statConfig.config.value.categories.list.isShow || params.statConfig.config.value.categories.bars.isShow)
   })
   const shouldUseTwoColumnLayout = computed(() =>
-    params.statTab.value !== 'split'
-    && (params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value),
+    params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value,
   )
 
   function onClickCategory(clickedCategoryId: CategoryId) {
@@ -65,9 +64,9 @@ export function useStatReportContext(params: UseStatReportContextParams) {
         || isStatDrilldownQuery(route.query.statDrilldown)
       return shouldCarryStatState
         ? {
-            activeTab: params.statTab.value,
             config: params.statConfig.config.value,
             date: params.statDate.params.value,
+            reportType: params.reportType.value,
             trns: {
               filterBy: report.trnsViewState.filterBy.value,
               isShowWithDesc: report.trnsViewState.isShowWithDesc.value,

@@ -37,6 +37,11 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     subtitleKey: 'stat.config.statAverage.subtitle',
     titleKey: 'stat.config.statAverage.title',
   },
+  trns: {
+    getIsShow: config => config.trns.isShow,
+    setIsShow: (provider, value) => provider.updateConfig('trns', { isShow: value }),
+    titleKey: 'trns.title',
+  },
   vertical: {
     getIsShow: config => config.categories.bars.isShow,
     setIsShow: (provider, value) => provider.updateConfig('categories', { bars: { isShow: value } }),

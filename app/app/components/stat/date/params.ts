@@ -1,6 +1,7 @@
 import type { Period, Range } from '~~/utils/date/types'
 
 import { differenceInDays, sub } from 'date-fns'
+import defu from 'defu'
 import { z } from 'zod/v4'
 import { u } from '~~/utils/date/civil'
 import { getEndOf, getStartOf, toDuration } from '~~/utils/date/period'
@@ -63,6 +64,11 @@ export function getIntervalsInRange(params: IntervalsInRangeProps) {
 }
 
 const queryParamsSchema = z.object({
+  customDate: z
+    .string()
+    .transform(val => Number(val))
+    .pipe(z.number().int().nonnegative())
+    .optional(),
   granularityBy: z.enum(periods).optional(),
   granularityDuration: z
     .string()
@@ -131,6 +137,13 @@ export const defaultStatDateParams: StatDateParams = {
   rangePanOffset: 0,
 }
 
+export function normalizeStoredStatDateParams(storageValue: unknown, defaults: StatDateParams): StatDateParams {
+  const merged = defu(storageValue ?? {}, defaults)
+  const parsed = statDateParamsSchema.safeParse(merged)
+
+  return parsed.success ? parsed.data : defaults
+}
+
 /**
  * Parse URL query params via Zod and merge into stat date params.
  * Returns a new params object (does not mutate input).
@@ -143,6 +156,13 @@ export function parseStatDateQueryParams(queryParams: Partial<StatDateParamsQuer
   const data = parsed.data
   const result = { ...currentParams }
 
+  if (data.customDate !== undefined) {
+    const date = u(data.customDate)
+    result.customDate = {
+      end: getEndOf(date, 'day').getTime(),
+      start: getStartOf(date, 'day').getTime(),
+    }
+  }
   if (data.granularityBy !== undefined)
     result.granularityBy = data.granularityBy
   if (data.granularityDuration !== undefined)

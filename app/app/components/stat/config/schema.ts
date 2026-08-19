@@ -5,7 +5,7 @@ import { z } from 'zod/v4'
 
 import { chartTypes } from '~/components/stat/chart/types'
 
-export const chartViewOptions = ['half', 'full'] as const
+export const chartLayoutOptions = ['combined-wide', 'split', 'combined-narrow'] as const
 
 export const ConfigSchema = z.object({
   average: z.object({
@@ -34,15 +34,18 @@ export const ConfigSchema = z.object({
     view: z.enum(['list', 'round']),
   }),
   chart: z.object({
-    isByCategories: z.boolean(),
+    breakdown: z.enum(['cashflow', 'categories']),
     isGrouped: z.boolean(),
     isShow: z.boolean(),
     isShowAverage: z.boolean(),
+    layout: z.enum(chartLayoutOptions),
     type: z.enum(chartTypes),
-    view: z.enum(chartViewOptions),
   }),
   date: z.object({
     isShowQuick: z.boolean(),
+  }),
+  page: z.object({
+    layout: z.enum(['combined', 'split']),
   }),
   trns: z.object({
     isShow: z.boolean(),
@@ -85,16 +88,20 @@ export const defaultConfig: MiniItemConfig = {
   },
 
   chart: {
-    isByCategories: false,
+    breakdown: 'cashflow',
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
+    layout: 'combined-wide',
     type: 'bar',
-    view: 'full',
   },
 
   date: {
     isShowQuick: false,
+  },
+
+  page: {
+    layout: 'combined',
   },
 
   trns: {

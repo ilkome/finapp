@@ -6,7 +6,7 @@ import type { ForecastMode } from '~/components/recurrences/useForecastMode'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { useStatReportData } from '~/components/stat/report/useStatReportData'
-import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
@@ -17,9 +17,9 @@ export function useStatReportChart(params: {
   effectiveFilteredCategoriesIds: ComputedRef<CategoryId[]>
   filteredType: Ref<SeriesSlugSelected>
   forecastMode: Ref<ForecastMode>
+  reportType: ComputedRef<StatReportType>
   statConfig: StatConfigProvider
   statDate: StatDateProvider
-  statTab: ComputedRef<StatTabSlug>
   type: ComputedRef<SeriesSlugSelected | undefined>
 }) {
   const { t } = useI18n()
@@ -27,18 +27,16 @@ export function useStatReportChart(params: {
   const { createSeriesItem, withMarkArea } = useStatChart()
 
   const categoriesBreakdownType = computed<SeriesSlug>(() => {
-    if (params.statTab.value === 'expense')
+    if (params.reportType.value === 'expense')
       return 'expense'
-    if (params.statTab.value === 'income')
+    if (params.reportType.value === 'income')
       return 'income'
-    if (params.statTab.value === 'split' && (params.type.value === 'expense' || params.type.value === 'income'))
-      return params.type.value
     if (params.filteredType.value === 'expense' || params.filteredType.value === 'income')
       return params.filteredType.value
     return 'expense'
   })
   const isCategorySumFocused = computed(() =>
-    params.statTab.value === 'summary'
+    params.reportType.value === 'combined'
     && !params.type.value
     && (params.filteredType.value === 'expense' || params.filteredType.value === 'income'),
   )
@@ -70,7 +68,7 @@ export function useStatReportChart(params: {
     const chartType = params.statConfig.config.value.chart.type
     let series: ChartSeries[]
 
-    if (params.statConfig.config.value.chart.isByCategories || isCategorySumFocused.value) {
+    if (params.statConfig.config.value.chart.breakdown === 'categories' || isCategorySumFocused.value) {
       series = buildCategoriesSeries({
         categoriesItems: categoriesStore.items ?? {},
         chartType,

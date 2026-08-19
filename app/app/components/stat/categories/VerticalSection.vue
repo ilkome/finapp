@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { CategoryWithData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { CategoryWithData, SeriesSlugSelected } from '~/components/stat/types'
 
 import { getMaxCategoryValues } from '~/components/stat/categories/barUtils'
 import { statConfigKey } from '~/components/stat/injectionKeys'
@@ -9,7 +9,7 @@ const props = defineProps<{
   groupedCategories: CategoryWithData[]
   isOneCategory?: boolean
   storageKey: string
-  type: SeriesSlugSelected | StatTabSlug
+  type: SeriesSlugSelected | 'summary'
   ungroupedCategories: CategoryWithData[]
 }>()
 

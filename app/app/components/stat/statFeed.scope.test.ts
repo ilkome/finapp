@@ -19,9 +19,9 @@ const scope: StatFeedScope = {
   },
   filteredType: 'netIncome',
   parentCategoriesIds: ['parent-a'],
+  reportType: 'combined',
   selectedCategoriesIds: ['category-a', 'category-b'],
   selectedWalletsIds: ['wallet-a', 'wallet-b'],
-  statTab: 'summary',
 }
 
 describe('isSameStatFeedScope', () => {
@@ -40,7 +40,7 @@ describe('isSameStatFeedScope', () => {
   it.each([
     ['childCategoryId', 'child'],
     ['filteredType', 'expense'],
-    ['statTab', 'income'],
+    ['reportType', 'income'],
   ] as const)('detects a changed %s field', (field, value) => {
     expect(isSameStatFeedScope(scope, { ...scope, [field]: value })).toBe(false)
   })

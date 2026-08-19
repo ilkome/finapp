@@ -13,5 +13,6 @@ const filter = inject(filterKey)!
       isShowCategories
       isShowWallets
     />
+    <StatViewToolbar class="shrink-0 snap-start snap-always" />
   </StatDateNavigation>
 </template>

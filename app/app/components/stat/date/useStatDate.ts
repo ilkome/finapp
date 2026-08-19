@@ -7,30 +7,52 @@ import { computed, toValue } from 'vue'
 
 import type { Grouped, IntervalGroupedLabel, StatDateParams, StatRangePanDirection, UseStatDateOptions } from '~/components/stat/date/types'
 
-import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
+import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, normalizeStoredStatDateParams, parseStatDateQueryParams } from './params'
 
 export function useStatDate({
   initParams,
   key,
+  legacyKey,
   maxRange,
   queryParams,
   storage,
 }: UseStatDateOptions) {
   const paramsStorageKey = computed(() => `${toValue(key)}-params`)
-  const params = useStorage<StatDateParams>(paramsStorageKey, {} as StatDateParams, storage ?? localStorage, {
-    mergeDefaults: (storageValue, defaults) => defu(storageValue, defaults),
+  const resolvedStorage = storage ?? localStorage
+  const previousKey = toValue(legacyKey)
+  if (previousKey && resolvedStorage.getItem(paramsStorageKey.value) === null) {
+    const previousValue = resolvedStorage.getItem(`${previousKey}-params`)
+    if (previousValue !== null)
+      resolvedStorage.setItem(paramsStorageKey.value, previousValue)
+  }
+  const defaults = defu(initParams ?? {}, defaultStatDateParams) as StatDateParams
+  const params = useStorage<StatDateParams>(paramsStorageKey, {} as StatDateParams, resolvedStorage, {
+    mergeDefaults: storageValue => normalizeStoredStatDateParams(storageValue, defaults),
   })
 
-  // Backfill defaults on every load, not just the first: a payload stored before a param
-  // rename keeps the dead key and misses the new one, and an undefined Period crashes date math.
-  params.value = Object.keys(params.value).length === 0 ? defu(initParams ?? {}, defaultStatDateParams) : defu(params.value, defaultStatDateParams)
+  params.value = normalizeStoredStatDateParams(params.value, defaults)
 
   const modal = ref({
     dateSelector: false,
   })
 
+  let paramsBeforeCustomDate: StatDateParams | null = null
   if (queryParams) {
-    params.value = parseStatDateQueryParams(queryParams, params.value)
+    watch(() => ({ ...queryParams }), (nextQuery) => {
+      if (nextQuery.customDate !== undefined) {
+        paramsBeforeCustomDate ??= structuredClone(params.value)
+        params.value = parseStatDateQueryParams(nextQuery, params.value)
+        return
+      }
+
+      if (paramsBeforeCustomDate) {
+        params.value = paramsBeforeCustomDate
+        paramsBeforeCustomDate = null
+        return
+      }
+
+      params.value = parseStatDateQueryParams(nextQuery, params.value)
+    }, { immediate: true })
   }
 
   const scrollRangeOffset = shallowRef<number | null>(null)

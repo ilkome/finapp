@@ -45,8 +45,9 @@ export function useStatReport(params: UseStatReportParams) {
     filteredType,
     forecastMode,
     isDateBounded: params.isDateBounded,
+    reportType: params.reportType,
+    selectionSource: params.selectionSource,
     statDate: params.statDate,
-    statTab: params.statTab,
     trnsIds: params.trnsIds,
     type: params.type,
   })
@@ -55,9 +56,9 @@ export function useStatReport(params: UseStatReportParams) {
     effectiveFilteredCategoriesIds,
     filteredType,
     forecastMode,
+    reportType: params.reportType,
     statConfig: params.statConfig,
     statDate: params.statDate,
-    statTab: params.statTab,
     type: params.type,
   })
 

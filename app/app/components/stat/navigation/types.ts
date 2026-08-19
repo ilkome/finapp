@@ -29,3 +29,10 @@ export type StatCategoryRouteOptions = {
   snapshotId: string | null
   walletsIds: readonly WalletId[]
 }
+
+export type StatWalletRouteOptions = {
+  categoriesIds: readonly CategoryId[]
+  isDrilldown: boolean
+  snapshotId: string | null
+  walletId: WalletId
+}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { CategoryWithData, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { CategoryWithData, SeriesSlugSelected } from '~/components/stat/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { getMaxCategoryValues } from '~/components/stat/categories/barUtils'
@@ -12,8 +12,9 @@ const props = defineProps<{
   focusedChildCategoryId?: CategoryId
   groupedCategories: CategoryWithData[]
   isOneCategory?: boolean
+  isTwoColumnLayout?: boolean
   storageKey: string
-  type: SeriesSlugSelected | StatTabSlug
+  type: SeriesSlugSelected | 'summary'
   ungroupedCategories: CategoryWithData[]
 }>()
 
@@ -65,7 +66,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
 <template>
   <div
     v-if="isListShow || isFocused"
-    class="@3xl/main:max-w-md"
+    class="w-full @3xl/main:max-w-md"
   >
     <div v-if="!isFocused" class="flex items-center justify-between">
       <UiTitleCollapse
@@ -102,6 +103,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
     <div
       v-if="isFocused || isListShown"
       :class="{
+        'w-full': !isListGrouped,
         '@3xl/main:max-w-md': !isListGrouped,
       }"
       class="pt-2"
@@ -116,8 +118,8 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           :maxCategoryValues="childrenMaxValues"
           :lineWidth="1"
           class="group"
-          @click="emit('setFocusedCategoryFilter', item.id)"
-          @amountClick="emit('setFocusedCategoryFilter', item.id)"
+          @click="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
+          @amountClick="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
         />
       </template>
 
@@ -142,7 +144,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
         <UCollapsible
           v-if="item.categories?.length"
           :open="isItemExpanded(item)"
-          :ui="{ content: 'overflow-hidden' }"
+          :ui="{ content: 'overflow-hidden data-[state=open]:animate-none! data-[state=closed]:animate-none!' }"
         >
           <template #content>
             <div class="ml-5 pb-1 pl-3">

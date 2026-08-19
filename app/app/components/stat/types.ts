@@ -10,20 +10,21 @@ import type { StatDateProvider } from '~/components/stat/date/types'
 import type { TrnsDisplayRow } from '~/components/trns/listRows'
 import type { TrnId, Trns, TrnsListFilterState, TrnsViewType } from '~/components/trns/types'
 
-export const statTabSlugs = ['income', 'expense', 'summary', 'split'] as const
-export type StatTabSlug = typeof statTabSlugs[number]
+export const statReportTypes = ['combined', 'expense', 'income'] as const
+export type StatReportType = typeof statReportTypes[number]
 export type SeriesSlug = 'income' | 'expense'
 export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
 
-export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical'
+export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical' | 'trns'
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
   filter: FilterProvider
   isDateBounded?: boolean
+  reportType: ComputedRef<StatReportType>
+  selectionSource?: ComputedRef<StatReportSelectedRecord[]>
   statConfig: StatConfigProvider
   statDate: StatDateProvider
-  statTab: ComputedRef<StatTabSlug>
   storageKey: ComputedRef<string>
   trnsIds: ComputedRef<TrnId[]>
   trnsViewState?: TrnsListFilterState
@@ -61,6 +62,11 @@ export type IntervalData = {
   range: Range
   total: TotalReturns
   trnsIds: TrnId[]
+}
+
+export type StatReportSelectedRecord = {
+  categoryId: CategoryId
+  id: TrnId
 }
 
 export type StatFeedLocalFilter = {
@@ -112,9 +118,9 @@ export type StatFeedScope = {
   }
   filteredType: string
   parentCategoriesIds: string[]
+  reportType: StatReportType
   selectedCategoriesIds: string[]
   selectedWalletsIds: string[]
-  statTab: string
 }
 
 export type StatVisibleItem = {

@@ -20,7 +20,7 @@ const trnsFormStore = useTrnsFormStore()
 // Charts mount on the first idle frame so echarts doesn't compete with the LCP render.
 const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
-const chartView = computed(() => statConfig.config.value.chart.view)
+const chartLayout = computed(() => statConfig.config.value.chart.layout)
 const chartType = computed(() => statConfig.config.value.chart.type)
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
@@ -38,8 +38,9 @@ function onChangePeriod(period: Period) {
 <template>
   <div
     v-if="isChartShow"
+    class="max-w-full min-w-0"
     :class="{
-      '@3xl/main:max-w-xl': chartView === 'half',
+      'w-full @3xl/main:max-w-md': chartLayout === 'combined-narrow',
     }"
   >
     <div class="-mb-1 flex justify-end">
@@ -58,7 +59,7 @@ function onChangePeriod(period: Period) {
     <!-- Reserve the chart height on this always-present box. The height must live here, not on a placeholder that the idle mount swaps out: the
          chart is a lazy component, so between isChartMountReady flipping and its chunk resolving the
          box would otherwise collapse for a frame and shift the whole page (CLS). -->
-    <div class="min-h-40 @3xl/stat:min-h-52">
+    <div class="min-h-40 max-w-full min-w-0 @3xl/stat:min-h-52">
       <LazyStatChartAxisView
         v-if="isChartMountReady"
         :chartType

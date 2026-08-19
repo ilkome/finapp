@@ -184,7 +184,7 @@ function makeFilter(categoriesIds: string[] = []) {
 function makeStatConfig() {
   return {
     config: computed(() => ({
-      chart: { isByCategories: false, isGrouped: false, isShowAverage: false, type: 'bar' as const },
+      chart: { breakdown: 'cashflow', isGrouped: false, isShowAverage: false, type: 'bar' as const },
     })),
   }
 }
@@ -193,7 +193,7 @@ function createStatReport(overrides?: {
   filterCategories?: string[]
   intervalSelected?: number
   intervalsInRange?: Range[]
-  statTab?: 'summary' | 'expense' | 'income' | 'split'
+  reportType?: 'combined' | 'expense' | 'income'
   trnsIds?: string[]
   type?: 'income' | 'expense' | 'netIncome'
 }) {
@@ -201,13 +201,14 @@ function createStatReport(overrides?: {
     filterCategories = [],
     intervalSelected = -1,
     intervalsInRange = [],
-    statTab = 'summary',
+    reportType = 'combined',
     trnsIds = [],
     type,
   } = overrides ?? {}
 
   return useStatReport({
     filter: makeFilter(filterCategories) as any,
+    reportType: computed(() => reportType),
     statConfig: makeStatConfig() as any,
     statDate: makeStatDate({
       intervalsInRange,
@@ -218,7 +219,6 @@ function createStatReport(overrides?: {
         rangeDuration: 1,
       },
     }) as any,
-    statTab: computed(() => statTab),
     storageKey: computed(() => 'test'),
     trnsIds: computed(() => trnsIds),
     type: computed(() => type),
@@ -491,17 +491,17 @@ describe('useStatReport', () => {
   // -------------------------------------------------------------------------
   describe('selectedTypeForSum', () => {
     it('returns summary for summary tab', () => {
-      const item = createStatReport({ statTab: 'summary' })
+      const item = createStatReport({ reportType: 'combined' })
       expect(item.selectedTypeForSum.value).toBe('summary')
     })
 
     it('returns statTab for expense tab', () => {
-      const item = createStatReport({ statTab: 'expense' })
+      const item = createStatReport({ reportType: 'expense' })
       expect(item.selectedTypeForSum.value).toBe('expense')
     })
 
-    it('returns type for split tab', () => {
-      const item = createStatReport({ statTab: 'split', type: 'income' })
+    it('returns the income projection type', () => {
+      const item = createStatReport({ reportType: 'income', type: 'income' })
       expect(item.selectedTypeForSum.value).toBe('income')
     })
   })

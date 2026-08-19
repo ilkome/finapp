@@ -320,8 +320,6 @@ export default {
       isExcludeInTotal: 'Не считать в общем балансе',
       withdrawal: 'Доступные для снятия',
     },
-    split: 'Раздельно',
-    summary: 'Общее',
     totals: {
       archived: 'Архивный',
     },
@@ -508,18 +506,13 @@ export default {
         label: 'Показывать график',
         title: 'Основной график',
       },
-      chartView: {
-        full: 'Широкий',
-        half: 'Компактный',
-        label: 'Вид графика',
-      },
       date: {
         quick: {
           label: 'Слайдер быстрого выбора даты',
         },
       },
       menu: {
-        label: 'Настройки страницы',
+        label: 'Настройки вида',
       },
       showedWallets: {
         placeholder: 'Количество',
@@ -551,6 +544,29 @@ export default {
       title: 'Прогноз',
     },
     title: 'Статистика',
+    view: {
+      breakdown: {
+        cashflow: { description: 'Строить серии по типам операций', label: 'Доходы и расходы' },
+        categories: { description: 'Строить серии по категориям', label: 'По категориям' },
+        title: 'Тип данных графиков',
+      },
+      chartLayout: {
+        'combined-narrow': { description: 'Показывать доходы и расходы на компактном графике', label: 'Вместе узко' },
+        'combined-wide': { description: 'Показывать доходы и расходы на широком графике', label: 'Вместе широко' },
+        'split': { description: 'Показывать отдельные графики расходов и доходов', label: 'Раздельно' },
+        'title': 'Режим графиков',
+      },
+      chartType: {
+        bar: { description: 'Показывать все серии столбцами', label: 'Столбцы' },
+        line: { description: 'Показывать все серии линиями', label: 'Линии' },
+        title: 'Вид графиков',
+      },
+      pageLayout: {
+        combined: { description: 'Размещать суммы, категории и транзакции в одном потоке', label: 'Общий' },
+        split: { description: 'Размещать расходы слева, а доходы справа', label: 'Раздельный' },
+        title: 'Вид страницы',
+      },
+    },
   },
 
   statistics: {
@@ -634,6 +650,9 @@ export default {
       saveFailed: 'Не удалось сохранить транзакцию',
     },
     filter: {
+      byCategory: 'Фильтр по категории',
+      byDate: 'Фильтр по дате',
+      byWallet: 'Фильтр по кошельку',
       showTrnsWithDesc: 'Только с описанием',
     },
     history: 'История',

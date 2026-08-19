@@ -9,7 +9,6 @@ export type StatConfigBooleanPath
     | 'categories.round.isIconBg'
     | 'categories.round.isShowFavorites'
     | 'categories.round.isShowRecent'
-    | 'chart.isByCategories'
     | 'chart.isGrouped'
     | 'chart.isShowAverage'
     | 'date.isShowQuick'
@@ -48,10 +47,6 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'categories.round.isShowRecent': {
     get: config => config.categories.round.isShowRecent,
     set: (provider, value) => provider.updateConfig('categories', { round: { isShowRecent: value } }),
-  },
-  'chart.isByCategories': {
-    get: config => config.chart.isByCategories,
-    set: (provider, value) => provider.updateConfig('chart', { isByCategories: value }),
   },
   'chart.isGrouped': {
     get: config => config.chart.isGrouped,

@@ -12,6 +12,6 @@ defineProps<{
     :series="ctx.chartSeries.value"
     :chartWindow="ctx.chartWindow"
     :xAxisLabels="ctx.chartXAxisLabels.value"
-    class="pb-3"
+    class="min-w-0 pb-3"
   />
 </template>

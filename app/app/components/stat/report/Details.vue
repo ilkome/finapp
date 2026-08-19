@@ -81,7 +81,7 @@ onBeforeUnmount(() => {
   />
 
   <div
-    v-if="ctx.selectedTrnsIds.value.length > 0 || (isVirtualFeedHost && ctx.params.statTab.value !== 'split')"
+    v-if="ctx.selectedTrnsIds.value.length > 0 || (isVirtualFeedHost && ctx.params.reportType.value === 'combined')"
     class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
   >
     <div
@@ -103,6 +103,7 @@ onBeforeUnmount(() => {
           :focusedChildCategoryId="ctx.filteredChildCategoryId.value"
           :focusedCategoryId="ctx.focusedQuickCategoryId.value"
           :isOneCategory="ctx.isOneCategory.value"
+          :isTwoColumnLayout="ctx.shouldUseTwoColumnLayout.value"
           :preCategoriesIds="ctx.params.preCategoriesIds?.value"
           :selectedTrnsIds="ctx.selectedAndQuickFilteredTrnsIds.value"
           :storageKey="ctx.statItemStorageKey.value"

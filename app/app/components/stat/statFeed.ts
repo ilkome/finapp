@@ -259,10 +259,10 @@ export function resolveStatScrollRangeOffset(activeOffset: number, baseOffset: n
 }
 
 export function resolveCurrentPeriodEmptyKey(
-  statTab: string,
+  reportType: string,
   filteredType: string,
 ): EmptyTransactionsKey {
-  const selectedType = statTab === 'summary' ? filteredType : statTab
+  const selectedType = reportType === 'combined' ? filteredType : reportType
 
   if (selectedType === 'expense')
     return 'trns.noExpenses'

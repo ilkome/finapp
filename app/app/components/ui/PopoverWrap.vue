@@ -29,7 +29,7 @@ const emit = defineEmits<{
     <div
       v-if="$slots.default"
       :class="props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden'"
-      class="min-h-0 px-2 py-px"
+      class="min-h-0 px-2 py-px md:pb-4"
     >
       <slot />
     </div>

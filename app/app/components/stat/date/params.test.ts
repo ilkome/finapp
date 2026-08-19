@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { StatDateParams } from '~/components/stat/date/types'
 
-import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, parseStatDateQueryParams } from './params'
+import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, normalizeStoredStatDateParams, parseStatDateQueryParams } from './params'
 
 describe('parseStatDateQueryParams', () => {
   const base: StatDateParams = { ...defaultStatDateParams }
@@ -19,6 +19,16 @@ describe('parseStatDateQueryParams', () => {
     expect(result.rangeBy).toBe('month')
     expect(result.rangeDuration).toBe(3)
     expect(result.granularityBy).toBe(base.granularityBy)
+  })
+
+  it('parses a transaction date as a custom day range', () => {
+    const date = Date.UTC(2026, 7, 19)
+    const result = parseStatDateQueryParams({ customDate: `${date}` }, base)
+
+    expect(result.customDate).toEqual({
+      end: Date.UTC(2026, 7, 19, 23, 59, 59, 999),
+      start: date,
+    })
   })
 
   it('merges granularityBy and granularityDuration', () => {
@@ -66,6 +76,22 @@ describe('parseStatDateQueryParams', () => {
   it('applies zero values for numeric fields', () => {
     const result = parseStatDateQueryParams({ rangeDuration: '0' }, base)
     expect(result.rangeDuration).toBe(0)
+  })
+})
+
+describe('normalizeStoredStatDateParams', () => {
+  it('restores missing date fields from defaults', () => {
+    const result = normalizeStoredStatDateParams({ rangeBy: undefined, rangeDuration: 30 }, defaultStatDateParams)
+
+    expect(result.rangeDuration).toBe(30)
+    expect(result.rangeBy).toBe(defaultStatDateParams.rangeBy)
+    expect(result.granularityBy).toBe(defaultStatDateParams.granularityBy)
+  })
+
+  it('rejects malformed persisted values', () => {
+    const result = normalizeStoredStatDateParams({ rangeBy: 'invalid' }, defaultStatDateParams)
+
+    expect(result).toEqual(defaultStatDateParams)
   })
 })
 

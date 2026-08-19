@@ -27,12 +27,12 @@ const isOpen = computed({
 const isVirtualEnabled = computed(() =>
   isVirtualFeedHost
   && props.ctx
-  && props.ctx.params.statTab.value !== 'split'
+  && props.ctx.params.reportType.value === 'combined'
   && props.ctx.params.statDate.params.value.intervalSelected === -1,
 )
 const currentPeriodEmptyLabel = computed(() => props.ctx
   ? t(resolveCurrentPeriodEmptyKey(
-      props.ctx.params.statTab.value,
+      props.ctx.params.reportType.value,
       props.ctx.filteredType.value,
     ))
   : t('trns.noTrns'))

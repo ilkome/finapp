@@ -1,63 +1,58 @@
-import type { SeriesSlug, SeriesSlugSelected, StatTabSlug } from '~/components/stat/types'
+import type { SeriesSlug, SeriesSlugSelected, StatReportType } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { TrnType } from '~/components/trns/types'
 
-export function getTypesMapping(slug: SeriesSlugSelected | StatTabSlug): TrnType[] {
+export function getTypesMapping(slug: SeriesSlugSelected | StatReportType): TrnType[] {
   // Transfers stay out of charts and period totals (getTotal keeps them in their own buckets,
   // matched by categoryId === 'transfer' so both two-leg and single-leg bank-import rows are
   // covered, and the category breakdown skips system categories). They ARE included in the
   // transaction list under the "all"/summary views so TrnsList's "Transfers" tab works; the
   // expense/income tabs stay pure so drilling into a type never mixes transfers in.
-  const typeMapping: Record<SeriesSlugSelected | StatTabSlug, TrnType[]> = {
+  const typeMapping: Record<SeriesSlugSelected | StatReportType, TrnType[]> = {
+    combined: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
     expense: [TrnType.Expense],
     income: [TrnType.Income],
     netIncome: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
-    split: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
-    summary: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
   }
 
   return typeMapping[slug]
 }
 
 /**
- * Resolve the selected stat type from tab and user filter.
+ * Resolve the selected stat type from the report projection and user filter.
  */
 export function getSelectedType(
-  statTab: StatTabSlug,
+  reportType: StatReportType,
   filteredType: SeriesSlugSelected,
-  type: SeriesSlugSelected | undefined,
-): SeriesSlugSelected | StatTabSlug {
-  if (statTab === 'summary')
+  _type: SeriesSlugSelected | undefined,
+): SeriesSlugSelected | StatReportType {
+  if (reportType === 'combined')
     return filteredType
-  if (statTab === 'split')
-    return type ?? filteredType
-  return statTab
+  return reportType
 }
 
 /**
  * Resolve the type used for sum display.
  */
 export function getSelectedTypeForSum(
-  statTab: StatTabSlug,
-  type: SeriesSlugSelected | undefined,
-): 'summary' | SeriesSlugSelected | StatTabSlug {
-  if (statTab === 'summary')
+  reportType: StatReportType,
+  _type: SeriesSlugSelected | undefined,
+): 'summary' | SeriesSlugSelected {
+  if (reportType === 'combined')
     return 'summary'
-  if (statTab === 'split')
-    return type ?? 'netIncome'
-  return statTab
+  return reportType
 }
 
 /**
  * Determine which chart series types to render.
  */
 export function getTypesToShow(
-  statTab: StatTabSlug,
+  reportType: StatReportType,
   filteredType: SeriesSlugSelected,
   type: SeriesSlugSelected | undefined,
 ): SeriesSlug[] {
-  if (statTab === 'summary') {
+  if (reportType === 'combined') {
     if (filteredType === 'netIncome')
       return ['income', 'expense']
     if (filteredType === 'income')
@@ -66,8 +61,8 @@ export function getTypesToShow(
       return ['expense']
   }
 
-  if (statTab === 'expense' || statTab === 'income')
-    return [statTab]
+  if (reportType === 'expense' || reportType === 'income')
+    return [reportType]
 
   if (type && type !== 'netIncome')
     return [type]

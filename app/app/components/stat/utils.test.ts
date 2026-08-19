@@ -4,9 +4,8 @@ import { getSelectedType, getSelectedTypeForSum, getSortedFilterWalletsIds, getT
 import { TrnType } from '~/components/trns/types'
 
 describe('getTypesMapping', () => {
-  it('includes transfers in the all/summary views so the transaction list can show them', () => {
-    expect(getTypesMapping('summary')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
-    expect(getTypesMapping('split')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
+  it('includes transfers in the combined view so the transaction list can show them', () => {
+    expect(getTypesMapping('combined')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
     expect(getTypesMapping('netIncome')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
   })
 
@@ -17,17 +16,9 @@ describe('getTypesMapping', () => {
 })
 
 describe('getSelectedType', () => {
-  it('returns filteredType for summary tab', () => {
-    expect(getSelectedType('summary', 'expense', 'income')).toBe('expense')
-    expect(getSelectedType('summary', 'netIncome', undefined)).toBe('netIncome')
-  })
-
-  it('returns type for split tab', () => {
-    expect(getSelectedType('split', 'netIncome', 'expense')).toBe('expense')
-  })
-
-  it('falls back to filteredType for split when type is undefined', () => {
-    expect(getSelectedType('split', 'income', undefined)).toBe('income')
+  it('returns filteredType for the combined report', () => {
+    expect(getSelectedType('combined', 'expense', 'income')).toBe('expense')
+    expect(getSelectedType('combined', 'netIncome', undefined)).toBe('netIncome')
   })
 
   it('returns statTab for expense/income tabs', () => {
@@ -37,12 +28,8 @@ describe('getSelectedType', () => {
 })
 
 describe('getSelectedTypeForSum', () => {
-  it('returns summary for summary tab', () => {
-    expect(getSelectedTypeForSum('summary', 'expense')).toBe('summary')
-  })
-
-  it('returns type for split tab', () => {
-    expect(getSelectedTypeForSum('split', 'income')).toBe('income')
+  it('returns summary for the combined report', () => {
+    expect(getSelectedTypeForSum('combined', 'expense')).toBe('summary')
   })
 
   it('returns statTab for expense/income tabs', () => {
@@ -52,16 +39,16 @@ describe('getSelectedTypeForSum', () => {
 })
 
 describe('getTypesToShow', () => {
-  it('returns both types for summary+netIncome', () => {
-    expect(getTypesToShow('summary', 'netIncome', undefined)).toEqual(['income', 'expense'])
+  it('returns both types for combined+netIncome', () => {
+    expect(getTypesToShow('combined', 'netIncome', undefined)).toEqual(['income', 'expense'])
   })
 
-  it('returns single type for summary+income', () => {
-    expect(getTypesToShow('summary', 'income', undefined)).toEqual(['income'])
+  it('returns single type for combined+income', () => {
+    expect(getTypesToShow('combined', 'income', undefined)).toEqual(['income'])
   })
 
-  it('returns single type for summary+expense', () => {
-    expect(getTypesToShow('summary', 'expense', undefined)).toEqual(['expense'])
+  it('returns single type for combined+expense', () => {
+    expect(getTypesToShow('combined', 'expense', undefined)).toEqual(['expense'])
   })
 
   it('returns statTab for expense tab', () => {
@@ -70,14 +57,6 @@ describe('getTypesToShow', () => {
 
   it('returns statTab for income tab', () => {
     expect(getTypesToShow('income', 'netIncome', undefined)).toEqual(['income'])
-  })
-
-  it('returns type for split tab', () => {
-    expect(getTypesToShow('split', 'netIncome', 'expense')).toEqual(['expense'])
-  })
-
-  it('falls back to both types for split without type', () => {
-    expect(getTypesToShow('split', 'netIncome', undefined)).toEqual(['income', 'expense'])
   })
 })
 

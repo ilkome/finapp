@@ -320,8 +320,6 @@ export default {
       isExcludeInTotal: 'Excluded from totals',
       withdrawal: 'Withdrawal',
     },
-    split: 'Split',
-    summary: 'Summary',
     totals: {
       archived: 'Archived',
     },
@@ -508,18 +506,13 @@ export default {
         label: 'Show chart',
         title: 'Main chart',
       },
-      chartView: {
-        full: 'Full',
-        half: 'Compact',
-        label: 'Chart view',
-      },
       date: {
         quick: {
           label: 'Date selector slider',
         },
       },
       menu: {
-        label: 'Page Settings',
+        label: 'View Settings',
       },
       showedWallets: {
         placeholder: 'Count',
@@ -551,6 +544,29 @@ export default {
       title: 'Forecast',
     },
     title: 'Dashboard',
+    view: {
+      breakdown: {
+        cashflow: { description: 'Build series by transaction type', label: 'Income and expenses' },
+        categories: { description: 'Build series by category', label: 'By categories' },
+        title: 'Chart data',
+      },
+      chartLayout: {
+        'combined-narrow': { description: 'Show income and expenses in a compact chart', label: 'Together narrow' },
+        'combined-wide': { description: 'Show income and expenses in a wide chart', label: 'Together wide' },
+        'split': { description: 'Show separate expense and income charts', label: 'Separate' },
+        'title': 'Chart layout',
+      },
+      chartType: {
+        bar: { description: 'Display all series as bars', label: 'Bars' },
+        line: { description: 'Display all series as lines', label: 'Lines' },
+        title: 'Chart style',
+      },
+      pageLayout: {
+        combined: { description: 'Place totals, categories, and transactions in one flow', label: 'Combined' },
+        split: { description: 'Place expenses on the left and income on the right', label: 'Split' },
+        title: 'Page layout',
+      },
+    },
   },
 
   statistics: {
@@ -634,6 +650,9 @@ export default {
       saveFailed: 'Failed to save transaction',
     },
     filter: {
+      byCategory: 'Filter by category',
+      byDate: 'Filter by date',
+      byWallet: 'Filter by wallet',
       showTrnsWithDesc: 'Only with description',
     },
     history: 'History',

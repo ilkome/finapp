@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
-import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/filter/useFilter'
+import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
-import { getTypesMapping } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -26,13 +23,16 @@ const { statHeader } = useStatPageHost()
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
+const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
+const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
+const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
 
-const activeTab = useStorage<StatTabSlug>(`${walletId.value}-tab`, 'summary')
-const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
+const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-${statSnapshotId}` : `${walletId.value}`)
+const legacyTab = localStorage.getItem(`${walletId.value}-tab`)?.replaceAll('"', '')
+const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `${walletId.value}-${legacyTab}` : undefined)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
-  trnsTypes: getTypesMapping(activeTab.value),
   walletsIds: [walletId.value],
 }))
 
@@ -40,6 +40,9 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const { statConfig } = useStatPageProviders({
   config: {
+    initialConfig: statSnapshot?.config,
+    legacyStorageKey,
+    legacyTab,
     props: {
       categories: {
         isShowEmpty: true,
@@ -48,14 +51,19 @@ const { statConfig } = useStatPageProviders({
         isShow: false,
       },
     },
+    storage: isStatDrilldown ? sessionStorage : localStorage,
     storageKey,
   },
   date: {
+    initParams: statSnapshot?.date,
     key: storageKey,
+    legacyKey: legacyStorageKey,
     maxRange,
     queryParams: route.query,
+    storage: isStatDrilldown ? sessionStorage : localStorage,
   },
   filter,
+  initialTrnsViewState: statSnapshot?.trns,
 })
 
 watch(filter.categoriesIds, () => {
@@ -115,7 +123,6 @@ async function onDeleteConfirm() {
   <UiPage v-if="wallet">
     <StatHeader
       ref="statHeader"
-      v-model:activeTab="activeTab"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
       :trnsIds
@@ -193,10 +200,10 @@ async function onDeleteConfirm() {
     </div>
 
     <StatLayout
-      :activeTab
       :storageKey
       :trnsIds
       :walletId
+      :reportType="statSnapshot?.reportType"
       hasChildren
     />
   </UiPage>

@@ -2,7 +2,7 @@
 import { differenceInDays } from 'date-fns'
 
 import type { RecurrenceId } from '~/components/recurrences/types'
-import type { StatTabSlug } from '~/components/stat/types'
+import type { StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
@@ -29,7 +29,7 @@ const rule = computed(() => recurrencesStore.items?.[id.value])
 const category = computed(() => (rule.value ? categoriesStore.items?.[rule.value.categoryId] : undefined))
 
 // A subscription is a single direction (expense or income): force the tab, hide the switcher.
-const activeTab = computed<StatTabSlug>(() => (rule.value?.type === TrnType.Income ? 'income' : 'expense'))
+const reportType = computed<StatReportType>(() => (rule.value?.type === TrnType.Income ? 'income' : 'expense'))
 // Key by id only: the tab is derived (not user-switchable), and it can flip once the rule loads,
 // which would otherwise leave the stat config/date keyed to the wrong (initial) tab.
 const storageKey = computed(() => `page-recurrence-${id.value}`)
@@ -92,10 +92,8 @@ function onDeleteConfirm() {
 <template>
   <UiPage v-if="rule">
     <StatHeader
-      v-model:activeTab="activeTab"
       backTo="/recurrences"
       :hasCategoryBreakdown="false"
-      hideTabs
       :trnsIds
     >
       <template #title>
@@ -121,10 +119,10 @@ function onDeleteConfirm() {
     </StatHeader>
 
     <StatLayout
-      :activeTab
       :categoryId="rule.categoryId"
       :storageKey
       :trnsIds
+      :reportType
     />
 
     <div class="max-w-3xl px-2 pb-10 lg:px-4">

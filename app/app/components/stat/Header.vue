@@ -2,7 +2,6 @@
 import type { ComponentPublicInstance } from 'vue'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -21,7 +20,6 @@ const props = withDefaults(defineProps<{
   configCategories?: boolean
   configWallets?: boolean
   hasCategoryBreakdown?: boolean
-  hideTabs?: boolean
   preCategoriesIds?: CategoryId[]
   sticky?: boolean
   trnsIds?: TrnId[]
@@ -29,8 +27,6 @@ const props = withDefaults(defineProps<{
   hasCategoryBreakdown: true,
   sticky: true,
 })
-
-const activeTab = defineModel<StatTabSlug>('activeTab')
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
@@ -103,13 +99,6 @@ function onClickWallet(walletId: WalletId) {
           </template>
         </BottomSheetOrDropdown>
       </div>
-    </template>
-
-    <template v-if="activeTab && !props.hideTabs && statConfig.showTabs.value" #selected>
-      <StatMenu
-        :active="activeTab"
-        @click="(id: StatTabSlug) => activeTab = id"
-      />
     </template>
 
     <template

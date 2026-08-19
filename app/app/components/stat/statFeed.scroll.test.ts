@@ -11,9 +11,9 @@ describe('canStickStatCategories', () => {
 
 describe('resolveCurrentPeriodEmptyKey', () => {
   it('uses the selected summary type', () => {
-    expect(resolveCurrentPeriodEmptyKey('summary', 'expense')).toBe('trns.noExpenses')
-    expect(resolveCurrentPeriodEmptyKey('summary', 'income')).toBe('trns.noIncome')
-    expect(resolveCurrentPeriodEmptyKey('summary', 'netIncome')).toBe('trns.noTrns')
+    expect(resolveCurrentPeriodEmptyKey('combined', 'expense')).toBe('trns.noExpenses')
+    expect(resolveCurrentPeriodEmptyKey('combined', 'income')).toBe('trns.noIncome')
+    expect(resolveCurrentPeriodEmptyKey('combined', 'netIncome')).toBe('trns.noTrns')
   })
 
   it('uses the active stat tab outside summary', () => {

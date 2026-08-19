@@ -2,7 +2,6 @@
 import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/filter/useFilter'
@@ -17,8 +16,9 @@ const trnsStore = useTrnsStore()
 const filter = useFilter()
 const { statHeader } = useStatPageHost()
 
-const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
-const storageKey = computed(() => `dashboard-${activeTab.value}`)
+const legacyTab = localStorage.getItem('dashboard-tab')?.replaceAll('"', '')
+const legacyStorageKey = legacyTab ? `dashboard-${legacyTab}` : undefined
+const storageKey = 'dashboard'
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
@@ -28,8 +28,8 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const { statConfig } = useStatPageProviders({
-  config: { storageKey },
-  date: { key: storageKey, maxRange, queryParams: route.query },
+  config: { legacyStorageKey, legacyTab, storageKey },
+  date: { key: storageKey, legacyKey: legacyStorageKey, maxRange, queryParams: route.query },
   filter,
 })
 
@@ -62,7 +62,6 @@ onDeactivated(() => {
   <UiPage>
     <StatHeader
       ref="statHeader"
-      v-model:activeTab="activeTab"
       :trnsIds
       compactBottom
       configCategories
@@ -76,7 +75,6 @@ onDeactivated(() => {
     <BudgetsDashboardCard class="mx-2 mb-2 max-w-7xl lg:mx-4" />
 
     <StatLayout
-      :activeTab
       :storageKey
       :trnsIds
       hasChildren
