@@ -132,7 +132,7 @@ async function clearCachesAndReload() {
                 <div v-if="activePanel === 'root'">
                   <div
                     v-if="userStore.currentUser"
-                    class="mx-2 flex items-start gap-2 border-b border-default py-2"
+                    class="mx-2 flex items-start gap-2 py-2"
                   >
                     <div class="min-w-0 grow">
                       <UserViewLogout />
@@ -148,6 +148,7 @@ async function clearCachesAndReload() {
                       />
                     </UiActionButton>
                   </div>
+                  <div v-if="userStore.currentUser" aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
                   <div class="py-4">
                     <div
