@@ -11,7 +11,6 @@ import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
 
 type UseStatReportContextParams = UseStatReportParams & {
-  categoryId?: ComputedRef<CategoryId | undefined>
   hasChildren?: ComputedRef<boolean | undefined>
   preCategoriesIds?: ComputedRef<CategoryId[] | undefined>
   walletId?: ComputedRef<WalletId | undefined>

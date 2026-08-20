@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
+import type { SeriesSlugSelected, StatQuickCategoryFilter, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<{
   categoryId?: CategoryId
   hasChildren?: boolean
   initialFilteredType?: SeriesSlugSelected
+  lockSingleTypeLayout?: boolean
   preCategoriesIds?: CategoryId[]
   reportType?: StatReportType
   storageKey: string
@@ -38,9 +39,6 @@ const statNavigation = useTemplateRef<HTMLElement>('statNavigation')
 const { width: statLayoutWidth } = useElementSize(statLayout)
 const { height: measuredNavigationHeight } = useElementSize(statNavigation, undefined, { box: 'border-box' })
 const stickyNavigationHeight = computed(() => Math.max(42, measuredNavigationHeight.value))
-watchEffect(() => {
-  canSplit.value = statLayoutWidth.value >= 768
-})
 provide(statCanSplitKey, canSplit)
 provide(statStickyNavigationHeightKey, stickyNavigationHeight)
 
@@ -78,6 +76,11 @@ const selectionProjections = computed(() => {
   return { combined: sharedSelection.value, expense, income }
 })
 
+const quickCategoryFilter: StatQuickCategoryFilter = {
+  categoriesIds: ref([]),
+  childCategoryId: ref(),
+}
+
 const commonParams = {
   applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),
   categoryId: computed(() => props.categoryId),
@@ -85,6 +88,7 @@ const commonParams = {
   hasChildren: computed(() => props.hasChildren),
   initialFilteredType: props.initialFilteredType,
   preCategoriesIds: computed(() => props.preCategoriesIds),
+  quickCategoryFilter,
   statConfig,
   statDate,
   storageKey: computed(() => props.storageKey),
@@ -107,6 +111,9 @@ const contexts = {
   expense: createContext('expense'),
   income: createContext('income'),
 }
+watchEffect(() => {
+  canSplit.value = statLayoutWidth.value >= 768 && !props.lockSingleTypeLayout
+})
 </script>
 
 <template>

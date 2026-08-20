@@ -1,4 +1,4 @@
-import type { ComputedRef } from 'vue'
+import type { ComputedRef, Ref } from 'vue'
 import type { Range } from '~~/utils/date/types'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
@@ -20,9 +20,11 @@ export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | '
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
+  categoryId?: ComputedRef<CategoryId | undefined>
   filter: FilterProvider
   initialFilteredType?: SeriesSlugSelected
   isDateBounded?: boolean
+  quickCategoryFilter?: StatQuickCategoryFilter
   reportType: ComputedRef<StatReportType>
   selectionSource?: ComputedRef<StatReportSelectedRecord[]>
   statConfig: StatConfigProvider
@@ -31,6 +33,11 @@ export type UseStatReportParams = {
   trnsIds: ComputedRef<TrnId[]>
   trnsViewState?: TrnsListFilterState
   type: ComputedRef<SeriesSlugSelected | undefined>
+}
+
+export type StatQuickCategoryFilter = {
+  categoriesIds: Ref<CategoryId[]>
+  childCategoryId: Ref<CategoryId | undefined>
 }
 
 type CategoryWithDataBase = {

@@ -8,6 +8,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { statConfigKey } from '~/components/stat/injectionKeys'
+import { buildStatSummaryItems } from '~/components/stat/sum/summaryItems'
 
 const props = defineProps<{
   averageTotal?: Record<string, number>
@@ -48,11 +49,7 @@ const className = computed(() => cn(
   },
 ))
 
-const summaryItems = computed<{ amount: number, isActive: boolean, type: SeriesSlugSelected }[]>(() => [
-  { amount: -props.total.expense, isActive: props.filteredType === 'expense', type: 'expense' },
-  { amount: props.total.income, isActive: props.filteredType === 'income', type: 'income' },
-  { amount: props.total.net, isActive: false, type: 'net' },
-])
+const summaryItems = computed(() => buildStatSummaryItems(props.total, props.filteredType))
 
 function onClick(type: SeriesSlugSelected) {
   emit('click', type)
@@ -98,10 +95,7 @@ function onClick(type: SeriesSlugSelected) {
           :statTabSlug="item.type"
         />
 
-        <div
-          v-if="item.type !== 'net'"
-          class="ml-auto hidden w-12 shrink-0 items-center justify-center @2xl/stat:flex"
-        >
+        <div class="ml-auto hidden w-12 shrink-0 items-center justify-center @2xl/stat:flex">
           <slot name="summaryPie" :type="item.type" />
         </div>
       </StatSumItem>

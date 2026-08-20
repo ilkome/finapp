@@ -5,7 +5,7 @@ import { computed, ref } from 'vue'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
-import type { IntervalData } from '~/components/stat/types'
+import type { IntervalData, StatQuickCategoryFilter } from '~/components/stat/types'
 
 // ---------------------------------------------------------------------------
 // Stub Nuxt/Vue auto-imports used by useStatReport
@@ -202,24 +202,30 @@ function makeStatConfig() {
 }
 
 function createStatReport(overrides?: {
+  categoryId?: string
   filterCategories?: string[]
   intervalSelected?: number
   intervalsInRange?: Range[]
+  quickCategoryFilter?: StatQuickCategoryFilter
   reportType?: 'combined' | 'expense' | 'income'
   trnsIds?: string[]
   type?: 'income' | 'expense' | 'net'
 }) {
   const {
+    categoryId,
     filterCategories = [],
     intervalSelected = -1,
     intervalsInRange = [],
+    quickCategoryFilter,
     reportType = 'combined',
     trnsIds = [],
     type,
   } = overrides ?? {}
 
   return useStatReport({
+    categoryId: computed(() => categoryId),
     filter: makeFilter(filterCategories) as any,
+    quickCategoryFilter,
     reportType: computed(() => reportType),
     statConfig: makeStatConfig() as any,
     statDate: makeStatDate({
@@ -272,6 +278,25 @@ describe('useStatReport', () => {
     expect(categoryBreakdownMocks.buildCategoriesSeries).toHaveBeenLastCalledWith(
       expect.objectContaining({ type: 'expense' }),
     )
+  })
+
+  it('hides a single-color summary pie in quick and regular category scopes', () => {
+    const singleColorPie = [
+      { color: 'red', value: 40 },
+      { color: 'red', value: 60 },
+    ]
+    categoryBreakdownMocks.buildCategoriesPieData.mockReturnValue(singleColorPie)
+    const report = createStatReport({ trnsIds: ['t1'] })
+
+    expect(report.summaryCategoryPieData.value.expense).toEqual(singleColorPie)
+
+    report.onSetCategoryFilter('cat1')
+
+    expect(report.summaryCategoryPieData.value.expense).toEqual([])
+
+    const categoryReport = createStatReport({ categoryId: 'cat1', trnsIds: ['t1'] })
+
+    expect(categoryReport.summaryCategoryPieData.value.expense).toEqual([])
   })
 
   // -------------------------------------------------------------------------
@@ -432,6 +457,20 @@ describe('useStatReport', () => {
   // onSetCategoryFilter
   // -------------------------------------------------------------------------
   describe('onSetCategoryFilter', () => {
+    it('shares quick category focus across split chart reports', () => {
+      const quickCategoryFilter: StatQuickCategoryFilter = {
+        categoriesIds: ref([]),
+        childCategoryId: ref(),
+      }
+      const expense = createStatReport({ quickCategoryFilter, reportType: 'expense' })
+      const income = createStatReport({ quickCategoryFilter, reportType: 'income' })
+
+      expense.onSetCategoryFilter('cat1')
+
+      expect(income.filteredCategoriesIds.value).toEqual(['cat1'])
+      expect(income.effectiveFilteredCategoriesIds.value).toEqual(['cat1'])
+    })
+
     it('sets the category filter when empty', () => {
       const item = createStatReport()
 

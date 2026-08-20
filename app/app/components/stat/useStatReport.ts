@@ -40,8 +40,8 @@ export function useStatReport(params: UseStatReportParams) {
   const normalizedFilteredType = normalizeSelectedSeries(filteredType.value)
   if (filteredType.value !== normalizedFilteredType)
     filteredType.value = normalizedFilteredType
-  const filteredCategoriesIds = ref<CategoryId[]>([])
-  const filteredChildCategoryId = ref<CategoryId>()
+  const filteredCategoriesIds = params.quickCategoryFilter?.categoriesIds ?? ref<CategoryId[]>([])
+  const filteredChildCategoryId = params.quickCategoryFilter?.childCategoryId ?? ref<CategoryId>()
   const effectiveFilteredCategoriesIds = computed(() => filteredChildCategoryId.value
     ? [filteredChildCategoryId.value]
     : filteredCategoriesIds.value)
@@ -69,6 +69,9 @@ export function useStatReport(params: UseStatReportParams) {
     filteredType,
     forecastMode,
     reportType: params.reportType,
+    shouldHideSingleColorSummaryPie: computed(() =>
+      filteredCategoriesIds.value.length > 0 || !!params.categoryId?.value,
+    ),
     statConfig: params.statConfig,
     statDate: params.statDate,
     type: params.type,

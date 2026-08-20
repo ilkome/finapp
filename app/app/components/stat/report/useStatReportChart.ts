@@ -9,6 +9,7 @@ import type { useStatReportData } from '~/components/stat/report/useStatReportDa
 import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { buildCashflowPieData, hideSingleColorPie } from '~/components/stat/chart/cashflowPie'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
 import { resolveEChartsSeriesType } from '~/components/stat/chart/types'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
@@ -20,6 +21,7 @@ export function useStatReportChart(params: {
   filteredType: Ref<SeriesSlugSelected>
   forecastMode: Ref<ForecastMode>
   reportType: ComputedRef<StatReportType>
+  shouldHideSingleColorSummaryPie: ComputedRef<boolean>
   statConfig: StatConfigProvider
   statDate: StatDateProvider
   type: ComputedRef<SeriesSlugSelected | undefined>
@@ -137,10 +139,15 @@ export function useStatReportChart(params: {
       type,
     })
   }
-  const summaryCategoryPieData = computed(() => ({
-    expense: buildCategoryPieData('expense'),
-    income: buildCategoryPieData('income'),
-  }))
+  const summaryCategoryPieData = computed(() => {
+    const expense = buildCategoryPieData('expense')
+    const income = buildCategoryPieData('income')
+    return {
+      expense: params.shouldHideSingleColorSummaryPie.value ? hideSingleColorPie(expense) : expense,
+      income: params.shouldHideSingleColorSummaryPie.value ? hideSingleColorPie(income) : income,
+      net: buildCashflowPieData(params.data.rangeTotal.value),
+    }
+  })
   const focusedCategoryPieData = computed(() => {
     if (params.filteredType.value !== 'expense' && params.filteredType.value !== 'income')
       return []

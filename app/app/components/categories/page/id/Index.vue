@@ -134,7 +134,6 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const { statConfig, statDate, trnsViewState } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
-    storageQuery,
     legacyStorageKey,
     legacyTab,
     props: isStatDrilldown
@@ -155,6 +154,7 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
         },
     storage: isStatDrilldown ? sessionStorage : localStorage,
     storageKey,
+    storageQuery,
   },
   date: {
     initParams: statSnapshot?.date ?? {
@@ -324,6 +324,7 @@ async function onDeleteConfirm() {
     <StatLayout
       :categoryId
       :initialFilteredType="statSnapshot?.filteredType"
+      :lockSingleTypeLayout="singleTrnType !== null"
       :preCategoriesIds="childrenIds"
       :storageKey
       :trnsIds
