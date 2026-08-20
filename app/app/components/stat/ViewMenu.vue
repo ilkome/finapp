@@ -1,15 +1,28 @@
 <script setup lang="ts">
-export type StatViewMenuOption = { description: string, icon: string, label: string, value: string }
+export type StatViewMenuOption = { description: string, icon: string, keepOpen?: boolean, label: string, value: string }
+export type StatViewMenuSetting = { checked: boolean, label: string, onUpdateChecked: (value: boolean) => void }
 
-const props = defineProps<{ label: string, modelValue: string, options: StatViewMenuOption[] }>()
+const props = defineProps<{ label: string, modelValue: string, options: StatViewMenuOption[], settings?: StatViewMenuSetting[] }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string] }>()
 const current = computed(() => props.options.find(option => option.value === props.modelValue) ?? props.options[0]!)
-const items = computed(() => props.options.map(option => ({
+const optionItems = computed(() => props.options.map(option => ({
   ...option,
   active: option.value === props.modelValue,
-  onSelect: () => emit('update:modelValue', option.value),
+  onSelect: (event: Event) => {
+    emit('update:modelValue', option.value)
+    if (option.keepOpen)
+      event.preventDefault()
+  },
   trailingIcon: option.value === props.modelValue ? 'i-lucide-check' : undefined,
 })))
+const settingItems = computed(() => props.settings?.map(setting => ({
+  ...setting,
+  onSelect: (event: Event) => event.preventDefault(),
+  type: 'checkbox' as const,
+})) ?? [])
+const items = computed(() => optionItems.value.flatMap(option =>
+  option.value === props.modelValue ? [option, ...settingItems.value] : [option],
+))
 
 function cycle() {
   const index = props.options.findIndex(option => option.value === props.modelValue)

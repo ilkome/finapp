@@ -77,8 +77,33 @@ describe('buildStatFeedIndex', () => {
       },
     }
 
-    expect(build({ filter: { filterBy: 'expense', showWithDesc: true }, items }).idsByOffset.get(1)).toEqual(['noted'])
+    expect(build({ filter: { filterBy: 'expense', showHistoryWithDesc: true, showWithDesc: false }, items }).idsByOffset.get(1)).toEqual(['noted'])
     expect(build({ filter: { filterBy: 'transfer', showWithDesc: false }, items }).idsByOffset.get(1)).toEqual(['transfer'])
+  })
+
+  it('applies description filters independently to the current and previous periods', () => {
+    const items = {
+      current: expense(rangeForOffset(0).end),
+      currentNoted: expense(rangeForOffset(0).start, 'current note'),
+      historical: expense(rangeForOffset(2).end),
+      historicalNoted: expense(rangeForOffset(2).start, 'history note'),
+    }
+
+    const currentOnly = build({
+      filter: { filterBy: 'all', showHistoryWithDesc: false, showWithDesc: true },
+      items,
+      searchedThroughOffset: 2,
+    })
+    expect(currentOnly.idsByOffset.get(0)).toEqual(['currentNoted'])
+    expect(currentOnly.idsByOffset.get(2)).toEqual(['historical', 'historicalNoted'])
+
+    const historyOnly = build({
+      filter: { filterBy: 'all', showHistoryWithDesc: true, showWithDesc: false },
+      items,
+      searchedThroughOffset: 2,
+    })
+    expect(historyOnly.idsByOffset.get(0)).toEqual(['current', 'currentNoted'])
+    expect(historyOnly.idsByOffset.get(2)).toEqual(['historicalNoted'])
   })
 
   it('materializes a newly matching historical period inside the searched frontier', () => {

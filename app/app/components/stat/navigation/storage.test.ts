@@ -26,6 +26,7 @@ function snapshot() {
   return {
     config: structuredClone(defaultConfig),
     date: structuredClone(defaultStatDateParams),
+    filteredType: 'expense' as const,
     reportType: 'combined' as const,
     trns: {
       filterBy: 'expense' as const,
@@ -47,6 +48,7 @@ describe('statistics navigation snapshot storage', () => {
     expect(getStatNavigationSnapshot(id, { now: 100, storage })).toMatchObject({
       config: { chart: { isShow: true } },
       date: { rangeOffset: 0 },
+      filteredType: 'expense',
       reportType: 'combined',
       trns: { filterBy: 'expense', isShowWithDesc: true },
       version: 2,

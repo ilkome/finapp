@@ -34,6 +34,7 @@ export type UseStatDateOptions = {
   key: MaybeRefOrGetter<string>
   legacyKey?: MaybeRefOrGetter<string | undefined>
   maxRange: ComputedRef<Range>
+  overrideStoredWithInitParams?: boolean
   queryParams?: Partial<StatDateParamsQuery>
   storage?: Storage
 }

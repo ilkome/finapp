@@ -1,20 +1,22 @@
 import type { Categories, CategoryId } from '~/components/categories/types'
 import type { ChartType } from '~/components/stat/chart/types'
-import type { ChartSeries, IntervalData, SeriesSlug } from '~/components/stat/types'
+import type { ChartSeries, IntervalData, SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getParentCategoryIdOrUndefined, isSystemCategoryId } from '~/components/categories/utils'
+import { partitionHighlightedItems } from '~/components/stat/chart/highlightedItems'
+import { resolveEChartsSeriesType } from '~/components/stat/chart/types'
 
 type AggregateParams = {
   categoriesItems: Categories
-  computeTotalForTrnsIds: (ids: TrnId[]) => { expense: number, income: number, sum: number }
+  computeTotalForTrnsIds: (ids: TrnId[]) => { expense: number, income: number, net: number }
   /** Categories dropped from the breakdown (dashboard "exclude from stats"); undefined when a drill/filter is active. */
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   filterCategoriesIds?: CategoryId[]
   intervals: IntervalData[]
   isGrouped: boolean
   trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
-  type: SeriesSlug
+  type: SeriesSlugSelected
 }
 
 type BuildSeriesParams = AggregateParams & {
@@ -28,16 +30,22 @@ export type CategoryPieDatum = {
 }
 
 type AggregatedTotals = {
-  /** displayCategoryId -> total over the full range (positive amounts only kept in `orderedCategoryIds`). */
+  /** displayCategoryId -> total over the full range. */
   categoryTotals: Record<CategoryId, number>
-  /** Category ids with a positive total, sorted by total descending. */
+  /** Category ids with a non-zero total, sorted by absolute total descending. */
   orderedCategoryIds: CategoryId[]
   /** For each interval: displayCategoryId -> trnIds that fell into it. */
   perIntervalByCategory: Record<CategoryId, TrnId[]>[]
 }
 
-const HIGHLIGHTED_CATEGORIES_COUNT = 5
 const OTHER_CATEGORY_COLOR = 'var(--ui-text-dimmed)'
+
+function getCategoryValue(
+  total: { expense: number, income: number, net: number },
+  type: SeriesSlugSelected,
+): number {
+  return type === 'net' ? total.net : total[type]
+}
 
 function resolveCategoryColor(categoriesItems: Categories, categoryId: CategoryId): string {
   return categoriesItems[categoryId]?.color ?? OTHER_CATEGORY_COLOR
@@ -100,15 +108,15 @@ export function aggregateCategoryTotals({
   const categoryTotals: Record<CategoryId, number> = {}
   for (const bucket of perIntervalByCategory) {
     for (const [catId, trnIds] of Object.entries(bucket)) {
-      const value = computeTotalForTrnsIds(trnIds)[type]
+      const value = getCategoryValue(computeTotalForTrnsIds(trnIds), type)
       categoryTotals[catId] = (categoryTotals[catId] ?? 0) + value
     }
   }
 
-  // Sort categories by total descending
+  // Net income keeps its sign for axis charts, while category priority follows magnitude.
   const orderedCategoryIds = Object.keys(categoryTotals)
-    .filter(id => categoryTotals[id]! > 0)
-    .sort((a, b) => categoryTotals[b]! - categoryTotals[a]!)
+    .filter(id => categoryTotals[id] !== 0)
+    .sort((a, b) => Math.abs(categoryTotals[b]!) - Math.abs(categoryTotals[a]!))
 
   return { categoryTotals, orderedCategoryIds, perIntervalByCategory }
 }
@@ -125,8 +133,8 @@ export function buildCategoriesSeries({
   trnsItems,
   type,
 }: BuildSeriesParams): ChartSeries[] {
-  const axisChartType = chartType === 'line' ? 'line' : 'bar'
-  const { orderedCategoryIds, perIntervalByCategory } = aggregateCategoryTotals({
+  const axisChartType = resolveEChartsSeriesType(chartType === 'pie' ? 'bar' : chartType)
+  const { categoryTotals, orderedCategoryIds, perIntervalByCategory } = aggregateCategoryTotals({
     categoriesItems,
     computeTotalForTrnsIds,
     excludedCategoriesIds,
@@ -140,42 +148,46 @@ export function buildCategoriesSeries({
   const valuesByInterval = perIntervalByCategory.map(bucket => Object.fromEntries(
     Object.entries(bucket).map(([categoryId, trnIds]) => [
       categoryId,
-      computeTotalForTrnsIds(trnIds)[type],
+      getCategoryValue(computeTotalForTrnsIds(trnIds), type),
     ]),
   ) as Record<CategoryId, number>)
-  const highlightedIdsByInterval = valuesByInterval.map(values => Object.entries(values)
-    .filter(([, value]) => value > 0)
-    .sort(([, valueA], [, valueB]) => valueB - valueA)
-    .slice(0, HIGHLIGHTED_CATEGORIES_COUNT)
-    .map(([categoryId]) => categoryId))
-  const highlightedSets = highlightedIdsByInterval.map(ids => new Set(ids))
-  const highlightedCategoryIds = orderedCategoryIds.filter(categoryId =>
-    highlightedSets.some(ids => ids.has(categoryId)),
-  )
+  const { highlighted, remainder } = partitionHighlightedItems({
+    getMagnitude: item => item.value,
+    items: orderedCategoryIds.map(id => ({ id, value: categoryTotals[id] ?? 0 })),
+  })
+  const highlightedCategoryIds = highlighted.map(item => item.id)
+  const remainderSet = new Set(remainder.map(item => item.id))
 
   const series = highlightedCategoryIds.map((catId): ChartSeries => {
     const category = categoriesItems[catId]
+    const values = valuesByInterval.map(values => values[catId] ?? 0)
     return {
       color: resolveCategoryColor(categoriesItems, catId),
-      data: valuesByInterval.map((values, index) =>
-        highlightedSets[index]!.has(catId) ? (values[catId] ?? 0) : 0,
-      ),
+      data: values.map(value => Math.abs(value)),
       icon: category?.icon,
       name: category?.name ?? catId,
+      showValueType: type === 'net',
       type: axisChartType,
+      valueTypes: type === 'net'
+        ? values.map(value => value === 0 ? undefined : value < 0 ? 'expense' : 'income')
+        : values.map(value => value === 0 ? undefined : type),
     }
   })
 
-  const otherData = valuesByInterval.map((values, index) => Object.entries(values)
-    .filter(([categoryId]) => !highlightedSets[index]!.has(categoryId))
+  const signedOtherData = valuesByInterval.map(values => Object.entries(values)
+    .filter(([categoryId]) => remainderSet.has(categoryId))
     .reduce((total, [, value]) => total + value, 0))
-  if (otherData.some(value => value > 0)) {
+  if (signedOtherData.some(value => value !== 0)) {
     series.push({
       color: OTHER_CATEGORY_COLOR,
-      data: otherData,
+      data: signedOtherData.map(value => Math.abs(value)),
       icon: 'lucide:ellipsis',
       name: otherName,
+      showValueType: type === 'net',
       type: axisChartType,
+      valueTypes: type === 'net'
+        ? signedOtherData.map(value => value === 0 ? undefined : value < 0 ? 'expense' : 'income')
+        : signedOtherData.map(value => value === 0 ? undefined : type),
     })
   }
 
@@ -199,15 +211,16 @@ export function buildCategoriesPieData(
     type,
   })
 
-  const highlightedData = orderedCategoryIds
-    .slice(0, HIGHLIGHTED_CATEGORIES_COUNT)
-    .map((catId): CategoryPieDatum => ({
-      color: resolveCategoryColor(categoriesItems, catId),
-      value: categoryTotals[catId]!,
+  const { highlighted, remainder } = partitionHighlightedItems({
+    getMagnitude: item => item.value,
+    items: orderedCategoryIds.map(id => ({ id, value: categoryTotals[id] ?? 0 })),
+  })
+  const highlightedData = highlighted
+    .map((item): CategoryPieDatum => ({
+      color: resolveCategoryColor(categoriesItems, item.id),
+      value: Math.abs(item.value),
     }))
-  const otherValue = orderedCategoryIds
-    .slice(HIGHLIGHTED_CATEGORIES_COUNT)
-    .reduce((total, catId) => total + categoryTotals[catId]!, 0)
+  const otherValue = remainder.reduce((total, item) => total + Math.abs(item.value), 0)
 
   return otherValue > 0
     ? [...highlightedData, { color: OTHER_CATEGORY_COLOR, value: otherValue }]

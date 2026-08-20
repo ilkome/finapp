@@ -44,6 +44,7 @@ export function useStatFeedViewport(params: {
   let geometryFrame: number | null = null
   let resizeObserver: ResizeObserver | undefined
   let isResetQueued = false
+  let isFillQueued = false
   let isScrollbarDragging = false
   let lastTouchY: number | null = null
 
@@ -164,8 +165,10 @@ export function useStatFeedViewport(params: {
     await nextAnimationFrame()
   }
   async function fillViewport() {
-    if (isFillingViewport.value)
+    if (isFillingViewport.value) {
+      isFillQueued = true
       return
+    }
     isFillingViewport.value = true
     let appendedPeriods = 0
     try {
@@ -187,8 +190,17 @@ export function useStatFeedViewport(params: {
     finally {
       isFillingViewport.value = false
       scheduleGeometryUpdate()
+      if (isFillQueued) {
+        isFillQueued = false
+        void fillViewport()
+      }
     }
   }
+
+  watch(
+    params.infinite.localFilterGeneration,
+    () => void nextTick(fillViewport),
+  )
 
   const listeners = [
     ['keydown', onScrollKeyDown],

@@ -22,12 +22,13 @@ vi.stubGlobal('localStorage', {
 })
 
 const storageKeys = vi.hoisted(() => [] as unknown[])
+const storedValues = vi.hoisted(() => [] as unknown[])
 
 // Mock useStorage as a plain ref with defaults
 vi.mock('@vueuse/core', () => ({
   useStorage: (key: unknown, defaultValue: any) => {
     storageKeys.push(key)
-    return ref(defaultValue)
+    return ref(storedValues.shift() ?? defaultValue)
   },
 }))
 
@@ -107,6 +108,34 @@ describe('storage key', () => {
 
     pageStorageKey.value = 'wallet-expense'
     expect(toValue(storageKey)).toBe('wallet-expense-params')
+  })
+})
+
+describe('initial params', () => {
+  it('overrides a previous stored period when requested', () => {
+    storedValues.push({
+      ...defaultStatDateParams,
+      rangeBy: 'year',
+      rangeDuration: 1,
+    })
+    const maxRange = computed<Range>(() => ({
+      end: new Date('2024-12-31').getTime(),
+      start: new Date('2024-01-01').getTime(),
+    }))
+
+    const statDate = useStatDate({
+      initParams: {
+        ...defaultStatDateParams,
+        rangeBy: 'month',
+        rangeDuration: 1,
+      },
+      key: 'snapshot-period',
+      maxRange,
+      overrideStoredWithInitParams: true,
+    })
+
+    expect(statDate.params.value.rangeBy).toBe('month')
+    expect(statDate.params.value.rangeDuration).toBe(1)
   })
 })
 

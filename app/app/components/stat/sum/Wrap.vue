@@ -35,10 +35,10 @@ const isShowAverage = computed(() => statConfig.config.value.average.isShow)
 
 // Forecast row: shown only when forecast is on and the period actually has projected occurrences.
 const isShowForecast = computed(() =>
-  !!props.forecastMode && props.forecastMode !== 'off' && !!props.forecastTotal && props.forecastTotal.sum !== 0,
+  !!props.forecastMode && props.forecastMode !== 'off' && !!props.forecastTotal && props.forecastTotal.net !== 0,
 )
 const isForecastEnabled = computed(() => !!props.forecastMode && props.forecastMode !== 'off')
-const projectedSum = computed(() => props.total.sum + (props.forecastTotal?.sum ?? 0))
+const projectedNet = computed(() => props.total.net + (props.forecastTotal?.net ?? 0))
 
 const className = computed(() => cn(
   'flex min-h-10.5 min-w-min items-center',
@@ -51,7 +51,7 @@ const className = computed(() => cn(
 const summaryItems = computed<{ amount: number, isActive: boolean, type: SeriesSlugSelected }[]>(() => [
   { amount: -props.total.expense, isActive: props.filteredType === 'expense', type: 'expense' },
   { amount: props.total.income, isActive: props.filteredType === 'income', type: 'income' },
-  { amount: props.total.sum, isActive: false, type: 'netIncome' },
+  { amount: props.total.net, isActive: false, type: 'net' },
 ])
 
 function onClick(type: SeriesSlugSelected) {
@@ -99,7 +99,7 @@ function onClick(type: SeriesSlugSelected) {
         />
 
         <div
-          v-if="item.type !== 'netIncome'"
+          v-if="item.type !== 'net'"
           class="ml-auto hidden w-12 shrink-0 items-center justify-center @2xl/stat:flex"
         >
           <slot name="summaryPie" :type="item.type" />
@@ -120,7 +120,7 @@ function onClick(type: SeriesSlugSelected) {
         <StatSumAverage
           v-if="isShowAverage"
           :categoryId
-          :statTabSlug="(props.type ?? 'netIncome') as SeriesSlugSelected"
+          :statTabSlug="(props.type ?? 'net') as SeriesSlugSelected"
           :trnsIds
           :walletId
         />
@@ -144,10 +144,10 @@ function onClick(type: SeriesSlugSelected) {
       <span v-if="forecastMode === 'separate'" class="flex items-center gap-1">
         {{ t('stat.forecast.short') }}
         <Amount
-          :amount="forecastTotal?.sum ?? 0"
+          :amount="forecastTotal?.net ?? 0"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
-          :isShowPlus="(forecastTotal?.sum ?? 0) > 0"
+          :isShowPlus="(forecastTotal?.net ?? 0) > 0"
           align="left"
           variant="xs"
         />
@@ -155,7 +155,7 @@ function onClick(type: SeriesSlugSelected) {
       <span class="flex items-center gap-1 text-highlighted">
         {{ t('stat.forecast.projected') }}
         <Amount
-          :amount="projectedSum"
+          :amount="projectedNet"
           :currencyCode="currenciesStore.base"
           :isShowBaseRate="false"
           align="left"

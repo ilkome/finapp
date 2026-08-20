@@ -6,7 +6,7 @@ import { TrnType } from '~/components/trns/types'
 describe('getTypesMapping', () => {
   it('includes transfers in the combined view so the transaction list can show them', () => {
     expect(getTypesMapping('combined')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
-    expect(getTypesMapping('netIncome')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
+    expect(getTypesMapping('net')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
   })
 
   it('keeps expense/income views pure (no transfers)', () => {
@@ -18,11 +18,11 @@ describe('getTypesMapping', () => {
 describe('getSelectedType', () => {
   it('returns filteredType for the combined report', () => {
     expect(getSelectedType('combined', 'expense', 'income')).toBe('expense')
-    expect(getSelectedType('combined', 'netIncome', undefined)).toBe('netIncome')
+    expect(getSelectedType('combined', 'net', undefined)).toBe('net')
   })
 
   it('returns statTab for expense/income tabs', () => {
-    expect(getSelectedType('expense', 'netIncome', 'income')).toBe('expense')
+    expect(getSelectedType('expense', 'net', 'income')).toBe('expense')
     expect(getSelectedType('income', 'expense', undefined)).toBe('income')
   })
 })
@@ -39,8 +39,8 @@ describe('getSelectedTypeForSum', () => {
 })
 
 describe('getTypesToShow', () => {
-  it('returns both types for combined+netIncome', () => {
-    expect(getTypesToShow('combined', 'netIncome', undefined)).toEqual(['income', 'expense'])
+  it('returns both types for combined+net', () => {
+    expect(getTypesToShow('combined', 'net', undefined)).toEqual(['income', 'expense'])
   })
 
   it('returns single type for combined+income', () => {
@@ -52,11 +52,11 @@ describe('getTypesToShow', () => {
   })
 
   it('returns statTab for expense tab', () => {
-    expect(getTypesToShow('expense', 'netIncome', 'income')).toEqual(['expense'])
+    expect(getTypesToShow('expense', 'net', 'income')).toEqual(['expense'])
   })
 
   it('returns statTab for income tab', () => {
-    expect(getTypesToShow('income', 'netIncome', undefined)).toEqual(['income'])
+    expect(getTypesToShow('income', 'net', undefined)).toEqual(['income'])
   })
 })
 

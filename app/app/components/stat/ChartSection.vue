@@ -1,11 +1,26 @@
 <script setup lang="ts">
 import type { StatReportContext } from '~/components/stat/report/types'
+import type { SeriesSlug } from '~/components/stat/types'
+import type { SplitChartSelectionState } from '~/components/stat/chart/splitChartSelection'
 
+import { resolveSplitChartSelection } from '~/components/stat/chart/splitChartSelection'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
-defineProps<{ contexts: Record<'combined' | 'expense' | 'income', StatReportContext> }>()
+const props = defineProps<{ contexts: Record<'combined' | 'expense' | 'income', StatReportContext> }>()
 const statConfig = inject(statConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
+const splitChartSelection = ref<SplitChartSelectionState>({})
+
+function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
+  const result = resolveSplitChartSelection(
+    props.contexts.combined.filteredType.value,
+    type,
+    intervalKey,
+    splitChartSelection.value,
+  )
+  props.contexts.combined.filteredType.value = result.nextType
+  splitChartSelection.value = result.state
+}
 </script>
 
 <template>
@@ -19,9 +34,9 @@ const canSplit = inject(statCanSplitKey, computed(() => false))
       :ctx="contexts.combined"
     />
     <template v-else>
-      <div class="grid min-w-0 grid-cols-2 gap-8">
-        <StatReportChart :ctx="contexts.expense" />
-        <StatReportChart :ctx="contexts.income" />
+      <div class="stat-two-column-grid">
+        <StatReportChart :ctx="contexts.expense" @select="onSelectSplitChart('expense', $event)" />
+        <StatReportChart :ctx="contexts.income" @select="onSelectSplitChart('income', $event)" />
       </div>
     </template>
   </div>

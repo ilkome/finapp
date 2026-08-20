@@ -69,7 +69,7 @@ const linkedTrnIds = computed(() =>
       {{ t('recurrences.history.title') }}
     </UiTitleModal>
 
-    <div v-if="rule" class="bottomSheetContentInside grid scrollerBlock content-start gap-4 px-3 py-2">
+    <div v-if="rule" class="bottom-sheet-content-inside grid scroller-block content-start gap-4 px-3 py-2">
       <!-- Series context: which subscription this timeline belongs to -->
       <div class="flex items-center gap-2">
         <UiIconBase

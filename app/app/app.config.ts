@@ -22,7 +22,7 @@ export default defineAppConfig({
         group: 'p-0 py-1 first:pt-0',
         item: 'p-0',
         label: 'z-20 mb-px sticky top-0 bg-default',
-        viewport: 'scrollerBlock',
+        viewport: 'scroller-block',
       },
     },
     modal: {

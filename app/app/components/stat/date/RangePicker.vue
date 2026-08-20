@@ -30,9 +30,6 @@ const granularities = computed<Grouped[]>(() => [{
 }, {
   granularityBy: 'month',
   granularityDuration: 1,
-}, {
-  granularityBy: 'year',
-  granularityDuration: 1,
 }])
 
 const granularityItems = computed<TabsItem[]>(() => granularities.value.map(item => ({
@@ -77,29 +74,48 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
 
     <div
       v-if="viewTab === 'presets'"
-      class="grid gap-6 pt-4"
+      class="grid gap-4 pt-4"
     >
       <!-- Presets -->
-      <div class="grid gap-4">
-        <StatDateRanges
-          :statDate
-          isShowRangeAdjust
-          view="periods"
-          @close="emit('close')"
-        />
-
-        <div class="flex flex-wrap gap-1">
+      <div class="grid grid-cols-2 items-start gap-3">
+        <div class="grid gap-1">
           <StatDateRanges
             :statDate
-            view="presets"
+            vertical
+            view="periods"
+            @close="emit('close')"
+          />
+
+          <StatDateRanges
+            :statDate
+            vertical
+            view="maximum"
             @close="emit('close')"
           />
         </div>
 
-        <div class="flex flex-wrap gap-1">
+        <div class="grid gap-3">
           <StatDateRanges
             :statDate
-            view="maximum"
+            presetUnit="day"
+            vertical
+            view="presets"
+            @close="emit('close')"
+          />
+
+          <StatDateRanges
+            :statDate
+            presetUnit="month"
+            vertical
+            view="presets"
+            @close="emit('close')"
+          />
+
+          <StatDateRanges
+            :statDate
+            presetUnit="year"
+            vertical
+            view="presets"
             @close="emit('close')"
           />
         </div>
@@ -111,22 +127,18 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
           {{ t('dates.calendar.granularity') }}
         </UiTitleSection>
 
-        <div class="grid gap-2">
-          <div class="flex flex-wrap items-center gap-1">
-            <UiTabs
-              size="sm"
-              :items="granularityItems"
-              :modelValue="statDate.params.value.granularityBy"
-              @update:modelValue="onSelectGranularityBy"
-            />
+        <UiTabs
+          size="xs"
+          :items="granularityItems"
+          :modelValue="statDate.params.value.granularityBy"
+          @update:modelValue="onSelectGranularityBy"
+        />
 
-            <UiInlineStepper
-              :value="statDate.params.value.granularityDuration"
-              @dec="statDate.minusGranularity"
-              @inc="statDate.plusGranularity"
-            />
-          </div>
-        </div>
+        <UiInlineStepper
+          :value="statDate.params.value.granularityDuration"
+          @dec="statDate.minusGranularity"
+          @inc="statDate.plusGranularity"
+        />
       </div>
     </div>
 

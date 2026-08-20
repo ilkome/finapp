@@ -158,7 +158,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div :class="props.embedded ? 'px-3 pt-1 pb-4' : 'scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4'">
+    <div :class="props.embedded ? 'px-3 pt-1 pb-4' : 'scroller-block h-full overflow-y-auto px-3 pt-1 pb-4'">
       <div
         v-if="hasNoMatches"
         class="p-4 text-center text-muted"

@@ -31,6 +31,21 @@ describe('buildSimplePieData', () => {
     ])).toEqual([])
   })
 
+  it('preserves the signed net value for tooltip labels', () => {
+    expect(buildSimplePieData([{
+      data: [100, 30],
+      name: 'Food',
+      showValueType: true,
+      type: 'bar',
+      valueTypes: ['expense', 'income'],
+    }])).toEqual([{
+      name: 'Food',
+      signedValue: -70,
+      value: 70,
+      valueType: 'expense',
+    }])
+  })
+
   it('keeps five largest slices and combines the rest', () => {
     const categorySeries = [10, 60, 20, 50, 30, 40, 5].map((value, index): ChartSeries => ({
       color: `color-${index}`,

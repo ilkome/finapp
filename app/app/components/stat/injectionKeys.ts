@@ -10,6 +10,7 @@ export const statConfigKey: InjectionKey<StatConfigProvider> = Symbol('statConfi
 export const statConfigPanelKey: InjectionKey<Ref<StatConfigPanelId>> = Symbol('statConfigPanel')
 export const statCanSplitKey: InjectionKey<Ref<boolean>> = Symbol('statCanSplit')
 export const statPreservedCategoryScrollTopKey: InjectionKey<Readonly<Ref<number | null>>> = Symbol('statPreservedCategoryScrollTop')
+export const statStickyNavigationHeightKey: InjectionKey<Readonly<Ref<number>>> = Symbol('statStickyNavigationHeight')
 export const statStickyNavKey: InjectionKey<boolean> = Symbol('statStickyNav')
 export const statStickyTopKey: InjectionKey<Readonly<Ref<number>>> = Symbol('statStickyTop')
 export const statTrnsViewStateKey: InjectionKey<TrnsListFilterState> = Symbol('statTrnsViewState')

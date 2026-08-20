@@ -14,6 +14,7 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
+  rounded?: boolean
   to?: string
   wallet: WalletItemComputed
   walletId: WalletId
@@ -26,8 +27,10 @@ const emit = defineEmits<{
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
-  'bg-elevated/30 rounded-sm': props.compact,
+  'bg-elevated/30': props.compact,
   'group relative': props.isSort,
+  'rounded-full': props.compact && props.rounded,
+  'rounded-sm': props.compact && !props.rounded,
 }))
 
 const walletCreditLimit = computed(() =>
@@ -41,6 +44,7 @@ const walletCreditLimit = computed(() =>
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ?? ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :to="props.to"
     :class="classes"
     @click="emit('click', props.walletId)"

@@ -43,7 +43,7 @@ const billRows = computed(() => props.breakdown.rows.filter(r => r.committed > 0
         {{ t('budgets.hero.safeToSpend') }} · {{ props.periodLabel }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-3 px-3 py-2">
+      <div class="bottom-sheet-content-inside grid scroller-block content-start gap-3 px-3 py-2">
         <div class="grid gap-1">
           <div class="flex items-center justify-between text-2xs">
             <span class="text-muted">{{ t('budgets.safeSheet.leftIn') }}</span>

@@ -3,9 +3,15 @@ import type { DeepPartial } from '~~/utils/types'
 import defu from 'defu'
 import { z } from 'zod/v4'
 
-import { chartTypes } from '~/components/stat/chart/types'
+import { chartTypes, defaultLineChartOptions } from '~/components/stat/chart/types'
 
 export const chartLayoutOptions = ['combined-wide', 'split', 'combined-narrow'] as const
+export const chartLayoutIcons: Record<typeof chartLayoutOptions[number], string> = {
+  'combined-narrow': 'i-lucide-rectangle-vertical',
+  'combined-wide': 'i-lucide-rectangle-horizontal',
+  'split': 'i-lucide-columns-2',
+}
+export const chartValueDisplayOptions = ['magnitude', 'signed'] as const
 
 export const ConfigSchema = z.object({
   average: z.object({
@@ -27,6 +33,7 @@ export const ConfigSchema = z.object({
     round: z.object({
       isGrouped: z.boolean(),
       isIconBg: z.boolean(),
+      isInlineAmount: z.boolean(),
       isShow: z.boolean(),
       isShowFavorites: z.boolean(),
       isShowRecent: z.boolean(),
@@ -38,8 +45,16 @@ export const ConfigSchema = z.object({
     isGrouped: z.boolean(),
     isShow: z.boolean(),
     isShowAverage: z.boolean(),
+    isShowScale: z.boolean(),
     layout: z.enum(chartLayoutOptions),
+    line: z.object({
+      isGradient: z.boolean(),
+      isShowPoints: z.boolean(),
+      isSkipZero: z.boolean(),
+      isSmooth: z.boolean(),
+    }),
     type: z.enum(chartTypes),
+    valueDisplay: z.enum(chartValueDisplayOptions),
   }),
   date: z.object({
     isShowQuick: z.boolean(),
@@ -80,6 +95,7 @@ export const defaultConfig: MiniItemConfig = {
     round: {
       isGrouped: false,
       isIconBg: true,
+      isInlineAmount: false,
       isShow: true,
       isShowFavorites: false,
       isShowRecent: false,
@@ -92,8 +108,11 @@ export const defaultConfig: MiniItemConfig = {
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
+    isShowScale: false,
     layout: 'combined-wide',
+    line: defaultLineChartOptions,
     type: 'bar',
+    valueDisplay: 'magnitude',
   },
 
   date: {

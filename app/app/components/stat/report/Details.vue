@@ -26,7 +26,7 @@ provide(statPreservedCategoryScrollTopKey, preservedCategoryScrollTop)
 let preserveScrollTimer: ReturnType<typeof setTimeout> | null = null
 const baseCategoryViews = computed(() => buildCategoryViews({
   categoriesItems: categoriesStore.items,
-  computeValue: ids => computeTotalForTrnsIds(ids).sum,
+  computeValue: ids => computeTotalForTrnsIds(ids).net,
   excludedCategoriesIds: props.ctx.statExcludedIds.value,
   trnsIds: props.ctx.selectedTrnsIds.value,
   trnsItems: trnsStore.items ?? {},
@@ -74,6 +74,7 @@ onBeforeUnmount(() => {
     :baseCategoryViews
     :excludedCategoriesIds="ctx.statExcludedIds.value"
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"
+    :focusedCategoryId="ctx.filteredParentCategoryId.value"
     :isOneCategory="ctx.isOneCategory.value"
     :preCategoriesIds="ctx.params.preCategoriesIds?.value"
     @clickCategory="ctx.onClickCategory"
@@ -86,7 +87,7 @@ onBeforeUnmount(() => {
   >
     <div
       :class="{
-        'grid gap-5 @3xl/stat:grid-cols-2 @3xl/stat:gap-6': ctx.shouldUseTwoColumnLayout.value,
+        'stat-responsive-two-column-grid': ctx.shouldUseTwoColumnLayout.value,
       }"
     >
       <div
@@ -107,7 +108,7 @@ onBeforeUnmount(() => {
           :preCategoriesIds="ctx.params.preCategoriesIds?.value"
           :selectedTrnsIds="ctx.selectedAndQuickFilteredTrnsIds.value"
           :storageKey="ctx.statItemStorageKey.value"
-          :type="ctx.params.type.value ?? 'netIncome'"
+          :type="ctx.params.type.value ?? 'net'"
           @clickCategory="ctx.onClickCategory"
           @openCategory="ctx.onOpenCategory"
           @setChildCategoryFilter="onSetChildCategoryFilter"
@@ -141,7 +142,7 @@ onBeforeUnmount(() => {
     </UiTitleModal>
 
     <div
-      class="bottomSheetContentInside scrollerBlock"
+      class="bottom-sheet-content-inside scroller-block"
       data-stat-trns-quick-view
     >
       <TrnsList

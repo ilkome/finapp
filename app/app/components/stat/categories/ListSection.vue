@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  openCategory: [categoryId: CategoryId]
+  openCategory: [categoryId: CategoryId, filteredType?: SeriesSlugSelected]
   setFocusedCategoryFilter: [categoryId: CategoryId]
 }>()
 
@@ -41,8 +41,9 @@ const {
   toggle: toggleCategory,
   toggleAll: toggleAllCategories,
 } = useCategoriesExpanded(
-  props.storageKey,
+  'statCategoriesList',
   computed(() => props.categoriesWithData.map(c => c.id)),
+  { persistDefault: true },
 )
 
 function onParentClick(item: CategoryWithData) {
@@ -50,6 +51,13 @@ function onParentClick(item: CategoryWithData) {
     toggleCategory(item.id)
   else
     emit('openCategory', item.id)
+}
+
+function onAmountOpen(item: CategoryWithData) {
+  const filteredType = props.type === 'expense' || props.type === 'income'
+    ? props.type
+    : undefined
+  emit('openCategory', item.id, filteredType)
 }
 
 function isItemExpanded(item: CategoryWithData) {
@@ -110,13 +118,13 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
     >
       <template v-if="isFocused">
         <StatCategoriesLine
-          v-for="item in focusedCategories"
+          v-for="(item, index) in focusedCategories"
           :key="item.id"
           :isActive="props.focusedChildCategoryId === item.id"
           :isShowParent="false"
           :item="item"
           :maxCategoryValues="childrenMaxValues"
-          :lineWidth="1"
+          :lineWidth="index === (focusedCategories?.length ?? 0) - 1 ? 0 : 1"
           class="group"
           @click="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
           @amountClick="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
@@ -124,7 +132,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
       </template>
 
       <template
-        v-for="item in linesCategories"
+        v-for="(item, index) in linesCategories"
         v-else
         :key="item.id"
       >
@@ -135,10 +143,10 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           :isExpanded="isItemExpanded(item)"
           isShowChevron
           :maxCategoryValues="linesMaxValues"
-          :lineWidth="1"
+          :lineWidth="index === linesCategories.length - 1 && !isItemExpanded(item) ? 0 : 1"
           :class="`group ${isItemExpanded(item) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
           @click="onParentClick(item)"
-          @amountClick="emit('openCategory', item.id)"
+          @amountClick="onAmountOpen(item)"
         />
 
         <UCollapsible
@@ -149,15 +157,15 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
           <template #content>
             <div class="ml-5 pb-1 pl-3">
               <StatCategoriesLine
-                v-for="itemInside in item.categories"
+                v-for="(itemInside, childIndex) in item.categories"
                 :key="itemInside.id"
                 :isShowParent="!isListGrouped"
                 :item="itemInside"
                 :maxCategoryValues="childrenMaxValues"
-                :lineWidth="1"
+                :lineWidth="childIndex === item.categories.length - 1 && index === linesCategories.length - 1 ? 0 : 1"
                 class="group"
                 @click="emit('openCategory', itemInside.id)"
-                @amountClick="emit('openCategory', itemInside.id)"
+                @amountClick="onAmountOpen(itemInside)"
               />
             </div>
           </template>

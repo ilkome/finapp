@@ -17,7 +17,7 @@ const canSplit = inject(statCanSplitKey, computed(() => false))
       </div>
     </template>
     <template v-else>
-      <div class="grid min-w-0 grid-cols-2 gap-8">
+      <div class="stat-two-column-grid">
         <div class="@container/stat grid min-w-0 content-start gap-3" data-stat-report-content="expense">
           <StatReportSums :ctx="contexts.expense" />
           <StatReportDetails :ctx="contexts.expense" />

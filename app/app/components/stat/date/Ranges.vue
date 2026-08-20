@@ -5,8 +5,10 @@ import type { IntervalGroupedLabel, StatDateProvider } from '~/components/stat/d
 
 const props = withDefaults(defineProps<{
   isShowRangeAdjust?: boolean
+  presetUnit?: 'day' | 'month' | 'year'
   size?: 'md' | 'sm' | 'xs'
   statDate: StatDateProvider
+  vertical?: boolean
   view: 'periods' | 'presets' | 'maximum'
 }>(), { size: 'sm' })
 
@@ -15,6 +17,10 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+
+function durationLabel(value: number, unit: 'day' | 'month' | 'year') {
+  return `${value} ${t(`dates.${unit}.plural`, value)}`
+}
 
 const items = computed(() => {
   if (props.view === 'maximum')
@@ -42,6 +48,12 @@ const items = computed(() => {
     }, {
       granularityBy: 'month',
       granularityDuration: 1,
+      label: t('dates.halfYear.simple'),
+      rangeBy: 'month',
+      rangeDuration: 6,
+    }, {
+      granularityBy: 'month',
+      granularityDuration: 1,
       label: t('dates.year.simple'),
       rangeBy: 'year',
       rangeDuration: 1,
@@ -50,43 +62,53 @@ const items = computed(() => {
     presets: [{
       granularityBy: 'day',
       granularityDuration: 1,
-      label: `7${t('dates.day.short')}`,
+      label: durationLabel(7, 'day'),
       rangeBy: 'day',
       rangeDuration: 7,
     }, {
       granularityBy: 'day',
       granularityDuration: 1,
-      label: `14${t('dates.day.short')}`,
+      label: durationLabel(14, 'day'),
       rangeBy: 'day',
       rangeDuration: 14,
     }, {
       granularityBy: 'day',
       granularityDuration: 1,
-      label: `30${t('dates.day.short')}`,
+      label: durationLabel(30, 'day'),
       rangeBy: 'day',
       rangeDuration: 30,
     }, {
       granularityBy: 'week',
       granularityDuration: 1,
-      label: `3${t('dates.month.short')}`,
+      label: durationLabel(3, 'month'),
       rangeBy: 'month',
       rangeDuration: 3,
     }, {
       granularityBy: 'month',
       granularityDuration: 1,
-      label: `6${t('dates.month.short')}`,
+      label: durationLabel(6, 'month'),
       rangeBy: 'month',
       rangeDuration: 6,
     }, {
       granularityBy: 'month',
       granularityDuration: 1,
-      label: `12${t('dates.month.short')}`,
+      label: durationLabel(12, 'month'),
       rangeBy: 'month',
       rangeDuration: 12,
+    }, {
+      granularityBy: 'year',
+      granularityDuration: 1,
+      label: durationLabel(6, 'year'),
+      rangeBy: 'year',
+      rangeDuration: 6,
     }],
   }
 
-  return elements[props.view]
+  const result = elements[props.view]
+  if (props.view !== 'presets' || !props.presetUnit)
+    return result
+
+  return result.filter(item => item.rangeBy === props.presetUnit)
 })
 
 function keyOf(igl: IntervalGroupedLabel) {
@@ -131,9 +153,12 @@ function onSelectMaxRangeKey(key: string | number) {
 </script>
 
 <template>
-  <div class="flex shrink-0 items-center gap-1">
+  <div :class="props.vertical ? 'grid content-start gap-1' : 'flex shrink-0 items-center gap-1'">
     <UiTabs
       v-if="(view === 'periods' || view === 'presets') && rangeTabItems.length"
+      :align="props.vertical ? 'left' : 'center'"
+      :class="props.vertical ? 'flex-col overflow-visible' : undefined"
+      :grow="!props.vertical"
       :size
       :items="rangeTabItems"
       :modelValue="selectedRangeKey"
@@ -149,8 +174,10 @@ function onSelectMaxRangeKey(key: string | number) {
     </template>
 
     <UiTabs
-
       v-if="props.view === 'maximum'"
+      :align="props.vertical ? 'left' : 'center'"
+      :class="props.vertical ? 'flex-col overflow-visible' : undefined"
+      :grow="!props.vertical"
       :size
       :items="maxRangeItems"
       :modelValue="selectedMaxRangeKey"

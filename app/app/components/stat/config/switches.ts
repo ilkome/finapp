@@ -7,10 +7,16 @@ export type StatConfigBooleanPath
     | 'categories.list.isRoundIcon'
     | 'categories.round.isGrouped'
     | 'categories.round.isIconBg'
+    | 'categories.round.isInlineAmount'
     | 'categories.round.isShowFavorites'
     | 'categories.round.isShowRecent'
     | 'chart.isGrouped'
     | 'chart.isShowAverage'
+    | 'chart.isShowScale'
+    | 'chart.line.isGradient'
+    | 'chart.line.isShowPoints'
+    | 'chart.line.isSkipZero'
+    | 'chart.line.isSmooth'
     | 'date.isShowQuick'
     | 'wallets.isShowIcon'
 
@@ -40,6 +46,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
     get: config => config.categories.round.isIconBg,
     set: (provider, value) => provider.updateConfig('categories', { round: { isIconBg: value } }),
   },
+  'categories.round.isInlineAmount': {
+    get: config => config.categories.round.isInlineAmount,
+    set: (provider, value) => provider.updateConfig('categories', { round: { isInlineAmount: value } }),
+  },
   'categories.round.isShowFavorites': {
     get: config => config.categories.round.isShowFavorites,
     set: (provider, value) => provider.updateConfig('categories', { round: { isShowFavorites: value } }),
@@ -55,6 +65,26 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'chart.isShowAverage': {
     get: config => config.chart.isShowAverage,
     set: (provider, value) => provider.updateConfig('chart', { isShowAverage: value }),
+  },
+  'chart.isShowScale': {
+    get: config => config.chart.isShowScale,
+    set: (provider, value) => provider.updateConfig('chart', { isShowScale: value }),
+  },
+  'chart.line.isGradient': {
+    get: config => config.chart.line.isGradient,
+    set: (provider, value) => provider.updateConfig('chart', { line: { isGradient: value } }),
+  },
+  'chart.line.isShowPoints': {
+    get: config => config.chart.line.isShowPoints,
+    set: (provider, value) => provider.updateConfig('chart', { line: { isShowPoints: value } }),
+  },
+  'chart.line.isSkipZero': {
+    get: config => config.chart.line.isSkipZero,
+    set: (provider, value) => provider.updateConfig('chart', { line: { isSkipZero: value } }),
+  },
+  'chart.line.isSmooth': {
+    get: config => config.chart.line.isSmooth,
+    set: (provider, value) => provider.updateConfig('chart', { line: { isSmooth: value } }),
   },
   'date.isShowQuick': {
     get: config => config.date.isShowQuick,

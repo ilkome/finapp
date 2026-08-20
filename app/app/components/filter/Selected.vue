@@ -15,7 +15,7 @@ const filter = inject(filterKey)!
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const { displayCategoryIds } = useFilterSummary()
-const itemClasses = 'bg-elevated/30 rounded-sm shrink-0'
+const itemClasses = 'shrink-0 rounded-full bg-elevated/30'
 
 function onCategoryClick(categoryId: CategoryId) {
   const children = categoriesStore.getChildrenIds(categoryId)
@@ -41,6 +41,7 @@ function onCategoryClick(categoryId: CategoryId) {
         compact
         isShowIcon
         isShowCreditLimit
+        rounded
         @click="filter.removeWalletId(walletId)"
       />
     </template>
@@ -54,6 +55,7 @@ function onCategoryClick(categoryId: CategoryId) {
         :class="itemClasses"
         stacked
         insideClasses="min-h-9.5!"
+        rounded
         @click="onCategoryClick(categoryId)"
       />
     </template>

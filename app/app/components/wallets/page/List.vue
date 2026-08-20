@@ -154,14 +154,14 @@ const groupNavItems = computed<TabsItem[]>(() =>
           <StatSumItem
             :title="t('money.types.total')"
             :amount="counts.total?.value ?? 0"
-            type="netIncome"
+            type="net"
             @click="setWalletViewType((counts.total?.id ?? 'total') as WalletType | 'total')"
           />
           <StatSumItem
             v-if="counts.available?.value !== 0 && counts.available?.value !== counts.total?.value"
             :title="t('money.types.available')"
             :amount="counts.available?.value ?? 0"
-            type="netIncome"
+            type="net"
             @click="setWalletViewType((counts.available?.id ?? 'isAvailable') as WalletType | 'total')"
           />
         </div>

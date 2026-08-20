@@ -3,6 +3,7 @@ const props = defineProps<{
   insideClasses?: string
   isActive?: boolean
   lineWidth?: number
+  rounded?: boolean
   to?: string
 }>()
 
@@ -14,7 +15,8 @@ const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
 
 const elementClasses = computed(() => cn(
-  'uiElement -my-0.25 flex min-h-10.5 grow items-center gap-3 overflow-hidden rounded-md border border-transparent interactive px-2 py-1.5',
+  'uiElement -my-0.25 flex min-h-10.5 grow items-center gap-3 overflow-hidden border border-transparent interactive px-2 py-1.5',
+  props.rounded ? 'rounded-full pr-3' : 'rounded-md',
   props.insideClasses,
   { 'relative z-10 bg-elevated/30 border-primary/30': props.isActive },
 ))

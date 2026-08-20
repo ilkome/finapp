@@ -13,13 +13,15 @@ import type { TrnId, Trns, TrnsListFilterState, TrnsViewType } from '~/component
 export const statReportTypes = ['combined', 'expense', 'income'] as const
 export type StatReportType = typeof statReportTypes[number]
 export type SeriesSlug = 'income' | 'expense'
-export type SeriesSlugSelected = 'income' | 'expense' | 'netIncome'
+export const seriesSlugsSelected = ['income', 'expense', 'net'] as const
+export type SeriesSlugSelected = typeof seriesSlugsSelected[number]
 
 export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical' | 'trns'
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
   filter: FilterProvider
+  initialFilteredType?: SeriesSlugSelected
   isDateBounded?: boolean
   reportType: ComputedRef<StatReportType>
   selectionSource?: ComputedRef<StatReportSelectedRecord[]>
@@ -45,6 +47,7 @@ export type CategoryWithData = CategoryWithDataBase & {
 export type CategoriesWithData = Record<CategoryId, CategoryWithData>
 
 export type ChartSeries = {
+  averageMode?: 'series' | 'stack'
   color?: string
   data: number[]
   icon?: string
@@ -54,8 +57,11 @@ export type ChartSeries = {
   }
   markedArea?: 'markedArea'
   markLine?: Record<string, unknown>
+  markLineValueType?: SeriesSlug
   name: string
+  showValueType?: boolean
   type: AxisChartType
+  valueTypes?: Array<SeriesSlug | undefined>
 }
 
 export type IntervalData = {
@@ -71,6 +77,7 @@ export type StatReportSelectedRecord = {
 
 export type StatFeedLocalFilter = {
   filterBy: TrnsViewType | 'all'
+  showHistoryWithDesc?: boolean
   showWithDesc: boolean
 }
 

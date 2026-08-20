@@ -43,7 +43,7 @@ const summary = computed(() => {
     :isOpen="isShow"
     :title="t('recurrences.form.repeat')"
     class="shrink-0 grow-0!"
-    dragClassesCustom="bottomSheetDragClassesCustom"
+    dragClassesCustom="bottom-sheet-drag-classes-custom"
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"

@@ -25,6 +25,7 @@ const defaultConfig: MiniItemConfig = {
     round: {
       isGrouped: false,
       isIconBg: true,
+      isInlineAmount: false,
       isShow: true,
       isShowFavorites: true,
       isShowRecent: true,
@@ -36,8 +37,16 @@ const defaultConfig: MiniItemConfig = {
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
+    isShowScale: false,
     layout: 'combined-wide',
+    line: {
+      isGradient: false,
+      isShowPoints: true,
+      isSkipZero: false,
+      isSmooth: true,
+    },
     type: 'bar',
+    valueDisplay: 'magnitude',
   },
   date: {
     isShowQuick: false,
@@ -78,6 +87,16 @@ describe('configSchema', () => {
   it('accepts the pie chart type', () => {
     const pie = { ...defaultConfig, chart: { ...defaultConfig.chart, type: 'pie' } }
     expect(ConfigSchema.safeParse(pie).success).toBe(true)
+  })
+
+  it.each(['area', 'stackedLine'] as const)('rejects the removed %s chart type', (type) => {
+    const config = { ...defaultConfig, chart: { ...defaultConfig.chart, type } }
+    expect(ConfigSchema.safeParse(config).success).toBe(false)
+  })
+
+  it('rejects an invalid chart value display mode', () => {
+    const invalid = { ...defaultConfig, chart: { ...defaultConfig.chart, valueDisplay: 'invalid' } }
+    expect(ConfigSchema.safeParse(invalid).success).toBe(false)
   })
 
   it('rejects invalid categories view', () => {

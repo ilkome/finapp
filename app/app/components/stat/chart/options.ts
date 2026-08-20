@@ -5,10 +5,11 @@ import type { ComposeOption } from 'echarts/core'
 
 import defu from 'defu'
 
-import type { AxisChartType } from '~/components/stat/chart/types'
+import type { AxisChartType, LineChartOptions } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatCompactChartAmount } from '~/components/stat/chart/format'
+import { defaultLineChartOptions, isStackedAxisChartType, resolveEChartsSeriesType } from '~/components/stat/chart/types'
 
 type EChartsOption = ComposeOption<
   | TooltipComponentOption
@@ -115,11 +116,122 @@ export function filterChartTooltipParams<T extends { value: unknown }>(params: T
   return params.filter((param): param is T & { value: number } => typeof param.value === 'number' && Number.isFinite(param.value) && param.value !== 0)
 }
 
+export function sortChartTooltipParams<T>(
+  params: T[],
+  resolveValue: (param: T) => number,
+  isPinnedLast: (param: T) => boolean = () => false,
+): T[] {
+  return params
+    .map((param, index) => ({ index, isPinnedLast: isPinnedLast(param), param, value: resolveValue(param) }))
+    .sort((a, b) => {
+      const pinnedOrder = Number(a.isPinnedLast) - Number(b.isPinnedLast)
+      if (pinnedOrder !== 0)
+        return pinnedOrder
+      const signOrder = Number(a.value < 0) - Number(b.value < 0)
+      if (signOrder !== 0)
+        return signOrder
+      return Math.abs(b.value) - Math.abs(a.value) || a.index - b.index
+    })
+    .map(item => item.param)
+}
+
 export function resolveChartTooltipPosition(
   point: [number, number],
   viewSize: [number, number],
 ): [number, number] {
   return [point[0] > viewSize[0] / 2 ? 0 : viewSize[0] / 2, 0]
+}
+
+export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartType, line = defaultLineChartOptions) {
+  const values = isStackedAxisChartType(chartType, line)
+    ? Array.from({ length: Math.max(0, ...series.map(item => item.data.length)) }, (_, index) => {
+        const pointValues = series.map(item => item.data[index] ?? 0).filter(Number.isFinite)
+        return [
+          pointValues.filter(value => value > 0).reduce((total, value) => total + value, 0),
+          pointValues.filter(value => value < 0).reduce((total, value) => total + value, 0),
+        ]
+      }).flat()
+    : series.flatMap(item => item.data).filter(Number.isFinite)
+  const max = Math.max(0, ...values.map(Math.abs))
+
+  if (max === 0)
+    return { interval: 0.5, max: 1, min: 0 }
+
+  return values.some(value => value < 0)
+    ? { interval: max, max, min: -max }
+    : { interval: max / 2, max, min: 0 }
+}
+
+export function resolveChartAverage(series: ChartSeries[]) {
+  return resolveChartSeriesAverages(series).find(value => value !== undefined)
+}
+
+export function resolveChartSeriesAverages(series: ChartSeries[]) {
+  return series.map((source) => {
+    if (!source.averageMode || source.data.length === 0)
+      return undefined
+
+    if (source.averageMode === 'series')
+      return source.data.reduce((total, value) => total + value, 0) / source.data.length
+
+    const stackSeries = series.filter(item => !item.markedArea && item.icon)
+    const totals = Array.from({ length: source.data.length }, (_, index) => stackSeries.reduce((total, item) => total + (item.data[index] ?? 0), 0))
+    return totals.reduce((total, value) => total + value, 0) / source.data.length
+  })
+}
+
+export function resolveChartScaleWidth(scale: { max: number, min: number }, averages?: number | number[]) {
+  const averageValues = averages === undefined ? [] : Array.isArray(averages) ? averages : [averages]
+  const labels = [scale.min, (scale.min + scale.max) / 2, ...averageValues, scale.max].map(formatCompactChartAmount)
+  return Math.max(18, Math.max(...labels.map(label => label.length)) * 5 + 12)
+}
+
+export function resolveChartGuideValues(scale: { max: number, min: number }, average?: number) {
+  const middle = (scale.min + scale.max) / 2
+  if (average === undefined)
+    return [scale.min, middle, scale.max]
+
+  const isFarFromMiddle = Math.abs(average - middle) > (scale.max - scale.min) * 0.1
+  return [...new Set([
+    scale.min,
+    ...(isFarFromMiddle ? [middle] : []),
+    average,
+    scale.max,
+  ])].sort((a, b) => a - b)
+}
+
+export function buildChartGuideMarkLine(scale: { max: number, min: number }, average?: number) {
+  return {
+    data: resolveChartGuideValues(scale, average).map(value => ({
+      ...(value === average
+        ? {
+            label: { color: 'var(--ui-text-dimmed)', opacity: 1 },
+            lineStyle: { color: 'var(--ui-text-dimmed)', opacity: 1 },
+          }
+        : {}),
+      yAxis: value,
+    })),
+    label: {
+      align: 'left',
+      color: 'var(--chart-label)',
+      distance: 6,
+      fontFamily: 'var(--font-secondary)',
+      formatter: ({ value }: { value: number }) => formatCompactChartAmount(value),
+      position: 'end',
+      show: true,
+      textBorderColor: 'transparent',
+      textBorderWidth: 0,
+      textShadowBlur: 0,
+    },
+    lineStyle: {
+      color: 'var(--ui-bg-elevated)',
+      opacity: 0.5,
+      type: 'solid',
+    },
+    silent: true,
+    symbol: false,
+    z: 0,
+  }
 }
 
 export const defaultSeriesConfig = {
@@ -150,18 +262,29 @@ export const defaultSeriesConfig = {
   type: 'line',
 }
 
-export function buildChartSeries(series: ChartSeries[], chartType?: AxisChartType) {
+export function buildChartSeries(series: ChartSeries[], chartType?: AxisChartType, line: LineChartOptions = defaultLineChartOptions) {
   return series
     .map((item: ChartSeries) => {
-      const isBar = (chartType || item.type) === 'bar'
+      const effectiveChartType = chartType || item.type
+      const isBar = effectiveChartType === 'bar'
+      const isLine = effectiveChartType === 'line'
+      const seriesType = resolveEChartsSeriesType(effectiveChartType)
+      const areaStyle = isLine && line.isGradient
+        ? defaultSeriesConfig.areaStyle
+        : { opacity: 0 }
       return {
         ...defu(defaultSeriesConfig, item),
+        areaStyle,
         // Zero = no trns that period; render no bar (null), not a floored stub.
         // Lines keep 0 as a real point so they stay connected.
-        data: isBar ? item.data.map(v => (v === 0 ? null : v)) : item.data,
+        data: isBar || isLine && line.isSkipZero ? item.data.map(v => (v === 0 ? null : v)) : item.data,
+        emphasis: isLine && line.isGradient ? { focus: 'series' as const } : defaultSeriesConfig.emphasis,
         label: defaultSeriesConfig.label,
-        stack: isBar ? 'b' : false,
-        type: item.markedArea ? 'bar' : (chartType || item.type),
+        lineStyle: defaultSeriesConfig.lineStyle,
+        showSymbol: isLine && line.isShowPoints,
+        smooth: isLine ? line.isSmooth : false,
+        stack: isStackedAxisChartType(chartType, line) ? 'b' : false,
+        type: item.markedArea ? 'bar' : seriesType,
       }
     })
 }

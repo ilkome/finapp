@@ -14,10 +14,13 @@ function uniqueSortedOffsets(offsets: readonly number[]): number[] {
   return [...new Set(offsets)].sort((left, right) => left - right)
 }
 
-function matchesLocalFilter(items: Trns, id: TrnId, filter: StatFeedLocalFilter): boolean {
+function matchesLocalType(items: Trns, id: TrnId, filter: StatFeedLocalFilter): boolean {
   const trn = items[id]
   return matchesTrnViewType(trn, filter.filterBy)
-    && (!filter.showWithDesc || !!trn?.desc)
+}
+
+function matchesDescriptionFilter(items: Trns, id: TrnId, showWithDesc: boolean): boolean {
+  return !showWithDesc || !!items[id]?.desc
 }
 
 function sortIds(ids: readonly string[]) {
@@ -131,13 +134,18 @@ export function buildStatFeedIndex(options: BuildStatFeedIndexOptions): StatFeed
   for (const id of options.candidateIds) {
     visitedIds++
     const trn = items[id]
-    if (!trn || !matchesLocalFilter(items, id, options.filter))
+    if (!trn || !matchesLocalType(items, id, options.filter))
       continue
 
     if (trn.date >= frontierRange.start && trn.date <= baseRange.end) {
       dateToOffsetLookups++
       const offset = findStatPeriodOffsetForDate(trn.date, options.baseOffset, rangeForOffset)
       if (offset !== null && offset <= options.searchedThroughOffset) {
+        const showWithDesc = offset === options.baseOffset
+          ? options.filter.showWithDesc
+          : options.filter.showHistoryWithDesc ?? false
+        if (!matchesDescriptionFilter(items, id, showWithDesc))
+          continue
         const ids = idsByOffset.get(offset)
         if (ids)
           ids.push(id)
@@ -148,8 +156,14 @@ export function buildStatFeedIndex(options: BuildStatFeedIndexOptions): StatFeed
       }
     }
 
-    if (!nextHistoricalId && trn.date >= options.minimumDate && trn.date < frontierRange.start)
+    if (
+      !nextHistoricalId
+      && trn.date >= options.minimumDate
+      && trn.date < frontierRange.start
+      && matchesDescriptionFilter(items, id, options.filter.showHistoryWithDesc ?? false)
+    ) {
       nextHistoricalId = id
+    }
   }
 
   return {

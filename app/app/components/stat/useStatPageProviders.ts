@@ -12,6 +12,7 @@ export function useStatPageProviders(options: StatPageProvidersOptions) {
   const canSplit = ref(false)
   const trnsViewState: TrnsListFilterState = {
     filterBy: ref(options.initialTrnsViewState?.filterBy ?? 'all'),
+    isShowHistoryWithDesc: ref(options.initialTrnsViewState?.isShowHistoryWithDesc ?? false),
     isShowWithDesc: ref(options.initialTrnsViewState?.isShowWithDesc ?? false),
   }
 

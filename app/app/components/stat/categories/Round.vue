@@ -21,6 +21,7 @@ const currenciesStore = useCurrenciesStore()
 const statConfig = inject(statConfigKey)!
 
 const isIconBg = computed(() => statConfig.config.value.categories.round.isIconBg)
+const isInlineAmount = computed(() => statConfig.config.value.categories.round.isInlineAmount)
 
 const { longPressRef } = useCategoryLongPress(
   () => props.item.id,
@@ -33,6 +34,7 @@ const { longPressRef } = useCategoryLongPress(
     ref="longPressRef"
     :categoryId="props.item.id"
     :isIconBg="isIconBg"
+    :isInlineContent="isInlineAmount"
     :isShowParent="props.isShowParent"
   >
     <div

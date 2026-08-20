@@ -7,6 +7,7 @@ const props = defineProps<{
   categoryId: CategoryId
   isActive?: boolean
   isIconBg?: boolean
+  isInlineContent?: boolean
   isShowParent?: boolean
 }>()
 
@@ -50,12 +51,15 @@ const parentCategory = computed(() => {
       />
     </div>
 
-    <div class="relative">
+    <div
+      class="relative"
+      :class="props.isInlineContent && 'flex items-center gap-1.5'"
+    >
       <CategoriesName
         :category="category"
         :isShowParent="props.isShowParent"
         :parentCategory="parentCategory"
-        stacked
+        :stacked="!props.isInlineContent"
         size="xs"
       />
       <slot />

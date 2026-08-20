@@ -17,7 +17,7 @@ const scope: StatFeedScope = {
     rangeOffset: 0,
     rangePanOffset: 0,
   },
-  filteredType: 'netIncome',
+  filteredType: 'net',
   parentCategoriesIds: ['parent-a'],
   reportType: 'combined',
   selectedCategoriesIds: ['category-a', 'category-b'],

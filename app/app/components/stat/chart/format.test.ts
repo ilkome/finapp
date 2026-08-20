@@ -1,7 +1,26 @@
 import { describe, expect, it } from 'vitest'
 import { epochToCivilParts, toCivilDayEpoch, todayCivilDayEpoch } from '~~/utils/date/civil'
 
-import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel, getTooltipFormatForChart } from '~/components/stat/chart/format'
+import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel, getTooltipFormatForChart, resolveChartTooltipAmount, resolveChartValueType } from '~/components/stat/chart/format'
+
+describe('resolveChartValueType', () => {
+  it('labels signed category values as expense or income', () => {
+    expect(resolveChartValueType(true, -100)).toBe('expense')
+    expect(resolveChartValueType(true, 100)).toBe('income')
+  })
+
+  it('does not label ordinary or empty series values', () => {
+    expect(resolveChartValueType(false, -100)).toBeUndefined()
+    expect(resolveChartValueType(true, 0)).toBeUndefined()
+  })
+})
+
+describe('resolveChartTooltipAmount', () => {
+  it('adds a minus only to expense tooltip values', () => {
+    expect(resolveChartTooltipAmount(100, 'expense')).toBe(-100)
+    expect(resolveChartTooltipAmount(100, 'income')).toBe(100)
+  })
+})
 
 describe('formatChartAmount', () => {
   it('formats non-finite echarts empty-datapoint values as 0', () => {

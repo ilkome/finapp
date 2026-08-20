@@ -228,7 +228,7 @@ const periodTypeItems = computed<TabsItem[]>(() => budgetPeriodTypes.map(type =>
               v-if="showToAssign"
               :amount="toAssignState === 'pool' ? toAssignTotal : assignedPoolTotal"
               :title="toAssignState === 'pool' ? t('budgets.hero.toAssign') : t('budgets.hero.assignedSoFar')"
-              :type="toAssignState === 'pool' ? (toAssignTotal < 0 ? 'expense' : 'income') : 'netIncome'"
+              :type="toAssignState === 'pool' ? (toAssignTotal < 0 ? 'expense' : 'income') : 'net'"
             >
               <div class="mb-1 grid gap-0.5 text-2xs text-muted">
                 <div class="flex items-center justify-between gap-2">

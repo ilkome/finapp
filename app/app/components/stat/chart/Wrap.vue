@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
+import type { AxisChartType } from '~/components/stat/chart/types'
 import type { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import type { ChartSeries } from '~/components/stat/types'
 
@@ -13,6 +14,10 @@ const props = defineProps<{
   xAxisLabels: number[]
 }>()
 
+const emit = defineEmits<{
+  select: [intervalKey?: number]
+}>()
+
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
@@ -22,10 +27,11 @@ const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartLayout = computed(() => statConfig.config.value.chart.layout)
 const chartType = computed(() => statConfig.config.value.chart.type)
-const axisChartType = computed(() => chartType.value === 'line' ? 'line' : 'bar')
+const axisChartType = computed<AxisChartType>(() => chartType.value === 'pie' ? 'bar' : chartType.value)
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
 async function onClickChart(intervalKey: number) {
+  emit('select', intervalKey)
   const day = await props.chartWindow.selectIntervalByKey(intervalKey)
   if (day)
     trnsFormStore.values.date = day
@@ -41,7 +47,7 @@ function onChangePeriod(period: Period) {
     v-if="isChartShow"
     class="max-w-full min-w-0"
     :class="{
-      'w-full @3xl/main:max-w-md': chartLayout === 'combined-narrow',
+      'stat-column-width': chartLayout === 'combined-narrow',
     }"
   >
     <div
@@ -60,9 +66,6 @@ function onChangePeriod(period: Period) {
       </div>
     </div>
 
-    <!-- Reserve the chart height on this always-present box. The height must live here, not on a placeholder that the idle mount swaps out: the
-         chart is a lazy component, so between isChartMountReady flipping and its chunk resolving the
-         box would otherwise collapse for a frame and shift the whole page (CLS). -->
     <div class="min-h-40 max-w-full min-w-0 @3xl/stat:min-h-52">
       <LazyStatChartSimplePieView
         v-if="isChartMountReady && chartType === 'pie'"
@@ -70,6 +73,7 @@ function onChangePeriod(period: Period) {
         :series="props.series"
         :startValue="props.chartWindow.startValue.value"
         :xAxisLabels="props.xAxisLabels"
+        @select="emit('select')"
       />
       <LazyStatChartAxisView
         v-else-if="isChartMountReady"

@@ -168,6 +168,7 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
     key: storageKey,
     legacyKey: legacyStorageKey,
     maxRange,
+    overrideStoredWithInitParams: isStatDrilldown,
     queryParams: route.query,
     storage: isStatDrilldown ? sessionStorage : localStorage,
   },
@@ -183,6 +184,7 @@ const openDrilldownCategory = useStatCategoryNavigation({
     reportType: reportType.value,
     trns: {
       filterBy: trnsViewState.filterBy.value,
+      isShowHistoryWithDesc: trnsViewState.isShowHistoryWithDesc?.value ?? false,
       isShowWithDesc: trnsViewState.isShowWithDesc.value,
     },
   })),
@@ -190,11 +192,9 @@ const openDrilldownCategory = useStatCategoryNavigation({
 })
 
 onActivated(() => {
-  if (!isStatDrilldown) {
-    statConfig.updateConfig('categories', { list: { isGrouped: false } })
-    statConfig.updateConfig('categories', { round: { isGrouped: false } })
-    statConfig.updateConfig('categories', { bars: { isGrouped: false } })
-  }
+  statConfig.updateConfig('categories', { list: { isGrouped: false } })
+  statConfig.updateConfig('categories', { round: { isGrouped: false } })
+  statConfig.updateConfig('categories', { bars: { isGrouped: false } })
 
   if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
@@ -310,7 +310,7 @@ async function onDeleteConfirm() {
     />
 
     <div
-      v-if="childrenIds.length > 0"
+      v-if="childrenIds.length > 0 && !isStatDrilldown"
       class="grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList
@@ -323,6 +323,7 @@ async function onDeleteConfirm() {
 
     <StatLayout
       :categoryId
+      :initialFilteredType="statSnapshot?.filteredType"
       :preCategoriesIds="childrenIds"
       :storageKey
       :trnsIds

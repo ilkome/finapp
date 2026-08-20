@@ -10,7 +10,9 @@ import type { ChartSeries, IntervalData, SeriesSlug, SeriesSlugSelected, StatRep
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
+import { resolveEChartsSeriesType } from '~/components/stat/chart/types'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
+import { applyChartValueDisplay } from '~/components/stat/chart/valueDisplay'
 
 export function useStatReportChart(params: {
   data: ReturnType<typeof useStatReportData>
@@ -24,16 +26,16 @@ export function useStatReportChart(params: {
 }) {
   const { t } = useI18n()
   const categoriesStore = useCategoriesStore()
-  const { createSeriesItem, withMarkArea } = useStatChart()
+  const { createAverageMarkLine, createSeriesItem, withMarkArea } = useStatChart()
 
-  const categoriesBreakdownType = computed<SeriesSlug>(() => {
+  const categoriesBreakdownType = computed<SeriesSlugSelected>(() => {
     if (params.reportType.value === 'expense')
       return 'expense'
     if (params.reportType.value === 'income')
       return 'income'
     if (params.filteredType.value === 'expense' || params.filteredType.value === 'income')
       return params.filteredType.value
-    return 'expense'
+    return 'net'
   })
   const isCategorySumFocused = computed(() =>
     params.reportType.value === 'combined'
@@ -42,12 +44,13 @@ export function useStatReportChart(params: {
   )
   const categoryBreakdownFilter = computed(() => {
     const ids = params.effectiveFilteredCategoriesIds.value
-    return ids.length === 0
-      ? { filterCategoriesIds: undefined, isGrouped: params.statConfig.config.value.chart.isGrouped }
-      : { filterCategoriesIds: categoriesStore.getTransactibleIds(ids), isGrouped: false }
+    return {
+      filterCategoriesIds: ids.length === 0 ? undefined : categoriesStore.getTransactibleIds(ids),
+      isGrouped: true,
+    }
   })
 
-  function computeSeriesAverage(typeSlug: SeriesSlug, intervals: IntervalData[]): number | false {
+  function computeSeriesAverage(typeSlug: SeriesSlugSelected, intervals: IntervalData[]): number | false {
     if (!params.statConfig.config.value.chart.isShowAverage || intervals.length === 0)
       return false
     return intervals.reduce((total, interval) => total + interval.total[typeSlug], 0) / intervals.length
@@ -58,7 +61,8 @@ export function useStatReportChart(params: {
       color: 'var(--ui-text-dimmed)',
       data: totals.map(total => Math.abs(total[typeSlug])),
       name: `${t(`money.${typeSlug}`)} · ${t('stat.forecast.short')}`,
-      type: params.statConfig.config.value.chart.type === 'line' ? 'line' : 'bar',
+      type: resolveEChartsSeriesType(params.statConfig.config.value.chart.type === 'pie' ? 'bar' : params.statConfig.config.value.chart.type),
+      valueTypes: totals.map(() => typeSlug),
     }
   }
 
@@ -81,6 +85,18 @@ export function useStatReportChart(params: {
         trnsItems: params.data.chartEffectiveItems.value,
         type: categoriesBreakdownType.value,
       })
+      const average = computeSeriesAverage(categoriesBreakdownType.value, intervals)
+      if (average && series[0]) {
+        const markLineValueType = categoriesBreakdownType.value === 'net'
+          ? average < 0 ? 'expense' : 'income'
+          : categoriesBreakdownType.value
+        series[0] = {
+          ...series[0],
+          averageMode: 'stack',
+          markLine: createAverageMarkLine(average, series[0].color),
+          markLineValueType,
+        }
+      }
     }
     else if (params.forecastMode.value === 'separate') {
       const actualIntervals = params.data.chartIntervalsDataWithFilteredCategories.value
@@ -98,9 +114,10 @@ export function useStatReportChart(params: {
       )
     }
 
+    const displayedSeries = applyChartValueDisplay(series, params.statConfig.config.value.chart.valueDisplay)
     return chartType !== 'pie' && selectedInterval?.start && params.statDate.params.value.intervalSelected >= 0
-      ? withMarkArea(series, selectedInterval.start, chartType)
-      : series
+      ? withMarkArea(displayedSeries, selectedInterval.start, chartType)
+      : displayedSeries
   })
   const chartXAxisLabels = computed(() =>
     params.data.chartIntervalsDataWithFilteredCategories.value.map(interval => interval.range.start),

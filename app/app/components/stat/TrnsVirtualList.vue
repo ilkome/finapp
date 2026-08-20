@@ -21,34 +21,55 @@ const { t } = useI18n()
 const isDev = import.meta.dev
 const stickyTop = inject(statStickyTopKey, ref(0))
 const preservedCategoryScrollTop = inject(statPreservedCategoryScrollTopKey, shallowRef<number | null>(null))
+const primaryTransactionType = computed<'expense' | 'income' | undefined>(() => {
+  const reportType = props.ctx.params.reportType.value
+  if (reportType === 'expense' || reportType === 'income')
+    return reportType
+  return props.ctx.filteredType.value === 'expense' || props.ctx.filteredType.value === 'income'
+    ? props.ctx.filteredType.value
+    : undefined
+})
 
 const candidateIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: props.ctx.effectiveFilteredCategoriesIds.value,
   sort: true,
   trnsIds: props.ctx.params.trnsIds.value,
-  trnsTypes: props.ctx.selectedTypesMapping.value,
 }))
+const currentPeriodCandidateIds = computed(() => {
+  const range = props.ctx.params.statDate.range.value
+  return candidateIds.value.filter((id) => {
+    const date = trnsStore.items?.[id]?.date
+    return date !== undefined && date >= range.start && date <= range.end
+  })
+})
 const {
+  descriptionSelectedIds,
   filterBy,
   isAllTrnsWithDesc,
   isShowWithDesc,
   isTrnsWithDesc,
   localFilter,
   realTypesCount,
-  selectedIds,
   setFilterBy,
   typeFilterItems,
 } = useTrnsListFilters({
+  descriptionIds: currentPeriodCandidateIds,
   ids: candidateIds,
+  primaryType: primaryTransactionType,
   showExpense: computed(() => true),
   showIncome: computed(() => true),
   showTransfers: computed(() => true),
   state: props.ctx.trnsViewState,
 })
+const isShowHistoryWithDesc = props.ctx.trnsViewState.isShowHistoryWithDesc ?? ref(false)
+const localFeedFilter = computed(() => ({
+  ...localFilter.value,
+  showHistoryWithDesc: isShowHistoryWithDesc.value,
+}))
 const infinite = useStatInfinitePeriods(props.ctx, {
   candidateIds,
   isEnabled: computed(() => true),
-  localFilter,
+  localFilter: localFeedFilter,
 })
 const feedHeader = useTemplateRef<HTMLElement>('feedHeader')
 const virtualViewport = useTemplateRef<HTMLElement>('virtualViewport')
@@ -70,7 +91,7 @@ function estimateRowHeight(index: number) {
   if (row.type === 'dateHeader')
     return 56
   if (row.type === 'historyDivider')
-    return 56
+    return 108
   if (row.type === 'loader' || row.type === 'end')
     return 44
   const transaction = trnsStore.items?.[row.trnId]
@@ -127,6 +148,9 @@ function rowAt(index: number): StatVirtualRow {
 function rowOffset(row: StatVirtualRow) {
   return 'offset' in row ? row.offset : undefined
 }
+function toggleHistoryWithDesc() {
+  isShowHistoryWithDesc.value = !isShowHistoryWithDesc.value
+}
 function flushRowMeasurements() {
   rowMeasurementFrame = null
   if (shouldCleanRowMeasurements) {
@@ -182,7 +206,7 @@ onBeforeUnmount(() => {
         :isShowWithDesc
         :isTrnsWithDesc
         :realTypesCount
-        :selectedCount="selectedIds.length"
+        :selectedCount="descriptionSelectedIds.length"
         :typeFilterItems
         @setFilterBy="setFilterBy"
         @update:isShowWithDesc="isShowWithDesc = $event"
@@ -220,11 +244,18 @@ onBeforeUnmount(() => {
 
           <div
             v-else-if="row.type === 'historyDivider'"
-            class="pt-3"
+            class="grid gap-1 pt-3"
           >
             <UiTitleCollapse isHideArrow>
               <h3>{{ t('trns.previous') }}</h3>
             </UiTitleCollapse>
+
+            <UiSwitchItem
+              :checkboxValue="isShowHistoryWithDesc"
+              :title="t('trns.filter.showTrnsWithDesc')"
+              showCheckbox
+              @click="toggleHistoryWithDesc"
+            />
           </div>
 
           <div

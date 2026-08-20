@@ -21,7 +21,7 @@ const zeroTotal: TotalReturns = {
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
-  sum: 0,
+  net: 0,
   sumTransfers: 0,
 }
 
@@ -95,7 +95,7 @@ const computeTotalMock = vi.fn((): TotalReturns => ({
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
-  sum: 0,
+  net: 0,
   sumTransfers: 0,
 }))
 
@@ -141,7 +141,19 @@ vi.mock('~/components/stat/intervals', async (importOriginal) => {
 // ---------------------------------------------------------------------------
 // Import after mocks
 // ---------------------------------------------------------------------------
-const { useStatReport } = await import('~/components/stat/useStatReport')
+const { normalizeSelectedSeries, useStatReport } = await import('~/components/stat/useStatReport')
+
+describe('normalizeSelectedSeries', () => {
+  it('migrates the legacy net income value', () => {
+    expect(normalizeSelectedSeries('netIncome')).toBe('net')
+  })
+
+  it('keeps current values', () => {
+    expect(normalizeSelectedSeries('expense')).toBe('expense')
+    expect(normalizeSelectedSeries('income')).toBe('income')
+    expect(normalizeSelectedSeries('net')).toBe('net')
+  })
+})
 
 // ---------------------------------------------------------------------------
 // Helpers to build mock params
@@ -195,7 +207,7 @@ function createStatReport(overrides?: {
   intervalsInRange?: Range[]
   reportType?: 'combined' | 'expense' | 'income'
   trnsIds?: string[]
-  type?: 'income' | 'expense' | 'netIncome'
+  type?: 'income' | 'expense' | 'net'
 }) {
   const {
     filterCategories = [],
@@ -362,7 +374,7 @@ describe('useStatReport', () => {
 
       bucketTrnsByIntervalsMock.mockReturnValue([{
         range: intervals[0]!,
-        total: { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0, sum: 0, sumTransfers: 0 },
+        total: { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0, net: 0, sumTransfers: 0 },
         trnsIds: intervalTrnsIds,
       }])
 
@@ -385,21 +397,21 @@ describe('useStatReport', () => {
     it('sets filteredType to the clicked type', () => {
       const item = createStatReport()
 
-      // Default filteredType is 'netIncome'
-      expect(item.filteredType.value).toBe('netIncome')
+      // Default filteredType is 'net'
+      expect(item.filteredType.value).toBe('net')
 
       item.onClickSumItem('expense')
       expect(item.filteredType.value).toBe('expense')
     })
 
-    it('toggles back to netIncome when clicking the same type', () => {
+    it('toggles back to net when clicking the same type', () => {
       const item = createStatReport()
 
       item.onClickSumItem('expense')
       expect(item.filteredType.value).toBe('expense')
 
       item.onClickSumItem('expense')
-      expect(item.filteredType.value).toBe('netIncome')
+      expect(item.filteredType.value).toBe('net')
     })
 
     it('switches between types', () => {
@@ -412,7 +424,7 @@ describe('useStatReport', () => {
       expect(item.filteredType.value).toBe('expense')
 
       item.onClickSumItem('expense')
-      expect(item.filteredType.value).toBe('netIncome')
+      expect(item.filteredType.value).toBe('net')
     })
   })
 

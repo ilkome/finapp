@@ -44,7 +44,7 @@ function onClosed() {
         {{ t('recurrences.adopt.title') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-3 px-3 py-2">
+      <div class="bottom-sheet-content-inside grid scroller-block content-start gap-3 px-3 py-2">
         <div class="text-2xs text-muted">
           {{ t('recurrences.adopt.subtitle', { count: pending.candidateIds.length }) }}
         </div>
@@ -58,7 +58,7 @@ function onClosed() {
         />
       </div>
 
-      <div class="bottomSheetContentBottom flex gap-2">
+      <div class="bottom-sheet-content-bottom flex gap-2">
         <UiButtonAccent variant="ghost" rounded @click="close">
           {{ t('recurrences.adopt.cancel') }}
         </UiButtonAccent>

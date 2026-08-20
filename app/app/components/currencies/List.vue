@@ -44,7 +44,7 @@ const list = computed(() => {
       />
     </div>
 
-    <div class="mt-3 flex scrollerBlock flex-col gap-6 overflow-y-auto py-px pb-3">
+    <div class="mt-3 flex scroller-block flex-col gap-6 overflow-y-auto py-px pb-3">
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
           {{ t('currencies.list.notFound') }}

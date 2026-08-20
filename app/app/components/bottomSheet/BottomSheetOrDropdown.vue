@@ -90,20 +90,20 @@ function closeMobileSheet(closeSheet: () => void) {
       <BottomSheet
         v-if="props.unmountOnHide ? props.isOpen : hasOpened"
         :isShow="props.unmountOnHide ? true : props.isOpen"
-        :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottomSheetDragClassesCustom`"
+        :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottom-sheet-drag-classes-custom`"
         :dragStyle="props.bottomSheetStyle"
         :snapPoints="props.snapPoints"
         @closed="emit('closeModal')"
       >
         <template #default="{ close, isExpanded }">
-          <div class="bottomSheetContent">
+          <div class="bottom-sheet-content">
             <UiTitleModal v-if="props.title">
               {{ props.title }}
             </UiTitleModal>
 
             <div
               v-if="$slots.content"
-              class="bottomSheetContentInside scrollerBlock"
+              class="bottom-sheet-content-inside scroller-block"
             >
               <slot name="content" :close="() => closeMobileSheet(close)" :isExpanded />
             </div>

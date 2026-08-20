@@ -13,12 +13,12 @@ describe('resolveCurrentPeriodEmptyKey', () => {
   it('uses the selected summary type', () => {
     expect(resolveCurrentPeriodEmptyKey('combined', 'expense')).toBe('trns.noExpenses')
     expect(resolveCurrentPeriodEmptyKey('combined', 'income')).toBe('trns.noIncome')
-    expect(resolveCurrentPeriodEmptyKey('combined', 'netIncome')).toBe('trns.noTrns')
+    expect(resolveCurrentPeriodEmptyKey('combined', 'net')).toBe('trns.noTrns')
   })
 
   it('uses the active stat tab outside summary', () => {
-    expect(resolveCurrentPeriodEmptyKey('expense', 'netIncome')).toBe('trns.noExpenses')
-    expect(resolveCurrentPeriodEmptyKey('income', 'netIncome')).toBe('trns.noIncome')
+    expect(resolveCurrentPeriodEmptyKey('expense', 'net')).toBe('trns.noExpenses')
+    expect(resolveCurrentPeriodEmptyKey('income', 'net')).toBe('trns.noIncome')
   })
 })
 

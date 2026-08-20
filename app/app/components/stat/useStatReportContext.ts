@@ -5,6 +5,7 @@ import type { SeriesSlugSelected, UseStatReportParams } from '~/components/stat/
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getSelectedParentCategoryId } from '~/components/filter/selectedParentCategory'
 import { getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
 import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
@@ -32,7 +33,12 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   )
   const shouldShowAmounts = computed(() => !params.categoryId?.value || params.categoryId.value !== 'transfer')
   const hasCategoriesData = computed(() => !!params.hasChildren?.value || (params.preCategoriesIds?.value ?? []).length > 0)
-  const focusedQuickCategoryId = computed(() => report.filteredCategoriesIds.value[0])
+  const filteredParentCategoryId = computed(() => getSelectedParentCategoryId({
+    getChildrenIds: categoryId => categoriesStore.getChildrenIds(categoryId),
+    rootIds: categoriesStore.categoriesRootIds,
+    selectedIds: params.filter.categoriesIds.value,
+  }))
+  const focusedQuickCategoryId = computed(() => filteredParentCategoryId.value ?? report.filteredCategoriesIds.value[0])
   const focusedQuickCategoryHasChildren = computed(() => {
     const categoryId = focusedQuickCategoryId.value
     return !!categoryId && categoriesStore.hasChildren(categoryId)
@@ -66,9 +72,11 @@ export function useStatReportContext(params: UseStatReportContextParams) {
         ? {
             config: params.statConfig.config.value,
             date: params.statDate.params.value,
+            filteredType: report.filteredType.value,
             reportType: params.reportType.value,
             trns: {
               filterBy: report.trnsViewState.filterBy.value,
+              isShowHistoryWithDesc: report.trnsViewState.isShowHistoryWithDesc?.value ?? false,
               isShowWithDesc: report.trnsViewState.isShowWithDesc.value,
             },
           }
@@ -78,7 +86,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   })
 
   function onClickSumItemWrap(type: SeriesSlugSelected) {
-    if (type === 'netIncome')
+    if (type === 'net')
       quickView.openFullTrns()
 
     report.onClickSumItem(type)
@@ -87,6 +95,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   return {
     ...report,
     ...quickView,
+    filteredParentCategoryId,
     focusedQuickCategoryId,
     hasCategoriesData,
     isCategoryFocus,

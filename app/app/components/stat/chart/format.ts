@@ -3,6 +3,17 @@ import type { Period } from '~~/utils/date/types'
 import { formatByLocale, formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 import type { LocaleSlug } from '~/components/locale/types'
+import type { SeriesSlug } from '~/components/stat/types'
+
+export function resolveChartValueType(showValueType: boolean | undefined, value: number | null): SeriesSlug | undefined {
+  if (!showValueType || !value)
+    return undefined
+  return value < 0 ? 'expense' : 'income'
+}
+
+export function resolveChartTooltipAmount(value: number, valueType: SeriesSlug | undefined): number {
+  return valueType === 'expense' ? -Math.abs(value) : value
+}
 
 export function getFormatForChart(periodName: Period) {
   switch (periodName) {

@@ -154,7 +154,7 @@ function onSave(close: () => void) {
         {{ t('recurrences.editTitle') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-5 px-3 py-2">
+      <div class="bottom-sheet-content-inside grid scroller-block content-start gap-5 px-3 py-2">
         <!-- Category (editable: steers future occurrences only) -->
         <FormElement>
           <template #label>
@@ -255,7 +255,7 @@ function onSave(close: () => void) {
       </div>
 
       <!-- Pinned footer (lives in the sheet's auto row, never scrolls away) -->
-      <div class="bottomSheetContentBottom">
+      <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
           class="sm:max-w-xs"
           rounded
@@ -270,7 +270,7 @@ function onSave(close: () => void) {
         v-if="isPickingCategory"
         @closed="isPickingCategory = false"
       >
-        <div class="bottomSheetContentInside h-[70vh] scrollerBlock">
+        <div class="bottom-sheet-content-inside h-[70vh] scroller-block">
           <CategoriesSelectorModal
             :activeItemId="categoryId"
             @selected="onSelectCategory"
@@ -282,7 +282,7 @@ function onSave(close: () => void) {
         v-if="isPickingWallet"
         @closed="isPickingWallet = false"
       >
-        <div class="bottomSheetContentInside h-[70vh] scrollerBlock">
+        <div class="bottom-sheet-content-inside h-[70vh] scroller-block">
           <WalletsSelector
             :activeItemId="walletId"
             withHeader
@@ -300,13 +300,13 @@ function onSave(close: () => void) {
           <UiTitleModal>
             {{ t('recurrences.form.editPriceDate') }}
           </UiTitleModal>
-          <div class="bottomSheetContentInside grid content-start gap-3 px-3 py-2">
+          <div class="bottom-sheet-content-inside grid content-start gap-3 px-3 py-2">
             <div class="text-2xs text-muted">
               {{ t('recurrences.form.effectiveFrom') }}
             </div>
             <FormDate v-model="editingDate" />
           </div>
-          <div class="bottomSheetContentBottom">
+          <div class="bottom-sheet-content-bottom">
             <UiButtonAccent
               class="sm:max-w-xs"
               rounded

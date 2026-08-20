@@ -4,7 +4,7 @@ import type { TabsItem } from '@nuxt/ui'
 import type { ChartType } from '~/components/stat/chart/types'
 
 import { useStatChart } from '~/components/stat/chart/useStatChart'
-import { chartLayoutOptions } from '~/components/stat/config/schema'
+import { chartLayoutIcons, chartLayoutOptions, chartValueDisplayOptions } from '~/components/stat/config/schema'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
@@ -21,11 +21,16 @@ const chartTypeItems = computed<TabsItem[]>(() => chartTypeOptions.value.map(ite
   value: item.value,
 })))
 const chartLayoutItems = computed<TabsItem[]>(() => chartLayoutOptions.map(value => ({
+  icon: chartLayoutIcons[value],
   label: t(`stat.view.chartLayout.${value}.label`),
   value,
 })))
 const breakdownItems = computed<TabsItem[]>(() => ['cashflow', 'categories'].map(value => ({
   label: t(`stat.view.breakdown.${value}.label`),
+  value,
+})))
+const valueDisplayItems = computed<TabsItem[]>(() => chartValueDisplayOptions.map(value => ({
+  label: t(`stat.view.valueDisplay.${value}.label`),
   value,
 })))
 </script>
@@ -44,11 +49,10 @@ const breakdownItems = computed<TabsItem[]>(() => ['cashflow', 'categories'].map
       :title="t('stat.config.chart.average.label')"
     />
     <StatConfigSwitch
-      v-if="statConfig.config.value.chart.breakdown === 'categories'"
-      path="chart.isGrouped"
-      :title="t('stat.config.chart.groupByParent')"
+      v-if="activeChartType !== 'pie'"
+      path="chart.isShowScale"
+      :title="t('stat.config.chart.scale.label')"
     />
-
     <div class="grid gap-4 pt-4">
       <div v-if="canSplit" class="grid gap-2">
         <UiTitleSection size="sm" class="px-1">
@@ -69,6 +73,35 @@ const breakdownItems = computed<TabsItem[]>(() => ['cashflow', 'categories'].map
           :items="chartTypeItems"
           :modelValue="activeChartType"
           @update:modelValue="(v) => statConfig.updateConfig('chart', { type: v as ChartType })"
+        />
+        <div v-if="activeChartType === 'line'" class="grid gap-0.5 pt-2">
+          <StatConfigSwitch
+            path="chart.line.isShowPoints"
+            :title="t('stat.config.chart.line.showPoints')"
+          />
+          <StatConfigSwitch
+            path="chart.line.isGradient"
+            :title="t('stat.config.chart.line.gradient')"
+          />
+          <StatConfigSwitch
+            path="chart.line.isSkipZero"
+            :title="t('stat.config.chart.line.skipZero')"
+          />
+          <StatConfigSwitch
+            path="chart.line.isSmooth"
+            :title="t('stat.config.chart.line.smooth')"
+          />
+        </div>
+      </div>
+
+      <div v-if="activeChartType !== 'pie'" class="grid gap-2">
+        <UiTitleSection size="sm" class="px-1">
+          {{ t('stat.view.valueDisplay.title') }}
+        </UiTitleSection>
+        <UiTabs
+          :items="valueDisplayItems"
+          :modelValue="statConfig.config.value.chart.valueDisplay"
+          @update:modelValue="(v) => statConfig.updateConfig('chart', { valueDisplay: v as typeof chartValueDisplayOptions[number] })"
         />
       </div>
 

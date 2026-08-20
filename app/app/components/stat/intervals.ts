@@ -56,10 +56,10 @@ export function bucketTrnsByIntervals(
  * Returns only non-zero entries.
  */
 export function computeAverageTotal(
-  sum: number,
+  net: number,
   dateRange: Range,
 ): Partial<Record<'day' | 'week' | 'month', number>> | undefined {
-  if (sum === 0 || differenceInDays(dateRange.end, dateRange.start) < 2)
+  if (net === 0 || differenceInDays(dateRange.end, dateRange.start) < 2)
     return undefined
 
   const dif = {
@@ -69,13 +69,13 @@ export function computeAverageTotal(
   }
 
   const items: Partial<Record<'day' | 'week' | 'month', number>> = {
-    day: sum / dif.day,
+    day: net / dif.day,
   }
 
   if (dif.week > 1)
-    items.week = sum / dif.week
+    items.week = net / dif.week
   if (dif.month > 1)
-    items.month = sum / dif.month
+    items.month = net / dif.month
 
   return items
 }

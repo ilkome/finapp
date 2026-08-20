@@ -220,7 +220,7 @@ export function useBottomSheetDrag({
   })
 
   function firstVisibleScroller(root: HTMLElement | null | undefined): HTMLElement | null {
-    const nodes = root?.querySelectorAll<HTMLElement>('.scrollerBlock')
+    const nodes = root?.querySelectorAll<HTMLElement>('.scroller-block')
     for (const el of nodes ?? []) {
       if (el.offsetParent !== null)
         return el
@@ -230,7 +230,7 @@ export function useBottomSheetDrag({
 
   function resolveScroller(target: EventTarget | null): HTMLElement | null {
     if (target instanceof Element) {
-      const closest = target.closest<HTMLElement>('.scrollerBlock')
+      const closest = target.closest<HTMLElement>('.scroller-block')
       if (closest && closest.offsetParent !== null)
         return closest
     }
@@ -461,7 +461,7 @@ export function useBottomSheetDrag({
 
   function finishClose() {
     clearTransitionTimer()
-    const scrollerBlocks = drag.value?.querySelectorAll('.scrollerBlock')
+    const scrollerBlocks = drag.value?.querySelectorAll('.scroller-block')
     scrollerBlocks?.forEach(el => (el.scrollTop = 0))
     phase.value = 'closed'
     emit('closed')

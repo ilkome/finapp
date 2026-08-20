@@ -108,15 +108,15 @@ async function clearCachesAndReload() {
   <Teleport to="body">
     <LazyBottomSheet
       isShow
-      dragClassesCustom="bottomSheetDragClassesCustom"
+      dragClassesCustom="bottom-sheet-drag-classes-custom"
       @closed="emit('close')"
     >
       <template #handler>
         <BottomSheetHandler />
       </template>
 
-      <div class="bottomSheetContent">
-        <div class="bottomSheetContentInside overflow-y-hidden! p-0!">
+      <div class="bottom-sheet-content">
+        <div class="bottom-sheet-content-inside overflow-y-hidden! p-0!">
           <div class="h-full overflow-x-clip">
             <AnimatePresence :custom="direction" mode="wait" :initial="false">
               <Motion
@@ -127,7 +127,7 @@ async function clearCachesAndReload() {
                 animate="center"
                 exit="exit"
                 :transition="panelTransition"
-                class="max-h-[98dvh] scrollerBlock overflow-y-auto px-3 pt-4 pb-2"
+                class="max-h-[98dvh] scroller-block overflow-y-auto px-3 pt-4 pb-2"
               >
                 <div v-if="activePanel === 'root'">
                   <div

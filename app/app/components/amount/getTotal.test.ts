@@ -23,7 +23,7 @@ describe('total of Transactions', () => {
       expenseTransfers: 0,
       income: 0,
       incomeTransfers: 0,
-      sum: 0,
+      net: 0,
       sumTransfers: 0,
     })
   })
@@ -42,7 +42,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.81081081081081)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(10.81081081081081)
+    expect(total.net).toEqual(10.81081081081081)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -62,7 +62,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.383135135135134)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(10.383135135135134)
+    expect(total.net).toEqual(10.383135135135134)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -85,7 +85,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
-    expect(total.sum).toEqual(600)
+    expect(total.net).toEqual(600)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -108,7 +108,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.383135135135134)
     expect(total.expense).toEqual(384.176)
-    expect(total.sum).toEqual(-373.79286486486484)
+    expect(total.net).toEqual(-373.79286486486484)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -134,7 +134,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
-    expect(total.sum).toEqual(600)
+    expect(total.net).toEqual(600)
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(10)
     expect(total.sumTransfers).toEqual(30)
@@ -156,7 +156,7 @@ describe('total of Transactions', () => {
     expect(total.adjustment).toEqual(150)
     expect(total.income).toEqual(0)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(0)
+    expect(total.net).toEqual(0)
   })
 
   it('excludedCategoriesIds drops matching income/expense from totals', () => {
@@ -174,7 +174,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(1000)
+    expect(total.net).toEqual(1000)
   })
 
   it('excludedCategoriesIds leaves transfer/adjustment buckets untouched', () => {
@@ -257,7 +257,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
-    expect(total.sum).toEqual(600)
+    expect(total.net).toEqual(600)
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(40)
     expect(total.sumTransfers).toEqual(0)
@@ -272,7 +272,7 @@ describe('addTotals', () => {
       expenseTransfers: 3,
       income: 4,
       incomeTransfers: 5,
-      sum: 6,
+      net: 6,
       sumTransfers: 7,
     }
     const b = {
@@ -281,7 +281,7 @@ describe('addTotals', () => {
       expenseTransfers: 30,
       income: 40,
       incomeTransfers: 50,
-      sum: 60,
+      net: 60,
       sumTransfers: 70,
     }
 
@@ -291,7 +291,7 @@ describe('addTotals', () => {
       expenseTransfers: 33,
       income: 44,
       incomeTransfers: 55,
-      sum: 66,
+      net: 66,
       sumTransfers: 77,
     })
   })
@@ -303,7 +303,7 @@ describe('addTotals', () => {
       expenseTransfers: 0,
       income: 0,
       incomeTransfers: 0,
-      sum: 0,
+      net: 0,
       sumTransfers: 0,
     }
     const a = {
@@ -312,7 +312,7 @@ describe('addTotals', () => {
       expenseTransfers: 3,
       income: 4,
       incomeTransfers: 5,
-      sum: 6,
+      net: 6,
       sumTransfers: 7,
     }
 

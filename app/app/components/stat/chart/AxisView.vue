@@ -12,16 +12,8 @@ import type { AxisChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
-import { baseOption, buildChartSeries, filterChartTooltipParams, resolveChartTooltipPosition } from '~/components/stat/chart/options'
+import { baseOption, buildChartGuideMarkLine, buildChartSeries, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-
-type TooltipParam = {
-  color: string
-  name: string
-  seriesIndex: number
-  seriesName: string
-  value: number | null
-}
 
 const {
   bufferSize = 0,
@@ -59,7 +51,8 @@ const { locale, t } = useI18n()
 const { width: viewportWidth } = useWindowSize()
 const statConfig = inject(statConfigKey)!
 const isDev = import.meta.dev
-const isRoundCategoryIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
+const isShowAverage = computed(() => statConfig.config.value.chart.isShowAverage)
+const isShowScale = computed(() => statConfig.config.value.chart.isShowScale)
 const chartRef = ref()
 let pointerStartX = 0
 let pointerStartY = 0
@@ -81,6 +74,46 @@ const option = computed(() => {
   const startIndex = xAxisLabels.indexOf(startValue ?? -1)
   const endIndex = xAxisLabels.indexOf(endValue ?? -1)
   const isDataZoomEnabled = isPannable && startIndex >= 0 && endIndex >= startIndex
+  const visibleStartIndex = isDataZoomEnabled ? startIndex : 0
+  const visibleEndIndex = isDataZoomEnabled ? endIndex + 1 : undefined
+  const visibleSeries = series.map(item => ({
+    ...item,
+    data: item.data.slice(visibleStartIndex, visibleEndIndex),
+  }))
+  const lineOptions = statConfig.config.value.chart.line
+  const scale = resolveChartScale(visibleSeries, chartType, lineOptions)
+  const averages = isShowAverage.value ? resolveChartSeriesAverages(visibleSeries) : []
+  const visibleAverages = averages.filter((value): value is number => value !== undefined)
+  const guideAverage = visibleAverages.length === 1 ? visibleAverages[0] : undefined
+  let seriesWithVisibleAverage = visibleAverages.length === 0
+    ? series
+    : series.map((item, index) => item.averageMode && averages[index] !== undefined && Array.isArray(item.markLine?.data)
+        ? {
+            ...item,
+            markLine: {
+              ...item.markLine,
+              data: item.markLine.data.map((line: { name?: string, yAxis?: number }) =>
+                line.name === 'average' ? { ...line, yAxis: averages[index] } : line,
+              ),
+            },
+          }
+        : item)
+  if (isShowScale.value && visibleAverages.length === 1) {
+    seriesWithVisibleAverage = seriesWithVisibleAverage.map(item => item.averageMode
+      ? { ...item, markLine: undefined }
+      : item)
+  }
+  const guideSeries: ChartSeries = {
+    data: [],
+    markLine: buildChartGuideMarkLine(scale, guideAverage),
+    name: 'scale-guides',
+    type: 'line',
+  }
+  const chartSeries = buildChartSeries(
+    isShowScale.value ? [...seriesWithVisibleAverage, guideSeries] : seriesWithVisibleAverage,
+    chartType,
+    lineOptions,
+  )
   const data = defu(baseOption, {
     dataZoom: [{
       disabled: !isDataZoomEnabled,
@@ -97,7 +130,7 @@ const option = computed(() => {
       zoomLock: true,
       zoomOnMouseWheel: false,
     }],
-    series: buildChartSeries(series, chartType),
+    series: chartSeries,
     xAxis: {
       data: xAxisLabels,
       type: 'category',
@@ -112,12 +145,27 @@ const option = computed(() => {
     const dataIndex = xAxisLabels.indexOf(dateValue)
     return formatChartAxisLabel(dateValue, xAxisLabels[dataIndex - 1], period, locale.value)
   }
+  xAxis.axisLabel.alignMaxLabel = 'right'
+  xAxis.axisLabel.showMaxLabel = true
 
   xAxis.axisPointer.label.formatter = ({ value }: { value: string }) => {
     return formatChartTooltipLabel(+value, period, locale.value)
   }
 
   const yAxis = data.yAxis as Record<string, any>
+  const grid = data.grid as Record<string, any>
+  grid.bottom = isShowScale.value ? 22 : 0
+  grid.containLabel = !isShowScale.value
+  grid.right = isShowScale.value ? resolveChartScaleWidth(scale, visibleAverages) : 5
+  yAxis.axisLabel.align = 'left'
+  yAxis.axisLabel.inside = false
+  yAxis.axisLabel.margin = 6
+  yAxis.axisLabel.show = false
+  yAxis.interval = isShowScale.value ? scale.interval : undefined
+  yAxis.max = isShowScale.value ? scale.max : undefined
+  yAxis.min = isShowScale.value ? scale.min : undefined
+  yAxis.splitNumber = 2
+  yAxis.splitLine.show = false
   yAxis.axisPointer.label.formatter = (props: { value: number }) => formatChartAmount(+props.value, locale.value) ?? ''
 
   const tooltip = data.tooltip as Record<string, any>
@@ -243,14 +291,6 @@ function onClickChart(params: { offsetX: number, offsetY: number }) {
   if (intervalKey !== undefined)
     emit('click', intervalKey)
 }
-
-function getTooltipSeries(param: TooltipParam) {
-  return series[param.seriesIndex]
-}
-
-function getTooltipRows(params: unknown) {
-  return filterChartTooltipParams(params as TooltipParam[])
-}
 </script>
 
 <template>
@@ -277,62 +317,12 @@ function getTooltipRows(params: unknown) {
     <VChart
       ref="chartRef"
       :option
-      :updateOptions="{ replaceMerge: ['series', 'xAxis'] }"
+      :updateOptions="{ replaceMerge: ['series', 'xAxis', 'yAxis'] }"
       autoresize
       @datazoom="onDataZoom"
     >
       <template #tooltip="params">
-        <div
-          class="min-w-48 overflow-hidden rounded-md bg-default shadow-lg ring ring-default"
-          :data-stat-chart-tooltip="isDev ? 'true' : undefined"
-        >
-          <div class="border-b border-accented px-3 py-2 text-xs text-muted capitalize">
-            {{ formatChartTooltipLabel(+(params as TooltipParam[])[0]!.name, period, locale) }}
-          </div>
-
-          <div v-if="getTooltipRows(params).length">
-            <div
-              v-for="(param, i) in getTooltipRows(params)"
-              :key="i"
-              class="flex min-h-11 items-center gap-2 border-b border-accented px-2 py-1 last:border-b-0"
-              :data-stat-chart-tooltip-icon="isDev ? getTooltipSeries(param)?.icon : undefined"
-              :data-stat-chart-tooltip-value="isDev ? param.value : undefined"
-            >
-              <UiIconBase
-                v-if="getTooltipSeries(param)?.icon && isRoundCategoryIcon"
-                :color="param.color"
-                :name="getTooltipSeries(param)!.icon!"
-                class="w-7!"
-                invert
-              />
-              <UiIconBase
-                v-else-if="getTooltipSeries(param)?.icon"
-                :color="param.color"
-                :name="getTooltipSeries(param)!.icon!"
-                class="ml-1 w-6!"
-              />
-              <div v-else class="flex-center size-7 shrink-0">
-                <div class="size-2.5 rounded-full" :style="`background: ${param.color}`" />
-              </div>
-
-              <div class="min-w-0 grow truncate text-sm leading-none font-medium tracking-wide text-toned">
-                {{ param.seriesName }}
-              </div>
-
-              <div class="shrink-0 text-right font-secondary text-base text-highlighted">
-                {{ formatChartAmount(param.value, locale) }}
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-else
-            class="p-3 text-sm text-muted"
-            :data-stat-chart-tooltip-empty="isDev ? 'true' : undefined"
-          >
-            {{ t('trns.noTrns') }}
-          </div>
-        </div>
+        <StatChartAxisTooltip :params :period :series />
       </template>
     </VChart>
   </div>

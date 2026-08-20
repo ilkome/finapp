@@ -28,5 +28,9 @@ const isCatsRoundShow = computed(() => statConfig.config.value.categories.round.
       path="categories.round.isIconBg"
       :title="t('stat.catButtons.isRoundIcon')"
     />
+    <StatConfigSwitch
+      path="categories.round.isInlineAmount"
+      :title="t('stat.config.categories.rounds.inlineAmount')"
+    />
   </div>
 </template>

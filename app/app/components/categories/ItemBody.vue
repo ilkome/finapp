@@ -17,6 +17,7 @@ const props = defineProps<{
   leftMenuButton?: boolean
   leftMenuItems?: ContextMenuItem[][]
   lineWidth?: number
+  rounded?: boolean
   selectedIds?: CategoryId[]
   stacked?: boolean
   to?: string
@@ -72,6 +73,7 @@ function onRowClick(e: Event) {
     :class="props.class"
     class="[&_.uiElementLine]:block!"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"
     :to="rowTo"
     @click="onRowClick"
@@ -124,6 +126,7 @@ function onRowClick(e: Event) {
     :class="props.class"
     class="[&_.uiElementLine]:block!"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"
     :to="props.to"
     @click="(e: Event) => emit('click', e)"

@@ -114,7 +114,7 @@ function handleDeleteConfirm() {
         },
       }"
       class="h-full min-h-0"
-      :ui="{ viewport: 'scrollerBlock overscroll-contain' }"
+      :ui="{ viewport: 'scroller-block overscroll-contain' }"
       @update:modelValue="emit('select', $event)"
     >
       <template #empty="{ searchTerm: currentSearchTerm }">

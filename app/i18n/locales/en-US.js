@@ -86,7 +86,7 @@ export default {
     help: { open: 'How budgets work' },
     hero: { assignedSoFar: 'Assigned so far', safeToSpend: 'Safe to spend', toAssign: 'To assign' },
     history: { action: 'History', empty: 'No spending history yet.', title: 'History' },
-    kind: { expense: 'Expense', income: 'Income' },
+    kind: { expense: 'Spending', income: 'Income' },
     mode: { envelope: 'Envelope', fifty_thirty_twenty: '50/30/20', limits: 'Limits' },
     move: { action: 'Move money', amount: 'Amount ({currency})', available: 'Available', cover: 'Cover', from: 'From', into: 'Into', noSource: 'No other budgets to move from.', title: 'Move money' },
     overBudget: 'Over budget',
@@ -239,6 +239,9 @@ export default {
       short: 'd',
       simple: 'Day',
     },
+    halfYear: {
+      simple: 'Half year',
+    },
     last: {
       day: 'Last',
       month: 'Last',
@@ -313,9 +316,9 @@ export default {
     all: 'Total',
     average: 'Average',
     balance: 'Balance',
-    expense: 'Expense',
+    expense: 'Spending',
     income: 'Income',
-    netIncome: 'Net income',
+    net: 'Net',
     options: {
       isExcludeInTotal: 'Excluded from totals',
       withdrawal: 'Withdrawal',
@@ -357,7 +360,7 @@ export default {
     actionCategory: 'Add category',
     actionTrn: 'Add transaction',
     actionWallet: 'Add wallet',
-    intro: 'Add your first income or expense',
+    intro: 'Add your first income or spending transaction',
     introCategories: 'Add a category, for example, "Food" or "Salary"',
     introWallets: 'Start tracking your finances by adding your first wallet',
   },
@@ -482,6 +485,7 @@ export default {
         rounds: {
           description: 'Strip of round category icons: favorites, recently used.',
           groupByParent: 'Group by parent',
+          inlineAmount: 'Name and amount in one row',
           showFavorites: 'Show favorites',
           showRecent: 'Show recent',
           title: 'Quick categories',
@@ -498,6 +502,15 @@ export default {
         byCategories: 'By categories',
         groupByParent: 'Group by parent',
         other: 'Other',
+        scale: {
+          label: 'Show scale and grid lines',
+        },
+        line: {
+          gradient: 'Show gradient',
+          showPoints: 'Show points',
+          skipZero: 'Skip zero values',
+          smooth: 'Smooth lines',
+        },
         type: {
           label: 'Chart type',
         },
@@ -546,14 +559,14 @@ export default {
     title: 'Dashboard',
     view: {
       breakdown: {
-        cashflow: { description: 'Build series by transaction type', label: 'Income and expenses' },
+        cashflow: { description: 'Build series by transaction type', label: 'Income and spending' },
         categories: { description: 'Build series by category', label: 'By categories' },
         title: 'Chart data',
       },
       chartLayout: {
-        'combined-narrow': { description: 'Show income and expenses in a compact chart', label: 'Together narrow' },
-        'combined-wide': { description: 'Show income and expenses in a wide chart', label: 'Together wide' },
-        'split': { description: 'Show separate expense and income charts', label: 'Separate' },
+        'combined-narrow': { description: 'Show income and spending in a compact chart', label: 'Together narrow' },
+        'combined-wide': { description: 'Show income and spending in a wide chart', label: 'Together wide' },
+        'split': { description: 'Show separate spending and income charts', label: 'Separate' },
         'title': 'Chart layout',
       },
       chartType: {
@@ -564,8 +577,13 @@ export default {
       },
       pageLayout: {
         combined: { description: 'Place totals, categories, and transactions in one flow', label: 'Combined' },
-        split: { description: 'Place expenses on the left and income on the right', label: 'Split' },
+        split: { description: 'Place spending on the left and income on the right', label: 'Split' },
         title: 'Page layout',
+      },
+      valueDisplay: {
+        magnitude: { label: 'All upward' },
+        signed: { label: 'By sign' },
+        title: 'Value direction',
       },
     },
   },
@@ -658,7 +676,7 @@ export default {
     },
     history: 'History',
     more: 'Show more',
-    noExpenses: 'No expenses',
+    noExpenses: 'No spending',
     noIncome: 'No income',
     noTrns: 'No transactions yet',
     plural: '0 transactions | {n} transaction | {n} transactions | {n} transactions',

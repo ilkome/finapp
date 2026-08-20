@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
+import type { SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
-import { statCanSplitKey, statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { statCanSplitKey, statConfigKey, statDateKey, statStickyNavigationHeightKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
@@ -16,6 +16,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = withDefaults(defineProps<{
   categoryId?: CategoryId
   hasChildren?: boolean
+  initialFilteredType?: SeriesSlugSelected
   preCategoriesIds?: CategoryId[]
   reportType?: StatReportType
   storageKey: string
@@ -33,11 +34,15 @@ const stickyTop = inject(statStickyTopKey, ref(0))
 const canSplit = inject(statCanSplitKey, ref(false))
 const trnsStore = useTrnsStore()
 const statLayout = useTemplateRef<HTMLElement>('statLayout')
+const statNavigation = useTemplateRef<HTMLElement>('statNavigation')
 const { width: statLayoutWidth } = useElementSize(statLayout)
+const { height: measuredNavigationHeight } = useElementSize(statNavigation, undefined, { box: 'border-box' })
+const stickyNavigationHeight = computed(() => Math.max(42, measuredNavigationHeight.value))
 watchEffect(() => {
   canSplit.value = statLayoutWidth.value >= 768
 })
 provide(statCanSplitKey, canSplit)
+provide(statStickyNavigationHeightKey, stickyNavigationHeight)
 
 const projections = computed(() => {
   const expense: TrnId[] = []
@@ -78,6 +83,7 @@ const commonParams = {
   categoryId: computed(() => props.categoryId),
   filter,
   hasChildren: computed(() => props.hasChildren),
+  initialFilteredType: props.initialFilteredType,
   preCategoriesIds: computed(() => props.preCategoriesIds),
   statConfig,
   statDate,
@@ -106,7 +112,7 @@ const contexts = {
 <template>
   <div
     ref="statLayout"
-    class="grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-3 px-2 pb-24 lg:px-4 2xl:px-8"
+    class="stat-layout grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-3 px-2 pb-24 lg:px-4 2xl:px-8"
     :data-stat-chart-layout="statConfig.config.value.chart.layout"
     :data-stat-page-layout="statConfig.config.value.page.layout"
     :data-stat-report-context-count="isDev ? statDevMetrics.reportContextCount.value : undefined"
@@ -115,7 +121,9 @@ const contexts = {
   >
     <StatChartSection :contexts />
     <div
-      :class="stickyNav && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur md:pt-2 lg:-mx-4 lg:px-4 lg:pb-2'"
+      ref="statNavigation"
+      data-stat-navigation
+      :class="stickyNav && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur lg:-mx-4 lg:px-4 lg:pb-2'"
       :style="stickyNav ? { top: `${stickyTop}px` } : undefined"
     >
       <StatDateFilterRow />

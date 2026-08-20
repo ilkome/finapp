@@ -10,23 +10,34 @@ import type { StatConfigParams } from '~/components/stat/config/types'
 import { applyConfigProps, applyConfigUpdate, ConfigSchema, defaultConfig } from '~/components/stat/config/schema'
 
 export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig, legacyTab?: unknown): MiniItemConfig {
-  const stored = storageValue as { chart?: { breakdown?: unknown, isByCategories?: unknown, layout?: unknown, type?: unknown, view?: unknown }, page?: { layout?: unknown } } | undefined
-  const legacyLayout = legacyTab === 'split' ? 'split' : 'combined-wide'
+  const stored = storageValue as { chart?: { breakdown?: unknown, isByCategories?: unknown, layout?: unknown, line?: unknown, type?: unknown, view?: unknown }, page?: { layout?: unknown } } | undefined
+  const legacyChartLayout = legacyTab === 'split' ? 'split' : 'combined-wide'
+  const legacyPageLayout = legacyTab === 'split' ? 'split' : 'combined'
   const storedLayout = stored?.chart?.layout === 'split'
     ? 'split'
     : stored?.chart?.layout === 'combined'
       ? (stored?.chart?.view === 'half' ? 'combined-narrow' : 'combined-wide')
       : stored?.chart?.layout
+  const legacyLine = stored?.chart?.type === 'area'
+    ? { isGradient: true, isShowPoints: true, isSkipZero: false, isSmooth: false }
+    : stored?.chart?.type === 'stackedLine'
+      ? { isGradient: false, isShowPoints: false, isSkipZero: false, isSmooth: false }
+      : undefined
+  const storedChartType = stored?.chart?.type === 'area' || stored?.chart?.type === 'stackedLine'
+    ? 'line'
+    : stored?.chart?.type
   const migrated = {
     ...stored,
     chart: {
       ...stored?.chart,
       breakdown: stored?.chart?.breakdown ?? (stored?.chart?.isByCategories ? 'categories' : 'cashflow'),
-      layout: storedLayout ?? legacyLayout,
+      layout: storedLayout ?? legacyChartLayout,
+      line: stored?.chart?.line ?? legacyLine,
+      type: storedChartType,
     },
     page: {
       ...stored?.page,
-      layout: stored?.page?.layout ?? legacyLayout,
+      layout: stored?.page?.layout ?? legacyPageLayout,
     },
   }
   const parsed = ConfigSchema.safeParse(defu(migrated, defaults))

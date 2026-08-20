@@ -74,7 +74,7 @@ watch(isSearchOpen, async (isOpen) => {
     <BottomSheet
       v-if="!isDesktop && isSearchOpen"
       isShow
-      dragClassesCustom="bottomSheetDragClassesCustom"
+      dragClassesCustom="bottom-sheet-drag-classes-custom"
       :snapPoints="snapPoints"
       @closed="onBottomSheetClosed"
     >
@@ -84,7 +84,7 @@ watch(isSearchOpen, async (isOpen) => {
 
       <template #default="{ isExpanded }">
         <div
-          class="bottomSheetContent"
+          class="bottom-sheet-content"
           :class="isExpanded === undefined ? 'max-h-[70dvh]' : 'h-full'"
         >
           <UiTitleModal>{{ t('search.title') }}</UiTitleModal>

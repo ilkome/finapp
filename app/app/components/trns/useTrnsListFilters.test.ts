@@ -77,6 +77,68 @@ describe('useTrnsListFilters', () => {
     expect(filters.selectedIds.value).toEqual(['transactionExpenseWalletCashUSD400'])
   })
 
+  it('limits scoped expense tabs and selects spending by default', () => {
+    const primaryType = ref<'expense' | 'income' | undefined>('expense')
+    const ids = computed(() => [
+      'transactionExpenseWalletCashUSD400',
+      'transactionIncomeWalletCashUSD1000',
+      'singleLegTransferExpenseWalletCashUSD50',
+      'adjustmentExpenseWalletCashUSD30',
+    ])
+    const filters = useTrnsListFilters({
+      ids,
+      primaryType: computed(() => primaryType.value),
+      showExpense: computed(() => true),
+      showIncome: computed(() => true),
+      showTransfers: computed(() => true),
+    })
+
+    expect(filters.filterBy.value).toBe('expense')
+    expect(filters.realTypesCount.value).toBe(3)
+    expect(filters.typeFilterItems.value.map(item => item.value)).toEqual(['expense', 'transfer', 'adjustment'])
+    expect(filters.selectedIds.value).toEqual(['transactionExpenseWalletCashUSD400', 'adjustmentExpenseWalletCashUSD30'])
+  })
+
+  it('shows all, transfers, and adjustments for the net view', () => {
+    const filters = useTrnsListFilters({
+      ids: computed(() => [
+        'transactionExpenseWalletCashUSD400',
+        'transactionIncomeWalletCashUSD1000',
+        'singleLegTransferExpenseWalletCashUSD50',
+        'adjustmentExpenseWalletCashUSD30',
+      ]),
+      primaryType: computed(() => undefined),
+      showExpense: computed(() => true),
+      showIncome: computed(() => true),
+      showTransfers: computed(() => true),
+    })
+
+    expect(filters.filterBy.value).toBe('all')
+    expect(filters.realTypesCount.value).toBe(3)
+    expect(filters.typeFilterItems.value.map(item => item.value)).toEqual(['all', 'transfer', 'adjustment'])
+  })
+
+  it('selects income when the scoped statistic type changes', async () => {
+    const primaryType = ref<'expense' | 'income' | undefined>('expense')
+    const filters = useTrnsListFilters({
+      ids: computed(() => [
+        'transactionExpenseWalletCashUSD400',
+        'transactionIncomeWalletCashUSD1000',
+      ]),
+      primaryType: computed(() => primaryType.value),
+      showExpense: computed(() => true),
+      showIncome: computed(() => true),
+      showTransfers: computed(() => true),
+    })
+
+    primaryType.value = 'income'
+    await nextTick()
+
+    expect(filters.filterBy.value).toBe('income')
+    expect(filters.typeFilterItems.value.map(item => item.value)).toEqual(['income'])
+    expect(filters.selectedIds.value).toEqual(['transactionIncomeWalletCashUSD1000'])
+  })
+
   it('applies description-only filtering when some transactions have descriptions', () => {
     const { filters } = createFilters(['transactionExpenseWalletCashUSD400', 'expenseWithDesc', 'incomeWithDesc'])
 

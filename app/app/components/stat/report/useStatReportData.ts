@@ -293,8 +293,8 @@ export function useStatReportData(params: {
   const averageTotal = computed(() => {
     if (differenceInDays(params.statDate.range.value.end, params.statDate.range.value.start) < 2)
       return
-    const key: keyof TotalReturns = (!params.type.value || params.type.value === 'netIncome' || params.filteredType.value === 'netIncome')
-      ? 'sum'
+    const key: keyof TotalReturns = (!params.type.value || params.type.value === 'net' || params.filteredType.value === 'net')
+      ? 'net'
       : params.type.value
     const dateRange = isIntervalSelected.value ? params.statDate.selectedInterval.value : params.statDate.range.value
     return computeAverageTotal(rangeTotal.value[key] ?? 0, dateRange!)

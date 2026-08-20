@@ -32,7 +32,7 @@ const name = computed(() => {
         {{ name }} · {{ periodLabel }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside scrollerBlock px-3 py-2">
+      <div class="bottom-sheet-content-inside scroller-block px-3 py-2">
         <div v-if="!trnsIds.length" class="py-6 text-center text-sm text-muted">
           {{ t('budgets.trns.empty') }}
         </div>

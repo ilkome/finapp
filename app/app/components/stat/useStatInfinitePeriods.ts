@@ -179,6 +179,7 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
 
   watch([
     () => options.localFilter.value.filterBy,
+    () => options.localFilter.value.showHistoryWithDesc,
     () => options.localFilter.value.showWithDesc,
   ], () => {
     localFilterGeneration.value++

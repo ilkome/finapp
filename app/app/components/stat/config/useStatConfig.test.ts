@@ -36,10 +36,10 @@ beforeEach(() => {
 })
 
 describe('normalizeStoredStatConfig', () => {
-  it('maps legacy pie chart configs to bar', () => {
+  it('preserves the current pie chart type in partial stored configs', () => {
     const config = normalizeStoredStatConfig({ chart: { type: 'pie' } }, structuredClone(defaultConfig))
 
-    expect(config.chart.type).toBe('bar')
+    expect(config.chart.type).toBe('pie')
   })
 
   it('migrates legacy chart and tab view settings', () => {
@@ -54,6 +54,29 @@ describe('normalizeStoredStatConfig', () => {
 
     expect(config.chart).toMatchObject({ breakdown: 'cashflow', layout: 'combined-wide' })
     expect(config.page.layout).toBe('combined')
+  })
+
+  it('backfills the current chart value display for stored configs', () => {
+    const config = normalizeStoredStatConfig({ chart: { type: 'line' } }, structuredClone(defaultConfig))
+
+    expect(config.chart.valueDisplay).toBe('magnitude')
+    expect(config.chart.isShowScale).toBe(false)
+    expect(config.chart.line).toEqual({ isGradient: false, isShowPoints: true, isSkipZero: false, isSmooth: true })
+    expect(config.categories.round.isInlineAmount).toBe(false)
+  })
+
+  it('migrates removed line chart variants to line options', () => {
+    const area = normalizeStoredStatConfig({ chart: { type: 'area' } }, structuredClone(defaultConfig))
+    const sharp = normalizeStoredStatConfig({ chart: { type: 'stackedLine' } }, structuredClone(defaultConfig))
+
+    expect(area.chart).toMatchObject({
+      line: { isGradient: true, isShowPoints: true, isSkipZero: false, isSmooth: false },
+      type: 'line',
+    })
+    expect(sharp.chart).toMatchObject({
+      line: { isGradient: false, isShowPoints: false, isSkipZero: false, isSmooth: false },
+      type: 'line',
+    })
   })
 
   it('tracks a reactive page storage key', () => {
@@ -74,8 +97,8 @@ describe('normalizeStoredStatConfig', () => {
     storageState.set('finapp-dashboard-summary-', storedValue)
 
     const statConfig = useStatConfig({
-      storageKey: 'dashboard-summary',
       initialConfig: { ...defaultConfig, chart: { ...defaultConfig.chart, type: 'pie' } },
+      storageKey: 'dashboard-summary',
     })
 
     expect(statConfig.config.value.chart.type).toBe('pie')

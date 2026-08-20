@@ -86,7 +86,7 @@ export default {
     help: { open: 'Как работают бюджеты' },
     hero: { assignedSoFar: 'Уже распределено', safeToSpend: 'Можно потратить', toAssign: 'К распределению' },
     history: { action: 'История', empty: 'Пока нет истории трат.', title: 'История' },
-    kind: { expense: 'Расход', income: 'Доход' },
+    kind: { expense: 'Трата', income: 'Доходы' },
     mode: { envelope: 'Конверты', fifty_thirty_twenty: '50/30/20', limits: 'Лимиты' },
     move: { action: 'Переместить', amount: 'Сумма ({currency})', available: 'Доступно', cover: 'Покрыть', from: 'Откуда', into: 'Куда', noSource: 'Нет других бюджетов для переноса.', title: 'Переместить деньги' },
     overBudget: 'Превышен бюджет',
@@ -239,6 +239,9 @@ export default {
       short: 'д',
       simple: 'День',
     },
+    halfYear: {
+      simple: 'Полгода',
+    },
     last: {
       day: 'Последних | Последний | Последние | Последние',
       month: 'Последний | Последний | Последние | Последние',
@@ -313,9 +316,9 @@ export default {
     all: 'Всего',
     average: 'Среднее',
     balance: 'Баланс',
-    expense: 'Расход',
-    income: 'Доход',
-    netIncome: 'Суммарно',
+    expense: 'Траты',
+    income: 'Доходы',
+    net: 'Итого',
     options: {
       isExcludeInTotal: 'Не считать в общем балансе',
       withdrawal: 'Доступные для снятия',
@@ -357,7 +360,7 @@ export default {
     actionCategory: 'Добавить категорию',
     actionTrn: 'Добавить транзакцию',
     actionWallet: 'Добавить кошелек',
-    intro: 'Добавьте свой первый доход или расход',
+    intro: 'Добавьте первые доходы или траты',
     introCategories: 'Добавьте категорию, например, «Еда» или «Зарплата»',
     introWallets: 'Начните учёт финансов, добавив первый кошелёк',
   },
@@ -482,6 +485,7 @@ export default {
         rounds: {
           description: 'Лента круглых иконок: избранные, недавно используемые.',
           groupByParent: 'Группировать по родителю',
+          inlineAmount: 'Название и сумма в одну строку',
           showFavorites: 'Показывать избранные',
           showRecent: 'Показывать недавние',
           title: 'Быстрые категории',
@@ -498,6 +502,15 @@ export default {
         byCategories: 'По категориям',
         groupByParent: 'Группировать по родителю',
         other: 'Остальные',
+        scale: {
+          label: 'Показывать шкалу и разделители',
+        },
+        line: {
+          gradient: 'Показывать градиент',
+          showPoints: 'Показывать точки',
+          skipZero: 'Пропускать нулевые значения',
+          smooth: 'Скруглять линии',
+        },
         type: {
           label: 'Тип графика',
         },
@@ -546,14 +559,14 @@ export default {
     title: 'Статистика',
     view: {
       breakdown: {
-        cashflow: { description: 'Строить серии по типам операций', label: 'Доходы и расходы' },
+        cashflow: { description: 'Строить серии по типам операций', label: 'Доходы и траты' },
         categories: { description: 'Строить серии по категориям', label: 'По категориям' },
         title: 'Тип данных графиков',
       },
       chartLayout: {
-        'combined-narrow': { description: 'Показывать доходы и расходы на компактном графике', label: 'Вместе узко' },
-        'combined-wide': { description: 'Показывать доходы и расходы на широком графике', label: 'Вместе широко' },
-        'split': { description: 'Показывать отдельные графики расходов и доходов', label: 'Раздельно' },
+        'combined-narrow': { description: 'Показывать доходы и траты на компактном графике', label: 'Вместе узко' },
+        'combined-wide': { description: 'Показывать доходы и траты на широком графике', label: 'Вместе широко' },
+        'split': { description: 'Показывать отдельные графики трат и доходов', label: 'Раздельно' },
         'title': 'Режим графиков',
       },
       chartType: {
@@ -564,8 +577,13 @@ export default {
       },
       pageLayout: {
         combined: { description: 'Размещать суммы, категории и транзакции в одном потоке', label: 'Общий' },
-        split: { description: 'Размещать расходы слева, а доходы справа', label: 'Раздельный' },
+        split: { description: 'Размещать траты слева, а доходы справа', label: 'Раздельный' },
         title: 'Вид страницы',
+      },
+      valueDisplay: {
+        magnitude: { label: 'Все вверх' },
+        signed: { label: 'По знаку' },
+        title: 'Направление значений',
       },
     },
   },
@@ -658,7 +676,7 @@ export default {
     },
     history: 'История',
     more: 'Показать еще',
-    noExpenses: 'Нет расходов',
+    noExpenses: 'Нет трат',
     noIncome: 'Нет доходов',
     noTrns: 'Нет транзакций',
     plural: '0 транзакций | {n} транзакция | {n} транзакции | {n} транзакций',

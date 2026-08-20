@@ -10,6 +10,12 @@ import { useStatReportChart } from '~/components/stat/report/useStatReportChart'
 import { useStatReportData } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
 
+export function normalizeSelectedSeries(value: unknown): SeriesSlugSelected {
+  if (value === 'expense' || value === 'income' || value === 'net')
+    return value
+  return 'net'
+}
+
 export function useStatReport(params: UseStatReportParams) {
   if (import.meta.dev) {
     statDevMetrics.reportContextCount.value++
@@ -19,6 +25,7 @@ export function useStatReport(params: UseStatReportParams) {
   const forecastMode = useForecastMode()
   const trnsViewState: TrnsListFilterState = params.trnsViewState ?? {
     filterBy: ref('all'),
+    isShowHistoryWithDesc: ref(false),
     isShowWithDesc: ref(false),
   }
   const statItemStorageKey = computed(() =>
@@ -26,8 +33,13 @@ export function useStatReport(params: UseStatReportParams) {
   )
   const filteredType = useStorage<SeriesSlugSelected>(
     `finapp-filtered-type-${params.type.value}-${statItemStorageKey.value}`,
-    'netIncome',
+    params.initialFilteredType ?? 'net',
   )
+  if (params.initialFilteredType !== undefined)
+    filteredType.value = normalizeSelectedSeries(params.initialFilteredType)
+  const normalizedFilteredType = normalizeSelectedSeries(filteredType.value)
+  if (filteredType.value !== normalizedFilteredType)
+    filteredType.value = normalizedFilteredType
   const filteredCategoriesIds = ref<CategoryId[]>([])
   const filteredChildCategoryId = ref<CategoryId>()
   const effectiveFilteredCategoriesIds = computed(() => filteredChildCategoryId.value
@@ -75,7 +87,7 @@ export function useStatReport(params: UseStatReportParams) {
     filteredChildCategoryId.value = filteredChildCategoryId.value === categoryId ? undefined : categoryId
   }
   function onClickSumItem(clickedType: SeriesSlugSelected) {
-    filteredType.value = clickedType === filteredType.value ? 'netIncome' : clickedType
+    filteredType.value = clickedType === filteredType.value ? 'net' : clickedType
   }
 
   return {

@@ -42,8 +42,8 @@ const currenciesStore = useCurrenciesStore()
           :amount="props.amount"
           :currencyCode="currenciesStore.base"
           :class="{
-            'text-income-1!': props.amount > 0 && props.type !== 'netIncome',
-            'text-expense-1!': props.amount < 0 && props.type !== 'netIncome',
+            'text-income-1!': props.amount > 0 && props.type !== 'net',
+            'text-expense-1!': props.amount < 0 && props.type !== 'net',
             'text-2xl!': props.variant === 'plain',
           }"
           align="left"

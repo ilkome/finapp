@@ -6,6 +6,7 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import { useElementSize } from '@vueuse/core'
+import type { SimplePieDatum } from '~/components/stat/chart/simplePie'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatChartAmount } from '~/components/stat/chart/format'
@@ -13,6 +14,7 @@ import { buildSimplePieData } from '~/components/stat/chart/simplePie'
 
 type PieTooltipParam = {
   color: string
+  data: SimplePieDatum
   name: string
   percent: number
   value: number
@@ -28,6 +30,10 @@ const {
   series: ChartSeries[]
   startValue?: number
   xAxisLabels: number[]
+}>()
+
+const emit = defineEmits<{
+  select: []
 }>()
 
 use([PieChart, SVGRenderer, TooltipComponent])
@@ -103,7 +109,9 @@ const option = computed(() => ({
       },
       itemStyle: { color: item.color },
       name: item.name,
+      signedValue: item.signedValue,
       value: item.value,
+      valueType: item.valueType,
     })),
     emphasis: {
       scale: false,
@@ -143,6 +151,7 @@ const option = computed(() => ({
     class="relative h-40 max-w-full min-w-0 overflow-visible @3xl/stat:h-52"
     role="img"
     :aria-label="chartAriaLabel"
+    @click="emit('select')"
   >
     <VChart :option :updateOptions="{ notMerge: true }" autoresize style="overflow: visible">
       <template #tooltip="params">
@@ -152,10 +161,13 @@ const option = computed(() => ({
             <div class="text-sm text-muted">
               {{ (params as PieTooltipParam).name }}
             </div>
+            <div v-if="(params as PieTooltipParam).data.valueType" class="text-xs text-muted">
+              {{ t(`money.${(params as PieTooltipParam).data.valueType}`) }}
+            </div>
           </div>
           <div class="flex items-baseline justify-between gap-4 pt-1">
             <div class="font-secondary text-lg text-highlighted">
-              {{ formatChartAmount((params as PieTooltipParam).value, locale) }}
+              {{ formatChartAmount((params as PieTooltipParam).data.signedValue ?? (params as PieTooltipParam).value, locale) }}
             </div>
             <div class="text-xs text-muted">
               {{ (params as PieTooltipParam).percent }}%

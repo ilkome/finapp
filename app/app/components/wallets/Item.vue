@@ -17,6 +17,7 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
+  rounded?: boolean
   to?: string
   wallet: WalletItemComputed
   walletId: WalletId
@@ -40,6 +41,7 @@ const emit = defineEmits<{
       :isShowRate="props.isShowRate"
       :isSort="props.isSort"
       :lineWidth="props.lineWidth"
+      :rounded="props.rounded"
       :to="props.to"
       :wallet="props.wallet"
       :walletId="props.walletId"
@@ -59,6 +61,7 @@ const emit = defineEmits<{
     :isShowRate="props.isShowRate"
     :isSort="props.isSort"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :wallet="props.wallet"
     :walletId="props.walletId"
     @click="emit('click', $event)"

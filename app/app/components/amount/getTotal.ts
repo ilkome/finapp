@@ -42,7 +42,7 @@ export type TotalReturns = {
   expenseTransfers: number
   income: number
   incomeTransfers: number
-  sum: number
+  net: number
   sumTransfers: number
 }
 
@@ -125,7 +125,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     }
   }
 
-  const sum = income - expense
+  const net = income - expense
   const sumTransfers = incomeTransfers - expenseTransfers
 
   return {
@@ -134,7 +134,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     expenseTransfers,
     income,
     incomeTransfers,
-    sum,
+    net,
     sumTransfers,
   }
 }
@@ -147,7 +147,7 @@ export function addTotals(a: TotalReturns, b: TotalReturns): TotalReturns {
     expenseTransfers: a.expenseTransfers + b.expenseTransfers,
     income: a.income + b.income,
     incomeTransfers: a.incomeTransfers + b.incomeTransfers,
-    sum: a.sum + b.sum,
+    net: a.net + b.net,
     sumTransfers: a.sumTransfers + b.sumTransfers,
   }
 }

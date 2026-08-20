@@ -94,7 +94,7 @@ const tabItems = computed<TabsItem[]>(() => [
     class="grid w-full min-w-0 grid-rows-[auto_1fr_auto] overflow-hidden"
     :class="props.isExpanded === undefined
       ? 'max-h-[85dvh] min-h-[50dvh]'
-      : 'relative h-full [&_.scrollerBlock]:pb-24'"
+      : 'relative h-full [&_.scroller-block]:pb-24'"
   >
     <div class="flex items-center gap-2 px-3 py-2">
       <input
@@ -154,7 +154,7 @@ const tabItems = computed<TabsItem[]>(() => [
 
       <div
         v-if="searchQuery"
-        class="h-full scrollerBlock overflow-y-auto px-2 pb-2"
+        class="h-full scroller-block overflow-y-auto px-2 pb-2"
       >
         <div
           v-if="hasNoResults"

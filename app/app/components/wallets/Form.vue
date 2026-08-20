@@ -190,7 +190,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="bottomSheetContentInside scrollerBlock">
+      <div class="bottom-sheet-content-inside scroller-block">
         <ColorPalette
           :activeColor="props.walletForm.color"
           isWallet

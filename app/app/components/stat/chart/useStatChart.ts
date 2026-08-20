@@ -4,10 +4,40 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
+import { formatCompactChartAmount } from '~/components/stat/chart/format'
 import { seriesOptions } from '~/components/stat/chart/options'
 
 export function useStatChart() {
   const { t } = useI18n()
+
+  function createAverageMarkLine(average: number, color?: string) {
+    return {
+      data: [{
+        name: 'average',
+        yAxis: Math.abs(average),
+      }],
+      index: 0,
+      label: {
+        align: 'left',
+        color,
+        distance: 6,
+        fontFamily: 'var(--font-secondary)',
+        formatter: ({ value }: { value: number }) => formatCompactChartAmount(value),
+        position: 'end',
+        show: true,
+        textBorderColor: 'transparent',
+        textBorderWidth: 0,
+        textShadowBlur: 0,
+      },
+      lineStyle: {
+        color,
+        type: 'solid',
+      },
+      silent: false,
+      symbol: false,
+      z: 0,
+    }
+  }
 
   const chartTypeOptions = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
     icon: 'lucide:chart-column',
@@ -25,31 +55,18 @@ export function useStatChart() {
 
   function createSeriesItem(typeItem: SeriesSlug, data: TotalReturns[], average?: number | false): ChartSeries {
     let markLine = {}
-    if (average) {
-      markLine = {
-        data: [{
-          name: 'average',
-          yAxis: Math.abs(average),
-        }],
-        index: 0,
-        label: {
-          show: false,
-        },
-        lineStyle: {
-          color: seriesOptions[typeItem]?.markLineColor ?? seriesOptions[typeItem]?.color,
-          type: 'solid',
-        },
-        silent: false,
-        symbol: false,
-      }
-    }
+    if (average)
+      markLine = createAverageMarkLine(average, seriesOptions[typeItem]?.color as string | undefined)
 
     return {
+      averageMode: average ? 'series' : undefined,
       color: seriesOptions[typeItem]?.color as string | undefined,
       data: data.map(i => Math.abs(i[typeItem])),
       markLine,
+      markLineValueType: typeItem,
       name: t(`money.${typeItem}`),
       type: seriesOptions[typeItem]?.type ?? 'bar',
+      valueTypes: data.map(() => typeItem),
     }
   }
 
@@ -87,6 +104,7 @@ export function useStatChart() {
 
   return {
     chartTypeOptions,
+    createAverageMarkLine,
     createSeriesItem,
     withMarkArea,
   }

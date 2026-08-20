@@ -47,17 +47,17 @@ const averageAmount = computed(() => {
     return total.value.income / averageConfig.value
   if (props.statTabSlug === 'expense')
     return total.value.expense / averageConfig.value
-  return total.value.sum / averageConfig.value
+  return total.value.net / averageConfig.value
 })
 
 const amountType = computed(() => {
-  if (props.statTabSlug === 'netIncome')
+  if (props.statTabSlug === 'net')
     return getTrnTypeByAmount(averageAmount.value)
   return props.statTabSlug === 'income' ? TrnType.Income : TrnType.Expense
 })
 
 const amountColorize = computed(() => {
-  if (props.statTabSlug === 'netIncome')
+  if (props.statTabSlug === 'net')
     return averageAmount.value > 0 ? 'income' : 'expense'
   return props.statTabSlug as 'expense' | 'income'
 })

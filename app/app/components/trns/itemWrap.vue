@@ -51,9 +51,11 @@ const statSnapshot = computed(() => {
   return {
     config: statConfig.config.value,
     date: statDate.params.value,
+    filteredType: reportType.value === 'combined' ? 'net' as const : reportType.value,
     reportType: reportType.value,
     trns: {
       filterBy: statTrnsViewState.filterBy.value,
+      isShowHistoryWithDesc: statTrnsViewState.isShowHistoryWithDesc?.value ?? false,
       isShowWithDesc: statTrnsViewState.isShowWithDesc.value,
     },
   }

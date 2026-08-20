@@ -15,12 +15,12 @@ const zeroTotal: TotalReturns = {
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
-  sum: 0,
+  net: 0,
   sumTransfers: 0,
 }
 
 function makeTotal(income: number, expense: number): TotalReturns {
-  return { ...zeroTotal, expense, income, sum: income - expense }
+  return { ...zeroTotal, expense, income, net: income - expense }
 }
 
 function makeTrn(date: number, type: TrnType = TrnType.Expense): TrnItem {
@@ -84,7 +84,7 @@ describe('bucketTrnsByIntervals', () => {
     )
 
     expect(result[0]!.total.income).toBe(1000)
-    expect(result[0]!.total.sum).toBe(1000)
+    expect(result[0]!.total.net).toBe(1000)
     expect(result[1]!.total.income).toBe(0)
   })
 

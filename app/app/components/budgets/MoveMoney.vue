@@ -84,7 +84,7 @@ function onConfirm(close: () => void) {
         {{ t('budgets.move.title') }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-4 px-3 py-2">
+      <div class="bottom-sheet-content-inside grid scroller-block content-start gap-4 px-3 py-2">
         <!-- Destination -->
         <div class="flex items-center justify-between gap-2 rounded-md bg-elevated/30 px-3 py-2">
           <span class="text-2xs text-muted">{{ t('budgets.move.into') }}</span>
@@ -144,7 +144,7 @@ function onConfirm(close: () => void) {
         </FormElement>
       </div>
 
-      <div class="bottomSheetContentBottom">
+      <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
           class="sm:max-w-xs"
           rounded

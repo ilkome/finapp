@@ -61,7 +61,7 @@ watch(isShow, async (v) => {
           <div class="swiper-wrapper">
             <!-- Main -->
             <div class="swiper-slide h-full">
-              <div class="grid h-full scrollerBlock grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
+              <div class="grid h-full scroller-block grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
                   class="pb-0!"
@@ -82,7 +82,7 @@ watch(isShow, async (v) => {
               class="swiper-slide"
               :style="{ height: '100%' }"
             >
-              <div class="h-full scrollerBlock overflow-y-auto overscroll-contain">
+              <div class="h-full scroller-block overflow-y-auto overscroll-contain">
                 <UiTitleSection class="sticky top-0 z-10 bg-default px-4 pt-5 pb-3 md:text-xl">
                   {{ t('trns.history') }}
                 </UiTitleSection>

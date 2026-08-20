@@ -48,7 +48,7 @@ const categoriesItems: Categories = Object.fromEntries(
 
 function computeTotalForTrnsIds(ids: TrnId[]) {
   const expense = ids.reduce((acc, id) => acc + (amounts[id] ?? 0), 0)
-  return { expense, income: 0, sum: -expense }
+  return { expense, income: 0, net: -expense }
 }
 
 /** All non-transfer trns inside a single interval. */
@@ -61,7 +61,7 @@ function singleInterval(trnIds: TrnId[]): IntervalData[] {
       expenseTransfers: 0,
       income: 0,
       incomeTransfers: 0,
-      sum: 0,
+      net: 0,
       sumTransfers: 0,
     },
     trnsIds: trnIds,
@@ -115,6 +115,37 @@ describe('aggregateCategoryTotals', () => {
     expect(categoryTotals.c03).toBeUndefined()
     expect(categoryTotals.c02).toBe(90)
   })
+
+  it('uses net income for categories in the combined mode', () => {
+    const cardsTrnsItems = {
+      expense: { categoryId: 'cards' },
+      foodExpense: { categoryId: 'food' },
+      income: { categoryId: 'cards' },
+    } as unknown as Record<TrnId, Pick<TrnItem, 'categoryId'>>
+    const computeCardsTotal = (ids: TrnId[]) => {
+      const expense = (ids.includes('expense') ? 1290 : 0) + (ids.includes('foodExpense') ? 10000 : 0)
+      const income = ids.includes('income') ? 6711 : 0
+      return { expense, income, net: income - expense }
+    }
+    const intervals = singleInterval(['expense', 'foodExpense', 'income'])
+
+    const series = buildCategoriesSeries({
+      categoriesItems: {
+        cards: { color: '#00ff00', icon: 'lucide:wallet-cards', name: 'Cards' },
+        food: { color: '#ff0000', icon: 'lucide:utensils', name: 'Food' },
+      } as unknown as Categories,
+      chartType: 'bar',
+      computeTotalForTrnsIds: computeCardsTotal,
+      intervals,
+      isGrouped: false,
+      trnsItems: cardsTrnsItems,
+      type: 'net',
+    })
+
+    expect(series).toHaveLength(2)
+    expect(series.find(item => item.name === 'Cards')).toMatchObject({ data: [5421] })
+    expect(series.find(item => item.name === 'Food')).toMatchObject({ data: [10000], valueTypes: ['expense'] })
+  })
 })
 
 describe('buildCategoriesPieData', () => {
@@ -155,7 +186,7 @@ describe('buildCategoriesPieData', () => {
     expect(series.map(item => item.color)).toEqual(expectedColors)
   })
 
-  it('selects the largest five separately in every chart interval', () => {
+  it('uses one top five for the range and groups every remaining value as Other', () => {
     const intervals = [
       singleInterval(['t01', 't02', 't03', 't04', 't05', 't06'])[0]!,
       singleInterval(['t05', 't06', 't07', 't08', 't09', 't10'])[0]!,
@@ -169,10 +200,10 @@ describe('buildCategoriesPieData', () => {
     const other = series.find(item => item.name === 'Other')
 
     expect(series.filter(item => item.name !== 'Other' && item.data[0]! > 0)).toHaveLength(5)
-    expect(series.filter(item => item.name !== 'Other' && item.data[1]! > 0)).toHaveLength(5)
+    expect(series.filter(item => item.name !== 'Other' && item.data[1]! > 0)).toHaveLength(2)
     expect(series.find(item => item.name === 'Cat 1')?.icon).toBe('lucide:circle-0')
     expect(other?.icon).toBe('lucide:ellipsis')
-    expect(other?.data).toEqual([50, 10])
+    expect(other?.data).toEqual([70, 100])
   })
 
   it('matches the bar series totals (single source of truth)', () => {

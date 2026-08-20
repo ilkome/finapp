@@ -26,7 +26,7 @@ const isLaptop = useIsLaptop()
     :bottomSheetStyle="props.bottomSheetStyle"
     :isOpen="isShow"
     :title="props.title"
-    dragClassesCustom="bottomSheetDragClassesCustom h-full"
+    dragClassesCustom="bottom-sheet-drag-classes-custom h-full"
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"

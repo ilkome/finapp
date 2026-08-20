@@ -13,7 +13,7 @@ export function getTypesMapping(slug: SeriesSlugSelected | StatReportType): TrnT
     combined: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
     expense: [TrnType.Expense],
     income: [TrnType.Income],
-    netIncome: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
+    net: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
   }
 
   return typeMapping[slug]
@@ -33,7 +33,7 @@ export function getSelectedType(
 }
 
 /**
- * Resolve the type used for sum display.
+ * Resolve the type used for total display.
  */
 export function getSelectedTypeForSum(
   reportType: StatReportType,
@@ -53,7 +53,7 @@ export function getTypesToShow(
   type: SeriesSlugSelected | undefined,
 ): SeriesSlug[] {
   if (reportType === 'combined') {
-    if (filteredType === 'netIncome')
+    if (filteredType === 'net')
       return ['income', 'expense']
     if (filteredType === 'income')
       return ['income']
@@ -64,7 +64,7 @@ export function getTypesToShow(
   if (reportType === 'expense' || reportType === 'income')
     return [reportType]
 
-  if (type && type !== 'netIncome')
+  if (type && type !== 'net')
     return [type]
   return ['income', 'expense']
 }

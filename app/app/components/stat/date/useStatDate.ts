@@ -14,6 +14,7 @@ export function useStatDate({
   key,
   legacyKey,
   maxRange,
+  overrideStoredWithInitParams,
   queryParams,
   storage,
 }: UseStatDateOptions) {
@@ -30,7 +31,9 @@ export function useStatDate({
     mergeDefaults: storageValue => normalizeStoredStatDateParams(storageValue, defaults),
   })
 
-  params.value = normalizeStoredStatDateParams(params.value, defaults)
+  params.value = overrideStoredWithInitParams && initParams
+    ? normalizeStoredStatDateParams(initParams, defaults)
+    : normalizeStoredStatDateParams(params.value, defaults)
 
   const modal = ref({
     dateSelector: false,

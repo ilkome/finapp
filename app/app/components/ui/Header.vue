@@ -45,7 +45,7 @@ function onBack() {
       data-ui-header-main
       class="grid min-h-12 max-w-7xl items-center border-accented"
       :class="[
-        compactBottom ? 'px-2 pt-2 pb-px md:p-2 lg:p-4' : 'p-2 lg:p-4',
+        compactBottom ? 'px-2 pt-2 pb-px lg:px-4' : 'p-2 lg:p-4',
         compactBottom ? '' : 'md:border-b',
         sticky && mobileAfterScrolls && 'sticky top-0 z-20 bg-default/90 backdrop-blur md:static md:bg-transparent md:backdrop-blur-none',
       ]"

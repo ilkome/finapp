@@ -4,12 +4,14 @@ import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
+import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   baseCategoryViews: CategoryViews
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   filteredCategoriesIds: CategoryId[]
+  focusedCategoryId?: CategoryId
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
 }>()
@@ -59,6 +61,16 @@ const mergedPreCategoriesIds = computed(() => {
 })
 
 const roundCategories = computed(() => {
+  if (props.focusedCategoryId) {
+    return filterFocusedCategories(
+      props.baseCategoryViews.ungrouped,
+      categoriesStore.getChildrenIds(props.focusedCategoryId),
+    )
+  }
+
+  if (props.isOneCategory)
+    return props.baseCategoryViews.ungrouped
+
   const views = addEmptyCategoryViews(
     props.baseCategoryViews,
     categoriesStore.items,

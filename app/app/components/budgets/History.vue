@@ -54,7 +54,7 @@ function pct(row: Row) {
         {{ t('budgets.history.title') }} · {{ name }}
       </UiTitleModal>
 
-      <div class="bottomSheetContentInside grid scrollerBlock content-start gap-3 px-3 py-2">
+      <div class="bottom-sheet-content-inside grid scroller-block content-start gap-3 px-3 py-2">
         <div v-if="!rows.length" class="py-6 text-center text-sm text-muted">
           {{ t('budgets.history.empty') }}
         </div>

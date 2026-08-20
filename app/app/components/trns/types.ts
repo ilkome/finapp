@@ -22,11 +22,13 @@ export type TrnsViewType = typeof trnsViewTypes[number]
 
 export type TrnsListFilterSnapshot = {
   filterBy: TrnsViewType
+  isShowHistoryWithDesc?: boolean
   isShowWithDesc: boolean
 }
 
 export type TrnsListFilterState = {
   filterBy: Ref<TrnsViewType>
+  isShowHistoryWithDesc?: Ref<boolean>
   isShowWithDesc: Ref<boolean>
 }
 

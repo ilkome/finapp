@@ -24,7 +24,7 @@ export function useCategoriesBreakdown(props: {
 
   const views = computed(() => props.baseCategoryViews ?? buildCategoryViews({
     categoriesItems: categoriesStore.items,
-    computeValue: ids => computeTotalForTrnsIds(ids).sum,
+    computeValue: ids => computeTotalForTrnsIds(ids).net,
     excludedCategoriesIds: props.excludedCategoriesIds,
     trnsIds: props.selectedTrnsIds ?? [],
     trnsItems: trnsStore.items ?? {},
