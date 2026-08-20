@@ -70,7 +70,7 @@ export function useStatChart() {
     }
   }
 
-  function withMarkArea(series: ChartSeries[], markedDate: DateUTC, chartType?: ChartType) {
+  function withMarkArea(series: ChartSeries[], markedDate: DateUTC, _chartType?: ChartType) {
     if (!markedDate)
       return series
 
@@ -82,18 +82,12 @@ export function useStatChart() {
       itemStyle: { color: 'var(--chart-line)', opacity: 1 },
     }
 
-    if (chartType === 'bar') {
-      if (series[0])
-        series[0].markArea = markAreaData
-      return series
-    }
-
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
     const markAreaSeries: ChartSeries = {
       data: [],
       markArea: markAreaData,
       markedArea: 'markedArea',
-      name: 'markArea',
+      name: '',
       type: 'bar',
     }
 
