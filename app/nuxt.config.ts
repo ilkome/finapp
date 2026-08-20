@@ -318,8 +318,15 @@ export default defineNuxtConfig({
 
   vite: {
     optimizeDeps: {
-      // @powersync/web ships web workers + WASM that must not be pre-bundled.
-      exclude: ['@powersync/web'],
+      // Keep PowerSync's main thread and shared workers on the same module graph. Mixing
+      // source-loaded @powersync/web with optimized transitive modules can leave a dev
+      // shared worker connected to clients from an obsolete Vite dependency generation.
+      exclude: [
+        '@powersync/common',
+        '@powersync/shared-internals',
+        '@powersync/web',
+        'comlink',
+      ],
       include: [
         'localforage',
         '@supabase/supabase-js',

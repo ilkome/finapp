@@ -21,6 +21,7 @@ export function useSupabase(): SupabaseClient {
       auth: {
         autoRefreshToken: true,
         detectSessionInUrl: true,
+        flowType: 'pkce',
         persistSession: true,
         // Fixed key the synchronous route gate (useAuthSession) reads directly.
         storageKey: AUTH_STORAGE_KEY,
