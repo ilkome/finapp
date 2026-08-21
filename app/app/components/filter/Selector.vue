@@ -1,0 +1,49 @@
+<script setup lang="ts">
+import { filterKey } from '~/components/filter/injectionKeys'
+
+const props = defineProps<{
+  isShowCategories?: boolean
+  isShowWallets?: boolean
+  labelMode?: boolean
+}>()
+
+const filter = inject(filterKey)!
+const { t } = useI18n()
+
+const isLaptop = useIsLaptop()
+</script>
+
+<template>
+  <div :class="props.labelMode ? 'grid' : 'flex items-center'">
+    <FilterSelectorItem
+      v-if="props.isShowWallets"
+      :hasSelection="filter?.walletsIds.value.length > 0"
+      :labelMode="props.labelMode"
+      :title="t('wallets.filter')"
+      icon="hugeicons:wallet-01"
+    >
+      <WalletsSelector
+        :filterAtTop="isLaptop"
+        :selectedIds="filter?.walletsIds.value"
+        class="min-w-80 px-2"
+        @selected="filter.toggleWalletId"
+      />
+    </FilterSelectorItem>
+
+    <FilterSelectorItem
+      v-if="props.isShowCategories"
+      :hasSelection="filter?.categoriesIds.value.length > 0"
+      :labelMode="props.labelMode"
+      :title="t('categories.filter')"
+      icon="hugeicons:folder-library"
+    >
+      <CategoriesSelectorTree
+        :selectedIds="filter?.categoriesIds.value"
+        class="min-w-80"
+        @selected="filter.toggleCategoryId"
+        @setCategories="filter.setCategories"
+        @removeCategories="filter.removeCategories"
+      />
+    </FilterSelectorItem>
+  </div>
+</template>

@@ -1,7 +1,9 @@
+import type { Range } from '~~/utils/date/types'
+
 import { differenceInDays, differenceInMonths, differenceInWeeks } from 'date-fns'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { Range, StatDateParams } from '~/components/date/types'
+import type { StatDateParams } from '~/components/stat/date/types'
 import type { IntervalData } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
@@ -54,10 +56,10 @@ export function bucketTrnsByIntervals(
  * Returns only non-zero entries.
  */
 export function computeAverageTotal(
-  sum: number,
+  net: number,
   dateRange: Range,
 ): Partial<Record<'day' | 'week' | 'month', number>> | undefined {
-  if (sum === 0 || differenceInDays(dateRange.end, dateRange.start) < 2)
+  if (net === 0 || differenceInDays(dateRange.end, dateRange.start) < 2)
     return undefined
 
   const dif = {
@@ -67,13 +69,13 @@ export function computeAverageTotal(
   }
 
   const items: Partial<Record<'day' | 'week' | 'month', number>> = {
-    day: sum / dif.day,
+    day: net / dif.day,
   }
 
   if (dif.week > 1)
-    items.week = sum / dif.week
+    items.week = net / dif.week
   if (dif.month > 1)
-    items.month = sum / dif.month
+    items.month = net / dif.month
 
   return items
 }
@@ -81,7 +83,7 @@ export function computeAverageTotal(
 /**
  * Check if the current period represents a single day.
  */
-export function isPeriodOneDay(params: Pick<StatDateParams, 'intervalsBy' | 'intervalSelected' | 'rangeBy' | 'rangeDuration'>): boolean {
+export function isPeriodOneDay(params: Pick<StatDateParams, 'granularityBy' | 'intervalSelected' | 'rangeBy' | 'rangeDuration'>): boolean {
   return (params.rangeBy === 'day' && params.rangeDuration === 1)
-    || (params.intervalsBy === 'day' && params.intervalSelected !== -1)
+    || (params.granularityBy === 'day' && params.intervalSelected !== -1)
 }

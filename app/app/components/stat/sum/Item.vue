@@ -7,9 +7,9 @@ const props = defineProps<{
   amount: number
   averageTotal?: Record<string, number>
   isActive?: boolean
-  plain?: boolean
   title?: string
   type: SeriesSlugSelected
+  variant?: 'default' | 'plain' | 'summary'
 }>()
 
 const emit = defineEmits<{
@@ -23,14 +23,16 @@ const currenciesStore = useCurrenciesStore()
 <template>
   <div
     :class="cn(
-      props.plain
+      props.variant === 'plain'
         ? 'px-1 pb-1'
-        : 'flex-1 flex-wrap rounded-sm border border-transparent bg-elevated/30 px-3 py-2 @2xl/stat:max-w-max',
-      props.isActive && 'bg-elevated/30 border-primary/40',
+        : props.variant === 'summary'
+          ? 'relative flex h-14 items-center rounded-sm border border-transparent bg-elevated/30 px-3 py-0.5'
+          : 'flex-1 flex-wrap rounded-sm border border-transparent bg-elevated/30 px-3 py-2 @2xl/stat:max-w-max',
+      props.isActive && 'border-primary/40 bg-elevated/30',
     )"
     @click="(e: Event) => emit('click', e)"
   >
-    <div class="flex items-end gap-5">
+    <div :class="props.variant === 'summary' ? 'flex w-full items-center gap-5' : 'flex items-end gap-5'">
       <div class="grid gap-1">
         <UiTextSubtitle>
           {{ props.title ?? t(`money.${props.type}`) }}
@@ -40,9 +42,9 @@ const currenciesStore = useCurrenciesStore()
           :amount="props.amount"
           :currencyCode="currenciesStore.base"
           :class="{
-            '!text-income-1': props.amount > 0 && props.type !== 'netIncome',
-            '!text-expense-1': props.amount < 0 && props.type !== 'netIncome',
-            '!text-2xl': props.plain,
+            'text-income-1!': props.amount > 0 && props.type !== 'net',
+            'text-expense-1!': props.amount < 0 && props.type !== 'net',
+            'text-2xl!': props.variant === 'plain',
           }"
           align="left"
           variant="xl"
@@ -58,7 +60,7 @@ const currenciesStore = useCurrenciesStore()
         <div
           v-for="(averageItem, slug) in props.averageTotal"
           :key="slug"
-          class="grid gap-1 pb-[2px]"
+          class="grid gap-1 pb-0.5"
         >
           <UiTextSubtitle>{{ t('money.average') }} <br> {{ t(`dates.${slug}.simple`) }}</UiTextSubtitle>
 
@@ -66,8 +68,8 @@ const currenciesStore = useCurrenciesStore()
             :amount="type === 'expense' ? -averageItem : averageItem"
             :currencyCode="currenciesStore.base"
             :class="{
-              '!text-income-1': type === 'income',
-              '!text-expense-1': type === 'expense',
+              'text-income-1!': type === 'income',
+              'text-expense-1!': type === 'expense',
             }"
             align="left"
           />
