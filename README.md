@@ -101,10 +101,10 @@ pnpm install
 
 ### Configure the app
 
-Copy the app environment example and fill in your Supabase and PowerSync values:
+Copy the app environment example for the local Nuxt client and fill in your Supabase and PowerSync values:
 
 ```bash
-cp app/.env.example app/.env
+cp app/.env.example app/.env.local
 ```
 
 Required environment variables:
@@ -173,15 +173,23 @@ The app workspace uses several `.env` files (all gitignored except `.env.example
 
 | File | Purpose |
 | --- | --- |
-| `app/.env` | Dev values, read by Nuxt |
-| `app/.env.prod` | Prod values, used by `pnpm dev:prod` |
+| `app/.env` | Local Supabase CLI secrets, never read by the Nuxt scripts |
+| `app/.env.local` | Local Nuxt client, used by `pnpm dev:local` |
+| `app/.env.cloud` | Cloud dev services, used by `pnpm dev` and `pnpm dev:cloud` |
+| `app/.env.production` | Production services, used by `pnpm dev:production` |
 
 ## Development
 
-With the local backend running, start the Nuxt app:
+The default command uses the cloud dev services:
 
 ```bash
 pnpm dev
+```
+
+With the local backend running, select it explicitly:
+
+```bash
+pnpm dev:local
 ```
 
 The app runs at `http://localhost:3050`.
@@ -189,7 +197,7 @@ The app runs at `http://localhost:3050`.
 Run the documentation site:
 
 ```bash
-pnpm docs:dev
+pnpm dev:docs
 ```
 
 The docs run at `http://localhost:3051`.
@@ -204,23 +212,30 @@ pnpm dev:all
 
 | Command | Description |
 | --- | --- |
-| `pnpm dev` | Start the app dev server |
-| `pnpm docs:dev` | Start the documentation dev server |
+| `pnpm dev` | Start the app with cloud dev services |
+| `pnpm dev:cloud` | Explicit alias for the cloud dev services |
+| `pnpm dev:local` | Start the app with the local backend |
+| `pnpm dev:production` | Start the dev server against production services |
+| `pnpm dev:docs` | Start the documentation dev server |
 | `pnpm dev:all` | Start app and docs dev servers in parallel |
 | `pnpm build` | Build all workspace packages that define `build` |
-| `pnpm generate` | Generate the app for static hosting |
-| `pnpm docs:build` | Build the documentation site |
+| `pnpm build:app` | Build the app for static hosting |
+| `pnpm build:docs` | Build the documentation site |
 | `pnpm lint` | Run root-owned linting for the monorepo |
 | `pnpm lint:app` | Run linting for the app package |
 | `pnpm lint:docs` | Run linting for the docs package |
 | `pnpm lint:fix` | Run linting with automatic fixes |
-| `pnpm test` | Run tests in workspace packages |
+| `pnpm test` | Run unit tests once in workspace packages |
+| `pnpm test:watch` | Run app unit tests in watch mode |
+| `pnpm test:e2e` | Run demo E2E tests |
+| `pnpm test:e2e:prod` | Run the production-build E2E smoke test |
 | `pnpm typecheck` | Run type checks in workspace packages |
+| `pnpm verify` | Run the non-mutating validation suite |
 
 ## Documentation
 
 User guides, development notes, and technical reference live in [`docs/content`](docs/content). 
-Start the docs site with `pnpm docs:dev`.
+Start the docs site with `pnpm dev:docs`.
 
 ## Previous Version
 
