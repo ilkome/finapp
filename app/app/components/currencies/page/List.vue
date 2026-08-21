@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import { currencies } from '~/components/currencies/currencies'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useCurrencyName } from '~/components/currencies/useCurrencyName'
@@ -89,6 +91,11 @@ const cryptoList = computed(() => {
 const activeList = computed(() => {
   return activeTab.value === 'fiat' ? fiatList.value : cryptoList.value
 })
+
+const tabItems = computed<TabsItem[]>(() => [
+  { label: t('currencies.page.fiat'), value: 'fiat' },
+  { label: t('currencies.page.crypto'), value: 'crypto' },
+])
 </script>
 
 <template>
@@ -109,7 +116,7 @@ const activeList = computed(() => {
         {{ t('currencies.page.showUsed') }}
       </UiTitleCollapse>
 
-      <div v-if="usedList.length === 0" class="text-muted py-6 text-center text-sm">
+      <div v-if="usedList.length === 0" class="py-6 text-center text-sm text-muted">
         {{ t('currencies.list.notFound') }}
       </div>
 
@@ -127,26 +134,16 @@ const activeList = computed(() => {
       </div>
 
       <!-- Fiat / Crypto tabs -->
-      <UiTabsScroll class="mt-4 mb-2">
-        <UiTabsItemPill
-          :isActive="activeTab === 'fiat'"
-          variant="outline"
-          @click="activeTab = 'fiat'"
-        >
-          {{ t('currencies.page.fiat') }}
-        </UiTabsItemPill>
+      <UiTabs
+        v-model="activeTab"
+        isEqual
+        size="xs"
+        class="mt-4 mb-2"
+        :items="tabItems"
+      />
 
-        <UiTabsItemPill
-          :isActive="activeTab === 'crypto'"
-          variant="outline"
-          @click="activeTab = 'crypto'"
-        >
-          {{ t('currencies.page.crypto') }}
-        </UiTabsItemPill>
-      </UiTabsScroll>
-
-      <div v-if="activeList.length === 0" class="text-muted py-6 text-center text-sm">
-        {{ t('currencies.list.notFound') }}
+      <div v-if="activeList.length === 0" class="py-6 text-center text-sm text-muted">
+        {{ allRateCodes.length === 0 ? t('currencies.list.noRates') : t('currencies.list.notFound') }}
       </div>
 
       <div v-else>

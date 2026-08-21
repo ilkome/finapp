@@ -28,7 +28,7 @@ const contextMenuItems = computed(() => [[{
     <UiElement
       :lineWidth="props.isBase ? 6 : 0"
       class="group"
-      insideClasses="!min-h-[44px]"
+      insideClasses="min-h-11!"
     >
       <div class="flex items-center justify-between gap-3">
         <div class="flex items-center gap-3">
@@ -36,7 +36,7 @@ const contextMenuItems = computed(() => [[{
             {{ props.code }}
           </div>
 
-          <div class="text-muted text-sm">
+          <div class="text-sm text-muted">
             {{ props.name }}
             <span v-if="props.symbol" class="ml-1 opacity-60">
               {{ props.symbol }}
@@ -46,7 +46,7 @@ const contextMenuItems = computed(() => [[{
 
         <div class="shrink-0 text-right text-sm tabular-nums">
           <template v-if="props.isBase">
-            <span class="text-muted text-xs opacity-60">
+            <span class="text-xs text-muted opacity-60">
               {{ t('currencies.base') }}
             </span>
           </template>

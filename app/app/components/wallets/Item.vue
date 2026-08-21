@@ -4,6 +4,10 @@ import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
+  // Classes for the visible item element. Use this (not a fallthrough `class`)
+  // so it reaches the body in the context-menu branch, whose root is a
+  // renderless ContextMenuRoot that would otherwise swallow it.
+  bodyClass?: string
   compact?: boolean
   contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
@@ -13,6 +17,7 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
+  rounded?: boolean
   to?: string
   wallet: WalletItemComputed
   walletId: WalletId
@@ -26,6 +31,7 @@ const emit = defineEmits<{
 <template>
   <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
     <WalletsItemBody
+      :class="props.bodyClass"
       :activeItemId="props.activeItemId"
       :compact="props.compact"
       :insideClasses="props.insideClasses"
@@ -35,6 +41,7 @@ const emit = defineEmits<{
       :isShowRate="props.isShowRate"
       :isSort="props.isSort"
       :lineWidth="props.lineWidth"
+      :rounded="props.rounded"
       :to="props.to"
       :wallet="props.wallet"
       :walletId="props.walletId"
@@ -44,6 +51,7 @@ const emit = defineEmits<{
 
   <WalletsItemBody
     v-else
+    :class="props.bodyClass"
     :activeItemId="props.activeItemId"
     :compact="props.compact"
     :insideClasses="props.insideClasses"
@@ -53,6 +61,7 @@ const emit = defineEmits<{
     :isShowRate="props.isShowRate"
     :isSort="props.isSort"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :wallet="props.wallet"
     :walletId="props.walletId"
     @click="emit('click', $event)"

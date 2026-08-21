@@ -1,46 +1,80 @@
 @utility interactive {
-  @apply select-none hover:bg-elevated/50;
+  /* The project's custom `hover` variant (main.css) is declared after this file is
+     imported, so it isn't resolvable inside @apply here. Inline its expansion
+     (hover-capable pointer + active) directly to stay import-order-independent. */
+  @apply select-none;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @apply bg-elevated/50;
+    }
+  }
+
+  &:active {
+    @apply bg-elevated/50;
+  }
 }
 
 @utility flex-center {
   @apply flex items-center justify-center;
 }
 
-@utility pageWrapper {
+@utility stat-layout {
+  --stat-column-gap: 4rem;
+}
+
+@utility stat-two-column-grid {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--stat-column-gap);
+}
+
+@utility stat-responsive-two-column-grid {
+  display: grid;
+  gap: 1.25rem;
+
+  @container stat (min-width: 48rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--stat-column-gap);
+  }
+}
+
+@utility stat-column-width {
+  width: 100%;
+
+  @container main (min-width: 48rem) {
+    width: calc((100% - var(--stat-column-gap)) / 2);
+  }
+}
+
+@utility page-wrapper {
   @apply @xl/page:max-w-2xl grow px-3 @md/page:px-4;
 }
 
-@utility bottomSheetDragClassesCustom {
+@utility bottom-sheet-drag-classes-custom {
   @apply bg-default max-w-md rounded-xl;
 }
 
-@utility bottomSheetContent {
+@utility bottom-sheet-content {
   @apply grid h-full max-h-[98dvh] grid-rows-[auto_1fr_auto] overflow-hidden;
   padding-bottom: calc(env(safe-area-inset-bottom) - 22px);
 }
 
-@utility bottomSheetContentInside {
+@utility bottom-sheet-content-inside {
   @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-2 py-px;
 }
 
-@utility bottomSheetContentBottom {
+@utility bottom-sheet-content-bottom {
   @apply flex items-center justify-center p-2;
 }
 
-@utility scrollerBlock {
-  &::-webkit-scrollbar {
-    @apply w-1.5 h-1.5;
-  }
-
-  &::-webkit-scrollbar-track {
-    @apply bg-transparent rounded-[10px];
-  }
-
-  &::-webkit-scrollbar-thumb {
-    @apply bg-gray-500 rounded-[10px];
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-600;
-  }
+/* `scroller-block` paints nothing: scroll areas keep the platform's own overlay
+   scrollbar, same as the page itself. The class stays as a behavioural marker -
+   useBottomSheetDrag queries it to decide whether a drag belongs to the sheet or
+   to the inner scroll, and to reset scrollTop on open. Do not delete the class
+   from markup, and do not restyle the bar here. `scrollbar-width: auto` is the
+   initial value; it is here only so the utility stays declared for tooling. */
+@utility scroller-block {
+  scrollbar-width: auto;
 }

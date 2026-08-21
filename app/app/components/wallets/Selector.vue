@@ -14,6 +14,7 @@ const props = defineProps<{
   disabledIds?: WalletId[]
   filterAtTop?: boolean
   hide?: () => void
+  hideSearch?: boolean
   selectedIds?: WalletId[]
   withHeader?: boolean
 }>()
@@ -26,9 +27,7 @@ const { t } = useI18n()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 
 const search = ref('')
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
@@ -96,7 +95,7 @@ function onClickNew() {
 }
 
 onMounted(async () => {
-  if (!props.withHeader)
+  if (!props.withHeader || props.hideSearch)
     return
   await nextTick()
   searchInput.value?.focus()
@@ -107,13 +106,15 @@ onMounted(async () => {
   <div class="flex h-full min-h-0 flex-col overflow-hidden">
     <div
       v-if="props.withHeader"
-      class="bg-default flex items-center gap-2 pt-2 pb-2"
+      class="flex items-center gap-2 bg-default py-2"
+      :class="{ 'justify-end': props.hideSearch }"
     >
       <input
+        v-if="!props.hideSearch"
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('wallets.search.placeholder')"
       >
       <UiActionButton
@@ -126,7 +127,7 @@ onMounted(async () => {
 
     <div class="relative grid min-h-0 flex-1 overflow-hidden">
       <div
-        class="scrollerBlock h-full overflow-y-auto py-px"
+        class="h-full scroller-block overflow-y-auto py-px"
         :class="{
           'pb-16': !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
@@ -134,7 +135,7 @@ onMounted(async () => {
       >
         <div
           v-if="hasNoMatches"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('search.noResults') }}
         </div>
@@ -145,11 +146,11 @@ onMounted(async () => {
         >
           <div
             v-if="props.selectedIds !== undefined"
-            class="hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent"
+            class="flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
             @click="onClickWallet(walletId)"
           >
             <div
-              class="flex-center relative w-10 shrink-0 self-stretch pl-2"
+              class="relative flex-center w-10 shrink-0 self-stretch pl-2"
               @click.stop
             >
               <div
@@ -167,7 +168,7 @@ onMounted(async () => {
               :walletId
               :wallet="walletsStore.itemsComputed[walletId]!"
               :lineWidth="4"
-              class="group/item min-w-0 flex-1"
+              bodyClass="group/item min-w-0 flex-1"
               isShowIcon
               isShowCreditLimit
             />
@@ -200,7 +201,7 @@ onMounted(async () => {
           class="pointer-events-none absolute left-0 z-20 w-full px-2"
           :class="props.filterAtTop ? 'top-0' : 'bottom-2'"
         >
-          <div class="border-default/80 bg-default/20 pointer-events-auto rounded-2xl border p-1 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
+          <div class="pointer-events-auto rounded-2xl border border-default/80 bg-default/20 p-1 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
             <WalletsCurrencies
               :currencyFiltered
               @selectFilterCurrency="code => currencyFiltered = code"

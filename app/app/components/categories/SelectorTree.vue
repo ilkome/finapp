@@ -7,6 +7,10 @@ import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpa
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
 const props = defineProps<{
+  // Flows inside a parent scroller instead of owning height/scroll.
+  embedded?: boolean
+  // Hides the built-in search (a parent provides a global one).
+  hideSearch?: boolean
   selectedIds?: CategoryId[]
 }>()
 
@@ -110,19 +114,28 @@ function onRootClick(rootId: CategoryId) {
 }
 
 onMounted(async () => {
+  if (props.hideSearch)
+    return
   await nextTick()
   searchInput.value?.focus()
 })
 </script>
 
 <template>
-  <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-2">
+  <div :class="props.embedded ? 'relative flex flex-col' : 'relative flex h-full min-h-0 flex-col overflow-hidden'">
+    <div
+      class="flex items-center gap-2 px-3 py-2"
+      :class="[
+        props.embedded ? '' : 'sticky top-0 z-20 bg-default',
+        props.hideSearch ? 'justify-end' : '',
+      ]"
+    >
       <input
+        v-if="!props.hideSearch"
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">
@@ -145,10 +158,10 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4">
+    <div :class="props.embedded ? 'px-3 pt-1 pb-4' : 'scroller-block h-full overflow-y-auto px-3 pt-1 pb-4'">
       <div
         v-if="hasNoMatches"
-        class="text-muted p-4 text-center"
+        class="p-4 text-center text-muted"
       >
         {{ t('categories.form.children.noMatches') }}
       </div>
@@ -158,9 +171,9 @@ onMounted(async () => {
           v-for="rootId in filteredRootIds"
           :key="rootId"
         >
-          <div class="group hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent">
+          <div class="group flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent">
             <div
-              class="flex-center relative w-8 shrink-0 self-stretch pl-2"
+              class="relative flex-center w-8 shrink-0 self-stretch pl-2"
               @click.stop
             >
               <div
@@ -197,11 +210,11 @@ onMounted(async () => {
               <div
                 v-for="childId in visibleChildrenIds(rootId)"
                 :key="childId"
-                class="group hover:bg-elevated/50 flex items-center rounded-sm select-none [&_.uiElement:hover]:bg-transparent"
+                class="group flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
                 @click="emit('selected', childId)"
               >
                 <div
-                  class="flex-center relative w-8 shrink-0 self-stretch pl-2"
+                  class="relative flex-center w-8 shrink-0 self-stretch pl-2"
                   @click.stop
                 >
                   <div

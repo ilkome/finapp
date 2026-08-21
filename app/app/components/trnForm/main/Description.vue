@@ -23,8 +23,8 @@ function onSave(close: () => void) {
   <BottomSheetOrDropdown
     :isOpen="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
-    class="shrink-0 !grow-0"
-    dragClassesCustom="bottomSheetDragClassesCustom"
+    class="shrink-0 grow-0!"
+    dragClassesCustom="bottom-sheet-drag-classes-custom"
     isShowCloseBtn
     @closeModal="trnsFormStore.closeTrnFormModal('description')"
     @openModal="trnsFormStore.openTrnFormModal('description')"
@@ -34,7 +34,7 @@ function onSave(close: () => void) {
         <Icon name="lucide:message-square" size="20" />
         <div
           v-if="trnsFormStore.values.desc"
-          class="bg-primary absolute top-0 right-0 aspect-square w-2.5 rounded-full"
+          class="absolute top-0 right-0 aspect-square w-2.5 rounded-full bg-primary"
         />
       </UiActionButton>
     </template>
@@ -42,10 +42,26 @@ function onSave(close: () => void) {
     <template #content="{ close }">
       <div class="grid min-w-80 gap-4">
         <div class="px-2">
-          <FormTextarea
-            v-model="desc"
-            :placeholder="t('trnForm.description.placeholder')"
-          />
+          <div class="relative">
+            <FormTextarea
+              v-model="desc"
+              autoResize
+              :placeholder="t('trnForm.description.placeholder')"
+            />
+            <UButton
+              v-if="desc"
+              type="button"
+              :aria-label="$t('base.clear')"
+              class="mt-1"
+              color="neutral"
+              icon="i-lucide-eraser"
+              size="xs"
+              variant="ghost"
+              @click="desc = ''"
+            >
+              {{ $t('base.clear') }}
+            </UButton>
+          </div>
         </div>
 
         <div class="flex-center px-2 pb-4 md:pb-0">

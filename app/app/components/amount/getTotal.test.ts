@@ -5,7 +5,7 @@ import { walletsItems } from '~~/mocks/wallets'
 
 import type { TrnId } from '~/components/trns/types'
 
-import { getTotal, getWalletsTotals } from '~/components/amount/getTotal'
+import { addTotals, getTotal, getWalletsTotals } from '~/components/amount/getTotal'
 
 describe('total of Transactions', () => {
   it('correct empty result and correct total structure', () => {
@@ -23,7 +23,7 @@ describe('total of Transactions', () => {
       expenseTransfers: 0,
       income: 0,
       incomeTransfers: 0,
-      sum: 0,
+      net: 0,
       sumTransfers: 0,
     })
   })
@@ -42,7 +42,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.81081081081081)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(10.81081081081081)
+    expect(total.net).toEqual(10.81081081081081)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -62,7 +62,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.383135135135134)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(10.383135135135134)
+    expect(total.net).toEqual(10.383135135135134)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -85,7 +85,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
-    expect(total.sum).toEqual(600)
+    expect(total.net).toEqual(600)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -108,7 +108,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.383135135135134)
     expect(total.expense).toEqual(384.176)
-    expect(total.sum).toEqual(-373.79286486486484)
+    expect(total.net).toEqual(-373.79286486486484)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -134,7 +134,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
-    expect(total.sum).toEqual(600)
+    expect(total.net).toEqual(600)
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(10)
     expect(total.sumTransfers).toEqual(30)
@@ -156,7 +156,90 @@ describe('total of Transactions', () => {
     expect(total.adjustment).toEqual(150)
     expect(total.income).toEqual(0)
     expect(total.expense).toEqual(0)
-    expect(total.sum).toEqual(0)
+    expect(total.net).toEqual(0)
+  })
+
+  it('excludedCategoriesIds drops matching income/expense from totals', () => {
+    const trnsIds = [
+      'transactionIncomeWalletCashUSD1000',
+      'transactionExpenseWalletCashUSD400',
+    ]
+
+    const total = getTotal({
+      excludedCategoriesIds: new Set(['expense']),
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.income).toEqual(1000)
+    expect(total.expense).toEqual(0)
+    expect(total.net).toEqual(1000)
+  })
+
+  it('excludedCategoriesIds leaves transfer/adjustment buckets untouched', () => {
+    const trnsIds = [
+      'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
+      'adjustmentIncomeWalletCashUSD200',
+    ]
+
+    const total = getTotal({
+      excludedCategoriesIds: new Set(['transfer', 'adjustment']),
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.incomeTransfers).toEqual(40)
+    expect(total.expenseTransfers).toEqual(40)
+    expect(total.adjustment).toEqual(200)
+    expect(total.income).toEqual(0)
+    expect(total.expense).toEqual(0)
+  })
+
+  it('single-leg transfer lands in transfer buckets, not income/expense', () => {
+    const trnsIds = [
+      'singleLegTransferExpenseWalletCashUSD50',
+      'singleLegTransferIncomeWalletCashUSD60',
+    ]
+
+    const total = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsItems,
+    })
+
+    expect(total.income).toEqual(0)
+    expect(total.expense).toEqual(0)
+    expect(total.incomeTransfers).toEqual(60)
+    expect(total.expenseTransfers).toEqual(50)
+  })
+
+  it('single-leg transfer counts only when its wallet is in the walletsIds filter', () => {
+    const trnsIds = [
+      'singleLegTransferExpenseWalletCashUSD50',
+      'singleLegTransferIncomeWalletCashUSD60',
+    ]
+
+    const included = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsIds: ['walletCashUSD'],
+      walletsItems,
+    })
+
+    expect(included.incomeTransfers).toEqual(60)
+    expect(included.expenseTransfers).toEqual(50)
+
+    const excluded = getTotal({
+      trnsIds,
+      trnsItems,
+      walletsIds: ['walletRUB'],
+      walletsItems,
+    })
+
+    expect(excluded.incomeTransfers).toEqual(0)
+    expect(excluded.expenseTransfers).toEqual(0)
   })
 
   it('total of Transfers when no Wallets filter provided', () => {
@@ -174,10 +257,66 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(1000)
     expect(total.expense).toEqual(400)
-    expect(total.sum).toEqual(600)
+    expect(total.net).toEqual(600)
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(40)
     expect(total.sumTransfers).toEqual(0)
+  })
+})
+
+describe('addTotals', () => {
+  it('sums every field of two totals', () => {
+    const a = {
+      adjustment: 1,
+      expense: 2,
+      expenseTransfers: 3,
+      income: 4,
+      incomeTransfers: 5,
+      net: 6,
+      sumTransfers: 7,
+    }
+    const b = {
+      adjustment: 10,
+      expense: 20,
+      expenseTransfers: 30,
+      income: 40,
+      incomeTransfers: 50,
+      net: 60,
+      sumTransfers: 70,
+    }
+
+    expect(addTotals(a, b)).toEqual({
+      adjustment: 11,
+      expense: 22,
+      expenseTransfers: 33,
+      income: 44,
+      incomeTransfers: 55,
+      net: 66,
+      sumTransfers: 77,
+    })
+  })
+
+  it('is a no-op when merging with a zero total', () => {
+    const zero = {
+      adjustment: 0,
+      expense: 0,
+      expenseTransfers: 0,
+      income: 0,
+      incomeTransfers: 0,
+      net: 0,
+      sumTransfers: 0,
+    }
+    const a = {
+      adjustment: 1,
+      expense: 2,
+      expenseTransfers: 3,
+      income: 4,
+      incomeTransfers: 5,
+      net: 6,
+      sumTransfers: 7,
+    }
+
+    expect(addTotals(a, zero)).toEqual(a)
   })
 })
 
@@ -225,6 +364,18 @@ describe('getWalletsTotals', () => {
     })
 
     expect(totals.get('walletCashUSD')).toBe(150)
+  })
+
+  it('single-leg transfer moves the wallet balance by the full amount', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: trnsItems.singleLegTransferExpenseWalletCashUSD50!,
+        t2: trnsItems.singleLegTransferIncomeWalletCashUSD60!,
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletCashUSD')).toBe(10)
   })
 
   it('computes full balance for walletCashUSD with mixed trns', () => {

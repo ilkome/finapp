@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import { useStorage } from '@vueuse/core'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -17,7 +19,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { getDates } = useDateFormats()
 const trnsFormStore = useTrnsFormStore()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -28,7 +29,8 @@ const filterBy = useStorage<FilterBy>('filterBy', 'wallet')
 const trnsIds = computed(() => {
   const walletsIds: WalletId[] = []
   let categoriesIds: CategoryId[] = []
-  const dates = getDates('day', trnsFormStore.values.date)
+  const filterDate = new Date(trnsFormStore.values.date)
+  const dates = { end: getEndOf(filterDate, 'day').getTime(), start: getStartOf(filterDate, 'day').getTime() }
 
   if (filterBy.value === 'wallet' && trnsFormStore.values.walletId)
     walletsIds.push(trnsFormStore.values.walletId)
@@ -57,19 +59,10 @@ function onClickTransaction() {
   props.slider?.slideTo(props.mainSlideIdx, 0)
 }
 
-const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
-  {
-    id: 'all',
-    name: t('trnForm.filterAll'),
-  },
-  {
-    id: 'wallet',
-    name: t('trnForm.filterWallet'),
-  },
-  {
-    id: 'walletAndCategory',
-    name: t('trnForm.filterWalletAndCategory'),
-  },
+const tabItems = computed<TabsItem[]>(() => [
+  { label: t('trnForm.filterAll'), value: 'all' },
+  { label: t('trnForm.filterWallet'), value: 'wallet' },
+  { label: t('trnForm.filterWalletAndCategory'), value: 'walletAndCategory' },
 ])
 </script>
 
@@ -90,17 +83,12 @@ const tabs = computed<{ id: FilterBy, name: string }[]>(() => [
           <TrnFormDate />
         </div>
 
-        <UiTabsBar class="mb-4">
-          <UiTabsItemFill
-            v-for="tab in tabs"
-            :key="tab.id"
-            class="text-xs whitespace-nowrap"
-            :isActive="tab.id === filterBy"
-            @click="changeFilter(tab.id)"
-          >
-            {{ tab.name }}
-          </UiTabsItemFill>
-        </UiTabsBar>
+        <UiTabs
+          class="mb-4"
+          :items="tabItems"
+          :modelValue="filterBy"
+          @update:modelValue="(v) => changeFilter(v as FilterBy)"
+        />
       </template>
     </TrnsList>
   </div>

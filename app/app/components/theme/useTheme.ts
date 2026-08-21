@@ -3,6 +3,7 @@ import type { Theme } from '~/components/theme/types'
 export function useTheme() {
   const { t } = useI18n()
   const colorMode = useColorMode()
+  const isDark = computed(() => colorMode.value === 'dark')
 
   const options: {
     label: string
@@ -22,9 +23,15 @@ export function useTheme() {
     colorMode.preference = theme
   }
 
+  function toggleTheme() {
+    setTheme(isDark.value ? 'light' : 'dark')
+  }
+
   return {
+    isDark,
     options,
     preference: computed(() => colorMode.preference),
     setTheme,
+    toggleTheme,
   }
 }

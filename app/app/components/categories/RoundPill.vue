@@ -7,6 +7,7 @@ const props = defineProps<{
   categoryId: CategoryId
   isActive?: boolean
   isIconBg?: boolean
+  isInlineContent?: boolean
   isShowParent?: boolean
 }>()
 
@@ -21,7 +22,7 @@ const parentCategory = computed(() => {
 <template>
   <div
     v-if="category"
-    class="bg-elevated/10 hover:bg-elevated/30 relative flex items-center overflow-hidden rounded-2xl border p-1 pr-3"
+    class="relative flex items-center overflow-hidden rounded-2xl border bg-elevated/10 p-1 pr-3 hover:bg-elevated/30"
     :class="[
       props.isIconBg ? 'gap-2' : 'gap-1',
       props.isActive ? 'border-primary/60 bg-elevated/30' : 'border-transparent',
@@ -38,7 +39,7 @@ const parentCategory = computed(() => {
         :name="category.icon"
         :color="category.color"
         :size="14"
-        class="!w-6 p-1"
+        class="w-6! p-1"
         invert
       />
       <UiIconBase
@@ -46,16 +47,19 @@ const parentCategory = computed(() => {
         :name="category.icon"
         :color="category.color"
         :size="14"
-        class="!w-6 p-1"
+        class="w-6! p-1"
       />
     </div>
 
-    <div class="relative">
+    <div
+      class="relative"
+      :class="props.isInlineContent && 'flex items-center gap-1.5'"
+    >
       <CategoriesName
         :category="category"
         :isShowParent="props.isShowParent"
         :parentCategory="parentCategory"
-        stacked
+        :stacked="!props.isInlineContent"
         size="xs"
       />
       <slot />

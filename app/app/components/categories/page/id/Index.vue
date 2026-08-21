@@ -1,18 +1,16 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import { differenceInDays } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabSlug } from '~/components/stat/types'
+import type { StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
-import { useStatDate } from '~/components/date/useStatDate'
-import { calculateBestIntervalsBy } from '~/components/date/utils'
-import { useFilter } from '~/components/stat/filter/useFilter'
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { useStatConfig } from '~/components/stat/useStatConfig'
-import { getTypesMapping } from '~/components/stat/utils'
+import { useFilter } from '~/components/filter/useFilter'
+import { calculateBestGranularityBy } from '~/components/stat/date/params'
+import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
+import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
+import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -25,6 +23,7 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const filter = useFilter()
+const { statHeader } = useStatPageHost()
 const deleteChildId = ref<CategoryId | null>(null)
 
 const deleteChildTrnsCount = computed(() => {
@@ -80,19 +79,22 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
   ]
 }
 
-provide(filterKey, filter)
-
 const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
 const category = computed(() => categoriesStore.items[categoryId.value])
 const categoryDetailHistoryPattern = /^\/categories\/[^/]+$/
-const preCategoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
+const childrenIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
+// Falls back to [self] so a leaf category still scopes its own trns query
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
+const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
+const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
+const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
+const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 
 const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: categoriesIdsOrParent.value,
 }))
 
-const singleTrnType = computed<StatTabSlug | null>(() => {
+const singleTrnType = computed<StatReportType | null>(() => {
   const items = trnsStore.items
   if (!items)
     return null
@@ -116,57 +118,83 @@ const singleTrnType = computed<StatTabSlug | null>(() => {
   return null
 })
 
-const storedTab = useStorage<StatTabSlug>(`page-${categoryId.value}-tab`, 'summary')
-const activeTab = computed({
-  get: () => singleTrnType.value ?? storedTab.value,
-  set: (v: StatTabSlug) => { storedTab.value = v },
-})
-const storageKey = computed(() => `page-${categoryId.value}-${activeTab.value}`)
+const reportType = computed<StatReportType>(() => singleTrnType.value ?? statSnapshot?.reportType ?? 'combined')
+const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-category-${categoryId.value}` : `page-${categoryId.value}`)
+const legacyTab = localStorage.getItem(`page-${categoryId.value}-tab`)?.replaceAll('"', '')
+const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `page-${categoryId.value}-${legacyTab}` : undefined)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: [...filter.categoriesIds.value, ...categoriesIdsOrParent.value],
-  trnsTypes: getTypesMapping(activeTab.value),
+  categoriesIds: filter.categoriesIds.value,
+  trnsIds: allTrnsIds.value,
   walletsIds: filter?.walletsIds?.value ?? [],
 }))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({
-  props: {
-    catsList: {
-      isGrouped: false,
-    },
-    catsRound: {
-      isGrouped: false,
-    },
-    isShowEmptyCategories: true,
-    vertical: {
-      isGrouped: false,
-    },
+const { statConfig, statDate, trnsViewState } = useStatPageProviders({
+  config: {
+    initialConfig: statSnapshot?.config,
+    legacyStorageKey,
+    legacyTab,
+    props: isStatDrilldown
+      ? undefined
+      : {
+          categories: {
+            bars: {
+              isGrouped: false,
+            },
+            isShowEmpty: true,
+            list: {
+              isGrouped: false,
+            },
+            round: {
+              isGrouped: false,
+            },
+          },
+        },
+    storage: isStatDrilldown ? sessionStorage : localStorage,
+    storageKey,
+    storageQuery,
   },
-  storageKey: storageKey.value,
+  date: {
+    initParams: statSnapshot?.date ?? {
+      granularityBy: calculateBestGranularityBy(maxRange.value),
+      granularityDuration: 1,
+      isShowMaxRange: true,
+      isSkipEmpty: true,
+      rangeBy: 'day',
+      rangeDuration: differenceInDays(maxRange.value.end, maxRange.value.start),
+    },
+    key: storageKey,
+    legacyKey: legacyStorageKey,
+    maxRange,
+    overrideStoredWithInitParams: isStatDrilldown,
+    queryParams: route.query,
+    storage: isStatDrilldown ? sessionStorage : localStorage,
+  },
+  filter,
+  initialTrnsViewState: statSnapshot?.trns,
 })
-provide(statConfigKey, statConfig)
 
-const statDate = useStatDate({
-  initParams: {
-    intervalsBy: calculateBestIntervalsBy(maxRange.value),
-    intervalsDuration: 1,
-    isShowMaxRange: true,
-    isSkipEmpty: true,
-    rangeBy: 'day',
-    rangeDuration: differenceInDays(maxRange.value.end, maxRange.value.start),
-  },
-  key: storageKey.value,
-  maxRange,
-  queryParams: route.query,
+const openDrilldownCategory = useStatCategoryNavigation({
+  categoriesIds: filter.categoriesIds,
+  snapshot: computed(() => ({
+    config: statConfig.config.value,
+    date: statDate.params.value,
+    reportType: reportType.value,
+    trns: {
+      filterBy: trnsViewState.filterBy.value,
+      isShowHistoryWithDesc: trnsViewState.isShowHistoryWithDesc?.value ?? false,
+      isShowWithDesc: trnsViewState.isShowWithDesc.value,
+    },
+  })),
+  walletsIds: filter.walletsIds,
 })
-provide(statDateKey, statDate)
 
 onActivated(() => {
-  statConfig.updateConfig('catsList', { isGrouped: false })
-  statConfig.updateConfig('catsRound', { isGrouped: false })
-  statConfig.updateConfig('vertical', { isGrouped: false })
+  statConfig.updateConfig('categories', { list: { isGrouped: false } })
+  statConfig.updateConfig('categories', { round: { isGrouped: false } })
+  statConfig.updateConfig('categories', { bars: { isGrouped: false } })
 
   if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
@@ -221,21 +249,20 @@ async function onDeleteConfirm() {
       : undefined)
   }, 300)
 }
-
-const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
 </script>
 
 <template>
   <UiPage v-if="category">
     <StatHeader
-      v-model:activeTab="activeTab"
-      :backSkipPattern="categoryDetailHistoryPattern"
-      :backTo="category.parentId ? `/categories/${category.parentId}` : '/categories'"
-      :hideTabs="!!singleTrnType"
-      :preCategoriesIds
+      ref="statHeader"
+      :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
+      :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
+      compactBottom
+      configWallets
+      :hasCategoryBreakdown="childrenIds.length > 0"
+      :preCategoriesIds="childrenIds"
       :trnsIds
       configCategories
-      filterWallets
     >
       <template #title>
         <CategoriesHeader
@@ -283,23 +310,25 @@ const categoriesIds = computed(() => categoriesStore.getChildrenIds(categoryId.v
     />
 
     <div
+      v-if="childrenIds.length > 0 && !isStatDrilldown"
       class="grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList
-        :ids="categoriesIds"
+        :ids="childrenIds"
         :getContextMenuItems="getCategoryContextMenuItems"
-        :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
+        :getTo="isStatDrilldown ? undefined : (categoryId: CategoryId) => `/categories/${categoryId}`"
+        @click="isStatDrilldown ? openDrilldownCategory($event) : undefined"
       />
     </div>
 
-    <StatWrap
-      :activeTab
+    <StatLayout
       :categoryId
-      :hasChildren="categoriesIdsOrParent.length > 1"
-      :preCategoriesIds
-      :range="statDate.range.value"
+      :initialFilteredType="statSnapshot?.filteredType"
+      :lockSingleTypeLayout="singleTrnType !== null"
+      :preCategoriesIds="childrenIds"
       :storageKey
       :trnsIds
+      :reportType
     />
   </UiPage>
 </template>

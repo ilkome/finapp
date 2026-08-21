@@ -6,7 +6,10 @@ import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const keepalive = ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard']
+const keepalive = {
+  include: ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard'],
+  max: 20,
+}
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
@@ -46,8 +49,9 @@ onMounted(() => {
 const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
+  showShell.value && 'bg-muted',
   showShell.value && (isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
-  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-[360px]',
+  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
 ))
 
 useAsyncData('app', initApp)
@@ -87,7 +91,7 @@ defineShortcuts({
       <UButton
         size="xl"
         class="min-w-52 justify-center rounded-full px-8 py-3"
-        @click="initApp"
+        @click="() => { initApp() }"
       >
         {{ t('app.retry') }}
       </UButton>
@@ -106,15 +110,14 @@ defineShortcuts({
           <main
             id="pageScroll"
             :style="showShell ? 'padding-bottom: calc(64px + env(safe-area-inset-bottom))' : ''"
-            class="@container/main flex-1 contain-paint md:!pb-0"
+            class="@container/main flex-1 contain-paint md:pb-0!"
           >
-            <slot :keepalive="{ include: keepalive }" />
+            <slot :keepalive />
           </main>
         </div>
       </div>
 
       <SearchModal v-if="showShell" />
-
       <template v-if="showShell">
         <TrnFormFloatOpener v-if="width >= 767" />
 

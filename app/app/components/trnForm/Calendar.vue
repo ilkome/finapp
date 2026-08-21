@@ -4,7 +4,8 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 
-import { getUCalendarTimedDate, getUCalendarToday, parseUCalendarDate } from '~/components/date/utils'
+import { getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
+
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -21,7 +22,7 @@ function onUpdate(date: CalendarDate) {
   if (!date)
     return
 
-  trnsFormStore.values.date = getUCalendarTimedDate(date)
+  trnsFormStore.values.date = getUCalendarCivilDate(date)
 }
 </script>
 

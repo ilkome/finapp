@@ -7,7 +7,7 @@ import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isSystemCategoryId } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -21,6 +21,7 @@ import { createLogger } from '~/utils/logger'
 const adjustment: CategoryItem = {
   color: '',
   icon: 'mdi:plus-minus',
+  isExcludeFromStats: true,
   name: 'Adjustment',
   parentId: 0,
   showInLastUsed: false,
@@ -30,6 +31,7 @@ const adjustment: CategoryItem = {
 const transfer: CategoryItem = {
   color: '',
   icon: 'mdi:repeat',
+  isExcludeFromStats: true,
   name: 'Transfer',
   parentId: 0,
   showInLastUsed: false,
@@ -41,6 +43,7 @@ type CategoriesStore = {
   categoriesIdsForTrnValues: ComputedRef<CategoryId[]>
   categoriesRootIds: ComputedRef<CategoryId[]>
   deleteCategory: (id: CategoryId, trnsIds?: TrnId[]) => Promise<void> | void
+  excludedFromStatsIds: ComputedRef<Set<CategoryId>>
   favoriteCategoriesIds: ComputedRef<CategoryId[]>
   getChildrenIds: (categoryId: CategoryId) => CategoryId[]
   getChildrenIdsOrParent: (categoryId: CategoryId) => CategoryId[]
@@ -55,6 +58,7 @@ type CategoriesStore = {
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<void> | void
   setCategories: (values: Categories | null) => void
+  sidebarCategoryIds: ComputedRef<CategoryId[]>
 }
 
 const logger = createLogger('categories')
@@ -63,8 +67,19 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const trnsStore = useTrnsStore()
   const { isDemo } = useDemo()
   const { uid } = useSupabaseAuth()
+  const nuxtApp = useNuxtApp()
 
   const items = shallowRef<Categories>({ adjustment, transfer })
+
+  // Localized display names for the synthetic system categories. Set via $i18n
+  // (never useI18n() here: outside setup it throws vue-i18n code 26) and refreshed
+  // on locale change so the name follows the app language everywhere category.name
+  // is rendered (list, search, stat grouping, trns list).
+  watch(() => nuxtApp.$i18n.locale.value, () => {
+    adjustment.name = nuxtApp.$i18n.t('trnForm.adjustmentTitle')
+    transfer.name = nuxtApp.$i18n.t('trnForm.transferTitle')
+    items.value = { ...items.value }
+  }, { immediate: true })
   const hasItems = computed(() =>
     Object.keys(items.value).some(id => id !== 'transfer' && id !== 'adjustment'),
   )
@@ -137,6 +152,13 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
+  // Categories excluded from dashboard stats/charts. Includes the two system
+  // categories via their `isExcludeFromStats: true` default. Leaf-only flag, so
+  // transaction category ids match directly - no parent->child expansion needed.
+  const excludedFromStatsIds = computed<Set<CategoryId>>(() =>
+    new Set(categoriesIds.value.filter(id => items.value[id]?.isExcludeFromStats)),
+  )
+
   const recentCategoriesIds = computed(() => {
     if (!hasItems.value || !trnsStore.hasItems)
       return []
@@ -176,8 +198,34 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
+  const sidebarCategoryIds = computed(() => {
+    const seen = new Set<CategoryId>()
+    const ids: CategoryId[] = []
+
+    for (const id of favoriteCategoriesIds.value) {
+      if (!seen.has(id)) {
+        seen.add(id)
+        ids.push(id)
+      }
+    }
+
+    const remainingSlots = Math.max(0, 10 - ids.length)
+    let added = 0
+    for (const id of recentCategoriesIds.value) {
+      if (added >= remainingSlots)
+        break
+      if (!seen.has(id)) {
+        seen.add(id)
+        ids.push(id)
+        added++
+      }
+    }
+
+    return ids.sort((a, b) => compareCategoryIds(a, b, items.value))
+  })
+
   const categoriesIdsForTrnValues = computed<CategoryId[]>(() =>
-    transactibleIds.value.filter(id => id !== 'transfer'),
+    transactibleIds.value.filter(id => !isSystemCategoryId(id)),
   )
 
   const debouncedPersist = createDebouncedPersist<Categories>(STORAGE_KEYS.categories)
@@ -387,6 +435,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     categoriesIdsForTrnValues,
     categoriesRootIds,
     deleteCategory,
+    excludedFromStatsIds,
     favoriteCategoriesIds,
     getChildrenIds,
     getChildrenIdsOrParent,
@@ -401,5 +450,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     recentCategoriesIds,
     saveCategory,
     setCategories,
+    sidebarCategoryIds,
   }
 })

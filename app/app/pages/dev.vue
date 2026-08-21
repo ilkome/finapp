@@ -1,42 +1,55 @@
+<script setup lang="ts">
+const tabsPillValue = ref('two')
+const tabsPillEqualValue = ref('two')
+const tabsScrollValue = ref('item-3')
+const tabsLinkValue = ref('two')
+const tabsMdValue = ref('two')
+const tabsSmValue = ref('two')
+const tabsXsValue = ref('two')
+const tabsLastActiveValue = ref('item-15')
+
+const tabsScrollItems = Array.from({ length: 15 }, (_, i) => ({ label: `Item ${i + 1}`, value: `item-${i + 1}` }))
+</script>
+
 <template>
   <UiPage>
     <div class="grid grid-cols-[1fr_auto] items-start gap-8 p-3">
       <div class="grid gap-12">
         <div>
           <!-- Colors -->
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             Colors
           </h1>
 
           <div class="grid gap-4">
             <div class="grid gap-2">
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex-center bg-default size-20">
+                <div class="flex-center size-20 bg-default">
                   default
                 </div>
-                <div class="flex-center bg-muted size-20">
+                <div class="flex-center size-20 bg-muted">
                   muted
                 </div>
-                <div class="flex-center bg-elevated size-20">
+                <div class="flex-center size-20 bg-elevated">
                   elevated
                 </div>
-                <div class="flex-center bg-accented size-20">
+                <div class="flex-center size-20 bg-accented">
                   accented
                 </div>
-                <div class="flex-center bg-inverted text-inverted size-20">
+                <div class="flex-center size-20 bg-inverted text-inverted">
                   inverted
                 </div>
               </div>
             </div>
 
             <div class="grid gap-2">
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 Texts
               </div>
-              <div class="bg-default flex flex-col gap-1 p-4">
+              <div class="flex flex-col gap-1 bg-default p-4">
                 <span class="text-highlighted">text-highlighted</span>
                 <span class="text-toned">text-toned</span>
                 <span class="text-default">text-default</span>
@@ -46,11 +59,11 @@
             </div>
 
             <div class="grid gap-2">
-              <div class="text-muted text-sm">
+              <div class="text-sm text-muted">
                 Primary
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="bg-primary size-20" />
+                <div class="size-20 bg-primary" />
               </div>
             </div>
           </div>
@@ -58,7 +71,7 @@
 
         <!-- UiTitle -->
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiTitle
           </h1>
 
@@ -90,7 +103,7 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiText
           </h1>
 
@@ -106,27 +119,22 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
-            UiToggle
+          <h1 class="mb-2 border-b border-default pb-1">
+            UCollapsible
           </h1>
 
           <div class="grid gap-4">
-            <UiToggle>
-              UiToggle
-            </UiToggle>
-
-            <UiToggleWithStorage>
-              UiToggleWithStorage
-            </UiToggleWithStorage>
-
-            <UiToggleControlled isShown>
-              UiToggleControlled
-            </UiToggleControlled>
+            <UCollapsible defaultOpen>
+              UCollapsible
+              <template #content>
+                UCollapsible content
+              </template>
+            </UCollapsible>
           </div>
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiItem
           </h1>
 
@@ -146,57 +154,61 @@
         </div>
 
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             UiTabs
           </h1>
 
           <div class="grid gap-4">
-            <UiTabsBar>
-              UiTabsBar
-            </UiTabsBar>
-
-            <UiTabsScroll>
-              UiTabsScroll
-            </UiTabsScroll>
-          </div>
-        </div>
-
-        <div>
-          <h1 class="border-default mb-2 border-b pb-1">
-            UiTabsItem
-          </h1>
-
-          <div class="grid grid-cols-2 gap-2">
-            <div class="grid gap-4">
-              <UiTabsItemFill>
-                UiTabsItemFill
-              </UiTabsItemFill>
-
-              <UiTabsItemPill>
-                UiTabsItemPill
-              </UiTabsItemPill>
-
-              <UiTabsItemPill variant="outline">
-                UiTabsItemPill outline
-              </UiTabsItemPill>
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                pill, 3 items (fills)
+              </div>
+              <UiTabs v-model="tabsPillValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" />
             </div>
 
-            <div class="grid gap-4">
-              <UiTabsItemFill isActive>
-                UiTabsItemFill
-              </UiTabsItemFill>
-
-              <UiTabsItemPill isActive>
-                UiTabsItemPill
-              </UiTabsItemPill>
-
-              <UiTabsItemPill
-                variant="outline"
-                isActive
-              >
-                UiTabsItemPill outline
-              </UiTabsItemPill>
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                pill, 3 items, isEqual (identical boxes)
+              </div>
+              <UiTabs v-model="tabsPillEqualValue" isEqual :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" />
             </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                pill, ~15 items (scrolls)
+              </div>
+              <UiTabs v-model="tabsScrollValue" :items="tabsScrollItems" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                link variant
+              </div>
+              <UiTabs v-model="tabsLinkValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" variant="link" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                sizes: md / sm / xs
+              </div>
+              <UiTabs v-model="tabsMdValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" size="md" />
+              <UiTabs v-model="tabsSmValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" size="sm" />
+              <UiTabs v-model="tabsXsValue" :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }, { label: 'Three', value: 'three' }]" size="xs" />
+            </div>
+
+            <div class="grid gap-1">
+              <div class="text-sm text-muted">
+                initial active item is the LAST one (mount-jump regression check)
+              </div>
+              <UiTabs v-model="tabsLastActiveValue" :items="tabsScrollItems" />
+            </div>
+
+            <URadioGroup
+              defaultValue="one"
+              indicator="hidden"
+              :items="[{ label: 'One', value: 'one' }, { label: 'Two', value: 'two' }]"
+              orientation="horizontal"
+            />
           </div>
         </div>
       </div>
@@ -204,13 +216,13 @@
       <div>
         <!-- Calendar -->
         <div>
-          <h1 class="border-default mb-2 border-b pb-1">
+          <h1 class="mb-2 border-b border-default pb-1">
             Calendar
           </h1>
 
           <div class="grid gap-4">
             <UCalendar />
-            <div class="bg-muted h-px" />
+            <div class="h-px bg-muted" />
             <UCalendar
               class="@container/calendar"
               :numberOfMonths="2"

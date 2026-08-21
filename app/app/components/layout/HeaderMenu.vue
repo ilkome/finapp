@@ -1,32 +1,44 @@
 <script setup lang="ts">
 import { AnimatePresence, Motion } from 'motion-v'
 
-import type { LocaleSlug } from '~/components/locale/types'
+import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
 
 import { useDemo } from '~/components/demo/useDemo'
-import { useTheme } from '~/components/theme/useTheme'
-import { useUserStore } from '~/components/user/useUserStore'
+import {
+  USER_MENU_DOCS_URL,
+  USER_MENU_GITHUB_URL,
+  USER_MENU_PANEL_CHILDREN,
+  USER_MENU_THEME_ICONS,
 
-type Panel = 'language' | 'palette' | 'root' | 'theme'
+  useUserMenuData,
+} from '~/components/layout/useUserMenuData'
+import { capitalize, swatchPalette } from '~/components/theme/useThemeOptions'
+
+type Panel = UserMenuPanel
 
 // Session actions (enable demo / sign out) are only meaningful for an authenticated
 // user mid-onboarding; the login page renders this menu without them.
 const { sessionActions = false } = defineProps<{ sessionActions?: boolean }>()
 
-const GITHUB_URL = 'https://github.com/ilkome/finapp'
-const DOCS_URL = 'https://finapp-docs.ilko.me/'
-
-const THEME_ICONS: Record<string, string> = {
-  dark: 'i-lucide-moon',
-  light: 'i-lucide-sun',
-  system: 'i-lucide-monitor',
-}
-
 const { locale, t } = useI18n()
 const router = useRouter()
-const userStore = useUserStore()
 const { generateDemoData, isDemo } = useDemo()
-const { options: themeOptions, preference: themePreference, setTheme } = useTheme()
+const {
+  blackAsPrimary,
+  localeOptions,
+  neutral,
+  neutralColors,
+  panelMeta,
+  primary,
+  primaryColors,
+  radius,
+  radiuses,
+  setBlackAsPrimary,
+  setTheme,
+  themeOptions,
+  themePreference,
+  userStore,
+} = useUserMenuData()
 
 async function enableDemo() {
   isDemo.value = 'true'
@@ -35,43 +47,32 @@ async function enableDemo() {
 }
 
 const isOpen = ref(false)
-const activePanel = ref<Panel>('root')
 const direction = ref<1 | -1>(1)
 
-const localeOptions = computed(() => [
-  { label: t('locale.ru'), value: 'ru' as LocaleSlug },
-  { label: t('locale.en'), value: 'en' as LocaleSlug },
-])
+const panelStack = ref<Panel[]>([])
+const activePanel = computed<'root' | Panel>(() => panelStack.value.at(-1) ?? 'root')
 
-const localeLabel = computed(() => t(`locale.${locale.value}`))
-const themeLabel = computed(() => themeOptions.find(o => o.value === themePreference.value)?.label ?? '')
+const panelTitle = computed(() =>
+  activePanel.value === 'root' ? '' : panelMeta.value[activePanel.value].title,
+)
 
-const panelTitle = computed(() => {
-  switch (activePanel.value) {
-    case 'language':
-      return t('locale.title')
-    case 'theme':
-      return t('theme.picker.theme')
-    case 'palette':
-      return t('theme.palette')
-    default:
-      return ''
-  }
-})
+const childRows = computed(() =>
+  (USER_MENU_PANEL_CHILDREN[activePanel.value] ?? []).map(id => ({ id, ...panelMeta.value[id] })),
+)
 
-function open(panel: Exclude<Panel, 'root'>) {
+function open(panel: Panel) {
   direction.value = 1
-  activePanel.value = panel
+  panelStack.value = [...panelStack.value, panel]
 }
 
 function back() {
   direction.value = -1
-  activePanel.value = 'root'
+  panelStack.value = panelStack.value.slice(0, -1)
 }
 
 // Reopen always lands on the root list, never a stale sub-panel.
 function resetToRoot() {
-  activePanel.value = 'root'
+  panelStack.value = []
   direction.value = 1
 }
 
@@ -83,7 +84,7 @@ const panelVariants = {
 }
 const panelTransition = { duration: 0.12, ease: [0.4, 0, 0.2, 1] as const }
 
-const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-elevated/50'
+const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-elevated/50'
 </script>
 
 <template>
@@ -93,17 +94,22 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
     @openModal="() => { resetToRoot(); isOpen = true }"
     @closeModal="isOpen = false"
   >
+    <!-- On desktop BottomSheetOrDropdown drives UPopover's own open state and never
+         emits openModal, so the reset has to hang off the trigger's click. A custom
+         trigger must bind resetToRoot too, or reopening lands on a stale sub-panel. -->
     <template #trigger="{ isActive }">
-      <UButton
-        :aria-label="t('login.menu.title')"
-        :variant="isActive ? 'soft' : 'ghost'"
-        class="text-muted max-md:border-default/80 max-md:bg-default/20 max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
-        color="neutral"
-        icon="i-lucide-menu"
-        size="lg"
-        square
-        @click="resetToRoot"
-      />
+      <slot name="trigger" :isActive :resetToRoot>
+        <UButton
+          :aria-label="t('login.menu.title')"
+          :variant="isActive ? 'soft' : 'ghost'"
+          class="text-muted max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:border-default/80 max-md:bg-default/20 max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
+          color="neutral"
+          icon="i-lucide-menu"
+          size="lg"
+          square
+          @click="resetToRoot"
+        />
+      </slot>
     </template>
 
     <template #content="{ close }">
@@ -118,36 +124,38 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
             exit="exit"
             :transition="panelTransition"
           >
-            <!-- Root list -->
-            <div v-if="activePanel === 'root'" class="grid gap-0.5">
-              <button :class="rowClass" type="button" @click="open('language')">
+            <div v-if="childRows.length" class="grid gap-0.5">
+              <div
+                v-if="activePanel !== 'root'"
+                :aria-label="t('base.previous')"
+                role="button"
+                tabindex="0"
+                class="mb-1 flex items-center gap-2 rounded-sm p-2 hover:bg-elevated/50"
+                @click="back"
+                @keydown.enter.prevent="back"
+                @keydown.space.prevent="back"
+              >
+                <UIcon name="lucide:chevron-left" class="size-5 text-muted" />
+                <span class="grow text-sm font-medium text-toned">{{ panelTitle }}</span>
+              </div>
+
+              <button
+                v-for="row in childRows"
+                :key="row.id"
+                :class="rowClass"
+                type="button"
+                @click="open(row.id)"
+              >
                 <span class="flex min-w-7 justify-center">
-                  <UIcon name="lucide:languages" class="text-muted size-5" />
+                  <UIcon :name="row.icon" class="size-5 text-muted" />
                 </span>
-                <span class="grow font-medium">{{ t('locale.title') }}</span>
-                <span class="text-dimmed text-xs">{{ localeLabel }}</span>
-                <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
+                <span class="grow font-medium">{{ row.title }}</span>
+                <span class="text-xs text-dimmed capitalize">{{ row.value }}</span>
+                <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
               </button>
 
-              <button :class="rowClass" type="button" @click="open('theme')">
-                <span class="flex min-w-7 justify-center">
-                  <UIcon :name="THEME_ICONS[themePreference]" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">{{ t('theme.picker.theme') }}</span>
-                <span class="text-dimmed text-xs">{{ themeLabel }}</span>
-                <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
-              </button>
-
-              <button :class="rowClass" type="button" @click="open('palette')">
-                <span class="flex min-w-7 justify-center">
-                  <UIcon name="i-lucide-swatch-book" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">{{ t('theme.palette') }}</span>
-                <UIcon name="lucide:chevron-right" class="text-muted size-4 shrink-0" />
-              </button>
-
-              <template v-if="sessionActions">
-                <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
+              <template v-if="activePanel === 'root' && sessionActions">
+                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
                 <button
                   :class="rowClass"
@@ -155,7 +163,7 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="() => { enableDemo(); close() }"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon name="mdi:play-box-outline" class="text-muted size-5" />
+                    <UIcon name="mdi:play-box-outline" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ t('login.openDemo') }}</span>
                 </button>
@@ -166,60 +174,61 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="userStore.signOut()"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon name="i-lucide-log-out" class="text-muted size-5" />
+                    <UIcon name="i-lucide-log-out" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ t('user.logout') }}</span>
                 </button>
               </template>
 
-              <div aria-hidden="true" class="bg-elevated/50 mx-2 my-1 h-px" />
+              <template v-if="activePanel === 'root'">
+                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
-              <a
-                :class="rowClass"
-                :href="GITHUB_URL"
-                rel="noopener"
-                target="_blank"
-                @click="close"
-              >
-                <span class="flex min-w-7 justify-center">
-                  <UIcon name="mdi:github" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">GitHub</span>
-                <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
-              </a>
+                <a
+                  :class="rowClass"
+                  :href="USER_MENU_GITHUB_URL"
+                  rel="noopener"
+                  target="_blank"
+                  @click="close"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <UIcon name="mdi:github" class="size-5 text-muted" />
+                  </span>
+                  <span class="grow font-medium">GitHub</span>
+                  <UIcon name="lucide:external-link" class="size-4 shrink-0 text-dimmed" />
+                </a>
 
-              <a
-                :class="rowClass"
-                :href="DOCS_URL"
-                rel="noopener"
-                target="_blank"
-                @click="close"
-              >
-                <span class="flex min-w-7 justify-center">
-                  <UIcon name="lucide:book-open" class="text-muted size-5" />
-                </span>
-                <span class="grow font-medium">{{ t('login.menu.documentation') }}</span>
-                <UIcon name="lucide:external-link" class="text-dimmed size-4 shrink-0" />
-              </a>
+                <a
+                  :class="rowClass"
+                  :href="USER_MENU_DOCS_URL"
+                  rel="noopener"
+                  target="_blank"
+                  @click="close"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <UIcon name="lucide:book-open" class="size-5 text-muted" />
+                  </span>
+                  <span class="grow font-medium">{{ t('login.menu.documentation') }}</span>
+                  <UIcon name="lucide:external-link" class="size-4 shrink-0 text-dimmed" />
+                </a>
+              </template>
             </div>
 
-            <!-- Sub-panels -->
             <div v-else>
               <div
                 :aria-label="t('base.previous')"
                 role="button"
                 tabindex="0"
-                class="hover:bg-elevated/50 mb-1 flex items-center gap-2 rounded-sm p-2"
+                class="mb-1 flex items-center gap-2 rounded-sm p-2 hover:bg-elevated/50"
                 @click="back"
                 @keydown.enter.prevent="back"
                 @keydown.space.prevent="back"
               >
-                <UIcon name="lucide:chevron-left" class="text-muted size-5" />
-                <span class="text-toned grow text-sm font-medium">{{ panelTitle }}</span>
+                <UIcon name="lucide:chevron-left" class="size-5 text-muted" />
+                <span class="grow text-sm font-medium text-toned">{{ panelTitle }}</span>
               </div>
 
               <!-- Language -->
-              <div v-if="activePanel === 'language'" class="grid gap-0.5">
+              <div v-if="activePanel === 'locale'" class="grid gap-0.5">
                 <button
                   v-for="opt in localeOptions"
                   :key="opt.value"
@@ -231,7 +240,7 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   <UIcon
                     v-if="locale === opt.value"
                     name="lucide:check"
-                    class="text-primary size-4 shrink-0"
+                    class="size-4 shrink-0 text-primary"
                   />
                 </button>
               </div>
@@ -246,20 +255,109 @@ const rowClass = 'flex min-h-[44px] w-full items-center gap-3 rounded-sm px-2 py
                   @click="setTheme(opt.value)"
                 >
                   <span class="flex min-w-7 justify-center">
-                    <UIcon :name="THEME_ICONS[opt.value]" class="text-muted size-5" />
+                    <UIcon :name="USER_MENU_THEME_ICONS[opt.value]" class="size-5 text-muted" />
                   </span>
                   <span class="grow font-medium">{{ opt.label }}</span>
                   <UIcon
                     v-if="themePreference === opt.value"
                     name="lucide:check"
-                    class="text-primary size-4 shrink-0"
+                    class="size-4 shrink-0 text-primary"
                   />
                 </button>
               </div>
 
-              <!-- Palette -->
-              <div v-else class="px-2 pb-1">
-                <ThemePickerPanel />
+              <!-- Primary color -->
+              <div v-else-if="activePanel === 'primary'" class="grid gap-0.5">
+                <button
+                  :class="rowClass"
+                  type="button"
+                  @click="setBlackAsPrimary(true)"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span class="size-5 shrink-0 rounded-full bg-black dark:bg-white" />
+                  </span>
+                  <span class="grow font-medium">Black</span>
+                  <UIcon
+                    v-if="blackAsPrimary"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
+
+                <button
+                  v-for="color in primaryColors"
+                  :key="color"
+                  :class="rowClass"
+                  type="button"
+                  @click="primary = color"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span
+                      class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
+                      :style="{
+                        '--chip-light': `var(--color-${color}-500)`,
+                        '--chip-dark': `var(--color-${color}-400)`,
+                      }"
+                    />
+                  </span>
+                  <span class="grow font-medium capitalize">{{ capitalize(color) }}</span>
+                  <UIcon
+                    v-if="!blackAsPrimary && primary === color"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
+              </div>
+
+              <!-- Background color -->
+              <div v-else-if="activePanel === 'neutral'" class="grid gap-0.5">
+                <button
+                  v-for="color in neutralColors"
+                  :key="color"
+                  :class="rowClass"
+                  type="button"
+                  @click="neutral = color"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span
+                      class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
+                      :style="{
+                        '--chip-light': `var(--color-${swatchPalette(color)}-500)`,
+                        '--chip-dark': `var(--color-${swatchPalette(color)}-400)`,
+                      }"
+                    />
+                  </span>
+                  <span class="grow font-medium capitalize">{{ capitalize(color) }}</span>
+                  <UIcon
+                    v-if="neutral === color"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
+              </div>
+
+              <!-- Rounding -->
+              <div v-else class="grid gap-0.5">
+                <button
+                  v-for="option in radiuses"
+                  :key="option"
+                  :class="rowClass"
+                  type="button"
+                  @click="radius = option"
+                >
+                  <span class="flex min-w-7 justify-center">
+                    <span
+                      class="size-5 shrink-0 bg-elevated ring-1 ring-accented"
+                      :style="{ borderRadius: `${option}rem` }"
+                    />
+                  </span>
+                  <span class="grow font-medium">{{ option }}</span>
+                  <UIcon
+                    v-if="radius === option"
+                    name="lucide:check"
+                    class="size-4 shrink-0 text-primary"
+                  />
+                </button>
               </div>
             </div>
           </Motion>
