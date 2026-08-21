@@ -8,6 +8,7 @@ const categories = new Table(
   {
     color: column.text,
     icon: column.text,
+    isExcludeFromStats: column.integer, // 0/1 - drop from dashboard stats/charts
     name: column.text,
     parentId: column.text, // null = root (mapped to 0 in the client item shape)
     showInLastUsed: column.integer,
@@ -40,8 +41,9 @@ const trns = new Table(
   {
     amount: column.real,
     categoryId: column.text,
-    date: column.integer,
+    date: column.integer, // civil day: UTC-midnight ms-epoch
     desc: column.text,
+    enteredAt: column.integer, // original entry instant (audit/ordering only)
     expenseAmount: column.real,
     expenseWalletId: column.text,
     incomeAmount: column.real,
@@ -57,6 +59,7 @@ const trns = new Table(
 const user_settings = new Table({
   baseCurrency: column.text,
   locale: column.text,
+  timezone: column.text, // IANA tz captured at entry; used by the civil-date backfill
   userId: column.text,
 })
 

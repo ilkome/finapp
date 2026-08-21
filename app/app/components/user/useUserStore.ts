@@ -203,6 +203,13 @@ export const useUserStore = defineStore('user', () => {
         locale.value = s.locale
         useNuxtApp().$i18n.setLocale(s.locale)
       }
+      // Civil-date model (P0): capture the device timezone so the backfill can map each
+      // stored instant to the right calendar day. Written once / when it changes.
+      const deviceTz = Intl.DateTimeFormat().resolvedOptions().timeZone
+      if (deviceTz && s.timezone !== deviceTz && uid.value) {
+        upsertRow('user_settings', uid.value, { timezone: deviceTz, userId: uid.value })
+          .catch(e => logger.error('capture timezone failed', e))
+      }
       persistUserSettings()
     })
     logger.log('watching user settings')

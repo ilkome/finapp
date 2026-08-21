@@ -43,20 +43,19 @@ function clearLocalDbOwner(): void {
 
 /**
  * Singleton PowerSync database (local SQLite, WASM + IndexedDB VFS: multi-tab, no COOP/COEP).
- * `@powersync/web` (+ schema) is dynamically imported on first call so its ~300KB stays out of
+ * `@powersync/web` (+ schema) is dynamically imported on first call so its bundle stays out of
  * the entry chunk - the login page and demo mode never parse it.
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ PowerSyncDatabase, WASQLiteOpenFactory, WASQLiteVFS }, { AppSchema }] = await Promise.all([
+    const [{ PowerSyncDatabase }, { AppSchema }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
     ])
     _db = new PowerSyncDatabase({
-      database: new WASQLiteOpenFactory({
+      database: {
         dbFilename: 'finapp.db',
-        vfs: WASQLiteVFS.IDBBatchAtomicVFS,
-      }),
+      },
       schema: AppSchema,
     })
     return _db
