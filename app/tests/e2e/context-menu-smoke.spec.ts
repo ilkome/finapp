@@ -2,11 +2,10 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
-// Guards against the reka-ui dual-version regression: two copies make
-// provide/inject fail with "Injection Symbol(ContextMenuRootContext) not found"
-// in the bundle. ContextMenuMy mounts on the dashboard (trn rows), so the error
-// surfaces on load - no interaction needed to catch it.
+// ContextMenuMy mounts on the dashboard, so production-only bootstrap and
+// reka-ui provide/inject regressions surface without additional interaction.
 const INJECT_ERROR = /ContextMenuRootContext|must be used within `ContextMenuRoot`/
+const NUXT_BOOTSTRAP_ERROR = /NUXT_E1005|hooks\.hookOnce is not a function/
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
   await context.clearCookies()
@@ -16,7 +15,7 @@ async function bootstrapDemo(page: Page, context: BrowserContext) {
   await page.waitForTimeout(800)
 }
 
-test('app mounts context menus without a reka-ui inject error', async ({ context, page }) => {
+test('production bundle mounts without bootstrap or reka-ui errors', async ({ context, page }) => {
   const errors: string[] = []
   page.on('console', (m) => {
     if (m.type() === 'error')
@@ -28,5 +27,7 @@ test('app mounts context menus without a reka-ui inject error', async ({ context
   await page.goto('/dashboard', { waitUntil: 'networkidle' })
   await page.waitForTimeout(1500)
 
+  await expect(page).toHaveTitle(/Dashboard/)
+  expect(errors.filter(e => NUXT_BOOTSTRAP_ERROR.test(e))).toEqual([])
   expect(errors.filter(e => INJECT_ERROR.test(e))).toEqual([])
 })
