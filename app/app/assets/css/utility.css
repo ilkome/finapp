@@ -1,7 +1,4 @@
 @utility interactive {
-  /* The project's custom `hover` variant (main.css) is declared after this file is
-     imported, so it isn't resolvable inside @apply here. Inline its expansion
-     (hover-capable pointer + active) directly to stay import-order-independent. */
   @apply select-none;
 
   @media (hover: hover) and (pointer: fine) {
@@ -69,12 +66,6 @@
   @apply flex items-center justify-center p-2;
 }
 
-/* `scroller-block` paints nothing: scroll areas keep the platform's own overlay
-   scrollbar, same as the page itself. The class stays as a behavioural marker -
-   useBottomSheetDrag queries it to decide whether a drag belongs to the sheet or
-   to the inner scroll, and to reset scrollTop on open. Do not delete the class
-   from markup, and do not restyle the bar here. `scrollbar-width: auto` is the
-   initial value; it is here only so the utility stays declared for tooling. */
 @utility scroller-block {
   scrollbar-width: auto;
 }
