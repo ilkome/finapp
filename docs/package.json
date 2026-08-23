@@ -7,11 +7,13 @@
     "build": "nuxt build --extends docus"
   },
   "dependencies": {
+    "@iconify-json/lucide": "^1.2.123",
+    "@iconify-json/vscode-icons": "^1.2.74",
     "@nuxt/fonts": "0.14.0",
     "@nuxt/icon": "2.2.3",
     "better-sqlite3": "^12.11.1",
-    "docus": "latest",
-    "nuxt": "^4.4.8",
+    "docus": "5.12.2",
+    "nuxt": "4.4.8",
     "zod": "^4.4.3",
     "zod-to-json-schema": "^3.25.2"
   }

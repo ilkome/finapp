@@ -10,10 +10,25 @@ allowBuilds:
   unrs-resolver: true
   vue-demi: true
 overrides:
-  # Active CVE floors (verified via pnpm audit). The rest of the deps tree
-  # already resolves above its advisories, so no other override is needed.
+  # Keep Docus and the workspace Nuxt runtime on one build graph. Mixed kit and
+  # framework versions create duplicate @nuxt/content contexts and break SSR.
+  '@nuxt/kit': 4.4.8
+  '@vue/compiler-core': 3.5.41
+  '@vue/compiler-dom': 3.5.41
+  '@vue/compiler-sfc': 3.5.41
+  '@vue/compiler-ssr': 3.5.41
+  '@vue/shared': 3.5.41
+  exsolve: 1.0.8
+  vite: 7.3.6
+  vue: 3.5.41
+  vue-router: 5.2.0
+  # Compatible patched releases for vulnerable transitive ranges.
+  brace-expansion@>=2.0.0 <2.1.2: 2.1.4
+  brace-expansion@>=3.0.0 <5.0.7: 5.0.9
   esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
   # Pin h3 v1: docus dev tooling pulls an h3 v2 RC that crashes @nuxt/content
   # prerender (.entries() on a v1 nitro event). Remove once nitro moves to h3 v2.
   h3: 1.15.11
   serialize-javascript@<7.0.5: '>=7.0.5'
+  shell-quote@<=1.8.4: 1.10.0
+  tar@<=7.5.20: 7.5.22
