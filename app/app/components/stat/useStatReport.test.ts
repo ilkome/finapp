@@ -440,18 +440,18 @@ describe('useStatReport', () => {
   // onSetCategoryFilter
   // -------------------------------------------------------------------------
   describe('onSetCategoryFilter', () => {
-    it('shares quick category focus across split chart reports', () => {
+    it('delegates coordinated quick category filtering when provided', () => {
+      const setCategoryFilter = vi.fn()
       const quickCategoryFilter: StatQuickCategoryFilter = {
         categoriesIds: ref([]),
         childCategoryId: ref(),
+        setCategoryFilter,
       }
-      const expense = createStatReport({ quickCategoryFilter, reportType: 'expense' })
-      const income = createStatReport({ quickCategoryFilter, reportType: 'income' })
+      const report = createStatReport({ quickCategoryFilter, reportType: 'expense' })
 
-      expense.onSetCategoryFilter('cat1')
+      report.onSetCategoryFilter('cat1')
 
-      expect(income.filteredCategoriesIds.value).toEqual(['cat1'])
-      expect(income.effectiveFilteredCategoriesIds.value).toEqual(['cat1'])
+      expect(setCategoryFilter).toHaveBeenCalledWith('cat1')
     })
 
     it('sets the category filter when empty', () => {

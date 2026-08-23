@@ -74,6 +74,10 @@ export function useStatReport(params: UseStatReportParams) {
   })
 
   function onSetCategoryFilter(categoryId: CategoryId) {
+    if (params.quickCategoryFilter?.setCategoryFilter) {
+      params.quickCategoryFilter.setCategoryFilter(categoryId)
+      return
+    }
     if (filteredCategoriesIds.value.includes(categoryId)) {
       filteredCategoriesIds.value = []
       filteredChildCategoryId.value = undefined

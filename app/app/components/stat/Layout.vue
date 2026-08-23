@@ -4,8 +4,10 @@ import type { SeriesSlugSelected, StatQuickCategoryFilter, StatReportSelectedRec
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statCanSplitKey, statConfigKey, statDateKey, statStickyNavigationHeightKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { resolveQuickCategorySelection } from '~/components/stat/quickCategorySelection'
 import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
@@ -33,6 +35,7 @@ const trnsViewState = inject(statTrnsViewStateKey)!
 const stickyNav = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 const canSplit = inject(statCanSplitKey, ref(false))
+const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const statLayout = useTemplateRef<HTMLElement>('statLayout')
 const statNavigation = useTemplateRef<HTMLElement>('statNavigation')
@@ -76,10 +79,30 @@ const selectionProjections = computed(() => {
   return { combined: sharedSelection.value, expense, income }
 })
 
-const quickCategoryFilter: StatQuickCategoryFilter = {
-  categoriesIds: ref([]),
-  childCategoryId: ref(),
+const quickCategoryFilters = Object.fromEntries(
+  (['combined', 'expense', 'income'] as const).map(reportType => [reportType, {
+    categoriesIds: ref<CategoryId[]>([]),
+    childCategoryId: ref<CategoryId>(),
+  }]),
+) as Record<StatReportType, StatQuickCategoryFilter>
+
+function setQuickCategoryFilter(categoryId: CategoryId) {
+  const transactibleIds = new Set(categoriesStore.getTransactibleIds([categoryId]))
+  const selection = resolveQuickCategorySelection({
+    categoryId,
+    hasExpense: selectionProjections.value.expense.some(record => transactibleIds.has(record.categoryId)),
+    hasIncome: selectionProjections.value.income.some(record => transactibleIds.has(record.categoryId)),
+    isSelected: Object.values(quickCategoryFilters).some(filter => filter.categoriesIds.value.includes(categoryId)),
+  })
+
+  for (const reportType of ['combined', 'expense', 'income'] as const) {
+    quickCategoryFilters[reportType].categoriesIds.value = selection[reportType]
+    quickCategoryFilters[reportType].childCategoryId.value = undefined
+  }
 }
+
+for (const filter of Object.values(quickCategoryFilters))
+  filter.setCategoryFilter = setQuickCategoryFilter
 
 const commonParams = {
   applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),
@@ -88,7 +111,6 @@ const commonParams = {
   hasChildren: computed(() => props.hasChildren),
   initialFilteredType: props.initialFilteredType,
   preCategoriesIds: computed(() => props.preCategoriesIds),
-  quickCategoryFilter,
   statConfig,
   statDate,
   storageKey: computed(() => props.storageKey),
@@ -99,6 +121,7 @@ const commonParams = {
 function createContext(reportType: StatReportType) {
   return useStatReportContext({
     ...commonParams,
+    quickCategoryFilter: quickCategoryFilters[reportType],
     reportType: computed(() => reportType),
     selectionSource: computed(() => selectionProjections.value[reportType]),
     trnsIds: computed(() => projections.value[reportType]),

@@ -38,6 +38,7 @@ export type UseStatReportParams = {
 export type StatQuickCategoryFilter = {
   categoriesIds: Ref<CategoryId[]>
   childCategoryId: Ref<CategoryId | undefined>
+  setCategoryFilter?: (categoryId: CategoryId) => void
 }
 
 type CategoryWithDataBase = {
