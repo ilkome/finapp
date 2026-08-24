@@ -41,17 +41,16 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm --filter @finapp/app check:deps"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^9.0.0",
-    "@nuxt/eslint-config": "^1.16.0",
-    "eslint": "^10.5.0",
+    "@antfu/eslint-config": "^9.3.0",
+    "@nuxt/eslint-config": "^1.17.0",
+    "eslint": "^10.9.0",
     "eslint-flat-config-utils": "^3.2.0",
     "eslint-plugin-format": "^2.0.1",
-    "eslint-plugin-perfectionist": "^5.9.1",
-    "eslint-plugin-tailwindcss": "4.2.0",
-    "prettier": "^3.8.4",
-    "prettier-plugin-tailwindcss": "^0.8.0",
-    "tailwindcss": "^4.3.1",
-    "typescript": "^6.0.3",
-    "vue-i18n": "11.4.8"
+    "eslint-plugin-perfectionist": "^5.10.1",
+    "eslint-plugin-tailwindcss": "^4.4.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^6.0.3"
   }
 }
