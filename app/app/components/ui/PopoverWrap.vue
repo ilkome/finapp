@@ -1,8 +1,11 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   isShowCloseBtn?: boolean
+  isShowScroll?: boolean
   title?: string
-}>()
+}>(), {
+  isShowScroll: true,
+})
 
 const emit = defineEmits<{
   close: []
@@ -11,23 +14,22 @@ const emit = defineEmits<{
 
 <template>
   <div
-    :class="cn('grid',
-               (props.title || props.isShowCloseBtn) && 'grid-rows-[auto_1fr]',
-    )"
+    class="flex flex-col overflow-hidden"
     style="max-height: var(--reka-popper-available-height, 60dvh)"
   >
     <UiTitleModal v-if="props.title">
       {{ props.title }}
     </UiTitleModal>
 
-    <BottomSheetClose
+    <UiButtonClose
       v-if="props.isShowCloseBtn"
       @click="emit('close')"
     />
 
     <div
       v-if="$slots.default"
-      class="scroller overflow-y-auto px-2 py-px"
+      :class="props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden'"
+      class="min-h-0 px-2 py-px md:pb-4"
     >
       <slot />
     </div>

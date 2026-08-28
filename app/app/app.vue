@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { ToasterProps } from '@nuxt/ui'
 
+import { useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useGuard } from '~/components/user/useGuard'
 
-const appConfig = useAppConfig()
 const colorMode = useColorMode()
+const { style } = useThemeOptions()
 const { t } = useI18n()
 const toaster: ToasterProps = {
   position: 'top-left',
@@ -22,8 +23,6 @@ useEventListener(document, 'click', (e) => {
 
 const isDark = usePreferredDark()
 const color = computed(() => (colorMode.value === 'dark' || (colorMode.value === 'system' && isDark.value)) ? '#171717' : 'white')
-const blackAsPrimary = computed(() => appConfig.theme.blackAsPrimary ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}')
-const radius = computed(() => `:root { --ui-radius: ${appConfig.theme.radius ?? 0.375}rem; }`)
 
 useHead({
   htmlAttrs: {
@@ -38,10 +37,7 @@ useHead({
     { content: 'width=device-width, initial-scale=1, viewport-fit=cover', name: 'viewport' },
     { content: color, key: 'theme-color', name: 'theme-color' },
   ],
-  style: [
-    { id: 'nuxt-ui-black-as-primary', innerHTML: blackAsPrimary, tagPriority: -2 },
-    { id: 'nuxt-ui-radius', innerHTML: radius, tagPriority: -2 },
-  ],
+  style,
 })
 
 useSeoMeta({

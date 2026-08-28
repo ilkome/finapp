@@ -23,7 +23,7 @@ export default defineConfig({
   webServer: {
     // Disable Nuxt devtools so its toolbar doesn't intercept clicks on
     // bottom-anchored buttons (Apply / Save) during E2E.
-    command: 'NUXT_DEVTOOLS_ENABLED=false pnpm dev',
+    command: 'NUXT_DEVTOOLS_ENABLED=false pnpm dev:local',
     reuseExistingServer: !process.env.CI,
     stderr: 'pipe',
     stdout: 'ignore',

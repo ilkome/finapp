@@ -88,7 +88,7 @@ finapp/
 ### Требования
 
 - Node.js `>=24.12.0`
-- pnpm `10.x`
+- pnpm `11.x`
 - Docker и [Supabase CLI](https://supabase.com/docs/guides/cli) для локального бэкенда
 
 ### Установка
@@ -101,10 +101,10 @@ pnpm install
 
 ### Настройка приложения
 
-Скопируйте пример env-файла приложения и заполните значениями Supabase и PowerSync:
+Скопируйте пример env-файла для локального Nuxt-клиента и заполните значениями Supabase и PowerSync:
 
 ```bash
-cp app/.env.example app/.env
+cp app/.env.example app/.env.local
 ```
 
 Обязательные переменные окружения:
@@ -142,15 +142,23 @@ Workspace приложения использует несколько `.env` ф
 
 | Файл | Назначение |
 | --- | --- |
-| `app/.env` | Значения dev, читаются Nuxt |
-| `app/.env.prod` | Значения prod-деплоя, используются `pnpm dev:prod` |
+| `app/.env` | Секреты локального Supabase CLI, Nuxt-скрипты его не читают |
+| `app/.env.local` | Локальный Nuxt-клиент, используется `pnpm dev:local` |
+| `app/.env.cloud` | Облачные dev-сервисы, используются `pnpm dev` и `pnpm dev:cloud` |
+| `app/.env.production` | Production-сервисы, используются `pnpm dev:production` |
 
 ## Разработка
 
-Когда локальный бэкенд запущен, запустите Nuxt-приложение:
+Обычная команда использует облачные dev-сервисы:
 
 ```bash
 pnpm dev
+```
+
+Для запущенного локального бэкенда выберите его явно:
+
+```bash
+pnpm dev:local
 ```
 
 Приложение доступно на `http://localhost:3050`.
@@ -158,7 +166,7 @@ pnpm dev
 Запустите сайт документации:
 
 ```bash
-pnpm docs:dev
+pnpm dev:docs
 ```
 
 Документация доступна на `http://localhost:3051`.
@@ -173,23 +181,30 @@ pnpm dev:all
 
 | Команда | Описание |
 | --- | --- |
-| `pnpm dev` | Запуск dev-сервера приложения |
-| `pnpm docs:dev` | Запуск dev-сервера документации |
+| `pnpm dev` | Запуск приложения с облачными dev-сервисами |
+| `pnpm dev:cloud` | Явный алиас для облачных dev-сервисов |
+| `pnpm dev:local` | Запуск приложения с локальным бэкендом |
+| `pnpm dev:production` | Запуск dev-сервера с production-сервисами |
+| `pnpm dev:docs` | Запуск dev-сервера документации |
 | `pnpm dev:all` | Параллельный запуск dev-серверов приложения и документации |
 | `pnpm build` | Сборка всех workspace-пакетов с командой `build` |
-| `pnpm generate` | Генерация приложения для статического хостинга |
-| `pnpm docs:build` | Сборка сайта документации |
+| `pnpm build:app` | Сборка приложения для статического хостинга |
+| `pnpm build:docs` | Сборка сайта документации |
 | `pnpm lint` | Линтинг монорепозитория |
 | `pnpm lint:app` | Линтинг пакета приложения |
 | `pnpm lint:docs` | Линтинг пакета документации |
 | `pnpm lint:fix` | Линтинг с автоисправлением |
-| `pnpm test` | Запуск тестов в workspace-пакетах |
+| `pnpm test` | Одноразовый запуск unit-тестов в workspace-пакетах |
+| `pnpm test:watch` | Запуск unit-тестов приложения в watch-режиме |
+| `pnpm test:e2e` | Запуск demo E2E-тестов |
+| `pnpm test:e2e:prod` | Запуск E2E smoke-теста production-сборки |
 | `pnpm typecheck` | Проверка типов в workspace-пакетах |
+| `pnpm verify` | Запуск немутирующего набора проверок |
 
 ## Документация
 
 Руководства пользователя, заметки по разработке и техническая справка находятся в [`docs/content`](docs/content).
-Запустите сайт документации командой `pnpm docs:dev`.
+Запустите сайт документации командой `pnpm dev:docs`.
 
 ## Предыдущая версия
 

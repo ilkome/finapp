@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
+  confirmLabel?: string
   description?: string
   highlight?: string
   title?: string
@@ -41,14 +42,10 @@ useEventListener('keydown', (e: KeyboardEvent) => {
     :ui="{ overlay: 'z-[70]', content: 'z-[70] max-w-sm divide-y-0', footer: 'justify-between' }"
     @after:leave="onClosed"
   >
-    <template #close>
-      <BottomSheetClose />
-    </template>
-
     <template v-if="description || highlight" #body>
       <div class="text-muted">
         {{ description }}
-        <span v-if="highlight" class="text-error font-medium">
+        <span v-if="highlight" class="font-medium text-error">
           {{ highlight }}
         </span>
       </div>
@@ -73,7 +70,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
         variant="soft"
         @click="confirm"
       >
-        {{ t('base.delete') }}
+        {{ props.confirmLabel || t('base.delete') }}
       </UButton>
     </template>
   </UModal>

@@ -1,3 +1,5 @@
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
+
 import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
@@ -11,7 +13,7 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
     amount: props.amount[0],
     categoryId: props.categoryId,
 
-    date: props.date || Date.now(),
+    date: props.date || todayCivilDayEpoch(),
     type: props.trnType,
 
     updatedAt: Date.now(),

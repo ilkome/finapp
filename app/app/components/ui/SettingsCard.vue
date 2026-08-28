@@ -9,13 +9,13 @@ defineProps<{
 <template>
   <div>
     <div :class="cn($slots.default || $slots.footer ? 'pb-2' : 'pb-4')">
-      <div class="border-default mb-2 border-b pb-2 text-lg font-semibold">
+      <div class="mb-2 border-b border-default pb-2 text-lg font-semibold">
         {{ title }}
       </div>
 
       <div
         v-if="description"
-        class="text-muted py-1 text-xs"
+        class="py-1 text-xs text-muted"
       >
         {{ description }}
       </div>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeBarStyle, formatCompactAmount } from '~/components/stat/categories/barUtils'
+import { computeBarStyle, formatCompactAmount, getMaxCategoryValues } from '~/components/stat/categories/barUtils'
 
 describe('computeBarStyle', () => {
   const biggest = { expense: 500, income: 1000 }
@@ -54,5 +54,24 @@ describe('formatCompactAmount', () => {
 
   it('formats zero', () => {
     expect(formatCompactAmount(0)).toBe('0')
+  })
+})
+
+describe('getMaxCategoryValues', () => {
+  it('takes the first positive and first negative value', () => {
+    const result = getMaxCategoryValues([{ value: 500 }, { value: 1000 }, { value: -250 }, { value: -900 }])
+    expect(result).toEqual({ expense: 250, income: 500 })
+  })
+
+  it('ignores values after the first found in each sign, even if larger', () => {
+    // Relies on categories being pre-sorted (e.g. by magnitude): the second
+    // negative (-900) is bigger than the first (-250) but is not picked up.
+    const result = getMaxCategoryValues([{ value: -250 }, { value: -900 }])
+    expect(result).toEqual({ expense: 250, income: 0 })
+  })
+
+  it('defaults to 0 when a sign is absent', () => {
+    expect(getMaxCategoryValues([{ value: 500 }])).toEqual({ expense: 0, income: 500 })
+    expect(getMaxCategoryValues([])).toEqual({ expense: 0, income: 0 })
   })
 })

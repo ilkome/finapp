@@ -39,6 +39,24 @@ export const trnsItems: Record<TrnId, TrnItem> = {
     walletId: 'walletCashUSD',
   },
 
+  singleLegTransferExpenseWalletCashUSD50: {
+    amount: 50,
+    categoryId: 'transfer',
+    date: 123456,
+    type: TrnType.Expense,
+    updatedAt: 12,
+    walletId: 'walletCashUSD',
+  },
+
+  singleLegTransferIncomeWalletCashUSD60: {
+    amount: 60,
+    categoryId: 'transfer',
+    date: 123456,
+    type: TrnType.Income,
+    updatedAt: 12,
+    walletId: 'walletCashUSD',
+  },
+
   transactionExpenseWalletCashUSD400: {
     amount: 400,
     categoryId: 'expense',

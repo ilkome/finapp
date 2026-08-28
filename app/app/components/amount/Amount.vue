@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/amount/types'
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/stat/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
@@ -43,15 +43,15 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
 <template>
   <div
     :class="{
-      '!text-expense-1': colorize === 'expense' && type === 0,
-      '!text-income-1': colorize === 'income' && type === 1,
+      'text-expense-1!': colorize === 'expense' && type === 0,
+      'text-income-1!': colorize === 'income' && type === 1,
       'text-2xs': variant === '2xs',
       'text-xs': variant === 'xs',
       'text-sm': variant === 'sm',
       'text-xl': variant === 'xl',
       'text-base': variant === 'base',
     }"
-    class="font-secondary grid gap-1 leading-none"
+    class="grid gap-1 font-secondary leading-none"
     @click="(e: Event) => emit('click', e)"
   >
     <AmountItem

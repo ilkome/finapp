@@ -5,14 +5,10 @@ export default defineAppConfig({
         .replace(/stroke-width="[^"]*"/g, `stroke-width="1.75"`)
     },
   },
-  theme: {
-    blackAsPrimary: true,
-    radius: 0.375,
-  },
   ui: {
     calendar: {
       slots: {
-        body: '!flex-col !space-y-8',
+        body: 'flex-col! space-y-8!',
         cellTrigger: 'data-[disabled]:hover:bg-transparent data-today:bg-primary/10',
         root: 'p-2 pt-0',
       },
@@ -26,17 +22,23 @@ export default defineAppConfig({
         group: 'p-0 py-1 first:pt-0',
         item: 'p-0',
         label: 'z-20 mb-px sticky top-0 bg-default',
-        viewport: 'scrollerBlock',
+        viewport: 'scroller-block',
       },
     },
     modal: {
       slots: {
-        overlay: '!bg-overlay',
+        overlay: 'bg-overlay!',
       },
     },
     popover: {
       slots: {
         content: 'w-[22rem] max-w-sm',
+      },
+    },
+    radioGroup: {
+      slots: {
+        fieldset: 'flex-wrap gap-1',
+        item: 'bg-elevated/30 rounded-sm',
       },
     },
     selectMenu: {
@@ -45,12 +47,12 @@ export default defineAppConfig({
         variant: 'outline',
       },
       slots: {
-        base: 'min-h-[42px] px-4 min-w-[160px]',
+        base: 'min-h-10.5 px-4 min-w-40',
         item: 'hover:bg-elevated/50 rounded-sm',
       },
       variants: {
         variant: {
-          outline: 'bg-elevated/30 hover:!bg-elevated/50',
+          outline: 'bg-elevated/30 hover:bg-elevated/50!',
         },
       },
     },

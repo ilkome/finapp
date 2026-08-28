@@ -26,6 +26,17 @@ export function computeBarStyle(
 }
 
 /**
+ * Max income/expense magnitude for a category list, feeding computeBarStyle.
+ * Relies on categories being pre-sorted: takes the first positive and first
+ * negative value rather than scanning for the true max.
+ */
+export function getMaxCategoryValues(categories: { value: number }[]): MaxCategoryValues {
+  const income = categories.find(c => c.value > 0)?.value ?? 0
+  const expense = categories.find(c => c.value < 0)?.value ?? 0
+  return { expense: Math.abs(expense), income }
+}
+
+/**
  * Format amount with K/M abbreviations for compact display.
  */
 export function formatCompactAmount(value: number): string {

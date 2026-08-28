@@ -1,32 +1,35 @@
 <script setup lang="ts">
-import { addDays, isSameDay, subDays } from 'date-fns'
+import { addCivilDays, isSameCivilDay, todayCivilDayEpoch } from '~~/utils/date/civil'
 
-import { useDateFormats } from '~/components/date/useDateFormats'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { useDateFormats } from '~/composables/useDateFormats'
 
 const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const { formatDate } = useDateFormats()
 
-const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full') as { day: string, full: string, month: string, week: string, weekday: string } | undefined)
-const isToday = computed(() => isSameDay(new Date(trnsFormStore.values.date), new Date()))
+const formattedDate = computed(() => formatDate(trnsFormStore.values.date, 'full'))
+const dateLabel = computed(() => formattedDate.value
+  ? [formattedDate.value.day, formattedDate.value.month, formattedDate.value.year].filter(Boolean).join(' ')
+  : '')
+const isToday = computed(() => isSameCivilDay(trnsFormStore.values.date, todayCivilDayEpoch()))
 const isShow = ref(false)
 
 function changeDate(way: 'prev' | 'next' | 'today') {
-  let newDate: number = Date.now()
+  let newDate: number = todayCivilDayEpoch()
 
   if (way === 'prev')
-    newDate = subDays(trnsFormStore.values.date, 1).getTime()
+    newDate = addCivilDays(trnsFormStore.values.date, -1)
 
   if (way === 'next' && !isToday.value)
-    newDate = addDays(trnsFormStore.values.date, 1).getTime()
+    newDate = addCivilDays(trnsFormStore.values.date, 1)
 
   trnsFormStore.values.date = newDate
 }
 </script>
 
 <template>
-  <DateNav
+  <UiNavArrows
     class="grow"
     :isShowNavHome="!isToday"
     :isEnd="isToday"
@@ -42,9 +45,9 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       @closeModal="isShow = false"
     >
       <template #trigger>
-        <UiActionButton class="text-muted grid h-full w-full content-center !justify-start px-2 text-left">
-          <div class="text-highlighted text-sm">
-            {{ formattedDate?.day }} {{ formattedDate?.month }}
+        <UiActionButton class="grid size-full content-center justify-start! px-2 text-left text-muted">
+          <div class="text-sm text-highlighted">
+            {{ dateLabel }}
           </div>
           <div class="font-regular text-2xs leading-none">
             {{ formattedDate?.weekday }}
@@ -58,5 +61,5 @@ function changeDate(way: 'prev' | 'next' | 'today') {
         </div>
       </template>
     </BottomSheetOrDropdown>
-  </DateNav>
+  </UiNavArrows>
 </template>

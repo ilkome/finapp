@@ -1,3 +1,4 @@
+import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -36,7 +37,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
     categoryId: null,
-    date: Date.now(),
+    date: todayCivilDayEpoch(),
     desc: undefined,
     expenseWalletId: null,
     incomeWalletId: null,
@@ -53,6 +54,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   const modal = ref({
     description: false,
   })
+
 
   function closeTrnFormModal(name: keyof typeof modal.value) {
     modal.value[name] = false
@@ -205,7 +207,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amount = [0, 0, 0]
     values.amountRaw = ['', '', '']
     values.categoryId = null
-    values.date = Date.now()
+    values.date = todayCivilDayEpoch()
     values.desc = undefined
     values.expenseWalletId = null
     values.incomeWalletId = null
@@ -343,6 +345,19 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     ui.value.isShow = true
   }
 
+  // Shared by the round-categories quick-add row and the categories long-press gesture: open a
+  // fresh create form pre-filled with a single category and no amount yet.
+  function openFormForCategory(categoryId: CategoryId, date: number = todayCivilDayEpoch()) {
+    if (!categoriesStore.isTransactible(categoryId))
+      return
+
+    openFormForCreate()
+    values.amount = [0, 0, 0]
+    values.amountRaw = ['', '', '']
+    values.categoryId = categoryId
+    values.date = date
+  }
+
   function openFormForDuplicate(trnId: TrnId) {
     const trn = trnsStore.items?.[trnId] as TrnItem
 
@@ -377,6 +392,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     onClose,
     onSubmit,
     onTransferWalletSelected,
+    openFormForCategory,
     openFormForCreate,
     openFormForDuplicate,
     openFormForEdit,

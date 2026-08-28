@@ -1,115 +1,88 @@
 <script setup lang="ts">
-import { sub } from 'date-fns'
+import {
+  isEnd as computeIsEnd,
+  isShowNav as computeIsShowNav,
+  isShowNavHome as computeIsShowNavHome,
+  isStart as computeIsStart,
+  isLatestSelectedInterval,
+} from '~/components/stat/date/navigationPredicates'
+import { statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
 
-import { getEndOf, getStartOf, toDuration } from '~/components/date/utils'
-import { statDateKey } from '~/components/stat/injectionKeys'
-
-const { t } = useI18n()
 const statDate = inject(statDateKey)!
+const stickyNav = inject(statStickyNavKey, false)
 
-const isShowNav = computed(() =>
-  !statDate.params.value.isShowMaxRange
-  && (statDate.range.value.start < Date.now()
-    || (
-      statDate.range.value.start !== statDate.maxRange.value.start
-      && statDate.range.value.end !== statDate.maxRange.value.end)))
+const isShowNav = computed(() => computeIsShowNav(statDate.params.value, statDate.range.value, statDate.maxRange.value, new Date()))
 
-const isDayToday = computed(() => statDate.params.value.rangeBy === 'day' && statDate.params.value.rangeDuration === 1 && statDate.range.value.end < getEndOf(new Date(), 'day').getTime())
+const isIntervalStep = computed(() => statDate.params.value.intervalSelected !== -1)
 
-const isEnd = computed(() =>
-  statDate.range.value.end >= getEndOf(new Date(), statDate.params.value.rangeBy).getTime() && !isDayToday.value,
-)
+// The window the arrows actually move, and the unit they move it by.
+const navRange = computed(() => (isIntervalStep.value && statDate.selectedInterval.value) || statDate.range.value)
+const navBy = computed(() => (isIntervalStep.value ? statDate.params.value.granularityBy : statDate.params.value.rangeBy))
+const navDuration = computed(() => (isIntervalStep.value ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration))
 
-const isStart = computed(() =>
-  statDate.range.value.start <= statDate.maxRange.value.start,
-)
-
-const isShowNavHome = computed(() => {
-  const start = getStartOf(sub(new Date(), toDuration(statDate.params.value.rangeBy, statDate.params.value.rangeDuration - 1)), statDate.params.value.rangeBy).getTime()
-  const end = getEndOf(new Date(), statDate.params.value.rangeBy).getTime()
-
-  return !statDate.params.value.isShowMaxRange && (statDate.params.value.intervalSelected !== -1 || (statDate.range.value.start !== start && statDate.range.value.end !== end))
+const isEnd = computed(() => {
+  const now = new Date()
+  return (
+    isLatestSelectedInterval(statDate.params.value.intervalSelected, statDate.intervalsInRange.value.length, statDate.range.value, now)
+    || computeIsEnd(statDate.params.value, navRange.value, now, navBy.value, navDuration.value)
+  )
 })
 
+const isStart = computed(() => computeIsStart(navRange.value, statDate.maxRange.value))
+
+const isShowNavHome = computed(() => computeIsShowNavHome(statDate.params.value, statDate.range.value, new Date()))
+
 function changeDate(way: 'next' | 'prev' | 'today') {
-  if (way === 'next' && !isEnd.value) {
-    statDate.params.value.rangeOffset = statDate.params.value.rangeOffset - 1
-    return
-  }
-
-  if (way === 'prev' && !isStart.value) {
-    statDate.params.value.rangeOffset = statDate.params.value.rangeOffset + 1
-    return
-  }
-
   if (way === 'today') {
-    statDate.params.value.rangeOffset = 0
-    statDate.params.value.intervalSelected = -1
+    statDate.goHome()
+    return
   }
+
+  if (way === 'next' ? isEnd.value : isStart.value)
+    return
+
+  const direction = way === 'next' ? 1 : -1
+  // An interval is selected -> the arrows step intervals (days inside a month, months
+  // inside a year) and roll into the neighbouring range at the edges.
+  if (statDate.params.value.intervalSelected !== -1)
+    statDate.stepInterval(direction)
+  else statDate.stepRange(direction)
 }
 </script>
 
 <template>
-  <div class="items-top flex grow items-center gap-2 overflow-x-auto py-2 pb-0">
-    <DateNav
+  <div
+    class="stat-date-navigation -mx-2 flex grow snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:px-0"
+    :class="stickyNav ? 'pt-0' : 'pt-2'"
+  >
+    <UiNavArrows
       v-if="isShowNav && !statDate.params.value.customDate"
+      class="shrink-0 snap-start"
+      hideInactiveArrows
+      :homeAriaLabel="$t('base.reset')"
+      homeMatchesArrows
       :isEnd
       :isShowNavHome
       :isStart
       @changeDate="changeDate"
     >
-      <BottomSheetOrDropdown
-        :title="t('dates.select')"
-        :isOpen="statDate.modal.value.dateSelector"
-        class="flex grow-0 gap-1"
-        isShowCloseBtn
-        @openModal="statDate.modal.value.dateSelector = true"
-        @closeModal="statDate.modal.value.dateSelector = false"
-      >
-        <template #trigger>
-          <UiTitleCollapse
-            class="text-md !grow-0"
-            isShown
-          >
-            <StatDateRange />
-          </UiTitleCollapse>
-        </template>
+      <StatDateRangeButton class="snap-start" />
+    </UiNavArrows>
 
-        <template #content="{ close }">
-          <StatDateSelector
-            class="min-w-[362px] pb-2"
-            @close="close"
-          />
-        </template>
-      </BottomSheetOrDropdown>
-    </DateNav>
-
-    <BottomSheetOrDropdown
-      v-else
-      :title="t('dates.select')"
-      :isOpen="statDate.modal.value.dateSelector"
-      class="flex grow-0 gap-1"
-      isShowCloseBtn
-      @openModal="statDate.modal.value.dateSelector = true"
-      @closeModal="statDate.modal.value.dateSelector = false"
-    >
-      <template #trigger>
-        <UiTitleCollapse
-          class="text-md !grow-0"
-          isShown
-        >
-          <StatDateRange />
-        </UiTitleCollapse>
-      </template>
-
-      <template #content="{ close }">
-        <StatDateSelector
-          class="min-w-[362px] pb-2 md:px-3"
-          @close="close"
-        />
-      </template>
-    </BottomSheetOrDropdown>
+    <StatDateRangeButton v-else class="shrink-0 snap-start" />
 
     <slot />
   </div>
 </template>
+
+<style scoped>
+.stat-date-navigation {
+  scrollbar-width: none;
+}
+
+.stat-date-navigation::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+</style>

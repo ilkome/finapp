@@ -13,5 +13,11 @@ export default defineAppConfig({
     colors: {
       primary: 'pink',
     },
+    prose: {
+      codeIcon: {
+        // Remove once Nuxt Icon or Docus handles .env.local.
+        '.env.local': 'i-vscode-icons-file-type-dotenv',
+      },
+    },
   },
 })

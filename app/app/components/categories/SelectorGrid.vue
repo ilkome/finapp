@@ -9,6 +9,7 @@ const props = defineProps<{
   getContextMenuItems?: (categoryId: CategoryId) => ContextMenuItem[][] | undefined
   ids: CategoryId[]
   onNew?: () => void
+  selectedIds?: CategoryId[]
 }>()
 
 const emit = defineEmits<{
@@ -28,7 +29,7 @@ function select(id: CategoryId) {
 </script>
 
 <template>
-  <div class="3sm:grid-cols-2 grid gap-1">
+  <div class="grid gap-1 3sm:grid-cols-2">
     <CategoriesItem
       v-for="categoryId in props.ids"
       :key="categoryId"
@@ -37,6 +38,7 @@ function select(id: CategoryId) {
       :class="itemClasses"
       :category="categoriesStore.items[categoryId]!"
       :contextMenuItems="props.getContextMenuItems?.(categoryId)"
+      :selectedIds="props.selectedIds"
       isShowParent
       stacked
       @click="select(categoryId)"
@@ -45,14 +47,14 @@ function select(id: CategoryId) {
     <button
       v-if="props.onNew"
       type="button"
-      :class="cn('interactive flex min-h-[46px] items-center gap-3 px-2 py-1.5 -my-[1px]', itemClasses)"
+      :class="cn('-my-0.25 flex min-h-11.5 items-center gap-3 interactive px-2 py-1.5', itemClasses)"
       :aria-label="t('categories.new')"
       @click="props.onNew"
     >
-      <div class="flex-center text-icon-primary bg-elevated/60 size-8 shrink-0 rounded-full">
+      <div class="flex-center size-8 shrink-0 rounded-full bg-elevated/60 text-icon-primary">
         <Icon name="lucide:plus" size="18" />
       </div>
-      <span class="text-muted text-sm">{{ t('categories.new') }}</span>
+      <span class="text-sm text-muted">{{ t('categories.new') }}</span>
     </button>
   </div>
 </template>

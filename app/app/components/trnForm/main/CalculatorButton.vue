@@ -7,16 +7,16 @@ const emit = defineEmits<{
 <template>
   <div
     class="
-      bg-elevated/50 font-secondary
-      hover:border-default hover:bg-elevated
-      text-muted
-      flex
-      aspect-square
-      w-12 items-center justify-center
+      hover:scale-1.02 flex
+      aspect-square w-12
+      items-center
+      justify-center
       rounded-full
-      p-1 text-2xl
-      font-normal transition
-      hover:scale-[1.02]
+      bg-elevated/50 p-1 font-secondary
+      text-2xl
+      font-normal text-muted
+      transition hover:border-default
+      hover:bg-elevated
       @xs/trnForm:w-14
       @sm/trnForm:w-16
     "

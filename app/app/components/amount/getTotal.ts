@@ -1,3 +1,4 @@
+import type { CategoryId } from '~/components/categories/types'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
@@ -26,6 +27,8 @@ export function getAmountInRate({
 
 type TotalProps = {
   baseCurrencyCode?: CurrencyCode
+  /** Category ids to drop from income/expense (dashboard "exclude from stats"). Balances never pass this. */
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   rates?: Rates
   trnsIds?: TrnId[]
   trnsItems: Record<TrnId, TrnItem>
@@ -39,7 +42,7 @@ export type TotalReturns = {
   expenseTransfers: number
   income: number
   incomeTransfers: number
-  sum: number
+  net: number
   sumTransfers: number
 }
 
@@ -74,6 +77,22 @@ export function getTotal(props: TotalProps): TotalReturns {
         adjustment += trn.type === TrnType.Income ? amount : -amount
         continue
       }
+      // Single-leg transfer (bank import, counterparty account not in finapp): moves money
+      // between accounts, so it belongs in the transfer buckets - never income/expense.
+      if (trn.categoryId === 'transfer') {
+        if (!walletsSet || walletsSet.has(trn.walletId)) {
+          const wallet = walletsItems[trn.walletId]
+          const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
+          if (trn.type === TrnType.Income)
+            incomeTransfers += sum
+          else
+            expenseTransfers += sum
+        }
+        continue
+      }
+      // Excluded-from-stats categories are kept in balances/lists but not counted here.
+      if (props.excludedCategoriesIds?.has(trn.categoryId))
+        continue
       const wallet = walletsItems[trn.walletId]
       const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
 
@@ -106,7 +125,7 @@ export function getTotal(props: TotalProps): TotalReturns {
     }
   }
 
-  const sum = income - expense
+  const net = income - expense
   const sumTransfers = incomeTransfers - expenseTransfers
 
   return {
@@ -115,8 +134,21 @@ export function getTotal(props: TotalProps): TotalReturns {
     expenseTransfers,
     income,
     incomeTransfers,
-    sum,
+    net,
     sumTransfers,
+  }
+}
+
+/** Merges two totals field by field - used to combine actuals with a forecast total. */
+export function addTotals(a: TotalReturns, b: TotalReturns): TotalReturns {
+  return {
+    adjustment: a.adjustment + b.adjustment,
+    expense: a.expense + b.expense,
+    expenseTransfers: a.expenseTransfers + b.expenseTransfers,
+    income: a.income + b.income,
+    incomeTransfers: a.incomeTransfers + b.incomeTransfers,
+    net: a.net + b.net,
+    sumTransfers: a.sumTransfers + b.sumTransfers,
   }
 }
 

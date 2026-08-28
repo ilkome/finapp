@@ -13,7 +13,7 @@ const trnsFormStore = useTrnsFormStore()
 const isShow = computed(() => trnsFormStore.ui.isShow)
 
 const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = ref<Swiper | null>(null)
+const sliderObj = shallowRef<Swiper | null>(null)
 
 function init() {
   if (!sliderObj.value) {
@@ -50,21 +50,21 @@ watch(isShow, async (v) => {
   <Transition name="fadeIn" appear>
     <div
       v-if="isShow"
-      class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-[360px] py-4"
+      class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-90 py-4"
     >
       <div class="relative h-full overflow-hidden rounded-l-xl shadow-2xl">
         <div class="absolute top-2 right-2">
-          <BottomSheetClose @click="trnsFormStore.onClose()" />
+          <UiButtonClose @click="trnsFormStore.onClose()" />
         </div>
 
-        <div ref="sliderRef" class="swiper-container bg-default h-full">
+        <div ref="sliderRef" class="swiper-container h-full bg-default">
           <div class="swiper-wrapper">
             <!-- Main -->
             <div class="swiper-slide h-full">
-              <div class="scrollerBlock grid h-full grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
+              <div class="grid h-full scroller-block grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
-                  class="!pb-0"
+                  class="pb-0!"
                 />
                 <div
                   v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
@@ -82,8 +82,8 @@ watch(isShow, async (v) => {
               class="swiper-slide"
               :style="{ height: '100%' }"
             >
-              <div class="scrollerBlock h-full overflow-y-auto overscroll-contain">
-                <UiTitleSection class="bg-default sticky top-0 z-10 px-4 pt-5 pb-3 md:text-xl">
+              <div class="h-full scroller-block overflow-y-auto overscroll-contain">
+                <UiTitleSection class="sticky top-0 z-10 bg-default px-4 pt-5 pb-3 md:text-xl">
                   {{ t('trns.history') }}
                 </UiTitleSection>
 

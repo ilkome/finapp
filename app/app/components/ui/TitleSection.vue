@@ -7,7 +7,7 @@ const { size = 'md' } = defineProps<{
 <template>
   <div
     :class="cn(
-      'font-tertiary text-muted leading-none font-semibold',
+      'font-tertiary leading-none font-semibold text-muted',
       size === 'md' && 'text-base',
     )"
   >

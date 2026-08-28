@@ -2,7 +2,7 @@ import type { Categories, CategoryId } from '~/components/categories/types'
 import type { CategoriesWithData, CategoryWithData } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
+import { getParentCategoryIdOrUndefined, isSystemCategoryId } from '~/components/categories/utils'
 
 export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData): number {
   if (a.value === 0)
@@ -22,11 +22,12 @@ export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData)
 
 export function collectCategoriesByTrns(params: {
   categoriesItems: Categories
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   preCategoriesIds?: CategoryId[]
   trnsIds: TrnId[]
   trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
 }): CategoriesWithData {
-  const { categoriesItems, preCategoriesIds, trnsIds, trnsItems } = params
+  const { categoriesItems, excludedCategoriesIds, preCategoriesIds, trnsIds, trnsItems } = params
 
   const result: CategoriesWithData = {}
 
@@ -34,7 +35,9 @@ export function collectCategoriesByTrns(params: {
     const categoryId = trnsItems[trnId]?.categoryId
     const category = categoryId && categoriesItems[categoryId]
 
-    if (!categoryId || !category || categoryId === 'transfer')
+    if (!categoryId || !category || isSystemCategoryId(categoryId))
+      continue
+    if (excludedCategoriesIds?.has(categoryId))
       continue
 
     result[categoryId] ??= {
@@ -49,7 +52,7 @@ export function collectCategoriesByTrns(params: {
   if (preCategoriesIds) {
     for (const catId of preCategoriesIds) {
       const category = categoriesItems[catId]
-      if (!category)
+      if (!category || excludedCategoriesIds?.has(catId))
         continue
 
       result[catId] ??= {

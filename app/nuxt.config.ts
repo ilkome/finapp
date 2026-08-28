@@ -16,40 +16,70 @@ export default defineNuxtConfig({
         { href: 'https://finapp.ilko.me/', rel: 'canonical' },
       ],
       meta: [
-        { content: 'Open-source personal finance app. Track expenses, manage wallets, and analyze your spending. Works offline, syncs across devices.', name: 'description' },
+        {
+          content:
+            'Open-source personal finance app. Track expenses, manage wallets, and analyze your spending. Works offline, syncs across devices.',
+          name: 'description',
+        },
         { content: 'Personal Finance Manager', property: 'og:title' },
-        { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', property: 'og:description' },
+        {
+          content:
+            'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.',
+          property: 'og:description',
+        },
         { content: 'website', property: 'og:type' },
         { content: 'Finapp', property: 'og:site_name' },
         { content: 'https://finapp.ilko.me/', property: 'og:url' },
-        { content: 'https://finapp.ilko.me/og-image.png', property: 'og:image' },
+        {
+          content: 'https://finapp.ilko.me/og-image.png',
+          property: 'og:image',
+        },
         { content: '1200', property: 'og:image:width' },
         { content: '630', property: 'og:image:height' },
         { content: 'image/png', property: 'og:image:type' },
-        { content: 'Finapp dashboard with expense and income analytics', property: 'og:image:alt' },
+        {
+          content: 'Finapp dashboard with expense and income analytics',
+          property: 'og:image:alt',
+        },
         { content: 'en_US', property: 'og:locale' },
         { content: 'summary_large_image', name: 'twitter:card' },
         { content: 'Personal Finance Manager', name: 'twitter:title' },
-        { content: 'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.', name: 'twitter:description' },
-        { content: 'https://finapp.ilko.me/og-image.png', name: 'twitter:image' },
-        { content: 'Finapp dashboard with expense and income analytics', name: 'twitter:image:alt' },
+        {
+          content:
+            'Your money, your control - anywhere, anytime. Track expenses, manage wallets, analyze spending. Works offline, syncs across devices.',
+          name: 'twitter:description',
+        },
+        {
+          content: 'https://finapp.ilko.me/og-image.png',
+          name: 'twitter:image',
+        },
+        {
+          content: 'Finapp dashboard with expense and income analytics',
+          name: 'twitter:image:alt',
+        },
+      ],
+      style: [
+        {
+          innerHTML:
+            'html{background:#fff;color-scheme:light dark}@media(prefers-color-scheme:dark){html{background:#171717}}',
+        },
       ],
       title: 'Personal Finance Manager',
     },
   },
-
   colorMode: {
     classSuffix: '',
     fallback: 'dark',
     preference: 'system',
   },
+  compatibilityDate: '2026-07-30',
 
-  compatibilityDate: '2024-07-07',
   css: [join(currentDir, './app/assets/css/main.css')],
 
   devtools: {
+    enabled: true,
     timeline: {
-      enabled: true,
+      enabled: false,
     },
   },
 
@@ -70,7 +100,6 @@ export default defineNuxtConfig({
       { global: true, name: 'Unica One' },
     ],
   },
-
   future: {
     compatibilityVersion: 4,
   },
@@ -101,9 +130,10 @@ export default defineNuxtConfig({
     clientBundle: {
       icons: [
         ...categoryIcons.flat(),
-        // Runtime iconify fetches pop in after first paint and shift layout.
         'hugeicons:archive-01',
         'hugeicons:bank',
+        'hugeicons:calendar-03',
+        'hugeicons:chart-histogram',
         'hugeicons:folder-library',
         'hugeicons:laptop-programming',
         'hugeicons:menu-01',
@@ -111,13 +141,31 @@ export default defineNuxtConfig({
         'hugeicons:plus-sign-square',
         'hugeicons:settings-01',
         'hugeicons:wallet-01',
+        'lucide:book-open',
+        'lucide:check',
         'lucide:chart-no-axes-combined',
+        'lucide:chevron-left',
+        'lucide:chevron-right',
+        'lucide:external-link',
         'lucide:folder',
         'lucide:folder-open',
         'lucide:folder-open-dot',
         'lucide:folder-tree',
+        'lucide:languages',
         'lucide:loader-circle',
+        'lucide:log-out',
+        'lucide:menu',
+        'lucide:monitor',
+        'lucide:moon',
         'lucide:network',
+        'lucide:paintbrush',
+        'lucide:palette',
+        'lucide:square-arrow-out-up-right',
+        'lucide:square-round-corner',
+        'lucide:sun',
+        'lucide:swatch-book',
+        'mdi:github',
+        'mdi:play-box-outline',
       ],
       scan: true,
     },
@@ -134,21 +182,8 @@ export default defineNuxtConfig({
   ],
 
   nitro: {
-    hooks: {
-      // Make the entry Tailwind stylesheet (~256KB) non-render-blocking so the SPA loading
-      // skeleton (inline-styled) paints on HTML arrival instead of waiting for that CSS to
-      // download. The app itself renders only after its JS bundle executes - slower than the
-      // CSS fetch - so styles are in place by mount (no FOUC); <noscript> keeps it blocking
-      // when JS is off. Rewrites the statically generated HTML (index/200/404).
-      'prerender:generate': (route: { contents?: string, fileName?: string }) => {
-        if (typeof route.contents !== 'string' || !route.fileName?.endsWith('.html'))
-          return
-        route.contents = route.contents.replace(
-          /<link rel="stylesheet" href="([^"]+)"([^>]*)>/g,
-          (_m, href, rest) =>
-            `<link rel="stylesheet" href="${href}"${rest} media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="${href}"${rest}></noscript>`,
-        )
-      },
+    prerender: {
+      autoSubfolderIndex: false,
     },
     preset: 'static',
   },
@@ -160,44 +195,52 @@ export default defineNuxtConfig({
     },
     devOptions: {
       enabled: false,
-      navigateFallback: '/',
+      navigateFallback: '/index.html',
       suppressWarnings: false,
     },
     manifest: {
       background_color: '#171717',
       display: 'standalone',
-      icons: [{
-        sizes: '192x192',
-        src: 'pwa-192x192.png',
-        type: 'image/png',
-      }, {
-        sizes: '512x512',
-        src: 'pwa-512x512.png',
-        type: 'image/png',
-      }, {
-        purpose: 'any',
-        sizes: '512x512',
-        src: 'pwa-512x512.png',
-        type: 'image/png',
-      }, {
-        purpose: 'maskable',
-        sizes: '192x192',
-        src: 'pwa-192x192.png',
-        type: 'image/png',
-      }],
+      icons: [
+        {
+          sizes: '192x192',
+          src: 'pwa-192x192.png',
+          type: 'image/png',
+        },
+        {
+          sizes: '512x512',
+          src: 'pwa-512x512.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'any',
+          sizes: '512x512',
+          src: 'pwa-512x512.png',
+          type: 'image/png',
+        },
+        {
+          purpose: 'maskable',
+          sizes: '192x192',
+          src: 'pwa-192x192.png',
+          type: 'image/png',
+        },
+      ],
       id: '/',
       name: 'Finapp',
-      screenshots: [{
-        form_factor: 'wide',
-        sizes: '1920x1080',
-        src: 'screenshot-desktop.png',
-        type: 'image/png',
-      }, {
-        form_factor: 'narrow',
-        sizes: '750x1334',
-        src: 'screenshot-mobile.png',
-        type: 'image/png',
-      }],
+      screenshots: [
+        {
+          form_factor: 'wide',
+          sizes: '1920x1080',
+          src: 'screenshot-desktop.png',
+          type: 'image/png',
+        },
+        {
+          form_factor: 'narrow',
+          sizes: '750x1334',
+          src: 'screenshot-mobile.png',
+          type: 'image/png',
+        },
+      ],
       short_name: 'Finapp',
       start_url: '/dashboard',
       theme_color: '#171717',
@@ -205,9 +248,26 @@ export default defineNuxtConfig({
     registerType: 'autoUpdate',
     workbox: {
       globIgnores: ['**/200*', '**/404*'],
-      globPatterns: ['**/*.{js,json,css,html,png,svg,ico,woff2}', '**/wa-sqlite-async.*.wasm'],
+      globPatterns: [
+        '**/*.{js,json,css,html,png,svg,ico,woff2}',
+        '**/wa-sqlite-async.*.wasm',
+      ],
+      importScripts: ['/sw-push.js'],
+      manifestTransforms: [
+        (entries) => {
+          const hasWasm = entries.some(e =>
+            /wa-sqlite-async\..*\.wasm$/.test(e.url),
+          )
+          if (!hasWasm) {
+            throw new Error(
+              'PWA precache manifest is missing the wa-sqlite WASM - offline-first start would break in prod. Check the wasm filename/glob in nuxt.config.ts.',
+            )
+          }
+          return { manifest: entries }
+        },
+      ],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
-      navigateFallback: '/',
+      navigateFallback: '/index.html',
       runtimeCaching: [
         {
           handler: 'CacheFirst',
@@ -242,30 +302,53 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      // Vercel sets VERCEL_ENV=production only for the main-branch prod deploy;
+      // absent locally, 'preview' for branch deploys.
+      isProd: process.env.VERCEL_ENV === 'production',
       powersyncUrl: process.env.VITE_POWERSYNC_URL,
       supabaseAnonKey: process.env.VITE_SUPABASE_ANON_KEY,
       supabaseUrl: process.env.VITE_SUPABASE_URL,
+      vapidPublicKey: process.env.VITE_VAPID_PUBLIC_KEY,
     },
   },
 
+  spaLoadingTemplate: false,
   ssr: false,
-
   telemetry: false,
 
   vite: {
     optimizeDeps: {
-      // @powersync/web ships web workers + WASM that must not be pre-bundled.
-      exclude: ['@powersync/web'],
+      // Keep PowerSync's main thread and shared workers on the same module graph. Mixing
+      // source-loaded @powersync/web with optimized transitive modules can leave a dev
+      // shared worker connected to clients from an obsolete Vite dependency generation.
+      exclude: [
+        '@powersync/common',
+        '@powersync/shared-internals',
+        '@powersync/web',
+        'comlink',
+      ],
       include: [
         'localforage',
         '@supabase/supabase-js',
         'date-fns',
+        'date-fns/locale',
+        '@date-fns/utc',
         'zod/v4',
         'es-toolkit',
         '@internationalized/date',
-        'date-fns/locale',
         'reka-ui',
         'reka-ui/namespaced',
+        'echarts/core',
+        'echarts/charts',
+        'echarts/components',
+        'echarts/renderers',
+        'vue-echarts',
+        'motion-v',
+        'clsx',
+        'tailwind-merge',
+        'tailwindcss/colors',
+        'swiper',
+        'swiper/modules',
       ],
     },
     worker: {

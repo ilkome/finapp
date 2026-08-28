@@ -28,12 +28,6 @@ const categoriesStore = useCategoriesStore()
 
 const isChildrenGrid = computed(() => props.childrenView === 'grid')
 
-function getRootLineWidth(categoryId: CategoryId) {
-  if (props.expanded?.isExpanded(categoryId) && categoriesStore.hasChildren(categoryId))
-    return 0
-  return props.categoriesItemProps?.lineWidth ?? 1
-}
-
 function getChildrenIds(categoryId: CategoryId) {
   return categoriesStore.getChildrenIds(categoryId)
 }
@@ -55,46 +49,49 @@ function getChildrenIds(categoryId: CategoryId) {
         :isShowChevron="!!props.expanded && categoriesStore.hasChildren(categoryId)"
         :to="props.getTo?.(categoryId)"
         v-bind="categoriesItemProps"
-        class="group"
-        :lineWidth="getRootLineWidth(categoryId)"
+        :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
+        :class="`group ${props.expanded?.isExpanded(categoryId) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
         @click="emit('click', categoryId)"
         @toggle="props.expanded?.toggle(categoryId)"
       />
 
-      <div
-        v-if="props.expanded?.isExpanded(categoryId) && categoriesStore.hasChildren(categoryId)"
-        :class="isChildrenGrid
-          ? 'ml-2 pb-4 pl-3 pr-2'
-          : '-mt-px ml-5 pb-1 pl-3'"
+      <UCollapsible
+        v-if="categoriesStore.hasChildren(categoryId)"
+        :open="props.expanded?.isExpanded(categoryId)"
+        :ui="{ content: 'overflow-hidden' }"
       >
-        <template v-if="!isChildrenGrid">
-          <CategoriesItem
-            v-for="childId in getChildrenIds(categoryId)"
-            :key="childId"
-            :activeItemId="activeItemId"
-            :category="categoriesStore.items[childId]!"
-            :categoryId="childId"
-            :contextMenuItems="props.getContextMenuItems?.(childId)"
-            :insideClasses="props.insideClasses"
-            :to="props.getTo?.(childId)"
-            :lineWidth="1"
-            v-bind="categoriesItemProps"
-            class="group"
-            @click="emit('click', childId)"
-          />
-        </template>
+        <template #content>
+          <div :class="isChildrenGrid ? 'ml-2 pr-2 pb-4 pl-3' : 'ml-5 pb-1 pl-3'">
+            <template v-if="!isChildrenGrid">
+              <CategoriesItem
+                v-for="childId in getChildrenIds(categoryId)"
+                :key="childId"
+                :activeItemId="activeItemId"
+                :category="categoriesStore.items[childId]!"
+                :categoryId="childId"
+                :contextMenuItems="props.getContextMenuItems?.(childId)"
+                :insideClasses="props.insideClasses"
+                :to="props.getTo?.(childId)"
+                v-bind="categoriesItemProps"
+                :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
+                class="group"
+                @click="emit('click', childId)"
+              />
+            </template>
 
-        <div v-else class="flex flex-wrap gap-1">
-          <CategoriesRoundLink
-            v-for="childId in getChildrenIds(categoryId)"
-            :key="childId"
-            :categoryId="childId"
-            :contextMenuItems="props.getContextMenuItems?.(childId)"
-            :to="props.getTo?.(childId)"
-            @click="emit('click', childId)"
-          />
-        </div>
-      </div>
+            <div v-else class="flex flex-wrap gap-1">
+              <CategoriesRoundLink
+                v-for="childId in getChildrenIds(categoryId)"
+                :key="childId"
+                :categoryId="childId"
+                :contextMenuItems="props.getContextMenuItems?.(childId)"
+                :to="props.getTo?.(childId)"
+                @click="emit('click', childId)"
+              />
+            </div>
+          </div>
+        </template>
+      </UCollapsible>
     </template>
   </div>
 </template>

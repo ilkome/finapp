@@ -64,7 +64,8 @@ test.describe('Categories children selector on /new', () => {
 
     await page.getByText(T.childCategories).first().click()
 
-    const candidates = page.locator('button[aria-pressed]')
+    const sheet = page.locator('.bottomSheetContent').last()
+    const candidates = sheet.locator('button[aria-pressed]')
     await expect(candidates.first()).toBeVisible()
     await candidates.nth(0).click()
     await candidates.nth(1).click()

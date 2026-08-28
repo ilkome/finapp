@@ -18,7 +18,7 @@ const isShow = computed(() =>
 )
 
 const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = ref<Swiper | null>(null)
+const sliderObj = shallowRef<Swiper | null>(null)
 const maxHeight = ref('550px')
 
 let resizeObserver: ResizeObserver | null = null
@@ -74,20 +74,19 @@ onMounted(init)
 <template>
   <BottomSheet
     :isShow="isShow"
-    dragClassesCustom="bottomSheetDragClassesCustom max-h-[98dvh]"
+    dragClassesCustom="bottom-sheet-drag-classes-custom max-h-[98dvh]"
     @closed="trnsFormStore.onClose()"
   >
-    <template #handler="{ close }">
+    <template #handler>
       <BottomSheetHandler />
-      <BottomSheetClose @click="close" />
     </template>
 
-    <div class="trnForm bg-default @container/trnForm">
+    <div class="trnForm @container/trnForm bg-default">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
-            class="swiper-slide bg-default h-full overflow-y-auto"
+            class="swiper-slide h-full overflow-y-auto bg-default"
             :style="{ height: maxHeight }"
           >
             <TrnFormTrnsSlide
@@ -99,7 +98,7 @@ onMounted(init)
 
           <!-- Main -->
           <div class="swiper-slide getHeight bg-default">
-            <div class="scrollerBlock h-full overflow-y-auto">
+            <div class="h-full scroller-block overflow-y-auto">
               <div class="max-h-[98dvh]">
                 <TrnFormMain
                   :maxHeight
@@ -113,7 +112,7 @@ onMounted(init)
             class="swiper-slide bg-default"
             :style="{ height: maxHeight }"
           >
-            <div class="scrollerBlock h-full overflow-y-auto">
+            <div class="h-full scroller-block overflow-y-auto">
               <div class="grid gap-4 pb-4">
                 <TrnFormSelectionWalletsFast />
                 <TrnFormSelectionCategoriesFast

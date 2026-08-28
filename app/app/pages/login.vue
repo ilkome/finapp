@@ -133,11 +133,11 @@ watch(
     >
       <div class="flex flex-col items-center justify-center">
         <UiLogo size="lg" />
-        <div class="text-muted pt-1 text-sm">
+        <div class="pt-1 text-sm text-muted">
           {{ t("login.description") }}
         </div>
 
-        <div class="grid min-w-[320px] items-center gap-3 pt-22">
+        <div class="grid min-w-80 items-center gap-3 pt-22">
           <button
             class="shiny-pro"
             :disabled="isLoading"

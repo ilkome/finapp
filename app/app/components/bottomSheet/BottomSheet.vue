@@ -1,12 +1,21 @@
 <script setup lang="ts">
 import { useBodyScrollLock } from 'reka-ui'
 
+import { registerSheet } from '~/composables/useSheetHistory'
+
+import { resolveDetentFractions } from './geometry'
 import { useBottomSheetDrag } from './useBottomSheetDrag'
 
 const props = defineProps<{
   dragClassesCustom?: string
   dragStyle?: Record<string, string>
+  isExpanded?: boolean
   isShow?: boolean
+  // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
+  // largest is the expanded/rendered height, the rest are collapsed detents.
+  // Enables the iOS/Android-style sheet that opens partway and expands on drag.
+  // Absent => classic single-state sheet.
+  snapPoints?: number[]
 }>()
 
 const emit = defineEmits<{
@@ -27,9 +36,12 @@ const { height: windowHeight } = useWindowSize()
 
 const {
   close,
+  dragMoved,
   dragStyles,
   init,
   isDragging,
+  isExpanded,
+  onTransitionEnd,
   opened,
   overflowClasses,
   overlayStyles,
@@ -40,11 +52,38 @@ const {
   drag,
   dragStyle: toRef(() => props.dragStyle),
   emit,
+  expanded: toRef(() => props.isExpanded),
   handlerRef,
   settings,
+  snapPoints: toRef(() => props.snapPoints),
+  windowHeight,
+})
+
+// In detent mode the sheet renders at a fixed height (the largest/expanded snap
+// point) so collapsed offsets are deterministic; detents slide it via transform.
+// Snap points accept viewport fractions (<= 1) or absolute pixels (> 1).
+const detentStyle = computed(() => {
+  const fractions = resolveDetentFractions(props.snapPoints, windowHeight.value)
+  if (fractions.length === 0)
+    return null
+  const expanded = fractions[fractions.length - 1]!
+  return { height: `${expanded * 100}dvh` }
 })
 
 const isBodyLocked = useBodyScrollLock(false)
+
+// Nested sheets keep `isShow` static true and signal open/close by mount/unmount,
+// so registration runs via the immediate watch and cleanup via onBeforeUnmount.
+let unregisterHistory: (() => void) | null = null
+function registerHistory() {
+  if (unregisterHistory)
+    return
+  unregisterHistory = registerSheet(() => close())
+}
+function deregisterHistory() {
+  unregisterHistory?.()
+  unregisterHistory = null
+}
 
 watch(
   () => props.isShow,
@@ -52,11 +91,13 @@ watch(
     if (value) {
       isBodyLocked.value = true
       init()
+      registerHistory()
     }
 
     if (!value) {
       isBodyLocked.value = false
       removeEvents()
+      deregisterHistory()
     }
 
     if (!value && opened.value) {
@@ -69,14 +110,16 @@ watch(
 onBeforeUnmount(() => {
   isBodyLocked.value = false
   removeEvents()
+  deregisterHistory()
 })
 
 const dragClasses = computed(() => [
   {
-    'pointer-events-none': isDragging.value && dragStyles.value.transform,
+    '[&_.scroller-block]:touch-none [&_.scroller-block]:overflow-hidden': isExpanded.value === false,
+    'duration-100': !isDragging.value && opened.value,
+    'pointer-events-none': dragMoved.value && dragStyles.value.transform,
     'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
-    'transition-opacity transition-transform duration-100':
-      !isDragging.value && opened.value,
+    'transition-opacity transition-transform': !isDragging.value && opened.value,
   },
   props.dragClassesCustom,
 ])
@@ -91,25 +134,25 @@ const dragClasses = computed(() => [
     <div
       :class="overflowClasses"
       :style="overlayStyles"
-      class="bg-overlay pointer-events-auto absolute inset-0 z-10 size-full"
+      class="pointer-events-auto absolute inset-0 z-10 size-full bg-overlay"
       @click="close()"
     />
 
     <div
       ref="drag"
       :class="dragClasses"
-      :style="dragStyles"
+      :style="[dragStyles, detentStyle]"
       class="drag pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
       @click.stop=""
+      @transitionend="onTransitionEnd"
     >
       <div ref="handlerRef">
-        <slot name="handler" :close="close">
+        <slot name="handler">
           <BottomSheetHandler />
-          <BottomSheetClose @click="close" />
         </slot>
       </div>
 
-      <slot :close="close" />
+      <slot :close="close" :isExpanded="isExpanded" />
     </div>
   </div>
 </template>

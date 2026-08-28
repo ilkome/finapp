@@ -1,0 +1,34 @@
+<script setup lang="ts">
+import { useDateFormats } from '~/composables/useDateFormats'
+
+const props = defineProps<{
+  date: number
+}>()
+
+const { formatDate } = useDateFormats()
+const formattedDate = computed(() => {
+  const result = formatDate(props.date, 'full')
+  return typeof result === 'object' ? result : undefined
+})
+</script>
+
+<template>
+  <div v-if="formattedDate" class="flex items-center gap-2">
+    <div class="font-secondary text-3xl font-semibold">
+      {{ formattedDate.day }}
+    </div>
+
+    <div class="text-muted">
+      <div class="pb-0.5 text-2xs leading-none">
+        {{ formattedDate.weekday }}
+      </div>
+
+      <div class="flex gap-1 text-sm leading-none font-medium">
+        <div>{{ formattedDate.month }}</div>
+        <div v-if="formattedDate.year">
+          {{ formattedDate.year }}
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

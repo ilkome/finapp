@@ -20,7 +20,7 @@ const src = computed(() => {
       width="2880"
       height="1864"
       loading="lazy"
-      class="w-full rounded-lg border border-[var(--ui-border)]"
+      class="w-full rounded-lg border border-default"
     />
   </div>
 </template>

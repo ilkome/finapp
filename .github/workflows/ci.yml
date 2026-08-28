@@ -6,6 +6,21 @@ on:
   pull_request:
 
 jobs:
+  checks:
+    name: lint + typecheck + unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+
   deps:
     name: reka-ui single version
     runs-on: ubuntu-latest
@@ -41,7 +56,7 @@ jobs:
         run: pnpm --filter @finapp/app exec playwright install-deps chromium
       # The demo smoke runs without a backend, but the build still needs a valid
       # supabaseUrl or createClient() throws and the login page never mounts.
-      - run: pnpm --filter @finapp/app test:e2e:prod
+      - run: pnpm test:e2e:prod
         env:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_ANON_KEY: e2e-dummy-anon-key

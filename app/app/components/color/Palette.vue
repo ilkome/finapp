@@ -66,7 +66,7 @@ const walletColorsUsed = computed(() => {
 
               <div
                 v-if="props.isWallet && walletColorsUsed.has(color)"
-                class="bg-accented size-3 rounded-full"
+                class="size-3 rounded-full bg-accented"
               />
             </div>
           </div>

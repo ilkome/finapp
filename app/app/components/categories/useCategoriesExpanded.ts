@@ -10,18 +10,26 @@ type CategoriesState = Record<CategoryId, CategoryState>
 export function useCategoriesExpanded(
   storageKey: string,
   currentIds: ComputedRef<CategoryId[]>,
+  options: { persistDefault?: boolean } = {},
 ) {
   const expandedState = useStorage<CategoriesState>(
     `categoriesOpened:${storageKey}`,
     {} as CategoriesState,
   )
+  const defaultExpanded = options.persistDefault
+    ? useStorage(`categoriesOpenedDefault:${storageKey}`, false)
+    : ref(false)
+
+  function isExpanded(id: CategoryId) {
+    return expandedState.value[id]?.show ?? defaultExpanded.value
+  }
 
   const isAllExpanded = computed(() =>
     currentIds.value.length > 0
-    && currentIds.value.every(id => expandedState.value[id]?.show),
+    && currentIds.value.every(isExpanded),
   )
   const isAnyExpanded = computed(() =>
-    currentIds.value.some(id => expandedState.value[id]?.show),
+    currentIds.value.some(isExpanded),
   )
 
   const folderIcon = computed(() => {
@@ -33,20 +41,22 @@ export function useCategoriesExpanded(
   })
 
   function toggleAll() {
-    const newShow = !isAnyExpanded.value
+    if (options.persistDefault) {
+      defaultExpanded.value = !defaultExpanded.value
+      return
+    }
+
+    const show = !isAnyExpanded.value
     for (const id of currentIds.value)
-      expandedState.value[id] = { show: newShow }
+      expandedState.value[id] = { show }
   }
 
   function toggle(id: CategoryId) {
-    expandedState.value[id] = { show: !expandedState.value[id]?.show }
-  }
-
-  function isExpanded(id: CategoryId) {
-    return expandedState.value[id]?.show ?? false
+    expandedState.value[id] = { show: !isExpanded(id) }
   }
 
   return {
+    defaultExpanded,
     folderIcon,
     isAllExpanded,
     isAnyExpanded,

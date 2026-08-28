@@ -1,7 +1,8 @@
+import type { Range } from '~~/utils/date/types'
+
 import { describe, expect, it } from 'vitest'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { Range } from '~/components/date/types'
 import type { TrnItem } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
@@ -14,12 +15,12 @@ const zeroTotal: TotalReturns = {
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
-  sum: 0,
+  net: 0,
   sumTransfers: 0,
 }
 
 function makeTotal(income: number, expense: number): TotalReturns {
-  return { ...zeroTotal, expense, income, sum: income - expense }
+  return { ...zeroTotal, expense, income, net: income - expense }
 }
 
 function makeTrn(date: number, type: TrnType = TrnType.Expense): TrnItem {
@@ -83,7 +84,7 @@ describe('bucketTrnsByIntervals', () => {
     )
 
     expect(result[0]!.total.income).toBe(1000)
-    expect(result[0]!.total.sum).toBe(1000)
+    expect(result[0]!.total.net).toBe(1000)
     expect(result[1]!.total.income).toBe(0)
   })
 
@@ -191,18 +192,18 @@ describe('computeAverageTotal', () => {
 
 describe('isPeriodOneDay', () => {
   it('returns true for rangeBy=day with duration=1', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 1 })).toBe(true)
+    expect(isPeriodOneDay({ granularityBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 1 })).toBe(true)
   })
 
-  it('returns true for intervalsBy=day with selected interval', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'day', intervalSelected: 3, rangeBy: 'month', rangeDuration: 1 })).toBe(true)
+  it('returns true for granularityBy=day with selected interval', () => {
+    expect(isPeriodOneDay({ granularityBy: 'day', intervalSelected: 3, rangeBy: 'month', rangeDuration: 1 })).toBe(true)
   })
 
   it('returns false for multi-day range without day interval selected', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 7 })).toBe(false)
+    expect(isPeriodOneDay({ granularityBy: 'month', intervalSelected: -1, rangeBy: 'day', rangeDuration: 7 })).toBe(false)
   })
 
   it('returns false for week range', () => {
-    expect(isPeriodOneDay({ intervalsBy: 'week', intervalSelected: -1, rangeBy: 'week', rangeDuration: 1 })).toBe(false)
+    expect(isPeriodOneDay({ granularityBy: 'week', intervalSelected: -1, rangeBy: 'week', rangeDuration: 1 })).toBe(false)
   })
 })

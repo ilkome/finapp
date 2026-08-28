@@ -1,95 +1,96 @@
 <script setup lang="ts">
-import type { CategoryId } from '~/components/categories/types'
-import type { Period } from '~/components/date/types'
+import type { Period } from '~~/utils/date/types'
+
+import type { AxisChartType } from '~/components/stat/chart/types'
+import type { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import type { ChartSeries } from '~/components/stat/types'
-import type { ChartPieGroup } from '~/components/stat/useStatItem'
 
 import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { resolveChartType } from '~/components/stat/useStatConfig'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
-  pieGroups: ChartPieGroup[]
+  chartWindow: ReturnType<typeof useStatChartWindow>
   series: ChartSeries[]
   xAxisLabels: number[]
 }>()
 
 const emit = defineEmits<{
-  clickCategory: [id: CategoryId]
+  select: [intervalKey?: number]
 }>()
 
-const { t } = useI18n()
 const statDate = inject(statDateKey)!
 const statConfig = inject(statConfigKey)!
 const trnsFormStore = useTrnsFormStore()
 
 // Charts mount on the first idle frame so echarts doesn't compete with the LCP render.
 const isChartMountReady = useIdleMount()
-const isChartShow = computed(() => statConfig.config.value.isChartShow)
-const chartView = computed(() => statConfig.config.value.chartView)
-const chartType = computed(() => resolveChartType(statConfig.config.value.chartType, statConfig.config.value.chart.mode))
-const isPie = computed(() => chartType.value === 'pie')
+const isChartShow = computed(() => statConfig.config.value.chart.isShow)
+const chartLayout = computed(() => statConfig.config.value.chart.layout)
+const chartType = computed(() => statConfig.config.value.chart.type)
+const axisChartType = computed<AxisChartType>(() => chartType.value === 'pie' ? 'bar' : chartType.value)
 const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
-function onClickChart(idx: number) {
-  const day = statDate.selectInterval(idx)
+async function onClickChart(intervalKey: number) {
+  emit('select', intervalKey)
+  const day = await props.chartWindow.selectIntervalByKey(intervalKey)
   if (day)
     trnsFormStore.values.date = day
 }
 
 function onChangePeriod(period: Period) {
-  statDate.setIntervalsBy(period)
+  statDate.setGranularityBy(period)
 }
 </script>
 
 <template>
   <div
     v-if="isChartShow"
+    class="max-w-full min-w-0"
     :class="{
-      '@3xl/main:max-w-xl': chartView === 'half' && !isPie,
+      'stat-column-width': chartLayout === 'combined-narrow',
     }"
   >
     <div
-      v-if="!isPie"
-      class="-mb-1 flex justify-end"
+      class="-mb-1 flex h-7 justify-end"
+      :class="{ invisible: chartType === 'pie' }"
     >
-      <StatDateQuick v-if="isShowQuick" />
+      <StatDateQuickRanges v-if="isShowQuick" />
 
       <div class="h-7">
-        <StatChartIntervals
-          :class="{ 'border-accented border-l': isShowQuick }"
-          :period="statDate.params.value.intervalsBy"
+        <StatChartIntervalSelect
+          :class="{ 'border-l border-accented': isShowQuick }"
+          :period="statDate.params.value.granularityBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"
         />
       </div>
     </div>
 
-    <div
-      v-if="isPie && isChartMountReady"
-      class="grid gap-4"
-      :class="{ '@sm/stat:grid-cols-2': props.pieGroups.length > 1 }"
-    >
-      <LazyStatChartPieView
-        v-for="group in props.pieGroups"
-        :key="group.type"
-        :pieData="group.pieData"
-        :showLegend="props.pieGroups.length === 1"
-        :typeLabel="t(`money.${group.type}`)"
-        @clickCategory="emit('clickCategory', $event)"
+    <div class="min-h-40 max-w-full min-w-0 @3xl/stat:min-h-52">
+      <LazyStatChartSimplePieView
+        v-if="isChartMountReady && chartType === 'pie'"
+        :endValue="props.chartWindow.endValue.value"
+        :series="props.series"
+        :startValue="props.chartWindow.startValue.value"
+        :xAxisLabels="props.xAxisLabels"
+        @select="emit('select')"
+      />
+      <LazyStatChartAxisView
+        v-else-if="isChartMountReady"
+        :chartType="axisChartType"
+        :bufferSize="props.chartWindow.bufferIntervals.value.length"
+        :commitCount="props.chartWindow.commitCount.value"
+        :endValue="props.chartWindow.endValue.value"
+        :isPannable="props.chartWindow.isEnabled.value"
+        :panOffset="statDate.params.value.rangePanOffset"
+        :period="statDate.params.value.granularityBy"
+        :series="props.series"
+        :startValue="props.chartWindow.startValue.value"
+        :xAxisLabels="props.xAxisLabels"
+        @click="onClickChart"
+        @preview="props.chartWindow.onPreview"
+        @previewEnd="props.chartWindow.commitPreview()"
       />
     </div>
-
-    <LazyStatChartView
-      v-else-if="isChartMountReady"
-      :chartType
-      :period="statDate.params.value.intervalsBy"
-      :series="props.series"
-      :xAxisLabels="props.xAxisLabels"
-      @click="onClickChart"
-    />
-
-    <!-- Space-reserving placeholder: same height as the chart, so the idle mount doesn't shift layout. -->
-    <div v-else class="h-40 @3xl/stat:h-52" />
   </div>
 </template>

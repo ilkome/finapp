@@ -365,6 +365,12 @@ async function onSave() {
           :title="t('categories.form.recentCategory')"
           @click="emit('update', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
+        <UiSwitchItem
+          v-if="!hasChildren"
+          :checkboxValue="!!props.categoryForm.isExcludeFromStats"
+          :title="t('categories.form.excludeFromStats')"
+          @click="emit('update', 'isExcludeFromStats', !props.categoryForm.isExcludeFromStats)"
+        />
       </div>
     </div>
 
@@ -393,7 +399,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="scrollerBlock bottomSheetContentInside">
+      <div class="bottom-sheet-content-inside scroller-block">
         <ColorPalette
           :activeColor="props.categoryForm.color"
           :icon="props.categoryForm.icon"
@@ -427,7 +433,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="scrollerBlock bottomSheetContentInside">
+      <div class="bottom-sheet-content-inside scroller-block">
         <FormElement class="pt-2 pb-4">
           <template #label>
             {{ t('categories.form.icon.desc') }}
@@ -453,7 +459,7 @@ async function onSave() {
           <div
             v-for="icon in iconGroup"
             :key="icon"
-            :class="cn('flex-center text-icon-primary size-10 rounded-full border-2 border-transparent',
+            :class="cn('flex-center size-10 rounded-full border-2 border-transparent text-icon-primary',
                        icon === props.categoryForm.icon && 'border-primary',
             )"
             :style="{ background: props.categoryForm.color }"
@@ -464,7 +470,7 @@ async function onSave() {
         </div>
       </div>
 
-      <div class="bottomSheetContentBottom">
+      <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
           rounded
           @click="close"
@@ -483,7 +489,7 @@ async function onSave() {
     <template #default="{ close }">
       <UiTitleModal>
         {{ t('categories.form.selectChildren') }}
-        <span v-if="selectedChildIds.length > 0" class="text-muted ml-2 text-sm font-normal">
+        <span v-if="selectedChildIds.length > 0" class="ml-2 text-sm font-normal text-muted">
           {{ t('categories.form.children.selected', { count: selectedChildIds.length }) }}
         </span>
       </UiTitleModal>
@@ -495,10 +501,10 @@ async function onSave() {
         />
       </div>
 
-      <div class="scrollerBlock bottomSheetContentInside">
+      <div class="bottom-sheet-content-inside scroller-block">
         <div
           v-if="childrenCandidateIds.length === 0"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('categories.form.children.noCandidates') }}
         </div>
@@ -512,7 +518,7 @@ async function onSave() {
               v-if="filteredCandidateGroups[group].length > 0"
               class="pb-2"
             >
-              <div class="text-muted px-3 pt-2 pb-1 text-xs tracking-wide uppercase">
+              <div class="px-3 pt-2 pb-1 text-xs tracking-wide text-muted uppercase">
                 {{ t(`categories.form.children.group.${group}`) }}
               </div>
 
@@ -521,7 +527,7 @@ async function onSave() {
                 :key="id"
                 type="button"
                 :aria-pressed="selectedChildIds.includes(id)"
-                :class="cn('flex w-full items-center gap-3 px-3 py-2 text-left transition hover:bg-elevated/50 rounded-sm', selectedChildIds.includes(id) && 'bg-elevated/30')"
+                :class="cn('flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left transition hover:bg-elevated/50', selectedChildIds.includes(id) && 'bg-elevated/30')"
                 @click="toggleChildSelection(id)"
               >
                 <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-primary bg-primary' : 'border-default')">
@@ -555,14 +561,14 @@ async function onSave() {
                 && filteredCandidateGroups.freeRoot.length === 0
                 && filteredCandidateGroups.fromOther.length === 0
             "
-            class="text-muted p-4 text-center"
+            class="p-4 text-center text-muted"
           >
             {{ t('categories.form.children.noMatches') }}
           </div>
         </template>
       </div>
 
-      <div class="bottomSheetContentBottom">
+      <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
           rounded
           @click="applyChildrenSelection(close)"
@@ -588,7 +594,7 @@ async function onSave() {
     <template #default="{ close }">
       <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
 
-      <div class="scrollerBlock bottomSheetContentInside">
+      <div class="bottom-sheet-content-inside scroller-block">
         <UiChipButton
           :isActive="props.categoryForm.parentId === 0"
           @click="onParentSelect(false, close)"
@@ -599,12 +605,12 @@ async function onSave() {
         <CategoriesList
           :activeItemId="props.categoryForm.parentId"
           :ids="categoriesStore.categoriesForBeParent.filter(id => id !== categoryId)"
-          class="!gap-x-1"
+          class="gap-x-1!"
           @click="id => onParentSelect(id, close)"
         />
       </div>
 
-      <div class="bottomSheetContentBottom">
+      <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
           rounded
           @click="close"

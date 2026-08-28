@@ -47,7 +47,7 @@ const links = computed(() => appConfig.github && appConfig.github.url
           <LanguageSelect />
 
           <template #fallback>
-            <div class="h-8 w-8 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800" />
+            <div class="size-8 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800" />
           </template>
         </ClientOnly>
 
@@ -63,7 +63,7 @@ const links = computed(() => appConfig.github && appConfig.github.url
         <UColorModeButton />
 
         <template #fallback>
-          <div class="h-8 w-8 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800" />
+          <div class="size-8 animate-pulse rounded-md bg-neutral-200 dark:bg-neutral-800" />
         </template>
       </ClientOnly>
 

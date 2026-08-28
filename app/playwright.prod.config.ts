@@ -3,7 +3,7 @@ import process from 'node:process'
 
 // Runs e2e against a real production build. The reka-ui chunk-duplication
 // inject regression only surfaces in the minified, code-split bundle - the
-// default config serves `pnpm dev`, which can't reproduce it.
+// default config serves `pnpm dev:local`, which can't reproduce it.
 const port = Number(process.env.E2E_PORT) || 3050
 
 export default defineConfig({

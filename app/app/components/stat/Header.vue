@@ -1,60 +1,57 @@
 <script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
+
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { getTypesMapping } from '~/components/stat/utils'
+import { filterKey } from '~/components/filter/injectionKeys'
+import { statConfigKey } from '~/components/stat/injectionKeys'
+import { getSortedFilterWalletsIds } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = defineProps<{
+// Defaults to true so pages that always have a breakdown need not pass it; an absent
+// Boolean prop would cast to false and forward that to StatConfigView.
+const props = withDefaults(defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
+  compactBottom?: boolean
   configCategories?: boolean
   configWallets?: boolean
-  filterCategories?: boolean
-  filterWallets?: boolean
-  hideTabs?: boolean
+  hasCategoryBreakdown?: boolean
   preCategoriesIds?: CategoryId[]
+  sticky?: boolean
   trnsIds?: TrnId[]
-}>()
-
-const activeTab = defineModel<StatTabSlug>('activeTab')
+}>(), {
+  hasCategoryBreakdown: true,
+  sticky: true,
+})
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
-const statDate = inject(statDateKey)!
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
-const trnsStore = useTrnsStore()
 
 const isPopoverOpen = ref(false)
 
-const sortedFilterWalletsIds = computed(() => {
-  const filteredIds = filter.walletsIds.value
-  const showedIds = statConfig.config.value.wallets.isShow
-    ? walletsStore.sortedIds.slice(0, statConfig.config.value.wallets.count)
-    : filteredIds
-  return [...new Set([...showedIds, ...filteredIds])]
-})
+type UiHeaderInstance = ComponentPublicInstance & {
+  mainElement: HTMLElement | null
+  rootElement: HTMLElement | null
+}
 
-const categoryConfigTrnsIds = computed(() => {
-  if (!props.configCategories || !props.trnsIds)
-    return undefined
+const uiHeader = useTemplateRef<UiHeaderInstance>('uiHeader')
+const stickyMainElement = computed(() => uiHeader.value?.mainElement)
+const stickyRootElement = computed(() => uiHeader.value?.rootElement)
 
-  return trnsStore.getStoreTrnsIds({
-    dates: {
-      end: statDate.range.value.end,
-      start: statDate.range.value.start,
-    },
-    sort: true,
-    trnsIds: props.trnsIds,
-    trnsTypes: activeTab.value ? getTypesMapping(activeTab.value) : undefined,
-  })
-})
+defineExpose({ stickyMainElement, stickyRootElement })
+
+const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
+  filter.walletsIds.value,
+  walletsStore.sortedIds,
+  statConfig.config.value.wallets.isShow,
+  statConfig.config.value.wallets.count,
+))
 
 function onClickWallet(walletId: WalletId) {
   filter.toggleWalletId(walletId)
@@ -63,21 +60,23 @@ function onClickWallet(walletId: WalletId) {
 </script>
 
 <template>
-  <UiHeader :backSkipPattern="backSkipPattern" :backTo="backTo">
+  <UiHeader
+    ref="uiHeader"
+    :backSkipPattern="backSkipPattern"
+    :backTo="backTo"
+    :compactBottom="props.compactBottom"
+    :mobileAfterScrolls="!!props.configWallets && statConfig.config.value.wallets.isShow"
+    :sticky="props.sticky"
+  >
     <slot name="title" />
 
     <template #actions>
       <div class="flex items-center">
-        <StatFilterSelector
-          v-if="filterCategories || filterWallets"
-          :isShowCategories="!!filterCategories"
-          :isShowWallets="!!filterWallets"
-        />
-
         <StatConfigModal>
           <StatConfigView
+            :hasCategoryBreakdown
+            :hasTrnsConfig="!!configCategories && trnsIds !== undefined"
             :isShowWallets="!!configWallets"
-            :selectedTrnsIds="categoryConfigTrnsIds"
           />
         </StatConfigModal>
 
@@ -102,18 +101,11 @@ function onClickWallet(walletId: WalletId) {
       </div>
     </template>
 
-    <template v-if="activeTab && !props.hideTabs" #selected>
-      <StatMenu
-        :active="activeTab"
-        @click="(id: StatTabSlug) => activeTab = id"
-      />
-    </template>
-
     <template
       v-if="statConfig.config.value.wallets.isShow"
       #after
     >
-      <div class="flex overflow-x-auto px-2 py-2 lg:px-4 2xl:px-8">
+      <div class="stat-wallets-scroll flex snap-x snap-mandatory scroll-px-2 overflow-x-auto p-2 lg:scroll-px-4 lg:px-4 2xl:scroll-px-8 2xl:px-8">
         <div class="flex shrink-0 gap-2">
           <WalletsItem
             v-for="walletId in sortedFilterWalletsIds"
@@ -122,7 +114,8 @@ function onClickWallet(walletId: WalletId) {
             :walletId
             :wallet="walletsStore.itemsComputed?.[walletId]!"
             :isShowIcon="statConfig.config.value.wallets.isShowIcon"
-            insideClasses="!min-h-[38px]"
+            bodyClass="snap-start snap-always"
+            insideClasses="min-h-9.5!"
             compact
             @click="onClickWallet(walletId)"
           />
@@ -131,3 +124,13 @@ function onClickWallet(walletId: WalletId) {
     </template>
   </UiHeader>
 </template>
+
+<style scoped>
+.stat-wallets-scroll {
+  scrollbar-width: none;
+}
+
+.stat-wallets-scroll::-webkit-scrollbar {
+  display: none;
+}
+</style>
