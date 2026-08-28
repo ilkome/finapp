@@ -11,6 +11,17 @@ import { defineStore } from 'pinia'
 import { vi } from 'vitest'
 import { computed, reactive, ref, shallowRef, toRaw, watch } from 'vue'
 
+import { initializeStoreSyncToast } from '~/composables/useStoreSync'
+
+vi.mock('localforage', () => ({
+  default: {
+    clear: vi.fn(),
+    getItem: vi.fn(),
+    removeItem: vi.fn(),
+    setItem: vi.fn(),
+  },
+}))
+
 vi.stubGlobal('computed', computed)
 vi.stubGlobal('reactive', reactive)
 vi.stubGlobal('ref', ref)
@@ -25,6 +36,7 @@ vi.stubGlobal('perf', () => {})
 export const toastAddMock = vi.fn()
 
 vi.stubGlobal('useToast', () => ({ add: toastAddMock }))
+initializeStoreSyncToast({ add: toastAddMock } as unknown as ReturnType<typeof useToast>)
 vi.stubGlobal('useI18n', () => ({ t: (key: string) => key }))
 // locale must be a ref: useCategoriesStore watches $i18n.locale.value at store creation
 const i18nStub = { locale: ref('en-US'), t: (key: string) => key }

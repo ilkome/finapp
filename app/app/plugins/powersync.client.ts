@@ -6,13 +6,15 @@ import { planDivergence } from '~~/services/powersync/uploadReconcile'
 import { useInitApp } from '~/components/app/useInitApp'
 import { useDemo } from '~/components/demo/useDemo'
 import { hasPersistedSession } from '~/composables/useAuthSession'
-import { showActionToast, showErrorToast } from '~/composables/useStoreSync'
+import { initializeStoreSyncToast, showActionToast, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabase, useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('powersync-plugin')
 
 export default defineNuxtPlugin(() => {
+  initializeStoreSyncToast(useToast())
+
   // Protect IndexedDB (PowerSync's local store) from eviction on low storage.
   navigator.storage?.persist?.()
 
