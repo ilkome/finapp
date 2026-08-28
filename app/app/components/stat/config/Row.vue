@@ -2,8 +2,9 @@
 defineProps<{
   hasPanel?: boolean
   hasToggle?: boolean
+  icon?: string
+  isExpanded?: boolean
   isShow?: boolean
-  subtitle?: string
   title: string
 }>()
 
@@ -14,31 +15,39 @@ defineEmits<{
 </script>
 
 <template>
-  <div class="flex min-h-13 items-stretch rounded-sm text-sm hover:bg-elevated/50">
+  <div
+    class="flex min-h-13 items-stretch text-sm hover:bg-elevated/50"
+    :class="isExpanded ? 'rounded-t-lg' : 'rounded-sm'"
+  >
     <div
       role="button"
       tabindex="0"
-      class="flex grow flex-col justify-center rounded-l-sm py-3 pr-2 pl-3"
-      :class="!hasToggle && 'rounded-r-sm pr-3'"
+      :aria-expanded="hasPanel ? isExpanded : undefined"
+      class="flex grow flex-col justify-center py-3 pr-2 pl-3"
+      :class="[
+        isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm',
+        !hasToggle && (isExpanded ? 'rounded-tr-lg pr-3' : 'rounded-r-sm pr-3'),
+      ]"
       @click="$emit('activate')"
       @keydown.enter.prevent="$emit('activate')"
       @keydown.space.prevent="$emit('activate')"
     >
       <div class="flex items-center gap-2">
+        <Icon
+          v-if="icon"
+          :name="icon"
+          class="shrink-0 text-muted"
+          size="20"
+        />
         <span>{{ title }}</span>
         <Icon
           v-if="hasPanel"
           name="lucide:chevron-right"
-          class="shrink-0 text-muted"
+          class="shrink-0 text-muted transition-transform"
+          :class="isExpanded && 'rotate-90'"
           size="18"
         />
       </div>
-      <span
-        v-if="subtitle"
-        class="text-xs text-dimmed"
-      >
-        {{ subtitle }}
-      </span>
     </div>
     <div
       v-if="hasToggle && hasPanel"
@@ -51,8 +60,11 @@ defineEmits<{
       tabindex="0"
       :aria-checked="isShow"
       :aria-label="title"
-      class="flex shrink-0 items-center rounded-r-sm pr-3 pl-4"
-      :class="hasPanel && 'hover:bg-accented'"
+      class="flex shrink-0 items-center pr-3 pl-4"
+      :class="[
+        isExpanded ? 'rounded-tr-lg' : 'rounded-r-sm',
+        hasPanel && 'hover:bg-accented',
+      ]"
       @click.stop="$emit('toggle')"
       @keydown.enter.stop.prevent="$emit('toggle')"
       @keydown.space.stop.prevent="$emit('toggle')"

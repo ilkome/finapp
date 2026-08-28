@@ -44,7 +44,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="hasData" class="size-12 shrink-0" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`">
+  <div v-if="hasData" class="size-12 shrink-0 cursor-default **:cursor-default!" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`">
     <VChart :option :updateOptions="{ notMerge: true }" autoresize />
   </div>
 </template>

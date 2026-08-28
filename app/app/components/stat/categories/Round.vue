@@ -48,7 +48,7 @@ const { longPressRef } = useCategoryLongPress(
         :isShowBaseRate="false"
         :isShowSymbol="false"
         align="left"
-        variant="xs"
+        variant="compact"
         colorize="income"
       />
     </div>

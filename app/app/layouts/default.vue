@@ -3,6 +3,7 @@ import { useInitApp } from '~/components/app/useInitApp'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useMenuData } from '~/components/layout/useMenuData'
 import { useSearch } from '~/components/search/useSearch'
+import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -17,6 +18,7 @@ const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
 const { isMenuOpen } = useMenuData()
 const { isSearchOpen } = useSearch()
+const { close: closeStatConfig, isOpen: isStatConfigOpen } = useStatConfigOverlay()
 const { bootState, initApp, isHydrated, isOnboarded, isOnboardedHint } = useInitApp()
 const { width } = useWindowSize()
 
@@ -33,8 +35,10 @@ watch([isOnboarded, isHydrated], () => {
 // chunks; an idle prefetch keeps that first open instant.
 const hasTrnFormOpened = ref(false)
 watch(() => trnsFormStore.ui.isShow, (show) => {
-  if (show)
+  if (show) {
     hasTrnFormOpened.value = true
+    closeStatConfig()
+  }
 })
 
 onMounted(() => {
@@ -50,15 +54,17 @@ const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
   showShell.value && 'bg-muted',
-  showShell.value && (isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
-  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
+  showShell.value && (isStatConfigOpen.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
+  isOnboarded.value && (trnsFormStore.ui.isShow || isStatConfigOpen.value) && 'md:pr-90',
 ))
 
 useAsyncData('app', initApp)
 
 defineShortcuts({
   'escape': () => {
-    if (trnsFormStore.ui.isShow)
+    if (isStatConfigOpen.value)
+      closeStatConfig()
+    else if (trnsFormStore.ui.isShow)
       trnsFormStore.ui.isShow = false
   },
   'meta_\\': () => {
@@ -100,6 +106,7 @@ defineShortcuts({
     <template v-else>
       <template v-if="showShell">
         <LayoutSidebar
+          :isHidden="isStatConfigOpen"
           :isShowSidebar
           @toggleSidebar="isShowSidebar = !isShowSidebar"
         />

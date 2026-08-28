@@ -1,7 +1,8 @@
 import type { SeriesSlug, SeriesSlugSelected, StatReportType } from '~/components/stat/types'
+import type { TrnId, Trns } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { TrnType } from '~/components/trns/types'
+import { isTransfer, TrnType } from '~/components/trns/types'
 
 export function getTypesMapping(slug: SeriesSlugSelected | StatReportType): TrnType[] {
   // Transfers stay out of charts and period totals (getTotal keeps them in their own buckets,
@@ -69,16 +70,56 @@ export function getTypesToShow(
   return ['income', 'expense']
 }
 
-/**
- * Wallets to render in the header strip: the configured top N, plus any
- * filtered wallet even past that count, so an active filter is never hidden.
- */
+/** Keep active filters visible even when a wallet is outside the selected display source. */
 export function getSortedFilterWalletsIds(
   filteredIds: WalletId[],
-  sortedIds: WalletId[],
+  recentIds: WalletId[],
+  periodIds: WalletId[],
   isShow: boolean,
   count: number,
+  displayMode: 'period' | 'recent',
 ): WalletId[] {
-  const showedIds = isShow ? sortedIds.slice(0, count) : filteredIds
+  const showedIds = isShow
+    ? displayMode === 'period' ? periodIds : recentIds.slice(0, count)
+    : filteredIds
   return [...new Set([...showedIds, ...filteredIds])]
+}
+
+/** Collect wallets in the order of their first transaction in an already sorted data set. */
+export function getUsedWalletIds(trnsIds: readonly TrnId[], trnsItems: Trns): WalletId[] {
+  const result: WalletId[] = []
+  const seen = new Set<WalletId>()
+  const add = (walletId: WalletId) => {
+    if (seen.has(walletId))
+      return
+    seen.add(walletId)
+    result.push(walletId)
+  }
+
+  for (const trnId of trnsIds) {
+    const trn = trnsItems[trnId]
+    if (!trn)
+      continue
+    if (isTransfer(trn)) {
+      add(trn.expenseWalletId)
+      add(trn.incomeWalletId)
+    }
+    else {
+      add(trn.walletId)
+    }
+  }
+
+  return result
+}
+
+export function getNextWalletFilterIds(
+  selectedIds: readonly WalletId[],
+  walletId: WalletId,
+  selectionMode: 'multiple' | 'single',
+): WalletId[] {
+  if (selectedIds.includes(walletId))
+    return selectedIds.filter(id => id !== walletId)
+  if (selectionMode === 'single')
+    return [walletId]
+  return [...selectedIds, walletId]
 }

@@ -1,164 +1,85 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 
-import type { IntervalGroupedLabel, StatDateProvider } from '~/components/stat/date/types'
+import type { QuickRangeOptionId, StatDateRangeView } from '~/components/stat/date/useRangeOptions'
+import type { StatDateProvider } from '~/components/stat/date/types'
+
+import { useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
 
 const props = withDefaults(defineProps<{
   isShowRangeAdjust?: boolean
+  itemClass?: string
+  optionIds?: QuickRangeOptionId[]
   presetUnit?: 'day' | 'month' | 'year'
   size?: 'md' | 'sm' | 'xs'
   statDate: StatDateProvider
+  tabsClass?: string
   vertical?: boolean
-  view: 'periods' | 'presets' | 'maximum'
+  view: StatDateRangeView | 'all'
 }>(), { size: 'sm' })
 
 const emit = defineEmits<{
   close: []
 }>()
 
-const { t } = useI18n()
-
-function durationLabel(value: number, unit: 'day' | 'month' | 'year') {
-  return `${value} ${t(`dates.${unit}.plural`, value)}`
-}
+const { options } = useStatDateRangeOptions()
 
 const items = computed(() => {
-  if (props.view === 'maximum')
-    return undefined
-
-  const elements: Record<Exclude<typeof props.view, 'maximum'>, IntervalGroupedLabel[]> = {
-    periods: [{
-      granularityBy: 'day',
-      granularityDuration: 1,
-      label: t('dates.day.simple'),
-      rangeBy: 'day',
-      rangeDuration: 1,
-    }, {
-      granularityBy: 'day',
-      granularityDuration: 1,
-      label: t('dates.week.simple'),
-      rangeBy: 'week',
-      rangeDuration: 1,
-    }, {
-      granularityBy: 'day',
-      granularityDuration: 1,
-      label: t('dates.month.simple'),
-      rangeBy: 'month',
-      rangeDuration: 1,
-    }, {
-      granularityBy: 'month',
-      granularityDuration: 1,
-      label: t('dates.halfYear.simple'),
-      rangeBy: 'month',
-      rangeDuration: 6,
-    }, {
-      granularityBy: 'month',
-      granularityDuration: 1,
-      label: t('dates.year.simple'),
-      rangeBy: 'year',
-      rangeDuration: 1,
-    }],
-
-    presets: [{
-      granularityBy: 'day',
-      granularityDuration: 1,
-      label: durationLabel(7, 'day'),
-      rangeBy: 'day',
-      rangeDuration: 7,
-    }, {
-      granularityBy: 'day',
-      granularityDuration: 1,
-      label: durationLabel(14, 'day'),
-      rangeBy: 'day',
-      rangeDuration: 14,
-    }, {
-      granularityBy: 'day',
-      granularityDuration: 1,
-      label: durationLabel(30, 'day'),
-      rangeBy: 'day',
-      rangeDuration: 30,
-    }, {
-      granularityBy: 'week',
-      granularityDuration: 1,
-      label: durationLabel(3, 'month'),
-      rangeBy: 'month',
-      rangeDuration: 3,
-    }, {
-      granularityBy: 'month',
-      granularityDuration: 1,
-      label: durationLabel(6, 'month'),
-      rangeBy: 'month',
-      rangeDuration: 6,
-    }, {
-      granularityBy: 'month',
-      granularityDuration: 1,
-      label: durationLabel(12, 'month'),
-      rangeBy: 'month',
-      rangeDuration: 12,
-    }, {
-      granularityBy: 'year',
-      granularityDuration: 1,
-      label: durationLabel(6, 'year'),
-      rangeBy: 'year',
-      rangeDuration: 6,
-    }],
-  }
-
-  const result = elements[props.view]
-  if (props.view !== 'presets' || !props.presetUnit)
-    return result
-
-  return result.filter(item => item.rangeBy === props.presetUnit)
+  const enabled = props.optionIds ? new Set(props.optionIds) : undefined
+  const order = new Map(props.optionIds?.map((id, index) => [id, index]) ?? [])
+  return options.value.filter((item) => {
+    if ((props.view !== 'all' && item.view !== props.view) || (enabled && !enabled.has(item.id)))
+      return false
+    return item.view !== 'presets' || !props.presetUnit || item.range.rangeBy === props.presetUnit
+  }).toSorted((a, b) => (order.get(a.id) ?? Number.MAX_SAFE_INTEGER) - (order.get(b.id) ?? Number.MAX_SAFE_INTEGER))
 })
 
-function keyOf(igl: IntervalGroupedLabel) {
-  return `${igl.rangeBy}-${igl.rangeDuration}`
-}
-
-const rangeTabItems = computed<TabsItem[]>(() => (items.value ?? []).map(igl => ({
-  label: igl.label,
-  value: keyOf(igl),
+const rangeTabItems = computed<TabsItem[]>(() => items.value.map(item => ({
+  label: item.label,
+  value: item.id,
 })))
 
-const selectedRangeKey = computed(() => `${props.statDate.params.value.rangeBy}-${props.statDate.params.value.rangeDuration}`)
-
-function selectRange(igl: IntervalGroupedLabel) {
-  props.statDate.setRangeByPeriod(igl)
-  emit('close')
-}
-
-function onSelectRangeKey(key: string | number) {
-  const igl = (items.value ?? []).find(i => keyOf(i) === key)
-  if (igl)
-    selectRange(igl)
-}
-
-function selectMaxRange(isSkipEmpty = false) {
-  props.statDate.setMaxRange(isSkipEmpty)
-  emit('close')
-}
-
-const maxRangeItems = computed<TabsItem[]>(() => [
-  { label: t('dates.ranges.all'), value: 'all' },
-  { label: t('dates.ranges.allSkipEmpty'), value: 'allSkipEmpty' },
-])
+const selectedRangeKey = computed(() => items.value.find(item => item.view !== 'maximum'
+  && item.range.rangeBy === props.statDate.params.value.rangeBy
+  && item.range.rangeDuration === props.statDate.params.value.rangeDuration)?.id)
 
 const selectedMaxRangeKey = computed(() => props.statDate.params.value.isShowMaxRange
-  ? (props.statDate.params.value.isSkipEmpty ? 'allSkipEmpty' : 'all')
+  ? items.value.find(item => item.view === 'maximum' && item.isSkipEmpty === props.statDate.params.value.isSkipEmpty)?.id
   : undefined)
+const selectedKey = computed(() => selectedMaxRangeKey.value ?? selectedRangeKey.value)
 
-function onSelectMaxRangeKey(key: string | number) {
-  selectMaxRange(key === 'allSkipEmpty')
+function onSelectRangeKey(key: string | number) {
+  const item = items.value.find(option => option.id === key)
+  if (!item)
+    return
+  if (item.view === 'maximum')
+    props.statDate.setMaxRange(item.isSkipEmpty)
+  else
+    props.statDate.setRangeByPeriod({ ...item.range, label: item.label })
+  emit('close')
 }
 </script>
 
 <template>
   <div :class="props.vertical ? 'grid content-start gap-1' : 'flex shrink-0 items-center gap-1'">
     <UiTabs
+      v-if="view === 'all' && rangeTabItems.length"
+      :align="props.vertical ? 'left' : 'center'"
+      :class="cn(props.vertical && 'flex-col overflow-visible', props.tabsClass)"
+      :grow="!props.vertical"
+      :itemClass="props.itemClass"
+      :size
+      :items="rangeTabItems"
+      :modelValue="selectedKey"
+      @update:modelValue="onSelectRangeKey"
+    />
+
+    <UiTabs
       v-if="(view === 'periods' || view === 'presets') && rangeTabItems.length"
       :align="props.vertical ? 'left' : 'center'"
-      :class="props.vertical ? 'flex-col overflow-visible' : undefined"
+      :class="cn(props.vertical && 'flex-col overflow-visible', props.tabsClass)"
       :grow="!props.vertical"
+      :itemClass="props.itemClass"
       :size
       :items="rangeTabItems"
       :modelValue="selectedRangeKey"
@@ -176,12 +97,13 @@ function onSelectMaxRangeKey(key: string | number) {
     <UiTabs
       v-if="props.view === 'maximum'"
       :align="props.vertical ? 'left' : 'center'"
-      :class="props.vertical ? 'flex-col overflow-visible' : undefined"
+      :class="cn(props.vertical && 'flex-col overflow-visible', props.tabsClass)"
       :grow="!props.vertical"
+      :itemClass="props.itemClass"
       :size
-      :items="maxRangeItems"
+      :items="rangeTabItems"
       :modelValue="selectedMaxRangeKey"
-      @update:modelValue="onSelectMaxRangeKey"
+      @update:modelValue="onSelectRangeKey"
     />
   </div>
 </template>

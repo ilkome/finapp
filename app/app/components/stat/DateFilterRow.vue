@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import { filterKey } from '~/components/filter/injectionKeys'
 
+withDefaults(defineProps<{
+  isShowNavigation?: boolean
+}>(), {
+  isShowNavigation: true,
+})
+
 const filter = inject(filterKey)!
 </script>
 
 <template>
-  <StatDateNavigation>
+  <StatDateNavigation :isShowButtons="isShowNavigation">
     <FilterButton class="shrink-0 snap-start snap-always" />
     <FilterSelected
       v-if="filter.isShow.value"
@@ -13,6 +19,5 @@ const filter = inject(filterKey)!
       isShowCategories
       isShowWallets
     />
-    <StatViewToolbar class="shrink-0 snap-start snap-always" />
   </StatDateNavigation>
 </template>

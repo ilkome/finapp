@@ -2,7 +2,7 @@
 import type { Period } from '~~/utils/date/types'
 
 import defu from 'defu'
-import { BarChart, LineChart } from 'echarts/charts'
+import { BarChart, CustomChart, LineChart } from 'echarts/charts'
 import { DataZoomInsideComponent, GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
@@ -12,7 +12,7 @@ import type { AxisChartType } from '~/components/stat/chart/types'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
-import { baseOption, buildChartGuideMarkLine, buildChartSeries, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
+import { baseOption, buildChartGuideMarkLine, buildChartSeries, resolveCenteredBarGeometry, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const {
@@ -45,7 +45,7 @@ const emit = defineEmits<{
   previewEnd: []
 }>()
 
-use([BarChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, SVGRenderer, TooltipComponent])
+use([BarChart, CustomChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, SVGRenderer, TooltipComponent])
 
 const { locale, t } = useI18n()
 const { width: viewportWidth } = useWindowSize()
@@ -53,6 +53,7 @@ const statConfig = inject(statConfigKey)!
 const isDev = import.meta.dev
 const isShowAverage = computed(() => statConfig.config.value.chart.isShowAverage)
 const isShowScale = computed(() => statConfig.config.value.chart.isShowScale)
+const isBarGrouped = computed(() => statConfig.config.value.chart.isGrouped)
 const chartRef = ref()
 let pointerStartX = 0
 let pointerStartY = 0
@@ -81,7 +82,11 @@ const option = computed(() => {
     data: item.data.slice(visibleStartIndex, visibleEndIndex),
   }))
   const lineOptions = statConfig.config.value.chart.line
-  const scale = resolveChartScale(visibleSeries, chartType, lineOptions)
+  const activeIntervalKey = series.find(item => item.markedArea === 'markedArea')?.markArea?.data[0]?.[0].xAxis
+  const activeIntervalIndex = activeIntervalKey === undefined
+    ? -1
+    : xAxisLabels.findIndex(label => `${label}` === activeIntervalKey)
+  const scale = resolveChartScale(visibleSeries, chartType, lineOptions, isBarGrouped.value)
   const averages = isShowAverage.value ? resolveChartSeriesAverages(visibleSeries) : []
   const visibleAverages = averages.filter((value): value is number => value !== undefined)
   const guideAverage = visibleAverages.length === 1 ? visibleAverages[0] : undefined
@@ -104,16 +109,118 @@ const option = computed(() => {
       : item)
   }
   const guideSeries: ChartSeries = {
+    axisOverlay: true,
     data: [],
     markLine: buildChartGuideMarkLine(scale, guideAverage),
     name: 'scale-guides',
     type: 'line',
   }
   const chartSeries = buildChartSeries(
-    isShowScale.value ? [...seriesWithVisibleAverage, guideSeries] : seriesWithVisibleAverage,
+    isShowScale.value
+      ? [...seriesWithVisibleAverage.filter(item => item.markedArea !== 'markedArea'), guideSeries]
+      : seriesWithVisibleAverage.filter(item => item.markedArea !== 'markedArea'),
     chartType,
     lineOptions,
+    isBarGrouped.value,
   )
+  const renderedSeries = chartType === 'bar'
+    && !isBarGrouped.value
+    && statConfig.config.value.chart.breakdown === 'categories'
+    ? chartSeries.map((item, seriesIndex) => {
+        if (item.axisOverlay || item.type !== 'bar')
+          return item
+
+        return {
+          ...item,
+          coordinateSystem: 'cartesian2d',
+          data: item.data.map((value, dataIndex) => [dataIndex, value]),
+          encode: { tooltip: 1, x: 0, y: 1 },
+          renderItem: (params: { dataIndex: number }, api: {
+            coord: (value: unknown[]) => number[]
+            value: (dimension: number) => unknown
+          }) => {
+            const value = Number(api.value(1))
+            if (!Number.isFinite(value) || value === 0)
+              return null
+
+            const activeSeriesIndexes = chartSeries
+              .map((candidate, candidateIndex) => ({ candidate, candidateIndex }))
+              .filter(({ candidate }) => !candidate.axisOverlay && candidate.type === 'bar' && Number(candidate.data[params.dataIndex]) !== 0)
+              .map(({ candidateIndex }) => candidateIndex)
+            const activeIndex = activeSeriesIndexes.indexOf(seriesIndex)
+            if (activeIndex < 0)
+              return null
+
+            const xValue = api.value(0)
+            const [, zeroY = 0] = api.coord([xValue, 0])
+            const [centerX = 0, valueY = 0] = api.coord([xValue, value])
+            const neighbourValue = params.dataIndex + 1 < xAxisLabels.length
+              ? params.dataIndex + 1
+              : params.dataIndex > 0 ? params.dataIndex - 1 : undefined
+            const [neighbourX = Number.NaN] = neighbourValue === undefined ? [] : api.coord([neighbourValue, 0])
+            const bucketWidth = Number.isFinite(neighbourX) ? Math.abs(neighbourX - centerX) : 12
+            const geometry = resolveCenteredBarGeometry(bucketWidth, activeSeriesIndexes.length, activeIndex)
+            const measuredHeight = Math.abs(zeroY - valueY)
+            const height = Math.max(2, measuredHeight)
+            const y = value >= 0 ? zeroY - height : zeroY
+
+            return {
+              emphasis: {
+                style: {
+                  fill: item.color,
+                  opacity: 1,
+                },
+              },
+              shape: {
+                height,
+                r: 2,
+                width: geometry.width,
+                x: centerX + geometry.offset - geometry.width / 2,
+                y,
+              },
+              style: { fill: item.color },
+              type: 'rect',
+            }
+          },
+          type: 'custom',
+        }
+      })
+    : chartSeries
+  const activeIntervalSeries = activeIntervalIndex < 0
+    ? []
+    : [{
+        axisOverlay: true,
+        coordinateSystem: 'cartesian2d',
+        data: [[activeIntervalIndex, 0]],
+        name: 'active-period',
+        renderItem: (params: { coordSys: { height: number, y: number } }, api: {
+          coord: (value: unknown[]) => number[]
+          value: (dimension: number) => unknown
+        }) => {
+          const dataIndex = Number(api.value(0))
+          const [centerX = 0] = api.coord([dataIndex, 0])
+          const neighbourIndex = dataIndex + 1 < xAxisLabels.length
+            ? dataIndex + 1
+            : dataIndex > 0 ? dataIndex - 1 : undefined
+          const [neighbourX = Number.NaN] = neighbourIndex === undefined ? [] : api.coord([neighbourIndex, 0])
+          const width = Number.isFinite(neighbourX) ? Math.abs(neighbourX - centerX) : 12
+
+          return {
+            shape: {
+              height: params.coordSys.height,
+              width,
+              x: centerX - width / 2,
+              y: params.coordSys.y,
+            },
+            style: { fill: 'var(--ui-bg-elevated)' },
+            type: 'rect',
+          }
+        },
+        silent: true,
+        tooltip: { show: false },
+        type: 'custom',
+        z: 0,
+      }]
   const data = defu(baseOption, {
     dataZoom: [{
       disabled: !isDataZoomEnabled,
@@ -130,7 +237,7 @@ const option = computed(() => {
       zoomLock: true,
       zoomOnMouseWheel: false,
     }],
-    series: chartSeries,
+    series: [...activeIntervalSeries, ...renderedSeries],
     xAxis: {
       data: xAxisLabels,
       type: 'category',
@@ -155,7 +262,7 @@ const option = computed(() => {
   const yAxis = data.yAxis as Record<string, any>
   const grid = data.grid as Record<string, any>
   grid.bottom = isShowScale.value ? 22 : 0
-  grid.containLabel = !isShowScale.value
+  grid.outerBoundsMode = isShowScale.value ? 'none' : 'same'
   grid.right = isShowScale.value ? resolveChartScaleWidth(scale, visibleAverages) : 5
   yAxis.axisLabel.align = 'left'
   yAxis.axisLabel.inside = false
@@ -295,7 +402,7 @@ function onClickChart(params: { offsetX: number, offsetY: number }) {
 
 <template>
   <div
-    class="h-40 touch-pan-y @3xl/stat:h-52"
+    class="h-40 cursor-default touch-pan-y **:cursor-default! @3xl/stat:h-52"
     role="img"
     :aria-label="chartAriaLabel"
     :data-stat-chart-buffer-size="isDev ? bufferSize : undefined"

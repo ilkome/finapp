@@ -176,16 +176,21 @@ function makeFilter(categoriesIds: string[] = []) {
   }
 }
 
-function makeStatConfig() {
+function makeStatConfig(
+  breakdown: 'cashflow' | 'categories' = 'cashflow',
+  type: 'bar' | 'line' | 'pie' = 'bar',
+) {
   return {
     config: computed(() => ({
-      chart: { breakdown: 'cashflow', isGrouped: false, isShowAverage: false, type: 'bar' as const },
+      chart: { breakdown, isGrouped: false, isShowAverage: false, type },
     })),
   }
 }
 
 function createStatReport(overrides?: {
   categoryId?: string
+  chartBreakdown?: 'cashflow' | 'categories'
+  chartType?: 'bar' | 'line' | 'pie'
   filterCategories?: string[]
   intervalSelected?: number
   intervalsInRange?: Range[]
@@ -196,6 +201,8 @@ function createStatReport(overrides?: {
 }) {
   const {
     categoryId,
+    chartBreakdown,
+    chartType,
     filterCategories = [],
     intervalSelected = -1,
     intervalsInRange = [],
@@ -210,7 +217,7 @@ function createStatReport(overrides?: {
     filter: makeFilter(filterCategories) as any,
     quickCategoryFilter,
     reportType: computed(() => reportType),
-    statConfig: makeStatConfig() as any,
+    statConfig: makeStatConfig(chartBreakdown, chartType) as any,
     statDate: makeStatDate({
       intervalsInRange,
       params: {
@@ -261,6 +268,28 @@ describe('useStatReport', () => {
     expect(categoryBreakdownMocks.buildCategoriesSeries).toHaveBeenLastCalledWith(
       expect.objectContaining({ type: 'expense' }),
     )
+  })
+
+  it.each(['bar', 'pie'] as const)('shows both cashflow series for a quick category with income and expense in a %s chart', (chartType) => {
+    computeTotalMock.mockReturnValue({
+      ...zeroTotal,
+      expense: 40,
+      income: 100,
+      net: 60,
+    })
+    const report = createStatReport({
+      chartBreakdown: 'categories',
+      chartType,
+      intervalsInRange: [{ end: 200, start: 100 }],
+      quickCategoryFilter: {
+        categoriesIds: ref(['cat1']),
+        childCategoryId: ref(),
+      },
+      trnsIds: ['t1'],
+    })
+
+    expect(report.chartSeries.value.map(item => item.name)).toEqual(['income', 'expense'])
+    expect(categoryBreakdownMocks.buildCategoriesSeries).not.toHaveBeenCalled()
   })
 
   it('hides a single-color summary pie in quick and regular category scopes', () => {

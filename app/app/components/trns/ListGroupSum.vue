@@ -18,7 +18,7 @@ const currenciesStore = useCurrenciesStore()
     :isShowBaseRate="false"
     :type="TrnType.Income"
     colorize="income"
-    variant="sm"
+    variant="row"
   />
 
   <Amount
@@ -28,6 +28,6 @@ const currenciesStore = useCurrenciesStore()
     :isShowBaseRate="false"
     :type="TrnType.Expense"
     isShowMinus
-    variant="sm"
+    variant="row"
   />
 </template>

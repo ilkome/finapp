@@ -7,10 +7,11 @@ export type StatConfigParams = {
   initialConfig?: unknown
   legacyStorageKey?: MaybeRefOrGetter<string | undefined>
   legacyTab?: unknown
-  storageQuery?: MaybeRefOrGetter<Record<string, unknown> | undefined>
   props?: DeepPartial<MiniItemConfig>
+  stableStorage?: boolean
   storage?: Storage
   storageKey: MaybeRefOrGetter<string>
+  storageQuery?: MaybeRefOrGetter<Record<string, unknown> | undefined>
 }
 
 export type StatConfigProvider = {

@@ -3,18 +3,13 @@ import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
-
-const isCatsRoundShow = computed(() => statConfig.config.value.categories.round.isShow)
 </script>
 
 <template>
-  <div
-    class="grid gap-0.5 transition-opacity"
-    :class="{ 'pointer-events-none opacity-50': !isCatsRoundShow }"
-  >
-    <StatConfigSwitch
-      path="categories.round.isGrouped"
-      :title="t('stat.config.categories.rounds.groupByParent')"
+  <div class="flex flex-col gap-0.5">
+    <StatConfigCategoryGroupingSelect
+      :modelValue="statConfig.config.value.categories.round.grouping"
+      @update:modelValue="value => statConfig.updateConfig('categories', { round: { grouping: value } })"
     />
     <StatConfigSwitch
       path="categories.round.isShowFavorites"

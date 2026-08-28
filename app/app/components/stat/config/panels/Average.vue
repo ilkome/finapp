@@ -6,8 +6,7 @@ const statConfig = inject(statConfigKey)!
 
 <template>
   <div
-    class="grid gap-3 transition-opacity"
-    :class="{ 'pointer-events-none opacity-50': !statConfig.config.value.average.isShow }"
+    class="grid gap-3"
   >
     <UiNumberStepper
       :modelValue="statConfig.config.value.average.count"

@@ -29,6 +29,9 @@ export default {
 
   base: {
     add: 'Create',
+    addCategory: 'Add category',
+    addWallet: 'Add wallet',
+    addWhat: 'What to add',
     apply: 'Apply',
     cancel: 'Cancel',
     clear: 'Clear',
@@ -478,17 +481,33 @@ export default {
     },
     config: {
       categories: {
+        grouping: {
+          auto: 'Automatic',
+          child: 'By child category',
+          parent: 'By parent',
+          title: 'Grouping',
+        },
         list: {
-          description: 'Detailed list of all categories for the period with amounts, shares, and transaction counts.',
+          backgroundType: 'Background',
+          backgroundTypes: {
+            category: 'Category color',
+            none: 'No background',
+            standard: 'Standard',
+          },
+          trendType: 'Mini chart',
+          trendTypes: {
+            bar: 'Bars',
+            'bar-plus': 'Bars +',
+            hidden: 'Hide',
+            line: 'Lines',
+          },
           title: 'Categories list',
         },
         rounds: {
-          description: 'Strip of round category icons: favorites, recently used.',
-          groupByParent: 'Group by parent',
           inlineAmount: 'Name and amount in one row',
           showFavorites: 'Show favorites',
           showRecent: 'Show recent',
-          title: 'Quick categories',
+          title: 'Category cloud',
         },
         vertical: {
           groupByParent: 'Group by parent',
@@ -499,18 +518,26 @@ export default {
         average: {
           label: 'Show average line',
         },
+        background: {
+          label: 'Show background',
+        },
         byCategories: 'By categories',
         groupByParent: 'Group by parent',
-        other: 'Other',
-        scale: {
-          label: 'Show scale and grid lines',
-        },
         line: {
           gradient: 'Show gradient',
           showPoints: 'Show points',
           skipZero: 'Skip zero values',
           smooth: 'Smooth lines',
         },
+        other: 'Other',
+        pie: {
+          showLabels: 'Show labels on chart',
+          showPercent: 'Show percentage inside chart',
+        },
+        scale: {
+          label: 'Show scale and grid lines',
+        },
+        settings: 'Chart settings',
         type: {
           label: 'Chart type',
         },
@@ -521,11 +548,18 @@ export default {
       },
       date: {
         quick: {
-          label: 'Date selector slider',
+          label: 'Show quick date selection',
+          period: 'Period',
+          selected: '{count} selected',
         },
       },
       menu: {
         label: 'View Settings',
+      },
+      navigation: {
+        pin: 'Pin while scrolling',
+        showButtons: 'Show navigation buttons',
+        title: 'Period selection',
       },
       showedWallets: {
         placeholder: 'Count',
@@ -534,15 +568,32 @@ export default {
         count: {
           label: 'Show average values',
         },
-        description: 'Arithmetic mean over the chosen number of past periods. Displayed next to the period total.',
-        subtitle: 'Average over last {count} periods',
         title: 'Average totals',
       },
+      summary: {
+        pin: 'Pin while scrolling',
+        showChart: 'Show charts',
+        title: 'Spending and income',
+      },
+      trns: {
+        showHistory: 'Show previous transactions',
+        showTitle: 'Title',
+        showTypeTabs: 'Show transaction type tabs',
+      },
       wallets: {
-        description: 'Quick access to the first N wallets from the full list. Order is set on the Wallets page.',
+        count: 'Wallet count',
+        displayMode: 'Show',
+        displayModes: {
+          period: 'Current period',
+          recent: 'Recent wallets',
+        },
         label: 'Show wallets',
+        selectionMode: 'Selection mode',
+        selectionModes: {
+          multiple: 'Multiple',
+          single: 'Single',
+        },
         showIcon: 'Show wallet icon',
-        subtitle: 'Top {count}',
         title: 'Wallets',
       },
     },
@@ -558,6 +609,11 @@ export default {
     },
     title: 'Dashboard',
     view: {
+      barLayout: {
+        adjacent: { label: 'Side by side' },
+        stacked: { label: 'Stacked' },
+        title: 'Bar layout',
+      },
       breakdown: {
         cashflow: { description: 'Build series by transaction type', label: 'Income and spending' },
         categories: { description: 'Build series by category', label: 'By categories' },
@@ -580,11 +636,52 @@ export default {
         split: { description: 'Place spending on the left and income on the right', label: 'Split' },
         title: 'Page layout',
       },
+      pieShape: {
+        circle: { label: 'Filled circle' },
+        donut: { label: 'Donut' },
+        title: 'Chart shape',
+      },
       valueDisplay: {
         magnitude: { label: 'All upward' },
         signed: { label: 'By sign' },
         title: 'Value direction',
       },
+    },
+    views: {
+      and: 'and',
+      andMore: 'and {count} more',
+      auto: 'Activate automatically',
+      autoDescription: 'Auto: {rule}',
+      categoryCount: '{comparator} {value} {scope}',
+      comparators: { eq: 'equals', gt: 'greater than', gte: 'greater than or equal to', lt: 'less than', lte: 'less than or equal to', neq: 'not equal to' },
+      classic: 'Classic',
+      conditions: {
+        addCondition: 'Add condition',
+        addGroup: 'Add group',
+        fields: { categoryCount: 'Categories', period: 'Period' },
+        labels: { comparator: 'Comparison', field: 'Condition type', operator: 'Condition operator', scope: 'Category scope', unit: 'Period unit' },
+        operators: { and: 'AND', or: 'OR' },
+        scopes: { all: 'All categories', parent: 'Parent categories' },
+        units: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
+      },
+      current: 'Current view',
+      cycle: 'Cycle saved views',
+      deleteConfirm: 'The saved view will be deleted.',
+      discard: 'Discard changes',
+      drag: 'Drag view',
+      errors: { delete: 'Could not delete view', order: 'Could not reorder views', save: 'Could not save view' },
+      menu: { label: 'Views', settings: 'Settings' },
+      name: 'View name',
+      new: 'New view',
+      period: { day: 'Last {count} days', month: 'Last {count} months', week: 'Last {count} weeks', year: 'Last {count} years' },
+      saveAs: 'Save as new',
+      scope: { all: 'categories', parent: 'parent categories' },
+      sort: 'Sort views',
+      sortBlocks: 'Sort blocks',
+      blockSynced: 'Block settings applied to all views',
+      syncBlock: 'Apply to all views',
+      title: 'Saved views',
+      update: 'Update current',
     },
   },
 

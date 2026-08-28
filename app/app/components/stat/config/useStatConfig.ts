@@ -9,8 +9,17 @@ import type { StatConfigParams } from '~/components/stat/config/types'
 
 import { applyConfigProps, applyConfigUpdate, ConfigSchema, defaultConfig } from '~/components/stat/config/schema'
 
-export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig, legacyTab?: unknown): MiniItemConfig {
-  const stored = storageValue as { chart?: { breakdown?: unknown, isByCategories?: unknown, layout?: unknown, line?: unknown, type?: unknown, view?: unknown }, page?: { layout?: unknown } } | undefined
+export function parseStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig, legacyTab?: unknown): MiniItemConfig | null {
+  const stored = storageValue as {
+    categories?: {
+      bars?: { grouping?: unknown, isGrouped?: unknown }
+      list?: { grouping?: unknown, isGrouped?: unknown }
+      round?: { grouping?: unknown, isGrouped?: unknown }
+    }
+    chart?: { breakdown?: unknown, isByCategories?: unknown, layout?: unknown, line?: unknown, type?: unknown, view?: unknown }
+    date?: { quickRangeIds?: unknown, quickRangeOrderIds?: unknown }
+    page?: { blockOrder?: unknown, layout?: unknown }
+  } | undefined
   const legacyChartLayout = legacyTab === 'split' ? 'split' : 'combined-wide'
   const legacyPageLayout = legacyTab === 'split' ? 'split' : 'combined'
   const storedLayout = stored?.chart?.layout === 'split'
@@ -28,6 +37,24 @@ export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniI
     : stored?.chart?.type
   const migrated = {
     ...stored,
+    categories: {
+      ...stored?.categories,
+      bars: {
+        ...stored?.categories?.bars,
+        grouping: stored?.categories?.bars?.grouping
+          ?? (typeof stored?.categories?.bars?.isGrouped === 'boolean' ? (stored.categories.bars.isGrouped ? 'parent' : 'child') : undefined),
+      },
+      list: {
+        ...stored?.categories?.list,
+        grouping: stored?.categories?.list?.grouping
+          ?? (typeof stored?.categories?.list?.isGrouped === 'boolean' ? (stored.categories.list.isGrouped ? 'parent' : 'child') : undefined),
+      },
+      round: {
+        ...stored?.categories?.round,
+        grouping: stored?.categories?.round?.grouping
+          ?? (typeof stored?.categories?.round?.isGrouped === 'boolean' ? (stored.categories.round.isGrouped ? 'parent' : 'child') : undefined),
+      },
+    },
     chart: {
       ...stored?.chart,
       breakdown: stored?.chart?.breakdown ?? (stored?.chart?.isByCategories ? 'categories' : 'cashflow'),
@@ -40,8 +67,20 @@ export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniI
       layout: stored?.page?.layout ?? legacyPageLayout,
     },
   }
-  const parsed = ConfigSchema.safeParse(defu(migrated, defaults))
-  return parsed.success ? parsed.data : structuredClone(defaults)
+  const merged = defu(migrated, defaults)
+  if (Array.isArray(stored?.date?.quickRangeIds))
+    merged.date.quickRangeIds = stored.date.quickRangeIds
+  if (Array.isArray(stored?.date?.quickRangeOrderIds))
+    merged.date.quickRangeOrderIds = stored.date.quickRangeOrderIds
+  if (Array.isArray(stored?.page?.blockOrder))
+    merged.page.blockOrder = stored.page.blockOrder
+
+  const parsed = ConfigSchema.safeParse(merged)
+  return parsed.success ? parsed.data : null
+}
+
+export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig, legacyTab?: unknown): MiniItemConfig {
+  return parseStoredStatConfig(storageValue, defaults, legacyTab) ?? structuredClone(defaults)
 }
 
 export function useStatConfig({
@@ -49,6 +88,7 @@ export function useStatConfig({
   legacyStorageKey,
   legacyTab,
   props,
+  stableStorage,
   storage,
   storageKey,
   storageQuery,
@@ -56,6 +96,8 @@ export function useStatConfig({
   const route = useRouter().currentRoute
   const configStorageQuery = computed(() => toValue(storageQuery) ?? route.value.query)
   const configStorageKey = computed(() => {
+    if (stableStorage)
+      return `finapp-${toValue(storageKey)}`
     const query = configStorageQuery.value
     const queryKey = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
     return `finapp-${toValue(storageKey)}-${queryKey}`

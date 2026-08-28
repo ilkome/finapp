@@ -3,7 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
+import { addEmptyCategoryViews, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
 import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
@@ -24,7 +24,7 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
-const isGrouped = computed(() => statConfig.config.value.categories.round.isGrouped)
+const grouping = computed(() => statConfig.config.value.categories.round.grouping)
 const isShowFavorites = computed(() => statConfig.config.value.categories.round.isShowFavorites)
 const isShowRecent = computed(() => statConfig.config.value.categories.round.isShowRecent)
 
@@ -77,7 +77,7 @@ const roundCategories = computed(() => {
     mergedPreCategoriesIds.value,
     props.excludedCategoriesIds,
   )
-  return isGrouped.value ? views.grouped : views.ungrouped
+  return resolveCategoryGrouping(views, grouping.value, props.baseCategoryViews.ungrouped)
 })
 const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
@@ -91,7 +91,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
       :class="{
         'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
         'opacity-50': !filteredSet.has(item.id) && item.value === 0,
-        'border-primary!': filteredSet.has(item.id),
+        'border-primary/40!': filteredSet.has(item.id),
       }"
       class="transition-opacity"
       isShowAmount

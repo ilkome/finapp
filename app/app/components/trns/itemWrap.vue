@@ -212,7 +212,7 @@ function handleDeleteConfirm() {
   </div>
 
   <template v-else>
-    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems" size="lg">
+    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
       <TrnsItem
         :compact="props.compact"
         :trnItem

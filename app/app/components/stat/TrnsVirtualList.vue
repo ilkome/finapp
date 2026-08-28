@@ -42,16 +42,22 @@ const currentPeriodCandidateIds = computed(() => {
     return date !== undefined && date >= range.start && date <= range.end
   })
 })
+const historyCandidateIds = computed(() => {
+  const rangeStart = props.ctx.params.statDate.range.value.start
+  return candidateIds.value.filter((id) => {
+    const date = trnsStore.items?.[id]?.date
+    return date !== undefined && date < rangeStart
+  })
+})
 const {
+  createTypeFilterControls,
   descriptionSelectedIds,
   filterBy,
   isAllTrnsWithDesc,
   isShowWithDesc,
   isTrnsWithDesc,
   localFilter,
-  realTypesCount,
   setFilterBy,
-  typeFilterItems,
 } = useTrnsListFilters({
   descriptionIds: currentPeriodCandidateIds,
   ids: candidateIds,
@@ -61,14 +67,23 @@ const {
   showTransfers: computed(() => true),
   state: props.ctx.trnsViewState,
 })
+const {
+  realTypesCount: currentRealTypesCount,
+  typeFilterItems: currentTypeFilterItems,
+} = createTypeFilterControls(currentPeriodCandidateIds)
+const {
+  realTypesCount: historyRealTypesCount,
+  typeFilterItems: historyTypeFilterItems,
+} = createTypeFilterControls(historyCandidateIds)
 const isShowHistoryWithDesc = props.ctx.trnsViewState.isShowHistoryWithDesc ?? ref(false)
+const isShowTypeTabs = computed(() => props.ctx.params.statConfig.config.value.trns.isShowTypeTabs)
 const localFeedFilter = computed(() => ({
   ...localFilter.value,
   showHistoryWithDesc: isShowHistoryWithDesc.value,
 }))
 const infinite = useStatInfinitePeriods(props.ctx, {
   candidateIds,
-  isEnabled: computed(() => true),
+  isEnabled: computed(() => props.ctx.params.statConfig.config.value.trns.isShowHistory),
   localFilter: localFeedFilter,
 })
 const feedHeader = useTemplateRef<HTMLElement>('feedHeader')
@@ -91,7 +106,7 @@ function estimateRowHeight(index: number) {
   if (row.type === 'dateHeader')
     return 56
   if (row.type === 'historyDivider')
-    return 108
+    return isShowTypeTabs.value && historyRealTypesCount.value > 1 ? 152 : 108
   if (row.type === 'loader' || row.type === 'end')
     return 44
   const transaction = trnsStore.items?.[row.trnId]
@@ -202,12 +217,12 @@ onBeforeUnmount(() => {
         :filterBy
         :isAllTrnsWithDesc
         :isShowFilterByDesc="true"
-        :isShowFilterByType="true"
+        :isShowFilterByType="isShowTypeTabs"
         :isShowWithDesc
         :isTrnsWithDesc
-        :realTypesCount
+        :realTypesCount="currentRealTypesCount"
         :selectedCount="descriptionSelectedIds.length"
-        :typeFilterItems
+        :typeFilterItems="currentTypeFilterItems"
         @setFilterBy="setFilterBy"
         @update:isShowWithDesc="isShowWithDesc = $event"
       />
@@ -249,6 +264,14 @@ onBeforeUnmount(() => {
             <UiTitleCollapse isHideArrow>
               <h3>{{ t('trns.previous') }}</h3>
             </UiTitleCollapse>
+
+            <TrnsListTypeTabs
+              v-if="isShowTypeTabs"
+              :filterBy
+              :realTypesCount="historyRealTypesCount"
+              :typeFilterItems="historyTypeFilterItems"
+              @setFilterBy="setFilterBy"
+            />
 
             <UiSwitchItem
               :checkboxValue="isShowHistoryWithDesc"

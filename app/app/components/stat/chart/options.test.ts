@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { ChartSeries } from '~/components/stat/types'
 
-import { baseOption, buildChartGuideMarkLine, buildChartSeries, filterChartTooltipParams, resolveChartAverage, resolveChartGuideValues, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition, sortChartTooltipParams } from '~/components/stat/chart/options'
+import { baseOption, buildChartGuideMarkLine, buildChartSeries, filterChartTooltipParams, resolveCenteredBarGeometry, resolveChartAverage, resolveChartGuideValues, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition, resolveChartTooltipValue, resolveStackedBarBorderRadius, sortChartTooltipParams } from '~/components/stat/chart/options'
 
 const baseSeries: ChartSeries = {
   data: [0, 10, 0, 5],
@@ -46,6 +46,55 @@ describe('buildChartSeries', () => {
 
     const [asLine] = buildChartSeries([{ ...baseSeries, type: 'bar' }], 'line')
     expect(asLine!.data).toEqual([0, 10, 0, 5])
+  })
+
+  it('places bar series side by side when grouping is disabled', () => {
+    const result = buildChartSeries([
+      { ...baseSeries, name: 'Income' },
+      { ...baseSeries, name: 'Expense' },
+    ], 'bar', undefined, false)
+
+    expect(result.map(item => item.stack)).toEqual([false, false])
+  })
+
+  it('rounds only the outside corners of stacked bars', () => {
+    const series = [
+      { ...baseSeries, data: [10, -10], name: 'First' },
+      { ...baseSeries, data: [20, -20], name: 'Middle' },
+      { ...baseSeries, data: [30, -30], name: 'Last' },
+    ]
+    const result = buildChartSeries(series, 'bar')
+
+    expect(resolveStackedBarBorderRadius(series, 0, 0)).toEqual([0, 0, 2, 2])
+    expect(resolveStackedBarBorderRadius(series, 1, 0)).toEqual([0, 0, 0, 0])
+    expect(resolveStackedBarBorderRadius(series, 2, 0)).toEqual([2, 2, 0, 0])
+    expect(resolveStackedBarBorderRadius(series, 0, 1)).toEqual([2, 2, 0, 0])
+    expect(resolveStackedBarBorderRadius(series, 1, 1)).toEqual([0, 0, 0, 0])
+    expect(resolveStackedBarBorderRadius(series, 2, 1)).toEqual([0, 0, 2, 2])
+    expect(result[1]?.data).toEqual([
+      { itemStyle: { borderRadius: [0, 0, 0, 0] }, value: 20 },
+      { itemStyle: { borderRadius: [0, 0, 0, 0] }, value: -20 },
+    ])
+  })
+
+  it('keeps overlays out of the adjacent bar layout', () => {
+    const [overlay] = buildChartSeries([{
+      axisOverlay: true,
+      data: [],
+      markedArea: 'markedArea',
+      name: '',
+      type: 'line',
+    }], 'bar', undefined, false)
+
+    expect(overlay).toMatchObject({
+      emphasis: { disabled: true },
+      itemStyle: { opacity: 0 },
+      lineStyle: { opacity: 0, width: 0 },
+      showSymbol: false,
+      stack: false,
+      symbol: 'none',
+      type: 'line',
+    })
   })
 
   it('restores the original subtle line fill from line options', () => {
@@ -107,6 +156,24 @@ describe('filterChartTooltipParams', () => {
       { name: 'food', value: 0 },
       { name: 'income', value: null },
     ])).toEqual([])
+  })
+})
+
+describe('adjacent category bars', () => {
+  it('centers the active bars within each day', () => {
+    const first = resolveCenteredBarGeometry(40, 2, 0)
+    const second = resolveCenteredBarGeometry(40, 2, 1)
+
+    expect(first.offset).toBe(-7)
+    expect(second.offset).toBe(7)
+    expect((first.offset + second.offset) / 2).toBe(0)
+    expect(resolveCenteredBarGeometry(40, 1, 0).offset).toBe(0)
+  })
+
+  it('reads values from regular and custom-series tooltip data', () => {
+    expect(resolveChartTooltipValue(40)).toBe(40)
+    expect(resolveChartTooltipValue([123, -20])).toBe(-20)
+    expect(resolveChartTooltipValue(null)).toBeNull()
   })
 })
 
@@ -178,6 +245,13 @@ describe('resolveChartScale', () => {
       { ...baseSeries, data: [60, 20] },
       { ...baseSeries, data: [40, 30] },
     ], 'bar')).toEqual({ interval: 50, max: 100, min: 0 })
+  })
+
+  it('uses the largest individual bar when series are side by side', () => {
+    expect(resolveChartScale([
+      { ...baseSeries, data: [60, 20] },
+      { ...baseSeries, data: [40, 30] },
+    ], 'bar', undefined, false)).toEqual({ interval: 30, max: 60, min: 0 })
   })
 
   it('uses the full stacked height for sharp or gradient lines', () => {

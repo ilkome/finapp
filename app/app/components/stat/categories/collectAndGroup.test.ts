@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import type { Categories } from '~/components/categories/types'
 import type { CategoriesWithData } from '~/components/stat/types'
 
-import { addEmptyCategoryViews, buildCategoryViews } from '~/components/stat/categories/categoryViews'
+import { addEmptyCategoryViews, buildCategoryViews, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
 import { collectCategoriesByTrns, flattenCategoriesWithValues, groupCategoriesWithValues, sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
 
 const categories = {
@@ -286,6 +286,62 @@ describe('buildCategoryViews', () => {
 
     expect(computeValue).toHaveBeenCalledTimes(1)
     expect(withEmpty.ungrouped.slice(-2).map(category => category.id)).toEqual(['salary', 'transport'])
+  })
+
+  it('builds interval trends for child and parent categories', () => {
+    const values: Record<string, number> = { t1: -50, t2: -30, t3: -100, t4: 1000 }
+    const views = buildCategoryViews({
+      categoriesItems: categories,
+      computeValue: ids => ids.reduce((sum, id) => sum + (values[id] ?? 0), 0),
+      intervals: [
+        { trnsIds: ['t1', 't3'] },
+        { trnsIds: ['t2', 't4'] },
+      ],
+      trnsIds: ['t1', 't2', 't3', 't4'],
+      trnsItems,
+    })
+
+    expect(views.ungrouped.find(category => category.id === 'groceries')?.trend).toEqual([50, 30])
+    expect(views.ungrouped.find(category => category.id === 'salary')?.trend).toEqual([0, 1000])
+    expect(views.grouped.find(category => category.id === 'food')?.trend).toEqual([150, 30])
+  })
+})
+
+describe('resolveCategoryGrouping', () => {
+  const automaticCategories = {
+    childA: { color: 'red', name: 'Child A', parentId: 'parent' },
+    childB: { color: 'red', name: 'Child B', parentId: 'parent' },
+    childC: { color: 'red', name: 'Child C', parentId: 'parent' },
+    parent: { color: 'red', name: 'Parent', parentId: 0 },
+  } as unknown as Categories
+  const automaticTrns = {
+    a: { categoryId: 'childA' },
+    b: { categoryId: 'childB' },
+    c: { categoryId: 'childC' },
+  }
+
+  function build(ids: string[]) {
+    return buildCategoryViews({
+      categoriesItems: automaticCategories,
+      computeValue: trnsIds => -trnsIds.length,
+      trnsIds: ids,
+      trnsItems: automaticTrns,
+    })
+  }
+
+  it('shows the child when only one child is active', () => {
+    expect(resolveCategoryGrouping(build(['a']), 'auto').map(category => category.id)).toEqual(['childA'])
+  })
+
+  it('shows the parent when more than one child is active', () => {
+    expect(resolveCategoryGrouping(build(['a', 'b']), 'auto').map(category => category.id)).toEqual(['parent'])
+    expect(resolveCategoryGrouping(build(['a', 'b', 'c']), 'auto').map(category => category.id)).toEqual(['parent'])
+  })
+
+  it('supports explicit parent and child modes', () => {
+    const views = build(['a', 'b', 'c'])
+    expect(resolveCategoryGrouping(views, 'parent').map(category => category.id)).toEqual(['parent'])
+    expect(resolveCategoryGrouping(views, 'child').map(category => category.id)).toEqual(['childA', 'childB', 'childC'])
   })
 })
 

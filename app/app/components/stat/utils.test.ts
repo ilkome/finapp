@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { getSelectedType, getSelectedTypeForSum, getSortedFilterWalletsIds, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
+import { getNextWalletFilterIds, getSelectedType, getSelectedTypeForSum, getSortedFilterWalletsIds, getTypesMapping, getTypesToShow, getUsedWalletIds } from '~/components/stat/utils'
 import { TrnType } from '~/components/trns/types'
 
 describe('getTypesMapping', () => {
@@ -62,14 +62,42 @@ describe('getTypesToShow', () => {
 
 describe('getSortedFilterWalletsIds', () => {
   it('shows filtered wallets past the configured count', () => {
-    expect(getSortedFilterWalletsIds(['w5'], ['w1', 'w2', 'w3', 'w4', 'w5'], true, 2)).toEqual(['w1', 'w2', 'w5'])
+    expect(getSortedFilterWalletsIds(['w5'], ['w1', 'w2', 'w3', 'w4', 'w5'], [], true, 2, 'recent')).toEqual(['w1', 'w2', 'w5'])
   })
 
   it('shows only the top N when nothing is filtered', () => {
-    expect(getSortedFilterWalletsIds([], ['w1', 'w2', 'w3'], true, 2)).toEqual(['w1', 'w2'])
+    expect(getSortedFilterWalletsIds([], ['w1', 'w2', 'w3'], [], true, 2, 'recent')).toEqual(['w1', 'w2'])
+  })
+
+  it('shows wallets used in the current period regardless of the count', () => {
+    expect(getSortedFilterWalletsIds([], ['w1'], ['w3', 'w2'], true, 1, 'period')).toEqual(['w3', 'w2'])
   })
 
   it('falls back to the filtered ids when the section is hidden', () => {
-    expect(getSortedFilterWalletsIds(['w3'], ['w1', 'w2', 'w3'], false, 2)).toEqual(['w3'])
+    expect(getSortedFilterWalletsIds(['w3'], ['w1', 'w2', 'w3'], ['w2'], false, 2, 'period')).toEqual(['w3'])
+  })
+})
+
+describe('getUsedWalletIds', () => {
+  it('collects regular and transfer wallets in source order without duplicates', () => {
+    expect(getUsedWalletIds(['transfer', 'expense', 'missing'], {
+      expense: { amount: 10, categoryId: 'food', date: 2, type: TrnType.Expense, updatedAt: 2, walletId: 'cash' },
+      transfer: { categoryId: 'transfer', date: 3, expenseAmount: 10, expenseWalletId: 'cash', incomeAmount: 10, incomeWalletId: 'card', type: TrnType.Transfer, updatedAt: 3 },
+    })).toEqual(['cash', 'card'])
+  })
+})
+
+describe('getNextWalletFilterIds', () => {
+  it('adds wallets in multiple selection mode', () => {
+    expect(getNextWalletFilterIds(['cash'], 'card', 'multiple')).toEqual(['cash', 'card'])
+  })
+
+  it('replaces the selected wallet in single selection mode', () => {
+    expect(getNextWalletFilterIds(['cash'], 'card', 'single')).toEqual(['card'])
+  })
+
+  it('removes the clicked wallet in either mode when it is already selected', () => {
+    expect(getNextWalletFilterIds(['cash'], 'cash', 'single')).toEqual([])
+    expect(getNextWalletFilterIds(['cash', 'card'], 'cash', 'multiple')).toEqual(['card'])
   })
 })

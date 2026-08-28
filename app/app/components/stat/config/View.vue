@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { useElementSize } from '@vueuse/core'
-import { AnimatePresence, Motion } from 'motion-v'
+import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 
+import type { StatConfigBlockId } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
-import { statCanSplitKey, statConfigKey, statConfigPanelKey } from '~/components/stat/injectionKeys'
+import { statCanSplitKey, statConfigKey, statViewControllerKey } from '~/components/stat/injectionKeys'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
@@ -20,16 +21,23 @@ const props = withDefaults(defineProps<{
   hasCategoryBreakdown: true,
 })
 
-const activePanel = inject(statConfigPanelKey, ref<StatConfigPanelId>('root'))
-
-const { locale, t } = useI18n()
+const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
+const viewController = inject(statViewControllerKey, null)
 const canSplit = inject(statCanSplitKey, computed(() => false))
+const { width } = useWindowSize()
+const expandedPanels = ref<ConfigPanelId[]>([])
+const isSortingBlocks = ref(false)
+const isSortingViews = ref(false)
+const syncingPanel = ref<ConfigPanelId | null>(null)
+const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
+  dragHandle: '.sortHandle',
+})
 
 const showCategoryConfig = computed(() => props.hasTrnsConfig && props.hasCategoryBreakdown)
 
-const availablePanels = computed<StatConfigPanelId[]>(() => {
-  const panels: StatConfigPanelId[] = ['root', 'statAverage']
+const availablePanels = computed<ConfigPanelId[]>(() => {
+  const panels: ConfigPanelId[] = ['statAverage', 'navigation', 'summary']
   if (props.isShowWallets)
     panels.push('wallets')
   if (props.hasTrnsConfig)
@@ -38,237 +46,268 @@ const availablePanels = computed<StatConfigPanelId[]>(() => {
     panels.push('catsRound', 'catsList', 'vertical')
   return panels
 })
+const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
+  availablePanels.value.filter((panel): panel is StatConfigBlockId => panel !== 'statAverage'),
+)
 
 watch(availablePanels, (panels) => {
-  if (!panels.includes(activePanel.value))
-    activePanel.value = 'root'
+  expandedPanels.value = expandedPanels.value.filter(panel => panels.includes(panel))
 }, { immediate: true })
 
 function panelIsShow(panel: ConfigPanelId): boolean {
-  return PANELS[panel].getIsShow(statConfig.config.value)
+  return PANELS[panel].getIsShow?.(statConfig.config.value) ?? true
 }
 
 function togglePanel(panel: ConfigPanelId) {
-  PANELS[panel].setIsShow(statConfig, !panelIsShow(panel))
+  PANELS[panel].setIsShow?.(statConfig, !panelIsShow(panel))
 }
 
-const panelTitle = computed<string>(() => activePanel.value === 'root' ? '' : t(PANELS[activePanel.value].titleKey))
-
-const panelDescription = computed<string>(() => {
-  if (activePanel.value === 'root')
-    return ''
-  const { descKey } = PANELS[activePanel.value]
-  return descKey ? t(descKey) : ''
-})
-
-const direction = ref<1 | -1>(1)
-
-function open(panel: StatConfigPanelId) {
-  if (panel === activePanel.value)
-    return
-  direction.value = 1
-  activePanel.value = panel
+function enablePanelForEditing(panel: ConfigPanelId) {
+  if (!panelIsShow(panel))
+    PANELS[panel].setIsShow?.(statConfig, true)
 }
 
-function back() {
-  if (activePanel.value === 'root')
-    return
-  direction.value = -1
-  activePanel.value = 'root'
+function isExpanded(panel: ConfigPanelId) {
+  return expandedPanels.value.includes(panel)
 }
 
-const panelToggleValue = computed<boolean | undefined>(() =>
-  activePanel.value === 'root' ? undefined : panelIsShow(activePanel.value),
-)
-
-function togglePanelSection() {
-  if (activePanel.value !== 'root')
-    togglePanel(activePanel.value)
-}
-
-const rootRef = ref<HTMLElement>()
-const { height: rootHeight } = useElementSize(rootRef)
-
-const FALLBACK_MIN_HEIGHT = 360
-const lastRootHeight = ref(FALLBACK_MIN_HEIGHT)
-
-watchEffect(() => {
-  if (rootHeight.value > 0)
-    lastRootHeight.value = rootHeight.value
-})
-
-watch(
-  [locale, () => props.isShowWallets, () => props.hasTrnsConfig],
-  () => {
-    lastRootHeight.value = FALLBACK_MIN_HEIGHT
-  },
-)
-
-const stableMinHeight = computed(() => Math.max(lastRootHeight.value, FALLBACK_MIN_HEIGHT))
-
-const SLIDE_DISTANCE = 8
-const SLIDE_DURATION = 0.12
-const SLIDE_EASING = [0.4, 0, 0.2, 1] as const
-
-const panelVariants = {
-  center: { opacity: 1, x: 0 },
-  enter: (dir: 1 | -1) => ({ opacity: 0, x: dir * SLIDE_DISTANCE }),
-  exit: (dir: 1 | -1) => ({ opacity: 0, x: dir * -SLIDE_DISTANCE }),
-}
-
-const panelTransition = {
-  duration: SLIDE_DURATION,
-  ease: SLIDE_EASING,
+function toggleExpanded(panel: ConfigPanelId) {
+  expandedPanels.value = isExpanded(panel)
+    ? expandedPanels.value.filter(item => item !== panel)
+    : [...expandedPanels.value, panel]
 }
 
 type RootRow = {
   cycle?: () => void
+  icon?: string
   isShow?: boolean
   key: string
   panel?: ConfigPanelId
-  subtitle?: string
   title: string
   toggle?: () => void
 }
 
 function panelRow(panel: ConfigPanelId): RootRow {
   const def = PANELS[panel]
-  const count = def.getCount?.(statConfig.config.value)
   return {
+    icon: def.icon,
     isShow: panelIsShow(panel),
     key: panel,
     panel,
-    subtitle: def.subtitleKey ? t(def.subtitleKey, { count }) : undefined,
     title: t(def.titleKey),
-    toggle: () => togglePanel(panel),
+    toggle: def.setIsShow ? () => togglePanel(panel) : undefined,
   }
 }
 
-const rows = computed<RootRow[]>(() => {
-  const list: RootRow[] = []
-
-  if (props.isShowWallets)
-    list.push(panelRow('wallets'))
-
-  list.push(panelRow('statAverage'))
-
-  if (props.hasTrnsConfig)
-    list.push(panelRow('chart'))
-
-  if (showCategoryConfig.value) {
-    list.push(panelRow('catsRound'))
-    list.push(panelRow('catsList'))
-    list.push(panelRow('vertical'))
-  }
-
-  if (props.hasTrnsConfig) {
-    list.push(panelRow('trns'))
-  }
-
-  return list
+const sortableRows = computed<RootRow[]>(() => {
+  const available = new Set(availableSortablePanels.value)
+  return statConfig.config.value.page.blockOrder
+    .filter(panel => available.has(panel))
+    .map(panelRow)
 })
+const rows = computed<RootRow[]>(() => [
+  ...(availablePanels.value.includes('statAverage') ? [panelRow('statAverage')] : []),
+  ...sortableRows.value,
+])
+
+function isPreviousExpanded(index: number) {
+  const previous = rows.value[index - 1]?.panel
+  return !!previous && isExpanded(previous)
+}
 
 const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
   label: t(`stat.view.pageLayout.${value}.label`),
   value,
 })))
+const blockSortAreaStyle = computed(() => ({
+  maxHeight: width.value < 767 ? 'calc(80dvh - 8rem)' : 'calc(100dvh - 9rem)',
+}))
+
+function enterBlockSortMode() {
+  expandedPanels.value = []
+  const available = new Set(availableSortablePanels.value)
+  sortedBlockIds.value = statConfig.config.value.page.blockOrder.filter(panel => available.has(panel))
+  isSortingBlocks.value = true
+}
+
+function exitBlockSortMode() {
+  isSortingBlocks.value = false
+}
+
+function saveBlockOrder() {
+  const available = new Set(availableSortablePanels.value)
+  let sortedIndex = 0
+  const blockOrder = statConfig.config.value.page.blockOrder.map((panel) => {
+    if (!available.has(panel))
+      return panel
+    return sortedBlockIds.value[sortedIndex++] ?? panel
+  })
+  statConfig.updateConfig('page', { blockOrder })
+  exitBlockSortMode()
+}
+
+function onViewsSortingVisibility(value: boolean) {
+  isSortingViews.value = value
+  if (value)
+    exitBlockSortMode()
+}
 
 function onRowActivate(row: RootRow) {
   if (row.panel)
-    open(row.panel)
+    toggleExpanded(row.panel)
   else if (row.cycle)
     row.cycle()
   else if (row.toggle)
     row.toggle()
 }
+
+async function syncPanel(panel: ConfigPanelId) {
+  if (!viewController || syncingPanel.value)
+    return
+  syncingPanel.value = panel
+  try {
+    await viewController.syncPanelAcrossViews(panel)
+    showSuccessToast('stat.views.blockSynced')
+  }
+  finally {
+    syncingPanel.value = null
+  }
+}
 </script>
 
 <template>
   <div
-    class="statConfigPanel"
-    :style="{ minHeight: `${stableMinHeight}px` }"
+    class="statConfigPanel grid"
+    :class="!isSortingBlocks && width < 767 && 'pb-6'"
   >
-    <AnimatePresence
-      :custom="direction"
-      mode="wait"
-      :initial="false"
+    <StatViewsManagement
+      :isSortingBlocks
+      @sortBlocks="enterBlockSortMode"
+      @sortingVisibility="onViewsSortingVisibility"
+    />
+    <div
+      v-show="isSortingBlocks"
+      class="flex min-h-0 flex-col px-1"
+      :style="blockSortAreaStyle"
     >
-      <Motion
-        :key="activePanel"
-        :custom="direction"
-        :variants="panelVariants"
-        initial="enter"
-        animate="center"
-        exit="exit"
-        :transition="panelTransition"
+      <div
+        ref="blockSortParent"
+        class="grid min-h-0 content-start gap-1 overflow-y-auto overscroll-contain py-px"
       >
-        <div
-          v-if="activePanel === 'root'"
-          ref="rootRef"
-          class="grid"
+        <UiElement
+          v-for="panel in sortedBlockIds"
+          :key="panel"
+          insideClasses="group relative min-h-[46px] rounded-md bg-elevated/30 pl-4"
         >
-          <template
-            v-for="(row, i) in rows"
-            :key="row.key"
+          <Icon :name="PANELS[panel].icon" class="shrink-0 text-muted" size="20" />
+          <div class="grid grow gap-0.5 overflow-hidden">
+            <UiEntityName>
+              {{ t(PANELS[panel].titleKey) }}
+            </UiEntityName>
+          </div>
+          <div
+            class="sortHandle absolute right-0 flex-center h-full cursor-grab rounded-md px-3 group-hover:bg-accented active:cursor-grabbing"
+            :aria-label="t('stat.views.drag')"
           >
-            <div
-              v-if="i > 0"
-              aria-hidden="true"
-              class="mx-2 h-px bg-elevated/50"
-            />
-            <StatConfigRow
-              :data-stat-config-row="row.key"
-              :hasPanel="!!row.panel"
-              :hasToggle="!!row.toggle"
-              :isShow="row.isShow"
-              :subtitle="row.subtitle"
-              :title="row.title"
-              @activate="onRowActivate(row)"
-              @toggle="row.toggle?.()"
-            />
-          </template>
+            <Icon name="lucide:grip-vertical" size="20" />
+          </div>
+        </UiElement>
+      </div>
+      <div class="bottom-sheet-content-bottom -mx-1 mt-3 shrink-0">
+        <div class="grid w-full grid-cols-2 gap-2">
+          <UiButtonAccent color="neutral" size="xl" variant="soft" @click="exitBlockSortMode">
+            {{ t('base.cancel') }}
+          </UiButtonAccent>
+          <UiButtonAccent size="xl" @click="saveBlockOrder">
+            {{ t('base.save') }}
+          </UiButtonAccent>
         </div>
-
-        <div v-else>
-          <StatConfigPanelHeader
-            :title="panelTitle"
-            @back="back"
-          />
-          <StatConfigPanelToggle
-            :description="panelDescription"
-            :value="panelToggleValue"
-            @toggle="togglePanelSection"
-          />
-          <StatConfigPanelsWallets
-            v-if="activePanel === 'wallets'"
-          />
-          <StatConfigPanelsAverage
-            v-else-if="activePanel === 'statAverage'"
-          />
-          <StatConfigPanelsChart
-            v-else-if="activePanel === 'chart'"
-          />
-          <div v-else-if="activePanel === 'trns' && canSplit" class="grid gap-2 pt-4">
-            <UiTitleSection size="sm" class="px-1">
-              {{ t('stat.view.pageLayout.title') }}
-            </UiTitleSection>
-            <UiTabs
+      </div>
+    </div>
+    <template v-if="!isSortingBlocks && !isSortingViews">
+      <template v-if="canSplit">
+        <div class="-mt-px rounded-lg border border-transparent">
+          <StatConfigFieldRow :title="t('stat.view.pageLayout.title')">
+            <USelect
+              class="w-40 shrink-0"
+              :aria-label="t('stat.view.pageLayout.title')"
+              :content="{ position: 'item-aligned' }"
               :items="pageLayoutItems"
               :modelValue="statConfig.config.value.page.layout"
+              :ui="{ content: 'z-[60]' }"
               @update:modelValue="(v) => statConfig.updateConfig('page', { layout: v as 'combined' | 'split' })"
             />
-          </div>
-          <StatConfigPanelsCatsRound
-            v-else-if="activePanel === 'catsRound'"
-          />
-          <StatConfigPanelsCatsList
-            v-else-if="activePanel === 'catsList'"
-          />
-          <StatConfigPanelsVertical
-            v-else-if="activePanel === 'vertical'"
-          />
+          </StatConfigFieldRow>
         </div>
-      </Motion>
-    </AnimatePresence>
+        <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
+      </template>
+
+      <template
+        v-for="(row, i) in rows"
+        :key="row.key"
+      >
+        <div
+          v-if="i > 0 && !isPreviousExpanded(i)"
+          aria-hidden="true"
+          class="mx-2 -my-px h-px bg-elevated/50"
+        />
+        <div
+          class="-mt-px rounded-lg border"
+          :class="{
+            'mb-3': i < rows.length - 1 && row.panel && isExpanded(row.panel),
+            'overflow-hidden border-default': row.panel && isExpanded(row.panel),
+            'border-transparent': !row.panel || !isExpanded(row.panel),
+          }"
+        >
+          <StatConfigRow
+            :data-stat-config-row="row.key"
+            :hasPanel="!!row.panel"
+            :hasToggle="!!row.toggle"
+            :icon="row.icon"
+            :isExpanded="row.panel ? isExpanded(row.panel) : false"
+            :isShow="row.isShow"
+            :title="row.title"
+            @activate="onRowActivate(row)"
+            @toggle="row.toggle?.()"
+          />
+          <UCollapsible
+            v-if="row.panel"
+            :open="isExpanded(row.panel)"
+            :ui="{ content: 'overflow-hidden' }"
+          >
+            <template #content>
+              <div
+                class="grid gap-3"
+                :class="row.panel === 'catsRound' ? 'pr-3 pb-3 pl-2' : 'px-3 pb-4'"
+                @focusin.capture="row.panel && enablePanelForEditing(row.panel)"
+                @pointerdown.capture="row.panel && enablePanelForEditing(row.panel)"
+              >
+                <StatConfigPanelsWallets v-if="row.panel === 'wallets'" />
+                <StatConfigPanelsAverage v-else-if="row.panel === 'statAverage'" />
+                <StatConfigPanelsNavigation v-else-if="row.panel === 'navigation'" />
+                <StatConfigPanelsSummary v-else-if="row.panel === 'summary'" />
+                <StatConfigPanelsChart v-else-if="row.panel === 'chart'" />
+                <StatConfigPanelsTrns v-else-if="row.panel === 'trns'" />
+                <StatConfigPanelsCatsRound v-else-if="row.panel === 'catsRound'" />
+                <StatConfigPanelsCatsList v-else-if="row.panel === 'catsList'" />
+                <StatConfigPanelsVertical v-else-if="row.panel === 'vertical'" />
+                <UButton
+                  v-if="viewController"
+                  class="w-fit justify-self-start"
+                  color="neutral"
+                  icon="i-lucide-copy"
+                  :label="t('stat.views.syncBlock')"
+                  size="xs"
+                  variant="soft"
+                  :disabled="!!syncingPanel"
+                  :loading="syncingPanel === row.panel"
+                  @click="syncPanel(row.panel)"
+                />
+              </div>
+            </template>
+          </UCollapsible>
+        </div>
+      </template>
+    </template>
   </div>
 </template>

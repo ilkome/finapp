@@ -7,7 +7,7 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
-import type { IntervalData, SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
+import type { SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 
 import { getTotal } from '~/components/amount/getTotal'

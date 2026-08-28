@@ -16,7 +16,7 @@ export type SeriesSlug = 'income' | 'expense'
 export const seriesSlugsSelected = ['income', 'expense', 'net'] as const
 export type SeriesSlugSelected = typeof seriesSlugsSelected[number]
 
-export type StatConfigPanelId = 'root' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical' | 'trns'
+export type StatConfigPanelId = 'root' | 'navigation' | 'summary' | 'wallets' | 'statAverage' | 'chart' | 'catsRound' | 'catsList' | 'vertical' | 'trns'
 
 export type UseStatReportParams = {
   applyStatsExclusion?: ComputedRef<boolean>
@@ -44,6 +44,7 @@ export type StatQuickCategoryFilter = {
 type CategoryWithDataBase = {
   id: CategoryId
   name: CategoryItem['name']
+  trend?: number[]
   trnsIds: TrnId[]
   value: number
 }
@@ -56,12 +57,13 @@ export type CategoriesWithData = Record<CategoryId, CategoryWithData>
 
 export type ChartSeries = {
   averageMode?: 'series' | 'stack'
+  axisOverlay?: boolean
   color?: string
   data: number[]
   icon?: string
   markArea?: {
     data: [{ xAxis: string }, { xAxis: string }][]
-    itemStyle: { color: string, opacity: number }
+    itemStyle: { borderWidth: number, color: string, opacity: number }
   }
   markedArea?: 'markedArea'
   markLine?: Record<string, unknown>

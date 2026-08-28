@@ -8,6 +8,7 @@ import { useCategoriesBreakdown } from '~/components/stat/categories/useCategori
 
 const props = defineProps<{
   baseCategoryViews?: CategoryViews
+  block?: 'catsList' | 'vertical'
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   focusedCategoryId?: CategoryId
   focusedChildCategoryId?: CategoryId
@@ -37,17 +38,15 @@ const displayedCategories = computed(() => isFocused.value ? focusedCategories.v
     class="grid content-start gap-3 @3xl/main:max-w-lg"
   >
     <StatCategoriesVerticalSection
-      v-if="!isFocused"
+      v-if="props.block !== 'catsList' && !isFocused"
       :groupedCategories
-      :isOneCategory="props.isOneCategory"
       :isTwoColumnLayout="props.isTwoColumnLayout"
-      :storageKey="props.storageKey"
-      :type="props.type"
       :ungroupedCategories
       @clickCategory="emit('clickCategory', $event)"
     />
 
     <StatCategoriesListSection
+      v-if="props.block !== 'vertical'"
       :categoriesWithData
       :focusedChildCategoryId="props.focusedChildCategoryId"
       :focusedCategories="isFocused ? focusedCategories : undefined"

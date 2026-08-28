@@ -28,7 +28,6 @@ const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartLayout = computed(() => statConfig.config.value.chart.layout)
 const chartType = computed(() => statConfig.config.value.chart.type)
 const axisChartType = computed<AxisChartType>(() => chartType.value === 'pie' ? 'bar' : chartType.value)
-const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
 async function onClickChart(intervalKey: number) {
   emit('select', intervalKey)
@@ -51,18 +50,17 @@ function onChangePeriod(period: Period) {
     }"
   >
     <div
-      class="-mb-1 flex h-7 justify-end"
-      :class="{ invisible: chartType === 'pie' }"
+      class="-mb-1 flex h-8 items-center gap-1"
     >
-      <StatDateQuickRanges v-if="isShowQuick" />
-
-      <div class="h-7">
+      <div class="h-7" :class="{ invisible: chartType === 'pie' }">
         <StatChartIntervalSelect
-          :class="{ 'border-l border-accented': isShowQuick }"
           :period="statDate.params.value.granularityBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"
         />
+      </div>
+      <div class="ml-auto shrink-0">
+        <StatChartSettingsPopover />
       </div>
     </div>
 
@@ -70,6 +68,9 @@ function onChangePeriod(period: Period) {
       <LazyStatChartSimplePieView
         v-if="isChartMountReady && chartType === 'pie'"
         :endValue="props.chartWindow.endValue.value"
+        :isDonut="statConfig.config.value.chart.pie.shape === 'donut'"
+        :isShowLabels="statConfig.config.value.chart.pie.isShowLabels"
+        :isShowPercent="statConfig.config.value.chart.pie.isShowPercent"
         :series="props.series"
         :startValue="props.chartWindow.startValue.value"
         :xAxisLabels="props.xAxisLabels"

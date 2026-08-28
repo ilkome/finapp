@@ -118,6 +118,30 @@ describe('useTrnsListFilters', () => {
     expect(filters.typeFilterItems.value.map(item => item.value)).toEqual(['all', 'transfer', 'adjustment'])
   })
 
+  it('builds independent type controls for the current and historical periods', () => {
+    const currentIds = ref(['transactionExpenseWalletCashUSD400'])
+    const historyIds = ref([
+      'transactionExpenseWalletCashUSD400',
+      'singleLegTransferExpenseWalletCashUSD50',
+      'adjustmentExpenseWalletCashUSD30',
+    ])
+    const filters = useTrnsListFilters({
+      ids: computed(() => [...currentIds.value, ...historyIds.value]),
+      primaryType: computed(() => undefined),
+      showExpense: computed(() => true),
+      showIncome: computed(() => true),
+      showTransfers: computed(() => true),
+    })
+
+    const current = filters.createTypeFilterControls(computed(() => currentIds.value))
+    const history = filters.createTypeFilterControls(computed(() => historyIds.value))
+
+    expect(current.realTypesCount.value).toBe(1)
+    expect(current.typeFilterItems.value.map(item => item.value)).toEqual(['all'])
+    expect(history.realTypesCount.value).toBe(3)
+    expect(history.typeFilterItems.value.map(item => item.value)).toEqual(['all', 'transfer', 'adjustment'])
+  })
+
   it('selects income when the scoped statistic type changes', async () => {
     const primaryType = ref<'expense' | 'income' | undefined>('expense')
     const filters = useTrnsListFilters({

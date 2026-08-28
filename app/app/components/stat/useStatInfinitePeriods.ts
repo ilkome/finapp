@@ -91,8 +91,8 @@ export function useStatInfinitePeriods(ctx: StatReportContext, options: {
   })
 
   const displayOffsets = computed(() => mergeStatOffsets(
-    loadedOffsets.value,
-    feedIndex.value.materializedOffsets,
+    options.isEnabled.value ? loadedOffsets.value : [baseOffset.value],
+    options.isEnabled.value ? feedIndex.value.materializedOffsets : [],
   ).offsets)
 
   const periods = computed(() => displayOffsets.value.map(offset => ({

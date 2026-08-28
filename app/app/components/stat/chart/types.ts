@@ -16,8 +16,10 @@ export const defaultLineChartOptions: LineChartOptions = {
   isSmooth: true,
 }
 
-export function isStackedAxisChartType(chartType?: AxisChartType, line?: LineChartOptions) {
-  return chartType === 'bar' || chartType === 'line' && !!line && (line.isGradient || !line.isSmooth)
+export function isStackedAxisChartType(chartType?: AxisChartType, line?: LineChartOptions, isBarGrouped = true) {
+  return chartType === 'bar'
+    ? isBarGrouped
+    : chartType === 'line' && !!line && (line.isGradient || !line.isSmooth)
 }
 
 export function resolveEChartsSeriesType(chartType?: AxisChartType): 'bar' | 'line' {

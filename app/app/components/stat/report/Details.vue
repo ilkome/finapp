@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { StatReportBlockId } from '~/components/stat/config/schema'
 import type { StatReportContext } from '~/components/stat/report/types'
 
 import { useAmount } from '~/components/amount/useAmount'
@@ -9,8 +10,11 @@ import { canStickStatCategories, isStatCategoriesPinned } from '~/components/sta
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
+  block: StatReportBlockId
   categoriesStickyTop?: number
   ctx: StatReportContext
+  isTwoColumnLayout?: boolean
+  managedLayout?: boolean
 }>()
 
 const { t } = useI18n()
@@ -24,10 +28,12 @@ const { height: viewportHeight } = useWindowSize()
 const preservedCategoryScrollTop = shallowRef<number | null>(null)
 provide(statPreservedCategoryScrollTopKey, preservedCategoryScrollTop)
 let preserveScrollTimer: ReturnType<typeof setTimeout> | null = null
+const isTwoColumnLayout = computed(() => props.isTwoColumnLayout ?? props.ctx.shouldUseTwoColumnLayout.value)
 const baseCategoryViews = computed(() => buildCategoryViews({
   categoriesItems: categoriesStore.items,
   computeValue: ids => computeTotalForTrnsIds(ids).net,
   excludedCategoriesIds: props.ctx.statExcludedIds.value,
+  intervals: props.ctx.effectiveIntervals.value,
   trnsIds: props.ctx.selectedTrnsIds.value,
   trnsItems: trnsStore.items ?? {},
 }))
@@ -36,7 +42,7 @@ const quickCategoryViews = computed(() => props.ctx.filteredCategoriesIds.value.
   : undefined)
 const canStickCategories = computed(() =>
   props.categoriesStickyTop !== undefined
-  && props.ctx.shouldUseTwoColumnLayout.value
+  && isTwoColumnLayout.value
   && canStickStatCategories(props.categoriesStickyTop, categoriesHeight.value, viewportHeight.value),
 )
 
@@ -70,7 +76,7 @@ onBeforeUnmount(() => {
 
 <template>
   <StatCategoriesRoundSection
-    v-if="ctx.params.statConfig.config.value.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || ctx.filteredCategoriesIds.value.length > 0)"
+    v-if="props.block === 'catsRound' && ctx.params.statConfig.config.value.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || ctx.filteredCategoriesIds.value.length > 0)"
     :baseCategoryViews
     :excludedCategoriesIds="ctx.statExcludedIds.value"
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"
@@ -82,16 +88,16 @@ onBeforeUnmount(() => {
   />
 
   <div
-    v-if="ctx.selectedTrnsIds.value.length > 0 || (isVirtualFeedHost && ctx.params.reportType.value === 'combined')"
+    v-if="props.block !== 'catsRound' && (ctx.selectedTrnsIds.value.length > 0 || (isVirtualFeedHost && ctx.params.reportType.value === 'combined'))"
     class="_min-h-dvh grid min-w-0 content-start items-start gap-4"
   >
     <div
       :class="{
-        'stat-responsive-two-column-grid': ctx.shouldUseTwoColumnLayout.value,
+        'stat-responsive-two-column-grid': isTwoColumnLayout && !props.managedLayout,
       }"
     >
       <div
-        v-if="ctx.shouldShowCategoriesBreakdown.value"
+        v-if="(props.block === 'catsList' || props.block === 'vertical') && ctx.shouldShowCategoriesBreakdown.value"
         ref="categoriesBreakdown"
         data-stat-categories-breakdown
         class="self-start"
@@ -100,11 +106,12 @@ onBeforeUnmount(() => {
       >
         <StatCategoriesBreakdown
           :baseCategoryViews="quickCategoryViews"
+          :block="props.block"
           :excludedCategoriesIds="ctx.statExcludedIds.value"
           :focusedChildCategoryId="ctx.filteredChildCategoryId.value"
           :focusedCategoryId="ctx.focusedQuickCategoryId.value"
           :isOneCategory="ctx.isOneCategory.value"
-          :isTwoColumnLayout="ctx.shouldUseTwoColumnLayout.value"
+          :isTwoColumnLayout="isTwoColumnLayout"
           :preCategoriesIds="ctx.params.preCategoriesIds?.value"
           :selectedTrnsIds="ctx.selectedAndQuickFilteredTrnsIds.value"
           :storageKey="ctx.statItemStorageKey.value"
@@ -117,7 +124,7 @@ onBeforeUnmount(() => {
       </div>
 
       <StatTrns
-        v-if="ctx.params.statConfig.config.value.trns.isShow"
+        v-if="props.block === 'trns' && ctx.params.statConfig.config.value.trns.isShow"
         :ctx="ctx"
         :isPeriodOneDay="ctx.isPeriodOneDay.value"
         :selectedTrnsIds="ctx.selectedAndFilteredTrnsIds.value"
@@ -127,14 +134,14 @@ onBeforeUnmount(() => {
     </div>
   </div>
 
-  <div v-else class="mx-auto grid w-full max-w-150 content-start justify-items-center gap-4">
+  <div v-else-if="props.block === 'trns'" class="mx-auto grid w-full max-w-150 content-start justify-items-center gap-4">
     <TrnsNoTrns />
 
     <CategoriesQuickAdd />
   </div>
 
   <BottomSheetModal
-    v-if="ctx.modalSource.value"
+    v-if="props.block === 'trns' && ctx.modalSource.value"
     @closed="ctx.closeModal"
   >
     <UiTitleModal v-if="ctx.modalTrnsIds.value.length > 0">

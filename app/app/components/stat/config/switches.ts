@@ -2,22 +2,31 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 
 export type StatConfigBooleanPath
-  = | 'categories.bars.isGrouped'
-    | 'categories.list.isLines'
+  = | 'categories.list.isLines'
     | 'categories.list.isRoundIcon'
-    | 'categories.round.isGrouped'
+    | 'categories.list.isShowTitle'
     | 'categories.round.isIconBg'
     | 'categories.round.isInlineAmount'
     | 'categories.round.isShowFavorites'
     | 'categories.round.isShowRecent'
     | 'chart.isGrouped'
+    | 'chart.isShowBackground'
     | 'chart.isShowAverage'
     | 'chart.isShowScale'
     | 'chart.line.isGradient'
     | 'chart.line.isShowPoints'
     | 'chart.line.isSkipZero'
     | 'chart.line.isSmooth'
+    | 'chart.pie.isShowLabels'
+    | 'chart.pie.isShowPercent'
+    | 'date.isPinned'
+    | 'date.isShowNavigation'
     | 'date.isShowQuick'
+    | 'summary.isPinned'
+    | 'summary.isShowChart'
+    | 'trns.isShowHistory'
+    | 'trns.isShowTitle'
+    | 'trns.isShowTypeTabs'
     | 'wallets.isShowIcon'
 
 type BooleanConfigOperation = {
@@ -26,10 +35,6 @@ type BooleanConfigOperation = {
 }
 
 export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, BooleanConfigOperation> = {
-  'categories.bars.isGrouped': {
-    get: config => config.categories.bars.isGrouped,
-    set: (provider, value) => provider.updateConfig('categories', { bars: { isGrouped: value } }),
-  },
   'categories.list.isLines': {
     get: config => config.categories.list.isLines,
     set: (provider, value) => provider.updateConfig('categories', { list: { isLines: value } }),
@@ -38,9 +43,9 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
     get: config => config.categories.list.isRoundIcon,
     set: (provider, value) => provider.updateConfig('categories', { list: { isRoundIcon: value } }),
   },
-  'categories.round.isGrouped': {
-    get: config => config.categories.round.isGrouped,
-    set: (provider, value) => provider.updateConfig('categories', { round: { isGrouped: value } }),
+  'categories.list.isShowTitle': {
+    get: config => config.categories.list.isShowTitle,
+    set: (provider, value) => provider.updateConfig('categories', { list: { isShowTitle: value } }),
   },
   'categories.round.isIconBg': {
     get: config => config.categories.round.isIconBg,
@@ -66,6 +71,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
     get: config => config.chart.isShowAverage,
     set: (provider, value) => provider.updateConfig('chart', { isShowAverage: value }),
   },
+  'chart.isShowBackground': {
+    get: config => config.chart.isShowBackground,
+    set: (provider, value) => provider.updateConfig('chart', { isShowBackground: value }),
+  },
   'chart.isShowScale': {
     get: config => config.chart.isShowScale,
     set: (provider, value) => provider.updateConfig('chart', { isShowScale: value }),
@@ -86,9 +95,45 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
     get: config => config.chart.line.isSmooth,
     set: (provider, value) => provider.updateConfig('chart', { line: { isSmooth: value } }),
   },
+  'chart.pie.isShowLabels': {
+    get: config => config.chart.pie.isShowLabels,
+    set: (provider, value) => provider.updateConfig('chart', { pie: { isShowLabels: value } }),
+  },
+  'chart.pie.isShowPercent': {
+    get: config => config.chart.pie.isShowPercent,
+    set: (provider, value) => provider.updateConfig('chart', { pie: { isShowPercent: value } }),
+  },
+  'date.isPinned': {
+    get: config => config.date.isPinned,
+    set: (provider, value) => provider.updateConfig('date', { isPinned: value }),
+  },
+  'date.isShowNavigation': {
+    get: config => config.date.isShowNavigation,
+    set: (provider, value) => provider.updateConfig('date', { isShowNavigation: value }),
+  },
   'date.isShowQuick': {
     get: config => config.date.isShowQuick,
     set: (provider, value) => provider.updateConfig('date', { isShowQuick: value }),
+  },
+  'summary.isPinned': {
+    get: config => config.summary.isPinned,
+    set: (provider, value) => provider.updateConfig('summary', { isPinned: value }),
+  },
+  'summary.isShowChart': {
+    get: config => config.summary.isShowChart,
+    set: (provider, value) => provider.updateConfig('summary', { isShowChart: value }),
+  },
+  'trns.isShowHistory': {
+    get: config => config.trns.isShowHistory,
+    set: (provider, value) => provider.updateConfig('trns', { isShowHistory: value }),
+  },
+  'trns.isShowTitle': {
+    get: config => config.trns.isShowTitle,
+    set: (provider, value) => provider.updateConfig('trns', { isShowTitle: value }),
+  },
+  'trns.isShowTypeTabs': {
+    get: config => config.trns.isShowTypeTabs,
+    set: (provider, value) => provider.updateConfig('trns', { isShowTypeTabs: value }),
   },
   'wallets.isShowIcon': {
     get: config => config.wallets.isShowIcon,

@@ -39,8 +39,9 @@ export const baseOption: EChartsOption['baseOption'] = {
 
   grid: {
     bottom: '0',
-    containLabel: true,
     left: '5',
+    outerBoundsContain: 'axisLabel',
+    outerBoundsMode: 'same',
     right: '5',
     top: '5',
   },
@@ -48,7 +49,10 @@ export const baseOption: EChartsOption['baseOption'] = {
   tooltip: {
     axisPointer: {
       animation: false,
-      type: 'cross',
+      shadowStyle: {
+        color: 'color-mix(in oklab, var(--ui-bg-elevated) 50%, transparent)',
+      },
+      type: 'shadow',
     },
     backgroundColor: 'transparent',
     borderWidth: 0,
@@ -73,6 +77,10 @@ export const baseOption: EChartsOption['baseOption'] = {
         color: 'var(--chart-axisLabel)',
         margin: 10,
       },
+      shadowStyle: {
+        color: 'color-mix(in oklab, var(--ui-bg-elevated) 50%, transparent)',
+      },
+      z: 0,
     },
     axisTick: {
       interval: 0,
@@ -142,8 +150,31 @@ export function resolveChartTooltipPosition(
   return [point[0] > viewSize[0] / 2 ? 0 : viewSize[0] / 2, 0]
 }
 
-export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartType, line = defaultLineChartOptions) {
-  const values = isStackedAxisChartType(chartType, line)
+export function resolveCenteredBarGeometry(
+  bucketWidth: number,
+  activeCount: number,
+  activeIndex: number,
+  gap = 2,
+  maxWidth = 12,
+) {
+  const availableWidth = Math.max(1, bucketWidth * 0.8)
+  const width = Math.min(maxWidth, Math.max(1, (availableWidth - gap * Math.max(0, activeCount - 1)) / activeCount))
+  return {
+    offset: (activeIndex - (activeCount - 1) / 2) * (width + gap),
+    width,
+  }
+}
+
+export function resolveChartTooltipValue(value: unknown): number | null {
+  if (typeof value === 'number')
+    return value
+  if (Array.isArray(value) && typeof value[1] === 'number')
+    return value[1]
+  return null
+}
+
+export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartType, line = defaultLineChartOptions, isBarGrouped = true) {
+  const values = isStackedAxisChartType(chartType, line, isBarGrouped)
     ? Array.from({ length: Math.max(0, ...series.map(item => item.data.length)) }, (_, index) => {
         const pointValues = series.map(item => item.data[index] ?? 0).filter(Number.isFinite)
         return [
@@ -262,12 +293,41 @@ export const defaultSeriesConfig = {
   type: 'line',
 }
 
-export function buildChartSeries(series: ChartSeries[], chartType?: AxisChartType, line: LineChartOptions = defaultLineChartOptions) {
+export function resolveStackedBarBorderRadius(
+  series: ChartSeries[],
+  seriesIndex: number,
+  dataIndex: number,
+  radius = 2,
+): number | [number, number, number, number] {
+  const value = series[seriesIndex]?.data[dataIndex] ?? 0
+  if (!Number.isFinite(value) || value === 0)
+    return 0
+
+  const stackIndexes = series.flatMap((item, index) => {
+    const candidate = item.data[dataIndex] ?? 0
+    const isSameStack = !item.axisOverlay && Number.isFinite(candidate) && candidate !== 0 && (candidate > 0) === (value > 0)
+    return isSameStack ? [index] : []
+  })
+  const isFirst = seriesIndex === stackIndexes[0]
+  const isLast = seriesIndex === stackIndexes.at(-1)
+
+  return value > 0
+    ? [isLast ? radius : 0, isLast ? radius : 0, isFirst ? radius : 0, isFirst ? radius : 0]
+    : [isFirst ? radius : 0, isFirst ? radius : 0, isLast ? radius : 0, isLast ? radius : 0]
+}
+
+export function buildChartSeries(
+  series: ChartSeries[],
+  chartType?: AxisChartType,
+  line: LineChartOptions = defaultLineChartOptions,
+  isBarGrouped = true,
+) {
   return series
-    .map((item: ChartSeries) => {
-      const effectiveChartType = chartType || item.type
+    .map((item: ChartSeries, seriesIndex) => {
+      const effectiveChartType = item.axisOverlay ? item.type : chartType || item.type
       const isBar = effectiveChartType === 'bar'
       const isLine = effectiveChartType === 'line'
+      const isStackedBar = isBar && isBarGrouped && !item.axisOverlay && series.filter(candidate => !candidate.axisOverlay).length > 1
       const seriesType = resolveEChartsSeriesType(effectiveChartType)
       const areaStyle = isLine && line.isGradient
         ? defaultSeriesConfig.areaStyle
@@ -277,14 +337,24 @@ export function buildChartSeries(series: ChartSeries[], chartType?: AxisChartTyp
         areaStyle,
         // Zero = no trns that period; render no bar (null), not a floored stub.
         // Lines keep 0 as a real point so they stay connected.
-        data: isBar || isLine && line.isSkipZero ? item.data.map(v => (v === 0 ? null : v)) : item.data,
-        emphasis: isLine && line.isGradient ? { focus: 'series' as const } : defaultSeriesConfig.emphasis,
+        data: isBar
+          ? item.data.map((value, dataIndex) => value === 0
+              ? null
+              : isStackedBar
+                ? { itemStyle: { borderRadius: resolveStackedBarBorderRadius(series, seriesIndex, dataIndex) }, value }
+                : value)
+          : isLine && line.isSkipZero ? item.data.map(value => value === 0 ? null : value) : item.data,
+        emphasis: item.axisOverlay
+          ? { disabled: true }
+          : isLine && line.isGradient ? { focus: 'series' as const } : defaultSeriesConfig.emphasis,
+        itemStyle: item.axisOverlay ? { opacity: 0 } : isBar && !isStackedBar ? { borderRadius: 2 } : undefined,
         label: defaultSeriesConfig.label,
-        lineStyle: defaultSeriesConfig.lineStyle,
-        showSymbol: isLine && line.isShowPoints,
+        lineStyle: item.axisOverlay ? { opacity: 0, width: 0 } : defaultSeriesConfig.lineStyle,
+        showSymbol: item.axisOverlay ? false : isLine && line.isShowPoints,
         smooth: isLine ? line.isSmooth : false,
-        stack: isStackedAxisChartType(chartType, line) ? 'b' : false,
-        type: item.markedArea ? 'bar' : seriesType,
+        stack: item.axisOverlay ? false : isStackedAxisChartType(chartType, line, isBarGrouped) ? 'b' : false,
+        symbol: item.axisOverlay ? 'none' : defaultSeriesConfig.symbol,
+        type: seriesType,
       }
     })
 }

@@ -12,6 +12,7 @@ import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
 
 type UseStatReportContextParams = UseStatReportParams & {
   hasChildren?: ComputedRef<boolean | undefined>
+  onFilteredTypeChange?: (type: SeriesSlugSelected) => void
   preCategoriesIds?: ComputedRef<CategoryId[] | undefined>
   walletId?: ComputedRef<WalletId | undefined>
 }
@@ -89,12 +90,14 @@ export function useStatReportContext(params: UseStatReportContextParams) {
       quickView.openFullTrns()
 
     report.onClickSumItem(type)
+    params.onFilteredTypeChange?.(report.filteredType.value)
   }
 
   return {
     ...report,
     ...quickView,
     filteredParentCategoryId,
+    focusedQuickCategoryHasChildren,
     focusedQuickCategoryId,
     hasCategoriesData,
     isCategoryFocus,
