@@ -3,6 +3,7 @@ const props = withDefaults(defineProps<{
   isShowCloseBtn?: boolean
   isShowScroll?: boolean
   title?: string
+  titleClass?: string
 }>(), {
   isShowScroll: true,
 })
@@ -17,7 +18,7 @@ const emit = defineEmits<{
     class="flex flex-col overflow-hidden"
     style="max-height: var(--reka-popper-available-height, 60dvh)"
   >
-    <UiTitleModal v-if="props.title">
+    <UiTitleModal v-if="props.title" :class="props.titleClass">
       {{ props.title }}
     </UiTitleModal>
 

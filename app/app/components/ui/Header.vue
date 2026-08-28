@@ -1,17 +1,14 @@
 <script setup lang="ts">
-import { useSearch } from '~/components/search/useSearch'
 import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { backSkipPattern, backTo, compactBottom = false, hideSearch, mobileAfterScrolls = false, sticky = true } = defineProps<{
+const { backSkipPattern, backTo, compactBottom = false, mobileAfterScrolls = false, sticky = true } = defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
   compactBottom?: boolean
-  hideSearch?: boolean
   mobileAfterScrolls?: boolean
   sticky?: boolean
 }>()
 
-const { isSearchOpen } = useSearch()
 const router = useRouter()
 const rootElement = useTemplateRef<HTMLElement>('rootElement')
 const mainElement = useTemplateRef<HTMLElement>('mainElement')
@@ -66,20 +63,6 @@ function onBack() {
         </div>
 
         <div class="ml-auto flex shrink-0 flex-nowrap items-center gap-1 pl-2">
-          <UTooltip
-            v-if="!hideSearch"
-            :text="$t('search.title')"
-            :kbds="['meta', 'K']"
-            class="hidden sm:flex md:hidden"
-          >
-            <UiActionButton
-              :ariaLabel="$t('search.title')"
-              @click="isSearchOpen = true"
-            >
-              <Icon name="lucide:search" size="20" />
-            </UiActionButton>
-          </UTooltip>
-
           <slot name="actions" />
         </div>
       </div>

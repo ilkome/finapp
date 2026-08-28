@@ -1,3 +1,6 @@
+@reference 'tailwindcss';
+@reference '@nuxt/ui';
+
 @utility interactive {
   @apply select-none;
 
@@ -14,6 +17,11 @@
 
 @utility flex-center {
   @apply flex items-center justify-center;
+}
+
+@utility theme-rounded-control {
+  /* 0.5rem maps to half of the tallest shared 42px control. */
+  border-radius: calc(var(--ui-radius) * 2.625);
 }
 
 @utility stat-layout {
@@ -59,7 +67,7 @@
 }
 
 @utility bottom-sheet-content-inside {
-  @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-2 py-px;
+  @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-3 py-px;
 }
 
 @utility bottom-sheet-content-bottom {

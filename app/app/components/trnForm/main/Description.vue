@@ -66,7 +66,6 @@ function onSave(close: () => void) {
 
         <div class="flex-center px-2 pb-4 md:pb-0">
           <UiButtonAccent
-            rounded
             @click="onSave(close)"
           >
             {{ t('base.save') }}

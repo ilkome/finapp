@@ -188,14 +188,12 @@ async function clearCachesAndReload() {
                     class="grid gap-2 px-3 py-2"
                   >
                     <UiButtonAccent
-                      rounded
                       @click="updateDemo"
                     >
                       {{ t('demo.update') }}
                     </UiButtonAccent>
 
                     <UiButtonAccent
-                      rounded
                       variant="outline"
                       @click="userStore.signOut"
                     >

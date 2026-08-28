@@ -36,6 +36,7 @@ type UseBottomSheetDragParams = {
 // Controls whose first tap must not be consumed by the drag gesture. Plain
 // `div @click` rows are intentionally excluded so drag/scroll still starts on them.
 const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea, label, [role="button"], [role="tab"], [role="switch"]'
+const SHEET_DRAG_EXCLUDED_SELECTOR = '.sortHandle, [role="combobox"]'
 const TRANSITION_FALLBACK_MS = 150
 
 function getClientY(event: DragInputEvent): number {
@@ -273,7 +274,7 @@ export function useBottomSheetDrag({
 
     activeScroller = resolveScroller(event.target)
 
-    if (event.target instanceof Element && event.target.closest('.sortHandle'))
+    if (event.target instanceof Element && event.target.closest(SHEET_DRAG_EXCLUDED_SELECTOR))
       return
 
     if (event.target instanceof Element) {

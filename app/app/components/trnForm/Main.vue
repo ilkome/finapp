@@ -7,8 +7,9 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const { maxHeight = '60vh' } = defineProps<{
+const { maxHeight = '60vh', sidebarHeader = false } = defineProps<{
   maxHeight?: string
+  sidebarHeader?: boolean
 }>()
 
 const { t } = useI18n()
@@ -18,12 +19,20 @@ const walletsStore = useWalletsStore()
 const walletId = computed(() =>
   trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
 )
-
 </script>
 
 <template>
-  <div class="grid gap-3 pb-6">
-    <UiTitleModal @click="trnsFormStore.values.trnId = null">
+  <div class="grid pb-6">
+    <div
+      v-if="sidebarHeader"
+      class="sticky top-0 z-20 bg-default/90 px-4 pt-5 pb-3 backdrop-blur"
+      @click="trnsFormStore.values.trnId = null"
+    >
+      <UiHeaderTitle class="md:text-xl">
+        {{ trnsFormStore.values.trnId ? t('trnForm.titleEditTrn') : t('trnForm.createTrn') }}
+      </UiHeaderTitle>
+    </div>
+    <UiTitleModal v-else @click="trnsFormStore.values.trnId = null">
       {{ trnsFormStore.values.trnId ? t('trnForm.titleEditTrn') : t('trnForm.createTrn') }}
     </UiTitleModal>
 

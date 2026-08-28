@@ -8,6 +8,7 @@ const props = withDefaults(defineProps<{
   keyboardTrigger?: boolean
   snapPoints?: number[]
   title?: string
+  titleClass?: string
   unmountOnHide?: boolean
 }>(), {
   align: 'start',
@@ -59,6 +60,7 @@ function closeMobileSheet(closeSheet: () => void) {
     <template #content>
       <UiPopoverWrap
         :title="props.title"
+        :titleClass="props.titleClass"
         :isShowCloseBtn="props.isShowCloseBtn"
         :isShowScroll="!$slots.custom"
         @close="() => open = false"
@@ -97,7 +99,7 @@ function closeMobileSheet(closeSheet: () => void) {
       >
         <template #default="{ close, isExpanded }">
           <div class="bottom-sheet-content">
-            <UiTitleModal v-if="props.title">
+            <UiTitleModal v-if="props.title" :class="props.titleClass">
               {{ props.title }}
             </UiTitleModal>
 

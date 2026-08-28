@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const props = defineProps<{
+  color?: 'neutral' | 'primary'
   loading?: boolean
-  rounded?: boolean
   size?: 'lg' | 'xl'
-  variant?: 'outline' | 'ghost' | 'solid'
+  variant?: 'ghost' | 'outline' | 'soft' | 'solid'
 }>()
 
 const emit = defineEmits<{ click: [] }>()
@@ -11,7 +11,7 @@ const emit = defineEmits<{ click: [] }>()
 
 <template>
   <UButton
-    :class="{ 'rounded-full': props.rounded, 'rounded-sm': !props.rounded, 'py-3': props.size === 'xl' }"
+    :color="props.color"
     :loading="props.loading"
     :size="props.size || 'lg'"
     :variant="props.variant"

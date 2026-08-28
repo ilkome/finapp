@@ -1,3 +1,26 @@
+const actionMenu = {
+  defaultVariants: {
+    size: 'md' as const,
+  },
+  slots: {
+    content: 'border border-accented ring-0',
+    group: 'relative p-1 [&:not(:first-child)]:before:absolute [&:not(:first-child)]:before:top-0 [&:not(:first-child)]:before:right-2 [&:not(:first-child)]:before:left-12 [&:not(:first-child)]:before:h-px [&:not(:first-child)]:before:bg-elevated/50',
+    item: 'min-h-10.5 items-center! gap-3! px-2! py-1.5! text-sm! leading-none font-medium tracking-wide',
+    itemLeadingIcon: 'size-5!',
+    label: 'min-h-10.5 gap-3! px-2! py-1.5! text-sm! leading-none font-medium tracking-wide',
+    separator: 'mx-2! my-0! ms-12! h-px bg-elevated/50',
+    viewport: 'divide-y-0!',
+  },
+  variants: {
+    active: {
+      false: {
+        item: 'text-toned data-highlighted:text-highlighted data-[state=open]:text-highlighted',
+        itemLeadingIcon: 'text-muted group-data-highlighted:text-default group-data-[state=open]:text-default',
+      },
+    },
+  },
+}
+
 export default defineAppConfig({
   icon: {
     customize: (content: string) => {
@@ -6,6 +29,11 @@ export default defineAppConfig({
     },
   },
   ui: {
+    button: {
+      slots: {
+        base: 'theme-rounded-control',
+      },
+    },
     calendar: {
       slots: {
         body: 'flex-col! space-y-8!',
@@ -25,6 +53,8 @@ export default defineAppConfig({
         viewport: 'scroller-block',
       },
     },
+    contextMenu: actionMenu,
+    dropdownMenu: actionMenu,
     modal: {
       slots: {
         overlay: 'bg-overlay!',

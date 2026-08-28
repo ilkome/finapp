@@ -2,8 +2,14 @@
 const props = defineProps<{
   hasSelection?: boolean
   icon: string
+  isActive?: boolean
   labelMode?: boolean
+  outlined?: boolean
   title: string
+}>()
+
+const emit = defineEmits<{
+  click: [e: Event]
 }>()
 </script>
 
@@ -26,16 +32,24 @@ const props = defineProps<{
       inset
       size="xs"
     >
-      <UiActionButton :ariaLabel="props.title">
-        <Icon :name="props.icon" size="20" />
+      <UiActionButton
+        :ariaLabel="props.title"
+        :isActive="props.isActive"
+        :class="props.outlined && 'border border-(--ui-bg-elevated)/50'"
+        @click="emit('click', $event)"
+      >
+        <Icon :name="props.icon" :class="props.isActive && 'text-primary'" size="20" />
       </UiActionButton>
     </UChip>
 
     <UiActionButton
       v-else
       :ariaLabel="props.title"
+      :isActive="props.isActive"
+      :class="props.outlined && 'border border-(--ui-bg-elevated)/50'"
+      @click="emit('click', $event)"
     >
-      <Icon :name="props.icon" size="20" />
+      <Icon :name="props.icon" :class="props.isActive && 'text-primary'" size="20" />
     </UiActionButton>
   </UTooltip>
 </template>

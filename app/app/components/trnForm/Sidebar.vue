@@ -52,7 +52,7 @@ watch(isShow, async (v) => {
       v-if="isShow"
       class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-90 py-4"
     >
-      <div class="relative h-full overflow-hidden rounded-l-xl shadow-2xl">
+      <div class="relative h-full overflow-hidden rounded-l-xl border border-accented shadow-2xl">
         <div class="absolute top-2 right-2">
           <UiButtonClose @click="trnsFormStore.onClose()" />
         </div>
@@ -64,6 +64,7 @@ watch(isShow, async (v) => {
               <div class="grid h-full scroller-block grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
                 <TrnFormMain
                   maxHeight="100vh"
+                  sidebarHeader
                   class="pb-0!"
                 />
                 <div

@@ -38,7 +38,7 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 <template>
   <UModal
     v-model:open="isOpen"
-    :title="props.title || t('base.sure')"
+    :title="props.title ?? t('base.sure')"
     :ui="{ overlay: 'z-[70]', content: 'z-[70] max-w-sm divide-y-0', footer: 'justify-between' }"
     @after:leave="onClosed"
   >
