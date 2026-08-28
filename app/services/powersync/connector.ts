@@ -13,6 +13,24 @@ import { notifyFatalUploadError } from './uploadErrorHandler'
 
 const logger = createLogger('powersync-connector')
 
+const JSON_COLUMNS: Record<string, string[]> = {
+  stat_views: ['autoRule', 'config'],
+}
+
+export function prepareUploadData(table: string, data: Record<string, unknown>): Record<string, unknown> {
+  const jsonColumns = JSON_COLUMNS[table]
+  if (!jsonColumns)
+    return data
+
+  const prepared = { ...data }
+  for (const column of jsonColumns) {
+    const value = prepared[column]
+    if (typeof value === 'string')
+      prepared[column] = JSON.parse(value)
+  }
+  return prepared
+}
+
 // Postgres error codes that retrying can't fix - the op is discarded, not requeued forever.
 const FATAL_RESPONSE_CODES = [
   /^22...$/, // data exception (e.g. type mismatch)
@@ -56,12 +74,12 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
         let result
         switch (op.op) {
           case UpdateType.PUT: {
-            const record = { ...op.opData, id: op.id }
+            const record = { ...prepareUploadData(op.table, op.opData ?? {}), id: op.id }
             result = await table.upsert(record)
             break
           }
           case UpdateType.PATCH:
-            result = await table.update(op.opData!).eq('id', op.id)
+            result = await table.update(prepareUploadData(op.table, op.opData ?? {})).eq('id', op.id)
             break
           case UpdateType.DELETE:
             result = await table.delete().eq('id', op.id)

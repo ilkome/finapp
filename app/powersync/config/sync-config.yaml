@@ -17,6 +17,7 @@ streams:
       - SELECT * FROM wallets WHERE "userId" = auth.user_id()
       - SELECT * FROM trns WHERE "userId" = auth.user_id()
       - SELECT * FROM user_settings WHERE "userId" = auth.user_id()
+      - SELECT * FROM stat_views WHERE "userId" = auth.user_id()
 
   # Global exchange rates: shared across all users.
   rates:

@@ -152,6 +152,7 @@ export function useInitApp() {
       if (userSettings.data.locale)
         userStore.setUserLocale(userSettings.data.locale)
     }
+    userStore.setStatViewsInitialized(userSettings.success ? userSettings.data.statViewsInitialized : false)
 
     const rates = ratesSchema.safeParse(rawCurrencies?.rates)
     if (rates.success)
@@ -234,6 +235,9 @@ export function useInitApp() {
       if (useDemo().isDemo.value) {
         if (!categoriesStore.hasItems)
           await startLocalData()
+        // Demo hydration does not change `isHydrated`, so reconcile the persisted
+        // onboarding hint explicitly after localforage has produced the real store state.
+        isOnboardedHint.value = isOnboarded.value
         return true
       }
 

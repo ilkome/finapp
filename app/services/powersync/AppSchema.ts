@@ -1,4 +1,4 @@
-import { column, Schema, Table } from '@powersync/web'
+import { column, Schema, Table } from '@powersync/common'
 
 // Client-side SQLite schema, mirroring the Supabase Postgres tables. PowerSync adds the
 // implicit `id` text PK. Booleans are stored as 0/1 and timestamps as ms-epoch ints;
@@ -59,6 +59,7 @@ const trns = new Table(
 const user_settings = new Table({
   baseCurrency: column.text,
   locale: column.text,
+  statViewsInitialized: column.integer,
   timezone: column.text, // IANA tz captured at entry; used by the civil-date backfill
   userId: column.text,
 })
@@ -70,9 +71,23 @@ const rates = new Table({
   updatedAt: column.integer,
 })
 
+const stat_views = new Table({
+  autoRule: column.text,
+  config: column.text,
+  createdAt: column.integer,
+  isAutoEnabled: column.integer,
+  name: column.text,
+  schemaVersion: column.integer,
+  scope: column.text,
+  sortOrder: column.integer,
+  updatedAt: column.integer,
+  userId: column.text,
+}, { indexes: { userScopeOrder: ['userId', 'scope', 'sortOrder'] } })
+
 export const AppSchema = new Schema({
   categories,
   rates,
+  stat_views,
   trns,
   user_settings,
   wallets,

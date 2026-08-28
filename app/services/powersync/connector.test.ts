@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { SupabaseConnector } from '~~/services/powersync/connector'
+import { prepareUploadData, SupabaseConnector } from '~~/services/powersync/connector'
 import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 
 vi.mock('@powersync/web', () => ({
@@ -116,5 +116,25 @@ describe('uploadData', () => {
     const { database } = makeDb([])
     const connector = new SupabaseConnector(makeClient({ error: null }), 'http://ps')
     await expect(connector.uploadData(database)).resolves.toBeUndefined()
+  })
+})
+
+describe('prepareUploadData', () => {
+  it('decodes stat view JSON columns for Postgres jsonb', () => {
+    expect(prepareUploadData('stat_views', {
+      autoRule: '{"operator":"and","conditions":[]}',
+      config: '{"wallets":{"isShow":true}}',
+      name: 'Classic',
+    })).toEqual({
+      autoRule: { conditions: [], operator: 'and' },
+      config: { wallets: { isShow: true } },
+      name: 'Classic',
+    })
+  })
+
+  it('keeps nullable JSON and other tables unchanged', () => {
+    expect(prepareUploadData('stat_views', { autoRule: null })).toEqual({ autoRule: null })
+    const row = { config: '{"value":1}' }
+    expect(prepareUploadData('wallets', row)).toBe(row)
   })
 })
