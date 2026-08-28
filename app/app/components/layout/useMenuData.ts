@@ -1,9 +1,11 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type MenuItem = {
+  badge?: number
   icon: string
   name: string
   tooltip?: {
@@ -21,6 +23,7 @@ export function useMenuData() {
   const trnsFormStore = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
+  const { isSearchOpen } = useSearch()
   const route = useRoute()
 
   const items = computed<Record<string, MenuItem>>(() => {
@@ -31,6 +34,14 @@ export function useMenuData() {
         tooltip: {
           text: t('trnForm.createTrn'),
           kbds: ['meta', 'G'],
+        },
+      },
+      search: {
+        icon: 'lucide:search',
+        name: t('search.title'),
+        tooltip: {
+          text: t('search.title'),
+          kbds: ['meta', 'K'],
         },
       },
       dashboard: {
@@ -72,12 +83,15 @@ export function useMenuData() {
   const itemsBottom = computed<Record<string, MenuItem>>(() => ({
     wallets: items.value.wallets!,
     categories: items.value.categories!,
-    trnForm: { ...items.value.trnForm!, name: t('base.add') },
     dashboard: items.value.dashboard!,
-    menu: { icon: 'hugeicons:menu-01', name: t('base.menu') },
   }))
 
-  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'dashboard'])
+  const menuItem = computed<MenuItem>(() => ({
+    icon: 'hugeicons:menu-01',
+    name: t('base.menu'),
+  }))
+
+  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'search', 'dashboard'])
   const itemsModal = computed<Record<string, MenuItem>>(() =>
     Object.fromEntries(
       Object.entries(items.value).filter(([key]) => !bottomKeys.has(key)),
@@ -102,6 +116,11 @@ export function useMenuData() {
       return
     }
 
+    if (menuId === 'search') {
+      isSearchOpen.value = true
+      return
+    }
+
     navigateTo(`/${menuId}`)
   }
 
@@ -113,6 +132,7 @@ export function useMenuData() {
     items,
     itemsBottom,
     itemsModal,
+    menuItem,
     onClick,
     checkIsActive,
     isMenuOpen,

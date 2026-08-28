@@ -14,7 +14,7 @@ const trnsFormStore = useTrnsFormStore()
     <TrnsItem
       v-if="trnsStore.computeTrnItem(trnsFormStore.values.trnId)"
       :trnItem="trnsStore.computeTrnItem(trnsFormStore.values.trnId)!"
-      class="group bg-elevated/50 rounded-lg"
+      class="group rounded-lg bg-elevated/50"
       @click="trnsFormStore.values.trnId = null"
     />
   </div>

@@ -17,6 +17,8 @@ const props = defineProps<{
   leftMenuButton?: boolean
   leftMenuItems?: ContextMenuItem[][]
   lineWidth?: number
+  rounded?: boolean
+  selectedIds?: CategoryId[]
   stacked?: boolean
   to?: string
 }>()
@@ -29,6 +31,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
+
+// Multi-select (filter) highlights every id in selectedIds; single-select falls
+// back to the activeItemId match.
+const isActive = computed(() =>
+  props.selectedIds
+    ? props.selectedIds.includes(props.categoryId)
+    : props.activeItemId === props.categoryId,
+)
 
 const childCategoriesIds = computed(() => categoriesStore.getChildrenIds(props.categoryId))
 const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
@@ -59,9 +69,11 @@ function onRowClick(e: Event) {
 <template>
   <UiElement
     v-if="props.leftMenuButton && props.category"
-    :isActive="props.activeItemId === props.categoryId"
+    :isActive="isActive"
     :class="props.class"
+    class="[&_.uiElementLine]:block!"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"
     :to="rowTo"
     @click="onRowClick"
@@ -88,7 +100,7 @@ function onRowClick(e: Event) {
         v-if="showInlineChevron"
         :name="props.isExpanded ? 'lucide:chevron-down' : 'lucide:chevron-right'"
         size="18"
-        class="text-muted shrink-0"
+        class="shrink-0 text-muted"
       />
     </div>
 
@@ -99,7 +111,7 @@ function onRowClick(e: Event) {
     >
       <button
         type="button"
-        class="flex-center text-muted hover:bg-elevated/50 -my-1 -mr-1 h-9 w-9 shrink-0 rounded-sm"
+        class="-my-1 -mr-1 flex-center size-9 shrink-0 rounded-sm text-muted hover:bg-elevated/50"
         :aria-label="t('base.moreOptions')"
         @click.stop.prevent
       >
@@ -110,9 +122,11 @@ function onRowClick(e: Event) {
 
   <UiElement
     v-else-if="props.category"
-    :isActive="props.activeItemId === props.categoryId"
+    :isActive="isActive"
     :class="props.class"
+    class="[&_.uiElementLine]:block!"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"
     :to="props.to"
     @click="(e: Event) => emit('click', e)"
@@ -139,7 +153,7 @@ function onRowClick(e: Event) {
     <button
       v-if="showRightChevron"
       type="button"
-      class="flex-center text-muted hover:bg-elevated/50 -mr-1 h-9 w-9 shrink-0 rounded-sm"
+      class="-mr-1 flex-center size-9 shrink-0 rounded-sm text-muted hover:bg-elevated/50"
       :aria-label="t('base.toggleExpand')"
       @click="onToggleClick"
     >

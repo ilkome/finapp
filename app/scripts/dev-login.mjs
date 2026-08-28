@@ -19,7 +19,7 @@ function env(key, fallback) {
   if (process.env[key])
     return process.env[key]
   try {
-    const line = readFileSync(resolve(here, '../.env'), 'utf8').split('\n').find(l => l.startsWith(`${key}=`))
+    const line = readFileSync(resolve(here, '../.env.local'), 'utf8').split('\n').find(l => l.startsWith(`${key}=`))
     if (line)
       return line.slice(key.length + 1).trim()
   }

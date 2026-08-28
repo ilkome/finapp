@@ -44,7 +44,7 @@ const list = computed(() => {
       />
     </div>
 
-    <div class="scrollerBlock mt-3 flex flex-col gap-6 overflow-y-auto py-px pb-3">
+    <div class="mt-3 flex scroller-block flex-col gap-6 overflow-y-auto py-px pb-3">
       <template v-if="list.length === 0">
         <div class="py-3 text-center">
           {{ t('currencies.list.notFound') }}
@@ -56,7 +56,7 @@ const list = computed(() => {
           :isActive="active === 'all'"
           :lineWidth="6"
           class="group"
-          insideClasses="!min-h-[44px]"
+          insideClasses="min-h-11!"
           @click="emit('select', 'all')"
         >
           <div class="flex items-center">
@@ -78,7 +78,7 @@ const list = computed(() => {
           :isActive="currencyCode === active"
           :lineWidth="6"
           class="group"
-          insideClasses="!min-h-[44px]"
+          insideClasses="min-h-11!"
           @click="emit('select', currencyCode)"
         >
           <div class="flex items-center">

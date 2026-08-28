@@ -1,14 +1,14 @@
 import type { Row } from '~~/services/powersync/transforms'
+import type { Range } from '~~/utils/date/types'
 
 import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
 import { trnToRow } from '~~/services/powersync/transforms'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 
-import type { Range } from '~/components/date/types'
 import type { TrnId, TrnItem, TrnItemFull, Trns, TrnsGetterProps } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { getEndOf, getStartOf } from '~/components/date/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { filterTrnsIds } from '~/components/trns/getTrns'
@@ -86,7 +86,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     for (const trnId of Object.keys(items.value!)) {
       const trn = items.value![trnId]
-      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
+      if (!trn || trn.categoryId === 'transfer' || trn.categoryId === 'adjustment')
         continue
       if (trn.date > latestDate) {
         latestDate = trn.date
@@ -149,7 +149,9 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
-    const valuesWithEditDate = { ...values, updatedAt: Date.now() }
+    // enteredAt is stamped once at creation and preserved across edits (audit/ordering only).
+    const enteredAt = values.enteredAt ?? items.value?.[id]?.enteredAt ?? Date.now()
+    const valuesWithEditDate = { ...values, enteredAt, updatedAt: Date.now() }
     const prev = items.value
 
     // Optimistic update (instant UI). In real mode the watch re-emits the same shape.

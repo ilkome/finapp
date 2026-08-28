@@ -1,17 +1,19 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { TrnId } from '~/components/trns/types'
+import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useStatCategories } from '~/components/stat/categories/useStatCategories'
+import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
+import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
-import { resolveGrouped } from '~/components/stat/useStatConfig'
 
 const props = defineProps<{
+  baseCategoryViews: CategoryViews
+  excludedCategoriesIds?: ReadonlySet<CategoryId>
   filteredCategoriesIds: CategoryId[]
+  focusedCategoryId?: CategoryId
   isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
-  selectedTrnsIds?: TrnId[]
 }>()
 
 const emit = defineEmits<{
@@ -19,13 +21,12 @@ const emit = defineEmits<{
   setCategoryFilter: [categoryId: CategoryId]
 }>()
 
-const { computeCategoriesWithData } = useStatCategories()
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
-const isGrouped = computed(() => resolveGrouped(statConfig.config.value.catsRound.isGrouped, statConfig.config.value.grouping))
-const isShowFavorites = computed(() => statConfig.config.value.catsRound.isShowFavorites)
-const isShowRecent = computed(() => statConfig.config.value.catsRound.isShowRecent)
+const isGrouped = computed(() => statConfig.config.value.categories.round.isGrouped)
+const isShowFavorites = computed(() => statConfig.config.value.categories.round.isShowFavorites)
+const isShowRecent = computed(() => statConfig.config.value.categories.round.isShowRecent)
 
 const mergedPreCategoriesIds = computed(() => {
   const ids: CategoryId[] = []
@@ -59,7 +60,25 @@ const mergedPreCategoriesIds = computed(() => {
   return ids
 })
 
-const roundCategories = computed(() => computeCategoriesWithData(props.selectedTrnsIds ?? [], isGrouped.value, mergedPreCategoriesIds.value))
+const roundCategories = computed(() => {
+  if (props.focusedCategoryId) {
+    return filterFocusedCategories(
+      props.baseCategoryViews.ungrouped,
+      categoriesStore.getChildrenIds(props.focusedCategoryId),
+    )
+  }
+
+  if (props.isOneCategory)
+    return props.baseCategoryViews.ungrouped
+
+  const views = addEmptyCategoryViews(
+    props.baseCategoryViews,
+    categoriesStore.items,
+    mergedPreCategoriesIds.value,
+    props.excludedCategoriesIds,
+  )
+  return isGrouped.value ? views.grouped : views.ungrouped
+})
 const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
 </script>
 
@@ -72,7 +91,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
       :class="{
         'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
         'opacity-50': !filteredSet.has(item.id) && item.value === 0,
-        '!border-primary': filteredSet.has(item.id),
+        'border-primary!': filteredSet.has(item.id),
       }"
       class="transition-opacity"
       isShowAmount

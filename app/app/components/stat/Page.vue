@@ -2,13 +2,11 @@
 import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatTabSlug } from '~/components/stat/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useStatDate } from '~/components/date/useStatDate'
-import { useFilter } from '~/components/stat/filter/useFilter'
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { useStatConfig } from '~/components/stat/useStatConfig'
+import { useFilter } from '~/components/filter/useFilter'
+import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
+import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const { t } = useI18n()
@@ -16,10 +14,11 @@ const route = useRoute()
 const trnsStore = useTrnsStore()
 
 const filter = useFilter()
-provide(filterKey, filter)
+const { statHeader } = useStatPageHost()
 
-const activeTab = useStorage<StatTabSlug>('dashboard-tab', 'summary')
-const storageKey = computed(() => `dashboard-${activeTab.value}`)
+const legacyTab = localStorage.getItem('dashboard-tab')?.replaceAll('"', '')
+const legacyStorageKey = legacyTab ? `dashboard-${legacyTab}` : undefined
+const storageKey = 'dashboard'
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
@@ -28,16 +27,14 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({
-  storageKey: storageKey.value,
+const { statConfig } = useStatPageProviders({
+  config: { legacyStorageKey, legacyTab, storageKey },
+  date: { key: storageKey, legacyKey: legacyStorageKey, maxRange, queryParams: route.query },
+  filter,
 })
-provide(statConfigKey, statConfig)
-
-const statDate = useStatDate({ key: storageKey.value, maxRange, queryParams: route.query })
-provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
-  statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
+  statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
 })
 
 const lastFilter = useStorage<{
@@ -64,21 +61,19 @@ onDeactivated(() => {
 <template>
   <UiPage>
     <StatHeader
-      v-model:activeTab="activeTab"
+      ref="statHeader"
       :trnsIds
+      compactBottom
       configCategories
       configWallets
-      filterCategories
-      filterWallets
     >
       <template #title>
         <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>
       </template>
     </StatHeader>
 
-    <StatWrap
-      :activeTab
-      :range="statDate.range.value"
+
+    <StatLayout
       :storageKey
       :trnsIds
       hasChildren

@@ -21,7 +21,7 @@ function getWalletIconName(name: string) {
 <template>
   <div
     :style="{ backgroundColor: props.color }"
-    class="flex-center text-icon-primary text-2xs aspect-square w-7 overflow-hidden rounded-sm p-1.5 font-extrabold opacity-80"
+    class="flex-center aspect-square w-7 overflow-hidden rounded-sm p-1.5 text-2xs font-extrabold text-icon-primary opacity-80"
   >
     {{ getWalletIconName(props.name) }}
   </div>

@@ -7,9 +7,8 @@
     "playwright": {
       "command": "npx",
       "args": [
-        "@playwright/mcp@latest",
-        "--config",
-        "./playwright/mcp.config.json"
+        "-y",
+        "@playwright/mcp@latest"
       ]
     }
   }

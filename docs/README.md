@@ -16,7 +16,7 @@ See also the root README ([English](../README.md) | [Русский](../README.r
 From the repository root:
 
 ```bash
-pnpm docs:dev
+pnpm dev:docs
 ```
 
 Runs at `http://localhost:3051`.
@@ -26,7 +26,7 @@ Runs at `http://localhost:3051`.
 From the repository root:
 
 ```bash
-pnpm docs:build
+pnpm build:docs
 ```
 
 ## Lint

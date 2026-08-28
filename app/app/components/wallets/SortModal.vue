@@ -23,7 +23,7 @@ function saveWalletsOrder(close: () => void) {
     <template #default="{ close }">
       <UiTitleModal>{{ t('wallets.sortTitle') }}</UiTitleModal>
 
-      <div ref="parent" class="scrollerBlock bottomSheetContentInside">
+      <div ref="parent" class="bottom-sheet-content-inside scroller-block">
         <WalletsItem
           v-for="walletId in sortedWalletsIds"
           :key="walletId"
@@ -35,7 +35,7 @@ function saveWalletsOrder(close: () => void) {
         />
       </div>
 
-      <div class="bottomSheetContentBottom">
+      <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
           rounded
           @click="saveWalletsOrder(close)"

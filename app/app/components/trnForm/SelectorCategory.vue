@@ -20,7 +20,7 @@ const isShow = ref(false)
     :title="t('trnForm.category.select')"
     :isOpen="isShow"
     :bottomSheetStyle="props.bottomSheetStyle"
-    dragClassesCustom="bottomSheetDragClassesCustom h-full"
+    dragClassesCustom="bottom-sheet-drag-classes-custom h-full"
     isShowCloseBtn
     @openModal="isShow = true"
     @closeModal="isShow = false"
@@ -31,7 +31,7 @@ const isShow = ref(false)
         :categoryId="props.categoryId"
         stacked
         isShowParent
-        insideClasses="bg-elevated/30 hover:bg-elevated/50 min-h-[42px] py-2"
+        insideClasses="bg-elevated/30 hover:bg-elevated/50 min-h-10.5 py-2"
       />
     </template>
 

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
 import pkg from '~~/package.json'
 
 import type { LocaleSlug } from '~/components/locale/types'
@@ -15,7 +14,6 @@ const currenciesStore = useCurrenciesStore()
 const { generateDemoData } = useDemo()
 const { isDemo } = useDemo()
 const isShowBaseCurrencyModal = ref(false)
-const isShowMenuLabels = useStorage('finapp.isShowMenuLabels', true)
 
 useSeoMeta({
   ogTitle: t('settings.title'),
@@ -44,10 +42,10 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="pageWrapper">
+    <div class="page-wrapper">
       <div class="grid gap-4 px-2 pt-2 pb-12 @3xl/main:max-w-lg">
         <!-- Theme -->
-        <ThemePicker inline />
+        <ThemePicker />
 
         <!-- Language -->
         <UiSettingsCard :title="t('locale.title')">
@@ -61,24 +59,18 @@ function onGenerateDemoData() {
           />
         </UiSettingsCard>
 
-        <!-- Menu labels -->
-        <UiSettingsCard :title="t('settings.mobileMenu')" class="md:hidden">
-          <UiSwitchItem
-            :checkboxValue="isShowMenuLabels"
-            :title="t('settings.menuLabels')"
-            @click="isShowMenuLabels = !isShowMenuLabels"
-          />
-        </UiSettingsCard>
+        <!-- Notifications -->
+        <NotificationsSettings />
 
         <!-- Currency -->
         <UiSettingsCard :title="t('currencies.base')">
           <button
-            class="text-highlighted bg-elevated/30 ring-accented hover:!bg-elevated/50 focus-visible:ring-primary group relative inline-flex min-h-[42px] min-w-[160px] items-center gap-2 rounded-md px-4 py-2 pe-10 text-sm ring transition-colors ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-inset"
+            class="group relative inline-flex min-h-10.5 min-w-40 items-center gap-2 rounded-md bg-elevated/30 px-4 py-2 pe-10 text-sm text-highlighted ring ring-accented transition-colors ring-inset hover:bg-elevated/50! focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
             @click="isShowBaseCurrencyModal = true"
           >
             <span class="truncate">{{ currenciesStore.base }}</span>
             <span class="absolute inset-y-0 end-0 flex items-center pe-3">
-              <UIcon name="i-lucide-chevrons-up-down" class="text-dimmed size-5 shrink-0" />
+              <UIcon name="i-lucide-chevrons-up-down" class="size-5 shrink-0 text-dimmed" />
             </span>
           </button>
         </UiSettingsCard>
@@ -128,7 +120,7 @@ function onGenerateDemoData() {
         </UiSettingsCard>
 
         <!-- About -->
-        <div class="text-muted pt-4 text-xs">
+        <div class="pt-4 text-xs text-muted">
           {{ t('app.version') }} {{ pkg.version }}
         </div>
       </div>

@@ -10,7 +10,7 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="interactive flex min-h-[44px] items-center gap-3 rounded-sm px-2 py-1.5 text-sm font-medium"
+    class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-sm font-medium"
     @click="e => emit('click', e)"
   >
     <div

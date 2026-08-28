@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletsCurrencyFiltered } from '~/components/wallets/types'
 
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-defineProps<{
+const props = defineProps<{
   currencyFiltered: WalletsCurrencyFiltered
 }>()
 
@@ -14,24 +16,18 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
+
+const items = computed<TabsItem[]>(() => [
+  { label: t('common.all'), value: 'all' },
+  ...walletsStore.currenciesUsed.map(currency => ({ label: currency, value: currency })),
+])
 </script>
 
 <template>
-  <UiTabsScroll class="flex gap-1 @xl/page:px-0">
-    <UiTabsItemFill
-      :isActive="currencyFiltered === 'all'"
-      @click="emit('selectFilterCurrency', 'all')"
-    >
-      {{ t('common.all') }}
-    </UiTabsItemFill>
-
-    <UiTabsItemFill
-      v-for="currency in walletsStore.currenciesUsed"
-      :key="currency"
-      :isActive="currencyFiltered === currency"
-      @click="emit('selectFilterCurrency', currency)"
-    >
-      {{ currency }}
-    </UiTabsItemFill>
-  </UiTabsScroll>
+  <UiTabs
+    class="@xl/page:px-0"
+    :items="items"
+    :modelValue="props.currencyFiltered"
+    @update:modelValue="(v) => emit('selectFilterCurrency', v as CurrencyCode)"
+  />
 </template>

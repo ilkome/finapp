@@ -20,8 +20,12 @@
 @layer base {
   html,
   body {
-    @apply antialiased text-default bg-muted/30 select-none;
+    @apply antialiased text-default select-none;
     overscroll-behavior-y: none;
+  }
+
+  body {
+    @apply bg-default;
   }
 
   /* Reka UI popper portals (UPopover, UDropdownMenu, UContextMenu, UTooltip)

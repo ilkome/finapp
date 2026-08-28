@@ -2,9 +2,8 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
-// Guards production-only bundling regressions. ContextMenuMy mounts on the
-// dashboard, so both bootstrap and reka-ui provide/inject failures surface on
-// load without additional interaction.
+// ContextMenuMy mounts on the dashboard, so production-only bootstrap and
+// reka-ui provide/inject regressions surface without additional interaction.
 const INJECT_ERROR = /ContextMenuRootContext|must be used within `ContextMenuRoot`/
 const NUXT_BOOTSTRAP_ERROR = /NUXT_E1005|hooks\.hookOnce is not a function/
 

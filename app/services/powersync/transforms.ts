@@ -19,6 +19,7 @@ export function rowToTrn(row: Row): TrnItem {
     date: Number(row.date),
     updatedAt: ts(row.updatedAt),
     ...(row.desc ? { desc: row.desc as string } : {}),
+    ...(row.enteredAt != null ? { enteredAt: Number(row.enteredAt) } : {}),
   }
 
   if (type === TrnType.Transfer) {
@@ -65,6 +66,7 @@ export function rowToCategory(row: Row): CategoryItem {
   return {
     color: row.color,
     icon: row.icon,
+    isExcludeFromStats: !!row.isExcludeFromStats,
     name: row.name,
     parentId: (row.parentId ?? 0) as CategoryId | 0, // null -> 0 (root sentinel)
     showInLastUsed: !!row.showInLastUsed,
@@ -93,6 +95,7 @@ export function trnToRow(item: TrnItem, userId: string): Record<string, unknown>
     categoryId: item.categoryId ?? null,
     date: item.date,
     desc: item.desc ?? null,
+    enteredAt: item.enteredAt ?? null,
     expenseAmount: null as number | null,
     expenseWalletId: null as string | null,
     incomeAmount: null as number | null,
@@ -138,6 +141,7 @@ export function categoryToRow(item: CategoryItem, userId: string): Record<string
   return {
     color: item.color,
     icon: item.icon,
+    isExcludeFromStats: item.isExcludeFromStats ? 1 : 0,
     name: item.name,
     parentId: item.parentId ? String(item.parentId) : null, // 0/'' root sentinel -> null
     showInLastUsed: item.showInLastUsed ? 1 : 0,

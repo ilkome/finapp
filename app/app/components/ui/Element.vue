@@ -3,6 +3,7 @@ const props = defineProps<{
   insideClasses?: string
   isActive?: boolean
   lineWidth?: number
+  rounded?: boolean
   to?: string
 }>()
 
@@ -14,7 +15,8 @@ const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
 
 const elementClasses = computed(() => cn(
-  'interactive uiElement flex grow border border-transparent items-center gap-3 overflow-hidden rounded-sm px-2 py-1.5 min-h-[42px] -my-[1px]',
+  'uiElement -my-0.25 flex min-h-10.5 grow items-center gap-3 overflow-hidden border border-transparent interactive px-2 py-1.5',
+  props.rounded ? 'rounded-full pr-3' : 'rounded-md',
   props.insideClasses,
   { 'relative z-10 bg-elevated/30 border-primary/30': props.isActive },
 ))
@@ -39,16 +41,18 @@ const elementClasses = computed(() => cn(
       <slot name="line" />
     </div>
 
+    <!-- Separator. `group-last:hidden` means "last row of the block", so the CALLER must put
+         `group` on the row element, not on a wrapper. An expanded parent hides its own separator
+         with [&_.uiElementLine]:bg-transparent instead of dropping lineWidth. -->
     <div
       v-if="lineWidth"
       :class="{
-        'ml-12': lineWidth === 1,
-        'ml-[48px]': lineWidth === 2,
+        'ml-12': lineWidth === 1 || lineWidth === 2,
         'group-last/trn:hidden': lineWidth === 3,
-        'ml-[48px] group-last/item:hidden': lineWidth === 4,
+        'ml-12 group-last/item:hidden': lineWidth === 4,
         'group-last:hidden': lineWidth !== 3 && lineWidth !== 4,
       }"
-      class="bg-elevated/50 mx-2 h-px"
+      class="uiElementLine mx-2 h-px bg-elevated/50"
     />
   </component>
 </template>
@@ -61,6 +65,6 @@ a.uiElementLink {
 }
 
 [data-state='open'] > .uiElement {
-  @apply !bg-accented;
+  @apply bg-accented!;
 }
 </style>

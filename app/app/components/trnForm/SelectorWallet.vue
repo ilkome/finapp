@@ -18,9 +18,7 @@ const walletsStore = useWalletsStore()
 
 const isShow = ref(false)
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 </script>
 
 <template>
@@ -28,7 +26,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
     :bottomSheetStyle="props.bottomSheetStyle"
     :isOpen="isShow"
     :title="props.title"
-    dragClassesCustom="bottomSheetDragClassesCustom h-full"
+    dragClassesCustom="bottom-sheet-drag-classes-custom h-full"
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"
@@ -37,7 +35,7 @@ const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mou
       <WalletsItem
         :walletId
         :wallet="walletsStore.itemsComputed[walletId]!"
-        insideClasses="!min-h-[46px]"
+        insideClasses="min-h-11.5!"
         isShowIcon
         isShowCreditLimit
         compact

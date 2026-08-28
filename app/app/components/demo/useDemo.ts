@@ -1,5 +1,6 @@
 import { addMonths, getMonth, startOfMonth, startOfYear, subYears } from 'date-fns'
 import localforage from 'localforage'
+import { localInstantToCivilDay } from '~~/utils/date/civil'
 
 import type { Categories } from '~/components/categories/types'
 import type { LocaleSlug } from '~/components/locale/types'
@@ -9,7 +10,7 @@ import type { Wallets } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import currencies from '~/components/demo/currencies.json'
-import { data, expenseRules, incomeRules, oneOffExpenses, salaryConfig, transferRules } from '~/components/demo/data'
+import { data, expenseRules, incomeRules, oneOffExpenses, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub } from '~/components/demo/data'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -86,6 +87,10 @@ export function useDemo() {
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
     const endDate = Date.now()
     const activeWalletIds = walletsStore.sortedIds.filter(id => !data.wallets[id]?.isArchived)
+    // Everyday expenses are paid from the RUB spending wallets. Amounts are RUB-scale, so leaving
+    // them on the USD/EUR/crypto wallets would record e.g. a 5000 grocery as $5000 and wreck the
+    // base-currency stats and budgets. Income/transfers still use the other wallets.
+    const spendingWalletIds = [walletCashRub, walletDebitRub, walletCreditRub]
 
     const trns: Trns = {}
     let trnIndex = 0
@@ -106,7 +111,7 @@ export function useDemo() {
       }
 
       const amount = roundAmount(randInt(rule.min, rule.max))
-      const walletId = rule.walletIds ? randItem(rule.walletIds) : randItem(activeWalletIds)
+      const walletId = rule.walletIds ? randItem(rule.walletIds) : randItem(spendingWalletIds)
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
@@ -132,7 +137,7 @@ export function useDemo() {
           continue
 
         const amount = roundAmount(randInt(oneOff.min, oneOff.max))
-        const walletId = oneOff.walletIds ? randItem(oneOff.walletIds) : randItem(activeWalletIds)
+        const walletId = oneOff.walletIds ? randItem(oneOff.walletIds) : randItem(spendingWalletIds)
 
         trns[trnIndex++] = {
           amount,
@@ -239,6 +244,15 @@ export function useDemo() {
         updatedAt: Date.now(),
         walletId,
       } satisfies TrnItem
+    }
+
+    // Civil-day model: snap each generated instant to its local calendar day (UTC-midnight)
+    // and keep the original instant as enteredAt. See plans/civil-date-migration.md.
+    for (const id in trns) {
+      const trn = trns[id]!
+      const instant = trn.date
+      trn.date = localInstantToCivilDay(instant)
+      trn.enteredAt = instant
     }
 
     trnsStore.setTrns(trns)

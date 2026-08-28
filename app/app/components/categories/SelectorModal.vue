@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStorage, useWindowSize } from '@vueuse/core'
+import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
 
@@ -14,6 +14,9 @@ type CategoryFilter = 'all' | 'favorites'
 const props = defineProps<{
   activeItemId?: CategoryId
   hide?: () => void
+  // Budgets aggregate a category's whole subtree, so they need to pick a parent itself - not just
+  // a leaf. When set, each expanded parent offers an explicit "whole category" row.
+  selectableParents?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -25,9 +28,7 @@ const router = useRouter()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const { width } = useWindowSize()
-const { pointerType } = usePointer()
-const isLaptop = computed(() => width.value >= 766 && pointerType.value === 'mouse')
+const isLaptop = useIsLaptop()
 
 const search = ref('')
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
@@ -218,12 +219,12 @@ onMounted(async () => {
 
 <template>
   <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="bg-default sticky top-0 z-20 flex items-center gap-2 px-3 pt-2 pb-2">
+    <div class="sticky top-0 z-20 flex items-center gap-2 bg-default px-3 py-2">
       <input
         ref="searchInput"
         v-model="search"
         type="text"
-        class="bg-elevated/30 placeholder:text-muted hover:bg-elevated/50 focus:bg-elevated/50 focus:border-primary m-0 min-h-[42px] w-0 min-w-0 flex-1 rounded-md border border-transparent px-4 py-2 text-base font-normal outline-none"
+        class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center">
@@ -268,11 +269,11 @@ onMounted(async () => {
       </div>
     </div>
 
-    <div class="scrollerBlock h-full overflow-y-auto px-3 pt-1 pb-4">
+    <div class="h-full scroller-block overflow-y-auto px-3 pt-1 pb-4">
       <template v-if="filter === 'all'">
         <div
           v-if="hasNoMatches"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('categories.form.children.noMatches') }}
         </div>
@@ -303,6 +304,29 @@ onMounted(async () => {
                 ? 'ml-2 pr-2 pb-4 pl-3'
                 : '-mt-px ml-5 pb-1 pl-3'"
             >
+              <button
+                v-if="props.selectableParents"
+                type="button"
+                class="mb-1 flex w-full items-center gap-2 rounded-md p-2 text-left hover:bg-elevated/40"
+                :class="props.activeItemId === rootId ? 'bg-elevated/60' : ''"
+                @click="onSelect(rootId)"
+              >
+                <div
+                  class="flex size-7 shrink-0 items-center justify-center rounded-full"
+                  :style="{ background: categoriesStore.items[rootId]?.color ?? 'var(--ui-bg-accented)' }"
+                >
+                  <Icon :name="categoriesStore.items[rootId]?.icon ?? 'lucide:folder'" size="15" class="text-white" />
+                </div>
+                <div class="min-w-0">
+                  <div class="truncate text-sm text-highlighted">
+                    {{ t('categories.selectParent', { name: categoriesStore.items[rootId]?.name }) }}
+                  </div>
+                  <div class="text-2xs text-muted">
+                    {{ t('categories.selectParentHint') }}
+                  </div>
+                </div>
+              </button>
+
               <template v-if="view === 'list'">
                 <CategoriesItem
                   v-for="childId in visibleChildrenIds(rootId)"
@@ -337,7 +361,7 @@ onMounted(async () => {
       <template v-else>
         <div
           v-if="hasNoMatches"
-          class="text-muted p-4 text-center"
+          class="p-4 text-center text-muted"
         >
           {{ t('categories.form.children.noMatches') }}
         </div>
@@ -352,7 +376,7 @@ onMounted(async () => {
           />
 
           <div v-if="filteredRecent.length > 0">
-            <div class="font-tertiary sticky top-0 z-10 pt-5 pb-4 text-lg leading-none font-semibold">
+            <div class="sticky top-0 z-10 pt-5 pb-4 font-tertiary text-lg leading-none font-semibold">
               {{ t('categories.recentCategories') }}
             </div>
             <CategoriesSelectorGrid

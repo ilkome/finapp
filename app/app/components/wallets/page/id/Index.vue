@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
-import type { StatTabSlug } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useStatDate } from '~/components/date/useStatDate'
-import { useFilter } from '~/components/stat/filter/useFilter'
-import { filterKey, statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
-import { useStatConfig } from '~/components/stat/useStatConfig'
-import { getTypesMapping } from '~/components/stat/utils'
+import { useFilter } from '~/components/filter/useFilter'
+import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
+import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
+import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -22,43 +18,58 @@ const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const filter = useFilter()
-provide(filterKey, filter)
+const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
+const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
+const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
+const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
+const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 
-const activeTab = useStorage<StatTabSlug>(`${walletId.value}-tab`, 'summary')
-const storageKey = computed(() => `${walletId.value}-${activeTab.value}`)
+const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-wallet-${walletId.value}` : `${walletId.value}`)
+const legacyTab = localStorage.getItem(`${walletId.value}-tab`)?.replaceAll('"', '')
+const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `${walletId.value}-${legacyTab}` : undefined)
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
-  trnsTypes: getTypesMapping(activeTab.value),
-  walletsIds: [walletId.value, ...filter?.walletsIds?.value],
+  walletsIds: [walletId.value],
 }))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const statConfig = useStatConfig({
-  props: {
-    isShowEmptyCategories: true,
-    wallets: {
-      isShow: false,
+const { statConfig } = useStatPageProviders({
+  config: {
+    initialConfig: statSnapshot?.config,
+    storageQuery,
+    legacyStorageKey,
+    legacyTab,
+    props: {
+      categories: {
+        isShowEmpty: true,
+      },
+      wallets: {
+        isShow: false,
+      },
     },
+    storage: isStatDrilldown ? sessionStorage : localStorage,
+    storageKey,
   },
-  storageKey: storageKey.value,
+  date: {
+    initParams: statSnapshot?.date,
+    key: storageKey,
+    legacyKey: legacyStorageKey,
+    maxRange,
+    queryParams: route.query,
+    storage: isStatDrilldown ? sessionStorage : localStorage,
+  },
+  filter,
+  initialTrnsViewState: statSnapshot?.trns,
 })
-provide(statConfigKey, statConfig)
-
-const statDate = useStatDate({
-  key: storageKey.value,
-  maxRange,
-  queryParams: route.query,
-})
-provide(statDateKey, statDate)
 
 watch(filter.categoriesIds, () => {
-  statConfig.config.value.isShowEmptyCategories = filter.categoriesIds.value.length > 0
+  statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
 })
 
 useHead({ title: wallet.value?.name })
@@ -113,12 +124,11 @@ async function onDeleteConfirm() {
 <template>
   <UiPage v-if="wallet">
     <StatHeader
-      v-model:activeTab="activeTab"
+      ref="statHeader"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
       :trnsIds
       configCategories
-      filterCategories
     >
       <template #title>
         <UiHeaderTitle>
@@ -157,7 +167,7 @@ async function onDeleteConfirm() {
         v-if="wallet.type !== 'credit'"
         class="md:max-w-lg"
       >
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('money.balance')"
@@ -165,17 +175,17 @@ async function onDeleteConfirm() {
       </div>
 
       <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="total"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.debt')"
         />
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="walletCreditLimit - (-total)"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.available')"
         />
-        <StatSumItemWallet
+        <WalletsSumItem
           :amount="walletCreditLimit"
           :currencyCode="wallet.currency"
           :title="t('wallets.form.credit.limit')"
@@ -191,12 +201,11 @@ async function onDeleteConfirm() {
       </UiTextMuted>
     </div>
 
-    <StatWrap
-      :activeTab
-      :range="statDate.range.value"
+    <StatLayout
       :storageKey
       :trnsIds
       :walletId
+      :reportType="statSnapshot?.reportType"
       hasChildren
     />
   </UiPage>

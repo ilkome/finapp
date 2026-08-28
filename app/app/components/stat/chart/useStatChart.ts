@@ -1,75 +1,93 @@
+import type { DateUTC } from '~~/utils/date/types'
+
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { DateUTC } from '~/components/date/types'
 import type { ChartType } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
-import { seriesOptions } from '~/components/stat/chart/config'
-import { createMarkAreaData } from '~/components/stat/chart/utils'
+import { formatCompactChartAmount } from '~/components/stat/chart/format'
+import { seriesOptions } from '~/components/stat/chart/options'
 
 export function useStatChart() {
   const { t } = useI18n()
 
-  const chartTypeOptions = computed<{ categoriesOnly?: boolean, icon: string, label: string, value: ChartType }[]>(() => [{
+  function createAverageMarkLine(average: number, color?: string) {
+    return {
+      data: [{
+        name: 'average',
+        yAxis: Math.abs(average),
+      }],
+      index: 0,
+      label: {
+        align: 'left',
+        color,
+        distance: 6,
+        fontFamily: 'var(--font-secondary)',
+        formatter: ({ value }: { value: number }) => formatCompactChartAmount(value),
+        position: 'end',
+        show: true,
+        textBorderColor: 'transparent',
+        textBorderWidth: 0,
+        textShadowBlur: 0,
+      },
+      lineStyle: {
+        color,
+        type: 'solid',
+      },
+      silent: false,
+      symbol: false,
+      z: 0,
+    }
+  }
+
+  const chartTypeOptions = computed<{ icon: string, label: string, value: ChartType }[]>(() => [{
     icon: 'lucide:chart-column',
-    label: t('chart.types.bar'),
+    label: t('stat.view.chartType.bar.label'),
     value: 'bar',
   }, {
     icon: 'lucide:chart-line',
-    label: t('chart.types.line'),
+    label: t('stat.view.chartType.line.label'),
     value: 'line',
   }, {
-    categoriesOnly: true,
     icon: 'lucide:chart-pie',
-    label: t('chart.types.pie'),
+    label: t('stat.view.chartType.pie.label'),
     value: 'pie',
   }])
 
   function createSeriesItem(typeItem: SeriesSlug, data: TotalReturns[], average?: number | false): ChartSeries {
     let markLine = {}
-    if (average) {
-      markLine = {
-        data: [{
-          name: 'average',
-          yAxis: Math.abs(average),
-        }],
-        index: 0,
-        label: {
-          show: false,
-        },
-        lineStyle: {
-          color: seriesOptions[typeItem]?.markLineColor ?? seriesOptions[typeItem]?.color,
-          type: 'solid',
-        },
-        silent: false,
-        symbol: false,
-      }
-    }
+    if (average)
+      markLine = createAverageMarkLine(average, seriesOptions[typeItem]?.color as string | undefined)
 
     return {
+      averageMode: average ? 'series' : undefined,
       color: seriesOptions[typeItem]?.color as string | undefined,
       data: data.map(i => Math.abs(i[typeItem])),
       markLine,
+      markLineValueType: typeItem,
       name: t(`money.${typeItem}`),
       type: seriesOptions[typeItem]?.type ?? 'bar',
+      valueTypes: data.map(() => typeItem),
     }
   }
 
-  function withMarkArea(series: ChartSeries[], markedDate: DateUTC, chartType?: ChartType) {
+  function withMarkArea(series: ChartSeries[], markedDate: DateUTC, _chartType?: ChartType) {
     if (!markedDate)
       return series
 
-    if (chartType === 'bar') {
-      if (series[0])
-        series[0].markArea = createMarkAreaData(markedDate)
-      return series
+    const markAreaData: {
+      data: [{ xAxis: string }, { xAxis: string }][]
+      itemStyle: { color: string, opacity: number }
+    } = {
+      data: [[{ xAxis: `${markedDate}` }, { xAxis: `${markedDate}` }]],
+      itemStyle: { color: 'var(--chart-line)', opacity: 1 },
     }
 
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
     const markAreaSeries: ChartSeries = {
       data: [],
-      markArea: createMarkAreaData(markedDate),
+      markArea: markAreaData,
       markedArea: 'markedArea',
-      name: 'markArea',
+      name: '',
       type: 'bar',
     }
 
@@ -80,6 +98,7 @@ export function useStatChart() {
 
   return {
     chartTypeOptions,
+    createAverageMarkLine,
     createSeriesItem,
     withMarkArea,
   }

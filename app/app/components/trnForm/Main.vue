@@ -18,6 +18,7 @@ const walletsStore = useWalletsStore()
 const walletId = computed(() =>
   trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
 )
+
 </script>
 
 <template>

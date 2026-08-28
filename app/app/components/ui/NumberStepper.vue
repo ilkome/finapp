@@ -21,7 +21,7 @@ function update(value: number) {
 <template>
   <div class="flex gap-1">
     <UiChipButton
-      :class="[{ '!hover:transparent opacity-30': props.min !== undefined && props.modelValue <= props.min }]"
+      :class="[{ 'opacity-30': props.min !== undefined && props.modelValue <= props.min }]"
       @click="update(props.modelValue - 1)"
     >
       <Icon name="lucide:minus" />
@@ -30,13 +30,13 @@ function update(value: number) {
     <FormInput
       :modelValue="props.modelValue"
       :min="props.min"
-      class="!w-16 max-w-24 !px-2 text-center"
+      class="w-16! max-w-24 px-2! text-center"
       type="number"
       @update:modelValue="value => update(+value)"
     />
 
     <UiChipButton
-      :class="[{ '!hover:transparent opacity-30': props.max !== undefined && props.modelValue >= props.max }]"
+      :class="[{ 'opacity-30': props.max !== undefined && props.modelValue >= props.max }]"
       @click="update(props.modelValue + 1)"
     >
       <Icon name="lucide:plus" />

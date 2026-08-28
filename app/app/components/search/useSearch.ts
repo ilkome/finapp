@@ -5,38 +5,23 @@ import type { TransactionFull, TransferFull, TrnId } from '~/components/trns/typ
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useMenuData } from '~/components/layout/useMenuData'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type SearchResultItem = CommandPaletteItem & {
   entityId: string
-  entityType: 'category' | 'menu' | 'trn' | 'wallet'
+  entityType: 'category' | 'trn' | 'wallet'
 }
 
-const RECENT_LIMIT = 10
-
 export const isSearchOpen = ref(false)
+export const searchTerm = ref('')
 
 export function useSearch() {
   const { t } = useI18n()
   const categoriesStore = useCategoriesStore()
-  const walletsStore = useWalletsStore()
   const trnsStore = useTrnsStore()
-  const { items: menuItems, onClick: onMenuClick } = useMenuData()
-  const searchTerm = ref('')
-
-  const menuGroup = computed(() => {
-    const items: SearchResultItem[] = Object.entries(menuItems.value).map(([id, item]) => ({
-      entityId: id,
-      entityType: 'menu' as const,
-      icon: item.icon,
-      id: `menu-${id}`,
-      label: item.name,
-    }))
-    return items
-  })
+  const walletsStore = useWalletsStore()
 
   const allCategoryItems = computed(() => {
     const items: SearchResultItem[] = []
@@ -154,56 +139,26 @@ export function useSearch() {
     return items
   })
 
-  const recentCategoryItems = computed(() => {
-    const recentIds = categoriesStore.recentCategoriesIds
-    if (!recentIds?.length)
-      return allCategoryItems.value.slice(0, RECENT_LIMIT)
-
-    return recentIds.slice(0, RECENT_LIMIT)
-      .map(id => allCategoryItems.value.find(item => item.entityId === id))
-      .filter((item): item is SearchResultItem => !!item)
-  })
-
-  const recentWalletItems = computed(() => {
-    const recentIds = walletsStore.recentWalletIds
-    if (!recentIds?.length)
-      return allWalletItems.value.slice(0, RECENT_LIMIT)
-
-    const walletItemsById = new Map(allWalletItems.value.map(w => [w.entityId, w]))
-    return recentIds.slice(0, RECENT_LIMIT)
-      .map(id => walletItemsById.get(id))
-      .filter((item): item is SearchResultItem => !!item)
-  })
-
-  const recentTrnItems = computed(() => {
-    return allTrnItems.value.slice(0, RECENT_LIMIT)
-  })
-
   const groups = computed(() => {
-    const isSearching = searchTerm.value.length > 0
+    if (!searchTerm.value.trim())
+      return []
 
     return [
       {
-        id: 'menu',
-        items: menuGroup.value,
-        label: t('base.menu'),
-        slot: 'menu-item',
-      },
-      {
         id: 'categories',
-        items: isSearching ? allCategoryItems.value : recentCategoryItems.value,
+        items: allCategoryItems.value,
         label: t('categories.name'),
         slot: 'category-item',
       },
       {
         id: 'wallets',
-        items: isSearching ? allWalletItems.value : recentWalletItems.value,
+        items: allWalletItems.value,
         label: t('wallets.name'),
         slot: 'wallet-item',
       },
       {
         id: 'trns',
-        items: isSearching ? allTrnItems.value : recentTrnItems.value,
+        items: allTrnItems.value,
         label: t('trns.history'),
         slot: 'trn-item',
       },
@@ -213,7 +168,6 @@ export function useSearch() {
   return {
     groups,
     isSearchOpen,
-    onMenuClick,
     searchTerm,
   }
 }

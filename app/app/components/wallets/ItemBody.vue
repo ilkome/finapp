@@ -14,6 +14,7 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
+  rounded?: boolean
   to?: string
   wallet: WalletItemComputed
   walletId: WalletId
@@ -26,8 +27,10 @@ const emit = defineEmits<{
 const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
-  'bg-elevated/30 rounded-sm': props.compact,
+  'bg-elevated/30': props.compact,
   'group relative': props.isSort,
+  'rounded-full': props.compact && props.rounded,
+  'rounded-sm': props.compact && !props.rounded,
 }))
 
 const walletCreditLimit = computed(() =>
@@ -41,6 +44,7 @@ const walletCreditLimit = computed(() =>
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ?? ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"
+    :rounded="props.rounded"
     :to="props.to"
     :class="classes"
     @click="emit('click', props.walletId)"
@@ -56,7 +60,7 @@ const walletCreditLimit = computed(() =>
     <!-- Main -->
     <template v-if="!props.compact">
       <div class="grid grow gap-1 overflow-hidden">
-        <div class="text-muted truncate text-sm leading-none font-medium tracking-wide">
+        <div class="truncate text-sm leading-none font-medium tracking-wide text-muted">
           {{ wallet.name }}
         </div>
 
@@ -129,7 +133,7 @@ const walletCreditLimit = computed(() =>
     <!-- Alternative -->
     <template v-if="props.compact">
       <div class="grid grow gap-0.5 overflow-hidden">
-        <div class="text-muted truncate text-xs leading-none">
+        <div class="truncate text-xs leading-none text-muted">
           {{ wallet.name }}
         </div>
 
@@ -157,7 +161,7 @@ const walletCreditLimit = computed(() =>
 
       <div
         v-if="isSort"
-        class="sortHandle flex-center group-hover:bg-accented absolute right-0 h-full rounded-md px-3"
+        class="sortHandle absolute right-0 flex-center h-full rounded-md px-3 group-hover:bg-accented"
       >
         <Icon name="lucide:grip-vertical" size="20" />
       </div>

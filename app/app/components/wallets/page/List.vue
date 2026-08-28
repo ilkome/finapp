@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
+import type { TabsItem } from '@nuxt/ui'
 
 import { useStorage } from '@vueuse/core'
 
 import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { tabsNavUi } from '~/components/menu/Tabs'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
@@ -66,13 +65,9 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
 
-const groupNavItems = computed<NavigationMenuItem[]>(() =>
+const groupNavItems = computed<TabsItem[]>(() =>
   groupTabs.value.map(item => ({
-    active: item.id === groupedBy.value,
     label: item.label,
-    onSelect: () => {
-      groupedBy.value = item.id
-    },
     value: item.id,
   })),
 )
@@ -159,14 +154,14 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
           <StatSumItem
             :title="t('money.types.total')"
             :amount="counts.total?.value ?? 0"
-            type="netIncome"
+            type="net"
             @click="setWalletViewType((counts.total?.id ?? 'total') as WalletType | 'total')"
           />
           <StatSumItem
             v-if="counts.available?.value !== 0 && counts.available?.value !== counts.total?.value"
             :title="t('money.types.available')"
             :amount="counts.available?.value ?? 0"
-            type="netIncome"
+            type="net"
             @click="setWalletViewType((counts.available?.id ?? 'isAvailable') as WalletType | 'total')"
           />
         </div>
@@ -182,11 +177,11 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
 
       <div class="@3xl/main:max-w-sm">
         <div class="mb-2 flex min-h-12 items-center gap-2 md:pt-2 ">
-          <UNavigationMenu
+          <UiTabs
             :items="groupNavItems"
-            highlight
+            :modelValue="groupedBy"
             class="w-full"
-            :ui="tabsNavUi"
+            @update:modelValue="(v) => groupedBy = v as WalletsGroupedBy"
           />
 
           <div
@@ -237,58 +232,52 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
             v-if="groupedBy !== 'none' && groupedWalletsWithIds"
             class="grid gap-4"
           >
-            <UiToggleControlled
+            <UCollapsible
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'bg-elevated/30 rounded-sm': !hasGroups(content.groups),
+                'rounded-sm bg-elevated/30': !hasGroups(content.groups),
               }"
-              :isShown="
-                walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true
-              "
+              :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
             >
-              <template #header="{ isShown }">
-                <UiTitleDropRight
-                  :isShown
-                  @click="toggleMap(groupPrimary)"
-                >
-                  <div class="font-tertiary !text-toned text-base leading-none font-semibold">
-                    {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
-                  </div>
-
-                  <div class="ml-auto opacity-60">
-                    <Amount
-                      :amount="countWalletsSum(content.ids)"
-                      :currencyCode="currenciesStore.base"
-                      :isShowBaseRate="false"
-                      variant="sm"
-                    />
-                    <Amount
-                      v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                      :amount="countWalletsSum(content.ids, false)"
-                      :currencyCode="groupPrimary"
-                      :isShowBaseRate="false"
-                      variant="2xs"
-                    />
-                  </div>
-                </UiTitleDropRight>
-              </template>
-
-              <div
-                v-if="hasGroups(content.groups)"
-                class="grid gap-2 pl-6"
+              <UiTitleDropRight
+                :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
+                @click="toggleMap(groupPrimary)"
               >
-                <UiToggleControlled
-                  v-for="(ids, groupSecondary) in content.groups"
-                  :key="groupSecondary"
-                  :isShown="
-                    walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true
-                  "
-                  class="bg-elevated/30 group grid gap-1 rounded-xl"
+                <div class="font-tertiary text-base leading-none font-semibold text-toned!">
+                  {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
+                </div>
+
+                <div class="ml-auto opacity-60">
+                  <Amount
+                    :amount="countWalletsSum(content.ids)"
+                    :currencyCode="currenciesStore.base"
+                    :isShowBaseRate="false"
+                    variant="sm"
+                  />
+                  <Amount
+                    v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                    :amount="countWalletsSum(content.ids, false)"
+                    :currencyCode="groupPrimary"
+                    :isShowBaseRate="false"
+                    variant="2xs"
+                  />
+                </div>
+              </UiTitleDropRight>
+
+              <template #content>
+                <div
+                  v-if="hasGroups(content.groups)"
+                  class="grid gap-2 pl-6"
                 >
-                  <template #header="{ isShown }">
+                  <UCollapsible
+                    v-for="(ids, groupSecondary) in content.groups"
+                    :key="groupSecondary"
+                    :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
+                    class="group grid gap-1 rounded-xl bg-elevated/30"
+                  >
                     <UiTitleDropRight
-                      :isShown
+                      :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
                       @click="toggleMap(groupPrimary, groupSecondary)"
                     >
                       <div class="font-tertiary text-base leading-none font-semibold">
@@ -309,26 +298,28 @@ const groupNavItems = computed<NavigationMenuItem[]>(() =>
                         />
                       </div>
                     </UiTitleDropRight>
-                  </template>
 
+                    <template #content>
+                      <WalletsPageListItem
+                        v-for="walletId in ids"
+                        :key="walletId"
+                        :walletId
+                        @delete="requestDelete"
+                      />
+                    </template>
+                  </UCollapsible>
+                </div>
+
+                <div v-else>
                   <WalletsPageListItem
-                    v-for="walletId in ids"
+                    v-for="walletId in content.ids"
                     :key="walletId"
                     :walletId
                     @delete="requestDelete"
                   />
-                </UiToggleControlled>
-              </div>
-
-              <div v-else>
-                <WalletsPageListItem
-                  v-for="walletId in content.ids"
-                  :key="walletId"
-                  :walletId
-                  @delete="requestDelete"
-                />
-              </div>
-            </UiToggleControlled>
+                </div>
+              </template>
+            </UCollapsible>
           </div>
         </div>
       </div>

@@ -11,7 +11,7 @@ const emit = defineEmits<{ click: [] }>()
 
 <template>
   <UButton
-    :class="{ 'rounded-full': props.rounded, 'rounded-sm': !props.rounded }"
+    :class="{ 'rounded-full': props.rounded, 'rounded-sm': !props.rounded, 'py-3': props.size === 'xl' }"
     :loading="props.loading"
     :size="props.size || 'lg'"
     :variant="props.variant"

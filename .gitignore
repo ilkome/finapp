@@ -10,6 +10,7 @@ dist
 
 # Node dependencies
 node_modules
+/.pnpm-store/
 
 # Logs
 logs
@@ -58,6 +59,10 @@ graphify-out
 
 # Local planning scratch (not source)
 plans/
+# Impeccable skill critique output (local, regenerated)
+.impeccable/
+# Stray Supabase CLI temp at repo root (real config lives in app/supabase)
+/supabase/
 
 # Vercel CLI link (local)
 .vercel
