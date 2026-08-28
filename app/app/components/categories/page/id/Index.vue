@@ -141,14 +141,14 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
       : {
           categories: {
             bars: {
-              isGrouped: false,
+              grouping: 'child',
             },
             isShowEmpty: true,
             list: {
-              isGrouped: false,
+              grouping: 'child',
             },
             round: {
-              isGrouped: false,
+              grouping: 'child',
             },
           },
         },
@@ -192,9 +192,9 @@ const openDrilldownCategory = useStatCategoryNavigation({
 })
 
 onActivated(() => {
-  statConfig.updateConfig('categories', { list: { isGrouped: false } })
-  statConfig.updateConfig('categories', { round: { isGrouped: false } })
-  statConfig.updateConfig('categories', { bars: { isGrouped: false } })
+  statConfig.updateConfig('categories', { list: { grouping: 'child' } })
+  statConfig.updateConfig('categories', { round: { grouping: 'child' } })
+  statConfig.updateConfig('categories', { bars: { grouping: 'child' } })
 
   if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
@@ -329,6 +329,7 @@ async function onDeleteConfirm() {
       :storageKey
       :trnsIds
       :reportType
+      showWallets
     />
   </UiPage>
 </template>

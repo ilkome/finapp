@@ -1,7 +1,7 @@
 import Swiper from 'swiper'
 import 'swiper/css'
 
-export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>, searchQuery: Ref<string>) {
+export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>) {
   const activeTabIdx = ref(0)
   // shallowRef, not ref: a plain ref deep-reactive-proxies the Swiper instance,
   // which corrupts its internal DOM/state so slideTo() (tab clicks) stops working.
@@ -18,6 +18,7 @@ export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>, searchQuery: R
       initialSlide: 0,
       longSwipesMs: 60,
       longSwipesRatio: 0.1,
+      noSwiping: true,
       on: {
         slideChange: sw => activeTabIdx.value = sw.activeIndex,
       },
@@ -29,14 +30,6 @@ export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>, searchQuery: R
     // answer with an update() each frame - janky slide switches plus disrupted
     // in-sheet scrolling. Recalc once after the open animation settles instead.
     requestAnimationFrame(() => sliderObj.value?.update())
-  })
-
-  // Swiper measures 0 while hidden behind search results; refresh on return.
-  watch(searchQuery, async (q) => {
-    if (!q) {
-      await nextTick()
-      sliderObj.value?.update()
-    }
   })
 
   onBeforeUnmount(() => sliderObj.value?.destroy(true, true))

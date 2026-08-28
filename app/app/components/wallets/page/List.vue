@@ -133,7 +133,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
         {{ t('wallets.new') }}
       </UiTitleSection>
       <NuxtLink to="/wallets/new">
-        <UiButtonAccent rounded>
+        <UiButtonAccent>
           {{ t('wallets.new') }}
         </UiButtonAccent>
       </NuxtLink>
@@ -236,7 +236,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
               :class="{
-                'rounded-sm bg-elevated/30': !hasGroups(content.groups),
+                'rounded-md bg-elevated/30': !hasGroups(content.groups),
               }"
               :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
             >
@@ -253,14 +253,14 @@ const groupNavItems = computed<TabsItem[]>(() =>
                     :amount="countWalletsSum(content.ids)"
                     :currencyCode="currenciesStore.base"
                     :isShowBaseRate="false"
-                    variant="sm"
+                    variant="row"
                   />
                   <Amount
                     v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
                     :amount="countWalletsSum(content.ids, false)"
                     :currencyCode="groupPrimary"
                     :isShowBaseRate="false"
-                    variant="2xs"
+                    variant="secondary"
                   />
                 </div>
               </UiTitleDropRight>
@@ -294,7 +294,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
                           :amount="countWalletsSum(ids, false)"
                           :currencyCode="groupPrimary"
                           :isShowBaseRate="false"
-                          variant="2xs"
+                          variant="secondary"
                         />
                       </div>
                     </UiTitleDropRight>

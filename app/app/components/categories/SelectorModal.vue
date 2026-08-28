@@ -13,10 +13,16 @@ type CategoryFilter = 'all' | 'favorites'
 
 const props = defineProps<{
   activeItemId?: CategoryId
+  autofocus?: boolean
   hide?: () => void
+  hideCreate?: boolean
+  hideHeader?: boolean
+  hideSearch?: boolean
   // Budgets aggregate a category's whole subtree, so they need to pick a parent itself - not just
   // a leaf. When set, each expanded parent offers an explicit "whole category" row.
+  searchQuery?: string
   selectableParents?: boolean
+  selectedIds?: CategoryId[]
 }>()
 
 const emit = defineEmits<{
@@ -77,7 +83,7 @@ function nameMatches(id: CategoryId, q: string) {
   return cat.name.toLowerCase().includes(q)
 }
 
-const searchQuery = computed(() => search.value.trim().toLowerCase())
+const searchQuery = computed(() => (props.searchQuery ?? search.value).trim().toLowerCase())
 
 const filteredAllRootIds = computed<CategoryId[]>(() => {
   const q = searchQuery.value
@@ -103,6 +109,8 @@ function visibleChildrenIds(rootId: CategoryId): CategoryId[] {
 function isRootExpanded(rootId: CategoryId) {
   if (searchQuery.value)
     return visibleChildrenIds(rootId).length > 0
+  if (categoriesStore.getChildrenIds(rootId).some(id => props.selectedIds?.includes(id)))
+    return true
   return isExpanded(rootId)
 }
 
@@ -211,56 +219,66 @@ function onRootClick(rootId: CategoryId) {
   toggle(rootId)
 }
 
-onMounted(async () => {
+async function focusSearch() {
+  if (props.hideHeader || props.hideSearch || props.autofocus === false)
+    return
   await nextTick()
-  searchInput.value?.focus()
-})
+  const focus = () => {
+    if (props.autofocus !== false)
+      searchInput.value?.focus()
+  }
+  requestAnimationFrame(focus)
+  // The kept-mounted filter sheet restores focus to its trigger after opening.
+  setTimeout(focus, 250)
+}
+
+onMounted(focusSearch)
+watch(() => props.autofocus, focusSearch)
 </script>
 
 <template>
   <div class="relative flex h-full min-h-0 flex-col overflow-hidden">
-    <div class="sticky top-0 z-20 flex items-center gap-2 bg-default px-3 py-2">
+    <div
+      v-if="!props.hideHeader"
+      class="sticky top-0 z-20 flex items-center gap-2 bg-default/90 px-3 backdrop-blur"
+      :class="props.hideSearch ? 'justify-end py-1' : 'py-2'"
+    >
       <input
+        v-if="!props.hideSearch"
         ref="searchInput"
         v-model="search"
         type="text"
         class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('categories.search.placeholder')"
       >
-      <div class="flex items-center">
-        <UiActionButton
+      <div class="flex items-center gap-0.5">
+        <UiTriggerButton
           v-if="filter === 'all'"
-          :ariaLabel="$t('base.toggleView')"
+          :icon="view === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
+          outlined
+          :title="$t('base.toggleView')"
           @click="view = view === 'list' ? 'grid' : 'list'"
-        >
-          <Icon
-            :name="view === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
-            size="20"
-          />
-        </UiActionButton>
+        />
 
-        <UiActionButton
+        <UiTriggerButton
           v-if="filter === 'all'"
-          :ariaLabel="$t('base.toggleFolders')"
+          :icon="folderIcon"
+          outlined
+          :title="$t('base.toggleFolders')"
           @click="toggleAll"
-        >
-          <Icon :name="folderIcon" size="20" />
-        </UiActionButton>
+        />
 
-        <UiActionButton
+        <UiTriggerButton
           v-if="hasFavoritesOrRecent"
-          :ariaLabel="$t('categories.favorite')"
+          icon="lucide:star"
           :isActive="filter === 'favorites'"
+          outlined
+          :title="$t('categories.favorite')"
           @click="toggleFavoritesFilter"
-        >
-          <Icon
-            name="lucide:star"
-            :class="filter === 'favorites' ? 'text-primary' : ''"
-            size="20"
-          />
-        </UiActionButton>
+        />
 
         <UiActionButton
+          v-if="!props.hideCreate"
           :ariaLabel="$t('categories.new')"
           @click="onClickNew"
         >
@@ -293,6 +311,7 @@ onMounted(async () => {
               :hideLeftMenuButton="true"
               :leftMenuButton="true"
               :lineWidth="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId) ? 0 : 1"
+              :selectedIds="props.selectedIds"
               class="group"
               @click="onRootClick(rootId)"
               @toggle="toggle(rootId)"
@@ -338,6 +357,7 @@ onMounted(async () => {
                   :hideLeftMenuButton="true"
                   :leftMenuButton="true"
                   :lineWidth="1"
+                  :selectedIds="props.selectedIds"
                   class="group"
                   @click="onSelect(childId)"
                 />
@@ -349,7 +369,7 @@ onMounted(async () => {
                   :key="childId"
                   :categoryId="childId"
                   :contextMenuItems="getCategoryContextMenuItems(childId)"
-                  :isActive="props.activeItemId === childId"
+                  :isActive="props.selectedIds?.includes(childId) || props.activeItemId === childId"
                   @click="onSelect(childId)"
                 />
               </div>
@@ -372,6 +392,7 @@ onMounted(async () => {
             :activeItemId="props.activeItemId"
             :getContextMenuItems="getCategoryContextMenuItems"
             :ids="filteredFavorites"
+            :selectedIds="props.selectedIds"
             @selected="onSelect"
           />
 
@@ -383,6 +404,7 @@ onMounted(async () => {
               :activeItemId="props.activeItemId"
               :getContextMenuItems="getCategoryContextMenuItems"
               :ids="filteredRecent"
+              :selectedIds="props.selectedIds"
               class="pt-px"
               @selected="onSelect"
             />

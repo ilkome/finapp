@@ -37,7 +37,6 @@ function saveWalletsOrder(close: () => void) {
 
       <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
-          rounded
           @click="saveWalletsOrder(close)"
         >
           {{ t('base.save') }}

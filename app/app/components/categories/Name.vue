@@ -11,18 +11,14 @@ const props = defineProps<{
 }>()
 
 const hasChildren = computed(() => (props.childrenCount ?? 0) > 0)
-
-const nameClass = computed(() =>
-  props.size === 'xs'
-    ? 'text-xs leading-none'
-    : 'text-toned text-sm leading-none font-medium tracking-wide',
-)
 </script>
 
 <template>
   <div :class="cn('flex min-w-0 items-baseline gap-3 pt-0', props.stacked && 'flex-col gap-0.5')">
-    <div class="flex min-w-0 items-center gap-2" :class="[nameClass]">
-      <span class="truncate">{{ props.category?.name }}</span>
+    <div class="flex min-w-0 items-center gap-2">
+      <UiEntityName :variant="props.size === 'xs' ? 'compact' : 'primary'">
+        {{ props.category?.name }}
+      </UiEntityName>
 
       <div
         v-if="hasChildren && childrenCount"
@@ -33,9 +29,9 @@ const nameClass = computed(() =>
     </div>
 
     <template v-if="isShowParent && !hasChildren && props.category?.parentId">
-      <div class="truncate text-2xs leading-none text-muted">
+      <UiEntityName variant="secondary">
         {{ props.parentCategory?.name }}
-      </div>
+      </UiEntityName>
     </template>
   </div>
 </template>

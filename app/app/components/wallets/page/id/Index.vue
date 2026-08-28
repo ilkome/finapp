@@ -42,7 +42,6 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 const { statConfig } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
-    storageQuery,
     legacyStorageKey,
     legacyTab,
     props: {
@@ -55,6 +54,7 @@ const { statConfig } = useStatPageProviders({
     },
     storage: isStatDrilldown ? sessionStorage : localStorage,
     storageKey,
+    storageQuery,
   },
   date: {
     initParams: statSnapshot?.date,
@@ -192,13 +192,13 @@ async function onDeleteConfirm() {
         />
       </div>
 
-      <UiTextMuted
+      <UiText
         v-if="wallet.desc"
-        size="sm"
-        class="pt-2 whitespace-pre"
+        class="pt-2 font-primary whitespace-pre text-muted"
+        variant="navigation"
       >
         {{ wallet.desc }}
-      </UiTextMuted>
+      </UiText>
     </div>
 
     <StatLayout

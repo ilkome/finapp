@@ -11,10 +11,14 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   activeItemId?: WalletId
+  autofocus?: boolean
+  currencyAboveAction?: boolean
   disabledIds?: WalletId[]
   filterAtTop?: boolean
   hide?: () => void
+  hideHeader?: boolean
   hideSearch?: boolean
+  searchQuery?: string
   selectedIds?: WalletId[]
   withHeader?: boolean
 }>()
@@ -31,7 +35,7 @@ const isLaptop = useIsLaptop()
 
 const search = ref('')
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
-const searchQuery = computed(() => search.value.trim().toLowerCase())
+const searchQuery = computed(() => (props.searchQuery ?? search.value).trim().toLowerCase())
 
 const editingWalletId = ref<WalletId | null>(null)
 const isCreatingNewWallet = ref(false)
@@ -94,18 +98,27 @@ function onClickNew() {
   }
 }
 
-onMounted(async () => {
-  if (!props.withHeader || props.hideSearch)
+async function focusSearch() {
+  if (!props.withHeader || props.hideHeader || props.hideSearch || props.autofocus === false)
     return
   await nextTick()
-  searchInput.value?.focus()
-})
+  const focus = () => {
+    if (props.autofocus !== false)
+      searchInput.value?.focus()
+  }
+  requestAnimationFrame(focus)
+  // The kept-mounted filter sheet restores focus to its trigger after opening.
+  setTimeout(focus, 250)
+}
+
+onMounted(focusSearch)
+watch(() => props.autofocus, focusSearch)
 </script>
 
 <template>
   <div class="flex h-full min-h-0 flex-col overflow-hidden">
     <div
-      v-if="props.withHeader"
+      v-if="props.withHeader && !props.hideHeader"
       class="flex items-center gap-2 bg-default py-2"
       :class="{ 'justify-end': props.hideSearch }"
     >
@@ -129,7 +142,9 @@ onMounted(async () => {
       <div
         class="h-full scroller-block overflow-y-auto py-px"
         :class="{
-          'pb-16': !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
+          'space-y-1 px-3 pt-2': props.selectedIds !== undefined,
+          'pb-28!': props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
+          'pb-16': !props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
         }"
       >
@@ -146,22 +161,12 @@ onMounted(async () => {
         >
           <div
             v-if="props.selectedIds !== undefined"
-            class="flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
+            :class="cn(
+              'flex items-center rounded-md border border-transparent bg-elevated/30 select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent',
+              props.selectedIds.includes(walletId) && 'border-primary/40',
+            )"
             @click="onClickWallet(walletId)"
           >
-            <div
-              class="relative flex-center w-10 shrink-0 self-stretch pl-2"
-              @click.stop
-            >
-              <div
-                class="absolute inset-0 z-10"
-                @click.stop="onClickWallet(walletId)"
-              />
-              <UCheckbox
-                :modelValue="props.selectedIds.includes(walletId)"
-                class="pointer-events-none"
-              />
-            </div>
             <WalletsItem
               :activeItemId="props.activeItemId ?? null"
               :contextMenuItems="getWalletContextMenuItems(walletId)"
@@ -191,19 +196,25 @@ onMounted(async () => {
 
       <template v-if="walletsStore.currenciesUsed.length > 1">
         <div
+          v-if="!props.currencyAboveAction"
           class="pointer-events-none absolute left-0 z-10 h-12 w-full"
-          :class="props.filterAtTop ? 'top-0' : 'bottom-0'"
+          :class="props.filterAtTop
+            ? 'top-0'
+            : props.currencyAboveAction ? 'bottom-14' : 'bottom-0'"
           :style="props.filterAtTop
             ? 'background: linear-gradient(to top, transparent, var(--ui-bg))'
             : 'background: linear-gradient(to bottom, transparent, var(--ui-bg))'"
         />
         <div
-          class="pointer-events-none absolute left-0 z-20 w-full px-2"
-          :class="props.filterAtTop ? 'top-0' : 'bottom-2'"
+          class="pointer-events-none absolute left-0 z-20 w-full"
+          :class="props.filterAtTop
+            ? 'top-0'
+            : props.currencyAboveAction ? 'bottom-14' : 'bottom-2'"
         >
-          <div class="pointer-events-auto rounded-2xl border border-default/80 bg-default/20 p-1 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
+          <div class="swiper-no-swiping pointer-events-auto w-full touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain px-2 [&::-webkit-scrollbar]:hidden">
             <WalletsCurrencies
               :currencyFiltered
+              menuStyle
               @selectFilterCurrency="code => currencyFiltered = code"
             />
           </div>

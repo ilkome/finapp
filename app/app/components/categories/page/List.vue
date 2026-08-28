@@ -122,7 +122,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         {{ t('categories.new') }}
       </UiTitleSection>
       <NuxtLink to="/categories/new">
-        <UiButtonAccent rounded>
+        <UiButtonAccent>
           {{ t('categories.new') }}
         </UiButtonAccent>
       </NuxtLink>

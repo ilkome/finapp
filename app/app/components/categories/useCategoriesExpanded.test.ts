@@ -54,4 +54,32 @@ describe('useCategoriesExpanded persistent default', () => {
 
     expect(expanded.isExpanded('food')).toBe(true)
   })
+
+  it('clears manual exceptions when toggling all categories', () => {
+    const ids = ref(['food', 'travel'])
+    const expanded = useCategoriesExpanded('stats', computed(() => ids.value), { persistDefault: true })
+
+    expanded.toggle('food')
+    expanded.toggleAll()
+
+    expect(expanded.isExpanded('food')).toBe(true)
+    expect(expanded.isExpanded('travel')).toBe(true)
+
+    expanded.toggleAll()
+
+    expect(expanded.isExpanded('food')).toBe(false)
+    expect(expanded.isExpanded('travel')).toBe(false)
+  })
+
+  it('resets the expanded state', () => {
+    const ids = ref(['food', 'travel'])
+    const expanded = useCategoriesExpanded('stats', computed(() => ids.value), { persistDefault: true })
+
+    expanded.toggleAll()
+    expanded.toggle('travel')
+    expanded.reset()
+
+    expect(expanded.isExpanded('food')).toBe(false)
+    expect(expanded.isExpanded('travel')).toBe(false)
+  })
 })

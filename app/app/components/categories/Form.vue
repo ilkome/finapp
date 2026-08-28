@@ -377,7 +377,6 @@ async function onSave() {
     <div class="flex-center">
       <UiButtonAccent
         class="sm:max-w-xs"
-        rounded
         @click="onSave"
       >
         {{ t('base.save') }}
@@ -410,7 +409,6 @@ async function onSave() {
 
       <div class="flex-center p-2">
         <UiButtonAccent
-          rounded
           @click="close"
         >
           {{ t('base.apply') }}
@@ -472,7 +470,6 @@ async function onSave() {
 
       <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
-          rounded
           @click="close"
         >
           {{ t('base.apply') }}
@@ -527,7 +524,7 @@ async function onSave() {
                 :key="id"
                 type="button"
                 :aria-pressed="selectedChildIds.includes(id)"
-                :class="cn('flex w-full items-center gap-3 rounded-sm px-3 py-2 text-left transition hover:bg-elevated/50', selectedChildIds.includes(id) && 'bg-elevated/30')"
+                :class="cn('flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition hover:bg-elevated/50', selectedChildIds.includes(id) && 'bg-elevated/30')"
                 @click="toggleChildSelection(id)"
               >
                 <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-primary bg-primary' : 'border-default')">
@@ -570,7 +567,6 @@ async function onSave() {
 
       <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
-          rounded
           @click="applyChildrenSelection(close)"
         >
           {{ t('base.apply') }}
@@ -612,7 +608,6 @@ async function onSave() {
 
       <div class="bottom-sheet-content-bottom">
         <UiButtonAccent
-          rounded
           @click="close"
         >
           {{ t('base.apply') }}

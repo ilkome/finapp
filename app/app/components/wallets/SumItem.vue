@@ -14,13 +14,15 @@ const currenciesStore = useCurrenciesStore()
   <div
     class="flex min-h-10.5 min-w-10.5 grow-0 items-center gap-1 py-1 lg:gap-1"
   >
-    <UiTextSubtitle>{{ props.title }}</UiTextSubtitle>
+    <UiText variant="caption">
+      {{ props.title }}
+    </UiText>
 
     <Amount
       :amount="props.amount"
       :currencyCode="props.currencyCode || currenciesStore.base"
       align="left"
-      variant="xl"
+      variant="summary"
     />
   </div>
 </template>

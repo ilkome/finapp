@@ -36,7 +36,7 @@ const shown = useStoredToggle(props.storageKey, true)
   <div class="group relative mb-2 rounded-xl bg-elevated/30 md:max-w-lg">
     <div class="-my-px overflow-hidden">
       <UCollapsible v-model:open="shown">
-        <div class="flex min-h-10.5 items-center rounded-sm interactive">
+        <div class="flex min-h-10.5 items-center rounded-md interactive">
           <UiTitleCollapse :isShown="shown">
             {{ t('statistics.title') }}
           </UiTitleCollapse>
@@ -70,7 +70,7 @@ const shown = useStoredToggle(props.storageKey, true)
                     <Amount
                       :amount="getCreditAvailable(item.secondValue, item.value)"
                       :currencyCode="currencyCode"
-                      variant="2xs"
+                      variant="secondary"
                     />
                     <div class="text-2xs leading-none opacity-70">
                       /
@@ -78,7 +78,7 @@ const shown = useStoredToggle(props.storageKey, true)
                     <Amount
                       :amount="item.secondValue"
                       :currencyCode="currencyCode"
-                      variant="2xs"
+                      variant="secondary"
                     />
                   </div>
                 </div>
@@ -87,7 +87,7 @@ const shown = useStoredToggle(props.storageKey, true)
                   <Amount
                     :amount="item.value"
                     :currencyCode="currencyCode"
-                    variant="sm"
+                    variant="row"
                   />
                 </div>
               </UiElement>
