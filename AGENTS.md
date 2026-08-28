@@ -26,7 +26,6 @@ Do not duplicate those details here. Inspect their source when the task depends 
 ## Non-obvious constraints
 
 - `nuxi typecheck` does not reliably catch deleted or renamed auto-imported components used in Vue templates. Search for the component name and verify the affected page at runtime.
-- UI changes require a browser check. For scroll position and geometry assertions, use physical pointer or scroll input because locator interactions can auto-scroll.
 - Keep non-trivial business rules in plain TypeScript when practical and unit-test them. Do not extract or add a full E2E test for a trivial template condition.
 - Persisted typed state must backfill defaults on every load. When renaming a persisted field, cover a pre-rename payload in a migration test.
 - PowerSync tables are SQLite views. Use the existing mutation helpers instead of `ON CONFLICT` writes.
