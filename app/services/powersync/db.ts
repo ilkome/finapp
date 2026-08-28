@@ -48,15 +48,20 @@ function clearLocalDbOwner(): void {
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ PowerSyncDatabase }, { AppSchema }] = await Promise.all([
+    const [{ PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
+      import('@powersync/web/bundled_worker?worker&url'),
     ])
     _db = new PowerSyncDatabase({
       database: {
         dbFilename: 'finapp.db',
+        worker: workerUrl,
       },
       schema: AppSchema,
+      sync: {
+        worker: workerUrl,
+      },
     })
     return _db
   })()

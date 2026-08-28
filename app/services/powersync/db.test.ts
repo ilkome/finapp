@@ -40,8 +40,9 @@ describe('getPowerSyncDb', () => {
   it('uses the PowerSync 2 database options API', async () => {
     await getPowerSyncDb()
     expect(createDatabase).toHaveBeenCalledWith({
-      database: { dbFilename: 'finapp.db' },
+      database: { dbFilename: 'finapp.db', worker: expect.any(String) },
       schema: {},
+      sync: { worker: expect.any(String) },
     })
   })
 })
