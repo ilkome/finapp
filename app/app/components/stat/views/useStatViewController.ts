@@ -8,8 +8,8 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { SyncableStatConfigPanelId } from '~/components/stat/views/syncPanelConfig'
 
 import { ConfigSchema } from '~/components/stat/config/schema'
-import { useUserStore } from '~/components/user/useUserStore'
 import { syncPanelConfig } from '~/components/stat/views/syncPanelConfig'
+import { useUserStore } from '~/components/user/useUserStore'
 
 import type { StatView, StatViewContext } from './types'
 
@@ -105,8 +105,8 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
   }
   function selectForCurrentContext() {
     const automatic = findAutomaticView(store.views, context.value)
-    const classic = store.views.find(view => view.name === t('stat.views.classic')) ?? store.views[0]
-    const view = automatic ?? classic
+    const modern = store.views.find(view => view.name === t('stat.views.modern')) ?? store.views[0]
+    const view = automatic ?? modern
     if (view)
       apply(view, false)
     return view ?? null
@@ -126,21 +126,21 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
         if (store.views.length > 0)
           return
       }
-      const classicName = t('stat.views.classic')
-      const existing = store.views.find(view => view.name === classicName)
+      const modernName = t('stat.views.modern')
+      const existing = store.views.find(view => view.name === modernName)
       const previousIds = store.views.map(view => view.id)
-      const classic = existing ?? await store.create({
+      const modern = existing ?? await store.create({
         autoRule: null,
         config: cloneConfig(config.value),
         isAutoEnabled: false,
-        name: classicName,
+        name: modernName,
         scope: 'dashboard',
       })
       if (!existing && previousIds.length)
-        await store.reorder([classic.id, ...previousIds])
+        await store.reorder([modern.id, ...previousIds])
       await userStore.saveStatViewsInitialized()
       if (activeId.value === null)
-        apply(classic, false)
+        apply(modern, false)
     }
     finally {
       isCreatingInitialView = false

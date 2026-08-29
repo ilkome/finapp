@@ -170,6 +170,14 @@ describe('adjacent category bars', () => {
     expect(resolveCenteredBarGeometry(40, 1, 0).offset).toBe(0)
   })
 
+  it('keeps bar widths equal when days have different active series counts', () => {
+    const single = resolveCenteredBarGeometry(20, 1, 0, { widthCount: 3 })
+    const firstOfThree = resolveCenteredBarGeometry(20, 3, 0, { widthCount: 3 })
+
+    expect(single.width).toBe(firstOfThree.width)
+    expect(single.offset).toBe(0)
+  })
+
   it('reads values from regular and custom-series tooltip data', () => {
     expect(resolveChartTooltipValue(40)).toBe(40)
     expect(resolveChartTooltipValue([123, -20])).toBe(-20)

@@ -126,65 +126,74 @@ const option = computed(() => {
   const renderedSeries = chartType === 'bar'
     && !isBarGrouped.value
     && statConfig.config.value.chart.breakdown === 'categories'
-    ? chartSeries.map((item, seriesIndex) => {
-        if (item.axisOverlay || item.type !== 'bar')
-          return item
+    ? (() => {
+        const hasBarValue = (value: unknown) => Number.isFinite(Number(value)) && Number(value) !== 0
+        const adjacentBarSeries = chartSeries
+          .map((candidate, candidateIndex) => ({ candidate, candidateIndex }))
+          .filter(({ candidate }) => !candidate.axisOverlay && candidate.type === 'bar')
+        const widthCount = Math.max(1, ...xAxisLabels.map((_, dataIndex) => adjacentBarSeries
+          .filter(({ candidate }) => hasBarValue(candidate.data[dataIndex]))
+          .length))
 
-        return {
-          ...item,
-          coordinateSystem: 'cartesian2d',
-          data: item.data.map((value, dataIndex) => [dataIndex, value]),
-          encode: { tooltip: 1, x: 0, y: 1 },
-          renderItem: (params: { dataIndex: number }, api: {
-            coord: (value: unknown[]) => number[]
-            value: (dimension: number) => unknown
-          }) => {
-            const value = Number(api.value(1))
-            if (!Number.isFinite(value) || value === 0)
-              return null
+        return chartSeries.map((item, seriesIndex) => {
+          if (item.axisOverlay || item.type !== 'bar')
+            return item
 
-            const activeSeriesIndexes = chartSeries
-              .map((candidate, candidateIndex) => ({ candidate, candidateIndex }))
-              .filter(({ candidate }) => !candidate.axisOverlay && candidate.type === 'bar' && Number(candidate.data[params.dataIndex]) !== 0)
-              .map(({ candidateIndex }) => candidateIndex)
-            const activeIndex = activeSeriesIndexes.indexOf(seriesIndex)
-            if (activeIndex < 0)
-              return null
+          return {
+            ...item,
+            coordinateSystem: 'cartesian2d',
+            data: item.data.map((value, dataIndex) => [dataIndex, value]),
+            encode: { tooltip: 1, x: 0, y: 1 },
+            renderItem: (params: { dataIndex: number }, api: {
+              coord: (value: unknown[]) => number[]
+              value: (dimension: number) => unknown
+            }) => {
+              const value = Number(api.value(1))
+              if (!Number.isFinite(value) || value === 0)
+                return null
 
-            const xValue = api.value(0)
-            const [, zeroY = 0] = api.coord([xValue, 0])
-            const [centerX = 0, valueY = 0] = api.coord([xValue, value])
-            const neighbourValue = params.dataIndex + 1 < xAxisLabels.length
-              ? params.dataIndex + 1
-              : params.dataIndex > 0 ? params.dataIndex - 1 : undefined
-            const [neighbourX = Number.NaN] = neighbourValue === undefined ? [] : api.coord([neighbourValue, 0])
-            const bucketWidth = Number.isFinite(neighbourX) ? Math.abs(neighbourX - centerX) : 12
-            const geometry = resolveCenteredBarGeometry(bucketWidth, activeSeriesIndexes.length, activeIndex)
-            const measuredHeight = Math.abs(zeroY - valueY)
-            const height = Math.max(2, measuredHeight)
-            const y = value >= 0 ? zeroY - height : zeroY
+              const activeSeriesIndexes = adjacentBarSeries
+                .filter(({ candidate }) => hasBarValue(candidate.data[params.dataIndex]))
+                .map(({ candidateIndex }) => candidateIndex)
+              const activeIndex = activeSeriesIndexes.indexOf(seriesIndex)
+              if (activeIndex < 0)
+                return null
 
-            return {
-              emphasis: {
-                style: {
-                  fill: item.color,
-                  opacity: 1,
+              const xValue = api.value(0)
+              const [, zeroY = 0] = api.coord([xValue, 0])
+              const [centerX = 0, valueY = 0] = api.coord([xValue, value])
+              const neighbourValue = params.dataIndex + 1 < xAxisLabels.length
+                ? params.dataIndex + 1
+                : params.dataIndex > 0 ? params.dataIndex - 1 : undefined
+              const [neighbourX = Number.NaN] = neighbourValue === undefined ? [] : api.coord([neighbourValue, 0])
+              const bucketWidth = Number.isFinite(neighbourX) ? Math.abs(neighbourX - centerX) : 12
+              const geometry = resolveCenteredBarGeometry(bucketWidth, activeSeriesIndexes.length, activeIndex, { widthCount })
+              const measuredHeight = Math.abs(zeroY - valueY)
+              const height = Math.max(2, measuredHeight)
+              const y = value >= 0 ? zeroY - height : zeroY
+
+              return {
+                emphasis: {
+                  style: {
+                    fill: item.color,
+                    opacity: 1,
+                  },
                 },
-              },
-              shape: {
-                height,
-                r: 2,
-                width: geometry.width,
-                x: centerX + geometry.offset - geometry.width / 2,
-                y,
-              },
-              style: { fill: item.color },
-              type: 'rect',
-            }
-          },
-          type: 'custom',
-        }
-      })
+                shape: {
+                  height,
+                  r: 2,
+                  width: geometry.width,
+                  x: centerX + geometry.offset - geometry.width / 2,
+                  y,
+                },
+                style: { fill: item.color },
+                type: 'rect',
+              }
+            },
+            type: 'custom',
+          }
+        })
+      })()
     : chartSeries
   const activeIntervalSeries = activeIntervalIndex < 0
     ? []

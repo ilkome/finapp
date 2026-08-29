@@ -15,6 +15,7 @@ const { t } = useI18n()
   >
     <UiActionButton
       :ariaLabel="t('stat.config.chart.settings')"
+      class="size-8 min-h-8! min-w-8!"
       size="sm"
     >
       <Icon name="lucide:sliders-horizontal" size="18" />
@@ -22,7 +23,7 @@ const { t } = useI18n()
 
     <template #content>
       <div class="w-88 max-w-full p-3">
-        <StatConfigPanelsChart />
+        <StatConfigPanelsChart isShowSyncButton />
       </div>
     </template>
   </UPopover>

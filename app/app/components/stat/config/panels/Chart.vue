@@ -9,6 +9,10 @@ import { chartLayoutIcons, chartLayoutOptions, chartValueDisplayOptions, pieShap
 import { quickRangeOptionIds, useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
+const { isShowSyncButton = false } = defineProps<{
+  isShowSyncButton?: boolean
+}>()
+
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
@@ -200,6 +204,11 @@ const quickRangeSelectionLabel = computed(() => {
       path="chart.isShowScale"
       :title="t('stat.config.chart.scale.label')"
     />
+    <StatConfigSwitch
+      v-if="activeChartType !== 'pie'"
+      path="chart.isShowAverage"
+      :title="t('stat.config.chart.average.label')"
+    />
 
     <StatConfigFieldRow v-if="canSplit" :title="t('stat.view.chartLayout.title')">
       <USelect
@@ -252,7 +261,7 @@ const quickRangeSelectionLabel = computed(() => {
             <div
               v-for="id in sortedQuickRangeIds"
               :key="id"
-              class="theme-rounded-control flex items-center gap-1 text-sm text-highlighted hover:bg-elevated"
+              class="flex items-center gap-1 theme-rounded-control text-sm text-highlighted hover:bg-elevated"
             >
               <button
                 type="button"
@@ -285,10 +294,6 @@ const quickRangeSelectionLabel = computed(() => {
         </template>
       </UPopover>
     </StatConfigFieldRow>
-    <StatConfigSwitch
-      v-if="activeChartType !== 'pie'"
-      path="chart.isShowAverage"
-      :title="t('stat.config.chart.average.label')"
-    />
+    <StatConfigSyncPanelButton v-if="isShowSyncButton" panel="chart" />
   </div>
 </template>

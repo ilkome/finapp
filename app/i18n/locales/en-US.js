@@ -654,7 +654,6 @@ export default {
       autoDescription: 'Auto: {rule}',
       categoryCount: '{comparator} {value} {scope}',
       comparators: { eq: 'equals', gt: 'greater than', gte: 'greater than or equal to', lt: 'less than', lte: 'less than or equal to', neq: 'not equal to' },
-      classic: 'Classic',
       conditions: {
         addCondition: 'Add condition',
         addGroup: 'Add group',
@@ -671,6 +670,7 @@ export default {
       drag: 'Drag view',
       errors: { delete: 'Could not delete view', order: 'Could not reorder views', save: 'Could not save view' },
       menu: { label: 'Views', settings: 'Settings' },
+      modern: 'Modern',
       name: 'View name',
       new: 'New view',
       period: { day: 'Last {count} days', month: 'Last {count} months', week: 'Last {count} weeks', year: 'Last {count} years' },

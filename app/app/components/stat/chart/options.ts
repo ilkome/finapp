@@ -154,11 +154,15 @@ export function resolveCenteredBarGeometry(
   bucketWidth: number,
   activeCount: number,
   activeIndex: number,
-  gap = 2,
-  maxWidth = 12,
+  options: {
+    gap?: number
+    maxWidth?: number
+    widthCount?: number
+  } = {},
 ) {
+  const { gap = 2, maxWidth = 12, widthCount = activeCount } = options
   const availableWidth = Math.max(1, bucketWidth * 0.8)
-  const width = Math.min(maxWidth, Math.max(1, (availableWidth - gap * Math.max(0, activeCount - 1)) / activeCount))
+  const width = Math.min(maxWidth, Math.max(1, (availableWidth - gap * Math.max(0, widthCount - 1)) / widthCount))
   return {
     offset: (activeIndex - (activeCount - 1) / 2) * (width + gap),
     width,

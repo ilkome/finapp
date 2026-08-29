@@ -66,6 +66,7 @@ describe('statistics saved views', () => {
       isShowNavigation: true,
       isShowQuick: false,
       quickRangeIds: defaultConfig.date.quickRangeIds,
+      quickRangeOrderIds: defaultConfig.date.quickRangeOrderIds,
     })
     expect(migrated?.config.summary).toEqual({ isPinned: true, isShowChart: true })
     expect(migrated?.config.wallets).toMatchObject({ displayMode: 'recent', selectionMode: 'multiple' })

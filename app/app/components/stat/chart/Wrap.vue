@@ -44,7 +44,7 @@ function onChangePeriod(period: Period) {
 <template>
   <div
     v-if="isChartShow"
-    class="max-w-full min-w-0"
+    class="relative max-w-full min-w-0"
     :class="{
       'stat-column-width': chartLayout === 'combined-narrow',
     }"
@@ -59,9 +59,15 @@ function onChangePeriod(period: Period) {
           @changePeriod="onChangePeriod"
         />
       </div>
-      <div class="ml-auto shrink-0">
-        <StatChartSettingsPopover />
-      </div>
+    </div>
+
+    <div
+      class="absolute z-10"
+      :class="statConfig.config.value.chart.isShowBackground
+        ? '-top-1 -right-1 md:-top-2 md:-right-2'
+        : 'top-1 right-1'"
+    >
+      <StatChartSettingsPopover />
     </div>
 
     <div class="min-h-40 max-w-full min-w-0 @3xl/stat:min-h-52">

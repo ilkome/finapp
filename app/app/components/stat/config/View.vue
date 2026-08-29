@@ -5,8 +5,7 @@ import type { StatConfigBlockId } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
-import { statCanSplitKey, statConfigKey, statViewControllerKey } from '~/components/stat/injectionKeys'
-import { showSuccessToast } from '~/composables/useStoreSync'
+import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
@@ -23,13 +22,11 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
-const viewController = inject(statViewControllerKey, null)
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const { width } = useWindowSize()
 const expandedPanels = ref<ConfigPanelId[]>([])
 const isSortingBlocks = ref(false)
 const isSortingViews = ref(false)
-const syncingPanel = ref<ConfigPanelId | null>(null)
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
   dragHandle: '.sortHandle',
 })
@@ -160,19 +157,6 @@ function onRowActivate(row: RootRow) {
   else if (row.toggle)
     row.toggle()
 }
-
-async function syncPanel(panel: ConfigPanelId) {
-  if (!viewController || syncingPanel.value)
-    return
-  syncingPanel.value = panel
-  try {
-    await viewController.syncPanelAcrossViews(panel)
-    showSuccessToast('stat.views.blockSynced')
-  }
-  finally {
-    syncingPanel.value = null
-  }
-}
 </script>
 
 <template>
@@ -213,7 +197,7 @@ async function syncPanel(panel: ConfigPanelId) {
           </div>
         </UiElement>
       </div>
-      <div class="bottom-sheet-content-bottom -mx-1 mt-3 shrink-0">
+      <div class="-mx-1 mt-3 bottom-sheet-content-bottom shrink-0">
         <div class="grid w-full grid-cols-2 gap-2">
           <UiButtonAccent color="neutral" size="xl" variant="soft" @click="exitBlockSortMode">
             {{ t('base.cancel') }}
@@ -291,18 +275,7 @@ async function syncPanel(panel: ConfigPanelId) {
                 <StatConfigPanelsCatsRound v-else-if="row.panel === 'catsRound'" />
                 <StatConfigPanelsCatsList v-else-if="row.panel === 'catsList'" />
                 <StatConfigPanelsVertical v-else-if="row.panel === 'vertical'" />
-                <UButton
-                  v-if="viewController"
-                  class="w-fit justify-self-start"
-                  color="neutral"
-                  icon="i-lucide-copy"
-                  :label="t('stat.views.syncBlock')"
-                  size="xs"
-                  variant="soft"
-                  :disabled="!!syncingPanel"
-                  :loading="syncingPanel === row.panel"
-                  @click="syncPanel(row.panel)"
-                />
+                <StatConfigSyncPanelButton :panel="row.panel" />
               </div>
             </template>
           </UCollapsible>

@@ -654,7 +654,6 @@ export default {
       autoDescription: 'Авто: {rule}',
       categoryCount: '{comparator} {value} {scope}',
       comparators: { eq: 'равно', gt: 'больше', gte: 'больше или равно', lt: 'меньше', lte: 'меньше или равно', neq: 'не равно' },
-      classic: 'Классический',
       conditions: {
         addCondition: 'Добавить условие',
         addGroup: 'Добавить группу',
@@ -671,6 +670,7 @@ export default {
       drag: 'Перетащить вид',
       errors: { delete: 'Не удалось удалить вид', order: 'Не удалось изменить порядок видов', save: 'Не удалось сохранить вид' },
       menu: { label: 'Виды', settings: 'Настроить' },
+      modern: 'Современный',
       name: 'Название вида',
       new: 'Новый вид',
       period: { day: 'Последние {count} дней', month: 'Последние {count} месяцев', week: 'Последние {count} недель', year: 'Последние {count} лет' },
