@@ -8,6 +8,7 @@ const props = defineProps<{
   parentCategory?: CategoryItem
   size?: 'default' | 'xs'
   stacked?: boolean
+  suffix?: string
 }>()
 
 const hasChildren = computed(() => (props.childrenCount ?? 0) > 0)
@@ -17,7 +18,7 @@ const hasChildren = computed(() => (props.childrenCount ?? 0) > 0)
   <div :class="cn('flex min-w-0 items-baseline gap-3 pt-0', props.stacked && 'flex-col gap-0.5')">
     <div class="flex min-w-0 items-center gap-2">
       <UiEntityName :variant="props.size === 'xs' ? 'compact' : 'primary'">
-        {{ props.category?.name }}
+        {{ props.category?.name }}{{ props.suffix }}
       </UiEntityName>
 
       <div

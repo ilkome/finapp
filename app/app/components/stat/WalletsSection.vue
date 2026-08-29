@@ -7,9 +7,10 @@ import { getNextWalletFilterIds, getSortedFilterWalletsIds } from '~/components/
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  isCategoryFocusActive?: boolean
   periodWalletIds: WalletId[]
-}>()
+}>(), { isCategoryFocusActive: false })
 
 const filter = inject(filterKey)!
 const statConfig = inject(statConfigKey)!
@@ -23,6 +24,7 @@ const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
   statConfig.config.value.wallets.isShow,
   statConfig.config.value.wallets.count,
   statConfig.config.value.wallets.displayMode,
+  props.isCategoryFocusActive && statConfig.config.value.wallets.displayMode === 'period',
 ))
 
 function onClickWallet(walletId: WalletId) {
@@ -39,7 +41,7 @@ function onClickWallet(walletId: WalletId) {
 <template>
   <div
     v-if="statConfig.config.value.wallets.isShow"
-    class="stat-wallets-scroll -mx-2 flex snap-x snap-mandatory scroll-px-2 overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
+    class="stat-wallets-scroll relative isolate z-0 -mx-2 flex snap-x snap-mandatory scroll-px-2 overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
     data-stat-block="wallets"
     data-stat-wallets-section
   >

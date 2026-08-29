@@ -8,11 +8,8 @@ import { statConfigKey, statViewControllerKey } from '~/components/stat/injectio
 
 const props = defineProps<{
   categoriesWithData: CategoryWithData[]
-  focusedCategories?: CategoryWithData[]
-  focusedChildCategoryId?: CategoryId
   groupedCategories: CategoryWithData[]
   isOneCategory?: boolean
-  isTwoColumnLayout?: boolean
   storageKey: string
   type: SeriesSlugSelected | 'summary'
   ungroupedCategories: CategoryWithData[]
@@ -20,7 +17,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   openCategory: [categoryId: CategoryId, filteredType?: SeriesSlugSelected]
-  setFocusedCategoryFilter: [categoryId: CategoryId]
 }>()
 
 const { t } = useI18n()
@@ -31,8 +27,6 @@ const catsList = computed(() => statConfig.config.value.categories.list)
 const isListShow = computed(() => catsList.value.isShow)
 const isShowBackground = computed(() => catsList.value.backgroundType !== 'none')
 const isShowTitle = computed(() => catsList.value.isShowTitle)
-const isFocused = computed(() => props.focusedCategories !== undefined)
-
 const linesCategories = computed<CategoryWithData[]>(() => props.categoriesWithData)
 const linesMaxValues = computed(() => getMaxCategoryValues(linesCategories.value))
 const childrenMaxValues = computed(() => getMaxCategoryValues(props.categoriesWithData))
@@ -78,10 +72,10 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
 
 <template>
   <div
-    v-if="isListShow || isFocused"
+    v-if="isListShow"
     class="w-full @3xl/main:max-w-md"
   >
-    <div v-if="!isFocused && isShowTitle" class="flex items-center justify-between">
+    <div v-if="isShowTitle" class="flex items-center justify-between">
       <UiTitleCollapse
         class="grow"
         :isShown="isListShown"
@@ -108,31 +102,15 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
     </div>
 
     <div
-      v-if="isFocused || !isShowTitle || isListShown"
+      v-if="!isShowTitle || isListShown"
       class="w-full @3xl/main:max-w-md"
       :class="[
-        (isFocused || isShowTitle) && 'pt-2',
+        isShowTitle && 'pt-2',
         isShowBackground && 'grid gap-1',
       ]"
     >
-      <template v-if="isFocused">
-        <StatCategoriesLine
-          v-for="(item, index) in focusedCategories"
-          :key="item.id"
-          :isActive="props.focusedChildCategoryId === item.id"
-          :isShowParent="false"
-          :item="item"
-          :maxCategoryValues="childrenMaxValues"
-          :lineWidth="index === (focusedCategories?.length ?? 0) - 1 ? 0 : 1"
-          class="group"
-          @click="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
-          @amountClick="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
-        />
-      </template>
-
       <template
         v-for="(item, index) in linesCategories"
-        v-else
         :key="item.id"
       >
         <StatCategoriesLine

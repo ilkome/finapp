@@ -73,6 +73,14 @@ describe('getSortedFilterWalletsIds', () => {
     expect(getSortedFilterWalletsIds([], ['w1'], ['w3', 'w2'], true, 1, 'period')).toEqual(['w3', 'w2'])
   })
 
+  it('hides selected wallets outside a focused category period', () => {
+    expect(getSortedFilterWalletsIds(['w1', 'w2'], [], ['w2'], true, 1, 'period', true)).toEqual(['w2'])
+  })
+
+  it('keeps selected wallets outside the period without a focused category', () => {
+    expect(getSortedFilterWalletsIds(['w1'], [], ['w2'], true, 1, 'period')).toEqual(['w2', 'w1'])
+  })
+
   it('falls back to the filtered ids when the section is hidden', () => {
     expect(getSortedFilterWalletsIds(['w3'], ['w1', 'w2', 'w3'], ['w2'], false, 2, 'period')).toEqual(['w3'])
   })

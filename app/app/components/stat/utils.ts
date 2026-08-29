@@ -70,7 +70,7 @@ export function getTypesToShow(
   return ['income', 'expense']
 }
 
-/** Keep active filters visible even when a wallet is outside the selected display source. */
+/** Keep active filters visible unless a focused category constrains period candidates. */
 export function getSortedFilterWalletsIds(
   filteredIds: WalletId[],
   recentIds: WalletId[],
@@ -78,11 +78,15 @@ export function getSortedFilterWalletsIds(
   isShow: boolean,
   count: number,
   displayMode: 'period' | 'recent',
+  restrictFilteredIdsToPeriod = false,
 ): WalletId[] {
   const showedIds = isShow
     ? displayMode === 'period' ? periodIds : recentIds.slice(0, count)
     : filteredIds
-  return [...new Set([...showedIds, ...filteredIds])]
+  const visibleFilteredIds = restrictFilteredIdsToPeriod
+    ? filteredIds.filter(id => periodIds.includes(id))
+    : filteredIds
+  return [...new Set([...showedIds, ...visibleFilteredIds])]
 }
 
 /** Collect wallets in the order of their first transaction in an already sorted data set. */

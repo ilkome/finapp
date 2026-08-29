@@ -103,7 +103,7 @@ export function addEmptyCategoryViews(
     ungrouped.push({
       id,
       name: category.name,
-      trend: trendLength ? Array.from({ length: trendLength }, () => 0) : undefined,
+      trend: trendLength ? Array.from<number>({ length: trendLength }).fill(0) : undefined,
       trnsIds: [],
       value: 0,
     })

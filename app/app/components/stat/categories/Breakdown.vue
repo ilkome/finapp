@@ -30,15 +30,40 @@ const emit = defineEmits<{
 const { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories } = useCategoriesBreakdown(props)
 const isFocused = computed(() => !!props.focusedCategoryId)
 const displayedCategories = computed(() => isFocused.value ? focusedCategories.value : categoriesWithData.value)
+const focusedCategoryViews = computed<CategoryViews>(() => ({
+  grouped: focusedCategories.value,
+  ungrouped: focusedCategories.value,
+}))
 </script>
 
 <template>
   <div
-    v-if="displayedCategories.length > 0"
+    v-if="displayedCategories.length > 0 && (!isFocused || props.block !== 'vertical')"
     class="grid content-start gap-3 @3xl/main:max-w-lg"
   >
+    <StatCategoriesRoundSection
+      v-if="isFocused"
+      :baseCategoryViews="focusedCategoryViews"
+      :filteredCategoriesIds="props.focusedChildCategoryId ? [props.focusedChildCategoryId] : []"
+      :focusedCategoryId="props.focusedCategoryId"
+      @setCategoryFilter="emit('setChildCategoryFilter', $event)"
+    >
+      <template #prepend>
+        <button
+          type="button"
+          class="relative flex shrink-0 items-center overflow-hidden rounded-2xl border border-transparent bg-elevated/30 p-1 hover:bg-elevated/50"
+          :aria-label="$t('base.clear')"
+          @click="emit('setCategoryFilter', props.focusedCategoryId!)"
+        >
+          <span class="flex size-6 items-center justify-center">
+            <Icon name="i-lucide-x" size="14" />
+          </span>
+        </button>
+      </template>
+    </StatCategoriesRoundSection>
+
     <StatCategoriesVerticalSection
-      v-if="props.block !== 'catsList' && !isFocused"
+      v-if="!isFocused && props.block !== 'catsList'"
       :groupedCategories
       :isTwoColumnLayout="props.isTwoColumnLayout"
       :ungroupedCategories
@@ -46,17 +71,14 @@ const displayedCategories = computed(() => isFocused.value ? focusedCategories.v
     />
 
     <StatCategoriesListSection
-      v-if="props.block !== 'vertical'"
+      v-if="!isFocused && props.block !== 'vertical'"
       :categoriesWithData
-      :focusedChildCategoryId="props.focusedChildCategoryId"
-      :focusedCategories="isFocused ? focusedCategories : undefined"
       :groupedCategories
       :isOneCategory="props.isOneCategory"
       :storageKey="props.storageKey"
       :type="props.type"
       :ungroupedCategories
       @openCategory="(categoryId, filteredType) => emit('openCategory', categoryId, filteredType)"
-      @setFocusedCategoryFilter="emit('setChildCategoryFilter', $event)"
     />
   </div>
 </template>

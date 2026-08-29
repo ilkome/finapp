@@ -146,12 +146,14 @@ const contexts = {
 activeWalletType.value = contexts.combined.filteredType.value
 const periodWalletIds = computed(() => {
   const periodTrnsIds = trnsStore.getStoreTrnsIds({
+    categoriesIds: contexts.combined.effectiveFilteredCategoriesIds.value,
     dates: selectionRange.value,
     trnsIds: props.walletSourceTrnsIds ?? props.trnsIds,
     trnsTypes: getTypesMapping(activeWalletType.value),
   })
   return getUsedWalletIds(periodTrnsIds, trnsStore.items ?? {})
 })
+const isCategoryFocusActive = computed(() => contexts.combined.effectiveFilteredCategoriesIds.value.length > 0)
 const orderedBlocks = computed(() => statConfig.config.value.page.blockOrder)
 const layoutEntries = computed(() => {
   const entries: Array<{
@@ -227,10 +229,10 @@ watchEffect(() => {
       <div
         v-if="entry.block === 'navigation'"
         :ref="setNavigationElement"
-        class="lg:-mb-2 lg:pb-2"
         data-stat-navigation
+        :data-stat-pinned-block="navigationIsPinned || undefined"
         :class="[
-          navigationIsPinned && 'bg-default/90 sticky z-10 -mx-2 px-2 backdrop-blur lg:-mx-4 lg:px-4',
+          navigationIsPinned && 'sticky z-10 -mx-2 bg-default/90 px-2 backdrop-blur lg:-mx-4 lg:px-4',
           navigationIsPinned && 'py-1! lg:py-1!',
         ]"
         :style="navigationIsPinned ? { top: `${navigationStickyTop}px` } : undefined"
@@ -242,6 +244,7 @@ watchEffect(() => {
       <div
         v-else-if="entry.block === 'summary'"
         :ref="setSummaryElement"
+        :data-stat-pinned-block="summaryIsPinned || undefined"
         :class="[
           summaryIsPinned && 'sticky z-10 bg-default/90 backdrop-blur',
           summaryIsPinned && 'py-1',
@@ -252,6 +255,7 @@ watchEffect(() => {
       </div>
       <StatWalletsSection
         v-else-if="entry.block === 'wallets' && props.showWallets"
+        :isCategoryFocusActive
         :periodWalletIds
       />
       <StatChartSection v-else-if="entry.block === 'chart'" :contexts />
@@ -259,3 +263,9 @@ watchEffect(() => {
     </template>
   </div>
 </template>
+
+<style scoped>
+[data-stat-pinned-block] + [data-stat-pinned-block] {
+  margin-top: -0.5rem;
+}
+</style>

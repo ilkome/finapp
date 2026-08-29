@@ -3,8 +3,9 @@ import type { CategoryId } from '~/components/categories/types'
 import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { addEmptyCategoryViews, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
-import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
+import { filterFocusedCategories, projectCategorySelection } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
@@ -79,11 +80,24 @@ const roundCategories = computed(() => {
   )
   return resolveCategoryGrouping(views, grouping.value, props.baseCategoryViews.ungrouped)
 })
-const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
+const selectedIdByVisibleId = computed(() => projectCategorySelection({
+  activeCategories: props.baseCategoryViews.ungrouped,
+  getChildrenIds: categoryId => categoriesStore.getChildrenIds(categoryId),
+  getParentId: categoryId => getParentCategoryIdOrUndefined(categoriesStore.items, categoryId),
+  selectedIds: props.filteredCategoriesIds,
+  visibleCategories: roundCategories.value,
+}))
+const filteredSet = computed(() => new Set(selectedIdByVisibleId.value.keys()))
+
+function onSetCategoryFilter(categoryId: CategoryId) {
+  emit('setCategoryFilter', selectedIdByVisibleId.value.get(categoryId) ?? categoryId)
+}
 </script>
 
 <template>
   <div class="flex min-w-0 flex-wrap justify-start gap-1 gap-y-2">
+    <slot name="prepend" />
+
     <StatCategoriesRound
       v-for="item in roundCategories"
       :key="item.id"
@@ -96,7 +110,7 @@ const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
       class="transition-opacity"
       isShowAmount
       :isShowParent="false"
-      @click="emit('setCategoryFilter', item.id)"
+      @click="onSetCategoryFilter(item.id)"
     />
   </div>
 </template>
