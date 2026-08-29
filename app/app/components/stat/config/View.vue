@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
+import { debounce } from 'es-toolkit'
 
 import type { StatConfigBlockId } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
+import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
@@ -21,6 +23,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
+const { isOpen: isConfigOpen } = useStatConfigOverlay()
 const statConfig = inject(statConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const { width } = useWindowSize()
@@ -117,7 +120,7 @@ const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
   value,
 })))
 const blockSortAreaStyle = computed(() => ({
-  maxHeight: width.value < 767 ? 'calc(80dvh - 8rem)' : 'calc(100dvh - 9rem)',
+  maxHeight: width.value < 767 ? 'calc(80dvh - 4rem)' : 'calc(100dvh - 5rem)',
 }))
 
 function enterBlockSortMode() {
@@ -127,11 +130,7 @@ function enterBlockSortMode() {
   isSortingBlocks.value = true
 }
 
-function exitBlockSortMode() {
-  isSortingBlocks.value = false
-}
-
-function saveBlockOrder() {
+const persistBlockOrder = debounce(() => {
   const available = new Set(availableSortablePanels.value)
   let sortedIndex = 0
   const blockOrder = statConfig.config.value.page.blockOrder.map((panel) => {
@@ -139,9 +138,27 @@ function saveBlockOrder() {
       return panel
     return sortedBlockIds.value[sortedIndex++] ?? panel
   })
+  if (blockOrder.every((panel, index) => panel === statConfig.config.value.page.blockOrder[index]))
+    return
   statConfig.updateConfig('page', { blockOrder })
-  exitBlockSortMode()
+}, 300)
+
+function exitBlockSortMode() {
+  persistBlockOrder.flush()
+  isSortingBlocks.value = false
 }
+
+watch(sortedBlockIds, () => {
+  if (isSortingBlocks.value)
+    persistBlockOrder()
+}, { deep: true })
+
+watch(isConfigOpen, (isOpen) => {
+  if (!isOpen)
+    exitBlockSortMode()
+})
+
+onBeforeUnmount(() => persistBlockOrder.flush())
 
 function onViewsSortingVisibility(value: boolean) {
   isSortingViews.value = value
@@ -196,16 +213,6 @@ function onRowActivate(row: RootRow) {
             <Icon name="lucide:grip-vertical" size="20" />
           </div>
         </UiElement>
-      </div>
-      <div class="-mx-1 mt-3 bottom-sheet-content-bottom shrink-0">
-        <div class="grid w-full grid-cols-2 gap-2">
-          <UiButtonAccent color="neutral" size="xl" variant="soft" @click="exitBlockSortMode">
-            {{ t('base.cancel') }}
-          </UiButtonAccent>
-          <UiButtonAccent size="xl" @click="saveBlockOrder">
-            {{ t('base.save') }}
-          </UiButtonAccent>
-        </div>
       </div>
     </div>
     <template v-if="!isSortingBlocks && !isSortingViews">
