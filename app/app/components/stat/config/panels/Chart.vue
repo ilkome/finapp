@@ -27,13 +27,13 @@ const chartTypeItems = computed(() => chartTypeOptions.value.map(item => ({
   label: item.label,
   value: item.value,
 })))
-const activeChartTypeIcon = computed(() => chartTypeItems.value.find(item => item.value === activeChartType.value)?.icon)
 const chartLayoutItems = computed(() => chartLayoutOptions.map(value => ({
   icon: chartLayoutIcons[value],
   label: t(`stat.view.chartLayout.${value}.label`),
   value,
 })))
 const breakdownItems = computed(() => ['cashflow', 'categories'].map(value => ({
+  icon: value === 'cashflow' ? 'i-lucide-arrow-down-up' : 'i-hugeicons-folder-library',
   label: t(`stat.view.breakdown.${value}.label`),
   value,
 })))
@@ -46,6 +46,7 @@ const barLayoutItems = computed(() => ['stacked', 'adjacent'].map(value => ({
   value,
 })))
 const pieShapeItems = computed(() => pieShapeOptions.map(value => ({
+  icon: 'i-lucide-circle',
   label: t(`stat.view.pieShape.${value}.label`),
   value,
 })))
@@ -111,40 +112,74 @@ const quickRangeSelectionLabel = computed(() => {
 <template>
   <div class="flex flex-col gap-0.5">
     <StatConfigFieldRow :title="t('stat.view.chartType.title')">
-      <USelect
+      <UTabs
         class="w-40 shrink-0"
-        :aria-label="t('stat.view.chartType.title')"
-        :content="{ position: 'item-aligned' }"
-        :icon="activeChartTypeIcon"
+        :content="false"
         :items="chartTypeItems"
         :modelValue="activeChartType"
-        :ui="selectUi"
+        size="md"
+        :ui="{
+          label: 'sr-only',
+          list: 'w-full',
+          trigger: 'min-w-0',
+        }"
         @update:modelValue="(v) => statConfig.updateConfig('chart', { type: v as ChartType })"
-      />
+      >
+        <template #leading="{ item }">
+          <UTooltip :text="item.label">
+            <Icon :name="item.icon" class="size-5 shrink-0" />
+          </UTooltip>
+        </template>
+      </UTabs>
     </StatConfigFieldRow>
 
     <StatConfigFieldRow :title="t('stat.view.breakdown.title')">
-      <USelect
+      <UTabs
         class="w-40 shrink-0"
-        :aria-label="t('stat.view.breakdown.title')"
-        :content="{ position: 'item-aligned' }"
+        :content="false"
         :items="breakdownItems"
         :modelValue="statConfig.config.value.chart.breakdown"
-        :ui="selectUi"
+        size="md"
+        :ui="{
+          label: 'sr-only',
+          list: 'w-full',
+          trigger: 'min-w-0',
+        }"
         @update:modelValue="(v) => statConfig.updateConfig('chart', { breakdown: v as 'cashflow' | 'categories' })"
-      />
+      >
+        <template #leading="{ item }">
+          <UTooltip :text="item.label">
+            <Icon :name="item.icon" class="size-5 shrink-0" />
+          </UTooltip>
+        </template>
+      </UTabs>
     </StatConfigFieldRow>
 
     <StatConfigFieldRow v-if="activeChartType === 'pie'" :title="t('stat.view.pieShape.title')">
-      <USelect
+      <UTabs
         class="w-40 shrink-0"
-        :aria-label="t('stat.view.pieShape.title')"
-        :content="{ position: 'item-aligned' }"
+        :content="false"
         :items="pieShapeItems"
         :modelValue="statConfig.config.value.chart.pie.shape"
-        :ui="selectUi"
+        size="md"
+        :ui="{
+          label: 'sr-only',
+          list: 'w-full',
+          trigger: 'min-w-0',
+        }"
         @update:modelValue="(v) => statConfig.updateConfig('chart', { pie: { shape: v as typeof pieShapeOptions[number] } })"
-      />
+      >
+        <template #leading="{ item }">
+          <UTooltip :text="item.label">
+            <span
+              v-if="item.value === 'circle'"
+              aria-hidden="true"
+              class="size-5 shrink-0 rounded-full bg-current"
+            />
+            <Icon v-else :name="item.icon" class="size-5 shrink-0" />
+          </UTooltip>
+        </template>
+      </UTabs>
     </StatConfigFieldRow>
     <StatConfigSwitch
       v-if="activeChartType === 'pie'"

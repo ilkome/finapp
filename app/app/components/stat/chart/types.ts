@@ -25,3 +25,18 @@ export function isStackedAxisChartType(chartType?: AxisChartType, line?: LineCha
 export function resolveEChartsSeriesType(chartType?: AxisChartType): 'bar' | 'line' {
   return chartType === 'bar' ? 'bar' : 'line'
 }
+
+export function resolveEffectiveChartType(options: {
+  activeCategoryCount: number
+  configuredType: ChartType
+  hasExpense: boolean
+  hasIncome: boolean
+  hasQuickCategoryFilter: boolean
+}): ChartType {
+  const hasSingleCashflowType = options.hasExpense !== options.hasIncome
+  const shouldReplacePie = options.activeCategoryCount === 1
+    || (options.hasQuickCategoryFilter && hasSingleCashflowType)
+  return options.configuredType === 'pie' && shouldReplacePie
+    ? 'bar'
+    : options.configuredType
+}

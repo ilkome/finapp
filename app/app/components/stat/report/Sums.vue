@@ -25,7 +25,7 @@ defineProps<{
     >
       <template #summaryPie="{ type }">
         <LazyStatChartPieView
-          v-if="ctx.params.statConfig.config.value.summary.isShowChart"
+          v-if="ctx.params.statConfig.config.value.summary.isShowChart && ctx.effectiveChartType.value !== 'pie'"
           :pieData="ctx.summaryCategoryPieData.value[type]"
           :typeLabel="$t(`money.${type}`)"
         />
@@ -33,7 +33,7 @@ defineProps<{
 
       <template #focusPie>
         <LazyStatChartPieView
-          v-if="ctx.isCategoryFocus.value && ctx.params.statConfig.config.value.summary.isShowChart"
+          v-if="ctx.isCategoryFocus.value && ctx.params.statConfig.config.value.summary.isShowChart && ctx.effectiveChartType.value !== 'pie'"
           :pieData="ctx.focusedCategoryPieData.value"
           :typeLabel="$t(`money.${ctx.filteredType.value}`)"
         />

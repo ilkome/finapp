@@ -9,8 +9,10 @@ import type { ChartSeries, IntervalData, SeriesSlugSelected, StatReportType } fr
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCashflowPieData, hideSingleColorPie } from '~/components/stat/chart/cashflowPie'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
+import { resolveEffectiveChartType } from '~/components/stat/chart/types'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { applyChartValueDisplay } from '~/components/stat/chart/valueDisplay'
+import { TrnType } from '~/components/trns/types'
 
 export function useStatReportChart(params: {
   data: ReturnType<typeof useStatReportData>
@@ -48,6 +50,28 @@ export function useStatReportChart(params: {
       isGrouped: true,
     }
   })
+  const quickCategoryCashflowTypes = computed(() => {
+    const activeCategoryIds = new Set<CategoryId>()
+    let hasExpense = false
+    let hasIncome = false
+    for (const trnId of params.data.selectedAndFilteredTrnsIds.value) {
+      const trn = params.data.trnsItems.value[trnId]
+      const type = trn?.type
+      const categoryId = trn?.categoryId
+      hasExpense ||= type === TrnType.Expense
+      hasIncome ||= type === TrnType.Income
+      if ((type === TrnType.Expense || type === TrnType.Income) && categoryId)
+        activeCategoryIds.add(categoryId)
+    }
+    return { activeCategoryCount: activeCategoryIds.size, hasExpense, hasIncome }
+  })
+  const effectiveChartType = computed(() => resolveEffectiveChartType({
+    activeCategoryCount: quickCategoryCashflowTypes.value.activeCategoryCount,
+    configuredType: params.statConfig.config.value.chart.type,
+    hasExpense: quickCategoryCashflowTypes.value.hasExpense,
+    hasIncome: quickCategoryCashflowTypes.value.hasIncome,
+    hasQuickCategoryFilter: params.hasQuickCategoryFilter.value,
+  }))
 
   function computeSeriesAverage(typeSlug: SeriesSlugSelected, intervals: IntervalData[]): number | false {
     if (!params.statConfig.config.value.chart.isShowAverage || intervals.length === 0)
@@ -58,7 +82,7 @@ export function useStatReportChart(params: {
   const chartSeries = computed<ChartSeries[]>(() => {
     const intervals = params.data.chartEffectiveIntervals.value
     const selectedInterval = params.statDate.selectedInterval.value
-    const chartType = params.statConfig.config.value.chart.type
+    const chartType = effectiveChartType.value
     const hasBothQuickCategoryTypes = params.hasQuickCategoryFilter.value
       && intervals.some(interval => interval.total.expense > 0)
       && intervals.some(interval => interval.total.income > 0)
@@ -142,5 +166,5 @@ export function useStatReportChart(params: {
     return buildCategoryPieData(params.filteredType.value)
   })
 
-  return { categoriesBreakdownType, chartSeries, chartXAxisLabels, focusedCategoryPieData, summaryCategoryPieData }
+  return { categoriesBreakdownType, chartSeries, chartXAxisLabels, effectiveChartType, focusedCategoryPieData, summaryCategoryPieData }
 }

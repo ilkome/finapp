@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
-import type { AxisChartType } from '~/components/stat/chart/types'
+import type { AxisChartType, ChartType } from '~/components/stat/chart/types'
 import type { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import type { ChartSeries } from '~/components/stat/types'
 
@@ -9,6 +9,7 @@ import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
+  chartType: ChartType
   chartWindow: ReturnType<typeof useStatChartWindow>
   series: ChartSeries[]
   xAxisLabels: number[]
@@ -26,7 +27,7 @@ const trnsFormStore = useTrnsFormStore()
 const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartLayout = computed(() => statConfig.config.value.chart.layout)
-const chartType = computed(() => statConfig.config.value.chart.type)
+const chartType = computed(() => props.chartType)
 const axisChartType = computed<AxisChartType>(() => chartType.value === 'pie' ? 'bar' : chartType.value)
 
 async function onClickChart(intervalKey: number) {
