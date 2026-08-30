@@ -5,6 +5,7 @@ import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
 import { useCategoriesBreakdown } from '~/components/stat/categories/useCategoriesBreakdown'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   baseCategoryViews?: CategoryViews
@@ -27,8 +28,10 @@ const emit = defineEmits<{
   setChildCategoryFilter: [categoryId: CategoryId]
 }>()
 
+const statConfig = inject(statConfigKey)!
 const { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories } = useCategoriesBreakdown(props)
 const isFocused = computed(() => !!props.focusedCategoryId)
+const isHideOthersOnSelect = computed(() => statConfig.config.value.categories.round.isHideOthersOnSelect)
 const displayedCategories = computed(() => isFocused.value ? focusedCategories.value : categoriesWithData.value)
 const focusedCategoryViews = computed<CategoryViews>(() => ({
   grouped: focusedCategories.value,
@@ -50,6 +53,7 @@ const focusedCategoryViews = computed<CategoryViews>(() => ({
     >
       <template #prepend>
         <button
+          v-if="!isHideOthersOnSelect"
           type="button"
           class="relative flex shrink-0 items-center overflow-hidden rounded-2xl border border-transparent bg-elevated/30 p-1 hover:bg-elevated/50"
           :aria-label="$t('base.clear')"

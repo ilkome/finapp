@@ -89,7 +89,7 @@ const selectedIdByVisibleId = computed(() => projectCategorySelection({
 }))
 const filteredSet = computed(() => new Set(selectedIdByVisibleId.value.keys()))
 const visibleRoundCategories = computed(() => {
-  if (!statConfig.config.value.categories.round.isHideOthersOnSelect || filteredSet.value.size === 0)
+  if (props.focusedCategoryId || !statConfig.config.value.categories.round.isHideOthersOnSelect || filteredSet.value.size === 0)
     return roundCategories.value
 
   return roundCategories.value.filter(item => filteredSet.value.has(item.id))
