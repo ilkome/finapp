@@ -88,6 +88,12 @@ const selectedIdByVisibleId = computed(() => projectCategorySelection({
   visibleCategories: roundCategories.value,
 }))
 const filteredSet = computed(() => new Set(selectedIdByVisibleId.value.keys()))
+const visibleRoundCategories = computed(() => {
+  if (!statConfig.config.value.categories.round.isHideOthersOnSelect || filteredSet.value.size === 0)
+    return roundCategories.value
+
+  return roundCategories.value.filter(item => filteredSet.value.has(item.id))
+})
 
 function onSetCategoryFilter(categoryId: CategoryId) {
   emit('setCategoryFilter', selectedIdByVisibleId.value.get(categoryId) ?? categoryId)
@@ -99,7 +105,7 @@ function onSetCategoryFilter(categoryId: CategoryId) {
     <slot name="prepend" />
 
     <StatCategoriesRound
-      v-for="item in roundCategories"
+      v-for="item in visibleRoundCategories"
       :key="item.id"
       :item="item"
       :class="{

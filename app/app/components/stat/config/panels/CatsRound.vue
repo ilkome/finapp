@@ -12,6 +12,10 @@ const statConfig = inject(statConfigKey)!
       @update:modelValue="value => statConfig.updateConfig('categories', { round: { grouping: value } })"
     />
     <StatConfigSwitch
+      path="categories.round.isHideOthersOnSelect"
+      :title="t('stat.config.categories.rounds.hideOthersOnSelect')"
+    />
+    <StatConfigSwitch
       path="categories.round.isShowFavorites"
       :title="t('stat.config.categories.rounds.showFavorites')"
     />

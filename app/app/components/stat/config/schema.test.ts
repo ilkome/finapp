@@ -29,6 +29,7 @@ const defaultConfig: MiniItemConfig = {
     },
     round: {
       grouping: 'child',
+      isHideOthersOnSelect: false,
       isIconBg: true,
       isInlineAmount: false,
       isShow: true,

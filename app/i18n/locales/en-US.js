@@ -504,6 +504,7 @@ export default {
           title: 'Categories list',
         },
         rounds: {
+          hideOthersOnSelect: 'Hide other categories when selected',
           inlineAmount: 'Name and amount in one row',
           showFavorites: 'Show favorites',
           showRecent: 'Show recent',

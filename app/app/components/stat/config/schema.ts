@@ -93,6 +93,7 @@ const categoryBarsSchema = z.preprocess(migrateCategoryGrouping, z.object({
 
 const categoryRoundSchema = z.preprocess(migrateCategoryGrouping, z.object({
   grouping: categoryGroupingSchema,
+  isHideOthersOnSelect: z.boolean(),
   isIconBg: z.boolean(),
   isInlineAmount: z.boolean(),
   isShow: z.boolean(),
@@ -200,6 +201,7 @@ export const defaultConfig: MiniItemConfig = {
     },
     round: {
       grouping: 'auto',
+      isHideOthersOnSelect: false,
       isIconBg: true,
       isInlineAmount: false,
       isShow: true,

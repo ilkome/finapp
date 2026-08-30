@@ -504,6 +504,7 @@ export default {
           title: 'Список категорий',
         },
         rounds: {
+          hideOthersOnSelect: 'Скрывать остальные категории при выборе',
           inlineAmount: 'Название и сумма в одну строку',
           showFavorites: 'Показывать избранные',
           showRecent: 'Показывать недавние',

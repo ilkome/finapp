@@ -5,6 +5,7 @@ export type StatConfigBooleanPath
   = | 'categories.list.isLines'
     | 'categories.list.isRoundIcon'
     | 'categories.list.isShowTitle'
+    | 'categories.round.isHideOthersOnSelect'
     | 'categories.round.isIconBg'
     | 'categories.round.isInlineAmount'
     | 'categories.round.isShowFavorites'
@@ -46,6 +47,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'categories.list.isShowTitle': {
     get: config => config.categories.list.isShowTitle,
     set: (provider, value) => provider.updateConfig('categories', { list: { isShowTitle: value } }),
+  },
+  'categories.round.isHideOthersOnSelect': {
+    get: config => config.categories.round.isHideOthersOnSelect,
+    set: (provider, value) => provider.updateConfig('categories', { round: { isHideOthersOnSelect: value } }),
   },
   'categories.round.isIconBg': {
     get: config => config.categories.round.isIconBg,

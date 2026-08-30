@@ -67,6 +67,7 @@ describe('normalizeStoredStatConfig', () => {
     expect(config.chart.isShowScale).toBe(false)
     expect(config.chart.line).toEqual({ isGradient: false, isShowPoints: true, isSkipZero: false, isSmooth: true })
     expect(config.categories.round.isInlineAmount).toBe(false)
+    expect(config.categories.round.isHideOthersOnSelect).toBe(false)
     expect(config.trns).toEqual({ isShow: true, isShowHistory: true, isShowTitle: true, isShowTypeTabs: true })
     expect(config.wallets).toMatchObject({ displayMode: 'recent', selectionMode: 'multiple' })
   })
