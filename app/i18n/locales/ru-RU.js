@@ -673,9 +673,6 @@ export default {
         parameterUnavailable: 'Не используется при текущих настройках блока',
         presets: {
           custom: 'Свое условие',
-          mobile: 'Ширина меньше 768 px',
-          shortPeriod: 'Период до недели',
-          singleCategory: 'Одна категория',
         },
         removeParameter: 'Удалить параметр',
         then: 'Тогда',

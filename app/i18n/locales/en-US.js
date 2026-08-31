@@ -673,9 +673,6 @@ export default {
         parameterUnavailable: 'Not used by the current block settings',
         presets: {
           custom: 'Custom condition',
-          mobile: 'Width below 768 px',
-          shortPeriod: 'Period up to one week',
-          singleCategory: 'One category',
         },
         removeParameter: 'Remove parameter',
         then: 'Then',

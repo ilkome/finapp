@@ -58,17 +58,34 @@ watch(() => rules.value.length, (count) => {
 
 onBeforeUnmount(() => persist.flush())
 
-const presets = computed(() => [[
-  { label: t('stat.views.blockRules.presets.mobile'), onSelect: () => addRule({ children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' }) },
-  { label: t('stat.views.blockRules.presets.singleCategory'), onSelect: () => addRule({ children: [{ comparator: '=', kind: 'categoryCount', scope: 'all', value: 1 }], operator: 'and' }) },
-  { label: t('stat.views.blockRules.presets.shortPeriod'), onSelect: () => addRule({ children: [{ comparator: '<=', kind: 'period', unit: 'week', value: 1 }], operator: 'and' }) },
-  { label: t('stat.views.blockRules.presets.custom'), onSelect: () => addRule({ children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }) },
-]])
+const reusableConditions = computed(() => {
+  const activeViewId = controller.activeView.value?.id
+  const storedRules = controller.store.views.flatMap(view => Object.entries(view.config.blockRules).flatMap(([panel, panelRules]) => (
+    view.id === activeViewId && panel === props.panel ? [] : panelRules ?? []
+  )))
+  const unique = new Map<string, ConditionGroup>()
+  for (const rule of [...rules.value, ...storedRules]) {
+    const fingerprint = JSON.stringify(rule.condition)
+    if (!unique.has(fingerprint))
+      unique.set(fingerprint, rule.condition)
+  }
+  return [...unique.values()]
+})
+const ruleItems = computed(() => [
+  [{
+    label: t('stat.views.blockRules.presets.custom'),
+    onSelect: () => addRule({ children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }),
+  }],
+  reusableConditions.value.map(condition => ({
+    label: generateViewName(condition, labels.value),
+    onSelect: () => addRule(condition),
+  })),
+].filter(group => group.length))
 const matchingRuleId = computed(() => findMatchingBlockRule(rules.value, controller.context.value)?.id ?? null)
 
 function addRule(condition: ConditionGroup) {
   const rule: BlockRule = {
-    condition,
+    condition: JSON.parse(JSON.stringify(condition)) as ConditionGroup,
     id: crypto.randomUUID(),
     isEnabled: true,
     isHidden: false,
@@ -107,7 +124,7 @@ function ruleTitle(rule: BlockRule) {
 <template>
   <section class="grid gap-4">
     <div class="flex justify-start">
-      <UDropdownMenu :items="presets">
+      <UDropdownMenu :items="ruleItems">
         <UButton
           class="w-fit"
           color="neutral"
