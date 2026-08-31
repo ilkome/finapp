@@ -2,6 +2,7 @@
 import type { ComponentPublicInstance } from 'vue'
 
 import type { CategoryId } from '~/components/categories/types'
+import type { StatConfigScreen } from '~/components/stat/config/types'
 import type { TrnId } from '~/components/trns/types'
 
 // Defaults to true so pages that always have a breakdown need not pass it; an absent
@@ -22,6 +23,7 @@ const props = withDefaults(defineProps<{
 })
 
 const isPopoverOpen = ref(false)
+const configScreen = shallowRef<StatConfigScreen | null>(null)
 
 type UiHeaderInstance = ComponentPublicInstance & {
   mainElement: HTMLElement | null
@@ -48,11 +50,12 @@ defineExpose({ stickyMainElement, stickyRootElement })
     <template #actions>
       <div class="flex items-center">
         <StatViewsModal />
-        <StatConfigModal>
+        <StatConfigModal :screen="configScreen">
           <StatConfigView
             :hasCategoryBreakdown
             :hasTrnsConfig="!!configCategories && trnsIds !== undefined"
             :isShowWallets="!!configWallets"
+            @screenChange="configScreen = $event"
           />
         </StatConfigModal>
 

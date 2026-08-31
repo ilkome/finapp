@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import type { StatBlockPanelId } from '~/components/stat/views/types'
 
-defineProps<{
+import { statConfigParameterIdsKey } from '~/components/stat/injectionKeys'
+
+const props = defineProps<{
   panel: StatBlockPanelId
+  parameterIds?: string[]
 }>()
+
+provide(statConfigParameterIdsKey, computed(() => props.parameterIds ? new Set(props.parameterIds) : null))
 </script>
 
 <template>

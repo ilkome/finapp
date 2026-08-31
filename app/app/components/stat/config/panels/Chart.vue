@@ -66,17 +66,13 @@ watch(() => statConfig.config.value.date.quickRangeOrderIds, (ids) => {
 watch(sortedQuickRangeIds, (ids) => {
   if (JSON.stringify(ids) === JSON.stringify(statConfig.config.value.date.quickRangeOrderIds))
     return
-  statConfig.config.value.date.quickRangeOrderIds.splice(
-    0,
-    statConfig.config.value.date.quickRangeOrderIds.length,
-    ...ids,
-  )
+  statConfig.updateConfig('date', { quickRangeOrderIds: [...ids] })
 }, { deep: true })
 
 function replaceQuickRangeIds(ids: QuickRangeOptionId[]) {
   const selected = new Set(ids)
   const normalized = quickRangeOptionIds.filter(id => selected.has(id))
-  statConfig.config.value.date.quickRangeIds.splice(0, statConfig.config.value.date.quickRangeIds.length, ...normalized)
+  statConfig.updateConfig('date', { quickRangeIds: normalized })
 }
 
 function setQuickRange(id: QuickRangeOptionId, isSelected: boolean) {
@@ -111,7 +107,7 @@ const quickRangeSelectionLabel = computed(() => {
 
 <template>
   <div class="flex flex-col gap-0.5">
-    <StatConfigFieldRow :title="t('stat.view.chartType.title')">
+    <StatConfigFieldRow parameterId="chart.type" :title="t('stat.view.chartType.title')">
       <UTabs
         class="w-40 shrink-0"
         :content="false"
@@ -133,7 +129,7 @@ const quickRangeSelectionLabel = computed(() => {
       </UTabs>
     </StatConfigFieldRow>
 
-    <StatConfigFieldRow :title="t('stat.view.breakdown.title')">
+    <StatConfigFieldRow parameterId="chart.breakdown" :title="t('stat.view.breakdown.title')">
       <UTabs
         class="w-40 shrink-0"
         :content="false"
@@ -155,7 +151,7 @@ const quickRangeSelectionLabel = computed(() => {
       </UTabs>
     </StatConfigFieldRow>
 
-    <StatConfigFieldRow v-if="activeChartType === 'pie'" :title="t('stat.view.pieShape.title')">
+    <StatConfigFieldRow v-if="activeChartType === 'pie'" parameterId="chart.pie.shape" :title="t('stat.view.pieShape.title')">
       <UTabs
         class="w-40 shrink-0"
         :content="false"
@@ -192,7 +188,7 @@ const quickRangeSelectionLabel = computed(() => {
       :title="t('stat.config.chart.pie.showPercent')"
     />
 
-    <StatConfigFieldRow v-if="activeChartType === 'bar'" :title="t('stat.view.barLayout.title')">
+    <StatConfigFieldRow v-if="activeChartType === 'bar'" parameterId="chart.isGrouped" :title="t('stat.view.barLayout.title')">
       <USelect
         class="w-40 shrink-0"
         :aria-label="t('stat.view.barLayout.title')"
@@ -223,7 +219,7 @@ const quickRangeSelectionLabel = computed(() => {
       />
     </template>
 
-    <StatConfigFieldRow v-if="activeChartType !== 'pie'" :title="t('stat.view.valueDisplay.title')">
+    <StatConfigFieldRow v-if="activeChartType !== 'pie'" parameterId="chart.valueDisplay" :title="t('stat.view.valueDisplay.title')">
       <USelect
         class="w-40 shrink-0"
         :aria-label="t('stat.view.valueDisplay.title')"
@@ -245,7 +241,7 @@ const quickRangeSelectionLabel = computed(() => {
       :title="t('stat.config.chart.average.label')"
     />
 
-    <StatConfigFieldRow v-if="canSplit" :title="t('stat.view.chartLayout.title')">
+    <StatConfigFieldRow v-if="canSplit" parameterId="chart.layout" :title="t('stat.view.chartLayout.title')">
       <USelect
         class="w-40 shrink-0"
         :aria-label="t('stat.view.chartLayout.title')"
@@ -267,6 +263,7 @@ const quickRangeSelectionLabel = computed(() => {
     />
     <StatConfigFieldRow
       v-if="statConfig.config.value.date.isShowQuick"
+      parameterId="date.quickRanges"
       :title="t('stat.config.date.quick.period')"
     >
       <UPopover

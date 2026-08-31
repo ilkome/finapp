@@ -7,9 +7,9 @@ function clonePanelConfig<T>(value: T): T {
 }
 
 export type PanelDef = {
-  getIsShow?: (config: MiniItemConfig) => boolean
+  getIsShow: (config: MiniItemConfig) => boolean
   icon: string
-  setIsShow?: (provider: StatConfigProvider, value: boolean) => void
+  setIsShow: (provider: StatConfigProvider, value: boolean) => void
   syncConfig: (source: MiniItemConfig, target: MiniItemConfig) => void
   titleKey: string
 }
@@ -42,9 +42,12 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     titleKey: 'stat.config.chartShow.title',
   },
   navigation: {
+    getIsShow: config => config.date.isShow,
     icon: 'lucide:calendar-range',
+    setIsShow: (provider, value) => provider.updateConfig('date', { isShow: value }),
     syncConfig: (source, target) => {
       target.date.isPinned = source.date.isPinned
+      target.date.isShow = source.date.isShow
       target.date.isShowNavigation = source.date.isShowNavigation
     },
     titleKey: 'stat.config.navigation.title',
@@ -57,7 +60,9 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     titleKey: 'stat.config.statAverage.title',
   },
   summary: {
+    getIsShow: config => config.summary.isShow,
     icon: 'lucide:badge-dollar-sign',
+    setIsShow: (provider, value) => provider.updateConfig('summary', { isShow: value }),
     syncConfig: (source, target) => { target.summary = clonePanelConfig(source.summary) },
     titleKey: 'stat.config.summary.title',
   },

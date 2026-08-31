@@ -9,6 +9,7 @@ const statConfig = inject(statConfigKey)!
   <div class="flex flex-col gap-0.5">
     <StatConfigCategoryGroupingSelect
       :modelValue="statConfig.config.value.categories.round.grouping"
+      parameterId="categories.round.grouping"
       @update:modelValue="value => statConfig.updateConfig('categories', { round: { grouping: value } })"
     />
     <StatConfigSwitch

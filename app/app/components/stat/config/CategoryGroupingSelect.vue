@@ -3,6 +3,7 @@ import { categoryGroupingOptions } from '~/components/stat/config/schema'
 
 defineProps<{
   modelValue: typeof categoryGroupingOptions[number]
+  parameterId?: string
 }>()
 
 const emit = defineEmits<{
@@ -17,7 +18,7 @@ const items = computed(() => categoryGroupingOptions.map(value => ({
 </script>
 
 <template>
-  <StatConfigFieldRow :title="t('stat.config.categories.grouping.title')">
+  <StatConfigFieldRow :parameterId :title="t('stat.config.categories.grouping.title')">
     <USelect
       class="w-40 shrink-0"
       :aria-label="t('stat.config.categories.grouping.title')"

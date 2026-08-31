@@ -17,9 +17,10 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
   <div class="flex flex-col gap-0.5">
     <StatConfigCategoryGroupingSelect
       :modelValue="statConfig.config.value.categories.list.grouping"
+      parameterId="categories.list.grouping"
       @update:modelValue="value => statConfig.updateConfig('categories', { list: { grouping: value } })"
     />
-    <StatConfigFieldRow :title="t('stat.config.categories.list.trendType')">
+    <StatConfigFieldRow parameterId="categories.list.trendType" :title="t('stat.config.categories.list.trendType')">
       <USelect
         class="w-40 shrink-0"
         :aria-label="t('stat.config.categories.list.trendType')"
@@ -31,6 +32,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
       />
     </StatConfigFieldRow>
     <StatConfigFieldRow
+      parameterId="categories.list.backgroundType"
       :title="t('stat.config.categories.list.backgroundType')"
     >
       <USelect
@@ -48,6 +50,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
       :title="t('stat.config.trns.showTitle')"
     />
     <StatConfigSwitch
+      v-if="statConfig.config.value.categories.list.backgroundType === 'none'"
       path="categories.list.isLines"
       :title="t('stat.catButtons.isLines')"
     />

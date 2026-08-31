@@ -12,7 +12,7 @@ import { applyConfigUpdate } from '~/components/stat/config/schema'
 import { statConfigKey, statContentWidthKey, statViewControllerKey } from '~/components/stat/injectionKeys'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
-import { createBlockRuleOverrides, findMatchingBlockRule, resolveConfigUpdatePanel, resolveEffectiveStatConfig } from '~/components/stat/views/blockRules'
+import { createBlockRuleOverrides, findMatchingBlockRule, resolveBlockRuleParameterIds, resolveConfigUpdatePanel, resolveConfigUpdateParameterIds, resolveEffectiveStatConfig, resolveHiddenStatPanels } from '~/components/stat/views/blockRules'
 import { useStatViewController } from '~/components/stat/views/useStatViewController'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -74,6 +74,10 @@ const effectiveConfig = computed(() => {
     ? resolveEffectiveStatConfig(statConfig.config.value, view.config.blockRules, viewContext.value)
     : statConfig.config.value
 })
+const hiddenPanels = computed(() => {
+  const view = statViewController.activeView.value
+  return view ? resolveHiddenStatPanels(view.config.blockRules, viewContext.value) : []
+})
 function updateEffectiveConfig<K extends keyof typeof statConfig.config.value>(key: K, value: Parameters<typeof statConfig.updateConfig<K>>[1]) {
   const panel = resolveConfigUpdatePanel(key, value)
   const rules = panel ? statViewController.activeView.value?.config.blockRules[panel] : undefined
@@ -85,8 +89,16 @@ function updateEffectiveConfig<K extends keyof typeof statConfig.config.value>(k
   const edited = applyConfigUpdate(effectiveConfig.value, key, value)
   if (!edited)
     return
+  const parameterIds = [
+    ...resolveBlockRuleParameterIds(panel, matchingRule),
+    ...resolveConfigUpdateParameterIds(panel, key, value),
+  ]
   void statViewController.updateBlockRules(panel, rules!.map(rule => rule.id === matchingRule.id
-    ? { ...rule, overrides: createBlockRuleOverrides(panel, statConfig.config.value, edited) }
+    ? {
+        ...rule,
+        overrides: createBlockRuleOverrides(panel, statConfig.config.value, edited, parameterIds),
+        parameterIds: [...new Set(parameterIds)],
+      }
     : rule))
 }
 provide(statConfigKey, { config: effectiveConfig, updateConfig: updateEffectiveConfig })
@@ -134,6 +146,7 @@ onDeactivated(() => {
     </StatHeader>
 
     <StatLayout
+      :hiddenPanels
       :storageKey
       :trnsIds
       :walletSourceTrnsIds

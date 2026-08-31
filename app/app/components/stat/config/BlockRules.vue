@@ -4,21 +4,17 @@ import { debounce } from 'es-toolkit'
 
 import type { BlockRule, ConditionGroup, StatBlockPanelId } from '~/components/stat/views/types'
 
-import { PANELS } from '~/components/stat/config/panels/registry'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
-import { findMatchingBlockRule } from '~/components/stat/views/blockRules'
+import { cloneBlockRule, findMatchingBlockRule } from '~/components/stat/views/blockRules'
 import { generateViewName } from '~/components/stat/views/generateViewName'
 
 const props = defineProps<{
   panel: StatBlockPanelId
 }>()
 
-defineEmits<{
-  back: []
-}>()
-
 const { t } = useI18n()
 const controller = inject(statViewControllerKey)!
+const DEFAULT_RULE_ID = 'default'
 const expandedId = ref<string | null>(null)
 let syncingFromStore = false
 const [sortParent, rules] = useDragAndDrop([] as BlockRule[], {
@@ -55,6 +51,11 @@ watch(rules, () => {
     persist()
 }, { deep: true })
 
+watch(() => rules.value.length, (count) => {
+  if (count === 0)
+    expandedId.value = DEFAULT_RULE_ID
+}, { immediate: true })
+
 onBeforeUnmount(() => persist.flush())
 
 const presets = computed(() => [[
@@ -70,7 +71,9 @@ function addRule(condition: ConditionGroup) {
     condition,
     id: crypto.randomUUID(),
     isEnabled: true,
+    isHidden: false,
     overrides: {},
+    parameterIds: [],
   }
   rules.value = [...rules.value, rule]
   expandedId.value = rule.id
@@ -84,7 +87,7 @@ function duplicateRule(index: number) {
   const source = rules.value[index]
   if (!source)
     return
-  const duplicate = { ...structuredClone(source), id: crypto.randomUUID() }
+  const duplicate = { ...cloneBlockRule(source), id: crypto.randomUUID() }
   rules.value = [...rules.value.slice(0, index + 1), duplicate, ...rules.value.slice(index + 1)]
   expandedId.value = duplicate.id
 }
@@ -102,20 +105,18 @@ function ruleTitle(rule: BlockRule) {
 </script>
 
 <template>
-  <section class="grid gap-4 px-1">
-    <div class="flex items-center gap-2 px-1">
-      <UiActionButton :ariaLabel="$t('base.previous')" @click="$emit('back')">
-        <Icon name="lucide:arrow-left" size="20" />
-      </UiActionButton>
-      <div class="min-w-0 grow">
-        <UiHeaderTitle class="truncate text-lg">
-          {{ $t('stat.views.blockRules.title', { block: $t(PANELS[panel].titleKey) }) }}
-        </UiHeaderTitle>
-      </div>
+  <section class="grid gap-4">
+    <div class="flex justify-start">
       <UDropdownMenu :items="presets">
-        <UButton icon="i-lucide-plus" :aria-label="$t('stat.views.blockRules.add')" size="sm" variant="soft">
-          <span class="hidden sm:inline">{{ $t('stat.views.blockRules.add') }}</span>
-        </UButton>
+        <UButton
+          class="w-fit"
+          color="neutral"
+          icon="i-lucide-plus"
+          :label="$t('stat.views.blockRules.addRule')"
+          size="xs"
+          trailingIcon="i-lucide-chevron-down"
+          variant="soft"
+        />
       </UDropdownMenu>
     </div>
 
@@ -135,8 +136,11 @@ function ruleTitle(rule: BlockRule) {
       />
     </div>
 
-    <div v-else class="rounded-lg border border-dashed border-default px-4 py-8 text-center text-sm text-muted">
-      {{ $t('stat.views.blockRules.empty') }}
-    </div>
+    <StatConfigBlockRuleDefaultCard
+      :isActive="matchingRuleId === null"
+      :isExpanded="expandedId === DEFAULT_RULE_ID"
+      :panel
+      @toggleExpanded="expandedId = expandedId === DEFAULT_RULE_ID ? null : DEFAULT_RULE_ID"
+    />
   </section>
 </template>

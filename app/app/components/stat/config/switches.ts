@@ -2,7 +2,9 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 
 export type StatConfigBooleanPath
-  = | 'categories.list.isLines'
+  = | 'categories.bars.isShowTooltip'
+    | 'categories.bars.isShowTooltipChildren'
+    | 'categories.list.isLines'
     | 'categories.list.isRoundIcon'
     | 'categories.list.isShowTitle'
     | 'categories.round.isHideOthersOnSelect'
@@ -36,6 +38,14 @@ type BooleanConfigOperation = {
 }
 
 export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, BooleanConfigOperation> = {
+  'categories.bars.isShowTooltip': {
+    get: config => config.categories.bars.isShowTooltip,
+    set: (provider, value) => provider.updateConfig('categories', { bars: { isShowTooltip: value } }),
+  },
+  'categories.bars.isShowTooltipChildren': {
+    get: config => config.categories.bars.isShowTooltipChildren,
+    set: (provider, value) => provider.updateConfig('categories', { bars: { isShowTooltipChildren: value } }),
+  },
   'categories.list.isLines': {
     get: config => config.categories.list.isLines,
     set: (provider, value) => provider.updateConfig('categories', { list: { isLines: value } }),

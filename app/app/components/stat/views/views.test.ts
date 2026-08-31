@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import { reactive } from 'vue'
 
 import { defaultConfig } from '~/components/stat/config/schema'
 
-import type { ConditionGroup, StatView } from './types'
+import type { BlockRule, ConditionGroup, StatView } from './types'
 
-import { resolveEffectiveStatConfig } from './blockRules'
+import { cloneBlockRule, createBlockRuleOverrides, resolveConfigUpdateParameterIds, resolveEffectiveStatConfig, resolveHiddenStatPanels } from './blockRules'
 import { evaluateConditionGroup, findAutomaticView } from './evaluateConditions'
 import { generateViewName } from './generateViewName'
 import { StatViewSchema } from './schema'
@@ -82,6 +83,61 @@ describe('statistics saved views', () => {
     expect(effective.chart.type).toBe('line')
     expect(effective.wallets).toEqual(defaultConfig.wallets)
     expect(defaultConfig.chart.type).toBe('bar')
+  })
+
+  it('hides a block when the first matching rule disables its visibility', () => {
+    const rules = {
+      chart: [
+        { condition: { children: [{ comparator: '<' as const, kind: 'contentWidth' as const, unit: 'px' as const, value: 768 }], operator: 'and' as const }, id: 'hidden', isEnabled: true, isHidden: true, overrides: { chart: { type: 'line' as const } } },
+        { condition: { children: [{ comparator: '>' as const, kind: 'categoryCount' as const, scope: 'all' as const, value: 0 }], operator: 'and' as const }, id: 'visible', isEnabled: true, overrides: { chart: { type: 'pie' as const } } },
+      ],
+    }
+
+    const effective = resolveEffectiveStatConfig(defaultConfig, rules, context)
+
+    expect(effective.chart.isShow).toBe(false)
+    expect(effective.chart.type).toBe('line')
+    expect(resolveHiddenStatPanels(rules, context)).toEqual(['chart'])
+  })
+
+  it('can show a block hidden by its default settings', () => {
+    const base = structuredClone(defaultConfig)
+    base.chart.isShow = false
+
+    const effective = resolveEffectiveStatConfig(base, {
+      chart: [{
+        condition: { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' },
+        id: 'show',
+        isEnabled: true,
+        isHidden: false,
+        overrides: {},
+        parameterIds: ['visibility'],
+      }],
+    }, context)
+
+    expect(effective.chart.isShow).toBe(true)
+  })
+
+  it('stores explicitly selected parameters even when they equal the default', () => {
+    expect(createBlockRuleOverrides('chart', defaultConfig, defaultConfig, ['chart.type'])).toEqual({
+      chart: { type: defaultConfig.chart.type },
+    })
+    expect(resolveConfigUpdateParameterIds('chart', 'chart', { line: { isSmooth: true } })).toEqual(['chart.line.isSmooth'])
+  })
+
+  it('clones reactive block rules for duplication', () => {
+    const source = reactive<BlockRule>({
+      condition: { children: [{ comparator: '=', kind: 'period', unit: 'day', value: 1 }], operator: 'and' },
+      id: 'source',
+      isEnabled: true,
+      overrides: { chart: { type: 'line' } },
+    })
+
+    const clone = cloneBlockRule(source)
+    clone.overrides.chart!.type = 'bar'
+
+    expect(clone).not.toBe(source)
+    expect(source.overrides.chart?.type).toBe('line')
   })
 
   it('generates names with a deterministic duplicate suffix', () => {

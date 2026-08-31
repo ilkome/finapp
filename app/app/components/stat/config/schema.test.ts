@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import type { MiniItemConfig } from './schema'
-
 import { quickRangeOptionIds } from '~/components/stat/date/useRangeOptions'
+
+import type { MiniItemConfig } from './schema'
 
 import { PANELS } from './panels/registry'
 import { applyConfigProps, applyConfigUpdate, ConfigSchema, statConfigBlockOrder } from './schema'
@@ -16,6 +16,8 @@ const defaultConfig: MiniItemConfig = {
     bars: {
       grouping: 'auto',
       isShow: false,
+      isShowTooltip: true,
+      isShowTooltipChildren: false,
     },
     isShowEmpty: false,
     list: {
@@ -62,10 +64,11 @@ const defaultConfig: MiniItemConfig = {
   },
   date: {
     isPinned: true,
+    isShow: true,
     isShowNavigation: true,
     isShowQuick: false,
-    quickRangeOrderIds: [...quickRangeOptionIds],
     quickRangeIds: ['period:day-1', 'period:week-1', 'period:month-1', 'period:month-6', 'period:year-1'],
+    quickRangeOrderIds: [...quickRangeOptionIds],
   },
   page: {
     blockOrder: [...statConfigBlockOrder],
@@ -73,6 +76,7 @@ const defaultConfig: MiniItemConfig = {
   },
   summary: {
     isPinned: true,
+    isShow: true,
     isShowChart: true,
   },
   trns: {
@@ -202,6 +206,16 @@ describe('applyConfigUpdate', () => {
     ])
   })
 
+  it('keeps comparison columns above the category list', () => {
+    const blockOrder: MiniItemConfig['page']['blockOrder'] = [
+      ...statConfigBlockOrder.filter(id => id !== 'vertical'),
+      'vertical',
+    ]
+    const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder })
+
+    expect(result!.page.blockOrder.indexOf('vertical')).toBeLessThan(result!.page.blockOrder.indexOf('catsList'))
+  })
+
   it('disables transaction history when transactions are not the last block', () => {
     const blockOrder: MiniItemConfig['page']['blockOrder'] = ['trns', ...statConfigBlockOrder.filter(id => id !== 'trns')]
     const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder })
@@ -274,8 +288,6 @@ describe('applyConfigUpdate', () => {
 describe('panel registry', () => {
   it('reads and updates each panel visibility without changing unrelated values', () => {
     for (const panel of Object.values(PANELS)) {
-      if (!panel.getIsShow || !panel.setIsShow)
-        continue
       let config = structuredClone(defaultConfig)
       const originalChartType = config.chart.type
       const provider = {
@@ -293,8 +305,10 @@ describe('panel registry', () => {
     }
   })
 
-  it('keeps always-visible layout panels without a visibility toggle', () => {
-    expect(PANELS.navigation.setIsShow).toBeUndefined()
-    expect(PANELS.summary.setIsShow).toBeUndefined()
+  it('supports visibility for every panel', () => {
+    for (const panel of Object.values(PANELS)) {
+      expect(panel.getIsShow).toBeTypeOf('function')
+      expect(panel.setIsShow).toBeTypeOf('function')
+    }
   })
 })

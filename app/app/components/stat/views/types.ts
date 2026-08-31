@@ -35,7 +35,9 @@ export type BlockRule = {
   condition: ConditionGroup
   id: string
   isEnabled: boolean
+  isHidden?: boolean
   overrides: DeepPartial<MiniItemConfig>
+  parameterIds?: string[]
 }
 export type StatViewConfig = {
   base: MiniItemConfig

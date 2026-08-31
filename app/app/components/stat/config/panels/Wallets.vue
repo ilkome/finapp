@@ -20,7 +20,7 @@ const selectionModeItems = computed(() => walletSelectionModes.map(value => ({
   <div
     class="flex flex-col gap-0.5"
   >
-    <StatConfigFieldRow :title="t('stat.config.wallets.displayMode')">
+    <StatConfigFieldRow parameterId="wallets.displayMode" :title="t('stat.config.wallets.displayMode')">
       <USelect
         class="w-40 shrink-0"
         :aria-label="t('stat.config.wallets.displayMode')"
@@ -34,6 +34,7 @@ const selectionModeItems = computed(() => walletSelectionModes.map(value => ({
 
     <StatConfigFieldRow
       v-if="statConfig.config.value.wallets.displayMode === 'recent'"
+      parameterId="wallets.count"
       :title="t('stat.config.wallets.count')"
     >
       <UiNumberStepper
@@ -44,7 +45,7 @@ const selectionModeItems = computed(() => walletSelectionModes.map(value => ({
       />
     </StatConfigFieldRow>
 
-    <StatConfigFieldRow :title="t('stat.config.wallets.selectionMode')">
+    <StatConfigFieldRow parameterId="wallets.selectionMode" :title="t('stat.config.wallets.selectionMode')">
       <USelect
         class="w-40 shrink-0"
         :aria-label="t('stat.config.wallets.selectionMode')"

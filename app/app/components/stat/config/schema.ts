@@ -18,7 +18,7 @@ export const walletDisplayModes = ['recent', 'period'] as const
 export const walletSelectionModes = ['multiple', 'single'] as const
 export const categoryGroupingOptions = ['auto', 'parent', 'child'] as const
 const leadingStatConfigBlockOrder = ['navigation', 'summary'] as const
-export const statReportBlockOrder = ['catsRound', 'catsList', 'vertical', 'trns'] as const
+export const statReportBlockOrder = ['vertical', 'catsRound', 'catsList', 'trns'] as const
 export const statConfigBlockOrder = [...leadingStatConfigBlockOrder, 'wallets', 'chart', ...statReportBlockOrder] as const
 export type StatConfigBlockId = typeof statConfigBlockOrder[number]
 export type StatReportBlockId = typeof statReportBlockOrder[number]
@@ -50,6 +50,12 @@ export function normalizeStatConfigBlockOrder(value: unknown): StatConfigBlockId
   for (const id of statConfigBlockOrder) {
     if (!seen.has(id))
       result.push(id)
+  }
+  const verticalIndex = result.indexOf('vertical')
+  const listIndex = result.indexOf('catsList')
+  if (verticalIndex > listIndex) {
+    result.splice(verticalIndex, 1)
+    result.splice(listIndex, 0, 'vertical')
   }
   return result
 }
@@ -89,6 +95,8 @@ const categoryListSchema = z.preprocess(migrateCategoryList, z.object({
 const categoryBarsSchema = z.preprocess(migrateCategoryGrouping, z.object({
   grouping: categoryGroupingSchema,
   isShow: z.boolean(),
+  isShowTooltip: z.boolean(),
+  isShowTooltipChildren: z.boolean(),
 }))
 
 const categoryRoundSchema = z.preprocess(migrateCategoryGrouping, z.object({
@@ -137,13 +145,14 @@ export const ConfigSchema = z.object({
   }),
   date: z.object({
     isPinned: z.boolean(),
+    isShow: z.boolean().default(true),
     isShowNavigation: z.boolean(),
     isShowQuick: z.boolean(),
-    quickRangeOrderIds: z.preprocess(normalizeQuickRangeOrderIds, z.array(z.enum(quickRangeOptionIds)).length(quickRangeOptionIds.length)),
     quickRangeIds: z.array(z.enum(quickRangeOptionIds)).transform((ids) => {
       const selected = new Set(ids)
       return quickRangeOptionIds.filter(id => selected.has(id))
     }),
+    quickRangeOrderIds: z.preprocess(normalizeQuickRangeOrderIds, z.array(z.enum(quickRangeOptionIds)).length(quickRangeOptionIds.length)),
   }),
   page: z.object({
     blockOrder: z.preprocess(normalizeStatConfigBlockOrder, z.array(statConfigBlockSchema).length(statConfigBlockOrder.length)),
@@ -151,6 +160,7 @@ export const ConfigSchema = z.object({
   }),
   summary: z.object({
     isPinned: z.boolean(),
+    isShow: z.boolean().default(true),
     isShowChart: z.boolean(),
   }),
   trns: z.object({
@@ -188,6 +198,8 @@ export const defaultConfig: MiniItemConfig = {
     bars: {
       grouping: 'auto',
       isShow: false,
+      isShowTooltip: true,
+      isShowTooltipChildren: false,
     },
     isShowEmpty: false,
     list: {
@@ -231,10 +243,11 @@ export const defaultConfig: MiniItemConfig = {
 
   date: {
     isPinned: true,
+    isShow: true,
     isShowNavigation: true,
     isShowQuick: false,
-    quickRangeOrderIds: [...quickRangeOptionIds],
     quickRangeIds: [...defaultQuickRangeOptionIds],
+    quickRangeOrderIds: [...quickRangeOptionIds],
   },
 
   page: {
@@ -244,6 +257,7 @@ export const defaultConfig: MiniItemConfig = {
 
   summary: {
     isPinned: true,
+    isShow: true,
     isShowChart: true,
   },
 

@@ -38,6 +38,10 @@ function replace(index: number, value: Condition | ConditionGroup) {
 function remove(index: number) {
   update(props.modelValue.children.filter((_, childIndex) => childIndex !== index))
 }
+function changeNumber(index: number, condition: Condition, change: number) {
+  const min = condition.kind === 'period' ? 1 : 0
+  replace(index, { ...condition, value: Math.max(min, condition.value + change) })
+}
 function changeKind(condition: Condition, kind: Condition['kind']) {
   if (kind === 'period')
     return { comparator: condition.comparator, kind, unit: 'day' as const, value: 1 }
@@ -77,7 +81,34 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
       <div v-else class="flex flex-wrap items-center gap-1">
         <USelect class="w-30" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="child.kind" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replace(index, changeKind(child, $event as Condition['kind']))" />
         <USelect class="w-16" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as Condition['comparator'] })" />
-        <UInputNumber class="w-28" :min="child.kind === 'period' ? 1 : 0" :modelValue="child.value" @update:modelValue="replace(index, { ...child, value: Number($event) })" />
+        <UFieldGroup class="w-28" @pointerdown.stop>
+          <UButton
+            :aria-label="t('stat.views.conditions.decrement')"
+            color="neutral"
+            icon="i-lucide-minus"
+            size="sm"
+            variant="outline"
+            :disabled="child.value <= (child.kind === 'period' ? 1 : 0)"
+            @click="changeNumber(index, child, -1)"
+          />
+          <UInputNumber
+            class="min-w-0 grow"
+            :decrement="false"
+            :increment="false"
+            :min="child.kind === 'period' ? 1 : 0"
+            :modelValue="child.value"
+            :ui="{ base: 'text-center' }"
+            @update:modelValue="replace(index, { ...child, value: Number($event) })"
+          />
+          <UButton
+            :aria-label="t('stat.views.conditions.increment')"
+            color="neutral"
+            icon="i-lucide-plus"
+            size="sm"
+            variant="outline"
+            @click="changeNumber(index, child, 1)"
+          />
+        </UFieldGroup>
         <USelect v-if="child.kind === 'period'" class="w-24" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
         <span v-else-if="child.kind === 'contentWidth'" class="px-2 text-sm text-muted">px</span>
         <USelect v-else class="w-38" :content="{ position: 'item-aligned' }" :items="scopes" :modelValue="child.scope" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.scope')" @update:modelValue="replace(index, { ...child, scope: $event as 'all' | 'parent' })" />

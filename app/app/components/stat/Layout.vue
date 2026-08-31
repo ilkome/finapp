@@ -2,6 +2,7 @@
 import type { CategoryId } from '~/components/categories/types'
 import type { StatConfigBlockId, StatReportBlockId } from '~/components/stat/config/schema'
 import type { SeriesSlugSelected, StatQuickCategoryFilter, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
+import type { StatBlockPanelId } from '~/components/stat/views/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -20,6 +21,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 const props = withDefaults(defineProps<{
   categoryId?: CategoryId
   hasChildren?: boolean
+  hiddenPanels?: StatBlockPanelId[]
   initialFilteredType?: SeriesSlugSelected
   lockSingleTypeLayout?: boolean
   preCategoriesIds?: CategoryId[]
@@ -155,7 +157,16 @@ const periodWalletIds = computed(() => {
   return getUsedWalletIds(periodTrnsIds, trnsStore.items ?? {})
 })
 const isCategoryFocusActive = computed(() => contexts.combined.effectiveFilteredCategoriesIds.value.length > 0)
-const orderedBlocks = computed(() => statConfig.config.value.page.blockOrder)
+const hiddenPanelIds = computed(() => new Set(props.hiddenPanels ?? []))
+const orderedBlocks = computed(() => statConfig.config.value.page.blockOrder.filter((block) => {
+  if (hiddenPanelIds.value.has(block))
+    return false
+  if (block === 'navigation')
+    return statConfig.config.value.date.isShow
+  if (block === 'summary')
+    return statConfig.config.value.summary.isShow
+  return true
+}))
 const layoutEntries = computed(() => {
   const entries: Array<{
     block?: StatConfigBlockId

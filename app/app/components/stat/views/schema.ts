@@ -22,7 +22,9 @@ const blockRuleSchema = z.object({
   condition: ConditionGroupSchema,
   id: z.string().min(1),
   isEnabled: z.boolean(),
+  isHidden: z.boolean().optional(),
   overrides: z.record(z.string(), z.unknown()),
+  parameterIds: z.array(z.string()).optional(),
 })
 const blockRulesSchema = z.partialRecord(z.enum(statConfigPanelIds), z.array(blockRuleSchema))
 export const StatViewConfigSchema = z.object({
