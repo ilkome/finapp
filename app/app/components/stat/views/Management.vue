@@ -46,6 +46,7 @@ const suggestion = computed(() => generateViewName(current.value?.autoRule ?? nu
   and: t('stat.views.and'),
   andMore: count => t('stat.views.andMore', { count }),
   categoryCount: (scope, comparator, value) => t('stat.views.categoryCount', { comparator, scope: t(`stat.views.scope.${scope}`), value }),
+  contentWidth: (comparator, value) => t('stat.views.contentWidth', { comparator, value }),
   fallback: t('stat.views.new'),
   period: (value, unit) => t(`stat.views.period.${unit}`, { count: value }),
 }, controller?.store.views.map(view => view.name) ?? []))

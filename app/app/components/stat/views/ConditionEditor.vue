@@ -10,6 +10,7 @@ const comparators = ['<', '<=', '=', '!=', '>=', '>'].map(value => ({ label: val
 const fields = computed(() => [
   { label: t('stat.views.conditions.fields.period'), value: 'period' },
   { label: t('stat.views.conditions.fields.categoryCount'), value: 'categoryCount' },
+  { label: t('stat.views.conditions.fields.contentWidth'), value: 'contentWidth' },
 ])
 const operators = computed(() => [
   { label: t('stat.views.conditions.operators.and'), value: 'and' },
@@ -38,9 +39,11 @@ function remove(index: number) {
   update(props.modelValue.children.filter((_, childIndex) => childIndex !== index))
 }
 function changeKind(condition: Condition, kind: Condition['kind']) {
-  return kind === 'period'
-    ? { comparator: condition.comparator, kind, unit: 'day' as const, value: 1 }
-    : { comparator: condition.comparator, kind, scope: 'all' as const, value: 0 }
+  if (kind === 'period')
+    return { comparator: condition.comparator, kind, unit: 'day' as const, value: 1 }
+  if (kind === 'contentWidth')
+    return { comparator: condition.comparator, kind, unit: 'px' as const, value: 768 }
+  return { comparator: condition.comparator, kind, scope: 'all' as const, value: 0 }
 }
 </script>
 
@@ -76,6 +79,7 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
         <USelect class="w-16" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as Condition['comparator'] })" />
         <UInputNumber class="w-28" :min="child.kind === 'period' ? 1 : 0" :modelValue="child.value" @update:modelValue="replace(index, { ...child, value: Number($event) })" />
         <USelect v-if="child.kind === 'period'" class="w-24" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
+        <span v-else-if="child.kind === 'contentWidth'" class="px-2 text-sm text-muted">px</span>
         <USelect v-else class="w-38" :content="{ position: 'item-aligned' }" :items="scopes" :modelValue="child.scope" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.scope')" @update:modelValue="replace(index, { ...child, scope: $event as 'all' | 'parent' })" />
         <UButton color="error" icon="i-lucide-x" size="xs" variant="ghost" @click="remove(index)" />
       </div>

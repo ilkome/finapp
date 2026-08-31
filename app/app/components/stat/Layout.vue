@@ -8,7 +8,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statReportBlockOrder } from '~/components/stat/config/schema'
-import { statCanSplitKey, statConfigKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { statCanSplitKey, statConfigKey, statContentWidthKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { resolveQuickCategorySelection } from '~/components/stat/quickCategorySelection'
 import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
@@ -39,6 +39,7 @@ const trnsViewState = inject(statTrnsViewStateKey)!
 const hostStickyNavigation = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 const canSplit = inject(statCanSplitKey, ref(false))
+const contentWidth = inject(statContentWidthKey, null)
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const activeWalletType = ref<SeriesSlugSelected>('net')
@@ -212,6 +213,8 @@ function setSummaryElement(element: unknown) {
 }
 watchEffect(() => {
   canSplit.value = statLayoutWidth.value >= 768 && !props.lockSingleTypeLayout
+  if (contentWidth)
+    contentWidth.value = statLayoutWidth.value > 0 ? Math.round(statLayoutWidth.value) : null
 })
 </script>
 

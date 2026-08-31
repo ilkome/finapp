@@ -11,13 +11,25 @@ import { ConfigSchema } from '~/components/stat/config/schema'
 import { syncPanelConfig } from '~/components/stat/views/syncPanelConfig'
 import { useUserStore } from '~/components/user/useUserStore'
 
-import type { StatView, StatViewContext } from './types'
+import type { BlockRule, StatBlockPanelId, StatView, StatViewConfig, StatViewContext } from './types'
 
 import { contextFingerprint, findAutomaticView } from './evaluateConditions'
 import { useStatViewsStore } from './useStatViewsStore'
 
 function cloneConfig(value: MiniItemConfig): MiniItemConfig {
   return ConfigSchema.parse(toRaw(value))
+}
+
+function cloneViewConfig(value: StatViewConfig): StatViewConfig {
+  return JSON.parse(JSON.stringify(value)) as StatViewConfig
+}
+
+function cloneBlockRules(value: StatViewConfig['blockRules']): StatViewConfig['blockRules'] {
+  return JSON.parse(JSON.stringify(value)) as StatViewConfig['blockRules']
+}
+
+function cloneRules(value: BlockRule[]): BlockRule[] {
+  return JSON.parse(JSON.stringify(value)) as BlockRule[]
 }
 
 export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<StatViewContext>) {
@@ -28,7 +40,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
   const manualFingerprint = useStorage<string | null>('finapp.dashboard.statView.manualFingerprint', null)
   const activeView = computed(() => store.views.find(view => view.id === activeId.value) ?? null)
   const configFingerprint = computed(() => JSON.stringify(config.value))
-  const isDirty = computed(() => !!activeView.value && JSON.stringify(config.value) !== JSON.stringify(activeView.value.config))
+  const isDirty = computed(() => !!activeView.value && JSON.stringify(config.value) !== JSON.stringify(activeView.value.config.base))
   const currentFingerprint = computed(() => contextFingerprint(context.value))
 
   function clearActive(manual = true) {
@@ -39,7 +51,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
 
   function apply(view: StatView, manual = true) {
     activeId.value = view.id
-    config.value = cloneConfig(view.config)
+    config.value = cloneConfig(view.config.base)
     if (manual)
       manualFingerprint.value = currentFingerprint.value
   }
@@ -55,7 +67,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     apply(list[index < 0 || index === list.length - 1 ? 0 : index + 1]!)
   }
   async function saveAs(name: string, autoRule: StatView['autoRule'] = null, isAutoEnabled = false) {
-    const view = await store.create({ autoRule, config: cloneConfig(config.value), isAutoEnabled, name, scope: 'dashboard' })
+    const view = await store.create({ autoRule, config: { base: cloneConfig(config.value), blockRules: {} }, isAutoEnabled, name, scope: 'dashboard' })
     apply(view)
     return view
   }
@@ -66,7 +78,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       suffix += 1
     const view = await store.create({
       autoRule: source.autoRule,
-      config: cloneConfig(source.config),
+      config: cloneViewConfig(source.config),
       isAutoEnabled: source.isAutoEnabled,
       name: `${source.name} ${suffix}`,
       scope: source.scope,
@@ -77,7 +89,13 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
   async function updateCurrent(patch: Partial<Pick<StatView, 'autoRule' | 'isAutoEnabled' | 'name'>> = {}) {
     if (!activeView.value)
       return null
-    const view = await store.update(activeView.value.id, { ...patch, config: cloneConfig(config.value) })
+    const view = await store.update(activeView.value.id, {
+      ...patch,
+      config: {
+        base: cloneConfig(config.value),
+        blockRules: cloneBlockRules(activeView.value.config.blockRules),
+      },
+    })
     return view
   }
   let configSaveQueue = Promise.resolve()
@@ -90,14 +108,43 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
         await updateCurrent()
       })
   })
-  async function syncPanelAcrossViews(panel: SyncableStatConfigPanelId) {
+  async function syncPanelAcrossViews(panel: SyncableStatConfigPanelId, includeRules = false) {
     if (!activeView.value)
       return []
     const source = cloneConfig(config.value)
     return store.updateMany(store.views.map(view => ({
       id: view.id,
-      patch: { config: syncPanelConfig(panel, source, view.config) },
+      patch: {
+        config: {
+          base: syncPanelConfig(panel, source, view.config.base),
+          blockRules: includeRules
+            ? { ...cloneBlockRules(view.config.blockRules), [panel]: cloneRules(activeView.value!.config.blockRules[panel] ?? []) }
+            : cloneBlockRules(view.config.blockRules),
+        },
+      },
     })))
+  }
+  function updateBlockRules(panel: StatBlockPanelId, rules: BlockRule[]) {
+    const viewId = activeView.value?.id
+    const nextRules = cloneRules(rules)
+    if (!viewId)
+      return Promise.resolve()
+    configSaveQueue = configSaveQueue
+      .catch(() => undefined)
+      .then(async () => {
+        const current = store.views.find(view => view.id === viewId)
+        if (!current)
+          return
+        const blockRules = cloneBlockRules(current.config.blockRules)
+        if (nextRules.length)
+          blockRules[panel] = nextRules
+        else
+          delete blockRules[panel]
+        await store.update(viewId, {
+          config: { base: cloneConfig(current.config.base), blockRules },
+        })
+      })
+    return configSaveQueue
   }
   function discard() {
     if (activeView.value)
@@ -131,7 +178,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       const previousIds = store.views.map(view => view.id)
       const modern = existing ?? await store.create({
         autoRule: null,
-        config: cloneConfig(config.value),
+        config: { base: cloneConfig(config.value), blockRules: {} },
         isAutoEnabled: false,
         name: modernName,
         scope: 'dashboard',
@@ -150,7 +197,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     if (store.isLoaded && activeId.value && !store.views.some(view => view.id === activeId.value))
       clearActive(false)
   }, { deep: true, immediate: true })
-  watch([() => store.isLoaded, currentFingerprint, () => store.views], () => {
+  watch([() => store.isLoaded, currentFingerprint], () => {
     if (!store.isLoaded || manualFingerprint.value === currentFingerprint.value)
       return
     const automatic = findAutomaticView(store.views, context.value)
@@ -158,11 +205,18 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       manualFingerprint.value = null
       return
     }
-    if (automatic)
+    if (automatic) {
       apply(automatic, false)
-    else clearActive(false)
+      manualFingerprint.value = null
+      return
+    }
+    if (activeView.value && (!activeView.value.isAutoEnabled || manualFingerprint.value !== null)) {
+      manualFingerprint.value = currentFingerprint.value
+      return
+    }
+    selectForCurrentContext()
     manualFingerprint.value = null
-  }, { deep: true, immediate: true })
+  }, { immediate: true })
 
-  return { activeId, activeView, apply, clearActive, cycle, discard, duplicate, isDirty, saveAs, selectForCurrentContext, store, syncPanelAcrossViews, updateCurrent }
+  return { activeId, activeView, apply, clearActive, context, cycle, discard, duplicate, isDirty, saveAs, selectForCurrentContext, store, syncPanelAcrossViews, updateBlockRules, updateCurrent }
 }

@@ -77,7 +77,6 @@ const stat_views = new Table({
   createdAt: column.integer,
   isAutoEnabled: column.integer,
   name: column.text,
-  schemaVersion: column.integer,
   scope: column.text,
   sortOrder: column.integer,
   updatedAt: column.integer,

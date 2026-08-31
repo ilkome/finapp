@@ -12,31 +12,43 @@ const { t } = useI18n()
 const viewController = inject(statViewControllerKey, null)
 const isSyncing = ref(false)
 
-async function syncPanel() {
+async function syncPanel(includeRules: boolean) {
   if (!viewController || isSyncing.value)
     return
   isSyncing.value = true
   try {
-    await viewController.syncPanelAcrossViews(panel)
+    await viewController.syncPanelAcrossViews(panel, includeRules)
     showSuccessToast('stat.views.blockSynced')
   }
   finally {
     isSyncing.value = false
   }
 }
+
+const items = computed(() => [[
+  {
+    label: t('stat.views.syncBlockSettings'),
+    onSelect: () => syncPanel(false),
+  },
+  {
+    label: t('stat.views.syncBlockWithRules'),
+    onSelect: () => syncPanel(true),
+  },
+]])
 </script>
 
 <template>
-  <UButton
-    v-if="viewController"
-    class="w-fit justify-self-start"
-    color="neutral"
-    icon="i-lucide-copy"
-    :label="t('stat.views.syncBlock')"
-    size="xs"
-    variant="soft"
-    :disabled="isSyncing"
-    :loading="isSyncing"
-    @click="syncPanel"
-  />
+  <UDropdownMenu v-if="viewController" :items>
+    <UButton
+      class="w-fit justify-self-start"
+      color="neutral"
+      icon="i-lucide-copy"
+      :label="t('stat.views.syncBlock')"
+      size="xs"
+      trailingIcon="i-lucide-chevron-down"
+      variant="soft"
+      :disabled="isSyncing"
+      :loading="isSyncing"
+    />
+  </UDropdownMenu>
 </template>

@@ -7,7 +7,7 @@ import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
-import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
+import { statBaseConfigKey, statCanSplitKey, statConfigKey, statViewControllerKey } from '~/components/stat/injectionKeys'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
@@ -24,12 +24,15 @@ const props = withDefaults(defineProps<{
 
 const { t } = useI18n()
 const { isOpen: isConfigOpen } = useStatConfigOverlay()
-const statConfig = inject(statConfigKey)!
+const statConfig = inject(statBaseConfigKey)!
+provide(statConfigKey, statConfig)
+const viewController = inject(statViewControllerKey, null)
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const { width } = useWindowSize()
 const expandedPanels = ref<ConfigPanelId[]>([])
 const isSortingBlocks = ref(false)
 const isSortingViews = ref(false)
+const rulesPanel = ref<ConfigPanelId | null>(null)
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
   dragHandle: '.sortHandle',
 })
@@ -65,6 +68,12 @@ function togglePanel(panel: ConfigPanelId) {
 function enablePanelForEditing(panel: ConfigPanelId) {
   if (!panelIsShow(panel))
     PANELS[panel].setIsShow?.(statConfig, true)
+}
+
+function enablePanelForInteraction(panel: ConfigPanelId, event: Event) {
+  if ((event.target as HTMLElement).closest('[data-stat-rules-trigger]'))
+    return
+  enablePanelForEditing(panel)
 }
 
 function isExpanded(panel: ConfigPanelId) {
@@ -154,8 +163,10 @@ watch(sortedBlockIds, () => {
 }, { deep: true })
 
 watch(isConfigOpen, (isOpen) => {
-  if (!isOpen)
+  if (!isOpen) {
     exitBlockSortMode()
+    rulesPanel.value = null
+  }
 })
 
 onBeforeUnmount(() => persistBlockOrder.flush())
@@ -174,6 +185,10 @@ function onRowActivate(row: RootRow) {
   else if (row.toggle)
     row.toggle()
 }
+
+function blockRuleCount(panel: ConfigPanelId): number {
+  return viewController?.activeView.value?.config.blockRules[panel]?.length ?? 0
+}
 </script>
 
 <template>
@@ -181,112 +196,120 @@ function onRowActivate(row: RootRow) {
     class="statConfigPanel grid"
     :class="!isSortingBlocks && width < 767 && 'pb-6'"
   >
-    <StatViewsManagement
-      :isSortingBlocks
-      @sortBlocks="enterBlockSortMode"
-      @sortingVisibility="onViewsSortingVisibility"
-    />
-    <div
-      v-show="isSortingBlocks"
-      class="flex min-h-0 flex-col px-1"
-      :style="blockSortAreaStyle"
-    >
+    <StatConfigBlockRules v-if="rulesPanel" :panel="rulesPanel" @back="rulesPanel = null" />
+    <template v-else>
+      <StatViewsManagement
+        :isSortingBlocks
+        @sortBlocks="enterBlockSortMode"
+        @sortingVisibility="onViewsSortingVisibility"
+      />
       <div
-        ref="blockSortParent"
-        class="grid min-h-0 content-start gap-1 overflow-y-auto overscroll-contain py-px"
+        v-show="isSortingBlocks"
+        class="flex min-h-0 flex-col px-1"
+        :style="blockSortAreaStyle"
       >
-        <UiElement
-          v-for="panel in sortedBlockIds"
-          :key="panel"
-          insideClasses="group relative min-h-[46px] rounded-md bg-elevated/30 pl-4"
+        <div
+          ref="blockSortParent"
+          class="grid min-h-0 content-start gap-1 overflow-y-auto overscroll-contain py-px"
         >
-          <Icon :name="PANELS[panel].icon" class="shrink-0 text-muted" size="20" />
-          <div class="grid grow gap-0.5 overflow-hidden">
-            <UiEntityName>
-              {{ t(PANELS[panel].titleKey) }}
-            </UiEntityName>
-          </div>
-          <div
-            class="sortHandle absolute right-0 flex-center h-full cursor-grab rounded-md px-3 group-hover:bg-accented active:cursor-grabbing"
-            :aria-label="t('stat.views.drag')"
+          <UiElement
+            v-for="panel in sortedBlockIds"
+            :key="panel"
+            insideClasses="group relative min-h-[46px] rounded-md bg-elevated/30 pl-4"
           >
-            <Icon name="lucide:grip-vertical" size="20" />
-          </div>
-        </UiElement>
+            <Icon :name="PANELS[panel].icon" class="shrink-0 text-muted" size="20" />
+            <div class="grid grow gap-0.5 overflow-hidden">
+              <UiEntityName>
+                {{ t(PANELS[panel].titleKey) }}
+              </UiEntityName>
+            </div>
+            <div
+              class="sortHandle absolute right-0 flex-center h-full cursor-grab rounded-md px-3 group-hover:bg-accented active:cursor-grabbing"
+              :aria-label="t('stat.views.drag')"
+            >
+              <Icon name="lucide:grip-vertical" size="20" />
+            </div>
+          </UiElement>
+        </div>
       </div>
-    </div>
-    <template v-if="!isSortingBlocks && !isSortingViews">
-      <template v-if="canSplit">
-        <div class="-mt-px rounded-lg border border-transparent">
-          <StatConfigFieldRow :title="t('stat.view.pageLayout.title')">
-            <USelect
-              class="w-40 shrink-0"
-              :aria-label="t('stat.view.pageLayout.title')"
-              :content="{ position: 'item-aligned' }"
-              :items="pageLayoutItems"
-              :modelValue="statConfig.config.value.page.layout"
-              :ui="{ content: 'z-[60]' }"
-              @update:modelValue="(v) => statConfig.updateConfig('page', { layout: v as 'combined' | 'split' })"
-            />
-          </StatConfigFieldRow>
-        </div>
-        <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
-      </template>
+      <template v-if="!isSortingBlocks && !isSortingViews">
+        <template v-if="canSplit">
+          <div class="-mt-px rounded-lg border border-transparent">
+            <StatConfigFieldRow :title="t('stat.view.pageLayout.title')">
+              <USelect
+                class="w-40 shrink-0"
+                :aria-label="t('stat.view.pageLayout.title')"
+                :content="{ position: 'item-aligned' }"
+                :items="pageLayoutItems"
+                :modelValue="statConfig.config.value.page.layout"
+                :ui="{ content: 'z-[60]' }"
+                @update:modelValue="(v) => statConfig.updateConfig('page', { layout: v as 'combined' | 'split' })"
+              />
+            </StatConfigFieldRow>
+          </div>
+          <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
+        </template>
 
-      <template
-        v-for="(row, i) in rows"
-        :key="row.key"
-      >
-        <div
-          v-if="i > 0 && !isPreviousExpanded(i)"
-          aria-hidden="true"
-          class="mx-2 -my-px h-px bg-elevated/50"
-        />
-        <div
-          class="-mt-px rounded-lg border"
-          :class="{
-            'mb-3': i < rows.length - 1 && row.panel && isExpanded(row.panel),
-            'overflow-hidden border-default': row.panel && isExpanded(row.panel),
-            'border-transparent': !row.panel || !isExpanded(row.panel),
-          }"
+        <template
+          v-for="(row, i) in rows"
+          :key="row.key"
         >
-          <StatConfigRow
-            :data-stat-config-row="row.key"
-            :hasPanel="!!row.panel"
-            :hasToggle="!!row.toggle"
-            :icon="row.icon"
-            :isExpanded="row.panel ? isExpanded(row.panel) : false"
-            :isShow="row.isShow"
-            :title="row.title"
-            @activate="onRowActivate(row)"
-            @toggle="row.toggle?.()"
+          <div
+            v-if="i > 0 && !isPreviousExpanded(i)"
+            aria-hidden="true"
+            class="mx-2 -my-px h-px bg-elevated/50"
           />
-          <UCollapsible
-            v-if="row.panel"
-            :open="isExpanded(row.panel)"
-            :ui="{ content: 'overflow-hidden' }"
+          <div
+            class="-mt-px rounded-lg border"
+            :class="{
+              'mb-3': i < rows.length - 1 && row.panel && isExpanded(row.panel),
+              'overflow-hidden border-default': row.panel && isExpanded(row.panel),
+              'border-transparent': !row.panel || !isExpanded(row.panel),
+            }"
           >
-            <template #content>
-              <div
-                class="grid gap-3"
-                :class="row.panel === 'catsRound' ? 'pr-3 pb-3 pl-2' : 'px-3 pb-4'"
-                @focusin.capture="row.panel && enablePanelForEditing(row.panel)"
-                @pointerdown.capture="row.panel && enablePanelForEditing(row.panel)"
-              >
-                <StatConfigPanelsWallets v-if="row.panel === 'wallets'" />
-                <StatConfigPanelsAverage v-else-if="row.panel === 'statAverage'" />
-                <StatConfigPanelsNavigation v-else-if="row.panel === 'navigation'" />
-                <StatConfigPanelsSummary v-else-if="row.panel === 'summary'" />
-                <StatConfigPanelsChart v-else-if="row.panel === 'chart'" />
-                <StatConfigPanelsTrns v-else-if="row.panel === 'trns'" />
-                <StatConfigPanelsCatsRound v-else-if="row.panel === 'catsRound'" />
-                <StatConfigPanelsCatsList v-else-if="row.panel === 'catsList'" />
-                <StatConfigPanelsVertical v-else-if="row.panel === 'vertical'" />
-                <StatConfigSyncPanelButton :panel="row.panel" />
-              </div>
-            </template>
-          </UCollapsible>
-        </div>
+            <StatConfigRow
+              :data-stat-config-row="row.key"
+              :hasPanel="!!row.panel"
+              :hasToggle="!!row.toggle"
+              :icon="row.icon"
+              :isExpanded="row.panel ? isExpanded(row.panel) : false"
+              :isShow="row.isShow"
+              :title="row.title"
+              @activate="onRowActivate(row)"
+              @toggle="row.toggle?.()"
+            />
+            <UCollapsible
+              v-if="row.panel"
+              :open="isExpanded(row.panel)"
+              :ui="{ content: 'overflow-hidden' }"
+            >
+              <template #content>
+                <div
+                  class="grid gap-3"
+                  :class="row.panel === 'catsRound' ? 'pr-3 pb-3 pl-2' : 'px-3 pb-4'"
+                  @focusin.capture="row.panel && enablePanelForInteraction(row.panel, $event)"
+                  @pointerdown.capture="row.panel && enablePanelForInteraction(row.panel, $event)"
+                >
+                  <StatConfigPanelContent :panel="row.panel" />
+                  <UButton
+                    v-if="viewController"
+                    data-stat-rules-trigger
+                    class="w-fit justify-self-start"
+                    color="neutral"
+                    icon="i-lucide-workflow"
+                    :label="blockRuleCount(row.panel)
+                      ? t('stat.views.blockRules.count', { count: blockRuleCount(row.panel) })
+                      : t('stat.views.blockRules.configure')"
+                    size="xs"
+                    variant="soft"
+                    @click="rulesPanel = row.panel"
+                  />
+                  <StatConfigSyncPanelButton :panel="row.panel" />
+                </div>
+              </template>
+            </UCollapsible>
+          </div>
+        </template>
       </template>
     </template>
   </div>

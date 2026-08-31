@@ -1,6 +1,8 @@
 import type { Period, Range } from '~~/utils/date/types'
+import type { DeepPartial } from '~~/utils/types'
 
 import type { MiniItemConfig } from '~/components/stat/config/schema'
+import type { StatConfigPanelId } from '~/components/stat/types'
 
 export type StatViewScope = 'dashboard'
 export type ConditionComparator = '<' | '<=' | '=' | '!=' | '>=' | '>'
@@ -19,17 +21,34 @@ export type CategoryCountCondition = {
   value: number
 }
 
-export type Condition = PeriodCondition | CategoryCountCondition
+export type ContentWidthCondition = {
+  comparator: ConditionComparator
+  kind: 'contentWidth'
+  unit: 'px'
+  value: number
+}
+
+export type Condition = PeriodCondition | CategoryCountCondition | ContentWidthCondition
 export type ConditionGroup = { children: Array<Condition | ConditionGroup>, operator: 'and' | 'or' }
+export type StatBlockPanelId = Exclude<StatConfigPanelId, 'root'>
+export type BlockRule = {
+  condition: ConditionGroup
+  id: string
+  isEnabled: boolean
+  overrides: DeepPartial<MiniItemConfig>
+}
+export type StatViewConfig = {
+  base: MiniItemConfig
+  blockRules: Partial<Record<StatBlockPanelId, BlockRule[]>>
+}
 
 export type StatView = {
   autoRule: ConditionGroup | null
-  config: MiniItemConfig
+  config: StatViewConfig
   createdAt: number
   id: string
   isAutoEnabled: boolean
   name: string
-  schemaVersion: number
   scope: StatViewScope
   sortOrder: number
   updatedAt: number
@@ -38,6 +57,7 @@ export type StatView = {
 
 export type StatViewContext = {
   categoryCount: number
+  contentWidth: number | null
   parentCategoryCount: number
   range: Range
   selectedCategoryIds: string[]

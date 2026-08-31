@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
+import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { generateViewName } from '~/components/stat/views/generateViewName'
 
 const { t } = useI18n()
@@ -11,11 +11,12 @@ const { open: openConfig } = useStatConfigOverlay()
 
 const views = computed(() => controller?.store.views ?? [])
 const currentId = computed(() => controller?.activeId.value ?? '')
-const comparatorKeys: Record<string, string> = { '<': 'lt', '<=': 'lte', '=': 'eq', '!=': 'neq', '>=': 'gte', '>': 'gt' }
+const comparatorKeys: Record<string, string> = { '!=': 'neq', '<': 'lt', '<=': 'lte', '=': 'eq', '>': 'gt', '>=': 'gte' }
 const autoRuleLabels = computed(() => ({
   and: t('stat.views.and'),
   andMore: (count: number) => t('stat.views.andMore', { count }),
   categoryCount: (scope: 'all' | 'parent', comparator: string, value: number) => t('stat.views.categoryCount', { comparator: t(`stat.views.comparators.${comparatorKeys[comparator] ?? 'eq'}`), scope: t(`stat.views.scope.${scope}`), value }),
+  contentWidth: (comparator: string, value: number) => t('stat.views.contentWidth', { comparator: t(`stat.views.comparators.${comparatorKeys[comparator] ?? 'eq'}`), value }),
   fallback: t('stat.views.new'),
   period: (value: number, unit: string) => t(`stat.views.period.${unit}`, { count: value }),
 }))

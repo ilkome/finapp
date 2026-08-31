@@ -31,6 +31,9 @@ function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | '
 }
 
 export function evaluateCondition(condition: Condition, context: StatViewContext): boolean {
+  if (condition.kind === 'contentWidth')
+    return context.contentWidth !== null && compareCondition(context.contentWidth, condition.comparator, condition.value)
+
   const actual = condition.kind === 'categoryCount'
     ? condition.scope === 'parent' ? context.parentCategoryCount : context.categoryCount
     : 0
@@ -52,5 +55,5 @@ export function findAutomaticView(views: StatView[], context: StatViewContext): 
 }
 
 export function contextFingerprint(context: StatViewContext): string {
-  return JSON.stringify([context.range.start, context.range.end, [...context.selectedCategoryIds].sort(), [...context.selectedWalletIds].sort(), context.categoryCount, context.parentCategoryCount])
+  return JSON.stringify([context.range.start, context.range.end, [...context.selectedCategoryIds].sort(), [...context.selectedWalletIds].sort(), context.categoryCount, context.parentCategoryCount, context.contentWidth])
 }

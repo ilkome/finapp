@@ -4,6 +4,7 @@ export type ViewNameLabels = {
   and: string
   andMore: (count: number) => string
   categoryCount: (scope: 'all' | 'parent', comparator: string, value: number) => string
+  contentWidth: (comparator: string, value: number) => string
   fallback: string
   period: (value: number, unit: string) => string
 }
@@ -23,6 +24,8 @@ export function generateViewName(rule: ConditionGroup | null, labels: ViewNameLa
     ? flatten(rule).map((condition) => {
         if (condition.kind === 'period')
           return labels.period(condition.value, condition.unit)
+        if (condition.kind === 'contentWidth')
+          return labels.contentWidth(condition.comparator, condition.value)
         return labels.categoryCount(condition.scope, condition.comparator, condition.value)
       }).filter(Boolean)
     : []

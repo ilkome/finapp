@@ -5,7 +5,9 @@ import type { StatDateProvider } from '~/components/stat/date/types'
 import type { TrnsListFilterState } from '~/components/trns/types'
 
 export const statDateKey: InjectionKey<StatDateProvider> = Symbol('statDate')
+export const statBaseConfigKey: InjectionKey<StatConfigProvider> = Symbol('statBaseConfig')
 export const statConfigKey: InjectionKey<StatConfigProvider> = Symbol('statConfig')
+export const statContentWidthKey: InjectionKey<Ref<number | null>> = Symbol('statContentWidth')
 export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController>> = Symbol('statViewController')
 export const statCanSplitKey: InjectionKey<Ref<boolean>> = Symbol('statCanSplit')
 export const statPreservedCategoryScrollTopKey: InjectionKey<Readonly<Ref<number | null>>> = Symbol('statPreservedCategoryScrollTop')

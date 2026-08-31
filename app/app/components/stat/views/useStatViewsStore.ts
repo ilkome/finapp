@@ -12,9 +12,9 @@ import { createLogger } from '~/utils/logger'
 
 import type { ConditionGroup, StatView, StatViewScope } from './types'
 
-type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name'>>
+import { StatViewSchema } from './schema'
 
-import { migrateStatView, STAT_VIEW_SCHEMA_VERSION } from './schema'
+type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name'>>
 
 const logger = createLogger('stat-views')
 const DEMO_KEY = 'finapp.statViews'
@@ -22,14 +22,14 @@ const DEMO_USER_ID = 'demo'
 
 function rowToView(row: Row): StatView | null {
   try {
-    return migrateStatView({
+    const parsed = StatViewSchema.safeParse({
       ...row,
       autoRule: row.autoRule ? JSON.parse(String(row.autoRule)) : null,
       config: JSON.parse(String(row.config)),
       isAutoEnabled: !!row.isAutoEnabled,
-      schemaVersion: Number(row.schemaVersion),
       sortOrder: Number(row.sortOrder),
     })
+    return parsed.success ? parsed.data as StatView : null
   }
   catch (error) {
     logger.warn('skipping invalid synced view', error)
@@ -38,16 +38,13 @@ function rowToView(row: Row): StatView | null {
 }
 
 function viewToRow(view: StatView): Record<string, unknown> {
-  const parsed = migrateStatView(view)
-  if (!parsed)
-    throw new Error('Invalid statistics view')
+  const parsed = StatViewSchema.parse(view)
   return {
     autoRule: parsed.autoRule ? JSON.stringify(parsed.autoRule) : null,
     config: JSON.stringify(parsed.config),
     createdAt: parsed.createdAt,
     isAutoEnabled: parsed.isAutoEnabled ? 1 : 0,
     name: parsed.name,
-    schemaVersion: parsed.schemaVersion,
     scope: parsed.scope,
     sortOrder: parsed.sortOrder,
     updatedAt: parsed.updatedAt,
@@ -73,7 +70,10 @@ export const useStatViewsStore = defineStore('statViews', () => {
     isLoaded.value = false
     if (isDemo.value) {
       const stored = await localforage.getItem<unknown[]>(`${DEMO_KEY}.${scope}`)
-      setItems((stored ?? []).map(migrateStatView).filter((view): view is StatView => !!view && view.scope === scope))
+      setItems((stored ?? []).map((value) => {
+        const parsed = StatViewSchema.safeParse(value)
+        return parsed.success ? parsed.data as StatView : null
+      }).filter((view): view is StatView => !!view && view.scope === scope))
       isLoaded.value = true
       return
     }
@@ -99,14 +99,11 @@ export const useStatViewsStore = defineStore('statViews', () => {
       autoRule: values.autoRule as ConditionGroup | null,
       createdAt: now,
       id: crypto.randomUUID(),
-      schemaVersion: STAT_VIEW_SCHEMA_VERSION,
       sortOrder: views.value.filter(item => item.scope === values.scope).length,
       updatedAt: now,
       userId: isDemo.value ? DEMO_USER_ID : resolveWriteUid(uid.value),
     }
-    const valid = migrateStatView(view)
-    if (!valid)
-      throw new Error('Invalid statistics view')
+    const valid = StatViewSchema.parse(view) as StatView
     const next = [...items.value, valid]
     try {
       await persist(next, [valid])
@@ -124,9 +121,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
     const current = items.value.find(view => view.id === id)
     if (!current)
       return null
-    const nextView = migrateStatView({ ...current, ...patch, updatedAt: Date.now() })
-    if (!nextView)
-      throw new Error('Invalid statistics view')
+    const nextView = StatViewSchema.parse({ ...current, ...patch, updatedAt: Date.now() }) as StatView
     const previous = items.value
     try {
       await persist(previous.map(view => view.id === id ? nextView : view), [nextView])
@@ -149,9 +144,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
       const patch = patches.get(view.id)
       if (!patch)
         return view
-      const nextView = migrateStatView({ ...view, ...patch, updatedAt: now })
-      if (!nextView)
-        throw new Error('Invalid statistics view')
+      const nextView = StatViewSchema.parse({ ...view, ...patch, updatedAt: now }) as StatView
       changed.push(nextView)
       return nextView
     })

@@ -8,9 +8,11 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { useFilter } from '~/components/filter/useFilter'
 import { collectCategoriesByTrns } from '~/components/stat/categories/collectAndGroup'
-import { statViewControllerKey } from '~/components/stat/injectionKeys'
+import { applyConfigUpdate } from '~/components/stat/config/schema'
+import { statConfigKey, statContentWidthKey, statViewControllerKey } from '~/components/stat/injectionKeys'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
+import { createBlockRuleOverrides, findMatchingBlockRule, resolveConfigUpdatePanel, resolveEffectiveStatConfig } from '~/components/stat/views/blockRules'
 import { useStatViewController } from '~/components/stat/views/useStatViewController'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -18,6 +20,8 @@ const { t } = useI18n()
 const route = useRoute()
 const trnsStore = useTrnsStore()
 const categoriesStore = useCategoriesStore()
+const contentWidth = ref<number | null>(null)
+provide(statContentWidthKey, contentWidth)
 
 const filter = useFilter()
 const { statHeader } = useStatPageHost()
@@ -54,6 +58,7 @@ const viewContext = computed(() => {
   const parents = new Set(categoryIds.map(id => getParentCategoryIdOrUndefined(categoriesStore.items, id) ?? id))
   return {
     categoryCount: categoryIds.length,
+    contentWidth: contentWidth.value,
     parentCategoryCount: parents.size,
     range: statDate.range.value,
     selectedCategoryIds: selectedIds,
@@ -63,6 +68,28 @@ const viewContext = computed(() => {
 
 const statViewController = useStatViewController(statConfig.config, viewContext)
 provide(statViewControllerKey, statViewController)
+const effectiveConfig = computed(() => {
+  const view = statViewController.activeView.value
+  return view
+    ? resolveEffectiveStatConfig(statConfig.config.value, view.config.blockRules, viewContext.value)
+    : statConfig.config.value
+})
+function updateEffectiveConfig<K extends keyof typeof statConfig.config.value>(key: K, value: Parameters<typeof statConfig.updateConfig<K>>[1]) {
+  const panel = resolveConfigUpdatePanel(key, value)
+  const rules = panel ? statViewController.activeView.value?.config.blockRules[panel] : undefined
+  const matchingRule = findMatchingBlockRule(rules, viewContext.value)
+  if (!panel || !matchingRule) {
+    statConfig.updateConfig(key, value)
+    return
+  }
+  const edited = applyConfigUpdate(effectiveConfig.value, key, value)
+  if (!edited)
+    return
+  void statViewController.updateBlockRules(panel, rules!.map(rule => rule.id === matchingRule.id
+    ? { ...rule, overrides: createBlockRuleOverrides(panel, statConfig.config.value, edited) }
+    : rule))
+}
+provide(statConfigKey, { config: effectiveConfig, updateConfig: updateEffectiveConfig })
 onMounted(() => {
   void statViewController.store.init('dashboard')
 })

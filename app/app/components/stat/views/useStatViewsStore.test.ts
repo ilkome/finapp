@@ -32,7 +32,7 @@ describe('useStatViewsStore demo persistence', () => {
 
     const view = await store.create({
       autoRule: null,
-      config: structuredClone(defaultConfig),
+      config: { base: structuredClone(defaultConfig), blockRules: {} },
       isAutoEnabled: false,
       name: 'Classic',
       scope: 'dashboard',

@@ -7,7 +7,6 @@ create table public.stat_views (
   "isAutoEnabled" boolean not null default false,
   "autoRule" jsonb,
   "sortOrder" integer not null default 0,
-  "schemaVersion" integer not null default 1,
   "createdAt" bigint not null,
   "updatedAt" bigint not null,
   constraint stat_views_name_not_blank check (length(btrim(name)) > 0),

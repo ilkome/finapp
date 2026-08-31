@@ -15,6 +15,6 @@ export type StatConfigParams = {
 }
 
 export type StatConfigProvider = {
-  config: Ref<MiniItemConfig>
+  config: Readonly<Ref<MiniItemConfig>>
   updateConfig: <K extends keyof MiniItemConfig>(key: K, value: DeepPartial<MiniItemConfig[K]>) => void
 }
