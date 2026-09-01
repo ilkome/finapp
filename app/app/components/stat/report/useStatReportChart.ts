@@ -9,7 +9,7 @@ import type { ChartSeries, IntervalData, SeriesSlugSelected, StatReportType } fr
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCashflowPieData, hideSingleColorPie } from '~/components/stat/chart/cashflowPie'
 import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
-import { resolveEffectiveChartType } from '~/components/stat/chart/types'
+import { resolveEffectiveChartType, shouldUseQuickCategoryCashflowSeries } from '~/components/stat/chart/types'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { applyChartValueDisplay } from '~/components/stat/chart/valueDisplay'
 import { TrnType } from '~/components/trns/types'
@@ -86,10 +86,13 @@ export function useStatReportChart(params: {
     const hasBothQuickCategoryTypes = params.hasQuickCategoryFilter.value
       && intervals.some(interval => interval.total.expense > 0)
       && intervals.some(interval => interval.total.income > 0)
-    const shouldUseQuickCategoryCashflow = params.reportType.value === 'combined'
-      && !params.type.value
-      && hasBothQuickCategoryTypes
-      && (chartType === 'bar' || chartType === 'pie')
+    const shouldUseQuickCategoryCashflow = shouldUseQuickCategoryCashflowSeries({
+      chartType,
+      filteredType: params.filteredType.value,
+      hasBothCashflowTypes: hasBothQuickCategoryTypes,
+      reportType: params.reportType.value,
+      type: params.type.value,
+    })
     let series: ChartSeries[]
 
     if (!shouldUseQuickCategoryCashflow && (params.statConfig.config.value.chart.breakdown === 'categories' || isCategorySumFocused.value)) {

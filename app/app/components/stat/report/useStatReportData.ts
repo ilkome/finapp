@@ -173,14 +173,22 @@ export function useStatReportData(params: {
     : intervalsData.value)
 
   const chartRangeTrnsIds = computed(() => {
-    if (params.isDateBounded)
-      return params.trnsIds.value
+    if (params.isDateBounded) {
+      return trnsStore.getStoreTrnsIds({
+        trnsIds: params.trnsIds.value,
+        trnsTypes: selectedTypesMapping.value,
+      })
+    }
     if (import.meta.dev) {
       deferStatDevMetricsUpdate(() => {
         statDevMetrics.getStoreTrnsIdsCount.value++
       })
     }
-    return trnsStore.getStoreTrnsIds({ dates: chartRange.value, trnsIds: params.trnsIds.value })
+    return trnsStore.getStoreTrnsIds({
+      dates: chartRange.value,
+      trnsIds: params.trnsIds.value,
+      trnsTypes: selectedTypesMapping.value,
+    })
   })
   const chartRangeTrnsIdsWithFilteredCategories = computed(() => {
     if (!hasCategoryFilter.value)

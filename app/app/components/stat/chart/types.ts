@@ -40,3 +40,17 @@ export function resolveEffectiveChartType(options: {
     ? 'bar'
     : options.configuredType
 }
+
+export function shouldUseQuickCategoryCashflowSeries(options: {
+  chartType: ChartType
+  filteredType: 'expense' | 'income' | 'net'
+  hasBothCashflowTypes: boolean
+  reportType: 'combined' | 'expense' | 'income'
+  type?: 'expense' | 'income' | 'net'
+}): boolean {
+  return options.reportType === 'combined'
+    && !options.type
+    && options.filteredType === 'net'
+    && options.hasBothCashflowTypes
+    && (options.chartType === 'bar' || options.chartType === 'pie')
+}

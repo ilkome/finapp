@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { resolveEffectiveChartType } from '~/components/stat/chart/types'
+import { resolveEffectiveChartType, shouldUseQuickCategoryCashflowSeries } from '~/components/stat/chart/types'
 
 describe('resolveEffectiveChartType', () => {
   it.each([
@@ -54,5 +54,25 @@ describe('resolveEffectiveChartType', () => {
       hasIncome: false,
       hasQuickCategoryFilter: true,
     })).toBe('line')
+  })
+})
+
+describe('shouldUseQuickCategoryCashflowSeries', () => {
+  it.each(['income', 'expense'] as const)('keeps the selected %s type when a category contains both types', (filteredType) => {
+    expect(shouldUseQuickCategoryCashflowSeries({
+      chartType: 'bar',
+      filteredType,
+      hasBothCashflowTypes: true,
+      reportType: 'combined',
+    })).toBe(false)
+  })
+
+  it('shows both types for a selected category when totals are active', () => {
+    expect(shouldUseQuickCategoryCashflowSeries({
+      chartType: 'pie',
+      filteredType: 'net',
+      hasBothCashflowTypes: true,
+      reportType: 'combined',
+    })).toBe(true)
   })
 })
