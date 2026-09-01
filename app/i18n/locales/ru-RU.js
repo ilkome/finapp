@@ -658,15 +658,17 @@ export default {
       blockRules: {
         addParameter: 'Добавить параметр',
         addRule: 'Добавить правило',
+        conditionSummary: {
+          categoryCount: '{field} {comparator} {value}',
+          contentWidth: 'Ширина контента {comparator} {value} px',
+          period: 'Период {comparator} {value} {unit}',
+        },
         configure: 'Настроить по правилам',
         count: 'Правила: {count}',
         default: 'По умолчанию',
         defaultDescription: 'Применяется, если другие правила не подошли',
         empty: 'Для этого блока пока нет правил.',
-        if: 'Если',
         new: 'Новое правило',
-        noParameters: 'Добавьте параметры, которые должно изменять правило.',
-        parameterCount: 'Параметров: {count}',
         parameters: {
           visibility: 'Показывать блок',
         },
@@ -683,10 +685,7 @@ export default {
       comparators: { eq: 'равно', gt: 'больше', gte: 'больше или равно', lt: 'меньше', lte: 'меньше или равно', neq: 'не равно' },
       conditions: {
         addCondition: 'Добавить условие',
-        addGroup: 'Добавить группу',
-        decrement: 'Уменьшить значение',
         fields: { categoryCount: 'Категории', contentWidth: 'Ширина контента', period: 'Период' },
-        increment: 'Увеличить значение',
         labels: { comparator: 'Сравнение', field: 'Тип условия', operator: 'Связь условий', scope: 'Категории', unit: 'Единица периода' },
         operators: { and: 'И', or: 'ИЛИ' },
         scopes: { all: 'Все категории', parent: 'Родительские категории' },

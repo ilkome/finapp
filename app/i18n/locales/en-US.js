@@ -658,15 +658,17 @@ export default {
       blockRules: {
         addParameter: 'Add parameter',
         addRule: 'Add rule',
+        conditionSummary: {
+          categoryCount: '{field} {comparator} {value}',
+          contentWidth: 'Content width {comparator} {value} px',
+          period: 'Period {comparator} {value} {unit}',
+        },
         configure: 'Configure with rules',
         count: 'Rules: {count}',
         default: 'Default',
         defaultDescription: 'Used when no other rule matches',
         empty: 'This block has no rules yet.',
-        if: 'If',
         new: 'New rule',
-        noParameters: 'Add the parameters this rule should change.',
-        parameterCount: 'Parameters: {count}',
         parameters: {
           visibility: 'Show block',
         },
@@ -683,10 +685,7 @@ export default {
       comparators: { eq: 'equals', gt: 'greater than', gte: 'greater than or equal to', lt: 'less than', lte: 'less than or equal to', neq: 'not equal to' },
       conditions: {
         addCondition: 'Add condition',
-        addGroup: 'Add group',
-        decrement: 'Decrease value',
         fields: { categoryCount: 'Categories', contentWidth: 'Content width', period: 'Period' },
-        increment: 'Increase value',
         labels: { comparator: 'Comparison', field: 'Condition type', operator: 'Condition operator', scope: 'Category scope', unit: 'Period unit' },
         operators: { and: 'AND', or: 'OR' },
         scopes: { all: 'All categories', parent: 'Parent categories' },

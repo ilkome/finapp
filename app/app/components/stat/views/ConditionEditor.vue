@@ -21,26 +21,36 @@ const scopes = computed(() => [
   { label: t('stat.views.conditions.scopes.all'), value: 'all' },
   { label: t('stat.views.conditions.scopes.parent'), value: 'parent' },
 ])
-const selectUi = { content: 'z-[60]' }
-
+const selectUi = { content: 'z-[80]' }
 function update(children: ConditionGroup['children']) {
   emit('update:modelValue', { ...props.modelValue, children })
 }
 function addCondition() {
   update([...props.modelValue.children, { comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }])
 }
-function addGroup() {
-  update([...props.modelValue.children, { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }])
-}
 function replace(index: number, value: Condition | ConditionGroup) {
   update(props.modelValue.children.map((child, childIndex) => childIndex === index ? value : child))
 }
 function remove(index: number) {
+  if (props.removable && props.modelValue.children.length === 1) {
+    emit('remove')
+    return
+  }
   update(props.modelValue.children.filter((_, childIndex) => childIndex !== index))
 }
-function changeNumber(index: number, condition: Condition, change: number) {
-  const min = condition.kind === 'period' ? 1 : 0
-  replace(index, { ...condition, value: Math.max(min, condition.value + change) })
+function duplicate(index: number) {
+  const child = props.modelValue.children[index]
+  if (!child)
+    return
+  const copy = JSON.parse(JSON.stringify(child)) as Condition | ConditionGroup
+  update([...props.modelValue.children.slice(0, index + 1), copy, ...props.modelValue.children.slice(index + 1)])
+}
+function conditionActionItems(index: number) {
+  return [[
+    { icon: 'i-lucide-copy', label: t('base.duplicate'), onSelect: () => duplicate(index) },
+  ], [
+    { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => remove(index) },
+  ]]
 }
 function changeKind(condition: Condition, kind: Condition['kind']) {
   if (kind === 'period')
@@ -53,13 +63,10 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
 
 <template>
   <div class="grid gap-2">
-    <div v-if="removable" class="flex justify-end">
-      <UButton v-if="removable" color="error" icon="i-lucide-trash-2" size="xs" variant="ghost" @click="$emit('remove')" />
-    </div>
     <template v-for="(child, index) in modelValue.children" :key="index">
-      <div v-if="index > 0" class="flex items-center gap-2">
-        <div aria-hidden="true" class="h-px flex-1 bg-(--ui-border-muted)" />
+      <div v-if="'children' in child" class="grid gap-2">
         <USelect
+          v-if="index > 0"
           class="w-20"
           :content="{ position: 'item-aligned' }"
           :items="operators"
@@ -68,31 +75,33 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
           :aria-label="t('stat.views.conditions.labels.operator')"
           @update:modelValue="$emit('update:modelValue', { ...modelValue, operator: $event as 'and' | 'or' })"
         />
-        <div aria-hidden="true" class="h-px flex-1 bg-(--ui-border-muted)" />
+        <StatViewsConditionEditor
+          :depth="(depth ?? 0) + 1"
+          :modelValue="child"
+          removable
+          @remove="remove(index)"
+          @update:modelValue="replace(index, $event)"
+        />
       </div>
-      <StatViewsConditionEditor
-        v-if="'children' in child"
-        :depth="(depth ?? 0) + 1"
-        :modelValue="child"
-        removable
-        @remove="remove(index)"
-        @update:modelValue="replace(index, $event)"
-      />
-      <div v-else class="flex flex-wrap items-center gap-1">
-        <USelect class="w-30" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="child.kind" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replace(index, changeKind(child, $event as Condition['kind']))" />
-        <USelect class="w-16" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as Condition['comparator'] })" />
-        <UFieldGroup class="w-28" @pointerdown.stop>
-          <UButton
-            :aria-label="t('stat.views.conditions.decrement')"
-            color="neutral"
-            icon="i-lucide-minus"
-            size="sm"
-            variant="outline"
-            :disabled="child.value <= (child.kind === 'period' ? 1 : 0)"
-            @click="changeNumber(index, child, -1)"
+      <div
+        v-else
+        class="relative min-w-0 pr-11"
+      >
+        <div class="flex min-w-0 flex-wrap items-center gap-1">
+          <USelect
+            v-if="index > 0"
+            class="w-20 shrink-0"
+            :content="{ position: 'item-aligned' }"
+            :items="operators"
+            :modelValue="modelValue.operator"
+            :ui="selectUi"
+            :aria-label="t('stat.views.conditions.labels.operator')"
+            @update:modelValue="$emit('update:modelValue', { ...modelValue, operator: $event as 'and' | 'or' })"
           />
+          <USelect class="min-w-32 grow" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="child.kind" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replace(index, changeKind(child, $event as Condition['kind']))" />
+          <USelect class="w-16 shrink-0" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as Condition['comparator'] })" />
           <UInputNumber
-            class="min-w-0 grow"
+            class="w-24 shrink-0"
             :decrement="false"
             :increment="false"
             :min="child.kind === 'period' ? 1 : 0"
@@ -100,24 +109,29 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
             :ui="{ base: 'text-center' }"
             @update:modelValue="replace(index, { ...child, value: Number($event) })"
           />
-          <UButton
-            :aria-label="t('stat.views.conditions.increment')"
-            color="neutral"
-            icon="i-lucide-plus"
-            size="sm"
-            variant="outline"
-            @click="changeNumber(index, child, 1)"
-          />
-        </UFieldGroup>
-        <USelect v-if="child.kind === 'period'" class="w-24" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
-        <span v-else-if="child.kind === 'contentWidth'" class="px-2 text-sm text-muted">px</span>
-        <USelect v-else class="w-38" :content="{ position: 'item-aligned' }" :items="scopes" :modelValue="child.scope" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.scope')" @update:modelValue="replace(index, { ...child, scope: $event as 'all' | 'parent' })" />
-        <UButton color="error" icon="i-lucide-x" size="xs" variant="ghost" @click="remove(index)" />
+          <USelect v-if="child.kind === 'period'" class="w-24 shrink-0" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
+          <span v-else-if="child.kind === 'contentWidth'" class="w-10 shrink-0 px-2 text-sm text-muted">px</span>
+          <USelect v-else class="w-38 shrink-0" :content="{ position: 'item-aligned' }" :items="scopes" :modelValue="child.scope" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.scope')" @update:modelValue="replace(index, { ...child, scope: $event as 'all' | 'parent' })" />
+        </div>
+        <div class="absolute top-0 right-0 flex justify-end">
+          <UDropdownMenu :items="conditionActionItems(index)" :content="{ align: 'end' }" :modal="false">
+            <UiActionButton :ariaLabel="$t('base.moreOptions')" @click.stop>
+              <Icon name="lucide:ellipsis" size="18" />
+            </UiActionButton>
+          </UDropdownMenu>
+        </div>
       </div>
     </template>
-    <div class="flex gap-1">
-      <UButton :label="t('stat.views.conditions.addCondition')" size="xs" variant="soft" @click="addCondition" />
-      <UButton :label="t('stat.views.conditions.addGroup')" size="xs" variant="ghost" @click="addGroup" />
+    <div v-if="!removable">
+      <UButton
+        class="w-full justify-start"
+        color="neutral"
+        icon="i-lucide-plus"
+        :label="t('stat.views.conditions.addCondition')"
+        size="sm"
+        variant="ghost"
+        @click="addCondition"
+      />
     </div>
   </div>
 </template>

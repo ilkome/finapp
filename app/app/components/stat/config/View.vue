@@ -271,12 +271,15 @@ function onRowActivate(row: RootRow) {
                 class="grid gap-3"
                 :class="row.panel === 'catsRound' ? 'pr-3 pb-3 pl-2' : 'px-3 pb-4'"
               >
-                <StatConfigBlockRules v-if="hasActiveView" :panel="row.panel" />
+                <div v-if="hasActiveView" class="grid gap-1">
+                  <StatConfigBlockRules :panel="row.panel" />
+                  <StatConfigSyncPanelButton :panel="row.panel" />
+                </div>
                 <template v-else>
                   <StatConfigPanelVisibility :panel="row.panel" />
                   <StatConfigPanelContent :panel="row.panel" />
+                  <StatConfigSyncPanelButton :panel="row.panel" />
                 </template>
-                <StatConfigSyncPanelButton :panel="row.panel" />
               </div>
             </template>
           </UCollapsible>

@@ -23,6 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const isMobile = useMediaQuery('(max-width: 767px)')
 const baseConfig = inject(statBaseConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const ruleConfig = computed(() => applyBlockRuleConfig(props.panel, baseConfig.config.value, props.rule.overrides))
@@ -39,6 +40,22 @@ const availableParameterItems = computed(() => BLOCK_RULE_PARAMETERS[props.panel
     label: t(parameter.titleKey),
     onSelect: () => addParameter(parameter.id),
   })))
+const ruleActionItems = computed(() => [[
+  {
+    icon: 'i-lucide-copy',
+    label: t('base.duplicate'),
+    onSelect: () => emit('duplicate'),
+  },
+  {
+    color: 'error' as const,
+    icon: 'i-lucide-trash-2',
+    label: t('base.delete'),
+    onSelect: () => emit('remove'),
+  },
+]])
+const popoverContent = computed(() => isMobile.value
+  ? { align: 'center' as const, side: 'bottom' as const, sideOffset: 6 }
+  : { align: 'start' as const, side: 'left' as const, sideOffset: 8 })
 const ruleProvider = {
   config: ruleConfig,
   updateConfig<K extends keyof MiniItemConfig>(key: K, value: Parameters<typeof applyConfigUpdate<K>>[2]) {
@@ -81,129 +98,117 @@ function removeParameter(id: string) {
     parameterIds: nextIds,
   })
 }
+
+function setExpanded(open: boolean) {
+  if (open !== props.isExpanded)
+    emit('toggleExpanded')
+}
 </script>
 
 <template>
-  <div
-    class="overflow-hidden rounded-lg border bg-default"
-    :class="isActive ? 'border-primary/50' : 'border-default'"
-  >
-    <div class="flex min-h-12 items-center gap-1 px-2" :class="isActive && 'bg-primary/5'">
-      <button
-        type="button"
-        role="switch"
-        :aria-checked="rule.isEnabled"
-        :aria-label="title"
-        class="flex shrink-0 items-center p-1"
-        @click="emit('update', { ...rule, isEnabled: !rule.isEnabled })"
-      >
-        <FormSwitch :value="rule.isEnabled" />
-      </button>
-      <button type="button" class="min-w-0 grow px-1 text-left" @click="emit('toggleExpanded')">
-        <span class="block truncate text-sm">{{ title }}</span>
-        <span class="block truncate text-xs text-muted">
-          {{ $t('stat.views.blockRules.parameterCount', { count: parameterIds.length }) }}
-        </span>
-      </button>
-      <UTooltip :text="$t('base.duplicate')">
-        <UiActionButton :ariaLabel="$t('base.duplicate')" @click="emit('duplicate')">
-          <Icon name="lucide:copy" size="16" />
-        </UiActionButton>
-      </UTooltip>
-      <UTooltip :text="$t('base.delete')">
-        <UiActionButton :ariaLabel="$t('base.delete')" @click="emit('remove')">
-          <Icon name="lucide:trash-2" class="text-error" size="16" />
-        </UiActionButton>
-      </UTooltip>
-      <div
-        class="blockRuleSortHandle sortHandle flex size-8 shrink-0 cursor-grab items-center justify-center rounded-md text-muted hover:bg-elevated active:cursor-grabbing"
-        :aria-label="$t('stat.views.drag')"
-      >
-        <Icon name="lucide:grip-vertical" size="18" />
-      </div>
-      <UiActionButton :ariaLabel="$t('base.toggleExpand')" @click="emit('toggleExpanded')">
-        <Icon
-          name="lucide:chevron-right"
-          class="shrink-0 text-muted transition-transform"
-          :class="isExpanded && 'rotate-90'"
-          size="18"
-        />
-      </UiActionButton>
+  <div class="flex min-w-0 items-center gap-1">
+    <div
+      class="blockRuleSortHandle sortHandle flex size-8 shrink-0 cursor-grab items-center justify-center rounded-md text-muted hover:bg-elevated active:cursor-grabbing"
+      :aria-label="$t('stat.views.drag')"
+    >
+      <Icon name="lucide:grip-vertical" size="18" />
     </div>
+    <div class="min-w-0 grow">
+      <UPopover
+        :open="isExpanded"
+        :content="popoverContent"
+        :ui="{
+          content: 'z-[70] max-h-[calc(100dvh-1rem)] w-120 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain p-0',
+        }"
+        @update:open="setExpanded"
+      >
+        <button
+          type="button"
+          class="flex min-h-10.5 w-full min-w-0 items-center gap-2 rounded-md px-3 text-left hover:bg-elevated/50"
+          :class="isActive && 'bg-primary/10 text-primary'"
+        >
+          <span class="min-w-0 grow truncate text-sm font-medium">{{ title }}</span>
+          <Icon name="lucide:chevron-down" class="size-4 shrink-0 text-muted" />
+        </button>
 
-    <UCollapsible :open="isExpanded" :ui="{ content: 'overflow-hidden' }">
-      <template #content>
-        <div class="grid gap-4 border-t border-default px-3 py-4">
-          <div class="grid gap-2">
-            <UiEntityName>{{ $t('stat.views.blockRules.if') }}</UiEntityName>
-            <StatViewsConditionEditor :modelValue="rule.condition" @update:modelValue="updateCondition" />
-          </div>
-          <div class="grid gap-2">
-            <UiEntityName>{{ $t('stat.views.blockRules.then') }}</UiEntityName>
-            <div v-if="parameterIds.length" class="grid gap-1">
-              <div
-                v-if="parameterIds.includes(BLOCK_RULE_VISIBILITY_PARAMETER_ID)"
-                class="flex min-w-0 items-center gap-1 rounded-sm pr-2 hover:bg-elevated/50"
-              >
-                <UiSwitchItem
-                  class="hover:bg-transparent!"
-                  :checkboxValue="!rule.isHidden"
-                  :title="$t('stat.views.blockRules.parameters.visibility')"
-                  trailing
-                  @click="emit('update', { ...rule, isHidden: !rule.isHidden })"
-                />
-                <UButton
-                  :aria-label="$t('stat.views.blockRules.removeParameter')"
-                  color="error"
-                  icon="i-lucide-x"
-                  size="xs"
-                  variant="ghost"
-                  @click="removeParameter(BLOCK_RULE_VISIBILITY_PARAMETER_ID)"
-                />
-              </div>
-              <StatConfigPanelContent
-                v-if="availableSelectedParameterIds.length"
-                :panel
-                :parameterIds="availableSelectedParameterIds"
-              />
-              <div
-                v-for="parameterId in unavailableSelectedParameterIds"
-                :key="parameterId"
-                class="flex min-w-0 items-center gap-1 rounded-sm pr-2 hover:bg-elevated/50"
-              >
-                <div class="grid min-w-0 grow gap-0.5 px-3 py-2 text-sm">
-                  <span class="truncate text-muted">
-                    {{ $t(BLOCK_RULE_PARAMETERS[panel].find(parameter => parameter.id === parameterId)?.titleKey ?? '') }}
-                  </span>
-                  <span class="truncate text-xs text-dimmed">{{ $t('stat.views.blockRules.parameterUnavailable') }}</span>
+        <template #content>
+          <div class="grid gap-4 p-3">
+            <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_2.625rem] items-start gap-2">
+              <span class="line-clamp-2 min-w-0 py-2 text-sm leading-5 font-medium wrap-break-word">{{ title }}</span>
+              <UDropdownMenu :items="ruleActionItems" :content="{ align: 'end' }" :modal="false">
+                <UiActionButton :ariaLabel="$t('base.moreOptions')" @click.stop>
+                  <Icon name="lucide:ellipsis" size="18" />
+                </UiActionButton>
+              </UDropdownMenu>
+            </div>
+            <StatViewsConditionEditor
+              :modelValue="rule.condition"
+              @update:modelValue="updateCondition"
+            />
+            <div class="grid gap-2">
+              <UiEntityName>{{ $t('stat.views.blockRules.then') }}</UiEntityName>
+              <div v-if="parameterIds.length" class="grid gap-1">
+                <div
+                  v-if="parameterIds.includes(BLOCK_RULE_VISIBILITY_PARAMETER_ID)"
+                  class="flex min-w-0 items-center gap-1 rounded-sm pr-2 hover:bg-elevated/50"
+                >
+                  <UiSwitchItem
+                    class="hover:bg-transparent!"
+                    :checkboxValue="!rule.isHidden"
+                    :title="$t('stat.views.blockRules.parameters.visibility')"
+                    trailing
+                    @click="emit('update', { ...rule, isHidden: !rule.isHidden })"
+                  />
+                  <UButton
+                    :aria-label="$t('stat.views.blockRules.removeParameter')"
+                    color="error"
+                    icon="i-lucide-x"
+                    size="xs"
+                    variant="ghost"
+                    @click="removeParameter(BLOCK_RULE_VISIBILITY_PARAMETER_ID)"
+                  />
                 </div>
-                <UButton
-                  :aria-label="$t('stat.views.blockRules.removeParameter')"
-                  color="error"
-                  icon="i-lucide-x"
-                  size="xs"
-                  variant="ghost"
-                  @click="removeParameter(parameterId)"
+                <StatConfigPanelContent
+                  v-if="availableSelectedParameterIds.length"
+                  :panel
+                  :parameterIds="availableSelectedParameterIds"
                 />
+                <div
+                  v-for="parameterId in unavailableSelectedParameterIds"
+                  :key="parameterId"
+                  class="flex min-w-0 items-center gap-1 rounded-sm pr-2 hover:bg-elevated/50"
+                >
+                  <div class="grid min-w-0 grow gap-0.5 px-3 py-2 text-sm">
+                    <span class="truncate text-muted">
+                      {{ $t(BLOCK_RULE_PARAMETERS[panel].find(parameter => parameter.id === parameterId)?.titleKey ?? '') }}
+                    </span>
+                    <span class="truncate text-xs text-dimmed">{{ $t('stat.views.blockRules.parameterUnavailable') }}</span>
+                  </div>
+                  <UButton
+                    :aria-label="$t('stat.views.blockRules.removeParameter')"
+                    color="error"
+                    icon="i-lucide-x"
+                    size="xs"
+                    variant="ghost"
+                    @click="removeParameter(parameterId)"
+                  />
+                </div>
               </div>
+              <UDropdownMenu :items="[availableParameterItems]">
+                <UButton
+                  class="w-full justify-start"
+                  color="neutral"
+                  :disabled="!availableParameterItems.length"
+                  icon="i-lucide-plus"
+                  :label="$t('stat.views.blockRules.addParameter')"
+                  size="sm"
+                  variant="ghost"
+                />
+              </UDropdownMenu>
             </div>
-            <div v-else class="rounded-md border border-dashed border-default px-3 py-4 text-center text-sm text-muted">
-              {{ $t('stat.views.blockRules.noParameters') }}
-            </div>
-            <UDropdownMenu :items="[availableParameterItems]">
-              <UButton
-                class="w-fit"
-                color="neutral"
-                :disabled="!availableParameterItems.length"
-                icon="i-lucide-plus"
-                :label="$t('stat.views.blockRules.addParameter')"
-                size="xs"
-                variant="soft"
-              />
-            </UDropdownMenu>
           </div>
-        </div>
-      </template>
-    </UCollapsible>
+        </template>
+      </UPopover>
+    </div>
   </div>
 </template>
