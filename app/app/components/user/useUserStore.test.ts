@@ -60,13 +60,6 @@ describe('useUserStore', () => {
       expect(setItem).toHaveBeenCalledWith(STORAGE_KEYS.userSettings, expect.objectContaining({ baseCurrency: 'EUR' }))
     })
 
-    it('persists the saved-view initialization marker in demo mode', () => {
-      h.demo.value = true
-      const store = useUserStore()
-      store.setStatViewsInitialized(true)
-      expect(store.isSettingsLoaded).toBe(true)
-      expect(setItem).toHaveBeenCalledWith(STORAGE_KEYS.userSettings, expect.objectContaining({ statViewsInitialized: true }))
-    })
   })
 
   it('no longer carries the removed offline-queue keys in STORAGE_KEYS', () => {

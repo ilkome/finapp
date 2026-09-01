@@ -30,7 +30,6 @@ export type User = {
 export type UserSettingsCache = {
   baseCurrency?: CurrencyCode
   locale?: LocaleSlug
-  statViewsInitialized?: boolean
   user?: User | null
 }
 
@@ -56,7 +55,6 @@ export const useUserStore = defineStore('user', () => {
   const isSigningOut = ref(false)
   const baseCurrency = ref<CurrencyCode>('USD')
   const locale = ref<LocaleSlug>('en')
-  const statViewsInitialized = ref(false)
   const isSettingsLoaded = ref(false)
 
   let watchController: AbortController | null = null
@@ -116,7 +114,6 @@ export const useUserStore = defineStore('user', () => {
       localforage.setItem(STORAGE_KEYS.userSettings, {
         baseCurrency: baseCurrency.value,
         locale: locale.value,
-        statViewsInitialized: statViewsInitialized.value,
       })
       return
     }
@@ -132,7 +129,6 @@ export const useUserStore = defineStore('user', () => {
     persistStoreCache('user', {
       baseCurrency: baseCurrency.value,
       locale: locale.value,
-      statViewsInitialized: statViewsInitialized.value,
       user: toRaw(user.value),
     } satisfies UserSettingsCache)
   }
@@ -149,7 +145,6 @@ export const useUserStore = defineStore('user', () => {
       locale.value = data.locale
       useNuxtApp().$i18n.setLocale(data.locale)
     }
-    statViewsInitialized.value = data.statViewsInitialized ?? false
   }
 
   function setUserBaseCurrency(value: CurrencyCode) {
@@ -193,30 +188,6 @@ export const useUserStore = defineStore('user', () => {
     })
   }
 
-  function setStatViewsInitialized(value: boolean) {
-    statViewsInitialized.value = value
-    if (isDemo.value)
-      isSettingsLoaded.value = true
-    persistUserSettings()
-  }
-
-  async function saveStatViewsInitialized() {
-    setStatViewsInitialized(true)
-    if (isDemo.value || !uid.value)
-      return
-    try {
-      await upsertRow('user_settings', uid.value, {
-        statViewsInitialized: 1,
-        userId: uid.value,
-      })
-    }
-    catch (error) {
-      statViewsInitialized.value = false
-      persistUserSettings()
-      logger.error('saveStatViewsInitialized failed', error)
-    }
-  }
-
   /** Real mode: subscribe to the user's settings row in local SQLite. */
   function initUserSettings(): void {
     if (isDemo.value)
@@ -234,7 +205,6 @@ export const useUserStore = defineStore('user', () => {
         locale.value = s.locale
         useNuxtApp().$i18n.setLocale(s.locale)
       }
-      statViewsInitialized.value = !!s.statViewsInitialized
       isSettingsLoaded.value = true
       // Civil-date model (P0): capture the device timezone so the backfill can map each
       // stored instant to the right calendar day. Written once / when it changes.
@@ -331,15 +301,12 @@ export const useUserStore = defineStore('user', () => {
     locale,
     primeFromCache,
     removeAllUserData,
-    saveStatViewsInitialized,
     saveUserBaseCurrency,
     saveUserLocale,
-    setStatViewsInitialized,
     setUser,
     setUserBaseCurrency,
     setUserLocale,
     signOut,
-    statViewsInitialized,
     uid,
   }
 })

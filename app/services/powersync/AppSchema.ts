@@ -59,7 +59,6 @@ const trns = new Table(
 const user_settings = new Table({
   baseCurrency: column.text,
   locale: column.text,
-  statViewsInitialized: column.integer,
   timezone: column.text, // IANA tz captured at entry; used by the civil-date backfill
   userId: column.text,
 })
@@ -75,6 +74,7 @@ const stat_views = new Table({
   autoRule: column.text,
   config: column.text,
   createdAt: column.integer,
+  isActive: column.integer,
   isAutoEnabled: column.integer,
   name: column.text,
   scope: column.text,

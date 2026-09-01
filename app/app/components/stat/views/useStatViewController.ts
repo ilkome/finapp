@@ -9,7 +9,6 @@ import type { SyncableStatConfigPanelId } from '~/components/stat/views/syncPane
 
 import { ConfigSchema } from '~/components/stat/config/schema'
 import { syncPanelConfig } from '~/components/stat/views/syncPanelConfig'
-import { useUserStore } from '~/components/user/useUserStore'
 
 import type { BlockRule, StatBlockPanelId, StatView, StatViewConfig, StatViewContext } from './types'
 
@@ -35,8 +34,7 @@ function cloneRules(value: BlockRule[]): BlockRule[] {
 export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<StatViewContext>) {
   const { t } = useI18n()
   const store = useStatViewsStore()
-  const userStore = useUserStore()
-  const activeId = useStorage<string | null>('finapp.dashboard.statView.active', null)
+  const activeId = computed(() => store.views.find(view => view.isActive)?.id ?? null)
   const manualFingerprint = useStorage<string | null>('finapp.dashboard.statView.manualFingerprint', null)
   const activeView = computed(() => store.views.find(view => view.id === activeId.value) ?? null)
   const configFingerprint = computed(() => JSON.stringify(config.value))
@@ -44,13 +42,14 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
   const currentFingerprint = computed(() => contextFingerprint(context.value))
 
   function clearActive(manual = true) {
-    activeId.value = null
+    void store.setActive(null)
     if (manual)
       manualFingerprint.value = currentFingerprint.value
   }
 
   function apply(view: StatView, manual = true) {
-    activeId.value = view.id
+    if (manual)
+      void store.setActive(view.id)
     config.value = cloneConfig(view.config.base)
     if (manual)
       manualFingerprint.value = currentFingerprint.value
@@ -108,6 +107,10 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
         await updateCurrent()
       })
   })
+  watch(activeView, (view) => {
+    if (view && JSON.stringify(config.value) !== JSON.stringify(view.config.base))
+      config.value = cloneConfig(view.config.base)
+  })
   async function syncPanelAcrossViews(panel: SyncableStatConfigPanelId, includeRules = false) {
     if (!activeView.value)
       return []
@@ -159,18 +162,14 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     return view ?? null
   }
   let isCreatingInitialView = false
-  watch([
-    () => store.isLoaded,
-    () => userStore.isSettingsLoaded,
-    () => userStore.statViewsInitialized,
-  ], async ([viewsLoaded, settingsLoaded, initialized]) => {
-    if (!viewsLoaded || !settingsLoaded || isCreatingInitialView || (initialized && store.views.length > 0))
+  watch(() => store.isLoaded, async (viewsLoaded) => {
+    if (!viewsLoaded || isCreatingInitialView || store.views.some(view => view.isActive))
       return
     isCreatingInitialView = true
     try {
-      if (initialized && !store.isDemo) {
+      if (!store.isDemo) {
         await waitForFirstSync()
-        if (store.views.length > 0)
+        if (store.views.some(view => view.isActive))
           return
       }
       const modernName = t('stat.views.modern')
@@ -185,7 +184,8 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       })
       if (!existing && previousIds.length)
         await store.reorder([modern.id, ...previousIds])
-      await userStore.saveStatViewsInitialized()
+      if (!store.views.some(view => view.isActive))
+        await store.setActive(modern.id)
       if (activeId.value === null)
         apply(modern, false)
     }

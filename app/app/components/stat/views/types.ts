@@ -49,6 +49,7 @@ export type StatView = {
   config: StatViewConfig
   createdAt: number
   id: string
+  isActive: boolean
   isAutoEnabled: boolean
   name: string
   scope: StatViewScope

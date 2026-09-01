@@ -14,7 +14,7 @@ import type { ConditionGroup, StatView, StatViewScope } from './types'
 
 import { StatViewSchema } from './schema'
 
-type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name'>>
+type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isActive' | 'isAutoEnabled' | 'name'>>
 
 const logger = createLogger('stat-views')
 const DEMO_KEY = 'finapp.statViews'
@@ -26,6 +26,7 @@ function rowToView(row: Row): StatView | null {
       ...row,
       autoRule: row.autoRule ? JSON.parse(String(row.autoRule)) : null,
       config: JSON.parse(String(row.config)),
+      isActive: !!row.isActive,
       isAutoEnabled: !!row.isAutoEnabled,
       sortOrder: Number(row.sortOrder),
     })
@@ -43,6 +44,7 @@ function viewToRow(view: StatView): Record<string, unknown> {
     autoRule: parsed.autoRule ? JSON.stringify(parsed.autoRule) : null,
     config: JSON.stringify(parsed.config),
     createdAt: parsed.createdAt,
+    isActive: parsed.isActive ? 1 : 0,
     isAutoEnabled: parsed.isAutoEnabled ? 1 : 0,
     name: parsed.name,
     scope: parsed.scope,
@@ -50,6 +52,14 @@ function viewToRow(view: StatView): Record<string, unknown> {
     updatedAt: parsed.updatedAt,
     userId: parsed.userId,
   }
+}
+
+function normalizeActiveViews(views: StatView[]): StatView[] {
+  const activeByScope = Map.groupBy(views.filter(view => view.isActive), view => view.scope)
+  const winners = new Set([...activeByScope.values()].map((active) => {
+    return active.toSorted((a, b) => b.updatedAt - a.updatedAt || a.id.localeCompare(b.id))[0]!.id
+  }))
+  return views.map(view => view.isActive && !winners.has(view.id) ? { ...view, isActive: false } : view)
 }
 
 export const useStatViewsStore = defineStore('statViews', () => {
@@ -78,8 +88,14 @@ export const useStatViewsStore = defineStore('statViews', () => {
       return
     }
     watchController = watchTable<Row>('SELECT * FROM stat_views WHERE scope = ? ORDER BY "sortOrder"', [scope], (rows) => {
-      setItems(rows.map(rowToView).filter((view): view is StatView => !!view))
+      const received = rows.map(rowToView).filter((view): view is StatView => !!view)
+      const normalized = normalizeActiveViews(received)
+      setItems(normalized)
       isLoaded.value = true
+      const changed = normalized.filter((view, index) => view.isActive !== received[index]!.isActive)
+      if (changed.length)
+        void upsertRows('stat_views', changed.map(view => ({ id: view.id, row: viewToRow(view) })))
+          .catch(error => logger.error('active view reconciliation failed', error))
     })
   }
 
@@ -99,6 +115,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
       autoRule: values.autoRule as ConditionGroup | null,
       createdAt: now,
       id: crypto.randomUUID(),
+      isActive: !views.value.some(view => view.scope === values.scope && view.isActive),
       sortOrder: views.value.filter(item => item.scope === values.scope).length,
       updatedAt: now,
       userId: isDemo.value ? DEMO_USER_ID : resolveWriteUid(uid.value),
@@ -203,7 +220,28 @@ export const useStatViewsStore = defineStore('statViews', () => {
     }
   }
 
-  return { create, init, isDemo, isLoaded, items, remove, reorder, update, updateMany, views }
+  async function setActive(id: string | null) {
+    const previous = items.value
+    const now = Date.now()
+    const next = previous.map((view) => {
+      const isActive = view.id === id
+      return isActive === view.isActive ? view : { ...view, isActive, updatedAt: now }
+    })
+    const changed = next.filter((view, index) => view.isActive !== previous[index]!.isActive)
+    if (!changed.length)
+      return
+    try {
+      await persist(next, changed)
+    }
+    catch (error) {
+      setItems(previous)
+      logger.error('set active failed', error)
+      showErrorToast('stat.views.errors.save')
+      throw error
+    }
+  }
+
+  return { create, init, isDemo, isLoaded, items, remove, reorder, setActive, update, updateMany, views }
 })
 
-export { rowToView, viewToRow }
+export { normalizeActiveViews, rowToView, viewToRow }

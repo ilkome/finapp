@@ -152,8 +152,6 @@ export function useInitApp() {
       if (userSettings.data.locale)
         userStore.setUserLocale(userSettings.data.locale)
     }
-    userStore.setStatViewsInitialized(userSettings.success ? userSettings.data.statViewsInitialized : false)
-
     const rates = ratesSchema.safeParse(rawCurrencies?.rates)
     if (rates.success)
       currenciesStore.setRates(rates.data)

@@ -3,7 +3,8 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { defaultConfig } from '~/components/stat/config/schema'
-import { useStatViewsStore } from '~/components/stat/views/useStatViewsStore'
+import { StatViewSchema } from '~/components/stat/views/schema'
+import { normalizeActiveViews, rowToView, useStatViewsStore, viewToRow } from '~/components/stat/views/useStatViewsStore'
 
 const h = vi.hoisted(() => ({
   auth: { uid: { value: null } },
@@ -42,5 +43,57 @@ describe('useStatViewsStore demo persistence', () => {
     expect(store.views).toEqual([view])
     expect(localforage.setItem).toHaveBeenCalledWith('finapp.statViews.dashboard', [view])
     expect(h.upsertRows).not.toHaveBeenCalled()
+  })
+
+  it('keeps one selected view for every device', async () => {
+    const store = useStatViewsStore()
+    await store.init()
+    const first = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'First', scope: 'dashboard' })
+    const second = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Second', scope: 'dashboard' })
+
+    await store.setActive(second.id)
+
+    expect(store.views).toMatchObject([
+      { id: first.id, isActive: false },
+      { id: second.id, isActive: true },
+    ])
+    expect(localforage.setItem).toHaveBeenLastCalledWith('finapp.statViews.dashboard', expect.arrayContaining([
+      expect.objectContaining({ id: second.id, isActive: true }),
+    ]))
+  })
+
+  it('stores active selection in the synchronized table column', async () => {
+    const store = useStatViewsStore()
+    await store.init()
+    const view = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Active', scope: 'dashboard' })
+    const row = viewToRow(view)
+
+    expect(row.isActive).toBe(1)
+    expect(JSON.parse(String(row.config))).not.toHaveProperty('isActive')
+    expect(rowToView({ id: view.id, ...row })?.isActive).toBe(true)
+  })
+})
+
+describe('active view conflict resolution', () => {
+  it('keeps the most recently selected view active', () => {
+    const older = StatViewSchema.parse({
+      autoRule: null,
+      config: { base: structuredClone(defaultConfig), blockRules: {} },
+      createdAt: 1,
+      id: 'older',
+      isActive: true,
+      isAutoEnabled: false,
+      name: 'Older',
+      scope: 'dashboard',
+      sortOrder: 0,
+      updatedAt: 10,
+      userId: 'u1',
+    })
+    const newer = StatViewSchema.parse({ ...older, id: 'newer', name: 'Newer', sortOrder: 1, updatedAt: 20 })
+
+    expect(normalizeActiveViews([older, newer]).map(view => ({ id: view.id, isActive: view.isActive }))).toEqual([
+      { id: 'older', isActive: false },
+      { id: 'newer', isActive: true },
+    ])
   })
 })

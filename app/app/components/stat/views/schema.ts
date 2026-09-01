@@ -48,6 +48,7 @@ export const StatViewSchema = z.object({
   config: StatViewConfigSchema,
   createdAt: z.number().int().nonnegative(),
   id: z.string().min(1),
+  isActive: z.boolean().default(false),
   isAutoEnabled: z.boolean(),
   name: z.string().trim().min(1).max(120),
   scope: z.literal('dashboard'),

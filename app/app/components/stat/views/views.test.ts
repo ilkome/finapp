@@ -25,6 +25,7 @@ function view(id: string, sortOrder: number, rule: ConditionGroup = { children: 
     config: { base: defaultConfig, blockRules: {} },
     createdAt: 1,
     id,
+    isActive: false,
     isAutoEnabled: true,
     name: id,
     scope: 'dashboard' as const,

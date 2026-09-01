@@ -4,6 +4,7 @@ create table public.stat_views (
   scope text not null default 'dashboard',
   name text not null,
   config jsonb not null,
+  "isActive" boolean not null default false,
   "isAutoEnabled" boolean not null default false,
   "autoRule" jsonb,
   "sortOrder" integer not null default 0,
