@@ -130,6 +130,9 @@ export function useStatReportData(params: {
     return trnsStore.getStoreTrnsIds({ dates: params.statDate.range.value, trnsIds: params.trnsIds.value })
   })
   const hasCategoryFilter = computed(() => params.effectiveFilteredCategoriesIds.value.length > 0)
+  const filteredTransactibleCategoryIds = computed(() =>
+    categoriesStore.getTransactibleIds(params.effectiveFilteredCategoriesIds.value),
+  )
   const rangeTrnsIdsWithFilteredCategories = computed(() => {
     if (!hasCategoryFilter.value)
       return rangeTrnsIds.value
@@ -138,7 +141,7 @@ export function useStatReportData(params: {
         statDevMetrics.getStoreTrnsIdsCount.value++
       })
     }
-    return trnsStore.getStoreTrnsIds({ categoriesIds: params.effectiveFilteredCategoriesIds.value, trnsIds: rangeTrnsIds.value })
+    return trnsStore.getStoreTrnsIds({ categoriesIds: filteredTransactibleCategoryIds.value, trnsIds: rangeTrnsIds.value })
   })
   const statExcludedIds = computed<ReadonlySet<CategoryId> | undefined>(() =>
     params.applyStatsExclusion?.value && !hasCategoryFilter.value ? categoriesStore.excludedFromStatsIds : undefined,
@@ -198,7 +201,7 @@ export function useStatReportData(params: {
         statDevMetrics.getStoreTrnsIdsCount.value++
       })
     }
-    return trnsStore.getStoreTrnsIds({ categoriesIds: params.effectiveFilteredCategoriesIds.value, trnsIds: chartRangeTrnsIds.value })
+    return trnsStore.getStoreTrnsIds({ categoriesIds: filteredTransactibleCategoryIds.value, trnsIds: chartRangeTrnsIds.value })
   })
   const chartIntervalsData = computed(() => bucketTrnsByIntervals(
     trnsStore.items ?? {},

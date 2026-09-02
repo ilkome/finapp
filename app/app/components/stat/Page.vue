@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Range } from '~~/utils/date/types'
+
 import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -9,6 +11,8 @@ import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { useFilter } from '~/components/filter/useFilter'
 import { collectCategoriesByTrns } from '~/components/stat/categories/collectAndGroup'
 import { applyConfigUpdate } from '~/components/stat/config/schema'
+import { calculateBestGranularityBy } from '~/components/stat/date/params'
+import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { statConfigKey, statContentWidthKey, statViewControllerKey } from '~/components/stat/injectionKeys'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
@@ -38,17 +42,32 @@ const walletSourceTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
 }))
 
-const maxRange = computed(() => trnsStore.getRange(walletSourceTrnsIds.value))
+const baseMaxRange = computed(() => trnsStore.getRange(walletSourceTrnsIds.value))
+const contextualMaxRange = shallowRef<Range | null>(null)
+const maxRange = computed(() => contextualMaxRange.value ?? baseMaxRange.value)
 
 const { statConfig, statDate } = useStatPageProviders({
   config: { legacyStorageKey, legacyTab, stableStorage: true, storageKey },
   date: { key: storageKey, legacyKey: legacyStorageKey, maxRange, queryParams: route.query },
   filter,
 })
+const contextRange = computed(() => resolveStatSelectionRange(
+  statDate.range.value,
+  statDate.selectedInterval.value,
+  statDate.params.value.intervalSelected,
+))
+
+watch(contextualMaxRange, (range) => {
+  if (!statDate.params.value.isShowMaxRange)
+    return
+  const granularityBy = calculateBestGranularityBy(range ?? baseMaxRange.value)
+  if (statDate.params.value.granularityBy !== granularityBy || statDate.params.value.granularityDuration !== 1)
+    statDate.setGranularity({ granularityBy, granularityDuration: 1 })
+}, { immediate: true })
 
 const viewContext = computed(() => {
   const selectedIds = filter.categoriesIds.value
-  const rangeTrnsIds = trnsStore.getStoreTrnsIds({ dates: statDate.range.value, trnsIds: trnsIds.value })
+  const rangeTrnsIds = trnsStore.getStoreTrnsIds({ dates: contextRange.value, trnsIds: trnsIds.value })
   const categoryIds = Object.keys(collectCategoriesByTrns({
     categoriesItems: categoriesStore.items,
     excludedCategoriesIds: categoriesStore.excludedFromStatsIds,
@@ -60,7 +79,7 @@ const viewContext = computed(() => {
     categoryCount: categoryIds.length,
     contentWidth: contentWidth.value,
     parentCategoryCount: parents.size,
-    range: statDate.range.value,
+    range: contextRange.value,
     selectedCategoryIds: selectedIds,
     selectedWalletIds: filter.walletsIds.value,
   }
@@ -152,6 +171,7 @@ onDeactivated(() => {
       :walletSourceTrnsIds
       hasChildren
       showWallets
+      @contextualMaxRange="contextualMaxRange = $event"
     />
   </UiPage>
 </template>

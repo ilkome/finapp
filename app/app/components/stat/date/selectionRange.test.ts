@@ -1,0 +1,20 @@
+import { describe, expect, it } from 'vitest'
+
+import { resolveStatSelectionRange } from './selectionRange'
+
+describe('resolveStatSelectionRange', () => {
+  const range = { end: 10, start: 1 }
+  const selectedInterval = { end: 6, start: 4 }
+
+  it('uses the selected chart interval for statistics context', () => {
+    expect(resolveStatSelectionRange(range, selectedInterval, 2)).toBe(selectedInterval)
+  })
+
+  it('uses the full range when no chart interval is selected', () => {
+    expect(resolveStatSelectionRange(range, selectedInterval, -1)).toBe(range)
+  })
+
+  it('falls back to the full range while a selected interval is unavailable', () => {
+    expect(resolveStatSelectionRange(range, undefined, 2)).toBe(range)
+  })
+})

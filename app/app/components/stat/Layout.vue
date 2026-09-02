@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { Range } from '~~/utils/date/types'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { StatConfigBlockId, StatReportBlockId } from '~/components/stat/config/schema'
 import type { SeriesSlugSelected, StatQuickCategoryFilter, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
@@ -9,8 +11,10 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { statReportBlockOrder } from '~/components/stat/config/schema'
+import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { statCanSplitKey, statConfigKey, statContentWidthKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { resolveQuickCategorySelection } from '~/components/stat/quickCategorySelection'
+import { shouldUseContextualMaxRange } from '~/components/stat/report/contextualMaxRange'
 import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
@@ -32,6 +36,10 @@ const props = withDefaults(defineProps<{
   walletId?: WalletId
   walletSourceTrnsIds?: TrnId[]
 }>(), { reportType: 'combined' })
+
+const emit = defineEmits<{
+  contextualMaxRange: [range: Range | null]
+}>()
 
 const isDev = import.meta.dev
 const filter = inject(filterKey)!
@@ -67,9 +75,11 @@ const projections = computed(() => {
   return { combined: props.trnsIds, expense, income }
 })
 
-const selectionRange = computed(() => statDate.params.value.intervalSelected >= 0
-  ? statDate.selectedInterval.value ?? statDate.range.value
-  : statDate.range.value)
+const selectionRange = computed(() => resolveStatSelectionRange(
+  statDate.range.value,
+  statDate.selectedInterval.value,
+  statDate.params.value.intervalSelected,
+))
 const sharedSelection = computed(() => buildSortedStatReportSelection({
   sourceIds: trnsStore.getStoreTrnsIds({ dates: selectionRange.value, trnsIds: props.trnsIds }),
   trnsItems: trnsStore.items ?? {},
@@ -157,6 +167,23 @@ const periodWalletIds = computed(() => {
   return getUsedWalletIds(periodTrnsIds, trnsStore.items ?? {})
 })
 const isCategoryFocusActive = computed(() => contexts.combined.effectiveFilteredCategoriesIds.value.length > 0)
+const contextualMaxRange = computed<Range | null>(() => {
+  const categoryIds = contexts.combined.effectiveFilteredCategoriesIds.value
+  if (!shouldUseContextualMaxRange({
+    categoryIds,
+    isShowMaxRange: statDate.params.value.isShowMaxRange,
+    selectedType: activeWalletType.value,
+  })) {
+    return null
+  }
+
+  const ids = trnsStore.getStoreTrnsIds({
+    categoriesIds: categoriesStore.getTransactibleIds(categoryIds),
+    trnsIds: props.trnsIds,
+    trnsTypes: getTypesMapping(activeWalletType.value),
+  })
+  return ids.length ? trnsStore.getRange(ids) : null
+})
 const hiddenPanelIds = computed(() => new Set(props.hiddenPanels ?? []))
 const orderedBlocks = computed(() => statConfig.config.value.page.blockOrder.filter((block) => {
   if (hiddenPanelIds.value.has(block))
@@ -227,6 +254,7 @@ watchEffect(() => {
   if (contentWidth)
     contentWidth.value = statLayoutWidth.value > 0 ? Math.round(statLayoutWidth.value) : null
 })
+watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediate: true })
 </script>
 
 <template>

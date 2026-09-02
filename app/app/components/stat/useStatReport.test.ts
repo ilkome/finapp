@@ -7,6 +7,8 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 import type { IntervalData, StatQuickCategoryFilter } from '~/components/stat/types'
 
+import { TrnType } from '~/components/trns/types'
+
 // ---------------------------------------------------------------------------
 // Stub Nuxt/Vue auto-imports used by useStatReport
 // ---------------------------------------------------------------------------
@@ -336,6 +338,28 @@ describe('useStatReport', () => {
       expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
         categoriesIds: ['cat1'],
         trnsIds: ['in-range'],
+      }))
+    })
+
+    it('intersects wallet source ids, income type, and a parent quick category for the chart', () => {
+      const walletFilteredIds = ['t1', 't2']
+      const item = createStatReport({
+        chartBreakdown: 'categories',
+        intervalsInRange: [{ end: 200, start: 100 }],
+        trnsIds: walletFilteredIds,
+      })
+
+      item.onClickSumItem('income')
+      item.onSetCategoryFilter('parent')
+      void item.chartSeries.value
+
+      expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
+        trnsIds: walletFilteredIds,
+        trnsTypes: [TrnType.Income],
+      }))
+      expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
+        categoriesIds: ['cat1'],
+        trnsIds: walletFilteredIds,
       }))
     })
 
