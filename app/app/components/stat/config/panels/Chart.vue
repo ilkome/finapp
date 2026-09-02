@@ -55,7 +55,7 @@ const quickRangeItemById = computed(() => new Map(dateRangeOptions.value.map(opt
 const quickRangeValue = computed<QuickRangeOptionId[]>(() => statConfig.config.value.date.quickRangeIds)
 const [quickRangeSortParent, sortedQuickRangeIds] = useDragAndDrop(
   [...statConfig.config.value.date.quickRangeOrderIds] as QuickRangeOptionId[],
-  { dragHandle: '.quickRangeSortHandle' },
+  { dragHandle: '.sortableSelectionHandle' },
 )
 
 watch(() => statConfig.config.value.date.quickRangeOrderIds, (ids) => {
@@ -273,7 +273,7 @@ const quickRangeSelectionLabel = computed(() => {
           sideOffset: 8,
         }"
         :ui="{
-          content: 'z-[60] max-h-96 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain md:max-h-[calc(100dvh-2rem)]',
+          content: 'z-[60] max-w-[calc(100vw-1rem)] overflow-hidden',
         }"
       >
         <UButton
@@ -289,39 +289,22 @@ const quickRangeSelectionLabel = computed(() => {
         </UButton>
 
         <template #content>
-          <div ref="quickRangeSortParent" class="grid min-w-56 gap-1 p-2">
-            <div
+          <div
+            ref="quickRangeSortParent"
+            class="scroller grid min-w-56 gap-1 overflow-y-auto overscroll-contain p-2"
+            style="max-height: var(--reka-popper-available-height, 60dvh)"
+          >
+            <UiSortableSelectionItem
               v-for="id in sortedQuickRangeIds"
               :key="id"
-              class="flex items-center gap-1 theme-rounded-control text-sm text-highlighted hover:bg-elevated"
+              :ariaLabel="t('stat.views.drag')"
+              :isSelected="quickRangeValue.includes(id)"
+              selectionMode="multiple"
+              @move="direction => moveQuickRange(id, direction)"
+              @select="setQuickRange(id, !quickRangeValue.includes(id))"
             >
-              <button
-                type="button"
-                class="flex min-w-0 grow items-center gap-2 py-2 pr-1 pl-2.5"
-                role="checkbox"
-                :aria-checked="quickRangeValue.includes(id)"
-                @click="setQuickRange(id, !quickRangeValue.includes(id))"
-              >
-                <Icon
-                  v-if="quickRangeValue.includes(id)"
-                  name="lucide:check"
-                  class="shrink-0 text-primary"
-                  size="16"
-                />
-                <span v-else class="size-4 shrink-0" />
-                <span class="grow truncate text-left">{{ quickRangeItemById.get(id)?.label }}</span>
-              </button>
-              <div
-                class="quickRangeSortHandle mr-1 flex size-8 shrink-0 cursor-grab items-center justify-center rounded-md text-muted hover:bg-accented active:cursor-grabbing"
-                role="button"
-                tabindex="0"
-                :aria-label="t('stat.views.drag')"
-                @keydown.up.prevent="moveQuickRange(id, -1)"
-                @keydown.down.prevent="moveQuickRange(id, 1)"
-              >
-                <Icon name="lucide:grip-vertical" size="20" />
-              </div>
-            </div>
+              {{ quickRangeItemById.get(id)?.label }}
+            </UiSortableSelectionItem>
           </div>
         </template>
       </UPopover>

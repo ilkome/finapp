@@ -16,6 +16,7 @@ const { t } = useI18n()
 const statDate = inject(statDateKey)!
 
 const viewTab = ref<'presets' | 'calendar'>('presets')
+const isGranularityOpen = useStoredToggle('stat-date-granularity', true)
 const viewTabItems = computed<TabsItem[]>(() => [
   { label: t('dates.calendar.presets'), value: 'presets' },
   { label: t('dates.calendar.calendar'), value: 'calendar' },
@@ -74,7 +75,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
 
     <div
       v-if="viewTab === 'presets'"
-      class="grid gap-4 pt-4"
+      class="grid gap-4 pt-2"
     >
       <!-- Presets -->
       <div class="grid grid-cols-2 items-start gap-3">
@@ -87,6 +88,7 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
           />
 
           <StatDateRanges
+            isShowRangeAdjust
             :statDate
             vertical
             view="maximum"
@@ -121,25 +123,39 @@ function onSelectRange(value: { end: unknown, start: unknown }) {
         </div>
       </div>
 
-      <!-- Grouped by -->
-      <div class="grid gap-3">
-        <UiTitleSection size="sm" class="px-1">
-          {{ t('dates.calendar.granularity') }}
-        </UiTitleSection>
+      <UCollapsible v-model:open="isGranularityOpen">
+        <button
+          type="button"
+          class="-my-0.25 flex min-h-10.5 w-full items-center gap-1 overflow-hidden rounded-md border border-transparent interactive px-3 py-1.5 text-left"
+          :aria-expanded="isGranularityOpen"
+        >
+          <UiEntityName>
+            {{ t('dates.calendar.granularity') }}
+          </UiEntityName>
+          <Icon
+            :name="isGranularityOpen ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+            class="shrink-0 text-muted"
+            size="18"
+          />
+        </button>
 
-        <UiTabs
-          size="xs"
-          :items="granularityItems"
-          :modelValue="statDate.params.value.granularityBy"
-          @update:modelValue="onSelectGranularityBy"
-        />
+        <template #content>
+          <div class="grid gap-3 pt-2">
+            <UiTabs
+              size="xs"
+              :items="granularityItems"
+              :modelValue="statDate.params.value.granularityBy"
+              @update:modelValue="onSelectGranularityBy"
+            />
 
-        <UiInlineStepper
-          :value="statDate.params.value.granularityDuration"
-          @dec="statDate.minusGranularity"
-          @inc="statDate.plusGranularity"
-        />
-      </div>
+            <UiNumberStepper
+              :modelValue="statDate.params.value.granularityDuration"
+              :min="1"
+              @update:modelValue="statDate.setGranularityDuration"
+            />
+          </div>
+        </template>
+      </UCollapsible>
     </div>
 
     <!-- @vue-ignore -->

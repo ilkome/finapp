@@ -33,8 +33,9 @@ defineEmits<{
       role="button"
       tabindex="0"
       :aria-expanded="hasPanel ? isExpanded : undefined"
-      class="flex grow flex-col justify-center py-3 pr-2 pl-3"
+      class="flex grow flex-col justify-center py-3 pr-2"
       :class="[
+        sortable ? 'pl-2' : 'pl-3',
         !sortable && (isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'),
         !hasToggle && (isExpanded ? 'rounded-tr-lg pr-3' : 'rounded-r-sm pr-3'),
       ]"

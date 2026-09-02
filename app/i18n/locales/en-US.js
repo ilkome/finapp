@@ -259,8 +259,8 @@ export default {
       simple: 'Month',
     },
     ranges: {
-      all: 'All',
-      allSkipEmpty: 'Maximum',
+      all: 'To today',
+      allSkipEmpty: 'All',
     },
     select: 'Select period',
     week: {

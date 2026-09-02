@@ -259,8 +259,8 @@ export default {
       simple: 'Месяц',
     },
     ranges: {
-      all: 'Все',
-      allSkipEmpty: 'Максимально',
+      all: 'До сегодня',
+      allSkipEmpty: 'Все',
     },
     select: 'Период',
     week: {

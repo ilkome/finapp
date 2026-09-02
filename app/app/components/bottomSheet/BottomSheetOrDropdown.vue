@@ -6,6 +6,8 @@ const props = withDefaults(defineProps<{
   isOpen?: boolean
   isShowCloseBtn?: boolean
   keyboardTrigger?: boolean
+  popoverBodyClass?: string
+  popoverContentClass?: string
   snapPoints?: number[]
   title?: string
   titleClass?: string
@@ -51,7 +53,7 @@ function closeMobileSheet(closeSheet: () => void) {
       side: 'bottom',
     }"
     :ui="{
-      content: 'z-50 overflow-hidden',
+      content: cn('z-50 overflow-hidden', props.popoverContentClass),
     }"
     class="popoverGroup grow overflow-hidden"
   >
@@ -61,6 +63,7 @@ function closeMobileSheet(closeSheet: () => void) {
       <UiPopoverWrap
         :title="props.title"
         :titleClass="props.titleClass"
+        :contentClass="props.popoverBodyClass"
         :isShowCloseBtn="props.isShowCloseBtn"
         :isShowScroll="!$slots.custom"
         @close="() => open = false"

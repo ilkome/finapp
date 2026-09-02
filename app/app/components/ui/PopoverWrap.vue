@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
+  contentClass?: string
   isShowCloseBtn?: boolean
   isShowScroll?: boolean
   title?: string
@@ -29,8 +30,11 @@ const emit = defineEmits<{
 
     <div
       v-if="$slots.default"
-      :class="props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden'"
-      class="min-h-0 px-2 py-px md:pb-4"
+      :class="cn(
+        props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden',
+        'min-h-0 px-2 py-px md:pb-4',
+        props.contentClass,
+      )"
     >
       <slot />
     </div>

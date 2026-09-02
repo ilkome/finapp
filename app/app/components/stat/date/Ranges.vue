@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { TabsItem } from '@nuxt/ui'
 
-import type { QuickRangeOptionId, StatDateRangeView } from '~/components/stat/date/useRangeOptions'
 import type { StatDateProvider } from '~/components/stat/date/types'
+import type { QuickRangeOptionId, StatDateRangeView } from '~/components/stat/date/useRangeOptions'
 
 import { useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
 
@@ -86,14 +86,6 @@ function onSelectRangeKey(key: string | number) {
       @update:modelValue="onSelectRangeKey"
     />
 
-    <template v-if="props.isShowRangeAdjust">
-      <UiInlineStepper
-        :value="props.statDate.params.value.rangeDuration"
-        @dec="props.statDate.minusRange"
-        @inc="props.statDate.plusRange"
-      />
-    </template>
-
     <UiTabs
       v-if="props.view === 'maximum'"
       :align="props.vertical ? 'left' : 'center'"
@@ -104,6 +96,13 @@ function onSelectRangeKey(key: string | number) {
       :items="rangeTabItems"
       :modelValue="selectedMaxRangeKey"
       @update:modelValue="onSelectRangeKey"
+    />
+
+    <UiNumberStepper
+      v-if="props.isShowRangeAdjust && !props.statDate.params.value.isShowMaxRange"
+      :modelValue="props.statDate.params.value.rangeDuration"
+      :min="1"
+      @update:modelValue="props.statDate.setRangeDuration"
     />
   </div>
 </template>

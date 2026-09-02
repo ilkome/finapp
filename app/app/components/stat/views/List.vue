@@ -10,7 +10,7 @@ const { conditionGroupTitle } = useStatConditionTitles()
 const controller = inject(statViewControllerKey, null)
 const deleteId = ref<string | null>(null)
 const [viewsParent, sortedViewIds] = useDragAndDrop([] as string[], {
-  dragHandle: '.viewSortHandle',
+  dragHandle: '.sortableSelectionHandle',
 })
 
 const views = computed(() => controller?.store.views ?? [])
@@ -27,6 +27,18 @@ function selectView(id: string) {
   const view = viewsById.value.get(id)
   if (view)
     controller?.apply(view)
+}
+
+function moveView(id: string, direction: -1 | 1) {
+  const index = sortedViewIds.value.indexOf(id)
+  const target = index + direction
+  if (index < 0 || target < 0 || target >= sortedViewIds.value.length)
+    return
+  const next = [...sortedViewIds.value]
+  const current = next[index]!
+  next[index] = next[target]!
+  next[target] = current
+  sortedViewIds.value = next
 }
 
 function duplicate(id: string) {
@@ -83,43 +95,26 @@ async function remove(id: string) {
 <template>
   <div v-if="controller" class="grid gap-1">
     <div ref="viewsParent" class="grid gap-1">
-      <UiElement
+      <UiSortableSelectionItem
         v-for="viewId in sortedViewIds"
         :key="viewId"
-        insideClasses="group min-h-[46px] gap-1 px-1 py-1.5"
+        :ariaLabel="$t('stat.views.drag')"
+        :isSelected="currentId === viewId"
+        @move="direction => moveView(viewId, direction)"
+        @select="selectView(viewId)"
       >
-        <div
-          class="viewSortHandle -my-1.5 -ml-1 flex w-11 shrink-0 cursor-grab items-center justify-center self-stretch rounded-l-md text-muted hover:bg-accented active:cursor-grabbing"
-          :aria-label="$t('stat.views.drag')"
-        >
-          <Icon name="lucide:grip-vertical" size="20" />
-        </div>
-        <button
-          type="button"
-          class="flex min-w-0 grow items-center self-stretch rounded-md px-1 text-left"
-          :aria-pressed="currentId === viewId"
-          @click="selectView(viewId)"
-        >
-          <span class="grid min-w-0 grow gap-0.5">
-            <span class="flex min-w-0 items-center gap-1">
-              <UiEntityName>
-                {{ viewsById.get(viewId)?.name }}
-              </UiEntityName>
-              <Icon
-                v-if="currentId === viewId"
-                name="lucide:check"
-                class="size-4 shrink-0 text-primary"
-              />
-            </span>
-            <UiEntityName v-if="ruleDescription(viewId)" variant="secondary">
-              {{ ruleDescription(viewId) }}
-            </UiEntityName>
-          </span>
-        </button>
-        <UDropdownMenu :items="viewActionItems(viewId)" :content="{ align: 'end' }" :modal="false">
-          <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
-        </UDropdownMenu>
-      </UiElement>
+        {{ viewsById.get(viewId)?.name }}
+
+        <template v-if="ruleDescription(viewId)" #description>
+          {{ ruleDescription(viewId) }}
+        </template>
+
+        <template #actions>
+          <UDropdownMenu :items="viewActionItems(viewId)" :content="{ align: 'end' }" :modal="false">
+            <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
+          </UDropdownMenu>
+        </template>
+      </UiSortableSelectionItem>
     </div>
 
     <LayoutConfirmModal
