@@ -63,9 +63,9 @@ onBeforeUnmount(onClose)
       <Transition name="statConfigSidebar" appear>
         <aside
           v-if="isOpen"
-          class="@container/statConfig fixed inset-y-0 right-0 z-50 h-dvh w-90 py-4"
+          class="@container/statConfig fixed inset-y-0 right-0 z-50 h-dvh w-100 py-4"
         >
-          <div class="relative h-full overflow-hidden rounded-md border border-accented bg-default shadow-2xl lg:rounded-2xl">
+          <div class="relative h-full overflow-hidden rounded-md border border-accented bg-default shadow-2xl lg:rounded-lg">
             <div class="h-full overflow-y-auto overscroll-contain">
               <div class="sticky top-0 z-20 flex min-h-14 items-center gap-1 bg-default/90 px-2 backdrop-blur">
                 <UiHeaderTitle class="min-w-0 grow truncate px-2 md:text-xl">
@@ -74,7 +74,7 @@ onBeforeUnmount(onClose)
                 <UiButtonClose class="shrink-0" @click="onClose" />
               </div>
 
-              <div class="px-3 pb-6">
+              <div class="px-3 pb-8">
                 <slot :close="onClose" />
               </div>
             </div>

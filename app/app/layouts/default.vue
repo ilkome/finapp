@@ -55,7 +55,8 @@ const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
   showShell.value && 'bg-muted',
   showShell.value && (isStatConfigOpen.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
-  isOnboarded.value && (trnsFormStore.ui.isShow || isStatConfigOpen.value) && 'md:pr-90',
+  isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
+  isOnboarded.value && isStatConfigOpen.value && 'md:pr-100',
 ))
 
 useAsyncData('app', initApp)
@@ -113,7 +114,7 @@ defineShortcuts({
       </template>
 
       <div :class="showShell ? 'flex min-h-dvh flex-col md:py-4 md:pr-4' : 'flex flex-1 items-center justify-center'">
-        <div :class="showShell ? 'bg-default md:border-accented relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-2xl' : 'w-full max-w-lg px-4'">
+        <div :class="showShell ? 'bg-default md:border-accented relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-lg' : 'w-full max-w-lg px-4'">
           <main
             id="pageScroll"
             :style="showShell ? 'padding-bottom: calc(64px + env(safe-area-inset-bottom))' : ''"

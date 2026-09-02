@@ -52,7 +52,7 @@ watch(isShow, async (v) => {
       v-if="isShow"
       class="trnForm @container/trnForm fixed inset-y-0 right-0 z-50 h-dvh w-90 py-4"
     >
-      <div class="relative h-full overflow-hidden rounded-l-xl border border-accented shadow-2xl">
+      <div class="relative h-full overflow-hidden rounded-l-xl border border-accented shadow-2xl lg:rounded-l-lg">
         <div class="absolute top-2 right-2">
           <UiButtonClose @click="trnsFormStore.onClose()" />
         </div>
