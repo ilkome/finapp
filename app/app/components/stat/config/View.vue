@@ -11,17 +11,6 @@ import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
-// hasCategoryBreakdown needs an explicit `true` default: an absent Boolean prop would
-// otherwise cast to false and hide the category-breakdown controls (grouping / rounds /
-// list / vertical) on every page that never opts out. Only leaf categories pass false.
-const props = withDefaults(defineProps<{
-  hasCategoryBreakdown?: boolean
-  hasTrnsConfig?: boolean
-  isShowWallets?: boolean
-}>(), {
-  hasCategoryBreakdown: true,
-})
-
 const { t } = useI18n()
 const { isOpen: isConfigOpen } = useStatConfigOverlay()
 const statConfig = inject(statBaseConfigKey)!
@@ -33,17 +22,8 @@ const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId
   dragHandle: '.sortHandle',
 })
 
-const showCategoryConfig = computed(() => props.hasTrnsConfig && props.hasCategoryBreakdown)
-
 const availablePanels = computed<ConfigPanelId[]>(() => {
-  const panels: ConfigPanelId[] = ['statAverage', 'navigation', 'summary']
-  if (props.isShowWallets)
-    panels.push('wallets')
-  if (props.hasTrnsConfig)
-    panels.push('chart', 'trns')
-  if (showCategoryConfig.value)
-    panels.push('catsRound', 'catsList', 'vertical')
-  return panels
+  return ['statAverage', 'navigation', 'summary', 'wallets', 'chart', 'trns', 'catsRound', 'catsList', 'vertical']
 })
 const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
   availablePanels.value.filter((panel): panel is StatConfigBlockId => panel !== 'statAverage'),

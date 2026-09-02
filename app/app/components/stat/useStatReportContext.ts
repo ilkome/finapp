@@ -77,7 +77,6 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     ...params.filter.walletsIds.value,
   ])])
   const onOpenCategory = useStatCategoryNavigation({
-    categoriesIds: params.filter.categoriesIds,
     snapshot: computed(() => {
       const shouldCarryStatState = !params.categoryId?.value
         || getStatSnapshotQueryId(route.query.statSnapshot) !== null

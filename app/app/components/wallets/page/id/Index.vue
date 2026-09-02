@@ -3,9 +3,11 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/filter/useFilter'
+import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
+import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -17,7 +19,7 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
-const filter = useFilter()
+const filter = useFilter({ canFilterWallets: false })
 const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
@@ -39,19 +41,11 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const { statConfig } = useStatPageProviders({
+const { contentWidth, statConfig, statDate } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
     legacyStorageKey,
     legacyTab,
-    props: {
-      categories: {
-        isShowEmpty: true,
-      },
-      wallets: {
-        isShow: false,
-      },
-    },
     storage: isStatDrilldown ? sessionStorage : localStorage,
     storageKey,
     storageQuery,
@@ -66,6 +60,20 @@ const { statConfig } = useStatPageProviders({
   },
   filter,
   initialTrnsViewState: statSnapshot?.trns,
+})
+
+const contextRange = computed(() => resolveStatSelectionRange(
+  statDate.range.value,
+  statDate.selectedInterval.value,
+  statDate.params.value.intervalSelected,
+))
+const { hiddenPanels } = useStatPageViews({
+  contentWidth,
+  filter,
+  range: contextRange,
+  statConfig,
+  trnsIds,
+  walletId,
 })
 
 watch(filter.categoriesIds, () => {
@@ -127,8 +135,6 @@ async function onDeleteConfirm() {
       ref="statHeader"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
-      :trnsIds
-      configCategories
     >
       <template #title>
         <UiHeaderTitle>
@@ -202,6 +208,7 @@ async function onDeleteConfirm() {
     </div>
 
     <StatLayout
+      :hiddenPanels
       :storageKey
       :trnsIds
       :walletId

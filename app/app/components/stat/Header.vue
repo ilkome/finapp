@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
 
-import type { CategoryId } from '~/components/categories/types'
-import type { TrnId } from '~/components/trns/types'
-
 import { statConfigOverlayOwnerKey } from '~/components/stat/injectionKeys'
 
 // Defaults to true so pages that always have a breakdown need not pass it; an absent
@@ -12,14 +9,8 @@ const props = withDefaults(defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
   compactBottom?: boolean
-  configCategories?: boolean
-  configWallets?: boolean
-  hasCategoryBreakdown?: boolean
-  preCategoriesIds?: CategoryId[]
   sticky?: boolean
-  trnsIds?: TrnId[]
 }>(), {
-  hasCategoryBreakdown: true,
   sticky: true,
 })
 
@@ -52,11 +43,7 @@ defineExpose({ stickyMainElement, stickyRootElement })
       <div class="flex items-center">
         <StatViewsModal />
         <StatConfigModal>
-          <StatConfigView
-            :hasCategoryBreakdown
-            :hasTrnsConfig="!!configCategories && trnsIds !== undefined"
-            :isShowWallets="!!configWallets"
-          />
+          <StatConfigView />
         </StatConfigModal>
 
         <BottomSheetOrDropdown

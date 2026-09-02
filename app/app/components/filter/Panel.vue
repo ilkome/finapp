@@ -31,10 +31,18 @@ const searchQuery = computed(() => search.value.trim().toLowerCase())
 const isCreatingNewWallet = ref(false)
 const isCreatingNewCategory = ref(false)
 
-const createItems = computed(() => [
-  { icon: 'i-hugeicons-wallet-01', label: t('base.addWallet'), value: 'wallet' },
-  { icon: 'i-hugeicons-folder-library', label: t('base.addCategory'), value: 'category' },
+type FilterEntityType = 'category' | 'wallet'
+
+const entityTypes = computed<FilterEntityType[]>(() => [
+  ...(filter.canFilterWallets ? ['wallet' as const] : []),
+  ...(filter.canFilterCategories ? ['category' as const] : []),
 ])
+
+const createItems = computed(() => entityTypes.value.map(value => ({
+  icon: value === 'wallet' ? 'i-hugeicons-wallet-01' : 'i-hugeicons-folder-library',
+  label: t(value === 'wallet' ? 'base.addWallet' : 'base.addCategory'),
+  value,
+})))
 
 function createEntity(value: string | undefined) {
   if (!value)
@@ -97,11 +105,13 @@ function clearSearchOrFilter() {
 }
 
 const walletResults = computed<WalletId[]>(() =>
-  searchWallets(searchQuery.value, walletsStore.itemsComputed),
+  filter.canFilterWallets ? searchWallets(searchQuery.value, walletsStore.itemsComputed) : [],
 )
 
 const categoryResults = computed<CategoryId[]>(() =>
-  searchCategories(searchQuery.value, categoriesStore.items, categoriesStore.hasChildren),
+  filter.canFilterCategories
+    ? searchCategories(searchQuery.value, categoriesStore.items, categoriesStore.hasChildren)
+    : [],
 )
 
 const hasNoResults = computed(() =>
@@ -111,10 +121,10 @@ const hasNoResults = computed(() =>
 const sliderRef = ref<HTMLElement | null>(null)
 const { activeTabIdx, goToTab } = useSwiperTabs(sliderRef)
 
-const tabItems = computed<TabsItem[]>(() => [
-  { label: t('wallets.title'), value: 0 },
-  { label: t('categories.title'), value: 1 },
-])
+const tabItems = computed<TabsItem[]>(() => entityTypes.value.map((type, index) => ({
+  label: t(type === 'wallet' ? 'wallets.title' : 'categories.title'),
+  value: index,
+})))
 
 async function focusSearch() {
   await nextTick()
@@ -171,7 +181,7 @@ onMounted(() => {
           :content="{ align: 'end', position: 'popper' }"
           icon="i-lucide-plus"
           :items="createItems"
-          modelValue=""
+          :modelValue="undefined"
           :placeholder="t('base.addWhat')"
           :title="t('base.addWhat')"
           :ui="{
@@ -187,7 +197,7 @@ onMounted(() => {
         />
       </div>
 
-      <div v-show="!searchQuery" class="px-3 pb-px md:px-1">
+      <div v-if="tabItems.length > 1 && !searchQuery" class="px-3 pb-px md:px-1">
         <UiTabs
           isEqual
           :items="tabItems"
@@ -204,8 +214,13 @@ onMounted(() => {
           class="swiper size-full min-h-0 min-w-0 overflow-hidden"
         >
           <div class="swiper-wrapper">
-            <div class="swiper-slide size-full">
+            <div
+              v-for="entityType in entityTypes"
+              :key="entityType"
+              class="swiper-slide size-full"
+            >
               <WalletsSelector
+                v-if="entityType === 'wallet'"
                 :autofocus="false"
                 compactDesktop
                 currencyAboveAction
@@ -215,9 +230,8 @@ onMounted(() => {
                 withHeader
                 @selected="toggleWallet"
               />
-            </div>
-            <div class="swiper-slide size-full">
               <CategoriesSelectorModal
+                v-else
                 :autofocus="false"
                 compactDesktop
                 hideCreate

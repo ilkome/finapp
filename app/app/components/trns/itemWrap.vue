@@ -61,14 +61,12 @@ const statSnapshot = computed(() => {
   }
 })
 const openStatCategory = useStatCategoryNavigation({
-  categoriesIds: navigationCategoriesIds,
   snapshot: statSnapshot,
   walletsIds: navigationWalletsIds,
 })
 const openStatWallet = useStatWalletNavigation({
   categoriesIds: navigationCategoriesIds,
   snapshot: statSnapshot,
-  walletsIds: navigationWalletsIds,
 })
 
 function filterByDate(date: number) {

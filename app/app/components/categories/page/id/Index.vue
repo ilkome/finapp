@@ -8,9 +8,11 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useFilter } from '~/components/filter/useFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
+import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
+import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -22,7 +24,7 @@ const route = useRoute()
 const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
-const filter = useFilter()
+const filter = useFilter({ canFilterCategories: false })
 const { statHeader } = useStatPageHost()
 const deleteChildId = ref<CategoryId | null>(null)
 
@@ -131,27 +133,11 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const { statConfig, statDate, trnsViewState } = useStatPageProviders({
+const { contentWidth, statConfig, statDate, trnsViewState } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
     legacyStorageKey,
     legacyTab,
-    props: isStatDrilldown
-      ? undefined
-      : {
-          categories: {
-            bars: {
-              grouping: 'child',
-            },
-            isShowEmpty: true,
-            list: {
-              grouping: 'child',
-            },
-            round: {
-              grouping: 'child',
-            },
-          },
-        },
     storage: isStatDrilldown ? sessionStorage : localStorage,
     storageKey,
     storageQuery,
@@ -176,8 +162,21 @@ const { statConfig, statDate, trnsViewState } = useStatPageProviders({
   initialTrnsViewState: statSnapshot?.trns,
 })
 
+const contextRange = computed(() => resolveStatSelectionRange(
+  statDate.range.value,
+  statDate.selectedInterval.value,
+  statDate.params.value.intervalSelected,
+))
+const { hiddenPanels } = useStatPageViews({
+  categoryId,
+  contentWidth,
+  filter,
+  range: contextRange,
+  statConfig,
+  trnsIds,
+})
+
 const openDrilldownCategory = useStatCategoryNavigation({
-  categoriesIds: filter.categoriesIds,
   snapshot: computed(() => ({
     config: statConfig.config.value,
     date: statDate.params.value,
@@ -192,10 +191,6 @@ const openDrilldownCategory = useStatCategoryNavigation({
 })
 
 onActivated(() => {
-  statConfig.updateConfig('categories', { list: { grouping: 'child' } })
-  statConfig.updateConfig('categories', { round: { grouping: 'child' } })
-  statConfig.updateConfig('categories', { bars: { grouping: 'child' } })
-
   if (categoriesStore.isTransactible(categoryId.value))
     trnsFormStore.values.categoryId = categoryId.value
 })
@@ -258,11 +253,6 @@ async function onDeleteConfirm() {
       :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
       :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
       compactBottom
-      configWallets
-      :hasCategoryBreakdown="childrenIds.length > 0"
-      :preCategoriesIds="childrenIds"
-      :trnsIds
-      configCategories
     >
       <template #title>
         <CategoriesHeader
@@ -323,6 +313,7 @@ async function onDeleteConfirm() {
 
     <StatLayout
       :categoryId
+      :hiddenPanels
       :initialFilteredType="statSnapshot?.filteredType"
       :lockSingleTypeLayout="singleTrnType !== null"
       :preCategoriesIds="childrenIds"

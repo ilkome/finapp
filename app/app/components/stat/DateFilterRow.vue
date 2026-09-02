@@ -16,8 +16,8 @@ const filter = inject(filterKey)!
     <FilterSelected
       v-if="filter.isShow.value"
       class="snap-start snap-always *:snap-start *:snap-always"
-      isShowCategories
-      isShowWallets
+      :isShowCategories="filter.canFilterCategories"
+      :isShowWallets="filter.canFilterWallets"
     />
   </StatDateNavigation>
 </template>

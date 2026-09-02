@@ -5,7 +5,6 @@ import { buildStatCategoryRoute, buildStatWalletRoute, isStatDrilldownQuery } fr
 describe('statistics category route', () => {
   it('builds a filtered snapshot route and removes duplicate ids', () => {
     expect(buildStatCategoryRoute({
-      categoriesIds: ['food', 'food', 'travel'],
       categoryId: 'groceries',
       isDrilldown: true,
       snapshotId: 'snapshot-id',
@@ -13,7 +12,6 @@ describe('statistics category route', () => {
     })).toEqual({
       path: '/categories/groceries',
       query: {
-        filterCategories: 'food,travel',
         filterWallets: 'cash',
         statDrilldown: 'true',
         statSnapshot: 'snapshot-id',
@@ -23,7 +21,6 @@ describe('statistics category route', () => {
 
   it('omits empty optional query values', () => {
     expect(buildStatCategoryRoute({
-      categoriesIds: [],
       categoryId: 'groceries',
       isDrilldown: false,
       snapshotId: null,
@@ -31,7 +28,6 @@ describe('statistics category route', () => {
     })).toEqual({
       path: '/categories/groceries',
       query: {
-        filterCategories: undefined,
         filterWallets: undefined,
         statDrilldown: undefined,
         statSnapshot: undefined,

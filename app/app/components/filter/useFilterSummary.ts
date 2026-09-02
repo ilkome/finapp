@@ -38,8 +38,22 @@ export function useFilterSummary() {
   })
 
   const summaryText = computed(() => {
-    const walletsCount = filter.walletsIds.value.length
-    const categoriesCount = displayCategoryIds.value.length
+    const walletsCount = filter.canFilterWallets ? filter.walletsIds.value.length : 0
+    const categoriesCount = filter.canFilterCategories ? displayCategoryIds.value.length : 0
+
+    const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1)
+
+    if (!filter.canFilterCategories) {
+      return capitalize(walletsCount
+        ? t('base.filterWalletsWord', walletsCount)
+        : t('base.filterAllWallets'))
+    }
+
+    if (!filter.canFilterWallets) {
+      return capitalize(categoriesCount
+        ? t('base.filterCategoriesWord', categoriesCount)
+        : t('base.filterAllCategories'))
+    }
 
     if (!walletsCount && !categoriesCount)
       return t('base.filterSummaryAll')
@@ -52,7 +66,7 @@ export function useFilterSummary() {
       : t('base.filterAllCategories')
 
     const text = t('base.filterSummary', { categories, wallets })
-    return text.charAt(0).toUpperCase() + text.slice(1)
+    return capitalize(text)
   })
 
   return { displayCategoryIds, summaryText }
