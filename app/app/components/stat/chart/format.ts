@@ -1,6 +1,6 @@
 import type { Period } from '~~/utils/date/types'
 
-import { formatByLocale, formatDateWithOptionalYear } from '~~/utils/date/civil'
+import { formatByLocale, formatDateWithOptionalYear, todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { LocaleSlug } from '~/components/locale/types'
 import type { SeriesSlug } from '~/components/stat/types'
@@ -43,12 +43,20 @@ export function formatChartAxisLabel(
   previousDate: number | undefined,
   period: Period,
   locale: LocaleSlug,
+  showYearForFirstLabel = false,
 ) {
   const label = formatByLocale(date, getFormatForChart(period), locale)
-  if (period === 'year' || previousDate === undefined)
+  if (period === 'year')
     return label
 
   const year = formatByLocale(date, 'yyyy', locale)
+  if (previousDate === undefined) {
+    const currentYear = formatByLocale(todayCivilDayEpoch(), 'yyyy', locale)
+    return showYearForFirstLabel && period === 'month' && year !== currentYear
+      ? `${year}\n${label}`
+      : label
+  }
+
   const previousYear = formatByLocale(previousDate, 'yyyy', locale)
   return year === previousYear ? label : `${year}\n${label}`
 }

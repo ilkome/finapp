@@ -165,6 +165,10 @@ describe('flattenCategoriesWithValues', () => {
     expect(result[0]!.id).toBe('full')
     expect(result[1]!.id).toBe('empty')
   })
+
+  it('keeps equal zero values stable', () => {
+    expect(sortCategoriesByAmount({ value: 0 }, { value: 0 })).toBe(0)
+  })
 })
 
 describe('groupCategoriesWithValues', () => {

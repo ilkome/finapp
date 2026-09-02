@@ -6,6 +6,7 @@ import { ref, toValue, watch } from 'vue'
 import { defaultConfig } from './schema'
 
 const storageKeys = vi.hoisted(() => [] as unknown[])
+const storageOptions = vi.hoisted(() => [] as unknown[])
 const storageState = vi.hoisted(() => new Map<string, unknown>())
 const currentRoute = ref({ query: {} as Record<string, string> })
 
@@ -14,10 +15,11 @@ vi.stubGlobal('useIsLaptop', () => ref(true))
 vi.stubGlobal('useRouter', () => ({ currentRoute }))
 
 vi.mock('@vueuse/core', () => ({
-  useStorage: (key: unknown, defaultValue: unknown) => {
+  useStorage: (key: unknown, defaultValue: unknown, _storage: unknown, options: unknown) => {
     const storageKey = String(toValue(key))
     const storageRef = key as { value?: string }
     storageKeys.push(storageRef)
+    storageOptions.push(options)
     const initialValue = storageState.has(storageKey) ? storageState.get(storageKey) : defaultValue
     const state = ref(initialValue)
     watch(state, (value) => {
@@ -32,6 +34,7 @@ const { normalizeStoredStatConfig, parseStoredStatConfig, useStatConfig } = awai
 beforeEach(() => {
   currentRoute.value = { query: {} }
   storageKeys.length = 0
+  storageOptions.length = 0
   storageState.clear()
 })
 
@@ -69,7 +72,7 @@ describe('normalizeStoredStatConfig', () => {
     expect(config.categories.round.isInlineAmount).toBe(false)
     expect(config.categories.round.isHideOthersOnSelect).toBe(false)
     expect(config.trns).toEqual({ isShow: true, isShowHistory: true, isShowTitle: true, isShowTypeTabs: true })
-    expect(config.wallets).toMatchObject({ displayMode: 'recent', selectionMode: 'multiple' })
+    expect(config.wallets).toMatchObject({ displayMode: 'recent', selectionMode: 'multiple', valueMode: 'balance' })
   })
 
   it('migrates legacy category grouping booleans', () => {
@@ -110,6 +113,15 @@ describe('normalizeStoredStatConfig', () => {
 
     pageStorageKey.value = 'dashboard-expense'
     expect(toValue(storageKey)).toBe('finapp-dashboard-expense-')
+  })
+
+  it('prevents stable config instances from overwriting each other through storage events', () => {
+    useStatConfig({ stableStorage: true, storageKey: 'dashboard' })
+
+    expect(storageOptions.at(-1)).toMatchObject({
+      flush: 'sync',
+      listenToStorageChanges: false,
+    })
   })
 
   it('uses initialConfig even if storage has a different valid value', () => {

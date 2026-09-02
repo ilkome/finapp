@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 
-import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { getNextWalletFilterIds, getSortedFilterWalletsIds } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -10,16 +9,21 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = withDefaults(defineProps<{
   isCategoryFocusActive?: boolean
   periodWalletIds: WalletId[]
+  selectedWalletIds: WalletId[]
+  walletPeriodTotals: Partial<Record<WalletId, number>>
 }>(), { isCategoryFocusActive: false })
 
-const filter = inject(filterKey)!
+const emit = defineEmits<{
+  'update:selectedWalletIds': [walletIds: WalletId[]]
+}>()
+
 const statConfig = inject(statConfigKey)!
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
 
 const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
-  filter.walletsIds.value,
-  walletsStore.recentWalletIds,
+  props.selectedWalletIds,
+  walletsStore.sortedIds,
   props.periodWalletIds,
   statConfig.config.value.wallets.isShow,
   statConfig.config.value.wallets.count,
@@ -29,11 +33,11 @@ const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
 
 function onClickWallet(walletId: WalletId) {
   const nextWalletIds = getNextWalletFilterIds(
-    filter.walletsIds.value,
+    props.selectedWalletIds,
     walletId,
     statConfig.config.value.wallets.selectionMode,
   )
-  filter.applyFilter(nextWalletIds, filter.categoriesIds.value)
+  emit('update:selectedWalletIds', nextWalletIds)
   trnsFormStore.values.walletId = walletId
 }
 </script>
@@ -49,7 +53,8 @@ function onClickWallet(walletId: WalletId) {
       <WalletsItem
         v-for="walletId in sortedFilterWalletsIds"
         :key="walletId"
-        :activeItemId="filter.walletsIds.value.includes(`${walletId}`) ? walletId : null"
+        :activeItemId="props.selectedWalletIds.includes(`${walletId}`) ? walletId : null"
+        :amount="statConfig.config.value.wallets.valueMode === 'period' ? props.walletPeriodTotals[walletId] ?? 0 : undefined"
         :walletId
         :wallet="walletsStore.itemsComputed?.[walletId]!"
         :isShowIcon="statConfig.config.value.wallets.isShowIcon"

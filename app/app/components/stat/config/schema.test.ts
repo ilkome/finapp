@@ -92,6 +92,7 @@ const defaultConfig: MiniItemConfig = {
     isShow: false,
     isShowIcon: true,
     selectionMode: 'multiple',
+    valueMode: 'balance',
   },
 }
 
@@ -263,10 +264,10 @@ describe('applyConfigUpdate', () => {
     expect(result!.wallets.isShow).toBe(false) // preserved
   })
 
-  it('updates wallet display and selection modes', () => {
-    const result = applyConfigUpdate(defaultConfig, 'wallets', { displayMode: 'period', selectionMode: 'single' })
+  it('updates wallet display, value, and selection modes', () => {
+    const result = applyConfigUpdate(defaultConfig, 'wallets', { displayMode: 'period', selectionMode: 'single', valueMode: 'period' })
 
-    expect(result?.wallets).toMatchObject({ displayMode: 'period', selectionMode: 'single' })
+    expect(result?.wallets).toMatchObject({ displayMode: 'period', selectionMode: 'single', valueMode: 'period' })
     expect(result?.wallets.count).toBe(6)
   })
 

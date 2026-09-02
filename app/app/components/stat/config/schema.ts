@@ -16,6 +16,7 @@ export const chartValueDisplayOptions = ['magnitude', 'signed'] as const
 export const pieShapeOptions = ['donut', 'circle'] as const
 export const walletDisplayModes = ['recent', 'period'] as const
 export const walletSelectionModes = ['multiple', 'single'] as const
+export const walletValueModes = ['balance', 'period'] as const
 export const categoryGroupingOptions = ['auto', 'parent', 'child'] as const
 const leadingStatConfigBlockOrder = ['navigation', 'summary'] as const
 export const statReportBlockOrder = ['vertical', 'catsRound', 'catsList', 'trns'] as const
@@ -176,6 +177,7 @@ export const ConfigSchema = z.object({
     isShow: z.boolean(),
     isShowIcon: z.boolean(),
     selectionMode: z.enum(walletSelectionModes),
+    valueMode: z.enum(walletValueModes).default('balance'),
   }),
 }).transform(config => config.page.blockOrder.at(-1) === 'trns' || !config.trns.isShowHistory
   ? config
@@ -276,6 +278,7 @@ export const defaultConfig: MiniItemConfig = {
     isShow: false,
     isShowIcon: true,
     selectionMode: 'multiple',
+    valueMode: 'balance',
   },
 }
 

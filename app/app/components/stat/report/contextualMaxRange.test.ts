@@ -3,17 +3,24 @@ import { describe, expect, it } from 'vitest'
 import { shouldUseContextualMaxRange } from './contextualMaxRange'
 
 describe('shouldUseContextualMaxRange', () => {
-  it('narrows the maximum range for an explicit type and quick category', () => {
+  it('narrows the maximum range for a category without requiring a transaction type', () => {
     expect(shouldUseContextualMaxRange({
-      categoryIds: ['mehana'],
+      hasCategoryFilter: true,
+      hasWalletFilter: false,
       isShowMaxRange: true,
-      selectedType: 'income',
     })).toBe(true)
   })
 
-  it('restores the original maximum range when either temporary filter is cleared', () => {
-    expect(shouldUseContextualMaxRange({ categoryIds: [], isShowMaxRange: true, selectedType: 'income' })).toBe(false)
-    expect(shouldUseContextualMaxRange({ categoryIds: ['mehana'], isShowMaxRange: true, selectedType: 'net' })).toBe(false)
-    expect(shouldUseContextualMaxRange({ categoryIds: ['mehana'], isShowMaxRange: false, selectedType: 'income' })).toBe(false)
+  it('narrows the maximum range for a wallet without requiring a category', () => {
+    expect(shouldUseContextualMaxRange({
+      hasCategoryFilter: false,
+      hasWalletFilter: true,
+      isShowMaxRange: true,
+    })).toBe(true)
+  })
+
+  it('restores the original maximum range when temporary filters are cleared', () => {
+    expect(shouldUseContextualMaxRange({ hasCategoryFilter: false, hasWalletFilter: false, isShowMaxRange: true })).toBe(false)
+    expect(shouldUseContextualMaxRange({ hasCategoryFilter: true, hasWalletFilter: true, isShowMaxRange: false })).toBe(false)
   })
 })

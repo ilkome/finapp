@@ -89,6 +89,7 @@ function onChangePeriod(period: Period) {
         :bufferSize="props.chartWindow.bufferIntervals.value.length"
         :commitCount="props.chartWindow.commitCount.value"
         :endValue="props.chartWindow.endValue.value"
+        :isShowMaxRange="statDate.params.value.isShowMaxRange"
         :isPannable="props.chartWindow.isEnabled.value"
         :panOffset="statDate.params.value.rangePanOffset"
         :period="statDate.params.value.granularityBy"

@@ -586,10 +586,10 @@ export default {
       },
       wallets: {
         count: 'Количество кошельков',
-        displayMode: 'Показывать',
+        displayMode: 'Отображение',
         displayModes: {
           period: 'За текущий период',
-          recent: 'Последние кошельки',
+          recent: 'Список кошельков',
         },
         label: 'Показывать кошельки',
         selectionMode: 'Режим выбора',
@@ -599,6 +599,11 @@ export default {
         },
         showIcon: 'Показывать иконку кошелька',
         title: 'Кошельки',
+        valueMode: 'Итого',
+        valueModes: {
+          balance: 'В кошельке',
+          period: 'За период',
+        },
       },
     },
     forecast: {

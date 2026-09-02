@@ -119,6 +119,8 @@ export function useStatConfig({
   // cloning, useStorage would seed each page's ref from the same nested objects.
   const initialValue = normalizeStoredStatConfig(initialConfig, defaultConfig, legacyTab)
   const config = useStorage<MiniItemConfig>(configStorageKey, structuredClone(initialValue), resolvedStorage, {
+    flush: 'sync',
+    listenToStorageChanges: !stableStorage,
     mergeDefaults: (storageValue, defaults) => normalizeStoredStatConfig(storageValue, defaults as MiniItemConfig, legacyTab),
   })
 

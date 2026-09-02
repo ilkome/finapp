@@ -6,6 +6,7 @@ import { getCreditAvailable } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
+  amount?: number
   compact?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
@@ -34,6 +35,7 @@ const classes = computed(() => ({
 const walletCreditLimit = computed(() =>
   props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
 )
+const displayAmount = computed(() => props.amount ?? props.wallet.amount)
 </script>
 
 <template>
@@ -112,14 +114,14 @@ const walletCreditLimit = computed(() =>
       <div class="pr-1">
         <Amount
           v-if="walletCreditLimit"
-          :amount="wallet.amount"
+          :amount="displayAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
           variant="row"
         />
         <Amount
           v-else
-          :amount="wallet.amount"
+          :amount="displayAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
           variant="row"
@@ -137,7 +139,7 @@ const walletCreditLimit = computed(() =>
         <div v-if="!isSort">
           <Amount
             v-if="walletCreditLimit"
-            :amount="wallet.amount"
+            :amount="displayAmount"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
             :isShowMinus="false"
@@ -146,7 +148,7 @@ const walletCreditLimit = computed(() =>
           />
           <Amount
             v-else
-            :amount="wallet.amount"
+            :amount="displayAmount"
             :currencyCode="wallet.currency"
             :isShowBaseRate="props.isShowBaseRate"
             :isShowMinus="false"

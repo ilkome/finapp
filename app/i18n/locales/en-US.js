@@ -586,10 +586,10 @@ export default {
       },
       wallets: {
         count: 'Wallet count',
-        displayMode: 'Show',
+        displayMode: 'Display',
         displayModes: {
           period: 'Current period',
-          recent: 'Recent wallets',
+          recent: 'Wallet list',
         },
         label: 'Show wallets',
         selectionMode: 'Selection mode',
@@ -599,6 +599,11 @@ export default {
         },
         showIcon: 'Show wallet icon',
         title: 'Wallets',
+        valueMode: 'Total',
+        valueModes: {
+          balance: 'In wallet',
+          period: 'For period',
+        },
       },
     },
     forecast: {

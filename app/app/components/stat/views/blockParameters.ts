@@ -85,6 +85,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
   wallets: [
     visibility,
     { id: 'wallets.displayMode', paths: ['wallets.displayMode'], titleKey: 'stat.config.wallets.displayMode' },
+    { id: 'wallets.valueMode', paths: ['wallets.valueMode'], titleKey: 'stat.config.wallets.valueMode' },
     { id: 'wallets.count', paths: ['wallets.count'], titleKey: 'stat.config.wallets.count' },
     { id: 'wallets.selectionMode', paths: ['wallets.selectionMode'], titleKey: 'stat.config.wallets.selectionMode' },
     { id: 'wallets.isShowIcon', paths: ['wallets.isShowIcon'], titleKey: 'stat.config.wallets.showIcon' },

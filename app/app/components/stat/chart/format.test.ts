@@ -40,6 +40,26 @@ describe('formatChartAmount', () => {
 })
 
 describe('formatChartAxisLabel', () => {
+  const currentYear = epochToCivilParts(todayCivilDayEpoch()).year
+
+  it('adds the year to the first maximum-range month outside the current year', () => {
+    const june = toCivilDayEpoch(currentYear - 2, 5, 1)
+
+    expect(formatChartAxisLabel(june, undefined, 'month', 'ru', true)).toBe(`${currentYear - 2}\nиюн.`)
+  })
+
+  it('keeps the first maximum-range month compact in the current year', () => {
+    const june = toCivilDayEpoch(currentYear, 5, 1)
+
+    expect(formatChartAxisLabel(june, undefined, 'month', 'ru', true)).toBe('июн.')
+  })
+
+  it('does not add the first year outside maximum-range mode', () => {
+    const june = toCivilDayEpoch(currentYear - 2, 5, 1)
+
+    expect(formatChartAxisLabel(june, undefined, 'month', 'ru')).toBe('июн.')
+  })
+
   it('adds the year when a sub-year axis crosses into a new year', () => {
     const december = toCivilDayEpoch(2025, 11, 1)
     const january = toCivilDayEpoch(2026, 0, 1)

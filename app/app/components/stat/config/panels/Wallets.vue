@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { walletDisplayModes, walletSelectionModes } from '~/components/stat/config/schema'
+import { walletDisplayModes, walletSelectionModes, walletValueModes } from '~/components/stat/config/schema'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -14,12 +14,45 @@ const selectionModeItems = computed(() => walletSelectionModes.map(value => ({
   label: t(`stat.config.wallets.selectionModes.${value}`),
   value,
 })))
+const valueModeItems = computed(() => walletValueModes.map(value => ({
+  label: t(`stat.config.wallets.valueModes.${value}`),
+  value,
+})))
 </script>
 
 <template>
   <div
     class="flex flex-col gap-0.5"
   >
+    <StatConfigSwitch
+      path="wallets.isShowIcon"
+      :title="t('stat.config.wallets.showIcon')"
+    />
+
+    <StatConfigFieldRow parameterId="wallets.selectionMode" :title="t('stat.config.wallets.selectionMode')">
+      <USelect
+        class="w-40 shrink-0"
+        :aria-label="t('stat.config.wallets.selectionMode')"
+        :content="{ position: 'item-aligned' }"
+        :items="selectionModeItems"
+        :modelValue="statConfig.config.value.wallets.selectionMode"
+        :ui="{ content: 'z-[60]' }"
+        @update:modelValue="value => statConfig.updateConfig('wallets', { selectionMode: value as typeof walletSelectionModes[number] })"
+      />
+    </StatConfigFieldRow>
+
+    <StatConfigFieldRow parameterId="wallets.valueMode" :title="t('stat.config.wallets.valueMode')">
+      <USelect
+        class="w-40 shrink-0"
+        :aria-label="t('stat.config.wallets.valueMode')"
+        :content="{ position: 'item-aligned' }"
+        :items="valueModeItems"
+        :modelValue="statConfig.config.value.wallets.valueMode"
+        :ui="{ content: 'z-[60]' }"
+        @update:modelValue="value => statConfig.updateConfig('wallets', { valueMode: value as typeof walletValueModes[number] })"
+      />
+    </StatConfigFieldRow>
+
     <StatConfigFieldRow parameterId="wallets.displayMode" :title="t('stat.config.wallets.displayMode')">
       <USelect
         class="w-40 shrink-0"
@@ -44,22 +77,5 @@ const selectionModeItems = computed(() => walletSelectionModes.map(value => ({
         @update:modelValue="value => statConfig.updateConfig('wallets', { count: value })"
       />
     </StatConfigFieldRow>
-
-    <StatConfigFieldRow parameterId="wallets.selectionMode" :title="t('stat.config.wallets.selectionMode')">
-      <USelect
-        class="w-40 shrink-0"
-        :aria-label="t('stat.config.wallets.selectionMode')"
-        :content="{ position: 'item-aligned' }"
-        :items="selectionModeItems"
-        :modelValue="statConfig.config.value.wallets.selectionMode"
-        :ui="{ content: 'z-[60]' }"
-        @update:modelValue="value => statConfig.updateConfig('wallets', { selectionMode: value as typeof walletSelectionModes[number] })"
-      />
-    </StatConfigFieldRow>
-
-    <StatConfigSwitch
-      path="wallets.isShowIcon"
-      :title="t('stat.config.wallets.showIcon')"
-    />
   </div>
 </template>

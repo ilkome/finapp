@@ -21,6 +21,7 @@ const {
   commitCount = 0,
   endValue,
   isPannable = false,
+  isShowMaxRange = false,
   panOffset = 0,
   period,
   series,
@@ -32,6 +33,7 @@ const {
   commitCount?: number
   endValue?: number
   isPannable?: boolean
+  isShowMaxRange?: boolean
   panOffset?: number
   period: Period
   series: ChartSeries[]
@@ -259,7 +261,8 @@ const option = computed(() => {
     // ECharts reindexes visible ticks after dataZoom, so resolve the neighbour
     // from the buffered category value instead of the formatter tick index.
     const dataIndex = xAxisLabels.indexOf(dateValue)
-    return formatChartAxisLabel(dateValue, xAxisLabels[dataIndex - 1], period, locale.value)
+    const previousDate = dataIndex === visibleStartIndex ? undefined : xAxisLabels[dataIndex - 1]
+    return formatChartAxisLabel(dateValue, previousDate, period, locale.value, isShowMaxRange)
   }
   xAxis.axisLabel.alignMaxLabel = 'right'
   xAxis.axisLabel.showMaxLabel = true
