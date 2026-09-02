@@ -89,6 +89,16 @@ export function buildStatReportSelection(params: {
   )
 }
 
+export function filterStatReportSelectionSource(params: {
+  dates?: Range
+  source: readonly StatReportSelectedRecord[]
+  trnsItems: Trns
+  trnsTypes: ReturnType<typeof getTypesMapping>
+}): StatReportSelectedRecord[] {
+  const matches = createTrnMatcher({ dates: params.dates, trnsTypes: params.trnsTypes })
+  return params.source.filter(record => matches(params.trnsItems[record.id]))
+}
+
 export function useStatReportData(params: {
   applyStatsExclusion?: ComputedRef<boolean>
   chartIntervals: ComputedRef<Range[]>
@@ -225,8 +235,12 @@ export function useStatReportData(params: {
     if (!params.selectionSource)
       return buildSortedStatReportSelection({ sourceIds: baseTrnsIdsForSelection.value, trnsItems: trnsStore.items ?? {}, trnsTypes: selectedTypesMapping.value })
 
-    const allowedTypes = new Set(selectedTypesMapping.value)
-    return params.selectionSource.value.filter(record => allowedTypes.has(trnsStore.items?.[record.id]?.type as never))
+    return filterStatReportSelectionSource({
+      dates: isIntervalSelected.value ? params.statDate.selectedInterval.value : undefined,
+      source: params.selectionSource.value,
+      trnsItems: trnsStore.items ?? {},
+      trnsTypes: selectedTypesMapping.value,
+    })
   })
   const selection = computed(() => projectStatReportSelection(
     sortedSelection.value,
