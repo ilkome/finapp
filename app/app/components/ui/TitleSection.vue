@@ -5,12 +5,10 @@ const { size = 'md' } = defineProps<{
 </script>
 
 <template>
-  <div
-    :class="cn(
-      'font-tertiary leading-none font-semibold text-muted',
-      size === 'md' && 'text-base',
-    )"
+  <UiText
+    :class="size === 'sm' && 'text-sm'"
+    variant="section"
   >
     <slot />
-  </div>
+  </UiText>
 </template>

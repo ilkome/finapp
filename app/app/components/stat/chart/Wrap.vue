@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
-import type { AxisChartType } from '~/components/stat/chart/types'
+import type { AxisChartType, ChartType } from '~/components/stat/chart/types'
 import type { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import type { ChartSeries } from '~/components/stat/types'
 
@@ -9,6 +9,7 @@ import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
+  chartType: ChartType
   chartWindow: ReturnType<typeof useStatChartWindow>
   series: ChartSeries[]
   xAxisLabels: number[]
@@ -26,9 +27,8 @@ const trnsFormStore = useTrnsFormStore()
 const isChartMountReady = useIdleMount()
 const isChartShow = computed(() => statConfig.config.value.chart.isShow)
 const chartLayout = computed(() => statConfig.config.value.chart.layout)
-const chartType = computed(() => statConfig.config.value.chart.type)
+const chartType = computed(() => props.chartType)
 const axisChartType = computed<AxisChartType>(() => chartType.value === 'pie' ? 'bar' : chartType.value)
-const isShowQuick = computed(() => statConfig.config.value.date.isShowQuick)
 
 async function onClickChart(intervalKey: number) {
   emit('select', intervalKey)
@@ -45,20 +45,16 @@ function onChangePeriod(period: Period) {
 <template>
   <div
     v-if="isChartShow"
-    class="max-w-full min-w-0"
+    class="relative max-w-full min-w-0"
     :class="{
       'stat-column-width': chartLayout === 'combined-narrow',
     }"
   >
     <div
-      class="-mb-1 flex h-7 justify-end"
-      :class="{ invisible: chartType === 'pie' }"
+      class="-mb-1 flex h-8 items-center gap-1"
     >
-      <StatDateQuickRanges v-if="isShowQuick" />
-
-      <div class="h-7">
+      <div class="h-7" :class="{ invisible: chartType === 'pie' }">
         <StatChartIntervalSelect
-          :class="{ 'border-l border-accented': isShowQuick }"
           :period="statDate.params.value.granularityBy"
           :range="statDate.range.value"
           @changePeriod="onChangePeriod"
@@ -66,10 +62,22 @@ function onChangePeriod(period: Period) {
       </div>
     </div>
 
+    <div
+      class="absolute z-10"
+      :class="statConfig.config.value.chart.isShowBackground
+        ? '-top-1 -right-1 md:-top-2 md:-right-2'
+        : 'top-1 right-1'"
+    >
+      <StatChartSettingsPopover />
+    </div>
+
     <div class="min-h-40 max-w-full min-w-0 @3xl/stat:min-h-52">
       <LazyStatChartSimplePieView
         v-if="isChartMountReady && chartType === 'pie'"
         :endValue="props.chartWindow.endValue.value"
+        :isDonut="statConfig.config.value.chart.pie.shape === 'donut'"
+        :isShowLabels="statConfig.config.value.chart.pie.isShowLabels"
+        :isShowPercent="statConfig.config.value.chart.pie.isShowPercent"
         :series="props.series"
         :startValue="props.chartWindow.startValue.value"
         :xAxisLabels="props.xAxisLabels"
@@ -81,6 +89,7 @@ function onChangePeriod(period: Period) {
         :bufferSize="props.chartWindow.bufferIntervals.value.length"
         :commitCount="props.chartWindow.commitCount.value"
         :endValue="props.chartWindow.endValue.value"
+        :isShowMaxRange="statDate.params.value.isShowMaxRange"
         :isPannable="props.chartWindow.isEnabled.value"
         :panOffset="statDate.params.value.rangePanOffset"
         :period="statDate.params.value.granularityBy"

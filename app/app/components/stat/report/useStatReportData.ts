@@ -7,7 +7,7 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
-import type { IntervalData, SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
+import type { SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 
 import { getTotal } from '~/components/amount/getTotal'
@@ -89,6 +89,16 @@ export function buildStatReportSelection(params: {
   )
 }
 
+export function filterStatReportSelectionSource(params: {
+  dates?: Range
+  source: readonly StatReportSelectedRecord[]
+  trnsItems: Trns
+  trnsTypes: ReturnType<typeof getTypesMapping>
+}): StatReportSelectedRecord[] {
+  const matches = createTrnMatcher({ dates: params.dates, trnsTypes: params.trnsTypes })
+  return params.source.filter(record => matches(params.trnsItems[record.id]))
+}
+
 export function useStatReportData(params: {
   applyStatsExclusion?: ComputedRef<boolean>
   chartIntervals: ComputedRef<Range[]>
@@ -130,6 +140,9 @@ export function useStatReportData(params: {
     return trnsStore.getStoreTrnsIds({ dates: params.statDate.range.value, trnsIds: params.trnsIds.value })
   })
   const hasCategoryFilter = computed(() => params.effectiveFilteredCategoriesIds.value.length > 0)
+  const filteredTransactibleCategoryIds = computed(() =>
+    categoriesStore.getTransactibleIds(params.effectiveFilteredCategoriesIds.value),
+  )
   const rangeTrnsIdsWithFilteredCategories = computed(() => {
     if (!hasCategoryFilter.value)
       return rangeTrnsIds.value
@@ -138,7 +151,7 @@ export function useStatReportData(params: {
         statDevMetrics.getStoreTrnsIdsCount.value++
       })
     }
-    return trnsStore.getStoreTrnsIds({ categoriesIds: params.effectiveFilteredCategoriesIds.value, trnsIds: rangeTrnsIds.value })
+    return trnsStore.getStoreTrnsIds({ categoriesIds: filteredTransactibleCategoryIds.value, trnsIds: rangeTrnsIds.value })
   })
   const statExcludedIds = computed<ReadonlySet<CategoryId> | undefined>(() =>
     params.applyStatsExclusion?.value && !hasCategoryFilter.value ? categoriesStore.excludedFromStatsIds : undefined,
@@ -173,14 +186,22 @@ export function useStatReportData(params: {
     : intervalsData.value)
 
   const chartRangeTrnsIds = computed(() => {
-    if (params.isDateBounded)
-      return params.trnsIds.value
+    if (params.isDateBounded) {
+      return trnsStore.getStoreTrnsIds({
+        trnsIds: params.trnsIds.value,
+        trnsTypes: selectedTypesMapping.value,
+      })
+    }
     if (import.meta.dev) {
       deferStatDevMetricsUpdate(() => {
         statDevMetrics.getStoreTrnsIdsCount.value++
       })
     }
-    return trnsStore.getStoreTrnsIds({ dates: chartRange.value, trnsIds: params.trnsIds.value })
+    return trnsStore.getStoreTrnsIds({
+      dates: chartRange.value,
+      trnsIds: params.trnsIds.value,
+      trnsTypes: selectedTypesMapping.value,
+    })
   })
   const chartRangeTrnsIdsWithFilteredCategories = computed(() => {
     if (!hasCategoryFilter.value)
@@ -190,7 +211,7 @@ export function useStatReportData(params: {
         statDevMetrics.getStoreTrnsIdsCount.value++
       })
     }
-    return trnsStore.getStoreTrnsIds({ categoriesIds: params.effectiveFilteredCategoriesIds.value, trnsIds: chartRangeTrnsIds.value })
+    return trnsStore.getStoreTrnsIds({ categoriesIds: filteredTransactibleCategoryIds.value, trnsIds: chartRangeTrnsIds.value })
   })
   const chartIntervalsData = computed(() => bucketTrnsByIntervals(
     trnsStore.items ?? {},
@@ -214,8 +235,12 @@ export function useStatReportData(params: {
     if (!params.selectionSource)
       return buildSortedStatReportSelection({ sourceIds: baseTrnsIdsForSelection.value, trnsItems: trnsStore.items ?? {}, trnsTypes: selectedTypesMapping.value })
 
-    const allowedTypes = new Set(selectedTypesMapping.value)
-    return params.selectionSource.value.filter(record => allowedTypes.has(trnsStore.items?.[record.id]?.type as never))
+    return filterStatReportSelectionSource({
+      dates: isIntervalSelected.value ? params.statDate.selectedInterval.value : undefined,
+      source: params.selectionSource.value,
+      trnsItems: trnsStore.items ?? {},
+      trnsTypes: selectedTypesMapping.value,
+    })
   })
   const selection = computed(() => projectStatReportSelection(
     sortedSelection.value,

@@ -68,14 +68,21 @@ function createQueryFilter<T extends string>(
   return { ids, removeId, removeMultiple, setId, setMultiple, toggleId }
 }
 
-export function useFilter() {
+export function useFilter(options: {
+  canFilterCategories?: boolean
+  canFilterWallets?: boolean
+} = {}) {
   const router = useRouter()
   const route = useRoute()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
+  const canFilterCategories = options.canFilterCategories ?? true
+  const canFilterWallets = options.canFilterWallets ?? true
 
   const wallets = createQueryFilter<WalletId>(route, router, 'filterWallets', id => !!walletsStore.items?.[id])
   const categories = createQueryFilter<CategoryId>(route, router, 'filterCategories', id => !!categoriesStore.items[id])
+  const walletsIds = computed(() => canFilterWallets ? wallets.ids.value : [])
+  const categoriesIds = computed(() => canFilterCategories ? categories.ids.value : [])
 
   function clearFilter() {
     router.push({ query: undefined })
@@ -88,17 +95,19 @@ export function useFilter() {
     router.push({
       query: {
         ...route.query,
-        filterCategories: nextCategories.length ? nextCategories : undefined,
-        filterWallets: nextWallets.length ? nextWallets : undefined,
+        filterCategories: canFilterCategories && nextCategories.length ? nextCategories : undefined,
+        filterWallets: canFilterWallets && nextWallets.length ? nextWallets : undefined,
       },
     })
   }
 
-  const isShow = computed(() => categories.ids.value.length > 0 || wallets.ids.value.length > 0)
+  const isShow = computed(() => categoriesIds.value.length > 0 || walletsIds.value.length > 0)
 
   return {
     applyFilter,
-    categoriesIds: categories.ids,
+    canFilterCategories,
+    canFilterWallets,
+    categoriesIds,
     clearFilter,
     isShow,
     removeCategories: categories.removeMultiple,
@@ -110,6 +119,6 @@ export function useFilter() {
     setWallets: wallets.setMultiple,
     toggleCategoryId: categories.toggleId,
     toggleWalletId: wallets.toggleId,
-    walletsIds: wallets.ids,
+    walletsIds,
   }
 }

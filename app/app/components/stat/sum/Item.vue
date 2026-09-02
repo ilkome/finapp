@@ -34,9 +34,9 @@ const currenciesStore = useCurrenciesStore()
   >
     <div :class="props.variant === 'summary' ? 'flex w-full items-center gap-5' : 'flex items-end gap-5'">
       <div class="grid gap-1">
-        <UiTextSubtitle>
+        <UiText variant="caption">
           {{ props.title ?? t(`money.${props.type}`) }}
-        </UiTextSubtitle>
+        </UiText>
 
         <Amount
           :amount="props.amount"
@@ -44,10 +44,9 @@ const currenciesStore = useCurrenciesStore()
           :class="{
             'text-income-1!': props.amount > 0 && props.type !== 'net',
             'text-expense-1!': props.amount < 0 && props.type !== 'net',
-            'text-2xl!': props.variant === 'plain',
           }"
           align="left"
-          variant="xl"
+          :variant="props.variant === 'plain' ? 'display' : 'summary'"
         />
       </div>
 
@@ -62,7 +61,9 @@ const currenciesStore = useCurrenciesStore()
           :key="slug"
           class="grid gap-1 pb-0.5"
         >
-          <UiTextSubtitle>{{ t('money.average') }} <br> {{ t(`dates.${slug}.simple`) }}</UiTextSubtitle>
+          <UiText variant="caption">
+            {{ t('money.average') }} <br> {{ t(`dates.${slug}.simple`) }}
+          </UiText>
 
           <Amount
             :amount="type === 'expense' ? -averageItem : averageItem"

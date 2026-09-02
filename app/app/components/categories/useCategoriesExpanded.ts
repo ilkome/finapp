@@ -42,7 +42,9 @@ export function useCategoriesExpanded(
 
   function toggleAll() {
     if (options.persistDefault) {
-      defaultExpanded.value = !defaultExpanded.value
+      const show = !isAllExpanded.value
+      expandedState.value = {}
+      defaultExpanded.value = show
       return
     }
 
@@ -55,12 +57,18 @@ export function useCategoriesExpanded(
     expandedState.value[id] = { show: !isExpanded(id) }
   }
 
+  function reset(show = false) {
+    expandedState.value = {}
+    defaultExpanded.value = show
+  }
+
   return {
     defaultExpanded,
     folderIcon,
     isAllExpanded,
     isAnyExpanded,
     isExpanded,
+    reset,
     toggle,
     toggleAll,
   }

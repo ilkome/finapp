@@ -4,7 +4,9 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { getParentCategoryIdOrUndefined, isSystemCategoryId } from '~/components/categories/utils'
 
-export function sortCategoriesByAmount(a: CategoryWithData, b: CategoryWithData): number {
+export function sortCategoriesByAmount(a: Pick<CategoryWithData, 'value'>, b: Pick<CategoryWithData, 'value'>): number {
+  if (a.value === 0 && b.value === 0)
+    return 0
   if (a.value === 0)
     return 1
   if (b.value === 0)

@@ -80,9 +80,9 @@ const tabsScrollItems = Array.from({ length: 15 }, (_, i) => ({ label: `Item ${i
               UiTitleSection
             </UiTitleSection>
 
-            <UiTextSubtitle>
-              UiTextSubtitle
-            </UiTextSubtitle>
+            <UiText variant="caption">
+              UiText caption
+            </UiText>
 
             <UiTitleCollapse>
               UiTitleCollapse
@@ -108,13 +108,13 @@ const tabsScrollItems = Array.from({ length: 15 }, (_, i) => ({ label: `Item ${i
           </h1>
 
           <div class="grid gap-4">
-            <UiTextMuted>
-              UiTextMuted
-            </UiTextMuted>
+            <UiText variant="meta">
+              UiText meta
+            </UiText>
 
-            <UiTextMuted size="sm">
-              UiTextMuted sm
-            </UiTextMuted>
+            <UiText variant="navigation">
+              UiText navigation
+            </UiText>
           </div>
         </div>
 

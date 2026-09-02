@@ -18,7 +18,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const itemClasses = 'bg-elevated/30 rounded-sm'
+const itemClasses = 'rounded-md bg-elevated/30'
 
 function select(id: CategoryId) {
   if (categoriesStore.hasChildren(id))

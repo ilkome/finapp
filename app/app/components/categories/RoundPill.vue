@@ -9,6 +9,7 @@ const props = defineProps<{
   isIconBg?: boolean
   isInlineContent?: boolean
   isShowParent?: boolean
+  nameSuffix?: string
 }>()
 
 const categoriesStore = useCategoriesStore()
@@ -60,6 +61,7 @@ const parentCategory = computed(() => {
         :isShowParent="props.isShowParent"
         :parentCategory="parentCategory"
         :stacked="!props.isInlineContent"
+        :suffix="props.nameSuffix"
         size="xs"
       />
       <slot />

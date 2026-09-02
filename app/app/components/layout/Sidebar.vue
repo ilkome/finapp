@@ -8,6 +8,7 @@ import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  isHidden?: boolean
   isShowSidebar?: boolean
 }>()
 
@@ -41,7 +42,10 @@ const tabItems = computed<TabsItem[]>(() => [
 
 <template>
   <aside
-    :class="{ 'md:w-72': props.isShowSidebar }"
+    :class="{
+      'md:-translate-x-full': props.isHidden,
+      'md:w-72': props.isShowSidebar,
+    }"
     class="fixed inset-y-0 left-0 z-40 hidden h-dvh w-12 overflow-hidden transition-all duration-300 ease-in-out md:block"
   >
     <div class="relative flex h-full flex-col overflow-hidden">

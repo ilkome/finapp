@@ -7,11 +7,12 @@ const props = withDefaults(defineProps<{
   align?: 'center' | 'left'
   grow?: boolean
   isEqual?: boolean // every tab the same width instead of sharing the slack
+  itemClass?: string
   itemGrow?: boolean
   items: TabsItem[]
   modelValue?: number | string
   size?: 'md' | 'sm' | 'xs'
-  variant?: 'link' | 'pill'
+  variant?: 'link' | 'pill' | 'text'
 }>(), { align: 'center', grow: true, itemGrow: true, size: 'md', variant: 'pill' })
 
 const emit = defineEmits<{ 'update:modelValue': [value: number | string] }>()
@@ -25,6 +26,11 @@ const sizes = {
     xs: 'px-2 pt-1 pb-1.5 text-xs gap-1',
   },
   pill: {
+    md: 'px-3 py-1.5 text-sm gap-1.5',
+    sm: 'px-2.5 py-1.5 text-xs gap-1.5',
+    xs: 'px-2 py-1 text-xs gap-1',
+  },
+  text: {
     md: 'px-3 py-1.5 text-sm gap-1.5',
     sm: 'px-2.5 py-1.5 text-xs gap-1.5',
     xs: 'px-2 py-1 text-xs gap-1',
@@ -50,7 +56,7 @@ watch(() => props.modelValue, () => nextTick(scrollToActive))
     :class="cn(
       'flex min-w-0 overflow-x-auto',
       props.grow && 'grow',
-      props.variant === 'pill' && 'rounded-lg bg-elevated/30 p-1',
+      props.variant === 'pill' && 'theme-rounded-control bg-elevated/30 p-1',
       props.variant === 'link' && 'overflow-y-hidden border-b border-default',
       $attrs.class as string,
     )"
@@ -62,15 +68,19 @@ watch(() => props.modelValue, () => nextTick(scrollToActive))
       :aria-pressed="item.value === props.modelValue"
       :class="cn(
         'relative inline-flex shrink-0 items-center rounded-md font-medium whitespace-nowrap transition-colors',
+        props.variant === 'pill' && 'theme-rounded-control',
         props.itemGrow && 'grow',
         props.align === 'left' ? 'justify-start' : 'justify-center',
         item.value === props.modelValue
           ? (props.variant === 'pill'
             ? 'bg-primary text-inverted shadow-xs'
-            : 'text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-primary')
+            : props.variant === 'link'
+              ? 'text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-primary'
+              : 'text-primary')
           : 'text-muted hover:text-default',
         sizes[props.variant][props.size],
         props.isEqual && 'basis-0',
+        props.itemClass,
       )"
       @click="emit('update:modelValue', item.value!)"
     >

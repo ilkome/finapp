@@ -50,7 +50,8 @@ function getChildrenIds(categoryId: CategoryId) {
         :to="props.getTo?.(categoryId)"
         v-bind="categoriesItemProps"
         :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
-        :class="`group ${props.expanded?.isExpanded(categoryId) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
+        class="group"
+        :class="props.expanded?.isExpanded(categoryId) ? '[&_.uiElementLine]:bg-transparent' : undefined"
         @click="emit('click', categoryId)"
         @toggle="props.expanded?.toggle(categoryId)"
       />

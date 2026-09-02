@@ -66,10 +66,10 @@ const amountColorize = computed(() => {
 <template>
   <div class="grid gap-4">
     <div class="grid w-full grow gap-1">
-      <UiTextSubtitle class="leading-3! text-nowrap">
+      <UiText class="leading-3! text-nowrap" variant="caption">
         {{ t('money.average') }}
         <br>{{ t('stat.average.forLast') }}
-      </UiTextSubtitle>
+      </UiText>
 
       <div class="flex gap-4">
         <Amount
@@ -78,7 +78,7 @@ const amountColorize = computed(() => {
           :currencyCode="currenciesStore.base"
           :type="amountType"
           align="left"
-          variant="base"
+          variant="default"
         />
       </div>
     </div>

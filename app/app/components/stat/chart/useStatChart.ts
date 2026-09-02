@@ -7,6 +7,11 @@ import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 import { formatCompactChartAmount } from '~/components/stat/chart/format'
 import { seriesOptions } from '~/components/stat/chart/options'
 
+const seriesIcons: Record<SeriesSlug, string> = {
+  expense: 'lucide:arrow-up-right',
+  income: 'lucide:arrow-down-left',
+}
+
 export function useStatChart() {
   const { t } = useI18n()
 
@@ -62,6 +67,7 @@ export function useStatChart() {
       averageMode: average ? 'series' : undefined,
       color: seriesOptions[typeItem]?.color as string | undefined,
       data: data.map(i => Math.abs(i[typeItem])),
+      icon: seriesIcons[typeItem],
       markLine,
       markLineValueType: typeItem,
       name: t(`money.${typeItem}`),
@@ -76,19 +82,24 @@ export function useStatChart() {
 
     const markAreaData: {
       data: [{ xAxis: string }, { xAxis: string }][]
-      itemStyle: { color: string, opacity: number }
+      itemStyle: { borderWidth: number, color: string, opacity: number }
     } = {
       data: [[{ xAxis: `${markedDate}` }, { xAxis: `${markedDate}` }]],
-      itemStyle: { color: 'var(--chart-line)', opacity: 1 },
+      itemStyle: {
+        borderWidth: 0,
+        color: 'color-mix(in oklab, var(--ui-bg-elevated) 100%, transparent)',
+        opacity: 1,
+      },
     }
 
     const markAreaIdx = series.findIndex(s => s.markedArea === 'markedArea')
     const markAreaSeries: ChartSeries = {
+      axisOverlay: true,
       data: [],
       markArea: markAreaData,
       markedArea: 'markedArea',
       name: '',
-      type: 'bar',
+      type: 'line',
     }
 
     return markAreaIdx === -1

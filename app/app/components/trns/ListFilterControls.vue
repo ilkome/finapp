@@ -24,13 +24,12 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <UiTabs
-    v-if="isShowFilterByType && realTypesCount > 1"
-    size="xs"
-    class="mb-2 [&>button]:py-[7px]"
-    :items="typeFilterItems"
-    :modelValue="filterBy"
-    @update:modelValue="(v) => emit('setFilterBy', v as TrnsViewType | 'all')"
+  <TrnsListTypeTabs
+    v-if="isShowFilterByType"
+    :filterBy
+    :realTypesCount
+    :typeFilterItems
+    @setFilterBy="emit('setFilterBy', $event)"
   />
 
   <div

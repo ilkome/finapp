@@ -32,27 +32,37 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
   const isShowWithDesc = options.state?.isShowWithDesc ?? ref(false)
   const filterBy = options.state?.filterBy ?? ref<TrnsViewType>('all')
 
-  const typeCounts = computed(() => getTypeCounts(options.ids.value, trnsStore.items))
-
-  const typeFilters = computed<TypeFilter[]>(() => {
-    const counts = typeCounts.value
+  function buildTypeFilters(ids: TrnId[]): TypeFilter[] {
+    const counts = getTypeCounts(ids, trnsStore.items)
     const primaryType = options.primaryType?.value
     const isScoped = !!options.primaryType
     const filters: TypeFilter[] = [
-      { count: options.ids.value.length, isShow: !isScoped || !primaryType, name: t('common.all'), slug: 'all', type: undefined },
+      { count: ids.length, isShow: !isScoped || !primaryType, name: t('common.all'), slug: 'all', type: undefined },
       { count: counts.expense, isShow: options.showExpense.value && (!isScoped || primaryType === 'expense') && counts.expense > 0, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
       { count: counts.income, isShow: options.showIncome.value && (!isScoped || primaryType === 'income') && counts.income > 0, name: t('money.income'), slug: 'income', type: TrnType.Income },
       { count: counts.transfer, isShow: options.showTransfers.value && counts.transfer > 0, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
       { count: counts.adjustment, isShow: counts.adjustment > 0, name: t('trnForm.adjustmentTitle'), slug: 'adjustment', type: undefined },
     ]
     return filters.filter(item => item.isShow)
-  })
-  const realTypesCount = computed(() => {
+  }
+
+  function countRealTypes(filters: TypeFilter[], ids: TrnId[]): number {
     if (options.primaryType)
-      return typeFilters.value.length
-    const counts = typeCounts.value
+      return filters.length
+    const counts = getTypeCounts(ids, trnsStore.items)
     return (counts.expense > 0 ? 1 : 0) + (counts.income > 0 ? 1 : 0) + (counts.transfer > 0 ? 1 : 0) + (counts.adjustment > 0 ? 1 : 0)
-  })
+  }
+
+  function createTypeFilterControls(ids: ComputedRef<TrnId[]>) {
+    const filters = computed(() => buildTypeFilters(ids.value))
+    return {
+      realTypesCount: computed(() => countRealTypes(filters.value, ids.value)),
+      typeFilterItems: computed<TabsItem[]>(() => filters.value.map(item => ({ label: item.name, value: item.slug }))),
+    }
+  }
+
+  const typeFilters = computed(() => buildTypeFilters(options.ids.value))
+  const { realTypesCount, typeFilterItems } = createTypeFilterControls(options.ids)
 
   if (options.primaryType) {
     watch(options.primaryType, (primaryType) => {
@@ -97,14 +107,13 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
     showWithDesc: isShowWithDesc.value && isTrnsWithDesc.value,
   }))
 
-  const typeFilterItems = computed<TabsItem[]>(() => typeFilters.value.map(item => ({ label: item.name, value: item.slug })))
-
   function setFilterBy(type: TrnsViewType | 'all') {
     const defaultType = options.primaryType?.value ?? 'all'
     filterBy.value = filterBy.value === type ? defaultType : (type ?? defaultType)
   }
 
   return {
+    createTypeFilterControls,
     descriptionSelectedIds,
     filterBy,
     filteredByTypeIds,

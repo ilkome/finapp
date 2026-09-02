@@ -2,7 +2,9 @@
 const props = defineProps<{
   busy?: boolean
   checkboxValue: boolean
+  disabled?: boolean
   title: string
+  trailing?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -10,7 +12,7 @@ const emit = defineEmits<{
 }>()
 
 function handleClick() {
-  if (props.busy)
+  if (props.busy || props.disabled)
     return
   emit('click', props.checkboxValue)
 }
@@ -18,9 +20,12 @@ function handleClick() {
 
 <template>
   <div
+    :aria-disabled="disabled || undefined"
     :class="cn(
-      'flex grow items-center gap-3 rounded-sm p-2 text-sm hover:bg-elevated/50',
+      'flex grow items-center gap-3 rounded-sm py-2 pr-2 pl-3 text-sm hover:bg-elevated/50',
       busy && 'pointer-events-none opacity-60',
+      disabled && 'pointer-events-none opacity-50',
+      trailing && 'flex-row-reverse',
     )"
     @click="handleClick"
   >

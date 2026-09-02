@@ -24,11 +24,9 @@ const emit = defineEmits<{
   clickAverage: []
 }>()
 
-const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
 
 const isShowAverage = computed(() => statConfig.config.value.average.isShow)
-
 
 const className = computed(() => cn(
   'flex min-h-10.5 min-w-min items-center',
@@ -116,7 +114,6 @@ function onClick(type: SeriesSlugSelected) {
         </div>
       </StatSumItem>
     </div>
-
   </div>
 </template>
 import type { TotalReturns } from '~/components/amount/getTotal'

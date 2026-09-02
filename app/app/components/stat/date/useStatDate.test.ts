@@ -293,6 +293,36 @@ describe('setGranularityBy', () => {
     expect(statDate.params.value.rangeBy).toBe('day')
     expect(statDate.params.value.rangeDuration).toBe(365)
   })
+
+  it('sets grouping duration directly and keeps maximum range active', () => {
+    const statDate = createStatDate({
+      granularityDuration: 1,
+      intervalSelected: 4,
+      isShowMaxRange: true,
+    })
+
+    statDate.setGranularityDuration(3)
+
+    expect(statDate.params.value.granularityDuration).toBe(3)
+    expect(statDate.params.value.intervalSelected).toBe(-1)
+    expect(statDate.params.value.isShowMaxRange).toBe(true)
+  })
+
+  it('sets range duration directly and exits maximum range', () => {
+    const statDate = createStatDate({
+      isShowMaxRange: true,
+      rangeBy: 'month',
+      rangeDuration: 3,
+      rangeOffset: 2,
+    })
+
+    statDate.setRangeDuration(4)
+
+    expect(statDate.params.value.isShowMaxRange).toBe(false)
+    expect(statDate.params.value.rangeBy).toBe('month')
+    expect(statDate.params.value.rangeDuration).toBe(4)
+    expect(statDate.params.value.rangeOffset).toBe(0)
+  })
 })
 
 describe('scroll range override', () => {

@@ -33,12 +33,13 @@ const emit = defineEmits<{
       <div class="flex grow items-center gap-3">
         <!-- Alt -->
         <template v-if="compact">
-          <div
+          <UiText
             v-if="date"
-            class="min-w-10 truncate text-2xs leading-none"
+            class="min-w-10 truncate"
+            variant="caption"
           >
             {{ date }}
-          </div>
+          </UiText>
 
           <div
             v-if="trnItem.type === TrnType.Transfer"
@@ -48,9 +49,9 @@ const emit = defineEmits<{
               :name="props.trnItem.category?.icon"
               size="16"
             />
-            <div class="flex items-center gap-2 text-xs leading-none">
+            <UiEntityName variant="compact">
               {{ trnItem.category.name }}
-            </div>
+            </UiEntityName>
           </div>
         </template>
 
@@ -71,9 +72,9 @@ const emit = defineEmits<{
             v-if="trnItem.wallet"
             class="flex items-center gap-2"
           >
-            <div class="text-2xs leading-none text-muted">
+            <UiEntityName variant="secondary">
               {{ trnItem.wallet.name }}
-            </div>
+            </UiEntityName>
           </div>
         </div>
 
@@ -87,7 +88,7 @@ const emit = defineEmits<{
           align="right"
           class="grow"
           colorize="income"
-          variant="sm"
+          variant="row"
         />
 
         <!-- Transfer -->
@@ -95,10 +96,14 @@ const emit = defineEmits<{
           v-if="trnItem.type === TrnType.Transfer"
           class="grid gap-1"
         >
-          <div class="flex items-center gap-1 text-sm leading-none text-toned">
-            <span class="font-semibold">{{ trnItem.expenseWallet.name }}</span>
+          <div class="flex items-center gap-1">
+            <UiEntityName>
+              {{ trnItem.expenseWallet.name }}
+            </UiEntityName>
             <Icon name="lucide:move-right" size="16" />
-            <span class="font-semibold">{{ trnItem.incomeWallet.name }}</span>
+            <UiEntityName>
+              {{ trnItem.incomeWallet.name }}
+            </UiEntityName>
           </div>
 
           <div class="flex flex-wrap gap-2">
@@ -108,7 +113,7 @@ const emit = defineEmits<{
               :currencyCode="trnItem.expenseWallet.currency"
               :type="TrnType.Expense"
               class="flex! items-center gap-2"
-              variant="sm"
+              variant="row"
             />
 
             <template v-if="trnItem.incomeAmount !== trnItem.expenseAmount">
@@ -118,19 +123,20 @@ const emit = defineEmits<{
                 :type="TrnType.Income"
                 colorize="income"
                 class="flex! items-center gap-2"
-                variant="sm"
+                variant="row"
               />
             </template>
           </div>
         </div>
       </div>
 
-      <div
+      <UiText
         v-if="trnItem.desc"
-        class="text-2xs opacity-80"
+        class="opacity-80"
+        variant="caption"
       >
         {{ trnItem.desc }}
-      </div>
+      </UiText>
     </div>
   </UiElement>
 </template>

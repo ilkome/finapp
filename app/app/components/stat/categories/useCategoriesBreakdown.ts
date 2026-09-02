@@ -5,7 +5,7 @@ import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { addEmptyCategoryViews, buildCategoryViews } from '~/components/stat/categories/categoryViews'
+import { addEmptyCategoryViews, buildCategoryViews, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
 import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -43,7 +43,7 @@ export function useCategoriesBreakdown(props: {
   })
 
   const categoriesWithData = computed<CategoryWithData[]>(() => {
-    const isGrouped = statConfig.config.value.categories[statConfig.config.value.categories.view === 'list' ? 'list' : 'round'].isGrouped
+    const grouping = statConfig.config.value.categories.list.grouping
 
     if (statConfig.config.value.categories.isShowEmpty && props.preCategoriesIds?.length) {
       const withEmpty = addEmptyCategoryViews(
@@ -52,10 +52,10 @@ export function useCategoriesBreakdown(props: {
         props.preCategoriesIds,
         props.excludedCategoriesIds,
       )
-      return isGrouped ? withEmpty.grouped : withEmpty.ungrouped
+      return resolveCategoryGrouping(withEmpty, grouping, views.value.ungrouped)
     }
 
-    return isGrouped ? groupedCategories.value : ungroupedCategories.value
+    return resolveCategoryGrouping(views.value, grouping)
   })
 
   return { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories }

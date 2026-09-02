@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { SplitChartSelectionState } from '~/components/stat/chart/splitChartSelection'
 import type { StatReportContext } from '~/components/stat/report/types'
 import type { SeriesSlug } from '~/components/stat/types'
-import type { SplitChartSelectionState } from '~/components/stat/chart/splitChartSelection'
 
 import { resolveSplitChartSelection } from '~/components/stat/chart/splitChartSelection'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
@@ -10,15 +10,16 @@ const props = defineProps<{ contexts: Record<'combined' | 'expense' | 'income', 
 const statConfig = inject(statConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const splitChartSelection = ref<SplitChartSelectionState>({})
+const combinedFilteredType = props.contexts.combined.filteredType
 
 function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
   const result = resolveSplitChartSelection(
-    props.contexts.combined.filteredType.value,
+    combinedFilteredType.value,
     type,
     intervalKey,
     splitChartSelection.value,
   )
-  props.contexts.combined.filteredType.value = result.nextType
+  combinedFilteredType.value = result.nextType
   splitChartSelection.value = result.state
 }
 </script>
@@ -26,7 +27,9 @@ function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
 <template>
   <div
     v-if="statConfig.config.value.chart.isShow"
-    class="grid min-w-0 gap-8"
+    class="grid min-w-0 gap-2"
+    :class="statConfig.config.value.chart.isShowBackground && 'rounded-md bg-elevated/30 p-2 md:p-3'"
+    data-stat-block="chart"
     data-stat-chart-section
   >
     <StatReportChart
@@ -39,5 +42,9 @@ function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
         <StatReportChart :ctx="contexts.income" @select="onSelectSplitChart('income', $event)" />
       </div>
     </template>
+    <StatDateQuickRanges
+      v-if="statConfig.config.value.date.isShowQuick"
+      data-stat-chart-quick-ranges
+    />
   </div>
 </template>

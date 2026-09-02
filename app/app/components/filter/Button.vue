@@ -15,6 +15,7 @@ const snapPoints = useSheetSnapPoints()
     :isOpen="isOpen"
     :snapPoints="snapPoints"
     :title="t('base.filters')"
+    titleClass="pb-0!"
     :unmountOnHide="false"
     isShowCloseBtn
     keyboardTrigger

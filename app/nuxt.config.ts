@@ -1,3 +1,4 @@
+import { readdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -5,6 +6,8 @@ import { fileURLToPath } from 'node:url'
 import categoryIcons from './app/assets/js/icons.js'
 
 const currentDir = dirname(fileURLToPath(import.meta.url))
+const powerSyncWasmDir = join(currentDir, 'node_modules/@powersync/web/dist/worker/assets')
+const powerSyncWasmFiles = readdirSync(powerSyncWasmDir).filter(file => file.endsWith('.wasm'))
 
 export default defineNuxtConfig({
   app: {
@@ -250,13 +253,13 @@ export default defineNuxtConfig({
       globIgnores: ['**/200*', '**/404*'],
       globPatterns: [
         '**/*.{js,json,css,html,png,svg,ico,woff2}',
-        '**/wa-sqlite-async.*.wasm',
+        '**/*.wasm',
       ],
       importScripts: ['/sw-push.js'],
       manifestTransforms: [
         (entries) => {
           const hasWasm = entries.some(e =>
-            /wa-sqlite-async\..*\.wasm$/.test(e.url),
+            /powersync-assets\/wa-sqlite-async-.*\.wasm$/.test(e.url),
           )
           if (!hasWasm) {
             throw new Error(
@@ -351,8 +354,40 @@ export default defineNuxtConfig({
         'swiper/modules',
       ],
     },
+    plugins: [
+      {
+        apply: 'build',
+        generateBundle() {
+          for (const file of powerSyncWasmFiles) {
+            this.emitFile({
+              fileName: `_nuxt/powersync-assets/${file}`,
+              source: readFileSync(join(powerSyncWasmDir, file)),
+              type: 'asset',
+            })
+          }
+        },
+        name: 'powersync-wasm-assets',
+        renderChunk(code) {
+          let rendered = code
+          for (const file of powerSyncWasmFiles)
+            rendered = rendered.replaceAll(`assets/${file}`, `powersync-assets/${file}`)
+          return rendered === code ? null : { code: rendered, map: null }
+        },
+      },
+    ],
     worker: {
       format: 'es',
+      plugins: () => [
+        {
+          name: 'powersync-wasm-paths',
+          renderChunk(code) {
+            let rendered = code
+            for (const file of powerSyncWasmFiles)
+              rendered = rendered.replaceAll(`assets/${file}`, `powersync-assets/${file}`)
+            return rendered === code ? null : { code: rendered, map: null }
+          },
+        },
+      ],
     },
   },
 })

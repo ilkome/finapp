@@ -4,15 +4,12 @@ import type { CategoryWithData, SeriesSlugSelected } from '~/components/stat/typ
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { getMaxCategoryValues } from '~/components/stat/categories/barUtils'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { statConfigKey, statViewControllerKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   categoriesWithData: CategoryWithData[]
-  focusedCategories?: CategoryWithData[]
-  focusedChildCategoryId?: CategoryId
   groupedCategories: CategoryWithData[]
   isOneCategory?: boolean
-  isTwoColumnLayout?: boolean
   storageKey: string
   type: SeriesSlugSelected | 'summary'
   ungroupedCategories: CategoryWithData[]
@@ -20,24 +17,25 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   openCategory: [categoryId: CategoryId, filteredType?: SeriesSlugSelected]
-  setFocusedCategoryFilter: [categoryId: CategoryId]
 }>()
 
 const { t } = useI18n()
 const statConfig = inject(statConfigKey)!
+const statViewController = inject(statViewControllerKey, null)
 
 const catsList = computed(() => statConfig.config.value.categories.list)
 const isListShow = computed(() => catsList.value.isShow)
-const isListGrouped = computed(() => catsList.value.isGrouped)
-const isFocused = computed(() => props.focusedCategories !== undefined)
-
-const linesCategories = computed<CategoryWithData[]>(() => isListGrouped.value ? props.groupedCategories : props.ungroupedCategories)
+const isShowBackground = computed(() => catsList.value.backgroundType !== 'none')
+const isShowTitle = computed(() => catsList.value.isShowTitle)
+const linesCategories = computed<CategoryWithData[]>(() => props.categoriesWithData)
 const linesMaxValues = computed(() => getMaxCategoryValues(linesCategories.value))
 const childrenMaxValues = computed(() => getMaxCategoryValues(props.categoriesWithData))
+const hasGroupedCategories = computed(() => linesCategories.value.some(item => !!item.categories?.length))
 
 const {
   folderIcon,
   isExpanded,
+  reset: resetExpanded,
   toggle: toggleCategory,
   toggleAll: toggleAllCategories,
 } = useCategoriesExpanded(
@@ -45,6 +43,13 @@ const {
   computed(() => props.categoriesWithData.map(c => c.id)),
   { persistDefault: true },
 )
+
+watch(() => statViewController?.activeId.value, (activeId, previousActiveId) => {
+  if (previousActiveId !== undefined && activeId !== previousActiveId)
+    resetExpanded(catsList.value.isAutoExpandParents)
+})
+
+watch(() => catsList.value.isAutoExpandParents, resetExpanded, { immediate: true })
 
 function onParentClick(item: CategoryWithData) {
   if (item.categories?.length)
@@ -61,11 +66,7 @@ function onAmountOpen(item: CategoryWithData) {
 }
 
 function isItemExpanded(item: CategoryWithData) {
-  return isListGrouped.value && !!item.categories?.length && isExpanded(item.id)
-}
-
-function onToggleListGrouping() {
-  statConfig.updateConfig('categories', { list: { isGrouped: !isListGrouped.value } })
+  return !!item.categories?.length && isExpanded(item.id)
 }
 
 const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, true)
@@ -73,10 +74,10 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
 
 <template>
   <div
-    v-if="isListShow || isFocused"
+    v-if="isListShow"
     class="w-full @3xl/main:max-w-md"
   >
-    <div v-if="!isFocused" class="flex items-center justify-between">
+    <div v-if="isShowTitle" class="flex items-center justify-between">
       <UiTitleCollapse
         class="grow"
         :isShown="isListShown"
@@ -90,7 +91,7 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
         class="flex items-center gap-1"
       >
         <UiActionButton
-          v-if="statConfig.config.value.categories.view === 'list' && !props.isOneCategory && isListGrouped"
+          v-if="!props.isOneCategory && hasGroupedCategories"
           :ariaLabel="$t('base.toggleFolders')"
           @click="toggleAllCategories"
         >
@@ -99,52 +100,31 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
             size="20"
           />
         </UiActionButton>
-
-        <StatCategoriesGroupingToggle
-          v-if="!props.isOneCategory"
-          :isGrouped="isListGrouped"
-          @toggle="onToggleListGrouping"
-        />
       </div>
     </div>
 
     <div
-      v-if="isFocused || isListShown"
-      :class="{
-        'w-full': !isListGrouped,
-        '@3xl/main:max-w-md': !isListGrouped,
-      }"
-      class="pt-2"
+      v-if="!isShowTitle || isListShown"
+      class="w-full @3xl/main:max-w-md"
+      :class="[
+        isShowTitle && 'pt-2',
+        isShowBackground && 'grid gap-1',
+      ]"
     >
-      <template v-if="isFocused">
-        <StatCategoriesLine
-          v-for="(item, index) in focusedCategories"
-          :key="item.id"
-          :isActive="props.focusedChildCategoryId === item.id"
-          :isShowParent="false"
-          :item="item"
-          :maxCategoryValues="childrenMaxValues"
-          :lineWidth="index === (focusedCategories?.length ?? 0) - 1 ? 0 : 1"
-          class="group"
-          @click="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
-          @amountClick="props.isTwoColumnLayout ? emit('setFocusedCategoryFilter', item.id) : emit('openCategory', item.id)"
-        />
-      </template>
-
       <template
         v-for="(item, index) in linesCategories"
-        v-else
         :key="item.id"
       >
         <StatCategoriesLine
-          :isShowParent="props.isOneCategory ? false : !isListGrouped"
-          :stacked="!props.isOneCategory && !isListGrouped"
+          :isShowParent="!props.isOneCategory && !item.categories?.length"
+          :stacked="!props.isOneCategory && !item.categories?.length"
           :item="item"
           :isExpanded="isItemExpanded(item)"
           isShowChevron
           :maxCategoryValues="linesMaxValues"
           :lineWidth="index === linesCategories.length - 1 && !isItemExpanded(item) ? 0 : 1"
-          :class="`group ${isItemExpanded(item) ? '[&_.uiElementLine]:bg-transparent' : ''}`"
+          class="group"
+          :class="isItemExpanded(item) && '[&_.uiElementLine]:bg-transparent'"
           @click="onParentClick(item)"
           @amountClick="onAmountOpen(item)"
         />
@@ -152,14 +132,18 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
         <UCollapsible
           v-if="item.categories?.length"
           :open="isItemExpanded(item)"
+          :class="!isItemExpanded(item) && 'hidden'"
           :ui="{ content: 'overflow-hidden data-[state=open]:animate-none! data-[state=closed]:animate-none!' }"
         >
           <template #content>
-            <div class="ml-5 pb-1 pl-3">
+            <div
+              :class="isShowBackground && 'grid gap-1'"
+              class="ml-5 pb-1 pl-3"
+            >
               <StatCategoriesLine
                 v-for="(itemInside, childIndex) in item.categories"
                 :key="itemInside.id"
-                :isShowParent="!isListGrouped"
+                :isShowParent="false"
                 :item="itemInside"
                 :maxCategoryValues="childrenMaxValues"
                 :lineWidth="childIndex === item.categories.length - 1 && index === linesCategories.length - 1 ? 0 : 1"

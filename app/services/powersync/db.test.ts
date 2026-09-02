@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const disconnect = vi.fn(async () => {})
 const disconnectAndClear = vi.fn(async () => {})
 const getUploadQueueStats = vi.fn(async () => ({ count: 0, size: null }))
+const init = vi.fn(async () => {})
 const createDatabase = vi.fn()
 
 vi.mock('@powersync/web', () => {
@@ -11,6 +12,7 @@ vi.mock('@powersync/web', () => {
     disconnect = disconnect
     disconnectAndClear = disconnectAndClear
     getUploadQueueStats = getUploadQueueStats
+    init = init
 
     constructor(options: unknown) {
       createDatabase(options)
@@ -20,7 +22,7 @@ vi.mock('@powersync/web', () => {
 })
 vi.mock('~~/services/powersync/AppSchema', () => ({ AppSchema: {} }))
 
-const { getPendingUploadCount, getPowerSyncDb, pausePowerSync } = await import('~~/services/powersync/db')
+const { getPendingUploadCount, getPowerSyncDb, initializePowerSyncDb, pausePowerSync } = await import('~~/services/powersync/db')
 
 describe('pausePowerSync', () => {
   beforeEach(() => {
@@ -40,9 +42,24 @@ describe('getPowerSyncDb', () => {
   it('uses the PowerSync 2 database options API', async () => {
     await getPowerSyncDb()
     expect(createDatabase).toHaveBeenCalledWith({
-      database: { dbFilename: 'finapp.db' },
+      database: { dbFilename: 'finapp.db', worker: expect.any(String) },
       schema: {},
+      sync: { worker: expect.any(String) },
     })
+  })
+})
+
+describe('initializePowerSyncDb', () => {
+  it('shares the in-flight initialization across concurrent callers', async () => {
+    let resolveInit!: () => void
+    init.mockImplementationOnce(() => new Promise<void>((resolve) => { resolveInit = resolve }))
+
+    const first = initializePowerSyncDb()
+    const second = initializePowerSyncDb()
+    await vi.waitFor(() => expect(init).toHaveBeenCalledTimes(1))
+
+    resolveInit()
+    await expect(Promise.all([first, second])).resolves.toEqual([undefined, undefined])
   })
 })
 

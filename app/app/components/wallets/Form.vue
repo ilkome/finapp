@@ -160,7 +160,6 @@ async function onSave() {
     <div class="flex-center">
       <UiButtonAccent
         class="sm:max-w-xs"
-        rounded
         @click="onSave"
       >
         {{ t('base.save') }}
@@ -200,7 +199,6 @@ async function onSave() {
 
       <div class="flex-center py-2">
         <UiButtonAccent
-          rounded
           @click="close"
         >
           {{ t('base.apply') }}

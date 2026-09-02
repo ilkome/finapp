@@ -30,9 +30,13 @@ export function createDebouncedPersist<T>(storageKey: string) {
 let _toast: ReturnType<typeof useToast> | null = null
 let _t: ((key: string, params?: Record<string, unknown>) => string) | null = null
 
+export function initializeStoreSyncToast(toast: ReturnType<typeof useToast>): void {
+  _toast = toast
+}
+
 function getToast() {
   if (!_toast)
-    _toast = useToast()
+    throw new Error('Store sync toast is not initialized')
   return _toast
 }
 

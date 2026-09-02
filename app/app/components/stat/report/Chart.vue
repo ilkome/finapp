@@ -15,6 +15,7 @@ defineEmits<{
     v-if="ctx.shouldShowAmounts.value"
     :series="ctx.chartSeries.value"
     :chartWindow="ctx.chartWindow"
+    :chartType="ctx.effectiveChartType.value"
     :xAxisLabels="ctx.chartXAxisLabels.value"
     class="min-w-0"
     @select="$emit('select', $event)"

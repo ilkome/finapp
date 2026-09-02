@@ -17,13 +17,16 @@ export type StatNavigationStorageOptions = {
 export type StatNavigationReadOptions = Pick<StatNavigationStorageOptions, 'now' | 'storage'>
 
 export type StatCategoryNavigationOptions = {
-  categoriesIds: MaybeRefOrGetter<readonly CategoryId[]>
   snapshot: MaybeRefOrGetter<StatNavigationSnapshotInput | null>
   walletsIds: MaybeRefOrGetter<readonly WalletId[]>
 }
 
+export type StatWalletNavigationOptions = {
+  categoriesIds: MaybeRefOrGetter<readonly CategoryId[]>
+  snapshot: MaybeRefOrGetter<StatNavigationSnapshotInput | null>
+}
+
 export type StatCategoryRouteOptions = {
-  categoriesIds: readonly CategoryId[]
   categoryId: CategoryId
   isDrilldown: boolean
   snapshotId: string | null
