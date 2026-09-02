@@ -24,14 +24,14 @@ const currenciesStore = useCurrenciesStore()
       :amount="props.amount"
       :currencyCode="currenciesStore.base"
       :isShowBaseRate="false"
-      :variant="props.isPrimary ? 'sm' : undefined"
+      :variant="props.isPrimary ? 'row' : undefined"
     />
     <Amount
       v-if="props.secondaryAmount != null"
       :amount="props.secondaryAmount"
       :currencyCode="props.secondaryCurrency!"
       :isShowBaseRate="false"
-      variant="2xs"
+      variant="secondary"
     />
   </div>
 </template>

@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
+import { quickRangeOptionIds } from '~/components/stat/date/useRangeOptions'
+
 import type { MiniItemConfig } from './schema'
 
 import { PANELS } from './panels/registry'
-import { applyConfigProps, applyConfigUpdate, ConfigSchema } from './schema'
+import { applyConfigProps, applyConfigUpdate, ConfigSchema, statConfigBlockOrder } from './schema'
 
 const defaultConfig: MiniItemConfig = {
   average: {
@@ -12,18 +14,25 @@ const defaultConfig: MiniItemConfig = {
   },
   categories: {
     bars: {
-      isGrouped: false,
+      grouping: 'auto',
       isShow: false,
+      isShowTooltip: true,
+      isShowTooltipChildren: false,
     },
     isShowEmpty: false,
     list: {
-      isGrouped: true,
+      backgroundType: 'none',
+      grouping: 'parent',
+      isAutoExpandParents: false,
       isLines: true,
       isRoundIcon: true,
       isShow: true,
+      isShowTitle: true,
+      trendType: 'bar',
     },
     round: {
-      isGrouped: false,
+      grouping: 'child',
+      isHideOthersOnSelect: false,
       isIconBg: true,
       isInlineAmount: false,
       isShow: true,
@@ -37,6 +46,7 @@ const defaultConfig: MiniItemConfig = {
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
+    isShowBackground: false,
     isShowScale: false,
     layout: 'combined-wide',
     line: {
@@ -45,22 +55,44 @@ const defaultConfig: MiniItemConfig = {
       isSkipZero: false,
       isSmooth: true,
     },
+    pie: {
+      isShowLabels: true,
+      isShowPercent: false,
+      shape: 'donut',
+    },
     type: 'bar',
     valueDisplay: 'magnitude',
   },
   date: {
+    isPinned: true,
+    isShow: true,
+    isShowNavigation: true,
     isShowQuick: false,
+    quickRangeIds: ['period:day-1', 'period:week-1', 'period:month-1', 'period:month-6', 'period:year-1'],
+    quickRangeOrderIds: [...quickRangeOptionIds],
   },
   page: {
+    blockOrder: [...statConfigBlockOrder],
     layout: 'combined',
+  },
+  summary: {
+    isPinned: true,
+    isShow: true,
+    isShowChart: true,
   },
   trns: {
     isShow: true,
+    isShowHistory: true,
+    isShowTitle: true,
+    isShowTypeTabs: true,
   },
   wallets: {
     count: 6,
+    displayMode: 'recent',
     isShow: false,
     isShowIcon: true,
+    selectionMode: 'multiple',
+    valueMode: 'balance',
   },
 }
 
@@ -77,6 +109,15 @@ describe('configSchema', () => {
 
   it('validates default config', () => {
     expect(ConfigSchema.safeParse(defaultConfig).success).toBe(true)
+  })
+
+  it('backfills automatic parent expansion for existing configs', () => {
+    const stored = structuredClone(defaultConfig)
+    delete (stored.categories.list as Partial<typeof stored.categories.list>).isAutoExpandParents
+
+    const result = ConfigSchema.parse(stored)
+
+    expect(result.categories.list.isAutoExpandParents).toBe(false)
   })
 
   it('rejects invalid chartType', () => {
@@ -140,13 +181,80 @@ describe('applyConfigUpdate', () => {
   })
 
   it('deep-merges nested object', () => {
-    const result = applyConfigUpdate(defaultConfig, 'categories', { list: { isGrouped: false } })
+    const result = applyConfigUpdate(defaultConfig, 'categories', { list: { grouping: 'child' } })
     expect(result).not.toBeNull()
-    expect(result!.categories.list.isGrouped).toBe(false)
+    expect(result!.categories.list.grouping).toBe('child')
     // Other fields preserved via defu
     expect(result!.categories.list.isShow).toBe(true)
     expect(result!.categories.list.isLines).toBe(true)
     expect(result!.categories.round).toEqual(defaultConfig.categories.round)
+  })
+
+  it('normalizes a partial block order without duplicates', () => {
+    const result = ConfigSchema.parse({
+      ...defaultConfig,
+      page: { ...defaultConfig.page, blockOrder: ['trns', 'chart', 'trns'] },
+    })
+
+    expect(result.page.blockOrder).toEqual([
+      'navigation',
+      'summary',
+      'trns',
+      'chart',
+      ...statConfigBlockOrder.filter(id => id !== 'navigation' && id !== 'summary' && id !== 'trns' && id !== 'chart'),
+    ])
+  })
+
+  it('stores the normalized block order after an update', () => {
+    const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder: ['trns', 'chart', 'trns'] as any })
+
+    expect(result?.page.blockOrder).toEqual([
+      'navigation',
+      'summary',
+      'trns',
+      'chart',
+      ...statConfigBlockOrder.filter(id => id !== 'navigation' && id !== 'summary' && id !== 'trns' && id !== 'chart'),
+    ])
+  })
+
+  it('keeps comparison columns above the category list', () => {
+    const blockOrder: MiniItemConfig['page']['blockOrder'] = [
+      ...statConfigBlockOrder.filter(id => id !== 'vertical'),
+      'vertical',
+    ]
+    const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder })
+
+    expect(result!.page.blockOrder.indexOf('vertical')).toBeLessThan(result!.page.blockOrder.indexOf('catsList'))
+  })
+
+  it('disables transaction history when transactions are not the last block', () => {
+    const blockOrder: MiniItemConfig['page']['blockOrder'] = ['trns', ...statConfigBlockOrder.filter(id => id !== 'trns')]
+    const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder })
+
+    expect(result?.page.blockOrder).toEqual(blockOrder)
+    expect(result?.trns.isShowHistory).toBe(false)
+  })
+
+  it('allows transaction history when transactions are the last block', () => {
+    const result = applyConfigUpdate(defaultConfig, 'trns', { isShowHistory: true })
+
+    expect(result?.trns.isShowHistory).toBe(true)
+  })
+
+  it('migrates legacy category grouping booleans', () => {
+    const legacy = structuredClone(defaultConfig) as any
+    delete legacy.categories.list.grouping
+    delete legacy.categories.round.grouping
+    delete legacy.categories.bars.grouping
+    legacy.categories.list.isGrouped = true
+    legacy.categories.round.isGrouped = false
+    legacy.categories.bars.isGrouped = true
+
+    const result = ConfigSchema.parse(legacy)
+
+    expect(result.categories.list.grouping).toBe('parent')
+    expect(result.categories.round.grouping).toBe('child')
+    expect(result.categories.bars.grouping).toBe('parent')
   })
 
   it('deep-merges wallets count', () => {
@@ -154,6 +262,13 @@ describe('applyConfigUpdate', () => {
     expect(result).not.toBeNull()
     expect(result!.wallets.count).toBe(12)
     expect(result!.wallets.isShow).toBe(false) // preserved
+  })
+
+  it('updates wallet display, value, and selection modes', () => {
+    const result = applyConfigUpdate(defaultConfig, 'wallets', { displayMode: 'period', selectionMode: 'single', valueMode: 'period' })
+
+    expect(result?.wallets).toMatchObject({ displayMode: 'period', selectionMode: 'single', valueMode: 'period' })
+    expect(result?.wallets.count).toBe(6)
   })
 
   it('returns null for invalid value', () => {
@@ -201,8 +316,10 @@ describe('panel registry', () => {
     }
   })
 
-  it('reads counts from the matching panel fields', () => {
-    expect(PANELS.wallets.getCount?.(defaultConfig)).toBe(defaultConfig.wallets.count)
-    expect(PANELS.statAverage.getCount?.(defaultConfig)).toBe(defaultConfig.average.count)
+  it('supports visibility for every panel', () => {
+    for (const panel of Object.values(PANELS)) {
+      expect(panel.getIsShow).toBeTypeOf('function')
+      expect(panel.setIsShow).toBeTypeOf('function')
+    }
   })
 })

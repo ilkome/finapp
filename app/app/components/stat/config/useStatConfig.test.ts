@@ -6,6 +6,7 @@ import { ref, toValue, watch } from 'vue'
 import { defaultConfig } from './schema'
 
 const storageKeys = vi.hoisted(() => [] as unknown[])
+const storageOptions = vi.hoisted(() => [] as unknown[])
 const storageState = vi.hoisted(() => new Map<string, unknown>())
 const currentRoute = ref({ query: {} as Record<string, string> })
 
@@ -14,10 +15,11 @@ vi.stubGlobal('useIsLaptop', () => ref(true))
 vi.stubGlobal('useRouter', () => ({ currentRoute }))
 
 vi.mock('@vueuse/core', () => ({
-  useStorage: (key: unknown, defaultValue: unknown) => {
+  useStorage: (key: unknown, defaultValue: unknown, _storage: unknown, options: unknown) => {
     const storageKey = String(toValue(key))
     const storageRef = key as { value?: string }
     storageKeys.push(storageRef)
+    storageOptions.push(options)
     const initialValue = storageState.has(storageKey) ? storageState.get(storageKey) : defaultValue
     const state = ref(initialValue)
     watch(state, (value) => {
@@ -27,15 +29,20 @@ vi.mock('@vueuse/core', () => ({
   },
 }))
 
-const { normalizeStoredStatConfig, useStatConfig } = await import('./useStatConfig')
+const { normalizeStoredStatConfig, parseStoredStatConfig, useStatConfig } = await import('./useStatConfig')
 
 beforeEach(() => {
   currentRoute.value = { query: {} }
   storageKeys.length = 0
+  storageOptions.length = 0
   storageState.clear()
 })
 
 describe('normalizeStoredStatConfig', () => {
+  it('keeps strict parsing available for persisted entities', () => {
+    expect(parseStoredStatConfig({ chart: { type: 'invalid' } }, structuredClone(defaultConfig))).toBeNull()
+  })
+
   it('preserves the current pie chart type in partial stored configs', () => {
     const config = normalizeStoredStatConfig({ chart: { type: 'pie' } }, structuredClone(defaultConfig))
 
@@ -63,6 +70,23 @@ describe('normalizeStoredStatConfig', () => {
     expect(config.chart.isShowScale).toBe(false)
     expect(config.chart.line).toEqual({ isGradient: false, isShowPoints: true, isSkipZero: false, isSmooth: true })
     expect(config.categories.round.isInlineAmount).toBe(false)
+    expect(config.categories.round.isHideOthersOnSelect).toBe(false)
+    expect(config.trns).toEqual({ isShow: true, isShowHistory: true, isShowTitle: true, isShowTypeTabs: true })
+    expect(config.wallets).toMatchObject({ displayMode: 'recent', selectionMode: 'multiple', valueMode: 'balance' })
+  })
+
+  it('migrates legacy category grouping booleans', () => {
+    const config = normalizeStoredStatConfig({
+      categories: {
+        bars: { isGrouped: true },
+        list: { isGrouped: true },
+        round: { isGrouped: false },
+      },
+    }, structuredClone(defaultConfig))
+
+    expect(config.categories.list.grouping).toBe('parent')
+    expect(config.categories.round.grouping).toBe('child')
+    expect(config.categories.bars.grouping).toBe('parent')
   })
 
   it('migrates removed line chart variants to line options', () => {
@@ -89,6 +113,15 @@ describe('normalizeStoredStatConfig', () => {
 
     pageStorageKey.value = 'dashboard-expense'
     expect(toValue(storageKey)).toBe('finapp-dashboard-expense-')
+  })
+
+  it('prevents stable config instances from overwriting each other through storage events', () => {
+    useStatConfig({ stableStorage: true, storageKey: 'dashboard' })
+
+    expect(storageOptions.at(-1)).toMatchObject({
+      flush: 'sync',
+      listenToStorageChanges: false,
+    })
   })
 
   it('uses initialConfig even if storage has a different valid value', () => {

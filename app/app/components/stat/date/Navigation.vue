@@ -6,10 +6,14 @@ import {
   isStart as computeIsStart,
   isLatestSelectedInterval,
 } from '~/components/stat/date/navigationPredicates'
-import { statDateKey, statStickyNavKey } from '~/components/stat/injectionKeys'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
+const props = withDefaults(defineProps<{
+  isShowButtons?: boolean
+}>(), {
+  isShowButtons: true,
+})
 const statDate = inject(statDateKey)!
-const stickyNav = inject(statStickyNavKey, false)
 
 const isShowNav = computed(() => computeIsShowNav(statDate.params.value, statDate.range.value, statDate.maxRange.value, new Date()))
 
@@ -53,10 +57,9 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 <template>
   <div
     class="stat-date-navigation -mx-2 flex grow snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:px-0"
-    :class="stickyNav ? 'pt-0' : 'pt-2'"
   >
     <UiNavArrows
-      v-if="isShowNav && !statDate.params.value.customDate"
+      v-if="props.isShowButtons && isShowNav && !statDate.params.value.customDate"
       class="shrink-0 snap-start"
       hideInactiveArrows
       :homeAriaLabel="$t('base.reset')"

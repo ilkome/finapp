@@ -61,14 +61,12 @@ const statSnapshot = computed(() => {
   }
 })
 const openStatCategory = useStatCategoryNavigation({
-  categoriesIds: navigationCategoriesIds,
   snapshot: statSnapshot,
   walletsIds: navigationWalletsIds,
 })
 const openStatWallet = useStatWalletNavigation({
   categoriesIds: navigationCategoriesIds,
   snapshot: statSnapshot,
-  walletsIds: navigationWalletsIds,
 })
 
 function filterByDate(date: number) {
@@ -212,7 +210,7 @@ function handleDeleteConfirm() {
   </div>
 
   <template v-else>
-    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems" size="lg">
+    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
       <TrnsItem
         :compact="props.compact"
         :trnItem

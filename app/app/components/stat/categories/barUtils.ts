@@ -3,6 +3,13 @@ type MaxCategoryValues = {
   income: number
 }
 
+export function getCategorySparklineWidth(periodCount: number): number {
+  const barWidth = 3
+  const gap = 2
+  const contentWidth = periodCount * barWidth + Math.max(0, periodCount - 1) * gap
+  return Math.max(14, contentWidth)
+}
+
 /**
  * Compute bar style for category proportional display.
  * Used in Vertical (height) and Line (width) category views.

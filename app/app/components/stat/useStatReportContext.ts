@@ -6,12 +6,15 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getSelectedParentCategoryId } from '~/components/filter/selectedParentCategory'
+import { countActiveFocusedChildren } from '~/components/stat/categories/focusedCategories'
 import { getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
 import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 type UseStatReportContextParams = UseStatReportParams & {
   hasChildren?: ComputedRef<boolean | undefined>
+  onFilteredTypeChange?: (type: SeriesSlugSelected) => void
   preCategoriesIds?: ComputedRef<CategoryId[] | undefined>
   walletId?: ComputedRef<WalletId | undefined>
 }
@@ -20,6 +23,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   const report = useStatReport(params)
   const quickView = useTrnsQuickView(report.selectedAndFilteredTrnsIds)
   const categoriesStore = useCategoriesStore()
+  const trnsStore = useTrnsStore()
   const route = useRoute()
 
   const isOneCategory = computed(() => !!params.categoryId?.value)
@@ -42,15 +46,26 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     const categoryId = focusedQuickCategoryId.value
     return !!categoryId && categoriesStore.hasChildren(categoryId)
   })
+  const focusedQuickCategoryActiveChildrenCount = computed(() => {
+    const categoryId = focusedQuickCategoryId.value
+    if (!categoryId)
+      return 0
+    return countActiveFocusedChildren({
+      childrenIds: categoriesStore.getChildrenIds(categoryId),
+      trnsIds: report.selectedAndQuickFilteredTrnsIds.value,
+      trnsItems: trnsStore.items ?? {},
+    })
+  })
   const shouldShowCategoriesBreakdown = computed(() => {
     if (focusedQuickCategoryId.value)
-      return focusedQuickCategoryHasChildren.value
+      return focusedQuickCategoryHasChildren.value && focusedQuickCategoryActiveChildrenCount.value > 1
 
     return hasCategoriesData.value
       && (params.statConfig.config.value.categories.list.isShow || params.statConfig.config.value.categories.bars.isShow)
   })
   const shouldUseTwoColumnLayout = computed(() =>
-    params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value,
+    shouldShowCategoriesBreakdown.value
+    && (params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value),
   )
 
   function onClickCategory(clickedCategoryId: CategoryId) {
@@ -62,7 +77,6 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     ...params.filter.walletsIds.value,
   ])])
   const onOpenCategory = useStatCategoryNavigation({
-    categoriesIds: params.filter.categoriesIds,
     snapshot: computed(() => {
       const shouldCarryStatState = !params.categoryId?.value
         || getStatSnapshotQueryId(route.query.statSnapshot) !== null
@@ -89,12 +103,15 @@ export function useStatReportContext(params: UseStatReportContextParams) {
       quickView.openFullTrns()
 
     report.onClickSumItem(type)
+    params.onFilteredTypeChange?.(report.filteredType.value)
   }
 
   return {
     ...report,
     ...quickView,
     filteredParentCategoryId,
+    focusedQuickCategoryActiveChildrenCount,
+    focusedQuickCategoryHasChildren,
     focusedQuickCategoryId,
     hasCategoriesData,
     isCategoryFocus,

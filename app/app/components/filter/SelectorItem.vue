@@ -40,7 +40,6 @@ const snapPoints = useSheetSnapPoints()
 
         <div class="px-3 py-2">
           <UiButtonAccent
-            rounded
             @click="close"
           >
             {{ t('base.apply') }}

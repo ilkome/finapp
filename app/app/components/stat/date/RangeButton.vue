@@ -9,6 +9,8 @@ const statDate = inject(statDateKey)!
   <BottomSheetOrDropdown
     :title="t('dates.select')"
     :isOpen="statDate.modal.value.dateSelector"
+    popoverBodyClass="md:pb-3"
+    popoverContentClass="md:w-96 md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
     class="flex grow-0 gap-1"
     isShowCloseBtn
@@ -24,7 +26,7 @@ const statDate = inject(statDateKey)!
 
     <template #content="{ close }">
       <StatDateRangePicker
-        class="min-w-0 pb-2 md:min-w-90.5 md:px-3"
+        class="min-w-0 pb-2 md:min-w-90.5 md:px-1 md:pb-0"
         @close="close"
       />
     </template>

@@ -6,6 +6,7 @@ import { getCreditAvailable } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
+  amount?: number
   compact?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
@@ -14,7 +15,6 @@ const props = defineProps<{
   isShowRate?: boolean
   isSort?: boolean
   lineWidth?: number
-  rounded?: boolean
   to?: string
   wallet: WalletItemComputed
   walletId: WalletId
@@ -29,13 +29,13 @@ const currenciesStore = useCurrenciesStore()
 const classes = computed(() => ({
   'bg-elevated/30': props.compact,
   'group relative': props.isSort,
-  'rounded-full': props.compact && props.rounded,
-  'rounded-sm': props.compact && !props.rounded,
+  'rounded-md': props.compact,
 }))
 
 const walletCreditLimit = computed(() =>
   props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
 )
+const displayAmount = computed(() => props.amount ?? props.wallet.amount)
 </script>
 
 <template>
@@ -44,7 +44,6 @@ const walletCreditLimit = computed(() =>
     :isActive="activeItemId === props.walletId"
     :insideClasses="`${props.insideClasses ?? ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"
-    :rounded="props.rounded"
     :to="props.to"
     :class="classes"
     @click="emit('click', props.walletId)"
@@ -60,9 +59,9 @@ const walletCreditLimit = computed(() =>
     <!-- Main -->
     <template v-if="!props.compact">
       <div class="grid grow gap-1 overflow-hidden">
-        <div class="truncate text-sm leading-none font-medium tracking-wide text-muted">
+        <UiEntityName>
           {{ wallet.name }}
-        </div>
+        </UiEntityName>
 
         <!-- Rate -->
         <div
@@ -75,7 +74,7 @@ const walletCreditLimit = computed(() =>
             :currencyCode="currenciesStore.base"
             :isShowBaseRate="false"
             align="left"
-            variant="2xs"
+            variant="secondary"
             class="text-xs opacity-70"
           />
         </div>
@@ -90,7 +89,7 @@ const walletCreditLimit = computed(() =>
             :isShowBaseRate="false"
             :isShowSymbol="false"
             align="left"
-            variant="2xs"
+            variant="secondary"
           />
 
           <div
@@ -107,7 +106,7 @@ const walletCreditLimit = computed(() =>
             :isShowBaseRate="false"
             :isShowSymbol="false"
             align="left"
-            variant="2xs"
+            variant="secondary"
           />
         </div>
       </div>
@@ -115,17 +114,17 @@ const walletCreditLimit = computed(() =>
       <div class="pr-1">
         <Amount
           v-if="walletCreditLimit"
-          :amount="wallet.amount"
+          :amount="displayAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          variant="sm"
+          variant="row"
         />
         <Amount
           v-else
-          :amount="wallet.amount"
+          :amount="displayAmount"
           :currencyCode="wallet.currency"
           :isShowBaseRate="props.isShowBaseRate"
-          variant="sm"
+          variant="row"
         />
       </div>
     </template>
@@ -133,28 +132,28 @@ const walletCreditLimit = computed(() =>
     <!-- Alternative -->
     <template v-if="props.compact">
       <div class="grid grow gap-0.5 overflow-hidden">
-        <div class="truncate text-xs leading-none text-muted">
+        <UiEntityName variant="compact">
           {{ wallet.name }}
-        </div>
+        </UiEntityName>
 
         <div v-if="!isSort">
           <Amount
             v-if="walletCreditLimit"
-            :amount="wallet.amount"
+            :amount="displayAmount"
             :currencyCode="wallet.currency"
             :isShowBaseRate="false"
             :isShowMinus="false"
             align="left"
-            variant="2xs"
+            variant="secondary"
           />
           <Amount
             v-else
-            :amount="wallet.amount"
+            :amount="displayAmount"
             :currencyCode="wallet.currency"
             :isShowBaseRate="props.isShowBaseRate"
             :isShowMinus="false"
             align="left"
-            variant="2xs"
+            variant="secondary"
           />
         </div>
       </div>

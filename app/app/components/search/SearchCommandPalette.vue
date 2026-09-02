@@ -147,9 +147,9 @@ function handleDeleteConfirm() {
             :name="getWallet(rawItem as SearchResultItem)?.name ?? ''"
           />
           <div class="grid grow gap-1">
-            <div class="text-sm leading-none font-medium tracking-wide text-nowrap text-toned">
+            <UiEntityName>
               {{ getWallet(rawItem as SearchResultItem)?.name }}
-            </div>
+            </UiEntityName>
             <div
               v-if="getWallet(rawItem as SearchResultItem)?.desc"
               class="text-2xs leading-none text-muted"
@@ -187,9 +187,9 @@ function handleDeleteConfirm() {
                       stacked
                     />
                     <div class="flex items-center gap-2">
-                      <div class="text-2xs leading-none text-muted">
+                      <UiEntityName variant="secondary">
                         {{ getTransaction(rawItem as SearchResultItem)?.wallet?.name }}
-                      </div>
+                      </UiEntityName>
                     </div>
                   </div>
 
@@ -202,7 +202,7 @@ function handleDeleteConfirm() {
                     align="right"
                     class="grow"
                     colorize="income"
-                    variant="sm"
+                    variant="row"
                   />
                 </template>
 
@@ -224,7 +224,7 @@ function handleDeleteConfirm() {
                       :currencyCode="getTransfer(rawItem as SearchResultItem)!.expenseWallet.currency"
                       :type="TrnType.Expense"
                       class="flex! items-center gap-2"
-                      variant="sm"
+                      variant="row"
                     />
 
                     <template v-if="getTransfer(rawItem as SearchResultItem)?.incomeAmount !== getTransfer(rawItem as SearchResultItem)?.expenseAmount">
@@ -234,7 +234,7 @@ function handleDeleteConfirm() {
                         :type="TrnType.Income"
                         colorize="income"
                         class="flex! items-center gap-2"
-                        variant="sm"
+                        variant="row"
                       />
                     </template>
                   </div>

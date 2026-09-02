@@ -14,21 +14,21 @@ const formattedDate = computed(() => {
 
 <template>
   <div v-if="formattedDate" class="flex items-center gap-2">
-    <div class="font-secondary text-3xl font-semibold">
+    <UiText variant="display">
       {{ formattedDate.day }}
-    </div>
+    </UiText>
 
     <div class="text-muted">
-      <div class="pb-0.5 text-2xs leading-none">
+      <UiText class="pb-0.5" variant="caption">
         {{ formattedDate.weekday }}
-      </div>
+      </UiText>
 
-      <div class="flex gap-1 text-sm leading-none font-medium">
+      <UiText class="flex gap-1" variant="navigation">
         <div>{{ formattedDate.month }}</div>
         <div v-if="formattedDate.year">
           {{ formattedDate.year }}
         </div>
-      </div>
+      </UiText>
     </div>
   </div>
 </template>

@@ -15,7 +15,6 @@ export type CategoryItemProps = {
   isShowParent?: boolean
   leftMenuButton?: boolean
   lineWidth?: number
-  rounded?: boolean
   selectedIds?: CategoryId[]
   stacked?: boolean
   to?: string
@@ -46,7 +45,6 @@ const emit = defineEmits<{
       :leftMenuButton="props.leftMenuButton"
       :leftMenuItems="props.contextMenuItems"
       :lineWidth="props.lineWidth"
-      :rounded="props.rounded"
       :selectedIds="props.selectedIds"
       :to="props.to"
       @click="emit('click', $event)"
@@ -68,7 +66,6 @@ const emit = defineEmits<{
     :isShowParent="props.isShowParent"
     :leftMenuButton="props.leftMenuButton"
     :lineWidth="props.lineWidth"
-    :rounded="props.rounded"
     :selectedIds="props.selectedIds"
     :to="props.to"
     @click="emit('click', $event)"

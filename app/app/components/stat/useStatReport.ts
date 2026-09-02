@@ -64,6 +64,7 @@ export function useStatReport(params: UseStatReportParams) {
     data,
     effectiveFilteredCategoriesIds,
     filteredType,
+    hasQuickCategoryFilter: computed(() => filteredCategoriesIds.value.length > 0),
     reportType: params.reportType,
     shouldHideSingleColorSummaryPie: computed(() =>
       filteredCategoriesIds.value.length > 0 || !!params.categoryId?.value,
@@ -98,7 +99,9 @@ export function useStatReport(params: UseStatReportParams) {
     chartSeries: chart.chartSeries,
     chartWindow,
     chartXAxisLabels: chart.chartXAxisLabels,
+    effectiveChartType: chart.effectiveChartType,
     effectiveFilteredCategoriesIds,
+    effectiveIntervals: data.effectiveIntervals,
     filteredCategoriesIds,
     filteredChildCategoryId,
     filteredType,

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
+  contentClass?: string
   isShowCloseBtn?: boolean
   isShowScroll?: boolean
   title?: string
+  titleClass?: string
 }>(), {
   isShowScroll: true,
 })
@@ -17,7 +19,7 @@ const emit = defineEmits<{
     class="flex flex-col overflow-hidden"
     style="max-height: var(--reka-popper-available-height, 60dvh)"
   >
-    <UiTitleModal v-if="props.title">
+    <UiTitleModal v-if="props.title" :class="props.titleClass">
       {{ props.title }}
     </UiTitleModal>
 
@@ -28,8 +30,11 @@ const emit = defineEmits<{
 
     <div
       v-if="$slots.default"
-      :class="props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden'"
-      class="min-h-0 px-2 py-px md:pb-4"
+      :class="cn(
+        props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden',
+        'min-h-0 px-2 py-px md:pb-4',
+        props.contentClass,
+      )"
     >
       <slot />
     </div>

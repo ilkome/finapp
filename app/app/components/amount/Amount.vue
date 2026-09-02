@@ -16,7 +16,7 @@ export type AmountProps = {
   isShowSymbol?: boolean
   precision?: number
   type?: MoneyTypeNumber
-  variant?: '2xs' | 'base' | 'xs' | 'sm' | 'xl'
+  variant?: 'compact' | 'default' | 'display' | 'row' | 'secondary' | 'summary'
 }
 
 const {
@@ -30,7 +30,7 @@ const {
   isShowSymbol = true,
   precision,
   type,
-  variant = 'base',
+  variant = 'default',
 } = defineProps<AmountProps>()
 
 const emit = defineEmits<{
@@ -45,13 +45,14 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
     :class="{
       'text-expense-1!': colorize === 'expense' && type === 0,
       'text-income-1!': colorize === 'income' && type === 1,
-      'text-2xs': variant === '2xs',
-      'text-xs': variant === 'xs',
-      'text-sm': variant === 'sm',
-      'text-xl': variant === 'xl',
-      'text-base': variant === 'base',
+      'text-2xs': variant === 'secondary',
+      'text-xs': variant === 'compact',
+      'text-sm': variant === 'row',
+      'text-xl': variant === 'summary',
+      'text-2xl': variant === 'display',
+      'text-base': variant === 'default',
     }"
-    class="grid gap-1 font-secondary leading-none"
+    class="grid gap-1 font-secondary leading-none tabular-nums"
     @click="(e: Event) => emit('click', e)"
   >
     <AmountItem

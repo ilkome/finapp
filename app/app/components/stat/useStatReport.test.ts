@@ -7,6 +7,8 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 import type { IntervalData, StatQuickCategoryFilter } from '~/components/stat/types'
 
+import { TrnType } from '~/components/trns/types'
+
 // ---------------------------------------------------------------------------
 // Stub Nuxt/Vue auto-imports used by useStatReport
 // ---------------------------------------------------------------------------
@@ -176,16 +178,21 @@ function makeFilter(categoriesIds: string[] = []) {
   }
 }
 
-function makeStatConfig() {
+function makeStatConfig(
+  breakdown: 'cashflow' | 'categories' = 'cashflow',
+  type: 'bar' | 'line' | 'pie' = 'bar',
+) {
   return {
     config: computed(() => ({
-      chart: { breakdown: 'cashflow', isGrouped: false, isShowAverage: false, type: 'bar' as const },
+      chart: { breakdown, isGrouped: false, isShowAverage: false, type },
     })),
   }
 }
 
 function createStatReport(overrides?: {
   categoryId?: string
+  chartBreakdown?: 'cashflow' | 'categories'
+  chartType?: 'bar' | 'line' | 'pie'
   filterCategories?: string[]
   intervalSelected?: number
   intervalsInRange?: Range[]
@@ -196,6 +203,8 @@ function createStatReport(overrides?: {
 }) {
   const {
     categoryId,
+    chartBreakdown,
+    chartType,
     filterCategories = [],
     intervalSelected = -1,
     intervalsInRange = [],
@@ -210,7 +219,7 @@ function createStatReport(overrides?: {
     filter: makeFilter(filterCategories) as any,
     quickCategoryFilter,
     reportType: computed(() => reportType),
-    statConfig: makeStatConfig() as any,
+    statConfig: makeStatConfig(chartBreakdown, chartType) as any,
     statDate: makeStatDate({
       intervalsInRange,
       params: {
@@ -263,6 +272,28 @@ describe('useStatReport', () => {
     )
   })
 
+  it.each(['bar', 'pie'] as const)('shows both cashflow series for a quick category with income and expense in a %s chart', (chartType) => {
+    computeTotalMock.mockReturnValue({
+      ...zeroTotal,
+      expense: 40,
+      income: 100,
+      net: 60,
+    })
+    const report = createStatReport({
+      chartBreakdown: 'categories',
+      chartType,
+      intervalsInRange: [{ end: 200, start: 100 }],
+      quickCategoryFilter: {
+        categoriesIds: ref(['cat1']),
+        childCategoryId: ref(),
+      },
+      trnsIds: ['t1'],
+    })
+
+    expect(report.chartSeries.value.map(item => item.name)).toEqual(['income', 'expense'])
+    expect(categoryBreakdownMocks.buildCategoriesSeries).not.toHaveBeenCalled()
+  })
+
   it('hides a single-color summary pie in quick and regular category scopes', () => {
     const singleColorPie = [
       { color: 'red', value: 40 },
@@ -307,6 +338,28 @@ describe('useStatReport', () => {
       expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
         categoriesIds: ['cat1'],
         trnsIds: ['in-range'],
+      }))
+    })
+
+    it('intersects wallet source ids, income type, and a parent quick category for the chart', () => {
+      const walletFilteredIds = ['t1', 't2']
+      const item = createStatReport({
+        chartBreakdown: 'categories',
+        intervalsInRange: [{ end: 200, start: 100 }],
+        trnsIds: walletFilteredIds,
+      })
+
+      item.onClickSumItem('income')
+      item.onSetCategoryFilter('parent')
+      void item.chartSeries.value
+
+      expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
+        trnsIds: walletFilteredIds,
+        trnsTypes: [TrnType.Income],
+      }))
+      expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
+        categoriesIds: ['cat1'],
+        trnsIds: walletFilteredIds,
       }))
     })
 

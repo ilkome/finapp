@@ -5,8 +5,10 @@ const { isActive = false } = defineProps<{
 </script>
 
 <template>
-  <div
-    class="flex min-h-10.5 min-w-10.5 grow-0! items-center gap-1 rounded-full interactive bg-elevated px-3 pr-2!  pb-0 text-sm leading-none font-semibold"
+  <UiText
+    as="div"
+    class="theme-rounded-control flex min-h-10.5 min-w-10.5 grow-0! items-center gap-1 interactive bg-elevated px-3 pr-2! pb-0"
+    variant="control"
   >
     <slot />
     <Icon
@@ -15,5 +17,5 @@ const { isActive = false } = defineProps<{
       class="shrink-0 text-muted transition-transform"
       :class="isActive && 'rotate-180'"
     />
-  </div>
+  </UiText>
 </template>

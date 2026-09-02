@@ -29,6 +29,9 @@ export default {
 
   base: {
     add: 'Create',
+    addCategory: 'Add category',
+    addWallet: 'Add wallet',
+    addWhat: 'What to add',
     apply: 'Apply',
     cancel: 'Cancel',
     clear: 'Clear',
@@ -256,8 +259,8 @@ export default {
       simple: 'Month',
     },
     ranges: {
-      all: 'All',
-      allSkipEmpty: 'Maximum',
+      all: 'To today',
+      allSkipEmpty: 'All',
     },
     select: 'Select period',
     week: {
@@ -478,20 +481,40 @@ export default {
     },
     config: {
       categories: {
+        grouping: {
+          auto: 'Automatic',
+          child: 'By child category',
+          parent: 'By parent',
+          title: 'Grouping',
+        },
         list: {
-          description: 'Detailed list of all categories for the period with amounts, shares, and transaction counts.',
+          autoExpandParents: 'Automatically expand parent categories',
+          backgroundType: 'Background',
+          backgroundTypes: {
+            category: 'Category color',
+            none: 'No background',
+            standard: 'Standard',
+          },
           title: 'Categories list',
+          trendType: 'Mini chart',
+          trendTypes: {
+            'bar': 'Bars',
+            'bar-plus': 'Bars +',
+            'hidden': 'Hide',
+            'line': 'Lines',
+          },
         },
         rounds: {
-          description: 'Strip of round category icons: favorites, recently used.',
-          groupByParent: 'Group by parent',
+          hideOthersOnSelect: 'Hide other categories when selected',
           inlineAmount: 'Name and amount in one row',
           showFavorites: 'Show favorites',
           showRecent: 'Show recent',
-          title: 'Quick categories',
+          title: 'Category cloud',
         },
         vertical: {
           groupByParent: 'Group by parent',
+          showTooltip: 'Show tooltip',
+          showTooltipChildren: 'Show child categories in tooltip',
           title: 'Comparison bars',
         },
       },
@@ -499,18 +522,26 @@ export default {
         average: {
           label: 'Show average line',
         },
+        background: {
+          label: 'Show background',
+        },
         byCategories: 'By categories',
         groupByParent: 'Group by parent',
-        other: 'Other',
-        scale: {
-          label: 'Show scale and grid lines',
-        },
         line: {
           gradient: 'Show gradient',
           showPoints: 'Show points',
           skipZero: 'Skip zero values',
           smooth: 'Smooth lines',
         },
+        other: 'Other',
+        pie: {
+          showLabels: 'Show labels on chart',
+          showPercent: 'Show percentage inside chart',
+        },
+        scale: {
+          label: 'Show scale and grid lines',
+        },
+        settings: 'Chart settings',
         type: {
           label: 'Chart type',
         },
@@ -521,11 +552,18 @@ export default {
       },
       date: {
         quick: {
-          label: 'Date selector slider',
+          label: 'Show quick date selection',
+          period: 'Period',
+          selected: '{count} selected',
         },
       },
       menu: {
         label: 'View Settings',
+      },
+      navigation: {
+        pin: 'Pin while scrolling',
+        showButtons: 'Show navigation buttons',
+        title: 'Period selection',
       },
       showedWallets: {
         placeholder: 'Count',
@@ -534,16 +572,38 @@ export default {
         count: {
           label: 'Show average values',
         },
-        description: 'Arithmetic mean over the chosen number of past periods. Displayed next to the period total.',
-        subtitle: 'Average over last {count} periods',
         title: 'Average totals',
       },
+      summary: {
+        pin: 'Pin while scrolling',
+        showChart: 'Show charts',
+        title: 'Spending and income',
+      },
+      trns: {
+        showHistory: 'Show previous transactions',
+        showTitle: 'Title',
+        showTypeTabs: 'Show transaction type tabs',
+      },
       wallets: {
-        description: 'Quick access to the first N wallets from the full list. Order is set on the Wallets page.',
+        count: 'Wallet count',
+        displayMode: 'Display',
+        displayModes: {
+          period: 'Current period',
+          recent: 'Wallet list',
+        },
         label: 'Show wallets',
+        selectionMode: 'Selection mode',
+        selectionModes: {
+          multiple: 'Multiple',
+          single: 'Single',
+        },
         showIcon: 'Show wallet icon',
-        subtitle: 'Top {count}',
         title: 'Wallets',
+        valueMode: 'Total',
+        valueModes: {
+          balance: 'In wallet',
+          period: 'For period',
+        },
       },
     },
     forecast: {
@@ -558,6 +618,11 @@ export default {
     },
     title: 'Dashboard',
     view: {
+      barLayout: {
+        adjacent: { label: 'Side by side' },
+        stacked: { label: 'Stacked' },
+        title: 'Bar layout',
+      },
       breakdown: {
         cashflow: { description: 'Build series by transaction type', label: 'Income and spending' },
         categories: { description: 'Build series by category', label: 'By categories' },
@@ -580,11 +645,76 @@ export default {
         split: { description: 'Place spending on the left and income on the right', label: 'Split' },
         title: 'Page layout',
       },
+      pieShape: {
+        circle: { label: 'Filled circle' },
+        donut: { label: 'Donut' },
+        title: 'Chart shape',
+      },
       valueDisplay: {
         magnitude: { label: 'All upward' },
         signed: { label: 'By sign' },
         title: 'Value direction',
       },
+    },
+    views: {
+      and: 'and',
+      andMore: 'and {count} more',
+      auto: 'Activate automatically',
+      blockRules: {
+        addParameter: 'Add parameter',
+        addRule: 'Add rule',
+        conditionSummary: {
+          categoryCount: '{field} {comparator} {value}',
+          contentWidth: 'Content width {comparator} {value} px',
+          period: 'Period {comparator} {value} {unit}',
+        },
+        configure: 'Configure with rules',
+        count: 'Rules: {count}',
+        default: 'Default',
+        empty: 'This block has no rules yet.',
+        new: 'New rule',
+        parameters: {
+          visibility: 'Show block',
+        },
+        parameterUnavailable: 'Not used by the current block settings',
+        presets: {
+          custom: 'Custom condition',
+        },
+        removeParameter: 'Remove parameter',
+        then: 'Then',
+        title: '{block} rules',
+      },
+      blockSynced: 'Block settings applied to all views',
+      categoryCount: '{comparator} {value} {scope}',
+      comparators: { eq: 'equals', gt: 'greater than', gte: 'greater than or equal to', lt: 'less than', lte: 'less than or equal to', neq: 'not equal to' },
+      conditions: {
+        addCondition: 'Add condition',
+        fields: { allCategoryCount: 'All categories', contentWidth: 'Content width', parentCategoryCount: 'Parent categories', period: 'Period' },
+        labels: { comparator: 'Comparison', field: 'Condition type', operator: 'Condition operator', unit: 'Period unit' },
+        operators: { and: 'AND', or: 'OR' },
+        units: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
+      },
+      contentWidth: 'content width {comparator} {value} px',
+      current: 'Current view',
+      cycle: 'Cycle saved views',
+      defaultName: 'Default',
+      deleteConfirm: 'The saved view will be deleted.',
+      discard: 'Discard changes',
+      drag: 'Drag view',
+      errors: { delete: 'Could not delete view', order: 'Could not reorder views', save: 'Could not save view' },
+      menu: { label: 'Views', settings: 'Settings' },
+      modern: 'Modern',
+      name: 'View name',
+      new: 'New view',
+      period: { day: 'Last {count} days', month: 'Last {count} months', week: 'Last {count} weeks', year: 'Last {count} years' },
+      saveAs: 'Save as new',
+      scope: { all: 'categories', parent: 'parent categories' },
+      sort: 'Sort views',
+      syncBlock: 'Apply to all views',
+      syncBlockSettings: 'Block settings only',
+      syncBlockWithRules: 'Settings and rules',
+      title: 'Saved views',
+      update: 'Update current',
     },
   },
 

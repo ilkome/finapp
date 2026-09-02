@@ -10,7 +10,7 @@ vi.mock('~/components/currencies/useCurrenciesStore', () => ({ useCurrenciesStor
 vi.mock('~/components/trns/useTrnsStore', () => ({ useTrnsStore: () => ({}) }))
 vi.mock('~/components/wallets/useWalletsStore', () => ({ useWalletsStore: () => ({}) }))
 
-const { buildSortedStatReportSelection, buildStatReportSelection, projectStatReportSelection } = await import('~/components/stat/report/useStatReportData')
+const { buildSortedStatReportSelection, buildStatReportSelection, filterStatReportSelectionSource, projectStatReportSelection } = await import('~/components/stat/report/useStatReportData')
 
 const items = {
   expense: { amount: 1, categoryId: 'food', date: 30, type: TrnType.Expense, updatedAt: 1, walletId: 'wallet' },
@@ -32,6 +32,21 @@ describe('buildStatReportSelection', () => {
     expect(result.selectedIds).toEqual(['expense', 'sameDate', 'income'])
     expect(result.filteredIds).toEqual(['expense', 'sameDate'])
     expect(result.quickFilteredIds).toEqual(['income'])
+  })
+
+  it('limits a shared maximum-range selection to the selected chart interval', () => {
+    const source = buildSortedStatReportSelection({
+      sourceIds: ['expense', 'sameDate', 'income'],
+      trnsItems: items,
+      trnsTypes: [TrnType.Expense, TrnType.Income],
+    })
+
+    expect(filterStatReportSelectionSource({
+      dates: { end: 30, start: 30 },
+      source,
+      trnsItems: items,
+      trnsTypes: [TrnType.Expense, TrnType.Income],
+    }).map(record => record.id)).toEqual(['expense', 'sameDate'])
   })
 
   it('keeps transfer-category rows out of expense selection', () => {

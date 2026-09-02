@@ -19,8 +19,8 @@ export const USER_MENU_THEME_ICONS: Record<string, string> = {
 }
 
 export const USER_MENU_PANEL_CHILDREN: Partial<Record<'root' | UserMenuPanel, UserMenuPanel[]>> = {
-  appearance: ['primary', 'neutral', 'radius'],
-  root: ['locale', 'theme', 'appearance'],
+  appearance: ['theme', 'primary', 'neutral', 'radius'],
+  root: ['locale', 'appearance'],
 }
 
 export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
@@ -186,12 +186,12 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
         label: t('locale.title'),
       },
       {
-        children: themeItems.value,
-        icon: USER_MENU_THEME_ICONS[themePreference.value],
-        label: t('theme.picker.theme'),
-      },
-      {
         children: [
+          {
+            children: themeItems.value,
+            icon: USER_MENU_THEME_ICONS[themePreference.value],
+            label: t('theme.picker.theme'),
+          },
           {
             children: primaryItems.value,
             chip: activePrimary.value,

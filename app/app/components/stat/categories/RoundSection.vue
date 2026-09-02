@@ -3,8 +3,9 @@ import type { CategoryId } from '~/components/categories/types'
 import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
-import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
+import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
+import { addEmptyCategoryViews, collectRoundCategoryIds, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
+import { filterFocusedCategories, projectCategorySelection } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
@@ -24,41 +25,18 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 const statConfig = inject(statConfigKey)!
 
-const isGrouped = computed(() => statConfig.config.value.categories.round.isGrouped)
+const grouping = computed(() => statConfig.config.value.categories.round.grouping)
 const isShowFavorites = computed(() => statConfig.config.value.categories.round.isShowFavorites)
 const isShowRecent = computed(() => statConfig.config.value.categories.round.isShowRecent)
 
-const mergedPreCategoriesIds = computed(() => {
-  const ids: CategoryId[] = []
-  const seen = new Set<CategoryId>()
-
-  function addId(id: CategoryId) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-    }
-  }
-
-  if (props.preCategoriesIds) {
-    for (const id of props.preCategoriesIds)
-      addId(id)
-  }
-
-  if (isShowFavorites.value) {
-    for (const id of categoriesStore.favoriteCategoriesIds)
-      addId(id)
-  }
-
-  if (isShowRecent.value) {
-    for (const id of categoriesStore.recentCategoriesIds)
-      addId(id)
-  }
-
-  for (const id of props.filteredCategoriesIds)
-    addId(id)
-
-  return ids
-})
+const mergedPreCategoriesIds = computed(() => collectRoundCategoryIds({
+  favoriteCategoryIds: categoriesStore.favoriteCategoriesIds,
+  filteredCategoryIds: props.filteredCategoriesIds,
+  isShowFavorites: isShowFavorites.value,
+  isShowRecent: isShowRecent.value,
+  preCategoryIds: props.preCategoriesIds,
+  recentCategoryIds: categoriesStore.recentCategoriesIds,
+}))
 
 const roundCategories = computed(() => {
   if (props.focusedCategoryId) {
@@ -77,26 +55,45 @@ const roundCategories = computed(() => {
     mergedPreCategoriesIds.value,
     props.excludedCategoriesIds,
   )
-  return isGrouped.value ? views.grouped : views.ungrouped
+  return resolveCategoryGrouping(views, grouping.value, props.baseCategoryViews.ungrouped)
 })
-const filteredSet = computed(() => new Set(props.filteredCategoriesIds))
+const selectedIdByVisibleId = computed(() => projectCategorySelection({
+  activeCategories: props.baseCategoryViews.ungrouped,
+  getChildrenIds: categoryId => categoriesStore.getChildrenIds(categoryId),
+  getParentId: categoryId => getParentCategoryIdOrUndefined(categoriesStore.items, categoryId),
+  selectedIds: props.filteredCategoriesIds,
+  visibleCategories: roundCategories.value,
+}))
+const filteredSet = computed(() => new Set(selectedIdByVisibleId.value.keys()))
+const visibleRoundCategories = computed(() => {
+  if (props.focusedCategoryId || !statConfig.config.value.categories.round.isHideOthersOnSelect || filteredSet.value.size === 0)
+    return roundCategories.value
+
+  return roundCategories.value.filter(item => filteredSet.value.has(item.id))
+})
+
+function onSetCategoryFilter(categoryId: CategoryId) {
+  emit('setCategoryFilter', selectedIdByVisibleId.value.get(categoryId) ?? categoryId)
+}
 </script>
 
 <template>
   <div class="flex min-w-0 flex-wrap justify-start gap-1 gap-y-2">
+    <slot name="prepend" />
+
     <StatCategoriesRound
-      v-for="item in roundCategories"
+      v-for="item in visibleRoundCategories"
       :key="item.id"
       :item="item"
       :class="{
         'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
         'opacity-50': !filteredSet.has(item.id) && item.value === 0,
-        'border-primary!': filteredSet.has(item.id),
+        'border-primary/40!': filteredSet.has(item.id),
       }"
       class="transition-opacity"
       isShowAmount
       :isShowParent="false"
-      @click="emit('setCategoryFilter', item.id)"
+      @click="onSetCategoryFilter(item.id)"
     />
   </div>
 </template>

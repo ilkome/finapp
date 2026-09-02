@@ -16,11 +16,13 @@ const { t } = useI18n()
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 
 const shown = useStoredToggle(`${props.storageKey}-trns`, true)
+const isShowTitle = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTitle ?? true)
+const isShowTypeTabs = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTypeTabs ?? true)
 const isQuickCategoryFocused = computed(() => (props.ctx?.filteredCategoriesIds.value.length ?? 0) > 0)
 const isOpen = computed({
-  get: () => isQuickCategoryFocused.value || shown.value,
+  get: () => isQuickCategoryFocused.value || !isShowTitle.value || shown.value,
   set: (value) => {
-    if (!isQuickCategoryFocused.value)
+    if (!isQuickCategoryFocused.value && isShowTitle.value)
       shown.value = value
   },
 })
@@ -51,7 +53,7 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
       :unmountOnHide="false"
     >
       <UiTitleCollapse
-        v-if="!isQuickCategoryFocused && selectedTrnsIds.length > 0"
+        v-if="isShowTitle && !isQuickCategoryFocused && selectedTrnsIds.length > 0"
         :isShown="shown"
       >
         {{ t('trns.title') }} {{ (!shown && selectedTrnsIds.length > 0) ? selectedTrnsIds.length : '' }}
@@ -61,7 +63,7 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
         <StatTrnsVirtualList
           v-if="isVirtualEnabled && ctx"
           :ctx="ctx"
-          :class="!isQuickCategoryFocused && 'pt-2'"
+          :class="isShowTitle && !isQuickCategoryFocused && 'pt-2'"
         />
 
         <TrnsList
@@ -74,8 +76,8 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
           isShowFilterByDesc
           isShowIncome
           isShowTransfers
-          isShowFilterByType
-          :class="!isQuickCategoryFocused && 'pt-2'"
+          :isShowFilterByType="isShowTypeTabs"
+          :class="isShowTitle && !isQuickCategoryFocused && 'pt-2'"
         />
       </template>
     </UCollapsible>

@@ -161,7 +161,6 @@ watch(
           />
 
           <UiButtonAccent
-            rounded
             size="xl"
             type="button"
             variant="ghost"

@@ -29,6 +29,9 @@ export default {
 
   base: {
     add: 'Создать',
+    addCategory: 'Добавить категорию',
+    addWallet: 'Добавить кошелек',
+    addWhat: 'Что добавить',
     apply: 'Применить',
     cancel: 'Отмена',
     clear: 'Очистить',
@@ -256,8 +259,8 @@ export default {
       simple: 'Месяц',
     },
     ranges: {
-      all: 'Все',
-      allSkipEmpty: 'Максимально',
+      all: 'До сегодня',
+      allSkipEmpty: 'Все',
     },
     select: 'Период',
     week: {
@@ -478,20 +481,40 @@ export default {
     },
     config: {
       categories: {
+        grouping: {
+          auto: 'Автоматически',
+          child: 'По дочерним категориям',
+          parent: 'По родителю',
+          title: 'Группировка',
+        },
         list: {
-          description: 'Развёрнутый список всех категорий за период с суммами, долями и количеством транзакций.',
+          autoExpandParents: 'Автоматически раскрывать родительские категории',
+          backgroundType: 'Фон',
+          backgroundTypes: {
+            category: 'Цвет категории',
+            none: 'Без фона',
+            standard: 'Стандартный',
+          },
           title: 'Список категорий',
+          trendType: 'Мини-график',
+          trendTypes: {
+            'bar': 'Столбцы',
+            'bar-plus': 'Столбцы +',
+            'hidden': 'Скрыть',
+            'line': 'Линии',
+          },
         },
         rounds: {
-          description: 'Лента круглых иконок: избранные, недавно используемые.',
-          groupByParent: 'Группировать по родителю',
+          hideOthersOnSelect: 'Скрывать остальные категории при выборе',
           inlineAmount: 'Название и сумма в одну строку',
           showFavorites: 'Показывать избранные',
           showRecent: 'Показывать недавние',
-          title: 'Быстрые категории',
+          title: 'Облако категорий',
         },
         vertical: {
           groupByParent: 'Группировка по родителю',
+          showTooltip: 'Показывать подсказку',
+          showTooltipChildren: 'Показывать дочерние категории в подсказке',
           title: 'Колонки сравнения',
         },
       },
@@ -499,18 +522,26 @@ export default {
         average: {
           label: 'Показывать средние значения',
         },
+        background: {
+          label: 'Показывать фон',
+        },
         byCategories: 'По категориям',
         groupByParent: 'Группировать по родителю',
-        other: 'Остальные',
-        scale: {
-          label: 'Показывать шкалу и разделители',
-        },
         line: {
           gradient: 'Показывать градиент',
           showPoints: 'Показывать точки',
           skipZero: 'Пропускать нулевые значения',
           smooth: 'Скруглять линии',
         },
+        other: 'Остальные',
+        pie: {
+          showLabels: 'Показывать названия на графике',
+          showPercent: 'Показывать процент внутри графика',
+        },
+        scale: {
+          label: 'Показывать шкалу и разделители',
+        },
+        settings: 'Настройки графика',
         type: {
           label: 'Тип графика',
         },
@@ -521,11 +552,18 @@ export default {
       },
       date: {
         quick: {
-          label: 'Слайдер быстрого выбора даты',
+          label: 'Показывать быстрый выбор даты',
+          period: 'Период',
+          selected: 'Выбрано: {count}',
         },
       },
       menu: {
         label: 'Настройки вида',
+      },
+      navigation: {
+        pin: 'Закреплять при прокрутке',
+        showButtons: 'Показывать кнопки навигации',
+        title: 'Выбор периода',
       },
       showedWallets: {
         placeholder: 'Количество',
@@ -534,16 +572,38 @@ export default {
         count: {
           label: 'Показывать средние значения',
         },
-        description: 'Среднее арифметическое сумм за выбранное число прошлых периодов. Показывается рядом с итогом за период.',
-        subtitle: 'Среднее за {count} прошлых периодов',
         title: 'Средние суммы',
       },
+      summary: {
+        pin: 'Закреплять при прокрутке',
+        showChart: 'Показывать графики',
+        title: 'Траты и доходы',
+      },
+      trns: {
+        showHistory: 'Показывать предыдущие транзакции',
+        showTitle: 'Заголовок',
+        showTypeTabs: 'Показывать вкладки типов транзакций',
+      },
       wallets: {
-        description: 'Быстрый доступ к первым N кошелькам из общего списка. Порядок задаётся на странице «Кошельки».',
+        count: 'Количество кошельков',
+        displayMode: 'Отображение',
+        displayModes: {
+          period: 'За текущий период',
+          recent: 'Список кошельков',
+        },
         label: 'Показывать кошельки',
+        selectionMode: 'Режим выбора',
+        selectionModes: {
+          multiple: 'Несколько',
+          single: 'Один',
+        },
         showIcon: 'Показывать иконку кошелька',
-        subtitle: 'Топ {count}',
         title: 'Кошельки',
+        valueMode: 'Итого',
+        valueModes: {
+          balance: 'В кошельке',
+          period: 'За период',
+        },
       },
     },
     forecast: {
@@ -558,6 +618,11 @@ export default {
     },
     title: 'Статистика',
     view: {
+      barLayout: {
+        adjacent: { label: 'Рядом' },
+        stacked: { label: 'В один столбец' },
+        title: 'Расположение столбцов',
+      },
       breakdown: {
         cashflow: { description: 'Строить серии по типам операций', label: 'Доходы и траты' },
         categories: { description: 'Строить серии по категориям', label: 'По категориям' },
@@ -580,11 +645,76 @@ export default {
         split: { description: 'Размещать траты слева, а доходы справа', label: 'Раздельный' },
         title: 'Вид страницы',
       },
+      pieShape: {
+        circle: { label: 'Заполненный круг' },
+        donut: { label: 'Кольцо' },
+        title: 'Форма диаграммы',
+      },
       valueDisplay: {
         magnitude: { label: 'Все вверх' },
         signed: { label: 'По знаку' },
         title: 'Направление значений',
       },
+    },
+    views: {
+      and: 'и',
+      andMore: 'и ещё {count}',
+      auto: 'Включать автоматически',
+      blockRules: {
+        addParameter: 'Добавить параметр',
+        addRule: 'Добавить правило',
+        conditionSummary: {
+          categoryCount: '{field} {comparator} {value}',
+          contentWidth: 'Ширина контента {comparator} {value} px',
+          period: 'Период {comparator} {value} {unit}',
+        },
+        configure: 'Настроить по правилам',
+        count: 'Правила: {count}',
+        default: 'По умолчанию',
+        empty: 'Для этого блока пока нет правил.',
+        new: 'Новое правило',
+        parameters: {
+          visibility: 'Показывать блок',
+        },
+        parameterUnavailable: 'Не используется при текущих настройках блока',
+        presets: {
+          custom: 'Свое условие',
+        },
+        removeParameter: 'Удалить параметр',
+        then: 'Тогда',
+        title: '{block} правила',
+      },
+      blockSynced: 'Настройки блока применены ко всем видам',
+      categoryCount: '{comparator} {value} {scope}',
+      comparators: { eq: 'равно', gt: 'больше', gte: 'больше или равно', lt: 'меньше', lte: 'меньше или равно', neq: 'не равно' },
+      conditions: {
+        addCondition: 'Добавить условие',
+        fields: { allCategoryCount: 'Все категории', contentWidth: 'Ширина контента', parentCategoryCount: 'Родительские категории', period: 'Период' },
+        labels: { comparator: 'Сравнение', field: 'Тип условия', operator: 'Связь условий', unit: 'Единица периода' },
+        operators: { and: 'И', or: 'ИЛИ' },
+        units: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
+      },
+      contentWidth: 'ширина контента {comparator} {value} px',
+      current: 'Текущий вид',
+      cycle: 'Переключить сохранённые виды',
+      defaultName: 'По умолчанию',
+      deleteConfirm: 'Сохранённый вид будет удалён.',
+      discard: 'Отменить изменения',
+      drag: 'Перетащить вид',
+      errors: { delete: 'Не удалось удалить вид', order: 'Не удалось изменить порядок видов', save: 'Не удалось сохранить вид' },
+      menu: { label: 'Виды', settings: 'Настроить' },
+      modern: 'Современный',
+      name: 'Название вида',
+      new: 'Новый вид',
+      period: { day: 'Последние {count} дней', month: 'Последние {count} месяцев', week: 'Последние {count} недель', year: 'Последние {count} лет' },
+      saveAs: 'Сохранить как новый',
+      scope: { all: 'категорий', parent: 'родительских категорий' },
+      sort: 'Сортировать виды',
+      syncBlock: 'Применить ко всем видам',
+      syncBlockSettings: 'Только настройки блока',
+      syncBlockWithRules: 'Настройки и правила',
+      title: 'Сохранённые виды',
+      update: 'Обновить текущий',
     },
   },
 

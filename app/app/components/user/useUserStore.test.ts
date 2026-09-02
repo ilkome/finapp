@@ -59,6 +59,7 @@ describe('useUserStore', () => {
       expect(store.baseCurrency).toBe('EUR')
       expect(setItem).toHaveBeenCalledWith(STORAGE_KEYS.userSettings, expect.objectContaining({ baseCurrency: 'EUR' }))
     })
+
   })
 
   it('no longer carries the removed offline-queue keys in STORAGE_KEYS', () => {

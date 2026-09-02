@@ -35,12 +35,12 @@ const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.bad
       />
     </div>
 
-    <div
+    <UiText
       v-if="isShowText"
-      class="text-sm font-medium"
+      variant="navigation"
     >
       {{ item.name }}
-    </div>
+    </UiText>
 
     <span
       v-if="isShowText && item.badge"

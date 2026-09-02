@@ -29,4 +29,5 @@ create publication powersync for table
   public.wallets,
   public.trns,
   public.user_settings,
+  public.stat_views,
   public.rates;

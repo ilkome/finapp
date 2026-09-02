@@ -171,7 +171,7 @@ onMounted(async () => {
           v-for="rootId in filteredRootIds"
           :key="rootId"
         >
-          <div class="group flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent">
+          <div class="group flex items-center rounded-md select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent">
             <div
               class="relative flex-center w-8 shrink-0 self-stretch pl-2"
               @click.stop
@@ -210,7 +210,7 @@ onMounted(async () => {
               <div
                 v-for="childId in visibleChildrenIds(rootId)"
                 :key="childId"
-                class="group flex items-center rounded-sm select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
+                class="group flex items-center rounded-md select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent"
                 @click="emit('selected', childId)"
               >
                 <div

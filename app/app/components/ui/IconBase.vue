@@ -11,7 +11,7 @@ const props = defineProps<{
 <template>
   <div
     :style="{
-      color: props.invert ? '' : props.color,
+      color: props.invert ? 'var(--color-icon-primary)' : props.color,
       backgroundColor: props.invert ? props.color : 'transparent',
     }"
     :class="cn(

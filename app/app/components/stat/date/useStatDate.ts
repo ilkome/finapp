@@ -275,29 +275,34 @@ export function useStatDate({
     params.value.intervalSelected = -1
   }
 
-  function plusGranularity() {
+  function setGranularityDuration(duration: number) {
+    if (!Number.isInteger(duration) || duration < 1)
+      return
+
     prepareGranularityChange()
-    ++params.value.granularityDuration
+    params.value.granularityDuration = duration
+  }
+
+  function plusGranularity() {
+    setGranularityDuration(params.value.granularityDuration + 1)
   }
 
   function minusGranularity() {
-    prepareGranularityChange()
-    if (params.value.granularityDuration > 1)
-      --params.value.granularityDuration
+    setGranularityDuration(params.value.granularityDuration - 1)
   }
 
-  function modifyRange(modification: number) {
-    resetCustomAndMaxRangeParams()
-    resetRangePan()
-    if (params.value.rangeDuration === 1 && modification < 0)
+  function setRangeDuration(duration: number) {
+    if (!Number.isInteger(duration) || duration < 1)
       return
 
-    params.value.rangeDuration += modification
+    resetCustomAndMaxRangeParams()
+    resetRangePan()
+    params.value.rangeDuration = duration
     params.value.rangeOffset = 0
   }
 
-  const plusRange = () => modifyRange(1)
-  const minusRange = () => modifyRange(-1)
+  const plusRange = () => setRangeDuration(params.value.rangeDuration + 1)
+  const minusRange = () => setRangeDuration(params.value.rangeDuration - 1)
 
   function selectInterval(idx: number) {
     if (params.value.intervalSelected === idx) {
@@ -361,9 +366,11 @@ export function useStatDate({
     selectInterval,
     setGranularity,
     setGranularityBy,
+    setGranularityDuration,
     setMaxRange,
     setRangeByCalendar,
     setRangeByPeriod,
+    setRangeDuration,
     setRangePanOffset,
     setScrollRangeOffset,
     stepInterval,

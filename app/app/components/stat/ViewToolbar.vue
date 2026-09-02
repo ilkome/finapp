@@ -26,6 +26,11 @@ const lineSettings = computed(() => [
     onUpdateChecked: (value: boolean) => statConfig.updateConfig('chart', { line: { isShowPoints: value } }),
   },
   {
+    checked: statConfig.config.value.chart.line.isSmooth,
+    label: t('stat.config.chart.line.smooth'),
+    onUpdateChecked: (value: boolean) => statConfig.updateConfig('chart', { line: { isSmooth: value } }),
+  },
+  {
     checked: statConfig.config.value.chart.line.isGradient,
     label: t('stat.config.chart.line.gradient'),
     onUpdateChecked: (value: boolean) => statConfig.updateConfig('chart', { line: { isGradient: value } }),
@@ -34,11 +39,6 @@ const lineSettings = computed(() => [
     checked: statConfig.config.value.chart.line.isSkipZero,
     label: t('stat.config.chart.line.skipZero'),
     onUpdateChecked: (value: boolean) => statConfig.updateConfig('chart', { line: { isSkipZero: value } }),
-  },
-  {
-    checked: statConfig.config.value.chart.line.isSmooth,
-    label: t('stat.config.chart.line.smooth'),
-    onUpdateChecked: (value: boolean) => statConfig.updateConfig('chart', { line: { isSmooth: value } }),
   },
 ])
 const breakdownOptions = computed(() => options('breakdown', [{ icon: 'i-lucide-arrow-down-up', value: 'cashflow' }, { icon: 'i-hugeicons-folder-library', value: 'categories' }]))

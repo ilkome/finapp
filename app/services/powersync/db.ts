@@ -7,6 +7,7 @@ const logger = createLogger('powersync')
 
 let _db: PowerSyncDatabase | null = null
 let _dbPromise: Promise<PowerSyncDatabase> | null = null
+let _dbInitPromise: Promise<void> | null = null
 let _connected = false
 // Serializes connect/wipe so the plugin watcher and the data-load path can't race into a double wipe.
 let _connectQueue: Promise<void> = Promise.resolve()
@@ -48,19 +49,37 @@ function clearLocalDbOwner(): void {
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ PowerSyncDatabase }, { AppSchema }] = await Promise.all([
+    const [{ PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
+      import('@powersync/web/bundled_worker?worker&url'),
     ])
     _db = new PowerSyncDatabase({
       database: {
         dbFilename: 'finapp.db',
+        worker: workerUrl,
       },
       schema: AppSchema,
+      sync: {
+        worker: workerUrl,
+      },
     })
     return _db
   })()
   return _dbPromise
+}
+
+/**
+ * Initialize the browser SQLite worker exactly once. A returning session starts this during
+ * boot, while the auth watcher connects shortly after; PowerSync cannot safely overlap them.
+ */
+export async function initializePowerSyncDb(): Promise<void> {
+  const db = await getPowerSyncDb()
+  _dbInitPromise ??= db.init().catch((error) => {
+    _dbInitPromise = null
+    throw error
+  })
+  return _dbInitPromise
 }
 
 /** Disconnect and wipe local SQLite, resetting connection + owner state. */
@@ -77,6 +96,7 @@ async function doConnect(client: SupabaseClient, powerSyncUrl: string, userId: s
     getPowerSyncDb(),
     import('./connector'),
   ])
+  await initializePowerSyncDb()
   // Cross-user guard: wipe another user's rows before connecting. Fail closed -
   // if the wipe throws we do NOT connect, so the new user can't read stale data.
   const owner = getLocalDbOwner()

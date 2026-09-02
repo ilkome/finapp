@@ -3,6 +3,7 @@
   --chart-line: var(--ui-border);
   --chart-splitLine: var(--ui-border-accented);
   --chart-axisLabel: var(--ui-text-highlighted);
+  --color-icon-primary: var(--ui-color-neutral-50);
 }
 
 /*
@@ -55,7 +56,7 @@
   --color-expense-2: oklch(0.63 0.24 24.81 / 0.5);
   --color-income-1: oklch(0.65 0.2 142.06);
   --color-income-2: oklch(0.65 0.2 142.06 / 0.5);
-  --color-icon-primary: var(--color-neutral-50);
+  --color-icon-primary: var(--ui-color-neutral-50);
   --text-2xs: 10px;
   --breakpoint-3sm: 360px;
 
