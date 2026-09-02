@@ -20,6 +20,11 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
       parameterId="categories.list.grouping"
       @update:modelValue="value => statConfig.updateConfig('categories', { list: { grouping: value } })"
     />
+    <StatConfigSwitch
+      v-if="statConfig.config.value.categories.list.grouping !== 'child'"
+      path="categories.list.isAutoExpandParents"
+      :title="t('stat.config.categories.list.autoExpandParents')"
+    />
     <StatConfigFieldRow parameterId="categories.list.trendType" :title="t('stat.config.categories.list.trendType')">
       <USelect
         class="w-40 shrink-0"

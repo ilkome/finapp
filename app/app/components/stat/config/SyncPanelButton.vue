@@ -40,7 +40,7 @@ const items = computed(() => [[
 <template>
   <UDropdownMenu v-if="viewController" :items>
     <UButton
-      class="w-full justify-start"
+      class="w-full justify-start rounded-sm! data-[state=open]:bg-elevated/50!"
       color="neutral"
       icon="i-lucide-copy"
       :label="t('stat.views.syncBlock')"

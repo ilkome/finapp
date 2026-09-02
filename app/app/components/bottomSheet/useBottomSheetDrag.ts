@@ -39,6 +39,10 @@ const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea, label, [role="
 const SHEET_DRAG_EXCLUDED_SELECTOR = '.sortHandle, [role="combobox"]'
 const TRANSITION_FALLBACK_MS = 150
 
+export function isSheetDragExcludedTarget(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest(SHEET_DRAG_EXCLUDED_SELECTOR) !== null
+}
+
 function getClientY(event: DragInputEvent): number {
   return 'touches' in event
     ? Math.round(event.touches[0]!.clientY)
@@ -274,7 +278,7 @@ export function useBottomSheetDrag({
 
     activeScroller = resolveScroller(event.target)
 
-    if (event.target instanceof Element && event.target.closest(SHEET_DRAG_EXCLUDED_SELECTOR))
+    if (isSheetDragExcludedTarget(event.target))
       return
 
     if (event.target instanceof Element) {

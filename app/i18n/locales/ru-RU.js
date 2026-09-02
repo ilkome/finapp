@@ -488,6 +488,7 @@ export default {
           title: 'Группировка',
         },
         list: {
+          autoExpandParents: 'Автоматически раскрывать родительские категории',
           backgroundType: 'Фон',
           backgroundTypes: {
             category: 'Цвет категории',
@@ -654,7 +655,6 @@ export default {
       and: 'и',
       andMore: 'и ещё {count}',
       auto: 'Включать автоматически',
-      autoDescription: 'Авто: {rule}',
       blockRules: {
         addParameter: 'Добавить параметр',
         addRule: 'Добавить правило',
@@ -666,7 +666,6 @@ export default {
         configure: 'Настроить по правилам',
         count: 'Правила: {count}',
         default: 'По умолчанию',
-        defaultDescription: 'Применяется, если другие правила не подошли',
         empty: 'Для этого блока пока нет правил.',
         new: 'Новое правило',
         parameters: {
@@ -685,15 +684,15 @@ export default {
       comparators: { eq: 'равно', gt: 'больше', gte: 'больше или равно', lt: 'меньше', lte: 'меньше или равно', neq: 'не равно' },
       conditions: {
         addCondition: 'Добавить условие',
-        fields: { categoryCount: 'Категории', contentWidth: 'Ширина контента', period: 'Период' },
-        labels: { comparator: 'Сравнение', field: 'Тип условия', operator: 'Связь условий', scope: 'Категории', unit: 'Единица периода' },
+        fields: { allCategoryCount: 'Все категории', contentWidth: 'Ширина контента', parentCategoryCount: 'Родительские категории', period: 'Период' },
+        labels: { comparator: 'Сравнение', field: 'Тип условия', operator: 'Связь условий', unit: 'Единица периода' },
         operators: { and: 'И', or: 'ИЛИ' },
-        scopes: { all: 'Все категории', parent: 'Родительские категории' },
         units: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
       },
       contentWidth: 'ширина контента {comparator} {value} px',
       current: 'Текущий вид',
       cycle: 'Переключить сохранённые виды',
+      defaultName: 'По умолчанию',
       deleteConfirm: 'Сохранённый вид будет удалён.',
       discard: 'Отменить изменения',
       drag: 'Перетащить вид',
@@ -706,7 +705,6 @@ export default {
       saveAs: 'Сохранить как новый',
       scope: { all: 'категорий', parent: 'родительских категорий' },
       sort: 'Сортировать виды',
-      sortBlocks: 'Сортировать блоки',
       syncBlock: 'Применить ко всем видам',
       syncBlockSettings: 'Только настройки блока',
       syncBlockWithRules: 'Настройки и правила',

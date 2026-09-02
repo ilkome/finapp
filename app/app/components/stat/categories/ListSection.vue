@@ -46,8 +46,10 @@ const {
 
 watch(() => statViewController?.activeId.value, (activeId, previousActiveId) => {
   if (previousActiveId !== undefined && activeId !== previousActiveId)
-    resetExpanded()
+    resetExpanded(catsList.value.isAutoExpandParents)
 })
+
+watch(() => catsList.value.isAutoExpandParents, resetExpanded, { immediate: true })
 
 function onParentClick(item: CategoryWithData) {
   if (item.categories?.length)

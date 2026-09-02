@@ -85,17 +85,20 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     apply(view)
     return view
   }
-  async function updateCurrent(patch: Partial<Pick<StatView, 'autoRule' | 'isAutoEnabled' | 'name'>> = {}) {
+  async function updateMetadata(patch: Partial<Pick<StatView, 'autoRule' | 'isAutoEnabled' | 'name'>>) {
     if (!activeView.value)
       return null
-    const view = await store.update(activeView.value.id, {
-      ...patch,
+    return store.update(activeView.value.id, patch)
+  }
+  async function saveCurrentConfig() {
+    if (!activeView.value)
+      return null
+    return store.update(activeView.value.id, {
       config: {
         base: cloneConfig(config.value),
         blockRules: cloneBlockRules(activeView.value.config.blockRules),
       },
     })
-    return view
   }
   let configSaveQueue = Promise.resolve()
   watch(configFingerprint, () => {
@@ -104,7 +107,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       .then(async () => {
         if (!activeView.value || !isDirty.value)
           return
-        await updateCurrent()
+        await saveCurrentConfig()
       })
   })
   watch(activeView, (view) => {
@@ -155,48 +158,51 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
   }
   function selectForCurrentContext() {
     const automatic = findAutomaticView(store.views, context.value)
-    const modern = store.views.find(view => view.name === t('stat.views.modern')) ?? store.views[0]
-    const view = automatic ?? modern
+    const fallback = store.views.find(view => view.name === t('stat.views.defaultName'))
+      ?? store.views.find(view => view.name === t('stat.views.modern'))
+      ?? store.views[0]
+    const view = automatic ?? fallback
     if (view)
       apply(view, false)
     return view ?? null
   }
-  let isCreatingInitialView = false
-  watch(() => store.isLoaded, async (viewsLoaded) => {
-    if (!viewsLoaded || isCreatingInitialView || store.views.some(view => view.isActive))
+  let isEnsuringActiveView = false
+  let hasWaitedForFirstSync = false
+  watch([
+    () => store.isLoaded,
+    () => store.views.length,
+    () => store.views.some(view => view.isActive),
+  ], async ([viewsLoaded, , hasActiveView]) => {
+    if (!viewsLoaded || hasActiveView || isEnsuringActiveView)
       return
-    isCreatingInitialView = true
+    isEnsuringActiveView = true
     try {
-      if (!store.isDemo) {
+      if (!store.isDemo && !hasWaitedForFirstSync) {
         await waitForFirstSync()
+        hasWaitedForFirstSync = true
         if (store.views.some(view => view.isActive))
           return
       }
-      const modernName = t('stat.views.modern')
-      const existing = store.views.find(view => view.name === modernName)
-      const previousIds = store.views.map(view => view.id)
-      const modern = existing ?? await store.create({
+      const fallback = store.views.find(view => view.name === t('stat.views.defaultName'))
+        ?? store.views.find(view => view.name === t('stat.views.modern'))
+        ?? store.views[0]
+      const view = fallback ?? await store.create({
         autoRule: null,
         config: { base: cloneConfig(config.value), blockRules: {} },
+        id: store.defaultViewId('dashboard'),
         isAutoEnabled: false,
-        name: modernName,
+        name: t('stat.views.defaultName'),
         scope: 'dashboard',
       })
-      if (!existing && previousIds.length)
-        await store.reorder([modern.id, ...previousIds])
-      if (!store.views.some(view => view.isActive))
-        await store.setActive(modern.id)
+      if (!view.isActive)
+        await store.setActive(view.id)
       if (activeId.value === null)
-        apply(modern, false)
+        apply(view, false)
     }
     finally {
-      isCreatingInitialView = false
+      isEnsuringActiveView = false
     }
   }, { immediate: true })
-  watch([() => store.isLoaded, () => store.views], () => {
-    if (store.isLoaded && activeId.value && !store.views.some(view => view.id === activeId.value))
-      clearActive(false)
-  }, { deep: true, immediate: true })
   watch([() => store.isLoaded, currentFingerprint], () => {
     if (!store.isLoaded || manualFingerprint.value === currentFingerprint.value)
       return
@@ -218,5 +224,5 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     manualFingerprint.value = null
   }, { immediate: true })
 
-  return { activeId, activeView, apply, clearActive, context, cycle, discard, duplicate, isDirty, saveAs, selectForCurrentContext, store, syncPanelAcrossViews, updateBlockRules, updateCurrent }
+  return { activeId, activeView, apply, clearActive, context, cycle, discard, duplicate, isDirty, saveAs, selectForCurrentContext, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
 }

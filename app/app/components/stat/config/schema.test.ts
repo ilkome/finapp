@@ -23,6 +23,7 @@ const defaultConfig: MiniItemConfig = {
     list: {
       backgroundType: 'none',
       grouping: 'parent',
+      isAutoExpandParents: false,
       isLines: true,
       isRoundIcon: true,
       isShow: true,
@@ -107,6 +108,15 @@ describe('configSchema', () => {
 
   it('validates default config', () => {
     expect(ConfigSchema.safeParse(defaultConfig).success).toBe(true)
+  })
+
+  it('backfills automatic parent expansion for existing configs', () => {
+    const stored = structuredClone(defaultConfig)
+    delete (stored.categories.list as Partial<typeof stored.categories.list>).isAutoExpandParents
+
+    const result = ConfigSchema.parse(stored)
+
+    expect(result.categories.list.isAutoExpandParents).toBe(false)
   })
 
   it('rejects invalid chartType', () => {

@@ -4,7 +4,7 @@ import type { CategoryWithData } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { computeBarStyle } from '~/components/stat/categories/barUtils'
+import { computeBarStyle, getCategorySparklineWidth } from '~/components/stat/categories/barUtils'
 import { useCategoryLongPress } from '~/components/stat/categories/useCategoryLongPress'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 import { getTrnTypeByAmount } from '~/components/trns/types'
@@ -53,20 +53,20 @@ const parentCategory = computed(() => {
 const barStyle = computed(() =>
   computeBarStyle(props.item.value, category.value?.color, props.maxCategoryValues, 'width'),
 )
-const sparklineWidth = 56
 const sparklineHeight = 40
+const sparklineWidth = computed(() => getCategorySparklineWidth(props.item.trend?.length ?? 0))
 const sparklinePoints = computed(() => {
   const values = props.item.trend ?? []
   const padding = 2
   if (values.length === 0)
     return ''
   if (values.length === 1)
-    return `${padding},${sparklineHeight / 2} ${sparklineWidth - padding},${sparklineHeight / 2}`
+    return `${padding},${sparklineHeight / 2} ${sparklineWidth.value - padding},${sparklineHeight / 2}`
 
   const min = Math.min(...values)
   const max = Math.max(...values)
   const range = max - min
-  const drawableWidth = sparklineWidth - padding * 2
+  const drawableWidth = sparklineWidth.value - padding * 2
   const drawableHeight = sparklineHeight - padding * 2
   return values.map((value, index) => {
     const x = padding + index * drawableWidth / (values.length - 1)
@@ -83,9 +83,9 @@ const sparklineBars = computed(() => {
   if (max === 0)
     return []
 
-  const barWidth = Math.min(3, Math.max(1, (sparklineWidth - gap * Math.max(0, values.length - 1)) / values.length))
+  const barWidth = Math.min(3, Math.max(1, (sparklineWidth.value - gap * Math.max(0, values.length - 1)) / values.length))
   const barsWidth = barWidth * values.length + gap * Math.max(0, values.length - 1)
-  const startX = sparklineWidth - barsWidth
+  const startX = sparklineWidth.value - barsWidth
   const maxBarHeight = sparklineHeight * 0.9
   return values.map((value, index) => {
     const barHeight = value === 0 ? 1 : Math.max(2, value / max * maxBarHeight)
@@ -217,10 +217,11 @@ function onAmountClick(e: MouseEvent) {
             'col-start-1 row-start-1 opacity-30': isBarPlus,
             'self-end opacity-70': trendType === 'bar',
           }"
-          class="h-10 w-14 shrink-0 overflow-visible"
+          :style="{ width: `${sparklineWidth}px` }"
+          class="h-10 shrink-0 overflow-visible"
           focusable="false"
           preserveAspectRatio="none"
-          viewBox="0 0 56 40"
+          :viewBox="`0 0 ${sparklineWidth} ${sparklineHeight}`"
         >
           <polyline
             v-if="trendType === 'line'"

@@ -2,16 +2,18 @@
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import { debounce } from 'es-toolkit'
 
-import type { BlockRule, Condition, ConditionGroup, StatBlockPanelId } from '~/components/stat/views/types'
+import type { BlockRule, ConditionGroup, StatBlockPanelId } from '~/components/stat/views/types'
 
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
-import { cloneBlockRule, findMatchingBlockRule } from '~/components/stat/views/blockRules'
+import { cloneBlockRule } from '~/components/stat/views/blockRules'
+import { useStatConditionTitles } from '~/components/stat/views/useConditionTitles'
 
 const props = defineProps<{
   panel: StatBlockPanelId
 }>()
 
 const { t } = useI18n()
+const { conditionGroupTitle } = useStatConditionTitles()
 const controller = inject(statViewControllerKey)!
 const DEFAULT_RULE_ID = 'default'
 const expandedId = ref<string | null>(null)
@@ -40,11 +42,6 @@ watch(rules, () => {
     persist()
 }, { deep: true })
 
-watch(() => rules.value.length, (count) => {
-  if (count === 0)
-    expandedId.value = DEFAULT_RULE_ID
-}, { immediate: true })
-
 onBeforeUnmount(() => persist.flush())
 
 const reusableConditions = computed(() => {
@@ -71,8 +68,6 @@ const ruleItems = computed(() => [
     onSelect: () => addRule(condition),
   })),
 ].filter(group => group.length))
-const matchingRuleId = computed(() => findMatchingBlockRule(rules.value, controller.context.value)?.id ?? null)
-
 function addRule(condition: ConditionGroup) {
   const rule: BlockRule = {
     condition: JSON.parse(JSON.stringify(condition)) as ConditionGroup,
@@ -109,49 +104,14 @@ function removeRule(index: number) {
 function ruleTitle(rule: BlockRule) {
   return conditionGroupTitle(rule.condition)
 }
-
-function conditionTitle(condition: Condition) {
-  const comparator = condition.comparator
-  if (condition.kind === 'categoryCount') {
-    const field = condition.scope === 'parent'
-      ? t('stat.views.conditions.scopes.parent')
-      : t('stat.views.conditions.fields.categoryCount')
-    return t('stat.views.blockRules.conditionSummary.categoryCount', { comparator, field, value: condition.value })
-  }
-  if (condition.kind === 'contentWidth')
-    return t('stat.views.blockRules.conditionSummary.contentWidth', { comparator, value: condition.value })
-  return t('stat.views.blockRules.conditionSummary.period', {
-    comparator,
-    unit: t(`stat.views.conditions.units.${condition.unit}`).toLocaleLowerCase(),
-    value: condition.value,
-  })
-}
-
-function flattenConditions(group: ConditionGroup, result: Condition[] = []): Condition[] {
-  for (const child of group.children) {
-    if ('children' in child)
-      flattenConditions(child, result)
-    else
-      result.push(child)
-  }
-  return result
-}
-
-function conditionGroupTitle(group: ConditionGroup) {
-  const conditions = flattenConditions(group)
-  return conditions.length
-    ? conditions.map(conditionTitle).join(', ')
-    : t('stat.views.blockRules.new')
-}
 </script>
 
 <template>
   <section class="grid gap-4">
-    <div v-if="rules.length" ref="sortParent" class="grid gap-2">
+    <div v-if="rules.length" ref="sortParent" class="grid gap-px">
       <StatConfigBlockRuleCard
         v-for="(rule, index) in rules"
         :key="rule.id"
-        :isActive="matchingRuleId === rule.id"
         :isExpanded="expandedId === rule.id"
         :panel
         :rule
@@ -163,27 +123,29 @@ function conditionGroupTitle(group: ConditionGroup) {
       />
     </div>
 
+    <div class="grid gap-1">
+      <UDropdownMenu
+        :items="ruleItems"
+        :content="{ align: 'start' }"
+        :ui="{ group: '[&:not(:first-child)]:before:right-0! [&:not(:first-child)]:before:left-0!' }"
+      >
+        <UButton
+          class="w-full justify-start rounded-sm! data-[state=open]:bg-elevated/50!"
+          color="neutral"
+          icon="i-lucide-plus"
+          :label="$t('stat.views.blockRules.addRule')"
+          size="sm"
+          trailingIcon="i-lucide-chevron-down"
+          variant="ghost"
+        />
+      </UDropdownMenu>
+      <slot name="actions" />
+    </div>
+
     <StatConfigBlockRuleDefaultCard
-      :isActive="matchingRuleId === null"
       :isExpanded="expandedId === DEFAULT_RULE_ID"
       :panel
       @toggleExpanded="expandedId = expandedId === DEFAULT_RULE_ID ? null : DEFAULT_RULE_ID"
     />
-
-    <UDropdownMenu
-      :items="ruleItems"
-      :content="{ align: 'start' }"
-      :ui="{ group: '[&:not(:first-child)]:before:right-0! [&:not(:first-child)]:before:left-0!' }"
-    >
-      <UButton
-        class="w-full justify-start"
-        color="neutral"
-        icon="i-lucide-plus"
-        :label="$t('stat.views.blockRules.addRule')"
-        size="sm"
-        trailingIcon="i-lucide-chevron-down"
-        variant="ghost"
-      />
-    </UDropdownMenu>
   </section>
 </template>

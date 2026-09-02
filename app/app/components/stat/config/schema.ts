@@ -85,6 +85,7 @@ function migrateCategoryList(value: unknown): unknown {
 const categoryListSchema = z.preprocess(migrateCategoryList, z.object({
   backgroundType: z.enum(['category', 'none', 'standard']),
   grouping: categoryGroupingSchema,
+  isAutoExpandParents: z.boolean().default(false),
   isLines: z.boolean(),
   isRoundIcon: z.boolean(),
   isShow: z.boolean(),
@@ -205,6 +206,7 @@ export const defaultConfig: MiniItemConfig = {
     list: {
       backgroundType: 'none',
       grouping: 'auto',
+      isAutoExpandParents: false,
       isLines: true,
       isRoundIcon: true,
       isShow: true,

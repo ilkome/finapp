@@ -72,6 +72,35 @@ describe('useStatViewsStore demo persistence', () => {
     expect(JSON.parse(String(row.config))).not.toHaveProperty('isActive')
     expect(rowToView({ id: view.id, ...row })?.isActive).toBe(true)
   })
+
+  it('reuses a deterministic default view created concurrently', async () => {
+    const store = useStatViewsStore()
+    await store.init()
+    const values = {
+      autoRule: null,
+      config: { base: structuredClone(defaultConfig), blockRules: {} },
+      id: store.defaultViewId('dashboard'),
+      isAutoEnabled: false,
+      name: 'Default',
+      scope: 'dashboard' as const,
+    }
+
+    const [first, second] = await Promise.all([store.create(values), store.create(values)])
+
+    expect(first.id).toBe(second.id)
+    expect(store.views).toHaveLength(1)
+  })
+
+  it('activates the adjacent view when the active view is removed', async () => {
+    const store = useStatViewsStore()
+    await store.init()
+    const first = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'First', scope: 'dashboard' })
+    const second = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Second', scope: 'dashboard' })
+
+    await store.remove(first.id)
+
+    expect(store.views).toMatchObject([{ id: second.id, isActive: true, sortOrder: 0 }])
+  })
 })
 
 describe('active view conflict resolution', () => {

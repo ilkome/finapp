@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import type { ConditionField } from './conditionFields'
 import type { Condition, ConditionGroup } from './types'
+
+import { changeConditionField, getConditionField } from './conditionFields'
 
 defineOptions({ name: 'StatViewsConditionEditor' })
 
@@ -9,7 +12,8 @@ const { t } = useI18n()
 const comparators = ['<', '<=', '=', '!=', '>=', '>'].map(value => ({ label: value, value }))
 const fields = computed(() => [
   { label: t('stat.views.conditions.fields.period'), value: 'period' },
-  { label: t('stat.views.conditions.fields.categoryCount'), value: 'categoryCount' },
+  { label: t('stat.views.conditions.fields.parentCategoryCount'), value: 'parentCategoryCount' },
+  { label: t('stat.views.conditions.fields.allCategoryCount'), value: 'allCategoryCount' },
   { label: t('stat.views.conditions.fields.contentWidth'), value: 'contentWidth' },
 ])
 const operators = computed(() => [
@@ -17,10 +21,6 @@ const operators = computed(() => [
   { label: t('stat.views.conditions.operators.or'), value: 'or' },
 ])
 const units = computed(() => ['day', 'week', 'month', 'year'].map(value => ({ label: t(`stat.views.conditions.units.${value}`), value })))
-const scopes = computed(() => [
-  { label: t('stat.views.conditions.scopes.all'), value: 'all' },
-  { label: t('stat.views.conditions.scopes.parent'), value: 'parent' },
-])
 const selectUi = { content: 'z-[80]' }
 function update(children: ConditionGroup['children']) {
   emit('update:modelValue', { ...props.modelValue, children })
@@ -51,13 +51,6 @@ function conditionActionItems(index: number) {
   ], [
     { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => remove(index) },
   ]]
-}
-function changeKind(condition: Condition, kind: Condition['kind']) {
-  if (kind === 'period')
-    return { comparator: condition.comparator, kind, unit: 'day' as const, value: 1 }
-  if (kind === 'contentWidth')
-    return { comparator: condition.comparator, kind, unit: 'px' as const, value: 768 }
-  return { comparator: condition.comparator, kind, scope: 'all' as const, value: 0 }
 }
 </script>
 
@@ -98,7 +91,7 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
             :aria-label="t('stat.views.conditions.labels.operator')"
             @update:modelValue="$emit('update:modelValue', { ...modelValue, operator: $event as 'and' | 'or' })"
           />
-          <USelect class="min-w-32 grow" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="child.kind" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replace(index, changeKind(child, $event as Condition['kind']))" />
+          <USelect class="min-w-32 grow" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="getConditionField(child)" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replace(index, changeConditionField(child, $event as ConditionField))" />
           <USelect class="w-16 shrink-0" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as Condition['comparator'] })" />
           <UInputNumber
             class="w-24 shrink-0"
@@ -111,13 +104,10 @@ function changeKind(condition: Condition, kind: Condition['kind']) {
           />
           <USelect v-if="child.kind === 'period'" class="w-24 shrink-0" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
           <span v-else-if="child.kind === 'contentWidth'" class="w-10 shrink-0 px-2 text-sm text-muted">px</span>
-          <USelect v-else class="w-38 shrink-0" :content="{ position: 'item-aligned' }" :items="scopes" :modelValue="child.scope" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.scope')" @update:modelValue="replace(index, { ...child, scope: $event as 'all' | 'parent' })" />
         </div>
         <div class="absolute top-0 right-0 flex justify-end">
           <UDropdownMenu :items="conditionActionItems(index)" :content="{ align: 'end' }" :modal="false">
-            <UiActionButton :ariaLabel="$t('base.moreOptions')" @click.stop>
-              <Icon name="lucide:ellipsis" size="18" />
-            </UiActionButton>
+            <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
           </UDropdownMenu>
         </div>
       </div>

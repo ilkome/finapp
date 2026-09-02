@@ -4,7 +4,7 @@ import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
-import { addEmptyCategoryViews, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
+import { addEmptyCategoryViews, collectRoundCategoryIds, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
 import { filterFocusedCategories, projectCategorySelection } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
@@ -29,37 +29,14 @@ const grouping = computed(() => statConfig.config.value.categories.round.groupin
 const isShowFavorites = computed(() => statConfig.config.value.categories.round.isShowFavorites)
 const isShowRecent = computed(() => statConfig.config.value.categories.round.isShowRecent)
 
-const mergedPreCategoriesIds = computed(() => {
-  const ids: CategoryId[] = []
-  const seen = new Set<CategoryId>()
-
-  function addId(id: CategoryId) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-    }
-  }
-
-  if (props.preCategoriesIds) {
-    for (const id of props.preCategoriesIds)
-      addId(id)
-  }
-
-  if (isShowFavorites.value) {
-    for (const id of categoriesStore.favoriteCategoriesIds)
-      addId(id)
-  }
-
-  if (isShowRecent.value) {
-    for (const id of categoriesStore.recentCategoriesIds)
-      addId(id)
-  }
-
-  for (const id of props.filteredCategoriesIds)
-    addId(id)
-
-  return ids
-})
+const mergedPreCategoriesIds = computed(() => collectRoundCategoryIds({
+  favoriteCategoryIds: categoriesStore.favoriteCategoriesIds,
+  filteredCategoryIds: props.filteredCategoriesIds,
+  isShowFavorites: isShowFavorites.value,
+  isShowRecent: isShowRecent.value,
+  preCategoryIds: props.preCategoriesIds,
+  recentCategoryIds: categoriesStore.recentCategoriesIds,
+}))
 
 const roundCategories = computed(() => {
   if (props.focusedCategoryId) {

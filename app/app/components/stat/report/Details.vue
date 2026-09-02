@@ -4,7 +4,7 @@ import type { StatReportContext } from '~/components/stat/report/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { buildCategoryViews } from '~/components/stat/categories/categoryViews'
+import { buildCategoryViews, collectRoundCategoryIds } from '~/components/stat/categories/categoryViews'
 import { statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/statFeed'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -40,6 +40,14 @@ const baseCategoryViews = computed(() => buildCategoryViews({
 const quickCategoryViews = computed(() => props.ctx.filteredCategoriesIds.value.length === 0
   ? baseCategoryViews.value
   : undefined)
+const roundCategoryIds = computed(() => collectRoundCategoryIds({
+  favoriteCategoryIds: categoriesStore.favoriteCategoriesIds,
+  filteredCategoryIds: props.ctx.filteredCategoriesIds.value,
+  isShowFavorites: props.ctx.params.statConfig.config.value.categories.round.isShowFavorites,
+  isShowRecent: props.ctx.params.statConfig.config.value.categories.round.isShowRecent,
+  preCategoryIds: props.ctx.params.preCategoriesIds?.value,
+  recentCategoryIds: categoriesStore.recentCategoriesIds,
+}))
 const canStickCategories = computed(() =>
   props.categoriesStickyTop !== undefined
   && isTwoColumnLayout.value
@@ -76,7 +84,7 @@ onBeforeUnmount(() => {
 
 <template>
   <StatCategoriesRoundSection
-    v-if="props.block === 'catsRound' && ctx.params.statConfig.config.value.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || ctx.filteredCategoriesIds.value.length > 0)"
+    v-if="props.block === 'catsRound' && ctx.params.statConfig.config.value.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || roundCategoryIds.length > 0)"
     :baseCategoryViews
     :excludedCategoriesIds="ctx.statExcludedIds.value"
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"

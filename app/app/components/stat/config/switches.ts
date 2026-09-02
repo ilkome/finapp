@@ -4,6 +4,7 @@ import type { StatConfigProvider } from '~/components/stat/config/types'
 export type StatConfigBooleanPath
   = | 'categories.bars.isShowTooltip'
     | 'categories.bars.isShowTooltipChildren'
+    | 'categories.list.isAutoExpandParents'
     | 'categories.list.isLines'
     | 'categories.list.isRoundIcon'
     | 'categories.list.isShowTitle'
@@ -45,6 +46,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'categories.bars.isShowTooltipChildren': {
     get: config => config.categories.bars.isShowTooltipChildren,
     set: (provider, value) => provider.updateConfig('categories', { bars: { isShowTooltipChildren: value } }),
+  },
+  'categories.list.isAutoExpandParents': {
+    get: config => config.categories.list.isAutoExpandParents,
+    set: (provider, value) => provider.updateConfig('categories', { list: { isAutoExpandParents: value } }),
   },
   'categories.list.isLines': {
     get: config => config.categories.list.isLines,

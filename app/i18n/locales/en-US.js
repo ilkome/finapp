@@ -488,6 +488,7 @@ export default {
           title: 'Grouping',
         },
         list: {
+          autoExpandParents: 'Automatically expand parent categories',
           backgroundType: 'Background',
           backgroundTypes: {
             category: 'Category color',
@@ -654,7 +655,6 @@ export default {
       and: 'and',
       andMore: 'and {count} more',
       auto: 'Activate automatically',
-      autoDescription: 'Auto: {rule}',
       blockRules: {
         addParameter: 'Add parameter',
         addRule: 'Add rule',
@@ -666,7 +666,6 @@ export default {
         configure: 'Configure with rules',
         count: 'Rules: {count}',
         default: 'Default',
-        defaultDescription: 'Used when no other rule matches',
         empty: 'This block has no rules yet.',
         new: 'New rule',
         parameters: {
@@ -685,15 +684,15 @@ export default {
       comparators: { eq: 'equals', gt: 'greater than', gte: 'greater than or equal to', lt: 'less than', lte: 'less than or equal to', neq: 'not equal to' },
       conditions: {
         addCondition: 'Add condition',
-        fields: { categoryCount: 'Categories', contentWidth: 'Content width', period: 'Period' },
-        labels: { comparator: 'Comparison', field: 'Condition type', operator: 'Condition operator', scope: 'Category scope', unit: 'Period unit' },
+        fields: { allCategoryCount: 'All categories', contentWidth: 'Content width', parentCategoryCount: 'Parent categories', period: 'Period' },
+        labels: { comparator: 'Comparison', field: 'Condition type', operator: 'Condition operator', unit: 'Period unit' },
         operators: { and: 'AND', or: 'OR' },
-        scopes: { all: 'All categories', parent: 'Parent categories' },
         units: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
       },
       contentWidth: 'content width {comparator} {value} px',
       current: 'Current view',
       cycle: 'Cycle saved views',
+      defaultName: 'Default',
       deleteConfirm: 'The saved view will be deleted.',
       discard: 'Discard changes',
       drag: 'Drag view',
@@ -706,7 +705,6 @@ export default {
       saveAs: 'Save as new',
       scope: { all: 'categories', parent: 'parent categories' },
       sort: 'Sort views',
-      sortBlocks: 'Sort blocks',
       syncBlock: 'Apply to all views',
       syncBlockSettings: 'Block settings only',
       syncBlockWithRules: 'Settings and rules',

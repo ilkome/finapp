@@ -12,6 +12,39 @@ export type CategoryViews = {
   ungrouped: CategoryWithData[]
 }
 
+export function collectRoundCategoryIds(params: {
+  favoriteCategoryIds: CategoryId[]
+  filteredCategoryIds: CategoryId[]
+  isShowFavorites: boolean
+  isShowRecent: boolean
+  preCategoryIds?: CategoryId[]
+  recentCategoryIds: CategoryId[]
+}): CategoryId[] {
+  const ids: CategoryId[] = []
+  const seen = new Set<CategoryId>()
+  const add = (id: CategoryId) => {
+    if (!seen.has(id)) {
+      seen.add(id)
+      ids.push(id)
+    }
+  }
+
+  for (const id of params.preCategoryIds ?? [])
+    add(id)
+  if (params.isShowFavorites) {
+    for (const id of params.favoriteCategoryIds)
+      add(id)
+  }
+  if (params.isShowRecent) {
+    for (const id of params.recentCategoryIds)
+      add(id)
+  }
+  for (const id of params.filteredCategoryIds)
+    add(id)
+
+  return ids
+}
+
 function groupLeafValues(leaves: CategoryWithData[], categoriesItems: Categories): CategoryWithData[] {
   const groups = new Map<CategoryId, CategoryWithData>()
   for (const leaf of leaves) {

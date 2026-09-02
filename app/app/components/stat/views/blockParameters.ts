@@ -20,6 +20,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
   catsList: [
     visibility,
     { id: 'categories.list.grouping', paths: ['categories.list.grouping'], titleKey: 'stat.config.categories.grouping.title' },
+    { id: 'categories.list.isAutoExpandParents', paths: ['categories.list.isAutoExpandParents'], titleKey: 'stat.config.categories.list.autoExpandParents' },
     { id: 'categories.list.trendType', paths: ['categories.list.trendType'], titleKey: 'stat.config.categories.list.trendType' },
     { id: 'categories.list.backgroundType', paths: ['categories.list.backgroundType'], titleKey: 'stat.config.categories.list.backgroundType' },
     { id: 'categories.list.isShowTitle', paths: ['categories.list.isShowTitle'], titleKey: 'stat.config.trns.showTitle' },
@@ -105,6 +106,8 @@ export function isBlockRuleParameterAvailable(
   config: MiniItemConfig,
   canSplit: boolean,
 ): boolean {
+  if (panel === 'catsList' && id === 'categories.list.isAutoExpandParents')
+    return config.categories.list.grouping !== 'child'
   if (panel === 'catsList' && id === 'categories.list.isLines')
     return config.categories.list.backgroundType === 'none'
   if (panel === 'wallets' && id === 'wallets.count')

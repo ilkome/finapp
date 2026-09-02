@@ -8,7 +8,6 @@ import { BLOCK_RULE_PARAMETERS, BLOCK_RULE_VISIBILITY_PARAMETER_ID, isBlockRuleP
 import { applyBlockRuleConfig, createBlockRuleOverrides, resolveBlockRuleParameterIds } from '~/components/stat/views/blockRules'
 
 const props = defineProps<{
-  isActive: boolean
   isExpanded: boolean
   panel: StatBlockPanelId
   rule: BlockRule
@@ -23,7 +22,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const isMobile = useMediaQuery('(max-width: 767px)')
 const baseConfig = inject(statBaseConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const ruleConfig = computed(() => applyBlockRuleConfig(props.panel, baseConfig.config.value, props.rule.overrides))
@@ -53,9 +51,7 @@ const ruleActionItems = computed(() => [[
     onSelect: () => emit('remove'),
   },
 ]])
-const popoverContent = computed(() => isMobile.value
-  ? { align: 'center' as const, side: 'bottom' as const, sideOffset: 6 }
-  : { align: 'start' as const, side: 'left' as const, sideOffset: 8 })
+const popoverContent = { align: 'end' as const, side: 'bottom' as const, sideOffset: 6 }
 const ruleProvider = {
   config: ruleConfig,
   updateConfig<K extends keyof MiniItemConfig>(key: K, value: Parameters<typeof applyConfigUpdate<K>>[2]) {
@@ -106,26 +102,27 @@ function setExpanded(open: boolean) {
 </script>
 
 <template>
-  <div class="flex min-w-0 items-center gap-1">
+  <UiElement
+    insideClasses="group min-h-[46px] gap-0 p-0"
+  >
     <div
-      class="blockRuleSortHandle sortHandle flex size-8 shrink-0 cursor-grab items-center justify-center rounded-md text-muted hover:bg-elevated active:cursor-grabbing"
+      class="blockRuleSortHandle sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center self-stretch text-muted hover:bg-accented active:cursor-grabbing"
       :aria-label="$t('stat.views.drag')"
     >
-      <Icon name="lucide:grip-vertical" size="18" />
+      <Icon name="lucide:grip-vertical" size="20" />
     </div>
     <div class="min-w-0 grow">
       <UPopover
         :open="isExpanded"
         :content="popoverContent"
         :ui="{
-          content: 'z-[70] max-h-[calc(100dvh-1rem)] w-120 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain p-0',
+          content: 'z-[70] max-h-[calc(100dvh-1rem)] w-85 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain p-0',
         }"
         @update:open="setExpanded"
       >
         <button
           type="button"
-          class="flex min-h-10.5 w-full min-w-0 items-center gap-2 rounded-md px-3 text-left hover:bg-elevated/50"
-          :class="isActive && 'bg-primary/10 text-primary'"
+          class="flex min-h-[46px] w-full min-w-0 items-center gap-2 px-3 text-left"
         >
           <span class="min-w-0 grow truncate text-sm font-medium">{{ title }}</span>
           <Icon name="lucide:chevron-down" class="size-4 shrink-0 text-muted" />
@@ -136,9 +133,7 @@ function setExpanded(open: boolean) {
             <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_2.625rem] items-start gap-2">
               <span class="line-clamp-2 min-w-0 py-2 text-sm leading-5 font-medium wrap-break-word">{{ title }}</span>
               <UDropdownMenu :items="ruleActionItems" :content="{ align: 'end' }" :modal="false">
-                <UiActionButton :ariaLabel="$t('base.moreOptions')" @click.stop>
-                  <Icon name="lucide:ellipsis" size="18" />
-                </UiActionButton>
+                <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
               </UDropdownMenu>
             </div>
             <StatViewsConditionEditor
@@ -196,7 +191,7 @@ function setExpanded(open: boolean) {
               </div>
               <UDropdownMenu :items="[availableParameterItems]">
                 <UButton
-                  class="w-full justify-start"
+                  class="w-full justify-start data-[state=open]:bg-elevated/50!"
                   color="neutral"
                   :disabled="!availableParameterItems.length"
                   icon="i-lucide-plus"
@@ -210,5 +205,5 @@ function setExpanded(open: boolean) {
         </template>
       </UPopover>
     </div>
-  </div>
+  </UiElement>
 </template>

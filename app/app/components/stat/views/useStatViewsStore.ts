@@ -93,9 +93,10 @@ export const useStatViewsStore = defineStore('statViews', () => {
       setItems(normalized)
       isLoaded.value = true
       const changed = normalized.filter((view, index) => view.isActive !== received[index]!.isActive)
-      if (changed.length)
+      if (changed.length) {
         void upsertRows('stat_views', changed.map(view => ({ id: view.id, row: viewToRow(view) })))
           .catch(error => logger.error('active view reconciliation failed', error))
+      }
     })
   }
 
@@ -108,13 +109,21 @@ export const useStatViewsStore = defineStore('statViews', () => {
     await upsertRows('stat_views', changed.map(view => ({ id: view.id, row: viewToRow(view) })))
   }
 
-  async function create(values: Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name' | 'scope'>) {
+  function defaultViewId(scope: StatViewScope) {
+    const userId = isDemo.value ? DEMO_USER_ID : resolveWriteUid(uid.value)
+    return `stat-view-default:${userId}:${scope}`
+  }
+
+  async function create(values: Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name' | 'scope'> & Partial<Pick<StatView, 'id'>>) {
+    const existing = values.id ? items.value.find(view => view.id === values.id) : null
+    if (existing)
+      return existing
     const now = Date.now()
     const view: StatView = {
       ...values,
       autoRule: values.autoRule as ConditionGroup | null,
       createdAt: now,
-      id: crypto.randomUUID(),
+      id: values.id ?? crypto.randomUUID(),
       isActive: !views.value.some(view => view.scope === values.scope && view.isActive),
       sortOrder: views.value.filter(item => item.scope === values.scope).length,
       updatedAt: now,
@@ -184,7 +193,14 @@ export const useStatViewsStore = defineStore('statViews', () => {
     const removed = previous.find(view => view.id === id)
     if (!removed)
       return
-    const next = previous.filter(view => view.id !== id).map((view, sortOrder) => ({ ...view, sortOrder, updatedAt: Date.now() }))
+    const remaining = previous.filter(view => view.id !== id)
+    const fallbackIndex = Math.min(previous.indexOf(removed), remaining.length - 1)
+    const next = remaining.map((view, sortOrder) => ({
+      ...view,
+      isActive: removed.isActive ? sortOrder === fallbackIndex : view.isActive,
+      sortOrder,
+      updatedAt: Date.now(),
+    }))
     setItems(next)
     try {
       if (isDemo.value) {
@@ -241,7 +257,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
     }
   }
 
-  return { create, init, isDemo, isLoaded, items, remove, reorder, setActive, update, updateMany, views }
+  return { create, defaultViewId, init, isDemo, isLoaded, items, remove, reorder, setActive, update, updateMany, views }
 })
 
 export { normalizeActiveViews, rowToView, viewToRow }

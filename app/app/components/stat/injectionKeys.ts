@@ -7,6 +7,7 @@ import type { TrnsListFilterState } from '~/components/trns/types'
 export const statDateKey: InjectionKey<StatDateProvider> = Symbol('statDate')
 export const statBaseConfigKey: InjectionKey<StatConfigProvider> = Symbol('statBaseConfig')
 export const statConfigKey: InjectionKey<StatConfigProvider> = Symbol('statConfig')
+export const statConfigOverlayOwnerKey: InjectionKey<string> = Symbol('statConfigOverlayOwner')
 export const statConfigParameterIdsKey: InjectionKey<Readonly<Ref<ReadonlySet<string> | null>>> = Symbol('statConfigParameterIds')
 export const statConfigParameterRemoveKey: InjectionKey<(id: string) => void> = Symbol('statConfigParameterRemove')
 export const statContentWidthKey: InjectionKey<Ref<number | null>> = Symbol('statContentWidth')

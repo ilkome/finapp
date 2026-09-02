@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest'
 
-import { computeBarStyle, formatCompactAmount, getMaxCategoryValues } from '~/components/stat/categories/barUtils'
+import { computeBarStyle, formatCompactAmount, getCategorySparklineWidth, getMaxCategoryValues } from '~/components/stat/categories/barUtils'
+
+describe('getCategorySparklineWidth', () => {
+  it('adapts to the number of displayed periods', () => {
+    expect(getCategorySparklineWidth(1)).toBe(14)
+    expect(getCategorySparklineWidth(7)).toBe(33)
+    expect(getCategorySparklineWidth(12)).toBe(58)
+    expect(getCategorySparklineWidth(30)).toBe(148)
+  })
+})
 
 describe('computeBarStyle', () => {
   const biggest = { expense: 500, income: 1000 }

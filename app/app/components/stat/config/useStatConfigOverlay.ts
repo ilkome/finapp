@@ -1,12 +1,22 @@
+import { statConfigOverlayOwnerKey } from '~/components/stat/injectionKeys'
+
+export function resolveStatConfigOverlayOpen(activeOwnerId: string | null, ownerId: string | null) {
+  return activeOwnerId !== null && (ownerId === null || activeOwnerId === ownerId)
+}
+
 export function useStatConfigOverlay() {
-  const isOpen = useState<boolean>('stat-config-overlay-open', () => false)
+  const ownerId = inject(statConfigOverlayOwnerKey, null)
+  const activeOwnerId = useState<string | null>('stat-config-overlay-owner', () => null)
+  const isOpen = computed(() => resolveStatConfigOverlayOpen(activeOwnerId.value, ownerId))
 
   function close() {
-    isOpen.value = false
+    if (ownerId === null || activeOwnerId.value === ownerId)
+      activeOwnerId.value = null
   }
 
   function open() {
-    isOpen.value = true
+    if (ownerId !== null)
+      activeOwnerId.value = ownerId
   }
 
   return { close, isOpen, open }

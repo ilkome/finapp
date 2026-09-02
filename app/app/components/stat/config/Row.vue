@@ -5,6 +5,7 @@ defineProps<{
   icon?: string
   isExpanded?: boolean
   isShow?: boolean
+  sortable?: boolean
   title: string
 }>()
 
@@ -20,12 +21,21 @@ defineEmits<{
     :class="isExpanded ? 'rounded-t-lg' : 'rounded-sm'"
   >
     <div
+      v-if="sortable"
+      class="sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center text-muted hover:bg-accented active:cursor-grabbing"
+      :class="isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'"
+      :aria-label="$t('stat.views.drag')"
+      @click.stop
+    >
+      <Icon name="lucide:grip-vertical" size="20" />
+    </div>
+    <div
       role="button"
       tabindex="0"
       :aria-expanded="hasPanel ? isExpanded : undefined"
       class="flex grow flex-col justify-center py-3 pr-2 pl-3"
       :class="[
-        isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm',
+        !sortable && (isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'),
         !hasToggle && (isExpanded ? 'rounded-tr-lg pr-3' : 'rounded-r-sm pr-3'),
       ]"
       @click="$emit('activate')"
