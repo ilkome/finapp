@@ -12,6 +12,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = defineProps<{
   activeItemId?: WalletId
   autofocus?: boolean
+  compactDesktop?: boolean
   currencyAboveAction?: boolean
   disabledIds?: WalletId[]
   filterAtTop?: boolean
@@ -143,6 +144,7 @@ watch(() => props.autofocus, focusSearch)
         class="h-full scroller-block overflow-y-auto py-px"
         :class="{
           'space-y-1 px-3 pt-2': props.selectedIds !== undefined,
+          'md:px-1': props.selectedIds !== undefined && props.compactDesktop,
           'pb-28!': props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pb-16': !props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,

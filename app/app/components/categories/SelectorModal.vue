@@ -14,6 +14,7 @@ type CategoryFilter = 'all' | 'favorites'
 const props = defineProps<{
   activeItemId?: CategoryId
   autofocus?: boolean
+  compactDesktop?: boolean
   hide?: () => void
   hideCreate?: boolean
   hideHeader?: boolean
@@ -287,7 +288,10 @@ watch(() => props.autofocus, focusSearch)
       </div>
     </div>
 
-    <div class="h-full scroller-block overflow-y-auto px-3 pt-1 pb-4">
+    <div
+      class="h-full scroller-block overflow-y-auto px-3 pt-1 pb-4"
+      :class="props.compactDesktop && 'md:px-1'"
+    >
       <template v-if="filter === 'all'">
         <div
           v-if="hasNoMatches"

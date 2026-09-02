@@ -139,7 +139,7 @@ onMounted(() => {
     <div
       class="relative z-20 bg-default/90 backdrop-blur"
     >
-      <div class="flex items-center gap-2 px-3 py-2">
+      <div class="flex items-center gap-2 px-3 py-2 md:px-1">
         <div class="relative min-w-0 flex-1">
           <input
             ref="searchInput"
@@ -187,7 +187,7 @@ onMounted(() => {
         />
       </div>
 
-      <div v-show="!searchQuery" class="px-3 pb-px">
+      <div v-show="!searchQuery" class="px-3 pb-px md:px-1">
         <UiTabs
           isEqual
           :items="tabItems"
@@ -207,6 +207,7 @@ onMounted(() => {
             <div class="swiper-slide size-full">
               <WalletsSelector
                 :autofocus="false"
+                compactDesktop
                 currencyAboveAction
                 hideHeader
                 :searchQuery
@@ -218,6 +219,7 @@ onMounted(() => {
             <div class="swiper-slide size-full">
               <CategoriesSelectorModal
                 :autofocus="false"
+                compactDesktop
                 hideCreate
                 hideSearch
                 :searchQuery
@@ -231,7 +233,7 @@ onMounted(() => {
 
       <div
         v-if="searchQuery"
-        class="h-full scroller-block overflow-y-auto px-3 pb-20"
+        class="h-full scroller-block overflow-y-auto px-3 pb-20 md:px-1"
       >
         <div
           v-if="hasNoResults"
@@ -281,7 +283,7 @@ onMounted(() => {
     </div>
 
     <div
-      class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2"
+      class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2 md:px-1"
       :style="props.isExpanded !== undefined
         ? { transform: 'translateY(calc(-1 * var(--sheet-ty, 0px)))' }
         : undefined"
