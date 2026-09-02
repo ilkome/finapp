@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { ChartSeries } from '~/components/stat/types'
 
-import { baseOption, buildChartGuideMarkLine, buildChartSeries, filterChartTooltipParams, resolveCenteredBarGeometry, resolveChartAverage, resolveChartGuideValues, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition, resolveChartTooltipValue, resolveStackedBarBorderRadius, sortChartTooltipParams } from '~/components/stat/chart/options'
+import { baseOption, buildChartGuideMarkLine, buildChartSeries, filterChartTooltipParams, resolveCenteredBarGeometry, resolveChartAverage, resolveChartGuideValues, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition, resolveChartTooltipSeries, resolveChartTooltipValue, resolveStackedBarBorderRadius, sortChartTooltipParams } from '~/components/stat/chart/options'
 
 const baseSeries: ChartSeries = {
   data: [0, 10, 0, 5],
@@ -156,6 +156,18 @@ describe('filterChartTooltipParams', () => {
       { name: 'food', value: 0 },
       { name: 'income', value: null },
     ])).toEqual([])
+  })
+})
+
+describe('resolveChartTooltipSeries', () => {
+  it('matches series metadata by name when an overlay offsets ECharts series indexes', () => {
+    const food = { ...baseSeries, icon: 'food', name: 'Food' }
+    const subscription = { ...baseSeries, icon: 'subscription', name: 'Subscription' }
+
+    expect(resolveChartTooltipSeries([food, subscription], {
+      seriesIndex: 1,
+      seriesName: 'Food',
+    })).toBe(food)
   })
 })
 

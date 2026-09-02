@@ -124,6 +124,16 @@ export function filterChartTooltipParams<T extends { value: unknown }>(params: T
   return params.filter((param): param is T & { value: number } => typeof param.value === 'number' && Number.isFinite(param.value) && param.value !== 0)
 }
 
+export function resolveChartTooltipSeries(
+  series: ChartSeries[] | undefined,
+  param: { seriesIndex: number, seriesName: string },
+): ChartSeries | undefined {
+  const indexed = series?.[param.seriesIndex]
+  return indexed?.name === param.seriesName
+    ? indexed
+    : series?.find(item => item.name === param.seriesName) ?? indexed
+}
+
 export function sortChartTooltipParams<T>(
   params: T[],
   resolveValue: (param: T) => number,

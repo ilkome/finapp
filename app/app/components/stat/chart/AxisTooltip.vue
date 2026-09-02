@@ -4,7 +4,7 @@ import type { Period } from '~~/utils/date/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartTooltipLabel, resolveChartTooltipAmount, resolveChartValueType } from '~/components/stat/chart/format'
-import { filterChartTooltipParams, resolveChartTooltipValue, sortChartTooltipParams } from '~/components/stat/chart/options'
+import { filterChartTooltipParams, resolveChartTooltipSeries, resolveChartTooltipValue, sortChartTooltipParams } from '~/components/stat/chart/options'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 type ChartTooltipRow = {
@@ -45,7 +45,7 @@ const tooltipParams = computed<TooltipParam[]>(() => (Array.isArray(props.params
 })))
 
 function getTooltipSeries(param: TooltipParam) {
-  return props.series?.[param.seriesIndex]
+  return resolveChartTooltipSeries(props.series, param)
 }
 
 function getTooltipColor(param: TooltipParam) {
