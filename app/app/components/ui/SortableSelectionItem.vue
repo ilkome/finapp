@@ -16,9 +16,9 @@ const slots = useSlots()
 </script>
 
 <template>
-  <UiElement insideClasses="group min-h-[46px] gap-1 px-1 py-1.5">
+  <UiElement insideClasses="group min-h-[46px] gap-1 px-1 py-0.5">
     <div
-      class="sortableSelectionHandle -my-1.5 -ml-1 flex w-11 shrink-0 cursor-grab items-center justify-center self-stretch rounded-l-md text-muted hover:bg-accented active:cursor-grabbing"
+      class="sortableSelectionHandle -my-0.5 -ml-1 flex w-11 shrink-0 cursor-grab items-center justify-center self-stretch rounded-l-md text-muted hover:bg-accented active:cursor-grabbing"
       role="button"
       tabindex="0"
       :aria-label="props.ariaLabel"

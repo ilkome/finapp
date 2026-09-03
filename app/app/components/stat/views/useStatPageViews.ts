@@ -44,9 +44,22 @@ export function useStatPageViews(options: UseStatPageViewsOptions) {
       trnsItems: trnsStore.items ?? {},
     }))
     const parentIds = new Set(categoryIds.map(id => getParentCategoryIdOrUndefined(categoriesStore.items, id) ?? id))
+    const categoryPathById = Object.fromEntries(Object.keys(categoriesStore.items).map((id) => {
+      const path = [id]
+      const seen = new Set(path)
+      let parentId = categoriesStore.items[id]?.parentId
+      while (parentId && !seen.has(String(parentId))) {
+        const nextId = String(parentId)
+        path.push(nextId)
+        seen.add(nextId)
+        parentId = categoriesStore.items[nextId]?.parentId
+      }
+      return [id, path]
+    }))
 
     return {
       categoryCount: categoryIds.length,
+      categoryPathById,
       contentWidth: options.contentWidth.value,
       parentCategoryCount: parentIds.size,
       range: options.range.value,

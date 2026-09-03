@@ -1,6 +1,6 @@
 import { addDays, addMonths, addWeeks, addYears, differenceInCalendarDays } from 'date-fns'
 
-import type { Condition, ConditionGroup, StatView, StatViewContext } from './types'
+import type { Condition, ConditionComparator, ConditionGroup, StatView, StatViewContext } from './types'
 
 import { compareCondition } from './conditions'
 
@@ -13,7 +13,7 @@ function matchesPeriod(range: StatViewContext['range'], unit: 'day' | 'week' | '
   return add(start, value).getTime() > end.getTime() && add(start, value - 1).getTime() <= end.getTime()
 }
 
-function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | 'month' | 'year', comparator: Condition['comparator'], value: number): boolean {
+function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | 'month' | 'year', comparator: ConditionComparator, value: number): boolean {
   if (comparator === '=')
     return matchesPeriod(range, unit, value)
   if (comparator === '!=')
@@ -31,6 +31,24 @@ function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | '
 }
 
 export function evaluateCondition(condition: Condition, context: StatViewContext): boolean {
+  if (condition.kind === 'walletSelection') {
+    if (condition.mode === 'all')
+      return true
+    if (condition.mode === 'none')
+      return context.selectedWalletIds.length === 0
+    const selectedIds = new Set(context.selectedWalletIds)
+    return condition.ids.some(id => selectedIds.has(id))
+  }
+
+  if (condition.kind === 'categorySelection') {
+    if (condition.mode === 'all')
+      return true
+    if (condition.mode === 'none')
+      return context.selectedCategoryIds.length === 0
+    const matchingIds = new Set(condition.ids)
+    return context.selectedCategoryIds.some(id => (context.categoryPathById[id] ?? [id]).some(pathId => matchingIds.has(pathId)))
+  }
+
   if (condition.kind === 'contentWidth')
     return context.contentWidth !== null && compareCondition(context.contentWidth, condition.comparator, condition.value)
 
@@ -55,5 +73,9 @@ export function findAutomaticView(views: StatView[], context: StatViewContext): 
 }
 
 export function contextFingerprint(context: StatViewContext): string {
-  return JSON.stringify([context.range.start, context.range.end, [...context.selectedCategoryIds].sort(), [...context.selectedWalletIds].sort(), context.categoryCount, context.parentCategoryCount, context.contentWidth])
+  const selectedCategoryPaths = context.selectedCategoryIds
+    .map(id => context.categoryPathById[id] ?? [id])
+    .map(path => [...path].sort())
+    .toSorted((a, b) => a.join('\0').localeCompare(b.join('\0')))
+  return JSON.stringify([context.range.start, context.range.end, selectedCategoryPaths, [...context.selectedWalletIds].sort(), context.categoryCount, context.parentCategoryCount, context.contentWidth])
 }

@@ -28,7 +28,21 @@ export type ContentWidthCondition = {
   value: number
 }
 
-export type Condition = PeriodCondition | CategoryCountCondition | ContentWidthCondition
+export type EntitySelectionMode = 'all' | 'none' | 'selected'
+
+export type WalletSelectionCondition = {
+  ids: string[]
+  kind: 'walletSelection'
+  mode: EntitySelectionMode
+}
+
+export type CategorySelectionCondition = {
+  ids: string[]
+  kind: 'categorySelection'
+  mode: EntitySelectionMode
+}
+
+export type Condition = PeriodCondition | CategoryCountCondition | ContentWidthCondition | WalletSelectionCondition | CategorySelectionCondition
 export type ConditionGroup = { children: Array<Condition | ConditionGroup>, operator: 'and' | 'or' }
 export type StatBlockPanelId = Exclude<StatConfigPanelId, 'root'>
 export type BlockRule = {
@@ -60,6 +74,7 @@ export type StatView = {
 
 export type StatViewContext = {
   categoryCount: number
+  categoryPathById: Record<string, string[]>
   contentWidth: number | null
   parentCategoryCount: number
   range: Range

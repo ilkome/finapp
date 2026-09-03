@@ -10,7 +10,14 @@ const comparatorSchema = z.enum(['<', '<=', '=', '!=', '>=', '>'])
 const periodConditionSchema = z.object({ comparator: comparatorSchema, kind: z.literal('period'), unit: z.enum(['day', 'week', 'month', 'year']), value: z.number().int().positive() })
 const categoryCountConditionSchema = z.object({ comparator: comparatorSchema, kind: z.literal('categoryCount'), scope: z.enum(['all', 'parent']), value: z.number().int().nonnegative() })
 const contentWidthConditionSchema = z.object({ comparator: comparatorSchema, kind: z.literal('contentWidth'), unit: z.literal('px'), value: z.number().int().nonnegative() })
-export const ConditionSchema = z.discriminatedUnion('kind', [periodConditionSchema, categoryCountConditionSchema, contentWidthConditionSchema])
+const entitySelectionModeSchema = z.enum(['all', 'none', 'selected'])
+const walletSelectionConditionSchema = z.object({ ids: z.array(z.string().min(1)), kind: z.literal('walletSelection'), mode: entitySelectionModeSchema })
+  .refine(condition => condition.mode !== 'selected' || condition.ids.length > 0, { message: 'Selected wallets require at least one id', path: ['ids'] })
+  .refine(condition => condition.mode === 'selected' || condition.ids.length === 0, { message: 'Only selected wallets may contain ids', path: ['ids'] })
+const categorySelectionConditionSchema = z.object({ ids: z.array(z.string().min(1)), kind: z.literal('categorySelection'), mode: entitySelectionModeSchema })
+  .refine(condition => condition.mode !== 'selected' || condition.ids.length > 0, { message: 'Selected categories require at least one id', path: ['ids'] })
+  .refine(condition => condition.mode === 'selected' || condition.ids.length === 0, { message: 'Only selected categories may contain ids', path: ['ids'] })
+export const ConditionSchema = z.discriminatedUnion('kind', [periodConditionSchema, categoryCountConditionSchema, contentWidthConditionSchema, walletSelectionConditionSchema, categorySelectionConditionSchema])
 export type Condition = z.infer<typeof ConditionSchema>
 export type ConditionGroup = { children: Array<Condition | ConditionGroup>, operator: 'and' | 'or' }
 export const ConditionGroupSchema: z.ZodType<ConditionGroup> = z.lazy(() => z.object({

@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { generateViewName } from '~/components/stat/views/generateViewName'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 import type { ConditionGroup } from './types'
 
@@ -12,6 +14,8 @@ function createDefaultAutoRule(): ConditionGroup {
 }
 
 const { t } = useI18n()
+const categoriesStore = useCategoriesStore()
+const walletsStore = useWalletsStore()
 const controller = inject(statViewControllerKey, null)
 const { isOpen } = useStatConfigOverlay()
 const name = ref('')
@@ -26,11 +30,20 @@ const suggestion = computed(() => generateViewName(current.value?.autoRule ?? nu
   and: t('stat.views.and'),
   andMore: count => t('stat.views.andMore', { count }),
   categoryCount: (scope, comparator, value) => t('stat.views.categoryCount', { comparator, scope: t(`stat.views.scope.${scope}`), value }),
+  categorySelection: (mode, ids) => selectionName('category', mode, ids),
   contentWidth: (comparator, value) => t('stat.views.contentWidth', { comparator, value }),
   fallback: t('stat.views.new'),
   period: (value, unit) => t(`stat.views.period.${unit}`, { count: value }),
+  walletSelection: (mode, ids) => selectionName('wallet', mode, ids),
 }, controller?.store.views.map(view => view.name) ?? []))
 const effectiveName = computed(() => name.value.trim() || suggestion.value)
+
+function selectionName(entity: 'category' | 'wallet', mode: 'all' | 'none' | 'selected', ids: string[]) {
+  if (mode !== 'selected')
+    return t(`stat.views.conditions.selection.${entity}.${mode}`)
+  const names = ids.map(id => entity === 'wallet' ? walletsStore.itemsComputed[id]?.name : categoriesStore.items[id]?.name).filter((value): value is string => !!value)
+  return names.length <= 2 ? names.join(', ') : t('stat.views.conditions.selection.multiple', { count: names.length })
+}
 const hasMetadataChanges = computed(() => {
   if (!current.value)
     return false

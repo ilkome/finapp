@@ -13,6 +13,7 @@ defineEmits<{
 
 <template>
   <StatConfigExpandableBlock
+    compact
     dataKey="default-rule"
     icon="lucide:settings-2"
     :isExpanded

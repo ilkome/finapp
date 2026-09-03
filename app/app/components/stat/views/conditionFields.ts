@@ -1,26 +1,30 @@
 import type { Condition } from './types'
 
-export type ConditionField = 'period' | 'parentCategoryCount' | 'allCategoryCount' | 'contentWidth'
+export type ConditionField = 'period' | 'contentWidth' | 'walletSelection' | 'category'
 
 export function getConditionField(condition: Condition): ConditionField {
-  if (condition.kind !== 'categoryCount')
-    return condition.kind
-
-  return condition.scope === 'parent' ? 'parentCategoryCount' : 'allCategoryCount'
+  return condition.kind === 'categoryCount' || condition.kind === 'categorySelection'
+    ? 'category'
+    : condition.kind
 }
 
-export function changeConditionField(condition: Condition, field: ConditionField): Condition {
-  if (field === 'period')
-    return { comparator: condition.comparator, kind: field, unit: 'day', value: 1 }
-  if (field === 'contentWidth')
-    return { comparator: condition.comparator, kind: field, unit: 'px', value: 768 }
-
-  const nextCondition: Condition = {
-    comparator: condition.comparator,
-    kind: 'categoryCount',
-    scope: field === 'parentCategoryCount' ? 'parent' : 'all',
-    value: condition.kind === 'categoryCount' ? condition.value : 0,
+export function changeConditionField(condition: Condition, field: ConditionField, contentWidth?: number | null): Condition {
+  if (field === 'walletSelection')
+    return { ids: [], kind: 'walletSelection', mode: 'all' }
+  if (field === 'category') {
+    return condition.kind === 'categoryCount' || condition.kind === 'categorySelection'
+      ? condition
+      : { ids: [], kind: 'categorySelection', mode: 'all' }
   }
 
-  return nextCondition
+  const comparator = 'comparator' in condition ? condition.comparator : '='
+  if (field === 'period')
+    return { comparator, kind: field, unit: 'day', value: 1 }
+  if (field === 'contentWidth') {
+    return condition.kind === 'contentWidth'
+      ? condition
+      : { comparator, kind: field, unit: 'px', value: contentWidth ?? 768 }
+  }
+
+  return { comparator, kind: 'period', unit: 'day', value: 1 }
 }

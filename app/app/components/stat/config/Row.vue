@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{
+  compact?: boolean
   hasPanel?: boolean
   hasToggle?: boolean
   icon?: string
@@ -17,8 +18,11 @@ defineEmits<{
 
 <template>
   <div
-    class="flex min-h-13 items-stretch text-sm hover:bg-elevated/50"
-    :class="isExpanded ? 'rounded-t-lg' : 'rounded-sm'"
+    class="flex items-stretch text-sm hover:bg-elevated/50"
+    :class="[
+      compact ? 'min-h-[46px]' : 'min-h-13',
+      isExpanded ? 'rounded-t-lg' : 'rounded-sm',
+    ]"
   >
     <div
       v-if="sortable"

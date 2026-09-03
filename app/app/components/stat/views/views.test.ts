@@ -12,6 +12,11 @@ import { StatViewSchema } from './schema'
 
 const context = {
   categoryCount: 12,
+  categoryPathById: {
+    child: ['child', 'parent'],
+    other: ['other'],
+    parent: ['parent'],
+  },
   contentWidth: 720,
   parentCategoryCount: 4,
   range: { end: new Date(2026, 0, 7).getTime(), start: new Date(2026, 0, 1).getTime() },
@@ -71,6 +76,29 @@ describe('statistics saved views', () => {
 
     expect(evaluateConditionGroup(rule, context)).toBe(true)
     expect(evaluateConditionGroup(rule, { ...context, contentWidth: null })).toBe(false)
+  })
+
+  it('evaluates wallet selection modes against page and global selections', () => {
+    expect(evaluateConditionGroup({ children: [{ ids: [], kind: 'walletSelection', mode: 'all' }], operator: 'and' }, context)).toBe(true)
+    expect(evaluateConditionGroup({ children: [{ ids: [], kind: 'walletSelection', mode: 'none' }], operator: 'and' }, context)).toBe(true)
+    expect(evaluateConditionGroup({ children: [{ ids: ['wallet-2'], kind: 'walletSelection', mode: 'selected' }], operator: 'and' }, { ...context, selectedWalletIds: ['wallet-1', 'wallet-2'] })).toBe(true)
+    expect(evaluateConditionGroup({ children: [{ ids: ['wallet-3'], kind: 'walletSelection', mode: 'selected' }], operator: 'and' }, { ...context, selectedWalletIds: ['wallet-1'] })).toBe(false)
+  })
+
+  it('applies a selected parent category to its descendants only', () => {
+    const parentRule = { children: [{ ids: ['parent'], kind: 'categorySelection' as const, mode: 'selected' as const }], operator: 'and' as const }
+    const childRule = { children: [{ ids: ['child'], kind: 'categorySelection' as const, mode: 'selected' as const }], operator: 'and' as const }
+
+    expect(evaluateConditionGroup(parentRule, { ...context, selectedCategoryIds: ['child'] })).toBe(true)
+    expect(evaluateConditionGroup(childRule, { ...context, selectedCategoryIds: ['parent'] })).toBe(false)
+    expect(evaluateConditionGroup(parentRule, { ...context, selectedCategoryIds: ['other'] })).toBe(false)
+  })
+
+  it('rejects invalid entity selection records instead of normalizing them', () => {
+    expect(StatViewSchema.safeParse(view('wallet', 0, { children: [{ ids: ['wallet-1'], kind: 'walletSelection', mode: 'selected' }], operator: 'and' })).success).toBe(true)
+    expect(StatViewSchema.safeParse(view('empty-selected', 0, { children: [{ ids: [], kind: 'walletSelection', mode: 'selected' }], operator: 'and' })).success).toBe(false)
+    expect(StatViewSchema.safeParse(view('ids-with-all', 0, { children: [{ ids: ['wallet-1'], kind: 'walletSelection', mode: 'all' }], operator: 'and' })).success).toBe(false)
+    expect(StatViewSchema.safeParse(view('old-wallet-rule', 0, { children: [{ kind: 'walletSelection', walletIds: ['wallet-1'] } as never], operator: 'and' })).success).toBe(false)
   })
 
   it('applies only the first matching rule to its block', () => {
@@ -146,9 +174,11 @@ describe('statistics saved views', () => {
       and: 'and',
       andMore: (count: number) => `and ${count} more`,
       categoryCount: (scope: string, comparator: string, value: number) => `${comparator} ${value} ${scope}`,
+      categorySelection: (mode: string, ids: string[]) => `${mode} ${ids.join(',')}`,
       contentWidth: (comparator: string, value: number) => `${comparator} ${value}px`,
       fallback: 'New view',
       period: (value: number, unit: string) => `Last ${value} ${unit}s`,
+      walletSelection: (mode: string, ids: string[]) => `${mode} ${ids.join(',')}`,
     }
     expect(generateViewName({ children: [{ comparator: '=', kind: 'period', unit: 'day', value: 7 }], operator: 'and' }, labels, ['Last 7 days'])).toBe('Last 7 days 2')
   })

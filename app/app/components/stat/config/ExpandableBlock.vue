@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
+  compact?: boolean
   dataKey?: string
   hasNext?: boolean
   icon: string
@@ -34,6 +35,7 @@ const emit = defineEmits<{
       }"
     >
       <StatConfigRow
+        :compact="props.compact"
         :data-stat-config-row="dataKey"
         hasPanel
         :icon
