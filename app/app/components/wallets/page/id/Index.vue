@@ -90,6 +90,13 @@ onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
+const walletBalanceItems = computed(() => wallet.value?.type === 'credit'
+  ? [
+      { amount: total.value, title: t('wallets.form.credit.debt') },
+      { amount: walletCreditLimit.value - (-total.value), title: t('wallets.form.credit.available') },
+      { amount: walletCreditLimit.value, title: t('wallets.form.credit.limit') },
+    ]
+  : [{ amount: total.value, title: t('money.balance') }])
 
 function onClickEdit(close: () => void) {
   close()
@@ -181,32 +188,16 @@ async function onDeleteConfirm() {
       hasChildren
     >
       <template #walletBalance>
-        <div
-          v-if="wallet.type !== 'credit'"
-          class="px-1 md:max-w-lg lg:px-0"
-        >
-          <WalletsSumItem
-            :amount="total"
+        <div class="wallet-balance-summary -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:flex-wrap md:overflow-visible md:px-0">
+          <StatSumItem
+            v-for="item in walletBalanceItems"
+            :key="item.title"
+            :amount="item.amount"
+            class="min-w-40 flex-1 shrink-0 snap-start snap-always md:min-w-0 md:snap-none"
             :currencyCode="wallet.currency"
-            :title="t('money.balance')"
-          />
-        </div>
-
-        <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 px-1 md:max-w-lg lg:px-0">
-          <WalletsSumItem
-            :amount="total"
-            :currencyCode="wallet.currency"
-            :title="t('wallets.form.credit.debt')"
-          />
-          <WalletsSumItem
-            :amount="walletCreditLimit - (-total)"
-            :currencyCode="wallet.currency"
-            :title="t('wallets.form.credit.available')"
-          />
-          <WalletsSumItem
-            :amount="walletCreditLimit"
-            :currencyCode="wallet.currency"
-            :title="t('wallets.form.credit.limit')"
+            :title="item.title"
+            type="net"
+            variant="summary"
           />
         </div>
       </template>
@@ -222,3 +213,15 @@ async function onDeleteConfirm() {
     </StatLayout>
   </UiPage>
 </template>
+
+<style scoped>
+.wallet-balance-summary {
+  scrollbar-width: none;
+}
+
+.wallet-balance-summary::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+</style>
