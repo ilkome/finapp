@@ -1,83 +1,78 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
+import type { HistoryRowSelectionState } from '~/components/trns/history/types'
 
-import type { CategoryId } from '~/components/categories/types'
-import type { WalletId } from '~/components/wallets/types'
-
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
-import { useFilter } from '~/components/filter/useFilter'
+import { historyFiltersKey } from '~/components/trns/history/injectionKeys'
+import { buildTransactionHistoryRows } from '~/components/trns/history/rows'
+import { useHistoryFilters } from '~/components/trns/history/useHistoryFilters'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { createLogger } from '~/utils/logger'
 
 const { t } = useI18n()
-const filter = useFilter()
+const filters = useHistoryFilters()
+const categoriesStore = useCategoriesStore()
+const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
-provide(filterKey, filter)
+const walletsStore = useWalletsStore()
+const logger = createLogger('history-table')
+
+provide(filterKey, filters.entityFilter)
+provide(historyFiltersKey, filters)
 
 useHead({
   title: t('trns.history'),
 })
 
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter.categoriesIds.value,
-  sort: true,
-  walletsIds: filter.walletsIds.value,
+const historyRows = computed(() => buildTransactionHistoryRows({
+  baseCurrency: currenciesStore.base,
+  categories: categoriesStore.items,
+  rates: currenciesStore.rates,
+  trns: trnsStore.items ?? {},
+  wallets: walletsStore.items ?? {},
 }))
 
-const lastFilter = useStorage<{
-  categoriesIds: CategoryId[]
-  walletsIds: WalletId[]
-}>('finapp.history.lastFilter2', {
-  categoriesIds: [],
-  walletsIds: [],
-}, localStorage, {
-  mergeDefaults: true,
-})
+watch(() => historyRows.value.unresolvedIds, (ids) => {
+  if (import.meta.dev && ids.length)
+    logger.warn('unresolved transaction rows', ids)
+}, { immediate: true })
 
-onMounted(() => {
-  filter.setCategories(lastFilter.value.categoriesIds ?? [])
-  filter.setWallets(lastFilter.value.walletsIds ?? [])
-})
+const rowSelection = ref<HistoryRowSelectionState>({})
+const filteredIds = ref<string[]>([])
+const selectedIds = computed(() => Object.entries(rowSelection.value).filter(([, selected]) => selected).map(([id]) => id))
 
-watch([filter.categoriesIds, filter.walletsIds], () => {
-  lastFilter.value.categoriesIds = filter.categoriesIds.value
-  lastFilter.value.walletsIds = filter.walletsIds.value
-})
+function removeAppliedSelection(ids: string[]) {
+  const changed = new Set(ids)
+  rowSelection.value = Object.fromEntries(Object.entries(rowSelection.value).filter(([id]) => !changed.has(id)))
+}
 </script>
 
 <template>
   <UiPage>
     <UiHeader>
       <UiHeaderTitle>{{ t('trns.history') }}</UiHeaderTitle>
-      <template #actions>
-        <FilterSelector
-          class="flex gap-1"
-          isShowCategories
-          isShowWallets
-        />
-      </template>
-
-      <template v-if="filter.isShow.value" #selected>
-        <FilterSelected
-          class="pb-2"
-          isShowCategories
-          isShowWallets
-        />
-      </template>
     </UiHeader>
 
-    <div class="mb-4 page-wrapper rounded-xl pt-1 pb-4">
-      <div class="grid min-w-0 gap-3 @3xl/main:max-w-md">
-        <TrnsList
-          :trnsIds
-          isShowDates
-          isShowExpense
-          isShowFilterByDesc
-          isShowFilterByType
-          isShowGroupSum
-          isShowIncome
-          isShowTransfers
-        />
-      </div>
+    <div class="relative mb-4 grid h-[calc(100dvh-8rem)] min-h-96 page-wrapper grid-rows-[auto_1fr] overflow-hidden rounded-md border border-default lg:rounded-xl">
+      <TrnsHistoryFilterBar />
+
+      <TrnsHistoryTable
+        v-model:rowSelection="rowSelection"
+        :columnFilters="filters.columnFilters.value"
+        :globalFilter="filters.search.value"
+        :rows="historyRows.rows"
+        @filteredIds="filteredIds = $event"
+      />
+
+      <TrnsHistoryBulkToolbar
+        v-if="selectedIds.length"
+        :filteredCount="filteredIds.length"
+        :selectedIds
+        @applied="removeAppliedSelection"
+        @clear="rowSelection = {}"
+      />
     </div>
   </UiPage>
 </template>

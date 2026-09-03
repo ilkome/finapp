@@ -52,6 +52,7 @@ describe('useTrnsStore', () => {
     h.watchCallbacks.length = 0
     h.watchTable.mockClear()
     h.upsertRow.mockReset().mockResolvedValue(undefined)
+    h.upsertRows.mockReset().mockResolvedValue(undefined)
     h.deleteRow.mockReset().mockResolvedValue(undefined)
     toastAddMock.mockClear()
   })
@@ -161,6 +162,50 @@ describe('useTrnsStore', () => {
 
       await tick()
       expect(h.upsertRow).toHaveBeenCalledWith('trns', 't1', expect.objectContaining({ userId: 'persisted-uid' }))
+    })
+  })
+
+  describe('saveTrns', () => {
+    it('updates the store once and writes the complete batch atomically', async () => {
+      const store = useTrnsStore()
+      store.setTrns({ a: expense(), b: expense() })
+
+      const result = await store.saveTrns({
+        a: expense({ desc: 'Shared', updatedAt: 99 }),
+        b: expense({ date: 1700000001000, updatedAt: 99 }),
+      })
+
+      expect(result).toBe(true)
+      expect(store.items?.a).toMatchObject({ desc: 'Shared', updatedAt: 99 })
+      expect(store.items?.b).toMatchObject({ date: 1700000001000, updatedAt: 99 })
+      expect(h.upsertRows).toHaveBeenCalledTimes(1)
+      expect(h.upsertRows).toHaveBeenCalledWith('trns', [
+        expect.objectContaining({ id: 'a', row: expect.objectContaining({ desc: 'Shared', userId: 'u1' }) }),
+        expect.objectContaining({ id: 'b', row: expect.objectContaining({ date: 1700000001000, userId: 'u1' }) }),
+      ])
+    })
+
+    it('restores the whole batch when the write fails', async () => {
+      const store = useTrnsStore()
+      const initial = { a: expense(), b: expense() }
+      store.setTrns(initial)
+      const prev = store.items
+      h.upsertRows.mockRejectedValueOnce(new Error('boom'))
+
+      const result = await store.saveTrns({ a: expense({ desc: 'Changed', updatedAt: 99 }) })
+
+      expect(result).toBe(false)
+      expect(store.items).toBe(prev)
+      expect(toastAddMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('does not touch PowerSync in demo mode', async () => {
+      h.demo.value = true
+      const store = useTrnsStore()
+
+      expect(await store.saveTrns({ a: expense({ desc: 'Demo', updatedAt: 99 }) })).toBe(true)
+      expect(store.items?.a?.desc).toBe('Demo')
+      expect(h.upsertRows).not.toHaveBeenCalled()
     })
   })
 
