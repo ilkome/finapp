@@ -193,7 +193,7 @@ async function onDeleteConfirm() {
             v-for="item in walletBalanceItems"
             :key="item.title"
             :amount="item.amount"
-            class="w-max flex-none snap-start snap-always md:snap-none"
+            class="min-w-0 flex-1 basis-0 snap-start snap-always md:w-max md:flex-none md:basis-auto md:snap-none"
             :currencyCode="wallet.currency"
             :title="item.title"
             type="net"
