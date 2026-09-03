@@ -55,16 +55,8 @@ function removeAppliedSelection(ids: string[]) {
       <UiHeaderTitle>{{ t('trns.history') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="relative mb-4 grid h-[calc(100dvh-8rem)] min-h-96 page-wrapper grid-rows-[auto_1fr] overflow-hidden rounded-md border border-default lg:rounded-xl">
+    <div class="mb-4 grid h-[calc(100dvh-8rem)] min-h-96 page-wrapper grid-rows-[auto_auto_1fr] overflow-hidden">
       <TrnsHistoryFilterBar />
-
-      <TrnsHistoryTable
-        v-model:rowSelection="rowSelection"
-        :columnFilters="filters.columnFilters.value"
-        :globalFilter="filters.search.value"
-        :rows="historyRows.rows"
-        @filteredIds="filteredIds = $event"
-      />
 
       <TrnsHistoryBulkToolbar
         v-if="selectedIds.length"
@@ -72,6 +64,14 @@ function removeAppliedSelection(ids: string[]) {
         :selectedIds
         @applied="removeAppliedSelection"
         @clear="rowSelection = {}"
+      />
+
+      <TrnsHistoryTable
+        v-model:rowSelection="rowSelection"
+        :columnFilters="filters.columnFilters.value"
+        :globalFilter="filters.search.value"
+        :rows="historyRows.rows"
+        @filteredIds="filteredIds = $event"
       />
     </div>
   </UiPage>

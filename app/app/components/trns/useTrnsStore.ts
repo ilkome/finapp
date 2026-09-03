@@ -2,7 +2,7 @@ import type { Row } from '~~/services/powersync/transforms'
 import type { Range } from '~~/utils/date/types'
 
 import { watchTable } from '~~/services/powersync/db'
-import { deleteRow, upsertRow, upsertRows } from '~~/services/powersync/mutations'
+import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { trnToRow } from '~~/services/powersync/transforms'
 import { getEndOf, getStartOf } from '~~/utils/date/period'
 
@@ -210,6 +210,32 @@ export const useTrnsStore = defineStore('trns', () => {
     })
   }
 
+  async function deleteTrns(ids: TrnId[]): Promise<boolean> {
+    const uniqueIds = [...new Set(ids)].filter(id => items.value?.[id])
+    if (!uniqueIds.length)
+      return true
+
+    const prev = items.value
+    const trns = { ...(items.value ?? {}) }
+    for (const id of uniqueIds)
+      delete trns[id]
+    setTrns(trns)
+
+    if (isDemo.value)
+      return true
+
+    try {
+      await deleteRows('trns', uniqueIds)
+      return true
+    }
+    catch (e) {
+      setTrns(prev)
+      logger.error('deleteTrns failed', e)
+      showErrorToast('trns.errors.deleteFailed')
+      return false
+    }
+  }
+
   /** Remove trns from the in-memory store only (used when a wallet/category is deleted). */
   function removeTrnsFromStore(trnsIds: TrnId[]) {
     if (!items.value)
@@ -284,6 +310,7 @@ export const useTrnsStore = defineStore('trns', () => {
   return {
     computeTrnItem,
     deleteTrn,
+    deleteTrns,
     getRange,
     getStoreTrnsIds,
     hasItems,

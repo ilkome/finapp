@@ -37,10 +37,11 @@ export type HistoryBulkEdit
     | { type: 'clearDescription' }
     | { type: 'setDate', value: number }
     | { type: 'setCategory', value: CategoryId }
+    | { type: 'setWallet', value: WalletId }
 
 export type HistoryBulkEditResult = {
   changedIds: TrnId[]
-  ineligible: Array<{ id: TrnId, reason: 'invalidCategory' | 'transfer' }>
+  ineligible: Array<{ id: TrnId, reason: 'invalidCategory' | 'invalidWallet' | 'transfer' }>
   unchangedIds: TrnId[]
   values: Record<TrnId, TrnItem>
 }

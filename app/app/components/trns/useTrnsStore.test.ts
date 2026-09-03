@@ -17,6 +17,7 @@ const h = vi.hoisted(() => {
   return {
     auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' as string | null }, user: { value: null } },
     deleteRow: vi.fn(),
+    deleteRows: vi.fn(),
     demo: { value: false },
     upsertRow: vi.fn(),
     upsertRows: vi.fn(),
@@ -29,7 +30,7 @@ const h = vi.hoisted(() => {
 })
 
 vi.mock('~~/services/powersync/db', () => ({ watchTable: h.watchTable }))
-vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
+vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, deleteRows: h.deleteRows, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
 vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
 vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))
 
@@ -54,6 +55,7 @@ describe('useTrnsStore', () => {
     h.upsertRow.mockReset().mockResolvedValue(undefined)
     h.upsertRows.mockReset().mockResolvedValue(undefined)
     h.deleteRow.mockReset().mockResolvedValue(undefined)
+    h.deleteRows.mockReset().mockResolvedValue(undefined)
     toastAddMock.mockClear()
   })
 
@@ -246,6 +248,41 @@ describe('useTrnsStore', () => {
       store.deleteTrn('t1')
       await tick()
       expect(h.deleteRow).not.toHaveBeenCalled()
+    })
+
+    it('deletes a batch atomically and ignores duplicate or missing ids', async () => {
+      const store = useTrnsStore()
+      store.setTrns({ t1: expense(), t2: expense(), t3: expense() })
+
+      const deleted = await store.deleteTrns(['t1', 't2', 't1', 'missing'])
+
+      expect(deleted).toBe(true)
+      expect(Object.keys(store.items ?? {})).toEqual(['t3'])
+      expect(h.deleteRows).toHaveBeenCalledWith('trns', ['t1', 't2'])
+    })
+
+    it('restores the complete batch when deletion fails', async () => {
+      const store = useTrnsStore()
+      const seeded = { t1: expense(), t2: expense() }
+      store.setTrns(seeded)
+      const prev = store.items
+      h.deleteRows.mockRejectedValueOnce(new Error('boom'))
+
+      const deleted = await store.deleteTrns(['t1', 't2'])
+
+      expect(deleted).toBe(false)
+      expect(store.items).toBe(prev)
+      expect(toastAddMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('deletes a batch locally without PowerSync in demo mode', async () => {
+      h.demo.value = true
+      const store = useTrnsStore()
+      store.setTrns({ t1: expense(), t2: expense() })
+
+      expect(await store.deleteTrns(['t1', 't2'])).toBe(true)
+      expect(store.items).toEqual({})
+      expect(h.deleteRows).not.toHaveBeenCalled()
     })
   })
 })

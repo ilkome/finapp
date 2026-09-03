@@ -45,7 +45,9 @@ export function useHistoryFilters() {
   const categoriesStore = useCategoriesStore()
   const entityFilter = useFilter()
 
-  const search = ref(firstQueryValue(route.query.historySearch))
+  const initialSearch = firstQueryValue(route.query.historySearch)
+  const searchInput = ref(initialSearch)
+  const search = ref(initialSearch)
   const type = ref<TrnsViewType>(parseType(route.query.historyType))
   const description = ref<HistoryDescriptionFilter>(parseDescription(route.query.historyDescription))
   const dateStart = ref<number | null>(parseCivilDate(route.query.historyDateStart))
@@ -72,26 +74,32 @@ export function useHistoryFilters() {
     replaceQuery({ historyDescription: value === 'all' ? undefined : value })
   }
 
-  function setDateStart(value: number | null) {
-    dateStart.value = value
-    replaceQuery({ historyDateStart: value })
+  function setDateRange(start: number | null, end: number | null) {
+    dateStart.value = start
+    dateEnd.value = end
+    replaceQuery({ historyDateEnd: end, historyDateStart: start })
   }
 
-  function setDateEnd(value: number | null) {
-    dateEnd.value = value
-    replaceQuery({ historyDateEnd: value })
+  function setAmountRange(min: string, max: string) {
+    amountMin.value = min
+    amountMax.value = max
+    replaceQuery({
+      historyAmountMax: max || undefined,
+      historyAmountMin: min || undefined,
+    })
   }
 
-  watchDebounced(search, value => replaceQuery({ historySearch: value.trim() || undefined }), { debounce: 250 })
-  watchDebounced([amountMin, amountMax], ([min, max]) => replaceQuery({
-    historyAmountMax: max || undefined,
-    historyAmountMin: min || undefined,
-  }), { debounce: 250 })
+  watchDebounced(searchInput, (value) => {
+    search.value = value
+    replaceQuery({ historySearch: value.trim() || undefined })
+  }, { debounce: 300 })
 
   watch(() => route.query, (query) => {
     const nextSearch = firstQueryValue(query.historySearch)
-    if (search.value !== nextSearch)
+    if (search.value !== nextSearch) {
       search.value = nextSearch
+      searchInput.value = nextSearch
+    }
     const nextMin = firstQueryValue(query.historyAmountMin)
     if (amountMin.value !== nextMin)
       amountMin.value = nextMin
@@ -133,12 +141,13 @@ export function useHistoryFilters() {
     return values
   })
 
-  const hasFilters = computed(() => !!search.value.trim()
+  const hasFilters = computed(() => !!searchInput.value.trim()
     || columnFilters.value.length > 0
     || entityFilter.categoriesIds.value.length > 0
     || entityFilter.walletsIds.value.length > 0)
 
   function clear() {
+    searchInput.value = ''
     search.value = ''
     type.value = 'all'
     description.value = 'all'
@@ -160,8 +169,9 @@ export function useHistoryFilters() {
     entityFilter,
     hasFilters,
     search,
-    setDateEnd,
-    setDateStart,
+    searchInput,
+    setAmountRange,
+    setDateRange,
     setDescription,
     setType,
     type,

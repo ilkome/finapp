@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
 import type { HistoryBulkEdit } from '~/components/trns/history/types'
+import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildHistoryBulkEdit } from '~/components/trns/history/bulkEdits'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 const props = defineProps<{
@@ -21,20 +23,29 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
+const walletsStore = useWalletsStore()
 
 const busy = ref(false)
 const description = ref('')
 const date = ref<number | null>(null)
 const categoryId = ref<CategoryId | null>(null)
+const walletId = ref<WalletId | null>(null)
 const isDescriptionOpen = ref(false)
 const isDateOpen = ref(false)
 const isCategoryOpen = ref(false)
+const isWalletOpen = ref(false)
+const showDeleteConfirm = ref(false)
 
 const categoryEligibleCount = computed(() => props.selectedIds.filter((id) => {
   const trn = trnsStore.items?.[id]
   return trn && trn.type !== TrnType.Transfer && trn.categoryId !== 'transfer'
 }).length)
 const categorySkippedCount = computed(() => props.selectedIds.length - categoryEligibleCount.value)
+const walletEligibleCount = computed(() => props.selectedIds.filter((id) => {
+  const trn = trnsStore.items?.[id]
+  return trn && trn.type !== TrnType.Transfer
+}).length)
+const walletSkippedCount = computed(() => props.selectedIds.length - walletEligibleCount.value)
 
 async function apply(action: HistoryBulkEdit, close: () => void) {
   if (busy.value || !trnsStore.items)
@@ -44,6 +55,7 @@ async function apply(action: HistoryBulkEdit, close: () => void) {
     action,
     ids: props.selectedIds,
     isCategoryTransactible: categoriesStore.isTransactible,
+    isWalletSelectable: id => Boolean(walletsStore.items?.[id] && !walletsStore.items[id].isArchived),
     items: trnsStore.items,
   })
 
@@ -67,11 +79,32 @@ function selectCategory(id: CategoryId) {
   if (categoriesStore.isTransactible(id) && id !== 'transfer')
     categoryId.value = id
 }
+
+function selectWallet(id: WalletId) {
+  if (walletsStore.items?.[id] && !walletsStore.items[id].isArchived)
+    walletId.value = id
+}
+
+async function confirmDelete() {
+  if (busy.value)
+    return
+
+  const ids = [...props.selectedIds]
+  busy.value = true
+  const deleted = await trnsStore.deleteTrns(ids)
+  busy.value = false
+  showDeleteConfirm.value = false
+  if (!deleted)
+    return
+
+  showSuccessToast('trns.historyTable.bulk.deleted', { count: ids.length })
+  emit('applied', ids)
+}
 </script>
 
 <template>
-  <div class="pointer-events-none absolute inset-x-2 bottom-2 z-30 flex justify-center">
-    <div class="pointer-events-auto flex max-w-full flex-wrap items-center gap-1 rounded-lg border border-default bg-default/95 p-1.5 shadow-xl backdrop-blur">
+  <div class="border-b border-default p-2">
+    <div class="flex max-w-full flex-wrap items-center gap-1 rounded-lg bg-elevated/30 p-1.5">
       <div class="px-2 text-sm text-highlighted">
         {{ t('trns.historyTable.selected', { count: props.selectedIds.length, total: props.filteredCount }) }}
       </div>
@@ -124,6 +157,47 @@ function selectCategory(id: CategoryId) {
       </BottomSheetOrDropdown>
 
       <BottomSheetOrDropdown
+        :isOpen="isWalletOpen"
+        :title="t('trns.historyTable.bulk.wallet')"
+        isShowCloseBtn
+        @closeModal="isWalletOpen = false"
+        @openModal="isWalletOpen = true"
+      >
+        <template #trigger="{ isActive }">
+          <UButton
+            :disabled="busy || walletEligibleCount === 0"
+            icon="i-hugeicons-wallet-01"
+            :label="t('trns.historyTable.bulk.wallet')"
+            :variant="isActive ? 'soft' : 'ghost'"
+          />
+        </template>
+        <template #custom="{ close, isExpanded }">
+          <div class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden" :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'">
+            <WalletsSelector
+              :activeItemId="walletId ?? undefined"
+              compactDesktop
+              :selectedIds="walletId ? [walletId] : []"
+              withHeader
+              @selected="selectWallet"
+            />
+            <div class="grid gap-2 border-t border-default bg-default p-3">
+              <p class="text-sm text-muted">
+                {{ t('trns.historyTable.bulk.willChange', { count: walletEligibleCount }) }}
+                <span v-if="walletSkippedCount">{{ t('trns.historyTable.bulk.transfersSkipped', { count: walletSkippedCount }) }}</span>
+              </p>
+              <UButton
+                block
+                :disabled="!walletId"
+                :loading="busy"
+                :label="t('base.apply')"
+                @click="walletId && apply({ type: 'setWallet', value: walletId }, close)"
+              />
+            </div>
+          </div>
+        </template>
+      </BottomSheetOrDropdown>
+
+      <BottomSheetOrDropdown
         :isOpen="isDateOpen"
         :title="t('trns.historyTable.bulk.date')"
         isShowCloseBtn
@@ -154,6 +228,15 @@ function selectCategory(id: CategoryId) {
           </div>
         </template>
       </BottomSheetOrDropdown>
+
+      <UButton
+        :disabled="busy"
+        color="error"
+        icon="i-lucide-trash-2"
+        :label="t('base.delete')"
+        variant="ghost"
+        @click="showDeleteConfirm = true"
+      />
 
       <BottomSheetOrDropdown
         :isOpen="isCategoryOpen"
@@ -204,5 +287,13 @@ function selectCategory(id: CategoryId) {
         @click="emit('clear')"
       />
     </div>
+
+    <LayoutConfirmModal
+      v-if="showDeleteConfirm"
+      :description="t('trns.historyTable.bulk.deleteDescription', { count: props.selectedIds.length })"
+      :title="t('trns.historyTable.bulk.deleteTitle')"
+      @closed="showDeleteConfirm = false"
+      @confirm="confirmDelete"
+    />
   </div>
 </template>

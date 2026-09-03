@@ -38,6 +38,7 @@ function build(items: Trns, action: Parameters<typeof buildHistoryBulkEdit>[0]['
     action,
     ids: Object.keys(items),
     isCategoryTransactible: id => ['adjustment', 'food', 'travel'].includes(id),
+    isWalletSelectable: id => ['card', 'cash'].includes(id),
     items,
     now: 99,
   })
@@ -74,6 +75,21 @@ describe('buildHistoryBulkEdit', () => {
     expect(result.changedIds).toEqual(['a'])
     expect(result.values.a?.categoryId).toBe('travel')
     expect(result.ineligible).toEqual([{ id: 'b', reason: 'transfer' }])
+  })
+
+  it('changes wallets for regular transactions and skips transfers', () => {
+    const result = build({ a: expense(), b: transfer }, { type: 'setWallet', value: 'card' })
+
+    expect(result.changedIds).toEqual(['a'])
+    expect(result.values.a?.type === TrnType.Transfer ? null : result.values.a?.walletId).toBe('card')
+    expect(result.ineligible).toEqual([{ id: 'b', reason: 'transfer' }])
+  })
+
+  it('rejects a wallet that is unavailable for selection', () => {
+    const result = build({ a: expense() }, { type: 'setWallet', value: 'missing' })
+
+    expect(result.changedIds).toEqual([])
+    expect(result.ineligible).toEqual([{ id: 'a', reason: 'invalidWallet' }])
   })
 
   it('rejects non-civil dates', () => {

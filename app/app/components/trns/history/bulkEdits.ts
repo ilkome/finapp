@@ -9,12 +9,14 @@ export function buildHistoryBulkEdit({
   action,
   ids,
   isCategoryTransactible,
+  isWalletSelectable,
   items,
   now = Date.now(),
 }: {
   action: HistoryBulkEdit
   ids: TrnId[]
   isCategoryTransactible: (id: string) => boolean
+  isWalletSelectable: (id: string) => boolean
   items: Trns
   now?: number
 }): HistoryBulkEditResult {
@@ -47,6 +49,17 @@ export function buildHistoryBulkEdit({
       }
     }
 
+    if (action.type === 'setWallet') {
+      if (current.type === TrnType.Transfer) {
+        result.ineligible.push({ id, reason: 'transfer' })
+        continue
+      }
+      if (!isWalletSelectable(action.value)) {
+        result.ineligible.push({ id, reason: 'invalidWallet' })
+        continue
+      }
+    }
+
     let next = current
     if (action.type === 'setDescription') {
       next = { ...current, desc: description, updatedAt: now }
@@ -58,8 +71,13 @@ export function buildHistoryBulkEdit({
     else if (action.type === 'setDate') {
       next = { ...current, date: action.value, updatedAt: now }
     }
-    else {
+    else if (action.type === 'setCategory') {
       next = { ...current, categoryId: action.value, updatedAt: now } as typeof current
+    }
+    else {
+      if (current.type === TrnType.Transfer)
+        throw new Error(`Transfer ${id} cannot use a single wallet`)
+      next = { ...current, updatedAt: now, walletId: action.value }
     }
 
     const isUnchanged = action.type === 'setDescription'
@@ -68,7 +86,9 @@ export function buildHistoryBulkEdit({
         ? current.desc === undefined
         : action.type === 'setDate'
           ? current.date === action.value
-          : current.categoryId === action.value
+          : action.type === 'setCategory'
+            ? current.categoryId === action.value
+            : current.type !== TrnType.Transfer && current.walletId === action.value
 
     if (isUnchanged) {
       result.unchangedIds.push(id)
