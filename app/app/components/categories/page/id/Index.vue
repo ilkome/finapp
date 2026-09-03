@@ -9,7 +9,7 @@ import { isMenuableCategory, useCategoryMenuItems } from '~/components/categorie
 import { useFilter } from '~/components/filter/useFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
-import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
+import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
@@ -90,6 +90,9 @@ const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrPar
 const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
 const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
 const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
+const contextBlockIds = computed(() => childrenIds.value.length > 0 && !isStatDrilldown
+  ? ['categoryChildren'] as const
+  : [])
 const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 
 const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
@@ -133,7 +136,7 @@ const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
-const { contentWidth, statConfig, statDate, trnsViewState } = useStatPageProviders({
+const { contentWidth, statConfig, statDate } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
     legacyStorageKey,
@@ -142,6 +145,7 @@ const { contentWidth, statConfig, statDate, trnsViewState } = useStatPageProvide
     storageKey,
     storageQuery,
   },
+  contextBlockIds,
   date: {
     initParams: statSnapshot?.date ?? {
       granularityBy: calculateBestGranularityBy(maxRange.value),
@@ -174,20 +178,6 @@ const { hiddenPanels } = useStatPageViews({
   range: contextRange,
   statConfig,
   trnsIds,
-})
-
-const openDrilldownCategory = useStatCategoryNavigation({
-  snapshot: computed(() => ({
-    config: statConfig.config.value,
-    date: statDate.params.value,
-    reportType: reportType.value,
-    trns: {
-      filterBy: trnsViewState.filterBy.value,
-      isShowHistoryWithDesc: trnsViewState.isShowHistoryWithDesc?.value ?? false,
-      isShowWithDesc: trnsViewState.isShowWithDesc.value,
-    },
-  })),
-  walletsIds: filter.walletsIds,
 })
 
 onActivated(() => {
@@ -299,18 +289,6 @@ async function onDeleteConfirm() {
       @confirm="onDeleteChildConfirm"
     />
 
-    <div
-      v-if="childrenIds.length > 0 && !isStatDrilldown"
-      class="grow px-2 lg:px-4 2xl:px-8"
-    >
-      <CategoriesList
-        :ids="childrenIds"
-        :getContextMenuItems="getCategoryContextMenuItems"
-        :getTo="isStatDrilldown ? undefined : (categoryId: CategoryId) => `/categories/${categoryId}`"
-        @click="isStatDrilldown ? openDrilldownCategory($event) : undefined"
-      />
-    </div>
-
     <StatLayout
       :categoryId
       :hiddenPanels
@@ -321,6 +299,16 @@ async function onDeleteConfirm() {
       :trnsIds
       :reportType
       showWallets
-    />
+    >
+      <template #categoryChildren>
+        <div class="grow">
+          <CategoriesList
+            :ids="childrenIds"
+            :getContextMenuItems="getCategoryContextMenuItems"
+            :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
+          />
+        </div>
+      </template>
+    </StatLayout>
   </UiPage>
 </template>

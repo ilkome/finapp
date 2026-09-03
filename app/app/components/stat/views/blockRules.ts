@@ -145,6 +145,9 @@ function setStatPanelVisibility(panel: StatBlockPanelId, config: MiniItemConfig,
     case 'chart':
       config.chart.isShow = isVisible
       break
+    case 'categoryChildren':
+      config.contextBlocks.categoryChildren.isShow = isVisible
+      break
     case 'navigation':
       config.date.isShow = isVisible
       break
@@ -159,6 +162,12 @@ function setStatPanelVisibility(panel: StatBlockPanelId, config: MiniItemConfig,
       break
     case 'vertical':
       config.categories.bars.isShow = isVisible
+      break
+    case 'walletBalance':
+      config.contextBlocks.walletBalance.isShow = isVisible
+      break
+    case 'walletDescription':
+      config.contextBlocks.walletDescription.isShow = isVisible
       break
     case 'wallets':
       config.wallets.isShow = isVisible
@@ -175,6 +184,14 @@ export function resolveConfigUpdatePanel<K extends keyof MiniItemConfig>(
     return 'statAverage'
   if (key === 'chart')
     return 'chart'
+  if (key === 'contextBlocks') {
+    if ('categoryChildren' in value)
+      return 'categoryChildren'
+    if ('walletBalance' in value)
+      return 'walletBalance'
+    if ('walletDescription' in value)
+      return 'walletDescription'
+  }
   if (key === 'summary')
     return 'summary'
   if (key === 'trns')

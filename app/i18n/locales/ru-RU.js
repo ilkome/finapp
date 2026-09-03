@@ -550,6 +550,11 @@ export default {
         label: 'Показывать график',
         title: 'Основной график',
       },
+      contextBlocks: {
+        categoryChildren: 'Список дочерних категорий',
+        walletBalance: 'Баланс кошелька',
+        walletDescription: 'Описание кошелька',
+      },
       date: {
         quick: {
           label: 'Показывать быстрый выбор даты',

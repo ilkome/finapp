@@ -24,6 +24,9 @@ const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
+const contextBlockIds = computed(() => wallet.value?.desc
+  ? ['walletBalance', 'walletDescription'] as const
+  : ['walletBalance'] as const)
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
 const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
 const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
@@ -50,6 +53,7 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
     storageKey,
     storageQuery,
   },
+  contextBlockIds,
   date: {
     initParams: statSnapshot?.date,
     key: storageKey,
@@ -168,45 +172,6 @@ async function onDeleteConfirm() {
       @confirm="onDeleteConfirm"
     />
 
-    <div class="px-3 pb-2 lg:gap-8 lg:px-4 2xl:px-8">
-      <div
-        v-if="wallet.type !== 'credit'"
-        class="md:max-w-lg"
-      >
-        <WalletsSumItem
-          :amount="total"
-          :currencyCode="wallet.currency"
-          :title="t('money.balance')"
-        />
-      </div>
-
-      <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
-        <WalletsSumItem
-          :amount="total"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.debt')"
-        />
-        <WalletsSumItem
-          :amount="walletCreditLimit - (-total)"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.available')"
-        />
-        <WalletsSumItem
-          :amount="walletCreditLimit"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.limit')"
-        />
-      </div>
-
-      <UiText
-        v-if="wallet.desc"
-        class="pt-2 font-primary whitespace-pre text-muted"
-        variant="navigation"
-      >
-        {{ wallet.desc }}
-      </UiText>
-    </div>
-
     <StatLayout
       :hiddenPanels
       :storageKey
@@ -214,6 +179,46 @@ async function onDeleteConfirm() {
       :walletId
       :reportType="statSnapshot?.reportType"
       hasChildren
-    />
+    >
+      <template #walletBalance>
+        <div
+          v-if="wallet.type !== 'credit'"
+          class="px-1 md:max-w-lg lg:px-0"
+        >
+          <WalletsSumItem
+            :amount="total"
+            :currencyCode="wallet.currency"
+            :title="t('money.balance')"
+          />
+        </div>
+
+        <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 px-1 md:max-w-lg lg:px-0">
+          <WalletsSumItem
+            :amount="total"
+            :currencyCode="wallet.currency"
+            :title="t('wallets.form.credit.debt')"
+          />
+          <WalletsSumItem
+            :amount="walletCreditLimit - (-total)"
+            :currencyCode="wallet.currency"
+            :title="t('wallets.form.credit.available')"
+          />
+          <WalletsSumItem
+            :amount="walletCreditLimit"
+            :currencyCode="wallet.currency"
+            :title="t('wallets.form.credit.limit')"
+          />
+        </div>
+      </template>
+
+      <template #walletDescription>
+        <UiText
+          class="px-1 font-primary whitespace-pre text-muted lg:px-0"
+          variant="navigation"
+        >
+          {{ wallet.desc }}
+        </UiText>
+      </template>
+    </StatLayout>
   </UiPage>
 </template>

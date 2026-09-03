@@ -3,7 +3,7 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { BlockRule, StatBlockPanelId } from '~/components/stat/views/types'
 
 import { applyConfigUpdate } from '~/components/stat/config/schema'
-import { statBaseConfigKey, statCanSplitKey, statConfigKey, statConfigParameterRemoveKey } from '~/components/stat/injectionKeys'
+import { statBaseConfigKey, statCanSplitKey, statConfigKey, statConfigParameterRemoveKey, statHistoryAvailableKey } from '~/components/stat/injectionKeys'
 import { BLOCK_RULE_PARAMETERS, BLOCK_RULE_VISIBILITY_PARAMETER_ID, isBlockRuleParameterAvailable } from '~/components/stat/views/blockParameters'
 import { applyBlockRuleConfig, createBlockRuleOverrides, resolveBlockRuleParameterIds } from '~/components/stat/views/blockRules'
 
@@ -24,6 +24,7 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const baseConfig = inject(statBaseConfigKey)!
 const canSplit = inject(statCanSplitKey, computed(() => false))
+const historyAvailable = inject(statHistoryAvailableKey, computed(() => true))
 const ruleConfig = computed(() => applyBlockRuleConfig(props.panel, baseConfig.config.value, props.rule.overrides))
 const parameterIds = computed(() => resolveBlockRuleParameterIds(props.panel, props.rule))
 const availableSelectedParameterIds = computed(() => parameterIds.value.filter(id => (
@@ -73,7 +74,7 @@ function updateCondition(condition: BlockRule['condition']) {
 }
 
 function parameterIsAvailable(id: string) {
-  return isBlockRuleParameterAvailable(props.panel, id, ruleConfig.value, canSplit.value)
+  return isBlockRuleParameterAvailable(props.panel, id, ruleConfig.value, canSplit.value, historyAvailable.value)
 }
 
 function addParameter(id: string) {

@@ -5,9 +5,9 @@ import { debounce } from 'es-toolkit'
 import type { StatConfigBlockId } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
-import { normalizeStatConfigBlockOrder } from '~/components/stat/config/schema'
+import { normalizeStatConfigBlockOrder, statConfigBlockOrder, statContextBlockIds } from '~/components/stat/config/schema'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
-import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
+import { statBaseConfigKey, statCanSplitKey, statConfigKey, statContextBlockIdsKey } from '~/components/stat/injectionKeys'
 
 type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
@@ -16,6 +16,7 @@ const { isOpen: isConfigOpen } = useStatConfigOverlay()
 const statConfig = inject(statBaseConfigKey)!
 provide(statConfigKey, statConfig)
 const canSplit = inject(statCanSplitKey, computed(() => false))
+const contextBlockIds = inject(statContextBlockIdsKey, computed(() => []))
 const { width } = useWindowSize()
 const expandedPanels = ref<ConfigPanelId[]>([])
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
@@ -23,7 +24,11 @@ const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId
 })
 
 const availablePanels = computed<ConfigPanelId[]>(() => {
-  return ['statAverage', 'navigation', 'summary', 'wallets', 'chart', 'trns', 'catsRound', 'catsList', 'vertical']
+  const contextual = new Set(contextBlockIds.value)
+  return [
+    'statAverage',
+    ...statConfigBlockOrder.filter(panel => !statContextBlockIds.includes(panel as typeof statContextBlockIds[number]) || contextual.has(panel as typeof statContextBlockIds[number])),
+  ]
 })
 const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
   availablePanels.value.filter((panel): panel is StatConfigBlockId => panel !== 'statAverage'),

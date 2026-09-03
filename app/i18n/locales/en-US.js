@@ -550,6 +550,11 @@ export default {
         label: 'Show chart',
         title: 'Main chart',
       },
+      contextBlocks: {
+        categoryChildren: 'Child categories list',
+        walletBalance: 'Wallet balance',
+        walletDescription: 'Wallet description',
+      },
       date: {
         quick: {
           label: 'Show quick date selection',

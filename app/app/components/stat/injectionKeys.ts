@@ -1,5 +1,6 @@
 import type { InjectionKey, Ref } from 'vue'
 
+import type { StatContextBlockId } from '~/components/stat/config/schema'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { TrnsListFilterState } from '~/components/trns/types'
@@ -11,6 +12,8 @@ export const statConfigOverlayOwnerKey: InjectionKey<string> = Symbol('statConfi
 export const statConfigParameterIdsKey: InjectionKey<Readonly<Ref<ReadonlySet<string> | null>>> = Symbol('statConfigParameterIds')
 export const statConfigParameterRemoveKey: InjectionKey<(id: string) => void> = Symbol('statConfigParameterRemove')
 export const statContentWidthKey: InjectionKey<Ref<number | null>> = Symbol('statContentWidth')
+export const statContextBlockIdsKey: InjectionKey<Readonly<Ref<readonly StatContextBlockId[]>>> = Symbol('statContextBlockIds')
+export const statHistoryAvailableKey: InjectionKey<Ref<boolean>> = Symbol('statHistoryAvailable')
 export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController>> = Symbol('statViewController')
 export const statCanSplitKey: InjectionKey<Ref<boolean>> = Symbol('statCanSplit')
 export const statPreservedCategoryScrollTopKey: InjectionKey<Readonly<Ref<number | null>>> = Symbol('statPreservedCategoryScrollTop')

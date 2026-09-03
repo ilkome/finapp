@@ -17,6 +17,7 @@ const visibility: BlockRuleParameterDefinition = {
 }
 
 export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterDefinition[]> = {
+  categoryChildren: [visibility],
   catsList: [
     visibility,
     { id: 'categories.list.grouping', paths: ['categories.list.grouping'], titleKey: 'stat.config.categories.grouping.title' },
@@ -82,6 +83,8 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     { id: 'categories.bars.isShowTooltip', paths: ['categories.bars.isShowTooltip'], titleKey: 'stat.config.categories.vertical.showTooltip' },
     { id: 'categories.bars.isShowTooltipChildren', paths: ['categories.bars.isShowTooltipChildren'], titleKey: 'stat.config.categories.vertical.showTooltipChildren' },
   ],
+  walletBalance: [visibility],
+  walletDescription: [visibility],
   wallets: [
     visibility,
     { id: 'wallets.displayMode', paths: ['wallets.displayMode'], titleKey: 'stat.config.wallets.displayMode' },
@@ -106,6 +109,7 @@ export function isBlockRuleParameterAvailable(
   id: string,
   config: MiniItemConfig,
   canSplit: boolean,
+  historyAvailable = config.page.blockOrder.at(-1) === 'trns',
 ): boolean {
   if (panel === 'catsList' && id === 'categories.list.isAutoExpandParents')
     return config.categories.list.grouping !== 'child'
@@ -114,7 +118,7 @@ export function isBlockRuleParameterAvailable(
   if (panel === 'wallets' && id === 'wallets.count')
     return config.wallets.displayMode === 'recent'
   if (panel === 'trns' && id === 'trns.isShowHistory')
-    return config.page.blockOrder.at(-1) === 'trns'
+    return historyAvailable
   if (panel === 'vertical' && id === 'categories.bars.isShowTooltipChildren')
     return config.categories.bars.isShowTooltip
   if (panel !== 'chart')
