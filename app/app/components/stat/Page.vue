@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import type { Range } from '~~/utils/date/types'
 
-import { useStorage } from '@vueuse/core'
-
-import type { CategoryId } from '~/components/categories/types'
-import type { WalletId } from '~/components/wallets/types'
-
 import { useFilter } from '~/components/filter/useFilter'
+import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
@@ -24,6 +20,8 @@ const { statHeader } = useStatPageHost()
 const legacyTab = localStorage.getItem('dashboard-tab')?.replaceAll('"', '')
 const legacyStorageKey = legacyTab ? `dashboard-${legacyTab}` : undefined
 const storageKey = 'dashboard'
+
+useStatFilterStorage({ filter, storageKey })
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter?.categoriesIds?.value,
@@ -66,26 +64,6 @@ const { hiddenPanels } = useStatPageViews({
 
 watch(filter.categoriesIds, () => {
   statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
-})
-
-const lastFilter = useStorage<{
-  categoriesIds: CategoryId[]
-  walletsIds: WalletId[]
-}>('finapp.dashboard.lastFilter', {
-  categoriesIds: [],
-  walletsIds: [],
-}, localStorage, {
-  mergeDefaults: true,
-})
-
-onActivated(() => {
-  filter.setCategories(lastFilter.value.categoriesIds ?? [])
-  filter.setWallets(lastFilter.value.walletsIds ?? [])
-})
-
-onDeactivated(() => {
-  lastFilter.value.categoriesIds = filter.categoriesIds.value
-  lastFilter.value.walletsIds = filter.walletsIds.value
 })
 </script>
 

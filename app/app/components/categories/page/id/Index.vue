@@ -7,6 +7,7 @@ import type { StatReportType } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useFilter } from '~/components/filter/useFilter'
+import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
@@ -127,6 +128,12 @@ const reportType = computed<StatReportType>(() => singleTrnType.value ?? statSna
 const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-category-${categoryId.value}` : `page-${categoryId.value}`)
 const legacyTab = localStorage.getItem(`page-${categoryId.value}-tab`)?.replaceAll('"', '')
 const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `page-${categoryId.value}-${legacyTab}` : undefined)
+
+useStatFilterStorage({
+  filter,
+  storage: isStatDrilldown ? sessionStorage : localStorage,
+  storageKey,
+})
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,

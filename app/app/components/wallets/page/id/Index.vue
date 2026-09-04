@@ -3,6 +3,7 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/filter/useFilter'
+import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
@@ -36,6 +37,12 @@ const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-wallet-${walletId.value}` : `${walletId.value}`)
 const legacyTab = localStorage.getItem(`${walletId.value}-tab`)?.replaceAll('"', '')
 const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `${walletId.value}-${legacyTab}` : undefined)
+
+useStatFilterStorage({
+  filter,
+  storage: isStatDrilldown ? sessionStorage : localStorage,
+  storageKey,
+})
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
