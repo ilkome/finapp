@@ -113,7 +113,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
   watch(activeView, (view) => {
     if (view && JSON.stringify(config.value) !== JSON.stringify(view.config.base))
       config.value = cloneConfig(view.config.base)
-  })
+  }, { immediate: true })
   async function syncPanelAcrossViews(panel: SyncableStatConfigPanelId, includeRules = false) {
     if (!activeView.value)
       return []
