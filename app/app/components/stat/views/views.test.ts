@@ -5,7 +5,7 @@ import { defaultConfig } from '~/components/stat/config/schema'
 
 import type { BlockRule, ConditionGroup, StatView } from './types'
 
-import { cloneBlockRule, createBlockRuleOverrides, resolveConfigUpdateParameterIds, resolveEffectiveStatConfig, resolveHiddenStatPanels } from './blockRules'
+import { cloneBlockRule, createBlockRuleOverrides, findMatchingBlockRules, resolveConfigUpdateParameterIds, resolveEffectiveStatConfig, resolveHiddenStatPanels } from './blockRules'
 import { evaluateConditionGroup, findAutomaticView } from './evaluateConditions'
 import { generateViewName } from './generateViewName'
 import { StatViewSchema } from './schema'
@@ -101,24 +101,25 @@ describe('statistics saved views', () => {
     expect(StatViewSchema.safeParse(view('old-wallet-rule', 0, { children: [{ kind: 'walletSelection', walletIds: ['wallet-1'] } as never], operator: 'and' })).success).toBe(false)
   })
 
-  it('applies only the first matching rule to its block', () => {
+  it('merges every matching rule and gives conflicting parameters to the first rule', () => {
     const effective = resolveEffectiveStatConfig(defaultConfig, {
       chart: [
         { condition: { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' }, id: 'first', isEnabled: true, overrides: { chart: { type: 'line' } } },
-        { condition: { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }, id: 'second', isEnabled: true, overrides: { chart: { type: 'pie' } } },
+        { condition: { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }, id: 'second', isEnabled: true, overrides: { chart: { type: 'pie', valueDisplay: 'signed' } } },
       ],
     }, context)
 
     expect(effective.chart.type).toBe('line')
+    expect(effective.chart.valueDisplay).toBe('signed')
     expect(effective.wallets).toEqual(defaultConfig.wallets)
     expect(defaultConfig.chart.type).toBe('bar')
   })
 
-  it('hides a block when the first matching rule disables its visibility', () => {
+  it('keeps the first matching visibility rule as the highest priority', () => {
     const rules = {
       chart: [
         { condition: { children: [{ comparator: '<' as const, kind: 'contentWidth' as const, unit: 'px' as const, value: 768 }], operator: 'and' as const }, id: 'hidden', isEnabled: true, isHidden: true, overrides: { chart: { type: 'line' as const } } },
-        { condition: { children: [{ comparator: '>' as const, kind: 'categoryCount' as const, scope: 'all' as const, value: 0 }], operator: 'and' as const }, id: 'visible', isEnabled: true, overrides: { chart: { type: 'pie' as const } } },
+        { condition: { children: [{ comparator: '>' as const, kind: 'categoryCount' as const, scope: 'all' as const, value: 0 }], operator: 'and' as const }, id: 'visible', isEnabled: true, isHidden: false, overrides: { chart: { type: 'pie' as const } }, parameterIds: ['visibility'] },
       ],
     }
 
@@ -127,6 +128,15 @@ describe('statistics saved views', () => {
     expect(effective.chart.isShow).toBe(false)
     expect(effective.chart.type).toBe('line')
     expect(resolveHiddenStatPanels(rules, context)).toEqual(['chart'])
+  })
+
+  it('returns every matching rule in priority order', () => {
+    const rules: BlockRule[] = [
+      { condition: { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' }, id: 'first', isEnabled: true, overrides: {} },
+      { condition: { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }, id: 'second', isEnabled: true, overrides: {} },
+    ]
+
+    expect(findMatchingBlockRules(rules, context).map(rule => rule.id)).toEqual(['first', 'second'])
   })
 
   it('can show a block hidden by its default settings', () => {
