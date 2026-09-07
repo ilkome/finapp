@@ -342,6 +342,12 @@ describe('resolveCategoryGrouping', () => {
     expect(resolveCategoryGrouping(build(['a', 'b', 'c']), 'auto').map(category => category.id)).toEqual(['parent'])
   })
 
+  it('keeps a selected child expanded instead of collapsing it into the parent', () => {
+    const views = build(['a', 'b', 'c'])
+    expect(resolveCategoryGrouping(views, 'auto', views.ungrouped, new Set(['childA'])).map(category => category.id))
+      .toEqual(['childA', 'childB', 'childC'])
+  })
+
   it('supports explicit parent and child modes', () => {
     const views = build(['a', 'b', 'c'])
     expect(resolveCategoryGrouping(views, 'parent').map(category => category.id)).toEqual(['parent'])

@@ -55,7 +55,7 @@ const roundCategories = computed(() => {
     mergedPreCategoriesIds.value,
     props.excludedCategoriesIds,
   )
-  return resolveCategoryGrouping(views, grouping.value, props.baseCategoryViews.ungrouped)
+  return resolveCategoryGrouping(views, grouping.value, props.baseCategoryViews.ungrouped, new Set(props.filteredCategoriesIds))
 })
 const selectedIdByVisibleId = computed(() => projectCategorySelection({
   activeCategories: props.baseCategoryViews.ungrouped,

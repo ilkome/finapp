@@ -149,6 +149,7 @@ export function resolveCategoryGrouping(
   views: CategoryViews,
   grouping: CategoryGrouping,
   activeLeaves: CategoryWithData[] = views.ungrouped,
+  keepExpandedIds?: ReadonlySet<CategoryId>,
 ): CategoryWithData[] {
   if (grouping === 'parent')
     return views.grouped
@@ -159,6 +160,9 @@ export function resolveCategoryGrouping(
   return views.grouped.flatMap((group) => {
     if (!group.categories?.length)
       return [group]
+    // Keep a selected child visible as a leaf instead of collapsing it into its parent.
+    if (keepExpandedIds?.size && group.categories.some(category => keepExpandedIds.has(category.id)))
+      return group.categories
     const activeChildrenCount = group.categories.filter(category => activeIds.has(category.id)).length
     return activeChildrenCount > 1 ? [group] : group.categories
   }).sort(sortCategoriesByAmount)
