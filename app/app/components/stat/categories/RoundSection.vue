@@ -5,7 +5,8 @@ import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { addEmptyCategoryViews, collectRoundCategoryIds, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
-import { filterFocusedCategories, projectCategorySelection } from '~/components/stat/categories/focusedCategories'
+import { sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
+import { filterFocusedCategories, projectCategorySelection, resolveFocusedParentId } from '~/components/stat/categories/focusedCategories'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
@@ -38,7 +39,18 @@ const mergedPreCategoriesIds = computed(() => collectRoundCategoryIds({
   recentCategoryIds: categoriesStore.recentCategoriesIds,
 }))
 
-const roundCategories = computed(() => {
+// Adds zero-value placeholders for favorites, recents and the current selection, so a selected
+// category keeps a chip in periods where it has no transactions.
+const expandedViews = computed(() => addEmptyCategoryViews(
+  props.baseCategoryViews,
+  categoriesStore.items,
+  mergedPreCategoriesIds.value,
+  props.excludedCategoriesIds,
+))
+
+// Categories laid out by the current grouping for the selected period; a selected
+// child may be collapsed into its parent group here.
+const groupedCategories = computed(() => {
   if (props.focusedCategoryId) {
     return filterFocusedCategories(
       props.baseCategoryViews.ungrouped,
@@ -49,20 +61,49 @@ const roundCategories = computed(() => {
   if (props.isOneCategory)
     return props.baseCategoryViews.ungrouped
 
-  const views = addEmptyCategoryViews(
-    props.baseCategoryViews,
-    categoriesStore.items,
-    mergedPreCategoriesIds.value,
-    props.excludedCategoriesIds,
+  // The selection counts towards its group even with no transactions in this period, so the
+  // cloud keeps showing the parent instead of splitting out a lone sibling.
+  return resolveCategoryGrouping(
+    expandedViews.value,
+    grouping.value,
+    expandedViews.value.ungrouped,
+    new Set(props.filteredCategoriesIds),
   )
-  return resolveCategoryGrouping(views, grouping.value, props.baseCategoryViews.ungrouped, new Set(props.filteredCategoriesIds))
 })
+
+// Children of the focused parent are listed in the focus row below, so a child grouping must
+// not repeat them as standalone chips next to their parent.
+const hiddenChildrenIds = computed(() => {
+  const visibleIds = new Set(groupedCategories.value.map(category => category.id))
+  const parentId = resolveFocusedParentId(
+    props.filteredCategoriesIds[0],
+    categoryId => getParentCategoryIdOrUndefined(categoriesStore.items, categoryId),
+  )
+  return parentId && visibleIds.has(parentId)
+    ? new Set(categoriesStore.getChildrenIds(parentId))
+    : new Set<CategoryId>()
+})
+
+const roundCategories = computed(() => {
+  if (props.focusedCategoryId || props.isOneCategory)
+    return groupedCategories.value
+
+  // A parent has no leaf of its own, so in child grouping its placeholder would read 0. The
+  // group row carries the children's total, which is what the parent chip has to show.
+  const groupById = new Map(expandedViews.value.grouped.map(group => [group.id, group]))
+  return groupedCategories.value
+    .filter(item => !hiddenChildrenIds.value.has(item.id))
+    .map(item => item.trnsIds.length === 0 ? groupById.get(item.id) ?? item : item)
+    .sort(sortCategoriesByAmount)
+})
+
+// Project over the grouped view: a collapsed selected child highlights its parent chip.
 const selectedIdByVisibleId = computed(() => projectCategorySelection({
   activeCategories: props.baseCategoryViews.ungrouped,
   getChildrenIds: categoryId => categoriesStore.getChildrenIds(categoryId),
   getParentId: categoryId => getParentCategoryIdOrUndefined(categoriesStore.items, categoryId),
   selectedIds: props.filteredCategoriesIds,
-  visibleCategories: roundCategories.value,
+  visibleCategories: groupedCategories.value,
 }))
 const filteredSet = computed(() => new Set(selectedIdByVisibleId.value.keys()))
 const visibleRoundCategories = computed(() => {

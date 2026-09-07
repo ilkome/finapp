@@ -1,29 +1,21 @@
 <script setup lang="ts">
+import type { EntitySelectionMode } from '~/components/stat/views/types'
+
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
+import { useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { generateViewName } from '~/components/stat/views/generateViewName'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-
-import type { ConditionGroup } from './types'
-
-import { ConditionGroupSchema } from './schema'
-
-function createDefaultAutoRule(): ConditionGroup {
-  return { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }
-}
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 const controller = inject(statViewControllerKey, null)
-const { isOpen } = useStatConfigOverlay()
+const { open: openPanel } = useStatConfigNav()
 const name = ref('')
 const isCustomName = ref(false)
 const isAutoEnabled = ref(false)
-const isAutoExpanded = ref(false)
 const isViewsExpanded = ref(true)
-const autoRule = ref<ConditionGroup>(createDefaultAutoRule())
 
 const current = computed(() => controller?.activeView.value ?? null)
 const suggestion = computed(() => generateViewName(current.value?.autoRule ?? null, {
@@ -38,27 +30,21 @@ const suggestion = computed(() => generateViewName(current.value?.autoRule ?? nu
 }, controller?.store.views.map(view => view.name) ?? []))
 const effectiveName = computed(() => name.value.trim() || suggestion.value)
 
-function selectionName(entity: 'category' | 'wallet', mode: 'all' | 'none' | 'selected', ids: string[]) {
+function selectionName(entity: 'category' | 'wallet', mode: EntitySelectionMode, ids: string[]) {
   if (mode !== 'selected')
     return t(`stat.views.conditions.selection.${entity}.${mode}`)
   const names = ids.map(id => entity === 'wallet' ? walletsStore.itemsComputed[id]?.name : categoriesStore.items[id]?.name).filter((value): value is string => !!value)
   return names.length <= 2 ? names.join(', ') : t('stat.views.conditions.selection.multiple', { count: names.length })
 }
-const hasMetadataChanges = computed(() => {
-  if (!current.value)
-    return false
-  const ruleChanged = (isAutoEnabled.value || current.value.isAutoEnabled)
-    && JSON.stringify(autoRule.value) !== JSON.stringify(current.value.autoRule ?? createDefaultAutoRule())
-  return effectiveName.value !== current.value.name
-    || isAutoEnabled.value !== current.value.isAutoEnabled
-    || ruleChanged
-})
+const hasMetadataChanges = computed(() => !!current.value && (
+  effectiveName.value !== current.value.name
+  || isAutoEnabled.value !== current.value.isAutoEnabled
+))
 
 function syncEditorFromView(view: typeof current.value) {
   name.value = view?.name ?? ''
   isCustomName.value = !!view
   isAutoEnabled.value = view?.isAutoEnabled ?? false
-  autoRule.value = view?.autoRule ? ConditionGroupSchema.parse(toRaw(view.autoRule)) : createDefaultAutoRule()
 }
 
 watch(current, (view) => {
@@ -67,10 +53,6 @@ watch(current, (view) => {
 watch(suggestion, (value) => {
   if (!isCustomName.value)
     name.value = value
-}, { immediate: true })
-watch([isOpen, () => controller?.store.isLoaded, () => controller?.activeView.value], ([open, loaded, active]) => {
-  if (open && loaded && !active)
-    controller?.selectForCurrentContext()
 }, { immediate: true })
 let autoSaveQueue = Promise.resolve()
 
@@ -81,7 +63,6 @@ function scheduleAutoSave() {
       if (!controller?.activeView.value || !hasMetadataChanges.value)
         return
       await controller.updateMetadata({
-        autoRule: autoRule.value,
         isAutoEnabled: isAutoEnabled.value,
         name: effectiveName.value,
       })
@@ -96,8 +77,6 @@ function onNameInput() {
 
 function toggleAutoEnabled() {
   isAutoEnabled.value = !isAutoEnabled.value
-  if (isAutoEnabled.value)
-    isAutoExpanded.value = true
 }
 </script>
 
@@ -108,7 +87,6 @@ function toggleAutoEnabled() {
         dataKey="views"
         icon="lucide:layout-panel-top"
         :isExpanded="isViewsExpanded"
-        :overlapTop="false"
         :title="$t('stat.views.menu.label')"
         @activate="isViewsExpanded = !isViewsExpanded"
       >
@@ -129,31 +107,18 @@ function toggleAutoEnabled() {
       </div>
     </div>
 
-    <div
-      class="rounded-lg border"
-      :class="isAutoExpanded
-        ? 'mb-3 overflow-hidden border-default'
-        : 'border-transparent'"
-    >
+    <div class="rounded-lg border border-transparent">
       <StatConfigRow
         data-stat-config-row="auto"
         hasPanel
         hasToggle
         icon="lucide:wand-sparkles"
-        :isExpanded="isAutoExpanded"
         :isShow="isAutoEnabled"
         :title="$t('stat.views.auto')"
-        @activate="isAutoExpanded = !isAutoExpanded"
+        @activate="openPanel('auto')"
         @toggle="toggleAutoEnabled"
       />
-      <UCollapsible :open="isAutoExpanded" :ui="{ content: 'overflow-hidden' }">
-        <template #content>
-          <div class="px-3 pb-4">
-            <StatViewsConditionEditor v-model="autoRule" />
-          </div>
-        </template>
-      </UCollapsible>
     </div>
-    <div v-if="!isAutoExpanded" aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
+    <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
   </section>
 </template>

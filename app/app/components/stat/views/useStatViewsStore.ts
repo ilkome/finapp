@@ -69,10 +69,16 @@ export const useStatViewsStore = defineStore('statViews', () => {
   const isLoaded = ref(false)
   let watchController: AbortController | null = null
 
-  const views = computed(() => items.value.toSorted((a, b) => a.sortOrder - b.sortOrder))
+  // Views created before ordering existed share sortOrder 0, so ties must break on something
+  // stable - otherwise every write reshuffles the list and the drag handler persists it back.
+  function compareViews(a: StatView, b: StatView) {
+    return a.sortOrder - b.sortOrder || a.createdAt - b.createdAt || a.id.localeCompare(b.id)
+  }
+
+  const views = computed(() => items.value.toSorted(compareViews))
 
   function setItems(next: StatView[]) {
-    items.value = next.toSorted((a, b) => a.sortOrder - b.sortOrder)
+    items.value = next.toSorted(compareViews)
   }
 
   async function init(scope: StatViewScope = 'dashboard') {

@@ -10,6 +10,17 @@ export function filterFocusedCategories(
   return categories.filter(category => childrenSet.has(category.id))
 }
 
+/**
+ * The category whose children the focus row lists. Selecting a child focuses its parent, so the
+ * cloud keeps showing the grouped level while the exact selection stays visible one row below.
+ */
+export function resolveFocusedParentId(
+  selectedId: CategoryId | undefined,
+  getParentId: (categoryId: CategoryId) => CategoryId | undefined,
+): CategoryId | undefined {
+  return selectedId ? getParentId(selectedId) ?? selectedId : undefined
+}
+
 export function countActiveFocusedChildren(options: {
   childrenIds: CategoryId[]
   trnsIds: TrnId[]

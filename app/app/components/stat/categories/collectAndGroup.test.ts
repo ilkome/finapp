@@ -342,10 +342,21 @@ describe('resolveCategoryGrouping', () => {
     expect(resolveCategoryGrouping(build(['a', 'b', 'c']), 'auto').map(category => category.id)).toEqual(['parent'])
   })
 
-  it('keeps a selected child expanded instead of collapsing it into the parent', () => {
-    const views = build(['a', 'b', 'c'])
-    expect(resolveCategoryGrouping(views, 'auto', views.ungrouped, new Set(['childA'])).map(category => category.id))
-      .toEqual(['childA', 'childB', 'childC'])
+  it('keeps a group collapsed when none of its children are active', () => {
+    const views = build(['a', 'b'])
+    expect(resolveCategoryGrouping(views, 'auto', []).map(category => category.id)).toEqual(['parent'])
+  })
+
+  it('keeps a selected parent whole even when one child is active', () => {
+    const views = build(['a'])
+
+    expect(resolveCategoryGrouping(views, 'auto', views.ungrouped, new Set(['parent'])).map(category => category.id)).toEqual(['parent'])
+  })
+
+  it('still expands a group to reveal the selected child', () => {
+    const views = build(['a'])
+
+    expect(resolveCategoryGrouping(views, 'auto', views.ungrouped, new Set(['childA'])).map(category => category.id)).toEqual(['childA'])
   })
 
   it('supports explicit parent and child modes', () => {

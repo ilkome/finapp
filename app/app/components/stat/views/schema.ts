@@ -10,7 +10,7 @@ const comparatorSchema = z.enum(['<', '<=', '=', '!=', '>=', '>'])
 const periodConditionSchema = z.object({ comparator: comparatorSchema, kind: z.literal('period'), unit: z.enum(['day', 'week', 'month', 'year']), value: z.number().int().positive() })
 const categoryCountConditionSchema = z.object({ comparator: comparatorSchema, kind: z.literal('categoryCount'), scope: z.enum(['all', 'parent']), value: z.number().int().nonnegative() })
 const contentWidthConditionSchema = z.object({ comparator: comparatorSchema, kind: z.literal('contentWidth'), unit: z.literal('px'), value: z.number().int().nonnegative() })
-const entitySelectionModeSchema = z.enum(['all', 'none', 'selected'])
+const entitySelectionModeSchema = z.enum(['all', 'any', 'none', 'selected'])
 const walletSelectionConditionSchema = z.object({ ids: z.array(z.string().min(1)), kind: z.literal('walletSelection'), mode: entitySelectionModeSchema })
   .refine(condition => condition.mode !== 'selected' || condition.ids.length > 0, { message: 'Selected wallets require at least one id', path: ['ids'] })
   .refine(condition => condition.mode === 'selected' || condition.ids.length === 0, { message: 'Only selected wallets may contain ids', path: ['ids'] })
@@ -21,9 +21,28 @@ export const ConditionSchema = z.discriminatedUnion('kind', [periodConditionSche
 export type Condition = z.infer<typeof ConditionSchema>
 export type ConditionGroup = { children: Array<Condition | ConditionGroup>, operator: 'and' | 'or' }
 export const ConditionGroupSchema: z.ZodType<ConditionGroup> = z.lazy(() => z.object({
-  children: z.array(z.union([ConditionSchema, ConditionGroupSchema])).min(1),
+  // A group starts empty: the editor adds conditions one by one, and an empty group
+  // matches nothing (see evaluateConditionGroup), so it stays inert until filled in.
+  children: z.array(z.union([ConditionSchema, ConditionGroupSchema])),
   operator: z.enum(['and', 'or']),
 }))
+
+// An automatic view binds to the open category/wallet page, so only selection conditions can
+// decide it. Rules saved before that narrowing keep their other conditions in storage until the
+// view is next written; stripping them on read makes those views behave as the editor shows them.
+const pageConditionKinds = new Set(['categorySelection', 'walletSelection'])
+function stripToPageConditions(value: unknown): unknown {
+  if (!value || typeof value !== 'object' || !('children' in value) || !Array.isArray((value as ConditionGroup).children))
+    return value
+  const group = value as ConditionGroup
+  const children = group.children
+    .map(child => typeof child === 'object' && child && 'children' in child ? stripToPageConditions(child) : child)
+    .filter(child => typeof child === 'object' && child !== null && ('children' in child
+      ? (child as ConditionGroup).children.length > 0
+      : pageConditionKinds.has((child as Condition).kind)))
+  return { ...group, children }
+}
+export const PageConditionGroupSchema = z.preprocess(stripToPageConditions, ConditionGroupSchema)
 
 const blockRuleSchema = z.object({
   condition: ConditionGroupSchema,
@@ -51,7 +70,7 @@ export const StatViewConfigSchema = z.object({
 })
 
 export const StatViewSchema = z.object({
-  autoRule: ConditionGroupSchema.nullable(),
+  autoRule: PageConditionGroupSchema.nullable(),
   config: StatViewConfigSchema,
   createdAt: z.number().int().nonnegative(),
   id: z.string().min(1),

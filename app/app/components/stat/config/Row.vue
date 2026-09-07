@@ -18,16 +18,14 @@ defineEmits<{
 
 <template>
   <div
-    class="flex items-stretch text-sm hover:bg-elevated/50"
+    class="flex items-stretch rounded-sm text-sm hover:bg-elevated/50"
     :class="[
-      compact ? 'min-h-[46px]' : 'min-h-13',
-      isExpanded ? 'rounded-t-lg' : 'rounded-sm',
+      compact ? 'min-h-10' : 'min-h-13',
     ]"
   >
     <div
       v-if="sortable"
-      class="sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center text-muted hover:bg-accented active:cursor-grabbing"
-      :class="isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'"
+      class="sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center rounded-l-sm text-muted hover:bg-accented active:cursor-grabbing"
       :aria-label="$t('stat.views.drag')"
       @click.stop
     >
@@ -40,8 +38,8 @@ defineEmits<{
       class="flex grow flex-col justify-center py-3 pr-2"
       :class="[
         sortable ? 'pl-2' : 'pl-3',
-        !sortable && (isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'),
-        !hasToggle && (isExpanded ? 'rounded-tr-lg pr-3' : 'rounded-r-sm pr-3'),
+        !sortable && 'rounded-l-sm',
+        !hasToggle && 'rounded-r-sm pr-3',
       ]"
       @click="$emit('activate')"
       @keydown.enter.prevent="$emit('activate')"

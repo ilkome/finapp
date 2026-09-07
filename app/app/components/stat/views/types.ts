@@ -28,7 +28,7 @@ export type ContentWidthCondition = {
   value: number
 }
 
-export type EntitySelectionMode = 'all' | 'none' | 'selected'
+export type EntitySelectionMode = 'all' | 'any' | 'none' | 'selected'
 
 export type WalletSelectionCondition = {
   ids: string[]
@@ -76,6 +76,8 @@ export type StatViewContext = {
   categoryCount: number
   categoryPathById: Record<string, string[]>
   contentWidth: number | null
+  pageCategoryId: string | null
+  pageWalletId: string | null
   parentCategoryCount: number
   range: Range
   selectedCategoryIds: string[]

@@ -18,13 +18,15 @@ const context = {
     parent: ['parent'],
   },
   contentWidth: 720,
+  pageCategoryId: null,
+  pageWalletId: null,
   parentCategoryCount: 4,
   range: { end: new Date(2026, 0, 7).getTime(), start: new Date(2026, 0, 1).getTime() },
   selectedCategoryIds: [],
   selectedWalletIds: [],
 }
 
-function view(id: string, sortOrder: number, rule: ConditionGroup = { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 10 }], operator: 'and' }): StatView {
+function view(id: string, sortOrder: number, rule: ConditionGroup = { children: [{ ids: [], kind: 'categorySelection', mode: 'any' }], operator: 'and' }): StatView {
   return {
     autoRule: rule,
     config: { base: defaultConfig, blockRules: {} },
@@ -68,7 +70,38 @@ describe('statistics saved views', () => {
 
   it('uses calendar ranges and every priority by user order', () => {
     expect(evaluateConditionGroup({ children: [{ comparator: '=', kind: 'period', unit: 'day', value: 7 }], operator: 'and' }, context)).toBe(true)
-    expect(findAutomaticView([view('second', 1), view('first', 0)], context)?.id).toBe('first')
+    const onCategoryPage = { ...context, pageCategoryId: 'parent' }
+    expect(findAutomaticView([view('second', 1), view('first', 0)], onCategoryPage)?.id).toBe('first')
+  })
+
+  it('scores automatic views against the open page, not the filters or the period', () => {
+    const bound = view('bound', 0, { children: [{ ids: ['parent'], kind: 'categorySelection', mode: 'selected' }], operator: 'and' })
+
+    expect(findAutomaticView([bound], { ...context, pageCategoryId: 'child' })?.id).toBe('bound')
+    expect(findAutomaticView([bound], { ...context, selectedCategoryIds: ['parent'] })).toBeNull()
+    // A rule left over from the width era survives storage only after the schema strips it, so it matches nothing.
+    const legacyWidth = StatViewSchema.parse(view('wide', 0, { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' })) as StatView
+    expect(findAutomaticView([legacyWidth], context)).toBeNull()
+  })
+
+  it('matches any page of an entity without naming it', () => {
+    const anyCategory = { children: [{ ids: [], kind: 'categorySelection' as const, mode: 'any' as const }], operator: 'and' as const }
+
+    expect(findAutomaticView([view('any', 0, anyCategory)], { ...context, pageCategoryId: 'other' })?.id).toBe('any')
+    expect(findAutomaticView([view('any', 0, anyCategory)], context)).toBeNull()
+  })
+
+  it('drops non-page conditions from a stored automatic rule', () => {
+    const parsed = StatViewSchema.parse(view('legacy', 0, {
+      children: [
+        { comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 },
+        { ids: ['parent'], kind: 'categorySelection', mode: 'selected' },
+        { children: [{ comparator: '=', kind: 'period', unit: 'day', value: 7 }], operator: 'or' },
+      ],
+      operator: 'and',
+    }))
+
+    expect(parsed.autoRule).toEqual({ children: [{ ids: ['parent'], kind: 'categorySelection', mode: 'selected' }], operator: 'and' })
   })
 
   it('evaluates content width conditions only after a width is measured', () => {

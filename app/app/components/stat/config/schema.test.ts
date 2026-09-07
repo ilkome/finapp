@@ -43,6 +43,7 @@ const defaultConfig: MiniItemConfig = {
   },
   chart: {
     breakdown: 'cashflow',
+    grouping: 'parent',
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
@@ -177,6 +178,21 @@ describe('applyConfigUpdate', () => {
     const result = applyConfigUpdate(defaultConfig, 'chart', { type: 'line' } as any)
     expect(result).not.toBeNull()
     expect(result!.chart.type).toBe('line')
+  })
+
+  it('resets the chart mode to the one matching the page layout', () => {
+    const split = applyConfigUpdate(defaultConfig, 'page', { layout: 'split' } as any)!
+    expect(split.chart.layout).toBe('split')
+
+    const back = applyConfigUpdate(split, 'page', { layout: 'combined' } as any)!
+    expect(back.chart.layout).toBe('combined-wide')
+  })
+
+  it('lets the chart mode be reverted without touching the page layout', () => {
+    const split = applyConfigUpdate(defaultConfig, 'page', { layout: 'split' } as any)!
+    const narrow = applyConfigUpdate(split, 'chart', { layout: 'combined-narrow' } as any)!
+    expect(narrow.chart.layout).toBe('combined-narrow')
+    expect(narrow.page.layout).toBe('split')
   })
 
   it('updates chart layout mode', () => {

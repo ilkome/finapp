@@ -6,6 +6,7 @@ import type { StatConfigBlockId } from '~/components/stat/config/schema'
 import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { normalizeStatConfigBlockOrder, statConfigBlockOrder, statContextBlockIds } from '~/components/stat/config/schema'
+import { useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { statBaseConfigKey, statCanSplitKey, statConfigKey, statContextBlockIdsKey } from '~/components/stat/injectionKeys'
 
@@ -18,7 +19,7 @@ provide(statConfigKey, statConfig)
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const contextBlockIds = inject(statContextBlockIdsKey, computed(() => []))
 const { width } = useWindowSize()
-const expandedPanels = ref<ConfigPanelId[]>([])
+const { activePanel, back, open: openPanel } = useStatConfigNav()
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
   dragHandle: '.sortHandle',
 })
@@ -34,19 +35,12 @@ const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
   availablePanels.value.filter((panel): panel is StatConfigBlockId => panel !== 'statAverage'),
 )
 
+// A section can disappear when the report context changes (contextual blocks), so leave it.
 watch(availablePanels, (panels) => {
-  expandedPanels.value = expandedPanels.value.filter(panel => panels.includes(panel))
+  const panel = activePanel.value
+  if (panel && panel !== 'auto' && !panels.includes(panel))
+    back()
 }, { immediate: true })
-
-function isExpanded(panel: ConfigPanelId) {
-  return expandedPanels.value.includes(panel)
-}
-
-function toggleExpanded(panel: ConfigPanelId) {
-  expandedPanels.value = isExpanded(panel)
-    ? expandedPanels.value.filter(item => item !== panel)
-    : [...expandedPanels.value, panel]
-}
 
 const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
   label: t(`stat.view.pageLayout.${value}.label`),
@@ -92,7 +86,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="statConfigPanel grid"
+    class="statConfigPanel grid min-w-0"
     :class="width < 767 && 'pb-6'"
   >
     <StatViewsManagement />
@@ -115,22 +109,18 @@ onBeforeUnmount(() => {
 
     <StatConfigBlock
       v-if="availablePanels.includes('statAverage')"
-      :hasNext="sortedBlockIds.length > 0"
-      :isExpanded="isExpanded('statAverage')"
       panel="statAverage"
-      @activate="toggleExpanded('statAverage')"
+      @activate="openPanel('statAverage')"
     />
 
-    <div ref="blockSortParent" class="grid">
+    <div ref="blockSortParent" class="grid min-w-0">
       <StatConfigBlock
         v-for="(panel, index) in sortedBlockIds"
         :key="panel"
-        :hasNext="index < sortedBlockIds.length - 1"
-        :isExpanded="isExpanded(panel)"
         :panel
-        :showSeparator="(index > 0 || availablePanels.includes('statAverage')) && !isExpanded(index > 0 ? sortedBlockIds[index - 1]! : 'statAverage')"
+        :showSeparator="index > 0 || availablePanels.includes('statAverage')"
         sortable
-        @activate="toggleExpanded(panel)"
+        @activate="openPanel(panel)"
       />
     </div>
   </div>

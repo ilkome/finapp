@@ -676,7 +676,7 @@ export default {
         },
         configure: 'Настроить по правилам',
         count: 'Правила: {count}',
-        default: 'По умолчанию',
+        default: 'Настройки',
         empty: 'Для этого блока пока нет правил.',
         new: 'Новое правило',
         parameters: {
@@ -687,6 +687,7 @@ export default {
           custom: 'Свое условие',
         },
         removeParameter: 'Удалить параметр',
+        rule: 'Правило',
         then: 'Тогда',
         title: '{block} правила',
       },
@@ -699,9 +700,9 @@ export default {
         labels: { comparator: 'Сравнение', field: 'Тип условия', operator: 'Связь условий', selectionMode: 'Режим выбора', unit: 'Единица периода' },
         operators: { and: 'И', or: 'ИЛИ' },
         selection: {
-          category: { all: 'Все категории', none: 'Без категории', selected: 'Выбранные категории' },
+          category: { all: 'Все категории', any: 'Любая страница категории', none: 'Без категории', selected: 'Выбранные категории' },
           multiple: 'Выбрано: {count}',
-          wallet: { all: 'Все кошельки', none: 'Без кошелька', selected: 'Выбранные кошельки' },
+          wallet: { all: 'Все кошельки', any: 'Любая страница кошелька', none: 'Без кошелька', selected: 'Выбранные кошельки' },
         },
         units: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
       },

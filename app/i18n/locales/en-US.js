@@ -676,7 +676,7 @@ export default {
         },
         configure: 'Configure with rules',
         count: 'Rules: {count}',
-        default: 'Default',
+        default: 'Settings',
         empty: 'This block has no rules yet.',
         new: 'New rule',
         parameters: {
@@ -687,6 +687,7 @@ export default {
           custom: 'Custom condition',
         },
         removeParameter: 'Remove parameter',
+        rule: 'Rule',
         then: 'Then',
         title: '{block} rules',
       },
@@ -699,9 +700,9 @@ export default {
         labels: { comparator: 'Comparison', field: 'Condition type', operator: 'Condition operator', selectionMode: 'Selection mode', unit: 'Period unit' },
         operators: { and: 'AND', or: 'OR' },
         selection: {
-          category: { all: 'All categories', none: 'Without a category', selected: 'Selected categories' },
+          category: { all: 'All categories', any: 'Any category page', none: 'Without a category', selected: 'Selected categories' },
           multiple: 'Selected: {count}',
-          wallet: { all: 'All wallets', none: 'Without a wallet', selected: 'Selected wallets' },
+          wallet: { all: 'All wallets', any: 'Any wallet page', none: 'Without a wallet', selected: 'Selected wallets' },
         },
         units: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
       },

@@ -85,7 +85,7 @@ async function remove(id: string) {
       name: t('stat.views.defaultName'),
     })
     if (fallback)
-      controller.apply(fallback, false)
+      controller.apply(fallback)
     return
   }
   await controller?.store.remove(id)

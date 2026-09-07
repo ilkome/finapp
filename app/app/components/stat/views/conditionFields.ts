@@ -2,6 +2,9 @@ import type { Condition } from './types'
 
 export type ConditionField = 'period' | 'contentWidth' | 'walletSelection' | 'category'
 
+export const blockRuleConditionFields: ConditionField[] = ['period', 'contentWidth', 'walletSelection', 'category']
+export const autoRuleConditionFields: ConditionField[] = ['walletSelection', 'category']
+
 export function getConditionField(condition: Condition): ConditionField {
   return condition.kind === 'categoryCount' || condition.kind === 'categorySelection'
     ? 'category'
@@ -10,11 +13,11 @@ export function getConditionField(condition: Condition): ConditionField {
 
 export function changeConditionField(condition: Condition, field: ConditionField, contentWidth?: number | null): Condition {
   if (field === 'walletSelection')
-    return { ids: [], kind: 'walletSelection', mode: 'all' }
+    return { ids: [], kind: 'walletSelection', mode: 'any' }
   if (field === 'category') {
     return condition.kind === 'categoryCount' || condition.kind === 'categorySelection'
       ? condition
-      : { ids: [], kind: 'categorySelection', mode: 'all' }
+      : { ids: [], kind: 'categorySelection', mode: 'any' }
   }
 
   const comparator = 'comparator' in condition ? condition.comparator : '='

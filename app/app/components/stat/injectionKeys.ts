@@ -16,7 +16,7 @@ export const statContextBlockIdsKey: InjectionKey<Readonly<Ref<readonly StatCont
 export const statHistoryAvailableKey: InjectionKey<Ref<boolean>> = Symbol('statHistoryAvailable')
 export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController>> = Symbol('statViewController')
 export const statCanSplitKey: InjectionKey<Ref<boolean>> = Symbol('statCanSplit')
-export const statPreservedCategoryScrollTopKey: InjectionKey<Readonly<Ref<number | null>>> = Symbol('statPreservedCategoryScrollTop')
+export const statPreservedCategoryScrollTopKey: InjectionKey<Ref<number | null>> = Symbol('statPreservedCategoryScrollTop')
 export const statStickyNavKey: InjectionKey<boolean> = Symbol('statStickyNav')
 export const statStickyTopKey: InjectionKey<Readonly<Ref<number>>> = Symbol('statStickyTop')
 export const statTrnsViewStateKey: InjectionKey<TrnsListFilterState> = Symbol('statTrnsViewState')

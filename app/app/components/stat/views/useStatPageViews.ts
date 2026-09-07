@@ -61,6 +61,8 @@ export function useStatPageViews(options: UseStatPageViewsOptions) {
       categoryCount: categoryIds.length,
       categoryPathById,
       contentWidth: options.contentWidth.value,
+      pageCategoryId: categoryId ?? null,
+      pageWalletId: walletId ?? null,
       parentCategoryCount: parentIds.size,
       range: options.range.value,
       selectedCategoryIds: [...new Set([

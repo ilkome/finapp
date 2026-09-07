@@ -22,10 +22,7 @@ const statConfig = inject(statConfigKey)!
 
 const isIconBg = computed(() => statConfig.config.value.categories.round.isIconBg)
 const isInlineAmount = computed(() => statConfig.config.value.categories.round.isInlineAmount)
-const isAutoGroupedParent = computed(() =>
-  statConfig.config.value.categories.round.grouping === 'auto'
-  && (props.item.categories?.length ?? 0) > 0,
-)
+const isGroupedParent = computed(() => (props.item.categories?.length ?? 0) > 0)
 
 const { longPressRef } = useCategoryLongPress(
   () => props.item.id,
@@ -40,7 +37,7 @@ const { longPressRef } = useCategoryLongPress(
     :isIconBg="isIconBg"
     :isInlineContent="isInlineAmount"
     :isShowParent="props.isShowParent"
-    :nameSuffix="isAutoGroupedParent ? '...' : undefined"
+    :nameSuffix="isGroupedParent ? '...' : undefined"
   >
     <div
       v-if="props.isShowAmount"

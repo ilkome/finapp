@@ -149,21 +149,31 @@ export function resolveCategoryGrouping(
   views: CategoryViews,
   grouping: CategoryGrouping,
   activeLeaves: CategoryWithData[] = views.ungrouped,
-  keepExpandedIds?: ReadonlySet<CategoryId>,
+  /**
+   * The current selection. A selected leaf counts as active even with no transactions, so it
+   * keeps its slot in the group; a selected group stays whole (see below).
+   */
+  pinnedIds?: ReadonlySet<CategoryId>,
 ): CategoryWithData[] {
   if (grouping === 'parent')
     return views.grouped
   if (grouping === 'child')
     return views.ungrouped
 
-  const activeIds = new Set(activeLeaves.filter(category => category.trnsIds.length > 0).map(category => category.id))
+  const activeIds = new Set(activeLeaves
+    .filter(category => category.trnsIds.length > 0 || pinnedIds?.has(category.id))
+    .map(category => category.id))
   return views.grouped.flatMap((group) => {
     if (!group.categories?.length)
       return [group]
-    // Keep a selected child visible as a leaf instead of collapsing it into its parent.
-    if (keepExpandedIds?.size && group.categories.some(category => keepExpandedIds.has(category.id)))
-      return group.categories
+    // A group the user picked themselves stays whole. Expanding it would drop the chip they
+    // selected and move the highlight onto whichever child happens to be the only active one.
+    if (pinnedIds?.has(group.id))
+      return [group]
+    // Only a group contributing exactly one active leaf is worth expanding. A group with no
+    // active leaf at all (empty placeholders added for favorites, recents or the current
+    // selection) stays collapsed, otherwise filtering flattens the whole list into children.
     const activeChildrenCount = group.categories.filter(category => activeIds.has(category.id)).length
-    return activeChildrenCount > 1 ? [group] : group.categories
+    return activeChildrenCount === 1 ? group.categories : [group]
   }).sort(sortCategoriesByAmount)
 }

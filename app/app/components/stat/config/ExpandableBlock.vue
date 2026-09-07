@@ -1,17 +1,14 @@
 <script setup lang="ts">
-const props = withDefaults(defineProps<{
+defineProps<{
   compact?: boolean
   dataKey?: string
   hasNext?: boolean
   icon: string
   isExpanded?: boolean
-  overlapTop?: boolean
   showSeparator?: boolean
   sortable?: boolean
   title: string
-}>(), {
-  overlapTop: true,
-})
+}>()
 
 const emit = defineEmits<{
   activate: []
@@ -19,23 +16,15 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div>
+  <div class="min-w-0">
     <div
       v-if="showSeparator"
       aria-hidden="true"
       class="mx-2 -my-px h-px bg-elevated/50"
     />
-    <div
-      class="rounded-lg border"
-      :class="{
-        '-mt-px': props.overlapTop,
-        'mb-3': hasNext && isExpanded,
-        'overflow-hidden border-default': isExpanded,
-        'border-transparent': !isExpanded,
-      }"
-    >
+    <div :class="hasNext && isExpanded && 'mb-3'">
       <StatConfigRow
-        :compact="props.compact"
+        :compact="compact"
         :data-stat-config-row="dataKey"
         hasPanel
         :icon
@@ -45,6 +34,7 @@ const emit = defineEmits<{
         @activate="emit('activate')"
       />
       <UCollapsible
+        v-if="$slots.default"
         :open="isExpanded"
         :ui="{ content: 'overflow-hidden' }"
       >

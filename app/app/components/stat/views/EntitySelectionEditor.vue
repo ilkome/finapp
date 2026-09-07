@@ -9,6 +9,8 @@ type SelectionOption = EntitySelectionMode | 'parentCount' | 'totalCount'
 
 const props = defineProps<{
   modelValue: EntityCondition
+  // Auto rules bind a view to the open page, so counts and the always-true mode make no sense there.
+  pageScoped?: boolean
 }>()
 const emit = defineEmits<{
   'update:modelValue': [value: EntityCondition]
@@ -24,10 +26,11 @@ const availableIds = computed(() => props.modelValue.kind === 'walletSelection'
   ? Object.keys(walletsStore.itemsComputed).filter(id => !walletsStore.itemsComputed[id]?.isArchived)
   : Object.keys(categoriesStore.items).filter(id => id !== 'transfer' && id !== 'adjustment'))
 const options = computed(() => [
-  { label: t(`stat.views.conditions.selection.${entityKey.value}.all`), value: 'all' },
+  ...(props.pageScoped ? [] : [{ label: t(`stat.views.conditions.selection.${entityKey.value}.all`), value: 'all' }]),
+  { label: t(`stat.views.conditions.selection.${entityKey.value}.any`), value: 'any' },
   { label: t(`stat.views.conditions.selection.${entityKey.value}.none`), value: 'none' },
   { disabled: availableIds.value.length === 0, label: t(`stat.views.conditions.selection.${entityKey.value}.selected`), value: 'selected' },
-  ...(entityKey.value === 'category'
+  ...(entityKey.value === 'category' && !props.pageScoped
     ? [
         { label: t('stat.views.conditions.fields.parentCategoryCount'), value: 'parentCount' },
         { label: t('stat.views.conditions.fields.allCategoryCount'), value: 'totalCount' },

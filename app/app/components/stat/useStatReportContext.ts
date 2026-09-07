@@ -5,8 +5,9 @@ import type { SeriesSlugSelected, UseStatReportParams } from '~/components/stat/
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { getSelectedParentCategoryId } from '~/components/filter/selectedParentCategory'
-import { countActiveFocusedChildren } from '~/components/stat/categories/focusedCategories'
+import { countActiveFocusedChildren, resolveFocusedParentId } from '~/components/stat/categories/focusedCategories'
 import { getStatSnapshotQueryId, isStatDrilldownQuery, useStatCategoryNavigation } from '~/components/stat/navigation'
 import { useStatReport } from '~/components/stat/useStatReport'
 import { useTrnsQuickView } from '~/components/stat/useTrnsQuickView'
@@ -41,7 +42,52 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     rootIds: categoriesStore.categoriesRootIds,
     selectedIds: params.filter.categoriesIds.value,
   }))
-  const focusedQuickCategoryId = computed(() => filteredParentCategoryId.value ?? report.filteredCategoriesIds.value[0])
+  const selectedQuickCategoryId = computed(() => report.filteredCategoriesIds.value[0])
+  const selectedQuickParentId = computed(() => resolveFocusedParentId(
+    selectedQuickCategoryId.value,
+    categoryId => getParentCategoryIdOrUndefined(categoriesStore.items, categoryId),
+  ))
+  /**
+   * Whether the cloud shows the selected branch as one parent chip. Only then does the focus
+   * row add anything: with a child grouping the cloud already lists the children itself.
+   */
+  const isQuickFocusGrouped = computed(() => {
+    const parentId = selectedQuickParentId.value
+    if (!parentId)
+      return false
+    const grouping = params.statConfig.config.value.categories.round.grouping
+    if (grouping !== 'auto')
+      return grouping === 'parent'
+    // The selection holds a slot in its group even with nothing in this period, matching how
+    // the cloud groups it (see resolveCategoryGrouping's pinned ids).
+    const selectedId = selectedQuickCategoryId.value
+    const siblingIds = categoriesStore.getChildrenIds(parentId).filter(id => id !== selectedId)
+    const activeSiblings = countActiveFocusedChildren({
+      childrenIds: siblingIds,
+      trnsIds: report.selectedTrnsIds.value,
+      trnsItems: trnsStore.items ?? {},
+    })
+    return activeSiblings + (selectedId === parentId ? 0 : 1) > 1
+  })
+  const isSelectedFoldedIntoParent = computed(() =>
+    isQuickFocusGrouped.value && selectedQuickParentId.value !== selectedQuickCategoryId.value)
+  const focusedQuickCategoryId = computed(() => filteredParentCategoryId.value
+    ?? (isSelectedFoldedIntoParent.value ? selectedQuickParentId.value : selectedQuickCategoryId.value))
+  const focusedQuickChildCategoryId = computed(() => report.filteredChildCategoryId.value
+    ?? (isSelectedFoldedIntoParent.value ? selectedQuickCategoryId.value : undefined))
+  /**
+   * The focus row lists the focused category's own transactions. When a child is selected the
+   * quick filter is narrowed to that child, which would leave its siblings out of the row.
+   */
+  const focusedQuickTrnsIds = computed(() => {
+    const parentId = isSelectedFoldedIntoParent.value ? selectedQuickParentId.value : undefined
+    if (!parentId)
+      return report.selectedAndQuickFilteredTrnsIds.value
+    return trnsStore.getStoreTrnsIds({
+      categoriesIds: categoriesStore.getTransactibleIds([parentId]),
+      trnsIds: report.selectedTrnsIds.value,
+    })
+  })
   const focusedQuickCategoryHasChildren = computed(() => {
     const categoryId = focusedQuickCategoryId.value
     return !!categoryId && categoriesStore.hasChildren(categoryId)
@@ -52,13 +98,16 @@ export function useStatReportContext(params: UseStatReportContextParams) {
       return 0
     return countActiveFocusedChildren({
       childrenIds: categoriesStore.getChildrenIds(categoryId),
-      trnsIds: report.selectedAndQuickFilteredTrnsIds.value,
+      trnsIds: focusedQuickTrnsIds.value,
       trnsItems: trnsStore.items ?? {},
     })
   })
   const shouldShowCategoriesBreakdown = computed(() => {
-    if (focusedQuickCategoryId.value)
-      return focusedQuickCategoryHasChildren.value && focusedQuickCategoryActiveChildrenCount.value > 1
+    if (focusedQuickCategoryId.value) {
+      return focusedQuickCategoryHasChildren.value
+        && focusedQuickCategoryActiveChildrenCount.value > 0
+        && (!!filteredParentCategoryId.value || isQuickFocusGrouped.value)
+    }
 
     return hasCategoriesData.value
       && (params.statConfig.config.value.categories.list.isShow || params.statConfig.config.value.categories.bars.isShow)
@@ -67,6 +116,18 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     shouldShowCategoriesBreakdown.value
     && (params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value),
   )
+
+  /**
+   * A child picked in the focus row becomes the selection itself, so it survives a period
+   * change like any other pick. Clicking the highlighted one steps back up to the parent.
+   */
+  function onSetFocusedChildCategoryFilter(categoryId: CategoryId) {
+    const parentId = selectedQuickParentId.value
+    const isClearingSelectedChild = isSelectedFoldedIntoParent.value
+      && !!parentId
+      && selectedQuickCategoryId.value === categoryId
+    report.onSetCategoryFilter(isClearingSelectedChild ? parentId : categoryId)
+  }
 
   function onClickCategory(clickedCategoryId: CategoryId) {
     quickView.openQuickViewForCategory(clickedCategoryId)
@@ -113,12 +174,15 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     focusedQuickCategoryActiveChildrenCount,
     focusedQuickCategoryHasChildren,
     focusedQuickCategoryId,
+    focusedQuickChildCategoryId,
+    focusedQuickTrnsIds,
     hasCategoriesData,
     isCategoryFocus,
     isOneCategory,
     onClickCategory,
     onClickSumItemWrap,
     onOpenCategory,
+    onSetFocusedChildCategoryFilter,
     params,
     shouldShowAmounts,
     shouldShowCategoriesBreakdown,

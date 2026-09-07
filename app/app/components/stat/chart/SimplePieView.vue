@@ -280,7 +280,7 @@ function pieTooltipRows(param: PieTooltipParam) {
         v-for="(item, index) in piePercentLabels"
         :key="`percent-${index}`"
         data-pie-percent
-        class="absolute -translate-1/2 text-[10px] leading-none text-white"
+        class="absolute -translate-1/2 text-2xs leading-none text-white"
         :style="{ left: `${item.x}px`, top: `${item.y}px` }"
       >
         {{ item.label }}

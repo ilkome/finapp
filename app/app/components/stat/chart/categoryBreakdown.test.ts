@@ -71,7 +71,7 @@ function singleInterval(trnIds: TrnId[]): IntervalData[] {
 const baseParams = {
   categoriesItems,
   computeTotalForTrnsIds,
-  isGrouped: false,
+  grouping: 'child' as const,
   trnsItems,
   type: 'expense' as const,
 }
@@ -116,6 +116,32 @@ describe('aggregateCategoryTotals', () => {
     expect(categoryTotals.c02).toBe(90)
   })
 
+  it('auto grouping keeps a parent with one active child expanded and collapses the rest', () => {
+    const items = {
+      childA: { color: '#1', name: 'Child A', parentId: 'parent' },
+      childB: { color: '#2', name: 'Child B', parentId: 'parent' },
+      loner: { color: '#3', name: 'Loner', parentId: 'solo' },
+      parent: { color: '#4', name: 'Parent' },
+      solo: { color: '#5', name: 'Solo' },
+    } as unknown as Categories
+    const trns = {
+      a: { categoryId: 'childA' },
+      b: { categoryId: 'childB' },
+      c: { categoryId: 'loner' },
+    } as unknown as Record<TrnId, Pick<TrnItem, 'categoryId'>>
+
+    const { orderedCategoryIds } = aggregateCategoryTotals({
+      categoriesItems: items,
+      computeTotalForTrnsIds: ids => ({ expense: ids.length * 10, income: 0, net: -ids.length * 10 }),
+      grouping: 'auto',
+      intervals: singleInterval(['a', 'b', 'c']),
+      trnsItems: trns,
+      type: 'expense',
+    })
+
+    expect(orderedCategoryIds.toSorted()).toEqual(['loner', 'parent'])
+  })
+
   it('uses net income for categories in the combined mode', () => {
     const cardsTrnsItems = {
       expense: { categoryId: 'cards' },
@@ -136,8 +162,8 @@ describe('aggregateCategoryTotals', () => {
       } as unknown as Categories,
       chartType: 'bar',
       computeTotalForTrnsIds: computeCardsTotal,
+      grouping: 'child' as const,
       intervals,
-      isGrouped: false,
       trnsItems: cardsTrnsItems,
       type: 'net',
     })

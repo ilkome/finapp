@@ -4,21 +4,23 @@ import { statContentWidthKey } from '~/components/stat/injectionKeys'
 import type { ConditionField } from './conditionFields'
 import type { Condition, ConditionComparator, ConditionGroup } from './types'
 
-import { changeConditionField, getConditionField } from './conditionFields'
+import { autoRuleConditionFields, blockRuleConditionFields, changeConditionField, getConditionField } from './conditionFields'
 
 defineOptions({ name: 'StatViewsConditionEditor' })
 
-const props = defineProps<{ depth?: number, modelValue: ConditionGroup, removable?: boolean }>()
+const props = defineProps<{ depth?: number, modelValue: ConditionGroup, pageScoped?: boolean, removable?: boolean }>()
 const emit = defineEmits<{ 'remove': [], 'update:modelValue': [value: ConditionGroup] }>()
 const { t } = useI18n()
 const contentWidth = inject(statContentWidthKey, ref(null))
 const comparators = ['<', '<=', '=', '!=', '>=', '>'].map(value => ({ label: value, value }))
-const fields = computed(() => [
-  { label: t('stat.views.conditions.fields.period'), value: 'period' },
-  { label: t('stat.views.conditions.fields.contentWidth'), value: 'contentWidth' },
-  { label: t('stat.views.conditions.fields.walletSelection'), value: 'walletSelection' },
-  { label: t('stat.views.conditions.fields.categorySelection'), value: 'category' },
-])
+const fieldLabelKeys: Record<ConditionField, string> = {
+  category: 'stat.views.conditions.fields.categorySelection',
+  contentWidth: 'stat.views.conditions.fields.contentWidth',
+  period: 'stat.views.conditions.fields.period',
+  walletSelection: 'stat.views.conditions.fields.walletSelection',
+}
+const fields = computed(() => (props.pageScoped ? autoRuleConditionFields : blockRuleConditionFields)
+  .map(value => ({ label: t(fieldLabelKeys[value]), value })))
 const operators = computed(() => [
   { label: t('stat.views.conditions.operators.and'), value: 'and' },
   { label: t('stat.views.conditions.operators.or'), value: 'or' },
@@ -29,7 +31,9 @@ function update(children: ConditionGroup['children']) {
   emit('update:modelValue', { ...props.modelValue, children })
 }
 function addCondition() {
-  update([...props.modelValue.children, { comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }])
+  update([...props.modelValue.children, props.pageScoped
+    ? { ids: [], kind: 'categorySelection', mode: 'any' }
+    : { comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }])
 }
 function replace(index: number, value: Condition | ConditionGroup) {
   update(props.modelValue.children.map((child, childIndex) => childIndex === index ? value : child))
@@ -77,6 +81,7 @@ function conditionActionItems(index: number) {
         <StatViewsConditionEditor
           :depth="(depth ?? 0) + 1"
           :modelValue="child"
+          :pageScoped="pageScoped"
           removable
           @remove="remove(index)"
           @update:modelValue="replace(index, $event)"
@@ -101,6 +106,7 @@ function conditionActionItems(index: number) {
           <StatViewsEntitySelectionEditor
             v-if="child.kind === 'walletSelection' || child.kind === 'categorySelection' || child.kind === 'categoryCount'"
             :modelValue="child"
+            :pageScoped="pageScoped"
             @update:modelValue="replace(index, $event)"
           />
           <template v-else>

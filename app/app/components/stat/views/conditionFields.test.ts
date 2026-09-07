@@ -19,8 +19,8 @@ describe('statistics condition fields', () => {
   it('creates entity selection conditions without carrying numeric fields', () => {
     const condition: Condition = { comparator: '>=', kind: 'period', unit: 'day', value: 7 }
 
-    expect(changeConditionField(condition, 'walletSelection')).toEqual({ ids: [], kind: 'walletSelection', mode: 'all' })
-    expect(changeConditionField(condition, 'category')).toEqual({ ids: [], kind: 'categorySelection', mode: 'all' })
+    expect(changeConditionField(condition, 'walletSelection')).toEqual({ ids: [], kind: 'walletSelection', mode: 'any' })
+    expect(changeConditionField(condition, 'category')).toEqual({ ids: [], kind: 'categorySelection', mode: 'any' })
     expect(changeConditionField({ ids: ['wallet'], kind: 'walletSelection', mode: 'selected' }, 'period')).toEqual({ comparator: '=', kind: 'period', unit: 'day', value: 1 })
   })
 

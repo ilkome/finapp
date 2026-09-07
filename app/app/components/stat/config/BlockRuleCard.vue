@@ -52,7 +52,6 @@ const ruleActionItems = computed(() => [[
     onSelect: () => emit('remove'),
   },
 ]])
-const popoverContent = { align: 'end' as const, side: 'bottom' as const, sideOffset: 6 }
 const ruleProvider = {
   config: ruleConfig,
   updateConfig<K extends keyof MiniItemConfig>(key: K, value: Parameters<typeof applyConfigUpdate<K>>[2]) {
@@ -104,7 +103,7 @@ function setExpanded(open: boolean) {
 
 <template>
   <UiElement
-    insideClasses="group min-h-[46px] gap-0 p-0"
+    insideClasses="group min-h-10 gap-0 border-0 p-0"
   >
     <div
       class="blockRuleSortHandle sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center self-stretch text-muted hover:bg-accented active:cursor-grabbing"
@@ -113,30 +112,33 @@ function setExpanded(open: boolean) {
       <Icon name="lucide:grip-vertical" size="20" />
     </div>
     <div class="min-w-0 grow">
-      <UPopover
-        :open="isExpanded"
-        :content="popoverContent"
-        :ui="{
-          content: 'z-[70] max-h-[calc(100dvh-1rem)] w-85 max-w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain p-0',
-        }"
-        @update:open="setExpanded"
+      <BottomSheetOrDropdown
+        align="end"
+        :isOpen="isExpanded"
+        popoverBodyClass="p-0!"
+        popoverContentClass="z-[70] max-h-[calc(100dvh-1rem)] w-85 max-w-[calc(100vw-1rem)] overscroll-contain"
+        @openModal="setExpanded(true)"
+        @closeModal="setExpanded(false)"
       >
-        <button
-          type="button"
-          class="flex min-h-[46px] w-full min-w-0 items-center gap-2 px-3 text-left"
-        >
-          <span class="min-w-0 grow truncate text-sm font-medium">{{ title }}</span>
-          <Icon name="lucide:chevron-down" class="size-4 shrink-0 text-muted" />
-        </button>
+        <template #trigger>
+          <button
+            type="button"
+            class="flex min-h-10 w-full min-w-0 items-center gap-2 px-3 text-left"
+          >
+            <span class="min-w-0 grow truncate text-sm font-medium">{{ title }}</span>
+            <Icon name="lucide:chevron-down" class="size-4 shrink-0 text-muted" />
+          </button>
+        </template>
 
         <template #content>
-          <div class="grid gap-4 p-3">
-            <div class="grid min-w-0 grid-cols-[minmax(0,1fr)_2.625rem] items-start gap-2">
-              <span class="line-clamp-2 min-w-0 py-2 text-sm leading-5 font-medium wrap-break-word">{{ title }}</span>
-              <UDropdownMenu :items="ruleActionItems" :content="{ align: 'end' }" :modal="false">
-                <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
-              </UDropdownMenu>
-            </div>
+          <UiTitleModal class="flex items-center gap-2 md:pt-3 md:pb-2">
+            <span class="grow">{{ t('stat.views.blockRules.rule') }}</span>
+            <UDropdownMenu :items="ruleActionItems" :content="{ align: 'end' }" :modal="false">
+              <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
+            </UDropdownMenu>
+          </UiTitleModal>
+
+          <div class="grid gap-4 px-3 pb-3 md:pb-2">
             <StatViewsConditionEditor
               :modelValue="rule.condition"
               @update:modelValue="updateCondition"
@@ -191,20 +193,16 @@ function setExpanded(open: boolean) {
                 </div>
               </div>
               <UDropdownMenu :items="[availableParameterItems]">
-                <UButton
-                  class="w-full justify-start data-[state=open]:bg-elevated/50!"
-                  color="neutral"
+                <StatConfigActionButton
                   :disabled="!availableParameterItems.length"
                   icon="i-lucide-plus"
                   :label="$t('stat.views.blockRules.addParameter')"
-                  size="sm"
-                  variant="ghost"
                 />
               </UDropdownMenu>
             </div>
           </div>
         </template>
-      </UPopover>
+      </BottomSheetOrDropdown>
     </div>
   </UiElement>
 </template>

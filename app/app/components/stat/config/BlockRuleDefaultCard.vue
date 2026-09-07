@@ -20,7 +20,7 @@ defineEmits<{
     :title="$t('stat.views.blockRules.default')"
     @activate="$emit('toggleExpanded')"
   >
-    <div class="grid gap-0.5 px-3 pb-4">
+    <div class="grid gap-0.5">
       <StatConfigPanelVisibility :panel />
       <StatConfigPanelContent :panel />
     </div>

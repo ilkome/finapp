@@ -41,6 +41,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     visibility,
     { id: 'chart.type', paths: ['chart.type'], titleKey: 'stat.view.chartType.title' },
     { id: 'chart.breakdown', paths: ['chart.breakdown'], titleKey: 'stat.view.breakdown.title' },
+    { id: 'chart.grouping', paths: ['chart.grouping'], titleKey: 'stat.config.categories.grouping.title' },
     { id: 'chart.pie.shape', paths: ['chart.pie.shape'], titleKey: 'stat.view.pieShape.title' },
     { id: 'chart.pie.isShowLabels', paths: ['chart.pie.isShowLabels'], titleKey: 'stat.config.chart.pie.showLabels' },
     { id: 'chart.pie.isShowPercent', paths: ['chart.pie.isShowPercent'], titleKey: 'stat.config.chart.pie.showPercent' },
@@ -125,6 +126,8 @@ export function isBlockRuleParameterAvailable(
     return true
   if (id.startsWith('chart.pie.'))
     return config.chart.type === 'pie'
+  if (id === 'chart.grouping')
+    return config.chart.breakdown === 'categories'
   if (id === 'chart.isGrouped')
     return config.chart.type === 'bar'
   if (id.startsWith('chart.line.'))

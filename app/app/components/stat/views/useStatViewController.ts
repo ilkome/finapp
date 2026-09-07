@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 
-import { useStorage } from '@vueuse/core'
 import { toRaw } from 'vue'
 import { waitForFirstSync } from '~~/services/powersync/db'
 
@@ -12,7 +11,7 @@ import { syncPanelConfig } from '~/components/stat/views/syncPanelConfig'
 
 import type { BlockRule, StatBlockPanelId, StatView, StatViewConfig, StatViewContext } from './types'
 
-import { contextFingerprint, findAutomaticView } from './evaluateConditions'
+import { findAutomaticView } from './evaluateConditions'
 import { useStatViewsStore } from './useStatViewsStore'
 
 function cloneConfig(value: MiniItemConfig): MiniItemConfig {
@@ -34,25 +33,31 @@ function cloneRules(value: BlockRule[]): BlockRule[] {
 export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<StatViewContext>) {
   const { t } = useI18n()
   const store = useStatViewsStore()
-  const activeId = computed(() => store.views.find(view => view.isActive)?.id ?? null)
-  const manualFingerprint = useStorage<string | null>('finapp.dashboard.statView.manualFingerprint', null)
+  // A view bound to the open category/wallet page applies locally: `isActive` stays the pick the
+  // user made themselves, so leaving the page restores it instead of a guessed fallback. Config
+  // and `activeId` must never diverge either, or the autosave below writes into the wrong view.
+  const appliedId = ref<string | null>(null)
+  const activeId = computed(() => (appliedId.value && store.views.some(view => view.id === appliedId.value)
+    ? appliedId.value
+    : store.views.find(view => view.isActive)?.id) ?? null)
   const activeView = computed(() => store.views.find(view => view.id === activeId.value) ?? null)
   const configFingerprint = computed(() => JSON.stringify(config.value))
   const isDirty = computed(() => !!activeView.value && JSON.stringify(config.value) !== JSON.stringify(activeView.value.config.base))
-  const currentFingerprint = computed(() => contextFingerprint(context.value))
 
-  function clearActive(manual = true) {
-    void store.setActive(null)
-    if (manual)
-      manualFingerprint.value = currentFingerprint.value
+  function applyLocal(view: StatView) {
+    appliedId.value = view.id
+    config.value = cloneConfig(view.config.base)
   }
 
-  function apply(view: StatView, manual = true) {
-    if (manual)
-      void store.setActive(view.id)
-    config.value = cloneConfig(view.config.base)
-    if (manual)
-      manualFingerprint.value = currentFingerprint.value
+  // Persisting the active view is async, and until it lands `store.views` shows no active row.
+  // The fallback watcher must not treat that gap as "nothing is selected" and create a view.
+  let isApplyingManually = false
+  function apply(view: StatView) {
+    applyLocal(view)
+    isApplyingManually = true
+    void store.setActive(view.id).finally(() => {
+      isApplyingManually = false
+    })
   }
   function cycle() {
     const list = store.views
@@ -64,11 +69,6 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     }
     const index = list.findIndex(view => view.id === activeId.value)
     apply(list[index < 0 || index === list.length - 1 ? 0 : index + 1]!)
-  }
-  async function saveAs(name: string, autoRule: StatView['autoRule'] = null, isAutoEnabled = false) {
-    const view = await store.create({ autoRule, config: { base: cloneConfig(config.value), blockRules: {} }, isAutoEnabled, name, scope: 'dashboard' })
-    apply(view)
-    return view
   }
   async function duplicate(source: StatView) {
     const names = new Set(store.views.map(view => view.name))
@@ -152,20 +152,6 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       })
     return configSaveQueue
   }
-  function discard() {
-    if (activeView.value)
-      apply(activeView.value, false)
-  }
-  function selectForCurrentContext() {
-    const automatic = findAutomaticView(store.views, context.value)
-    const fallback = store.views.find(view => view.name === t('stat.views.defaultName'))
-      ?? store.views.find(view => view.name === t('stat.views.modern'))
-      ?? store.views[0]
-    const view = automatic ?? fallback
-    if (view)
-      apply(view, false)
-    return view ?? null
-  }
   let isEnsuringActiveView = false
   let hasWaitedForFirstSync = false
   watch([
@@ -173,7 +159,8 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     () => store.views.length,
     () => store.views.some(view => view.isActive),
   ], async ([viewsLoaded, , hasActiveView]) => {
-    if (!viewsLoaded || hasActiveView || isEnsuringActiveView)
+    // A manual pick writes two rows; the feed can observe the gap where neither is active.
+    if (!viewsLoaded || hasActiveView || isEnsuringActiveView || isApplyingManually)
       return
     isEnsuringActiveView = true
     try {
@@ -196,33 +183,24 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       })
       if (!view.isActive)
         await store.setActive(view.id)
-      if (activeId.value === null)
-        apply(view, false)
     }
     finally {
       isEnsuringActiveView = false
     }
   }, { immediate: true })
-  watch([() => store.isLoaded, currentFingerprint], () => {
-    if (!store.isLoaded || manualFingerprint.value === currentFingerprint.value)
-      return
-    const automatic = findAutomaticView(store.views, context.value)
-    if (automatic?.id === activeId.value) {
-      manualFingerprint.value = null
-      return
-    }
-    if (automatic) {
-      apply(automatic, false)
-      manualFingerprint.value = null
-      return
-    }
-    if (activeView.value && (!activeView.value.isAutoEnabled || manualFingerprint.value !== null)) {
-      manualFingerprint.value = currentFingerprint.value
-      return
-    }
-    selectForCurrentContext()
-    manualFingerprint.value = null
+
+  // Only the open page moves the applied view. Leaving a bound page drops the local override and
+  // `activeView` falls back to the stored pick, which the watcher above feeds back into the config.
+  const automaticViewId = computed(() => store.isLoaded
+    ? findAutomaticView(store.views, context.value)?.id ?? null
+    : null)
+  watch(automaticViewId, (id) => {
+    const view = id ? store.views.find(item => item.id === id) : null
+    if (view)
+      applyLocal(view)
+    else
+      appliedId.value = null
   }, { immediate: true })
 
-  return { activeId, activeView, apply, clearActive, context, cycle, discard, duplicate, isDirty, saveAs, selectForCurrentContext, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
+  return { activeId, activeView, apply, context, cycle, duplicate, isDirty, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
 }
