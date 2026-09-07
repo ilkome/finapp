@@ -19,10 +19,19 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const currenciesStore = useCurrenciesStore()
+
+// Unique per instance: a split layout and the feed render several summaries at once, and
+// duplicate transition names abort the whole transition.
+const instanceId = useId()
+const transitionName = computed(() => props.variant === 'summary'
+  ? `statSum-${instanceId}-${props.type}`.replace(/[^\w-]/g, '_')
+  : undefined)
 </script>
 
 <template>
   <div
+    class="statSumFlip"
+    :style="{ viewTransitionName: transitionName }"
     :class="cn(
       props.variant === 'plain'
         ? 'px-1 pb-1'

@@ -113,8 +113,16 @@ const visibleRoundCategories = computed(() => {
   return roundCategories.value.filter(item => filteredSet.value.has(item.id))
 })
 
+// Unique per section: the same category can sit in several clouds at once (one per period in
+// the feed, plus the focus row), and duplicate transition names abort the whole transition.
+const transitionScope = useId()
+function transitionName(categoryId: CategoryId) {
+  return `statCat-${transitionScope}-${categoryId}`.replace(/[^\w-]/g, '_')
+}
+
 function onSetCategoryFilter(categoryId: CategoryId) {
-  emit('setCategoryFilter', selectedIdByVisibleId.value.get(categoryId) ?? categoryId)
+  const nextId = selectedIdByVisibleId.value.get(categoryId) ?? categoryId
+  runViewTransition(() => emit('setCategoryFilter', nextId))
 }
 </script>
 
@@ -126,6 +134,7 @@ function onSetCategoryFilter(categoryId: CategoryId) {
       v-for="item in visibleRoundCategories"
       :key="item.id"
       :item="item"
+      :style="{ viewTransitionName: transitionName(item.id) }"
       :class="{
         'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
         'opacity-50': !filteredSet.has(item.id) && item.value === 0,

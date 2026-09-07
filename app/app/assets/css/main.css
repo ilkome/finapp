@@ -43,3 +43,38 @@
     pointer-events: auto !important;
   }
 }
+
+/* Category chips morph between their old and new slots via view transitions. Only the named
+   elements should move - a full-page cross-fade behind them would redraw the whole report. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* Summary blocks flip on their horizontal axis rather than cross-fading. Browsers without
+   `view-transition-class` ignore these rules and fall back to the default cross-fade. */
+.statSumFlip {
+  view-transition-class: statSum;
+}
+
+@keyframes statSumFlipOut {
+  to {
+    opacity: 0;
+    transform: rotateX(-90deg);
+  }
+}
+
+@keyframes statSumFlipIn {
+  from {
+    opacity: 0;
+    transform: rotateX(90deg);
+  }
+}
+
+::view-transition-old(.statSum) {
+  animation: 110ms cubic-bezier(0.4, 0, 1, 1) both statSumFlipOut;
+}
+
+::view-transition-new(.statSum) {
+  animation: 110ms cubic-bezier(0, 0, 0.2, 1) 90ms both statSumFlipIn;
+}
