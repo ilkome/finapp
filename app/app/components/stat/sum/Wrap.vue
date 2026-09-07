@@ -39,7 +39,7 @@ const className = computed(() => cn(
 const summaryItems = computed(() => buildStatSummaryItems(props.total, props.filteredType))
 
 function onClick(type: SeriesSlugSelected) {
-  runViewTransition(() => emit('click', type))
+  emit('click', type)
 }
 </script>
 

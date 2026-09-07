@@ -38,7 +38,7 @@ const isShowNavHome = computed(() => computeIsShowNavHome(statDate.params.value,
 
 function changeDate(way: 'next' | 'prev' | 'today') {
   if (way === 'today') {
-    runViewTransition(() => statDate.goHome())
+    statDate.goHome()
     return
   }
 
@@ -46,13 +46,11 @@ function changeDate(way: 'next' | 'prev' | 'today') {
     return
 
   const direction = way === 'next' ? 1 : -1
-  runViewTransition(() => {
-    // An interval is selected -> the arrows step intervals (days inside a month, months
-    // inside a year) and roll into the neighbouring range at the edges.
-    if (statDate.params.value.intervalSelected !== -1)
-      statDate.stepInterval(direction)
-    else statDate.stepRange(direction)
-  })
+  // An interval is selected -> the arrows step intervals (days inside a month, months
+  // inside a year) and roll into the neighbouring range at the edges.
+  if (statDate.params.value.intervalSelected !== -1)
+    statDate.stepInterval(direction)
+  else statDate.stepRange(direction)
 }
 </script>
 
