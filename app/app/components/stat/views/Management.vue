@@ -13,9 +13,11 @@ const walletsStore = useWalletsStore()
 const controller = inject(statViewControllerKey, null)
 const { open: openPanel } = useStatConfigNav()
 const name = ref('')
+const nameInput = useTemplateRef<{ inputRef?: HTMLInputElement }>('nameInput')
 const isCustomName = ref(false)
 const isAutoEnabled = ref(false)
-const isViewsExpanded = ref(true)
+const isViewsOpen = ref(false)
+const isDeleteOpen = ref(false)
 
 const current = computed(() => controller?.activeView.value ?? null)
 const suggestion = computed(() => generateViewName(current.value?.autoRule ?? null, {
@@ -75,6 +77,12 @@ function onNameInput() {
   isCustomName.value = true
 }
 
+const viewActionItems = computed(() => [[
+  { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: () => nextTick(() => nameInput.value?.inputRef?.focus()) },
+], [
+  { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => { isDeleteOpen.value = true } },
+]])
+
 function toggleAutoEnabled() {
   isAutoEnabled.value = !isAutoEnabled.value
 }
@@ -83,18 +91,9 @@ function toggleAutoEnabled() {
 <template>
   <section v-if="controller" class="grid">
     <div class="grid gap-3 px-1 pb-4">
-      <StatConfigExpandableBlock
-        dataKey="views"
-        icon="lucide:layout-panel-top"
-        :isExpanded="isViewsExpanded"
-        :title="$t('stat.views.menu.label')"
-        @activate="isViewsExpanded = !isViewsExpanded"
-      >
-        <StatViewsList class="px-2 pb-3" />
-      </StatConfigExpandableBlock>
-
-      <div class="flex min-w-0 items-center px-2">
+      <div class="flex min-w-0 items-center gap-1 px-2">
         <UInput
+          ref="nameInput"
           v-model="name"
           class="min-w-0 flex-1 border-b border-transparent transition-colors focus-within:border-primary hover:border-default"
           :disabled="!current"
@@ -104,6 +103,33 @@ function toggleAutoEnabled() {
           variant="none"
           @update:modelValue="onNameInput"
         />
+
+        <div class="shrink-0">
+          <BottomSheetOrDropdown
+            align="end"
+            :isOpen="isViewsOpen"
+            :title="$t('stat.views.menu.label')"
+            @openModal="isViewsOpen = true"
+            @closeModal="isViewsOpen = false"
+          >
+            <template #trigger>
+              <UButton
+                :aria-label="$t('stat.views.menu.label')"
+                color="neutral"
+                icon="i-lucide-layout-panel-top"
+                variant="ghost"
+              />
+            </template>
+
+            <template #content>
+              <StatViewsList class="pb-4 md:pb-0" />
+            </template>
+          </BottomSheetOrDropdown>
+        </div>
+
+        <UDropdownMenu :items="viewActionItems" :content="{ align: 'end' }" :modal="false">
+          <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
+        </UDropdownMenu>
       </div>
     </div>
 
@@ -120,5 +146,13 @@ function toggleAutoEnabled() {
       />
     </div>
     <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
+
+    <LayoutConfirmModal
+      v-if="isDeleteOpen"
+      :description="$t('stat.views.deleteConfirm')"
+      title=""
+      @closed="isDeleteOpen = false"
+      @confirm="current && controller.remove(current.id)"
+    />
   </section>
 </template>

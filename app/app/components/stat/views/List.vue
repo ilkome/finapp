@@ -75,21 +75,6 @@ watch(sortedViewIds, () => {
 onBeforeUnmount(() => {
   persistViewOrder.flush()
 })
-
-async function remove(id: string) {
-  if (!controller)
-    return
-  if (views.value.length === 1) {
-    const fallback = await controller.store.update(id, {
-      isActive: true,
-      name: t('stat.views.defaultName'),
-    })
-    if (fallback)
-      controller.apply(fallback)
-    return
-  }
-  await controller?.store.remove(id)
-}
 </script>
 
 <template>
@@ -122,7 +107,7 @@ async function remove(id: string) {
       :description="$t('stat.views.deleteConfirm')"
       title=""
       @closed="deleteId = null"
-      @confirm="remove(deleteId!)"
+      @confirm="controller.remove(deleteId!)"
     />
   </div>
 </template>

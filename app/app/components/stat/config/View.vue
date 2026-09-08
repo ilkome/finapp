@@ -146,7 +146,6 @@ onBeforeUnmount(() => {
     <StatConfigBlockRuleGroups
       v-if="groupBy === 'rules'"
       :panels="availablePanels"
-      @activate="openPanel($event)"
     />
   </div>
 </template>

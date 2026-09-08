@@ -8,9 +8,12 @@ import { BLOCK_RULE_PARAMETERS, BLOCK_RULE_VISIBILITY_PARAMETER_ID, isBlockRuleP
 import { applyBlockRuleConfig, createBlockRuleOverrides, resolveBlockRuleParameterIds } from '~/components/stat/views/blockRules'
 
 const props = defineProps<{
+  icon?: string
   isExpanded: boolean
   panel: StatBlockPanelId
   rule: BlockRule
+  // Opened from the rules grouping, where the condition is the group itself: only "then" is editable.
+  thenOnly?: boolean
   title: string
 }>()
 
@@ -106,6 +109,7 @@ function setExpanded(open: boolean) {
     insideClasses="group min-h-10 gap-0 border-0 p-0"
   >
     <div
+      v-if="!thenOnly"
       class="blockRuleSortHandle sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center self-stretch text-muted hover:bg-accented active:cursor-grabbing"
       :aria-label="$t('stat.views.drag')"
     >
@@ -125,6 +129,7 @@ function setExpanded(open: boolean) {
             type="button"
             class="flex min-h-10 w-full min-w-0 items-center gap-2 px-3 text-left"
           >
+            <Icon v-if="icon" :name="icon" class="size-4 shrink-0 text-muted" />
             <span class="min-w-0 grow truncate text-sm font-medium">{{ title }}</span>
             <Icon name="lucide:chevron-down" class="size-4 shrink-0 text-muted" />
           </button>
@@ -132,14 +137,20 @@ function setExpanded(open: boolean) {
 
         <template #content>
           <UiTitleModal class="flex items-center gap-2 md:pt-3 md:pb-2">
-            <span class="grow">{{ t('stat.views.blockRules.rule') }}</span>
-            <UDropdownMenu :items="ruleActionItems" :content="{ align: 'end' }" :modal="false">
+            <span class="grow">{{ thenOnly ? title : t('stat.views.blockRules.rule') }}</span>
+            <UDropdownMenu
+              v-if="!thenOnly"
+              :items="ruleActionItems"
+              :content="{ align: 'end' }"
+              :modal="false"
+            >
               <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
             </UDropdownMenu>
           </UiTitleModal>
 
           <div class="grid gap-4 px-3 pb-3 md:pb-2">
             <StatViewsConditionEditor
+              v-if="!thenOnly"
               :modelValue="rule.condition"
               @update:modelValue="updateCondition"
             />

@@ -715,7 +715,7 @@ export default {
       discard: 'Discard changes',
       drag: 'Drag view',
       errors: { delete: 'Could not delete view', order: 'Could not reorder views', save: 'Could not save view' },
-      groupBy: { blocks: 'By blocks', rules: 'By rules' },
+      groupBy: { blocks: 'Blocks', rules: 'Rules' },
       menu: { label: 'Views', settings: 'Settings' },
       modern: 'Modern',
       name: 'View name',

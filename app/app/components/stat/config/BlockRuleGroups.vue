@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { StatBlockPanelId } from '~/components/stat/views/types'
+import type { BlockRule, StatBlockPanelId } from '~/components/stat/views/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
@@ -9,33 +9,34 @@ const props = defineProps<{
   panels: StatBlockPanelId[]
 }>()
 
-const emit = defineEmits<{
-  activate: [panel: StatBlockPanelId]
-}>()
-
 const { t } = useI18n()
 const { conditionGroupTitle } = useStatConditionTitles()
 const controller = inject(statViewControllerKey, null)
 const expandedId = ref<string | null>(null)
+const expandedRuleId = ref<string | null>(null)
 
 // Rules are stored per block, but one condition is usually reused across several of them. This
 // view inverts that mapping so a condition can be read as "what this changes everywhere".
 const groups = computed(() => {
   const blockRules = controller?.activeView.value?.config.blockRules ?? {}
-  const byCondition = new Map<string, { panels: StatBlockPanelId[], title: string }>()
+  const byCondition = new Map<string, { entries: { panel: StatBlockPanelId, rule: BlockRule }[], title: string }>()
 
   for (const panel of props.panels) {
     for (const rule of blockRules[panel] ?? []) {
       const id = JSON.stringify(rule.condition)
-      const group = byCondition.get(id) ?? { panels: [], title: conditionGroupTitle(rule.condition) }
-      if (!group.panels.includes(panel))
-        group.panels.push(panel)
+      const group = byCondition.get(id) ?? { entries: [], title: conditionGroupTitle(rule.condition) }
+      group.entries.push({ panel, rule })
       byCondition.set(id, group)
     }
   }
 
   return [...byCondition].map(([id, group]) => ({ ...group, id }))
 })
+
+function updateRule(panel: StatBlockPanelId, next: BlockRule) {
+  const rules = controller?.activeView.value?.config.blockRules[panel] ?? []
+  void controller?.updateBlockRules(panel, rules.map(rule => rule.id === next.id ? next : rule))
+}
 </script>
 
 <template>
@@ -50,14 +51,17 @@ const groups = computed(() => {
       :title="group.title"
       @activate="expandedId = expandedId === group.id ? null : group.id"
     >
-      <StatConfigRow
-        v-for="panel in group.panels"
-        :key="panel"
-        compact
-        hasPanel
-        :icon="PANELS[panel].icon"
-        :title="t(PANELS[panel].titleKey)"
-        @activate="emit('activate', panel)"
+      <StatConfigBlockRuleCard
+        v-for="entry in group.entries"
+        :key="`${entry.panel}:${entry.rule.id}`"
+        :icon="PANELS[entry.panel].icon"
+        :isExpanded="expandedRuleId === entry.rule.id"
+        :panel="entry.panel"
+        :rule="entry.rule"
+        thenOnly
+        :title="t(PANELS[entry.panel].titleKey)"
+        @toggleExpanded="expandedRuleId = expandedRuleId === entry.rule.id ? null : entry.rule.id"
+        @update="updateRule(entry.panel, $event)"
       />
     </StatConfigExpandableBlock>
 

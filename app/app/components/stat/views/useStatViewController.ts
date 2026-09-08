@@ -152,6 +152,16 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       })
     return configSaveQueue
   }
+  // The stat page always needs one view, so dropping the last one resets it instead of deleting.
+  async function remove(id: string) {
+    if (store.views.length === 1) {
+      const fallback = await store.update(id, { isActive: true, name: t('stat.views.defaultName') })
+      if (fallback)
+        apply(fallback)
+      return
+    }
+    await store.remove(id)
+  }
   let isEnsuringActiveView = false
   let hasWaitedForFirstSync = false
   watch([
@@ -202,5 +212,5 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       appliedId.value = null
   }, { immediate: true })
 
-  return { activeId, activeView, apply, context, cycle, duplicate, isDirty, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
+  return { activeId, activeView, apply, context, cycle, duplicate, isDirty, remove, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
 }

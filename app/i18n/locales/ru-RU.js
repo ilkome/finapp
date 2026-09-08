@@ -715,7 +715,7 @@ export default {
       discard: 'Отменить изменения',
       drag: 'Перетащить вид',
       errors: { delete: 'Не удалось удалить вид', order: 'Не удалось изменить порядок видов', save: 'Не удалось сохранить вид' },
-      groupBy: { blocks: 'По блокам', rules: 'По правилам' },
+      groupBy: { blocks: 'Блоки', rules: 'Правила' },
       menu: { label: 'Виды', settings: 'Настроить' },
       modern: 'Современный',
       name: 'Название вида',
