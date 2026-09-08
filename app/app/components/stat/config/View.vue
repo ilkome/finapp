@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
+import { useStorage } from '@vueuse/core'
 import { debounce } from 'es-toolkit'
 
 import type { StatConfigBlockId } from '~/components/stat/config/schema'
@@ -44,6 +45,14 @@ watch(availablePanels, (panels) => {
 
 const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
   label: t(`stat.view.pageLayout.${value}.label`),
+  value,
+})))
+
+// Which way the block settings are listed is a habit, not a property of the view - it outlives
+// both the session and whichever view happens to be active.
+const groupBy = useStorage<'blocks' | 'rules'>('finapp.statConfig.groupBy', 'blocks')
+const groupByItems = computed(() => (['blocks', 'rules'] as const).map(value => ({
+  label: t(`stat.views.groupBy.${value}`),
   value,
 })))
 function syncSortedBlockIds() {
@@ -113,15 +122,31 @@ onBeforeUnmount(() => {
       @activate="openPanel('statAverage')"
     />
 
-    <div ref="blockSortParent" class="grid min-w-0">
+    <div class="px-2 py-3">
+      <UiTabs
+        :items="groupByItems"
+        :modelValue="groupBy"
+        size="sm"
+        @update:modelValue="value => groupBy = value as 'blocks' | 'rules'"
+      />
+    </div>
+
+    <!-- v-show, not v-if: unmounting the list would tear down the drag-and-drop parent. -->
+    <div v-show="groupBy === 'blocks'" ref="blockSortParent" class="grid min-w-0">
       <StatConfigBlock
         v-for="(panel, index) in sortedBlockIds"
         :key="panel"
         :panel
-        :showSeparator="index > 0 || availablePanels.includes('statAverage')"
+        :showSeparator="index > 0"
         sortable
         @activate="openPanel(panel)"
       />
     </div>
+
+    <StatConfigBlockRuleGroups
+      v-if="groupBy === 'rules'"
+      :panels="availablePanels"
+      @activate="openPanel($event)"
+    />
   </div>
 </template>

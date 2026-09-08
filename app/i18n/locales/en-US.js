@@ -678,6 +678,7 @@ export default {
         count: 'Rules: {count}',
         default: 'Settings',
         empty: 'This block has no rules yet.',
+        emptyView: 'This view has no block rules yet.',
         new: 'New rule',
         parameters: {
           visibility: 'Show block',
@@ -714,6 +715,7 @@ export default {
       discard: 'Discard changes',
       drag: 'Drag view',
       errors: { delete: 'Could not delete view', order: 'Could not reorder views', save: 'Could not save view' },
+      groupBy: { blocks: 'By blocks', rules: 'By rules' },
       menu: { label: 'Views', settings: 'Settings' },
       modern: 'Modern',
       name: 'View name',
