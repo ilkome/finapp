@@ -43,6 +43,7 @@ const defaultConfig: MiniItemConfig = {
   },
   chart: {
     breakdown: 'cashflow',
+    grouping: 'parent',
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
@@ -62,6 +63,11 @@ const defaultConfig: MiniItemConfig = {
     },
     type: 'bar',
     valueDisplay: 'magnitude',
+  },
+  contextBlocks: {
+    categoryChildren: { isShow: true },
+    walletBalance: { isShow: true },
+    walletDescription: { isShow: true },
   },
   date: {
     isPinned: true,
@@ -174,6 +180,21 @@ describe('applyConfigUpdate', () => {
     expect(result!.chart.type).toBe('line')
   })
 
+  it('resets the chart mode to the one matching the page layout', () => {
+    const split = applyConfigUpdate(defaultConfig, 'page', { layout: 'split' } as any)!
+    expect(split.chart.layout).toBe('split')
+
+    const back = applyConfigUpdate(split, 'page', { layout: 'combined' } as any)!
+    expect(back.chart.layout).toBe('combined-wide')
+  })
+
+  it('lets the chart mode be reverted without touching the page layout', () => {
+    const split = applyConfigUpdate(defaultConfig, 'page', { layout: 'split' } as any)!
+    const narrow = applyConfigUpdate(split, 'chart', { layout: 'combined-narrow' } as any)!
+    expect(narrow.chart.layout).toBe('combined-narrow')
+    expect(narrow.page.layout).toBe('split')
+  })
+
   it('updates chart layout mode', () => {
     const result = applyConfigUpdate(defaultConfig, 'chart', { layout: 'combined-narrow' } as any)
     expect(result).not.toBeNull()
@@ -197,11 +218,14 @@ describe('applyConfigUpdate', () => {
     })
 
     expect(result.page.blockOrder).toEqual([
+      'categoryChildren',
+      'walletBalance',
+      'walletDescription',
       'navigation',
       'summary',
       'trns',
       'chart',
-      ...statConfigBlockOrder.filter(id => id !== 'navigation' && id !== 'summary' && id !== 'trns' && id !== 'chart'),
+      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription'].includes(id)),
     ])
   })
 
@@ -209,11 +233,14 @@ describe('applyConfigUpdate', () => {
     const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder: ['trns', 'chart', 'trns'] as any })
 
     expect(result?.page.blockOrder).toEqual([
+      'categoryChildren',
+      'walletBalance',
+      'walletDescription',
       'navigation',
       'summary',
       'trns',
       'chart',
-      ...statConfigBlockOrder.filter(id => id !== 'navigation' && id !== 'summary' && id !== 'trns' && id !== 'chart'),
+      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription'].includes(id)),
     ])
   })
 
@@ -227,12 +254,12 @@ describe('applyConfigUpdate', () => {
     expect(result!.page.blockOrder.indexOf('vertical')).toBeLessThan(result!.page.blockOrder.indexOf('catsList'))
   })
 
-  it('disables transaction history when transactions are not the last block', () => {
+  it('preserves the transaction history preference when transactions are not the last block', () => {
     const blockOrder: MiniItemConfig['page']['blockOrder'] = ['trns', ...statConfigBlockOrder.filter(id => id !== 'trns')]
     const result = applyConfigUpdate(defaultConfig, 'page', { blockOrder })
 
     expect(result?.page.blockOrder).toEqual(blockOrder)
-    expect(result?.trns.isShowHistory).toBe(false)
+    expect(result?.trns.isShowHistory).toBe(true)
   })
 
   it('allows transaction history when transactions are the last block', () => {

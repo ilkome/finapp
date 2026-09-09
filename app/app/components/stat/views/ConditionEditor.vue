@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import type { ConditionField } from './conditionFields'
-import type { Condition, ConditionGroup } from './types'
+import { statContentWidthKey } from '~/components/stat/injectionKeys'
 
-import { changeConditionField, getConditionField } from './conditionFields'
+import type { ConditionField } from './conditionFields'
+import type { Condition, ConditionComparator, ConditionGroup } from './types'
+
+import { autoRuleConditionFields, blockRuleConditionFields, changeConditionField, getConditionField } from './conditionFields'
 
 defineOptions({ name: 'StatViewsConditionEditor' })
 
-const props = defineProps<{ depth?: number, modelValue: ConditionGroup, removable?: boolean }>()
+const props = defineProps<{ depth?: number, modelValue: ConditionGroup, pageScoped?: boolean, removable?: boolean }>()
 const emit = defineEmits<{ 'remove': [], 'update:modelValue': [value: ConditionGroup] }>()
 const { t } = useI18n()
+const contentWidth = inject(statContentWidthKey, ref(null))
 const comparators = ['<', '<=', '=', '!=', '>=', '>'].map(value => ({ label: value, value }))
-const fields = computed(() => [
-  { label: t('stat.views.conditions.fields.period'), value: 'period' },
-  { label: t('stat.views.conditions.fields.parentCategoryCount'), value: 'parentCategoryCount' },
-  { label: t('stat.views.conditions.fields.allCategoryCount'), value: 'allCategoryCount' },
-  { label: t('stat.views.conditions.fields.contentWidth'), value: 'contentWidth' },
-])
+const fieldLabelKeys: Record<ConditionField, string> = {
+  category: 'stat.views.conditions.fields.categorySelection',
+  contentWidth: 'stat.views.conditions.fields.contentWidth',
+  period: 'stat.views.conditions.fields.period',
+  walletSelection: 'stat.views.conditions.fields.walletSelection',
+}
+const fields = computed(() => (props.pageScoped ? autoRuleConditionFields : blockRuleConditionFields)
+  .map(value => ({ label: t(fieldLabelKeys[value]), value })))
 const operators = computed(() => [
   { label: t('stat.views.conditions.operators.and'), value: 'and' },
   { label: t('stat.views.conditions.operators.or'), value: 'or' },
@@ -26,10 +31,15 @@ function update(children: ConditionGroup['children']) {
   emit('update:modelValue', { ...props.modelValue, children })
 }
 function addCondition() {
-  update([...props.modelValue.children, { comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }])
+  update([...props.modelValue.children, props.pageScoped
+    ? { ids: [], kind: 'categorySelection', mode: 'any' }
+    : { comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }])
 }
 function replace(index: number, value: Condition | ConditionGroup) {
   update(props.modelValue.children.map((child, childIndex) => childIndex === index ? value : child))
+}
+function replaceField(index: number, condition: Condition, field: ConditionField) {
+  replace(index, changeConditionField(condition, field, contentWidth.value))
 }
 function remove(index: number) {
   if (props.removable && props.modelValue.children.length === 1) {
@@ -71,6 +81,7 @@ function conditionActionItems(index: number) {
         <StatViewsConditionEditor
           :depth="(depth ?? 0) + 1"
           :modelValue="child"
+          :pageScoped="pageScoped"
           removable
           @remove="remove(index)"
           @update:modelValue="replace(index, $event)"
@@ -91,21 +102,29 @@ function conditionActionItems(index: number) {
             :aria-label="t('stat.views.conditions.labels.operator')"
             @update:modelValue="$emit('update:modelValue', { ...modelValue, operator: $event as 'and' | 'or' })"
           />
-          <USelect class="min-w-32 grow" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="getConditionField(child)" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replace(index, changeConditionField(child, $event as ConditionField))" />
-          <USelect class="w-16 shrink-0" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as Condition['comparator'] })" />
-          <UInputNumber
-            class="w-24 shrink-0"
-            :decrement="false"
-            :increment="false"
-            :min="child.kind === 'period' ? 1 : 0"
-            :modelValue="child.value"
-            :ui="{ base: 'text-center' }"
-            @update:modelValue="replace(index, { ...child, value: Number($event) })"
+          <USelect class="min-w-32 grow" :content="{ position: 'item-aligned' }" :items="fields" :modelValue="getConditionField(child)" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.field')" @update:modelValue="replaceField(index, child, $event as ConditionField)" />
+          <StatViewsEntitySelectionEditor
+            v-if="child.kind === 'walletSelection' || child.kind === 'categorySelection' || child.kind === 'categoryCount'"
+            :modelValue="child"
+            :pageScoped="pageScoped"
+            @update:modelValue="replace(index, $event)"
           />
-          <USelect v-if="child.kind === 'period'" class="w-24 shrink-0" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
-          <span v-else-if="child.kind === 'contentWidth'" class="w-10 shrink-0 px-2 text-sm text-muted">px</span>
+          <template v-else>
+            <USelect class="w-16 shrink-0" :content="{ position: 'item-aligned' }" :items="comparators" :modelValue="child.comparator" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.comparator')" @update:modelValue="replace(index, { ...child, comparator: $event as ConditionComparator })" />
+            <UInputNumber
+              class="w-24 shrink-0"
+              :decrement="false"
+              :increment="false"
+              :min="child.kind === 'period' ? 1 : 0"
+              :modelValue="child.value"
+              :ui="{ base: 'text-center' }"
+              @update:modelValue="replace(index, { ...child, value: Number($event) })"
+            />
+            <USelect v-if="child.kind === 'period'" class="w-24 shrink-0" :content="{ position: 'item-aligned' }" :items="units" :modelValue="child.unit" :ui="selectUi" :aria-label="t('stat.views.conditions.labels.unit')" @update:modelValue="replace(index, { ...child, unit: $event as 'day' | 'week' | 'month' | 'year' })" />
+            <span v-else-if="child.kind === 'contentWidth'" class="w-10 shrink-0 px-2 text-sm text-muted">px</span>
+          </template>
         </div>
-        <div class="absolute top-0 right-0 flex justify-end">
+        <div class="absolute -top-1 -right-1 flex justify-end">
           <UDropdownMenu :items="conditionActionItems(index)" :content="{ align: 'end' }" :modal="false">
             <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
           </UDropdownMenu>
@@ -113,13 +132,9 @@ function conditionActionItems(index: number) {
       </div>
     </template>
     <div v-if="!removable">
-      <UButton
-        class="w-full justify-start"
-        color="neutral"
+      <StatConfigActionButton
         icon="i-lucide-plus"
         :label="t('stat.views.conditions.addCondition')"
-        size="sm"
-        variant="ghost"
         @click="addCondition"
       />
     </div>

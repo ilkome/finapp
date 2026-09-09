@@ -1,15 +1,17 @@
 <script setup lang="ts">
-defineProps<{
+const props = defineProps<{
   ariaLabel: string
 }>()
 </script>
 
 <template>
-  <UiActionButton
-    class="rounded-md! hover:bg-accented!"
-    :ariaLabel
+  <button
+    type="button"
+    class="group/more relative flex size-10 shrink-0 cursor-default items-center justify-center"
+    :aria-label="props.ariaLabel"
     @click.stop
   >
-    <Icon name="lucide:ellipsis" size="18" />
-  </UiActionButton>
+    <span class="more-button-bg absolute inset-1 rounded-sm transition-colors group-hover/more:bg-accented group-data-[state=open]/more:bg-accented" />
+    <Icon name="lucide:ellipsis" class="relative" size="16" />
+  </button>
 </template>

@@ -12,13 +12,31 @@ export const chartLayoutIcons: Record<typeof chartLayoutOptions[number], string>
   'combined-wide': 'i-lucide-rectangle-horizontal',
   'split': 'i-lucide-columns-2',
 }
+export type ChartLayout = typeof chartLayoutOptions[number]
+export type PageLayout = 'combined' | 'split'
+
+/**
+ * "Together" means a different chart on each page layout: a wide chart in one column, a narrow
+ * one beside its neighbour. Only the matching pair is offered.
+ */
+export function resolveChartLayoutOptions(pageLayout: PageLayout): ChartLayout[] {
+  return [pageLayout === 'split' ? 'combined-narrow' : 'combined-wide', 'split']
+}
+
+/** Each page layout has a default chart mode; the other option of the pair reverts it by hand. */
+export function alignChartLayoutToPage(pageLayout: PageLayout): ChartLayout {
+  return pageLayout === 'split' ? 'split' : 'combined-wide'
+}
+
 export const chartValueDisplayOptions = ['magnitude', 'signed'] as const
 export const pieShapeOptions = ['donut', 'circle'] as const
 export const walletDisplayModes = ['recent', 'period'] as const
 export const walletSelectionModes = ['multiple', 'single'] as const
 export const walletValueModes = ['balance', 'period'] as const
 export const categoryGroupingOptions = ['auto', 'parent', 'child'] as const
-const leadingStatConfigBlockOrder = ['navigation', 'summary'] as const
+export const statContextBlockIds = ['categoryChildren', 'walletBalance', 'walletDescription'] as const
+export type StatContextBlockId = typeof statContextBlockIds[number]
+const leadingStatConfigBlockOrder = [...statContextBlockIds, 'navigation', 'summary'] as const
 export const statReportBlockOrder = ['vertical', 'catsRound', 'catsList', 'trns'] as const
 export const statConfigBlockOrder = [...leadingStatConfigBlockOrder, 'wallets', 'chart', ...statReportBlockOrder] as const
 export type StatConfigBlockId = typeof statConfigBlockOrder[number]
@@ -125,6 +143,7 @@ export const ConfigSchema = z.object({
   }),
   chart: z.object({
     breakdown: z.enum(['cashflow', 'categories']),
+    grouping: categoryGroupingSchema.default('parent'),
     isGrouped: z.boolean(),
     isShow: z.boolean(),
     isShowAverage: z.boolean(),
@@ -144,6 +163,15 @@ export const ConfigSchema = z.object({
     }),
     type: z.enum(chartTypes),
     valueDisplay: z.enum(chartValueDisplayOptions),
+  }),
+  contextBlocks: z.object({
+    categoryChildren: z.object({ isShow: z.boolean() }),
+    walletBalance: z.object({ isShow: z.boolean() }),
+    walletDescription: z.object({ isShow: z.boolean() }),
+  }).default({
+    categoryChildren: { isShow: true },
+    walletBalance: { isShow: true },
+    walletDescription: { isShow: true },
   }),
   date: z.object({
     isPinned: z.boolean(),
@@ -179,15 +207,7 @@ export const ConfigSchema = z.object({
     selectionMode: z.enum(walletSelectionModes),
     valueMode: z.enum(walletValueModes).default('balance'),
   }),
-}).transform(config => config.page.blockOrder.at(-1) === 'trns' || !config.trns.isShowHistory
-  ? config
-  : {
-      ...config,
-      trns: {
-        ...config.trns,
-        isShowHistory: false,
-      },
-    })
+})
 
 export type MiniItemConfig = z.infer<typeof ConfigSchema>
 
@@ -229,6 +249,7 @@ export const defaultConfig: MiniItemConfig = {
 
   chart: {
     breakdown: 'cashflow',
+    grouping: 'parent',
     isGrouped: true,
     isShow: true,
     isShowAverage: false,
@@ -243,6 +264,12 @@ export const defaultConfig: MiniItemConfig = {
     },
     type: 'bar',
     valueDisplay: 'magnitude',
+  },
+
+  contextBlocks: {
+    categoryChildren: { isShow: true },
+    walletBalance: { isShow: true },
+    walletDescription: { isShow: true },
   },
 
   date: {
@@ -300,6 +327,10 @@ export function applyConfigUpdate<K extends keyof MiniItemConfig>(
   const update = {
     ...current,
     [key]: mergedValue,
+  }
+  if (key === 'page' && 'layout' in value) {
+    const pageLayout = (mergedValue as MiniItemConfig['page']).layout
+    update.chart = { ...update.chart, layout: alignChartLayoutToPage(pageLayout) }
   }
 
   const parsed = ConfigSchema.safeParse(update)

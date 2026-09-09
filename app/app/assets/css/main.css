@@ -43,3 +43,10 @@
     pointer-events: auto !important;
   }
 }
+
+/* Category chips morph between their old and new slots via view transitions. Only the named
+   elements should move - a full-page cross-fade behind them would redraw the whole report. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}

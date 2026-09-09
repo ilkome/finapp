@@ -2,7 +2,7 @@ import type { Row } from '~~/services/powersync/transforms'
 import type { Range } from '~~/utils/date/types'
 
 import { watchTable } from '~~/services/powersync/db'
-import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
+import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { trnToRow } from '~~/services/powersync/transforms'
 import { getEndOf, getStartOf } from '~~/utils/date/period'
 
@@ -167,6 +167,33 @@ export const useTrnsStore = defineStore('trns', () => {
     })
   }
 
+  async function saveTrns(values: Record<TrnId, TrnItem>): Promise<boolean> {
+    const entries = Object.entries(values)
+    if (!entries.length)
+      return true
+
+    const prev = items.value
+    setTrns({ ...(items.value ?? {}), ...values })
+
+    if (isDemo.value)
+      return true
+
+    try {
+      const userId = resolveWriteUid(uid.value)
+      await upsertRows('trns', entries.map(([id, trn]) => ({
+        id,
+        row: trnToRow(trn, userId),
+      })))
+      return true
+    }
+    catch (e) {
+      setTrns(prev)
+      logger.error('saveTrns failed', e)
+      showErrorToast('trns.errors.saveFailed')
+      return false
+    }
+  }
+
   function deleteTrn(id: TrnId) {
     const prev = items.value
     const trns = { ...(items.value ?? {}) }
@@ -181,6 +208,32 @@ export const useTrnsStore = defineStore('trns', () => {
       logger.error('deleteTrn failed', e)
       showErrorToast('trns.errors.deleteFailed')
     })
+  }
+
+  async function deleteTrns(ids: TrnId[]): Promise<boolean> {
+    const uniqueIds = [...new Set(ids)].filter(id => items.value?.[id])
+    if (!uniqueIds.length)
+      return true
+
+    const prev = items.value
+    const trns = { ...(items.value ?? {}) }
+    for (const id of uniqueIds)
+      delete trns[id]
+    setTrns(trns)
+
+    if (isDemo.value)
+      return true
+
+    try {
+      await deleteRows('trns', uniqueIds)
+      return true
+    }
+    catch (e) {
+      setTrns(prev)
+      logger.error('deleteTrns failed', e)
+      showErrorToast('trns.errors.deleteFailed')
+      return false
+    }
   }
 
   /** Remove trns from the in-memory store only (used when a wallet/category is deleted). */
@@ -257,6 +310,7 @@ export const useTrnsStore = defineStore('trns', () => {
   return {
     computeTrnItem,
     deleteTrn,
+    deleteTrns,
     getRange,
     getStoreTrnsIds,
     hasItems,
@@ -267,6 +321,7 @@ export const useTrnsStore = defineStore('trns', () => {
     primeFromCache,
     removeTrnsFromStore,
     saveTrn,
+    saveTrns,
     setTrns,
   }
 })

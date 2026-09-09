@@ -1,12 +1,14 @@
-import type { Condition, ConditionGroup } from './types'
+import type { Condition, ConditionGroup, EntitySelectionMode } from './types'
 
 export type ViewNameLabels = {
   and: string
   andMore: (count: number) => string
   categoryCount: (scope: 'all' | 'parent', comparator: string, value: number) => string
+  categorySelection: (mode: EntitySelectionMode, ids: string[]) => string
   contentWidth: (comparator: string, value: number) => string
   fallback: string
   period: (value: number, unit: string) => string
+  walletSelection: (mode: EntitySelectionMode, ids: string[]) => string
 }
 
 function flatten(group: ConditionGroup, result: Condition[] = []): Condition[] {
@@ -26,6 +28,10 @@ export function generateViewName(rule: ConditionGroup | null, labels: ViewNameLa
           return labels.period(condition.value, condition.unit)
         if (condition.kind === 'contentWidth')
           return labels.contentWidth(condition.comparator, condition.value)
+        if (condition.kind === 'walletSelection')
+          return labels.walletSelection(condition.mode, condition.ids)
+        if (condition.kind === 'categorySelection')
+          return labels.categorySelection(condition.mode, condition.ids)
         return labels.categoryCount(condition.scope, condition.comparator, condition.value)
       }).filter(Boolean)
     : []

@@ -50,7 +50,7 @@ const combinedGroups = computed(() => {
 <template>
   <div v-if="visibleBlocks.length" class="grid min-w-0 gap-8" :data-stat-block="visibleBlocks.join(' ')">
     <template v-if="statConfig.config.value.page.layout === 'combined' || !canSplit">
-      <div class="@container/stat grid min-w-0 content-start gap-3" data-stat-report-content="combined">
+      <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="combined">
         <template v-for="(group, groupIndex) in combinedGroups" :key="`${group.kind}-${groupIndex}`">
           <StatReportDetails
             v-if="group.kind === 'round'"
@@ -89,7 +89,7 @@ const combinedGroups = computed(() => {
     </template>
     <template v-else>
       <div class="stat-two-column-grid">
-        <div class="@container/stat grid min-w-0 content-start gap-3" data-stat-report-content="expense">
+        <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="expense">
           <StatReportDetails
             v-for="block in visibleBlocks"
             :key="block"
@@ -99,7 +99,7 @@ const combinedGroups = computed(() => {
             managedLayout
           />
         </div>
-        <div class="@container/stat grid min-w-0 content-start gap-3" data-stat-report-content="income">
+        <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="income">
           <StatReportDetails
             v-for="block in visibleBlocks"
             :key="block"

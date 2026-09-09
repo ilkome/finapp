@@ -5,21 +5,28 @@ import { defaultConfig } from '~/components/stat/config/schema'
 
 import type { BlockRule, ConditionGroup, StatView } from './types'
 
-import { cloneBlockRule, createBlockRuleOverrides, resolveConfigUpdateParameterIds, resolveEffectiveStatConfig, resolveHiddenStatPanels } from './blockRules'
+import { cloneBlockRule, createBlockRuleOverrides, findMatchingBlockRules, resolveConfigUpdateParameterIds, resolveEffectiveStatConfig, resolveHiddenStatPanels } from './blockRules'
 import { evaluateConditionGroup, findAutomaticView } from './evaluateConditions'
 import { generateViewName } from './generateViewName'
 import { StatViewSchema } from './schema'
 
 const context = {
   categoryCount: 12,
+  categoryPathById: {
+    child: ['child', 'parent'],
+    other: ['other'],
+    parent: ['parent'],
+  },
   contentWidth: 720,
+  pageCategoryId: null,
+  pageWalletId: null,
   parentCategoryCount: 4,
   range: { end: new Date(2026, 0, 7).getTime(), start: new Date(2026, 0, 1).getTime() },
   selectedCategoryIds: [],
   selectedWalletIds: [],
 }
 
-function view(id: string, sortOrder: number, rule: ConditionGroup = { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 10 }], operator: 'and' }): StatView {
+function view(id: string, sortOrder: number, rule: ConditionGroup = { children: [{ ids: [], kind: 'categorySelection', mode: 'any' }], operator: 'and' }): StatView {
   return {
     autoRule: rule,
     config: { base: defaultConfig, blockRules: {} },
@@ -63,7 +70,38 @@ describe('statistics saved views', () => {
 
   it('uses calendar ranges and every priority by user order', () => {
     expect(evaluateConditionGroup({ children: [{ comparator: '=', kind: 'period', unit: 'day', value: 7 }], operator: 'and' }, context)).toBe(true)
-    expect(findAutomaticView([view('second', 1), view('first', 0)], context)?.id).toBe('first')
+    const onCategoryPage = { ...context, pageCategoryId: 'parent' }
+    expect(findAutomaticView([view('second', 1), view('first', 0)], onCategoryPage)?.id).toBe('first')
+  })
+
+  it('scores automatic views against the open page, not the filters or the period', () => {
+    const bound = view('bound', 0, { children: [{ ids: ['parent'], kind: 'categorySelection', mode: 'selected' }], operator: 'and' })
+
+    expect(findAutomaticView([bound], { ...context, pageCategoryId: 'child' })?.id).toBe('bound')
+    expect(findAutomaticView([bound], { ...context, selectedCategoryIds: ['parent'] })).toBeNull()
+    // A rule left over from the width era survives storage only after the schema strips it, so it matches nothing.
+    const legacyWidth = StatViewSchema.parse(view('wide', 0, { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' })) as StatView
+    expect(findAutomaticView([legacyWidth], context)).toBeNull()
+  })
+
+  it('matches any page of an entity without naming it', () => {
+    const anyCategory = { children: [{ ids: [], kind: 'categorySelection' as const, mode: 'any' as const }], operator: 'and' as const }
+
+    expect(findAutomaticView([view('any', 0, anyCategory)], { ...context, pageCategoryId: 'other' })?.id).toBe('any')
+    expect(findAutomaticView([view('any', 0, anyCategory)], context)).toBeNull()
+  })
+
+  it('drops non-page conditions from a stored automatic rule', () => {
+    const parsed = StatViewSchema.parse(view('legacy', 0, {
+      children: [
+        { comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 },
+        { ids: ['parent'], kind: 'categorySelection', mode: 'selected' },
+        { children: [{ comparator: '=', kind: 'period', unit: 'day', value: 7 }], operator: 'or' },
+      ],
+      operator: 'and',
+    }))
+
+    expect(parsed.autoRule).toEqual({ children: [{ ids: ['parent'], kind: 'categorySelection', mode: 'selected' }], operator: 'and' })
   })
 
   it('evaluates content width conditions only after a width is measured', () => {
@@ -73,24 +111,48 @@ describe('statistics saved views', () => {
     expect(evaluateConditionGroup(rule, { ...context, contentWidth: null })).toBe(false)
   })
 
-  it('applies only the first matching rule to its block', () => {
+  it('evaluates wallet selection modes against page and global selections', () => {
+    expect(evaluateConditionGroup({ children: [{ ids: [], kind: 'walletSelection', mode: 'all' }], operator: 'and' }, context)).toBe(true)
+    expect(evaluateConditionGroup({ children: [{ ids: [], kind: 'walletSelection', mode: 'none' }], operator: 'and' }, context)).toBe(true)
+    expect(evaluateConditionGroup({ children: [{ ids: ['wallet-2'], kind: 'walletSelection', mode: 'selected' }], operator: 'and' }, { ...context, selectedWalletIds: ['wallet-1', 'wallet-2'] })).toBe(true)
+    expect(evaluateConditionGroup({ children: [{ ids: ['wallet-3'], kind: 'walletSelection', mode: 'selected' }], operator: 'and' }, { ...context, selectedWalletIds: ['wallet-1'] })).toBe(false)
+  })
+
+  it('applies a selected parent category to its descendants only', () => {
+    const parentRule = { children: [{ ids: ['parent'], kind: 'categorySelection' as const, mode: 'selected' as const }], operator: 'and' as const }
+    const childRule = { children: [{ ids: ['child'], kind: 'categorySelection' as const, mode: 'selected' as const }], operator: 'and' as const }
+
+    expect(evaluateConditionGroup(parentRule, { ...context, selectedCategoryIds: ['child'] })).toBe(true)
+    expect(evaluateConditionGroup(childRule, { ...context, selectedCategoryIds: ['parent'] })).toBe(false)
+    expect(evaluateConditionGroup(parentRule, { ...context, selectedCategoryIds: ['other'] })).toBe(false)
+  })
+
+  it('rejects invalid entity selection records instead of normalizing them', () => {
+    expect(StatViewSchema.safeParse(view('wallet', 0, { children: [{ ids: ['wallet-1'], kind: 'walletSelection', mode: 'selected' }], operator: 'and' })).success).toBe(true)
+    expect(StatViewSchema.safeParse(view('empty-selected', 0, { children: [{ ids: [], kind: 'walletSelection', mode: 'selected' }], operator: 'and' })).success).toBe(false)
+    expect(StatViewSchema.safeParse(view('ids-with-all', 0, { children: [{ ids: ['wallet-1'], kind: 'walletSelection', mode: 'all' }], operator: 'and' })).success).toBe(false)
+    expect(StatViewSchema.safeParse(view('old-wallet-rule', 0, { children: [{ kind: 'walletSelection', walletIds: ['wallet-1'] } as never], operator: 'and' })).success).toBe(false)
+  })
+
+  it('merges every matching rule and gives conflicting parameters to the first rule', () => {
     const effective = resolveEffectiveStatConfig(defaultConfig, {
       chart: [
         { condition: { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' }, id: 'first', isEnabled: true, overrides: { chart: { type: 'line' } } },
-        { condition: { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }, id: 'second', isEnabled: true, overrides: { chart: { type: 'pie' } } },
+        { condition: { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }, id: 'second', isEnabled: true, overrides: { chart: { type: 'pie', valueDisplay: 'signed' } } },
       ],
     }, context)
 
     expect(effective.chart.type).toBe('line')
+    expect(effective.chart.valueDisplay).toBe('signed')
     expect(effective.wallets).toEqual(defaultConfig.wallets)
     expect(defaultConfig.chart.type).toBe('bar')
   })
 
-  it('hides a block when the first matching rule disables its visibility', () => {
+  it('keeps the first matching visibility rule as the highest priority', () => {
     const rules = {
       chart: [
         { condition: { children: [{ comparator: '<' as const, kind: 'contentWidth' as const, unit: 'px' as const, value: 768 }], operator: 'and' as const }, id: 'hidden', isEnabled: true, isHidden: true, overrides: { chart: { type: 'line' as const } } },
-        { condition: { children: [{ comparator: '>' as const, kind: 'categoryCount' as const, scope: 'all' as const, value: 0 }], operator: 'and' as const }, id: 'visible', isEnabled: true, overrides: { chart: { type: 'pie' as const } } },
+        { condition: { children: [{ comparator: '>' as const, kind: 'categoryCount' as const, scope: 'all' as const, value: 0 }], operator: 'and' as const }, id: 'visible', isEnabled: true, isHidden: false, overrides: { chart: { type: 'pie' as const } }, parameterIds: ['visibility'] },
       ],
     }
 
@@ -99,6 +161,15 @@ describe('statistics saved views', () => {
     expect(effective.chart.isShow).toBe(false)
     expect(effective.chart.type).toBe('line')
     expect(resolveHiddenStatPanels(rules, context)).toEqual(['chart'])
+  })
+
+  it('returns every matching rule in priority order', () => {
+    const rules: BlockRule[] = [
+      { condition: { children: [{ comparator: '<', kind: 'contentWidth', unit: 'px', value: 768 }], operator: 'and' }, id: 'first', isEnabled: true, overrides: {} },
+      { condition: { children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }, id: 'second', isEnabled: true, overrides: {} },
+    ]
+
+    expect(findMatchingBlockRules(rules, context).map(rule => rule.id)).toEqual(['first', 'second'])
   })
 
   it('can show a block hidden by its default settings', () => {
@@ -146,9 +217,11 @@ describe('statistics saved views', () => {
       and: 'and',
       andMore: (count: number) => `and ${count} more`,
       categoryCount: (scope: string, comparator: string, value: number) => `${comparator} ${value} ${scope}`,
+      categorySelection: (mode: string, ids: string[]) => `${mode} ${ids.join(',')}`,
       contentWidth: (comparator: string, value: number) => `${comparator} ${value}px`,
       fallback: 'New view',
       period: (value: number, unit: string) => `Last ${value} ${unit}s`,
+      walletSelection: (mode: string, ids: string[]) => `${mode} ${ids.join(',')}`,
     }
     expect(generateViewName({ children: [{ comparator: '=', kind: 'period', unit: 'day', value: 7 }], operator: 'and' }, labels, ['Last 7 days'])).toBe('Last 7 days 2')
   })

@@ -54,6 +54,20 @@ export async function deleteRow(table: string, id: string): Promise<void> {
   await db.execute(`DELETE FROM ${table} WHERE id = ?`, [id])
 }
 
+/** Delete several rows atomically so optimistic callers can roll the whole batch back. */
+export async function deleteRows(table: string, ids: string[]): Promise<void> {
+  assertTable(table)
+  const uniqueIds = [...new Set(ids)]
+  if (!uniqueIds.length)
+    return
+
+  const db = await getPowerSyncDb()
+  await db.writeTransaction(async (tx) => {
+    for (const id of uniqueIds)
+      await tx.execute(`DELETE FROM ${table} WHERE id = ?`, [id])
+  })
+}
+
 /**
  * Delete local trns referencing a wallet/category. Used when a rejected wallet/category
  * INSERT is reverted, so optimistically-created trns don't survive as orphans. The deletes

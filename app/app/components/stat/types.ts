@@ -16,7 +16,7 @@ export type SeriesSlug = 'income' | 'expense'
 export const seriesSlugsSelected = ['income', 'expense', 'net'] as const
 export type SeriesSlugSelected = typeof seriesSlugsSelected[number]
 
-export const statConfigPanelIds = ['navigation', 'summary', 'wallets', 'statAverage', 'chart', 'catsRound', 'catsList', 'vertical', 'trns'] as const
+export const statConfigPanelIds = ['navigation', 'summary', 'wallets', 'statAverage', 'chart', 'catsRound', 'catsList', 'vertical', 'trns', 'categoryChildren', 'walletBalance', 'walletDescription'] as const
 export type StatConfigPanelId = 'root' | typeof statConfigPanelIds[number]
 
 export type UseStatReportParams = {

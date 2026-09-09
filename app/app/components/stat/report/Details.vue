@@ -25,8 +25,7 @@ const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
 const { height: categoriesHeight } = useElementSize(categoriesBreakdown)
 const { height: viewportHeight } = useWindowSize()
-const preservedCategoryScrollTop = shallowRef<number | null>(null)
-provide(statPreservedCategoryScrollTopKey, preservedCategoryScrollTop)
+const preservedCategoryScrollTop = inject(statPreservedCategoryScrollTopKey, shallowRef<number | null>(null))
 let preserveScrollTimer: ReturnType<typeof setTimeout> | null = null
 const isTwoColumnLayout = computed(() => props.isTwoColumnLayout ?? props.ctx.shouldUseTwoColumnLayout.value)
 const baseCategoryViews = computed(() => buildCategoryViews({
@@ -54,26 +53,33 @@ const canStickCategories = computed(() =>
   && canStickStatCategories(props.categoriesStickyTop, categoriesHeight.value, viewportHeight.value),
 )
 
-function onSetChildCategoryFilter(categoryId: string) {
-  const categories = categoriesBreakdown.value
-  if (categories) {
-    const style = getComputedStyle(categories)
-    preservedCategoryScrollTop.value = isStatCategoriesPinned(
-      style.position,
-      categories.getBoundingClientRect().top,
-      Number.parseFloat(style.top),
-    )
-      ? document.scrollingElement?.scrollTop ?? 0
-      : null
-  }
-
+/** The feed reloads on a filter change; without this it would land at the top of the page. */
+function preserveScroll(scrollTop: number | null) {
+  preservedCategoryScrollTop.value = scrollTop
   if (preserveScrollTimer !== null)
     clearTimeout(preserveScrollTimer)
   preserveScrollTimer = setTimeout(() => {
     preservedCategoryScrollTop.value = null
     preserveScrollTimer = null
   }, 1000)
-  props.ctx.onSetChildCategoryFilter(categoryId)
+}
+
+function onSetCategoryFilter(categoryId: string) {
+  preserveScroll(document.scrollingElement?.scrollTop ?? 0)
+  props.ctx.onSetCategoryFilter(categoryId)
+}
+
+function onSetChildCategoryFilter(categoryId: string) {
+  const categories = categoriesBreakdown.value
+  // A pinned category block stays put, so the feed must land where it already is.
+  const style = categories ? getComputedStyle(categories) : null
+  const isPinned = !!categories && !!style && isStatCategoriesPinned(
+    style.position,
+    categories.getBoundingClientRect().top,
+    Number.parseFloat(style.top),
+  )
+  preserveScroll(isPinned ? document.scrollingElement?.scrollTop ?? 0 : null)
+  props.ctx.onSetFocusedChildCategoryFilter(categoryId)
 }
 
 onBeforeUnmount(() => {
@@ -92,7 +98,7 @@ onBeforeUnmount(() => {
     :isOneCategory="ctx.isOneCategory.value"
     :preCategoriesIds="ctx.params.preCategoriesIds?.value"
     @clickCategory="ctx.onClickCategory"
-    @setCategoryFilter="ctx.onSetCategoryFilter"
+    @setCategoryFilter="onSetCategoryFilter"
   />
 
   <div
@@ -116,12 +122,12 @@ onBeforeUnmount(() => {
           :baseCategoryViews="quickCategoryViews"
           :block="props.block"
           :excludedCategoriesIds="ctx.statExcludedIds.value"
-          :focusedChildCategoryId="ctx.filteredChildCategoryId.value"
+          :focusedChildCategoryId="ctx.focusedQuickChildCategoryId.value"
           :focusedCategoryId="ctx.focusedQuickCategoryId.value"
           :isOneCategory="ctx.isOneCategory.value"
           :isTwoColumnLayout="isTwoColumnLayout"
           :preCategoriesIds="ctx.params.preCategoriesIds?.value"
-          :selectedTrnsIds="ctx.selectedAndQuickFilteredTrnsIds.value"
+          :selectedTrnsIds="ctx.focusedQuickTrnsIds.value"
           :storageKey="ctx.statItemStorageKey.value"
           :type="ctx.params.type.value ?? 'net'"
           @clickCategory="ctx.onClickCategory"

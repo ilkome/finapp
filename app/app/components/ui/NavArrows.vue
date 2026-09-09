@@ -1,5 +1,6 @@
 <script setup lang="ts">
-const { hideInactiveArrows = false, homeAriaLabel, homeMatchesArrows = false, isEnd, isShowNavHome, isStart } = defineProps<{
+const { compact = false, hideInactiveArrows = false, homeAriaLabel, homeMatchesArrows = false, isEnd, isShowNavHome, isStart } = defineProps<{
+  compact?: boolean
   hideInactiveArrows?: boolean
   homeAriaLabel?: string
   homeMatchesArrows?: boolean
@@ -20,6 +21,7 @@ const emit = defineEmits<{
       :ariaLabel="$t('base.previous')"
       :disabled="isStart"
       class="bg-elevated"
+      :class="compact && 'min-h-9! min-w-9!'"
       @click="emit('changeDate', 'prev')"
     >
       <Icon name="lucide:chevron-left" size="24" />
@@ -30,6 +32,7 @@ const emit = defineEmits<{
       :ariaLabel="$t('base.next')"
       :disabled="isEnd"
       class="bg-elevated"
+      :class="compact && 'min-h-9! min-w-9!'"
       @click="emit('changeDate', 'next')"
     >
       <Icon name="lucide:chevron-left" size="24" class="rotate-180" />
@@ -38,7 +41,7 @@ const emit = defineEmits<{
     <UiActionButton
       v-if="isShowNavHome"
       :ariaLabel="homeAriaLabel ?? $t('base.today')"
-      :class="homeMatchesArrows && 'bg-elevated'"
+      :class="[homeMatchesArrows && 'bg-elevated', compact && 'min-h-9! min-w-9!']"
       @click="emit('changeDate', 'today')"
     >
       <Icon name="lucide:undo-2" size="20" />

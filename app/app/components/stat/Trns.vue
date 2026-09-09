@@ -2,7 +2,7 @@
 import type { StatReportContext } from '~/components/stat/report/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { statVirtualFeedKey } from '~/components/stat/injectionKeys'
+import { statHistoryAvailableKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { resolveCurrentPeriodEmptyKey } from '~/components/stat/statFeed'
 
 const props = defineProps<{
@@ -14,6 +14,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
+const isHistoryAvailable = inject(statHistoryAvailableKey, computed(() => true))
 
 const shown = useStoredToggle(`${props.storageKey}-trns`, true)
 const isShowTitle = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTitle ?? true)
@@ -28,6 +29,7 @@ const isOpen = computed({
 })
 const isVirtualEnabled = computed(() =>
   isVirtualFeedHost
+  && isHistoryAvailable.value
   && props.ctx
   && props.ctx.params.reportType.value === 'combined'
   && props.ctx.params.statDate.params.value.intervalSelected === -1,

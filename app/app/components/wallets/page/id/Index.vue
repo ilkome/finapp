@@ -3,6 +3,7 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useFilter } from '~/components/filter/useFilter'
+import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
@@ -24,6 +25,9 @@ const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
+const contextBlockIds = computed(() => wallet.value?.desc
+  ? ['walletBalance', 'walletDescription'] as const
+  : ['walletBalance'] as const)
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
 const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
 const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
@@ -33,6 +37,12 @@ const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-wallet-${walletId.value}` : `${walletId.value}`)
 const legacyTab = localStorage.getItem(`${walletId.value}-tab`)?.replaceAll('"', '')
 const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `${walletId.value}-${legacyTab}` : undefined)
+
+useStatFilterStorage({
+  filter,
+  storage: isStatDrilldown ? sessionStorage : localStorage,
+  storageKey,
+})
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: filter.categoriesIds.value,
@@ -50,12 +60,13 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
     storageKey,
     storageQuery,
   },
+  contextBlockIds,
   date: {
     initParams: statSnapshot?.date,
     key: storageKey,
     legacyKey: legacyStorageKey,
     maxRange,
-    queryParams: route.query,
+    queryParams: () => route.query,
     storage: isStatDrilldown ? sessionStorage : localStorage,
   },
   filter,
@@ -86,6 +97,13 @@ onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
+const walletBalanceItems = computed(() => wallet.value?.type === 'credit'
+  ? [
+      { amount: total.value, title: t('wallets.form.credit.debt') },
+      { amount: walletCreditLimit.value - (-total.value), title: t('wallets.form.credit.available') },
+      { amount: walletCreditLimit.value, title: t('wallets.form.credit.limit') },
+    ]
+  : [{ amount: total.value, title: t('money.balance') }])
 
 function onClickEdit(close: () => void) {
   close()
@@ -168,45 +186,6 @@ async function onDeleteConfirm() {
       @confirm="onDeleteConfirm"
     />
 
-    <div class="px-3 pb-2 lg:gap-8 lg:px-4 2xl:px-8">
-      <div
-        v-if="wallet.type !== 'credit'"
-        class="md:max-w-lg"
-      >
-        <WalletsSumItem
-          :amount="total"
-          :currencyCode="wallet.currency"
-          :title="t('money.balance')"
-        />
-      </div>
-
-      <div v-if="walletCreditLimit" class="flex flex-wrap gap-x-8 gap-y-2 md:max-w-lg">
-        <WalletsSumItem
-          :amount="total"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.debt')"
-        />
-        <WalletsSumItem
-          :amount="walletCreditLimit - (-total)"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.available')"
-        />
-        <WalletsSumItem
-          :amount="walletCreditLimit"
-          :currencyCode="wallet.currency"
-          :title="t('wallets.form.credit.limit')"
-        />
-      </div>
-
-      <UiText
-        v-if="wallet.desc"
-        class="pt-2 font-primary whitespace-pre text-muted"
-        variant="navigation"
-      >
-        {{ wallet.desc }}
-      </UiText>
-    </div>
-
     <StatLayout
       :hiddenPanels
       :storageKey
@@ -214,6 +193,42 @@ async function onDeleteConfirm() {
       :walletId
       :reportType="statSnapshot?.reportType"
       hasChildren
-    />
+    >
+      <template #walletBalance>
+        <div class="wallet-balance-summary -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:flex-wrap md:overflow-visible md:px-0">
+          <StatSumItem
+            v-for="item in walletBalanceItems"
+            :key="item.title"
+            :amount="item.amount"
+            class="min-w-0 flex-1 basis-0 snap-start snap-always md:w-max md:flex-none md:basis-auto md:snap-none"
+            :currencyCode="wallet.currency"
+            :title="item.title"
+            type="net"
+            variant="summary"
+          />
+        </div>
+      </template>
+
+      <template #walletDescription>
+        <UiText
+          class="px-1 font-primary whitespace-pre text-muted lg:px-0"
+          variant="navigation"
+        >
+          {{ wallet.desc }}
+        </UiText>
+      </template>
+    </StatLayout>
   </UiPage>
 </template>
+
+<style scoped>
+.wallet-balance-summary {
+  scrollbar-width: none;
+}
+
+.wallet-balance-summary::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+</style>

@@ -2,7 +2,7 @@
 import type { Range } from '~~/utils/date/types'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatConfigBlockId, StatReportBlockId } from '~/components/stat/config/schema'
+import type { StatConfigBlockId, StatContextBlockId, StatReportBlockId } from '~/components/stat/config/schema'
 import type { SeriesSlugSelected, StatQuickCategoryFilter, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { StatBlockPanelId } from '~/components/stat/views/types'
 import type { TrnId } from '~/components/trns/types'
@@ -10,9 +10,10 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
+import { PANELS } from '~/components/stat/config/panels/registry'
 import { statReportBlockOrder } from '~/components/stat/config/schema'
 import { resolveStatSelectionSourceRange } from '~/components/stat/date/selectionRange'
-import { statCanSplitKey, statConfigKey, statContentWidthKey, statDateKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { statCanSplitKey, statConfigKey, statContentWidthKey, statContextBlockIdsKey, statDateKey, statHistoryAvailableKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { resolveQuickCategorySelection } from '~/components/stat/quickCategorySelection'
 import { shouldUseContextualMaxRange } from '~/components/stat/report/contextualMaxRange'
 import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
@@ -52,6 +53,8 @@ const hostStickyNavigation = inject(statStickyNavKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 const canSplit = inject(statCanSplitKey, ref(false))
 const contentWidth = inject(statContentWidthKey, null)
+const contextBlockIds = inject(statContextBlockIdsKey, computed(() => []))
+const historyAvailable = inject(statHistoryAvailableKey, ref(true))
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
@@ -214,14 +217,25 @@ const contextualMaxRange = computed<Range | null>(() => {
   return ids.length ? trnsStore.getRange(ids) : null
 })
 const hiddenPanelIds = computed(() => new Set(props.hiddenPanels ?? []))
+const availableContextBlockIds = computed(() => new Set<StatContextBlockId>(contextBlockIds.value))
 const orderedBlocks = computed(() => statConfig.config.value.page.blockOrder.filter((block) => {
   if (hiddenPanelIds.value.has(block))
     return false
+  if (block === 'categoryChildren' || block === 'walletBalance' || block === 'walletDescription')
+    return availableContextBlockIds.value.has(block) && PANELS[block].getIsShow(statConfig.config.value)
   if (block === 'navigation')
     return statConfig.config.value.date.isShow
   if (block === 'summary')
     return statConfig.config.value.summary.isShow
   return true
+}))
+const renderedBlocks = computed(() => orderedBlocks.value.filter((block) => {
+  if (block === 'wallets') {
+    return !!props.showWallets
+      && filter.walletsIds.value.length === 0
+      && PANELS.wallets.getIsShow(statConfig.config.value)
+  }
+  return PANELS[block].getIsShow(statConfig.config.value)
 }))
 const layoutEntries = computed(() => {
   const entries: Array<{
@@ -280,6 +294,7 @@ function setSummaryElement(element: unknown) {
 }
 watchEffect(() => {
   canSplit.value = statLayoutWidth.value >= 768 && !props.lockSingleTypeLayout
+  historyAvailable.value = renderedBlocks.value.at(-1) === 'trns'
   if (contentWidth)
     contentWidth.value = statLayoutWidth.value > 0 ? Math.round(statLayoutWidth.value) : null
 })
@@ -301,8 +316,11 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
     :data-stat-report-selection-count="isDev ? statDevMetrics.reportSelectionCount.value : undefined"
   >
     <template v-for="entry in layoutEntries" :key="entry.key">
+      <slot v-if="entry.block === 'categoryChildren'" name="categoryChildren" />
+      <slot v-else-if="entry.block === 'walletBalance'" name="walletBalance" />
+      <slot v-else-if="entry.block === 'walletDescription'" name="walletDescription" />
       <div
-        v-if="entry.block === 'navigation'"
+        v-else-if="entry.block === 'navigation'"
         :ref="setNavigationElement"
         data-stat-navigation
         :data-stat-pinned-block="navigationIsPinned || undefined"

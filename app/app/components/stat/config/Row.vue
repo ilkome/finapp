@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{
+  compact?: boolean
   hasPanel?: boolean
   hasToggle?: boolean
   icon?: string
@@ -17,13 +18,14 @@ defineEmits<{
 
 <template>
   <div
-    class="flex min-h-13 items-stretch text-sm hover:bg-elevated/50"
-    :class="isExpanded ? 'rounded-t-lg' : 'rounded-sm'"
+    class="flex items-stretch rounded-sm text-sm hover:bg-elevated/50"
+    :class="[
+      compact ? 'min-h-10' : 'min-h-13',
+    ]"
   >
     <div
       v-if="sortable"
-      class="sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center text-muted hover:bg-accented active:cursor-grabbing"
-      :class="isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'"
+      class="sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center rounded-l-sm text-muted hover:bg-accented active:cursor-grabbing"
       :aria-label="$t('stat.views.drag')"
       @click.stop
     >
@@ -36,8 +38,8 @@ defineEmits<{
       class="flex grow flex-col justify-center py-3 pr-2"
       :class="[
         sortable ? 'pl-2' : 'pl-3',
-        !sortable && (isExpanded ? 'rounded-tl-lg' : 'rounded-l-sm'),
-        !hasToggle && (isExpanded ? 'rounded-tr-lg pr-3' : 'rounded-r-sm pr-3'),
+        !sortable && 'rounded-l-sm',
+        !hasToggle && 'rounded-r-sm pr-3',
       ]"
       @click="$emit('activate')"
       @keydown.enter.prevent="$emit('activate')"
@@ -50,7 +52,7 @@ defineEmits<{
           class="shrink-0 text-muted"
           size="20"
         />
-        <span>{{ title }}</span>
+        <span class="whitespace-pre-line">{{ title }}</span>
         <Icon
           v-if="hasPanel"
           name="lucide:chevron-right"

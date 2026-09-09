@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { statHistoryAvailableKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
-const statConfig = inject(statConfigKey)!
-const isHistoryAvailable = computed(() => statConfig.config.value.page.blockOrder.at(-1) === 'trns')
+const isHistoryAvailable = inject(statHistoryAvailableKey, computed(() => true))
 </script>
 
 <template>
@@ -17,7 +16,7 @@ const isHistoryAvailable = computed(() => statConfig.config.value.page.blockOrde
       :title="t('stat.config.trns.showTypeTabs')"
     />
     <StatConfigSwitch
-      :disabled="!isHistoryAvailable"
+      v-if="isHistoryAvailable"
       path="trns.isShowHistory"
       :title="t('stat.config.trns.showHistory')"
     />

@@ -5,7 +5,7 @@ import type { ChartType } from '~/components/stat/chart/types'
 import type { QuickRangeOptionId } from '~/components/stat/date/useRangeOptions'
 
 import { useStatChart } from '~/components/stat/chart/useStatChart'
-import { chartLayoutIcons, chartLayoutOptions, chartValueDisplayOptions, pieShapeOptions } from '~/components/stat/config/schema'
+import { chartLayoutIcons, chartLayoutOptions, chartValueDisplayOptions, pieShapeOptions, resolveChartLayoutOptions } from '~/components/stat/config/schema'
 import { quickRangeOptionIds, useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
@@ -27,7 +27,7 @@ const chartTypeItems = computed(() => chartTypeOptions.value.map(item => ({
   label: item.label,
   value: item.value,
 })))
-const chartLayoutItems = computed(() => chartLayoutOptions.map(value => ({
+const chartLayoutItems = computed(() => resolveChartLayoutOptions(statConfig.config.value.page.layout).map(value => ({
   icon: chartLayoutIcons[value],
   label: t(`stat.view.chartLayout.${value}.label`),
   value,
@@ -128,6 +128,13 @@ const quickRangeSelectionLabel = computed(() => {
         </template>
       </UTabs>
     </StatConfigFieldRow>
+
+    <StatConfigCategoryGroupingSelect
+      v-if="statConfig.config.value.chart.breakdown === 'categories'"
+      :modelValue="statConfig.config.value.chart.grouping"
+      parameterId="chart.grouping"
+      @update:modelValue="value => statConfig.updateConfig('chart', { grouping: value })"
+    />
 
     <StatConfigFieldRow parameterId="chart.breakdown" :title="t('stat.view.breakdown.title')">
       <UTabs
