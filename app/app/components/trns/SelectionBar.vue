@@ -53,15 +53,7 @@ const actions = computed<HistoryBulkEdit[]>(() => {
   return staged
 })
 
-const descriptionLabel = computed(() => {
-  if (isDescriptionCleared.value)
-    return t('trns.historyTable.bulk.clearDescription')
-  return stagedDescription.value || t('trns.historyTable.bulk.description')
-})
-const categoryLabel = computed(() => (categoryId.value && categoriesStore.items?.[categoryId.value]?.name)
-  || t('trns.historyTable.bulk.category'))
-const walletLabel = computed(() => (walletId.value && walletsStore.items?.[walletId.value]?.name)
-  || t('trns.historyTable.bulk.wallet'))
+const hasStagedDescription = computed(() => isDescriptionCleared.value || Boolean(stagedDescription.value))
 
 function resetStaged() {
   description.value = ''
@@ -157,9 +149,18 @@ watch(description, (value) => {
       variant="text"
       @click="selection.clear()"
     >
-      <Icon name="lucide:x" size="18" />
       {{ count }}
+      <Icon name="lucide:x" size="18" />
     </UiActionButton>
+
+    <UButton
+      v-if="actions.length"
+      class="shrink-0 snap-start"
+      :label="t('base.apply')"
+      :loading="busy"
+      size="lg"
+      @click="apply"
+    />
 
     <BottomSheetOrDropdown
       class="flex shrink-0 grow-0 snap-start gap-1"
@@ -174,7 +175,8 @@ watch(description, (value) => {
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="max-w-40 truncate text-nowrap">{{ descriptionLabel }}</span>
+          <span class="text-nowrap">{{ t('trns.historyTable.bulk.description') }}</span>
+          <span v-if="hasStagedDescription" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
 
@@ -211,13 +213,14 @@ watch(description, (value) => {
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="max-w-40 truncate text-nowrap">{{ categoryLabel }}</span>
+          <span class="text-nowrap">{{ t('trns.historyTable.bulk.category') }}</span>
+          <span v-if="categoryId" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
 
       <template #custom="{ close, isExpanded }">
         <div
-          class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden"
+          class="grid min-w-80 overflow-hidden"
           :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'"
         >
           <CategoriesSelectorModal
@@ -227,15 +230,6 @@ watch(description, (value) => {
             :selectedIds="categoryId ? [categoryId] : []"
             @selected="(id: CategoryId) => stageCategory(id, close)"
           />
-          <div v-if="categoryId" class="px-3 py-2 md:px-1">
-            <UiButtonAccent
-              color="neutral"
-              variant="soft"
-              @click="categoryId = null; close()"
-            >
-              {{ t('base.reset') }}
-            </UiButtonAccent>
-          </div>
         </div>
       </template>
     </BottomSheetOrDropdown>
@@ -254,31 +248,22 @@ watch(description, (value) => {
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="max-w-40 truncate text-nowrap">{{ walletLabel }}</span>
+          <span class="text-nowrap">{{ t('trns.historyTable.bulk.wallet') }}</span>
+          <span v-if="walletId" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
 
       <template #custom="{ close, isExpanded }">
         <div
-          class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden"
+          class="grid min-w-80 overflow-hidden"
           :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'"
         >
           <WalletsSelector
-            :activeItemId="walletId ?? undefined"
             compactDesktop
             :selectedIds="walletId ? [walletId] : []"
             withHeader
             @selected="(id: WalletId) => stageWallet(id, close)"
           />
-          <div v-if="walletId" class="px-3 py-2 md:px-1">
-            <UiButtonAccent
-              color="neutral"
-              variant="soft"
-              @click="walletId = null; close()"
-            >
-              {{ t('base.reset') }}
-            </UiButtonAccent>
-          </div>
         </div>
       </template>
     </BottomSheetOrDropdown>
@@ -290,33 +275,25 @@ watch(description, (value) => {
       :placeholder="t('trns.historyTable.bulk.date')"
       :title="t('trns.historyTable.bulk.date')"
     >
-      <template #trigger="{ isActive, label }">
+      <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="text-nowrap">{{ label }}</span>
+          <span class="text-nowrap">{{ t('trns.historyTable.bulk.date') }}</span>
+          <span v-if="date !== null" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
     </FormDate>
 
-    <UiActionButton
-      class="shrink-0 snap-start theme-rounded-control! bg-elevated text-error"
-      variant="text"
+    <UButton
+      class="shrink-0 snap-start"
+      color="error"
+      :label="t('base.delete')"
+      size="lg"
+      variant="soft"
       @click="showDeleteConfirm = true"
-    >
-      {{ t('base.delete') }}
-    </UiActionButton>
-
-    <UiActionButton
-      class="shrink-0 snap-start theme-rounded-control! bg-primary text-inverted"
-      :disabled="!actions.length || busy"
-      variant="text"
-      @click="apply"
-    >
-      {{ t('base.apply') }}
-    </UiActionButton>
+    />
 
     <LayoutConfirmModal
       v-if="showDeleteConfirm"
-      :description="t('trns.historyTable.bulk.deleteDescription', { count })"
       :title="t('trns.historyTable.bulk.deleteTitle')"
       @closed="showDeleteConfirm = false"
       @confirm="confirmDelete"

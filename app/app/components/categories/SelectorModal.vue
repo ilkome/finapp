@@ -221,6 +221,10 @@ function onRootClick(rootId: CategoryId) {
 }
 
 async function focusSearch() {
+  // Autofocus is a mouse-only convenience: on touch it just pops the keyboard over the sheet.
+  if (!isLaptop.value)
+    return
+
   if (props.hideHeader || props.hideSearch || props.autofocus === false)
     return
   await nextTick()
@@ -242,7 +246,11 @@ watch(() => props.autofocus, focusSearch)
     <div
       v-if="!props.hideHeader"
       class="sticky top-0 z-20 flex items-center gap-2 bg-default/90 px-3 backdrop-blur"
-      :class="props.hideSearch ? 'justify-end py-1' : 'py-2'"
+      :class="[
+        props.hideSearch ? 'justify-end py-1' : 'py-2',
+        // Stay aligned with the list below, which drops to md:px-1 in compact mode.
+        props.compactDesktop && 'md:px-1',
+      ]"
     >
       <input
         v-if="!props.hideSearch"
@@ -292,7 +300,7 @@ watch(() => props.autofocus, focusSearch)
       class="h-full scroller-block overflow-y-auto px-3 pt-1 pb-4"
       :class="props.compactDesktop && 'md:px-1'"
     >
-      <template v-if="filter === 'all'">
+      <div v-show="filter === 'all'">
         <div
           v-if="hasNoMatches"
           class="p-4 text-center text-muted"
@@ -380,9 +388,9 @@ watch(() => props.autofocus, focusSearch)
             </div>
           </template>
         </template>
-      </template>
+      </div>
 
-      <template v-else>
+      <div v-show="filter !== 'all'">
         <div
           v-if="hasNoMatches"
           class="p-4 text-center text-muted"
@@ -414,7 +422,7 @@ watch(() => props.autofocus, focusSearch)
             />
           </div>
         </template>
-      </template>
+      </div>
     </div>
 
     <CategoriesEditModal

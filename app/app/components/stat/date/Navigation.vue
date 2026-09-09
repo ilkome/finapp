@@ -69,7 +69,9 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       :isStart
       @changeDate="changeDate"
     >
-      <StatDateRangeButton class="snap-start" />
+      <!-- No snap-start here: a nested snap target lets the browser snap past the arrows,
+           which parks the strip mid-scroll and hides its left edge. -->
+      <StatDateRangeButton />
     </UiNavArrows>
 
     <StatDateRangeButton v-else class="shrink-0 snap-start" />

@@ -100,6 +100,10 @@ function onClickNew() {
 }
 
 async function focusSearch() {
+  // Autofocus is a mouse-only convenience: on touch it just pops the keyboard over the sheet.
+  if (!isLaptop.value)
+    return
+
   if (!props.withHeader || props.hideHeader || props.hideSearch || props.autofocus === false)
     return
   await nextTick()
@@ -121,7 +125,12 @@ watch(() => props.autofocus, focusSearch)
     <div
       v-if="props.withHeader && !props.hideHeader"
       class="flex items-center gap-2 bg-default py-2"
-      :class="{ 'justify-end': props.hideSearch }"
+      :class="{
+        'justify-end': props.hideSearch,
+        // Keep the search aligned with the padded list below it.
+        'px-3': props.selectedIds !== undefined,
+        'md:px-1': props.selectedIds !== undefined && props.compactDesktop,
+      }"
     >
       <input
         v-if="!props.hideSearch"
