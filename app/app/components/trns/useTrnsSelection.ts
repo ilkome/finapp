@@ -10,6 +10,7 @@ export type TrnsSelection = {
   has: (id: TrnId) => boolean
   ids: Ref<TrnId[]>
   toggle: (id: TrnId) => void
+  toggleMany: (ids: TrnId[]) => void
 }
 
 export function useTrnsSelection(): TrnsSelection {
@@ -25,6 +26,20 @@ export function useTrnsSelection(): TrnsSelection {
       : [...ids.value, id]
   }
 
+  // Selects the whole group, or deselects it when every id is already selected.
+  function toggleMany(group: TrnId[]) {
+    if (!group.length)
+      return
+
+    if (group.every(has)) {
+      const removed = new Set(group)
+      ids.value = ids.value.filter(id => !removed.has(id))
+      return
+    }
+
+    ids.value = [...ids.value, ...group.filter(id => !has(id))]
+  }
+
   function clear() {
     ids.value = []
   }
@@ -35,5 +50,6 @@ export function useTrnsSelection(): TrnsSelection {
     has,
     ids,
     toggle,
+    toggleMany,
   }
 }

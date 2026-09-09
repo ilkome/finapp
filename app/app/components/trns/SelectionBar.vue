@@ -16,6 +16,7 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const selection = inject(trnsSelectionKey)!
+const snapPoints = useSheetSnapPoints()
 // Nested refs of an injected plain object are not unwrapped in the template.
 const count = selection.count
 
@@ -30,16 +31,8 @@ const showDeleteConfirm = ref(false)
 const isCategoryOpen = ref(false)
 const isWalletOpen = ref(false)
 
-const categoryEligibleCount = computed(() => selection.ids.value.filter((id) => {
-  const trn = trnsStore.items?.[id]
-  return trn && trn.type !== TrnType.Transfer && trn.categoryId !== 'transfer'
-}).length)
-const categorySkippedCount = computed(() => selection.count.value - categoryEligibleCount.value)
-const walletEligibleCount = computed(() => selection.ids.value.filter((id) => {
-  const trn = trnsStore.items?.[id]
-  return trn && trn.type !== TrnType.Transfer
-}).length)
-const walletSkippedCount = computed(() => selection.count.value - walletEligibleCount.value)
+// Category and wallet cannot apply to a transfer, so they leave the bar as soon as one is selected.
+const hasTransfer = computed(() => selection.ids.value.some(id => trnsStore.items?.[id]?.type === TrnType.Transfer))
 
 const stagedDescription = computed(() => description.value.trim())
 const actions = computed<HistoryBulkEdit[]>(() => {
@@ -143,6 +136,13 @@ async function confirmDelete() {
   selection.clear()
 }
 
+watch(hasTransfer, (value) => {
+  if (value) {
+    categoryId.value = null
+    walletId.value = null
+  }
+})
+
 watch(description, (value) => {
   if (value.trim())
     isDescriptionCleared.value = false
@@ -150,176 +150,169 @@ watch(description, (value) => {
 </script>
 
 <template>
-  <div class="flex min-w-0 items-center gap-1 py-1">
-    <UButton
-      :aria-label="t('trns.historyTable.clearSelection')"
-      color="neutral"
-      icon="i-lucide-x"
-      variant="ghost"
+  <div class="-mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 py-1 lg:-mx-4 lg:scroll-px-4 lg:px-4">
+    <UiActionButton
+      :ariaLabel="t('trns.historyTable.clearSelection')"
+      class="shrink-0 snap-start gap-1 theme-rounded-control! bg-elevated"
+      variant="text"
       @click="selection.clear()"
-    />
-
-    <div class="shrink-0 pr-1 text-sm font-medium text-highlighted">
+    >
+      <Icon name="lucide:x" size="18" />
       {{ count }}
-    </div>
+    </UiActionButton>
 
-    <div class="-mx-1 scroll-strip flex min-w-0 grow snap-x snap-mandatory scroll-px-1 items-center gap-1 overflow-x-auto px-1">
-      <BottomSheetOrDropdown
-        :isOpen="isDescriptionOpen"
-        :title="t('trns.historyTable.bulk.description')"
-        class="shrink-0 snap-start"
-        isShowCloseBtn
-        @closeModal="isDescriptionOpen = false"
-        @openModal="isDescriptionOpen = true"
-      >
-        <template #trigger="{ isActive }">
-          <UButton
-            class="max-w-40"
-            :disabled="busy"
-            icon="i-lucide-text"
-            :label="descriptionLabel"
-            :ui="{ label: 'truncate' }"
-            :variant="isDescriptionCleared || stagedDescription ? 'soft' : (isActive ? 'soft' : 'ghost')"
+    <BottomSheetOrDropdown
+      class="flex shrink-0 grow-0 snap-start gap-1"
+      :isOpen="isDescriptionOpen"
+      :snapPoints="snapPoints"
+      :title="t('trns.historyTable.bulk.description')"
+      titleClass="pb-0!"
+      isShowCloseBtn
+      keyboardTrigger
+      @closeModal="isDescriptionOpen = false"
+      @openModal="isDescriptionOpen = true"
+    >
+      <template #trigger="{ isActive }">
+        <UiTitleDropdown :isActive>
+          <span class="max-w-40 truncate text-nowrap">{{ descriptionLabel }}</span>
+        </UiTitleDropdown>
+      </template>
+
+      <template #content="{ close }">
+        <div class="grid min-w-80 gap-2 px-3 py-2 md:px-1">
+          <UTextarea
+            v-model="description"
+            autofocus
+            :placeholder="t('trns.historyTable.bulk.descriptionPlaceholder')"
+            autoresize
           />
-        </template>
-        <template #content="{ close }">
-          <div class="grid min-w-80 gap-3 p-3">
-            <p class="text-sm text-muted">
-              {{ t('trns.historyTable.bulk.willChange', { count }) }}
-            </p>
-            <UTextarea
-              v-model="description"
-              autofocus
-              :placeholder="t('trns.historyTable.bulk.descriptionPlaceholder')"
-              autoresize
-            />
-            <UButton
-              block
+          <UiButtonAccent
+            color="neutral"
+            variant="soft"
+            @click="stageClearDescription(close)"
+          >
+            {{ t('trns.historyTable.bulk.clearDescription') }}
+          </UiButtonAccent>
+        </div>
+      </template>
+    </BottomSheetOrDropdown>
+
+    <BottomSheetOrDropdown
+      v-if="!hasTransfer"
+      class="flex shrink-0 grow-0 snap-start gap-1"
+      :isOpen="isCategoryOpen"
+      :snapPoints="snapPoints"
+      :title="t('trns.historyTable.bulk.category')"
+      titleClass="pb-0!"
+      isShowCloseBtn
+      keyboardTrigger
+      @closeModal="isCategoryOpen = false"
+      @openModal="isCategoryOpen = true"
+    >
+      <template #trigger="{ isActive }">
+        <UiTitleDropdown :isActive>
+          <span class="max-w-40 truncate text-nowrap">{{ categoryLabel }}</span>
+        </UiTitleDropdown>
+      </template>
+
+      <template #custom="{ close, isExpanded }">
+        <div
+          class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden"
+          :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'"
+        >
+          <CategoriesSelectorModal
+            autofocus
+            compactDesktop
+            hideCreate
+            :selectedIds="categoryId ? [categoryId] : []"
+            @selected="(id: CategoryId) => stageCategory(id, close)"
+          />
+          <div v-if="categoryId" class="px-3 py-2 md:px-1">
+            <UiButtonAccent
               color="neutral"
-              icon="i-lucide-eraser"
-              :label="t('trns.historyTable.bulk.clearDescription')"
               variant="soft"
-              @click="stageClearDescription(close)"
-            />
+              @click="categoryId = null; close()"
+            >
+              {{ t('base.reset') }}
+            </UiButtonAccent>
           </div>
-        </template>
-      </BottomSheetOrDropdown>
+        </div>
+      </template>
+    </BottomSheetOrDropdown>
 
-      <BottomSheetOrDropdown
-        :isOpen="isCategoryOpen"
-        :title="t('trns.historyTable.bulk.category')"
-        class="shrink-0 snap-start"
-        isShowCloseBtn
-        @closeModal="isCategoryOpen = false"
-        @openModal="isCategoryOpen = true"
-      >
-        <template #trigger="{ isActive }">
-          <UButton
-            class="max-w-40"
-            :disabled="busy || categoryEligibleCount === 0"
-            icon="i-hugeicons-folder-library"
-            :label="categoryLabel"
-            :ui="{ label: 'truncate' }"
-            :variant="categoryId ? 'soft' : (isActive ? 'soft' : 'ghost')"
+    <BottomSheetOrDropdown
+      v-if="!hasTransfer"
+      class="flex shrink-0 grow-0 snap-start gap-1"
+      :isOpen="isWalletOpen"
+      :snapPoints="snapPoints"
+      :title="t('trns.historyTable.bulk.wallet')"
+      titleClass="pb-0!"
+      isShowCloseBtn
+      keyboardTrigger
+      @closeModal="isWalletOpen = false"
+      @openModal="isWalletOpen = true"
+    >
+      <template #trigger="{ isActive }">
+        <UiTitleDropdown :isActive>
+          <span class="max-w-40 truncate text-nowrap">{{ walletLabel }}</span>
+        </UiTitleDropdown>
+      </template>
+
+      <template #custom="{ close, isExpanded }">
+        <div
+          class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden"
+          :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'"
+        >
+          <WalletsSelector
+            :activeItemId="walletId ?? undefined"
+            compactDesktop
+            :selectedIds="walletId ? [walletId] : []"
+            withHeader
+            @selected="(id: WalletId) => stageWallet(id, close)"
           />
-        </template>
-        <template #custom="{ close, isExpanded }">
-          <div class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden" :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'">
-            <CategoriesSelectorModal
-              autofocus
-              compactDesktop
-              hideCreate
-              :selectedIds="categoryId ? [categoryId] : []"
-              @selected="(id: CategoryId) => stageCategory(id, close)"
-            />
-            <div class="grid gap-2 border-t border-default bg-default p-3">
-              <p class="text-sm text-muted">
-                {{ t('trns.historyTable.bulk.willChange', { count: categoryEligibleCount }) }}
-                <span v-if="categorySkippedCount">{{ t('trns.historyTable.bulk.transfersSkipped', { count: categorySkippedCount }) }}</span>
-              </p>
-              <UButton
-                v-if="categoryId"
-                block
-                color="neutral"
-                :label="t('base.reset')"
-                variant="soft"
-                @click="categoryId = null; close()"
-              />
-            </div>
+          <div v-if="walletId" class="px-3 py-2 md:px-1">
+            <UiButtonAccent
+              color="neutral"
+              variant="soft"
+              @click="walletId = null; close()"
+            >
+              {{ t('base.reset') }}
+            </UiButtonAccent>
           </div>
-        </template>
-      </BottomSheetOrDropdown>
+        </div>
+      </template>
+    </BottomSheetOrDropdown>
 
-      <BottomSheetOrDropdown
-        :isOpen="isWalletOpen"
-        :title="t('trns.historyTable.bulk.wallet')"
-        class="shrink-0 snap-start"
-        isShowCloseBtn
-        @closeModal="isWalletOpen = false"
-        @openModal="isWalletOpen = true"
-      >
-        <template #trigger="{ isActive }">
-          <UButton
-            class="max-w-40"
-            :disabled="busy || walletEligibleCount === 0"
-            icon="i-hugeicons-wallet-01"
-            :label="walletLabel"
-            :ui="{ label: 'truncate' }"
-            :variant="walletId ? 'soft' : (isActive ? 'soft' : 'ghost')"
-          />
-        </template>
-        <template #custom="{ close, isExpanded }">
-          <div class="grid min-w-80 grid-rows-[1fr_auto] overflow-hidden" :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'">
-            <WalletsSelector
-              :activeItemId="walletId ?? undefined"
-              compactDesktop
-              :selectedIds="walletId ? [walletId] : []"
-              withHeader
-              @selected="(id: WalletId) => stageWallet(id, close)"
-            />
-            <div class="grid gap-2 border-t border-default bg-default p-3">
-              <p class="text-sm text-muted">
-                {{ t('trns.historyTable.bulk.willChange', { count: walletEligibleCount }) }}
-                <span v-if="walletSkippedCount">{{ t('trns.historyTable.bulk.transfersSkipped', { count: walletSkippedCount }) }}</span>
-              </p>
-              <UButton
-                v-if="walletId"
-                block
-                color="neutral"
-                :label="t('base.reset')"
-                variant="soft"
-                @click="walletId = null; close()"
-              />
-            </div>
-          </div>
-        </template>
-      </BottomSheetOrDropdown>
+    <FormDate
+      v-model="date"
+      class="flex shrink-0 grow-0 snap-start gap-1"
+      clearable
+      :placeholder="t('trns.historyTable.bulk.date')"
+      :title="t('trns.historyTable.bulk.date')"
+    >
+      <template #trigger="{ isActive, label }">
+        <UiTitleDropdown :isActive>
+          <span class="text-nowrap">{{ label }}</span>
+        </UiTitleDropdown>
+      </template>
+    </FormDate>
 
-      <FormDate
-        v-model="date"
-        class="w-36 shrink-0 snap-start"
-        clearable
-        :placeholder="t('trns.historyTable.bulk.date')"
-        :title="t('trns.historyTable.bulk.date')"
-      />
+    <UiActionButton
+      class="shrink-0 snap-start theme-rounded-control! bg-elevated text-error"
+      variant="text"
+      @click="showDeleteConfirm = true"
+    >
+      {{ t('base.delete') }}
+    </UiActionButton>
 
-      <UButton
-        class="shrink-0 snap-start"
-        color="error"
-        :disabled="busy"
-        icon="i-lucide-trash-2"
-        :label="t('base.delete')"
-        variant="ghost"
-        @click="showDeleteConfirm = true"
-      />
-    </div>
-
-    <UButton
-      :disabled="!actions.length"
-      :label="t('base.apply')"
-      :loading="busy"
+    <UiActionButton
+      class="shrink-0 snap-start theme-rounded-control! bg-primary text-inverted"
+      :disabled="!actions.length || busy"
+      variant="text"
       @click="apply"
-    />
+    >
+      {{ t('base.apply') }}
+    </UiActionButton>
 
     <LayoutConfirmModal
       v-if="showDeleteConfirm"

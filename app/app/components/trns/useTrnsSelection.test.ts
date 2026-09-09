@@ -20,4 +20,15 @@ describe('useTrnsSelection', () => {
     expect(selection.ids.value).toEqual([])
     expect(selection.count.value).toBe(0)
   })
+
+  it('selects a whole group, then deselects it once every id is selected', () => {
+    const selection = useTrnsSelection()
+
+    selection.toggle('a')
+    selection.toggleMany(['a', 'b'])
+    expect(selection.ids.value).toEqual(['a', 'b'])
+
+    selection.toggleMany(['a', 'b'])
+    expect(selection.ids.value).toEqual([])
+  })
 })

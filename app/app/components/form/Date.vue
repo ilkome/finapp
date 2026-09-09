@@ -48,16 +48,18 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
     @openModal="isOpen = true"
     @closeModal="isOpen = false"
   >
-    <template #trigger>
-      <button
-        type="button"
-        class="m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-left text-base font-normal outline-none hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
-      >
-        <span :class="props.modelValue != null ? 'text-highlighted' : 'text-muted'">
-          {{ label }}
-        </span>
-        <Icon name="lucide:calendar" size="16" class="ml-auto shrink-0 text-muted" />
-      </button>
+    <template #trigger="{ isActive }">
+      <slot name="trigger" :isActive="isActive" :label="label">
+        <button
+          type="button"
+          class="m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-left text-base font-normal outline-none hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
+        >
+          <span :class="props.modelValue != null ? 'text-highlighted' : 'text-muted'">
+            {{ label }}
+          </span>
+          <Icon name="lucide:calendar" size="16" class="ml-auto shrink-0 text-muted" />
+        </button>
+      </slot>
     </template>
 
     <template #content="{ close }">
