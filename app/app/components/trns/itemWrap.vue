@@ -5,6 +5,7 @@ import { filterKey } from '~/components/filter/injectionKeys'
 import { statConfigKey, statDateKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { useStatCategoryNavigation, useStatWalletNavigation } from '~/components/stat/navigation'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
+import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 import { isTransfer, TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -13,15 +14,12 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps<{
   compact?: boolean
   date?: string
-  isSelected?: boolean
-  selectable?: boolean
   trnId: TrnId
   trnItem: TrnItemFull
 }>()
 
 const emit = defineEmits<{
   click: []
-  toggleSelect: []
 }>()
 
 const { t } = useI18n()
@@ -32,7 +30,10 @@ const statConfig = inject(statConfigKey, null)
 const statDate = inject(statDateKey, null)
 const statTrnsViewState = inject(statTrnsViewStateKey, null)
 const trnsStore = useTrnsStore()
+const selection = inject(trnsSelectionKey, null)
 const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
+
+const isSelected = computed(() => selection?.has(props.trnId) ?? false)
 
 const showDeleteConfirm = ref(false)
 const reportType = computed(() => {
@@ -151,10 +152,17 @@ const contextMenuItems = computed(() => {
   })
 
   return [[
+    ...(selection
+      ? [{
+          icon: isSelected.value ? 'lucide:square-minus' : 'lucide:square-check',
+          label: isSelected.value ? t('trns.selection.deselect') : t('trns.selection.select'),
+          onSelect: () => selection.toggle(props.trnId),
+        }]
+      : []),
     {
       icon: 'lucide:pencil',
       label: t('base.edit'),
-      onSelect: () => click(),
+      onSelect: () => openEdit(),
     },
     {
       icon: 'lucide:copy',
@@ -171,7 +179,17 @@ const contextMenuItems = computed(() => {
   ]]
 })
 
-async function click() {
+// While a selection is active the row is a selection target, not a shortcut to the form.
+function click() {
+  if (selection?.count.value) {
+    selection.toggle(props.trnId)
+    return
+  }
+
+  openEdit()
+}
+
+async function openEdit() {
   emit('click')
   await nextTick()
   openFormForEdit(props.trnId)
@@ -190,40 +208,20 @@ function handleDeleteConfirm() {
 </script>
 
 <template>
-  <div
-    v-if="selectable"
-    v-bind="$attrs"
-    class="flex items-center gap-2 pl-3"
-    @click="emit('toggleSelect')"
-  >
-    <input
-      type="checkbox"
-      :checked="isSelected"
-      class="pointer-events-none size-5 shrink-0"
-    >
+  <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
     <TrnsItem
       :compact="props.compact"
+      :isActive="isSelected"
       :trnItem
       :date
-      class="grow"
+      @click="click"
     />
-  </div>
+  </UiContextMenuMy>
 
-  <template v-else>
-    <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
-      <TrnsItem
-        :compact="props.compact"
-        :trnItem
-        :date
-        @click="click"
-      />
-    </UiContextMenuMy>
-
-    <LayoutConfirmModal
-      v-if="showDeleteConfirm"
-      :title="t('trnForm.delete.alert')"
-      @closed="showDeleteConfirm = false"
-      @confirm="handleDeleteConfirm"
-    />
-  </template>
+  <LayoutConfirmModal
+    v-if="showDeleteConfirm"
+    :title="t('trnForm.delete.alert')"
+    @closed="showDeleteConfirm = false"
+    @confirm="handleDeleteConfirm"
+  />
 </template>

@@ -56,7 +56,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 
 <template>
   <div
-    class="stat-date-navigation -mx-2 flex grow snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:px-0"
+    class="-mx-2 scroll-strip flex grow snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:px-0"
   >
     <UiNavArrows
       v-if="props.isShowButtons && isShowNav && !statDate.params.value.customDate"
@@ -77,15 +77,3 @@ function changeDate(way: 'next' | 'prev' | 'today') {
     <slot />
   </div>
 </template>
-
-<style scoped>
-.stat-date-navigation {
-  scrollbar-width: none;
-}
-
-.stat-date-navigation::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-</style>

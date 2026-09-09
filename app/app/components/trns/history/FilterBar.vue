@@ -43,7 +43,7 @@ const descriptionItems = computed(() => [
       </template>
     </UInput>
 
-    <div class="history-filter-scroll -mx-2 flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:-mx-3 md:scroll-px-3 md:px-3">
+    <div class="-mx-2 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:-mx-3 md:scroll-px-3 md:px-3">
       <UiActionButton
         v-if="filters.hasFilters.value"
         class="shrink-0 snap-start snap-always"
@@ -82,15 +82,3 @@ const descriptionItems = computed(() => [
     </div>
   </div>
 </template>
-
-<style scoped>
-.history-filter-scroll {
-  scrollbar-width: none;
-}
-
-.history-filter-scroll::-webkit-scrollbar {
-  display: none;
-  width: 0;
-  height: 0;
-}
-</style>

@@ -1,7 +1,7 @@
 import { civilDayStart } from '~~/utils/date/civil'
 
 import type { HistoryBulkEdit, HistoryBulkEditResult } from '~/components/trns/history/types'
-import type { TrnId, Trns } from '~/components/trns/types'
+import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 
 import { trnItemSchema, TrnType } from '~/components/trns/types'
 
@@ -104,4 +104,55 @@ export function buildHistoryBulkEdit({
   }
 
   return result
+}
+
+/**
+ * Stage several parameters and apply them to the same selection in one pass: every action runs on
+ * the items the previous one produced, so the result is a single value per transaction to save.
+ */
+export function buildTrnsBulkEdits({
+  actions,
+  ids,
+  isCategoryTransactible,
+  isWalletSelectable,
+  items,
+  now = Date.now(),
+}: {
+  actions: HistoryBulkEdit[]
+  ids: TrnId[]
+  isCategoryTransactible: (id: string) => boolean
+  isWalletSelectable: (id: string) => boolean
+  items: Trns
+  now?: number
+}): HistoryBulkEditResult {
+  const changed = new Set<TrnId>()
+  const ineligible: HistoryBulkEditResult['ineligible'] = []
+  const values: Record<TrnId, TrnItem> = {}
+  let currentItems = items
+
+  for (const action of actions) {
+    const step = buildHistoryBulkEdit({
+      action,
+      ids,
+      isCategoryTransactible,
+      isWalletSelectable,
+      items: currentItems,
+      now,
+    })
+
+    ineligible.push(...step.ineligible)
+    Object.assign(values, step.values)
+    for (const id of step.changedIds)
+      changed.add(id)
+
+    if (step.changedIds.length)
+      currentItems = { ...currentItems, ...step.values }
+  }
+
+  return {
+    changedIds: [...changed],
+    ineligible,
+    unchangedIds: [...new Set(ids)].filter(id => !changed.has(id)),
+    values,
+  }
 }

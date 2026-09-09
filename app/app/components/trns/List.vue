@@ -19,8 +19,6 @@ const {
   isShowHeader,
   isShowIncome,
   isShowTransfers,
-  selectable,
-  selectedTrnIds = [],
   size = 30,
   trnsIds = [],
 } = defineProps<{
@@ -34,15 +32,12 @@ const {
   isShowHeader?: boolean
   isShowIncome?: boolean
   isShowTransfers?: boolean
-  selectable?: boolean
-  selectedTrnIds?: TrnId[]
   size?: number
   trnsIds?: TrnId[]
 }>()
 
 const emit = defineEmits<{
   click: []
-  toggleSelect: [id: TrnId]
 }>()
 
 const trnsStore = useTrnsStore()
@@ -154,10 +149,7 @@ function onOpenTrnForm(date: number) {
           v-if="row.type === 'transaction'"
           :compact="compact"
           :row
-          :selectable="selectable"
-          :selectedTrnIds
           @click="emit('click')"
-          @toggleSelect="emit('toggleSelect', $event)"
         />
       </template>
     </div>
@@ -185,10 +177,7 @@ function onOpenTrnForm(date: number) {
             :key="trnRow.id"
             :compact="compact"
             :row="trnRow"
-            :selectable="selectable"
-            :selectedTrnIds
             @click="emit('click')"
-            @toggleSelect="emit('toggleSelect', $event)"
           />
         </div>
       </div>

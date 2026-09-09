@@ -3,7 +3,7 @@ import { trnToRow } from '~~/services/powersync/transforms'
 
 import type { TrnItem, Trns } from '~/components/trns/types'
 
-import { buildHistoryBulkEdit } from '~/components/trns/history/bulkEdits'
+import { buildHistoryBulkEdit, buildTrnsBulkEdits } from '~/components/trns/history/bulkEdits'
 import { TrnType } from '~/components/trns/types'
 
 const day = Date.UTC(2026, 8, 3)
@@ -94,5 +94,42 @@ describe('buildHistoryBulkEdit', () => {
 
   it('rejects non-civil dates', () => {
     expect(() => build({ a: expense() }, { type: 'setDate', value: day + 1 })).toThrow('civil day')
+  })
+})
+
+describe('buildTrnsBulkEdits', () => {
+  it('merges several staged actions into one value per transaction', () => {
+    const result = buildTrnsBulkEdits({
+      actions: [
+        { type: 'setDescription', value: 'Trip' },
+        { type: 'setCategory', value: 'travel' },
+        { type: 'setWallet', value: 'card' },
+      ],
+      ids: ['a', 'b'],
+      isCategoryTransactible: id => ['adjustment', 'food', 'travel'].includes(id),
+      isWalletSelectable: id => ['card', 'cash'].includes(id),
+      items: { a: expense(), b: transfer },
+      now: 99,
+    })
+
+    expect(result.changedIds).toEqual(['a', 'b'])
+    expect(result.values.a).toMatchObject({ categoryId: 'travel', desc: 'Trip', updatedAt: 99, walletId: 'card' })
+    // The transfer takes the description but is skipped by category and wallet.
+    expect(result.values.b).toMatchObject({ categoryId: 'transfer', desc: 'Trip' })
+    expect(result.ineligible).toEqual([{ id: 'b', reason: 'transfer' }, { id: 'b', reason: 'transfer' }])
+  })
+
+  it('reports transactions no action changed', () => {
+    const result = buildTrnsBulkEdits({
+      actions: [{ type: 'setDescription', value: 'Old' }],
+      ids: ['a'],
+      isCategoryTransactible: () => true,
+      isWalletSelectable: () => true,
+      items: { a: expense() },
+      now: 99,
+    })
+
+    expect(result.changedIds).toEqual([])
+    expect(result.unchangedIds).toEqual(['a'])
   })
 })

@@ -5,6 +5,8 @@ import { filterKey } from '~/components/filter/injectionKeys'
 import { useStatConfig } from '~/components/stat/config/useStatConfig'
 import { useStatDate } from '~/components/stat/date/useStatDate'
 import { statBaseConfigKey, statCanSplitKey, statConfigKey, statContentWidthKey, statContextBlockIdsKey, statDateKey, statHistoryAvailableKey, statPreservedCategoryScrollTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { trnsSelectionKey } from '~/components/trns/injectionKeys'
+import { useTrnsSelection } from '~/components/trns/useTrnsSelection'
 
 export function useStatPageProviders(options: StatPageProvidersOptions) {
   const statConfig = useStatConfig(options.config)
@@ -16,6 +18,7 @@ export function useStatPageProviders(options: StatPageProvidersOptions) {
   // One per page: the block that changes the filter and the feed that reloads are separate
   // component trees, so this cannot live inside either of them.
   const preservedCategoryScrollTop = shallowRef<number | null>(null)
+  const trnsSelection = useTrnsSelection()
   const trnsViewState: TrnsListFilterState = {
     filterBy: ref(options.initialTrnsViewState?.filterBy ?? 'all'),
     isShowHistoryWithDesc: ref(options.initialTrnsViewState?.isShowHistoryWithDesc ?? false),
@@ -32,6 +35,7 @@ export function useStatPageProviders(options: StatPageProvidersOptions) {
   provide(statHistoryAvailableKey, historyAvailable)
   provide(statPreservedCategoryScrollTopKey, preservedCategoryScrollTop)
   provide(statTrnsViewStateKey, trnsViewState)
+  provide(trnsSelectionKey, trnsSelection)
 
-  return { canSplit, contentWidth, contextBlockIds, historyAvailable, preservedCategoryScrollTop, statConfig, statDate, trnsViewState }
+  return { canSplit, contentWidth, contextBlockIds, historyAvailable, preservedCategoryScrollTop, statConfig, statDate, trnsSelection, trnsViewState }
 }

@@ -11,14 +11,11 @@ const props = defineProps<{
   compact?: boolean
   isShowGroupSum?: boolean
   row: TrnsDisplayRow
-  selectable?: boolean
-  selectedTrnIds?: TrnId[]
 }>()
 
 const emit = defineEmits<{
   click: [trnId: TrnId]
   clickDate: [date: number]
-  toggleSelect: [trnId: TrnId]
 }>()
 
 const trnsStore = useTrnsStore()
@@ -61,12 +58,9 @@ const rowTotal = computed(() => props.row.type === 'dateHeader' && props.row.trn
     v-else-if="trnItem"
     :compact="compact"
     :date="(formatDate(trnItem.date, 'trnItem') as string)"
-    :isSelected="selectedTrnIds?.includes(row.trnId)"
-    :selectable="selectable"
     :trnId="row.trnId"
     :trnItem="trnItem"
     class="group"
     @click="emit('click', row.trnId)"
-    @toggleSelect="emit('toggleSelect', row.trnId)"
   />
 </template>

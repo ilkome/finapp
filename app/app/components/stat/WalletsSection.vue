@@ -45,7 +45,7 @@ function onClickWallet(walletId: WalletId) {
 <template>
   <div
     v-if="statConfig.config.value.wallets.isShow"
-    class="stat-wallets-scroll relative isolate z-0 -mx-2 flex snap-x snap-mandatory scroll-px-2 overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
+    class="relative isolate z-0 -mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
     data-stat-block="wallets"
     data-stat-wallets-section
   >
@@ -66,13 +66,3 @@ function onClickWallet(walletId: WalletId) {
     </div>
   </div>
 </template>
-
-<style scoped>
-.stat-wallets-scroll {
-  scrollbar-width: none;
-}
-
-.stat-wallets-scroll::-webkit-scrollbar {
-  display: none;
-}
-</style>

@@ -2,6 +2,7 @@
 import type { ComponentPublicInstance } from 'vue'
 
 import { statConfigOverlayOwnerKey } from '~/components/stat/injectionKeys'
+import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 
 // Defaults to true so pages that always have a breakdown need not pass it; an absent
 // Boolean prop would cast to false and forward that to StatConfigView.
@@ -15,6 +16,7 @@ const props = withDefaults(defineProps<{
 })
 
 const isPopoverOpen = ref(false)
+const trnsSelection = inject(trnsSelectionKey, null)
 provide(statConfigOverlayOwnerKey, useId())
 
 type UiHeaderInstance = ComponentPublicInstance & {
@@ -38,6 +40,10 @@ defineExpose({ stickyMainElement, stickyRootElement })
     :sticky="props.sticky"
   >
     <slot name="title" />
+
+    <template v-if="trnsSelection?.count.value" #selected>
+      <TrnsSelectionBar />
+    </template>
 
     <template #actions>
       <div class="flex items-center">
