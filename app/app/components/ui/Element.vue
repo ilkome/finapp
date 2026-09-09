@@ -16,8 +16,11 @@ const slots = useSlots()
 const elementClasses = computed(() => cn(
   'uiElement -my-0.25 flex min-h-10.5 grow items-center gap-3 overflow-hidden rounded-md border border-transparent interactive px-2 py-1.5',
   props.insideClasses,
-  // The row's default -my-0.25 lets neighbours overlap; an active row must not sit under them.
-  { 'relative z-10 my-0 bg-elevated/30 border-primary/40': props.isActive },
+  // Rows overlap by the base -my-0.25, so the highlight is painted by an overlay inset by that
+  // 1px instead of on the row itself: neighbours cannot cover it and the row keeps its height.
+  {
+    'relative z-10 after:pointer-events-none after:absolute after:inset-0 after:-z-10 after:rounded-md after:border after:border-primary/40 after:bg-elevated/30 after:content-[""]': props.isActive,
+  },
 ))
 </script>
 
