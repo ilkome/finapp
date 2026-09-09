@@ -61,6 +61,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
     <UiNavArrows
       v-if="props.isShowButtons && isShowNav && !statDate.params.value.customDate"
       class="shrink-0 snap-start"
+      compact
       hideInactiveArrows
       :homeAriaLabel="$t('base.reset')"
       homeMatchesArrows

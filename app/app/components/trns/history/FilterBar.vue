@@ -46,7 +46,7 @@ const descriptionItems = computed(() => [
     <div class="-mx-2 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:-mx-3 md:scroll-px-3 md:px-3">
       <UiActionButton
         v-if="filters.hasFilters.value"
-        class="shrink-0 snap-start snap-always"
+        class="min-h-9! min-w-9! shrink-0 snap-start snap-always"
         :ariaLabel="t('base.reset')"
         @click="filters.clear"
       >

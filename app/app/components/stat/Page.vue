@@ -37,7 +37,7 @@ const maxRange = computed(() => contextualMaxRange.value ?? baseMaxRange.value)
 
 const { contentWidth, statConfig, statDate } = useStatPageProviders({
   config: { legacyStorageKey, legacyTab, stableStorage: true, storageKey },
-  date: { key: storageKey, legacyKey: legacyStorageKey, maxRange, queryParams: route.query },
+  date: { key: storageKey, legacyKey: legacyStorageKey, maxRange, queryParams: () => route.query },
   filter,
 })
 const contextRange = computed(() => resolveStatSelectionRange(

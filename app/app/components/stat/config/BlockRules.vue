@@ -14,7 +14,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { conditionGroupTitle } = useStatConditionTitles()
+const { conditionGroupTitle, conditionGroupTitles } = useStatConditionTitles()
 const controller = inject(statViewControllerKey)!
 const expandedId = ref<string | null>(null)
 // The default settings are the block's main content, so they start open and only a manual
@@ -105,7 +105,7 @@ function removeRule(index: number) {
 }
 
 function ruleTitle(rule: BlockRule) {
-  return conditionGroupTitle(rule.condition)
+  return conditionGroupTitles(rule.condition).join('\n')
 }
 </script>
 

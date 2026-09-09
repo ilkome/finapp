@@ -145,7 +145,7 @@ watch(description, (value) => {
   <div class="-mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 py-1 lg:-mx-4 lg:scroll-px-4 lg:px-4">
     <UiActionButton
       :ariaLabel="t('trns.historyTable.clearSelection')"
-      class="shrink-0 snap-start gap-1 theme-rounded-control! bg-elevated"
+      class="min-h-9! min-w-9! shrink-0 snap-start gap-1 theme-rounded-control! bg-elevated"
       variant="text"
       @click="selection.clear()"
     >
@@ -165,9 +165,10 @@ watch(description, (value) => {
     <BottomSheetOrDropdown
       class="flex shrink-0 grow-0 snap-start gap-1"
       :isOpen="isDescriptionOpen"
+      popoverBodyClass="md:pb-3"
       :snapPoints="snapPoints"
       :title="t('trns.historyTable.bulk.description')"
-      titleClass="pb-0!"
+      titleClass="pt-3! pb-3!"
       isShowCloseBtn
       keyboardTrigger
       @closeModal="isDescriptionOpen = false"
@@ -181,7 +182,7 @@ watch(description, (value) => {
       </template>
 
       <template #content="{ close }">
-        <div class="grid min-w-80 gap-2 px-3 py-2 md:px-1">
+        <div class="grid min-w-80 gap-2 px-3 md:px-1">
           <UTextarea
             v-model="description"
             autofocus
@@ -203,9 +204,10 @@ watch(description, (value) => {
       v-if="!hasTransfer"
       class="flex shrink-0 grow-0 snap-start gap-1"
       :isOpen="isCategoryOpen"
+      popoverBodyClass="py-0! md:pb-0!"
       :snapPoints="snapPoints"
       :title="t('trns.historyTable.bulk.category')"
-      titleClass="pb-0!"
+      titleClass="pt-3! pb-2!"
       isShowCloseBtn
       keyboardTrigger
       @closeModal="isCategoryOpen = false"
@@ -238,9 +240,10 @@ watch(description, (value) => {
       v-if="!hasTransfer"
       class="flex shrink-0 grow-0 snap-start gap-1"
       :isOpen="isWalletOpen"
+      popoverBodyClass="py-0! md:pb-0!"
       :snapPoints="snapPoints"
       :title="t('trns.historyTable.bulk.wallet')"
-      titleClass="pb-0!"
+      titleClass="pt-3! pb-2!"
       isShowCloseBtn
       keyboardTrigger
       @closeModal="isWalletOpen = false"

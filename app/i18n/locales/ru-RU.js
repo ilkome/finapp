@@ -666,6 +666,7 @@ export default {
       andMore: 'и ещё {count}',
       auto: 'Включать автоматически',
       blockRules: {
+        addBlock: 'Добавить блок',
         addParameter: 'Добавить параметр',
         addRule: 'Добавить правило',
         conditionSummary: {
@@ -687,8 +688,10 @@ export default {
         presets: {
           custom: 'Свое условие',
         },
+        removeBlock: 'Убрать блок',
         removeParameter: 'Удалить параметр',
         rule: 'Правило',
+        settings: 'Настройки правила',
         then: 'Тогда',
         title: '{block} правила',
       },

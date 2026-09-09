@@ -1,19 +1,11 @@
 <script setup lang="ts">
-import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { BlockRule, StatBlockPanelId } from '~/components/stat/views/types'
-
-import { applyConfigUpdate } from '~/components/stat/config/schema'
-import { statBaseConfigKey, statCanSplitKey, statConfigKey, statConfigParameterRemoveKey, statHistoryAvailableKey } from '~/components/stat/injectionKeys'
-import { BLOCK_RULE_PARAMETERS, BLOCK_RULE_VISIBILITY_PARAMETER_ID, isBlockRuleParameterAvailable } from '~/components/stat/views/blockParameters'
-import { applyBlockRuleConfig, createBlockRuleOverrides, resolveBlockRuleParameterIds } from '~/components/stat/views/blockRules'
 
 const props = defineProps<{
   icon?: string
   isExpanded: boolean
   panel: StatBlockPanelId
   rule: BlockRule
-  // Opened from the rules grouping, where the condition is the group itself: only "then" is editable.
-  thenOnly?: boolean
   title: string
 }>()
 
@@ -25,23 +17,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const baseConfig = inject(statBaseConfigKey)!
-const canSplit = inject(statCanSplitKey, computed(() => false))
-const historyAvailable = inject(statHistoryAvailableKey, computed(() => true))
-const ruleConfig = computed(() => applyBlockRuleConfig(props.panel, baseConfig.config.value, props.rule.overrides))
-const parameterIds = computed(() => resolveBlockRuleParameterIds(props.panel, props.rule))
-const availableSelectedParameterIds = computed(() => parameterIds.value.filter(id => (
-  id !== BLOCK_RULE_VISIBILITY_PARAMETER_ID && parameterIsAvailable(id)
-)))
-const unavailableSelectedParameterIds = computed(() => parameterIds.value.filter(id => (
-  id !== BLOCK_RULE_VISIBILITY_PARAMETER_ID && !parameterIsAvailable(id)
-)))
-const availableParameterItems = computed(() => BLOCK_RULE_PARAMETERS[props.panel]
-  .filter(parameter => !parameterIds.value.includes(parameter.id) && parameterIsAvailable(parameter.id))
-  .map(parameter => ({
-    label: t(parameter.titleKey),
-    onSelect: () => addParameter(parameter.id),
-  })))
 const ruleActionItems = computed(() => [[
   {
     icon: 'i-lucide-copy',
@@ -55,47 +30,9 @@ const ruleActionItems = computed(() => [[
     onSelect: () => emit('remove'),
   },
 ]])
-const ruleProvider = {
-  config: ruleConfig,
-  updateConfig<K extends keyof MiniItemConfig>(key: K, value: Parameters<typeof applyConfigUpdate<K>>[2]) {
-    const edited = applyConfigUpdate(ruleConfig.value, key, value)
-    if (!edited)
-      return
-    emit('update', {
-      ...props.rule,
-      overrides: createBlockRuleOverrides(props.panel, baseConfig.config.value, edited, parameterIds.value),
-      parameterIds: parameterIds.value,
-    })
-  },
-}
-provide(statConfigKey, ruleProvider)
-provide(statConfigParameterRemoveKey, removeParameter)
 
 function updateCondition(condition: BlockRule['condition']) {
   emit('update', { ...props.rule, condition })
-}
-
-function parameterIsAvailable(id: string) {
-  return isBlockRuleParameterAvailable(props.panel, id, ruleConfig.value, canSplit.value, historyAvailable.value)
-}
-
-function addParameter(id: string) {
-  const nextIds = [...parameterIds.value, id]
-  emit('update', {
-    ...props.rule,
-    overrides: createBlockRuleOverrides(props.panel, baseConfig.config.value, ruleConfig.value, nextIds),
-    parameterIds: nextIds,
-  })
-}
-
-function removeParameter(id: string) {
-  const nextIds = parameterIds.value.filter(parameterId => parameterId !== id)
-  emit('update', {
-    ...props.rule,
-    isHidden: id === BLOCK_RULE_VISIBILITY_PARAMETER_ID ? false : props.rule.isHidden,
-    overrides: createBlockRuleOverrides(props.panel, baseConfig.config.value, ruleConfig.value, nextIds),
-    parameterIds: nextIds,
-  })
 }
 
 function setExpanded(open: boolean) {
@@ -109,7 +46,6 @@ function setExpanded(open: boolean) {
     insideClasses="group min-h-10 gap-0 border-0 p-0"
   >
     <div
-      v-if="!thenOnly"
       class="blockRuleSortHandle sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center self-stretch text-muted hover:bg-accented active:cursor-grabbing"
       :aria-label="$t('stat.views.drag')"
     >
@@ -130,86 +66,35 @@ function setExpanded(open: boolean) {
             class="flex min-h-10 w-full min-w-0 items-center gap-2 px-3 text-left"
           >
             <Icon v-if="icon" :name="icon" class="size-4 shrink-0 text-muted" />
-            <span class="min-w-0 grow truncate text-sm font-medium">{{ title }}</span>
+            <span class="min-w-0 grow text-sm font-medium whitespace-pre-line">{{ title }}</span>
             <Icon name="lucide:chevron-down" class="size-4 shrink-0 text-muted" />
           </button>
         </template>
 
         <template #content>
-          <UiTitleModal class="flex items-center gap-2 md:pt-3 md:pb-2">
-            <span class="grow">{{ thenOnly ? title : t('stat.views.blockRules.rule') }}</span>
+          <UiTitleModal class="flex items-center gap-2 py-2 pr-2!">
+            <span class="grow">{{ t('stat.views.blockRules.rule') }}</span>
             <UDropdownMenu
-              v-if="!thenOnly"
               :items="ruleActionItems"
               :content="{ align: 'end' }"
               :modal="false"
             >
-              <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
+              <StatViewsMoreButton class="size-8!" :ariaLabel="$t('base.moreOptions')" />
             </UDropdownMenu>
           </UiTitleModal>
 
           <div class="grid gap-4 px-3 pb-3 md:pb-2">
             <StatViewsConditionEditor
-              v-if="!thenOnly"
               :modelValue="rule.condition"
               @update:modelValue="updateCondition"
             />
             <div class="grid gap-2">
               <UiEntityName>{{ $t('stat.views.blockRules.then') }}</UiEntityName>
-              <div v-if="parameterIds.length" class="grid gap-1">
-                <div
-                  v-if="parameterIds.includes(BLOCK_RULE_VISIBILITY_PARAMETER_ID)"
-                  class="flex min-w-0 items-center gap-1 rounded-sm pr-2 hover:bg-elevated/50"
-                >
-                  <UiSwitchItem
-                    class="hover:bg-transparent!"
-                    :checkboxValue="!rule.isHidden"
-                    :title="$t('stat.views.blockRules.parameters.visibility')"
-                    trailing
-                    @click="emit('update', { ...rule, isHidden: !rule.isHidden })"
-                  />
-                  <UButton
-                    :aria-label="$t('stat.views.blockRules.removeParameter')"
-                    color="error"
-                    icon="i-lucide-x"
-                    size="xs"
-                    variant="ghost"
-                    @click="removeParameter(BLOCK_RULE_VISIBILITY_PARAMETER_ID)"
-                  />
-                </div>
-                <StatConfigPanelContent
-                  v-if="availableSelectedParameterIds.length"
-                  :panel
-                  :parameterIds="availableSelectedParameterIds"
-                />
-                <div
-                  v-for="parameterId in unavailableSelectedParameterIds"
-                  :key="parameterId"
-                  class="flex min-w-0 items-center gap-1 rounded-sm pr-2 hover:bg-elevated/50"
-                >
-                  <div class="grid min-w-0 grow gap-0.5 px-3 py-2 text-sm">
-                    <span class="truncate text-muted">
-                      {{ $t(BLOCK_RULE_PARAMETERS[panel].find(parameter => parameter.id === parameterId)?.titleKey ?? '') }}
-                    </span>
-                    <span class="truncate text-xs text-dimmed">{{ $t('stat.views.blockRules.parameterUnavailable') }}</span>
-                  </div>
-                  <UButton
-                    :aria-label="$t('stat.views.blockRules.removeParameter')"
-                    color="error"
-                    icon="i-lucide-x"
-                    size="xs"
-                    variant="ghost"
-                    @click="removeParameter(parameterId)"
-                  />
-                </div>
-              </div>
-              <UDropdownMenu :items="[availableParameterItems]">
-                <StatConfigActionButton
-                  :disabled="!availableParameterItems.length"
-                  icon="i-lucide-plus"
-                  :label="$t('stat.views.blockRules.addParameter')"
-                />
-              </UDropdownMenu>
+              <StatConfigBlockRuleParameters
+                :panel
+                :rule
+                @update="emit('update', $event)"
+              />
             </div>
           </div>
         </template>

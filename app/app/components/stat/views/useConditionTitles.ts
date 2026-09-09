@@ -49,12 +49,17 @@ export function useStatConditionTitles() {
     return result
   }
 
-  function conditionGroupTitle(group: ConditionGroup) {
+  /** One line per condition: a group reads as a list, not as one comma-run. */
+  function conditionGroupTitles(group: ConditionGroup) {
     const conditions = flattenConditions(group)
     return conditions.length
-      ? conditions.map(conditionTitle).join(', ')
-      : t('stat.views.blockRules.new')
+      ? conditions.map(conditionTitle)
+      : [t('stat.views.blockRules.new')]
   }
 
-  return { conditionGroupTitle, conditionTitle }
+  function conditionGroupTitle(group: ConditionGroup) {
+    return conditionGroupTitles(group).join(', ')
+  }
+
+  return { conditionGroupTitle, conditionGroupTitles, conditionTitle }
 }

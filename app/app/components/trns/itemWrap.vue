@@ -2,11 +2,10 @@
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
-import { statConfigKey, statDateKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
-import { useStatCategoryNavigation, useStatWalletNavigation } from '~/components/stat/navigation'
+import { statDateKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
-import { isTransfer, TrnType } from '~/components/trns/types'
+import { isTransfer } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 defineOptions({ inheritAttrs: false })
@@ -26,9 +25,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const filter = inject(filterKey, null)
-const statConfig = inject(statConfigKey, null)
 const statDate = inject(statDateKey, null)
-const statTrnsViewState = inject(statTrnsViewStateKey, null)
 const trnsStore = useTrnsStore()
 const selection = inject(trnsSelectionKey, null)
 const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
@@ -36,40 +33,9 @@ const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
 const isSelected = computed(() => selection?.has(props.trnId) ?? false)
 
 const showDeleteConfirm = ref(false)
-const reportType = computed(() => {
-  if (props.trnItem.type === TrnType.Expense)
-    return 'expense' as const
-  if (props.trnItem.type === TrnType.Income)
-    return 'income' as const
-  return 'combined' as const
-})
-const navigationCategoriesIds = computed(() => filter?.categoriesIds.value ?? [])
-const navigationWalletsIds = computed(() => filter?.walletsIds.value ?? [])
-const statSnapshot = computed(() => {
-  if (!statConfig || !statDate || !statTrnsViewState)
-    return null
 
-  return {
-    config: statConfig.config.value,
-    date: statDate.params.value,
-    filteredType: reportType.value === 'combined' ? 'net' as const : reportType.value,
-    reportType: reportType.value,
-    trns: {
-      filterBy: statTrnsViewState.filterBy.value,
-      isShowHistoryWithDesc: statTrnsViewState.isShowHistoryWithDesc?.value ?? false,
-      isShowWithDesc: statTrnsViewState.isShowWithDesc.value,
-    },
-  }
-})
-const openStatCategory = useStatCategoryNavigation({
-  snapshot: statSnapshot,
-  walletsIds: navigationWalletsIds,
-})
-const openStatWallet = useStatWalletNavigation({
-  categoriesIds: navigationCategoriesIds,
-  snapshot: statSnapshot,
-})
-
+// On a stat page the menu narrows the page itself: the wallet and category filters are added
+// here, and the day goes into the URL only, so Back restores the period the user had.
 function filterByDate(date: number) {
   if (statDate) {
     router.push({
@@ -88,15 +54,19 @@ function filterByDate(date: number) {
 }
 
 function filterByCategory(categoryId: string) {
-  if (statSnapshot.value)
-    return openStatCategory(categoryId)
+  if (filter?.canFilterCategories) {
+    filter.setCategoryId(categoryId)
+    return
+  }
 
   return router.push(`/categories/${categoryId}`)
 }
 
 function filterByWallet(walletId: string) {
-  if (statSnapshot.value)
-    return openStatWallet(walletId)
+  if (filter?.canFilterWallets) {
+    filter.setWallets([walletId])
+    return
+  }
 
   return router.push(`/wallets/${walletId}`)
 }

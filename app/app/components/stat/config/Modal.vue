@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AnimatePresence, Motion } from 'motion-v'
 
-import { statConfigNavTitleKey, useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
+import { isStatConfigRuleNav, statConfigNavTitleKey, useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -15,7 +15,14 @@ const trnsFormStore = useTrnsFormStore()
 const { close: closeOverlay, isOpen, open: openOverlay } = useStatConfigOverlay()
 const { activePanel, back, direction } = useStatConfigNav()
 
-const panelTitle = computed(() => activePanel.value ? t(statConfigNavTitleKey(activePanel.value)) : '')
+const panelTitle = computed(() => {
+  const panel = activePanel.value
+  if (!panel)
+    return ''
+  return isStatConfigRuleNav(panel)
+    ? t('stat.views.blockRules.settings')
+    : t(statConfigNavTitleKey(panel))
+})
 
 // Desktop only: the sidebar slides between the block list and one section, mirroring the
 // bottom menu. Mobile stacks a second sheet instead, so Back is handled by the sheet stack.

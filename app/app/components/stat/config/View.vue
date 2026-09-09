@@ -4,34 +4,25 @@ import { useStorage } from '@vueuse/core'
 import { debounce } from 'es-toolkit'
 
 import type { StatConfigBlockId } from '~/components/stat/config/schema'
-import type { StatConfigPanelId } from '~/components/stat/types'
 
-import { normalizeStatConfigBlockOrder, statConfigBlockOrder, statContextBlockIds } from '~/components/stat/config/schema'
-import { useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
+import { normalizeStatConfigBlockOrder } from '~/components/stat/config/schema'
+import { isStatConfigRuleNav, useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
-import { statBaseConfigKey, statCanSplitKey, statConfigKey, statContextBlockIdsKey } from '~/components/stat/injectionKeys'
-
-type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
+import { useStatConfigAvailablePanels } from '~/components/stat/config/useStatConfigPanels'
+import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
 const { isOpen: isConfigOpen } = useStatConfigOverlay()
 const statConfig = inject(statBaseConfigKey)!
 provide(statConfigKey, statConfig)
 const canSplit = inject(statCanSplitKey, computed(() => false))
-const contextBlockIds = inject(statContextBlockIdsKey, computed(() => []))
 const { width } = useWindowSize()
 const { activePanel, back, open: openPanel } = useStatConfigNav()
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
   dragHandle: '.sortHandle',
 })
 
-const availablePanels = computed<ConfigPanelId[]>(() => {
-  const contextual = new Set(contextBlockIds.value)
-  return [
-    'statAverage',
-    ...statConfigBlockOrder.filter(panel => !statContextBlockIds.includes(panel as typeof statContextBlockIds[number]) || contextual.has(panel as typeof statContextBlockIds[number])),
-  ]
-})
+const availablePanels = useStatConfigAvailablePanels()
 const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
   availablePanels.value.filter((panel): panel is StatConfigBlockId => panel !== 'statAverage'),
 )
@@ -39,7 +30,7 @@ const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
 // A section can disappear when the report context changes (contextual blocks), so leave it.
 watch(availablePanels, (panels) => {
   const panel = activePanel.value
-  if (panel && panel !== 'auto' && !panels.includes(panel))
+  if (panel && panel !== 'auto' && !isStatConfigRuleNav(panel) && !panels.includes(panel))
     back()
 }, { immediate: true })
 

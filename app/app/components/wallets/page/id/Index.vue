@@ -66,7 +66,7 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
     key: storageKey,
     legacyKey: legacyStorageKey,
     maxRange,
-    queryParams: route.query,
+    queryParams: () => route.query,
     storage: isStatDrilldown ? sessionStorage : localStorage,
   },
   filter,

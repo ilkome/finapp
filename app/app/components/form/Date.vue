@@ -44,6 +44,8 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
   <BottomSheetOrDropdown
     :title="props.title ?? t('common.date')"
     :isOpen="isOpen"
+    popoverBodyClass="md:pb-2"
+    titleClass="pt-3! pb-2!"
     isShowCloseBtn
     @openModal="isOpen = true"
     @closeModal="isOpen = false"
@@ -67,10 +69,10 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
         <!-- @vue-ignore -->
         <UCalendar
           :modelValue="calendarDate"
-          class="p-3"
+          class="px-2 pt-0 pb-2"
           @update:modelValue="(d: CalendarDate) => onPick(d, close)"
         />
-        <div v-if="props.clearable && props.modelValue != null" class="flex justify-end px-3 pb-3">
+        <div v-if="props.clearable && props.modelValue != null" class="flex justify-end px-3 pb-2">
           <button
             type="button"
             class="text-sm text-muted hover:text-highlighted"

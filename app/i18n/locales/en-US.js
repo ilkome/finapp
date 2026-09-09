@@ -666,6 +666,7 @@ export default {
       andMore: 'and {count} more',
       auto: 'Activate automatically',
       blockRules: {
+        addBlock: 'Add block',
         addParameter: 'Add parameter',
         addRule: 'Add rule',
         conditionSummary: {
@@ -687,8 +688,10 @@ export default {
         presets: {
           custom: 'Custom condition',
         },
+        removeBlock: 'Remove block',
         removeParameter: 'Remove parameter',
         rule: 'Rule',
+        settings: 'Rule settings',
         then: 'Then',
         title: '{block} rules',
       },

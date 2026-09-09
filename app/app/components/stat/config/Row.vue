@@ -52,7 +52,7 @@ defineEmits<{
           class="shrink-0 text-muted"
           size="20"
         />
-        <span>{{ title }}</span>
+        <span class="whitespace-pre-line">{{ title }}</span>
         <Icon
           v-if="hasPanel"
           name="lucide:chevron-right"
