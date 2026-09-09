@@ -275,6 +275,10 @@ export function useStatFeedViewport(params: {
         window.scrollTo({ top: landingScrollTop })
       await fillViewport()
       await settleVirtualMeasurements()
+      // Filling the feed remeasures the rows above it, which drifts the position we just
+      // restored - land on it again now that the geometry is final.
+      if (params.preservedCategoryScrollTop.value !== null && scroller && Math.abs(scroller.scrollTop - landingScrollTop) > 0.5)
+        window.scrollTo({ top: landingScrollTop })
     }
     finally {
       isReconciling.value = false

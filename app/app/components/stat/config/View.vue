@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
+import { useStorage } from '@vueuse/core'
 import { debounce } from 'es-toolkit'
 
 import type { StatConfigBlockId } from '~/components/stat/config/schema'
-import type { StatConfigPanelId } from '~/components/stat/types'
 
 import { normalizeStatConfigBlockOrder } from '~/components/stat/config/schema'
+import { isStatConfigRuleNav, useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
+import { useStatConfigAvailablePanels } from '~/components/stat/config/useStatConfigPanels'
 import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
-
-type ConfigPanelId = Exclude<StatConfigPanelId, 'root'>
 
 const { t } = useI18n()
 const { isOpen: isConfigOpen } = useStatConfigOverlay()
@@ -17,34 +17,33 @@ const statConfig = inject(statBaseConfigKey)!
 provide(statConfigKey, statConfig)
 const canSplit = inject(statCanSplitKey, computed(() => false))
 const { width } = useWindowSize()
-const expandedPanels = ref<ConfigPanelId[]>([])
+const { activePanel, back, open: openPanel } = useStatConfigNav()
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
   dragHandle: '.sortHandle',
 })
 
-const availablePanels = computed<ConfigPanelId[]>(() => {
-  return ['statAverage', 'navigation', 'summary', 'wallets', 'chart', 'trns', 'catsRound', 'catsList', 'vertical']
-})
+const availablePanels = useStatConfigAvailablePanels()
 const availableSortablePanels = computed<StatConfigBlockId[]>(() =>
   availablePanels.value.filter((panel): panel is StatConfigBlockId => panel !== 'statAverage'),
 )
 
+// A section can disappear when the report context changes (contextual blocks), so leave it.
 watch(availablePanels, (panels) => {
-  expandedPanels.value = expandedPanels.value.filter(panel => panels.includes(panel))
+  const panel = activePanel.value
+  if (panel && panel !== 'auto' && !isStatConfigRuleNav(panel) && !panels.includes(panel))
+    back()
 }, { immediate: true })
-
-function isExpanded(panel: ConfigPanelId) {
-  return expandedPanels.value.includes(panel)
-}
-
-function toggleExpanded(panel: ConfigPanelId) {
-  expandedPanels.value = isExpanded(panel)
-    ? expandedPanels.value.filter(item => item !== panel)
-    : [...expandedPanels.value, panel]
-}
 
 const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
   label: t(`stat.view.pageLayout.${value}.label`),
+  value,
+})))
+
+// Which way the block settings are listed is a habit, not a property of the view - it outlives
+// both the session and whichever view happens to be active.
+const groupBy = useStorage<'blocks' | 'rules'>('finapp.statConfig.groupBy', 'blocks')
+const groupByItems = computed(() => (['blocks', 'rules'] as const).map(value => ({
+  label: t(`stat.views.groupBy.${value}`),
   value,
 })))
 function syncSortedBlockIds() {
@@ -87,7 +86,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="statConfigPanel grid"
+    class="statConfigPanel grid min-w-0"
     :class="width < 767 && 'pb-6'"
   >
     <StatViewsManagement />
@@ -110,23 +109,34 @@ onBeforeUnmount(() => {
 
     <StatConfigBlock
       v-if="availablePanels.includes('statAverage')"
-      :hasNext="sortedBlockIds.length > 0"
-      :isExpanded="isExpanded('statAverage')"
       panel="statAverage"
-      @activate="toggleExpanded('statAverage')"
+      @activate="openPanel('statAverage')"
     />
 
-    <div ref="blockSortParent" class="grid">
+    <div class="px-2 py-3">
+      <UiTabs
+        :items="groupByItems"
+        :modelValue="groupBy"
+        size="sm"
+        @update:modelValue="value => groupBy = value as 'blocks' | 'rules'"
+      />
+    </div>
+
+    <!-- v-show, not v-if: unmounting the list would tear down the drag-and-drop parent. -->
+    <div v-show="groupBy === 'blocks'" ref="blockSortParent" class="grid min-w-0">
       <StatConfigBlock
         v-for="(panel, index) in sortedBlockIds"
         :key="panel"
-        :hasNext="index < sortedBlockIds.length - 1"
-        :isExpanded="isExpanded(panel)"
         :panel
-        :showSeparator="(index > 0 || availablePanels.includes('statAverage')) && !isExpanded(index > 0 ? sortedBlockIds[index - 1]! : 'statAverage')"
+        :showSeparator="index > 0"
         sortable
-        @activate="toggleExpanded(panel)"
+        @activate="openPanel(panel)"
       />
     </div>
+
+    <StatConfigBlockRuleGroups
+      v-if="groupBy === 'rules'"
+      :panels="availablePanels"
+    />
   </div>
 </template>

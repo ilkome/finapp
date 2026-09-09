@@ -13,6 +13,7 @@ const snapPoints = useSheetSnapPoints()
   <BottomSheetOrDropdown
     class="flex grow-0 gap-1"
     :isOpen="isOpen"
+    popoverBodyClass="py-0! md:pb-0!"
     :snapPoints="snapPoints"
     :title="t('base.filters')"
     titleClass="pb-0!"

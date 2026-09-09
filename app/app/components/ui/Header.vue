@@ -69,7 +69,7 @@ function onBack() {
 
       <div
         v-if="$slots.selected"
-        class="grid lg:-mb-4"
+        class="grid"
       >
         <slot name="selected" />
       </div>

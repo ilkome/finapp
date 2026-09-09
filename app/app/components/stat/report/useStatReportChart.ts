@@ -47,7 +47,7 @@ export function useStatReportChart(params: {
     const ids = params.effectiveFilteredCategoriesIds.value
     return {
       filterCategoriesIds: ids.length === 0 ? undefined : categoriesStore.getTransactibleIds(ids),
-      isGrouped: true,
+      grouping: params.statConfig.config.value.chart.grouping,
     }
   })
   const quickCategoryCashflowTypes = computed(() => {
@@ -102,8 +102,8 @@ export function useStatReportChart(params: {
         computeTotalForTrnsIds: params.data.chartEffectiveComputeTotal.value,
         excludedCategoriesIds: params.data.statExcludedIds.value,
         filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
+        grouping: categoryBreakdownFilter.value.grouping,
         intervals,
-        isGrouped: categoryBreakdownFilter.value.isGrouped,
         otherName: t('stat.config.chart.other'),
         trnsItems: params.data.chartEffectiveItems.value,
         type: categoriesBreakdownType.value,
@@ -148,8 +148,8 @@ export function useStatReportChart(params: {
       computeTotalForTrnsIds: params.data.computeTotalForTrnsIds,
       excludedCategoriesIds: params.data.statExcludedIds.value,
       filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
+      grouping: categoryBreakdownFilter.value.grouping,
       intervals,
-      isGrouped: categoryBreakdownFilter.value.isGrouped,
       trnsItems: params.data.trnsItems.value,
       type,
     })

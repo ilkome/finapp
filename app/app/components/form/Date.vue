@@ -44,20 +44,24 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
   <BottomSheetOrDropdown
     :title="props.title ?? t('common.date')"
     :isOpen="isOpen"
+    popoverBodyClass="md:pb-2"
+    titleClass="pt-3! pb-2!"
     isShowCloseBtn
     @openModal="isOpen = true"
     @closeModal="isOpen = false"
   >
-    <template #trigger>
-      <button
-        type="button"
-        class="m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-left text-base font-normal outline-none hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
-      >
-        <span :class="props.modelValue != null ? 'text-highlighted' : 'text-muted'">
-          {{ label }}
-        </span>
-        <Icon name="lucide:calendar" size="16" class="ml-auto shrink-0 text-muted" />
-      </button>
+    <template #trigger="{ isActive }">
+      <slot name="trigger" :isActive="isActive" :label="label">
+        <button
+          type="button"
+          class="m-0 flex min-h-10.5 w-full items-center gap-2 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-left text-base font-normal outline-none hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
+        >
+          <span :class="props.modelValue != null ? 'text-highlighted' : 'text-muted'">
+            {{ label }}
+          </span>
+          <Icon name="lucide:calendar" size="16" class="ml-auto shrink-0 text-muted" />
+        </button>
+      </slot>
     </template>
 
     <template #content="{ close }">
@@ -65,10 +69,10 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
         <!-- @vue-ignore -->
         <UCalendar
           :modelValue="calendarDate"
-          class="p-3"
+          class="px-2 pt-0 pb-2"
           @update:modelValue="(d: CalendarDate) => onPick(d, close)"
         />
-        <div v-if="props.clearable && props.modelValue != null" class="flex justify-end px-3 pb-3">
+        <div v-if="props.clearable && props.modelValue != null" class="flex justify-end px-3 pb-2">
           <button
             type="button"
             class="text-sm text-muted hover:text-highlighted"

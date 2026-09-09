@@ -1,6 +1,6 @@
 import { addDays, addMonths, addWeeks, addYears, differenceInCalendarDays } from 'date-fns'
 
-import type { Condition, ConditionGroup, StatView, StatViewContext } from './types'
+import type { Condition, ConditionComparator, ConditionGroup, StatView, StatViewContext } from './types'
 
 import { compareCondition } from './conditions'
 
@@ -13,7 +13,7 @@ function matchesPeriod(range: StatViewContext['range'], unit: 'day' | 'week' | '
   return add(start, value).getTime() > end.getTime() && add(start, value - 1).getTime() <= end.getTime()
 }
 
-function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | 'month' | 'year', comparator: Condition['comparator'], value: number): boolean {
+function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | 'month' | 'year', comparator: ConditionComparator, value: number): boolean {
   if (comparator === '=')
     return matchesPeriod(range, unit, value)
   if (comparator === '!=')
@@ -31,6 +31,28 @@ function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | '
 }
 
 export function evaluateCondition(condition: Condition, context: StatViewContext): boolean {
+  if (condition.kind === 'walletSelection') {
+    if (condition.mode === 'all')
+      return true
+    if (condition.mode === 'any')
+      return context.selectedWalletIds.length > 0
+    if (condition.mode === 'none')
+      return context.selectedWalletIds.length === 0
+    const selectedIds = new Set(context.selectedWalletIds)
+    return condition.ids.some(id => selectedIds.has(id))
+  }
+
+  if (condition.kind === 'categorySelection') {
+    if (condition.mode === 'all')
+      return true
+    if (condition.mode === 'any')
+      return context.selectedCategoryIds.length > 0
+    if (condition.mode === 'none')
+      return context.selectedCategoryIds.length === 0
+    const matchingIds = new Set(condition.ids)
+    return context.selectedCategoryIds.some(id => (context.categoryPathById[id] ?? [id]).some(pathId => matchingIds.has(pathId)))
+  }
+
   if (condition.kind === 'contentWidth')
     return context.contentWidth !== null && compareCondition(context.contentWidth, condition.comparator, condition.value)
 
@@ -43,17 +65,27 @@ export function evaluateCondition(condition: Condition, context: StatViewContext
 }
 
 export function evaluateConditionGroup(group: ConditionGroup, context: StatViewContext): boolean {
+  // An `and` over nothing is vacuously true, which would make a half-built rule win.
+  if (group.children.length === 0)
+    return false
   return group.operator === 'and'
     ? group.children.every(child => 'children' in child ? evaluateConditionGroup(child, context) : evaluateCondition(child, context))
     : group.children.some(child => 'children' in child ? evaluateConditionGroup(child, context) : evaluateCondition(child, context))
 }
 
-export function findAutomaticView(views: StatView[], context: StatViewContext): StatView | null {
-  return views
-    .toSorted((a, b) => a.sortOrder - b.sortOrder)
-    .find(view => view.isAutoEnabled && view.autoRule && evaluateConditionGroup(view.autoRule, context)) ?? null
+// Auto rules bind a view to a page, so they must not see filters, the period or the layout -
+// those change while the user stays put and would flip the view under them.
+export function pageScopedContext(context: StatViewContext): StatViewContext {
+  return {
+    ...context,
+    selectedCategoryIds: context.pageCategoryId ? [context.pageCategoryId] : [],
+    selectedWalletIds: context.pageWalletId ? [context.pageWalletId] : [],
+  }
 }
 
-export function contextFingerprint(context: StatViewContext): string {
-  return JSON.stringify([context.range.start, context.range.end, [...context.selectedCategoryIds].sort(), [...context.selectedWalletIds].sort(), context.categoryCount, context.parentCategoryCount, context.contentWidth])
+export function findAutomaticView(views: StatView[], context: StatViewContext): StatView | null {
+  const pageContext = pageScopedContext(context)
+  return views
+    .toSorted((a, b) => a.sortOrder - b.sortOrder)
+    .find(view => view.isAutoEnabled && view.autoRule && evaluateConditionGroup(view.autoRule, pageContext)) ?? null
 }

@@ -1,5 +1,6 @@
 import type { Categories, CategoryId } from '~/components/categories/types'
 import type { ChartType } from '~/components/stat/chart/types'
+import type { CategoryGrouping } from '~/components/stat/config/schema'
 import type { ChartSeries, IntervalData, SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
@@ -13,8 +14,8 @@ type AggregateParams = {
   /** Categories dropped from the breakdown (dashboard "exclude from stats"); undefined when a drill/filter is active. */
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   filterCategoriesIds?: CategoryId[]
+  grouping: CategoryGrouping
   intervals: IntervalData[]
-  isGrouped: boolean
   trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
   type: SeriesSlugSelected
 }
@@ -51,16 +52,38 @@ function resolveCategoryColor(categoriesItems: Categories, categoryId: CategoryI
   return categoriesItems[categoryId]?.color ?? OTHER_CATEGORY_COLOR
 }
 
+/**
+ * Parents that contribute exactly one active leaf in `auto` grouping: collapsing those into
+ * the parent would only rename the slice, so the leaf is shown instead. Same rule as the
+ * category cloud and list (see resolveCategoryGrouping).
+ */
+function collectExpandedParentIds(leafIds: Iterable<CategoryId>, categoriesItems: Categories): Set<CategoryId> {
+  const leavesByParent = new Map<CategoryId, Set<CategoryId>>()
+  for (const leafId of leafIds) {
+    const parentId = getParentCategoryIdOrUndefined(categoriesItems, leafId)
+    if (!parentId)
+      continue
+    const leaves = leavesByParent.get(parentId) ?? new Set<CategoryId>()
+    leaves.add(leafId)
+    leavesByParent.set(parentId, leaves)
+  }
+  return new Set([...leavesByParent].filter(([, leaves]) => leaves.size === 1).map(([parentId]) => parentId))
+}
+
 function resolveCategoryId(
   trnCategoryId: CategoryId | undefined,
   categoriesItems: Categories,
-  isGrouped: boolean,
+  grouping: CategoryGrouping,
+  expandedParentIds: ReadonlySet<CategoryId>,
 ): CategoryId | undefined {
   if (!trnCategoryId)
     return undefined
-  if (!isGrouped)
+  if (grouping === 'child')
     return trnCategoryId
-  return getParentCategoryIdOrUndefined(categoriesItems, trnCategoryId) ?? trnCategoryId
+  const parentId = getParentCategoryIdOrUndefined(categoriesItems, trnCategoryId)
+  if (!parentId)
+    return trnCategoryId
+  return grouping === 'auto' && expandedParentIds.has(parentId) ? trnCategoryId : parentId
 }
 
 /**
@@ -75,26 +98,36 @@ export function aggregateCategoryTotals({
   computeTotalForTrnsIds,
   excludedCategoriesIds,
   filterCategoriesIds,
+  grouping,
   intervals,
-  isGrouped,
   trnsItems,
   type,
 }: AggregateParams): AggregatedTotals {
   const filterSet = filterCategoriesIds?.length ? new Set(filterCategoriesIds) : undefined
+  const isIncluded = (categoryId: CategoryId | undefined): categoryId is CategoryId => (
+    !!categoryId
+    && !isSystemCategoryId(categoryId)
+    && !excludedCategoriesIds?.has(categoryId)
+    && (!filterSet || filterSet.has(categoryId))
+  )
+  const expandedParentIds = grouping === 'auto'
+    ? collectExpandedParentIds(
+        new Set(intervals.flatMap(interval => interval.trnsIds
+          .map(trnId => trnsItems[trnId]?.categoryId)
+          .filter(isIncluded))),
+        categoriesItems,
+      )
+    : new Set<CategoryId>()
 
   // For each interval, build a map of displayCategoryId -> trnIds[]
   const perIntervalByCategory: Record<CategoryId, TrnId[]>[] = intervals.map((interval) => {
     const bucket: Record<CategoryId, TrnId[]> = {}
     for (const trnId of interval.trnsIds) {
       const rawCategoryId = trnsItems[trnId]?.categoryId
-      if (!rawCategoryId || isSystemCategoryId(rawCategoryId))
-        continue
-      if (excludedCategoriesIds?.has(rawCategoryId))
-        continue
-      if (filterSet && !filterSet.has(rawCategoryId))
+      if (!isIncluded(rawCategoryId))
         continue
 
-      const displayId = resolveCategoryId(rawCategoryId, categoriesItems, isGrouped)
+      const displayId = resolveCategoryId(rawCategoryId, categoriesItems, grouping, expandedParentIds)
       if (!displayId)
         continue
 
@@ -127,8 +160,8 @@ export function buildCategoriesSeries({
   computeTotalForTrnsIds,
   excludedCategoriesIds,
   filterCategoriesIds,
+  grouping,
   intervals,
-  isGrouped,
   otherName = 'Other',
   trnsItems,
   type,
@@ -139,8 +172,8 @@ export function buildCategoriesSeries({
     computeTotalForTrnsIds,
     excludedCategoriesIds,
     filterCategoriesIds,
+    grouping,
     intervals,
-    isGrouped,
     trnsItems,
     type,
   })
@@ -198,15 +231,15 @@ export function buildCategoriesSeries({
  * Focused-donut slices, derived from the same aggregation as the bar series.
  */
 export function buildCategoriesPieData(
-  { categoriesItems, computeTotalForTrnsIds, excludedCategoriesIds, filterCategoriesIds, intervals, isGrouped, trnsItems, type }: AggregateParams,
+  { categoriesItems, computeTotalForTrnsIds, excludedCategoriesIds, filterCategoriesIds, grouping, intervals, trnsItems, type }: AggregateParams,
 ): CategoryPieDatum[] {
   const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
     categoriesItems,
     computeTotalForTrnsIds,
     excludedCategoriesIds,
     filterCategoriesIds,
+    grouping,
     intervals,
-    isGrouped,
     trnsItems,
     type,
   })

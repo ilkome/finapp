@@ -15,6 +15,13 @@ export type PanelDef = {
 }
 
 export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
+  categoryChildren: {
+    getIsShow: config => config.contextBlocks.categoryChildren.isShow,
+    icon: 'lucide:list-tree',
+    setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { categoryChildren: { isShow: value } }),
+    syncConfig: (source, target) => { target.contextBlocks.categoryChildren = clonePanelConfig(source.contextBlocks.categoryChildren) },
+    titleKey: 'stat.config.contextBlocks.categoryChildren',
+  },
   catsList: {
     getIsShow: config => config.categories.list.isShow,
     icon: 'lucide:list',
@@ -79,6 +86,20 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     setIsShow: (provider, value) => provider.updateConfig('categories', { bars: { isShow: value } }),
     syncConfig: (source, target) => { target.categories.bars = clonePanelConfig(source.categories.bars) },
     titleKey: 'stat.config.categories.vertical.title',
+  },
+  walletBalance: {
+    getIsShow: config => config.contextBlocks.walletBalance.isShow,
+    icon: 'hugeicons:wallet-01',
+    setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { walletBalance: { isShow: value } }),
+    syncConfig: (source, target) => { target.contextBlocks.walletBalance = clonePanelConfig(source.contextBlocks.walletBalance) },
+    titleKey: 'stat.config.contextBlocks.walletBalance',
+  },
+  walletDescription: {
+    getIsShow: config => config.contextBlocks.walletDescription.isShow,
+    icon: 'lucide:notebook-text',
+    setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { walletDescription: { isShow: value } }),
+    syncConfig: (source, target) => { target.contextBlocks.walletDescription = clonePanelConfig(source.contextBlocks.walletDescription) },
+    titleKey: 'stat.config.contextBlocks.walletDescription',
   },
   wallets: {
     getIsShow: config => config.wallets.isShow,

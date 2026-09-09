@@ -123,15 +123,23 @@ export function resolveConfigUpdateParameterIds<K extends keyof MiniItemConfig>(
     .map(parameter => parameter.id)
 }
 
+export function findMatchingBlockRules(rules: BlockRule[] | undefined, context: StatViewContext): BlockRule[] {
+  return rules?.filter(rule => rule.isEnabled && evaluateConditionGroup(rule.condition, context)) ?? []
+}
+
 export function findMatchingBlockRule(rules: BlockRule[] | undefined, context: StatViewContext): BlockRule | null {
-  return rules?.find(rule => rule.isEnabled && evaluateConditionGroup(rule.condition, context)) ?? null
+  return findMatchingBlockRules(rules, context)[0] ?? null
 }
 
 export function resolveHiddenStatPanels(
   blockRules: Partial<Record<StatBlockPanelId, BlockRule[]>>,
   context: StatViewContext,
 ): StatBlockPanelId[] {
-  return statConfigPanelIds.filter(panel => findMatchingBlockRule(blockRules[panel], context)?.isHidden)
+  return statConfigPanelIds.filter((panel) => {
+    const visibilityRule = findMatchingBlockRules(blockRules[panel], context)
+      .find(rule => resolveBlockRuleParameterIds(panel, rule).includes(BLOCK_RULE_VISIBILITY_PARAMETER_ID))
+    return visibilityRule?.isHidden ?? false
+  })
 }
 
 function setStatPanelVisibility(panel: StatBlockPanelId, config: MiniItemConfig, isVisible: boolean): MiniItemConfig {
@@ -144,6 +152,9 @@ function setStatPanelVisibility(panel: StatBlockPanelId, config: MiniItemConfig,
       break
     case 'chart':
       config.chart.isShow = isVisible
+      break
+    case 'categoryChildren':
+      config.contextBlocks.categoryChildren.isShow = isVisible
       break
     case 'navigation':
       config.date.isShow = isVisible
@@ -160,6 +171,12 @@ function setStatPanelVisibility(panel: StatBlockPanelId, config: MiniItemConfig,
     case 'vertical':
       config.categories.bars.isShow = isVisible
       break
+    case 'walletBalance':
+      config.contextBlocks.walletBalance.isShow = isVisible
+      break
+    case 'walletDescription':
+      config.contextBlocks.walletDescription.isShow = isVisible
+      break
     case 'wallets':
       config.wallets.isShow = isVisible
       break
@@ -175,6 +192,14 @@ export function resolveConfigUpdatePanel<K extends keyof MiniItemConfig>(
     return 'statAverage'
   if (key === 'chart')
     return 'chart'
+  if (key === 'contextBlocks') {
+    if ('categoryChildren' in value)
+      return 'categoryChildren'
+    if ('walletBalance' in value)
+      return 'walletBalance'
+    if ('walletDescription' in value)
+      return 'walletDescription'
+  }
   if (key === 'summary')
     return 'summary'
   if (key === 'trns')
@@ -201,12 +226,12 @@ export function resolveEffectiveStatConfig(
 ): MiniItemConfig {
   let result = cloneConfigValue(base)
   for (const panel of statConfigPanelIds) {
-    const rule = findMatchingBlockRule(blockRules[panel], context)
-    if (!rule)
-      continue
-    result = applyBlockRuleConfig(panel, result, rule.overrides)
-    if (resolveBlockRuleParameterIds(panel, rule).includes(BLOCK_RULE_VISIBILITY_PARAMETER_ID))
-      result = setStatPanelVisibility(panel, result, !rule.isHidden)
+    const rules = findMatchingBlockRules(blockRules[panel], context)
+    for (const rule of rules.toReversed()) {
+      result = applyBlockRuleConfig(panel, result, rule.overrides)
+      if (resolveBlockRuleParameterIds(panel, rule).includes(BLOCK_RULE_VISIBILITY_PARAMETER_ID))
+        result = setStatPanelVisibility(panel, result, !rule.isHidden)
+    }
   }
   return result
 }

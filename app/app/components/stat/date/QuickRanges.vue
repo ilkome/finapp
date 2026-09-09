@@ -10,7 +10,7 @@ const orderedOptionIds = computed(() => {
 </script>
 
 <template>
-  <div class="stat-date-quick-ranges -mx-2 flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8">
+  <div class="-mx-2 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8">
     <StatDateRanges
       class="shrink-0"
       itemClass="snap-start snap-always"
@@ -22,13 +22,3 @@ const orderedOptionIds = computed(() => {
     />
   </div>
 </template>
-
-<style scoped>
-.stat-date-quick-ranges {
-  scrollbar-width: none;
-}
-
-.stat-date-quick-ranges::-webkit-scrollbar {
-  display: none;
-}
-</style>

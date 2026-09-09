@@ -4,6 +4,8 @@ import type { CategoryViews } from '~/components/stat/categories/categoryViews'
 import type { SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId } from '~/components/trns/types'
 
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
 import { useCategoriesBreakdown } from '~/components/stat/categories/useCategoriesBreakdown'
 import { statConfigKey } from '~/components/stat/injectionKeys'
 
@@ -29,14 +31,25 @@ const emit = defineEmits<{
 }>()
 
 const statConfig = inject(statConfigKey)!
+const categoriesStore = useCategoriesStore()
 const { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories } = useCategoriesBreakdown(props)
 const isFocused = computed(() => !!props.focusedCategoryId)
 const isHideOthersOnSelect = computed(() => statConfig.config.value.categories.round.isHideOthersOnSelect)
 const displayedCategories = computed(() => isFocused.value ? focusedCategories.value : categoriesWithData.value)
-const focusedCategoryViews = computed<CategoryViews>(() => ({
-  grouped: focusedCategories.value,
-  ungrouped: focusedCategories.value,
-}))
+// The focused child keeps its chip in periods where it has no transactions, so the selection
+// stays visible instead of silently disappearing from the row.
+const focusedCategoryViews = computed<CategoryViews>(() => {
+  const childId = props.focusedChildCategoryId
+  const categories = childId && !focusedCategories.value.some(category => category.id === childId)
+    ? addEmptyCategoryViews(
+      { grouped: focusedCategories.value, ungrouped: focusedCategories.value },
+      categoriesStore.items,
+      [childId],
+      props.excludedCategoriesIds,
+    ).ungrouped
+    : focusedCategories.value
+  return { grouped: categories, ungrouped: categories }
+})
 </script>
 
 <template>

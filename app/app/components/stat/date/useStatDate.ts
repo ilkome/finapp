@@ -29,6 +29,11 @@ export function useStatDate({
   const defaults = defu(initParams ?? {}, defaultStatDateParams) as StatDateParams
   const params = useStorage<StatDateParams>(paramsStorageKey, {} as StatDateParams, resolvedStorage, {
     mergeDefaults: storageValue => normalizeStoredStatDateParams(storageValue, defaults),
+    // A custom date lives in the URL only: it must not outlive the query param it came from.
+    serializer: {
+      read: (value: string) => JSON.parse(value) as StatDateParams,
+      write: (value: StatDateParams) => JSON.stringify({ ...value, customDate: false }),
+    },
   })
 
   params.value = overrideStoredWithInitParams && initParams
@@ -41,9 +46,10 @@ export function useStatDate({
 
   let paramsBeforeCustomDate: StatDateParams | null = null
   if (queryParams) {
-    watch(() => ({ ...queryParams }), (nextQuery) => {
+    watch(() => ({ ...toValue(queryParams) }), (nextQuery) => {
       if (nextQuery.customDate !== undefined) {
-        paramsBeforeCustomDate ??= structuredClone(params.value)
+        // params is a reactive storage ref: structuredClone chokes on the proxy.
+        paramsBeforeCustomDate ??= JSON.parse(JSON.stringify(params.value)) as StatDateParams
         params.value = parseStatDateQueryParams(nextQuery, params.value)
         return
       }

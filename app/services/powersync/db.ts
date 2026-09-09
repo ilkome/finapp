@@ -57,6 +57,10 @@ export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
     _db = new PowerSyncDatabase({
       database: {
         dbFilename: 'finapp.db',
+        // TEMPORARY: the in-app review browser exposes `SharedWorker` but cannot start a module
+        // one, so PowerSync picks the shared worker, it dies, and the app never leaves the
+        // skeleton. Dedicated worker per tab costs multi-tab sharing; drop this once done.
+        ...(import.meta.dev ? { enableMultiTabs: false } : {}),
         worker: workerUrl,
       },
       schema: AppSchema,

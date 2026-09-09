@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ChartType } from '~/components/stat/chart/types'
 
-import { chartLayoutIcons, chartLayoutOptions as chartLayoutValues } from '~/components/stat/config/schema'
+import { chartLayoutIcons, resolveChartLayoutOptions } from '~/components/stat/config/schema'
 import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 
 const { t } = useI18n()
@@ -10,7 +10,7 @@ const canSplit = inject(statCanSplitKey, computed(() => false))
 function options(key: string, values: Array<{ icon: string, keepOpen?: boolean, value: string }>) {
   return values.map(item => ({ ...item, description: t(`stat.view.${key}.${item.value}.description`), label: t(`stat.view.${key}.${item.value}.label`) }))
 }
-const chartLayoutOptions = computed(() => options('chartLayout', chartLayoutValues.map(value => ({
+const chartLayoutOptions = computed(() => options('chartLayout', resolveChartLayoutOptions(statConfig.config.value.page.layout).map(value => ({
   icon: chartLayoutIcons[value],
   value,
 }))))

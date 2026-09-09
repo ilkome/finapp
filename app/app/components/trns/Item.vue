@@ -6,6 +6,7 @@ import { TrnType } from '~/components/trns/types'
 const props = defineProps<{
   compact?: boolean
   date?: string
+  isActive?: boolean
   trnItem: TrnItemFull
 }>()
 
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 <template>
   <UiElement
     v-if="props.trnItem"
+    :isActive="props.isActive"
     :lineWidth="props.compact ? 3 : 0"
     :insideClasses="props.compact ? 'py-2 min-h-8' : 'py-3 min-h-9.5'"
     @click="emit('click')"

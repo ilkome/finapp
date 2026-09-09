@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
+import { useStorage } from '@vueuse/core'
 import { debounce } from 'es-toolkit'
 
 import type { BlockRule, ConditionGroup, StatBlockPanelId } from '~/components/stat/views/types'
@@ -13,10 +14,12 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const { conditionGroupTitle } = useStatConditionTitles()
+const { conditionGroupTitle, conditionGroupTitles } = useStatConditionTitles()
 const controller = inject(statViewControllerKey)!
-const DEFAULT_RULE_ID = 'default'
 const expandedId = ref<string | null>(null)
+// The default settings are the block's main content, so they start open and only a manual
+// collapse hides them; the choice is per block and outlives the session.
+const isDefaultExpanded = useStorage(`finapp.statConfig.defaultRuleExpanded.${props.panel}`, true)
 let syncingFromStore = false
 const [sortParent, rules] = useDragAndDrop([] as BlockRule[], {
   dragHandle: '.blockRuleSortHandle',
@@ -60,7 +63,7 @@ const reusableConditions = computed(() => {
 const ruleItems = computed(() => [
   [{
     label: t('stat.views.blockRules.presets.custom'),
-    onSelect: () => addRule({ children: [{ comparator: '>', kind: 'categoryCount', scope: 'all', value: 0 }], operator: 'and' }),
+    onSelect: () => addRule({ children: [], operator: 'and' }),
     ui: { item: 'pl-4!' },
   }],
   reusableConditions.value.map(condition => ({
@@ -102,13 +105,13 @@ function removeRule(index: number) {
 }
 
 function ruleTitle(rule: BlockRule) {
-  return conditionGroupTitle(rule.condition)
+  return conditionGroupTitles(rule.condition).join('\n')
 }
 </script>
 
 <template>
-  <section class="grid gap-4">
-    <div v-if="rules.length" ref="sortParent" class="grid gap-px">
+  <section class="grid grid-cols-[minmax(0,1fr)] gap-1">
+    <div v-if="rules.length" ref="sortParent" class="grid grid-cols-[minmax(0,1fr)] gap-px">
       <StatConfigBlockRuleCard
         v-for="(rule, index) in rules"
         :key="rule.id"
@@ -123,29 +126,29 @@ function ruleTitle(rule: BlockRule) {
       />
     </div>
 
-    <div class="grid gap-1">
+    <div v-if="rules.length" aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
+
+    <div class="grid gap-px">
       <UDropdownMenu
         :items="ruleItems"
         :content="{ align: 'start' }"
         :ui="{ group: '[&:not(:first-child)]:before:right-0! [&:not(:first-child)]:before:left-0!' }"
       >
-        <UButton
-          class="w-full justify-start rounded-sm! data-[state=open]:bg-elevated/50!"
-          color="neutral"
+        <StatConfigActionButton
           icon="i-lucide-plus"
           :label="$t('stat.views.blockRules.addRule')"
-          size="sm"
           trailingIcon="i-lucide-chevron-down"
-          variant="ghost"
         />
       </UDropdownMenu>
       <slot name="actions" />
     </div>
 
+    <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
+
     <StatConfigBlockRuleDefaultCard
-      :isExpanded="expandedId === DEFAULT_RULE_ID"
+      :isExpanded="isDefaultExpanded"
       :panel
-      @toggleExpanded="expandedId = expandedId === DEFAULT_RULE_ID ? null : DEFAULT_RULE_ID"
+      @toggleExpanded="isDefaultExpanded = !isDefaultExpanded"
     />
   </section>
 </template>

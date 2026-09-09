@@ -6,6 +6,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 const props = defineProps<{
   amount: number
   averageTotal?: Record<string, number>
+  currencyCode?: string
   isActive?: boolean
   title?: string
   type: SeriesSlugSelected
@@ -40,7 +41,7 @@ const currenciesStore = useCurrenciesStore()
 
         <Amount
           :amount="props.amount"
-          :currencyCode="currenciesStore.base"
+          :currencyCode="props.currencyCode ?? currenciesStore.base"
           :class="{
             'text-income-1!': props.amount > 0 && props.type !== 'net',
             'text-expense-1!': props.amount < 0 && props.type !== 'net',

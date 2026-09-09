@@ -1,9 +1,28 @@
 import type { Condition, ConditionGroup } from '~/components/stat/views/types'
 
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
 export function useStatConditionTitles() {
   const { t } = useI18n()
+  const categoriesStore = useCategoriesStore()
+  const walletsStore = useWalletsStore()
+
+  function selectionTitle(condition: Extract<Condition, { kind: 'categorySelection' | 'walletSelection' }>) {
+    const entity = condition.kind === 'walletSelection' ? 'wallet' : 'category'
+    const field = t(`stat.views.conditions.fields.${condition.kind}`)
+    if (condition.mode !== 'selected')
+      return t('stat.views.blockRules.conditionSummary.selection', { field, value: t(`stat.views.conditions.selection.${entity}.${condition.mode}`) })
+    const names = condition.ids.map(id => condition.kind === 'walletSelection'
+      ? walletsStore.itemsComputed[id]?.name
+      : categoriesStore.items[id]?.name).filter((name): name is string => !!name)
+    const value = names.length <= 2 ? names.join(', ') : t('stat.views.conditions.selection.multiple', { count: names.length })
+    return t('stat.views.blockRules.conditionSummary.selection', { field, value })
+  }
 
   function conditionTitle(condition: Condition) {
+    if (condition.kind === 'walletSelection' || condition.kind === 'categorySelection')
+      return selectionTitle(condition)
     const comparator = condition.comparator
     if (condition.kind === 'categoryCount') {
       const field = condition.scope === 'parent'
@@ -30,12 +49,17 @@ export function useStatConditionTitles() {
     return result
   }
 
-  function conditionGroupTitle(group: ConditionGroup) {
+  /** One line per condition: a group reads as a list, not as one comma-run. */
+  function conditionGroupTitles(group: ConditionGroup) {
     const conditions = flattenConditions(group)
     return conditions.length
-      ? conditions.map(conditionTitle).join(', ')
-      : t('stat.views.blockRules.new')
+      ? conditions.map(conditionTitle)
+      : [t('stat.views.blockRules.new')]
   }
 
-  return { conditionGroupTitle, conditionTitle }
+  function conditionGroupTitle(group: ConditionGroup) {
+    return conditionGroupTitles(group).join(', ')
+  }
+
+  return { conditionGroupTitle, conditionGroupTitles, conditionTitle }
 }
