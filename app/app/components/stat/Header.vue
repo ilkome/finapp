@@ -47,7 +47,6 @@ defineExpose({ stickyMainElement, stickyRootElement })
 
     <template #actions>
       <div class="flex items-center">
-        <StatViewsModal />
         <StatConfigModal>
           <StatConfigView />
         </StatConfigModal>

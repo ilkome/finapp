@@ -4,6 +4,7 @@ import type { BlockRule, ConditionGroup, StatBlockPanelId } from '~/components/s
 import { PANELS } from '~/components/stat/config/panels/registry'
 import { useStatConfigAvailablePanels } from '~/components/stat/config/useStatConfigPanels'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
+import { resolveBlockRuleParameterIds } from '~/components/stat/views/blockRules'
 import { useStatConditionTitles } from '~/components/stat/views/useConditionTitles'
 
 const props = defineProps<{
@@ -53,6 +54,15 @@ function removeRule(panel: StatBlockPanelId, id: string) {
   if (addedPanel.value === panel)
     addedPanel.value = null
 }
+
+// A block added here is empty until a parameter lands in it; leaving the section without one
+// means the block was never really added.
+onBeforeUnmount(() => {
+  for (const entry of entries.value) {
+    if (!resolveBlockRuleParameterIds(entry.panel, entry.rule).length)
+      removeRule(entry.panel, entry.rule.id)
+  }
+})
 
 function addBlock(panel: StatBlockPanelId) {
   const rule: BlockRule = {
