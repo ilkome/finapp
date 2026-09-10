@@ -22,15 +22,16 @@ const contextMenuItems = computed(() => [
 </script>
 
 <template>
-  <WalletsItem
-    :wallet="walletsStore.itemsComputed[props.walletId]!"
-    :walletId="props.walletId"
-    :contextMenuItems="contextMenuItems"
-    bodyClass="group rounded-md bg-elevated/30"
-    isShowBaseRate
-    isShowCreditLimit
-    isShowIcon
-    isShowRate
-    :to="`/wallets/${props.walletId}`"
-  />
+  <UiRowBackground class="group" type="standard">
+    <WalletsItem
+      :wallet="walletsStore.itemsComputed[props.walletId]!"
+      :walletId="props.walletId"
+      :contextMenuItems="contextMenuItems"
+      isShowBaseRate
+      isShowCreditLimit
+      isShowIcon
+      isShowRate
+      :to="`/wallets/${props.walletId}`"
+    />
+  </UiRowBackground>
 </template>

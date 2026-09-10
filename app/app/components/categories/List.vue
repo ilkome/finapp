@@ -30,14 +30,6 @@ const categoriesStore = useCategoriesStore()
 const isChildrenGrid = computed(() => props.childrenView === 'grid')
 const isShowBackground = computed(() => !!props.backgroundType && props.backgroundType !== 'none')
 
-// The row and its children collapsible are siblings, so the spacing lives on the row
-// itself: a container gap would also apply to the collapsible and double up.
-const backgroundClasses = computed(() => ({
-  'bg-elevated/10 hover:bg-elevated/30': props.backgroundType === 'category',
-  'bg-elevated/30 hover:bg-elevated/50': props.backgroundType === 'standard',
-  'relative mb-1 overflow-hidden rounded-md': isShowBackground.value,
-}))
-
 function getChildrenIds(categoryId: CategoryId) {
   return categoriesStore.getChildrenIds(categoryId)
 }
@@ -49,12 +41,11 @@ function getChildrenIds(categoryId: CategoryId) {
       v-for="categoryId in ids"
       :key="categoryId"
     >
-      <div :class="backgroundClasses">
-        <div
-          v-if="props.backgroundType === 'category'"
-          :style="{ backgroundColor: categoriesStore.items[categoryId]?.color }"
-          class="pointer-events-none absolute inset-0 opacity-5"
-        />
+      <UiRowBackground
+        :color="categoriesStore.items[categoryId]?.color"
+        :type="props.backgroundType"
+        :class="isShowBackground && 'mb-1'"
+      >
         <CategoriesItem
           :activeItemId="activeItemId"
           :category="categoriesStore.items[categoryId]!"
@@ -71,7 +62,7 @@ function getChildrenIds(categoryId: CategoryId) {
           @click="emit('click', categoryId)"
           @toggle="props.expanded?.toggle(categoryId)"
         />
-      </div>
+      </UiRowBackground>
 
       <UCollapsible
         v-if="categoriesStore.hasChildren(categoryId)"
@@ -86,16 +77,13 @@ function getChildrenIds(categoryId: CategoryId) {
             ]"
           >
             <template v-if="!isChildrenGrid">
-              <div
+              <UiRowBackground
                 v-for="childId in getChildrenIds(categoryId)"
                 :key="childId"
-                :class="backgroundClasses"
+                :color="categoriesStore.items[childId]?.color"
+                :type="props.backgroundType"
+                :class="isShowBackground && 'mb-1'"
               >
-                <div
-                  v-if="props.backgroundType === 'category'"
-                  :style="{ backgroundColor: categoriesStore.items[childId]?.color }"
-                  class="pointer-events-none absolute inset-0 opacity-5"
-                />
                 <CategoriesItem
                   :activeItemId="activeItemId"
                   :category="categoriesStore.items[childId]!"
@@ -108,7 +96,7 @@ function getChildrenIds(categoryId: CategoryId) {
                   class="group relative"
                   @click="emit('click', childId)"
                 />
-              </div>
+              </UiRowBackground>
             </template>
 
             <div v-else class="flex flex-wrap gap-1">
