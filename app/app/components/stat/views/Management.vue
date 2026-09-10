@@ -90,8 +90,8 @@ function toggleAutoEnabled() {
 
 <template>
   <section v-if="controller" class="grid">
-    <div class="grid gap-3 px-1 pb-4">
-      <div class="flex min-w-0 items-center gap-1 px-2">
+    <div class="grid gap-3 pb-2 md:px-1 md:pb-4">
+      <div class="flex min-w-0 items-center gap-1">
         <UInput
           ref="nameInput"
           v-model="name"

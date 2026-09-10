@@ -91,6 +91,7 @@ const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5
   <BottomSheetOrDropdown
     align="end"
     :isOpen="isOpen"
+    popoverBodyClass="md:pb-0"
     @openModal="() => { resetToRoot(); isOpen = true }"
     @closeModal="isOpen = false"
   >
