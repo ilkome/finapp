@@ -5,9 +5,9 @@ const actionMenu = {
   slots: {
     content: 'border border-accented ring-0',
     group: 'relative p-1 [&:not(:first-child)]:before:absolute [&:not(:first-child)]:before:top-0 [&:not(:first-child)]:before:right-2 [&:not(:first-child)]:before:left-12 [&:not(:first-child)]:before:h-px [&:not(:first-child)]:before:bg-elevated/50',
-    item: 'min-h-10.5 items-center! gap-3! px-2! py-1.5! text-sm! leading-none font-medium tracking-wide',
+    item: 'min-h-10.5 items-center! gap-3! py-1.5! pr-2! pl-3! text-sm! leading-none font-medium tracking-wide before:rounded-sm',
     itemLeadingIcon: 'size-5!',
-    label: 'min-h-10.5 gap-3! px-2! py-1.5! text-sm! leading-none font-medium tracking-wide',
+    label: 'min-h-10.5 gap-3! py-1.5! pr-2! pl-3! text-sm! leading-none font-medium tracking-wide',
     separator: 'mx-2! my-0! ms-12! h-px bg-elevated/50',
     viewport: 'divide-y-0!',
   },

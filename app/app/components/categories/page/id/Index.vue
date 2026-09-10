@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui'
+
 import { differenceInDays } from 'date-fns'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -192,12 +194,17 @@ onActivated(() => {
     trnsFormStore.values.categoryId = categoryId.value
 })
 
-function onEditClick(close: () => void) {
-  close()
-  setTimeout(() => {
-    router.push(`/categories/${categoryId.value}/edit`)
-  }, 100)
+function onEditClick() {
+  router.push(`/categories/${categoryId.value}/edit`)
 }
+
+const menuItems = computed<DropdownMenuItem[][] | undefined>(() => categoryId.value === 'transfer'
+  ? undefined
+  : [[
+      { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onEditClick },
+    ], [
+      { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete },
+    ]])
 
 useHead({ title: category.value?.name })
 
@@ -210,9 +217,7 @@ const deleteHighlight = computed(() =>
 )
 
 const isShowDeleteConfirm = ref(false)
-function onClickDelete(close: () => void) {
-  close()
-
+function onClickDelete() {
   for (const id of Object.keys(categoriesStore.items)) {
     if (categoriesStore.items[id]?.parentId === categoryId.value) {
       showErrorToast('categories.form.delete.errorChildren')
@@ -250,31 +255,13 @@ async function onDeleteConfirm() {
       :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
       :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
       compactBottom
+      :menuItems
     >
       <template #title>
         <CategoriesHeader
           :category="category"
           :parentCategory="categoriesStore.items[category.parentId]"
         />
-      </template>
-
-      <template
-        v-if="categoryId !== 'transfer'"
-        #popover="{ close }"
-      >
-        <UiHeaderLink
-          icon="lucide:pencil"
-          @click="onEditClick(close)"
-        >
-          {{ t('base.edit') }}
-        </UiHeaderLink>
-
-        <UiHeaderLink
-          icon="lucide:trash-2"
-          @click="onClickDelete(close)"
-        >
-          {{ t('base.delete') }}
-        </UiHeaderLink>
       </template>
     </StatHeader>
 

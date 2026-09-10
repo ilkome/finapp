@@ -117,6 +117,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         </UiActionButton>
 
         <BottomSheetOrDropdown
+          align="end"
           :isOpen="isViewSettingsOpen"
           popoverBodyClass="md:pb-0"
           popoverContentClass="w-80 max-w-[calc(100vw-1rem)]"

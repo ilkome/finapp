@@ -87,3 +87,58 @@
     height: 0;
   }
 }
+
+/* Fades the edges of a horizontal scroller, but only on the side that still has content
+   hidden: a scroll-driven timeline is inactive when nothing overflows, so both widths stay
+   at their 0px initial value and no fade is painted. Browsers without scroll-driven
+   animations simply get no fade. */
+@property --scroll-fade-start {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --scroll-fade-end {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+@keyframes scroll-fade-start {
+  from {
+    --scroll-fade-start: 0px;
+  }
+  to {
+    --scroll-fade-start: var(--scroll-fade-size);
+  }
+}
+
+@keyframes scroll-fade-end {
+  from {
+    --scroll-fade-end: var(--scroll-fade-size);
+  }
+  to {
+    --scroll-fade-end: 0px;
+  }
+}
+
+@utility scroll-fade {
+  --scroll-fade-size: 1.5rem;
+
+  @supports (animation-timeline: scroll()) {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      black var(--scroll-fade-start),
+      black calc(100% - var(--scroll-fade-end)),
+      transparent 100%
+    );
+    animation:
+      scroll-fade-start linear both,
+      scroll-fade-end linear both;
+    animation-timeline: scroll(self inline), scroll(self inline);
+    animation-range:
+      0 var(--scroll-fade-size),
+      calc(100% - var(--scroll-fade-size)) 100%;
+  }
+}

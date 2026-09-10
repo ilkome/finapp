@@ -46,6 +46,7 @@ export default {
     filterSummary: '{wallets} and {categories}',
     filterSummaryAll: 'All wallets and categories',
     filterWalletsWord: '0 wallets | {n} wallet | {n} wallets | {n} wallets',
+    hide: 'Hide',
     loading: 'Loading...',
     menu: 'Menu',
     moreOptions: 'More options',
@@ -55,11 +56,14 @@ export default {
     off: 'Off',
     on: 'On',
     open: 'Open',
+    pin: 'Pin',
     previous: 'Previous',
     reset: 'Reset',
     save: 'Save',
     search: 'Search',
     selectDate: 'Select date',
+    show: 'Show',
+    sort: 'Sort',
     sure: 'Confirm action',
     today: 'Today',
     toggleExpand: 'Toggle expand',
@@ -67,6 +71,7 @@ export default {
     toggleGrouping: 'Toggle grouping',
     togglePresets: 'Toggle presets',
     toggleView: 'Toggle view',
+    unpin: 'Unpin',
     yes: 'Yes',
   },
 
@@ -188,7 +193,7 @@ export default {
     view: {
       childrenView: 'Child categories',
       childrenViews: {
-        grid: 'Grid',
+        grid: 'Cloud',
         list: 'List',
       },
       showChildrenCount: 'Show children count',
@@ -347,10 +352,23 @@ export default {
       debt: 'Debt',
       deposit: 'Deposit',
       isArchived: 'Archived',
-      isAvailable: 'Available with credits',
+      isAvailable: 'Left after credit cards',
       isExcludeInTotal: 'Not included in total',
       isWithdrawal: 'Withdrawal',
       total: 'Total',
+    },
+    typesHint: {
+      cash: 'Total across cash wallets',
+      cashless: 'Total across cards and bank accounts',
+      credit: 'Credit cards. Below the amount: available limit and total limit',
+      crypto: 'Total across crypto wallets',
+      debt: 'Total across debt wallets - what is owed to you and by you',
+      deposit: 'Total across deposits and savings accounts',
+      isArchived: 'Wallets marked as archived',
+      isAvailable: 'Available to withdraw minus what is owed on credit cards',
+      isExcludeInTotal: 'Wallets marked "Do not count in total"',
+      isWithdrawal: 'Wallets with the "Available to withdraw" option enabled',
+      total: 'Every wallet except credit cards and the ones kept out of the total',
     },
   },
 
@@ -744,6 +762,9 @@ export default {
   },
 
   statistics: {
+    hints: 'What the rows mean',
+    list: 'List',
+    pinned: 'Pinned',
     title: 'Statistics',
   },
 
@@ -944,6 +965,7 @@ export default {
     new: 'New wallet',
     options: {
       includeArchivedInStats: 'Include archived in statistics',
+      includeExcludedInStats: 'Include not-in-total in statistics',
       showArchived: 'Show archived wallets',
       showGroupCount: 'Show group counts',
     },

@@ -13,12 +13,13 @@ type CountItem = {
 export function computeWalletCounts(params: {
   baseCurrency?: CurrencyCode
   includeArchivedInStats?: boolean
+  includeExcludedInStats?: boolean
   rates?: Rates
   totalWalletsCount: number
   walletIds: WalletId[]
   wallets: Record<WalletId, WalletItemComputed>
 }): Record<string, CountItem> {
-  const { baseCurrency, includeArchivedInStats = false, rates, totalWalletsCount, walletIds, wallets } = params
+  const { baseCurrency, includeArchivedInStats = false, includeExcludedInStats = false, rates, totalWalletsCount, walletIds, wallets } = params
 
   function convert(amount: number, currencyCode: CurrencyCode): number {
     return getAmountInRate({ amount, baseCurrencyCode: baseCurrency, currencyCode, rates })
@@ -47,16 +48,23 @@ export function computeWalletCounts(params: {
 
     const amount = convert(wallet.amount ?? 0, wallet.currency ?? 'USD')
 
+    // "Archived" and "not in total" are independent slices: a wallet flagged both shows in both.
     if (wallet.isArchived) {
       sum.archived += amount
       hasArchivedWallet = true
-      if (!includeArchivedInStats)
-        continue
     }
 
     if (wallet.isExcludeInTotal)
       sum.excludeInTotal += amount
-    else if (wallet.type !== 'credit')
+
+    // Either flag opts the wallet out of every regular row until its own switch is on, so the
+    // per-type rows always add up to the total.
+    if (wallet.isArchived && !includeArchivedInStats)
+      continue
+    if (wallet.isExcludeInTotal && !includeExcludedInStats)
+      continue
+
+    if (wallet.type !== 'credit')
       sum.total += amount
 
     switch (wallet.type) {
@@ -95,7 +103,7 @@ export function computeWalletCounts(params: {
     available: {
       id: 'isAvailable',
       isShow: sum.withdrawal !== 0 && sum.credit !== 0,
-      value: sum.withdrawal - Math.abs(sum.credit),
+      value: sum.withdrawal + sum.credit,
     },
     cash: {
       id: 'cash',

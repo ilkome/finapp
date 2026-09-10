@@ -41,7 +41,7 @@ const items = computed<TabsItem[]>(() => [
 
   <div
     v-else
-    class="-mx-2 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
+    class="-mx-2 scroll-strip flex min-w-0 scroll-fade snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px @xl/page:mx-0 @xl/page:scroll-px-0 @xl/page:px-0"
   >
     <UiTabs
       class="shrink-0 overflow-visible! bg-transparent! p-0!"
@@ -49,7 +49,6 @@ const items = computed<TabsItem[]>(() => [
       :itemGrow="false"
       :items="items"
       :modelValue="props.currencyFiltered"
-      size="xs"
       @update:modelValue="(v) => emit('selectFilterCurrency', v as CurrencyCode)"
     />
   </div>

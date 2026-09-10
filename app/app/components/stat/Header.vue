@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui'
 import type { ComponentPublicInstance } from 'vue'
 
 import { statConfigOverlayOwnerKey } from '~/components/stat/injectionKeys'
@@ -10,12 +11,12 @@ const props = withDefaults(defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
   compactBottom?: boolean
+  menuItems?: DropdownMenuItem[][]
   sticky?: boolean
 }>(), {
   sticky: true,
 })
 
-const isPopoverOpen = ref(false)
 const trnsSelection = inject(trnsSelectionKey, null)
 provide(statConfigOverlayOwnerKey, useId())
 
@@ -51,24 +52,18 @@ defineExpose({ stickyMainElement, stickyRootElement })
           <StatConfigView />
         </StatConfigModal>
 
-        <BottomSheetOrDropdown
-          v-if="$slots.popover"
-          :isOpen="isPopoverOpen"
-          @openModal="isPopoverOpen = true"
-          @closeModal="isPopoverOpen = false"
+        <UDropdownMenu
+          v-if="props.menuItems"
+          :content="{ align: 'end' }"
+          :items="props.menuItems"
+          :modal="false"
         >
-          <template #trigger>
-            <UTooltip :text="$t('base.moreOptions')">
-              <UiActionButton :ariaLabel="$t('base.moreOptions')">
-                <Icon name="lucide:ellipsis-vertical" size="20" />
-              </UiActionButton>
-            </UTooltip>
-          </template>
-
-          <template #content="{ close }">
-            <slot name="popover" :close />
-          </template>
-        </BottomSheetOrDropdown>
+          <UTooltip :text="$t('base.moreOptions')">
+            <UiActionButton :ariaLabel="$t('base.moreOptions')">
+              <Icon name="lucide:ellipsis-vertical" size="20" />
+            </UiActionButton>
+          </UTooltip>
+        </UDropdownMenu>
       </div>
     </template>
   </UiHeader>

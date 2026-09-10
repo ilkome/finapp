@@ -46,6 +46,7 @@ export default {
     filterSummary: '{wallets} и {categories}',
     filterSummaryAll: 'Все кошельки и категории',
     filterWalletsWord: '0 кошельков | {n} кошелёк | {n} кошелька | {n} кошельков',
+    hide: 'Скрыть',
     loading: 'Загрузка...',
     menu: 'Меню',
     moreOptions: 'Ещё',
@@ -55,11 +56,14 @@ export default {
     off: 'Откл.',
     on: 'Вкл.',
     open: 'Открыть',
+    pin: 'Закрепить',
     previous: 'Назад',
     reset: 'Сбросить',
     save: 'Сохранить',
     search: 'Поиск',
     selectDate: 'Выбрать дату',
+    show: 'Показать',
+    sort: 'Сортировать',
     sure: 'Удалить?',
     today: 'Сегодня',
     toggleExpand: 'Развернуть/свернуть',
@@ -67,6 +71,7 @@ export default {
     toggleGrouping: 'Группировка',
     togglePresets: 'Пресеты',
     toggleView: 'Вид',
+    unpin: 'Открепить',
     yes: 'Да',
   },
 
@@ -188,7 +193,7 @@ export default {
     view: {
       childrenView: 'Дочерние категории',
       childrenViews: {
-        grid: 'Сетка',
+        grid: 'Облако',
         list: 'Список',
       },
       showChildrenCount: 'Показывать количество дочерних',
@@ -347,10 +352,23 @@ export default {
       debt: 'Долги',
       deposit: 'Вклады',
       isArchived: 'Архивные',
-      isAvailable: 'Доступные с учетом кредитов',
+      isAvailable: 'Останется после кредитов',
       isExcludeInTotal: 'Не учитываемые в общем балансе',
       isWithdrawal: 'Доступные для снятия',
       total: 'Всего',
+    },
+    typesHint: {
+      cash: 'Сумма наличных кошельков',
+      cashless: 'Сумма карт и банковских счетов',
+      credit: 'Кредитные карты. Под суммой - доступный лимит и общий лимит',
+      crypto: 'Сумма криптовалютных кошельков',
+      debt: 'Сумма кошельков-долгов: сколько должны вам и сколько должны вы',
+      deposit: 'Сумма вкладов и накопительных счетов',
+      isArchived: 'Кошельки, помеченные как архивные',
+      isAvailable: 'Доступные для снятия минус долг по кредитным картам',
+      isExcludeInTotal: 'Кошельки с опцией «Не считать в общем балансе»',
+      isWithdrawal: 'Кошельки, у которых включена опция «Доступные для снятия»',
+      total: 'Все кошельки, кроме кредитных и исключённых из общего баланса',
     },
   },
 
@@ -744,6 +762,9 @@ export default {
   },
 
   statistics: {
+    hints: 'Что означают пункты',
+    list: 'Список',
+    pinned: 'Закреплённые',
     title: 'Статистика',
   },
 
@@ -944,6 +965,7 @@ export default {
     new: 'Новый кошелек',
     options: {
       includeArchivedInStats: 'Учитывать архивные в статистике',
+      includeExcludedInStats: 'Учитывать не входящие в баланс',
       showArchived: 'Показывать архивные кошельки',
       showGroupCount: 'Показывать количество в группах',
     },

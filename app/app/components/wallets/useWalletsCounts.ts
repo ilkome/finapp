@@ -9,6 +9,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 export function useWalletsCounts(
   selectedWalletsIdsWithCurrency: ComputedRef<WalletId[]>,
   includeArchivedInStats: Ref<boolean>,
+  includeExcludedInStats: Ref<boolean>,
 ) {
   const walletsStore = useWalletsStore()
   const currenciesStore = useCurrenciesStore()
@@ -16,6 +17,7 @@ export function useWalletsCounts(
   const counts = computed(() => computeWalletCounts({
     baseCurrency: currenciesStore.base,
     includeArchivedInStats: includeArchivedInStats.value,
+    includeExcludedInStats: includeExcludedInStats.value,
     rates: currenciesStore.rates,
     totalWalletsCount: Object.values(walletsStore.itemsComputed).filter(w => !w.isArchived).length,
     walletIds: selectedWalletsIdsWithCurrency.value,
