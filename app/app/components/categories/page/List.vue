@@ -24,6 +24,16 @@ const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'lis
   mergeDefaults: true,
 })
 
+const backgroundType = useStorage<'category' | 'none' | 'standard'>('finapp.categoriesBackgroundType', 'none', localStorage, {
+  mergeDefaults: true,
+})
+
+const isViewSettingsOpen = ref(false)
+const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(value => ({
+  label: t(`stat.config.categories.list.backgroundTypes.${value}`),
+  value,
+})))
+
 const deleteCategoryId = ref<CategoryId | null>(null)
 
 const deleteTrnsCount = computed(() => {
@@ -105,6 +115,37 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           />
         </UiActionButton>
 
+        <BottomSheetOrDropdown
+          :isOpen="isViewSettingsOpen"
+          popoverBodyClass="md:pb-0"
+          popoverContentClass="w-80 max-w-[calc(100vw-1rem)]"
+          :title="t('stat.config.menu.label')"
+          @closeModal="isViewSettingsOpen = false"
+          @openModal="isViewSettingsOpen = true"
+        >
+          <template #trigger>
+            <UiActionButton :ariaLabel="t('stat.config.menu.label')">
+              <Icon name="lucide:settings-2" size="20" />
+            </UiActionButton>
+          </template>
+
+          <template #content>
+            <div class="pb-2 md:pb-0">
+              <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
+                <USelect
+                  class="w-40 shrink-0"
+                  :aria-label="t('stat.config.categories.list.backgroundType')"
+                  :content="{ position: 'item-aligned' }"
+                  :items="backgroundTypeItems"
+                  :modelValue="backgroundType"
+                  :ui="{ content: 'z-[60]' }"
+                  @update:modelValue="value => backgroundType = value as 'category' | 'none' | 'standard'"
+                />
+              </StatConfigFieldRow>
+            </div>
+          </template>
+        </BottomSheetOrDropdown>
+
         <NuxtLink to="/categories/new">
           <UiActionButton :ariaLabel="$t('categories.new')">
             <Icon name="lucide:plus" size="24" />
@@ -134,6 +175,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
       class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList
+        :backgroundType
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
           leftMenuButton: true,
