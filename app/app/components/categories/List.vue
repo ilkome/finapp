@@ -72,7 +72,7 @@ function getChildrenIds(categoryId: CategoryId) {
         <template #content>
           <div
             :class="[
-              isChildrenGrid ? 'ml-2 pr-2 pb-4 pl-3' : 'ml-5 pl-3',
+              isChildrenGrid ? 'pr-2 pb-4 pl-6' : 'pl-6',
               !isChildrenGrid && !isShowBackground && 'pb-1',
             ]"
           >
