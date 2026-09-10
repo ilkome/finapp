@@ -185,6 +185,14 @@ export default {
     selectParent: 'Whole «{name}»',
     selectParentHint: 'incl. all subcategories',
     title: 'Categories',
+    view: {
+      childrenView: 'Child categories',
+      childrenViews: {
+        grid: 'Grid',
+        list: 'List',
+      },
+      showChildrenCount: 'Show children count',
+    },
   },
 
   chart: {
@@ -937,6 +945,7 @@ export default {
     options: {
       includeArchivedInStats: 'Include archived in statistics',
       showArchived: 'Show archived wallets',
+      showGroupCount: 'Show group counts',
     },
     page: {
       currencies: 'Currencies',

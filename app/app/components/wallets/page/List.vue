@@ -36,6 +36,9 @@ const {
 const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
 const showArchived = useStorage<boolean>(WALLET_STORAGE_KEYS.showArchived, false)
 const includeArchivedInStats = useStorage<boolean>(WALLET_STORAGE_KEYS.includeArchivedInStats, false)
+const isShowGroupCount = useStorage<boolean>('finapp.walletsShowGroupCount', false, localStorage, {
+  mergeDefaults: true,
+})
 
 const {
   currencyFiltered,
@@ -118,6 +121,11 @@ const groupNavItems = computed<TabsItem[]>(() =>
                   :checkboxValue="includeArchivedInStats"
                   :title="t('wallets.options.includeArchivedInStats')"
                   @click="includeArchivedInStats = !includeArchivedInStats"
+                />
+                <UiSwitchItem
+                  :checkboxValue="isShowGroupCount"
+                  :title="t('wallets.options.showGroupCount')"
+                  @click="isShowGroupCount = !isShowGroupCount"
                 />
               </div>
             </div>
@@ -246,6 +254,13 @@ const groupNavItems = computed<TabsItem[]>(() =>
                   {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                 </div>
 
+                <div
+                  v-if="isShowGroupCount"
+                  class="font-tertiary text-base leading-none font-semibold text-dimmed"
+                >
+                  {{ content.ids.length }}
+                </div>
+
                 <template #after>
                   <div class="ml-auto opacity-60">
                     <Amount
@@ -282,6 +297,13 @@ const groupNavItems = computed<TabsItem[]>(() =>
                     >
                       <div class="font-tertiary text-base leading-none font-semibold">
                         {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
+                      </div>
+
+                      <div
+                        v-if="isShowGroupCount"
+                        class="font-tertiary text-base leading-none font-semibold text-dimmed"
+                      >
+                        {{ ids.length }}
                       </div>
                       <template #after>
                         <div class="ml-auto">

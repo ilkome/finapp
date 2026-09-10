@@ -185,6 +185,14 @@ export default {
     selectParent: 'Вся «{name}»',
     selectParentHint: 'со всеми подкатегориями',
     title: 'Категории',
+    view: {
+      childrenView: 'Дочерние категории',
+      childrenViews: {
+        grid: 'Сетка',
+        list: 'Список',
+      },
+      showChildrenCount: 'Показывать количество дочерних',
+    },
   },
 
   chart: {
@@ -937,6 +945,7 @@ export default {
     options: {
       includeArchivedInStats: 'Учитывать архивные в статистике',
       showArchived: 'Показывать архивные кошельки',
+      showGroupCount: 'Показывать количество в группах',
     },
     page: {
       currencies: 'Валюты',

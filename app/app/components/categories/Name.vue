@@ -23,7 +23,7 @@ const hasChildren = computed(() => (props.childrenCount ?? 0) > 0)
 
       <div
         v-if="hasChildren && childrenCount"
-        class="shrink-0 text-muted"
+        class="shrink-0 text-sm leading-none font-medium tracking-wide text-dimmed"
       >
         {{ childrenCount }}
       </div>

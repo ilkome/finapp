@@ -28,9 +28,17 @@ const backgroundType = useStorage<'category' | 'none' | 'standard'>('finapp.cate
   mergeDefaults: true,
 })
 
+const isShowChildrenCount = useStorage<boolean>('finapp.categoriesShowChildrenCount', false, localStorage, {
+  mergeDefaults: true,
+})
+
 const isViewSettingsOpen = ref(false)
 const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(value => ({
   label: t(`stat.config.categories.list.backgroundTypes.${value}`),
+  value,
+})))
+const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
+  label: t(`categories.view.childrenViews.${value}`),
   value,
 })))
 
@@ -108,13 +116,6 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           <Icon :name="folderIcon" size="20" />
         </UiActionButton>
 
-        <UiActionButton :ariaLabel="$t('base.toggleView')" @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
-          <Icon
-            :name="categoriesView === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
-            size="20"
-          />
-        </UiActionButton>
-
         <BottomSheetOrDropdown
           :isOpen="isViewSettingsOpen"
           popoverBodyClass="md:pb-0"
@@ -130,7 +131,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           </template>
 
           <template #content>
-            <div class="pb-2 md:pb-0">
+            <div class="pb-2">
               <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
                 <USelect
                   class="w-40 shrink-0"
@@ -142,6 +143,25 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
                   @update:modelValue="value => backgroundType = value as 'category' | 'none' | 'standard'"
                 />
               </StatConfigFieldRow>
+
+              <StatConfigFieldRow :title="t('categories.view.childrenView')">
+                <USelect
+                  class="w-40 shrink-0"
+                  :aria-label="t('categories.view.childrenView')"
+                  :content="{ position: 'item-aligned' }"
+                  :items="childrenViewItems"
+                  :modelValue="categoriesView"
+                  :ui="{ content: 'z-[60]' }"
+                  @update:modelValue="value => categoriesView = value as 'grid' | 'list'"
+                />
+              </StatConfigFieldRow>
+
+              <UiSwitchItem
+                :checkboxValue="isShowChildrenCount"
+                :title="t('categories.view.showChildrenCount')"
+                trailing
+                @click="isShowChildrenCount = !isShowChildrenCount"
+              />
             </div>
           </template>
         </BottomSheetOrDropdown>
@@ -178,6 +198,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         :backgroundType
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
+          isShowChildrenCount,
           leftMenuButton: true,
           lineWidth: 1,
         }"
