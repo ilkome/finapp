@@ -30,10 +30,12 @@ const categoriesStore = useCategoriesStore()
 const isChildrenGrid = computed(() => props.childrenView === 'grid')
 const isShowBackground = computed(() => !!props.backgroundType && props.backgroundType !== 'none')
 
+// The row and its children collapsible are siblings, so the spacing lives on the row
+// itself: a container gap would also apply to the collapsible and double up.
 const backgroundClasses = computed(() => ({
   'bg-elevated/10 hover:bg-elevated/30': props.backgroundType === 'category',
   'bg-elevated/30 hover:bg-elevated/50': props.backgroundType === 'standard',
-  'relative overflow-hidden rounded-md': isShowBackground.value,
+  'relative mb-1 overflow-hidden rounded-md': isShowBackground.value,
 }))
 
 function getChildrenIds(categoryId: CategoryId) {
@@ -42,7 +44,7 @@ function getChildrenIds(categoryId: CategoryId) {
 </script>
 
 <template>
-  <div class="pt-1" :class="isShowBackground && 'grid gap-1'">
+  <div class="pt-1">
     <template
       v-for="categoryId in ids"
       :key="categoryId"
@@ -79,8 +81,8 @@ function getChildrenIds(categoryId: CategoryId) {
         <template #content>
           <div
             :class="[
-              isChildrenGrid ? 'ml-2 pr-2 pb-4 pl-3' : 'ml-5 pb-1 pl-3',
-              isShowBackground && !isChildrenGrid && 'grid gap-1 pt-1',
+              isChildrenGrid ? 'ml-2 pr-2 pb-4 pl-3' : 'ml-5 pl-3',
+              !isChildrenGrid && !isShowBackground && 'pb-1',
             ]"
           >
             <template v-if="!isChildrenGrid">
