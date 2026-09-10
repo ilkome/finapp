@@ -26,8 +26,7 @@ const contextMenuItems = computed(() => [
     :wallet="walletsStore.itemsComputed[props.walletId]!"
     :walletId="props.walletId"
     :contextMenuItems="contextMenuItems"
-    :lineWidth="2"
-    class="group"
+    bodyClass="group rounded-md bg-elevated/30"
     isShowBaseRate
     isShowCreditLimit
     isShowIcon

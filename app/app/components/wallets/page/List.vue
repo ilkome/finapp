@@ -88,6 +88,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
         <BottomSheetOrDropdown
           v-if="walletsStore.sortedIds.length > 1"
           :isOpen="isOpen"
+          popoverBodyClass="md:pb-0"
           isShowCloseBtn
           @closeModal="isOpen = false"
           @openModal="isOpen = true"
@@ -99,7 +100,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
           </template>
 
           <template #content>
-            <div class="p-1 pt-4 pb-3">
+            <div class="pt-4 pb-3">
               <UiHeaderLink
                 icon="lucide:arrow-down-up"
                 @click="isSortModalOpen = true"
@@ -218,7 +219,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
         <div class="pb-6 md:max-w-lg @xl/page:max-w-lg">
           <div
             v-if="groupedBy === 'none'"
-            class="md:max-w-lg"
+            class="grid gap-1 py-1 md:max-w-lg"
           >
             <WalletsPageListItem
               v-for="walletId in selectedWalletsIds"
@@ -230,14 +231,11 @@ const groupNavItems = computed<TabsItem[]>(() =>
 
           <div
             v-if="groupedBy !== 'none' && groupedWalletsWithIds"
-            class="grid gap-4"
+            class="grid"
           >
             <UCollapsible
               v-for="(content, groupPrimary) in groupedWalletsWithIds"
               :key="groupPrimary"
-              :class="{
-                'rounded-md bg-elevated/30': !hasGroups(content.groups),
-              }"
               :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
             >
               <UiTitleDropRight
@@ -248,33 +246,35 @@ const groupNavItems = computed<TabsItem[]>(() =>
                   {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                 </div>
 
-                <div class="ml-auto opacity-60">
-                  <Amount
-                    :amount="countWalletsSum(content.ids)"
-                    :currencyCode="currenciesStore.base"
-                    :isShowBaseRate="false"
-                    variant="row"
-                  />
-                  <Amount
-                    v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                    :amount="countWalletsSum(content.ids, false)"
-                    :currencyCode="groupPrimary"
-                    :isShowBaseRate="false"
-                    variant="secondary"
-                  />
-                </div>
+                <template #after>
+                  <div class="ml-auto opacity-60">
+                    <Amount
+                      :amount="countWalletsSum(content.ids)"
+                      :currencyCode="currenciesStore.base"
+                      :isShowBaseRate="false"
+                      variant="row"
+                    />
+                    <Amount
+                      v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                      :amount="countWalletsSum(content.ids, false)"
+                      :currencyCode="groupPrimary"
+                      :isShowBaseRate="false"
+                      variant="secondary"
+                    />
+                  </div>
+                </template>
               </UiTitleDropRight>
 
               <template #content>
                 <div
                   v-if="hasGroups(content.groups)"
-                  class="grid gap-2 pl-6"
+                  class="grid pl-6"
                 >
                   <UCollapsible
                     v-for="(ids, groupSecondary) in content.groups"
                     :key="groupSecondary"
                     :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
-                    class="group grid gap-1 rounded-xl bg-elevated/30"
+                    class="group grid"
                   >
                     <UiTitleDropRight
                       :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
@@ -283,34 +283,38 @@ const groupNavItems = computed<TabsItem[]>(() =>
                       <div class="font-tertiary text-base leading-none font-semibold">
                         {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
                       </div>
-                      <div class="ml-auto">
-                        <Amount
-                          :amount="countWalletsSum(ids)"
-                          :currencyCode="currenciesStore.base"
-                          :isShowBaseRate="false"
-                        />
-                        <Amount
-                          v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                          :amount="countWalletsSum(ids, false)"
-                          :currencyCode="groupPrimary"
-                          :isShowBaseRate="false"
-                          variant="secondary"
-                        />
-                      </div>
+                      <template #after>
+                        <div class="ml-auto">
+                          <Amount
+                            :amount="countWalletsSum(ids)"
+                            :currencyCode="currenciesStore.base"
+                            :isShowBaseRate="false"
+                          />
+                          <Amount
+                            v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                            :amount="countWalletsSum(ids, false)"
+                            :currencyCode="groupPrimary"
+                            :isShowBaseRate="false"
+                            variant="secondary"
+                          />
+                        </div>
+                      </template>
                     </UiTitleDropRight>
 
                     <template #content>
-                      <WalletsPageListItem
-                        v-for="walletId in ids"
-                        :key="walletId"
-                        :walletId
-                        @delete="requestDelete"
-                      />
+                      <div class="grid gap-1 py-1">
+                        <WalletsPageListItem
+                          v-for="walletId in ids"
+                          :key="walletId"
+                          :walletId
+                          @delete="requestDelete"
+                        />
+                      </div>
                     </template>
                   </UCollapsible>
                 </div>
 
-                <div v-else>
+                <div v-else class="grid gap-1 py-1">
                   <WalletsPageListItem
                     v-for="walletId in content.ids"
                     :key="walletId"

@@ -9,14 +9,17 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="flex min-h-9.5 min-w-10.5 grow items-center gap-2 rounded-sm interactive px-3 pb-0"
+    class="flex min-h-9.5 min-w-10.5 grow items-center gap-1 rounded-sm interactive px-3 pb-0"
     @click="emit('click')"
   >
+    <slot />
+
     <Icon
       :name="props.isShown ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-      size="22"
-      class="-ml-1 text-muted!"
+      size="18"
+      class="shrink-0 text-muted"
     />
-    <slot />
+
+    <slot name="after" />
   </div>
 </template>
