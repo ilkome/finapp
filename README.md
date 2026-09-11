@@ -18,10 +18,6 @@
 
 [finapp-docs.ilko.me](https://finapp-docs.ilko.me/)
 
-## Knowledge Graph
-
-Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://finapp-graph.ilko.me/en/)
-
 ## Why Finapp?
 
 - **Simple**: No clutter, no distractions - just your transactions and balances.
@@ -37,12 +33,12 @@ Interactive map of the codebase architecture: [finapp-graph.ilko.me/en](https://
 - **Wallets**: 6 types - cash, bank accounts, credit cards, deposits, crypto, debt.
 - **Transactions**: expense, income, transfer, adjustment with a built-in calculator.
 - **Categories**: hierarchical parent-child categories with custom icons and colors.
-- **Multi-currency**: 165+ currencies with automatic daily exchange rates.
+- **Multi-currency**: 180+ fiat and crypto currencies with automatic daily exchange rates.
 
 ### Analytics
 
-- Dashboard with summary, expense, and income tabs.
-- Bar and line charts with an average line.
+- Configurable dashboard: reorderable blocks, saved views with auto-activation rules.
+- Bar, line and pie charts with an average line, by category or by income/spending.
 - Flexible date ranges: day, week, month, year, or custom period.
 - Category breakdown with multiple display modes.
 - Multi-select filters by wallet and category.
@@ -165,7 +161,7 @@ The login screen shows a **Sign in with Google** button. To make it work against
 
 3. Restart Supabase so it re-reads the config and env (`supabase stop && supabase start`).
 
-The Google provider is already enabled in `app/supabase/config.toml` (`[auth.external.google]`, `skip_nonce_check = true` for local). Leaving the env vars empty just keeps the button non-functional - email/password still works. For **production**, configure Google in the hosted Supabase dashboard instead (see [Deployment](docs/content/en/2.development/05.deployment.md)).
+The Google provider is already enabled in `app/supabase/config.toml` (`[auth.external.google]`, `skip_nonce_check = true` for local). Leaving the env vars empty just keeps the button non-functional - demo mode and the seed user still work. For **production**, configure Google in the hosted Supabase dashboard instead (see [Deployment](docs/content/en/2.development/05.deployment.md)).
 
 ### Environment files
 
