@@ -10,7 +10,7 @@ const { openFormForCreate, ui } = useTrnsFormStore()
     class="
       group fixed top-0 right-0 h-full w-75 items-end
       justify-end from-transparent to-elevated
-      transition hover:bg-gradient-to-r xl:flex
+      transition hover:bg-linear-to-r xl:flex
     "
     @click="openFormForCreate()"
   >

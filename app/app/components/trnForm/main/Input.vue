@@ -9,6 +9,7 @@ defineProps<{
 
 const emit = defineEmits<{
   change: [value: string]
+  submit: []
 }>()
 
 const { t } = useI18n()
@@ -39,6 +40,7 @@ const { t } = useI18n()
       class="swiper-no-swiping border-transparent bg-transparent pt-6 pb-2 text-center font-secondary text-3xl! placeholder:text-3xl"
       inputmode="tel"
       @update:modelValue="(value: string) => emit('change', value || '')"
+      @keydown.enter.prevent="emit('submit')"
     />
   </div>
 </template>
