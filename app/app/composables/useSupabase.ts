@@ -60,7 +60,9 @@ export function useSupabaseAuth() {
     // be allow-listed in Supabase auth config (config.toml additional_redirect_urls / dashboard).
     signInWithGoogle: (redirectTo: string) =>
       client.auth.signInWithOAuth({ options: { redirectTo }, provider: 'google' }),
-    signOut: () => client.auth.signOut(),
+    // `local` revokes only this device's refresh token. The default `global` would kill every
+    // other device's session and push them into the involuntary session-loss path.
+    signOut: () => client.auth.signOut({ scope: 'local' }),
     uid: computed<string | null>(() => session.value?.user?.id ?? null),
     user: computed(() => session.value?.user ?? null),
   }

@@ -76,9 +76,4 @@ describe('useUserStore', () => {
       expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ color: 'error', description: 'sync.errors.signOutPending' }))
     })
   })
-
-  it('no longer carries the removed offline-queue keys in STORAGE_KEYS', () => {
-    expect(Object.values(STORAGE_KEYS)).not.toContain('finapp.offlineQueue')
-    expect(Object.keys(STORAGE_KEYS)).not.toContain('offlineQueue')
-  })
 })

@@ -67,7 +67,9 @@ describe('getPowerSyncDb', () => {
 describe('initializePowerSyncDb', () => {
   it('shares the in-flight initialization across concurrent callers', async () => {
     let resolveInit!: () => void
-    init.mockImplementationOnce(() => new Promise<void>((resolve) => { resolveInit = resolve }))
+    init.mockImplementationOnce(() => new Promise<void>((resolve) => {
+      resolveInit = resolve
+    }))
 
     const first = initializePowerSyncDb()
     const second = initializePowerSyncDb()
