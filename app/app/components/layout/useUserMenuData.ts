@@ -1,11 +1,7 @@
-import type { DropdownMenuItem } from '@nuxt/ui'
-
 import type { LocaleSlug } from '~/components/locale/types'
 
-import { useSyncStatus } from '~/components/app/useSyncStatus'
-import { useDemo } from '~/components/demo/useDemo'
 import { useTheme } from '~/components/theme/useTheme'
-import { BLACK_PRIMARY, capitalize, useThemeOptions } from '~/components/theme/useThemeOptions'
+import { useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useUserStore } from '~/components/user/useUserStore'
 
 export type UserMenuPanel = 'appearance' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
@@ -24,11 +20,9 @@ export const USER_MENU_PANEL_CHILDREN: Partial<Record<'root' | UserMenuPanel, Us
   root: ['locale', 'appearance'],
 }
 
-export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
-  const { sessionActions = true } = options
+export function useUserMenuData() {
   const { locale, t } = useI18n()
   const userStore = useUserStore()
-  const { isDemo } = useDemo()
   const {
     isDark,
     options: themeOptions,
@@ -58,8 +52,6 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
     icon: user.value?.photoURL ? undefined : 'i-lucide-user',
     src: user.value?.photoURL ?? undefined,
   }))
-
-  const activePrimary = computed(() => blackAsPrimary.value ? BLACK_PRIMARY : primary.value)
 
   const localeOptions = computed(() => [
     { label: t('locale.ru'), value: 'ru' as LocaleSlug },
@@ -102,169 +94,8 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
     },
   }))
 
-  // Checkbox items would close the menu on select; preventDefault keeps it open so
-  // several appearance tweaks can be made in one visit.
-  function pick(apply: () => void) {
-    return (e: Event) => {
-      e.preventDefault()
-      apply()
-    }
-  }
-
-  const localeItems = computed<DropdownMenuItem[]>(() =>
-    localeOptions.value.map(option => ({
-      checked: locale.value === option.value,
-      label: option.label,
-      onSelect: pick(() => userStore.saveUserLocale(option.value)),
-      type: 'checkbox' as const,
-    })),
-  )
-
-  const themeItems = computed<DropdownMenuItem[]>(() =>
-    themeOptions.map(option => ({
-      checked: themePreference.value === option.value,
-      icon: USER_MENU_THEME_ICONS[option.value],
-      label: option.label,
-      onSelect: pick(() => setTheme(option.value)),
-      type: 'checkbox' as const,
-    })),
-  )
-
-  const primaryItems = computed<DropdownMenuItem[]>(() => [
-    {
-      checked: blackAsPrimary.value,
-      chip: BLACK_PRIMARY,
-      label: 'Black',
-      onSelect: pick(() => setBlackAsPrimary(true)),
-      slot: 'chip' as const,
-      type: 'checkbox' as const,
-    },
-    ...primaryColors.map(color => ({
-      checked: !blackAsPrimary.value && primary.value === color,
-      chip: color,
-      label: capitalize(color),
-      onSelect: pick(() => primary.value = color),
-      slot: 'chip' as const,
-      type: 'checkbox' as const,
-    })),
-  ])
-
-  const neutralItems = computed<DropdownMenuItem[]>(() =>
-    neutralColors.map(color => ({
-      checked: neutral.value === color,
-      chip: color,
-      label: capitalize(color),
-      onSelect: pick(() => neutral.value = color),
-      slot: 'chip' as const,
-      type: 'checkbox' as const,
-    })),
-  )
-
-  const radiusItems = computed<DropdownMenuItem[]>(() =>
-    radiuses.map(value => ({
-      checked: radius.value === value,
-      label: String(value),
-      onSelect: pick(() => radius.value = value),
-      radius: value,
-      slot: 'radius' as const,
-      type: 'checkbox' as const,
-    })),
-  )
-
-  const { hasIssue: hasSyncIssue, status: syncStatus } = useSyncStatus()
-  const syncLabel = computed(() => {
-    if (syncStatus.value.uploadError)
-      return t('sync.status.uploadError')
-    const parts = []
-    if (!syncStatus.value.connected)
-      parts.push(t('sync.status.offline'))
-    if (syncStatus.value.pending > 0)
-      parts.push(t('sync.status.pending', { count: syncStatus.value.pending }))
-    return parts.join(' · ')
-  })
-
-  const dropdownItems = computed<DropdownMenuItem[][]>(() => [
-    ...(user.value
-      ? [[
-          {
-            avatar: triggerAvatar.value,
-            label: triggerLabel.value,
-            type: 'label' as const,
-          },
-          ...(hasSyncIssue.value
-            ? [{
-                class: 'text-warning',
-                disabled: true,
-                icon: syncStatus.value.connected ? 'i-lucide-cloud-upload' : 'i-lucide-cloud-off',
-                label: syncLabel.value,
-              }]
-            : []),
-        ]]
-      : []),
-
-    [
-      {
-        children: localeItems.value,
-        icon: 'lucide:languages',
-        label: t('locale.title'),
-      },
-      {
-        children: [
-          {
-            children: themeItems.value,
-            icon: USER_MENU_THEME_ICONS[themePreference.value],
-            label: t('theme.picker.theme'),
-          },
-          {
-            children: primaryItems.value,
-            chip: activePrimary.value,
-            label: t('theme.picker.primary'),
-            slot: 'chip' as const,
-          },
-          {
-            children: neutralItems.value,
-            chip: neutral.value,
-            label: t('theme.picker.neutral'),
-            slot: 'chip' as const,
-          },
-          {
-            children: radiusItems.value,
-            label: t('theme.picker.radius'),
-            radius: radius.value,
-            slot: 'radius' as const,
-          },
-        ],
-        icon: 'i-lucide-paintbrush',
-        label: t('theme.title'),
-      },
-    ],
-    ...(sessionActions
-      ? [[{
-          icon: 'i-lucide-log-out',
-          label: isDemo.value ? t('demo.exit') : t('user.logout'),
-          onSelect: () => userStore.signOut(),
-        }]]
-      : []),
-
-    [
-      {
-        icon: 'mdi:github',
-        label: 'GitHub',
-        target: '_blank',
-        to: USER_MENU_GITHUB_URL,
-      },
-      {
-        icon: 'lucide:book-open',
-        label: t('login.menu.documentation'),
-        target: '_blank',
-        to: USER_MENU_DOCS_URL,
-      },
-    ],
-  ])
-
   return {
     blackAsPrimary,
-    dropdownItems,
     isDark,
     locale,
     localeOptions,
