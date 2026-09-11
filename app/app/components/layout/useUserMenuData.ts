@@ -2,6 +2,7 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 
 import type { LocaleSlug } from '~/components/locale/types'
 
+import { useSyncStatus } from '~/components/app/useSyncStatus'
 import { useDemo } from '~/components/demo/useDemo'
 import { useTheme } from '~/components/theme/useTheme'
 import { BLACK_PRIMARY, capitalize, useThemeOptions } from '~/components/theme/useThemeOptions'
@@ -170,13 +171,35 @@ export function useUserMenuData(options: { sessionActions?: boolean } = {}) {
     })),
   )
 
+  const { hasIssue: hasSyncIssue, status: syncStatus } = useSyncStatus()
+  const syncLabel = computed(() => {
+    if (syncStatus.value.uploadError)
+      return t('sync.status.uploadError')
+    const parts = []
+    if (!syncStatus.value.connected)
+      parts.push(t('sync.status.offline'))
+    if (syncStatus.value.pending > 0)
+      parts.push(t('sync.status.pending', { count: syncStatus.value.pending }))
+    return parts.join(' · ')
+  })
+
   const dropdownItems = computed<DropdownMenuItem[][]>(() => [
     ...(user.value
-      ? [[{
-          avatar: triggerAvatar.value,
-          label: triggerLabel.value,
-          type: 'label' as const,
-        }]]
+      ? [[
+          {
+            avatar: triggerAvatar.value,
+            label: triggerLabel.value,
+            type: 'label' as const,
+          },
+          ...(hasSyncIssue.value
+            ? [{
+                class: 'text-warning',
+                disabled: true,
+                icon: syncStatus.value.connected ? 'i-lucide-cloud-upload' : 'i-lucide-cloud-off',
+                label: syncLabel.value,
+              }]
+            : []),
+        ]]
       : []),
 
     [

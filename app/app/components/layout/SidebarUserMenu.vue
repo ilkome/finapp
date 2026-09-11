@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSyncStatus } from '~/components/app/useSyncStatus'
 import { useUserMenuData } from '~/components/layout/useUserMenuData'
 import { BLACK_PRIMARY, swatchPalette } from '~/components/theme/useThemeOptions'
 
@@ -6,6 +7,7 @@ const { collapsed = false } = defineProps<{ collapsed?: boolean }>()
 
 const { t } = useI18n()
 const { dropdownItems, triggerAvatar, triggerLabel } = useUserMenuData()
+const { hasIssue: hasSyncIssue } = useSyncStatus()
 </script>
 
 <template>
@@ -19,13 +21,21 @@ const { dropdownItems, triggerAvatar, triggerLabel } = useUserMenuData()
       :avatar="triggerAvatar"
       :label="collapsed ? undefined : triggerLabel"
       :square="collapsed"
-      :trailingIcon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
-      :ui="{ trailingIcon: 'text-dimmed' }"
       block
-      class="pointer-events-auto min-h-12 bg-transparent backdrop-blur transition-colors hover:bg-elevated/50! active:bg-elevated/50! data-[state=open]:bg-elevated/50!"
+      class="pointer-events-auto relative min-h-12 bg-transparent backdrop-blur transition-colors hover:bg-elevated/50! active:bg-elevated/50! data-[state=open]:bg-elevated/50!"
       color="neutral"
       variant="ghost"
-    />
+    >
+      <template #trailing>
+        <UIcon v-if="!collapsed" name="i-lucide-chevrons-up-down" class="text-dimmed" />
+        <!-- Offline / unsynced-changes marker; the dropdown's status row carries the details. -->
+        <span
+          v-if="hasSyncIssue"
+          data-testid="sync-issue-dot"
+          class="absolute top-1.5 left-1.5 size-2 rounded-full bg-warning"
+        />
+      </template>
+    </UButton>
 
     <template #chip-leading="{ item }">
       <span

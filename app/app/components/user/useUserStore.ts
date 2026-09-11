@@ -1,7 +1,7 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import localforage from 'localforage'
-import { disconnectPowerSync, getPowerSyncDb, watchTable } from '~~/services/powersync/db'
+import { disconnectPowerSync, getPowerSyncDb, waitForUploadsDrained, watchTable } from '~~/services/powersync/db'
 import { upsertRow } from '~~/services/powersync/mutations'
 
 import type { CurrencyCode } from '~/components/currencies/types'
@@ -15,7 +15,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { hasPersistedSession } from '~/composables/useAuthSession'
 import { clearStoreCache, persistStoreCache } from '~/composables/useStoreCache'
-import { blockPersist, isPersistBlocked } from '~/composables/useStoreSync'
+import { blockPersist, isPersistBlocked, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
@@ -226,6 +226,15 @@ export const useUserStore = defineStore('user', () => {
       isDemo.value = undefined
       useCookie<boolean>('finapp.isOnboarded').value = false
       window.location.href = '/login'
+      return
+    }
+
+    // The wipe below destroys the upload queue, so give queued offline writes a chance to
+    // reach the server first and refuse to sign out while any remain (offline, or a stuck upload).
+    const pending = await waitForUploadsDrained().catch(() => 0)
+    if (pending > 0) {
+      isSigningOut.value = false
+      showErrorToast('sync.errors.signOutPending', { count: pending })
       return
     }
 

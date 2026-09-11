@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
+import { toastAddMock } from '~/test-utils/setup-store'
 
 const h = vi.hoisted(() => ({
   auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' }, user: { value: null } },
@@ -13,11 +14,12 @@ const h = vi.hoisted(() => ({
   getPowerSyncDb: vi.fn(async () => ({ execute: vi.fn() })),
   upsertRow: vi.fn(),
   upsertRows: vi.fn(),
+  waitForUploadsDrained: vi.fn(async () => 0),
   watchTable: vi.fn(() => ({ abort: vi.fn() })),
 }))
 
 vi.mock('localforage', () => ({ default: { clear: vi.fn(), getItem: vi.fn(), removeItem: vi.fn(), setItem: vi.fn() } }))
-vi.mock('~~/services/powersync/db', () => ({ disconnectPowerSync: h.disconnectPowerSync, getPowerSyncDb: h.getPowerSyncDb, watchTable: h.watchTable }))
+vi.mock('~~/services/powersync/db', () => ({ disconnectPowerSync: h.disconnectPowerSync, getPowerSyncDb: h.getPowerSyncDb, waitForUploadsDrained: h.waitForUploadsDrained, watchTable: h.watchTable }))
 vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
 vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
 vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))
@@ -59,7 +61,20 @@ describe('useUserStore', () => {
       expect(store.baseCurrency).toBe('EUR')
       expect(setItem).toHaveBeenCalledWith(STORAGE_KEYS.userSettings, expect.objectContaining({ baseCurrency: 'EUR' }))
     })
+  })
 
+  describe('signOut', () => {
+    it('refuses to wipe local data while offline writes are still queued', async () => {
+      h.waitForUploadsDrained.mockResolvedValueOnce(2)
+      const store = useUserStore()
+
+      await store.signOut()
+
+      expect(h.disconnectPowerSync).not.toHaveBeenCalled()
+      expect(h.auth.signOut).not.toHaveBeenCalled()
+      expect(store.isSigningOut).toBe(false)
+      expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ color: 'error', description: 'sync.errors.signOutPending' }))
+    })
   })
 
   it('no longer carries the removed offline-queue keys in STORAGE_KEYS', () => {

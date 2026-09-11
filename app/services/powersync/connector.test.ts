@@ -78,6 +78,32 @@ describe('uploadData', () => {
     expect(onError.mock.calls[0]?.[1]).toEqual([putOp]) // diverged ops
   })
 
+  it('discards a permanent PostgREST request error (PGRST2xx) instead of blocking the queue', async () => {
+    const onError = vi.fn()
+    setUploadErrorHandler(onError)
+    const { complete, database } = makeDb([putOp])
+    const connector = new SupabaseConnector(
+      makeClient({ error: { code: 'PGRST205', message: 'table not in schema cache' } }),
+      'http://ps',
+    )
+
+    await connector.uploadData(database)
+
+    expect(complete).toHaveBeenCalledTimes(1)
+    expect(onError).toHaveBeenCalledTimes(1)
+  })
+
+  it('keeps a JWT error (PGRST3xx) retryable', async () => {
+    const { complete, database } = makeDb([putOp])
+    const connector = new SupabaseConnector(
+      makeClient({ error: { code: 'PGRST301', message: 'jwt expired' } }),
+      'http://ps',
+    )
+
+    await expect(connector.uploadData(database)).rejects.toMatchObject({ code: 'PGRST301' })
+    expect(complete).not.toHaveBeenCalled()
+  })
+
   it('surfaces only the failing op and those after it (slice from failedIndex)', async () => {
     const onError = vi.fn()
     setUploadErrorHandler(onError)

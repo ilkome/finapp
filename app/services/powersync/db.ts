@@ -86,9 +86,22 @@ export async function initializePowerSyncDb(): Promise<void> {
   return _dbInitPromise
 }
 
+// Fires when a wipe discards not-yet-uploaded ops (foreign-owner wipe or force resync),
+// so the app can tell the user instead of losing them silently.
+let _onDiscardedPending: ((count: number) => void) | null = null
+
+export function setDiscardedPendingHandler(handler: ((count: number) => void) | null): void {
+  _onDiscardedPending = handler
+}
+
 /** Disconnect and wipe local SQLite, resetting connection + owner state. */
 async function wipeLocalDb(): Promise<void> {
   const db = await getPowerSyncDb()
+  const pending = (await db.getUploadQueueStats()).count
+  if (pending > 0) {
+    logger.warn(`wiping local db with ${pending} unsynced op(s)`)
+    _onDiscardedPending?.(pending)
+  }
   await db.disconnectAndClear()
   _connected = false
   clearLocalDbOwner()
@@ -187,6 +200,55 @@ export async function pausePowerSync(): Promise<void> {
 export async function getPendingUploadCount(): Promise<number> {
   const db = await getPowerSyncDb()
   return (await db.getUploadQueueStats()).count
+}
+
+/**
+ * Wait until the upload queue is empty or `timeoutMs` passes. Resolves with the number
+ * of ops still pending (0 = drained). Sign-out must not wipe while this is non-zero.
+ */
+export async function waitForUploadsDrained(timeoutMs = 8000): Promise<number> {
+  const deadline = Date.now() + timeoutMs
+  for (;;) {
+    const pending = await getPendingUploadCount()
+    if (pending === 0 || Date.now() >= deadline)
+      return pending
+    await new Promise(resolve => setTimeout(resolve, Math.min(250, Math.max(0, deadline - Date.now()))))
+  }
+}
+
+export type SyncStatusSnapshot = { connected: boolean, pending: number, uploadError: string | null }
+
+const SYNCED_TABLES = ['categories', 'stat_views', 'trns', 'user_settings', 'wallets'] as const
+
+/**
+ * Observe connection + upload-queue state for the UI. `onChange` fires on every PowerSync
+ * status change and on every local write (each touches the queue). Returns a stop function.
+ */
+export function subscribeSyncStatus(onChange: (s: SyncStatusSnapshot) => void): () => void {
+  const stops: (() => void)[] = []
+  let stopped = false
+  getPowerSyncDb()
+    .then((db) => {
+      if (stopped)
+        return
+      const refresh = async () => {
+        const status = db.currentStatus
+        const pending = (await db.getUploadQueueStats()).count
+        // A failed upload while disconnected is just "offline", not a server rejection.
+        const uploadError = status.connected ? (status.dataFlowStatus.uploadError?.message ?? null) : null
+        if (!stopped)
+          onChange({ connected: status.connected, pending, uploadError })
+      }
+      stops.push(db.registerListener({ statusChanged: () => void refresh() }))
+      stops.push(db.onChangeWithCallback({ onChange: () => void refresh() }, { tables: [...SYNCED_TABLES], throttleMs: 500 }))
+      void refresh()
+    })
+    .catch((e: unknown) => logger.error('sync status subscribe failed', e))
+  return () => {
+    stopped = true
+    for (const stop of stops)
+      stop()
+  }
 }
 
 /** Resolves `true` once the first full sync completes; `false` on timeout / not connected. */

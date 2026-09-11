@@ -22,7 +22,22 @@ vi.mock('@powersync/web', () => {
 })
 vi.mock('~~/services/powersync/AppSchema', () => ({ AppSchema: {} }))
 
-const { getPendingUploadCount, getPowerSyncDb, initializePowerSyncDb, pausePowerSync } = await import('~~/services/powersync/db')
+const { getPendingUploadCount, getPowerSyncDb, initializePowerSyncDb, pausePowerSync, waitForUploadsDrained } = await import('~~/services/powersync/db')
+
+describe('waitForUploadsDrained', () => {
+  it('resolves 0 once the queue empties', async () => {
+    getUploadQueueStats
+      .mockResolvedValueOnce({ count: 2, size: null })
+      .mockResolvedValueOnce({ count: 0, size: null })
+    expect(await waitForUploadsDrained(2000)).toBe(0)
+  })
+
+  it('resolves the remaining count when the timeout passes', async () => {
+    getUploadQueueStats.mockResolvedValue({ count: 3, size: null })
+    expect(await waitForUploadsDrained(1)).toBe(3)
+    getUploadQueueStats.mockResolvedValue({ count: 0, size: null })
+  })
+})
 
 describe('pausePowerSync', () => {
   beforeEach(() => {

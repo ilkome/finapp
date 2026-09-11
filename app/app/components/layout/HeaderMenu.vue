@@ -3,6 +3,7 @@ import { AnimatePresence, Motion } from 'motion-v'
 
 import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
 
+import { useSyncStatus } from '~/components/app/useSyncStatus'
 import { useDemo } from '~/components/demo/useDemo'
 import {
   USER_MENU_DOCS_URL,
@@ -23,6 +24,7 @@ const { sessionActions = false } = defineProps<{ sessionActions?: boolean }>()
 const { locale, t } = useI18n()
 const router = useRouter()
 const { generateDemoData, isDemo } = useDemo()
+const { hasIssue: hasSyncIssue, status: syncStatus } = useSyncStatus()
 const {
   blackAsPrimary,
   localeOptions,
@@ -100,16 +102,24 @@ const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm px-2 py-1.5
          trigger must bind resetToRoot too, or reopening lands on a stale sub-panel. -->
     <template #trigger="{ isActive }">
       <slot name="trigger" :isActive :resetToRoot>
-        <UButton
-          :aria-label="t('login.menu.title')"
-          :variant="isActive ? 'soft' : 'ghost'"
-          class="text-muted max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:border-default/80 max-md:bg-default/20 max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
-          color="neutral"
-          icon="i-lucide-menu"
-          size="lg"
-          square
-          @click="resetToRoot"
-        />
+        <span class="relative inline-flex">
+          <UButton
+            :aria-label="t('login.menu.title')"
+            :variant="isActive ? 'soft' : 'ghost'"
+            class="text-muted max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:border-default/80 max-md:bg-default/20 max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
+            color="neutral"
+            icon="i-lucide-menu"
+            size="lg"
+            square
+            @click="resetToRoot"
+          />
+          <!-- Offline / unsynced-changes marker; details live in the account panel (UserViewLogout). -->
+          <span
+            v-if="hasSyncIssue"
+            :title="t('sync.status.pending', { count: syncStatus.pending })"
+            class="pointer-events-none absolute top-0.5 right-0.5 size-2 rounded-full bg-warning"
+          />
+        </span>
       </slot>
     </template>
 
