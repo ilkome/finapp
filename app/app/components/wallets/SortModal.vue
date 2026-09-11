@@ -23,24 +23,34 @@ function saveWalletsOrder(close: () => void) {
     <template #default="{ close }">
       <UiTitleModal>{{ t('wallets.sortTitle') }}</UiTitleModal>
 
-      <div ref="parent" class="bottom-sheet-content-inside scroller-block">
-        <WalletsItem
-          v-for="walletId in sortedWalletsIds"
-          :key="walletId"
-          :walletId
-          :wallet="walletsStore.itemsComputed[walletId]!"
-          compact
-          isSort
-          isShowIcon
-        />
-      </div>
+      <div class="relative min-h-0">
+        <div ref="parent" class="bottom-sheet-content-inside scroller-block pb-20">
+          <WalletsItem
+            v-for="walletId in sortedWalletsIds"
+            :key="walletId"
+            :walletId
+            :wallet="walletsStore.itemsComputed[walletId]!"
+            compact
+            isSort
+            isShowIcon
+          />
+        </div>
 
-      <div class="bottom-sheet-content-bottom">
-        <UiButtonAccent
-          @click="saveWalletsOrder(close)"
-        >
-          {{ t('base.save') }}
-        </UiButtonAccent>
+        <div class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2">
+          <div
+            class="pointer-events-none absolute inset-x-0 -top-6 bottom-0 -z-10"
+            style="background: linear-gradient(to bottom, transparent, var(--ui-bg))"
+          />
+
+          <div class="min-w-0 flex-1">
+            <UiButtonAccent
+              size="xl"
+              @click="saveWalletsOrder(close)"
+            >
+              {{ t('base.save') }}
+            </UiButtonAccent>
+          </div>
+        </div>
       </div>
     </template>
   </BottomSheetModal>
