@@ -1,9 +1,4 @@
 export default {
-  about: {
-    author: 'Author',
-    thanks: 'Thanks for support',
-    title: 'Creators',
-  },
 
   actionError: {
     goHome: 'Go to home',
@@ -16,7 +11,6 @@ export default {
   },
 
   app: {
-    about: 'About',
     desc: 'Finapp helps you to control personal finances easily and efficiently.',
     loadError: 'Could not load your data. Check your connection and try again.',
     retry: 'Try again',
@@ -47,14 +41,10 @@ export default {
     filterSummaryAll: 'All wallets and categories',
     filterWalletsWord: '0 wallets | {n} wallet | {n} wallets | {n} wallets',
     hide: 'Hide',
-    loading: 'Loading...',
     menu: 'Menu',
     moreOptions: 'More options',
     next: 'Next',
-    no: 'No',
     noData: 'No data',
-    off: 'Off',
-    on: 'On',
     open: 'Open',
     pin: 'Pin',
     previous: 'Previous',
@@ -69,52 +59,8 @@ export default {
     toggleExpand: 'Toggle expand',
     toggleFolders: 'Toggle folders',
     toggleGrouping: 'Toggle grouping',
-    togglePresets: 'Toggle presets',
     toggleView: 'Toggle view',
     unpin: 'Unpin',
-    yes: 'Yes',
-  },
-
-  budgets: {
-    add: 'Add budget',
-    archive: 'Archive',
-    archived: 'Archived',
-    assign: {
-      forPeriod: 'this period',
-      reset: 'Reset',
-    },
-    autoAssign: 'Copy last period',
-    carried: 'rolled over',
-    committed: 'committed to recurring',
-    confirm: { autoAssignText: 'Fills budgets with no amount set yet this period from the previous one. Manual changes and savings targets are left as-is.', autoAssignTitle: 'Copy last period?', deleteText: 'This removes the limit. Your transactions are kept.', deleteTitle: 'Delete budget?', unarchiveText: 'An active budget for {category} already exists. Restore this one and archive the other?', unarchiveTitle: 'Restore budget?' },
-    empty: 'No budgets yet. Add a limit for a category.',
-    errors: { deleteFailed: 'Could not delete budget', saveFailed: 'Could not save budget' },
-    form: { amount: 'Amount per period', amountPer: 'Amount per {period}', cadence: 'Budget rhythm', category: 'Category', categoryTaken: '{kind} budget for this category already exists.', currency: 'Currency', goalAmount: 'Goal amount', goalDate: 'Target date', kind: 'Type', receiveHint: 'Receive ≈ {amount} {currency}/month', rollover: 'Rollover', selectCategory: 'Select category', setAsideHint: 'Set aside ≈ {amount} {currency}/month', subtreeHint: 'Covers this category and all subcategories (except any with their own budget).', targetToggle: 'Target by date' },
-    goalReached: 'Goal reached',
-    help: { open: 'How budgets work' },
-    hero: { assignedSoFar: 'Assigned so far', safeToSpend: 'Safe to spend', toAssign: 'To assign' },
-    history: { action: 'History', empty: 'No spending history yet.', title: 'History' },
-    kind: { expense: 'Spending', income: 'Income' },
-    mode: { envelope: 'Envelope', fifty_thirty_twenty: '50/30/20', limits: 'Limits' },
-    move: { action: 'Move money', amount: 'Amount ({currency})', available: 'Available', cover: 'Cover', from: 'From', into: 'Into', noSource: 'No other budgets to move from.', title: 'Move money' },
-    overBudget: 'Over budget',
-    pace: 'Pace',
-    period: { month: 'Month', week: 'Week', year: 'Year' },
-    periodUnit: { month: 'month', week: 'week', year: 'year' },
-    projected: 'Projected',
-    rollover: { none: 'No rollover', surplus: 'Roll over surplus', surplus_deficit: 'Roll over surplus & deficit' },
-    safeSheet: { billsIn: 'Upcoming bills in budgets', billsOut: 'Upcoming bills outside budgets', caption: 'What is left to spend freely in {period}. Paid bills are already excluded.', leftIn: 'Left in budgets', payday: 'Payday {date}', perDay: '≈ {amount}/day', untilDate: 'until {date}' },
-    skip: 'Skip this period',
-    target: { by: 'by {date}', fund: 'Set aside', reached: 'Funded' },
-    title: 'Budgets',
-    toAssign: { assignedLabel: 'assigned', balance: 'Balance to zero', expectedNote: 'Expecting ≈ {amount} this period', fix: 'Fix this', over: 'Over-assigned by', receivedLabel: 'received', text: 'Pull assignments back until the pool is zero. Reducing a budget frees its money to reassign.', title: 'Reduce assignments' },
-    triad: {
-      expense: { activity: 'Spent', assigned: 'Assigned', remaining: 'Available' },
-      income: { activity: 'Received', assigned: 'Expected', remaining: 'Left to receive' },
-    },
-    trns: { empty: 'No transactions this period.' },
-    unarchive: 'Unarchive',
-    unskip: 'Un-skip',
   },
 
   categories: {
@@ -203,11 +149,6 @@ export default {
   chart: {
     empty: 'No data for this period',
     label: 'Chart',
-    types: {
-      bar: 'Bars',
-      line: 'Lines',
-      pie: 'Pie',
-    },
   },
 
   color: {
@@ -221,7 +162,6 @@ export default {
   },
 
   currencies: {
-    ariaFilter: 'Filter currencies',
     base: 'Base currency',
     list: {
       all: 'All',
@@ -233,9 +173,7 @@ export default {
     page: {
       crypto: 'Crypto',
       fiat: 'Fiat',
-      rate: 'Rate',
       setBase: 'Set as base currency',
-      showAll: 'All',
       showUsed: 'Used',
       title: 'Currencies',
     },
@@ -323,11 +261,6 @@ export default {
     title: 'Login',
   },
 
-  menu: {
-    documentation: 'Documentation',
-    title: 'Menu',
-  },
-
   money: {
     all: 'Total',
     average: 'Average',
@@ -394,92 +327,6 @@ export default {
     introWallets: 'Start tracking your finances by adding your first wallet',
   },
 
-  recurrences: {
-    actions: {
-      cancel: 'Cancel',
-      confirm: 'Confirm',
-      confirmAll: 'Confirm all',
-      delay: 'Delay',
-      pause: 'Pause',
-      payEarly: 'Pay now',
-      resume: 'Resume',
-      skip: 'Skip',
-      skipAll: 'Skip all',
-      skipNext: 'Skip next',
-    },
-    add: 'Add recurring',
-    addHint: 'Opens the transaction form with Repeat turned on.',
-    adopt: {
-      cancel: 'Not now',
-      confirm: 'Link {count}',
-      subtitle: 'Found {count} earlier payments that look like this one. Pick the ones that belong to this series.',
-      title: 'Link past payments?',
-    },
-    confirm: {
-      cancelText: 'Stops future transactions. Already-created ones stay.',
-      cancelTitle: 'Cancel this series?',
-      confirmAllText: 'Creates {count} transactions from the due payments. You can edit or delete them afterwards.',
-      confirmAllTitle: 'Confirm {count} payments?',
-      deleteText: 'Removes the rule entirely. Already-created transactions stay.',
-      deleteTitle: 'Delete this series?',
-      skipAllText: 'Skips {count} due payments so they are not created. This cannot be undone here.',
-      skipAllTitle: 'Skip {count} payments?',
-    },
-    delay: { month: '+1 month', title: 'Delay to', tomorrow: 'Tomorrow', week: '+1 week' },
-    editTitle: 'Edit recurrence',
-    empty: 'No recurring transactions yet. Toggle "Repeat" when adding a transaction.',
-    end: { count: 'After N', countPlaceholder: 'count', date: 'On date', never: 'Never' },
-    errors: { deleteFailed: 'Could not delete recurrence', saveFailed: 'Could not save recurrence' },
-    everyOne: { day: 'Every day', month: 'Every month', week: 'Every week', year: 'Every year' },
-    form: {
-      amount: 'Amount',
-      autoCreate: 'Create automatically (off = confirm each time)',
-      backfill: 'Create past payments',
-      backfillOffHint: 'Only track this subscription from its next payment - no past transactions.',
-      backfillOnHint: 'Creates every payment from the start date up to today.',
-      category: 'Category',
-      currencyChangeHint: 'New wallet is in {currency}; existing amounts are now shown in it.',
-      currentNext: 'now:',
-      editKeepsHint: 'Already-created transactions keep their old category and wallet.',
-      editPriceDate: 'Edit change date',
-      effectiveFrom: 'From',
-      ends: 'Ends',
-      every: 'Every',
-      futureStart: 'First payment on {date} - it will appear then, not now.',
-      lockedHint: 'Type is fixed for the series.',
-      monthLastDay: 'Last day of month',
-      nextCharge: 'Next charge date',
-      noNext: 'no upcoming',
-      priceFrom: 'from',
-      priceHistory: 'Price history',
-      repeat: 'Repeat',
-      save: 'Save',
-      selectCategory: 'Select category',
-      selectWallet: 'Select wallet',
-      startDate: 'Start date',
-      wallet: 'Wallet',
-    },
-    freq: { day: 'Day', month: 'Month', week: 'Week', year: 'Year' },
-    help: { open: 'How recurring works' },
-    history: { allTrns: 'All transactions', nextCharge: 'Next charge', noChanges: 'Price never changed', noNext: 'No upcoming charge', open: 'Open price history', paidThisYear: 'Paid this year', title: 'Price history', wallet: 'Funding wallet' },
-    manual: 'confirm',
-    next: 'next',
-    overdue: 'overdue',
-    partOfSeries: 'Part of a recurring series',
-    payments: { empty: 'No payments in this period', only: 'Only', paid: 'paid', priceChanged: 'price changed', progressLeft: 'left', progressPaid: 'paid', thisMonth: 'This month', title: 'Payments' },
-    pending: { title: 'Due to confirm' },
-    reminders: { firstCharge: { title: 'First charge soon' }, inDays: 'in {count} days', priceHike: { title: 'Price going up' }, title: 'Upcoming payment', today: 'today', tomorrow: 'tomorrow' },
-    sort: { cost: 'By cost', date: 'By date' },
-    stale: { flag: 'Cancel candidate', hint: 'No payment in the last 2 expected periods - confirm or cancel.' },
-    status: { active: 'Active', cancelled: 'Cancelled', paused: 'Paused' },
-    subscriptions: { title: 'Subscriptions' },
-    summary: { until: 'until' },
-    title: 'Recurring',
-    totals: { cycle: 'Change timeframe', monthly: 'Avg / month', perDay: '/ day', weekly: 'Avg / week', yearly: 'Per year' },
-    unit: { day: 'day | days', month: 'month | months', week: 'week | weeks', year: 'year | years' },
-    upcoming: { days: '{count} days', dueSoon: '{count} due soon', title: 'Upcoming' },
-  },
-
   search: {
     noResults: 'Nothing found',
     placeholder: 'Search...',
@@ -488,11 +335,7 @@ export default {
   },
 
   settings: {
-    caution: 'With caution',
     deleteButton: 'Delete my data',
-    errors: {
-      saveFailed: 'Failed to save settings',
-    },
     menuLabels: 'Show labels in bottom menu',
     title: 'Settings',
   },
@@ -637,16 +480,6 @@ export default {
         },
       },
     },
-    forecast: {
-      mode: {
-        merged: 'Projected total',
-        off: 'Off',
-        separate: 'Fact + forecast',
-      },
-      projected: 'Projected',
-      short: 'forecast',
-      title: 'Forecast',
-    },
     title: 'Dashboard',
     view: {
       barLayout: {
@@ -776,7 +609,6 @@ export default {
     errors: {
       sessionLostPending: 'Your session ended with {count} change(s) not yet synced. Sign in again to upload them.',
       uploadDiverged: 'A change could not be synced - your local data may differ from the server. Reload to discard unsynced local changes and refresh from the server.',
-      uploadRejected: 'Some changes could not be synced to the server',
       uploadReverted: 'A change could not be saved and was reverted',
     },
   },
@@ -934,8 +766,6 @@ export default {
       orderFailed: 'Failed to save wallet order',
       saveFailed: 'Failed to save wallet',
     },
-    filter: 'Filter wallets',
-    filterByCurrency: 'Filter by',
     form: {
       credit: {
         available: 'Available',
@@ -977,8 +807,6 @@ export default {
     search: {
       placeholder: 'Search',
     },
-    showAll: 'Show all',
-    showOnly: 'Show only',
     sortTitle: 'Sort wallets',
     title: 'Wallets',
   },
