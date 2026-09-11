@@ -1,7 +1,10 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   icon?: string
-}>()
+  iconSize?: number
+}>(), {
+  iconSize: 22,
+})
 
 const emit = defineEmits<{
   click: [e: Event]
@@ -19,7 +22,7 @@ const emit = defineEmits<{
     >
       <Icon
         :name="props.icon"
-        size="22"
+        :size="props.iconSize"
         class="text-muted"
       />
     </div>

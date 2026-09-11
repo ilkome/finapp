@@ -24,6 +24,24 @@ const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'lis
   mergeDefaults: true,
 })
 
+const backgroundType = useStorage<'category' | 'none' | 'standard'>('finapp.categoriesBackgroundType', 'none', localStorage, {
+  mergeDefaults: true,
+})
+
+const isShowChildrenCount = useStorage<boolean>('finapp.categoriesShowChildrenCount', false, localStorage, {
+  mergeDefaults: true,
+})
+
+const isViewSettingsOpen = ref(false)
+const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(value => ({
+  label: t(`stat.config.categories.list.backgroundTypes.${value}`),
+  value,
+})))
+const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
+  label: t(`categories.view.childrenViews.${value}`),
+  value,
+})))
+
 const deleteCategoryId = ref<CategoryId | null>(null)
 
 const deleteTrnsCount = computed(() => {
@@ -98,12 +116,56 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           <Icon :name="folderIcon" size="20" />
         </UiActionButton>
 
-        <UiActionButton :ariaLabel="$t('base.toggleView')" @click="categoriesView = categoriesView === 'list' ? 'grid' : 'list'">
-          <Icon
-            :name="categoriesView === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
-            size="20"
-          />
-        </UiActionButton>
+        <BottomSheetOrDropdown
+          align="end"
+          :isOpen="isViewSettingsOpen"
+          popoverBodyClass="md:pb-0"
+          popoverContentClass="w-80 max-w-[calc(100vw-1rem)]"
+          :title="t('stat.config.menu.label')"
+          @closeModal="isViewSettingsOpen = false"
+          @openModal="isViewSettingsOpen = true"
+        >
+          <template #trigger>
+            <UiActionButton :ariaLabel="t('stat.config.menu.label')">
+              <Icon name="lucide:settings-2" size="20" />
+            </UiActionButton>
+          </template>
+
+          <template #content>
+            <div class="pb-2">
+              <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
+                <USelect
+                  class="w-40 shrink-0"
+                  :aria-label="t('stat.config.categories.list.backgroundType')"
+                  :content="{ position: 'item-aligned' }"
+                  :items="backgroundTypeItems"
+                  :modelValue="backgroundType"
+                  :ui="{ content: 'z-[60]' }"
+                  @update:modelValue="value => backgroundType = value as 'category' | 'none' | 'standard'"
+                />
+              </StatConfigFieldRow>
+
+              <StatConfigFieldRow :title="t('categories.view.childrenView')">
+                <USelect
+                  class="w-40 shrink-0"
+                  :aria-label="t('categories.view.childrenView')"
+                  :content="{ position: 'item-aligned' }"
+                  :items="childrenViewItems"
+                  :modelValue="categoriesView"
+                  :ui="{ content: 'z-[60]' }"
+                  @update:modelValue="value => categoriesView = value as 'grid' | 'list'"
+                />
+              </StatConfigFieldRow>
+
+              <UiSwitchItem
+                :checkboxValue="isShowChildrenCount"
+                :title="t('categories.view.showChildrenCount')"
+                trailing
+                @click="isShowChildrenCount = !isShowChildrenCount"
+              />
+            </div>
+          </template>
+        </BottomSheetOrDropdown>
 
         <NuxtLink to="/categories/new">
           <UiActionButton :ariaLabel="$t('categories.new')">
@@ -134,8 +196,10 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
       class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
       <CategoriesList
+        :backgroundType
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
+          isShowChildrenCount,
           leftMenuButton: true,
           lineWidth: 1,
         }"

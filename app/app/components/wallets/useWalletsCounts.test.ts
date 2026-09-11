@@ -90,7 +90,7 @@ describe('computeWalletCounts', () => {
     expect(result.excludeInTotal!.isShow).toBe(true)
   })
 
-  it('computes available as withdrawal minus abs(credit)', () => {
+  it('computes available as withdrawal plus the credit balance', () => {
     const wallets = {
       w1: wallet({ amount: 5000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
       w2: wallet({ amount: -1000, creditLimit: 5000, currency: 'USD', type: 'credit' }),
@@ -107,6 +107,23 @@ describe('computeWalletCounts', () => {
     expect(result.available!.value).toBe(4000)
     expect(result.withdrawal!.value).toBe(5000)
     expect(result.available!.isShow).toBe(true)
+  })
+
+  it('an overpaid credit card adds to available instead of subtracting', () => {
+    const wallets = {
+      w1: wallet({ amount: 5000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
+      w2: wallet({ amount: 200, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+    }
+
+    const result = computeWalletCounts({
+      baseCurrency: 'USD',
+      rates,
+      totalWalletsCount: 2,
+      walletIds: ['w1', 'w2'],
+      wallets,
+    })
+
+    expect(result.available!.value).toBe(5200)
   })
 
   it('converts currencies to base rate', () => {
@@ -318,7 +335,50 @@ describe('computeWalletCounts', () => {
 
     expect(result.excludeInTotal!.value).toBe(-300)
     expect(result.total!.value).toBe(0)
-    expect(result.credit!.value).toBe(-300)
+    expect(result.credit!.value).toBe(0)
+  })
+
+  it('includeExcludedInStats puts isExcludeInTotal wallets back into total and type rows', () => {
+    const wallets = {
+      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 300, currency: 'USD', isExcludeInTotal: true, isWithdrawal: true, type: 'cashless' }),
+    }
+
+    const params = { baseCurrency: 'USD' as const, rates, totalWalletsCount: 2, walletIds: ['w1', 'w2'], wallets }
+
+    const off = computeWalletCounts(params)
+    expect(off.total!.value).toBe(1000)
+    expect(off.cashless!.value).toBe(0)
+    expect(off.withdrawal!.value).toBe(0)
+    expect(off.excludeInTotal!.value).toBe(300)
+
+    const on = computeWalletCounts({ ...params, includeExcludedInStats: true })
+    expect(on.total!.value).toBe(1300)
+    expect(on.cashless!.value).toBe(300)
+    expect(on.withdrawal!.value).toBe(300)
+    expect(on.excludeInTotal!.value).toBe(300)
+  })
+
+  it('a wallet that is both archived and excluded lands in both slices', () => {
+    const wallets = {
+      w1: wallet({ amount: 500, currency: 'USD', isArchived: true, isExcludeInTotal: true, type: 'cash' }),
+    }
+
+    const params = { baseCurrency: 'USD' as const, rates, totalWalletsCount: 1, walletIds: ['w1'], wallets }
+
+    const off = computeWalletCounts(params)
+    expect(off.archived!.value).toBe(500)
+    expect(off.excludeInTotal!.value).toBe(500)
+    expect(off.total!.value).toBe(0)
+    expect(off.cash!.value).toBe(0)
+
+    // One switch is not enough - the other flag still keeps it out of the regular rows.
+    const archivedOnly = computeWalletCounts({ ...params, includeArchivedInStats: true })
+    expect(archivedOnly.total!.value).toBe(0)
+
+    const both = computeWalletCounts({ ...params, includeArchivedInStats: true, includeExcludedInStats: true })
+    expect(both.total!.value).toBe(500)
+    expect(both.cash!.value).toBe(500)
   })
 
   it('withdrawal wallet with negative amount', () => {

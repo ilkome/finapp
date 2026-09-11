@@ -9,7 +9,7 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="grid grid-cols-[minmax(0,1fr)] gap-3 px-1 pb-4">
+  <div class="grid grid-cols-[minmax(0,1fr)] gap-3 pb-2 md:px-1 md:pb-4">
     <StatViewsAutoRuleEditor v-if="props.panel === 'auto'" />
     <StatConfigRuleGroupScreen
       v-else-if="isStatConfigRuleNav(props.panel)"
