@@ -31,6 +31,7 @@ Do not duplicate those details here. Inspect their source when the task depends 
 - PowerSync tables are SQLite views. Use the existing mutation helpers instead of `ON CONFLICT` writes.
 - Entity IDs are client-generated text values. Do not add foreign-key assumptions that require upload ordering.
 - Demo mode bypasses PowerSync and uses its own in-memory and localforage persistence path.
+- The in-app review browser cannot start a module `SharedWorker`, so PowerSync's multi-tab worker dies there. Run `pnpm dev:review` (sets `VITE_POWERSYNC_SINGLE_TAB=1`) for that browser only; every other run must keep the shared-worker path.
 
 ## Domain invariants
 

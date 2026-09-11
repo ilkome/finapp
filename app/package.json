@@ -12,6 +12,7 @@
     "dev": "nuxt dev --port=3050 --public --dotenv=.env.cloud",
     "dev:cloud": "nuxt dev --port=3050 --public --dotenv=.env.cloud",
     "dev:local": "nuxt dev --port=3050 --public --dotenv=.env.local",
+    "dev:review": "VITE_POWERSYNC_SINGLE_TAB=1 nuxt dev --port=3050 --public --dotenv=.env.local",
     "dev:production": "nuxt dev --port=3050 --public --dotenv=.env.production",
     "preview": "nuxt preview",
     "typecheck": "nuxi typecheck",

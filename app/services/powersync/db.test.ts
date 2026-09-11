@@ -1,3 +1,4 @@
+// @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Spies shared across the fake PowerSyncDatabase instances so assertions can reach them.
@@ -22,7 +23,7 @@ vi.mock('@powersync/web', () => {
 })
 vi.mock('~~/services/powersync/AppSchema', () => ({ AppSchema: {} }))
 
-const { getPendingUploadCount, getPowerSyncDb, initializePowerSyncDb, pausePowerSync, waitForUploadsDrained } = await import('~~/services/powersync/db')
+const { disconnectPowerSync, getPendingUploadCount, getPowerSyncDb, initializePowerSyncDb, pausePowerSync, waitForLocalDbOwner, waitForUploadsDrained } = await import('~~/services/powersync/db')
 
 describe('waitForUploadsDrained', () => {
   it('resolves 0 once the queue empties', async () => {
@@ -94,7 +95,6 @@ describe('waitForLocalDbOwner', () => {
     expect(await waitForLocalDbOwner('u1', 5)).toBe(false)
 
     const pending = waitForLocalDbOwner('u1', 1000)
-    await pausePowerSync() // no-op for the owner; the wipe path below clears it
     await disconnectPowerSync()
     expect(await pending).toBe(true)
   })

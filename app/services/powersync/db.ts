@@ -61,6 +61,7 @@ export function waitForLocalDbOwner(userId: string, timeoutMs = 30000): Promise<
   if (isSafe())
     return Promise.resolve(true)
   return new Promise((resolve) => {
+    let timer: ReturnType<typeof setTimeout>
     const check = () => {
       if (!isSafe())
         return
@@ -68,7 +69,7 @@ export function waitForLocalDbOwner(userId: string, timeoutMs = 30000): Promise<
       _ownerListeners.delete(check)
       resolve(true)
     }
-    const timer = setTimeout(() => {
+    timer = setTimeout(() => {
       _ownerListeners.delete(check)
       resolve(false)
     }, timeoutMs)
