@@ -212,23 +212,29 @@ export function forceResync(client: SupabaseClient, powerSyncUrl: string, userId
  * Disconnect and wipe local data (sign-out). Returns whether the wipe succeeded;
  * on failure the owner marker is kept so the next foreign sign-in wipes first.
  */
-export async function disconnectPowerSync(): Promise<boolean> {
-  if (!_dbPromise) {
-    clearLocalDbOwner()
-    return true
-  }
-  _connected = false
-  try {
-    const db = await _dbPromise
-    await db.disconnectAndClear()
-    clearLocalDbOwner()
-    logger.log('disconnected and cleared')
-    return true
-  }
-  catch (e) {
-    logger.error('disconnect failed', e)
-    return false
-  }
+export function disconnectPowerSync(): Promise<boolean> {
+  // Through the queue: a sign-out during the boot connect must run after it, or the connect's
+  // owner marker lands after the wipe and the next user starts on a "foreign" db.
+  const run = _connectQueue.catch(() => {}).then(async () => {
+    if (!_dbPromise) {
+      clearLocalDbOwner()
+      return true
+    }
+    _connected = false
+    try {
+      const db = await _dbPromise
+      await db.disconnectAndClear()
+      clearLocalDbOwner()
+      logger.log('disconnected and cleared')
+      return true
+    }
+    catch (e) {
+      logger.error('disconnect failed', e)
+      return false
+    }
+  })
+  _connectQueue = run.then(() => {})
+  return run
 }
 
 /**
