@@ -18,7 +18,7 @@ vi.mock('@powersync/web', () => {
       createDatabase(options)
     }
   }
-  return { PowerSyncDatabase }
+  return { LogLevels: { debug: 20, error: 50, info: 30, trace: 10, warn: 40 }, PowerSyncDatabase }
 })
 vi.mock('~~/services/powersync/AppSchema', () => ({ AppSchema: {} }))
 
@@ -58,9 +58,45 @@ describe('getPowerSyncDb', () => {
     await getPowerSyncDb()
     expect(createDatabase).toHaveBeenCalledWith({
       database: { dbFilename: 'finapp.db', worker: expect.any(String) },
+      logger: { log: expect.any(Function) },
       schema: {},
       sync: { worker: expect.any(String) },
     })
+  })
+
+  it('downgrades network failures to warn and keeps other errors at error', async () => {
+    const { logger } = createDatabase.mock.calls[0]![0] as { logger: { log: (r: { error?: unknown, level: number, message: string }) => void } }
+    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+
+    logger.log({ error: new TypeError('Failed to fetch'), level: 50, message: 'Caught exception when connecting' })
+    logger.log({ level: 50, message: 'Schema mismatch' })
+
+    expect(warn).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledTimes(1)
+    expect(error).toHaveBeenCalledWith('[powersync]', 'Schema mismatch')
+    error.mockRestore()
+    warn.mockRestore()
+  })
+})
+
+describe('waitForLocalDbOwner', () => {
+  beforeEach(() => localStorage.clear())
+
+  it('resolves at once when the db is unowned or owned by the same user', async () => {
+    expect(await waitForLocalDbOwner('u1')).toBe(true)
+    localStorage.setItem('finapp.psDbOwnerUid', 'u1')
+    expect(await waitForLocalDbOwner('u1')).toBe(true)
+  })
+
+  it('waits for the foreign owner to be wiped, and gives up on timeout', async () => {
+    localStorage.setItem('finapp.psDbOwnerUid', 'other')
+    expect(await waitForLocalDbOwner('u1', 5)).toBe(false)
+
+    const pending = waitForLocalDbOwner('u1', 1000)
+    await pausePowerSync() // no-op for the owner; the wipe path below clears it
+    await disconnectPowerSync()
+    expect(await pending).toBe(true)
   })
 })
 

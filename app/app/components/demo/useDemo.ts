@@ -24,10 +24,30 @@ const config = {
   transferCount: 60,
 }
 
+// E2E snapshots need the same demo data on every run. A test sets `window.__finappDemoSeed`
+// before the app boots (page.addInitScript) and generation switches to a seeded mulberry32;
+// without it production keeps Math.random. Re-created per generation so a seed restarts the stream.
+let random: () => number = Math.random
+
+function createRandom(): () => number {
+  const seed = import.meta.client ? (window as { __finappDemoSeed?: number }).__finappDemoSeed : undefined
+  if (seed === undefined)
+    return Math.random
+
+  let state = seed >>> 0
+  return () => {
+    state = (state + 0x6D2B79F5) >>> 0
+    let t = state
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 /** Pick a random item from an array using weighted probabilities. */
 function weightedPick<T extends { weight: number }>(rules: T[]): T {
   const totalWeight = rules.reduce((sum, r) => sum + r.weight, 0)
-  let rand = Math.random() * totalWeight
+  let rand = random() * totalWeight
   for (const rule of rules) {
     rand -= rule.weight
     if (rand <= 0)
@@ -37,11 +57,11 @@ function weightedPick<T extends { weight: number }>(rules: T[]): T {
 }
 
 function randInt(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min + 1)) + min
+  return Math.floor(random() * (max - min + 1)) + min
 }
 
 function randItem<T>(arr: T[]): T {
-  return arr[Math.floor(Math.random() * arr.length)]!
+  return arr[Math.floor(random() * arr.length)]!
 }
 
 function roundAmount(n: number): number {
@@ -52,7 +72,7 @@ function roundAmount(n: number): number {
 function randDateInMonth(year: number, month: number): number {
   const start = new Date(year, month, 1).getTime()
   const end = new Date(year, month + 1, 0).getTime()
-  return start + Math.random() * (end - start)
+  return start + random() * (end - start)
 }
 
 export function useDemo() {
@@ -63,6 +83,7 @@ export function useDemo() {
   const trnsStore = useTrnsStore()
 
   async function generateDemoData(locale: LocaleSlug) {
+    random = createRandom()
     await localforage.clear()
 
     const translatedData: {
@@ -98,14 +119,14 @@ export function useDemo() {
     // --- Expenses (with seasonality) ---
     for (let i = 0; i < config.expenseCount; i++) {
       const rule = weightedPick(expenseRules)
-      let date = startDate + Math.random() * (endDate - startDate)
+      let date = startDate + random() * (endDate - startDate)
 
       // Seasonality: if rule has seasonMonths, re-roll date until it falls in an allowed month
       // (with a fallback to avoid infinite loops)
       if (rule.seasonMonths) {
         let attempts = 0
         while (!rule.seasonMonths.includes(getMonth(date)) && attempts < 20) {
-          date = startDate + Math.random() * (endDate - startDate)
+          date = startDate + random() * (endDate - startDate)
           attempts++
         }
       }
@@ -158,7 +179,7 @@ export function useDemo() {
 
     while (month.getTime() < endDate) {
       // Salary on ~5th of each month
-      const salaryDate = month.getTime() + 4 * 24 * 60 * 60 * 1000 + Math.random() * 2 * 24 * 60 * 60 * 1000
+      const salaryDate = month.getTime() + 4 * 24 * 60 * 60 * 1000 + random() * 2 * 24 * 60 * 60 * 1000
       if (salaryDate < endDate) {
         const isRaised = monthIndex >= salaryConfig.raiseAfterMonths
         const min = isRaised ? salaryConfig.raisedMin : salaryConfig.startMin
@@ -191,7 +212,7 @@ export function useDemo() {
       trns[trnIndex++] = {
         amount,
         categoryId: rule.categoryId,
-        date: startDate + Math.random() * (endDate - startDate),
+        date: startDate + random() * (endDate - startDate),
         ...(desc ? { desc } : {}),
         type: TrnType.Income,
         updatedAt: Date.now(),
@@ -218,7 +239,7 @@ export function useDemo() {
 
       trns[trnIndex++] = {
         categoryId: 'transfer',
-        date: startDate + Math.random() * (endDate - startDate),
+        date: startDate + random() * (endDate - startDate),
         ...(desc ? { desc } : {}),
         expenseAmount: Math.max(1, expenseAmount),
         expenseWalletId: rule.expenseWalletId,
@@ -233,12 +254,12 @@ export function useDemo() {
     for (let i = 0; i < config.adjustmentsCount; i++) {
       const amount = roundAmount(randInt(1000, 20000))
       const walletId = randItem(activeWalletIds)
-      const type = Math.random() < 0.5 ? TrnType.Income : TrnType.Expense
+      const type = random() < 0.5 ? TrnType.Income : TrnType.Expense
 
       trns[trnIndex++] = {
         amount,
         categoryId: 'adjustment',
-        date: startDate + Math.random() * (endDate - startDate),
+        date: startDate + random() * (endDate - startDate),
         desc: locale === 'ru' ? 'Корректировка баланса' : 'Balance adjustment',
         type,
         updatedAt: Date.now(),

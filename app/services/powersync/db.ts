@@ -28,11 +28,15 @@ export function getLocalDbOwner(): string | null {
   }
 }
 
+const _ownerListeners = new Set<() => void>()
+
 function setLocalDbOwner(uid: string): void {
   try {
     globalThis.localStorage?.setItem(DB_OWNER_KEY, uid)
   }
   catch {}
+  for (const listener of _ownerListeners)
+    listener()
 }
 
 function clearLocalDbOwner(): void {
@@ -40,6 +44,36 @@ function clearLocalDbOwner(): void {
     globalThis.localStorage?.removeItem(DB_OWNER_KEY)
   }
   catch {}
+  for (const listener of _ownerListeners)
+    listener()
+}
+
+/**
+ * Resolves `true` once local SQLite holds no other user's rows: the owner is `userId` or the
+ * db was wiped (null). The plugin's connect does the wiping; this only waits for it, so the
+ * data path never races a second connect. `false` when nothing settles within `timeoutMs`.
+ */
+export function waitForLocalDbOwner(userId: string, timeoutMs = 30000): Promise<boolean> {
+  const isSafe = () => {
+    const owner = getLocalDbOwner()
+    return !owner || owner === userId
+  }
+  if (isSafe())
+    return Promise.resolve(true)
+  return new Promise((resolve) => {
+    const check = () => {
+      if (!isSafe())
+        return
+      clearTimeout(timer)
+      _ownerListeners.delete(check)
+      resolve(true)
+    }
+    const timer = setTimeout(() => {
+      _ownerListeners.delete(check)
+      resolve(false)
+    }, timeoutMs)
+    _ownerListeners.add(check)
+  })
 }
 
 /**
@@ -49,7 +83,7 @@ function clearLocalDbOwner(): void {
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
+    const [{ LogLevels, PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
       import('@powersync/web/bundled_worker?worker&url'),
@@ -57,11 +91,27 @@ export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
     _db = new PowerSyncDatabase({
       database: {
         dbFilename: 'finapp.db',
-        // TEMPORARY: the in-app review browser exposes `SharedWorker` but cannot start a module
-        // one, so PowerSync picks the shared worker, it dies, and the app never leaves the
-        // skeleton. Dedicated worker per tab costs multi-tab sharing; drop this once done.
-        ...(import.meta.dev ? { enableMultiTabs: false } : {}),
+        // The in-app review browser exposes `SharedWorker` but cannot start a module one, so
+        // PowerSync's shared worker dies and the app never leaves the skeleton. `pnpm dev:review`
+        // sets the flag; every other run exercises the real multi-tab path.
+        ...(import.meta.env.VITE_POWERSYNC_SINGLE_TAB ? { enableMultiTabs: false } : {}),
         worker: workerUrl,
+      },
+      logger: {
+        log: ({ error, level, message }) => {
+          if (level < LogLevels.info)
+            return
+          // Being offline is the normal case for this app, not a fault: a failed connect or
+          // stream is a warning so the console stays readable for real errors.
+          const isNetwork = !globalThis.navigator?.onLine || /fetch|network|connect|stream|socket|abort/i.test(`${message} ${error ?? ''}`)
+          const args = error === undefined ? [message] : [message, error]
+          if (level >= LogLevels.error && !isNetwork)
+            logger.error(...args)
+          else if (level >= LogLevels.warn)
+            logger.warn(...args)
+          else
+            logger.log(...args)
+        },
       },
       schema: AppSchema,
       sync: {

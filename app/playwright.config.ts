@@ -16,7 +16,11 @@ export default defineConfig({
   testIgnore: /context-menu-smoke\.spec\.ts/,
   use: {
     baseURL: 'http://localhost:3050',
+    // Snapshots must not depend on where they were recorded: the frozen clock in openDemo()
+    // is only reproducible with a fixed zone, and the UI language must match the stored trees.
+    locale: 'ru-RU',
     screenshot: 'only-on-failure',
+    timezoneId: 'Europe/Moscow',
     trace: 'retain-on-failure',
     video: 'retain-on-failure',
   },
