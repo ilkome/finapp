@@ -33,6 +33,23 @@ watch(() => props.isOpen, (value) => {
     hasOpened.value = true
 }, { immediate: true })
 
+// The desktop popover owns its open state, so mirror the controlled prop both ways: that lets
+// something other than the trigger open it (a context-menu action) and keeps the parent's flag
+// honest when it closes on its own (outside click, Escape).
+watch(() => props.isOpen, (value) => {
+  if (value)
+    open.value = true
+})
+
+watch(open, (value) => {
+  if (!value)
+    emit('closeModal')
+})
+
+function closeDesktopPopover() {
+  open.value = false
+}
+
 function closeMobileSheet(closeSheet: () => void) {
   if (props.unmountOnHide) {
     closeSheet()
@@ -66,15 +83,15 @@ function closeMobileSheet(closeSheet: () => void) {
         :contentClass="props.popoverBodyClass"
         :isShowCloseBtn="props.isShowCloseBtn"
         :isShowScroll="!$slots.custom"
-        @close="() => open = false"
+        @close="closeDesktopPopover"
       >
         <slot
           name="content"
-          :close="() => open = false"
+          :close="closeDesktopPopover"
         />
         <slot
           name="custom"
-          :close="() => open = false"
+          :close="closeDesktopPopover"
         />
       </UiPopoverWrap>
     </template>

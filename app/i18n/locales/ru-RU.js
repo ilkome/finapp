@@ -1,9 +1,4 @@
 export default {
-  about: {
-    author: 'Автор',
-    thanks: 'Спасибо за поддержку',
-    title: 'Создатели',
-  },
 
   actionError: {
     goHome: 'На главную',
@@ -16,7 +11,6 @@ export default {
   },
 
   app: {
-    about: 'О приложении',
     desc: 'Приложение для учета личных финансов',
     loadError: 'Не удалось загрузить данные. Проверьте соединение и попробуйте снова.',
     retry: 'Повторить',
@@ -46,70 +40,27 @@ export default {
     filterSummary: '{wallets} и {categories}',
     filterSummaryAll: 'Все кошельки и категории',
     filterWalletsWord: '0 кошельков | {n} кошелёк | {n} кошелька | {n} кошельков',
-    loading: 'Загрузка...',
+    hide: 'Скрыть',
     menu: 'Меню',
     moreOptions: 'Ещё',
     next: 'Вперёд',
-    no: 'Нет',
     noData: 'Нет данных',
-    off: 'Откл.',
-    on: 'Вкл.',
     open: 'Открыть',
+    pin: 'Закрепить',
     previous: 'Назад',
     reset: 'Сбросить',
     save: 'Сохранить',
     search: 'Поиск',
     selectDate: 'Выбрать дату',
+    show: 'Показать',
+    sort: 'Сортировать',
     sure: 'Удалить?',
     today: 'Сегодня',
     toggleExpand: 'Развернуть/свернуть',
     toggleFolders: 'Папки',
     toggleGrouping: 'Группировка',
-    togglePresets: 'Пресеты',
     toggleView: 'Вид',
-    yes: 'Да',
-  },
-
-  budgets: {
-    add: 'Добавить бюджет',
-    archive: 'В архив',
-    archived: 'Архив',
-    assign: {
-      forPeriod: 'на период',
-      reset: 'Сбросить',
-    },
-    autoAssign: 'Скопировать прошлый период',
-    carried: 'перенос',
-    committed: 'зарезервировано на регулярные',
-    confirm: { autoAssignText: 'Заполнит бюджеты без заданной суммы значениями из прошлого периода. Ручные изменения и цели-копилки не тронет.', autoAssignTitle: 'Скопировать прошлый период?', deleteText: 'Удалится только лимит. Транзакции останутся.', deleteTitle: 'Удалить бюджет?', unarchiveText: 'Активный бюджет для «{category}» уже есть. Восстановить этот и убрать тот в архив?', unarchiveTitle: 'Восстановить бюджет?' },
-    empty: 'Пока нет бюджетов. Добавьте лимит для категории.',
-    errors: { deleteFailed: 'Не удалось удалить бюджет', saveFailed: 'Не удалось сохранить бюджет' },
-    form: { amount: 'Сумма за период', amountPer: 'Сумма на {period}', cadence: 'Ритм бюджета', category: 'Категория', categoryTaken: 'Бюджет «{kind}» для этой категории уже есть.', currency: 'Валюта', goalAmount: 'Сумма цели', goalDate: 'Дата цели', kind: 'Тип', receiveHint: 'Получать ≈ {amount} {currency}/мес', rollover: 'Перенос', selectCategory: 'Выбрать категорию', setAsideHint: 'Откладывать ≈ {amount} {currency}/мес', subtreeHint: 'Учитывает категорию и все подкатегории (кроме тех, у кого свой бюджет).', targetToggle: 'Цель к дате' },
-    goalReached: 'Цель достигнута',
-    help: { open: 'Как работают бюджеты' },
-    hero: { assignedSoFar: 'Уже распределено', safeToSpend: 'Можно потратить', toAssign: 'К распределению' },
-    history: { action: 'История', empty: 'Пока нет истории трат.', title: 'История' },
-    kind: { expense: 'Трата', income: 'Доходы' },
-    mode: { envelope: 'Конверты', fifty_thirty_twenty: '50/30/20', limits: 'Лимиты' },
-    move: { action: 'Переместить', amount: 'Сумма ({currency})', available: 'Доступно', cover: 'Покрыть', from: 'Откуда', into: 'Куда', noSource: 'Нет других бюджетов для переноса.', title: 'Переместить деньги' },
-    overBudget: 'Превышен бюджет',
-    pace: 'Темп',
-    period: { month: 'Месяц', week: 'Неделя', year: 'Год' },
-    periodUnit: { month: 'месяц', week: 'неделю', year: 'год' },
-    projected: 'Прогноз',
-    rollover: { none: 'Без переноса', surplus: 'Переносить остаток', surplus_deficit: 'Переносить остаток и перерасход' },
-    safeSheet: { billsIn: 'Предстоящие платежи в бюджетах', billsOut: 'Предстоящие платежи вне бюджетов', caption: 'Сколько можно свободно потратить за {period}. Оплаченные платежи уже исключены.', leftIn: 'Осталось в бюджетах', payday: 'Зарплата {date}', perDay: '≈ {amount}/день', untilDate: 'до {date}' },
-    skip: 'Пропустить период',
-    target: { by: 'до {date}', fund: 'Отложить', reached: 'Накоплено' },
-    title: 'Бюджеты',
-    toAssign: { assignedLabel: 'распределено', balance: 'Свести к нулю', expectedNote: 'Ожидается ≈ {amount} за период', fix: 'Исправить', over: 'Распределено сверх дохода', receivedLabel: 'получено', text: 'Уменьшайте распределение, пока остаток не станет нулевым. Освобождённые деньги можно распределить заново.', title: 'Уменьшить распределение' },
-    triad: {
-      expense: { activity: 'Потрачено', assigned: 'Назначено', remaining: 'Доступно' },
-      income: { activity: 'Получено', assigned: 'Ожидается', remaining: 'Осталось получить' },
-    },
-    trns: { empty: 'Нет транзакций за период.' },
-    unarchive: 'Из архива',
-    unskip: 'Вернуть период',
+    unpin: 'Открепить',
   },
 
   categories: {
@@ -185,16 +136,19 @@ export default {
     selectParent: 'Вся «{name}»',
     selectParentHint: 'со всеми подкатегориями',
     title: 'Категории',
+    view: {
+      childrenView: 'Дочерние категории',
+      childrenViews: {
+        grid: 'Облако',
+        list: 'Список',
+      },
+      showChildrenCount: 'Показывать количество дочерних',
+    },
   },
 
   chart: {
     empty: 'Нет данных за период',
     label: 'График',
-    types: {
-      bar: 'Колонки',
-      line: 'Линии',
-      pie: 'Круговая',
-    },
   },
 
   color: {
@@ -208,7 +162,6 @@ export default {
   },
 
   currencies: {
-    ariaFilter: 'Фильтр валют',
     base: 'Основная валюта',
     list: {
       all: 'Все',
@@ -220,9 +173,7 @@ export default {
     page: {
       crypto: 'Криптовалюты',
       fiat: 'Фиатные',
-      rate: 'Курс',
       setBase: 'Сделать основной валютой',
-      showAll: 'Все',
       showUsed: 'Используемые',
       title: 'Валюты',
     },
@@ -310,11 +261,6 @@ export default {
     title: 'Вход',
   },
 
-  menu: {
-    documentation: 'Документация',
-    title: 'Меню',
-  },
-
   money: {
     all: 'Всего',
     average: 'Среднее',
@@ -339,10 +285,23 @@ export default {
       debt: 'Долги',
       deposit: 'Вклады',
       isArchived: 'Архивные',
-      isAvailable: 'Доступные с учетом кредитов',
+      isAvailable: 'Останется после кредитов',
       isExcludeInTotal: 'Не учитываемые в общем балансе',
       isWithdrawal: 'Доступные для снятия',
       total: 'Всего',
+    },
+    typesHint: {
+      cash: 'Сумма наличных кошельков',
+      cashless: 'Сумма карт и банковских счетов',
+      credit: 'Кредитные карты. Под суммой - доступный лимит и общий лимит',
+      crypto: 'Сумма криптовалютных кошельков',
+      debt: 'Сумма кошельков-долгов: сколько должны вам и сколько должны вы',
+      deposit: 'Сумма вкладов и накопительных счетов',
+      isArchived: 'Кошельки, помеченные как архивные',
+      isAvailable: 'Доступные для снятия минус долг по кредитным картам',
+      isExcludeInTotal: 'Кошельки с опцией «Не считать в общем балансе»',
+      isWithdrawal: 'Кошельки, у которых включена опция «Доступные для снятия»',
+      total: 'Все кошельки, кроме кредитных и исключённых из общего баланса',
     },
   },
 
@@ -368,92 +327,6 @@ export default {
     introWallets: 'Начните учёт финансов, добавив первый кошелёк',
   },
 
-  recurrences: {
-    actions: {
-      cancel: 'Отменить',
-      confirm: 'Подтвердить',
-      confirmAll: 'Подтвердить все',
-      delay: 'Отложить',
-      pause: 'Пауза',
-      payEarly: 'Внести',
-      resume: 'Возобновить',
-      skip: 'Пропустить',
-      skipAll: 'Пропустить все',
-      skipNext: 'Пропустить',
-    },
-    add: 'Добавить повторение',
-    addHint: 'Откроется форма транзакции с включённым повтором.',
-    adopt: {
-      cancel: 'Не сейчас',
-      confirm: 'Привязать {count}',
-      subtitle: 'Найдено {count} похожих платежей раньше. Отметьте те, что относятся к этой серии.',
-      title: 'Привязать прошлые платежи?',
-    },
-    confirm: {
-      cancelText: 'Будущие операции остановятся. Созданные останутся.',
-      cancelTitle: 'Отменить серию?',
-      confirmAllText: 'Создаст {count} операций из платежей к подтверждению. Их можно изменить или удалить позже.',
-      confirmAllTitle: 'Подтвердить {count} платежей?',
-      deleteText: 'Правило удалится полностью. Созданные операции останутся.',
-      deleteTitle: 'Удалить серию?',
-      skipAllText: 'Пропустит {count} платежей, они не будут созданы. Здесь это нельзя отменить.',
-      skipAllTitle: 'Пропустить {count} платежей?',
-    },
-    delay: { month: '+1 месяц', title: 'Отложить до', tomorrow: 'Завтра', week: '+1 неделя' },
-    editTitle: 'Изменить повтор',
-    empty: 'Пока нет регулярных операций. Включите «Повтор» при добавлении операции.',
-    end: { count: 'После N', countPlaceholder: 'кол-во', date: 'До даты', never: 'Никогда' },
-    errors: { deleteFailed: 'Не удалось удалить', saveFailed: 'Не удалось сохранить' },
-    everyOne: { day: 'Каждый день', month: 'Каждый месяц', week: 'Каждую неделю', year: 'Каждый год' },
-    form: {
-      amount: 'Сумма',
-      autoCreate: 'Создавать автоматически (выкл = подтверждать каждый раз)',
-      backfill: 'Создать прошлые платежи',
-      backfillOffHint: 'Отслеживать подписку только со следующего платежа - без прошлых операций.',
-      backfillOnHint: 'Создаст все платежи с даты начала по сегодня.',
-      category: 'Категория',
-      currencyChangeHint: 'Новый кошелёк в {currency}; существующие суммы теперь показаны в этой валюте.',
-      currentNext: 'сейчас:',
-      editKeepsHint: 'Уже созданные операции сохранят прежние категорию и кошелёк.',
-      editPriceDate: 'Изменить дату изменения',
-      effectiveFrom: 'С даты',
-      ends: 'Окончание',
-      every: 'Каждые',
-      futureStart: 'Первый платёж {date} - появится тогда, не сейчас.',
-      lockedHint: 'Тип закреплён за серией.',
-      monthLastDay: 'Последний день месяца',
-      nextCharge: 'Дата следующего списания',
-      noNext: 'нет предстоящих',
-      priceFrom: 'с',
-      priceHistory: 'История цены',
-      repeat: 'Повтор',
-      save: 'Сохранить',
-      selectCategory: 'Выберите категорию',
-      selectWallet: 'Выберите кошелёк',
-      startDate: 'Дата начала',
-      wallet: 'Кошелёк',
-    },
-    freq: { day: 'День', month: 'Месяц', week: 'Неделя', year: 'Год' },
-    help: { open: 'Как работают повторения' },
-    history: { allTrns: 'Все транзакции', nextCharge: 'Следующее списание', noChanges: 'Цена не менялась', noNext: 'Нет предстоящих списаний', open: 'Открыть историю цены', paidThisYear: 'Оплачено в этом году', title: 'История цены', wallet: 'Кошелёк списания' },
-    manual: 'подтверждение',
-    next: 'далее',
-    overdue: 'просрочен',
-    partOfSeries: 'Часть регулярного платежа',
-    payments: { empty: 'Нет платежей в этом периоде', only: 'Только', paid: 'оплачен', priceChanged: 'цена менялась', progressLeft: 'осталось', progressPaid: 'оплачено', thisMonth: 'В этом месяце', title: 'Платежи' },
-    pending: { title: 'Ожидают подтверждения' },
-    reminders: { firstCharge: { title: 'Скоро первое списание' }, inDays: 'через {count} дн.', priceHike: { title: 'Цена вырастет' }, title: 'Скоро платёж', today: 'сегодня', tomorrow: 'завтра' },
-    sort: { cost: 'По сумме', date: 'По дате' },
-    stale: { flag: 'Кандидат на отмену', hint: 'Нет платежей за 2 последних периода - подтвердите или отмените.' },
-    status: { active: 'Активные', cancelled: 'Отменённые', paused: 'На паузе' },
-    subscriptions: { title: 'Подписки' },
-    summary: { until: 'до' },
-    title: 'Регулярные',
-    totals: { cycle: 'Сменить период', monthly: 'В среднем / мес', perDay: '/ день', weekly: 'В среднем / нед', yearly: 'В год' },
-    unit: { day: 'день | дня | дней', month: 'месяц | месяца | месяцев', week: 'неделя | недели | недель', year: 'год | года | лет' },
-    upcoming: { days: '{count} дн.', dueSoon: '{count} скоро', title: 'Предстоящие' },
-  },
-
   search: {
     noResults: 'Ничего не найдено',
     placeholder: 'Поиск...',
@@ -462,11 +335,7 @@ export default {
   },
 
   settings: {
-    caution: 'C осторожностью',
     deleteButton: 'Удалить все мои данные',
-    errors: {
-      saveFailed: 'Не удалось сохранить настройки',
-    },
     menuLabels: 'Подписи в нижнем меню',
     title: 'Настройки',
   },
@@ -611,16 +480,6 @@ export default {
         },
       },
     },
-    forecast: {
-      mode: {
-        merged: 'Прогноз итога',
-        off: 'Выкл',
-        separate: 'Факт + прогноз',
-      },
-      projected: 'Прогноз',
-      short: 'прогноз',
-      title: 'Прогноз',
-    },
     title: 'Статистика',
     view: {
       barLayout: {
@@ -736,6 +595,9 @@ export default {
   },
 
   statistics: {
+    hints: 'Что означают пункты',
+    list: 'Список',
+    pinned: 'Закреплённые',
     title: 'Статистика',
   },
 
@@ -747,7 +609,6 @@ export default {
     errors: {
       sessionLostPending: 'Сессия завершилась, а {count} изменений ещё не синхронизированы. Войдите снова, чтобы отправить их.',
       uploadDiverged: 'Изменение не удалось синхронизировать - локальные данные могут отличаться от сервера. Загрузите заново, чтобы отменить несинхронизированные локальные изменения и обновить данные с сервера.',
-      uploadRejected: 'Некоторые изменения не удалось синхронизировать с сервером',
       uploadReverted: 'Изменение не удалось сохранить, оно было отменено',
     },
   },
@@ -905,8 +766,6 @@ export default {
       orderFailed: 'Не удалось сохранить порядок кошельков',
       saveFailed: 'Не удалось сохранить кошелек',
     },
-    filter: 'Фильтр по кошелькам',
-    filterByCurrency: 'Валюты кошельков',
     form: {
       credit: {
         available: 'Доступно',
@@ -936,7 +795,9 @@ export default {
     new: 'Новый кошелек',
     options: {
       includeArchivedInStats: 'Учитывать архивные в статистике',
+      includeExcludedInStats: 'Учитывать не входящие в баланс',
       showArchived: 'Показывать архивные кошельки',
+      showGroupCount: 'Показывать количество в группах',
     },
     page: {
       currencies: 'Валюты',
@@ -946,8 +807,6 @@ export default {
     search: {
       placeholder: 'Поиск',
     },
-    showAll: 'Показать все',
-    showOnly: 'Показать только',
     sortTitle: 'Сортировать кошельки',
     title: 'Кошельки',
   },

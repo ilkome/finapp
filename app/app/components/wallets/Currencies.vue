@@ -39,11 +39,17 @@ const items = computed<TabsItem[]>(() => [
     />
   </div>
 
-  <UiTabs
+  <div
     v-else
-    class="@xl/page:px-0"
-    :items="items"
-    :modelValue="props.currencyFiltered"
-    @update:modelValue="(v) => emit('selectFilterCurrency', v as CurrencyCode)"
-  />
+    class="-mx-2 scroll-strip flex min-w-0 scroll-fade snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px @xl/page:mx-0 @xl/page:scroll-px-0 @xl/page:px-0"
+  >
+    <UiTabs
+      class="shrink-0 overflow-visible! bg-transparent! p-0!"
+      itemClass="snap-start snap-always"
+      :itemGrow="false"
+      :items="items"
+      :modelValue="props.currencyFiltered"
+      @update:modelValue="(v) => emit('selectFilterCurrency', v as CurrencyCode)"
+    />
+  </div>
 </template>

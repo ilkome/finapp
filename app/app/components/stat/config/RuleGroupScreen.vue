@@ -81,7 +81,7 @@ function addBlock(panel: StatBlockPanelId) {
 
 <template>
   <div class="grid min-w-0">
-    <UiText class="px-3 pb-3 whitespace-pre-line" variant="caption">
+    <UiText class="pb-3 whitespace-pre-line" variant="caption">
       {{ conditionTitles.join('\n') }}
     </UiText>
 

@@ -111,25 +111,15 @@ function onAmountClick(e: MouseEvent) {
 </script>
 
 <template>
-  <div
+  <UiRowBackground
     v-if="category"
     ref="longPressRef"
+    :color="category.color"
     :data-stat-category-id="props.item.id"
-    :class="[props.insideClass, {
-      'bg-elevated': props.isActive,
-      'overflow-hidden rounded-md': isShowBackground,
-      'bg-elevated/10 hover:bg-elevated/30': isShowBackground && backgroundType === 'category',
-      'bg-elevated/30 hover:bg-elevated/50': isShowBackground && backgroundType === 'standard',
-    }]"
+    :type="backgroundType"
+    :class="[props.insideClass, { 'bg-elevated': props.isActive }]"
     :style="props.insideStyle"
-    class="relative"
   >
-    <slot name="before" />
-    <div
-      v-if="isShowBackground && backgroundType === 'category'"
-      :style="{ backgroundColor: category.color }"
-      class="pointer-events-none absolute inset-0 opacity-5"
-    />
     <UiElement
       :isActive="props.isActive"
       :lineWidth="isLines || isShowBackground ? 0 : props.lineWidth"
@@ -251,5 +241,5 @@ function onAmountClick(e: MouseEvent) {
     </UiElement>
 
     <slot />
-  </div>
+  </UiRowBackground>
 </template>

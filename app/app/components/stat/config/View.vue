@@ -113,7 +113,7 @@ onBeforeUnmount(() => {
       @activate="openPanel('statAverage')"
     />
 
-    <div class="px-2 py-3">
+    <div class="py-3">
       <UiTabs
         :items="groupByItems"
         :modelValue="groupBy"

@@ -13,6 +13,7 @@ const props = defineProps<{
   insideClasses?: string
   isExpanded?: boolean
   isShowChevron?: boolean
+  isShowChildrenCount?: boolean
   isShowParent?: boolean
   leftMenuButton?: boolean
   leftMenuItems?: ContextMenuItem[][]
@@ -90,7 +91,7 @@ function onRowClick(e: Event) {
         :stacked="props.stacked"
         :category="props.category"
         :parentCategory="parentCategory"
-        :childrenCount="showInlineChevron ? undefined : childCategoriesIds.length"
+        :childrenCount="props.isShowChildrenCount || !showInlineChevron ? childCategoriesIds.length : undefined"
         :isShowParent="props.isShowParent"
       />
 

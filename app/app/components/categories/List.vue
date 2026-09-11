@@ -11,6 +11,7 @@ export type CategoriesListExpanded = {
 
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
+  backgroundType?: 'category' | 'none' | 'standard'
   categoriesItemProps?: Partial<CategoryItemProps>
   childrenView?: 'list' | 'grid'
   expanded?: CategoriesListExpanded
@@ -27,6 +28,7 @@ const emit = defineEmits<{
 const categoriesStore = useCategoriesStore()
 
 const isChildrenGrid = computed(() => props.childrenView === 'grid')
+const isShowBackground = computed(() => !!props.backgroundType && props.backgroundType !== 'none')
 
 function getChildrenIds(categoryId: CategoryId) {
   return categoriesStore.getChildrenIds(categoryId)
@@ -39,22 +41,28 @@ function getChildrenIds(categoryId: CategoryId) {
       v-for="categoryId in ids"
       :key="categoryId"
     >
-      <CategoriesItem
-        :activeItemId="activeItemId"
-        :category="categoriesStore.items[categoryId]!"
-        :categoryId="categoryId"
-        :contextMenuItems="props.getContextMenuItems?.(categoryId)"
-        :insideClasses="props.insideClasses"
-        :isExpanded="props.expanded?.isExpanded(categoryId)"
-        :isShowChevron="!!props.expanded && categoriesStore.hasChildren(categoryId)"
-        :to="props.getTo?.(categoryId)"
-        v-bind="categoriesItemProps"
-        :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
-        class="group"
-        :class="props.expanded?.isExpanded(categoryId) ? '[&_.uiElementLine]:bg-transparent' : undefined"
-        @click="emit('click', categoryId)"
-        @toggle="props.expanded?.toggle(categoryId)"
-      />
+      <UiRowBackground
+        :color="categoriesStore.items[categoryId]?.color"
+        :type="props.backgroundType"
+        :class="isShowBackground && 'mb-1'"
+      >
+        <CategoriesItem
+          :activeItemId="activeItemId"
+          :category="categoriesStore.items[categoryId]!"
+          :categoryId="categoryId"
+          :contextMenuItems="props.getContextMenuItems?.(categoryId)"
+          :insideClasses="props.insideClasses"
+          :isExpanded="props.expanded?.isExpanded(categoryId)"
+          :isShowChevron="!!props.expanded && categoriesStore.hasChildren(categoryId)"
+          :to="props.getTo?.(categoryId)"
+          v-bind="categoriesItemProps"
+          :lineWidth="isShowBackground ? 0 : (props.categoriesItemProps?.lineWidth ?? 1)"
+          class="group relative"
+          :class="props.expanded?.isExpanded(categoryId) ? '[&_.uiElementLine]:bg-transparent' : undefined"
+          @click="emit('click', categoryId)"
+          @toggle="props.expanded?.toggle(categoryId)"
+        />
+      </UiRowBackground>
 
       <UCollapsible
         v-if="categoriesStore.hasChildren(categoryId)"
@@ -62,22 +70,33 @@ function getChildrenIds(categoryId: CategoryId) {
         :ui="{ content: 'overflow-hidden' }"
       >
         <template #content>
-          <div :class="isChildrenGrid ? 'ml-2 pr-2 pb-4 pl-3' : 'ml-5 pb-1 pl-3'">
+          <div
+            :class="[
+              isChildrenGrid ? 'pr-2 pb-4 pl-6' : 'pl-6',
+              !isChildrenGrid && !isShowBackground && 'pb-1',
+            ]"
+          >
             <template v-if="!isChildrenGrid">
-              <CategoriesItem
+              <UiRowBackground
                 v-for="childId in getChildrenIds(categoryId)"
                 :key="childId"
-                :activeItemId="activeItemId"
-                :category="categoriesStore.items[childId]!"
-                :categoryId="childId"
-                :contextMenuItems="props.getContextMenuItems?.(childId)"
-                :insideClasses="props.insideClasses"
-                :to="props.getTo?.(childId)"
-                v-bind="categoriesItemProps"
-                :lineWidth="props.categoriesItemProps?.lineWidth ?? 1"
-                class="group"
-                @click="emit('click', childId)"
-              />
+                :color="categoriesStore.items[childId]?.color"
+                :type="props.backgroundType"
+                :class="isShowBackground && 'mb-1'"
+              >
+                <CategoriesItem
+                  :activeItemId="activeItemId"
+                  :category="categoriesStore.items[childId]!"
+                  :categoryId="childId"
+                  :contextMenuItems="props.getContextMenuItems?.(childId)"
+                  :insideClasses="props.insideClasses"
+                  :to="props.getTo?.(childId)"
+                  v-bind="categoriesItemProps"
+                  :lineWidth="isShowBackground ? 0 : (props.categoriesItemProps?.lineWidth ?? 1)"
+                  class="group relative"
+                  @click="emit('click', childId)"
+                />
+              </UiRowBackground>
             </template>
 
             <div v-else class="flex flex-wrap gap-1">

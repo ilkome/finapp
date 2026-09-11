@@ -63,7 +63,7 @@ function onChangePeriod(period: Period) {
     </div>
 
     <div
-      class="absolute z-10"
+      class="absolute z-1"
       :class="statConfig.config.value.chart.isShowBackground
         ? '-top-1 -right-1 md:-top-2 md:-right-2'
         : 'top-1 right-1'"

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui'
+
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -105,8 +107,7 @@ const walletBalanceItems = computed(() => wallet.value?.type === 'credit'
     ]
   : [{ amount: total.value, title: t('money.balance') }])
 
-function onClickEdit(close: () => void) {
-  close()
+function onClickEdit() {
   router.push(`/wallets/${walletId.value}/edit`)
 }
 
@@ -123,10 +124,15 @@ const deleteHighlight = computed(() => {
 })
 
 const isShowDeleteConfirm = ref(false)
-function onClickDelete(close: () => void) {
-  close()
+function onClickDelete() {
   isShowDeleteConfirm.value = true
 }
+
+const menuItems = computed<DropdownMenuItem[][]>(() => [[
+  { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onClickEdit },
+], [
+  { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete },
+]])
 
 async function onDeleteConfirm() {
   const deleteTrnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({
@@ -153,27 +159,12 @@ async function onDeleteConfirm() {
       ref="statHeader"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
+      :menuItems
     >
       <template #title>
         <UiHeaderTitle>
           {{ wallet.name }}
         </UiHeaderTitle>
-      </template>
-
-      <template #popover="{ close }">
-        <UiHeaderLink
-          icon="lucide:pencil"
-          @click="onClickEdit(close)"
-        >
-          {{ t('base.edit') }}
-        </UiHeaderLink>
-
-        <UiHeaderLink
-          icon="lucide:trash-2"
-          @click="onClickDelete(close)"
-        >
-          {{ t('base.delete') }}
-        </UiHeaderLink>
       </template>
     </StatHeader>
 

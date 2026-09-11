@@ -143,7 +143,6 @@ const dragClasses = computed(() => [
       :class="dragClasses"
       :style="[dragStyles, detentStyle]"
       class="drag pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
-      @click.stop=""
       @transitionend="onTransitionEnd"
     >
       <div ref="handlerRef">
