@@ -805,6 +805,7 @@ export default {
       includeExcludedInStats: 'Include not-in-total in statistics',
       showArchived: 'Show archived wallets',
       showGroupCount: 'Show group counts',
+      showStatistics: 'Show statistics',
     },
     page: {
       currencies: 'Currencies',

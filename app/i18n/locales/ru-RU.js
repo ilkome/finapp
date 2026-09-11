@@ -805,6 +805,7 @@ export default {
       includeExcludedInStats: 'Учитывать не входящие в баланс',
       showArchived: 'Показывать архивные кошельки',
       showGroupCount: 'Показывать количество в группах',
+      showStatistics: 'Показывать статистику',
     },
     page: {
       currencies: 'Валюты',

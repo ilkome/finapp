@@ -4,12 +4,15 @@ import type { WalletsStatistics } from '~/components/wallets/useWalletsStatistic
 
 import { getCreditAvailable } from '~/components/wallets/types'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   activeType?: string | false
   currencyCode: CurrencyCode
+  isShowList?: boolean
   state: WalletsStatistics
   storageKey: string
-}>()
+}>(), {
+  isShowList: true,
+})
 
 const emit = defineEmits<{
   click: [v: string]
@@ -48,7 +51,7 @@ function menuItems(id: string, pinned: boolean) {
       </UiContextMenuMy>
     </div>
 
-    <div class="group relative md:max-w-lg">
+    <div v-if="props.isShowList" class="group relative md:max-w-lg">
       <div class="-my-px overflow-hidden">
         <UCollapsible v-model:open="shown">
           <UiTitleDropRight :isShown="shown">

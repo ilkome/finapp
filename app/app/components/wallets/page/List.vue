@@ -57,6 +57,7 @@ const {
 
 const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
 const showArchived = useStorage<boolean>(WALLET_STORAGE_KEYS.showArchived, false)
+const showStatistics = useStorage<boolean>(WALLET_STORAGE_KEYS.showStatistics, true)
 const includeArchivedInStats = useStorage<boolean>(WALLET_STORAGE_KEYS.includeArchivedInStats, false)
 const includeExcludedInStats = useStorage<boolean>(WALLET_STORAGE_KEYS.includeExcludedInStats, false)
 const isShowGroupCount = useStorage<boolean>('finapp.walletsShowGroupCount', false, localStorage, {
@@ -179,6 +180,12 @@ const groupNavItems = computed<TabsItem[]>(() =>
                 </UPopover>
               </UiHeaderLink>
 
+              <UiSwitchItem
+                :checkboxValue="showStatistics"
+                :title="t('wallets.options.showStatistics')"
+                trailing
+                @click="showStatistics = !showStatistics"
+              />
 
               <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
                 <UiText variant="meta" class="px-2">
@@ -296,6 +303,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
 
         <div class="grid content-start gap-3 pt-2 @xl/page:gap-4 @3xl/main:max-w-sm">
           <WalletsStatistics
+            :isShowList="showStatistics"
             :storageKey="statisticsStorageKey"
             :activeType="walletViewType"
             :currencyCode="currenciesStore.base"
