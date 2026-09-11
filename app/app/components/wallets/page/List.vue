@@ -30,6 +30,23 @@ const isOpen = ref(false)
 // a second popover or sheet on top of the menu is neither the house pattern nor safe on touch.
 const menuPanel = ref<'root' | 'statistics'>('root')
 
+// The sort modal is a sheet of its own, and on touch so is this menu. Opening it before the
+// menu unregisters stacks it above the menu in the sheet history, whose cleanup then closes
+// everything above itself - so the modal would flash open and vanish. Wait for the menu first.
+let afterMenuClose: (() => void) | null = null
+
+function closeMenu() {
+  isOpen.value = false
+  const run = afterMenuClose
+  afterMenuClose = null
+  run?.()
+}
+
+function openAfterMenu(action: () => void, close: () => void) {
+  afterMenuClose = action
+  close()
+}
+
 const {
   cancelDelete,
   confirmDelete,
@@ -108,7 +125,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
           :isOpen="isOpen"
           popoverBodyClass="md:py-2"
           popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
-          @closeModal="isOpen = false"
+          @closeModal="closeMenu"
           @openModal="() => { menuPanel = 'root'; isOpen = true }"
         >
           <template #trigger>
@@ -162,6 +179,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
                 </UPopover>
               </UiHeaderLink>
 
+
               <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
                 <UiText variant="meta" class="px-2">
                   {{ t('statistics.pinned') }}
@@ -197,7 +215,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
             <div v-else class="pt-4 pb-3 md:py-0">
               <UiHeaderLink
                 icon="lucide:arrow-down-up"
-                @click="() => { isSortModalOpen = true; close() }"
+                @click="() => openAfterMenu(() => isSortModalOpen = true, close)"
               >
                 {{ t('wallets.sortTitle') }}
               </UiHeaderLink>
