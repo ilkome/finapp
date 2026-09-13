@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useSyncStatus } from '~/components/app/useSyncStatus'
 import { useUserStore } from '~/components/user/useUserStore'
 
 const props = defineProps<{
@@ -7,6 +8,7 @@ const props = defineProps<{
 
 const userStore = useUserStore()
 const { t } = useI18n()
+const { hasIssue, status } = useSyncStatus()
 </script>
 
 <template>
@@ -26,6 +28,15 @@ const { t } = useI18n()
         </div>
 
         {{ userStore.currentUser?.email }}
+
+        <div v-if="hasIssue" class="mt-1 text-xs text-warning">
+          <span v-if="!status.connected">{{ t('sync.status.offline') }}</span>
+          <span v-if="!status.connected && status.pending > 0"> · </span>
+          <span v-if="status.pending > 0">{{ t('sync.status.pending', { count: status.pending }) }}</span>
+          <div v-if="status.uploadError" class="text-error">
+            {{ t('sync.status.uploadError') }}
+          </div>
+        </div>
       </div>
     </div>
 

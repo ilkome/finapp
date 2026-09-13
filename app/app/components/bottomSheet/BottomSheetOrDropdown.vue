@@ -8,6 +8,7 @@ const props = withDefaults(defineProps<{
   keyboardTrigger?: boolean
   popoverBodyClass?: string
   popoverContentClass?: string
+  sheetBodyClass?: string
   snapPoints?: number[]
   title?: string
   titleClass?: string
@@ -125,7 +126,7 @@ function closeMobileSheet(closeSheet: () => void) {
 
             <div
               v-if="$slots.content"
-              class="bottom-sheet-content-inside scroller-block"
+              :class="cn('bottom-sheet-content-inside scroller-block', props.sheetBodyClass)"
             >
               <slot name="content" :close="() => closeMobileSheet(close)" :isExpanded />
             </div>

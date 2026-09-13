@@ -1,5 +1,5 @@
 import localforage from 'localforage'
-import { connectPowerSync, getLocalDbOwner, hasAnyLocalData, waitForFirstSync } from '~~/services/powersync/db'
+import { hasAnyLocalData, waitForFirstSync, waitForLocalDbOwner } from '~~/services/powersync/db'
 
 import type { Categories } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
@@ -17,9 +17,8 @@ import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { getPersistedUid } from '~/composables/useAuthSession'
-import { clearStoreCache, readStoreCache } from '~/composables/useStoreCache'
-import { blockPersist, unblockPersist } from '~/composables/useStoreSync'
-import { useSupabase } from '~/composables/useSupabase'
+import { readStoreCache } from '~/composables/useStoreCache'
+import { unblockPersist } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('app')
@@ -90,12 +89,6 @@ export function useInitApp() {
       })
     })
   }
-
-  useEventListener(window, 'online', () => {
-    // PowerSync reconnects on its own; re-arming watches is cheap and idempotent.
-    if (userStore.uid && !isDbLoading.value)
-      startWatches()
-  })
 
   /**
    * Register reactive watches on local SQLite. Each watch emits current local rows immediately
@@ -175,14 +168,11 @@ export function useInitApp() {
     // is a no-op once a store is loaded, so a late prime would be dropped.
     await primeStoresFromCache()
 
-    // If local SQLite still holds another user's rows, wipe + reconnect before reading so we never
-    // surface the previous user's data. Same-user path stays instant (no wait).
+    // If local SQLite still holds another user's rows, the plugin's connect wipes them first;
+    // wait for that so the previous user's data never reaches the stores. Same-user path is instant.
     const currentUid = userStore.uid ?? getPersistedUid()
-    const owner = getLocalDbOwner()
-    if (currentUid && owner && owner !== currentUid) {
-      const config = useRuntimeConfig()
-      await connectPowerSync(useSupabase(), config.public.powersyncUrl as string, currentUid)
-    }
+    if (currentUid && !(await waitForLocalDbOwner(currentUid)))
+      throw new Error('local db is still owned by another user')
 
     startWatches()
   }
@@ -200,11 +190,6 @@ export function useInitApp() {
     isDbLoading.value = true
     syncError.value = false
     try {
-      if (!navigator.onLine) {
-        syncError.value = !(await hasAnyLocalData())
-        return
-      }
-
       const synced = await waitForFirstSync()
       if (!synced) {
         syncError.value = !(await hasAnyLocalData())
@@ -254,19 +239,11 @@ export function useInitApp() {
     return true
   }
 
+  // Involuntary session loss (useGuard): drop the in-memory data and the next user's prime.
   function clearLocalData() {
-    blockPersist()
     primePromise = null
-
-    categoriesStore.setCategories(null)
-    trnsStore.setTrns(null)
-    walletsStore.setWallets(null)
     userStore.setUser(null)
-
-    for (const key of Object.values(STORAGE_KEYS))
-      localforage.removeItem(key)
-
-    void clearStoreCache()
+    void userStore.clearLocalStores()
   }
 
   return {

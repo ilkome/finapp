@@ -239,6 +239,9 @@ async function focusSearch() {
 
 onMounted(focusSearch)
 watch(() => props.autofocus, focusSearch)
+
+// Lets a host with its own toolbar (the filter sheet) drive the view controls.
+defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavoritesFilter, view })
 </script>
 
 <template>

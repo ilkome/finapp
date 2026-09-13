@@ -17,7 +17,7 @@ const emit = defineEmits<{
 <template>
   <div
     class="flex flex-col overflow-hidden"
-    style="max-height: var(--reka-popper-available-height, 60dvh)"
+    style="max-height: min(600px, var(--reka-popper-available-height, 60dvh))"
   >
     <UiTitleModal v-if="props.title" :class="props.titleClass">
       {{ props.title }}
@@ -31,7 +31,7 @@ const emit = defineEmits<{
     <div
       v-if="$slots.default"
       :class="cn(
-        props.isShowScroll ? 'scroller overflow-y-auto' : 'grid flex-1 overflow-hidden',
+        props.isShowScroll ? 'scroller overflow-y-auto overscroll-contain' : 'grid flex-1 overflow-hidden',
         'min-h-0 px-2 py-px md:pb-4',
         props.contentClass,
       )"

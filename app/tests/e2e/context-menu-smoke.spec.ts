@@ -2,17 +2,15 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
+import { openDemo } from './helpers'
+
 // ContextMenuMy mounts on the dashboard, so production-only bootstrap and
 // reka-ui provide/inject regressions surface without additional interaction.
 const INJECT_ERROR = /ContextMenuRootContext|must be used within `ContextMenuRoot`/
 const NUXT_BOOTSTRAP_ERROR = /NUXT_E1005|hooks\.hookOnce is not a function/
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: /demo|демо/i }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
 }
 
 test('production bundle mounts without bootstrap or reka-ui errors', async ({ context, page }) => {

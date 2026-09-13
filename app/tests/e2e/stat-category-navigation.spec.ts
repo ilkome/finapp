@@ -2,19 +2,16 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
+import { openDemo } from './helpers'
+
 const T = {
   descriptionFilter: /^(Only with description|Только с описанием)$/,
   grouping: /^(Toggle grouping|Группировка)$/,
   previous: /^(Previous|Назад)$/,
-  startDemo: /demo|демо/i,
 }
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: T.startDemo }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
   await expect(page.locator('[data-stat-date-range]').first()).toBeVisible({ timeout: 15_000 })
 }

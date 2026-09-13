@@ -5,6 +5,7 @@ import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  isSort?: boolean
   walletId: WalletId
 }>()
 
@@ -27,6 +28,7 @@ const contextMenuItems = computed(() => [
       :wallet="walletsStore.itemsComputed[props.walletId]!"
       :walletId="props.walletId"
       :contextMenuItems="contextMenuItems"
+      :isSort="props.isSort"
       isShowBaseRate
       isShowCreditLimit
       isShowIcon

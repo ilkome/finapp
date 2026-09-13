@@ -28,11 +28,15 @@ export function getLocalDbOwner(): string | null {
   }
 }
 
+const _ownerListeners = new Set<() => void>()
+
 function setLocalDbOwner(uid: string): void {
   try {
     globalThis.localStorage?.setItem(DB_OWNER_KEY, uid)
   }
   catch {}
+  for (const listener of _ownerListeners)
+    listener()
 }
 
 function clearLocalDbOwner(): void {
@@ -40,6 +44,37 @@ function clearLocalDbOwner(): void {
     globalThis.localStorage?.removeItem(DB_OWNER_KEY)
   }
   catch {}
+  for (const listener of _ownerListeners)
+    listener()
+}
+
+/**
+ * Resolves `true` once local SQLite holds no other user's rows: the owner is `userId` or the
+ * db was wiped (null). The plugin's connect does the wiping; this only waits for it, so the
+ * data path never races a second connect. `false` when nothing settles within `timeoutMs`.
+ */
+export function waitForLocalDbOwner(userId: string, timeoutMs = 30000): Promise<boolean> {
+  const isSafe = () => {
+    const owner = getLocalDbOwner()
+    return !owner || owner === userId
+  }
+  if (isSafe())
+    return Promise.resolve(true)
+  return new Promise((resolve) => {
+    let timer: ReturnType<typeof setTimeout>
+    const check = () => {
+      if (!isSafe())
+        return
+      clearTimeout(timer)
+      _ownerListeners.delete(check)
+      resolve(true)
+    }
+    timer = setTimeout(() => {
+      _ownerListeners.delete(check)
+      resolve(false)
+    }, timeoutMs)
+    _ownerListeners.add(check)
+  })
 }
 
 /**
@@ -49,7 +84,7 @@ function clearLocalDbOwner(): void {
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
+    const [{ LogLevels, PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
       import('@powersync/web/bundled_worker?worker&url'),
@@ -57,11 +92,27 @@ export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
     _db = new PowerSyncDatabase({
       database: {
         dbFilename: 'finapp.db',
-        // TEMPORARY: the in-app review browser exposes `SharedWorker` but cannot start a module
-        // one, so PowerSync picks the shared worker, it dies, and the app never leaves the
-        // skeleton. Dedicated worker per tab costs multi-tab sharing; drop this once done.
-        ...(import.meta.dev ? { enableMultiTabs: false } : {}),
+        // The in-app review browser exposes `SharedWorker` but cannot start a module one, so
+        // PowerSync's shared worker dies and the app never leaves the skeleton. `pnpm dev:review`
+        // sets the flag; every other run exercises the real multi-tab path.
+        ...(import.meta.env.VITE_POWERSYNC_SINGLE_TAB ? { enableMultiTabs: false } : {}),
         worker: workerUrl,
+      },
+      logger: {
+        log: ({ error, level, message }) => {
+          if (level < LogLevels.info)
+            return
+          // Being offline is the normal case for this app, not a fault: a failed connect or
+          // stream is a warning so the console stays readable for real errors.
+          const isNetwork = !globalThis.navigator?.onLine || /fetch|network|connect|stream|socket|abort/i.test(`${message} ${error ?? ''}`)
+          const args = error === undefined ? [message] : [message, error]
+          if (level >= LogLevels.error && !isNetwork)
+            logger.error(...args)
+          else if (level >= LogLevels.warn)
+            logger.warn(...args)
+          else
+            logger.log(...args)
+        },
       },
       schema: AppSchema,
       sync: {
@@ -86,9 +137,22 @@ export async function initializePowerSyncDb(): Promise<void> {
   return _dbInitPromise
 }
 
+// Fires when a wipe discards not-yet-uploaded ops (foreign-owner wipe or force resync),
+// so the app can tell the user instead of losing them silently.
+let _onDiscardedPending: ((count: number) => void) | null = null
+
+export function setDiscardedPendingHandler(handler: ((count: number) => void) | null): void {
+  _onDiscardedPending = handler
+}
+
 /** Disconnect and wipe local SQLite, resetting connection + owner state. */
 async function wipeLocalDb(): Promise<void> {
   const db = await getPowerSyncDb()
+  const pending = (await db.getUploadQueueStats()).count
+  if (pending > 0) {
+    logger.warn(`wiping local db with ${pending} unsynced op(s)`)
+    _onDiscardedPending?.(pending)
+  }
   await db.disconnectAndClear()
   _connected = false
   clearLocalDbOwner()
@@ -148,23 +212,29 @@ export function forceResync(client: SupabaseClient, powerSyncUrl: string, userId
  * Disconnect and wipe local data (sign-out). Returns whether the wipe succeeded;
  * on failure the owner marker is kept so the next foreign sign-in wipes first.
  */
-export async function disconnectPowerSync(): Promise<boolean> {
-  if (!_dbPromise) {
-    clearLocalDbOwner()
-    return true
-  }
-  _connected = false
-  try {
-    const db = await _dbPromise
-    await db.disconnectAndClear()
-    clearLocalDbOwner()
-    logger.log('disconnected and cleared')
-    return true
-  }
-  catch (e) {
-    logger.error('disconnect failed', e)
-    return false
-  }
+export function disconnectPowerSync(): Promise<boolean> {
+  // Through the queue: a sign-out during the boot connect must run after it, or the connect's
+  // owner marker lands after the wipe and the next user starts on a "foreign" db.
+  const run = _connectQueue.catch(() => {}).then(async () => {
+    if (!_dbPromise) {
+      clearLocalDbOwner()
+      return true
+    }
+    _connected = false
+    try {
+      const db = await _dbPromise
+      await db.disconnectAndClear()
+      clearLocalDbOwner()
+      logger.log('disconnected and cleared')
+      return true
+    }
+    catch (e) {
+      logger.error('disconnect failed', e)
+      return false
+    }
+  })
+  _connectQueue = run.then(() => {})
+  return run
 }
 
 /**
@@ -187,6 +257,55 @@ export async function pausePowerSync(): Promise<void> {
 export async function getPendingUploadCount(): Promise<number> {
   const db = await getPowerSyncDb()
   return (await db.getUploadQueueStats()).count
+}
+
+/**
+ * Wait until the upload queue is empty or `timeoutMs` passes. Resolves with the number
+ * of ops still pending (0 = drained). Sign-out must not wipe while this is non-zero.
+ */
+export async function waitForUploadsDrained(timeoutMs = 8000): Promise<number> {
+  const deadline = Date.now() + timeoutMs
+  for (;;) {
+    const pending = await getPendingUploadCount()
+    if (pending === 0 || Date.now() >= deadline)
+      return pending
+    await new Promise(resolve => setTimeout(resolve, Math.min(250, Math.max(0, deadline - Date.now()))))
+  }
+}
+
+export type SyncStatusSnapshot = { connected: boolean, pending: number, uploadError: string | null }
+
+const SYNCED_TABLES = ['categories', 'stat_views', 'trns', 'user_settings', 'wallets'] as const
+
+/**
+ * Observe connection + upload-queue state for the UI. `onChange` fires on every PowerSync
+ * status change and on every local write (each touches the queue). Returns a stop function.
+ */
+export function subscribeSyncStatus(onChange: (s: SyncStatusSnapshot) => void): () => void {
+  const stops: (() => void)[] = []
+  let stopped = false
+  getPowerSyncDb()
+    .then((db) => {
+      if (stopped)
+        return
+      const refresh = async () => {
+        const status = db.currentStatus
+        const pending = (await db.getUploadQueueStats()).count
+        // A failed upload while disconnected is just "offline", not a server rejection.
+        const uploadError = status.connected ? (status.dataFlowStatus.uploadError?.message ?? null) : null
+        if (!stopped)
+          onChange({ connected: status.connected, pending, uploadError })
+      }
+      stops.push(db.registerListener({ statusChanged: () => void refresh() }))
+      stops.push(db.onChangeWithCallback({ onChange: () => void refresh() }, { tables: [...SYNCED_TABLES], throttleMs: 500 }))
+      void refresh()
+    })
+    .catch((e: unknown) => logger.error('sync status subscribe failed', e))
+  return () => {
+    stopped = true
+    for (const stop of stops)
+      stop()
+  }
 }
 
 /** Resolves `true` once the first full sync completes; `false` on timeout / not connected. */

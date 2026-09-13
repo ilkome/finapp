@@ -36,6 +36,10 @@ const FATAL_RESPONSE_CODES = [
   /^22...$/, // data exception (e.g. type mismatch)
   /^23...$/, // integrity constraint violation
   /^42501$/, // insufficient privilege (RLS violation)
+  // PostgREST request/schema errors (unknown table/column, bad body): the same op fails
+  // identically on every retry and, being first in the FIFO queue, blocks every op behind it.
+  // PGRST3xx (JWT) and PGRST5xx (pool) are transient and stay retryable.
+  /^PGRST[12]\d\d$/,
 ]
 
 /**

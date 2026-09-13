@@ -8,7 +8,8 @@ import { getPowerSyncDb } from './db'
 // Every mutation targets one of these trusted literals (callers never pass user input). The
 // guard hardens the string-interpolated SQL below; column names come from transforms.ts (fixed
 // keys) and row values are always parameterized.
-const WRITABLE_TABLES = new Set(['budget_assignments', 'budgets', 'categories', 'recurrences', 'stat_views', 'trns', 'user_settings', 'wallets'])
+// Mirrors the tables in AppSchema (not imported: that would pull @powersync/common into the entry chunk).
+const WRITABLE_TABLES = new Set(['categories', 'stat_views', 'trns', 'user_settings', 'wallets'])
 
 function assertTable(table: string): void {
   if (!WRITABLE_TABLES.has(table))

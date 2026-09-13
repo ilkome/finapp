@@ -5,11 +5,7 @@ import { devices, expect, test } from '@playwright/test'
 const mobile = devices['iPhone 13']
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: /demo|демо/i }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
 }
 
 async function expectQuickViewReplaced(page: Page, context: BrowserContext, isMobile = false) {

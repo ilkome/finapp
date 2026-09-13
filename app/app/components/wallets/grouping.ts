@@ -163,3 +163,39 @@ export function applyToggleAll(
 
   return result
 }
+
+/** Manual orders keyed by group path: `type`, `type/cash`, `type/cash/RUB`. */
+export type WalletSortOrders = Record<string, string[]>
+
+export function sortOrderKey(groupedBy: WalletsGroupedBy, ...path: string[]) {
+  return [groupedBy, ...path].join('/')
+}
+
+/** Stored order first (skipping stale keys), then anything new in its original position. */
+export function applyStoredOrder<T extends string>(keys: T[], stored?: string[]): T[] {
+  if (!stored?.length)
+    return keys
+  const known = stored.filter((k): k is T => keys.includes(k as T))
+  return [...known, ...keys.filter(k => !known.includes(k))]
+}
+
+export function sortWalletGroups(
+  groups: GroupedWallets,
+  groupedBy: WalletsGroupedBy,
+  orders: WalletSortOrders,
+): GroupedWallets {
+  const primaryKeys = applyStoredOrder(Object.keys(groups), orders[sortOrderKey(groupedBy)])
+  return Object.fromEntries(primaryKeys.map((primary) => {
+    const group = groups[primary]!
+    const primaryOrder = orders[sortOrderKey(groupedBy, primary)]
+    const secondaryKeys = applyStoredOrder(Object.keys(group.groups ?? {}), primaryOrder)
+    return [primary, {
+      groups: Object.fromEntries(secondaryKeys.map(secondary => [
+        secondary,
+        applyStoredOrder(group.groups![secondary]!, orders[sortOrderKey(groupedBy, primary, secondary)]),
+      ])),
+      // Without a secondary level the primary key holds the wallet order itself.
+      ids: secondaryKeys.length ? group.ids : applyStoredOrder(group.ids, primaryOrder),
+    }]
+  }))
+}

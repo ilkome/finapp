@@ -109,12 +109,14 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <UiHeader>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UiActionButton
-          :ariaLabel="$t('base.toggleFolders')"
-          @click="toggleAll"
-        >
-          <Icon :name="folderIcon" size="20" />
-        </UiActionButton>
+        <UTooltip :text="$t('base.toggleFolders')">
+          <UiActionButton
+            :ariaLabel="$t('base.toggleFolders')"
+            @click="toggleAll"
+          >
+            <Icon :name="folderIcon" size="20" />
+          </UiActionButton>
+        </UTooltip>
 
         <BottomSheetOrDropdown
           align="end"
@@ -126,9 +128,11 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           @openModal="isViewSettingsOpen = true"
         >
           <template #trigger>
-            <UiActionButton :ariaLabel="t('stat.config.menu.label')">
-              <Icon name="lucide:settings-2" size="20" />
-            </UiActionButton>
+            <UTooltip :text="t('stat.config.menu.label')">
+              <UiActionButton :ariaLabel="t('stat.config.menu.label')">
+                <Icon name="lucide:settings-2" size="20" />
+              </UiActionButton>
+            </UTooltip>
           </template>
 
           <template #content>
@@ -167,11 +171,13 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           </template>
         </BottomSheetOrDropdown>
 
-        <NuxtLink to="/categories/new">
-          <UiActionButton :ariaLabel="$t('categories.new')">
-            <Icon name="lucide:plus" size="24" />
-          </UiActionButton>
-        </NuxtLink>
+        <UTooltip :text="$t('categories.new')">
+          <NuxtLink to="/categories/new">
+            <UiActionButton :ariaLabel="$t('categories.new')">
+              <Icon name="lucide:plus" size="24" />
+            </UiActionButton>
+          </NuxtLink>
+        </UTooltip>
       </template>
     </UiHeader>
 

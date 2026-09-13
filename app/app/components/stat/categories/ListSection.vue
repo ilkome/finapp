@@ -90,16 +90,20 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
         v-if="isListShown"
         class="flex items-center gap-1"
       >
-        <UiActionButton
+        <UTooltip
           v-if="!props.isOneCategory && hasGroupedCategories"
-          :ariaLabel="$t('base.toggleFolders')"
-          @click="toggleAllCategories"
+          :text="$t('base.toggleFolders')"
         >
-          <Icon
-            :name="folderIcon"
-            size="20"
-          />
-        </UiActionButton>
+          <UiActionButton
+            :ariaLabel="$t('base.toggleFolders')"
+            @click="toggleAllCategories"
+          >
+            <Icon
+              :name="folderIcon"
+              size="20"
+            />
+          </UiActionButton>
+        </UTooltip>
       </div>
     </div>
 

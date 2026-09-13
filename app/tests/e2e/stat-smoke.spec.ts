@@ -2,19 +2,16 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
+import { openDemo } from './helpers'
+
 const T = {
   expense: /^(Expense|Расход)$/,
   income: /^(Income|Доход)$/,
-  startDemo: /demo|демо/i,
   summary: /^(Summary|Общее)$/,
 }
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: T.startDemo }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
 }
 
 test.describe('Stat / dashboard smoke', () => {

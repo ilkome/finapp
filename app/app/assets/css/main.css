@@ -50,3 +50,36 @@
 ::view-transition-new(root) {
   animation: none;
 }
+
+/* Nested-menu panels (view-transition-name: ui-panel) slide 8px along the direction of travel;
+   `runPanelTransition` stamps the direction on <html>. */
+@keyframes ui-panel-out {
+  to {
+    opacity: 0;
+    transform: translateX(calc(var(--ui-panel-dir) * -8px));
+  }
+}
+
+@keyframes ui-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--ui-panel-dir) * 8px));
+  }
+}
+
+:root {
+  --ui-panel-dir: 1;
+}
+
+:root[data-panel-direction='back'] {
+  --ui-panel-dir: -1;
+}
+
+::view-transition-old(ui-panel) {
+  animation: 120ms cubic-bezier(0.4, 0, 0.2, 1) both ui-panel-out;
+}
+
+::view-transition-new(ui-panel) {
+  animation: 120ms cubic-bezier(0.4, 0, 0.2, 1) both ui-panel-in;
+}
+

@@ -1,15 +1,13 @@
 import { devices, expect, test } from '@playwright/test'
 
+import { openDemo } from './helpers'
+
 const T = {
   searchPrompt: /Search categories, wallets, transactions|Поиск категорий, кошельков, транзакций/,
-  startDemo: /demo|демо/i,
 }
 
 test('search opens empty with a focused input', async ({ context, page }) => {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: T.startDemo }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
+  await openDemo(page, context)
 
   const header = page.locator('[data-ui-header-main]')
   await expect(header.getByRole('button', { name: /^(Search|Поиск)$/ })).toHaveCount(0)
@@ -70,10 +68,7 @@ test.describe('mobile search sheet', () => {
   })
 
   test('expands on upward drag and closes from a transaction drag', async ({ context, page }) => {
-    await context.clearCookies()
-    await page.goto('/login', { waitUntil: 'domcontentloaded' })
-    await page.getByRole('button', { name: T.startDemo }).click()
-    await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
+    await openDemo(page, context)
 
     const bottomNavigation = page.locator('.fixed.bottom-0.left-0.z-20')
     await bottomNavigation.locator('.mx-auto > div').last().click()

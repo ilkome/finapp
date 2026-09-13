@@ -3,6 +3,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useTrnFormSubmit } from '~/components/trnForm/useTrnFormSubmit'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -16,6 +17,7 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
 const walletsStore = useWalletsStore()
+const { submit } = useTrnFormSubmit()
 const walletId = computed(() =>
   trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
 )
@@ -53,6 +55,7 @@ const walletId = computed(() =>
         :highlight="trnsFormStore.values.trnType === TrnType.Expense ? 'expense' : 'income'"
         :isShowSum="trnsFormStore.shouldShowSum()"
         @change="trnsFormStore.onChangeAmount"
+        @submit="submit"
       />
 
       <!-- Selected -->

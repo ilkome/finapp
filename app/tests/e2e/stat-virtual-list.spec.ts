@@ -2,8 +2,9 @@ import type { BrowserContext, Locator, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
-const startDemo = /demo|демо/i
-const transactionWallet = /Debit card|Credit card|Cash|Savings|Dollar account/
+import { openDemo } from './helpers'
+
+const transactionWallet = /Debit card|Credit card|Cash|Savings|Dollar account|Дебетовая карта|Кредитная карта|Наличные|Накопления|Долларовый счет/
 const addTransaction = /^(Add transaction|Добавить операцию)$/
 const deleteTransaction = /Delete transaction\?|Удалить операцию\?/
 const deleteAction = /^(Delete|Удалить)$/
@@ -16,11 +17,7 @@ type Geometry = {
 }
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: startDemo }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
   await expect(page.locator('.stat-trns-virtual')).toBeVisible({ timeout: 15_000 })
 }
