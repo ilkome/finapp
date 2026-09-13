@@ -1,7 +1,7 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import localforage from 'localforage'
-import { disconnectPowerSync, getPowerSyncDb, watchTable } from '~~/services/powersync/db'
+import { disconnectPowerSync, getPowerSyncDb, waitForUploadsDrained, watchTable } from '~~/services/powersync/db'
 import { upsertRow } from '~~/services/powersync/mutations'
 
 import type { CurrencyCode } from '~/components/currencies/types'
@@ -15,7 +15,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { hasPersistedSession } from '~/composables/useAuthSession'
 import { clearStoreCache, persistStoreCache } from '~/composables/useStoreCache'
-import { blockPersist, isPersistBlocked } from '~/composables/useStoreSync'
+import { blockPersist, isPersistBlocked, showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
@@ -229,22 +229,18 @@ export const useUserStore = defineStore('user', () => {
       return
     }
 
-    // Prevents in-flight mutation callbacks from re-writing data after cleanup.
-    blockPersist()
+    // The wipe below destroys the upload queue, so give queued offline writes a chance to
+    // reach the server first and refuse to sign out while any remain (offline, or a stuck upload).
+    const pending = await waitForUploadsDrained().catch(() => 0)
+    if (pending > 0) {
+      isSigningOut.value = false
+      showErrorToast('sync.errors.signOutPending', { count: pending })
+      return
+    }
 
     try {
-      trnsStore.setTrns(null)
-      categoriesStore.setCategories(null)
-      walletsStore.setWallets(null)
-
-      useTrnsFormStore().$reset()
+      await clearLocalStores() // session still present here, so the cache uid resolves
       setUser(null)
-      useCookie<boolean>('finapp.isOnboarded').value = false
-
-      await Promise.all(
-        Object.values(STORAGE_KEYS).map(key => localforage.removeItem(key)),
-      )
-      await clearStoreCache() // session still present here, so the uid resolves
 
       // Best-effort local wipe; if it fails the owner marker makes the next foreign sign-in wipe first.
       const cleared = await disconnectPowerSync()
@@ -263,15 +259,24 @@ export const useUserStore = defineStore('user', () => {
     window.location.href = '/login'
   }
 
-  async function removeAllUserData() {
+  /**
+   * The one local reset shared by sign-out, "remove all data" and involuntary session loss:
+   * blocks persistence first so in-flight callbacks can't re-write, then empties the stores,
+   * the demo localforage keys and the cold-start snapshot. Local SQLite is the caller's job.
+   */
+  async function clearLocalStores() {
     blockPersist()
-
     trnsStore.setTrns(null)
     categoriesStore.setCategories(null)
     walletsStore.setWallets(null)
     useTrnsFormStore().$reset()
-
     useCookie<boolean>('finapp.isOnboarded').value = false
+    await Promise.all(Object.values(STORAGE_KEYS).map(key => localforage.removeItem(key)))
+    await clearStoreCache()
+  }
+
+  async function removeAllUserData() {
+    await clearLocalStores()
 
     if (isDemo.value) {
       await localforage.clear()
@@ -285,7 +290,6 @@ export const useUserStore = defineStore('user', () => {
       await db.execute('DELETE FROM wallets')
       await db.execute('DELETE FROM stat_views')
       await db.execute('DELETE FROM user_settings')
-      await clearStoreCache()
     }
     catch (e) {
       logger.error('removeAllUserData failed', e)
@@ -294,6 +298,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     baseCurrency,
+    clearLocalStores,
     currentUser,
     initUserSettings,
     isSettingsLoaded,

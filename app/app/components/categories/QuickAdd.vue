@@ -3,30 +3,23 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { compareCategoryIds } from '~/components/categories/utils'
+import { statConfigKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
+const statConfig = inject(statConfigKey)!
+
+// Same source and look as the round categories block, so the empty-period placeholder
+// follows the view settings instead of its own rules.
+const roundConfig = computed(() => statConfig.config.value.categories.round)
 
 const categoryIds = computed(() => {
-  const seen = new Set<CategoryId>()
-  const ids: CategoryId[] = []
-
-  for (const id of categoriesStore.favoriteCategoriesIds) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-    }
-  }
-
-  for (const id of categoriesStore.recentCategoriesIds) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      ids.push(id)
-    }
-  }
-
-  return ids.sort((a, b) => compareCategoryIds(a, b, categoriesStore.items))
+  const ids = new Set<CategoryId>([
+    ...(roundConfig.value.isShowFavorites ? categoriesStore.favoriteCategoriesIds : []),
+    ...(roundConfig.value.isShowRecent ? categoriesStore.recentCategoriesIds : []),
+  ])
+  return [...ids].sort((a, b) => compareCategoryIds(a, b, categoriesStore.items))
 })
 
 function onClick(categoryId: CategoryId) {
@@ -40,8 +33,8 @@ function onClick(categoryId: CategoryId) {
       v-for="categoryId in categoryIds"
       :key="categoryId"
       :categoryId="categoryId"
+      :isIconBg="roundConfig.isIconBg"
       :isShowParent="!!categoriesStore.items[categoryId]?.parentId"
-      isIconBg
       class="cursor-default"
       @click="onClick(categoryId)"
     />

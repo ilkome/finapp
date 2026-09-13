@@ -15,8 +15,8 @@ const menuItems = computed(() => source === 'itemsModal' ? itemsModal.value : it
     <UTooltip
       v-for="(item, menuId) in menuItems"
       :key="menuId"
-      :disabled="!item.tooltip"
-      :text="item.tooltip?.text"
+      :disabled="isShowText && !item.tooltip"
+      :text="item.tooltip?.text ?? item.name"
       :kbds="item.tooltip?.kbds"
     >
       <LayoutSidebarMenuItem

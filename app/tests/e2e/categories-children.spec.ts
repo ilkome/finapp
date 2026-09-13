@@ -2,6 +2,8 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
+import { openDemo } from './helpers'
+
 const T = {
   apply: /^(Apply|Применить)$/,
   availableRoots: /Available root categories|Свободные корневые/,
@@ -13,21 +15,13 @@ const T = {
   parentCategory: /^(Parent category|Родительская категория)$/,
   save: /^(Save|Сохранить)$/,
   selectedTwo: /(2 selected|Выбрано:?\s*2)/i,
-  startDemo: /demo|демо/i,
   withoutParent: /^(Without parent|Без родителя)$/,
 }
 
 const PARENT_NAME = 'E2E Test Parent'
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: T.startDemo }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  // Demo store hydrates synchronously, but debouncedPersist (300ms) flushes
-  // localforage with a slight delay. Wait so that hard reloads (page.goto)
-  // can re-hydrate the store from cache.
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
 }
 
 async function openNewCategory(page: Page) {

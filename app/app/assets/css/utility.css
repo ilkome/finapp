@@ -1,6 +1,6 @@
-@reference 'tailwindcss';
-@reference '@nuxt/ui';
-
+/* No @reference here: this file is only ever imported after tailwindcss and @nuxt/ui in main.css,
+   and a duplicate `@reference 'tailwindcss'` dedupes against that import in reference mode, which
+   drops the whole default palette (var(--color-red-500) etc.) from the output. */
 @utility interactive {
   @apply select-none;
 
@@ -58,7 +58,7 @@
 }
 
 @utility bottom-sheet-drag-classes-custom {
-  @apply bg-default max-w-md rounded-xl;
+  @apply bg-default max-w-md rounded-t-xl;
 }
 
 @utility bottom-sheet-content {
@@ -76,6 +76,7 @@
 
 @utility scroller-block {
   scrollbar-width: auto;
+  overscroll-behavior: contain;
 }
 
 @utility scroll-strip {

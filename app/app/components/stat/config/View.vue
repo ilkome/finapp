@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import { useStorage } from '@vueuse/core'
-import { debounce } from 'es-toolkit'
 
 import type { StatConfigBlockId } from '~/components/stat/config/schema'
 
@@ -51,7 +50,7 @@ function syncSortedBlockIds() {
   sortedBlockIds.value = statConfig.config.value.page.blockOrder.filter(panel => available.has(panel))
 }
 
-const persistBlockOrder = debounce(() => {
+const persistBlockOrder = useAutosave(sortedBlockIds, () => {
   const available = new Set(availableSortablePanels.value)
   let sortedIndex = 0
   const blockOrder = statConfig.config.value.page.blockOrder.map((panel) => {
@@ -66,21 +65,13 @@ const persistBlockOrder = debounce(() => {
   if (normalizedBlockOrder.every((panel, index) => panel === statConfig.config.value.page.blockOrder[index]))
     return
   statConfig.updateConfig('page', { blockOrder: normalizedBlockOrder })
-}, 300)
-
-watch(sortedBlockIds, () => {
-  persistBlockOrder()
-}, { deep: true })
+})
 
 watch([availableSortablePanels, () => statConfig.config.value.page.blockOrder], syncSortedBlockIds, { immediate: true })
 
 watch(isConfigOpen, (isOpen) => {
   if (!isOpen)
     persistBlockOrder.flush()
-})
-
-onBeforeUnmount(() => {
-  persistBlockOrder.flush()
 })
 </script>
 

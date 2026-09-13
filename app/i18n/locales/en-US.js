@@ -31,6 +31,7 @@ export default {
     clear: 'Clear',
     close: 'Close',
     delete: 'Delete',
+    done: 'Done',
     duplicate: 'Duplicate',
     edit: 'Edit',
     filterAllCategories: 'all categories',
@@ -57,7 +58,7 @@ export default {
     sure: 'Confirm action',
     today: 'Today',
     toggleExpand: 'Toggle expand',
-    toggleFolders: 'Toggle folders',
+    toggleFolders: 'Expand / collapse',
     toggleGrouping: 'Toggle grouping',
     toggleView: 'Toggle view',
     unpin: 'Unpin',
@@ -607,9 +608,16 @@ export default {
       reloadFromServer: 'Reload from server',
     },
     errors: {
+      pendingDiscarded: '{count} unsynced change(s) from the previous account were discarded',
       sessionLostPending: 'Your session ended with {count} change(s) not yet synced. Sign in again to upload them.',
+      signOutPending: '{count} change(s) are not synced yet. Connect to the internet and try again.',
       uploadDiverged: 'A change could not be synced - your local data may differ from the server. Reload to discard unsynced local changes and refresh from the server.',
       uploadReverted: 'A change could not be saved and was reverted',
+    },
+    status: {
+      offline: 'Offline',
+      pending: '{count} change(s) not synced',
+      uploadError: 'Sync error - some changes are not reaching the server',
     },
   },
 
@@ -798,6 +806,7 @@ export default {
       includeExcludedInStats: 'Include not-in-total in statistics',
       showArchived: 'Show archived wallets',
       showGroupCount: 'Show group counts',
+      showStatistics: 'Show statistics',
     },
     page: {
       currencies: 'Currencies',

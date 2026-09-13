@@ -28,7 +28,7 @@ const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
   'bg-elevated/30': props.compact,
-  'group relative': props.isSort,
+  'group': props.isSort,
   'rounded-md': props.compact,
 }))
 
@@ -49,11 +49,21 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
-    <template v-if="props.isShowIcon" #leftIcon>
-      <WalletsIcon
-        :name="wallet.name"
-        :color="wallet.color"
-      />
+    <template v-if="props.isShowIcon || props.isSort" #leftIcon>
+      <div class="flex items-center gap-2">
+        <div
+          v-if="props.isSort"
+          class="sortHandle -my-1.5 flex-center cursor-grab self-stretch rounded-md px-1 text-muted group-hover:bg-accented active:cursor-grabbing"
+        >
+          <Icon name="lucide:grip-vertical" size="20" />
+        </div>
+
+        <WalletsIcon
+          v-if="props.isShowIcon"
+          :name="wallet.name"
+          :color="wallet.color"
+        />
+      </div>
     </template>
 
     <!-- Main -->
@@ -156,13 +166,6 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
             variant="secondary"
           />
         </div>
-      </div>
-
-      <div
-        v-if="isSort"
-        class="sortHandle absolute right-0 flex-center h-full rounded-md px-3 group-hover:bg-accented"
-      >
-        <Icon name="lucide:grip-vertical" size="20" />
       </div>
     </template>
   </UiElement>

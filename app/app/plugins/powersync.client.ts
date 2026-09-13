@@ -1,4 +1,4 @@
-import { connectPowerSync, forceResync, getPendingUploadCount, initializePowerSyncDb, pausePowerSync } from '~~/services/powersync/db'
+import { connectPowerSync, forceResync, getLocalDbOwner, getPendingUploadCount, initializePowerSyncDb, pausePowerSync, setDiscardedPendingHandler } from '~~/services/powersync/db'
 import { deleteRow, deleteTrnsReferencing } from '~~/services/powersync/mutations'
 import { setUploadErrorHandler } from '~~/services/powersync/uploadErrorHandler'
 import { planDivergence } from '~~/services/powersync/uploadReconcile'
@@ -64,22 +64,27 @@ export default defineNuxtPlugin(() => {
     }
   })
 
-  // Drive the PowerSync connection from the auth session.
+  // A wipe (foreign user signing in, force resync) that discards queued offline writes.
+  setDiscardedPendingHandler(count => showErrorToast('sync.errors.pendingDiscarded', { count }))
+
+  // Drive the PowerSync connection from the auth session. Watches the pair, not just `uid`:
+  // on a cold start whose persisted session is already dead, uid stays null while isAuthReady
+  // flips, and a uid-only watch (null -> null) would never run the pause branch.
   watch(
-    uid,
-    (userId) => {
+    () => [uid.value, isAuthReady.value] as const,
+    ([userId, ready]) => {
       if (isDemo.value)
         return
 
       if (userId) {
         connectPowerSync(client, powerSyncUrl, userId).catch(e => logger.error('connect failed', e))
       }
-      // Session lost while resolved (the initial cold-start null is skipped via isAuthReady).
-      // This is NOT the explicit sign-out path - useUserStore.signOut() wipes locally itself
-      // before this fires - so it's an involuntary loss (token revoked/expired). Keep the local
-      // data + unsynced queue and only pause syncing; re-auth as the same user drains the queue.
+      // Session lost (involuntary: token revoked/expired). This is NOT the explicit sign-out path -
+      // useUserStore.signOut() wipes locally itself before this fires. Keep the local data +
+      // unsynced queue and only pause syncing; re-auth as the same user drains the queue.
       // Wiping here would silently discard offline writes that never reached the server.
-      else if (isAuthReady.value) {
+      // The owner marker gates it so a plain logged-out visit never loads the PowerSync bundle.
+      else if (ready && getLocalDbOwner()) {
         pausePowerSync()
           .then(() => getPendingUploadCount())
           .then((pending) => {

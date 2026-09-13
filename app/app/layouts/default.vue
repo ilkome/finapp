@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useInitApp } from '~/components/app/useInitApp'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { SIDEBAR_DEFAULT_WIDTH } from '~/components/layout/sidebarWidth'
 import { useMenuData } from '~/components/layout/useMenuData'
 import { useSearch } from '~/components/search/useSearch'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
@@ -23,6 +24,7 @@ const { bootState, initApp, isHydrated, isOnboarded, isOnboardedHint } = useInit
 const { width } = useWindowSize()
 
 const isShowSidebar = useCookie('finapp.isShowSidebar', { default: () => true })
+const sidebarWidth = useCookie('finapp.sidebarWidth', { default: () => SIDEBAR_DEFAULT_WIDTH })
 
 // Only sync the hint once local data has hydrated - otherwise the empty stores during the
 // load gap would wipe the hint exactly when it's needed.
@@ -54,7 +56,7 @@ const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
   showShell.value && 'bg-muted',
-  showShell.value && (isStatConfigOpen.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-72' : 'md:pl-12'),
+  showShell.value && (isStatConfigOpen.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-(--sidebar-width)' : 'md:pl-12'),
   isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
   isOnboarded.value && isStatConfigOpen.value && 'md:pr-100',
 ))
@@ -85,7 +87,7 @@ defineShortcuts({
 <template>
   <div
     :class="layoutClasses"
-    style="margin-left: env(safe-area-inset-left)"
+    :style="{ 'margin-left': 'env(safe-area-inset-left)', '--sidebar-width': `${sidebarWidth}px` }"
   >
     <div
       v-if="bootState === 'error'"
@@ -107,6 +109,7 @@ defineShortcuts({
     <template v-else>
       <template v-if="showShell">
         <LayoutSidebar
+          v-model:width="sidebarWidth"
           :isHidden="isStatConfigOpen"
           :isShowSidebar
           @toggleSidebar="isShowSidebar = !isShowSidebar"

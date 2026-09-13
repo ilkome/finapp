@@ -2,14 +2,10 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { expect, test } from '@playwright/test'
 
-const startDemo = /demo|демо/i
+import { openDemo } from './helpers'
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
-  await context.clearCookies()
-  await page.goto('/login', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('button', { name: startDemo }).click()
-  await page.waitForURL(/\/(dashboard|categories|wallets|stat)/, { timeout: 30_000 })
-  await page.waitForTimeout(800)
+  await openDemo(page, context)
   await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 }
 
