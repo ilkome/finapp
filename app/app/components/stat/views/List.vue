@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
-import { debounce } from 'es-toolkit'
 
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { useStatConditionTitles } from '~/components/stat/views/useConditionTitles'
@@ -55,26 +54,18 @@ function viewActionItems(id: string) {
   ]]
 }
 
-const persistViewOrder = debounce(async () => {
+useAutosave(sortedViewIds, () => {
   if (!controller)
     return
   const currentIds = controller.store.views.map(view => view.id)
   if (sortedViewIds.value.every((id, index) => id === currentIds[index]))
     return
-  await controller.store.reorder(sortedViewIds.value)
-}, 300)
+  void controller.store.reorder(sortedViewIds.value)
+})
 
 watch(() => views.value.map(view => view.id), (ids) => {
   sortedViewIds.value = [...ids]
 }, { immediate: true })
-
-watch(sortedViewIds, () => {
-  void persistViewOrder()
-}, { deep: true })
-
-onBeforeUnmount(() => {
-  persistViewOrder.flush()
-})
 </script>
 
 <template>

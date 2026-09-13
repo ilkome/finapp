@@ -20,29 +20,32 @@ const isOpen = ref(false)
     @closeModal="isOpen = false"
   >
     <template #trigger="{ isActive }">
-      <UButton
-        :aria-label="t('login.menu.title')"
-        :avatar="triggerAvatar"
-        :label="collapsed ? undefined : triggerLabel"
-        :square="collapsed"
-        block
-        :class="cn(
-          'pointer-events-auto relative min-h-12 bg-transparent backdrop-blur transition-colors hover:bg-elevated/50! active:bg-elevated/50!',
-          isActive && 'bg-elevated/50!',
-        )"
-        color="neutral"
-        variant="ghost"
-      >
-        <template #trailing>
-          <UIcon v-if="!collapsed" name="i-lucide-chevrons-up-down" class="text-dimmed" />
-          <!-- Offline / unsynced-changes marker; the menu's account block carries the details. -->
-          <span
-            v-if="hasSyncIssue"
-            data-testid="sync-issue-dot"
-            class="absolute top-1.5 left-1.5 size-2 rounded-full bg-warning"
-          />
-        </template>
-      </UButton>
+      <UTooltip :text="triggerLabel" :disabled="!collapsed">
+        <UButton
+          :aria-label="t('login.menu.title')"
+          :avatar="triggerAvatar"
+          :label="collapsed ? undefined : triggerLabel"
+          :square="collapsed"
+          block
+          :class="cn(
+            'pointer-events-auto relative min-h-12 rounded-md! bg-transparent backdrop-blur transition-colors hover:bg-elevated/50! active:bg-elevated/50!',
+            isActive && 'bg-elevated/50!',
+            collapsed && 'px-0!',
+          )"
+          color="neutral"
+          variant="ghost"
+        >
+          <template #trailing>
+            <UIcon v-if="!collapsed" name="i-lucide-chevrons-up-down" class="text-dimmed" />
+            <!-- Offline / unsynced-changes marker; the menu's account block carries the details. -->
+            <span
+              v-if="hasSyncIssue"
+              data-testid="sync-issue-dot"
+              class="absolute top-1.5 left-1.5 size-2 rounded-full bg-warning"
+            />
+          </template>
+        </UButton>
+      </UTooltip>
     </template>
 
     <template #content="{ close }">

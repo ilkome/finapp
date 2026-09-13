@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import type { DropdownMenuItem } from '@nuxt/ui'
+
 import { useStorage } from '@vueuse/core'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletId } from '~/components/wallets/types'
+import type { WalletsToggleMap } from '~/components/wallets/grouping'
+import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
+import { applyToggle, buildWalletGroups } from '~/components/wallets/grouping'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -16,6 +20,8 @@ const props = defineProps<{
   currencyAboveAction?: boolean
   disabledIds?: WalletId[]
   filterAtTop?: boolean
+  // Group rows by type / currency; the host renders the picker from the exposed `groupingItems`.
+  groupingMenu?: boolean
   hide?: () => void
   hideHeader?: boolean
   hideSearch?: boolean
@@ -68,6 +74,33 @@ const hasNoMatches = computed(() =>
   !!searchQuery.value && selectedWalletsIdsWithCurrency.value.length === 0,
 )
 
+const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.selectorGroupedBy, 'none')
+const walletGroups = computed(() => {
+  const groups = props.groupingMenu
+    ? buildWalletGroups(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, groupedBy.value, false)
+    : false
+  return groups
+    ? Object.entries(groups).map(([key, group]) => ({
+        ids: group.ids,
+        key,
+        label: groupedBy.value === 'type' ? t(`money.types.${key}`) : key,
+      }))
+    : [{ ids: selectedWalletsIdsWithCurrency.value, key: 'all', label: '' }]
+})
+const toggledMap = useStorage<WalletsToggleMap>(WALLET_STORAGE_KEYS.selectorToggleMap, {})
+const isGroupOpen = (key: string) => groupedBy.value === 'none' || (toggledMap.value[groupedBy.value]?.[key]?.show ?? true)
+function toggleGroup(key: string) {
+  toggledMap.value = applyToggle(toggledMap.value, groupedBy.value, key)
+}
+const groupingItems = computed<DropdownMenuItem[]>(() => (['none', 'type', 'currency'] as const)
+  .filter(id => id !== 'currency' || walletsStore.currenciesUsed.length > 1)
+  .map(id => ({
+    checked: groupedBy.value === id,
+    label: t(id === 'currency' ? 'wallets.page.currencies' : `wallets.page.${id}`),
+    onSelect: () => { groupedBy.value = id },
+    type: 'checkbox' as const,
+  })))
+
 const walletMenu = useWalletMenuItems()
 
 function getWalletContextMenuItems(walletId: WalletId) {
@@ -118,6 +151,8 @@ async function focusSearch() {
 
 onMounted(focusSearch)
 watch(() => props.autofocus, focusSearch)
+
+defineExpose({ groupingItems })
 </script>
 
 <template>
@@ -166,43 +201,64 @@ watch(() => props.autofocus, focusSearch)
           {{ t('search.noResults') }}
         </div>
 
-        <template
-          v-for="walletId in selectedWalletsIdsWithCurrency"
-          :key="walletId"
+        <UCollapsible
+          v-for="group in walletGroups"
+          :key="group.key"
+          :open="isGroupOpen(group.key)"
+          class="grid"
         >
-          <div
-            v-if="props.selectedIds !== undefined"
-            :class="cn(
-              'flex items-center rounded-md border border-transparent bg-elevated/30 select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent',
-              props.selectedIds.includes(walletId) && 'border-primary/40',
-            )"
-            @click="onClickWallet(walletId)"
+          <UiTitleDropRight
+            v-if="group.label"
+            :isShown="isGroupOpen(group.key)"
+            @click="toggleGroup(group.key)"
           >
-            <WalletsItem
-              :activeItemId="props.activeItemId ?? null"
-              :contextMenuItems="getWalletContextMenuItems(walletId)"
-              :walletId
-              :wallet="walletsStore.itemsComputed[walletId]!"
-              :lineWidth="4"
-              bodyClass="group/item min-w-0 flex-1"
-              isShowIcon
-              isShowCreditLimit
-            />
-          </div>
+            <div class="font-tertiary text-base leading-none font-semibold text-toned!">
+              {{ group.label }}
+            </div>
+          </UiTitleDropRight>
 
-          <WalletsItem
-            v-else
-            :activeItemId="props.activeItemId ?? null"
-            :contextMenuItems="getWalletContextMenuItems(walletId)"
-            :walletId
-            :wallet="walletsStore.itemsComputed[walletId]!"
-            :lineWidth="4"
-            class="group/item"
-            isShowIcon
-            isShowCreditLimit
-            @click="onClickWallet(walletId)"
-          />
-        </template>
+          <template #content>
+            <div class="grid gap-1" :class="group.label && 'py-1'">
+              <template
+                v-for="walletId in group.ids"
+                :key="walletId"
+              >
+                <div
+                  v-if="props.selectedIds !== undefined"
+                  :class="cn(
+                    'flex items-center rounded-md border border-transparent bg-elevated/30 select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent',
+                    props.selectedIds.includes(walletId) && 'border-primary/40',
+                  )"
+                  @click="onClickWallet(walletId)"
+                >
+                  <WalletsItem
+                    :activeItemId="props.activeItemId ?? null"
+                    :contextMenuItems="getWalletContextMenuItems(walletId)"
+                    :walletId
+                    :wallet="walletsStore.itemsComputed[walletId]!"
+                    :lineWidth="4"
+                    bodyClass="group/item min-w-0 flex-1"
+                    isShowIcon
+                    isShowCreditLimit
+                  />
+                </div>
+
+                <WalletsItem
+                  v-else
+                  :activeItemId="props.activeItemId ?? null"
+                  :contextMenuItems="getWalletContextMenuItems(walletId)"
+                  :walletId
+                  :wallet="walletsStore.itemsComputed[walletId]!"
+                  :lineWidth="4"
+                  class="group/item"
+                  isShowIcon
+                  isShowCreditLimit
+                  @click="onClickWallet(walletId)"
+                />
+              </template>
+            </div>
+          </template>
+        </UCollapsible>
       </div>
 
       <template v-if="walletsStore.currenciesUsed.length > 1">

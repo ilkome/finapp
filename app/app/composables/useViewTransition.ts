@@ -12,8 +12,21 @@ export function runViewTransition(update: () => void): void {
     return
   }
 
-  document.startViewTransition(async () => {
+  const transition = document.startViewTransition(async () => {
     update()
     await nextTick()
   })
+  // A transition skipped by a newer one (or a hidden tab) rejects these; the update itself
+  // already ran, so there is nothing to handle.
+  transition.ready.catch(() => {})
+  transition.finished.catch(() => {})
+}
+
+/**
+ * Nested-menu panel switch as a view transition: the element carrying
+ * `view-transition-name: ui-panel` slides 8px in the direction of travel (see main.css).
+ */
+export function runPanelTransition(direction: 'back' | 'forward', update: () => void): void {
+  document.documentElement.dataset.panelDirection = direction
+  runViewTransition(update)
 }

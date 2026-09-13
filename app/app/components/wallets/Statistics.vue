@@ -23,8 +23,8 @@ const { t } = useI18n()
 
 const shown = useStoredToggle(props.storageKey, true)
 
-function menuItems(id: string, pinned: boolean) {
-  return props.state.menuItems(id, p => emit('openSettings', p), pinned)
+function menuItems(id: string) {
+  return props.state.menuItems(id, () => emit('openSettings'))
 }
 </script>
 

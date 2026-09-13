@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useFilterSummary } from '~/components/filter/useFilterSummary'
 
-const { t } = useI18n()
 const { summaryText } = useFilterSummary()
 
 const isOpen = ref(false)
@@ -15,10 +14,7 @@ const snapPoints = useSheetSnapPoints()
     :isOpen="isOpen"
     popoverBodyClass="py-0! md:pb-0!"
     :snapPoints="snapPoints"
-    :title="t('base.filters')"
-    titleClass="pb-0!"
     :unmountOnHide="false"
-    isShowCloseBtn
     keyboardTrigger
     @closeModal="isOpen = false"
     @openModal="isOpen = true"

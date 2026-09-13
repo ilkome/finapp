@@ -2,11 +2,11 @@ import type { ComputedRef, Ref } from 'vue'
 
 import { useStorage } from '@vueuse/core'
 
-import type { GroupedWallets, WalletsToggleMap } from '~/components/wallets/grouping'
+import type { GroupedWallets, WalletSortOrders, WalletsToggleMap } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
-import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus } from '~/components/wallets/grouping'
+import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus, sortOrderKey, sortWalletGroups } from '~/components/wallets/grouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type { GroupedWallets }
@@ -27,16 +27,23 @@ export function useWalletsGrouping(
     mergeDefaults: true,
   })
 
+  const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
+
   const groupedWalletsWithIds = computed<GroupedWallets | false>(() => {
     const useSecondary = groupedBy.value !== 'none' && !!groupedBySecondary.value[groupedBy.value]
 
-    return buildWalletGroups(
+    const groups = buildWalletGroups(
       selectedWalletsIds.value,
       walletsStore.itemsComputed,
       groupedBy.value,
       useSecondary,
     )
+    return groups ? sortWalletGroups(groups, groupedBy.value, sortOrders.value) : groups
   })
+
+  function setSortOrder(path: string[], ids: string[]) {
+    sortOrders.value = { ...sortOrders.value, [sortOrderKey(groupedBy.value, ...path)]: ids }
+  }
 
   function toggleMap(groupPrimary: string, groupSecondary?: string) {
     walletsToggledMap.value = applyToggle(
@@ -99,6 +106,7 @@ export function useWalletsGrouping(
     groupedWalletsWithIds,
     groupTabs,
     isSecondaryGroupingActive,
+    setSortOrder,
     toggleMap,
     toggleOpened,
     toggleSecondaryGrouping,
