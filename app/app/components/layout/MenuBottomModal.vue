@@ -26,8 +26,11 @@ async function updateDemo() {
 }
 
 async function clearCachesAndReload() {
+  // Workbox fills the precache only during install. Deleting the caches under a live worker
+  // leaves it activated with an empty precache and kills offline start until the next deploy,
+  // so drop the registration too: the reload registers and installs it from scratch.
   if ('serviceWorker' in navigator)
-    await navigator.serviceWorker.getRegistration().then(reg => reg?.update())
+    await navigator.serviceWorker.getRegistration().then(reg => reg?.unregister())
   if ('caches' in window)
     await caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
   location.reload()
