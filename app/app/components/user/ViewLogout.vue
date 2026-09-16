@@ -10,7 +10,7 @@ const props = defineProps<{
 const userStore = useUserStore()
 const { t } = useI18n()
 const { hasIssue, status } = useSyncStatus()
-const { offlineState } = useOfflineReady()
+const { applyUpdate, offlineState } = useOfflineReady()
 </script>
 
 <template>
@@ -39,8 +39,16 @@ const { offlineState } = useOfflineReady()
             {{ t('sync.status.uploadError') }}
           </div>
         </div>
+        <button
+          v-else-if="offlineState === 'updateReady'"
+          type="button"
+          class="mt-1 block text-xs text-primary"
+          @click="applyUpdate"
+        >
+          {{ t('sync.status.updateReady') }}
+        </button>
         <div v-else-if="offlineState !== 'unavailable'" class="mt-1 text-xs text-muted">
-          {{ t(offlineState === 'ready' ? 'sync.status.offlineReady' : 'sync.status.offlinePreparing') }}
+          {{ t(`sync.status.${offlineState === 'ready' ? 'offlineReady' : offlineState === 'updating' ? 'updating' : 'offlinePreparing'}`) }}
         </div>
       </div>
     </div>

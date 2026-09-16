@@ -194,6 +194,8 @@ export default defineNuxtConfig({
   pwa: {
     client: {
       installPrompt: true,
+      // Long-lived PWA sessions never navigate, so poll for a new sw.js as well.
+      periodicSyncForUpdates: 20 * 60,
       registerPlugin: true,
     },
     devOptions: {
@@ -248,7 +250,9 @@ export default defineNuxtConfig({
       start_url: '/dashboard',
       theme_color: '#171717',
     },
-    registerType: 'autoUpdate',
+    // A new build installs in the background and waits; the account status line offers the
+    // restart instead of reloading the app under the user.
+    registerType: 'prompt',
     workbox: {
       globIgnores: ['**/200*', '**/404*', 'og-image.png', 'screenshot-*.png'],
       globPatterns: [
