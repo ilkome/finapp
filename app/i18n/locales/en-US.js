@@ -616,6 +616,8 @@ export default {
     },
     status: {
       offline: 'Offline',
+      offlinePreparing: 'Preparing offline mode...',
+      offlineReady: 'Works offline',
       pending: '{count} change(s) not synced',
       uploadError: 'Sync error - some changes are not reaching the server',
     },

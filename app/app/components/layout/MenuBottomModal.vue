@@ -54,13 +54,13 @@ async function clearCachesAndReload() {
             <LayoutUserMenuPanels @close="emit('close')">
               <template #root>
                 <div
-                  class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-muted"
+                  class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-toned"
                   @click="onSearchClick"
                 >
                   <div class="flex min-w-7 items-center justify-center">
                     <Icon name="lucide:search" size="22" class="leading-none" />
                   </div>
-                  <div class="text-sm font-medium">
+                  <div class="text-sm font-medium tracking-wide">
                     {{ t('search.title') }}
                   </div>
                 </div>

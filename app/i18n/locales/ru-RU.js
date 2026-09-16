@@ -616,6 +616,8 @@ export default {
     },
     status: {
       offline: 'Оффлайн',
+      offlinePreparing: 'Загрузка оффлайн-режима...',
+      offlineReady: 'Доступно оффлайн',
       pending: 'Не синхронизировано: {count}',
       uploadError: 'Ошибка синхронизации - часть изменений не доходит до сервера',
     },
