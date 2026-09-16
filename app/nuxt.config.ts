@@ -194,6 +194,8 @@ export default defineNuxtConfig({
   pwa: {
     client: {
       installPrompt: true,
+      // Long-lived PWA sessions never navigate, so poll for a new sw.js as well.
+      periodicSyncForUpdates: 20 * 60,
       registerPlugin: true,
     },
     devOptions: {
@@ -248,9 +250,11 @@ export default defineNuxtConfig({
       start_url: '/dashboard',
       theme_color: '#171717',
     },
-    registerType: 'autoUpdate',
+    // A new build installs in the background and waits; the account status line offers the
+    // restart instead of reloading the app under the user.
+    registerType: 'prompt',
     workbox: {
-      globIgnores: ['**/200*', '**/404*'],
+      globIgnores: ['**/200*', '**/404*', 'og-image.png', 'screenshot-*.png'],
       globPatterns: [
         '**/*.{js,json,css,html,png,svg,ico,woff2}',
         '**/*.wasm',
@@ -258,15 +262,18 @@ export default defineNuxtConfig({
       importScripts: ['/sw-push.js'],
       manifestTransforms: [
         (entries) => {
-          const hasWasm = entries.some(e =>
-            /powersync-assets\/wa-sqlite-async-.*\.wasm$/.test(e.url),
+          // The runtime loads exactly one wasm build. Vite's own copies under _nuxt/ and the
+          // mc-/sync variants would add ~12 MB to every install on a phone.
+          const manifest = entries.filter(e =>
+            !e.url.endsWith('.wasm') || /powersync-assets\/wa-sqlite-async-.*\.wasm$/.test(e.url),
           )
+          const hasWasm = manifest.some(e => e.url.endsWith('.wasm'))
           if (!hasWasm) {
             throw new Error(
               'PWA precache manifest is missing the wa-sqlite WASM - offline-first start would break in prod. Check the wasm filename/glob in nuxt.config.ts.',
             )
           }
-          return { manifest: entries }
+          return { manifest }
         },
       ],
       maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,

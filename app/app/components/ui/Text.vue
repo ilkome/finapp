@@ -11,7 +11,7 @@ const variantClass = computed(() => ({
   control: 'text-sm leading-none font-semibold',
   display: 'font-secondary text-3xl leading-none font-semibold',
   meta: 'text-xs leading-none text-muted',
-  navigation: 'text-sm leading-none font-medium',
+  navigation: 'text-sm leading-none font-medium tracking-wide',
   section: 'font-tertiary text-base leading-none font-semibold text-muted',
 })[props.variant])
 </script>

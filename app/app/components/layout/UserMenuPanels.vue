@@ -93,7 +93,7 @@ function back() {
   panelStack.value = panelStack.value.slice(0, -1)
 }
 
-const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm interactive px-2 py-1.5 text-left text-sm font-medium'
+const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm interactive px-2 py-1.5 text-left text-sm font-medium tracking-wide text-toned'
 const iconSlotClass = 'flex min-w-7 justify-center'
 </script>
 
