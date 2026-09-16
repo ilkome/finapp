@@ -616,7 +616,11 @@ export default {
     },
     status: {
       offline: 'Offline',
+      offlinePreparing: 'Preparing offline mode...',
+      offlineReady: 'Works offline',
       pending: '{count} change(s) not synced',
+      updateReady: 'Update ready - tap to restart',
+      updating: 'Downloading update...',
       uploadError: 'Sync error - some changes are not reaching the server',
     },
   },

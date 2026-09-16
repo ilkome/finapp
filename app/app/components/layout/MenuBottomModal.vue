@@ -26,8 +26,11 @@ async function updateDemo() {
 }
 
 async function clearCachesAndReload() {
+  // Workbox fills the precache only during install. Deleting the caches under a live worker
+  // leaves it activated with an empty precache and kills offline start until the next deploy,
+  // so drop the registration too: the reload registers and installs it from scratch.
   if ('serviceWorker' in navigator)
-    await navigator.serviceWorker.getRegistration().then(reg => reg?.update())
+    await navigator.serviceWorker.getRegistration().then(reg => reg?.unregister())
   if ('caches' in window)
     await caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
   location.reload()
@@ -51,13 +54,13 @@ async function clearCachesAndReload() {
             <LayoutUserMenuPanels @close="emit('close')">
               <template #root>
                 <div
-                  class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-muted"
+                  class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-toned"
                   @click="onSearchClick"
                 >
                   <div class="flex min-w-7 items-center justify-center">
                     <Icon name="lucide:search" size="22" class="leading-none" />
                   </div>
-                  <div class="text-sm font-medium">
+                  <div class="text-sm font-medium tracking-wide">
                     {{ t('search.title') }}
                   </div>
                 </div>

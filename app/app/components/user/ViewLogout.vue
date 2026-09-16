@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useOfflineReady } from '~/components/app/useOfflineReady'
 import { useSyncStatus } from '~/components/app/useSyncStatus'
 import { useUserStore } from '~/components/user/useUserStore'
 
@@ -9,6 +10,7 @@ const props = defineProps<{
 const userStore = useUserStore()
 const { t } = useI18n()
 const { hasIssue, status } = useSyncStatus()
+const { applyUpdate, offlineState } = useOfflineReady()
 </script>
 
 <template>
@@ -36,6 +38,17 @@ const { hasIssue, status } = useSyncStatus()
           <div v-if="status.uploadError" class="text-error">
             {{ t('sync.status.uploadError') }}
           </div>
+        </div>
+        <button
+          v-else-if="offlineState === 'updateReady'"
+          type="button"
+          class="mt-1 block text-xs text-primary"
+          @click="applyUpdate"
+        >
+          {{ t('sync.status.updateReady') }}
+        </button>
+        <div v-else-if="offlineState !== 'unavailable'" class="mt-1 text-xs text-muted">
+          {{ t(`sync.status.${offlineState === 'ready' ? 'offlineReady' : offlineState === 'updating' ? 'updating' : 'offlinePreparing'}`) }}
         </div>
       </div>
     </div>
