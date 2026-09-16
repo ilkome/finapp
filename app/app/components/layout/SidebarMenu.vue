@@ -23,6 +23,7 @@ const menuItems = computed(() => source === 'itemsModal' ? itemsModal.value : it
         :item
         :menuId
         :isShowText
+        :tone="source === 'itemsModal' ? 'toned' : 'muted'"
       />
     </UTooltip>
   </div>

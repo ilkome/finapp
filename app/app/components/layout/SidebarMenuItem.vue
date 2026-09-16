@@ -3,11 +3,13 @@ import type { MenuItem } from '~/components/layout/useMenuData'
 
 import { useMenuData } from '~/components/layout/useMenuData'
 
-const { isShowText = true, item, menuId, position } = defineProps<{
+const { isShowText = true, item, menuId, position, tone = 'muted' } = defineProps<{
   isShowText?: boolean
   item: MenuItem
   menuId: string
   position?: 'bottom'
+  /** `toned` matches the account-panel rows in the mobile sheet; the sidebar stays muted. */
+  tone?: 'muted' | 'toned'
 }>()
 
 const { checkIsActive, onClick } = useMenuData()
@@ -18,7 +20,7 @@ const badgeLabel = computed(() => (item.badge ?? 0) > 9 ? '9+' : String(item.bad
 <template>
   <div
     :class="cn('group flex min-h-11 items-center rounded-md interactive px-2 py-1.5 md:min-h-9.5',
-               checkIsActive(menuId) ? 'text-primary' : 'text-toned',
+               checkIsActive(menuId) ? 'text-primary' : tone === 'toned' ? 'text-toned' : 'text-muted',
                isShowText && 'gap-3',
     )"
     @click="onClick(menuId)"
