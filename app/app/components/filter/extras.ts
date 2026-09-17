@@ -8,7 +8,7 @@ import type { TrnItem, TrnsViewType } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { getAmountInRate } from '~/components/amount/getTotal'
-import { formatAmount } from '~/components/amount/utils'
+import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
 import { matchesTrnViewType } from '~/components/trns/tabClassification'
 import { trnsViewTypes } from '~/components/trns/types'
 
@@ -18,13 +18,14 @@ export type FilterExtras = {
   amountMax: number | null
   amountMin: number | null
   desc: FilterDescMode
+  descText: string
   search: string
   type: TrnsViewType
 }
 
 export type ExtrasChip = {
   icon: string
-  key: 'amount' | 'desc' | 'search' | 'type'
+  key: 'amount' | 'desc' | 'descText' | 'search' | 'type'
   label: string
   patch: Partial<FilterExtras>
   tooltip: string
@@ -43,6 +44,7 @@ export const filterExtrasSchema = z.object({
   amountMax: z.number().nullable(),
   amountMin: z.number().nullable(),
   desc: z.enum(['all', 'with', 'without']),
+  descText: z.string(),
   search: z.string(),
   type: z.enum(trnsViewTypes),
 }) satisfies z.ZodType<FilterExtras>
@@ -51,6 +53,7 @@ export const defaultFilterExtras: FilterExtras = {
   amountMax: null,
   amountMin: null,
   desc: 'all',
+  descText: '',
   search: '',
   type: 'all',
 }
@@ -85,6 +88,7 @@ export function parseFilterExtras(query: LocationQuery): FilterExtras {
     amountMax: parseNumber(query.filterAmountMax),
     amountMin: parseNumber(query.filterAmountMin),
     desc: descModes.includes(desc) ? desc : 'all',
+    descText: firstQueryValue(query.filterDescText).trim(),
     search: firstQueryValue(query.filterSearch).trim(),
     type: trnsViewTypes.includes(type) ? type : 'all',
   }
@@ -95,6 +99,7 @@ export function extrasToQuery(extras: FilterExtras): Record<string, string | und
     filterAmountMax: extras.amountMax === null ? undefined : String(extras.amountMax),
     filterAmountMin: extras.amountMin === null ? undefined : String(extras.amountMin),
     filterDesc: extras.desc === 'all' ? undefined : extras.desc,
+    filterDescText: extras.descText.trim() || undefined,
     filterSearch: extras.search.trim() || undefined,
     filterType: extras.type === 'all' ? undefined : extras.type,
   }
@@ -106,15 +111,21 @@ export function countActiveExtras(extras: FilterExtras): number {
   return (extras.type !== 'all' ? 1 : 0)
     + (extras.search.trim() ? 1 : 0)
     + (extras.desc !== 'all' ? 1 : 0)
+    + (extras.descText.trim() ? 1 : 0)
     + (extras.amountMin !== null || extras.amountMax !== null ? 1 : 0)
 }
 
 export function isSameExtras(a: FilterExtras, b: FilterExtras): boolean {
   return a.type === b.type
     && a.desc === b.desc
+    && a.descText.trim() === b.descText.trim()
     && a.search.trim() === b.search.trim()
     && a.amountMin === b.amountMin
     && a.amountMax === b.amountMax
+}
+
+function cutLabel(text: string): string {
+  return text.length > 24 ? `${text.slice(0, 24)}…` : text
 }
 
 function formatAmountRange(extras: FilterExtras, currency: CurrencyCode): string {
@@ -123,21 +134,23 @@ function formatAmountRange(extras: FilterExtras, currency: CurrencyCode): string
   const range = min !== null && max !== null
     ? `${min} - ${max}`
     : min !== null ? `≥ ${min}` : `≤ ${max}`
-  return `${range} ${currency}`
+  return `${range} ${getCurrencySymbol(currency)}`
 }
 
 export function extrasChips(extras: FilterExtras, currency: CurrencyCode, labels: ExtrasChipLabels): ExtrasChip[] {
   const chips: ExtrasChip[] = []
   const search = extras.search.trim()
+  const descText = extras.descText.trim()
 
   if (extras.type !== 'all') {
     const label = labels.types[extras.type]
     chips.push({ icon: typeIcons[extras.type], key: 'type', label, patch: { type: 'all' }, tooltip: `${labels.type}: ${label}` })
   }
   if (search) {
-    const label = search.length > 24 ? `${search.slice(0, 24)}…` : search
-    chips.push({ icon: 'lucide:search', key: 'search', label: `“${label}”`, patch: { search: '' }, tooltip: `${labels.search}: “${search}”` })
+    chips.push({ icon: 'lucide:search', key: 'search', label: `“${cutLabel(search)}”`, patch: { search: '' }, tooltip: `${labels.search}: “${search}”` })
   }
+  if (descText)
+    chips.push({ icon: 'lucide:text', key: 'descText', label: `“${cutLabel(descText)}”`, patch: { descText: '' }, tooltip: `${labels.desc}: “${descText}”` })
   if (extras.desc !== 'all') {
     const label = labels.descMode[extras.desc]
     chips.push({ icon: 'lucide:text', key: 'desc', label, patch: { desc: 'all' }, tooltip: `${labels.desc}: ${label}` })
@@ -158,13 +171,14 @@ export type ExtrasMatcherContext = {
 
 /**
  * Amount is compared unsigned in the base currency, so `min` keeps both large expenses and large incomes.
- * Search matches the description, the category path (`Parent / Child`) and the wallet name(s).
+ * Search matches the description, the category path (`Parent / Child`) and the wallet name(s); `descText` matches the description only.
  */
 export function createExtrasMatcher(extras: FilterExtras, ctx: ExtrasMatcherContext): (trn: TrnItem | undefined) => boolean {
   if (countActiveExtras(extras) === 0)
     return trn => !!trn
 
   const search = extras.search.trim().toLocaleLowerCase()
+  const descText = extras.descText.trim().toLocaleLowerCase()
   const { amountMax, amountMin, desc, type } = extras
 
   function amountInBase(trn: TrnItem): number {
@@ -196,6 +210,8 @@ export function createExtrasMatcher(extras: FilterExtras, ctx: ExtrasMatcherCont
     if (desc === 'with' && !description)
       return false
     if (desc === 'without' && description)
+      return false
+    if (descText && !description.toLocaleLowerCase().includes(descText))
       return false
     if (search && !searchTargets(trn, description).some(target => target.toLocaleLowerCase().includes(search)))
       return false

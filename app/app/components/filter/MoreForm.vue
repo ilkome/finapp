@@ -2,6 +2,7 @@
 import type { FilterDescMode, FilterExtras } from '~/components/filter/extras'
 import type { TrnsViewType } from '~/components/trns/types'
 
+import { getCurrencySymbol } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useExtrasLabels } from '~/components/filter/useExtrasLabels'
 
@@ -35,9 +36,11 @@ function toNumber(value: string | number): number | null {
       <div class="text-sm font-medium text-muted">
         {{ t('trns.fields.description') }}
       </div>
-      <UiSearchInput
-        :modelValue="extras.search"
-        @update:modelValue="extras = { ...extras, search: $event }"
+      <UInput
+        :modelValue="extras.descText"
+        :placeholder="t('trns.filter.enterDescription')"
+        size="xl"
+        @update:modelValue="extras = { ...extras, descText: String($event) }"
       />
       <UiTabs
         :items="descItems"
@@ -49,7 +52,7 @@ function toNumber(value: string | number): number | null {
 
     <div class="grid gap-2">
       <div class="text-sm font-medium text-muted">
-        {{ t('base.filterAmountIn', { currency: currenciesStore.base }) }}
+        {{ t('base.filterAmountIn', { currency: getCurrencySymbol(currenciesStore.base) }) }}
       </div>
       <div class="grid grid-cols-2 gap-2">
         <UInput

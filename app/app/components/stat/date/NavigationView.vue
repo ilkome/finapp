@@ -36,12 +36,11 @@ const emit = defineEmits<{
       <slot name="range" />
     </UiNavArrows>
 
-    <template v-else>
+    <!-- One snap target for tools + range: otherwise the strip parks on the range pill, past the search button. -->
+    <div v-else class="flex shrink-0 snap-start items-center gap-1">
       <slot name="tools" />
-      <div class="shrink-0 snap-start">
-        <slot name="range" />
-      </div>
-    </template>
+      <slot name="range" />
+    </div>
 
     <slot />
   </div>

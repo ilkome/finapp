@@ -39,15 +39,17 @@ const itemClasses = 'shrink-0 rounded-md bg-elevated/30'
         insideClasses="min-h-9.5!"
         @click="emit('remove', chip)"
       />
-      <button
+      <UiText
         v-else
+        as="button"
         type="button"
-        :class="cn(itemClasses, 'flex min-h-9.5 items-center gap-2 interactive px-3 text-sm hover:bg-elevated/50')"
+        class="flex min-h-9.5 grow-0! items-center gap-2 theme-rounded-control interactive bg-elevated px-3 pb-0"
+        variant="control"
         @click="emit('remove', chip)"
       >
-        <Icon :name="chip.icon" size="16" class="text-muted" />
+        <Icon :name="chip.icon" size="16" class="shrink-0 text-muted" />
         <span class="text-nowrap">{{ chip.label }}</span>
-      </button>
+      </UiText>
     </UTooltip>
   </div>
 </template>

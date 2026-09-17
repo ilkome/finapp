@@ -31,7 +31,8 @@ const date = computed(() => {
   const isIntervalSelected = statDate.params.value.intervalSelected !== -1
   const by = isIntervalSelected ? statDate.params.value.granularityBy : statDate.params.value.rangeBy
   const duration = isIntervalSelected ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration
-  const isShowMaxRange = statDate.params.value.isShowMaxRange && !isIntervalSelected
+  if (statDate.params.value.isShowMaxRange && !isIntervalSelected)
+    return t('dates.ranges.allTime')
 
   return formatRangeWithLast(
     {
@@ -40,7 +41,6 @@ const date = computed(() => {
       end: new Date(range.value.end),
       start: new Date(range.value.start),
     },
-    isShowMaxRange,
   )
 })
 </script>
@@ -48,9 +48,5 @@ const date = computed(() => {
 <template>
   <div class="flex items-center gap-1 leading-none text-nowrap capitalize">
     {{ date }}
-    <data
-      v-if="statDate.params.value.isShowMaxRange && statDate.params.value.intervalSelected === -1"
-      class="inline-flex w-auto items-center rounded-sm bg-elevated px-1 py-px text-2xs leading-none text-muted"
-    >max</data>
   </div>
 </template>

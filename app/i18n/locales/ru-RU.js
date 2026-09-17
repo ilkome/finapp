@@ -215,6 +215,7 @@ export default {
     ranges: {
       all: 'До сегодня',
       allSkipEmpty: 'Все',
+      allTime: 'Всё время',
     },
     select: 'Период',
     week: {
@@ -714,6 +715,7 @@ export default {
       byCategory: 'Фильтр по категории',
       byDate: 'Фильтр по дате',
       byWallet: 'Фильтр по кошельку',
+      enterDescription: 'Введите описание',
       maximum: 'Максимум',
       minimum: 'Минимум',
       search: 'Поиск транзакций',

@@ -24,7 +24,7 @@ const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 useStatPageProviders({
   config: { stableStorage: true, storageKey },
-  date: { key: storageKey, maxRange, queryParams: () => route.query },
+  date: { initParams: { granularityBy: 'month', isShowMaxRange: true }, key: storageKey, maxRange, queryParams: () => route.query },
   filter,
 })
 provide(statHiddenPanelsKey, hiddenPanels)

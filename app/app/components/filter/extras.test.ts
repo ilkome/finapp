@@ -39,7 +39,7 @@ function extras(patch: Partial<FilterExtras>): FilterExtras {
 
 describe('parseFilterExtras', () => {
   it('round-trips through the query', () => {
-    const value = extras({ amountMax: 500, amountMin: 100, desc: 'with', search: 'milk', type: 'expense' })
+    const value = extras({ amountMax: 500, amountMin: 100, desc: 'with', descText: 'weekly', search: 'milk', type: 'expense' })
     expect(parseFilterExtras(extrasToQuery(value) as any)).toEqual(value)
   })
 
@@ -49,6 +49,7 @@ describe('parseFilterExtras', () => {
       filterAmountMax: undefined,
       filterAmountMin: undefined,
       filterDesc: undefined,
+      filterDescText: undefined,
       filterSearch: undefined,
       filterType: undefined,
     })
@@ -56,7 +57,7 @@ describe('parseFilterExtras', () => {
 
   it('counts each group once', () => {
     expect(countActiveExtras(defaultFilterExtras)).toBe(0)
-    expect(countActiveExtras(extras({ amountMax: 1, amountMin: 1, desc: 'with', search: 'a', type: 'income' }))).toBe(4)
+    expect(countActiveExtras(extras({ amountMax: 1, amountMin: 1, desc: 'with', descText: 'b', search: 'a', type: 'income' }))).toBe(5)
   })
 })
 
@@ -81,6 +82,12 @@ describe('createExtrasMatcher', () => {
     expect([expense, income].filter(createExtrasMatcher(extras({ search: 'GROCER' }), ctx))).toEqual([expense])
   })
 
+  it('descText matches the description only', () => {
+    expect([expense, income, transfer].filter(createExtrasMatcher(extras({ descText: 'grocer' }), ctx))).toEqual([expense])
+    expect([expense, income, transfer].filter(createExtrasMatcher(extras({ descText: 'food' }), ctx))).toEqual([])
+    expect([expense, income, transfer].filter(createExtrasMatcher(extras({ descText: 'dollar' }), ctx))).toEqual([])
+  })
+
   it('searches the category path and wallet names too', () => {
     expect([expense, income, transfer].filter(createExtrasMatcher(extras({ search: 'home / food' }), ctx))).toEqual([expense])
     expect([expense, income, transfer].filter(createExtrasMatcher(extras({ search: 'salary' }), ctx))).toEqual([income])
@@ -99,18 +106,19 @@ describe('createExtrasMatcher', () => {
 
 describe('extrasChips', () => {
   it('builds one chip per group with a reset patch', () => {
-    const chips = extrasChips(extras({ amountMin: 100, desc: 'without', search: 'a'.repeat(30), type: 'expense' }), 'USD', labels)
-    expect(chips.map(c => c.key)).toEqual(['type', 'search', 'desc', 'amount'])
+    const chips = extrasChips(extras({ amountMin: 100, desc: 'without', descText: 'milk', search: 'a'.repeat(30), type: 'expense' }), 'USD', labels)
+    expect(chips.map(c => c.key)).toEqual(['type', 'search', 'descText', 'desc', 'amount'])
     expect(chips[0]).toMatchObject({ label: 'Expense', patch: { type: 'all' }, tooltip: 'Type: Expense' })
     expect(chips[1]!.label).toBe(`“${'a'.repeat(24)}…”`)
     expect(chips[1]!.tooltip).toBe(`Search: “${'a'.repeat(30)}”`)
-    expect(chips[2]).toMatchObject({ patch: { desc: 'all' }, tooltip: 'Description: Without description' })
-    expect(chips[3]).toMatchObject({ label: '≥ 100.00 USD', patch: { amountMax: null, amountMin: null }, tooltip: 'Amount: ≥ 100.00 USD' })
+    expect(chips[2]).toMatchObject({ label: '“milk”', patch: { descText: '' }, tooltip: 'Description: “milk”' })
+    expect(chips[3]).toMatchObject({ patch: { desc: 'all' }, tooltip: 'Description: Without description' })
+    expect(chips[4]).toMatchObject({ label: '≥ 100.00 $', patch: { amountMax: null, amountMin: null }, tooltip: 'Amount: ≥ 100.00 $' })
   })
 
   it('formats two-sided and max-only ranges', () => {
-    expect(extrasChips(extras({ amountMax: 500, amountMin: 100 }), 'USD', labels)[0]!.label).toBe('100.00 - 500.00 USD')
-    expect(extrasChips(extras({ amountMax: 500 }), 'USD', labels)[0]!.label).toBe('≤ 500.00 USD')
+    expect(extrasChips(extras({ amountMax: 500, amountMin: 100 }), 'USD', labels)[0]!.label).toBe('100.00 - 500.00 $')
+    expect(extrasChips(extras({ amountMax: 500 }), 'USD', labels)[0]!.label).toBe('≤ 500.00 $')
     expect(extrasChips(defaultFilterExtras, 'USD', labels)).toEqual([])
   })
 })

@@ -215,6 +215,7 @@ export default {
     ranges: {
       all: 'To today',
       allSkipEmpty: 'All',
+      allTime: 'All time',
     },
     select: 'Select period',
     week: {
@@ -714,6 +715,7 @@ export default {
       byCategory: 'Filter by category',
       byDate: 'Filter by date',
       byWallet: 'Filter by wallet',
+      enterDescription: 'Enter description',
       maximum: 'Maximum',
       minimum: 'Minimum',
       search: 'Search transactions',
