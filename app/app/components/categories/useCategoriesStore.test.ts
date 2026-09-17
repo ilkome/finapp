@@ -208,6 +208,21 @@ describe('useCategoriesStore', () => {
     })
   })
 
+  describe('getWithParent', () => {
+    it('returns the category with its parent, no parent for roots, null when missing', () => {
+      const store = useCategoriesStore()
+      store.setCategories(cats({
+        c1: category({ name: 'Root' }),
+        c2: category({ name: 'Child', parentId: 'c1' }),
+      }))
+
+      expect(store.getWithParent('c1')?.parentCategory).toBeUndefined()
+      expect(store.getWithParent('c2')?.parentCategory?.name).toBe('Root')
+      expect(store.getWithParent('c2')?.category.name).toBe('Child')
+      expect(store.getWithParent('nope')).toBeNull()
+    })
+  })
+
   describe('children-map (hasChildren / getChildrenIds)', () => {
     it('returns a root\'s children, sorted by name', () => {
       const store = useCategoriesStore()

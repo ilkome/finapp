@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { walletDisplayModes, walletSelectionModes, walletValueModes } from '~/components/stat/config/schema'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const walletsStore = useWalletsStore()
 const displayModeItems = computed(() => walletDisplayModes.map(value => ({
   label: t(`stat.config.wallets.displayModes.${value}`),
@@ -35,7 +35,7 @@ const valueModeItems = computed(() => walletValueModes.map(value => ({
         :aria-label="t('stat.config.wallets.selectionMode')"
         :content="{ position: 'item-aligned' }"
         :items="selectionModeItems"
-        :modelValue="statConfig.config.value.wallets.selectionMode"
+        :modelValue="statConfig.wallets.value.selectionMode"
         :ui="{ content: 'z-[60]' }"
         @update:modelValue="value => statConfig.updateConfig('wallets', { selectionMode: value as typeof walletSelectionModes[number] })"
       />
@@ -47,7 +47,7 @@ const valueModeItems = computed(() => walletValueModes.map(value => ({
         :aria-label="t('stat.config.wallets.valueMode')"
         :content="{ position: 'item-aligned' }"
         :items="valueModeItems"
-        :modelValue="statConfig.config.value.wallets.valueMode"
+        :modelValue="statConfig.wallets.value.valueMode"
         :ui="{ content: 'z-[60]' }"
         @update:modelValue="value => statConfig.updateConfig('wallets', { valueMode: value as typeof walletValueModes[number] })"
       />
@@ -59,19 +59,19 @@ const valueModeItems = computed(() => walletValueModes.map(value => ({
         :aria-label="t('stat.config.wallets.displayMode')"
         :content="{ position: 'item-aligned' }"
         :items="displayModeItems"
-        :modelValue="statConfig.config.value.wallets.displayMode"
+        :modelValue="statConfig.wallets.value.displayMode"
         :ui="{ content: 'z-[60]' }"
         @update:modelValue="value => statConfig.updateConfig('wallets', { displayMode: value as typeof walletDisplayModes[number] })"
       />
     </StatConfigFieldRow>
 
     <StatConfigFieldRow
-      v-if="statConfig.config.value.wallets.displayMode === 'recent'"
+      v-if="statConfig.wallets.value.displayMode === 'recent'"
       parameterId="wallets.count"
       :title="t('stat.config.wallets.count')"
     >
       <UiNumberStepper
-        :modelValue="statConfig.config.value.wallets.count"
+        :modelValue="statConfig.wallets.value.count"
         :min="1"
         :max="walletsStore.sortedIds.length"
         @update:modelValue="value => statConfig.updateConfig('wallets', { count: value })"

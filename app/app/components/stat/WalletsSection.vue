@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { StatWalletRecord } from '~/components/stat/wallets/View.vue'
 import type { WalletId } from '~/components/wallets/types'
 
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 import { getNextWalletFilterIds, getSortedFilterWalletsIds } from '~/components/stat/utils'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -17,52 +18,43 @@ const emit = defineEmits<{
   'update:selectedWalletIds': [walletIds: WalletId[]]
 }>()
 
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
 
-const sortedFilterWalletsIds = computed(() => getSortedFilterWalletsIds(
+const walletsConfig = computed(() => statConfig.wallets.value)
+
+const items = computed<StatWalletRecord[]>(() => getSortedFilterWalletsIds(
   props.selectedWalletIds,
   walletsStore.sortedIds,
   props.periodWalletIds,
-  statConfig.config.value.wallets.isShow,
-  statConfig.config.value.wallets.count,
-  statConfig.config.value.wallets.displayMode,
-  props.isCategoryFocusActive && statConfig.config.value.wallets.displayMode === 'period',
-))
+  walletsConfig.value.isShow,
+  walletsConfig.value.count,
+  walletsConfig.value.displayMode,
+  props.isCategoryFocusActive && walletsConfig.value.displayMode === 'period',
+).flatMap((walletId) => {
+  const wallet = walletsStore.itemsComputed?.[walletId]
+  return wallet
+    ? [{
+        amount: walletsConfig.value.valueMode === 'period' ? props.walletPeriodTotals[walletId] ?? 0 : undefined,
+        isSelected: props.selectedWalletIds.includes(`${walletId}`),
+        wallet,
+        walletId,
+      }]
+    : []
+}))
 
-function onClickWallet(walletId: WalletId) {
-  const nextWalletIds = getNextWalletFilterIds(
-    props.selectedWalletIds,
-    walletId,
-    statConfig.config.value.wallets.selectionMode,
-  )
-  emit('update:selectedWalletIds', nextWalletIds)
+function onSelect(walletId: WalletId) {
+  emit('update:selectedWalletIds', getNextWalletFilterIds(props.selectedWalletIds, walletId, walletsConfig.value.selectionMode))
   trnsFormStore.values.walletId = walletId
 }
 </script>
 
 <template>
-  <div
-    v-if="statConfig.config.value.wallets.isShow"
-    class="relative isolate z-0 -mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
-    data-stat-block="wallets"
-    data-stat-wallets-section
-  >
-    <div class="flex shrink-0 gap-2">
-      <WalletsItem
-        v-for="walletId in sortedFilterWalletsIds"
-        :key="walletId"
-        :activeItemId="props.selectedWalletIds.includes(`${walletId}`) ? walletId : null"
-        :amount="statConfig.config.value.wallets.valueMode === 'period' ? props.walletPeriodTotals[walletId] ?? 0 : undefined"
-        :walletId
-        :wallet="walletsStore.itemsComputed?.[walletId]!"
-        :isShowIcon="statConfig.config.value.wallets.isShowIcon"
-        bodyClass="snap-start snap-always"
-        insideClasses="min-h-9.5!"
-        compact
-        @click="onClickWallet(walletId)"
-      />
-    </div>
-  </div>
+  <StatWalletsView
+    v-if="walletsConfig.isShow"
+    :isShowIcon="walletsConfig.isShowIcon"
+    :items
+    @select="onSelect"
+  />
 </template>

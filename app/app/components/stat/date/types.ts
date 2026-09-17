@@ -32,7 +32,6 @@ export type StatRangePanDirection = 'future' | 'past'
 export type UseStatDateOptions = {
   initParams?: Partial<StatDateParams>
   key: MaybeRefOrGetter<string>
-  legacyKey?: MaybeRefOrGetter<string | undefined>
   maxRange: ComputedRef<Range>
   overrideStoredWithInitParams?: boolean
   queryParams?: MaybeRefOrGetter<Partial<StatDateParamsQuery>>

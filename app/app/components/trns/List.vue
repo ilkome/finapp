@@ -3,6 +3,7 @@ import type { TrnsDisplayRow } from '~/components/trns/listRows'
 import type { TrnId, TrnsListFilterState } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { buildTrnsDisplayRows } from '~/components/trns/listRows'
 import { useTrnsListFilters } from '~/components/trns/useTrnsListFilters'
@@ -43,6 +44,7 @@ const emit = defineEmits<{
 const trnsStore = useTrnsStore()
 const trnsFormStore = useTrnsFormStore()
 
+const currenciesStore = useCurrenciesStore()
 const { computeTotalForTrnsIds } = useAmount()
 const { t } = useI18n()
 const pageNumber = ref(1)
@@ -139,6 +141,7 @@ function onOpenTrnForm(date: number) {
         class="border-b border-accented pr-3 pb-2 opacity-60"
       >
         <TrnsListGroupSum
+          :currencyCode="currenciesStore.base"
           :expense="paginatedTotal.expense"
           :income="paginatedTotal.income"
         />

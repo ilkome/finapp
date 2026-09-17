@@ -1,0 +1,24 @@
+{
+  "chartConfig": {
+    "breakdown": "cashflow",
+    "grouping": "parent",
+    "isGrouped": false,
+    "isShow": true,
+    "isShowAverage": true,
+    "isShowBackground": false,
+    "isShowScale": true,
+    "layout": "combined-wide",
+    "line": { "isGradient": true, "isShowPoints": false, "isSkipZero": false, "isSmooth": true },
+    "pie": { "isShowLabels": true, "isShowPercent": true, "shape": "donut" },
+    "type": "bar",
+    "valueDisplay": "magnitude"
+  },
+  "chartType": "bar",
+  "period": "day",
+  "range": { "end": 1789084800000, "start": 1787961600000 },
+  "series": [
+    { "color": "#e0745a", "data": [120, 80, 0, 45, 300, 12, 90], "name": "expense", "type": "bar" },
+    { "color": "#5ac07a", "data": [0, 0, 1500, 0, 0, 0, 0], "name": "income", "type": "bar" }
+  ],
+  "xAxisLabels": [1787961600000, 1788048000000, 1788134400000, 1788220800000, 1788307200000, 1788393600000, 1788480000000]
+}

@@ -8,11 +8,10 @@ import type { StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
-import { useFilter } from '~/components/filter/useFilter'
-import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
+import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
-import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
+import { useStatDrilldownPage } from '~/components/stat/page/useStatDrilldownPage'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
@@ -27,7 +26,6 @@ const route = useRoute()
 const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
-const filter = useFilter({ canFilterCategories: false })
 const { statHeader } = useStatPageHost()
 const deleteChildId = ref<CategoryId | null>(null)
 
@@ -90,13 +88,10 @@ const categoryDetailHistoryPattern = /^\/categories\/[^/]+$/
 const childrenIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
 // Falls back to [self] so a leaf category still scopes its own trns query
 const categoriesIdsOrParent = computed(() => categoriesStore.getChildrenIdsOrParent(categoryId.value))
-const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
-const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
-const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
+const { isStatDrilldown, statSnapshot, storage, storageKey, storageQuery } = useStatDrilldownPage({ id: categoryId, kind: 'category' })
 const contextBlockIds = computed(() => childrenIds.value.length > 0 && !isStatDrilldown
   ? ['categoryChildren'] as const
   : [])
-const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
 
 const allTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
   categoriesIds: categoriesIdsOrParent.value,
@@ -127,30 +122,21 @@ const singleTrnType = computed<StatReportType | null>(() => {
 })
 
 const reportType = computed<StatReportType>(() => singleTrnType.value ?? statSnapshot?.reportType ?? 'combined')
-const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-category-${categoryId.value}` : `page-${categoryId.value}`)
-const legacyTab = localStorage.getItem(`page-${categoryId.value}-tab`)?.replaceAll('"', '')
-const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `page-${categoryId.value}-${legacyTab}` : undefined)
 
-useStatFilterStorage({
-  filter,
-  storage: isStatDrilldown ? sessionStorage : localStorage,
+const { filter, filterTrnsIds } = useStatPageFilter({
+  canFilterCategories: false,
+  storage,
   storageKey,
 })
 
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter.categoriesIds.value,
-  trnsIds: allTrnsIds.value,
-  walletsIds: filter?.walletsIds?.value ?? [],
-}))
+const trnsIds = computed(() => filterTrnsIds({ trnsIds: allTrnsIds.value }))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const { contentWidth, statConfig, statDate } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
-    legacyStorageKey,
-    legacyTab,
-    storage: isStatDrilldown ? sessionStorage : localStorage,
+    storage,
     storageKey,
     storageQuery,
   },
@@ -165,11 +151,10 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
       rangeDuration: differenceInDays(maxRange.value.end, maxRange.value.start),
     },
     key: storageKey,
-    legacyKey: legacyStorageKey,
     maxRange,
     overrideStoredWithInitParams: isStatDrilldown,
     queryParams: () => route.query,
-    storage: isStatDrilldown ? sessionStorage : localStorage,
+    storage,
   },
   filter,
   initialTrnsViewState: statSnapshot?.trns,

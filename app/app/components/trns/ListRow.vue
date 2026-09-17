@@ -3,6 +3,7 @@ import type { TrnsDisplayRow } from '~/components/trns/listRows'
 import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useDateFormats } from '~/composables/useDateFormats'
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 
 const trnsStore = useTrnsStore()
 const selection = inject(trnsSelectionKey, null)
+const currenciesStore = useCurrenciesStore()
 const { computeTotalForTrnsIds } = useAmount()
 const { formatDate } = useDateFormats()
 
@@ -64,6 +66,7 @@ const rowTotal = computed(() => props.row.type === 'dateHeader' && props.row.trn
       class="opacity-60"
     >
       <TrnsListGroupSum
+        :currencyCode="currenciesStore.base"
         :expense="rowTotal.expense"
         :income="rowTotal.income"
       />

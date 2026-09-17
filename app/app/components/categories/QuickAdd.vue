@@ -3,16 +3,16 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { compareCategoryIds } from '~/components/categories/utils'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 
 // Same source and look as the round categories block, so the empty-period placeholder
 // follows the view settings instead of its own rules.
-const roundConfig = computed(() => statConfig.config.value.categories.round)
+const roundConfig = computed(() => statConfig.categories.value.round)
 
 const categoryIds = computed(() => {
   const ids = new Set<CategoryId>([

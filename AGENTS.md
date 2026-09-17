@@ -33,6 +33,13 @@ Do not duplicate those details here. Inspect their source when the task depends 
 - Demo mode bypasses PowerSync and uses its own in-memory and localforage persistence path.
 - The in-app review browser cannot start a module `SharedWorker`, so PowerSync's multi-tab worker dies there. Run `pnpm dev:review` (sets `VITE_POWERSYNC_SINGLE_TAB=1`) for that browser only; every other run must keep the shared-worker path.
 
+## Pure UI views
+
+- Components named `*View.vue` under `app/app/components/{stat,wallets,categories,trns,filter}/` are pure: props in, emits out. They never import a store, call `inject()`, `useRoute()`, or read app state; labels arrive as props and `t()` is only for static UI strings.
+- A `View` prop type must be JSON-serializable (no refs, functions, class instances, or `Date`; dates are ms-epoch numbers). `stat/blocks/payload.ts` holds the zod schema for every block a producer can hand to `StatBlocksRenderer`; extend it when a view's props change.
+- Sections and containers (`*Section.vue`, `stat/report/*`, `filter/Selected.vue`, ...) own every store and provider call and pass plain values down.
+- Every `View` has a `*.view.test.ts` that mounts it from a fixture under `stat/fixtures/` (vitest project `view`).
+
 ## Domain invariants
 
 - `TrnType` values are Expense `0`, Income `1`, and Transfer `2`.

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { Range } from '~~/utils/date/types'
 
-import { useFilter } from '~/components/filter/useFilter'
-import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
+import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
@@ -14,30 +13,22 @@ const { t } = useI18n()
 const route = useRoute()
 const trnsStore = useTrnsStore()
 
-const filter = useFilter()
 const { statHeader } = useStatPageHost()
 
-const legacyTab = localStorage.getItem('dashboard-tab')?.replaceAll('"', '')
-const legacyStorageKey = legacyTab ? `dashboard-${legacyTab}` : undefined
 const storageKey = 'dashboard'
 
-useStatFilterStorage({ filter, storageKey })
+const { filter, filterTrnsIds } = useStatPageFilter({ storageKey })
 
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter?.categoriesIds?.value,
-  walletsIds: filter?.walletsIds?.value,
-}))
-const walletSourceTrnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter?.categoriesIds?.value,
-}))
+const trnsIds = computed(() => filterTrnsIds())
+const walletSourceTrnsIds = computed(() => filterTrnsIds({ walletsIds: undefined }))
 
 const baseMaxRange = computed(() => trnsStore.getRange(walletSourceTrnsIds.value))
 const contextualMaxRange = shallowRef<Range | null>(null)
 const maxRange = computed(() => contextualMaxRange.value ?? baseMaxRange.value)
 
 const { contentWidth, statConfig, statDate } = useStatPageProviders({
-  config: { legacyStorageKey, legacyTab, stableStorage: true, storageKey },
-  date: { key: storageKey, legacyKey: legacyStorageKey, maxRange, queryParams: () => route.query },
+  config: { stableStorage: true, storageKey },
+  date: { key: storageKey, maxRange, queryParams: () => route.query },
   filter,
 })
 const contextRange = computed(() => resolveStatSelectionRange(

@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { statConfigKey, statDateKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const orderedOptionIds = computed(() => {
-  const selected = new Set(statConfig.config.value.date.quickRangeIds)
-  return statConfig.config.value.date.quickRangeOrderIds.filter(id => selected.has(id))
+  const selected = new Set(statConfig.date.value.quickRangeIds)
+  return statConfig.date.value.quickRangeOrderIds.filter(id => selected.has(id))
 })
 </script>
 

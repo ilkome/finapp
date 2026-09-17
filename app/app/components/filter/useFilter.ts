@@ -1,7 +1,9 @@
 import type { CategoryId } from '~/components/categories/types'
+import type { FilterExtras } from '~/components/filter/extras'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { countActiveExtras, extrasToQuery, parseFilterExtras } from '~/components/filter/extras'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 function createQueryFilter<T extends string>(
@@ -83,32 +85,39 @@ export function useFilter(options: {
   const categories = createQueryFilter<CategoryId>(route, router, 'filterCategories', id => !!categoriesStore.items[id])
   const walletsIds = computed(() => canFilterWallets ? wallets.ids.value : [])
   const categoriesIds = computed(() => canFilterCategories ? categories.ids.value : [])
-
-  function clearFilter() {
-    router.push({ query: undefined })
-  }
+  const extras = computed<FilterExtras>(() => parseFilterExtras(route.query))
 
   // Atomic apply of both wallet + category selections in a single navigation.
   // Chaining the per-key setters would race: each reads route.query before the
   // previous push lands, so later pushes drop earlier changes.
-  function applyFilter(nextWallets: WalletId[], nextCategories: CategoryId[]) {
+  function applyFilter(next: { categories: CategoryId[], extras: FilterExtras, wallets: WalletId[] }) {
     router.push({
       query: {
         ...route.query,
-        filterCategories: canFilterCategories && nextCategories.length ? nextCategories : undefined,
-        filterWallets: canFilterWallets && nextWallets.length ? nextWallets : undefined,
+        ...extrasToQuery(next.extras),
+        filterCategories: canFilterCategories && next.categories.length ? next.categories : undefined,
+        filterWallets: canFilterWallets && next.wallets.length ? next.wallets : undefined,
       },
     })
   }
 
-  const isShow = computed(() => categoriesIds.value.length > 0 || walletsIds.value.length > 0)
+  function setExtras(patch: Partial<FilterExtras>) {
+    router.push({
+      query: {
+        ...route.query,
+        ...extrasToQuery({ ...extras.value, ...patch }),
+      },
+    })
+  }
+
+  const isShow = computed(() => categoriesIds.value.length > 0 || walletsIds.value.length > 0 || countActiveExtras(extras.value) > 0)
 
   return {
     applyFilter,
     canFilterCategories,
     canFilterWallets,
     categoriesIds,
-    clearFilter,
+    extras,
     isShow,
     removeCategories: categories.removeMultiple,
     removeCategoryId: categories.removeId,
@@ -116,6 +125,7 @@ export function useFilter(options: {
     removeWallets: wallets.removeMultiple,
     setCategories: categories.setMultiple,
     setCategoryId: categories.setId,
+    setExtras,
     setWallets: wallets.setMultiple,
     toggleCategoryId: categories.toggleId,
     toggleWalletId: wallets.toggleId,

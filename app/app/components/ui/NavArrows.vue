@@ -47,6 +47,8 @@ const emit = defineEmits<{
       <Icon name="lucide:undo-2" size="20" />
     </UiActionButton>
 
+    <slot name="tools" />
+
     <slot />
   </div>
 </template>

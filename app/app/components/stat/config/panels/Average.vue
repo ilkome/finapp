@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 </script>
 
 <template>
   <div class="grid gap-3">
     <StatConfigFieldRow parameterId="average.count" :title="$t('stat.config.statAverage.count.label')">
       <UiNumberStepper
-        :modelValue="statConfig.config.value.average.count"
+        :modelValue="statConfig.average.value.count"
         :min="1"
         @update:modelValue="value => statConfig.updateConfig('average', { count: value })"
       />

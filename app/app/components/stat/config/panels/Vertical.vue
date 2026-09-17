@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 </script>
 
 <template>
   <StatConfigCategoryGroupingSelect
-    :modelValue="statConfig.config.value.categories.bars.grouping"
+    :modelValue="statConfig.categories.value.bars.grouping"
     parameterId="categories.bars.grouping"
     @update:modelValue="value => statConfig.updateConfig('categories', { bars: { grouping: value } })"
   />
@@ -17,7 +17,7 @@ const statConfig = inject(statConfigKey)!
   />
 
   <StatConfigSwitch
-    :disabled="!statConfig.config.value.categories.bars.isShowTooltip"
+    :disabled="!statConfig.categories.value.bars.isShowTooltip"
     path="categories.bars.isShowTooltipChildren"
     :title="$t('stat.config.categories.vertical.showTooltipChildren')"
   />

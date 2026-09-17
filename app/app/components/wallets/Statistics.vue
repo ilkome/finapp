@@ -39,7 +39,7 @@ function menuItems(id: string) {
         :key="item.id"
         :items="menuItems(item.id)"
       >
-        <StatSumItem
+        <StatSumItemView
           :amount="item.value"
           class="min-w-max flex-1 snap-start snap-always @xl/page:min-w-0"
           :currencyCode="currencyCode"

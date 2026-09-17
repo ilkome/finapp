@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { filterKey } from '~/components/filter/injectionKeys'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   isShowNavigation?: boolean
+  isShowSearch?: boolean
 }>(), {
   isShowNavigation: true,
 })
@@ -12,6 +13,10 @@ const filter = inject(filterKey)!
 
 <template>
   <StatDateNavigation :isShowButtons="isShowNavigation">
+    <template v-if="props.isShowSearch" #tools>
+      <FilterSearchToggle />
+    </template>
+
     <FilterButton class="shrink-0 snap-start snap-always" />
     <FilterSelected
       v-if="filter.isShow.value"

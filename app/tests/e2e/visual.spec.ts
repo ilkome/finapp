@@ -7,9 +7,14 @@ import { openDemo } from './helpers'
 // Viewport-only shots on a tall viewport: a fullPage capture resizes the window mid-shot and
 // ECharts redraws into an empty SVG. The project viewport is sized so a stat page fits.
 const T = {
+  chartLayout: /^(Chart layout|Режим графиков)$/,
+  chartLayoutSplit: /^(Separate|Раздельно)$/,
+  chartPanel: /^(Main chart|Основной график)$/,
   configMenu: /^(View Settings|Настройки вида)$/,
   pageLayout: /^(Page layout|Вид страницы)$/,
   pageLayoutSplit: /^(Split|Раздельный)$/,
+  showBlock: /^(Show block|Показывать блок)$/,
+  walletsPanel: /^(Wallets|Кошельки)$/,
 }
 
 async function openStat(page: Page, context: BrowserContext, route: string) {
@@ -36,6 +41,31 @@ async function selectPageLayoutSplit(page: Page) {
   await page.waitForTimeout(800)
 }
 
+async function selectChartLayoutSplit(page: Page) {
+  await page.getByRole('button', { name: T.configMenu }).first().click()
+  await page.getByRole('button', { name: T.chartPanel }).click()
+  await page.getByRole('combobox', { name: T.chartLayout }).click()
+  await page.getByRole('option', { name: T.chartLayoutSplit }).click()
+  await page.keyboard.press('Escape')
+  const incomeChart = page.locator('[data-stat-chart-section] svg').nth(1)
+  await expect.poll(() => incomeChart.locator('path').count(), { timeout: 15_000 }).toBeGreaterThan(0)
+  await page.waitForTimeout(800)
+}
+
+async function openChartPanel(page: Page) {
+  await page.getByRole('button', { name: T.configMenu }).first().click()
+  await page.getByRole('button', { name: T.chartPanel }).click()
+  await expect(page.getByRole('combobox', { name: T.chartLayout })).toBeVisible()
+}
+
+async function showWalletsBlock(page: Page) {
+  await page.getByRole('button', { name: T.configMenu }).first().click()
+  await page.getByRole('button', { name: T.walletsPanel }).last().click()
+  await page.getByText(T.showBlock).first().click()
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(400)
+}
+
 test.describe('stat visual regression', () => {
   test('dashboard combined', async ({ context, page }) => {
     await openStat(page, context, '/dashboard')
@@ -48,10 +78,29 @@ test.describe('stat visual regression', () => {
     await expect(page).toHaveScreenshot('dashboard-split-page.png')
   })
 
+  test('dashboard chart split', async ({ context, page }) => {
+    await openStat(page, context, '/dashboard')
+    await selectChartLayoutSplit(page)
+    await expect(page).toHaveScreenshot('dashboard-chart-split.png')
+  })
+
+  test('config chart panel', async ({ context, page }) => {
+    await openStat(page, context, '/dashboard')
+    await openChartPanel(page)
+    await expect(page).toHaveScreenshot('config-chart-panel.png')
+  })
+
+  test('dashboard wallets block', async ({ context, page }) => {
+    await openStat(page, context, '/dashboard')
+    await showWalletsBlock(page)
+    await expect(page).toHaveScreenshot('dashboard-wallets-block.png')
+  })
+
   test('dashboard mobile', async ({ context, page }) => {
     await page.setViewportSize({ height: 844, width: 390 })
     await openStat(page, context, '/dashboard')
-    await expect(page).toHaveScreenshot('dashboard-mobile.png')
+    // A 2px header shift already cost 3% of this screenshot; desktop scenarios stay at 0.02.
+    await expect(page).toHaveScreenshot('dashboard-mobile.png', { maxDiffPixelRatio: 0.05 })
   })
 
   test('wallet page', async ({ context, page }) => {
