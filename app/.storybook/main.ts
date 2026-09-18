@@ -6,6 +6,8 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { mergeConfig } from 'vite'
 
+import { nuxtComponentName } from './nuxtName'
+
 const appDir = fileURLToPath(new URL('../app', import.meta.url))
 const rootDir = fileURLToPath(new URL('..', import.meta.url))
 const stubsDir = fileURLToPath(new URL('./stubs', import.meta.url))
@@ -33,7 +35,7 @@ function componentUsage() {
     .map(entry => `${entry.parentPath}/${entry.name}`)
   const names = files
     .filter(file => file.startsWith(`${appDir}/components/`))
-    .map(file => file.slice(`${appDir}/components/`.length, -4).split('/').map(part => part[0]!.toUpperCase() + part.slice(1)).join(''))
+    .map(file => nuxtComponentName(file.slice(`${appDir}/components/`.length)))
   const usage: Record<string, { count: number, files: string[] }> = {}
   for (const name of names)
     usage[name] = { count: 0, files: [] }

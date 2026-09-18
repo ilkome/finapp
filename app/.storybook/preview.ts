@@ -13,6 +13,7 @@ import { useAppConfig } from '#imports'
 import { NEUTRAL_COLORS, PRIMARY_COLORS, RADIUSES } from '../app/components/theme/useThemeOptions'
 import { cn } from '../app/composables/useCn'
 import en from '../i18n/locales/en-US.js'
+import { nuxtComponentName } from './nuxtName'
 import Icon from './stubs/Icon.vue'
 import StoryApp from './stubs/StoryApp.vue'
 import '../app/assets/css/main.css'
@@ -50,8 +51,7 @@ function applyAppearance(globals: Record<string, string>) {
 // A dev-server SFC carries its path in `__file`; walk it back to the Nuxt name the usage map uses.
 function usageOf(component: unknown) {
   const file = (component as { __file?: string } | undefined)?.__file?.split('/components/')[1]
-  const name = file?.replace(/\.vue$/, '').split('/').map(part => part[0]!.toUpperCase() + part.slice(1)).join('')
-  return name ? usage[name] : undefined
+  return file ? usage[nuxtComponentName(file)] : undefined
 }
 
 const preview: Preview = {
