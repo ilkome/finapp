@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabsItem } from '@nuxt/ui'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -6,6 +8,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormSubmit } from '~/components/trnForm/useTrnFormSubmit'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { maxHeight = '60vh', sidebarHeader = false } = defineProps<{
@@ -16,11 +19,21 @@ const { maxHeight = '60vh', sidebarHeader = false } = defineProps<{
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsFormStore = useTrnsFormStore()
+const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const { submit } = useTrnFormSubmit()
 const walletId = computed(() =>
   trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
 )
+
+const editedTrnItem = computed(() => trnsFormStore.values.trnId ? trnsStore.computeTrnItem(trnsFormStore.values.trnId) : undefined)
+
+const typeItems = computed<TabsItem[]>(() => [
+  { label: t('money.expense'), value: TrnType.Expense },
+  { label: t('money.income'), value: TrnType.Income },
+  // A transfer needs a second wallet to go to.
+  ...(walletsStore.sortedIds.length > 1 ? [{ label: t('trnForm.transferTitle'), value: TrnType.Transfer }] : []),
+])
 </script>
 
 <template>
@@ -39,14 +52,24 @@ const walletId = computed(() =>
     </UiTitleModal>
 
     <div class="grid gap-3 px-3">
-      <TrnFormEditedTrn v-if="trnsFormStore.values.trnId" />
+      <TrnsItem
+        v-if="editedTrnItem"
+        :trnItem="editedTrnItem"
+        class="group mx-3 rounded-lg bg-elevated/50"
+        @click="trnsFormStore.values.trnId = null"
+      />
 
       <div class="flex items-center gap-1">
         <TrnFormDate />
         <TrnFormMainDescription />
       </div>
 
-      <TrnFormMainTypes />
+      <UiTabs
+        isEqual
+        :items="typeItems"
+        :modelValue="trnsFormStore.values.trnType"
+        @update:modelValue="(v) => trnsFormStore.onChangeTrnType(v as TrnType)"
+      />
 
       <TrnFormMainInput
         v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
