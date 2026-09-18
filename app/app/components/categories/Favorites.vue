@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FavoritesSection } from '~/components/categories/FavoritesView.vue'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -59,64 +60,53 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
   ]
 }
 
-const hasFavorites = computed(() => categoriesStore.favoriteCategoriesIds.length > 0)
-const hasRecent = computed(() => categoriesStore.recentCategoriesIds.length > 0)
-const showFallbackGrid = computed(() =>
-  props.showFallback
-  && !hasFavorites.value
-  && !hasRecent.value
-  && categoriesStore.categoriesIdsForTrnValues.length > 0,
-)
+function toItems(ids: CategoryId[]) {
+  return ids.map((categoryId) => {
+    const category = categoriesStore.items[categoryId]!
+    return {
+      category,
+      categoryId,
+      childrenCount: categoriesStore.getChildrenIds(categoryId).length,
+      contextMenuItems: getCategoryContextMenuItems(categoryId),
+      parentCategory: categoriesStore.items[category?.parentId],
+    }
+  })
+}
+
+const sections = computed<FavoritesSection[]>(() => {
+  const favorites = categoriesStore.favoriteCategoriesIds
+  const recent = categoriesStore.recentCategoriesIds
+  const result: FavoritesSection[] = []
+
+  if (favorites.length) {
+    result.push({
+      // The new-category button lives on the last grid only.
+      isShowNew: recent.length === 0,
+      items: toItems(favorites),
+      key: 'favorites',
+      title: t('categories.favoriteCategories'),
+    })
+  }
+
+  if (recent.length)
+    result.push({ isShowNew: true, items: toItems(recent), key: 'recent', title: t('categories.recentCategories') })
+
+  if (!result.length && props.showFallback && categoriesStore.categoriesIdsForTrnValues.length)
+    result.push({ isShowNew: true, items: toItems(categoriesStore.categoriesIdsForTrnValues), key: 'all' })
+
+  return result
+})
 </script>
 
 <template>
   <div>
-    <!-- Favorite categories -->
-    <div v-if="hasFavorites">
-      <UiTitleModal>
-        {{ t('categories.favoriteCategories') }}
-      </UiTitleModal>
-
-      <CategoriesSelectorGrid
-        :activeItemId="props.activeItemId"
-        :getContextMenuItems="getCategoryContextMenuItems"
-        :ids="categoriesStore.favoriteCategoriesIds"
-        :onNew="hasRecent ? undefined : onClickNew"
-        :selectedIds="props.selectedIds"
-        class="px-3 pt-1"
-        @selected="id => emit('selected', id)"
-      />
-    </div>
-
-    <!-- Recent categories -->
-    <div v-if="hasRecent">
-      <UiTitleModal>
-        {{ t('categories.recentCategories') }}
-      </UiTitleModal>
-
-      <CategoriesSelectorGrid
-        :activeItemId="props.activeItemId"
-        :getContextMenuItems="getCategoryContextMenuItems"
-        :ids="categoriesStore.recentCategoriesIds"
-        :onNew="onClickNew"
-        :selectedIds="props.selectedIds"
-        class="px-3 pt-1"
-        @selected="id => emit('selected', id)"
-      />
-    </div>
-
-    <!-- All categories fallback when no favorites and no recent -->
-    <div v-if="showFallbackGrid">
-      <CategoriesSelectorGrid
-        :activeItemId="props.activeItemId"
-        :getContextMenuItems="getCategoryContextMenuItems"
-        :ids="categoriesStore.categoriesIdsForTrnValues"
-        :onNew="onClickNew"
-        :selectedIds="props.selectedIds"
-        class="px-3 pt-1"
-        @selected="id => emit('selected', id)"
-      />
-    </div>
+    <CategoriesFavoritesView
+      :activeItemId="props.activeItemId"
+      :sections
+      :selectedIds="props.selectedIds"
+      @new="onClickNew"
+      @selected="id => emit('selected', id)"
+    />
 
     <CategoriesEditModal
       v-if="(editingCategoryId || isCreatingNewCategory) && !isLaptop"

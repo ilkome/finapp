@@ -34,6 +34,7 @@ const modules = import.meta.glob<{ default: Component }>([
   '!~/components/ui/ContextMenuMy.vue',
   '!~/components/ui/Header.vue',
   '~/components/categories/Name.vue',
+  '~/components/form/Input.vue',
   '~/components/wallets/Item*.vue',
   '~/components/wallets/Icon.vue',
   '~/components/trns/Item.vue',

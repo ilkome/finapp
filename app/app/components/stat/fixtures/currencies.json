@@ -1,0 +1,12 @@
+{
+  "all": [
+    { "code": "USD", "name": "US Dollar" },
+    { "code": "EUR", "name": "Euro" },
+    { "code": "RUB", "name": "Russian Ruble" },
+    { "code": "BTC", "name": "BTC" }
+  ],
+  "used": [
+    { "code": "USD", "name": "US Dollar" },
+    { "code": "RUB", "name": "Russian Ruble" }
+  ]
+}
