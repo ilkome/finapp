@@ -1,0 +1,8 @@
+{
+  "currencyCode": "USD",
+  "items": [
+    { "amount": -1250.5, "average": -980, "isActive": false, "type": "expense" },
+    { "amount": 3000, "average": 2900, "isActive": true, "type": "income" },
+    { "amount": 1749.5, "average": 1920, "isActive": false, "type": "net" }
+  ]
+}

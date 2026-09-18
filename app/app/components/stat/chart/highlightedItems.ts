@@ -1,4 +1,4 @@
-export const HIGHLIGHTED_ITEMS_LIMIT = 5
+const HIGHLIGHTED_ITEMS_LIMIT = 5
 
 export function partitionHighlightedItems<T>({
   getMagnitude,

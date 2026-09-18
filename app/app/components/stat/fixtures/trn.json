@@ -1,0 +1,16 @@
+{
+  "date": "16 Sep",
+  "trnItem": {
+    "amount": 152,
+    "category": { "color": "#e0745a", "icon": "lucide:utensils", "name": "Groceries", "parentId": "food" },
+    "categoryParent": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food" },
+    "categoryId": "groceries",
+    "date": 1789084800000,
+    "desc": "Weekly groceries",
+    "id": "t1",
+    "type": 0,
+    "updatedAt": 1789084800000,
+    "wallet": { "amount": 1520, "color": "#3b82f6", "currency": "USD", "id": "card", "isArchived": false, "name": "Dollar card", "order": 1, "type": "cash" },
+    "walletId": "card"
+  }
+}

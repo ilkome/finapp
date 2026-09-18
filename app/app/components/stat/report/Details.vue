@@ -18,6 +18,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const config = computed(() => props.ctx.params.statConfig.config.value)
 const { computeTotalForTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
@@ -42,8 +43,8 @@ const quickCategoryViews = computed(() => props.ctx.filteredCategoriesIds.value.
 const roundCategoryIds = computed(() => collectRoundCategoryIds({
   favoriteCategoryIds: categoriesStore.favoriteCategoriesIds,
   filteredCategoryIds: props.ctx.filteredCategoriesIds.value,
-  isShowFavorites: props.ctx.params.statConfig.config.value.categories.round.isShowFavorites,
-  isShowRecent: props.ctx.params.statConfig.config.value.categories.round.isShowRecent,
+  isShowFavorites: config.value.categories.round.isShowFavorites,
+  isShowRecent: config.value.categories.round.isShowRecent,
   preCategoryIds: props.ctx.params.preCategoriesIds?.value,
   recentCategoryIds: categoriesStore.recentCategoriesIds,
 }))
@@ -90,7 +91,7 @@ onBeforeUnmount(() => {
 
 <template>
   <StatCategoriesRoundSection
-    v-if="props.block === 'catsRound' && ctx.params.statConfig.config.value.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || roundCategoryIds.length > 0)"
+    v-if="props.block === 'catsRound' && config.categories.round.isShow && ctx.hasCategoriesData.value && (ctx.selectedTrnsIds.value.length > 0 || roundCategoryIds.length > 0)"
     :baseCategoryViews
     :excludedCategoriesIds="ctx.statExcludedIds.value"
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"
@@ -125,7 +126,6 @@ onBeforeUnmount(() => {
           :focusedChildCategoryId="ctx.focusedQuickChildCategoryId.value"
           :focusedCategoryId="ctx.focusedQuickCategoryId.value"
           :isOneCategory="ctx.isOneCategory.value"
-          :isTwoColumnLayout="isTwoColumnLayout"
           :preCategoriesIds="ctx.params.preCategoriesIds?.value"
           :selectedTrnsIds="ctx.focusedQuickTrnsIds.value"
           :storageKey="ctx.statItemStorageKey.value"
@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
       </div>
 
       <StatTrns
-        v-if="props.block === 'trns' && ctx.params.statConfig.config.value.trns.isShow"
+        v-if="props.block === 'trns' && config.trns.isShow"
         :ctx="ctx"
         :isPeriodOneDay="ctx.isPeriodOneDay.value"
         :selectedTrnsIds="ctx.selectedAndFilteredTrnsIds.value"

@@ -1,0 +1,13 @@
+{
+  "currencyCode": "USD",
+  "items": [
+    { "id": "total", "title": "Total", "value": 4820 },
+    { "id": "cash", "title": "Cash", "value": 300 },
+    { "id": "cashless", "title": "Cashless", "value": 4100 },
+    { "id": "credit", "secondValue": 2000, "title": "Credit", "value": -420 }
+  ],
+  "pinnedItems": [
+    { "id": "total", "title": "Total", "value": 4820 },
+    { "id": "available", "title": "Available", "value": 4400 }
+  ]
+}

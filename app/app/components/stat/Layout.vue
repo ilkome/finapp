@@ -2,34 +2,29 @@
 import type { Range } from '~~/utils/date/types'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { StatConfigBlockId, StatContextBlockId, StatReportBlockId } from '~/components/stat/config/schema'
-import type { SeriesSlugSelected, StatQuickCategoryFilter, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
+import type { StatReportContexts, StatSplitContexts } from '~/components/stat/report/types'
+import type { SeriesSlugSelected, StatReportType } from '~/components/stat/types'
 import type { StatBlockPanelId } from '~/components/stat/views/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { filterKey } from '~/components/filter/injectionKeys'
-import { PANELS } from '~/components/stat/config/panels/registry'
-import { statReportBlockOrder } from '~/components/stat/config/schema'
-import { resolveStatSelectionSourceRange } from '~/components/stat/date/selectionRange'
-import { statCanSplitKey, statConfigKey, statContentWidthKey, statContextBlockIdsKey, statDateKey, statHistoryAvailableKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
-import { resolveQuickCategorySelection } from '~/components/stat/quickCategorySelection'
-import { shouldUseContextualMaxRange } from '~/components/stat/report/contextualMaxRange'
-import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
+import { statCanSplitKey, statContentWidthKey, statContextBlockIdsKey, statDateKey, statHistoryAvailableKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { resolveStatLayoutBlocks } from '~/components/stat/layout/blocks'
+import SplitContexts from '~/components/stat/layout/SplitContexts'
+import { useStatPinnedOffsets } from '~/components/stat/layout/useStatPinnedOffsets'
+import { useStatQuickWallets } from '~/components/stat/layout/useStatQuickWallets'
+import { useStatReportContexts } from '~/components/stat/layout/useStatReportContexts'
+import { useStatWalletPeriod } from '~/components/stat/layout/useStatWalletPeriod'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
-import { useStatReportContext } from '~/components/stat/useStatReportContext'
-import { getTypesMapping, getUsedWalletIds } from '~/components/stat/utils'
-import { getWalletPeriodTotals, sortWalletIdsByPeriodTotal } from '~/components/stat/walletPeriodTotals'
-import { TrnType } from '~/components/trns/types'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = withDefaults(defineProps<{
   categoryId?: CategoryId
   hasChildren?: boolean
   hiddenPanels?: StatBlockPanelId[]
   initialFilteredType?: SeriesSlugSelected
+  isShowSearch?: boolean
   lockSingleTypeLayout?: boolean
   preCategoriesIds?: CategoryId[]
   reportType?: StatReportType
@@ -46,7 +41,7 @@ const emit = defineEmits<{
 
 const isDev = import.meta.dev
 const filter = inject(filterKey)!
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const statDate = inject(statDateKey)!
 const trnsViewState = inject(statTrnsViewStateKey)!
 const hostStickyNavigation = inject(statStickyNavKey, false)
@@ -55,252 +50,64 @@ const canSplit = inject(statCanSplitKey, ref(false))
 const contentWidth = inject(statContentWidthKey, null)
 const contextBlockIds = inject(statContextBlockIdsKey, computed(() => []))
 const historyAvailable = inject(statHistoryAvailableKey, ref(true))
-const categoriesStore = useCategoriesStore()
-const trnsStore = useTrnsStore()
-const walletsStore = useWalletsStore()
-const activeWalletType = ref<SeriesSlugSelected>('net')
-const quickWalletIds = ref<WalletId[]>([])
 const statLayout = useTemplateRef<HTMLElement>('statLayout')
-const statNavigation = shallowRef<HTMLElement>()
-const statSummary = shallowRef<HTMLElement>()
 const { width: statLayoutWidth } = useElementSize(statLayout)
-const { height: measuredNavigationHeight } = useElementSize(statNavigation, undefined, { box: 'border-box' })
-const { height: measuredSummaryHeight } = useElementSize(statSummary, undefined, { box: 'border-box' })
-const stickyNavigationHeight = computed(() => Math.max(42, measuredNavigationHeight.value))
 provide(statCanSplitKey, canSplit)
 
-const quickWalletTrnsIds = computed(() => quickWalletIds.value.length
-  ? trnsStore.getStoreTrnsIds({ trnsIds: props.trnsIds, walletsIds: quickWalletIds.value })
-  : props.trnsIds)
-const projections = computed(() => {
-  const expense: TrnId[] = []
-  const income: TrnId[] = []
-  for (const id of quickWalletTrnsIds.value) {
-    const type = trnsStore.items?.[id]?.type
-    if (type === TrnType.Expense)
-      expense.push(id)
-    else if (type === TrnType.Income)
-      income.push(id)
-  }
-  return { combined: quickWalletTrnsIds.value, expense, income }
-})
-
-const selectionSourceRange = computed(() => resolveStatSelectionSourceRange(
-  statDate.range.value,
-  statDate.selectedInterval.value,
-  statDate.params.value.intervalSelected,
-  statDate.params.value.isShowMaxRange,
-))
-const sharedSelection = computed(() => buildSortedStatReportSelection({
-  sourceIds: trnsStore.getStoreTrnsIds({ dates: selectionSourceRange.value, trnsIds: quickWalletTrnsIds.value }),
-  trnsItems: trnsStore.items ?? {},
-  trnsTypes: getTypesMapping('combined'),
-}))
-const selectionProjections = computed(() => {
-  const expense: StatReportSelectedRecord[] = []
-  const income: StatReportSelectedRecord[] = []
-  for (const record of sharedSelection.value) {
-    const type = trnsStore.items?.[record.id]?.type
-    if (type === TrnType.Expense)
-      expense.push(record)
-    else if (type === TrnType.Income)
-      income.push(record)
-  }
-  return { combined: sharedSelection.value, expense, income }
-})
-
-const quickCategoryFilters = Object.fromEntries(
-  (['combined', 'expense', 'income'] as const).map(reportType => [reportType, {
-    categoriesIds: ref<CategoryId[]>([]),
-    childCategoryId: ref<CategoryId>(),
-  }]),
-) as Record<StatReportType, StatQuickCategoryFilter>
-
-function setQuickCategoryFilter(categoryId: CategoryId) {
-  const transactibleIds = new Set(categoriesStore.getTransactibleIds([categoryId]))
-  const selection = resolveQuickCategorySelection({
-    categoryId,
-    hasExpense: selectionProjections.value.expense.some(record => transactibleIds.has(record.categoryId)),
-    hasIncome: selectionProjections.value.income.some(record => transactibleIds.has(record.categoryId)),
-    isSelected: Object.values(quickCategoryFilters).some(filter => filter.categoriesIds.value.includes(categoryId)),
-  })
-
-  for (const reportType of ['combined', 'expense', 'income'] as const) {
-    quickCategoryFilters[reportType].categoriesIds.value = selection[reportType]
-    quickCategoryFilters[reportType].childCategoryId.value = undefined
-  }
-}
-
-for (const filter of Object.values(quickCategoryFilters))
-  filter.setCategoryFilter = setQuickCategoryFilter
-
-const commonParams = {
-  applyStatsExclusion: computed(() => !props.categoryId && !filter.categoriesIds.value.length),
+const { quickWalletIds, quickWalletTrnsIds } = useStatQuickWallets({ filter, trnsIds: computed(() => props.trnsIds) })
+const { activeWalletType, combined, createContext, selectionSourceRange } = useStatReportContexts({
   categoryId: computed(() => props.categoryId),
   filter,
   hasChildren: computed(() => props.hasChildren),
   initialFilteredType: props.initialFilteredType,
   preCategoriesIds: computed(() => props.preCategoriesIds),
+  reportType: props.reportType,
   statConfig,
   statDate,
   storageKey: computed(() => props.storageKey),
+  trnsIds: quickWalletTrnsIds,
   trnsViewState,
   walletId: computed(() => props.walletId),
-}
-
-function createContext(reportType: StatReportType) {
-  return useStatReportContext({
-    ...commonParams,
-    onFilteredTypeChange: (type) => {
-      activeWalletType.value = type
-    },
-    quickCategoryFilter: quickCategoryFilters[reportType],
-    reportType: computed(() => reportType),
-    selectionSource: computed(() => selectionProjections.value[reportType]),
-    trnsIds: computed(() => projections.value[reportType]),
-    type: computed(() => reportType === 'combined' ? undefined : reportType),
-  })
-}
-
-const contexts = {
-  combined: createContext(props.reportType),
-  expense: createContext('expense'),
-  income: createContext('income'),
-}
-activeWalletType.value = contexts.combined.filteredType.value
-const walletPeriodTotals = computed(() => {
-  const categoryIds = contexts.combined.effectiveFilteredCategoriesIds.value
-  const ids = trnsStore.getStoreTrnsIds({
-    categoriesIds: categoryIds.length ? categoriesStore.getTransactibleIds(categoryIds) : undefined,
-    dates: selectionSourceRange.value,
-    trnsIds: props.walletSourceTrnsIds ?? props.trnsIds,
-    trnsTypes: [TrnType.Expense, TrnType.Income],
-  })
-  return getWalletPeriodTotals({
-    excludedCategoryIds: categoryIds.length > 0 || filter.categoriesIds.value.length > 0
-      ? undefined
-      : categoriesStore.excludedFromStatsIds,
-    trnsIds: ids,
-    trnsItems: trnsStore.items ?? {},
-  })
 })
-const periodWalletIds = computed(() => {
-  const categoryIds = contexts.combined.effectiveFilteredCategoriesIds.value
-  const periodTrnsIds = trnsStore.getStoreTrnsIds({
-    categoriesIds: categoryIds.length ? categoriesStore.getTransactibleIds(categoryIds) : undefined,
-    dates: selectionSourceRange.value,
-    trnsIds: props.walletSourceTrnsIds ?? props.trnsIds,
-    trnsTypes: getTypesMapping(activeWalletType.value),
-  })
-  const usedIds = new Set(getUsedWalletIds(periodTrnsIds, trnsStore.items ?? {}))
-  return sortWalletIdsByPeriodTotal(
-    walletsStore.sortedIds.filter(id => usedIds.has(id)),
-    walletPeriodTotals.value,
-  )
-})
-const isCategoryFocusActive = computed(() => contexts.combined.effectiveFilteredCategoriesIds.value.length > 0)
-const contextualMaxRange = computed<Range | null>(() => {
-  const categoryIds = contexts.combined.effectiveFilteredCategoriesIds.value
-  if (!shouldUseContextualMaxRange({
-    hasCategoryFilter: categoryIds.length > 0,
-    hasWalletFilter: filter.walletsIds.value.length > 0 || quickWalletIds.value.length > 0,
-    isShowMaxRange: statDate.params.value.isShowMaxRange,
-  })) {
-    return null
+const splitContexts = shallowRef<StatSplitContexts | null>(null)
+const needsSplit = computed(() => canSplit.value
+  && (statConfig.page.value.layout === 'split' || statConfig.chart.value.layout === 'split'))
+const contexts = computed<StatReportContexts>(() => {
+  const split = splitContexts.value
+  return {
+    combined,
+    isChartSplit: !!split && canSplit.value && statConfig.chart.value.layout === 'split',
+    isPageSplit: !!split && canSplit.value && statConfig.page.value.layout === 'split',
+    split,
   }
-
-  const ids = trnsStore.getStoreTrnsIds({
-    categoriesIds: categoryIds.length ? categoriesStore.getTransactibleIds(categoryIds) : undefined,
-    trnsIds: quickWalletTrnsIds.value,
-    trnsTypes: getTypesMapping(activeWalletType.value),
-  })
-  return ids.length ? trnsStore.getRange(ids) : null
 })
-const hiddenPanelIds = computed(() => new Set(props.hiddenPanels ?? []))
-const availableContextBlockIds = computed(() => new Set<StatContextBlockId>(contextBlockIds.value))
-const orderedBlocks = computed(() => statConfig.config.value.page.blockOrder.filter((block) => {
-  if (hiddenPanelIds.value.has(block))
-    return false
-  if (block === 'categoryChildren' || block === 'walletBalance' || block === 'walletDescription')
-    return availableContextBlockIds.value.has(block) && PANELS[block].getIsShow(statConfig.config.value)
-  if (block === 'navigation')
-    return statConfig.config.value.date.isShow
-  if (block === 'summary')
-    return statConfig.config.value.summary.isShow
-  return true
+const { contextualMaxRange, periodWalletIds, walletPeriodTotals } = useStatWalletPeriod({
+  activeWalletType,
+  effectiveFilteredCategoriesIds: combined.effectiveFilteredCategoriesIds,
+  filter,
+  quickWalletIds,
+  quickWalletTrnsIds,
+  selectionSourceRange,
+  statDate,
+  walletSourceTrnsIds: computed(() => props.walletSourceTrnsIds ?? props.trnsIds),
+})
+const isCategoryFocusActive = computed(() => combined.effectiveFilteredCategoriesIds.value.length > 0)
+const layout = computed(() => resolveStatLayoutBlocks({
+  config: statConfig.config.value,
+  contextBlockIds: contextBlockIds.value,
+  hasWalletFilter: filter.walletsIds.value.length > 0,
+  hiddenPanels: props.hiddenPanels,
+  showWallets: props.showWallets,
 }))
-const renderedBlocks = computed(() => orderedBlocks.value.filter((block) => {
-  if (block === 'wallets') {
-    return !!props.showWallets
-      && filter.walletsIds.value.length === 0
-      && PANELS.wallets.getIsShow(statConfig.config.value)
-  }
-  return PANELS[block].getIsShow(statConfig.config.value)
-}))
-const layoutEntries = computed(() => {
-  const entries: Array<{
-    block?: StatConfigBlockId
-    blocks?: StatReportBlockId[]
-    key: string
-  }> = []
+const orderedBlocks = computed(() => layout.value.orderedBlocks)
+const layoutEntries = computed(() => layout.value.entries)
+const { navigationIsPinned, navigationStickyTop, setNavigationElement, setSummaryElement, summaryIsPinned, summaryStickyTop } = useStatPinnedOffsets({ hostStickyNavigation, orderedBlocks, statConfig, stickyTop })
 
-  for (const block of orderedBlocks.value) {
-    if (isReportBlock(block)) {
-      const previous = entries.at(-1)
-      if (previous?.blocks)
-        previous.blocks.push(block)
-      else entries.push({ blocks: [block], key: `report-${entries.length}` })
-    }
-    else {
-      entries.push({ block, key: block })
-    }
-  }
-
-  return entries
-})
-const navigationIsPinned = computed(() => hostStickyNavigation && statConfig.config.value.date.isPinned)
-const summaryIsPinned = computed(() => hostStickyNavigation && statConfig.config.value.summary.isPinned)
-const navigationIndex = computed(() => orderedBlocks.value.indexOf('navigation'))
-const summaryIndex = computed(() => orderedBlocks.value.indexOf('summary'))
-const navigationComesBeforeSummary = computed(() => navigationIndex.value < summaryIndex.value)
-const summaryComesBeforeNavigation = computed(() => summaryIndex.value < navigationIndex.value)
-const navigationIsBeforeSummary = computed(() => navigationIsPinned.value
-  && summaryIsPinned.value
-  && navigationComesBeforeSummary.value)
-const summaryIsBeforeNavigation = computed(() => navigationIsPinned.value
-  && summaryIsPinned.value
-  && summaryComesBeforeNavigation.value)
-const navigationStickyTop = computed(() => stickyTop.value + (
-  summaryIsBeforeNavigation.value
-    ? measuredSummaryHeight.value
-    : 0
-))
-const summaryStickyTop = computed(() => stickyTop.value + (
-  navigationIsBeforeSummary.value
-    ? stickyNavigationHeight.value
-    : 0
-))
-
-function isReportBlock(block: StatConfigBlockId): block is StatReportBlockId {
-  return statReportBlockOrder.includes(block as StatReportBlockId)
-}
-
-function setNavigationElement(element: unknown) {
-  statNavigation.value = element instanceof HTMLElement ? element : undefined
-}
-
-function setSummaryElement(element: unknown) {
-  statSummary.value = element instanceof HTMLElement ? element : undefined
-}
 watchEffect(() => {
   canSplit.value = statLayoutWidth.value >= 768 && !props.lockSingleTypeLayout
-  historyAvailable.value = renderedBlocks.value.at(-1) === 'trns'
+  historyAvailable.value = layout.value.renderedBlocks.at(-1) === 'trns'
   if (contentWidth)
     contentWidth.value = statLayoutWidth.value > 0 ? Math.round(statLayoutWidth.value) : null
-})
-watch(filter.walletsIds, (walletIds) => {
-  if (walletIds.length > 0)
-    quickWalletIds.value = []
 })
 watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediate: true })
 </script>
@@ -309,12 +116,19 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
   <div
     ref="statLayout"
     class="grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-2 px-2 pb-24 stat-layout lg:px-4 2xl:px-8"
-    :data-stat-chart-layout="statConfig.config.value.chart.layout"
-    :data-stat-page-layout="statConfig.config.value.page.layout"
+    :data-stat-chart-layout="statConfig.chart.value.layout"
+    :data-stat-page-layout="statConfig.page.value.layout"
     :data-stat-report-context-count="isDev ? statDevMetrics.reportContextCount.value : undefined"
     :data-stat-report-get-store-count="isDev ? statDevMetrics.getStoreTrnsIdsCount.value : undefined"
     :data-stat-report-selection-count="isDev ? statDevMetrics.reportSelectionCount.value : undefined"
   >
+    <SplitContexts
+      v-if="needsSplit"
+      :create="createContext"
+      @dispose="splitContexts = null"
+      @ready="splitContexts = $event"
+    />
+
     <template v-for="entry in layoutEntries" :key="entry.key">
       <slot v-if="entry.block === 'categoryChildren'" name="categoryChildren" />
       <slot v-else-if="entry.block === 'walletBalance'" name="walletBalance" />
@@ -331,7 +145,8 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
         :style="navigationIsPinned ? { top: `${navigationStickyTop}px` } : undefined"
       >
         <StatDateFilterRow
-          :isShowNavigation="statConfig.config.value.date.isShowNavigation"
+          :isShowNavigation="statConfig.date.value.isShowNavigation"
+          :isShowSearch="props.isShowSearch"
         />
       </div>
       <div
@@ -344,7 +159,7 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
         ]"
         :style="summaryIsPinned ? { top: `${summaryStickyTop}px` } : undefined"
       >
-        <StatContentSection :contexts />
+        <StatContentSection :contexts="contexts" />
       </div>
       <StatWalletsSection
         v-else-if="entry.block === 'wallets' && props.showWallets && filter.walletsIds.value.length === 0"
@@ -353,8 +168,8 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
         :periodWalletIds
         :walletPeriodTotals
       />
-      <StatChartSection v-else-if="entry.block === 'chart'" :contexts />
-      <StatReportBlockSection v-else-if="entry.blocks" :blocks="entry.blocks" :contexts />
+      <StatChartSection v-else-if="entry.block === 'chart'" :contexts="contexts" />
+      <StatReportBlockSection v-else-if="entry.blocks" :blocks="entry.blocks" :contexts="contexts" />
     </template>
   </div>
 </template>

@@ -55,28 +55,19 @@ function changeDate(way: 'next' | 'prev' | 'today') {
 </script>
 
 <template>
-  <div
-    class="-mx-2 scroll-strip flex grow snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:px-0"
+  <StatDateNavigationView
+    :isEnd
+    :isShowArrows="props.isShowButtons && isShowNav && !statDate.params.value.customDate"
+    :isShowHome="isShowNavHome"
+    :isStart
+    @changeDate="changeDate"
   >
-    <UiNavArrows
-      v-if="props.isShowButtons && isShowNav && !statDate.params.value.customDate"
-      class="shrink-0 snap-start"
-      compact
-      hideInactiveArrows
-      :homeAriaLabel="$t('base.reset')"
-      homeMatchesArrows
-      :isEnd
-      :isShowNavHome
-      :isStart
-      @changeDate="changeDate"
-    >
-      <!-- No snap-start here: a nested snap target lets the browser snap past the arrows,
-           which parks the strip mid-scroll and hides its left edge. -->
+    <template #tools>
+      <slot name="tools" />
+    </template>
+    <template #range>
       <StatDateRangeButton />
-    </UiNavArrows>
-
-    <StatDateRangeButton v-else class="shrink-0 snap-start" />
-
+    </template>
     <slot />
-  </div>
+  </StatDateNavigationView>
 </template>

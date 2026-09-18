@@ -5,7 +5,7 @@ import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartTooltipLabel, resolveChartTooltipAmount, resolveChartValueType } from '~/components/stat/chart/format'
 import { filterChartTooltipParams, resolveChartTooltipSeries, resolveChartTooltipValue, sortChartTooltipParams } from '~/components/stat/chart/options'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 type ChartTooltipRow = {
   amount: number
@@ -36,9 +36,9 @@ const props = defineProps<{
 }>()
 
 const { locale } = useI18n()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const isDev = import.meta.dev
-const isRoundCategoryIcon = computed(() => statConfig.config.value.categories.list.isRoundIcon)
+const isRoundCategoryIcon = computed(() => statConfig.categories.value.list.isRoundIcon)
 const tooltipParams = computed<TooltipParam[]>(() => (Array.isArray(props.params) ? props.params as RawTooltipParam[] : []).map(param => ({
   ...param,
   value: resolveChartTooltipValue(param.value),

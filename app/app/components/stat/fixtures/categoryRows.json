@@ -1,0 +1,14 @@
+{
+  "expandedIds": ["food"],
+  "rows": [
+    {
+      "category": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food", "parentId": 0 },
+      "categoryId": "food",
+      "children": [
+        { "category": { "color": "#e0745a", "icon": "lucide:utensils", "name": "Groceries", "parentId": "food" }, "categoryId": "groceries" },
+        { "category": { "color": "#d98b3a", "icon": "lucide:coffee", "name": "Cafe", "parentId": "food" }, "categoryId": "cafe" }
+      ]
+    },
+    { "category": { "color": "#3b82f6", "icon": "lucide:car", "name": "Taxi", "parentId": 0 }, "categoryId": "taxi" }
+  ]
+}

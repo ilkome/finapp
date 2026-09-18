@@ -1,3 +1,4 @@
+import vue from '@vitejs/plugin-vue'
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitest/config'
 
@@ -16,9 +17,19 @@ export default defineConfig({
       {
         resolve: { alias },
         test: {
-          exclude: ['app/**/*Store.test.ts', 'app/**/useStoreSync.test.ts'],
+          exclude: ['app/**/*Store.test.ts', 'app/**/useStoreSync.test.ts', 'app/**/*.view.test.ts'],
           include: ['app/**/*.test.ts', 'utils/**/*.test.ts', 'services/**/*.test.ts'],
           name: 'unit',
+        },
+      },
+      {
+        plugins: [vue()],
+        resolve: { alias },
+        test: {
+          environment: 'happy-dom',
+          include: ['app/**/*.view.test.ts'],
+          name: 'view',
+          setupFiles: ['./app/test-utils/setup-view.ts'],
         },
       },
       {

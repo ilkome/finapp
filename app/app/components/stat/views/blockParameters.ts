@@ -96,10 +96,6 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
   ],
 }
 
-export function getBlockRuleParameter(panel: StatBlockPanelId, id: string): BlockRuleParameterDefinition | undefined {
-  return BLOCK_RULE_PARAMETERS[panel].find(parameter => parameter.id === id)
-}
-
 export function normalizeBlockRuleParameterIds(panel: StatBlockPanelId, ids: readonly string[]): string[] {
   const allowed = new Set(BLOCK_RULE_PARAMETERS[panel].map(parameter => parameter.id))
   return [...new Set(ids)].filter(id => allowed.has(id))

@@ -7,7 +7,7 @@ import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { addEmptyCategoryViews, buildCategoryViews, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
 import { filterFocusedCategories } from '~/components/stat/categories/focusedCategories'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export function useCategoriesBreakdown(props: {
@@ -20,7 +20,7 @@ export function useCategoriesBreakdown(props: {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const { computeTotalForTrnsIds } = useAmount()
-  const statConfig = inject(statConfigKey)!
+  const statConfig = useStatConfigCtx()
 
   const views = computed(() => props.baseCategoryViews ?? buildCategoryViews({
     categoriesItems: categoriesStore.items,
@@ -29,7 +29,6 @@ export function useCategoriesBreakdown(props: {
     trnsIds: props.selectedTrnsIds ?? [],
     trnsItems: trnsStore.items ?? {},
   }))
-  const groupedCategories = computed(() => views.value.grouped)
   const ungroupedCategories = computed(() => views.value.ungrouped)
   const focusedCategories = computed<CategoryWithData[]>(() => {
     if (!props.focusedCategoryId)
@@ -43,9 +42,9 @@ export function useCategoriesBreakdown(props: {
   })
 
   const categoriesWithData = computed<CategoryWithData[]>(() => {
-    const grouping = statConfig.config.value.categories.list.grouping
+    const grouping = statConfig.categories.value.list.grouping
 
-    if (statConfig.config.value.categories.isShowEmpty && props.preCategoriesIds?.length) {
+    if (statConfig.categories.value.isShowEmpty && props.preCategoriesIds?.length) {
       const withEmpty = addEmptyCategoryViews(
         views.value,
         categoriesStore.items,
@@ -58,5 +57,5 @@ export function useCategoriesBreakdown(props: {
     return resolveCategoryGrouping(views.value, grouping)
   })
 
-  return { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories }
+  return { categoriesWithData, focusedCategories, views }
 }

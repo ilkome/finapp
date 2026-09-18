@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 const { t } = useI18n()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const trendTypeItems = computed(() => ['hidden', 'bar', 'bar-plus', 'line'].map(value => ({
   label: t(`stat.config.categories.list.trendTypes.${value}`),
   value,
@@ -16,12 +16,12 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
 <template>
   <div class="flex flex-col gap-0.5">
     <StatConfigCategoryGroupingSelect
-      :modelValue="statConfig.config.value.categories.list.grouping"
+      :modelValue="statConfig.categories.value.list.grouping"
       parameterId="categories.list.grouping"
       @update:modelValue="value => statConfig.updateConfig('categories', { list: { grouping: value } })"
     />
     <StatConfigSwitch
-      v-if="statConfig.config.value.categories.list.grouping !== 'child'"
+      v-if="statConfig.categories.value.list.grouping !== 'child'"
       path="categories.list.isAutoExpandParents"
       :title="t('stat.config.categories.list.autoExpandParents')"
     />
@@ -31,7 +31,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
         :aria-label="t('stat.config.categories.list.trendType')"
         :content="{ position: 'item-aligned' }"
         :items="trendTypeItems"
-        :modelValue="statConfig.config.value.categories.list.trendType"
+        :modelValue="statConfig.categories.value.list.trendType"
         :ui="{ content: 'z-[60]' }"
         @update:modelValue="value => statConfig.updateConfig('categories', { list: { trendType: value as 'bar' | 'bar-plus' | 'hidden' | 'line' } })"
       />
@@ -45,7 +45,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
         :aria-label="t('stat.config.categories.list.backgroundType')"
         :content="{ position: 'item-aligned' }"
         :items="backgroundTypeItems"
-        :modelValue="statConfig.config.value.categories.list.backgroundType"
+        :modelValue="statConfig.categories.value.list.backgroundType"
         :ui="{ content: 'z-[60]' }"
         @update:modelValue="value => statConfig.updateConfig('categories', { list: { backgroundType: value as 'category' | 'none' | 'standard' } })"
       />
@@ -55,7 +55,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
       :title="t('stat.config.trns.showTitle')"
     />
     <StatConfigSwitch
-      v-if="statConfig.config.value.categories.list.backgroundType === 'none'"
+      v-if="statConfig.categories.value.list.backgroundType === 'none'"
       path="categories.list.isLines"
       :title="t('stat.catButtons.isLines')"
     />

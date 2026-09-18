@@ -27,6 +27,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
   const trnsStore = useTrnsStore()
   const route = useRoute()
 
+  const categoriesConfig = computed(() => params.statConfig.config.value.categories)
   const isOneCategory = computed(() => !!params.categoryId?.value)
   const isCategoryFocus = computed(() =>
     !params.categoryId?.value
@@ -110,11 +111,11 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     }
 
     return hasCategoriesData.value
-      && (params.statConfig.config.value.categories.list.isShow || params.statConfig.config.value.categories.bars.isShow)
+      && (categoriesConfig.value.list.isShow || categoriesConfig.value.bars.isShow)
   })
   const shouldUseTwoColumnLayout = computed(() =>
     shouldShowCategoriesBreakdown.value
-    && (params.statConfig.config.value.categories.list.isShow || focusedQuickCategoryHasChildren.value),
+    && (categoriesConfig.value.list.isShow || focusedQuickCategoryHasChildren.value),
   )
 
   /**
@@ -171,7 +172,6 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     ...report,
     ...quickView,
     filteredParentCategoryId,
-    focusedQuickCategoryActiveChildrenCount,
     focusedQuickCategoryHasChildren,
     focusedQuickCategoryId,
     focusedQuickChildCategoryId,
