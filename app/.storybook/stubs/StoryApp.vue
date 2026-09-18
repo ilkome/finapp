@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <UApp>
+  <UApp class="bg-default p-2 text-default">
     <slot />
   </UApp>
 </template>

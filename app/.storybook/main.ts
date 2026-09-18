@@ -25,11 +25,19 @@ function resolveAppComponent(name: string) {
   }
 }
 
+// `app.config.ts` is Nuxt-only source: it calls the auto-imported `defineAppConfig`, and its
+// `ui` block (colors and every component override) is what makes the app look like itself.
+async function loadAppUiConfig() {
+  ;(globalThis as any).defineAppConfig = (value: unknown) => value
+  const { default: appConfig } = await import(`${appDir}/app.config.ts`)
+  return appConfig.ui as Record<string, unknown>
+}
+
 const config: StorybookConfig = {
   addons: ['@storybook/addon-a11y', '@storybook/addon-docs'],
   framework: '@storybook/vue3-vite',
   stories: ['../app/components/**/*.stories.ts'],
-  viteFinal: config => mergeConfig(config, {
+  viteFinal: async config => mergeConfig(config, {
     plugins: [
       vue(),
       // Nuxt UI's Vue-mode plugin brings Tailwind, its components, icons and auto-imports; the
@@ -44,7 +52,7 @@ const config: StorybookConfig = {
         colorMode: false,
         components: { dirs: [stubsDir], dts: false, resolvers: [resolveAppComponent] },
         dts: false,
-        ui: {},
+        ui: await loadAppUiConfig(),
       }),
     ],
     resolve: { alias: { '~': appDir, '~~': rootDir } },
