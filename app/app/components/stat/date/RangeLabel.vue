@@ -1,48 +1,15 @@
 <script setup lang="ts">
-import type { Range } from '~~/utils/date/types'
-
-import { createRangeFormatter } from '~~/utils/date/labels'
-
+import { statDateRangeLabel } from '~/components/stat/date/rangeLabelText'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const statDate = inject(statDateKey)!
 const { locale, t } = useI18n()
 
-const { formatRangeExact, formatRangeWithLast } = createRangeFormatter(t, locale.value)
-
-const range = computed<Range>(() => {
-  return statDate.params.value.intervalSelected !== -1
-    ? statDate.intervalsInRange.value[statDate.params.value.intervalSelected]
-      ? statDate.intervalsInRange.value[statDate.params.value.intervalSelected]!
-      : statDate.range.value
-    : statDate.range.value
-})
-
-const date = computed(() => {
-  if (statDate.params.value.rangePanOffset !== 0) {
-    return formatRangeExact({
-      by: statDate.params.value.granularityBy,
-      duration: statDate.intervalsInRange.value.length,
-      end: new Date(range.value.end),
-      start: new Date(range.value.start),
-    })
-  }
-
-  const isIntervalSelected = statDate.params.value.intervalSelected !== -1
-  const by = isIntervalSelected ? statDate.params.value.granularityBy : statDate.params.value.rangeBy
-  const duration = isIntervalSelected ? statDate.params.value.granularityDuration : statDate.params.value.rangeDuration
-  if (statDate.params.value.isShowMaxRange && !isIntervalSelected)
-    return t('dates.ranges.allTime')
-
-  return formatRangeWithLast(
-    {
-      by,
-      duration,
-      end: new Date(range.value.end),
-      start: new Date(range.value.start),
-    },
-  )
-})
+const date = computed(() => statDateRangeLabel({
+  intervalsInRange: statDate.intervalsInRange.value,
+  params: statDate.params.value,
+  range: statDate.range.value,
+}, t, locale.value))
 </script>
 
 <template>

@@ -46,6 +46,9 @@ export type IntervalsInRangeProps = Pick<StatDateParams, 'granularityBy' | 'gran
 type Interval = Pick<StatDateParams, 'rangeDuration' | 'rangeBy'>
 export type Grouped = Pick<StatDateParams, 'granularityBy' | 'granularityDuration'>
 
+/** The params slice a pure range view needs to highlight the selected option. */
+export type StatDateRangeParams = Pick<StatDateParams, 'isShowMaxRange' | 'isSkipEmpty' | 'rangeBy' | 'rangeDuration'>
+
 export type IntervalGroupedLabel = Grouped
   & Interval & {
     isShowMaxRange?: boolean
