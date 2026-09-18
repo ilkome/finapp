@@ -18,67 +18,29 @@ const emit = defineEmits<{
   toggleWallet: [id: WalletId]
 }>()
 
-const { t } = useI18n()
 const filter = inject(filterKey)!
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 
-const walletResults = computed<WalletId[]>(() =>
-  filter.canFilterWallets ? searchWallets(props.searchQuery, walletsStore.itemsComputed) : [],
-)
-const categoryResults = computed<CategoryId[]>(() =>
-  filter.canFilterCategories
-    ? searchCategories(props.searchQuery, categoriesStore.items, categoriesStore.hasChildren)
-    : [],
-)
-const hasNoResults = computed(() => walletResults.value.length === 0 && categoryResults.value.length === 0)
+const wallets = computed(() => filter.canFilterWallets
+  ? searchWallets(props.searchQuery, walletsStore.itemsComputed).map(walletId => ({ wallet: walletsStore.itemsComputed[walletId]!, walletId }))
+  : [])
+
+const categories = computed(() => filter.canFilterCategories
+  ? searchCategories(props.searchQuery, categoriesStore.items, categoriesStore.hasChildren).map((categoryId) => {
+      const category = categoriesStore.items[categoryId]!
+      return { category, categoryId, parentCategory: categoriesStore.items[category.parentId] }
+    })
+  : [])
 </script>
 
 <template>
-  <div class="h-full scroller-block overflow-y-auto px-3 pb-20 md:px-1">
-    <div
-      v-if="hasNoResults"
-      class="p-4 text-center text-muted"
-    >
-      {{ t('search.noResults') }}
-    </div>
-
-    <template v-if="walletResults.length">
-      <UiTitleModal>
-        {{ t('wallets.title') }}
-      </UiTitleModal>
-      <div class="grid gap-1 pt-1">
-        <div
-          v-for="walletId in walletResults"
-          :key="walletId"
-          :class="cn(
-            'flex items-center rounded-md border border-transparent bg-elevated/30 select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent',
-            props.pendingWallets.includes(walletId) && 'border-primary/40',
-          )"
-          @click="emit('toggleWallet', walletId)"
-        >
-          <WalletsItem
-            :wallet="walletsStore.itemsComputed[walletId]!"
-            :walletId="walletId"
-            :lineWidth="4"
-            class="min-w-0 flex-1"
-            isShowCreditLimit
-            isShowIcon
-          />
-        </div>
-      </div>
-    </template>
-
-    <template v-if="categoryResults.length">
-      <UiTitleModal>
-        {{ t('categories.title') }}
-      </UiTitleModal>
-      <CategoriesSelectorGrid
-        :ids="categoryResults"
-        :selectedIds="props.pendingCategories"
-        class="pt-1"
-        @selected="emit('toggleCategory', $event)"
-      />
-    </template>
-  </div>
+  <FilterSearchResultsView
+    :categories="categories"
+    :pendingCategories="props.pendingCategories"
+    :pendingWallets="props.pendingWallets"
+    :wallets="wallets"
+    @toggleCategory="emit('toggleCategory', $event)"
+    @toggleWallet="emit('toggleWallet', $event)"
+  />
 </template>

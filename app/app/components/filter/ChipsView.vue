@@ -30,7 +30,7 @@ const itemClasses = 'shrink-0 rounded-md bg-elevated/30'
         isShowCreditLimit
         @click="emit('remove', chip)"
       />
-      <CategoriesItem
+      <CategoriesItemView
         v-else-if="chip.kind === 'category'"
         :category="chip.category"
         :categoryId="chip.categoryId"

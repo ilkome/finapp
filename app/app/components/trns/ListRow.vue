@@ -44,34 +44,20 @@ function onClickDate() {
     emit('clickDate', props.row.date)
 }
 
-const rowTotal = computed(() => props.row.type === 'dateHeader' && props.row.trnsIds.length > 1
+const daySum = computed(() => props.row.type === 'dateHeader' && props.row.trnsIds.length > 1
   ? computeTotalForTrnsIds(props.row.trnsIds)
-  : null)
+  : undefined)
 </script>
 
 <template>
-  <div
+  <TrnsDateRowView
     v-if="row.type === 'dateHeader'"
-    :class="{ 'border-accented': isShowGroupSum && row.trnsIds.length > 1 }"
-    class="flex items-center gap-2 px-3 pt-3 pb-1"
-  >
-    <TrnsDateHeader
-      :date="row.date"
-      class="grow"
-      @click="onClickDate"
-    />
-
-    <div
-      v-if="isShowGroupSum && rowTotal"
-      class="opacity-60"
-    >
-      <TrnsListGroupSum
-        :currencyCode="currenciesStore.base"
-        :expense="rowTotal.expense"
-        :income="rowTotal.income"
-      />
-    </div>
-  </div>
+    :currencyCode="currenciesStore.base"
+    :date="row.date"
+    :isShowGroupSum="isShowGroupSum"
+    :sum="daySum"
+    @click="onClickDate"
+  />
 
   <TrnsItemWrap
     v-else-if="trnItem"
