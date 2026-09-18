@@ -36,7 +36,7 @@ Do not duplicate those details here. Inspect their source when the task depends 
 ## Pure UI views
 
 - Components named `*View.vue` under `app/app/components/{stat,wallets,categories,trns,filter}/` are pure: props in, emits out. They never import a store, call `inject()`, `useRoute()`, or read app state; labels arrive as props and `t()` is only for static UI strings.
-- A `View` prop type must be JSON-serializable (no refs, functions, class instances, or `Date`; dates are ms-epoch numbers). `stat/blocks/payload.ts` holds the zod schema for every block a producer can hand to `StatBlocksRenderer`; extend it when a view's props change.
+- A `View` prop type must be JSON-serializable (no refs, functions, class instances, or `Date`; dates are ms-epoch numbers).
 - Sections and containers (`*Section.vue`, `stat/report/*`, `filter/Selected.vue`, ...) own every store and provider call and pass plain values down.
 - Every `View` has a `*.view.test.ts` that mounts it from a fixture under `stat/fixtures/` (vitest project `view`).
 
