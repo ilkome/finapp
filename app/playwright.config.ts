@@ -9,7 +9,8 @@ export default defineConfig({
   projects: [
     {
       name: 'demo',
-      testIgnore: /visual\.spec\.ts/,
+      // A project-level testIgnore replaces the top-level one, so the prod-only specs are repeated.
+      testIgnore: /(visual|context-menu-smoke|offline-sync)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
     },
     {

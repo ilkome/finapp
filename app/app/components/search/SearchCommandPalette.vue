@@ -107,7 +107,8 @@ function handleDeleteConfirm() {
       :groups="groups"
       :placeholder="t('search.placeholder')"
       :fuse="{
-        resultLimit: 50,
+        // The groups cap themselves (useSearch postFilter); a global cap starves the small groups.
+        resultLimit: Number.POSITIVE_INFINITY,
         fuseOptions: {
           threshold: 0.4,
           keys: ['label', 'suffix', 'search'],

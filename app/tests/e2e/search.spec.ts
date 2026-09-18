@@ -31,17 +31,15 @@ test('search opens empty with a focused input', async ({ context, page }) => {
   await expect(input).toHaveValue('')
   await expect(palette).toContainText(T.searchPrompt)
 
-  await input.fill('Cards')
+  await input.fill('Продукты')
   await expect(palette).toContainText(/Categories|Категории/)
 
-  await input.fill('a')
-  const viewport = palette.locator('.scrollerBlock')
+  // Cyrillic: the ru-RU demo data has no Latin names.
+  await input.fill('а')
+  const viewport = palette.locator('.scroller-block')
   await expect(viewport).toBeVisible()
-  const scrollMetrics = await viewport.evaluate(el => ({
-    clientHeight: el.clientHeight,
-    scrollHeight: el.scrollHeight,
-  }))
-  expect(scrollMetrics.scrollHeight).toBeGreaterThan(scrollMetrics.clientHeight)
+  // The search is debounced and fuse runs over every transaction; wait for the list to fill.
+  await expect.poll(() => viewport.evaluate(el => el.scrollHeight - el.clientHeight)).toBeGreaterThan(0)
   await viewport.evaluate((el) => {
     el.scrollTop = el.scrollHeight
   })
@@ -81,8 +79,8 @@ test.describe('mobile search sheet', () => {
     await expect.poll(async () => (await sheet.boundingBox())?.y ?? 0)
       .toBeGreaterThan(mobile.viewport.height * 0.5)
 
-    await palette.locator('input').fill('Oil change')
-    const viewport = palette.locator('.scrollerBlock')
+    await palette.locator('input').fill('Замена масла')
+    const viewport = palette.locator('.scroller-block')
     await expect(viewport).toHaveCSS('overflow-y', 'hidden')
     await expect.poll(async () => (await sheet.boundingBox())?.y ?? 0)
       .toBeGreaterThan(mobile.viewport.height * 0.5)
