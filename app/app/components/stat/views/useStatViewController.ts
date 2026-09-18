@@ -41,8 +41,6 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     ? appliedId.value
     : store.views.find(view => view.isActive)?.id) ?? null)
   const activeView = computed(() => store.views.find(view => view.id === activeId.value) ?? null)
-  const configFingerprint = computed(() => JSON.stringify(config.value))
-  const isDirty = computed(() => !!activeView.value && JSON.stringify(config.value) !== JSON.stringify(activeView.value.config.base))
 
   function applyLocal(view: StatView) {
     appliedId.value = view.id
@@ -90,26 +88,29 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       return null
     return store.update(activeView.value.id, patch)
   }
-  async function saveCurrentConfig() {
-    if (!activeView.value)
-      return null
-    return store.update(activeView.value.id, {
-      config: {
-        base: cloneConfig(config.value),
-        blockRules: cloneBlockRules(activeView.value.config.blockRules),
-      },
-    })
-  }
   let configSaveQueue = Promise.resolve()
-  watch(configFingerprint, () => {
+  // Only explicit edits reach the stored view. Watching `config` for any divergence used to
+  // persist wholesale replacements too (a failed schema parse falling back to defaults, a
+  // wallet page re-reading a query-keyed storage slot) and wiped the view's saved config.
+  function saveCurrentConfig() {
+    const viewId = activeView.value?.id
+    if (!viewId)
+      return Promise.resolve()
     configSaveQueue = configSaveQueue
       .catch(() => undefined)
       .then(async () => {
-        if (!activeView.value || !isDirty.value)
+        const current = store.views.find(view => view.id === viewId)
+        if (!current || JSON.stringify(config.value) === JSON.stringify(current.config.base))
           return
-        await saveCurrentConfig()
+        await store.update(viewId, {
+          config: {
+            base: cloneConfig(config.value),
+            blockRules: cloneBlockRules(current.config.blockRules),
+          },
+        })
       })
-  })
+    return configSaveQueue
+  }
   watch(activeView, (view) => {
     if (view && JSON.stringify(config.value) !== JSON.stringify(view.config.base))
       config.value = cloneConfig(view.config.base)
@@ -212,5 +213,5 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       appliedId.value = null
   }, { immediate: true })
 
-  return { activeId, activeView, apply, context, cycle, duplicate, isDirty, remove, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
+  return { activeId, activeView, apply, context, cycle, duplicate, remove, saveCurrentConfig, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
 }
