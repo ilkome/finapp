@@ -2,7 +2,7 @@ import type { StorybookConfig } from '@storybook/vue3-vite'
 
 import ui from '@nuxt/ui/vite'
 import vue from '@vitejs/plugin-vue'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { mergeConfig } from 'vite'
 
@@ -25,6 +25,31 @@ function resolveAppComponent(name: string) {
   }
 }
 
+// Where each app component is used, keyed by its Nuxt name (`UiTabs`), counted from the tags in
+// every `.vue` file that is not a story. Served as a virtual module so the preview can show it.
+function componentUsage() {
+  const files = readdirSync(appDir, { recursive: true, withFileTypes: true })
+    .filter(entry => entry.isFile() && entry.name.endsWith('.vue'))
+    .map(entry => `${entry.parentPath}/${entry.name}`)
+  const names = files
+    .filter(file => file.startsWith(`${appDir}/components/`))
+    .map(file => file.slice(`${appDir}/components/`.length, -4).split('/').map(part => part[0]!.toUpperCase() + part.slice(1)).join(''))
+  const usage: Record<string, { count: number, files: string[] }> = {}
+  for (const name of names)
+    usage[name] = { count: 0, files: [] }
+  const tag = new RegExp(`<(?:Lazy)?(${names.join('|')})(?=[\\s/>])`, 'g')
+  for (const file of files) {
+    for (const [, name] of readFileSync(file, 'utf8').matchAll(tag)) {
+      const entry = usage[name!]!
+      entry.count++
+      const short = file.slice(appDir.length + 1)
+      if (!entry.files.includes(short))
+        entry.files.push(short)
+    }
+  }
+  return usage
+}
+
 // `app.config.ts` is Nuxt-only source: it calls the auto-imported `defineAppConfig`, and its
 // `ui` block (colors and every component override) is what makes the app look like itself.
 async function loadAppUiConfig() {
@@ -39,6 +64,11 @@ const config: StorybookConfig = {
   stories: ['../app/components/**/*.stories.ts'],
   viteFinal: async config => mergeConfig(config, {
     plugins: [
+      {
+        load: (id: string) => (id === 'virtual:component-usage' ? `export default ${JSON.stringify(componentUsage())}` : undefined),
+        name: 'finapp:component-usage',
+        resolveId: (id: string) => (id === 'virtual:component-usage' ? id : undefined),
+      },
       vue(),
       // Nuxt UI's Vue-mode plugin brings Tailwind, its components, icons and auto-imports; the
       // app's own components and composables are layered on top the way Nuxt names them.

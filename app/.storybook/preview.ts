@@ -3,6 +3,7 @@ import type { Preview } from '@storybook/vue3-vite'
 import ui from '@nuxt/ui/vue-plugin'
 import { setup } from '@storybook/vue3-vite'
 import { createPinia } from 'pinia'
+import usage from 'virtual:component-usage'
 import { createI18n } from 'vue-i18n'
 
 // Resolved by the Nuxt UI plugin to its Vue-mode stubs; the same reactive app config its
@@ -46,16 +47,31 @@ function applyAppearance(globals: Record<string, string>) {
   style.textContent = isBlack ? ':root { --ui-primary: black; } .dark { --ui-primary: #ededed; }' : ''
 }
 
+// A dev-server SFC carries its path in `__file`; walk it back to the Nuxt name the usage map uses.
+function usageOf(component: unknown) {
+  const file = (component as { __file?: string } | undefined)?.__file?.split('/components/')[1]
+  const name = file?.replace(/\.vue$/, '').split('/').map(part => part[0]!.toUpperCase() + part.slice(1)).join('')
+  return name ? usage[name] : undefined
+}
+
 const preview: Preview = {
   decorators: [
-    (story, { globals }) => {
+    (story, { component, globals }) => {
       // The app switches theme with a `dark`/`light` class on <html> (nuxt color-mode with an
       // empty classSuffix); theme.css defines the palette on both, so neither may be missing.
       const isDark = globals.theme !== 'light'
       document.documentElement.classList.toggle('dark', isDark)
       document.documentElement.classList.toggle('light', !isDark)
       applyAppearance(globals)
-      return { components: { StoryApp }, template: '<StoryApp><story /></StoryApp>' }
+      const used = usageOf(component)
+      return {
+        components: { StoryApp },
+        data: () => ({ used }),
+        template: `<StoryApp><story /></StoryApp>
+          <div v-if="used" class="fixed right-2 bottom-2 text-xs text-muted" :title="used.files.join('\\n')">
+            used {{ used.count }}× in {{ used.files.length }} files
+          </div>`,
+      }
     },
   ],
   globalTypes: {
