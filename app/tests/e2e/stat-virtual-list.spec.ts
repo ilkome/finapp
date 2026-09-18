@@ -269,8 +269,8 @@ test.describe('Statistics measured virtual feed', () => {
     await transactionRow.locator('.uiElement.interactive').click({ button: 'right' })
     const deleteMenuItem = page.getByRole('menuitem', { name: deleteAction })
     await expect(deleteMenuItem).toBeVisible()
-    // Opening the context menu rebuilds the index once by itself (a scroll-lock reflow), so
-    // the delete is measured from here.
+    // The right-click scrolls the row into view; a forward scroll that reaches the feed's tail
+    // loads the next period and rebuilds the index, so the delete is measured from here.
     const buildCountBeforeDelete = await buildCount()
     const rowBuildCountBeforeDelete = await rowBuildCount()
     await deleteMenuItem.dispatchEvent('click')
