@@ -113,6 +113,12 @@ describe('configSchema', () => {
     expect(result.categories.list).toEqual(defaultConfig.categories.list)
   })
 
+  it('replaces list props instead of merging them by index', () => {
+    const result = applyConfigProps(defaultConfig, { date: { quickRangeIds: ['period:week-1'] } })
+
+    expect(result.date.quickRangeIds).toEqual(['period:week-1'])
+  })
+
   it('validates default config', () => {
     expect(ConfigSchema.safeParse(defaultConfig).success).toBe(true)
   })
@@ -268,20 +274,12 @@ describe('applyConfigUpdate', () => {
     expect(result?.trns.isShowHistory).toBe(true)
   })
 
-  it('migrates legacy category grouping booleans', () => {
-    const legacy = structuredClone(defaultConfig) as any
-    delete legacy.categories.list.grouping
-    delete legacy.categories.round.grouping
-    delete legacy.categories.bars.grouping
-    legacy.categories.list.isGrouped = true
-    legacy.categories.round.isGrouped = false
-    legacy.categories.bars.isGrouped = true
+  it('backfills missing category grouping with the default instead of reading old booleans', () => {
+    const stored = structuredClone(defaultConfig) as any
+    delete stored.categories.list.grouping
+    stored.categories.list.isGrouped = true
 
-    const result = ConfigSchema.parse(legacy)
-
-    expect(result.categories.list.grouping).toBe('parent')
-    expect(result.categories.round.grouping).toBe('child')
-    expect(result.categories.bars.grouping).toBe('parent')
+    expect(ConfigSchema.parse(stored).categories.list.grouping).toBe('auto')
   })
 
   it('deep-merges wallets count', () => {

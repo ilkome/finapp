@@ -69,7 +69,7 @@ function onGenerateDemoData() {
             @click="isShowBaseCurrencyModal = true"
           >
             <span class="truncate">{{ currenciesStore.base }}</span>
-            <span class="absolute inset-y-0 end-0 flex items-center pe-3">
+            <span class="absolute inset-y-0 inset-e-0 flex items-center pe-3">
               <UIcon name="i-lucide-chevrons-up-down" class="size-5 shrink-0 text-dimmed" />
             </span>
           </button>

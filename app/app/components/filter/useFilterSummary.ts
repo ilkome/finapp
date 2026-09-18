@@ -1,6 +1,7 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { countActiveExtras } from '~/components/filter/extras'
 import { filterKey } from '~/components/filter/injectionKeys'
 
 /**
@@ -37,7 +38,7 @@ export function useFilterSummary() {
     return result
   })
 
-  const summaryText = computed(() => {
+  const entitiesText = computed(() => {
     const walletsCount = filter.canFilterWallets ? filter.walletsIds.value.length : 0
     const categoriesCount = filter.canFilterCategories ? displayCategoryIds.value.length : 0
 
@@ -67,6 +68,11 @@ export function useFilterSummary() {
 
     const text = t('base.filterSummary', { categories, wallets })
     return capitalize(text)
+  })
+
+  const summaryText = computed(() => {
+    const extrasCount = countActiveExtras(filter.extras.value)
+    return extrasCount ? `${entitiesText.value} +${extrasCount}` : entitiesText.value
   })
 
   return { displayCategoryIds, summaryText }

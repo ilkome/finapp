@@ -6,7 +6,7 @@ import { computeDateRange } from '~/components/stat/date/params'
 
 import { buildChartWindowIntervals, resolveCommittedPanOffset, shouldExtendChartBuffer } from './chartWindow'
 
-export const statChartCommitDelay = 150
+const statChartCommitDelay = 150
 
 export function useStatChartWindow(params: { statDate: StatDateProvider }) {
   const previewStartValue = shallowRef<number>()

@@ -2,10 +2,20 @@ import { defineConfig, devices } from '@playwright/test'
 import process from 'node:process'
 
 export default defineConfig({
+  expect: {
+    // Visual project: a refactor must not change the picture, a few px of drift must not fail.
+    toHaveScreenshot: { animations: 'disabled', maxDiffPixelRatio: 0.02 },
+  },
   projects: [
     {
       name: 'demo',
+      testIgnore: /visual\.spec\.ts/,
       use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'visual',
+      testMatch: /visual\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'], contextOptions: { reducedMotion: 'reduce' }, viewport: { height: 1600, width: 1280 } },
     },
   ],
   reporter: [['html', { open: 'never' }], ['list']],

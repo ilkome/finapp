@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { WalletId } from '~/components/wallets/types'
 
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -14,6 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const walletsStore = useWalletsStore()
+const currenciesStore = useCurrenciesStore()
 const m = useWalletMenuItems()
 
 const contextMenuItems = computed(() => [
@@ -32,6 +34,7 @@ const contextMenuItems = computed(() => [
       isShowBaseRate
       isShowCreditLimit
       isShowIcon
+      :baseCurrencyCode="currenciesStore.base"
       isShowRate
       :to="`/wallets/${props.walletId}`"
     />

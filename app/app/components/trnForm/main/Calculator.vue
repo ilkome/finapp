@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
 
+import { useTrnFormSubmit } from '~/components/trnForm/useTrnFormSubmit'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
+const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
+const { isMath, isSubmittable, submit } = useTrnFormSubmit()
 
 const buttons = [
   ['7', '8', '9'],
@@ -77,7 +80,20 @@ onLongPress(
     </div>
 
     <div class="grid grid-rows-[1fr] gap-3">
-      <TrnFormMainActionSide />
+      <button
+        :aria-label="t(isMath ? 'base.apply' : 'base.save')"
+        :class="cn(
+          'hover:scale-1.02 flex size-full w-12 items-center justify-center rounded-sm p-1 py-4 text-center transition @xs/trnForm:w-14 @sm/trnForm:w-16',
+          !isMath && isSubmittable
+            ? 'bg-primary/50 text-icon-primary hover:bg-primary/80'
+            : 'bg-elevated! text-highlighted hover:bg-elevated/30',
+          (!isSubmittable || isMath) && 'text-muted',
+        )"
+        type="button"
+        @click="submit"
+      >
+        <Icon :name="isMath ? 'lucide:equal' : 'lucide:check'" size="40" />
+      </button>
     </div>
   </div>
 </template>

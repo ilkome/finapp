@@ -1,9 +1,9 @@
 import type { DeepPartial } from '~~/utils/types'
 
-import defu from 'defu'
 import { z } from 'zod/v4'
 
 import { chartTypes, defaultLineChartOptions } from '~/components/stat/chart/types'
+import { mergeStatConfig } from '~/components/stat/config/mergeConfig'
 import { defaultQuickRangeOptionIds, normalizeQuickRangeOrderIds, quickRangeOptionIds } from '~/components/stat/date/useRangeOptions'
 
 export const chartLayoutOptions = ['combined-wide', 'split', 'combined-narrow'] as const
@@ -24,7 +24,7 @@ export function resolveChartLayoutOptions(pageLayout: PageLayout): ChartLayout[]
 }
 
 /** Each page layout has a default chart mode; the other option of the pair reverts it by hand. */
-export function alignChartLayoutToPage(pageLayout: PageLayout): ChartLayout {
+function alignChartLayoutToPage(pageLayout: PageLayout): ChartLayout {
   return pageLayout === 'split' ? 'split' : 'combined-wide'
 }
 
@@ -79,55 +79,38 @@ export function normalizeStatConfigBlockOrder(value: unknown): StatConfigBlockId
   return result
 }
 
-function migrateCategoryGrouping(value: unknown): unknown {
-  const raw = value as Record<string, unknown> | null
-  if (!raw)
-    return value
-  return {
-    ...raw,
-    grouping: raw.grouping ?? (typeof raw.isGrouped === 'boolean' ? (raw.isGrouped ? 'parent' : 'child') : 'auto'),
-  }
-}
+export const categoryListBackgroundTypes = ['category', 'none', 'standard'] as const
+export const categoryListTrendTypes = ['bar', 'bar-plus', 'hidden', 'line'] as const
+export type CategoryListBackgroundType = typeof categoryListBackgroundTypes[number]
+export type CategoryListTrendType = typeof categoryListTrendTypes[number]
 
-function migrateCategoryList(value: unknown): unknown {
-  const raw = migrateCategoryGrouping(value) as Record<string, unknown> | null
-  if (!raw)
-    return value
-  return {
-    ...raw,
-    backgroundType: raw.backgroundType
-      ?? (raw.isShowBackground === true ? 'category' : 'none'),
-    trendType: raw.trendType ?? 'bar',
-  }
-}
-
-const categoryListSchema = z.preprocess(migrateCategoryList, z.object({
-  backgroundType: z.enum(['category', 'none', 'standard']),
-  grouping: categoryGroupingSchema,
+const categoryListSchema = z.object({
+  backgroundType: z.enum(categoryListBackgroundTypes).default('none'),
+  grouping: categoryGroupingSchema.default('auto'),
   isAutoExpandParents: z.boolean().default(false),
   isLines: z.boolean(),
   isRoundIcon: z.boolean(),
   isShow: z.boolean(),
   isShowTitle: z.boolean(),
-  trendType: z.enum(['bar', 'bar-plus', 'hidden', 'line']),
-}))
+  trendType: z.enum(categoryListTrendTypes).default('bar'),
+})
 
-const categoryBarsSchema = z.preprocess(migrateCategoryGrouping, z.object({
-  grouping: categoryGroupingSchema,
+const categoryBarsSchema = z.object({
+  grouping: categoryGroupingSchema.default('auto'),
   isShow: z.boolean(),
   isShowTooltip: z.boolean(),
   isShowTooltipChildren: z.boolean(),
-}))
+})
 
-const categoryRoundSchema = z.preprocess(migrateCategoryGrouping, z.object({
-  grouping: categoryGroupingSchema,
+const categoryRoundSchema = z.object({
+  grouping: categoryGroupingSchema.default('auto'),
   isHideOthersOnSelect: z.boolean(),
   isIconBg: z.boolean(),
   isInlineAmount: z.boolean(),
   isShow: z.boolean(),
   isShowFavorites: z.boolean(),
   isShowRecent: z.boolean(),
-}))
+})
 
 export const ConfigSchema = z.object({
   average: z.object({
@@ -318,11 +301,7 @@ export function applyConfigUpdate<K extends keyof MiniItemConfig>(
   key: K,
   value: DeepPartial<MiniItemConfig[K]>,
 ): MiniItemConfig | null {
-  const mergedValue = defu(value, current[key])
-  if (key === 'page' && 'blockOrder' in value && Array.isArray(value.blockOrder))
-    (mergedValue as MiniItemConfig['page']).blockOrder = value.blockOrder as MiniItemConfig['page']['blockOrder']
-  if (key === 'date' && 'quickRangeIds' in value && Array.isArray(value.quickRangeIds))
-    (mergedValue as MiniItemConfig['date']).quickRangeIds = value.quickRangeIds as MiniItemConfig['date']['quickRangeIds']
+  const mergedValue = mergeStatConfig(value, current[key])
 
   const update = {
     ...current,
@@ -338,5 +317,5 @@ export function applyConfigUpdate<K extends keyof MiniItemConfig>(
 }
 
 export function applyConfigProps(current: MiniItemConfig, props: DeepPartial<MiniItemConfig>): MiniItemConfig {
-  return ConfigSchema.parse(defu(props, current))
+  return ConfigSchema.parse(mergeStatConfig(props, current))
 }

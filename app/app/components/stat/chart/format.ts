@@ -15,7 +15,7 @@ export function resolveChartTooltipAmount(value: number, valueType: SeriesSlug |
   return valueType === 'expense' ? -Math.abs(value) : value
 }
 
-export function getFormatForChart(periodName: Period) {
+function getFormatForChart(periodName: Period) {
   switch (periodName) {
     case 'day':
     case 'week':

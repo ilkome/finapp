@@ -173,7 +173,6 @@ function makeStatDate(overrides?: Partial<{
 function makeFilter(categoriesIds: string[] = []) {
   return {
     categoriesIds: computed(() => categoriesIds),
-    clearFilter: vi.fn(),
     isShow: computed(() => categoriesIds.length > 0),
   }
 }

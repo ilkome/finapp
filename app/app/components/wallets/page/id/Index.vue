@@ -4,10 +4,9 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { useFilter } from '~/components/filter/useFilter'
-import { useStatFilterStorage } from '~/components/filter/useStatFilterStorage'
+import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
-import { getStatNavigationSnapshot, getStatSnapshotQueryId, isStatDrilldownQuery } from '~/components/stat/navigation'
+import { useStatDrilldownPage } from '~/components/stat/page/useStatDrilldownPage'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
@@ -22,7 +21,6 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
-const filter = useFilter({ canFilterWallets: false })
 const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
@@ -31,34 +29,22 @@ const contextBlockIds = computed(() => wallet.value?.desc
   ? ['walletBalance', 'walletDescription'] as const
   : ['walletBalance'] as const)
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
-const statSnapshotId = getStatSnapshotQueryId(route.query.statSnapshot)
-const statSnapshot = getStatNavigationSnapshot(statSnapshotId)
-const isStatDrilldown = statSnapshotId !== null || isStatDrilldownQuery(route.query.statDrilldown)
-const storageQuery = computed(() => isStatDrilldown ? {} : undefined)
+const { statSnapshot, storage, storageKey, storageQuery } = useStatDrilldownPage({ id: walletId, kind: 'wallet' })
 
-const storageKey = computed(() => isStatDrilldown ? `stat-drilldown-wallet-${walletId.value}` : `${walletId.value}`)
-const legacyTab = localStorage.getItem(`${walletId.value}-tab`)?.replaceAll('"', '')
-const legacyStorageKey = computed(() => !isStatDrilldown && legacyTab ? `${walletId.value}-${legacyTab}` : undefined)
-
-useStatFilterStorage({
-  filter,
-  storage: isStatDrilldown ? sessionStorage : localStorage,
+const { filter, filterTrnsIds } = useStatPageFilter({
+  canFilterWallets: false,
+  storage,
   storageKey,
 })
 
-const trnsIds = computed(() => trnsStore.getStoreTrnsIds({
-  categoriesIds: filter.categoriesIds.value,
-  walletsIds: [walletId.value],
-}))
+const trnsIds = computed(() => filterTrnsIds({ walletsIds: [walletId.value] }))
 
 const maxRange = computed(() => trnsStore.getRange(trnsIds.value))
 
 const { contentWidth, statConfig, statDate } = useStatPageProviders({
   config: {
     initialConfig: statSnapshot?.config,
-    legacyStorageKey,
-    legacyTab,
-    storage: isStatDrilldown ? sessionStorage : localStorage,
+    storage,
     storageKey,
     storageQuery,
   },
@@ -66,10 +52,9 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
   date: {
     initParams: statSnapshot?.date,
     key: storageKey,
-    legacyKey: legacyStorageKey,
     maxRange,
     queryParams: () => route.query,
-    storage: isStatDrilldown ? sessionStorage : localStorage,
+    storage,
   },
   filter,
   initialTrnsViewState: statSnapshot?.trns,
@@ -188,7 +173,7 @@ async function onDeleteConfirm() {
     >
       <template #walletBalance>
         <div class="wallet-balance-summary -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:flex-wrap md:overflow-visible md:px-0">
-          <StatSumItem
+          <StatSumItemView
             v-for="item in walletBalanceItems"
             :key="item.title"
             :amount="item.amount"

@@ -2,7 +2,8 @@
 import type { StatConfigBooleanPath } from '~/components/stat/config/switches'
 
 import { STAT_CONFIG_BOOLEAN_OPERATIONS } from '~/components/stat/config/switches'
-import { statConfigKey, statConfigParameterIdsKey, statConfigParameterRemoveKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
+import { statConfigParameterIdsKey, statConfigParameterRemoveKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   disabled?: boolean
@@ -10,7 +11,7 @@ const props = defineProps<{
   title: string
 }>()
 
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const parameterIds = inject(statConfigParameterIdsKey, computed(() => null))
 const removeParameter = inject(statConfigParameterRemoveKey, null)
 

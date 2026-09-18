@@ -1,18 +1,14 @@
 <script setup lang="ts">
-import type { StatReportContext } from '~/components/stat/report/types'
-
-import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
+import type { StatReportContexts } from '~/components/stat/report/types'
 
 defineProps<{
-  contexts: Record<'combined' | 'expense' | 'income', StatReportContext>
+  contexts: StatReportContexts
 }>()
-const statConfig = inject(statConfigKey)!
-const canSplit = inject(statCanSplitKey, computed(() => false))
 </script>
 
 <template>
   <div data-stat-content-section class="grid min-w-0 gap-8">
-    <template v-if="statConfig.config.value.page.layout === 'combined' || !canSplit">
+    <template v-if="!contexts.isPageSplit || !contexts.split">
       <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="combined">
         <StatReportSums :ctx="contexts.combined" />
       </div>
@@ -20,10 +16,10 @@ const canSplit = inject(statCanSplitKey, computed(() => false))
     <template v-else>
       <div class="stat-two-column-grid">
         <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="expense">
-          <StatReportSums :ctx="contexts.expense" />
+          <StatReportSums :ctx="contexts.split.expense" />
         </div>
         <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="income">
-          <StatReportSums :ctx="contexts.income" />
+          <StatReportSums :ctx="contexts.split.income" />
         </div>
       </div>
     </template>

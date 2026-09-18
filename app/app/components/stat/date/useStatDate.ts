@@ -7,12 +7,12 @@ import { computed, toValue } from 'vue'
 
 import type { Grouped, IntervalGroupedLabel, StatDateParams, StatRangePanDirection, UseStatDateOptions } from '~/components/stat/date/types'
 
-import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, normalizeStoredStatDateParams, parseStatDateQueryParams } from './params'
+import { calculateBestGranularityBy, computeDateRange, defaultStatDateParams, getIntervalsInRange, normalizeStoredStatDateParams } from './params'
+import { useStatDateQuerySync } from './useStatDateQuerySync'
 
 export function useStatDate({
   initParams,
   key,
-  legacyKey,
   maxRange,
   overrideStoredWithInitParams,
   queryParams,
@@ -20,12 +20,6 @@ export function useStatDate({
 }: UseStatDateOptions) {
   const paramsStorageKey = computed(() => `${toValue(key)}-params`)
   const resolvedStorage = storage ?? localStorage
-  const previousKey = toValue(legacyKey)
-  if (previousKey && resolvedStorage.getItem(paramsStorageKey.value) === null) {
-    const previousValue = resolvedStorage.getItem(`${previousKey}-params`)
-    if (previousValue !== null)
-      resolvedStorage.setItem(paramsStorageKey.value, previousValue)
-  }
   const defaults = defu(initParams ?? {}, defaultStatDateParams) as StatDateParams
   const params = useStorage<StatDateParams>(paramsStorageKey, {} as StatDateParams, resolvedStorage, {
     mergeDefaults: storageValue => normalizeStoredStatDateParams(storageValue, defaults),
@@ -44,25 +38,7 @@ export function useStatDate({
     dateSelector: false,
   })
 
-  let paramsBeforeCustomDate: StatDateParams | null = null
-  if (queryParams) {
-    watch(() => ({ ...toValue(queryParams) }), (nextQuery) => {
-      if (nextQuery.customDate !== undefined) {
-        // params is a reactive storage ref: structuredClone chokes on the proxy.
-        paramsBeforeCustomDate ??= JSON.parse(JSON.stringify(params.value)) as StatDateParams
-        params.value = parseStatDateQueryParams(nextQuery, params.value)
-        return
-      }
-
-      if (paramsBeforeCustomDate) {
-        params.value = paramsBeforeCustomDate
-        paramsBeforeCustomDate = null
-        return
-      }
-
-      params.value = parseStatDateQueryParams(nextQuery, params.value)
-    }, { immediate: true })
-  }
+  useStatDateQuerySync(params, queryParams)
 
   const scrollRangeOffset = shallowRef<number | null>(null)
   const scrollRangeResetVersion = shallowRef(0)

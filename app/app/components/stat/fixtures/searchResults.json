@@ -1,0 +1,11 @@
+{
+  "categories": [
+    { "category": { "color": "#e0745a", "icon": "lucide:utensils", "name": "Groceries", "parentId": "food" }, "categoryId": "groceries", "parentCategory": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food", "parentId": 0 } },
+    { "category": { "color": "#3b82f6", "icon": "lucide:car", "name": "Taxi", "parentId": 0 }, "categoryId": "taxi" }
+  ],
+  "pendingCategories": ["taxi"],
+  "pendingWallets": [],
+  "wallets": [
+    { "walletId": "card", "wallet": { "amount": 1520, "color": "#3b82f6", "currency": "USD", "id": "card", "isArchived": false, "name": "Dollar card", "order": 1, "type": "cash" } }
+  ]
+}

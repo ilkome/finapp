@@ -1,19 +1,24 @@
 <script setup lang="ts">
 import type { SplitChartSelectionState } from '~/components/stat/chart/splitChartSelection'
-import type { StatReportContext } from '~/components/stat/report/types'
+import type { StatReportContexts } from '~/components/stat/report/types'
 import type { SeriesSlug } from '~/components/stat/types'
 
 import { resolveSplitChartSelection } from '~/components/stat/chart/splitChartSelection'
-import { statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
+import { statDateKey } from '~/components/stat/injectionKeys'
 
-const props = defineProps<{ contexts: Record<'combined' | 'expense' | 'income', StatReportContext> }>()
-const statConfig = inject(statConfigKey)!
-const canSplit = inject(statCanSplitKey, computed(() => false))
+const props = defineProps<{ contexts: StatReportContexts }>()
+const statConfig = useStatConfigCtx()
+const statDate = inject(statDateKey)!
+const quickRangeIds = computed(() => {
+  const selected = new Set(statConfig.date.value.quickRangeIds)
+  return statConfig.date.value.quickRangeOrderIds.filter(id => selected.has(id))
+})
 const splitChartSelection = ref<SplitChartSelectionState>({})
 const combinedFilteredType = props.contexts.combined.filteredType
-const isSplit = computed(() => statConfig.config.value.chart.layout === 'split' && canSplit.value)
+const isSplit = computed(() => props.contexts.isChartSplit)
 // Split charts are two blocks, not one split in half, so each carries its own background.
-const backgroundClass = computed(() => statConfig.config.value.chart.isShowBackground
+const backgroundClass = computed(() => statConfig.chart.value.isShowBackground
   ? 'rounded-md bg-elevated/30 p-2 md:p-3'
   : undefined)
 
@@ -31,7 +36,7 @@ function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
 
 <template>
   <div
-    v-if="statConfig.config.value.chart.isShow"
+    v-if="statConfig.chart.value.isShow"
     class="grid min-w-0 gap-2"
     :class="!isSplit && backgroundClass"
     data-stat-block="chart"
@@ -41,19 +46,30 @@ function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
       v-if="!isSplit"
       :ctx="contexts.combined"
     />
-    <template v-else>
+    <template v-else-if="contexts.split">
       <div class="stat-two-column-grid">
         <div class="grid min-w-0" :class="backgroundClass">
-          <StatReportChart :ctx="contexts.expense" @select="onSelectSplitChart('expense', $event)" />
+          <StatReportChart :ctx="contexts.split.expense" @select="onSelectSplitChart('expense', $event)" />
         </div>
         <div class="grid min-w-0" :class="backgroundClass">
-          <StatReportChart :ctx="contexts.income" @select="onSelectSplitChart('income', $event)" />
+          <StatReportChart :ctx="contexts.split.income" @select="onSelectSplitChart('income', $event)" />
         </div>
       </div>
     </template>
-    <StatDateQuickRanges
-      v-if="statConfig.config.value.date.isShowQuick"
+    <div
+      v-if="statConfig.date.value.isShowQuick"
+      class="-mx-2 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
       data-stat-chart-quick-ranges
-    />
+    >
+      <StatDateRanges
+        class="shrink-0"
+        itemClass="snap-start snap-always"
+        size="xs"
+        :optionIds="quickRangeIds"
+        :statDate
+        tabsClass="overflow-visible! bg-transparent! p-0!"
+        view="all"
+      />
+    </div>
   </div>
 </template>

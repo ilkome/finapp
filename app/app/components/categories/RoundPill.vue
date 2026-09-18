@@ -13,58 +13,20 @@ const props = defineProps<{
 }>()
 
 const categoriesStore = useCategoriesStore()
-const category = computed(() => categoriesStore.items[props.categoryId])
-const parentCategory = computed(() => {
-  const parentId = category.value?.parentId
-  return parentId ? categoriesStore.items[parentId] : undefined
-})
+const withParent = computed(() => categoriesStore.getWithParent(props.categoryId))
 </script>
 
 <template>
-  <div
-    v-if="category"
-    class="relative flex items-center overflow-hidden rounded-2xl border bg-elevated/10 p-1 pr-3 hover:bg-elevated/30"
-    :class="[
-      props.isIconBg ? 'gap-2' : 'gap-1',
-      props.isActive ? 'border-primary/60 bg-elevated/30' : 'border-transparent',
-    ]"
+  <CategoriesRoundPillView
+    v-if="withParent"
+    :category="withParent.category"
+    :isActive="props.isActive"
+    :isIconBg="props.isIconBg"
+    :isInlineContent="props.isInlineContent"
+    :isShowParent="props.isShowParent"
+    :nameSuffix="props.nameSuffix"
+    :parentCategory="withParent.parentCategory"
   >
-    <div
-      :style="{ backgroundColor: category.color }"
-      class="absolute inset-0 size-full opacity-10"
-    />
-
-    <div class="relative size-6">
-      <UiIconBase
-        v-if="props.isIconBg"
-        :name="category.icon"
-        :color="category.color"
-        :size="14"
-        class="w-6! p-1"
-        invert
-      />
-      <UiIconBase
-        v-else
-        :name="category.icon"
-        :color="category.color"
-        :size="14"
-        class="w-6! p-1"
-      />
-    </div>
-
-    <div
-      class="relative"
-      :class="props.isInlineContent && 'flex items-center gap-1.5'"
-    >
-      <CategoriesName
-        :category="category"
-        :isShowParent="props.isShowParent"
-        :parentCategory="parentCategory"
-        :stacked="!props.isInlineContent"
-        :suffix="props.nameSuffix"
-        size="xs"
-      />
-      <slot />
-    </div>
-  </div>
+    <slot />
+  </CategoriesRoundPillView>
 </template>

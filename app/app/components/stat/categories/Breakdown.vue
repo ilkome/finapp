@@ -7,7 +7,7 @@ import type { TrnId } from '~/components/trns/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { addEmptyCategoryViews } from '~/components/stat/categories/categoryViews'
 import { useCategoriesBreakdown } from '~/components/stat/categories/useCategoriesBreakdown'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 const props = defineProps<{
   baseCategoryViews?: CategoryViews
@@ -16,7 +16,6 @@ const props = defineProps<{
   focusedCategoryId?: CategoryId
   focusedChildCategoryId?: CategoryId
   isOneCategory?: boolean
-  isTwoColumnLayout?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
   storageKey: string
@@ -30,11 +29,11 @@ const emit = defineEmits<{
   setChildCategoryFilter: [categoryId: CategoryId]
 }>()
 
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const categoriesStore = useCategoriesStore()
-const { categoriesWithData, focusedCategories, groupedCategories, ungroupedCategories } = useCategoriesBreakdown(props)
+const { categoriesWithData, focusedCategories, views } = useCategoriesBreakdown(props)
 const isFocused = computed(() => !!props.focusedCategoryId)
-const isHideOthersOnSelect = computed(() => statConfig.config.value.categories.round.isHideOthersOnSelect)
+const isHideOthersOnSelect = computed(() => statConfig.categories.value.round.isHideOthersOnSelect)
 const displayedCategories = computed(() => isFocused.value ? focusedCategories.value : categoriesWithData.value)
 // The focused child keeps its chip in periods where it has no transactions, so the selection
 // stays visible instead of silently disappearing from the row.
@@ -81,20 +80,16 @@ const focusedCategoryViews = computed<CategoryViews>(() => {
 
     <StatCategoriesVerticalSection
       v-if="!isFocused && props.block !== 'catsList'"
-      :groupedCategories
-      :isTwoColumnLayout="props.isTwoColumnLayout"
-      :ungroupedCategories
+      :views
       @clickCategory="emit('clickCategory', $event)"
     />
 
     <StatCategoriesListSection
       v-if="!isFocused && props.block !== 'vertical'"
       :categoriesWithData
-      :groupedCategories
       :isOneCategory="props.isOneCategory"
       :storageKey="props.storageKey"
       :type="props.type"
-      :ungroupedCategories
       @openCategory="(categoryId, filteredType) => emit('openCategory', categoryId, filteredType)"
     />
   </div>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getCreditAvailable } from '~/components/wallets/types'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
   amount?: number
+  /** Base currency the rate is shown against; the rate row is hidden without it. */
+  baseCurrencyCode?: string
   compact?: boolean
   insideClasses?: string
   isShowBaseRate?: boolean
@@ -23,8 +24,6 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [walletId: WalletId]
 }>()
-
-const currenciesStore = useCurrenciesStore()
 
 const classes = computed(() => ({
   'bg-elevated/30': props.compact,
@@ -75,13 +74,13 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
 
         <!-- Rate -->
         <div
-          v-if="props.isShowRate && wallet.currency !== currenciesStore.base && wallet.rate"
+          v-if="props.isShowRate && props.baseCurrencyCode && wallet.currency !== props.baseCurrencyCode && wallet.rate"
           class="opacity-90"
         >
           <Amount
             :amount="wallet.rate"
             :precision="2"
-            :currencyCode="currenciesStore.base"
+            :currencyCode="props.baseCurrencyCode"
             :isShowBaseRate="false"
             align="left"
             variant="secondary"

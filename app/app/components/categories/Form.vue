@@ -48,7 +48,7 @@ const isAllowChangeParent = computed(() =>
 // A root can manage children only if it has no direct transactions of its own,
 // otherwise adopting children would hide its trns from stats.
 // New categories have no transactions yet, so they always qualify.
-// Existing root with own children also qualifies (legacy safety valve).
+// A root that already has children keeps them even if it later gained own trns.
 const canHaveChildren = computed(() =>
   isNewCategory.value
   || hadChildrenInitially.value

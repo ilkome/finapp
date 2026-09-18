@@ -279,7 +279,7 @@ export function buildChartGuideMarkLine(scale: { max: number, min: number }, ave
   }
 }
 
-export const defaultSeriesConfig = {
+const defaultSeriesConfig = {
   areaStyle: {
     opacity: 0.1,
   },
@@ -343,31 +343,45 @@ export function buildChartSeries(
       const isLine = effectiveChartType === 'line'
       const isStackedBar = isBar && isBarGrouped && !item.axisOverlay && series.filter(candidate => !candidate.axisOverlay).length > 1
       const seriesType = resolveEChartsSeriesType(effectiveChartType)
-      const areaStyle = isLine && line.isGradient
-        ? defaultSeriesConfig.areaStyle
-        : { opacity: 0 }
+      // Zero = no trns that period; render no bar (null), not a floored stub.
+      // Lines keep 0 as a real point so they stay connected.
+      const data = isBar
+        ? item.data.map((value, dataIndex) => value === 0
+            ? null
+            : isStackedBar
+              ? { itemStyle: { borderRadius: resolveStackedBarBorderRadius(series, seriesIndex, dataIndex) }, value }
+              : value)
+        : isLine && line.isSkipZero ? item.data.map(value => value === 0 ? null : value) : item.data
+
+      if (item.axisOverlay) {
+        return {
+          ...defu(defaultSeriesConfig, item),
+          areaStyle: { opacity: 0 },
+          data,
+          emphasis: { disabled: true },
+          itemStyle: { opacity: 0 },
+          label: defaultSeriesConfig.label,
+          lineStyle: { opacity: 0, width: 0 },
+          showSymbol: false,
+          smooth: isLine ? line.isSmooth : false,
+          stack: false,
+          symbol: 'none',
+          type: seriesType,
+        }
+      }
+
       return {
         ...defu(defaultSeriesConfig, item),
-        areaStyle,
-        // Zero = no trns that period; render no bar (null), not a floored stub.
-        // Lines keep 0 as a real point so they stay connected.
-        data: isBar
-          ? item.data.map((value, dataIndex) => value === 0
-              ? null
-              : isStackedBar
-                ? { itemStyle: { borderRadius: resolveStackedBarBorderRadius(series, seriesIndex, dataIndex) }, value }
-                : value)
-          : isLine && line.isSkipZero ? item.data.map(value => value === 0 ? null : value) : item.data,
-        emphasis: item.axisOverlay
-          ? { disabled: true }
-          : isLine && line.isGradient ? { focus: 'series' as const } : defaultSeriesConfig.emphasis,
-        itemStyle: item.axisOverlay ? { opacity: 0 } : isBar && !isStackedBar ? { borderRadius: 2 } : undefined,
+        areaStyle: isLine && line.isGradient ? defaultSeriesConfig.areaStyle : { opacity: 0 },
+        data,
+        emphasis: isLine && line.isGradient ? { focus: 'series' as const } : defaultSeriesConfig.emphasis,
+        itemStyle: isBar && !isStackedBar ? { borderRadius: 2 } : undefined,
         label: defaultSeriesConfig.label,
-        lineStyle: item.axisOverlay ? { opacity: 0, width: 0 } : defaultSeriesConfig.lineStyle,
-        showSymbol: item.axisOverlay ? false : isLine && line.isShowPoints,
+        lineStyle: defaultSeriesConfig.lineStyle,
+        showSymbol: isLine && line.isShowPoints,
         smooth: isLine ? line.isSmooth : false,
-        stack: item.axisOverlay ? false : isStackedAxisChartType(chartType, line, isBarGrouped) ? 'b' : false,
-        symbol: item.axisOverlay ? 'none' : defaultSeriesConfig.symbol,
+        stack: isStackedAxisChartType(chartType, line, isBarGrouped) ? 'b' : false,
+        symbol: defaultSeriesConfig.symbol,
         type: seriesType,
       }
     })

@@ -3,6 +3,7 @@ import type { TrnsDisplayRow } from '~/components/trns/listRows'
 import type { TrnId } from '~/components/trns/types'
 
 import { useAmount } from '~/components/amount/useAmount'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useDateFormats } from '~/composables/useDateFormats'
@@ -21,6 +22,7 @@ const emit = defineEmits<{
 
 const trnsStore = useTrnsStore()
 const selection = inject(trnsSelectionKey, null)
+const currenciesStore = useCurrenciesStore()
 const { computeTotalForTrnsIds } = useAmount()
 const { formatDate } = useDateFormats()
 
@@ -42,33 +44,20 @@ function onClickDate() {
     emit('clickDate', props.row.date)
 }
 
-const rowTotal = computed(() => props.row.type === 'dateHeader' && props.row.trnsIds.length > 1
+const daySum = computed(() => props.row.type === 'dateHeader' && props.row.trnsIds.length > 1
   ? computeTotalForTrnsIds(props.row.trnsIds)
-  : null)
+  : undefined)
 </script>
 
 <template>
-  <div
+  <TrnsDateRowView
     v-if="row.type === 'dateHeader'"
-    :class="{ 'border-accented': isShowGroupSum && row.trnsIds.length > 1 }"
-    class="flex items-center gap-2 px-3 pt-3 pb-1"
-  >
-    <TrnsDateHeader
-      :date="row.date"
-      class="grow"
-      @click="onClickDate"
-    />
-
-    <div
-      v-if="isShowGroupSum && rowTotal"
-      class="opacity-60"
-    >
-      <TrnsListGroupSum
-        :expense="rowTotal.expense"
-        :income="rowTotal.income"
-      />
-    </div>
-  </div>
+    :currencyCode="currenciesStore.base"
+    :date="row.date"
+    :isShowGroupSum="isShowGroupSum"
+    :sum="daySum"
+    @click="onClickDate"
+  />
 
   <TrnsItemWrap
     v-else-if="trnItem"

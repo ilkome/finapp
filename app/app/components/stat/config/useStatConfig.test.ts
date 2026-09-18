@@ -49,20 +49,6 @@ describe('normalizeStoredStatConfig', () => {
     expect(config.chart.type).toBe('pie')
   })
 
-  it('migrates legacy chart and tab view settings', () => {
-    const config = normalizeStoredStatConfig({ chart: { isByCategories: true, type: 'line' } }, structuredClone(defaultConfig), 'split')
-
-    expect(config.chart).toMatchObject({ breakdown: 'categories', layout: 'split', type: 'line' })
-    expect(config.page.layout).toBe('split')
-  })
-
-  it('defaults independent layouts for non-split legacy tabs', () => {
-    const config = normalizeStoredStatConfig({ chart: { isByCategories: false } }, structuredClone(defaultConfig), 'summary')
-
-    expect(config.chart).toMatchObject({ breakdown: 'cashflow', layout: 'combined-wide' })
-    expect(config.page.layout).toBe('combined')
-  })
-
   it('backfills the current chart value display for stored configs', () => {
     const config = normalizeStoredStatConfig({ chart: { type: 'line' } }, structuredClone(defaultConfig))
 
@@ -75,32 +61,11 @@ describe('normalizeStoredStatConfig', () => {
     expect(config.wallets).toMatchObject({ displayMode: 'recent', selectionMode: 'multiple', valueMode: 'balance' })
   })
 
-  it('migrates legacy category grouping booleans', () => {
-    const config = normalizeStoredStatConfig({
-      categories: {
-        bars: { isGrouped: true },
-        list: { isGrouped: true },
-        round: { isGrouped: false },
-      },
-    }, structuredClone(defaultConfig))
+  it('drops old-shape payloads to defaults instead of migrating them', () => {
+    const config = normalizeStoredStatConfig({ chart: { isByCategories: true, type: 'area' } }, structuredClone(defaultConfig))
 
-    expect(config.categories.list.grouping).toBe('parent')
-    expect(config.categories.round.grouping).toBe('child')
-    expect(config.categories.bars.grouping).toBe('parent')
-  })
-
-  it('migrates removed line chart variants to line options', () => {
-    const area = normalizeStoredStatConfig({ chart: { type: 'area' } }, structuredClone(defaultConfig))
-    const sharp = normalizeStoredStatConfig({ chart: { type: 'stackedLine' } }, structuredClone(defaultConfig))
-
-    expect(area.chart).toMatchObject({
-      line: { isGradient: true, isShowPoints: true, isSkipZero: false, isSmooth: false },
-      type: 'line',
-    })
-    expect(sharp.chart).toMatchObject({
-      line: { isGradient: false, isShowPoints: false, isSkipZero: false, isSmooth: false },
-      type: 'line',
-    })
+    expect(config.chart).toMatchObject({ breakdown: 'cashflow', type: 'bar' })
+    expect(config).toEqual(defaultConfig)
   })
 
   it('tracks a reactive page storage key', () => {

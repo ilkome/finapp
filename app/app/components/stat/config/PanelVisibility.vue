@@ -2,13 +2,13 @@
 import type { StatBlockPanelId } from '~/components/stat/views/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 const props = defineProps<{
   panel: StatBlockPanelId
 }>()
 
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const panel = computed(() => PANELS[props.panel])
 const isVisible = computed(() => panel.value.getIsShow(statConfig.config.value))
 

@@ -9,7 +9,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const keepalive = {
-  include: ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard'],
+  include: ['Categories', 'CategoriesId', 'Wallets', 'WalletsId', 'Dashboard', 'History'],
   max: 20,
 }
 

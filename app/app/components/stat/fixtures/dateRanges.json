@@ -1,0 +1,14 @@
+{
+  "params": { "isShowMaxRange": false, "isSkipEmpty": false, "rangeBy": "month", "rangeDuration": 1 },
+  "options": [
+    { "id": "period:day-1", "label": "Day", "range": { "granularityBy": "day", "granularityDuration": 1, "rangeBy": "day", "rangeDuration": 1 }, "view": "periods" },
+    { "id": "period:week-1", "label": "Week", "range": { "granularityBy": "day", "granularityDuration": 1, "rangeBy": "week", "rangeDuration": 1 }, "view": "periods" },
+    { "id": "period:month-1", "label": "Month", "range": { "granularityBy": "day", "granularityDuration": 1, "rangeBy": "month", "rangeDuration": 1 }, "view": "periods" },
+    { "id": "period:year-1", "label": "Year", "range": { "granularityBy": "month", "granularityDuration": 1, "rangeBy": "year", "rangeDuration": 1 }, "view": "periods" },
+    { "id": "preset:day-7", "label": "7 days", "range": { "granularityBy": "day", "granularityDuration": 1, "rangeBy": "day", "rangeDuration": 7 }, "view": "presets" },
+    { "id": "preset:month-3", "label": "3 months", "range": { "granularityBy": "week", "granularityDuration": 1, "rangeBy": "month", "rangeDuration": 3 }, "view": "presets" },
+    { "id": "preset:year-6", "label": "6 years", "range": { "granularityBy": "year", "granularityDuration": 1, "rangeBy": "year", "rangeDuration": 6 }, "view": "presets" },
+    { "id": "maximum:all", "isSkipEmpty": false, "label": "All", "view": "maximum" },
+    { "id": "maximum:allSkipEmpty", "isSkipEmpty": true, "label": "All, skip empty", "view": "maximum" }
+  ]
+}

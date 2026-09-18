@@ -48,6 +48,7 @@ type CategoriesStore = {
   getChildrenIds: (categoryId: CategoryId) => CategoryId[]
   getChildrenIdsOrParent: (categoryId: CategoryId) => CategoryId[]
   getTransactibleIds: (ids?: CategoryId[]) => CategoryId[]
+  getWithParent: (categoryId: CategoryId) => { category: CategoryItem, parentCategory: CategoryItem | undefined } | null
   hasChildren: (categoryId: CategoryId) => boolean
   hasItems: ComputedRef<boolean>
   initCategories: () => void
@@ -296,6 +297,13 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return children.length ? children : [categoryId]
   }
 
+  function getWithParent(categoryId: CategoryId) {
+    const category = items.value[categoryId]
+    if (!category)
+      return null
+    return { category, parentCategory: category.parentId ? items.value[category.parentId] : undefined }
+  }
+
   function getTransactibleIds(ids?: CategoryId[]) {
     return getTransactibleCategoriesIds(items.value, ids)
   }
@@ -440,6 +448,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     getChildrenIds,
     getChildrenIdsOrParent,
     getTransactibleIds,
+    getWithParent,
     hasChildren,
     hasItems,
     initCategories,

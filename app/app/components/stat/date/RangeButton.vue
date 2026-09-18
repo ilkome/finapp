@@ -1,8 +1,15 @@
 <script setup lang="ts">
+import { statDateRangeLabel } from '~/components/stat/date/rangeLabelText'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const statDate = inject(statDateKey)!
+
+const label = computed(() => statDateRangeLabel({
+  intervalsInRange: statDate.intervalsInRange.value,
+  params: statDate.params.value,
+  range: statDate.range.value,
+}, t, locale.value))
 </script>
 
 <template>
@@ -20,7 +27,9 @@ const statDate = inject(statDateKey)!
   >
     <template #trigger="{ isActive }">
       <UiTitleDropdown data-stat-date-range :isActive>
-        <StatDateRangeLabel />
+        <div class="flex items-center gap-1 leading-none text-nowrap capitalize">
+          {{ label }}
+        </div>
       </UiTitleDropdown>
     </template>
 

@@ -5,6 +5,7 @@ import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 const props = defineProps<{
   activeItemId?: WalletId | null
   amount?: number
+  baseCurrencyCode?: string
   // Classes for the visible item element. Use this (not a fallthrough `class`)
   // so it reaches the body in the context-menu branch, whose root is a
   // renderless ContextMenuRoot that would otherwise swallow it.
@@ -26,44 +27,17 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [walletId: WalletId]
 }>()
+
+const bodyProps = computed(() => {
+  const { bodyClass, contextMenuItems: _, ...rest } = props
+  return { ...rest, class: bodyClass }
+})
 </script>
 
 <template>
   <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
-    <WalletsItemBody
-      :class="props.bodyClass"
-      :activeItemId="props.activeItemId"
-      :amount="props.amount"
-      :compact="props.compact"
-      :insideClasses="props.insideClasses"
-      :isShowBaseRate="props.isShowBaseRate"
-      :isShowCreditLimit="props.isShowCreditLimit"
-      :isShowIcon="props.isShowIcon"
-      :isShowRate="props.isShowRate"
-      :isSort="props.isSort"
-      :lineWidth="props.lineWidth"
-      :to="props.to"
-      :wallet="props.wallet"
-      :walletId="props.walletId"
-      @click="emit('click', $event)"
-    />
+    <WalletsItemBody v-bind="bodyProps" @click="emit('click', $event)" />
   </UiContextMenuMy>
 
-  <WalletsItemBody
-    v-else
-    :class="props.bodyClass"
-    :activeItemId="props.activeItemId"
-    :amount="props.amount"
-    :compact="props.compact"
-    :insideClasses="props.insideClasses"
-    :isShowBaseRate="props.isShowBaseRate"
-    :isShowCreditLimit="props.isShowCreditLimit"
-    :isShowIcon="props.isShowIcon"
-    :isShowRate="props.isShowRate"
-    :isSort="props.isSort"
-    :lineWidth="props.lineWidth"
-    :wallet="props.wallet"
-    :walletId="props.walletId"
-    @click="emit('click', $event)"
-  />
+  <WalletsItemBody v-else v-bind="bodyProps" @click="emit('click', $event)" />
 </template>

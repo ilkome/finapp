@@ -5,8 +5,6 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 
 export type StatConfigParams = {
   initialConfig?: unknown
-  legacyStorageKey?: MaybeRefOrGetter<string | undefined>
-  legacyTab?: unknown
   props?: DeepPartial<MiniItemConfig>
   stableStorage?: boolean
   storage?: Storage

@@ -1,0 +1,7 @@
+{
+  "chips": [
+    { "key": "wallet-card", "kind": "wallet", "tooltip": "Wallet: Dollar card", "walletId": "card", "wallet": { "amount": 1520, "color": "#3b82f6", "currency": "USD", "id": "card", "isArchived": false, "name": "Dollar card", "order": 1, "type": "cash" } },
+    { "key": "category-food", "kind": "category", "tooltip": "Category: Food", "categoryId": "food", "category": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food" } },
+    { "key": "extra-type", "kind": "extra", "tooltip": "Type: Expense", "icon": "lucide:arrow-down", "label": "Expense", "patch": { "type": "all" } }
+  ]
+}

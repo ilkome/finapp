@@ -14,107 +14,20 @@ const emit = defineEmits<{
   select: [code: CurrencyCode]
 }>()
 
-const { t } = useI18n()
 const walletsStore = useWalletsStore()
-const { active } = toRefs(props)
 const { getCurrencyName } = useCurrencyName()
 
-const searchInput = ref('')
-const list = computed(() => {
-  if (!searchInput.value)
-    return currencies
-
-  const search = searchInput.value.toLowerCase()
-  const searchableCurrencies = props.isHideUnused ? currencies.filter(currency => walletsStore.currenciesUsed.includes(currency.code)) : currencies
-
-  return searchableCurrencies.filter(
-    currency =>
-      getCurrencyName(currency.code).toLowerCase().includes(search)
-      || currency.code.toLowerCase().includes(search),
-  )
-})
+const all = computed(() => currencies.map(currency => ({ code: currency.code, name: getCurrencyName(currency.code) })))
+const used = computed(() => walletsStore.currenciesUsed.map(code => ({ code, name: getCurrencyName(code) })))
 </script>
 
 <template>
-  <div class="grid h-full grid-rows-[auto_1fr] overflow-hidden px-2">
-    <div>
-      <FormInput
-        v-model="searchInput"
-        :placeholder="`${t('currencies.list.search')}...`"
-      />
-    </div>
-
-    <div class="mt-3 flex scroller-block flex-col gap-6 overflow-y-auto py-px pb-3">
-      <template v-if="list.length === 0">
-        <div class="py-3 text-center">
-          {{ t('currencies.list.notFound') }}
-        </div>
-      </template>
-
-      <div v-if="props.isShowAllButton">
-        <UiElement
-          :isActive="active === 'all'"
-          :lineWidth="6"
-          class="group"
-          insideClasses="min-h-11!"
-          @click="emit('select', 'all')"
-        >
-          <div class="flex items-center">
-            <div class="w-14 pl-1">
-              {{ t('currencies.list.all') }}
-            </div>
-
-            <div class="text-sm">
-              {{ t('currencies.list.showAll') }}
-            </div>
-          </div>
-        </UiElement>
-      </div>
-
-      <div v-if="!searchInput">
-        <UiElement
-          v-for="currencyCode in walletsStore.currenciesUsed"
-          :key="currencyCode"
-          :isActive="currencyCode === active"
-          :lineWidth="6"
-          class="group"
-          insideClasses="min-h-11!"
-          @click="emit('select', currencyCode)"
-        >
-          <div class="flex items-center">
-            <div class="w-14 pl-1">
-              {{ currencyCode }}
-            </div>
-
-            <div
-              v-if="currencies.find((c) => c.code === currencyCode)"
-              class="text-sm"
-            >
-              {{ getCurrencyName(currencyCode) }}
-            </div>
-          </div>
-        </UiElement>
-      </div>
-
-      <div v-if="!props.isHideUnused && list.length > 0">
-        <UiElement
-          v-for="currency in list"
-          :key="currency.code"
-          :isActive="currency.code === active"
-          :lineWidth="6"
-          class="group"
-          @click="emit('select', currency.code)"
-        >
-          <div class="flex items-center">
-            <div class="w-14 pl-1">
-              {{ currency.code }}
-            </div>
-            <div class="text-sm">
-              {{ getCurrencyName(currency.code) }}
-            </div>
-          </div>
-        </UiElement>
-      </div>
-    </div>
-  </div>
+  <CurrenciesListView
+    :active="props.active"
+    :all
+    :isHideUnused="props.isHideUnused"
+    :isShowAllButton="props.isShowAllButton"
+    :used
+    @select="emit('select', $event)"
+  />
 </template>

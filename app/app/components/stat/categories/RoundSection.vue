@@ -7,7 +7,8 @@ import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { addEmptyCategoryViews, collectRoundCategoryIds, resolveCategoryGrouping } from '~/components/stat/categories/categoryViews'
 import { sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
 import { filterFocusedCategories, projectCategorySelection, resolveFocusedParentId } from '~/components/stat/categories/focusedCategories'
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatCategoryRows } from '~/components/stat/categories/useStatCategoryRows'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 const props = defineProps<{
   baseCategoryViews: CategoryViews
@@ -24,11 +25,11 @@ const emit = defineEmits<{
 }>()
 
 const categoriesStore = useCategoriesStore()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 
-const grouping = computed(() => statConfig.config.value.categories.round.grouping)
-const isShowFavorites = computed(() => statConfig.config.value.categories.round.isShowFavorites)
-const isShowRecent = computed(() => statConfig.config.value.categories.round.isShowRecent)
+const grouping = computed(() => statConfig.categories.value.round.grouping)
+const isShowFavorites = computed(() => statConfig.categories.value.round.isShowFavorites)
+const isShowRecent = computed(() => statConfig.categories.value.round.isShowRecent)
 
 const mergedPreCategoriesIds = computed(() => collectRoundCategoryIds({
   favoriteCategoryIds: categoriesStore.favoriteCategoriesIds,
@@ -107,18 +108,17 @@ const selectedIdByVisibleId = computed(() => projectCategorySelection({
 }))
 const filteredSet = computed(() => new Set(selectedIdByVisibleId.value.keys()))
 const visibleRoundCategories = computed(() => {
-  if (props.focusedCategoryId || !statConfig.config.value.categories.round.isHideOthersOnSelect || filteredSet.value.size === 0)
+  if (props.focusedCategoryId || !statConfig.categories.value.round.isHideOthersOnSelect || filteredSet.value.size === 0)
     return roundCategories.value
 
   return roundCategories.value.filter(item => filteredSet.value.has(item.id))
 })
 
-// Unique per section: the same category can sit in several clouds at once (one per period in
-// the feed, plus the focus row), and duplicate transition names abort the whole transition.
+const { currencyCode, openFormForCategory, rows } = useStatCategoryRows(visibleRoundCategories)
+const selectedIds = computed(() => [...filteredSet.value])
+// The same category can sit in several clouds at once (one per period in the feed, plus the
+// focus row), and duplicate transition names abort the whole transition.
 const transitionScope = useId()
-function transitionName(categoryId: CategoryId) {
-  return `statCat-${transitionScope}-${categoryId}`.replace(/[^\w-]/g, '_')
-}
 
 function onSetCategoryFilter(categoryId: CategoryId) {
   const nextId = selectedIdByVisibleId.value.get(categoryId) ?? categoryId
@@ -127,23 +127,20 @@ function onSetCategoryFilter(categoryId: CategoryId) {
 </script>
 
 <template>
-  <div class="flex min-w-0 flex-wrap justify-start gap-1 gap-y-2">
-    <slot name="prepend" />
-
-    <StatCategoriesRound
-      v-for="item in visibleRoundCategories"
-      :key="item.id"
-      :item="item"
-      :style="{ viewTransitionName: transitionName(item.id) }"
-      :class="{
-        'opacity-60': filteredSet.size > 0 && !filteredSet.has(item.id),
-        'opacity-50': !filteredSet.has(item.id) && item.value === 0,
-        'border-primary/40!': filteredSet.has(item.id),
-      }"
-      class="transition-opacity"
-      isShowAmount
-      :isShowParent="false"
-      @click="onSetCategoryFilter(item.id)"
-    />
-  </div>
+  <StatCategoriesRoundListView
+    :currencyCode
+    :isIconBg="statConfig.categories.value.round.isIconBg"
+    :isInlineAmount="statConfig.categories.value.round.isInlineAmount"
+    :isShowParent="false"
+    :rows
+    :selectedIds
+    :transitionScope
+    isShowAmount
+    @click="onSetCategoryFilter"
+    @longPress="openFormForCategory"
+  >
+    <template #prepend>
+      <slot name="prepend" />
+    </template>
+  </StatCategoriesRoundListView>
 </template>

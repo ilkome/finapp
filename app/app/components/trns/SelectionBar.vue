@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import type { CategoryId } from '~/components/categories/types'
-import type { HistoryBulkEdit } from '~/components/trns/history/types'
+import type { TrnsBulkEdit } from '~/components/trns/bulkEdits'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { buildTrnsBulkEdits } from '~/components/trns/history/bulkEdits'
+import { buildTrnsBulkEdits } from '~/components/trns/bulkEdits'
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -35,8 +35,8 @@ const isWalletOpen = ref(false)
 const hasTransfer = computed(() => selection.ids.value.some(id => trnsStore.items?.[id]?.type === TrnType.Transfer))
 
 const stagedDescription = computed(() => description.value.trim())
-const actions = computed<HistoryBulkEdit[]>(() => {
-  const staged: HistoryBulkEdit[] = []
+const actions = computed<TrnsBulkEdit[]>(() => {
+  const staged: TrnsBulkEdit[] = []
 
   if (isDescriptionCleared.value)
     staged.push({ type: 'clearDescription' })
@@ -104,7 +104,7 @@ async function apply() {
     if (!saved)
       return
 
-    showSuccessToast('trns.historyTable.bulk.updated', { count: result.changedIds.length })
+    showSuccessToast('trns.bulk.updated', { count: result.changedIds.length })
   }
 
   resetStaged()
@@ -123,7 +123,7 @@ async function confirmDelete() {
   if (!deleted)
     return
 
-  showSuccessToast('trns.historyTable.bulk.deleted', { count: ids.length })
+  showSuccessToast('trns.bulk.deleted', { count: ids.length })
   resetStaged()
   selection.clear()
 }
@@ -144,7 +144,7 @@ watch(description, (value) => {
 <template>
   <div class="-mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 items-center gap-2 overflow-x-auto px-2 py-1 lg:-mx-4 lg:scroll-px-4 lg:px-4">
     <UiActionButton
-      :ariaLabel="t('trns.historyTable.clearSelection')"
+      :ariaLabel="t('trns.selection.clear')"
       class="min-h-9! min-w-9! shrink-0 snap-start gap-1 theme-rounded-control! bg-elevated"
       variant="text"
       @click="selection.clear()"
@@ -167,7 +167,7 @@ watch(description, (value) => {
       :isOpen="isDescriptionOpen"
       popoverBodyClass="md:pb-3"
       :snapPoints="snapPoints"
-      :title="t('trns.historyTable.bulk.description')"
+      :title="t('trns.bulk.description')"
       titleClass="pt-3! pb-3!"
       isShowCloseBtn
       keyboardTrigger
@@ -176,7 +176,7 @@ watch(description, (value) => {
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="text-nowrap">{{ t('trns.historyTable.bulk.description') }}</span>
+          <span class="text-nowrap">{{ t('trns.bulk.description') }}</span>
           <span v-if="hasStagedDescription" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
@@ -186,7 +186,7 @@ watch(description, (value) => {
           <UTextarea
             v-model="description"
             autofocus
-            :placeholder="t('trns.historyTable.bulk.descriptionPlaceholder')"
+            :placeholder="t('trns.bulk.descriptionPlaceholder')"
             autoresize
           />
           <UiButtonAccent
@@ -194,7 +194,7 @@ watch(description, (value) => {
             variant="soft"
             @click="stageClearDescription(close)"
           >
-            {{ t('trns.historyTable.bulk.clearDescription') }}
+            {{ t('trns.bulk.clearDescription') }}
           </UiButtonAccent>
         </div>
       </template>
@@ -206,7 +206,7 @@ watch(description, (value) => {
       :isOpen="isCategoryOpen"
       popoverBodyClass="py-0! md:pb-0!"
       :snapPoints="snapPoints"
-      :title="t('trns.historyTable.bulk.category')"
+      :title="t('trns.bulk.category')"
       titleClass="pt-3! pb-2!"
       isShowCloseBtn
       keyboardTrigger
@@ -215,7 +215,7 @@ watch(description, (value) => {
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="text-nowrap">{{ t('trns.historyTable.bulk.category') }}</span>
+          <span class="text-nowrap">{{ t('trns.bulk.category') }}</span>
           <span v-if="categoryId" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
@@ -242,7 +242,7 @@ watch(description, (value) => {
       :isOpen="isWalletOpen"
       popoverBodyClass="py-0! md:pb-0!"
       :snapPoints="snapPoints"
-      :title="t('trns.historyTable.bulk.wallet')"
+      :title="t('trns.bulk.wallet')"
       titleClass="pt-3! pb-2!"
       isShowCloseBtn
       keyboardTrigger
@@ -251,7 +251,7 @@ watch(description, (value) => {
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="text-nowrap">{{ t('trns.historyTable.bulk.wallet') }}</span>
+          <span class="text-nowrap">{{ t('trns.bulk.wallet') }}</span>
           <span v-if="walletId" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
@@ -275,12 +275,12 @@ watch(description, (value) => {
       v-model="date"
       class="flex shrink-0 grow-0 snap-start gap-1"
       clearable
-      :placeholder="t('trns.historyTable.bulk.date')"
-      :title="t('trns.historyTable.bulk.date')"
+      :placeholder="t('trns.bulk.date')"
+      :title="t('trns.bulk.date')"
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
-          <span class="text-nowrap">{{ t('trns.historyTable.bulk.date') }}</span>
+          <span class="text-nowrap">{{ t('trns.bulk.date') }}</span>
           <span v-if="date !== null" class="size-1.5 rounded-full bg-primary" />
         </UiTitleDropdown>
       </template>
@@ -297,7 +297,7 @@ watch(description, (value) => {
 
     <LayoutConfirmModal
       v-if="showDeleteConfirm"
-      :title="t('trns.historyTable.bulk.deleteTitle')"
+      :title="t('trns.bulk.deleteTitle')"
       @closed="showDeleteConfirm = false"
       @confirm="confirmDelete"
     />

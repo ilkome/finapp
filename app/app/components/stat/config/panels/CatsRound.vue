@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { statConfigKey } from '~/components/stat/injectionKeys'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 const { t } = useI18n()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 </script>
 
 <template>
   <div class="flex flex-col gap-0.5">
     <StatConfigCategoryGroupingSelect
-      :modelValue="statConfig.config.value.categories.round.grouping"
+      :modelValue="statConfig.categories.value.round.grouping"
       parameterId="categories.round.grouping"
       @update:modelValue="value => statConfig.updateConfig('categories', { round: { grouping: value } })"
     />

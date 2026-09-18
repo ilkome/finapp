@@ -4,15 +4,15 @@ import type { CategoryWithData, SeriesSlugSelected } from '~/components/stat/typ
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { getMaxCategoryValues } from '~/components/stat/categories/barUtils'
-import { statConfigKey, statViewControllerKey } from '~/components/stat/injectionKeys'
+import { useStatCategoryRows } from '~/components/stat/categories/useStatCategoryRows'
+import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
+import { statViewControllerKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   categoriesWithData: CategoryWithData[]
-  groupedCategories: CategoryWithData[]
   isOneCategory?: boolean
   storageKey: string
   type: SeriesSlugSelected | 'summary'
-  ungroupedCategories: CategoryWithData[]
 }>()
 
 const emit = defineEmits<{
@@ -20,17 +20,15 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const statConfig = inject(statConfigKey)!
+const statConfig = useStatConfigCtx()
 const statViewController = inject(statViewControllerKey, null)
 
-const catsList = computed(() => statConfig.config.value.categories.list)
+const catsList = computed(() => statConfig.categories.value.list)
 const isListShow = computed(() => catsList.value.isShow)
-const isShowBackground = computed(() => catsList.value.backgroundType !== 'none')
 const isShowTitle = computed(() => catsList.value.isShowTitle)
-const linesCategories = computed<CategoryWithData[]>(() => props.categoriesWithData)
-const linesMaxValues = computed(() => getMaxCategoryValues(linesCategories.value))
-const childrenMaxValues = computed(() => getMaxCategoryValues(props.categoriesWithData))
-const hasGroupedCategories = computed(() => linesCategories.value.some(item => !!item.categories?.length))
+const { currencyCode, openFormForCategory, rows } = useStatCategoryRows(() => props.categoriesWithData)
+const maxValues = computed(() => getMaxCategoryValues(props.categoriesWithData))
+const hasGroupedCategories = computed(() => props.categoriesWithData.some(item => !!item.categories?.length))
 
 const {
   folderIcon,
@@ -43,6 +41,7 @@ const {
   computed(() => props.categoriesWithData.map(c => c.id)),
   { persistDefault: true },
 )
+const expandedIds = computed(() => props.categoriesWithData.map(item => item.id).filter(id => isExpanded(id)))
 
 watch(() => statViewController?.activeId.value, (activeId, previousActiveId) => {
   if (previousActiveId !== undefined && activeId !== previousActiveId)
@@ -51,22 +50,11 @@ watch(() => statViewController?.activeId.value, (activeId, previousActiveId) => 
 
 watch(() => catsList.value.isAutoExpandParents, resetExpanded, { immediate: true })
 
-function onParentClick(item: CategoryWithData) {
-  if (item.categories?.length)
-    toggleCategory(item.id)
-  else
-    emit('openCategory', item.id)
-}
-
-function onAmountOpen(item: CategoryWithData) {
+function onAmountOpen(categoryId: CategoryId) {
   const filteredType = props.type === 'expense' || props.type === 'income'
     ? props.type
     : undefined
-  emit('openCategory', item.id, filteredType)
-}
-
-function isItemExpanded(item: CategoryWithData) {
-  return !!item.categories?.length && isExpanded(item.id)
+  emit('openCategory', categoryId, filteredType)
 }
 
 const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, true)
@@ -107,58 +95,23 @@ const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, tr
       </div>
     </div>
 
-    <div
+    <StatCategoriesListView
       v-if="!isShowTitle || isListShown"
       class="w-full @3xl/main:max-w-md"
-      :class="[
-        isShowTitle && 'pt-2',
-        isShowBackground && 'grid gap-1',
-      ]"
-    >
-      <template
-        v-for="(item, index) in linesCategories"
-        :key="item.id"
-      >
-        <StatCategoriesLine
-          :isShowParent="!props.isOneCategory && !item.categories?.length"
-          :stacked="!props.isOneCategory && !item.categories?.length"
-          :item="item"
-          :isExpanded="isItemExpanded(item)"
-          isShowChevron
-          :maxCategoryValues="linesMaxValues"
-          :lineWidth="index === linesCategories.length - 1 && !isItemExpanded(item) ? 0 : 1"
-          class="group"
-          :class="isItemExpanded(item) && '[&_.uiElementLine]:bg-transparent'"
-          @click="onParentClick(item)"
-          @amountClick="onAmountOpen(item)"
-        />
-
-        <UCollapsible
-          v-if="item.categories?.length"
-          :open="isItemExpanded(item)"
-          :class="!isItemExpanded(item) && 'hidden'"
-          :ui="{ content: 'overflow-hidden data-[state=open]:animate-none! data-[state=closed]:animate-none!' }"
-        >
-          <template #content>
-            <div
-              :class="isShowBackground && 'grid gap-1'"
-              class="ml-5 pb-1 pl-3"
-            >
-              <StatCategoriesLine
-                v-for="(itemInside, childIndex) in item.categories"
-                :key="itemInside.id"
-                :isShowParent="false"
-                :item="itemInside"
-                :maxCategoryValues="childrenMaxValues"
-                :lineWidth="childIndex === item.categories.length - 1 && index === linesCategories.length - 1 ? 0 : 1"
-                class="group"
-                @click="emit('openCategory', itemInside.id)"
-                @amountClick="onAmountOpen(itemInside)"
-              />
-            </div>
-          </template>
-        </UCollapsible>
-      </template>
-    </div>
+      :class="isShowTitle && 'pt-2'"
+      :backgroundType="catsList.backgroundType"
+      :currencyCode
+      :expandedIds
+      :isLines="catsList.isLines"
+      :isRoundIcon="catsList.isRoundIcon"
+      :isShowParent="!props.isOneCategory"
+      :maxCategoryValues="maxValues"
+      :rows
+      :trendType="catsList.trendType"
+      @amountClick="onAmountOpen"
+      @longPress="openFormForCategory"
+      @select="emit('openCategory', $event)"
+      @toggleExpand="toggleCategory"
+    />
   </div>
 </template>

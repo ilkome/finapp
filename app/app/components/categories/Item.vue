@@ -2,6 +2,8 @@
 import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+
 export type CategoryItemProps = {
   activeItemId?: string | 0 | false | null
   category: CategoryItem
@@ -28,49 +30,18 @@ const emit = defineEmits<{
   filter: [categoryId: CategoryId]
   toggle: []
 }>()
+
+const categoriesStore = useCategoriesStore()
+
+const childrenCount = computed(() => categoriesStore.getChildrenIds(props.categoryId).length)
+const parentCategory = computed(() => categoriesStore.items[props.category?.parentId])
 </script>
 
 <template>
-  <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
-    <CategoriesItemBody
-      :activeItemId="props.activeItemId"
-      :stacked="props.stacked"
-      :category="props.category"
-      :categoryId="props.categoryId"
-      :class="props.class"
-      :insideClasses="props.insideClasses"
-      :isExpanded="props.isExpanded"
-      :isShowChevron="props.isShowChevron"
-      :isShowChildrenCount="props.isShowChildrenCount"
-      :isShowParent="props.isShowParent"
-      :hideLeftMenuButton="props.hideLeftMenuButton"
-      :leftMenuButton="props.leftMenuButton"
-      :leftMenuItems="props.contextMenuItems"
-      :lineWidth="props.lineWidth"
-      :selectedIds="props.selectedIds"
-      :to="props.to"
-      @click="emit('click', $event)"
-      @filter="emit('filter', $event)"
-      @toggle="emit('toggle')"
-    />
-  </UiContextMenuMy>
-
-  <CategoriesItemBody
-    v-else
-    :activeItemId="props.activeItemId"
-    :stacked="props.stacked"
-    :category="props.category"
-    :categoryId="props.categoryId"
-    :class="props.class"
-    :insideClasses="props.insideClasses"
-    :isExpanded="props.isExpanded"
-    :isShowChevron="props.isShowChevron"
-    :isShowChildrenCount="props.isShowChildrenCount"
-    :isShowParent="props.isShowParent"
-    :leftMenuButton="props.leftMenuButton"
-    :lineWidth="props.lineWidth"
-    :selectedIds="props.selectedIds"
-    :to="props.to"
+  <CategoriesItemView
+    v-bind="props"
+    :childrenCount="childrenCount"
+    :parentCategory="parentCategory"
     @click="emit('click', $event)"
     @filter="emit('filter', $event)"
     @toggle="emit('toggle')"

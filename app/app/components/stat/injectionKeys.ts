@@ -3,6 +3,7 @@ import type { InjectionKey, Ref } from 'vue'
 import type { StatContextBlockId } from '~/components/stat/config/schema'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
+import type { StatBlockPanelId } from '~/components/stat/views/types'
 import type { TrnsListFilterState } from '~/components/trns/types'
 
 export const statDateKey: InjectionKey<StatDateProvider> = Symbol('statDate')
@@ -13,6 +14,8 @@ export const statConfigParameterIdsKey: InjectionKey<Readonly<Ref<ReadonlySet<st
 export const statConfigParameterRemoveKey: InjectionKey<(id: string) => void> = Symbol('statConfigParameterRemove')
 export const statContentWidthKey: InjectionKey<Ref<number | null>> = Symbol('statContentWidth')
 export const statContextBlockIdsKey: InjectionKey<Readonly<Ref<readonly StatContextBlockId[]>>> = Symbol('statContextBlockIds')
+/** Panels a page never renders; the settings drawer skips them too. */
+export const statHiddenPanelsKey: InjectionKey<readonly StatBlockPanelId[]> = Symbol('statHiddenPanels')
 export const statHistoryAvailableKey: InjectionKey<Ref<boolean>> = Symbol('statHistoryAvailable')
 export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController>> = Symbol('statViewController')
 export const statCanSplitKey: InjectionKey<Ref<boolean>> = Symbol('statCanSplit')

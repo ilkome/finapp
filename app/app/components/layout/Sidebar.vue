@@ -4,6 +4,7 @@ import type { TabsItem } from '@nuxt/ui'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { SIDEBAR_COLLAPSE_WIDTH, SIDEBAR_DEFAULT_WIDTH, SIDEBAR_MAX_WIDTH, SIDEBAR_MIN_WIDTH } from '~/components/layout/sidebarWidth'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -22,6 +23,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
+const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
 
 const walletMenu = useWalletMenuItems()
@@ -146,6 +148,7 @@ function startResize(event: PointerEvent) {
                 :walletId
                 class="group"
                 isShowCreditLimit
+                :baseCurrencyCode="currenciesStore.base"
                 isShowRate
                 isShowIcon
                 :to="walletId === route.params.id ? '/dashboard' : `/wallets/${walletId}`"
