@@ -55,7 +55,8 @@ const config: StorybookConfig = {
         ui: await loadAppUiConfig(),
       }),
     ],
-    resolve: { alias: { '~': appDir, '~~': rootDir } },
+    // `#ui` is the Nuxt module's alias for @nuxt/ui's runtime; the Vue-mode plugin does not add it.
+    resolve: { alias: { '#ui': `${rootDir}/node_modules/@nuxt/ui/dist/runtime`, '~': appDir, '~~': rootDir } },
   }),
 }
 

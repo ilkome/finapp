@@ -5,6 +5,11 @@ import { setup } from '@storybook/vue3-vite'
 import { createPinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 
+// Resolved by the Nuxt UI plugin to its Vue-mode stubs; the same reactive app config its
+// colors plugin reads, so changing a color here re-emits the `--ui-color-*` palette.
+import { useAppConfig } from '#imports'
+
+import { NEUTRAL_COLORS, PRIMARY_COLORS, RADIUSES } from '../app/components/theme/useThemeOptions'
 import { cn } from '../app/composables/useCn'
 import en from '../i18n/locales/en-US.js'
 import Icon from './stubs/Icon.vue'
@@ -24,6 +29,23 @@ setup((app) => {
   app.component('NuxtLink', { props: { to: String }, template: '<a :href="to"><slot /></a>' })
 })
 
+// The appearance settings the app keeps in `useThemeOptions`: radius and the black accent are
+// head styles, primary/neutral live in the app config (Nuxt UI derives the palette from them).
+function applyAppearance(globals: Record<string, string>) {
+  const appConfig = useAppConfig()
+  const isBlack = globals.primary === 'black'
+  appConfig.ui.colors.primary = isBlack ? 'black' : globals.primary
+  appConfig.ui.colors.neutral = globals.neutral
+  document.documentElement.style.setProperty('--ui-radius', `${globals.radius}rem`)
+  let style = document.getElementById('nuxt-ui-black-as-primary')
+  if (!style) {
+    style = document.createElement('style')
+    style.id = 'nuxt-ui-black-as-primary'
+    document.head.appendChild(style)
+  }
+  style.textContent = isBlack ? ':root { --ui-primary: black; } .dark { --ui-primary: #ededed; }' : ''
+}
+
 const preview: Preview = {
   decorators: [
     (story, { globals }) => {
@@ -32,15 +54,18 @@ const preview: Preview = {
       const isDark = globals.theme !== 'light'
       document.documentElement.classList.toggle('dark', isDark)
       document.documentElement.classList.toggle('light', !isDark)
+      applyAppearance(globals)
       return { components: { StoryApp }, template: '<StoryApp><story /></StoryApp>' }
     },
   ],
   globalTypes: {
-    theme: {
-      toolbar: { icon: 'mirror', items: ['light', 'dark'], title: 'Theme' },
-    },
+    neutral: { toolbar: { icon: 'contrast', items: NEUTRAL_COLORS, title: 'Neutral' } },
+    primary: { toolbar: { icon: 'paintbrush', items: ['black', ...PRIMARY_COLORS], title: 'Primary' } },
+    radius: { toolbar: { icon: 'component', items: RADIUSES.map(String), title: 'Radius' } },
+    theme: { toolbar: { icon: 'mirror', items: ['light', 'dark'], title: 'Theme' } },
   },
-  initialGlobals: { theme: 'dark' },
+  // The app's defaults: black accent, `neutral` palette, 0.375rem radius.
+  initialGlobals: { neutral: 'neutral', primary: 'black', radius: '0.375', theme: 'dark' },
   parameters: {
     backgrounds: { disable: true },
     controls: {
