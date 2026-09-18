@@ -1,6 +1,7 @@
 import antfu from '@antfu/eslint-config'
 import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
 import { extend } from 'eslint-flat-config-utils'
+import storybook from 'eslint-plugin-storybook'
 import tailwind from 'eslint-plugin-tailwindcss'
 import { join } from 'node:path'
 
@@ -94,4 +95,5 @@ export default [
       'vue/no-multiple-template-root': 'off',
     },
   },
+  ...storybook.configs['flat/recommended'],
 ]
