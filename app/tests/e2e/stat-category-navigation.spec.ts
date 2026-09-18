@@ -6,7 +6,6 @@ import { openDemo } from './helpers'
 
 const T = {
   descriptionFilter: /^(Only with description|Только с описанием)$/,
-  grouping: /^(Toggle grouping|Группировка)$/,
   previous: /^(Previous|Назад)$/,
 }
 
@@ -16,6 +15,16 @@ async function bootstrapDemo(page: Page, context: BrowserContext) {
   await expect(page.locator('[data-stat-date-range]').first()).toBeVisible({ timeout: 15_000 })
 }
 
+// Grouping is a setting of the categories list block: "by parent" shows every parent as a row.
+async function groupByParent(page: Page) {
+  await page.getByRole('button', { name: /View Settings|Настройки вида/ }).first().click()
+  await page.locator('[data-stat-config-row="catsList"]').getByRole('button').click()
+  const grouping = page.getByRole('combobox', { name: /^(Grouping|Группировка)$/ })
+  await grouping.click()
+  await page.getByRole('option', { name: /^(By parent|По родителю)$/ }).click()
+  await page.getByRole('button', { name: /^(Close|Закрыть)$/ }).click()
+}
+
 test.describe('Statistics category navigation', () => {
   test('opens a leaf with inherited state and restores the cached dashboard', async ({ context, page }) => {
     await bootstrapDemo(page, context)
@@ -23,7 +32,7 @@ test.describe('Statistics category navigation', () => {
     const parent = page.locator('[data-stat-category-id="demo_cat_food"]').first()
     const child = page.locator('[data-stat-category-id="demo_cat_food_groceries"]').first()
     if (!(await parent.isVisible()))
-      await page.getByRole('button', { name: T.grouping }).first().click()
+      await groupByParent(page)
     await expect(parent).toBeVisible()
     await parent.click()
     await expect(page).toHaveURL(/\/dashboard/)
@@ -51,9 +60,14 @@ test.describe('Statistics category navigation', () => {
   test('opens a parent from its amount and keeps direct category state separate', async ({ context, page }) => {
     await bootstrapDemo(page, context)
 
+    // A year of transport holds both described (fuel) and bare (transit) transactions, which is
+    // what makes the description filter appear on the category page.
+    await page.locator('[data-stat-date-range]').first().click()
+    await page.getByRole('button', { name: /^(Year|Год)$/ }).first().click()
+
     const parent = page.locator('[data-stat-category-id="demo_cat_transport"]').first()
     if (!(await parent.isVisible()))
-      await page.getByRole('button', { name: T.grouping }).first().click()
+      await groupByParent(page)
     await expect(parent).toBeVisible()
     await parent.locator('[data-stat-category-amount]').click()
     await expect(page).toHaveURL(/\/categories\/demo_cat_transport\?.*statSnapshot=/)
@@ -61,7 +75,14 @@ test.describe('Statistics category navigation', () => {
     const descriptionFilter = page.getByText(T.descriptionFilter).first()
     await expect(descriptionFilter).toBeVisible()
     await descriptionFilter.click()
-    await page.getByText('Fuel', { exact: true }).first().click()
+    // The chip cloud only focuses a child in place; the list row is what opens its page.
+    const fuel = page.locator('[data-stat-category-id="demo_cat_transport_fuel"]').first()
+    if (!(await fuel.isVisible()))
+      await page.locator('[data-stat-category-id="demo_cat_transport"]').first().click()
+    await expect(fuel).toBeVisible()
+    const fuelBox = await fuel.boundingBox()
+    expect(fuelBox).not.toBeNull()
+    await page.mouse.click(fuelBox!.x + fuelBox!.width / 3, fuelBox!.y + fuelBox!.height / 2)
     await expect(page).toHaveURL(/\/categories\/demo_cat_transport_fuel\?.*statSnapshot=/)
     const snapshotId = new URL(page.url()).searchParams.get('statSnapshot')
     const inheritedDescriptionFilter = await page.evaluate((id) => {

@@ -20,6 +20,9 @@ const { t } = useI18n()
 
 <template>
   <div
+    role="button"
+    tabindex="0"
+    :aria-pressed="props.isActive ?? false"
     :class="cn(
       props.variant === 'plain'
         ? 'px-1 pb-1'
@@ -29,6 +32,8 @@ const { t } = useI18n()
       props.isActive && 'border-primary/40 bg-elevated/30',
     )"
     @click="(e: Event) => emit('click', e)"
+    @keydown.enter.prevent="(e: Event) => emit('click', e)"
+    @keydown.space.prevent="(e: Event) => emit('click', e)"
   >
     <div :class="props.variant === 'summary' ? 'flex w-full items-center gap-5' : 'flex items-end gap-5'">
       <div class="grid gap-1">

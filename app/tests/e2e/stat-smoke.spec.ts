@@ -4,10 +4,10 @@ import { expect, test } from '@playwright/test'
 
 import { openDemo } from './helpers'
 
+// The summary tiles are the type filter: pressing one narrows the report to that type.
 const T = {
-  expense: /^(Expense|Расход)$/,
-  income: /^(Income|Доход)$/,
-  summary: /^(Summary|Общее)$/,
+  expense: /^(Spending|Траты)/,
+  income: /^(Income|Доходы)/,
 }
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
@@ -15,24 +15,33 @@ async function bootstrapDemo(page: Page, context: BrowserContext) {
 }
 
 test.describe('Stat / dashboard smoke', () => {
-  test('keeps an independent period for each statistics tab', async ({ context, page }) => {
+  test('filters by type from the summary tiles and keeps the page period', async ({ context, page }) => {
     await bootstrapDemo(page, context)
     await page.goto('/dashboard', { waitUntil: 'domcontentloaded' })
 
     const dateRange = page.locator('[data-stat-date-range]').first()
-    const summaryPeriod = (await dateRange.textContent())?.trim()
+    const expenseTile = page.getByRole('button', { name: T.expense }).first()
+    const incomeTile = page.getByRole('button', { name: T.income }).first()
+    await expect(expenseTile).toHaveAttribute('aria-pressed', 'false')
 
-    await page.getByRole('button', { name: T.expense }).first().click()
+    await expenseTile.click()
+    await expect(expenseTile).toHaveAttribute('aria-pressed', 'true')
+
+    const initialPeriod = (await dateRange.textContent())?.trim()
     await dateRange.click()
     await page.getByRole('button', { name: /^(Month|Месяц)$/ }).first().click()
-    const expensePeriod = (await dateRange.textContent())?.trim()
-    expect(expensePeriod).not.toBe(summaryPeriod)
+    const monthPeriod = (await dateRange.textContent())?.trim()
+    expect(monthPeriod).not.toBe(initialPeriod)
 
-    await page.getByRole('button', { name: T.summary }).first().click()
-    await expect(dateRange).toHaveText(summaryPeriod!)
+    // The period belongs to the page, not to the type filter.
+    await incomeTile.click()
+    await expect(incomeTile).toHaveAttribute('aria-pressed', 'true')
+    await expect(expenseTile).toHaveAttribute('aria-pressed', 'false')
+    await expect(dateRange).toHaveText(monthPeriod!)
 
-    await page.getByRole('button', { name: T.expense }).first().click()
-    await expect(dateRange).toHaveText(expensePeriod!)
+    await incomeTile.click()
+    await expect(incomeTile).toHaveAttribute('aria-pressed', 'false')
+    await expect(dateRange).toHaveText(monthPeriod!)
   })
 
   test('page loads with no errors, chart renders, tabs switch cleanly', async ({ context, page }) => {
@@ -59,22 +68,21 @@ test.describe('Stat / dashboard smoke', () => {
     const chartSvg = statRoot.locator('svg').first()
     await expect(chartSvg).toBeVisible({ timeout: 10_000 })
 
-    // §3 Tab switching: click Expense, then Income, then back to Summary.
-    // Dashboard may render two StatMenu instances (split view); .first() scopes to the first.
-    const expenseTab = page.getByRole('button', { name: T.expense }).first()
-    const incomeTab = page.getByRole('button', { name: T.income }).first()
-    const summaryTab = page.getByRole('button', { name: T.summary }).first()
+    // §3 Type switching: Expense, then Income, then back to everything.
+    const expenseTile = page.getByRole('button', { name: T.expense }).first()
+    const incomeTile = page.getByRole('button', { name: T.income }).first()
 
-    await expect(expenseTab).toBeVisible({ timeout: 5_000 })
+    await expect(expenseTile).toBeVisible({ timeout: 5_000 })
 
-    await expenseTab.click()
+    await expenseTile.click()
     // After switching, the stat root must still be present (no crash/unmount).
     await expect(statRoot).toBeVisible()
 
-    await incomeTab.click()
+    await incomeTile.click()
     await expect(statRoot).toBeVisible()
 
-    await summaryTab.click()
+    await incomeTile.click()
+    await expect(incomeTile).toHaveAttribute('aria-pressed', 'false')
     await expect(statRoot).toBeVisible()
 
     // §1 No uncaught errors (primary goal - catches the "Cannot read properties of undefined" class).
