@@ -80,6 +80,7 @@ const focusedCategoryViews = computed<CategoryViews>(() => {
 
     <StatCategoriesVerticalSection
       v-if="!isFocused && props.block !== 'catsList'"
+      :isOneCategory="props.isOneCategory"
       :views
       @clickCategory="emit('clickCategory', $event)"
     />

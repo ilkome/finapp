@@ -139,6 +139,10 @@ export function useSearch() {
     return items
   })
 
+  // Capped per group, not across groups: hundreds of transactions carry a category's exact name,
+  // so a global limit would never let the category itself through.
+  const postFilter = (_term: string, items: SearchResultItem[]) => items.slice(0, 50)
+
   const groups = computed(() => {
     if (!searchTerm.value.trim())
       return []
@@ -148,18 +152,21 @@ export function useSearch() {
         id: 'categories',
         items: allCategoryItems.value,
         label: t('categories.name'),
+        postFilter,
         slot: 'category-item',
       },
       {
         id: 'wallets',
         items: allWalletItems.value,
         label: t('wallets.name'),
+        postFilter,
         slot: 'wallet-item',
       },
       {
         id: 'trns',
         items: allTrnItems.value,
         label: t('trns.history'),
+        postFilter,
         slot: 'trn-item',
       },
     ]

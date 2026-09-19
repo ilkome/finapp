@@ -19,6 +19,7 @@ export function useStatReportChart(params: {
   effectiveFilteredCategoriesIds: ComputedRef<CategoryId[]>
   filteredType: Ref<SeriesSlugSelected>
   hasQuickCategoryFilter: ComputedRef<boolean>
+  isCategoryPage: ComputedRef<boolean>
   reportType: ComputedRef<StatReportType>
   shouldHideSingleColorSummaryPie: ComputedRef<boolean>
   statConfig: StatConfigProvider
@@ -83,7 +84,9 @@ export function useStatReportChart(params: {
     const intervals = params.data.chartEffectiveIntervals.value
     const selectedInterval = params.statDate.selectedInterval.value
     const chartType = effectiveChartType.value
-    const hasBothQuickCategoryTypes = params.hasQuickCategoryFilter.value
+    // A category page is the same scope as a quick category filter: one category's cashflow,
+    // so the chart splits into income and expense instead of colouring it by the category.
+    const hasBothQuickCategoryTypes = (params.hasQuickCategoryFilter.value || params.isCategoryPage.value)
       && intervals.some(interval => interval.total.expense > 0)
       && intervals.some(interval => interval.total.income > 0)
     const shouldUseQuickCategoryCashflow = shouldUseQuickCategoryCashflowSeries({

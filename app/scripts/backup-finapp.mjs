@@ -26,7 +26,7 @@ if (!url || !key) {
 }
 
 const headers = { apikey: key, Authorization: `Bearer ${key}` }
-const USER_TABLES = ['wallets', 'categories', 'trns', 'user_settings', 'budgets', 'budget_assignments', 'recurrences']
+const USER_TABLES = ['wallets', 'categories', 'trns', 'user_settings', 'stat_views', 'budgets', 'budget_assignments', 'recurrences']
 const GLOBAL_TABLES = ['rates'] // no userId column
 
 let uid = null

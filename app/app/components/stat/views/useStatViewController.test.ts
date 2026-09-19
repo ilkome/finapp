@@ -97,6 +97,40 @@ describe('useStatViewController', () => {
     expect(update).not.toHaveBeenCalled()
   })
 
+  it('does not write the active view when config is replaced wholesale', async () => {
+    const view = makeView(configWith('pie'))
+    const update = vi.fn()
+    h.store = { create: vi.fn(), defaultViewId: vi.fn(), isDemo: true, isLoaded: true, setActive: vi.fn(), update, updateMany: vi.fn(), views: [view] }
+
+    const config = ref(configWith('pie'))
+    useStatViewController(config, ref(makeContext()))
+    await flush()
+
+    // A failed schema parse or a re-read storage slot lands here; it must stay local.
+    config.value = structuredClone(defaultConfig)
+    await flush()
+
+    expect(update).not.toHaveBeenCalled()
+  })
+
+  it('saves the current config into the active view only on an explicit save', async () => {
+    const view = makeView(configWith('pie'))
+    const update = vi.fn(async (id: string, patch: any) => ({ ...view, ...patch }))
+    h.store = { create: vi.fn(), defaultViewId: vi.fn(), isDemo: true, isLoaded: true, setActive: vi.fn(), update, updateMany: vi.fn(), views: [view] }
+
+    const config = ref(configWith('pie'))
+    const controller = useStatViewController(config, ref(makeContext()))
+    await flush()
+
+    await controller.saveCurrentConfig()
+    expect(update).not.toHaveBeenCalled()
+
+    config.value = configWith('line')
+    await controller.saveCurrentConfig()
+    expect(update).toHaveBeenCalledTimes(1)
+    expect(update.mock.calls[0]![1].config.base.chart.type).toBe('line')
+  })
+
   it('binds a view to its page without rewriting either view', async () => {
     const bound = makeView(configWith('pie'), {
       autoRule: { children: [{ ids: ['cat-1'], kind: 'categorySelection', mode: 'selected' }], operator: 'and' },

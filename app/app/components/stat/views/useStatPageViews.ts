@@ -96,6 +96,7 @@ export function useStatPageViews(options: UseStatPageViewsOptions) {
     const matchingRule = findMatchingBlockRule(rules, context.value)
     if (!panel || !matchingRule) {
       options.statConfig.updateConfig(key, value)
+      void controller.saveCurrentConfig()
       return
     }
     const edited = applyConfigUpdate(effectiveConfig.value, key, value)

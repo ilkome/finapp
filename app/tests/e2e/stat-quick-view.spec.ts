@@ -2,6 +2,8 @@ import type { BrowserContext, Page } from '@playwright/test'
 
 import { devices, expect, test } from '@playwright/test'
 
+import { openDemo } from './helpers'
+
 const mobile = devices['iPhone 13']
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
@@ -13,16 +15,22 @@ async function expectQuickViewReplaced(page: Page, context: BrowserContext, isMo
 
   const categories = page.locator('[data-stat-categories-breakdown]').first()
   await expect(categories).toBeVisible({ timeout: 15_000 })
-  await page.getByRole('button', { name: /Page Settings|Настройки страницы/ }).click()
+  await page.getByRole('button', { name: /View Settings|Настройки вида/ }).first().click()
+  // The block's visibility lives inside its panel now, not on the row.
   const verticalRow = page.locator('[data-stat-config-row="vertical"]')
-  const verticalToggle = verticalRow.getByRole('switch')
+  await verticalRow.getByRole('button').click()
+  const verticalToggle = page.getByRole('switch', { name: /Show block|Показывать блок/ })
+  await expect(verticalToggle).toBeVisible()
   if (await verticalToggle.getAttribute('aria-checked') !== 'true')
     await verticalToggle.click()
-  if (isMobile)
-    await page.goBack()
-  else
+  if (isMobile) {
+    await page.keyboard.press('Escape')
+    await page.keyboard.press('Escape')
+  }
+  else {
     await page.getByRole('button', { name: /Close|Закрыть/ }).click()
-  await expect(verticalRow).toBeHidden()
+  }
+  await expect(verticalToggle).toBeHidden()
 
   const quickViewTrigger = page.locator('[data-stat-category-quick-view]').first()
   await expect(quickViewTrigger).toBeVisible()

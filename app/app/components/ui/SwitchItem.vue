@@ -20,7 +20,10 @@ function handleClick() {
 
 <template>
   <div
+    role="switch"
+    :aria-checked="checkboxValue"
     :aria-disabled="disabled || undefined"
+    :aria-label="title"
     :class="cn(
       'flex grow items-center gap-3 rounded-sm py-2 pr-2 pl-3 text-sm hover:bg-elevated/50',
       busy && 'pointer-events-none opacity-60',

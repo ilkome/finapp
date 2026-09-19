@@ -28,11 +28,8 @@ async function openNewCategory(page: Page) {
   // Use SPA navigation: click "Categories" in sidebar, then "+" / "New" link.
   // Falls back to direct goto if sidebar links aren't reachable.
   await page.goto('/categories/new', { waitUntil: 'domcontentloaded' })
-  // Form needs hydrated store; wait for either Parent or Children row to appear
-  await Promise.race([
-    page.getByText(T.parentCategory).first().waitFor({ state: 'visible', timeout: 15_000 }),
-    page.getByText(T.childCategories).first().waitFor({ state: 'visible', timeout: 15_000 }),
-  ]).catch(() => null)
+  // The form reads the store: "No children" is rendered only once categories are hydrated.
+  await expect(page.getByText(T.noChildren).first()).toBeVisible({ timeout: 15_000 })
 }
 
 test.describe('Categories children selector on /new', () => {
@@ -58,7 +55,7 @@ test.describe('Categories children selector on /new', () => {
 
     await page.getByText(T.childCategories).first().click()
 
-    const sheet = page.locator('.bottomSheetContent').last()
+    const sheet = page.locator('.bottom-sheet-content').last()
     const candidates = sheet.locator('button[aria-pressed]')
     await expect(candidates.first()).toBeVisible()
     await candidates.nth(0).click()
@@ -97,7 +94,7 @@ test.describe('Categories children selector on /new', () => {
 
     // Demo seeds always include "Entertainment" as a root with children but no own trns,
     // so it appears in categoriesForBeParent. Click it inside the bottom sheet.
-    const sheet = page.locator('.bottomSheetContent').last()
+    const sheet = page.locator('.bottom-sheet-content').last()
     const target = sheet.getByText(/^(Entertainment|Развлечения)$/).first()
     // Selecting a parent closes the sheet automatically (onParentSelect → close()).
     await target.click()

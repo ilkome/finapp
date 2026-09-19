@@ -65,6 +65,7 @@ export function useStatReport(params: UseStatReportParams) {
     effectiveFilteredCategoriesIds,
     filteredType,
     hasQuickCategoryFilter: computed(() => filteredCategoriesIds.value.length > 0),
+    isCategoryPage: computed(() => !!params.categoryId?.value),
     reportType: params.reportType,
     shouldHideSingleColorSummaryPie: computed(() =>
       filteredCategoriesIds.value.length > 0 || !!params.categoryId?.value,
