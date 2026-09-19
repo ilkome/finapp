@@ -67,6 +67,22 @@ async function geometry(page: Page, row: Locator): Promise<Geometry> {
   }), await row.elementHandle())
 }
 
+// Freshly appended rows are laid out at their estimated size and re-measured on the next
+// frame, so a height read right after the load poll resolves may still include estimates.
+async function settledScrollHeight(page: Page): Promise<number> {
+  return page.evaluate(() => new Promise<number>((resolve) => {
+    let previous = -1
+    const tick = () => {
+      const height = document.scrollingElement?.scrollHeight ?? 0
+      if (height === previous)
+        return resolve(height)
+      previous = height
+      requestAnimationFrame(() => requestAnimationFrame(tick))
+    }
+    tick()
+  }))
+}
+
 function expectStableGeometry(before: Geometry, after: Geometry) {
   expect(after.scrollTop).toBeCloseTo(before.scrollTop, 0)
   expect(after.feedTop).toBeCloseTo(before.feedTop, 0)
@@ -184,11 +200,11 @@ test.describe('Statistics measured virtual feed', () => {
     await expect(page.getByRole('heading', { name: /Previous transactions|Предыдущие транзакции/ })).toHaveCount(1)
 
     const loadCount = Number(await feed.locator('..').getAttribute('data-stat-load-count'))
-    const heightBeforeBackwardScroll = await page.evaluate(() => document.scrollingElement?.scrollHeight ?? 0)
+    const heightBeforeBackwardScroll = await settledScrollHeight(page)
     await page.mouse.wheel(0, -900)
     await page.waitForTimeout(400)
     expect(Number(await feed.locator('..').getAttribute('data-stat-load-count'))).toBe(loadCount)
-    expect(await page.evaluate(() => document.scrollingElement?.scrollHeight ?? 0)).toBe(heightBeforeBackwardScroll)
+    expect(await settledScrollHeight(page)).toBe(heightBeforeBackwardScroll)
     expect(await feed.locator(':scope > [data-index]').count()).toBeLessThanOrEqual(120)
 
     await page.mouse.wheel(0, 900)
