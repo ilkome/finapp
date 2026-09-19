@@ -8,6 +8,9 @@ import type { StatConfigParams } from '~/components/stat/config/types'
 
 import { mergeStatConfig } from '~/components/stat/config/mergeConfig'
 import { applyConfigProps, applyConfigUpdate, ConfigSchema, defaultConfig } from '~/components/stat/config/schema'
+import { createLogger } from '~/utils/logger'
+
+const logger = createLogger('stat-config')
 
 export function parseStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig): MiniItemConfig | null {
   const parsed = ConfigSchema.safeParse(mergeStatConfig((storageValue ?? {}) as Partial<MiniItemConfig>, defaults))
@@ -15,7 +18,10 @@ export function parseStoredStatConfig(storageValue: unknown, defaults: MiniItemC
 }
 
 export function normalizeStoredStatConfig(storageValue: unknown, defaults: MiniItemConfig): MiniItemConfig {
-  return parseStoredStatConfig(storageValue, defaults) ?? structuredClone(defaults)
+  const parsed = parseStoredStatConfig(storageValue, defaults)
+  if (!parsed)
+    logger.warn('stored stat config failed the schema, using defaults', storageValue)
+  return parsed ?? structuredClone(defaults)
 }
 
 export function useStatConfig({

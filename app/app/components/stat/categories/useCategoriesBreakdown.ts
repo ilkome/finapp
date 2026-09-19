@@ -14,6 +14,7 @@ export function useCategoriesBreakdown(props: {
   baseCategoryViews?: CategoryViews
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   focusedCategoryId?: CategoryId
+  isOneCategory?: boolean
   preCategoriesIds?: CategoryId[]
   selectedTrnsIds?: TrnId[]
 }) {
@@ -42,7 +43,9 @@ export function useCategoriesBreakdown(props: {
   })
 
   const categoriesWithData = computed<CategoryWithData[]>(() => {
-    const grouping = statConfig.categories.value.list.grouping
+    // A category page already sits inside the parent, so a parent grouping would collapse the
+    // children into the one row the user is looking at.
+    const grouping = props.isOneCategory ? 'child' : statConfig.categories.value.list.grouping
 
     if (statConfig.categories.value.isShowEmpty && props.preCategoriesIds?.length) {
       const withEmpty = addEmptyCategoryViews(

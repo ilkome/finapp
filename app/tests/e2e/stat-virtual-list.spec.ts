@@ -67,6 +67,22 @@ async function geometry(page: Page, row: Locator): Promise<Geometry> {
   }), await row.elementHandle())
 }
 
+// Freshly appended rows are laid out at their estimated size and re-measured on the next
+// frame, so a height read right after the load poll resolves may still include estimates.
+async function settledScrollHeight(page: Page): Promise<number> {
+  return page.evaluate(() => new Promise<number>((resolve) => {
+    let previous = -1
+    const tick = () => {
+      const height = document.scrollingElement?.scrollHeight ?? 0
+      if (height === previous)
+        return resolve(height)
+      previous = height
+      requestAnimationFrame(() => requestAnimationFrame(tick))
+    }
+    tick()
+  }))
+}
+
 function expectStableGeometry(before: Geometry, after: Geometry) {
   expect(after.scrollTop).toBeCloseTo(before.scrollTop, 0)
   expect(after.feedTop).toBeCloseTo(before.feedTop, 0)
@@ -75,15 +91,13 @@ function expectStableGeometry(before: Geometry, after: Geometry) {
 }
 
 test.describe('Statistics measured virtual feed', () => {
-  test('uses the shared virtual and sticky host on category and wallet pages', async ({ context, page }) => {
+  test('uses the shared virtual and sticky host on the wallet page', async ({ context, page }) => {
     await page.setViewportSize({ height: 900, width: 1440 })
     await bootstrapDemo(page, context)
 
-    for (const path of [
-      '/categories/demo_cat_food',
-      '/categories/demo_cat_food_groceries',
-      '/wallets/demo_w_debit_rub',
-    ]) {
+    // A category page reports a single type, which renders the plain list by design; only a
+    // combined report (dashboard, wallet) hosts the virtual feed.
+    for (const path of ['/wallets/demo_w_debit_rub']) {
       await page.goto(path, { waitUntil: 'domcontentloaded' })
 
       const feed = page.locator('.stat-trns-virtual')
@@ -92,7 +106,8 @@ test.describe('Statistics measured virtual feed', () => {
       await expect(feed).toBeVisible({ timeout: 15_000 })
       await expect(feedState).toHaveAttribute('data-stat-listener-count', '11')
       expect(await feed.locator(':scope > [data-index]').count()).toBeLessThanOrEqual(120)
-      expect(await summary.evaluate(element => getComputedStyle(element).position)).toBe('sticky')
+      // The pinned wrapper around the summary block carries the sticky positioning.
+      expect(await summary.locator('xpath=ancestor::*[@data-stat-pinned-block]').evaluate(element => getComputedStyle(element).position)).toBe('sticky')
 
       const initialScrollTop = await page.evaluate(() => document.scrollingElement?.scrollTop ?? 0)
       await page.mouse.wheel(0, 900)
@@ -110,15 +125,23 @@ test.describe('Statistics measured virtual feed', () => {
     await expect(report).toHaveAttribute('data-stat-report-context-count', '1')
     await expect(feedState).toHaveAttribute('data-stat-listener-count', '11')
 
-    for (const name of [/^Expense$/, /^Income$/]) {
+    for (const name of [/^(Spending|Траты)/, /^(Income|Доходы)/]) {
       await page.getByRole('button', { name }).first().click()
       await expect(report).toHaveAttribute('data-stat-report-context-count', '1')
     }
+    await page.getByRole('button', { name: /^(Income|Доходы)/ }).first().click()
 
-    await page.getByRole('button', { name: /^Split$/ }).first().click()
-    await expect(report).toHaveAttribute('data-stat-report-context-count', '2')
-    await page.getByRole('button', { name: /^Summary$/ }).first().click()
+    // Split is a page layout setting: expenses left, income right, each its own context on top
+    // of the combined one the chart and wallet strip keep using.
+    await page.getByRole('button', { name: /View Settings|Настройки вида/ }).first().click()
+    const pageLayout = page.getByRole('combobox', { name: /Page layout|Вид страницы/ })
+    await pageLayout.click()
+    await page.getByRole('option', { name: /^(Split|Раздельный)$/ }).click()
+    await expect(report).toHaveAttribute('data-stat-report-context-count', '3')
+    await pageLayout.click()
+    await page.getByRole('option', { name: /^(Combined|Общий)$/ }).click()
     await expect(report).toHaveAttribute('data-stat-report-context-count', '1')
+    await page.getByRole('button', { name: /^(Close|Закрыть)$/ }).click()
     await expect(feedState).toHaveAttribute('data-stat-listener-count', '11')
     expect(Number(await feedState.getAttribute('data-stat-observer-count'))).toBeLessThanOrEqual(2)
   })
@@ -177,11 +200,11 @@ test.describe('Statistics measured virtual feed', () => {
     await expect(page.getByRole('heading', { name: /Previous transactions|Предыдущие транзакции/ })).toHaveCount(1)
 
     const loadCount = Number(await feed.locator('..').getAttribute('data-stat-load-count'))
-    const heightBeforeBackwardScroll = await page.evaluate(() => document.scrollingElement?.scrollHeight ?? 0)
+    const heightBeforeBackwardScroll = await settledScrollHeight(page)
     await page.mouse.wheel(0, -900)
     await page.waitForTimeout(400)
     expect(Number(await feed.locator('..').getAttribute('data-stat-load-count'))).toBe(loadCount)
-    expect(await page.evaluate(() => document.scrollingElement?.scrollHeight ?? 0)).toBe(heightBeforeBackwardScroll)
+    expect(await settledScrollHeight(page)).toBe(heightBeforeBackwardScroll)
     expect(await feed.locator(':scope > [data-index]').count()).toBeLessThanOrEqual(120)
 
     await page.mouse.wheel(0, 900)
@@ -202,7 +225,7 @@ test.describe('Statistics measured virtual feed', () => {
     const loadedOffsetsBeforeFilter = JSON.parse(await feed.locator('..').getAttribute('data-stat-loaded-offsets') ?? '[]') as number[]
     const searchedThroughBeforeFilter = await feed.locator('..').getAttribute('data-stat-searched-through-offset')
     await page.mouse.wheel(0, -10_000)
-    const descriptionFilter = page.getByText(/Only with description|Только с описанием/, { exact: true }).locator('..')
+    const descriptionFilter = page.getByRole('switch', { name: /Only with description|Только с описанием/ }).filter({ visible: true }).first()
     const filterBox = await descriptionFilter.boundingBox()
     if (!filterBox)
       throw new Error('The description filter was not physically visible')
@@ -262,12 +285,16 @@ test.describe('Statistics measured virtual feed', () => {
     await transactionRow.locator('.uiElement.interactive').click({ button: 'right' })
     const deleteMenuItem = page.getByRole('menuitem', { name: deleteAction })
     await expect(deleteMenuItem).toBeVisible()
+    // The right-click scrolls the row into view; a forward scroll that reaches the feed's tail
+    // loads the next period and rebuilds the index, so the delete is measured from here.
+    const buildCountBeforeDelete = await buildCount()
+    const rowBuildCountBeforeDelete = await rowBuildCount()
     await deleteMenuItem.dispatchEvent('click')
     await page.getByRole('dialog', { name: deleteTransaction }).getByRole('button', { name: deleteAction }).click()
 
     await expect(createdAmount).toHaveCount(0)
-    await expect.poll(buildCount).toBe(buildCountBeforeCreate + 2)
-    await expect.poll(rowBuildCount).toBe(rowBuildCountBeforeCreate + 2)
+    await expect.poll(buildCount).toBe(buildCountBeforeDelete + 1)
+    await expect.poll(rowBuildCount).toBe(rowBuildCountBeforeDelete + 1)
     expect(Number(await feedState.getAttribute('data-stat-index-build-duration'))).toBeLessThan(50)
   })
 })
