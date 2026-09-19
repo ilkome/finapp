@@ -9,6 +9,7 @@ import { useStatCategoryRows } from '~/components/stat/categories/useStatCategor
 import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 const props = defineProps<{
+  isOneCategory?: boolean
   views: CategoryViews
 }>()
 
@@ -20,7 +21,8 @@ const statConfig = useStatConfigCtx()
 
 const barsConfig = computed(() => statConfig.categories.value.bars)
 const listConfig = computed(() => statConfig.categories.value.list)
-const verticalCategories = computed<CategoryWithData[]>(() => resolveCategoryGrouping(props.views, barsConfig.value.grouping))
+// Same as the list: inside a category page the parent group is the page itself.
+const verticalCategories = computed<CategoryWithData[]>(() => resolveCategoryGrouping(props.views, props.isOneCategory ? 'child' : barsConfig.value.grouping))
 const visibleVerticalCategories = computed(() => verticalCategories.value.filter(c => c.value !== 0))
 const verticalMaxValues = computed(() => getMaxCategoryValues(verticalCategories.value))
 const { currencyCode, openFormForCategory, rows } = useStatCategoryRows(visibleVerticalCategories)
