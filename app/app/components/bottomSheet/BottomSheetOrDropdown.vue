@@ -4,6 +4,7 @@ const props = withDefaults(defineProps<{
   bottomSheetStyle?: Record<string, string>
   dragClassesCustom?: string
   isOpen?: boolean
+  isPassthrough?: boolean
   isShowCloseBtn?: boolean
   keyboardTrigger?: boolean
   popoverBodyClass?: string
@@ -115,6 +116,7 @@ function closeMobileSheet(closeSheet: () => void) {
         :isShow="props.unmountOnHide ? true : props.isOpen"
         :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottom-sheet-drag-classes-custom`"
         :dragStyle="props.bottomSheetStyle"
+        :isPassthrough="props.isPassthrough"
         :snapPoints="props.snapPoints"
         @closed="emit('closeModal')"
       >

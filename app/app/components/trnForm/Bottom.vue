@@ -82,7 +82,7 @@ onMounted(init)
     </template>
 
     <div class="trnForm @container/trnForm bg-default">
-      <div ref="sliderRef" class="swiper-container">
+      <div ref="sliderRef" class="swiper-container" data-sheet-no-drag>
         <div class="swiper-wrapper">
           <!-- History -->
           <div

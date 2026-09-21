@@ -68,7 +68,7 @@ watch(() => props.modelValue, () => nextTick(scrollToActive))
       :aria-pressed="item.value === props.modelValue"
       :class="cn(
         'relative inline-flex shrink-0 items-center rounded-md font-medium whitespace-nowrap transition-colors',
-        props.variant === 'pill' && 'theme-rounded-control',
+        props.variant === 'pill' && 'theme-rounded-control-inner',
         props.itemGrow && 'grow',
         props.align === 'left' ? 'justify-start' : 'justify-center',
         item.value === props.modelValue

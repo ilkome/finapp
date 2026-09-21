@@ -1,0 +1,396 @@
+{
+  "base": {
+    "average": {
+      "count": 10,
+      "isShow": false
+    },
+    "categories": {
+      "bars": {
+        "grouping": "auto",
+        "isShow": false,
+        "isShowTooltip": true,
+        "isShowTooltipChildren": false
+      },
+      "isShowEmpty": false,
+      "list": {
+        "backgroundType": "standard",
+        "grouping": "auto",
+        "isAutoExpandParents": false,
+        "isLines": true,
+        "isRoundIcon": false,
+        "isShow": true,
+        "isShowTitle": false,
+        "trendType": "bar"
+      },
+      "round": {
+        "grouping": "auto",
+        "isHideOthersOnSelect": false,
+        "isIconBg": false,
+        "isInlineAmount": true,
+        "isShow": true,
+        "isShowFavorites": false,
+        "isShowRecent": false
+      },
+      "view": "list"
+    },
+    "chart": {
+      "breakdown": "categories",
+      "grouping": "parent",
+      "isGrouped": true,
+      "isShow": true,
+      "isShowAverage": false,
+      "isShowBackground": true,
+      "isShowScale": true,
+      "layout": "combined-wide",
+      "line": {
+        "isGradient": false,
+        "isShowPoints": true,
+        "isSkipZero": false,
+        "isSmooth": true
+      },
+      "pie": {
+        "isShowLabels": true,
+        "isShowPercent": false,
+        "shape": "donut"
+      },
+      "type": "bar",
+      "valueDisplay": "magnitude"
+    },
+    "contextBlocks": {
+      "categoryChildren": {
+        "isShow": true
+      },
+      "walletBalance": {
+        "isShow": true
+      },
+      "walletDescription": {
+        "isShow": true
+      }
+    },
+    "date": {
+      "isPinned": true,
+      "isShow": true,
+      "isShowNavigation": false,
+      "isShowQuick": true,
+      "quickRangeIds": [
+        "preset:day-7",
+        "preset:day-14",
+        "preset:day-30",
+        "preset:month-3",
+        "preset:month-6",
+        "preset:month-12",
+        "maximum:allSkipEmpty"
+      ],
+      "quickRangeOrderIds": [
+        "period:day-1",
+        "period:week-1",
+        "period:month-1",
+        "period:month-6",
+        "period:year-1",
+        "preset:day-7",
+        "preset:day-14",
+        "preset:day-30",
+        "preset:month-3",
+        "preset:month-6",
+        "preset:month-12",
+        "preset:year-6",
+        "maximum:all",
+        "maximum:allSkipEmpty"
+      ]
+    },
+    "page": {
+      "blockOrder": [
+        "categoryChildren",
+        "walletBalance",
+        "walletDescription",
+        "chart",
+        "summary",
+        "navigation",
+        "wallets",
+        "vertical",
+        "catsRound",
+        "catsList",
+        "trns"
+      ],
+      "layout": "combined"
+    },
+    "summary": {
+      "isPinned": true,
+      "isShow": true,
+      "isShowChart": true
+    },
+    "trns": {
+      "isShow": true,
+      "isShowHistory": true,
+      "isShowTitle": true,
+      "isShowTypeTabs": true
+    },
+    "wallets": {
+      "count": 6,
+      "displayMode": "period",
+      "isShow": true,
+      "isShowIcon": false,
+      "selectionMode": "multiple",
+      "valueMode": "balance"
+    }
+  },
+  "blockRules": {
+    "catsList": [
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": ">=",
+              "kind": "contentWidth",
+              "unit": "px",
+              "value": 944
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "79005132-9a6e-43c5-a9db-83f9d620a516",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "categories": {
+            "list": {
+              "backgroundType": "standard",
+              "grouping": "auto",
+              "isAutoExpandParents": false,
+              "isLines": false,
+              "isRoundIcon": false,
+              "isShowTitle": false,
+              "trendType": "bar"
+            }
+          }
+        },
+        "parameterIds": [
+          "visibility",
+          "categories.list.isRoundIcon",
+          "categories.list.grouping",
+          "categories.list.isAutoExpandParents",
+          "categories.list.trendType",
+          "categories.list.backgroundType",
+          "categories.list.isShowTitle",
+          "categories.list.isLines"
+        ]
+      }
+    ],
+    "catsRound": [
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": ">",
+              "kind": "categoryCount",
+              "scope": "all",
+              "value": 11
+            },
+            {
+              "comparator": "<=",
+              "kind": "contentWidth",
+              "unit": "px",
+              "value": 600
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "103abef5-a1b6-453b-922c-f3eff2513fab",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "categories": {
+            "round": {
+              "grouping": "auto",
+              "isHideOthersOnSelect": true
+            }
+          }
+        },
+        "parameterIds": [
+          "categories.round.isHideOthersOnSelect",
+          "categories.round.grouping"
+        ]
+      },
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": "<=",
+              "kind": "categoryCount",
+              "scope": "all",
+              "value": 11
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "d5560645-d574-4da0-b0ae-7a9c8a5144fb",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "categories": {
+            "round": {
+              "grouping": "child"
+            }
+          }
+        },
+        "parameterIds": [
+          "categories.round.grouping"
+        ]
+      },
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": "=",
+              "kind": "categoryCount",
+              "scope": "all",
+              "value": 0
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "611b57a7-0661-4e0e-b2d5-25eece98559d",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "categories": {
+            "round": {
+              "isShowFavorites": true
+            }
+          }
+        },
+        "parameterIds": [
+          "categories.round.isShowFavorites"
+        ]
+      }
+    ],
+    "chart": [
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": "<=",
+              "kind": "contentWidth",
+              "unit": "px",
+              "value": 395
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "1b0b8e55-09a9-4b7e-8c4b-dbb9bbe01be3",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "date": {
+            "quickRangeIds": [
+              "preset:day-7",
+              "preset:day-14",
+              "preset:day-30",
+              "preset:month-3",
+              "preset:month-6",
+              "maximum:allSkipEmpty"
+            ],
+            "quickRangeOrderIds": [
+              "period:day-1",
+              "period:week-1",
+              "period:month-1",
+              "period:month-6",
+              "period:year-1",
+              "preset:day-7",
+              "preset:day-14",
+              "preset:day-30",
+              "preset:month-3",
+              "preset:month-6",
+              "preset:month-12",
+              "preset:year-6",
+              "maximum:all",
+              "maximum:allSkipEmpty"
+            ]
+          }
+        },
+        "parameterIds": [
+          "date.quickRanges"
+        ]
+      }
+    ],
+    "navigation": [
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": ">=",
+              "kind": "contentWidth",
+              "unit": "px",
+              "value": 944
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "5f8f2540-8285-4ecb-9f05-fabcd069c28b",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "date": {
+            "isShowNavigation": true
+          }
+        },
+        "parameterIds": [
+          "date.isShowNavigation"
+        ]
+      }
+    ],
+    "trns": [
+      {
+        "condition": {
+          "children": [
+            {
+              "comparator": ">=",
+              "kind": "contentWidth",
+              "unit": "px",
+              "value": 944
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "fb1d8b89-52bc-4948-82dc-f608a2762946",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "trns": {
+            "isShowHistory": true,
+            "isShowTitle": false,
+            "isShowTypeTabs": true
+          }
+        },
+        "parameterIds": [
+          "trns.isShowTypeTabs",
+          "trns.isShowTitle",
+          "trns.isShowHistory"
+        ]
+      },
+      {
+        "condition": {
+          "children": [
+            {
+              "ids": [],
+              "kind": "walletSelection",
+              "mode": "any"
+            }
+          ],
+          "operator": "and"
+        },
+        "id": "126a3e85-e6cf-4c03-ab19-2a5fd1e783da",
+        "isEnabled": true,
+        "isHidden": false,
+        "overrides": {
+          "trns": {
+            "isShowTypeTabs": true
+          }
+        },
+        "parameterIds": [
+          "trns.isShowTypeTabs"
+        ]
+      }
+    ]
+  }
+}

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   ariaLabel: string
+  // Pinned rows render the handle slot as blank space so labels stay aligned.
+  isFixed?: boolean
   isSelected?: boolean
   selectionMode?: 'multiple' | 'single'
 }>(), {
@@ -17,7 +19,9 @@ const slots = useSlots()
 
 <template>
   <UiElement insideClasses="group min-h-[46px] gap-1 px-1 py-0.5">
+    <div v-if="props.isFixed" class="w-11 shrink-0" />
     <div
+      v-else
       class="sortableSelectionHandle -my-0.5 -ml-1 flex w-11 shrink-0 cursor-grab items-center justify-center self-stretch rounded-l-md text-muted hover:bg-accented active:cursor-grabbing"
       role="button"
       tabindex="0"

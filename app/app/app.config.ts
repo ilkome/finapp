@@ -77,7 +77,7 @@ export default defineAppConfig({
         variant: 'outline',
       },
       slots: {
-        base: 'min-h-10.5 px-4 min-w-40',
+        base: 'min-h-10.5 px-4 min-w-40 theme-rounded-control',
         item: 'hover:bg-elevated/50 rounded-sm',
       },
       variants: {

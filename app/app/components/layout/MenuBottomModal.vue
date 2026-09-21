@@ -12,6 +12,7 @@ const { locale, t } = useI18n()
 const userStore = useUserStore()
 const { generateDemoData, isDemo } = useDemo()
 const config = useRuntimeConfig()
+const isCompact = ref(false)
 
 function onSearchClick() {
   emit('close')
@@ -41,7 +42,8 @@ async function clearCachesAndReload() {
   <Teleport to="body">
     <LazyBottomSheet
       isShow
-      dragClassesCustom="bottom-sheet-drag-classes-custom"
+      :dragClassesCustom="isCompact ? 'bottom-sheet-drag-classes-custom sheet-preview-border' : 'bottom-sheet-drag-classes-custom'"
+      :isPassthrough="isCompact"
       @closed="emit('close')"
     >
       <template #handler>
@@ -51,7 +53,7 @@ async function clearCachesAndReload() {
       <div class="bottom-sheet-content">
         <div class="bottom-sheet-content-inside overflow-y-hidden! p-0!">
           <div class="h-full max-h-[98dvh] scroller-block overflow-y-auto px-3 pt-4 pb-2">
-            <LayoutUserMenuPanels @close="emit('close')">
+            <LayoutUserMenuPanels @close="emit('close')" @compact="isCompact = $event">
               <template #root>
                 <div
                   class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-toned"

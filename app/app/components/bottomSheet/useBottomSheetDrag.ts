@@ -37,10 +37,18 @@ type UseBottomSheetDragParams = {
 // `div @click` rows are intentionally excluded so drag/scroll still starts on them.
 const INTERACTIVE_SELECTOR = 'button, a, input, select, textarea, label, [role="button"], [role="tab"], [role="switch"]'
 const SHEET_DRAG_EXCLUDED_SELECTOR = '.sortHandle, [role="combobox"]'
+// Horizontal strips and sliders: the gesture's dominant axis decides between native scroll and sheet drag.
+const AXIS_LOCK_SELECTOR = '[data-sheet-no-drag]'
 const TRANSITION_FALLBACK_MS = 150
 
 export function isSheetDragExcludedTarget(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest(SHEET_DRAG_EXCLUDED_SELECTOR) !== null
+}
+
+function getClientX(event: DragInputEvent): number {
+  return 'touches' in event
+    ? Math.round(event.touches[0]!.clientX)
+    : event.clientX
 }
 
 function getClientY(event: DragInputEvent): number {
@@ -73,6 +81,8 @@ export function useBottomSheetDrag({
   // of a plain tap on inner controls (e.g. the filter tabs).
   const dragMoved = ref(false)
   const startFingerY = ref(0)
+  const startFingerX = ref(0)
+  let isAxisLocked = false
   const MOVE_THRESHOLD = 8
   let activeScroller: HTMLElement | null = null
   let transitionTimer: ReturnType<typeof setTimeout> | null = null
@@ -282,6 +292,13 @@ export function useBottomSheetDrag({
       return
 
     if (event.target instanceof Element) {
+      isAxisLocked = event.target.closest(AXIS_LOCK_SELECTOR) !== null
+      if (isAxisLocked) {
+        startFingerX.value = getClientX(event)
+        startFingerY.value = getClientY(event)
+        phase.value = 'pending'
+        return
+      }
       isHandler.value = Boolean(event.target.closest('.handler'))
       const isTarget = event.target.closest('.drag')
       const hasScroll = contentHasScroll(event)
@@ -323,8 +340,15 @@ export function useBottomSheetDrag({
   function onDragging(event: DragInputEvent): void {
     if (phase.value === 'pending') {
       const y = getClientY(event)
-      if (Math.abs(y - startFingerY.value) <= MOVE_THRESHOLD)
+      const dx = isAxisLocked ? Math.abs(getClientX(event) - startFingerX.value) : 0
+      if (Math.abs(y - startFingerY.value) <= MOVE_THRESHOLD && dx <= MOVE_THRESHOLD)
         return
+
+      if (isAxisLocked && dx > Math.abs(y - startFingerY.value)) {
+        phase.value = 'idle'
+        activeScroller = null
+        return
+      }
 
       if (contentHasScroll(event)) {
         phase.value = 'idle'
@@ -355,6 +379,10 @@ export function useBottomSheetDrag({
         dragMoved.value = true
       clientY.value = y
       sampleVelocity(y)
+      // Upward moves from the expanded detent were handed off above, so whatever reaches
+      // here moves the sheet itself.
+      if (event.cancelable)
+        event.preventDefault()
       return
     }
 
@@ -372,6 +400,11 @@ export function useBottomSheetDrag({
         dragMoved.value = true
       clientY.value = y
       sampleVelocity(y)
+      // While the sheet is displaced the content must not scroll underneath: a scrolled inner
+      // list would trip the hand-off above and snap the sheet back mid-gesture. At rest the
+      // browser keeps the gesture so an upward move scrolls the content right away.
+      if (event.cancelable && dragDistance.value > 0)
+        event.preventDefault()
     }
   }
 
@@ -496,7 +529,7 @@ export function useBottomSheetDrag({
       // Context-menu triggers may stop bubbling touch events during long-press
       // detection, so the sheet observes the gesture before child components.
       useEventListener(containerRef, 'touchstart', onDragStart, { capture: true }),
-      useEventListener(containerRef, 'touchmove', onDragging, { capture: true }),
+      useEventListener(containerRef, 'touchmove', onDragging, { capture: true, passive: false }),
       useEventListener(containerRef, 'touchend', onDragEnd, { capture: true }),
       useEventListener(containerRef, 'touchcancel', onDragEnd, { capture: true }),
       useEventListener(containerRef, 'mousedown', onDragStart),

@@ -4,6 +4,7 @@ import type { EntitySelectionMode } from '~/components/stat/views/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
+import { isAdaptiveViewId } from '~/components/stat/views/adaptiveView'
 import { generateViewName } from '~/components/stat/views/generateViewName'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -14,12 +15,12 @@ const controller = inject(statViewControllerKey, null)
 const { open: openPanel } = useStatConfigNav()
 const name = ref('')
 const nameInput = useTemplateRef<{ inputRef?: HTMLInputElement }>('nameInput')
-const isCustomName = ref(false)
 const isAutoEnabled = ref(false)
 const isViewsOpen = ref(false)
 const isDeleteOpen = ref(false)
 
 const current = computed(() => controller?.activeView.value ?? null)
+const isAdaptive = computed(() => isAdaptiveViewId(current.value?.id))
 const suggestion = computed(() => generateViewName(current.value?.autoRule ?? null, {
   and: t('stat.views.and'),
   andMore: count => t('stat.views.andMore', { count }),
@@ -30,7 +31,6 @@ const suggestion = computed(() => generateViewName(current.value?.autoRule ?? nu
   period: (value, unit) => t(`stat.views.period.${unit}`, { count: value }),
   walletSelection: (mode, ids) => selectionName('wallet', mode, ids),
 }, controller?.store.views.map(view => view.name) ?? []))
-const effectiveName = computed(() => name.value.trim() || suggestion.value)
 
 function selectionName(entity: 'category' | 'wallet', mode: EntitySelectionMode, ids: string[]) {
   if (mode !== 'selected')
@@ -38,54 +38,36 @@ function selectionName(entity: 'category' | 'wallet', mode: EntitySelectionMode,
   const names = ids.map(id => entity === 'wallet' ? walletsStore.itemsComputed[id]?.name : categoriesStore.items[id]?.name).filter((value): value is string => !!value)
   return names.length <= 2 ? names.join(', ') : t('stat.views.conditions.selection.multiple', { count: names.length })
 }
-const hasMetadataChanges = computed(() => !!current.value && (
-  effectiveName.value !== current.value.name
-  || isAutoEnabled.value !== current.value.isAutoEnabled
-))
-
-function syncEditorFromView(view: typeof current.value) {
-  name.value = view?.name ?? ''
-  isCustomName.value = !!view
-  isAutoEnabled.value = view?.isAutoEnabled ?? false
-}
-
 watch(current, (view) => {
-  syncEditorFromView(view)
+  name.value = view?.name ?? ''
+  isAutoEnabled.value = view?.isAutoEnabled ?? false
 }, { immediate: true })
-watch(suggestion, (value) => {
-  if (!isCustomName.value)
-    name.value = value
-}, { immediate: true })
-let autoSaveQueue = Promise.resolve()
 
-function scheduleAutoSave() {
-  autoSaveQueue = autoSaveQueue
-    .catch(() => undefined)
-    .then(async () => {
-      if (!controller?.activeView.value || !hasMetadataChanges.value)
-        return
-      await controller.updateMetadata({
-        isAutoEnabled: isAutoEnabled.value,
-        name: effectiveName.value,
-      })
-    })
+// The name is committed on blur and on close, never while typing: an empty field must stay
+// empty so the user can retype it, and only then falls back to the suggested name.
+function commitName() {
+  const view = current.value
+  if (!view || isAdaptive.value)
+    return
+  const next = name.value.trim() || suggestion.value
+  if (next !== view.name)
+    void controller?.updateMetadata({ name: next })
 }
-
-watch(hasMetadataChanges, scheduleAutoSave, { immediate: true })
-
-function onNameInput() {
-  isCustomName.value = true
-}
-
-const viewActionItems = computed(() => [[
-  { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: () => nextTick(() => nameInput.value?.inputRef?.focus()) },
-], [
-  { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => { isDeleteOpen.value = true } },
-]])
+onBeforeUnmount(commitName)
 
 function toggleAutoEnabled() {
   isAutoEnabled.value = !isAutoEnabled.value
+  void controller?.updateMetadata({ isAutoEnabled: isAutoEnabled.value })
 }
+
+const viewActionItems = computed(() => [
+  ...(isAdaptive.value
+    ? []
+    : [[{ icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: () => nextTick(() => nameInput.value?.inputRef?.focus()) }]]),
+  ...(isAdaptive.value
+    ? []
+    : [[{ color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => { isDeleteOpen.value = true } }]]),
+])
 </script>
 
 <template>
@@ -98,10 +80,12 @@ function toggleAutoEnabled() {
           class="min-w-0 flex-1 border-b border-transparent transition-colors focus-within:border-primary hover:border-default"
           :disabled="!current"
           :placeholder="suggestion"
+          :readonly="isAdaptive"
           size="xl"
           :ui="{ base: 'rounded-none px-0 py-2 text-xl font-semibold' }"
           variant="none"
-          @update:modelValue="onNameInput"
+          @blur="commitName"
+          @keydown.enter="commitName"
         />
 
         <div class="shrink-0">
@@ -127,7 +111,7 @@ function toggleAutoEnabled() {
           </BottomSheetOrDropdown>
         </div>
 
-        <UDropdownMenu :items="viewActionItems" :content="{ align: 'end' }" :modal="false">
+        <UDropdownMenu v-if="viewActionItems.length" :items="viewActionItems" :content="{ align: 'end' }" :modal="false">
           <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
         </UDropdownMenu>
       </div>
