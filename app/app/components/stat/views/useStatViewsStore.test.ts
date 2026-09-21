@@ -3,6 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { defaultConfig } from '~/components/stat/config/schema'
+import { ADAPTIVE_VIEW_ID } from '~/components/stat/views/adaptiveView'
 import { StatViewSchema } from '~/components/stat/views/schema'
 import { normalizeActiveViews, rowToView, useStatViewsStore, viewToRow } from '~/components/stat/views/useStatViewsStore'
 
@@ -40,7 +41,7 @@ describe('useStatViewsStore demo persistence', () => {
     })
 
     expect(view.userId).toBe('demo')
-    expect(store.views).toEqual([view])
+    expect(store.savedViews).toEqual([view])
     expect(localforage.setItem).toHaveBeenCalledWith('finapp.statViews.dashboard', [view])
     expect(h.upsertRows).not.toHaveBeenCalled()
   })
@@ -53,7 +54,7 @@ describe('useStatViewsStore demo persistence', () => {
 
     await store.setActive(second.id)
 
-    expect(store.views).toMatchObject([
+    expect(store.savedViews).toMatchObject([
       { id: first.id, isActive: false },
       { id: second.id, isActive: true },
     ])
@@ -73,22 +74,32 @@ describe('useStatViewsStore demo persistence', () => {
     expect(rowToView({ id: view.id, ...row })?.isActive).toBe(true)
   })
 
-  it('reuses a deterministic default view created concurrently', async () => {
+  it('always lists the built-in adaptive view first and marks it active when nothing else is', async () => {
     const store = useStatViewsStore()
     await store.init()
-    const values = {
-      autoRule: null,
-      config: { base: structuredClone(defaultConfig), blockRules: {} },
-      id: store.defaultViewId('dashboard'),
-      isAutoEnabled: false,
-      name: 'Default',
-      scope: 'dashboard' as const,
-    }
 
-    const [first, second] = await Promise.all([store.create(values), store.create(values)])
+    expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: true, name: 'stat.views.adaptive' }])
 
-    expect(first.id).toBe(second.id)
-    expect(store.views).toHaveLength(1)
+    const view = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Saved', scope: 'dashboard' })
+    expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: false }, { id: view.id, isActive: true }])
+
+    await store.setActive(ADAPTIVE_VIEW_ID)
+    expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: true }, { id: view.id, isActive: false }])
+  })
+
+  it('forks the adaptive view into "mine" instead of editing it, and never removes it', async () => {
+    const store = useStatViewsStore()
+    await store.init()
+
+    const rule = { children: [{ ids: [], kind: 'walletSelection' as const, mode: 'any' as const }], operator: 'and' as const }
+    const forked = await store.update(ADAPTIVE_VIEW_ID, { autoRule: rule, isAutoEnabled: true })
+
+    expect(forked).toMatchObject({ autoRule: rule, isActive: true, isAutoEnabled: true, name: 'stat.views.mine' })
+    expect(forked?.config.blockRules.catsRound).toHaveLength(3)
+    expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: false }, { id: forked!.id }])
+
+    await store.remove(ADAPTIVE_VIEW_ID)
+    expect(store.views[0]?.id).toBe(ADAPTIVE_VIEW_ID)
   })
 
   it('activates the adjacent view when the active view is removed', async () => {
@@ -99,7 +110,7 @@ describe('useStatViewsStore demo persistence', () => {
 
     await store.remove(first.id)
 
-    expect(store.views).toMatchObject([{ id: second.id, isActive: true, sortOrder: 0 }])
+    expect(store.savedViews).toMatchObject([{ id: second.id, isActive: true, sortOrder: 0 }])
   })
 })
 

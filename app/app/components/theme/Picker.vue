@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BLACK_PRIMARY, capitalize, swatchPalette, useThemeOptions } from '~/components/theme/useThemeOptions'
+import { BLACK_PRIMARY, colorLabel, swatchPalette, useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
 
 const colorMode = useColorMode()
@@ -36,8 +36,8 @@ const selectedModeItem = computed(() =>
 )
 
 const primaryItems = computed(() => [
-  { label: 'Black', value: BLACK_PRIMARY },
-  ...primaryColors.map(c => ({ label: capitalize(c), value: c })),
+  { label: colorLabel(t, BLACK_PRIMARY), value: BLACK_PRIMARY },
+  ...primaryColors.map(c => ({ label: colorLabel(t, c), value: c })),
 ])
 const primarySelected = computed({
   get() {
@@ -54,7 +54,7 @@ const primarySelected = computed({
   },
 })
 
-const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(c), value: c })))
+const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(t, c), value: c })))
 </script>
 
 <template>
@@ -78,99 +78,55 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: capitalize(
         </USelectMenu>
       </div>
 
-      <!-- Primary color -->
-      <div class="flex flex-col items-start gap-1">
-        <span class="text-xs text-muted">{{ t('theme.picker.primary') }}</span>
-        <USelectMenu
-          v-model="primarySelected"
-          :items="primaryItems"
-          valueKey="value"
-          :searchInput="false"
-        >
-          <template #leading>
-            <span
-              v-if="primarySelected === BLACK_PRIMARY"
-              class="size-5 rounded-full bg-black dark:bg-white"
-            />
-            <span
-              v-else
-              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-              :style="{
-                '--color-light': `var(--color-${primarySelected}-500)`,
-                '--color-dark': `var(--color-${primarySelected}-400)`,
-              }"
-            />
-          </template>
-          <template #item-leading="{ item }">
-            <span
-              v-if="item.value === BLACK_PRIMARY"
-              class="size-5 rounded-full bg-black dark:bg-white"
-            />
-            <span
-              v-else
-              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-              :style="{
-                '--color-light': `var(--color-${item.value}-500)`,
-                '--color-dark': `var(--color-${item.value}-400)`,
-              }"
-            />
-          </template>
-        </USelectMenu>
-      </div>
+      <ThemeOptionSheet
+        v-model="primarySelected"
+        :label="t('theme.picker.primary')"
+        :items="primaryItems"
+      >
+        <template #swatch="{ value }">
+          <span
+            v-if="value === BLACK_PRIMARY"
+            class="size-6 rounded-full bg-black dark:bg-white"
+          />
+          <span
+            v-else
+            class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+            :style="{
+              '--color-light': `var(--color-${value}-500)`,
+              '--color-dark': `var(--color-${value}-400)`,
+            }"
+          />
+        </template>
+      </ThemeOptionSheet>
 
-      <!-- Neutral color -->
-      <div class="flex flex-col items-start gap-1">
-        <span class="text-xs text-muted">{{ t('theme.picker.neutral') }}</span>
-        <USelectMenu
-          v-model="neutral"
-          :items="neutralItems"
-          valueKey="value"
-          :searchInput="false"
-        >
-          <template #leading>
-            <span
-              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-              :style="{
-                '--color-light': `var(--color-${swatchPalette(neutral)}-500)`,
-                '--color-dark': `var(--color-${swatchPalette(neutral)}-400)`,
-              }"
-            />
-          </template>
-          <template #item-leading="{ item }">
-            <span
-              class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-              :style="{
-                '--color-light': `var(--color-${swatchPalette(item.value)}-500)`,
-                '--color-dark': `var(--color-${swatchPalette(item.value)}-400)`,
-              }"
-            />
-          </template>
-        </USelectMenu>
-      </div>
+      <ThemeOptionSheet
+        v-model="neutral"
+        :label="t('theme.picker.neutral')"
+        :items="neutralItems"
+      >
+        <template #swatch="{ value }">
+          <span
+            class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+            :style="{
+              '--color-light': `var(--color-${swatchPalette(value)}-500)`,
+              '--color-dark': `var(--color-${swatchPalette(value)}-400)`,
+            }"
+          />
+        </template>
+      </ThemeOptionSheet>
 
-      <!-- Radius -->
-      <div class="flex flex-col items-start gap-1">
-        <span class="text-xs text-muted">{{ t('theme.picker.radius') }}</span>
-        <USelectMenu
-          v-model="radius"
-          :items="radiusItems"
-          valueKey="value"
-          :searchInput="false"
-        >
-          <template #leading>
-            <span
-              class="size-5 bg-elevated"
-              :style="{ borderRadius: `${radius}rem` }"
-            />
-          </template>
-          <template #item-leading="{ item }">
-            <span
-              class="size-5 bg-elevated"
-              :style="{ borderRadius: `${item.value}rem` }"
-            />
-          </template>
-        </USelectMenu>
-      </div>
+      <ThemeOptionSheet
+        v-model="radius"
+        :label="t('theme.picker.radius')"
+        :items="radiusItems"
+      >
+        <template #swatch="{ value }">
+          <span
+            class="size-6 border-2 border-accented bg-elevated"
+            :style="{ borderRadius: `${value}rem` }"
+          />
+        </template>
+      </ThemeOptionSheet>
 
       <UiSwitchItem
         :checkboxValue="isShowMenuLabels"

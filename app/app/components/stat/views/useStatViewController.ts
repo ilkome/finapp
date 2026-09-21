@@ -1,7 +1,6 @@
 import type { Ref } from 'vue'
 
 import { toRaw } from 'vue'
-import { waitForFirstSync } from '~~/services/powersync/db'
 
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { SyncableStatConfigPanelId } from '~/components/stat/views/syncPanelConfig'
@@ -31,7 +30,6 @@ function cloneRules(value: BlockRule[]): BlockRule[] {
 }
 
 export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<StatViewContext>) {
-  const { t } = useI18n()
   const store = useStatViewsStore()
   // A view bound to the open category/wallet page applies locally: `isActive` stays the pick the
   // user made themselves, so leaving the page restores it instead of a guessed fallback. Config
@@ -47,15 +45,9 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     config.value = cloneConfig(view.config.base)
   }
 
-  // Persisting the active view is async, and until it lands `store.views` shows no active row.
-  // The fallback watcher must not treat that gap as "nothing is selected" and create a view.
-  let isApplyingManually = false
   function apply(view: StatView) {
     applyLocal(view)
-    isApplyingManually = true
-    void store.setActive(view.id).finally(() => {
-      isApplyingManually = false
-    })
+    void store.setActive(view.id)
   }
   function cycle() {
     const list = store.views
@@ -83,10 +75,18 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     apply(view)
     return view
   }
+  // Editing the built-in view forks it; the fork must become the applied view, or the local
+  // page override keeps pointing at the adaptive one and every later edit forks again.
+  async function persist(viewId: string, patch: Parameters<typeof store.update>[1]) {
+    const next = await store.update(viewId, patch)
+    if (next && next.id !== viewId && appliedId.value === viewId)
+      appliedId.value = next.id
+    return next
+  }
   async function updateMetadata(patch: Partial<Pick<StatView, 'autoRule' | 'isAutoEnabled' | 'name'>>) {
     if (!activeView.value)
       return null
-    return store.update(activeView.value.id, patch)
+    return persist(activeView.value.id, patch)
   }
   let configSaveQueue = Promise.resolve()
   // Only explicit edits reach the stored view. Watching `config` for any divergence used to
@@ -102,7 +102,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
         const current = store.views.find(view => view.id === viewId)
         if (!current || JSON.stringify(config.value) === JSON.stringify(current.config.base))
           return
-        await store.update(viewId, {
+        await persist(viewId, {
           config: {
             base: cloneConfig(config.value),
             blockRules: cloneBlockRules(current.config.blockRules),
@@ -147,58 +147,16 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
           blockRules[panel] = nextRules
         else
           delete blockRules[panel]
-        await store.update(viewId, {
+        await persist(viewId, {
           config: { base: cloneConfig(current.config.base), blockRules },
         })
       })
     return configSaveQueue
   }
-  // The stat page always needs one view, so dropping the last one resets it instead of deleting.
-  async function remove(id: string) {
-    if (store.views.length === 1) {
-      const fallback = await store.update(id, { isActive: true, name: t('stat.views.defaultName') })
-      if (fallback)
-        apply(fallback)
-      return
-    }
-    await store.remove(id)
+  // The built-in adaptive view always remains, so deleting never leaves the page without one.
+  function remove(id: string) {
+    return store.remove(id)
   }
-  let isEnsuringActiveView = false
-  let hasWaitedForFirstSync = false
-  watch([
-    () => store.isLoaded,
-    () => store.views.length,
-    () => store.views.some(view => view.isActive),
-  ], async ([viewsLoaded, , hasActiveView]) => {
-    // A manual pick writes two rows; the feed can observe the gap where neither is active.
-    if (!viewsLoaded || hasActiveView || isEnsuringActiveView || isApplyingManually)
-      return
-    isEnsuringActiveView = true
-    try {
-      if (!store.isDemo && !hasWaitedForFirstSync) {
-        await waitForFirstSync()
-        hasWaitedForFirstSync = true
-        if (store.views.some(view => view.isActive))
-          return
-      }
-      const fallback = store.views.find(view => view.name === t('stat.views.defaultName'))
-        ?? store.views.find(view => view.name === t('stat.views.modern'))
-        ?? store.views[0]
-      const view = fallback ?? await store.create({
-        autoRule: null,
-        config: { base: cloneConfig(config.value), blockRules: {} },
-        id: store.defaultViewId('dashboard'),
-        isAutoEnabled: false,
-        name: t('stat.views.defaultName'),
-        scope: 'dashboard',
-      })
-      if (!view.isActive)
-        await store.setActive(view.id)
-    }
-    finally {
-      isEnsuringActiveView = false
-    }
-  }, { immediate: true })
 
   // Only the open page moves the applied view. Leaving a bound page drops the local override and
   // `activeView` falls back to the stored pick, which the watcher above feeds back into the config.

@@ -24,6 +24,16 @@
   border-radius: calc(var(--ui-radius) * 2.625);
 }
 
+/* Item nested in a p-1 control: concentric with the outer edge. */
+@utility theme-rounded-control-inner {
+  border-radius: max(0px, calc(var(--ui-radius) * 2.625 - 0.25rem));
+}
+
+/* 20px switch track: 0.5rem radius -> full pill, smaller settings stay proportional. */
+@utility theme-rounded-switch {
+  border-radius: calc(var(--ui-radius) * 1.25);
+}
+
 @utility stat-layout {
   --stat-column-gap: 4rem;
 }
@@ -59,6 +69,11 @@
 
 @utility bottom-sheet-drag-classes-custom {
   @apply bg-default max-w-md rounded-t-xl;
+}
+
+/* Live-preview sheets have no overlay, so an edge separates them from the page. */
+@utility sheet-preview-border {
+  @apply border border-b-0 border-accented;
 }
 
 @utility bottom-sheet-content {

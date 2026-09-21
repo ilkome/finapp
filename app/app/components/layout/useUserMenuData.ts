@@ -1,10 +1,10 @@
 import type { LocaleSlug } from '~/components/locale/types'
 
 import { useTheme } from '~/components/theme/useTheme'
-import { useThemeOptions } from '~/components/theme/useThemeOptions'
+import { BLACK_PRIMARY, colorLabel, useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useUserStore } from '~/components/user/useUserStore'
 
-export type UserMenuPanel = 'appearance' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
+export type UserMenuPanel = 'appearance' | 'color' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
 
 export const USER_MENU_GITHUB_URL = 'https://github.com/ilkome/finapp'
 export const USER_MENU_DOCS_URL = 'https://finapp-docs.ilko.me/'
@@ -18,6 +18,12 @@ export const USER_MENU_THEME_ICONS: Record<string, string> = {
 export const USER_MENU_PANEL_CHILDREN: Partial<Record<'root' | UserMenuPanel, UserMenuPanel[]>> = {
   appearance: ['theme', 'primary', 'neutral', 'radius'],
   root: ['locale', 'appearance'],
+}
+
+// The phone sheet folds primary + neutral into one swatch panel.
+export const USER_MENU_PANEL_CHILDREN_PHONE: typeof USER_MENU_PANEL_CHILDREN = {
+  ...USER_MENU_PANEL_CHILDREN,
+  appearance: ['theme', 'color', 'radius'],
 }
 
 export function useUserMenuData() {
@@ -60,12 +66,17 @@ export function useUserMenuData() {
 
   const localeLabel = computed(() => t(`locale.${locale.value}`))
   const themeLabel = computed(() => themeOptions.find(o => o.value === themePreference.value)?.label ?? '')
-  const primaryLabel = computed(() => blackAsPrimary.value ? 'Black' : primary.value)
+  const primaryLabel = computed(() => colorLabel(t, blackAsPrimary.value ? BLACK_PRIMARY : primary.value))
 
   const panelMeta = computed<Record<UserMenuPanel, { icon?: string, title: string, value?: string }>>(() => ({
     appearance: {
       icon: 'i-lucide-paintbrush',
       title: t('theme.title'),
+    },
+    color: {
+      icon: 'i-lucide-palette',
+      title: t('theme.picker.color'),
+      value: primaryLabel.value,
     },
     locale: {
       icon: 'lucide:languages',
@@ -75,7 +86,7 @@ export function useUserMenuData() {
     neutral: {
       icon: 'i-lucide-swatch-book',
       title: t('theme.picker.neutral'),
-      value: neutral.value,
+      value: colorLabel(t, neutral.value),
     },
     primary: {
       icon: 'i-lucide-palette',

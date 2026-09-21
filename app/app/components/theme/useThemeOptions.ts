@@ -7,7 +7,7 @@ const NON_PALETTE_COLORS = ['inherit', 'current', 'transparent', 'black', 'white
 
 // slate/gray/zinc/neutral/stone are Tailwind palettes; taupe/mauve/mist/olive are
 // the extra neutrals @nuxt/ui's docs offer - their palettes live in `theme.css`.
-export const NEUTRAL_COLORS = ['slate', 'gray', 'zinc', 'neutral', 'stone', 'taupe', 'mauve', 'mist', 'olive']
+export const NEUTRAL_COLORS = ['neutral', 'zinc', 'stone', 'taupe', 'mauve', 'slate', 'gray', 'mist', 'olive']
 export const RADIUSES = [0, 0.25, 0.375, 0.5]
 
 export const PRIMARY_COLORS = Object.keys(
@@ -17,8 +17,11 @@ export const PRIMARY_COLORS = Object.keys(
 /** Sentinel for the black accent, which is a theme flag rather than a palette entry. */
 export const BLACK_PRIMARY = '__black__'
 
-export function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1)
+/** Localised palette name; falls back to the capitalised key for palettes without a translation. */
+export function colorLabel(t: (key: string) => string, color: string) {
+  const key = `theme.colors.${color === BLACK_PRIMARY ? 'black' : color}`
+  const label = t(key)
+  return label === key ? color.charAt(0).toUpperCase() + color.slice(1) : label
 }
 
 /**

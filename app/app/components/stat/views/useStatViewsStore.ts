@@ -12,6 +12,7 @@ import { createLogger } from '~/utils/logger'
 
 import type { ConditionGroup, StatView, StatViewScope } from './types'
 
+import { adaptiveView, adaptiveViewConfig, isAdaptiveViewId } from './adaptiveView'
 import { StatViewSchema } from './schema'
 
 type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isActive' | 'isAutoEnabled' | 'name'>>
@@ -65,8 +66,10 @@ function normalizeActiveViews(views: StatView[]): StatView[] {
 export const useStatViewsStore = defineStore('statViews', () => {
   const { isDemo } = useDemo()
   const { uid } = useSupabaseAuth()
+  const { $i18n } = useNuxtApp()
   const items = shallowRef<StatView[]>([])
   const isLoaded = ref(false)
+  const activeScope = ref<StatViewScope>('dashboard')
   let watchController: AbortController | null = null
 
   // Views created before ordering existed share sortOrder 0, so ties must break on something
@@ -75,13 +78,19 @@ export const useStatViewsStore = defineStore('statViews', () => {
     return a.sortOrder - b.sortOrder || a.createdAt - b.createdAt || a.id.localeCompare(b.id)
   }
 
-  const views = computed(() => items.value.toSorted(compareViews))
+  // Saved views only; `views` prepends the built-in adaptive one.
+  const savedViews = computed(() => items.value.toSorted(compareViews))
+  const views = computed(() => [
+    adaptiveView($i18n.t('stat.views.adaptive'), activeScope.value, !savedViews.value.some(view => view.isActive)),
+    ...savedViews.value,
+  ])
 
   function setItems(next: StatView[]) {
     items.value = next.toSorted(compareViews)
   }
 
   async function init(scope: StatViewScope = 'dashboard') {
+    activeScope.value = scope
     watchController?.abort()
     isLoaded.value = false
     if (isDemo.value) {
@@ -115,11 +124,6 @@ export const useStatViewsStore = defineStore('statViews', () => {
     await upsertRows('stat_views', changed.map(view => ({ id: view.id, row: viewToRow(view) })))
   }
 
-  function defaultViewId(scope: StatViewScope) {
-    const userId = isDemo.value ? DEMO_USER_ID : resolveWriteUid(uid.value)
-    return `stat-view-default:${userId}:${scope}`
-  }
-
   async function create(values: Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name' | 'scope'> & Partial<Pick<StatView, 'id'>>) {
     const existing = values.id ? items.value.find(view => view.id === values.id) : null
     if (existing)
@@ -130,8 +134,8 @@ export const useStatViewsStore = defineStore('statViews', () => {
       autoRule: values.autoRule as ConditionGroup | null,
       createdAt: now,
       id: values.id ?? crypto.randomUUID(),
-      isActive: !views.value.some(view => view.scope === values.scope && view.isActive),
-      sortOrder: views.value.filter(item => item.scope === values.scope).length,
+      isActive: !savedViews.value.some(view => view.scope === values.scope && view.isActive),
+      sortOrder: savedViews.value.filter(item => item.scope === values.scope).length,
       updatedAt: now,
       userId: isDemo.value ? DEMO_USER_ID : resolveWriteUid(uid.value),
     }
@@ -149,7 +153,28 @@ export const useStatViewsStore = defineStore('statViews', () => {
     return valid
   }
 
+  // Editing the built-in view forks it: the copy is named "Mine", carries the patch and takes over
+  // as the active view, so the adaptive defaults stay pristine.
+  async function forkAdaptive(patch: StatViewPatch) {
+    const names = new Set(savedViews.value.map(view => view.name))
+    const base = $i18n.t('stat.views.mine')
+    let name = base
+    for (let suffix = 2; names.has(name); suffix++)
+      name = `${base} ${suffix}`
+    const view = await create({
+      autoRule: patch.autoRule ?? null,
+      config: patch.config ?? adaptiveViewConfig(),
+      isAutoEnabled: patch.isAutoEnabled ?? false,
+      name,
+      scope: activeScope.value,
+    })
+    await setActive(view.id)
+    return items.value.find(item => item.id === view.id) ?? view
+  }
+
   async function update(id: string, patch: StatViewPatch) {
+    if (isAdaptiveViewId(id))
+      return forkAdaptive(patch)
     const current = items.value.find(view => view.id === id)
     if (!current)
       return null
@@ -168,7 +193,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
   }
 
   async function updateMany(updates: Array<{ id: string, patch: StatViewPatch }>) {
-    const patches = new Map(updates.map(update => [update.id, update.patch]))
+    const patches = new Map(updates.filter(update => !isAdaptiveViewId(update.id)).map(update => [update.id, update.patch]))
     const previous = items.value
     const changed: StatView[] = []
     const now = Date.now()
@@ -195,6 +220,8 @@ export const useStatViewsStore = defineStore('statViews', () => {
   }
 
   async function remove(id: string) {
+    if (isAdaptiveViewId(id))
+      return
     const previous = items.value
     const removed = previous.find(view => view.id === id)
     if (!removed)
@@ -228,7 +255,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
   async function reorder(ids: string[]) {
     const previous = items.value
     const byId = new Map(previous.map(view => [view.id, view]))
-    const next = ids.map((id, sortOrder) => byId.get(id) && ({ ...byId.get(id)!, sortOrder, updatedAt: Date.now() })).filter((view): view is StatView => !!view)
+    const next = ids.filter(id => !isAdaptiveViewId(id)).map((id, sortOrder) => byId.get(id) && ({ ...byId.get(id)!, sortOrder, updatedAt: Date.now() })).filter((view): view is StatView => !!view)
     if (next.length !== previous.length)
       return
     try {
@@ -242,11 +269,12 @@ export const useStatViewsStore = defineStore('statViews', () => {
     }
   }
 
+  // The adaptive view is "active" by absence: picking it clears every saved flag.
   async function setActive(id: string | null) {
     const previous = items.value
     const now = Date.now()
     const next = previous.map((view) => {
-      const isActive = view.id === id
+      const isActive = view.id === id && !isAdaptiveViewId(id)
       return isActive === view.isActive ? view : { ...view, isActive, updatedAt: now }
     })
     const changed = next.filter((view, index) => view.isActive !== previous[index]!.isActive)
@@ -263,7 +291,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
     }
   }
 
-  return { create, defaultViewId, init, isDemo, isLoaded, items, remove, reorder, setActive, update, updateMany, views }
+  return { create, init, isDemo, isLoaded, items, remove, reorder, savedViews, setActive, update, updateMany, views }
 })
 
 export { normalizeActiveViews, rowToView, viewToRow }

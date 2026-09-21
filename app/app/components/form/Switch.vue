@@ -17,13 +17,13 @@ const emit = defineEmits<{
 
     <div
       :class="cn(
-        'relative h-5 w-10 rounded-xl px-0.5 py-px transition-colors ease-in-out',
+        'relative h-5 w-10 theme-rounded-switch px-0.5 py-px transition-colors ease-in-out',
         value ? 'bg-primary' : 'bg-elevated',
       )"
     >
       <div
         :class="cn(
-          'size-4.5 rounded-xl bg-default shadow-md transition-transform ease-in-out',
+          'size-4.5 theme-rounded-switch bg-default shadow-md transition-transform ease-in-out',
           value && 'translate-x-4.5',
         )"
       />

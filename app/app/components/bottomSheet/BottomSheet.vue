@@ -10,6 +10,8 @@ const props = defineProps<{
   dragClassesCustom?: string
   dragStyle?: Record<string, string>
   isExpanded?: boolean
+  // Live-preview mode: no backdrop, page keeps scrolling and stays clickable; closes by drag/back only.
+  isPassthrough?: boolean
   isShow?: boolean
   // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
   // largest is the expanded/rendered height, the rest are collapsed detents.
@@ -89,7 +91,7 @@ watch(
   () => props.isShow,
   (value) => {
     if (value) {
-      isBodyLocked.value = true
+      isBodyLocked.value = !props.isPassthrough
       init()
       registerHistory()
     }
@@ -106,6 +108,12 @@ watch(
   },
   { immediate: true },
 )
+
+// The user menu flips into preview mode while already open.
+watch(() => props.isPassthrough, (value) => {
+  if (props.isShow)
+    isBodyLocked.value = !value
+})
 
 onBeforeUnmount(() => {
   isBodyLocked.value = false
@@ -128,10 +136,11 @@ const dragClasses = computed(() => [
 <template>
   <div
     ref="containerRef"
-    :class="wrapClasses"
+    :class="[wrapClasses, props.isPassthrough && 'pointer-events-none']"
     class="fixed inset-0 z-50 size-full overflow-hidden select-none"
   >
     <div
+      v-if="!props.isPassthrough"
       :class="overflowClasses"
       :style="overlayStyles"
       class="pointer-events-auto absolute inset-0 z-10 size-full bg-overlay"
