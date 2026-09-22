@@ -6,6 +6,8 @@ const props = defineProps<{
   currencyCode: string
   /** Summary mode with a category focus: the focused type replaces the tiles on narrow layouts. */
   focused?: StatSumRecord | null
+  // Without the "Итого" tile there is room for the pie on narrow layouts too.
+  isShowPieOnNarrow?: boolean
   /** Summary mode: one tile per record. Single mode: `single` only. */
   items: StatSumRecord[]
   single?: StatSumRecord | null
@@ -59,7 +61,7 @@ const tileClass = 'flex min-h-10.5 min-w-min flex-1 items-center interactive @2x
             :type="item.type"
           />
 
-          <div class="ml-auto hidden w-12 shrink-0 items-center justify-center @2xl/stat:flex">
+          <div :class="props.isShowPieOnNarrow ? 'flex' : 'hidden @2xl/stat:flex'" class="ml-auto w-12 shrink-0 items-center justify-center">
             <slot name="summaryPie" :type="item.type" />
           </div>
         </StatSumItemView>

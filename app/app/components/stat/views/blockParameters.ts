@@ -71,6 +71,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     visibility,
     { id: 'summary.isPinned', paths: ['summary.isPinned'], titleKey: 'stat.config.summary.pin' },
     { id: 'summary.isShowChart', paths: ['summary.isShowChart'], titleKey: 'stat.config.summary.showChart' },
+    { id: 'summary.isHideTotal', paths: ['summary.isHideTotal'], titleKey: 'stat.config.summary.hideTotal' },
   ],
   trns: [
     visibility,

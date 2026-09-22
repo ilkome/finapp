@@ -7,6 +7,7 @@ import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus, sortOrderKey, sortWalletGroups } from '~/components/wallets/grouping'
+import { useWalletGroupingOptions } from '~/components/wallets/useWalletGroupingOptions'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type { GroupedWallets }
@@ -15,8 +16,8 @@ export function useWalletsGrouping(
   selectedWalletsIds: ComputedRef<WalletId[]>,
   groupedBy: Ref<WalletsGroupedBy>,
 ) {
-  const { t } = useI18n()
   const walletsStore = useWalletsStore()
+  const groupTabs = useWalletGroupingOptions()
 
   const groupedBySecondary = useStorage(WALLET_STORAGE_KEYS.groupedBySecondary, {
     currency: false,
@@ -70,28 +71,6 @@ export function useWalletsGrouping(
       typeGroupsStatus.value,
     )
   }
-
-  const groupTabs = computed(() => {
-    const items: {
-      id: WalletsGroupedBy
-      label: string
-    }[] = [{
-      id: 'none',
-      label: t('wallets.page.none'),
-    }, {
-      id: 'type',
-      label: t('wallets.page.type'),
-    }]
-
-    if (walletsStore.currenciesUsed.length > 1) {
-      items.push({
-        id: 'currency',
-        label: t('wallets.page.currencies'),
-      })
-    }
-
-    return items
-  })
 
   function toggleSecondaryGrouping() {
     if (groupedBy.value !== 'none')

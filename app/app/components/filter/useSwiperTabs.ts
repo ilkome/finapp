@@ -1,8 +1,8 @@
 import Swiper from 'swiper'
 import 'swiper/css'
 
-export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>) {
-  const activeTabIdx = ref(0)
+export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>, initialIndex = 0) {
+  const activeTabIdx = ref(initialIndex)
   // shallowRef, not ref: a plain ref deep-reactive-proxies the Swiper instance,
   // which corrupts its internal DOM/state so slideTo() (tab clicks) stops working.
   const sliderObj = shallowRef<Swiper | null>(null)
@@ -15,7 +15,7 @@ export function useSwiperTabs(sliderRef: Ref<HTMLElement | null>) {
   onMounted(async () => {
     await nextTick()
     sliderObj.value = new Swiper(sliderRef.value!, {
-      initialSlide: 0,
+      initialSlide: initialIndex,
       longSwipesMs: 60,
       longSwipesRatio: 0.1,
       noSwiping: true,

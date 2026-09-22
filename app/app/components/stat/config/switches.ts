@@ -26,6 +26,7 @@ export type StatConfigBooleanPath
     | 'date.isPinned'
     | 'date.isShowNavigation'
     | 'date.isShowQuick'
+    | 'summary.isHideTotal'
     | 'summary.isPinned'
     | 'summary.isShowChart'
     | 'trns.isShowHistory'
@@ -134,6 +135,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'date.isShowQuick': {
     get: config => config.date.isShowQuick,
     set: (provider, value) => provider.updateConfig('date', { isShowQuick: value }),
+  },
+  'summary.isHideTotal': {
+    get: config => config.summary.isHideTotal,
+    set: (provider, value) => provider.updateConfig('summary', { isHideTotal: value }),
   },
   'summary.isPinned': {
     get: config => config.summary.isPinned,

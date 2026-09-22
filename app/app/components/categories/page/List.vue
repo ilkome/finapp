@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
+import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -31,6 +32,8 @@ const backgroundType = useStorage<'category' | 'none' | 'standard'>('finapp.cate
 const isShowChildrenCount = useStorage<boolean>('finapp.categoriesShowChildrenCount', false, localStorage, {
   mergeDefaults: true,
 })
+
+const isRoundIcon = useCategoriesIconStyle()
 
 const isViewSettingsOpen = ref(false)
 const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(value => ({
@@ -167,6 +170,13 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
                 trailing
                 @click="isShowChildrenCount = !isShowChildrenCount"
               />
+
+              <UiSwitchItem
+                :checkboxValue="isRoundIcon"
+                :title="t('stat.catButtons.isRoundIcon')"
+                trailing
+                @click="isRoundIcon = !isRoundIcon"
+              />
             </div>
           </template>
         </BottomSheetOrDropdown>
@@ -205,6 +215,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         :backgroundType
         :ids="categoriesStore.categoriesRootIds"
         :categoriesItemProps="{
+          isRoundIcon,
           isShowChildrenCount,
           leftMenuButton: true,
           lineWidth: 1,

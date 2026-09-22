@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
+import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -42,6 +43,7 @@ const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
 
 const filter = useStorage<CategoryFilter>('finapp-categories-selector-filter', 'all')
 const view = useStorage<'list' | 'grid'>('finapp.categoriesSelectorView', 'list')
+const isRoundIcon = useCategoriesIconStyle()
 
 const editingCategoryId = ref<CategoryId | null>(null)
 const isCreatingNewCategory = ref(false)
@@ -322,6 +324,7 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
               :categoryId="rootId"
               :contextMenuItems="getCategoryContextMenuItems(rootId)"
               :isExpanded="isRootExpanded(rootId)"
+              :isRoundIcon="isRoundIcon"
               :isShowChevron="categoriesStore.hasChildren(rootId)"
               :hideLeftMenuButton="true"
               :leftMenuButton="true"
@@ -370,6 +373,7 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
                   :categoryId="childId"
                   :contextMenuItems="getCategoryContextMenuItems(childId)"
                   :hideLeftMenuButton="true"
+                  :isRoundIcon="isRoundIcon"
                   :leftMenuButton="true"
                   :lineWidth="1"
                   :selectedIds="props.selectedIds"

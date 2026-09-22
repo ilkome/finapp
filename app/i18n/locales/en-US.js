@@ -23,6 +23,7 @@ export default {
 
   base: {
     add: 'Create',
+    addAction: 'Add',
     addCategory: 'Add category',
     addWallet: 'Add wallet',
     addWhat: 'What to add',
@@ -138,6 +139,7 @@ export default {
     },
     selectParent: 'Whole «{name}»',
     selectParentHint: 'incl. all subcategories',
+    singular: 'Category',
     title: 'Categories',
     view: {
       childrenView: 'Child categories',
@@ -453,6 +455,7 @@ export default {
         title: 'Average totals',
       },
       summary: {
+        hideTotal: 'Hide the total',
         pin: 'Pin while scrolling',
         showChart: 'Show charts',
         title: 'Spending and income',
@@ -622,7 +625,9 @@ export default {
       offlinePreparing: 'Preparing offline mode...',
       offlineReady: 'Works offline',
       pending: '{count} change(s) not synced',
+      updateAvailable: 'Update available',
       updateReady: 'Update ready - tap to restart',
+      updateReload: 'Reload',
       updating: 'Downloading update...',
       uploadError: 'Sync error - some changes are not reaching the server',
     },
@@ -678,9 +683,6 @@ export default {
   trnForm: {
     adjustmentTitle: 'Adjustment',
     ariaCopyAmount: 'Copy amount',
-    category: {
-      select: 'Select category',
-    },
     createTrn: 'Add transaction',
     delete: {
       alert: 'Delete transaction?',
@@ -710,9 +712,6 @@ export default {
       incomeModal: 'Transfer to wallet',
     },
     transferTitle: 'Transfer',
-    wallet: {
-      select: 'Select wallet',
-    },
   },
 
   trns: {
@@ -829,6 +828,7 @@ export default {
     search: {
       placeholder: 'Search',
     },
+    singular: 'Wallet',
     sortTitle: 'Sort wallets',
     title: 'Wallets',
   },

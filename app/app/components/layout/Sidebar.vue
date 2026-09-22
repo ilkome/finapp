@@ -117,6 +117,7 @@ function startResize(event: PointerEvent) {
       <div class="min-h-0 grow overflow-y-auto overscroll-contain">
         <LayoutSidebarMenu
           v-if="!props.isShowSidebar"
+          :hideKeys="['settings']"
           :isShowText="false"
           class="flex min-h-full flex-col items-center justify-center gap-1"
         />
@@ -125,7 +126,7 @@ function startResize(event: PointerEvent) {
           v-else
           class="grid content-start gap-8 pt-3 pb-16"
         >
-          <LayoutSidebarMenu class="px-2 pb-2" />
+          <LayoutSidebarMenu :hideKeys="['settings']" class="px-2 pb-2" />
 
           <div class="px-2 pb-6">
             <div class="pb-2 pl-1">

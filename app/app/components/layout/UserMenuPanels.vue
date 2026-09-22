@@ -127,7 +127,7 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
       <template v-if="userStore.currentUser">
         <div class="mx-2 flex items-start gap-2 py-2">
           <div class="min-w-0 grow">
-            <UserViewLogout />
+            <UserViewLogout :compact="isLaptop" hideEmail />
           </div>
           <UiActionButton
             :ariaLabel="t(isDark ? 'theme.light' : 'theme.dark')"
@@ -155,6 +155,20 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
         <span class="grow">{{ row.title }}</span>
         <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
         <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
+      </button>
+
+      <!-- On the phone the bottom nav's own menu already lists Settings (via itemsModal in its
+           #root slot); here it only replaces the sidebar's standalone icon on desktop. -->
+      <button
+        v-if="isLaptop"
+        :class="rowClass"
+        type="button"
+        @click="router.push('/settings'); emit('close')"
+      >
+        <span :class="iconSlotClass">
+          <UIcon name="hugeicons:settings-01" class="size-5 text-muted" />
+        </span>
+        <span class="grow">{{ t('settings.title') }}</span>
       </button>
 
       <template v-if="sessionActions">
