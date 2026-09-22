@@ -82,26 +82,14 @@ const typeItems = computed<TabsItem[]>(() => [
       />
 
       <!-- Selected -->
-      <div
+      <TrnFormEntitySelector
         v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
-        class="grid grid-cols-2 gap-2"
-      >
-        <TrnFormSelectorWallet
-          v-if="walletId"
-          :bottomSheetStyle="{ maxHeight }"
-          :title="t('trnForm.wallet.select')"
-          :walletId="walletId"
-          @selected="(id: WalletId) => trnsFormStore.values.walletId = id"
-        />
-
-        <TrnFormSelectorCategory
-          v-if="trnsFormStore.values.categoryId || categoriesStore.categoriesIdsForTrnValues[0]"
-          :bottomSheetStyle="{ maxHeight }"
-          :category="categoriesStore.items[(trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0])!]!"
-          :categoryId="(trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0])!"
-          @selected="(id: CategoryId) => trnsFormStore.values.categoryId = id"
-        />
-      </div>
+        :bottomSheetStyle="{ maxHeight }"
+        :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
+        :walletId
+        @selectCategory="(id: CategoryId) => trnsFormStore.values.categoryId = id"
+        @selectWallet="(id: WalletId) => trnsFormStore.values.walletId = id"
+      />
 
       <TrnFormMainAmountTransfer
         v-if="trnsFormStore.values.trnType === TrnType.Transfer"

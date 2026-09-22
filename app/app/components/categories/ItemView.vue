@@ -12,6 +12,7 @@ const props = defineProps<{
   hideLeftMenuButton?: boolean
   insideClasses?: string
   isExpanded?: boolean
+  isRoundIcon?: boolean
   isShowChevron?: boolean
   isShowChildrenCount?: boolean
   isShowParent?: boolean
@@ -79,7 +80,8 @@ function onRowClick(e: Event) {
         <UiIconBase
           :color="props.category.color"
           :name="props.category.icon"
-          invert
+          :class="props.isRoundIcon === false ? 'w-6!' : undefined"
+          :invert="props.isRoundIcon !== false"
           @click="emit('filter', props.categoryId ?? '')"
         />
       </template>
@@ -131,7 +133,8 @@ function onRowClick(e: Event) {
         <UiIconBase
           :color="props.category.color"
           :name="props.category.icon"
-          invert
+          :class="props.isRoundIcon === false ? 'w-6!' : undefined"
+          :invert="props.isRoundIcon !== false"
           @click="emit('filter', props.categoryId ?? '')"
         />
       </template>

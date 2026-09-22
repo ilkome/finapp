@@ -20,6 +20,7 @@ const config = computed(() => props.ctx.params.statConfig.config.value)
 const isShowPie = computed(() => config.value.summary.isShowChart && props.ctx.effectiveChartType.value !== 'pie')
 
 const items = computed<StatSumRecord[]>(() => buildStatSummaryItems(props.ctx.rangeTotal.value, props.ctx.filteredType.value)
+  .filter(item => item.type !== 'net' || !config.value.summary.isHideTotal)
   .map(item => ({ ...item, average: averages.value?.[item.type] })))
 
 const focused = computed<StatSumRecord | null>(() => {
@@ -56,6 +57,7 @@ function toggleAverage() {
     <StatSumView
       :currencyCode="currenciesStore.base"
       :focused
+      :isShowPieOnNarrow="config.summary.isHideTotal"
       :items
       :single
       @click="ctx.onClickSumItemWrap"

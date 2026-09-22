@@ -1,23 +1,38 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, TabsItem } from '@nuxt/ui'
 
+import type { CategoryId } from '~/components/categories/types'
+import type { WalletId } from '~/components/wallets/types'
+
 import CategoriesSelectorModal from '~/components/categories/SelectorModal.vue'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilterDraft } from '~/components/filter/useFilterDraft'
 import { useSwiperTabs } from '~/components/filter/useSwiperTabs'
 import WalletsSelector from '~/components/wallets/Selector.vue'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  // 'select': a single-pick entity sheet (transaction form) - no draft, no Apply, picking
+  // an item closes the sheet right away instead of staging it for the URL filter.
+  activeCategoryId?: CategoryId
+  activeWalletId?: WalletId
+  initialSlide?: 'category' | 'wallet'
   isExpanded?: boolean
-}>()
+  mode?: 'filter' | 'select'
+}>(), {
+  initialSlide: 'wallet',
+  mode: 'filter',
+})
 
 const emit = defineEmits<{
   close: []
+  selectCategory: [id: CategoryId]
+  selectWallet: [id: WalletId]
 }>()
 
 const { t } = useI18n()
 const router = useRouter()
-const filter = inject(filterKey)!
+const isSelectMode = computed(() => props.mode === 'select')
+const filter = isSelectMode.value ? null : inject(filterKey)!
 const isLaptop = useIsLaptop()
 
 const search = ref('')
@@ -31,11 +46,13 @@ const isCreatingNewCategory = ref(false)
 type FilterEntityType = 'category' | 'wallet'
 type FilterSlide = FilterEntityType | 'more'
 
-const entityTypes = computed<FilterEntityType[]>(() => [
-  ...(filter.canFilterWallets ? ['wallet' as const] : []),
-  ...(filter.canFilterCategories ? ['category' as const] : []),
-])
-const slides = computed<FilterSlide[]>(() => [...entityTypes.value, 'more'])
+const entityTypes = computed<FilterEntityType[]>(() => isSelectMode.value
+  ? ['wallet', 'category']
+  : [
+      ...(filter!.canFilterWallets ? ['wallet' as const] : []),
+      ...(filter!.canFilterCategories ? ['category' as const] : []),
+    ])
+const slides = computed<FilterSlide[]>(() => isSelectMode.value ? entityTypes.value : [...entityTypes.value, 'more'])
 
 const createItems = computed<DropdownMenuItem[]>(() => entityTypes.value.map(value => ({
   icon: value === 'wallet' ? 'i-hugeicons-wallet-01' : 'i-hugeicons-folder-library',
@@ -56,18 +73,38 @@ function createEntity(value: FilterEntityType) {
     isCreatingNewCategory.value = true
 }
 
-const { apply: applyDraft, hasPending, pendingCategories, pendingExtras, pendingWallets, reset, toggleCategory, toggleWallet } = useFilterDraft(filter)
+const draft = isSelectMode.value ? null : useFilterDraft(filter!)
 // Reset stays reachable while any applied filter exists, so an emptied pending
 // (which disables Apply) can never trap the user with a stale active filter.
-const showReset = computed(() => hasPending.value || filter.isShow.value)
+const showReset = computed(() => !isSelectMode.value && (draft!.hasPending.value || filter!.isShow.value))
 
 function apply() {
-  applyDraft()
+  draft!.apply()
   emit('close')
 }
 
+function selectWallet(id: WalletId) {
+  if (isSelectMode.value) {
+    emit('selectWallet', id)
+    emit('close')
+  }
+  else {
+    draft!.toggleWallet(id)
+  }
+}
+
+function selectCategory(id: CategoryId) {
+  if (isSelectMode.value) {
+    emit('selectCategory', id)
+    emit('close')
+  }
+  else {
+    draft!.toggleCategory(id)
+  }
+}
+
 const sliderRef = ref<HTMLElement | null>(null)
-const { activeTabIdx, goToTab } = useSwiperTabs(sliderRef)
+const { activeTabIdx, goToTab } = useSwiperTabs(sliderRef, isSelectMode.value ? slides.value.indexOf(props.initialSlide) : 0)
 
 const tabItems = computed<TabsItem[]>(() => slides.value.map((slide, index) => ({
   label: t(slide === 'wallet' ? 'wallets.title' : slide === 'category' ? 'categories.title' : 'base.filtersMore'),
@@ -75,14 +112,20 @@ const tabItems = computed<TabsItem[]>(() => slides.value.map((slide, index) => (
 })))
 
 const activeEntityType = computed(() => slides.value[activeTabIdx.value])
+const headerTitle = computed(() => isSelectMode.value
+  ? t(activeEntityType.value === 'wallet' ? 'wallets.singular' : 'categories.singular')
+  : undefined)
 </script>
 
 <template>
   <div
-    class="relative grid w-full min-w-0 grid-rows-[auto_1fr] overflow-hidden [&_.scroller-block]:pb-20"
-    :class="props.isExpanded === undefined
-      ? 'max-h-[min(600px,85dvh)] min-h-[min(50dvh,600px)]'
-      : 'h-full'"
+    class="relative grid w-full min-w-0 grid-rows-[auto_1fr] overflow-hidden"
+    :class="[
+      !isSelectMode && '[&_.scroller-block]:pb-20',
+      props.isExpanded === undefined
+        ? 'max-h-[min(600px,85dvh)] min-h-[min(50dvh,600px)]'
+        : 'h-full',
+    ]"
   >
     <div class="relative z-20 bg-default/90 backdrop-blur">
       <FilterPanelHeader
@@ -91,10 +134,13 @@ const activeEntityType = computed(() => slides.value[activeTabIdx.value])
         :categoriesSelector
         :createItems
         :isShowClose="isLaptop"
+        :mode="props.mode"
         :showReset
+        :title="headerTitle"
         :walletsSelector
+        @addActive="createEntity(activeEntityType as FilterEntityType)"
         @close="emit('close')"
-        @reset="reset"
+        @reset="draft?.reset()"
       />
 
       <div v-if="tabItems.length > 1 && !searchQuery" class="px-3 pb-px md:px-1">
@@ -121,30 +167,32 @@ const activeEntityType = computed(() => slides.value[activeTabIdx.value])
             >
               <FilterMoreForm
                 v-if="slide === 'more'"
-                v-model="pendingExtras"
+                :modelValue="draft!.pendingExtras.value" @update:modelValue="v => draft!.pendingExtras.value = v"
               />
               <WalletsSelector
                 v-else-if="slide === 'wallet'"
                 :ref="(el: any) => walletsSelector = el"
+                :activeItemId="isSelectMode ? props.activeWalletId : undefined"
                 :autofocus="false"
                 compactDesktop
-                currencyAboveAction
+                :currencyAboveAction="!isSelectMode"
                 groupingMenu
                 hideHeader
                 :searchQuery
-                :selectedIds="pendingWallets"
+                :selectedIds="isSelectMode ? undefined : draft!.pendingWallets.value"
                 withHeader
-                @selected="toggleWallet"
+                @selected="selectWallet"
               />
               <CategoriesSelectorModal
                 v-else
                 :ref="(el: any) => categoriesSelector = el"
+                :activeItemId="isSelectMode ? props.activeCategoryId : undefined"
                 :autofocus="false"
                 compactDesktop
                 hideHeader
                 :searchQuery
-                :selectedIds="pendingCategories"
-                @selected="toggleCategory"
+                :selectedIds="isSelectMode ? undefined : draft!.pendingCategories.value"
+                @selected="selectCategory"
               />
             </div>
           </div>
@@ -152,16 +200,17 @@ const activeEntityType = computed(() => slides.value[activeTabIdx.value])
       </div>
 
       <FilterSearchResults
-        v-if="searchQuery"
-        :pendingCategories
-        :pendingWallets
+        v-if="searchQuery && !isSelectMode"
+        :pendingCategories="draft!.pendingCategories.value"
+        :pendingWallets="draft!.pendingWallets.value"
         :searchQuery
-        @toggleCategory="toggleCategory"
-        @toggleWallet="toggleWallet"
+        @toggleCategory="draft!.toggleCategory"
+        @toggleWallet="draft!.toggleWallet"
       />
     </div>
 
     <div
+      v-if="!isSelectMode"
       class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2 md:px-1"
       :style="props.isExpanded !== undefined
         ? { transform: 'translateY(calc(-1 * var(--sheet-ty, 0px)))' }
@@ -173,7 +222,7 @@ const activeEntityType = computed(() => slides.value[activeTabIdx.value])
       />
       <div class="min-w-0 flex-1">
         <UiButtonAccent
-          :disabled="!hasPending"
+          :disabled="!draft!.hasPending.value"
           size="xl"
           @click="apply"
         >

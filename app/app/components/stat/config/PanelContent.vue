@@ -24,6 +24,7 @@ const switchPanels: Partial<Record<StatBlockPanelId, { path: StatConfigBooleanPa
   summary: [
     { path: 'summary.isPinned', title: t('stat.config.summary.pin') },
     { path: 'summary.isShowChart', title: t('stat.config.summary.showChart') },
+    { path: 'summary.isHideTotal', title: t('stat.config.summary.hideTotal') },
   ],
 }
 </script>

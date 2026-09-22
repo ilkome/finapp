@@ -23,6 +23,7 @@ export default {
 
   base: {
     add: 'Создать',
+    addAction: 'Добавить',
     addCategory: 'Добавить категорию',
     addWallet: 'Добавить кошелек',
     addWhat: 'Что добавить',
@@ -138,6 +139,7 @@ export default {
     },
     selectParent: 'Вся «{name}»',
     selectParentHint: 'со всеми подкатегориями',
+    singular: 'Категория',
     title: 'Категории',
     view: {
       childrenView: 'Дочерние категории',
@@ -453,6 +455,7 @@ export default {
         title: 'Средние суммы',
       },
       summary: {
+        hideTotal: 'Не показывать итог',
         pin: 'Закреплять при прокрутке',
         showChart: 'Показывать графики',
         title: 'Траты и доходы',
@@ -622,7 +625,9 @@ export default {
       offlinePreparing: 'Загрузка оффлайн-режима...',
       offlineReady: 'Доступно оффлайн',
       pending: 'Не синхронизировано: {count}',
+      updateAvailable: 'Обновление готово',
       updateReady: 'Обновление готово - нажмите, чтобы перезапустить',
+      updateReload: 'Обновить',
       updating: 'Скачивается обновление...',
       uploadError: 'Ошибка синхронизации - часть изменений не доходит до сервера',
     },
@@ -678,9 +683,6 @@ export default {
   trnForm: {
     adjustmentTitle: 'Корректировка',
     ariaCopyAmount: 'Копировать сумму',
-    category: {
-      select: 'Выбрать категорию',
-    },
     createTrn: 'Создать транзакцию',
     delete: {
       alert: 'Удалить транзакцию?',
@@ -710,9 +712,6 @@ export default {
       incomeModal: 'Перевод в кошелёк',
     },
     transferTitle: 'Перевод',
-    wallet: {
-      select: 'Выбрать кошелек',
-    },
   },
 
   trns: {
@@ -829,6 +828,7 @@ export default {
     search: {
       placeholder: 'Поиск',
     },
+    singular: 'Кошелек',
     sortTitle: 'Сортировать кошельки',
     title: 'Кошельки',
   },

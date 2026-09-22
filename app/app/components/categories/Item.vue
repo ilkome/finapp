@@ -13,6 +13,7 @@ export type CategoryItemProps = {
   hideLeftMenuButton?: boolean
   insideClasses?: string
   isExpanded?: boolean
+  isRoundIcon?: boolean
   isShowChevron?: boolean
   isShowChildrenCount?: boolean
   isShowParent?: boolean

@@ -4,12 +4,13 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 import { useStorage } from '@vueuse/core'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletsToggleMap } from '~/components/wallets/grouping'
+import type { WalletSortOrders, WalletsToggleMap } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
-import { applyToggle, buildWalletGroups } from '~/components/wallets/grouping'
+import { applyToggle, buildWalletGroups, sortWalletGroups } from '~/components/wallets/grouping'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
+import { useWalletGroupingOptions } from '~/components/wallets/useWalletGroupingOptions'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -58,7 +59,7 @@ const {
 const currencyFiltered = useStorage<CurrencyCode>(WALLET_STORAGE_KEYS.selectorCurrency, 'all')
 const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
   const q = searchQuery.value
-  return Object.keys(walletsStore.itemsComputed).filter((id) => {
+  return walletsStore.sortedIds.filter((id) => {
     const wallet = walletsStore.itemsComputed[id]
     if (!wallet || wallet.isArchived || props.disabledIds?.includes(id))
       return false
@@ -74,11 +75,14 @@ const hasNoMatches = computed(() =>
   !!searchQuery.value && selectedWalletsIdsWithCurrency.value.length === 0,
 )
 
-const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.selectorGroupedBy, 'none')
+const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
+// Same key the page's drag-to-reorder writes to - grouped wallets must sort the same way here.
+const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
 const walletGroups = computed(() => {
-  const groups = props.groupingMenu
+  const built = props.groupingMenu
     ? buildWalletGroups(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, groupedBy.value, false)
     : false
+  const groups = built ? sortWalletGroups(built, groupedBy.value, sortOrders.value) : false
   return groups
     ? Object.entries(groups).map(([key, group]) => ({
         ids: group.ids,
@@ -87,19 +91,18 @@ const walletGroups = computed(() => {
       }))
     : [{ ids: selectedWalletsIdsWithCurrency.value, key: 'all', label: '' }]
 })
-const toggledMap = useStorage<WalletsToggleMap>(WALLET_STORAGE_KEYS.selectorToggleMap, {})
+const toggledMap = useStorage<WalletsToggleMap>(WALLET_STORAGE_KEYS.toggleMap, {})
 const isGroupOpen = (key: string) => groupedBy.value === 'none' || (toggledMap.value[groupedBy.value]?.[key]?.show ?? true)
 function toggleGroup(key: string) {
   toggledMap.value = applyToggle(toggledMap.value, groupedBy.value, key)
 }
-const groupingItems = computed<DropdownMenuItem[]>(() => (['none', 'type', 'currency'] as const)
-  .filter(id => id !== 'currency' || walletsStore.currenciesUsed.length > 1)
-  .map(id => ({
-    checked: groupedBy.value === id,
-    label: t(id === 'currency' ? 'wallets.page.currencies' : `wallets.page.${id}`),
-    onSelect: () => { groupedBy.value = id },
-    type: 'checkbox' as const,
-  })))
+const groupingOptions = useWalletGroupingOptions()
+const groupingItems = computed<DropdownMenuItem[]>(() => groupingOptions.value.map(option => ({
+  checked: groupedBy.value === option.id,
+  label: option.label,
+  onSelect: () => { groupedBy.value = option.id },
+  type: 'checkbox' as const,
+})))
 
 const walletMenu = useWalletMenuItems()
 

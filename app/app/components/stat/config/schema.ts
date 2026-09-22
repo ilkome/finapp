@@ -172,6 +172,7 @@ export const ConfigSchema = z.object({
     layout: z.enum(['combined', 'split']),
   }),
   summary: z.object({
+    isHideTotal: z.boolean().default(false),
     isPinned: z.boolean(),
     isShow: z.boolean().default(true),
     isShowChart: z.boolean(),
@@ -270,6 +271,7 @@ export const defaultConfig: MiniItemConfig = {
   },
 
   summary: {
+    isHideTotal: false,
     isPinned: true,
     isShow: true,
     isShowChart: true,

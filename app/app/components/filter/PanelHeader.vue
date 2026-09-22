@@ -9,14 +9,23 @@ const props = defineProps<{
   categoriesSelector: InstanceType<typeof CategoriesSelectorModal> | null
   createItems: DropdownMenuItem[]
   isShowClose?: boolean
+  // 'select': the transaction form's single-pick sheet. Its per-slide actions (add, grouping,
+  // view, folders, favorites) collapse into one overflow menu instead of a row of icons, so the
+  // close button always has room next to the title.
+  mode?: 'filter' | 'select'
   showReset: boolean
+  // Overrides the "Фильтры" title - the single-pick sheet shows the active slide's name instead.
+  title?: string
   walletsSelector: InstanceType<typeof WalletsSelector> | null
 }>()
 
 const emit = defineEmits<{
+  addActive: []
   close: []
   reset: []
 }>()
+
+const isSelectMode = computed(() => props.mode === 'select')
 
 const search = defineModel<string>('search', { default: '' })
 
@@ -38,6 +47,33 @@ function toggleCategoriesView() {
     selector.view = selector.view === 'list' ? 'grid' : 'list'
 }
 
+// The select-mode header hides the per-slide icons behind one overflow menu, scoped to
+// whichever slide (wallet/category) is active.
+const overflowItems = computed<DropdownMenuItem[][]>(() => {
+  if (props.activeSlide === 'wallet' && props.walletsSelector) {
+    return [[
+      { children: props.walletsSelector.groupingItems, icon: 'lucide:list-tree', label: t('base.toggleGrouping') },
+      { icon: 'lucide:plus', label: t('base.addAction'), onSelect: () => emit('addActive') },
+    ]]
+  }
+  if (props.activeSlide === 'category' && props.categoriesSelector) {
+    const selector = props.categoriesSelector
+    return [[
+      ...(selector.filter === 'all'
+        ? [
+            { icon: selector.view === 'list' ? 'lucide:layout-grid' : 'lucide:list', label: t('base.toggleView'), onSelect: toggleCategoriesView },
+            { icon: selector.folderIcon, label: t('base.toggleFolders'), onSelect: () => selector.toggleAll() },
+          ]
+        : []),
+      ...(selector.hasFavoritesOrRecent
+        ? [{ checked: selector.filter === 'favorites', icon: 'lucide:star', label: t('categories.favorite'), onSelect: () => selector.toggleFavoritesFilter(), type: 'checkbox' as const }]
+        : []),
+      { icon: 'lucide:plus', label: t('base.addAction'), onSelect: () => emit('addActive') },
+    ]]
+  }
+  return []
+})
+
 function closeSearch() {
   search.value = ''
   isSearchOpen.value = false
@@ -47,61 +83,72 @@ function closeSearch() {
 <template>
   <div class="relative flex min-h-12 items-center gap-1 px-3 md:px-1">
     <div class="grow font-tertiary text-lg leading-none font-semibold">
-      {{ t('base.filters') }}
+      {{ props.title ?? t('base.filters') }}
     </div>
 
-    <template v-if="props.activeSlide === 'wallet' && props.walletsSelector">
+    <template v-if="!isSelectMode">
+      <template v-if="props.activeSlide === 'wallet' && props.walletsSelector">
+        <UDropdownMenu
+          :content="{ align: 'end' }"
+          :items="props.walletsSelector.groupingItems"
+          :modal="false"
+        >
+          <UiTriggerButton icon="lucide:list-tree" :title="t('base.toggleGrouping')" />
+        </UDropdownMenu>
+      </template>
+
+      <template v-if="props.activeSlide === 'category' && props.categoriesSelector">
+        <UiTriggerButton
+          v-if="props.categoriesSelector.filter === 'all'"
+          :icon="props.categoriesSelector.view === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
+          :title="t('base.toggleView')"
+          @click="toggleCategoriesView"
+        />
+        <UiTriggerButton
+          v-if="props.categoriesSelector.filter === 'all'"
+          :icon="props.categoriesSelector.folderIcon"
+          :title="t('base.toggleFolders')"
+          @click="props.categoriesSelector.toggleAll()"
+        />
+        <UiTriggerButton
+          v-if="props.categoriesSelector.hasFavoritesOrRecent"
+          icon="lucide:star"
+          :isActive="props.categoriesSelector.filter === 'favorites'"
+          :title="t('categories.favorite')"
+          @click="props.categoriesSelector.toggleFavoritesFilter()"
+        />
+      </template>
+
       <UDropdownMenu
         :content="{ align: 'end' }"
-        :items="props.walletsSelector.groupingItems"
+        :items="props.createItems"
         :modal="false"
+        :ui="{ content: 'min-w-52' }"
       >
-        <UiTriggerButton icon="lucide:list-tree" :title="t('base.toggleGrouping')" />
+        <UiTriggerButton icon="lucide:plus" :title="t('base.addWhat')" />
       </UDropdownMenu>
-    </template>
 
-    <template v-if="props.activeSlide === 'category' && props.categoriesSelector">
       <UiTriggerButton
-        v-if="props.categoriesSelector.filter === 'all'"
-        :icon="props.categoriesSelector.view === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
-        :title="t('base.toggleView')"
-        @click="toggleCategoriesView"
-      />
-      <UiTriggerButton
-        v-if="props.categoriesSelector.filter === 'all'"
-        :icon="props.categoriesSelector.folderIcon"
-        :title="t('base.toggleFolders')"
-        @click="props.categoriesSelector.toggleAll()"
-      />
-      <UiTriggerButton
-        v-if="props.categoriesSelector.hasFavoritesOrRecent"
-        icon="lucide:star"
-        :isActive="props.categoriesSelector.filter === 'favorites'"
-        :title="t('categories.favorite')"
-        @click="props.categoriesSelector.toggleFavoritesFilter()"
+        v-if="props.showReset"
+        icon="lucide:filter-x"
+        :title="t('base.reset')"
+        @click="emit('reset')"
       />
     </template>
 
     <UDropdownMenu
+      v-if="isSelectMode && overflowItems.length"
       :content="{ align: 'end' }"
-      :items="props.createItems"
+      :items="overflowItems"
       :modal="false"
-      :ui="{ content: 'min-w-52' }"
     >
-      <UiTriggerButton icon="lucide:plus" :title="t('base.addWhat')" />
+      <UiTriggerButton icon="lucide:ellipsis-vertical" :title="t('base.moreOptions')" />
     </UDropdownMenu>
-
-    <UiTriggerButton
-      v-if="props.showReset"
-      icon="lucide:filter-x"
-      :title="t('base.reset')"
-      @click="emit('reset')"
-    />
 
     <UiTriggerButton icon="lucide:search" :title="t('base.search')" @click="openSearch" />
 
     <UiTriggerButton
-      v-if="props.isShowClose"
+      v-if="props.isShowClose || isSelectMode"
       icon="lucide:x"
       :title="t('base.close')"
       @click="emit('close')"
