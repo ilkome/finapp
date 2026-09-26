@@ -6,7 +6,8 @@ const disconnect = vi.fn(async () => {})
 const disconnectAndClear = vi.fn(async () => {})
 const getUploadQueueStats = vi.fn(async () => ({ count: 0, size: null }))
 const init = vi.fn(async () => {})
-const createDatabase = vi.fn()
+// A plain array, not vi.fn(): the db is a singleton built once, and vitest clears mock calls between tests.
+const createdWith: unknown[] = []
 
 vi.mock('@powersync/web', () => {
   class PowerSyncDatabase {
@@ -16,7 +17,7 @@ vi.mock('@powersync/web', () => {
     init = init
 
     constructor(options: unknown) {
-      createDatabase(options)
+      createdWith.push(options)
     }
   }
   return { LogLevels: { debug: 20, error: 50, info: 30, trace: 10, warn: 40 }, PowerSyncDatabase }
@@ -57,16 +58,16 @@ describe('pausePowerSync', () => {
 describe('getPowerSyncDb', () => {
   it('uses the PowerSync 2 database options API', async () => {
     await getPowerSyncDb()
-    expect(createDatabase).toHaveBeenCalledWith({
+    expect(createdWith).toEqual([{
       database: { dbFilename: 'finapp.db', worker: expect.any(String) },
       logger: { log: expect.any(Function) },
       schema: {},
       sync: { worker: expect.any(String) },
-    })
+    }])
   })
 
   it('downgrades network failures to warn and keeps other errors at error', async () => {
-    const { logger } = createDatabase.mock.calls[0]![0] as { logger: { log: (r: { error?: unknown, level: number, message: string }) => void } }
+    const { logger } = createdWith[0] as { logger: { log: (r: { error?: unknown, level: number, message: string }) => void } }
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 

@@ -1,6 +1,11 @@
 packages:
   - app
   - docs
+
+overrides:
+  # fontless (via @nuxt/fonts) still pins a vulnerable esbuild (GHSA-g7r4-m6w7-qqqr).
+  esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
+
 allowBuilds:
   '@journeyapps/wa-sqlite': true
   '@parcel/watcher': true

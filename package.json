@@ -41,15 +41,15 @@
     "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm --filter @finapp/app check:deps"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^9.3.0",
+    "@antfu/eslint-config": "^9.5.1",
     "@nuxt/eslint-config": "^1.17.0",
-    "eslint": "^10.9.0",
+    "eslint": "^10.11.0",
     "eslint-flat-config-utils": "^3.2.0",
     "eslint-plugin-format": "^2.0.1",
-    "eslint-plugin-perfectionist": "^5.10.1",
+    "eslint-plugin-perfectionist": "^5.12.1",
     "eslint-plugin-storybook": "^10.6.0",
     "eslint-plugin-tailwindcss": "^4.4.0",
-    "prettier": "^3.9.6",
+    "prettier": "^3.9.9",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3"
