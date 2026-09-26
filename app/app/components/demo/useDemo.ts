@@ -1,4 +1,4 @@
-import { addMonths, getMonth, startOfMonth, startOfYear, subYears } from 'date-fns'
+import { addMonths, getMonth, startOfMonth, startOfYear, subMonths, subYears } from 'date-fns'
 import localforage from 'localforage'
 import { localInstantToCivilDay } from '~~/utils/date/civil'
 
@@ -8,9 +8,10 @@ import type { TrnItem, Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { currencies as currencyCatalog } from '~/components/currencies/currencies'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import currencies from '~/components/demo/currencies.json'
-import { data, expenseRules, incomeRules, oneOffExpenses, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub } from '~/components/demo/data'
+import { data, debtMoves, expenseRules, foreignCurrency, incomeRules, mainCurrency, monthlySettlements, oneOffExpenses, randomCryptoCurrencies, randomFiatCurrencies, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub, walletRandomCrypto, walletRandomFiat, walletUsd } from '~/components/demo/data'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -68,6 +69,16 @@ function roundAmount(n: number): number {
   return Math.round(n / 10) * 10
 }
 
+const rates = currencies as Record<string, number>
+const precisionOf = new Map(currencyCatalog.map(c => [c.code, c.precision ?? 2]))
+
+/** Converts at the demo rates (units per 1 USD) and rounds to what the currency can show. */
+function convert(amount: number, from: string, to: string): number {
+  const value = from === to ? amount : amount / (rates[from] ?? 1) * (rates[to] ?? 1)
+  const factor = 10 ** (precisionOf.get(to) ?? 2)
+  return Math.round(value * factor) / factor
+}
+
 /** Random timestamp within a specific month of a given year. */
 function randDateInMonth(year: number, month: number): number {
   const start = new Date(year, month, 1).getTime()
@@ -100,17 +111,42 @@ export function useDemo() {
       }, {} as Wallets),
     }
 
-    useUserStore().setUserBaseCurrency('USD')
+    const main = mainCurrency[locale]
+    const foreign = foreignCurrency[locale]
+    for (const wallet of Object.values(translatedData.wallets)) {
+      if (wallet.currency === 'RUB')
+        wallet.currency = main
+    }
+    Object.assign(translatedData.wallets[walletUsd]!, { currency: foreign, name: locale === 'ru' ? `Счёт ${foreign}` : `${foreign} account` })
+    /** A RUB-scale amount from data.ts in the currency of the wallet it lands on. */
+    const money = (rubScale: number, walletId: string) => convert(roundAmount(rubScale), 'RUB', translatedData.wallets[walletId]!.currency)
+    /** A RUB-scale round figure (a limit, a principal) kept round in the main currency. */
+    const round = (rubScale: number, currency = main) => {
+      const value = convert(rubScale, 'RUB', currency)
+      const step = currency === 'RUB' ? 1000 : 100
+      return Math.round(value / step) * step
+    }
+
+    const fiat = randItem(randomFiatCurrencies.filter(code => code !== foreign))
+    Object.assign(translatedData.wallets[walletRandomFiat]!, { currency: fiat, name: locale === 'ru' ? `Счёт ${fiat}` : `${fiat} account` })
+    const crypto = randItem(Object.keys(randomCryptoCurrencies))
+    Object.assign(translatedData.wallets[walletRandomCrypto]!, { currency: crypto, name: randomCryptoCurrencies[crypto] })
+
+    const creditLimit = round(300000)
+    Object.assign(translatedData.wallets[walletCreditRub]!, {
+      creditLimit,
+      desc: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${creditLimit.toLocaleString(locale)}`,
+    })
+
+    useUserStore().setUserBaseCurrency(main)
     currenciesStore.setRates(currencies)
     categoriesStore.setCategories(translatedData.categories)
     walletsStore.setWallets(translatedData.wallets)
 
     const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
     const endDate = Date.now()
-    const activeWalletIds = walletsStore.sortedIds.filter(id => !data.wallets[id]?.isArchived)
-    // Everyday expenses are paid from the RUB spending wallets. Amounts are RUB-scale, so leaving
-    // them on the USD/EUR/crypto wallets would record e.g. a 5000 grocery as $5000 and wreck the
-    // base-currency stats and budgets. Income/transfers still use the other wallets.
+    // Everyday expenses are paid from the main-currency wallets; the foreign and crypto wallets are
+    // only reached by transfers and the rules that name them.
     const spendingWalletIds = [walletCashRub, walletDebitRub, walletCreditRub]
 
     const trns: Trns = {}
@@ -131,8 +167,8 @@ export function useDemo() {
         }
       }
 
-      const amount = roundAmount(randInt(rule.min, rule.max))
       const walletId = rule.walletIds ? randItem(rule.walletIds) : randItem(spendingWalletIds)
+      const amount = money(randInt(rule.min, rule.max), walletId)
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
@@ -157,8 +193,8 @@ export function useDemo() {
         if (date < startDate || date > endDate)
           continue
 
-        const amount = roundAmount(randInt(oneOff.min, oneOff.max))
         const walletId = oneOff.walletIds ? randItem(oneOff.walletIds) : randItem(spendingWalletIds)
+        const amount = money(randInt(oneOff.min, oneOff.max), walletId)
 
         trns[trnIndex++] = {
           amount,
@@ -184,7 +220,7 @@ export function useDemo() {
         const isRaised = monthIndex >= salaryConfig.raiseAfterMonths
         const min = isRaised ? salaryConfig.raisedMin : salaryConfig.startMin
         const max = isRaised ? salaryConfig.raisedMax : salaryConfig.startMax
-        const amount = roundAmount(randInt(min, max))
+        const amount = money(randInt(min, max), salaryConfig.walletId)
 
         trns[trnIndex++] = {
           amount,
@@ -205,8 +241,8 @@ export function useDemo() {
     const remainingIncome = config.incomeCount - salaryMonths
     for (let i = 0; i < Math.max(0, remainingIncome); i++) {
       const rule = weightedPick(incomeRules)
-      const amount = roundAmount(randInt(rule.min, rule.max))
-      const walletId = rule.walletIds ? randItem(rule.walletIds) : randItem(activeWalletIds)
+      const walletId = rule.walletIds ? randItem(rule.walletIds) : walletDebitRub
+      const amount = money(randInt(rule.min, rule.max), walletId)
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
@@ -223,27 +259,18 @@ export function useDemo() {
     // --- Transfers ---
     for (let i = 0; i < config.transferCount; i++) {
       const rule = weightedPick(transferRules)
-      const incomeAmount = roundAmount(randInt(rule.incomeAmountMin, rule.incomeAmountMax))
-
-      // Compute expense amount based on currency pair
-      const expenseWallet = data.wallets[rule.expenseWalletId]!
-      const incomeWallet = data.wallets[rule.incomeWalletId]!
-      let expenseAmount = incomeAmount
-      if (expenseWallet.currency !== incomeWallet.currency) {
-        const expenseRate = (currencies as Record<string, number>)[expenseWallet.currency] ?? 1
-        const incomeRate = (currencies as Record<string, number>)[incomeWallet.currency] ?? 1
-        expenseAmount = roundAmount(Math.round(incomeAmount * expenseRate / incomeRate))
-      }
-
+      const from = translatedData.wallets[rule.expenseWalletId]!.currency
+      const to = translatedData.wallets[rule.incomeWalletId]!.currency
+      const expenseAmount = money(randInt(rule.amountMin, rule.amountMax), rule.expenseWalletId)
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
         categoryId: 'transfer',
         date: startDate + random() * (endDate - startDate),
         ...(desc ? { desc } : {}),
-        expenseAmount: Math.max(1, expenseAmount),
+        expenseAmount,
         expenseWalletId: rule.expenseWalletId,
-        incomeAmount,
+        incomeAmount: convert(expenseAmount, from, to),
         incomeWalletId: rule.incomeWalletId,
         type: TrnType.Transfer,
         updatedAt: Date.now(),
@@ -252,8 +279,8 @@ export function useDemo() {
 
     // --- Adjustments ---
     for (let i = 0; i < config.adjustmentsCount; i++) {
-      const amount = roundAmount(randInt(1000, 20000))
-      const walletId = randItem(activeWalletIds)
+      const walletId = randItem(spendingWalletIds)
+      const amount = money(randInt(1000, 20000), walletId)
       const type = random() < 0.5 ? TrnType.Income : TrnType.Expense
 
       trns[trnIndex++] = {
@@ -265,6 +292,56 @@ export function useDemo() {
         updatedAt: Date.now(),
         walletId,
       } satisfies TrnItem
+    }
+
+    // --- Debts between people ---
+    const debtBalances = new Map<string, number>()
+    for (const move of debtMoves) {
+      const held = debtBalances.get(move.walletId) ?? 0
+      const amount = move.amount === 0 ? Math.abs(held) : round(move.amount)
+      debtBalances.set(move.walletId, held + (move.direction === 'out' ? amount : -amount))
+      const [from, to] = move.direction === 'out' ? [walletDebitRub, move.walletId] : [move.walletId, walletDebitRub]
+      trns[trnIndex++] = {
+        categoryId: 'transfer',
+        date: subMonths(new Date(endDate), move.monthsAgo).getTime(),
+        expenseAmount: amount,
+        expenseWalletId: from,
+        incomeAmount: amount,
+        incomeWalletId: to,
+        type: TrnType.Transfer,
+        updatedAt: Date.now(),
+      } satisfies TrnItem
+    }
+
+    // --- Monthly settlements: a month's net outflow of cash and the credit card ---
+    for (const settlement of monthlySettlements) {
+      const outflowByMonth = new Map<number, number>()
+      for (const id in trns) {
+        const trn = trns[id]!
+        if (trn.type === TrnType.Transfer || trn.walletId !== settlement.walletId)
+          continue
+        const month = startOfMonth(new Date(trn.date)).getTime()
+        outflowByMonth.set(month, (outflowByMonth.get(month) ?? 0) + (trn.type === TrnType.Expense ? trn.amount : -trn.amount))
+      }
+      for (const [month, outflow] of outflowByMonth) {
+        const date = addMonths(new Date(month), settlement.monthsLater).getTime() + (settlement.day - 1) * 24 * 60 * 60 * 1000
+        // Rounded up: a little is left over, as with a real withdrawal or repayment.
+        const step = main === 'RUB' ? 1000 : 10
+        const amount = Math.ceil(outflow / step) * step
+        if (date > endDate || amount <= 0)
+          continue
+        trns[trnIndex++] = {
+          categoryId: 'transfer',
+          date,
+          desc: settlement.desc[locale],
+          expenseAmount: amount,
+          expenseWalletId: walletDebitRub,
+          incomeAmount: amount,
+          incomeWalletId: settlement.walletId,
+          type: TrnType.Transfer,
+          updatedAt: Date.now(),
+        } satisfies TrnItem
+      }
     }
 
     // Civil-day model: snap each generated instant to its local calendar day (UTC-midnight)

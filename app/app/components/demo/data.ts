@@ -71,6 +71,24 @@ export const walletDepositEur = 'demo_w_deposit_eur'
 export const walletCrypto = 'demo_w_crypto'
 export const walletDebt = 'demo_w_debt'
 export const walletSavings = 'demo_w_savings'
+export const walletEth = 'demo_w_eth'
+export const walletUsdt = 'demo_w_usdt'
+export const walletRandomFiat = 'demo_w_random_fiat'
+export const walletRandomCrypto = 'demo_w_random_crypto'
+export const walletLent = 'demo_w_lent'
+export const walletBorrowed = 'demo_w_borrowed'
+
+/**
+ * Every amount in this file is RUB-scale. The generator converts it at the demo rates into the
+ * currency of the wallet it lands on: RUB wallets take the locale's main currency and the dollar
+ * account its foreign one, so an English demo has no roubles.
+ */
+export const mainCurrency = { en: 'USD', ru: 'RUB' }
+export const foreignCurrency = { en: 'GBP', ru: 'USD' }
+
+/** One wallet of each list gets a random currency per generation, to show what else the app handles. */
+export const randomFiatCurrencies = ['GBP', 'CNY', 'JPY', 'CHF', 'TRY', 'KZT']
+export const randomCryptoCurrencies: Record<string, string> = { DOGE: 'Dogecoin', SOL: 'Solana', TON: 'Toncoin', XRP: 'XRP' }
 
 export const data: {
   categories: Record<CategoryId, DemoCategoryItem>
@@ -397,6 +415,15 @@ export const data: {
   },
 
   wallets: {
+    [walletBorrowed]: {
+      color: '#e11d48',
+      currency: 'RUB',
+      desc: { en: 'Paying back in parts', ru: 'Отдаю частями' },
+      name: { en: 'Borrowed from parents', ru: 'Занял у родителей' },
+      order: 24,
+      type: 'debt',
+      updatedAt: 1585408895295,
+    },
     [walletCashRub]: {
       color: '#3b82f6',
       currency: 'RUB',
@@ -419,10 +446,10 @@ export const data: {
     },
     [walletCrypto]: {
       color: '#f97316',
-      currency: 'USD',
-      desc: { en: 'Crypto portfolio', ru: 'Крипто портфель' },
-      name: { en: 'Crypto', ru: 'Крипто' },
-      order: 6,
+      currency: 'BTC',
+      desc: { en: 'Long-term holding', ru: 'Долгосрочное хранение' },
+      name: { en: 'Bitcoin', ru: 'Биткоин' },
+      order: 10,
       type: 'crypto',
       updatedAt: 1585408895295,
     },
@@ -438,10 +465,10 @@ export const data: {
     [walletDebt]: {
       color: '#64748b',
       currency: 'RUB',
-      desc: { en: 'Borrowed to a friend', ru: 'Одолжил другу' },
+      desc: { en: 'Returned in full', ru: 'Вернули полностью' },
       isArchived: true,
-      name: { en: 'Debt', ru: 'Долг' },
-      order: 7,
+      name: { en: 'Lent to a friend', ru: 'Одолжил другу' },
+      order: 25,
       type: 'debt',
       updatedAt: 1585408895295,
     },
@@ -454,13 +481,49 @@ export const data: {
       type: 'deposit',
       updatedAt: 1585408895295,
     },
+    [walletEth]: {
+      color: '#6366f1',
+      currency: 'ETH',
+      desc: { en: '', ru: '' },
+      name: { en: 'Ethereum', ru: 'Эфириум' },
+      order: 11,
+      type: 'crypto',
+      updatedAt: 1585408895295,
+    },
+    [walletLent]: {
+      color: '#14b8a6',
+      currency: 'RUB',
+      desc: { en: 'Returns in parts', ru: 'Возвращает частями' },
+      name: { en: 'Lent to Alex', ru: 'Одолжил Саше' },
+      order: 23,
+      type: 'debt',
+      updatedAt: 1585408895295,
+    },
+    [walletRandomCrypto]: {
+      color: '#a855f7',
+      currency: 'SOL',
+      desc: { en: '', ru: '' },
+      name: { en: 'Altcoin', ru: 'Альткоин' },
+      order: 13,
+      type: 'crypto',
+      updatedAt: 1585408895295,
+    },
+    [walletRandomFiat]: {
+      color: '#0ea5e9',
+      currency: 'GBP',
+      desc: { en: '', ru: '' },
+      name: { en: 'Foreign currency', ru: 'Иностранная валюта' },
+      order: 7,
+      type: 'cashless',
+      updatedAt: 1585408895295,
+    },
     [walletSavings]: {
       color: '#8b5cf6',
       currency: 'USD',
       desc: { en: 'Emergency fund', ru: 'Фонд на непредвиденные расходы' },
       isExcludeInTotal: true,
       name: { en: 'Savings', ru: 'Накопления' },
-      order: 8,
+      order: 6,
       type: 'deposit',
       updatedAt: 1585408895295,
     },
@@ -471,6 +534,15 @@ export const data: {
       name: { en: 'Dollar account', ru: 'Долларовый счет' },
       order: 4,
       type: 'cashless',
+      updatedAt: 1585408895295,
+    },
+    [walletUsdt]: {
+      color: '#10b981',
+      currency: 'USDT',
+      desc: { en: 'Stablecoin', ru: 'Стейблкоин' },
+      name: { en: 'Tether', ru: 'Tether' },
+      order: 12,
+      type: 'crypto',
       updatedAt: 1585408895295,
     },
   },
@@ -556,21 +628,47 @@ export type DemoIncomeRule = {
   weight: number
 }
 
+/**
+ * Money lent and borrowed between people, as transfers with the debit card: `out` leaves the card
+ * (lending, or paying a borrowed debt back), `in` comes back to it. A debt wallet is positive while
+ * someone owes you and negative while you owe.
+ */
+export const debtMoves: { amount: number, direction: 'in' | 'out', monthsAgo: number, walletId: WalletId }[] = [
+  { amount: 40000, direction: 'out', monthsAgo: 18, walletId: walletDebt },
+  { amount: 25000, direction: 'in', monthsAgo: 15, walletId: walletDebt },
+  // 0: whatever is still owed, so the debt closes exactly after rounding into the locale's currency.
+  { amount: 0, direction: 'in', monthsAgo: 12, walletId: walletDebt },
+  { amount: 60000, direction: 'out', monthsAgo: 5, walletId: walletLent },
+  { amount: 20000, direction: 'in', monthsAgo: 2, walletId: walletLent },
+  { amount: 100000, direction: 'in', monthsAgo: 7, walletId: walletBorrowed },
+  { amount: 30000, direction: 'out', monthsAgo: 3, walletId: walletBorrowed },
+]
+
+/**
+ * Wallets topped up from the debit card once a month by a month's net outflow, so the credit card
+ * stays within its limit and cash does not drift.
+ */
+export const monthlySettlements: { day: number, desc: LocaleString, monthsLater: number, walletId: WalletId }[] = [
+  // Cash is withdrawn ahead for the month, the card is repaid after its statement.
+  { day: 1, desc: { en: 'ATM withdrawal', ru: 'Снятие в банкомате' }, monthsLater: 0, walletId: walletCashRub },
+  { day: 20, desc: { en: 'Credit card repayment', ru: 'Погашение кредитки' }, monthsLater: 1, walletId: walletCreditRub },
+]
+
 export const salaryConfig = {
   categoryId: catSalary,
   desc: { en: 'Salary', ru: 'Зарплата' } as LocaleString,
   /** After this many months from start, salary gets a raise */
   raiseAfterMonths: 12,
-  raisedMax: 200000,
-  raisedMin: 170000,
-  startMax: 160000,
-  startMin: 130000,
+  raisedMax: 150000,
+  raisedMin: 120000,
+  startMax: 110000,
+  startMin: 80000,
   walletId: walletDebitRub,
 }
 
 export const incomeRules: DemoIncomeRule[] = [
   { categoryId: catFreelance, max: 60000, min: 10000, weight: 3 },
-  { categoryId: catInvestments, desc: { en: 'Dividends', ru: 'Дивиденды' }, max: 30000, min: 5000, walletIds: [walletUsd, walletCrypto], weight: 2 },
+  { categoryId: catInvestments, desc: { en: 'Dividends', ru: 'Дивиденды' }, max: 40000, min: 5000, walletIds: [walletUsd], weight: 2 },
   { categoryId: catCashback, max: 3000, min: 100, walletIds: [walletDebitRub, walletCreditRub], weight: 4 },
 ]
 
@@ -578,23 +676,22 @@ export const incomeRules: DemoIncomeRule[] = [
  * Transfer scenarios between wallets.
  */
 export type DemoTransferRule = {
+  /** Charged to the paying wallet; the receiving side is converted at demo rates. */
+  amountMax: number
+  amountMin: number
   desc?: LocaleString
   expenseWalletId: string
-  incomeAmountMax: number
-  incomeAmountMin: number
   incomeWalletId: string
   weight: number
 }
 
 export const transferRules: DemoTransferRule[] = [
-  // Card to cash
-  { desc: { en: 'ATM withdrawal', ru: 'Снятие в банкомате' }, expenseWalletId: walletDebitRub, incomeAmountMax: 20000, incomeAmountMin: 3000, incomeWalletId: walletCashRub, weight: 4 },
-  // Card to savings
-  { desc: { en: 'Monthly savings', ru: 'Ежемесячные накопления' }, expenseWalletId: walletDebitRub, incomeAmountMax: 500, incomeAmountMin: 100, incomeWalletId: walletSavings, weight: 3 },
-  // Card to crypto
-  { desc: { en: 'Buy crypto', ru: 'Покупка крипто' }, expenseWalletId: walletUsd, incomeAmountMax: 500, incomeAmountMin: 50, incomeWalletId: walletCrypto, weight: 2 },
-  // Card to deposit
-  { desc: { en: 'Top up deposit', ru: 'Пополнение вклада' }, expenseWalletId: walletUsd, incomeAmountMax: 1000, incomeAmountMin: 200, incomeWalletId: walletDepositEur, weight: 2 },
-  // Credit card repayment
-  { desc: { en: 'Credit repayment', ru: 'Погашение кредитки' }, expenseWalletId: walletDebitRub, incomeAmountMax: 50000, incomeAmountMin: 10000, incomeWalletId: walletCreditRub, weight: 3 },
+  { amountMax: 50000, amountMin: 10000, desc: { en: 'Monthly savings', ru: 'Ежемесячные накопления' }, expenseWalletId: walletDebitRub, incomeWalletId: walletSavings, weight: 3 },
+  { amountMax: 90000, amountMin: 30000, desc: { en: 'Currency exchange', ru: 'Покупка валюты' }, expenseWalletId: walletDebitRub, incomeWalletId: walletUsd, weight: 3 },
+  { amountMax: 50000, amountMin: 5000, desc: { en: 'Buy bitcoin', ru: 'Покупка биткоина' }, expenseWalletId: walletUsd, incomeWalletId: walletCrypto, weight: 2 },
+  { amountMax: 30000, amountMin: 5000, desc: { en: 'Buy ether', ru: 'Покупка эфира' }, expenseWalletId: walletUsd, incomeWalletId: walletEth, weight: 1 },
+  { amountMax: 40000, amountMin: 10000, desc: { en: 'Buy USDT', ru: 'Покупка USDT' }, expenseWalletId: walletUsd, incomeWalletId: walletUsdt, weight: 1 },
+  { amountMax: 20000, amountMin: 3000, expenseWalletId: walletUsd, incomeWalletId: walletRandomCrypto, weight: 1 },
+  { amountMax: 30000, amountMin: 5000, desc: { en: 'Currency exchange', ru: 'Обмен валюты' }, expenseWalletId: walletDebitRub, incomeWalletId: walletRandomFiat, weight: 1 },
+  { amountMax: 90000, amountMin: 20000, desc: { en: 'Top up deposit', ru: 'Пополнение вклада' }, expenseWalletId: walletDebitRub, incomeWalletId: walletDepositEur, weight: 2 },
 ]
