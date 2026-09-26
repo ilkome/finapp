@@ -51,12 +51,10 @@ describe('useTrnsStore', () => {
     h.auth.uid.value = 'u1'
     localStorage.clear()
     h.watchCallbacks.length = 0
-    h.watchTable.mockClear()
     h.upsertRow.mockReset().mockResolvedValue(undefined)
     h.upsertRows.mockReset().mockResolvedValue(undefined)
     h.deleteRow.mockReset().mockResolvedValue(undefined)
     h.deleteRows.mockReset().mockResolvedValue(undefined)
-    toastAddMock.mockClear()
   })
 
   describe('hydration via watch', () => {

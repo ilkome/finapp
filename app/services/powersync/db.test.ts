@@ -42,11 +42,6 @@ describe('waitForUploadsDrained', () => {
 })
 
 describe('pausePowerSync', () => {
-  beforeEach(() => {
-    disconnect.mockClear()
-    disconnectAndClear.mockClear()
-  })
-
   it('disconnects but keeps local data (never disconnectAndClear)', async () => {
     await getPowerSyncDb() // populate the singleton so pausePowerSync has a db
     await pausePowerSync()

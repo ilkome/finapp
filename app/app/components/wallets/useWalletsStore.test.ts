@@ -51,11 +51,9 @@ describe('useWalletsStore', () => {
     setActivePinia(createPinia())
     h.demo.value = false
     h.watchCallbacks.length = 0
-    h.watchTable.mockClear()
     h.upsertRow.mockReset().mockResolvedValue(undefined)
     h.upsertRows.mockReset().mockResolvedValue(undefined)
     h.deleteRow.mockReset().mockResolvedValue(undefined)
-    toastAddMock.mockClear()
   })
 
   describe('hydration via watch', () => {

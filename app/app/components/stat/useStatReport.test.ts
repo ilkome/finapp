@@ -239,7 +239,6 @@ function createStatReport(overrides?: {
 // ---------------------------------------------------------------------------
 describe('useStatReport', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
     categoryBreakdownMocks.buildCategoriesSeries.mockReturnValue([])
     computeTotalMock.mockReturnValue({ ...zeroTotal })
     getStoreTrnsIdsMock.mockImplementation(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
