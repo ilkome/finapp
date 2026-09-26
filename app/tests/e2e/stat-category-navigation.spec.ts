@@ -6,7 +6,6 @@ import { openDemo } from './helpers'
 
 const T = {
   descriptionFilter: /^(Only with description|Только с описанием)$/,
-  previous: /^(Previous|Назад)$/,
 }
 
 async function bootstrapDemo(page: Page, context: BrowserContext) {
@@ -48,7 +47,9 @@ test.describe('Statistics category navigation', () => {
     await expect(page).toHaveURL(/\/categories\/demo_cat_food_groceries\?.*statSnapshot=/)
     await expect(page.locator('[data-stat-date-range]').first()).toHaveText(dashboardPeriod!.trim())
 
-    await page.getByRole('button', { name: T.previous }).nth(1).click()
+    // The built-in view shows period arrows only on wide content, so change the period through the picker.
+    await page.locator('[data-stat-date-range]').first().click()
+    await page.getByRole('button', { name: /^(Month|Месяц)$/ }).first().click()
     await expect(page.locator('[data-stat-date-range]').first()).not.toHaveText(dashboardPeriod!.trim())
 
     await page.goBack()
