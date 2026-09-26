@@ -75,6 +75,44 @@ export function deriveLoan(
   return rate > 0 ? derive(rate) : { ...probe, projectionRate: null }
 }
 
+type DeriveInputs = {
+  loan: LoanItem
+  overrides: ScheduleOverride[]
+  summary: LoanSummary
+  today: number
+  trnsKey: string
+  walletBalance: number
+}
+
+/**
+ * `deriveLoan` with a per-loan cache: any trn edit rebuilds the credit-trn lists and wallet
+ * balances, but a loan whose own inputs did not change keeps its previous summary instead of
+ * regenerating the whole schedule. `loan` and `overrides` compare by reference (the store keeps
+ * them stable), the loan's trns by content.
+ */
+export function createDeriveLoanMemo() {
+  const cache = new Map<LoanId, DeriveInputs>()
+
+  return function derive(
+    loanId: LoanId,
+    loan: LoanItem,
+    overrides: ScheduleOverride[],
+    trns: LoanTrn[],
+    walletBalance: number,
+    today: number,
+  ): LoanSummary {
+    const trnsKey = trns.map(trn => `${trn.id}:${trn.amount}:${trn.date}:${trn.kind}`).join('|')
+    const hit = cache.get(loanId)
+    if (hit && hit.loan === loan && hit.overrides === overrides && hit.trnsKey === trnsKey
+      && hit.walletBalance === walletBalance && hit.today === today) {
+      return hit.summary
+    }
+    const summary = deriveLoan(loan, overrides, trns, walletBalance, today)
+    cache.set(loanId, { loan, overrides, summary, today, trnsKey, walletBalance })
+    return summary
+  }
+}
+
 /** Contract parameters at the rate the loan is projected at; null when what-if has nothing to run on. */
 export function projectionParams(loan: LoanItem, summary: LoanSummary): LoanParams | null {
   return summary.projectionRate === null ? null : { ...paramsOf(loan), annualRate: summary.projectionRate }

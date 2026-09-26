@@ -5,14 +5,14 @@ import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
 import { loanScheduleRowToRow, loanToRow, rowToLoan, rowToLoanScheduleRow } from '~~/services/powersync/transforms'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { LoanCost, LoanSummary, LoanTrn, OverpaymentMode, WhatIfResult } from '~/components/loans/engine/types'
+import type { LoanCost, LoanSummary, LoanTrn, OverpaymentMode, ScheduleOverride, WhatIfResult } from '~/components/loans/engine/types'
 import type { LoanId, LoanItem, Loans, LoanScheduleRowId, LoanScheduleRowItem, LoanScheduleRows } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { getAmountInRate } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
-import { bankNextPaymentAmount, deriveDue, deriveLoan, overridesByLoan, projectionParams } from '~/components/loans/engine/derive'
+import { bankNextPaymentAmount, createDeriveLoanMemo, deriveDue, overridesByLoan, projectionParams } from '~/components/loans/engine/derive'
 import { collectCreditTrns, costOf } from '~/components/loans/engine/ledger'
 import { whatIf } from '~/components/loans/engine/summary'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
@@ -26,6 +26,7 @@ import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('loans')
+const NO_OVERRIDES: ScheduleOverride[] = []
 
 export type LoansCache = {
   items: Loans
@@ -107,14 +108,17 @@ export const useLoansStore = defineStore('loans', () => {
     () => collectCreditTrns(trnsStore.items ?? {}, creditWalletIds.value),
   )
 
-  const byWalletId = computed<Map<WalletId, { loan: LoanItem, summary: LoanSummary }>>(() => {
-    const overrides = overridesByLoan(scheduleRows.value)
+  // Own computed so each loan's override list keeps its reference across trn edits (memo key).
+  const overridesByLoanId = computed(() => overridesByLoan(scheduleRows.value))
+  const deriveLoanMemo = createDeriveLoanMemo()
 
+  const byWalletId = computed<Map<WalletId, { loan: LoanItem, summary: LoanSummary }>>(() => {
     return new Map(Object.entries(items.value).map(([loanId, loan]) => [loan.walletId, {
       loan,
-      summary: deriveLoan(
+      summary: deriveLoanMemo(
+        loanId,
         loan,
-        overrides.get(loanId) ?? [],
+        overridesByLoanId.value.get(loanId) ?? NO_OVERRIDES,
         trnsByCreditWallet.value.get(loan.walletId) ?? [],
         walletsStore.itemsComputed[loan.walletId]?.amount ?? 0,
         today.value,
