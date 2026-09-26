@@ -240,6 +240,8 @@ function createStatReport(overrides?: {
 describe('useStatReport', () => {
   beforeEach(() => {
     categoryBreakdownMocks.buildCategoriesSeries.mockReturnValue([])
+    categoryBreakdownMocks.buildCategoriesPieData.mockReset()
+    bucketTrnsByIntervalsMock.mockReset()
     computeTotalMock.mockReturnValue({ ...zeroTotal })
     getStoreTrnsIdsMock.mockImplementation(({ trnsIds }: { sort?: boolean, trnsIds?: string[] }) => trnsIds ?? [])
   })
