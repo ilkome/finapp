@@ -22,7 +22,7 @@ import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const route = useRoute()
+const route = useRoute('categories-id')
 const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
@@ -82,7 +82,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
   ]
 }
 
-const categoryId = computed(() => route.params.id) as ComputedRef<CategoryId>
+const categoryId = computed<CategoryId>(() => route.params.id)
 const category = computed(() => categoriesStore.items[categoryId.value])
 const categoryDetailHistoryPattern = /^\/categories\/[^/]+$/
 const childrenIds = computed(() => categoriesStore.getChildrenIds(categoryId.value))
