@@ -97,6 +97,10 @@ export const currencies: {
 }, {
   code: 'DKK',
 }, {
+  code: 'DOGE',
+  precision: 2,
+  symbol: 'Ð',
+}, {
   code: 'DOP',
 }, {
   code: 'DZD',
@@ -106,6 +110,10 @@ export const currencies: {
   code: 'ERN',
 }, {
   code: 'ETB',
+}, {
+  code: 'ETH',
+  precision: 6,
+  symbol: 'Ξ',
 }, {
   code: 'EUR',
   symbol: '€',
@@ -278,6 +286,9 @@ export const currencies: {
 }, {
   code: 'SLL',
 }, {
+  code: 'SOL',
+  precision: 4,
+}, {
   code: 'SOS',
 }, {
   code: 'SRD',
@@ -302,6 +313,9 @@ export const currencies: {
 }, {
   code: 'TND',
 }, {
+  code: 'TON',
+  precision: 2,
+}, {
   code: 'TOP',
 }, {
   code: 'TRY',
@@ -320,6 +334,10 @@ export const currencies: {
 }, {
   code: 'USD',
   symbol: '$',
+}, {
+  code: 'USDT',
+  precision: 2,
+  symbol: '₮',
 }, {
   code: 'USN',
 }, {
@@ -364,6 +382,9 @@ export const currencies: {
   code: 'XPF',
 }, {
   code: 'XPT',
+}, {
+  code: 'XRP',
+  precision: 2,
 }, {
   code: 'XSU',
 }, {
