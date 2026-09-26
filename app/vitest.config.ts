@@ -15,7 +15,6 @@ export default defineConfig({
   test: {
     projects: [
       {
-        resolve: { alias },
         test: {
           exclude: ['app/**/*Store.test.ts', 'app/**/useStoreSync.test.ts', 'app/**/*.view.test.ts'],
           include: ['app/**/*.test.ts', 'utils/**/*.test.ts', 'services/**/*.test.ts'],
@@ -24,7 +23,6 @@ export default defineConfig({
       },
       {
         plugins: [vue()],
-        resolve: { alias },
         test: {
           environment: 'happy-dom',
           include: ['app/**/*.view.test.ts'],
@@ -33,7 +31,6 @@ export default defineConfig({
         },
       },
       {
-        resolve: { alias },
         test: {
           environment: 'happy-dom',
           include: ['app/**/*Store.test.ts', 'app/**/useStoreSync.test.ts'],
