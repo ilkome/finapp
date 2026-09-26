@@ -59,7 +59,7 @@ describe('getPowerSyncDb', () => {
   it('uses the PowerSync 2 database options API', async () => {
     await getPowerSyncDb()
     expect(createdWith).toEqual([{
-      database: { dbFilename: 'finapp.db', worker: expect.any(String) },
+      database: { dbFilename: 'finapp.db', preparedStatementsCache: 64, worker: expect.any(String) },
       logger: { log: expect.any(Function) },
       schema: {},
       sync: { worker: expect.any(String) },
