@@ -18,6 +18,8 @@ export default defineConfig({
         test: {
           exclude: ['app/**/*Store.test.ts', 'app/**/useStoreSync.test.ts', 'app/**/*.view.test.ts'],
           include: ['app/**/*.test.ts', 'utils/**/*.test.ts', 'services/**/*.test.ts'],
+          // Reusing workers across files cuts the run ~3x; tests must not depend on file or test order.
+          isolate: false,
           name: 'unit',
         },
       },
