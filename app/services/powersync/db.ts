@@ -292,7 +292,7 @@ export function subscribeSyncStatus(onChange: (s: SyncStatusSnapshot) => void): 
         const status = db.currentStatus
         const pending = (await db.getUploadQueueStats()).count
         // A failed upload while disconnected is just "offline", not a server rejection.
-        const uploadError = status.connected ? (status.dataFlowStatus.uploadError?.message ?? null) : null
+        const uploadError = status.connected ? (status.uploadError?.message ?? null) : null
         if (!stopped)
           onChange({ connected: status.connected, pending, uploadError })
       }
@@ -363,8 +363,8 @@ export function watchTable<TRow = Record<string, unknown>>(
         params,
         {
           onError: (e: Error) => logger.error(`watch error: ${sql}`, e),
-          onResult: (result: { rows?: { _array: unknown[] } }) => {
-            const rows = (result.rows?._array ?? []) as TRow[]
+          onResult: (result: { array: unknown[] }) => {
+            const rows = result.array as TRow[]
             if (isFirstEmit) {
               isFirstEmit = false
               performance.mark(`ps:watch:${label}:first`)
