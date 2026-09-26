@@ -17,8 +17,10 @@ export type CacheSlice = 'categories' | 'loans' | 'rates' | 'trns' | 'user' | 'w
 
 export type StoreSnapshot = Partial<Record<CacheSlice, unknown>>
 
-// In-memory accumulator of this session's latest slice values. The debounced write merges it
-// over the on-disk blob (read-modify-write) so a single-slice write never drops other slices.
+// In-memory copy of the whole blob: seeded by the cold-start read, then updated per slice. The
+// debounced write stores it as is - a slice this session never touched (a store whose first watch
+// emission matched the primed cache persists nothing) still comes from the seed, and no write has
+// to read the 1+ MB blob back first.
 const snapshot: StoreSnapshot = {}
 
 function cacheKey(uid: string): string {
@@ -31,7 +33,12 @@ export async function readStoreCache(): Promise<StoreSnapshot | null> {
   if (!uid)
     return null
   try {
-    return await localforage.getItem<StoreSnapshot>(cacheKey(uid))
+    const stored = await localforage.getItem<StoreSnapshot>(cacheKey(uid))
+    for (const [slice, data] of Object.entries(stored ?? {})) {
+      if (!(slice in snapshot))
+        snapshot[slice as CacheSlice] = data
+    }
+    return stored
   }
   catch (e) {
     logger.error('read err', e)
@@ -51,9 +58,7 @@ export function persistStoreCache(slice: CacheSlice, data: unknown): void {
       const uid = getPersistedUid()
       if (!uid)
         return
-      // Read-modify-write: merge this session's touched slices over what's on disk.
-      void localforage.getItem<StoreSnapshot>(cacheKey(uid))
-        .then(existing => localforage.setItem(cacheKey(uid), { ...existing, ...snapshot }))
+      void localforage.setItem(cacheKey(uid), { ...snapshot })
         .catch(e => logger.error('WRITE err', e))
     }, 400)
   }
