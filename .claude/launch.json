@@ -1,0 +1,41 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "review-cloud",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "./app",
+        "exec",
+        "nuxt",
+        "dev",
+        "--port=3050",
+        "--public",
+        "--dotenv=.env.cloud"
+      ],
+      "port": 3050,
+      "env": {
+        "VITE_POWERSYNC_SINGLE_TAB": "1"
+      }
+    },
+    {
+      "name": "review-local",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "./app",
+        "exec",
+        "nuxt",
+        "dev",
+        "--port=3051",
+        "--public",
+        "--dotenv=.env.local"
+      ],
+      "port": 3051,
+      "env": {
+        "VITE_POWERSYNC_SINGLE_TAB": "1"
+      }
+    }
+  ]
+}
