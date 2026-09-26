@@ -56,4 +56,14 @@ describe('get Transactions IDs', () => {
 
     expect(trnsIds).toContain('singleLegTransferExpenseWalletCashUSD50')
   })
+
+  it('sorts a copy, never the caller\'s array', () => {
+    const trnsIds = Object.keys(trnsItems)
+    const before = [...trnsIds]
+    const sorted = filterTrnsIds({ sort: true, trnsIds, trnsItems })
+
+    expect(trnsIds).toEqual(before)
+    expect(sorted).not.toBe(trnsIds)
+    expect(sorted.map(id => trnsItems[id]!.date)).toEqual([...sorted.map(id => trnsItems[id]!.date)].sort((a, b) => b - a))
+  })
 })

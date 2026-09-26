@@ -42,7 +42,10 @@ export function filterTrnsIds(props: TrnsGetterProps) {
     || props.walletsIds?.length
     || props.categoriesIds?.length
   const matches = createTrnMatcher(props)
-  const result = hasFilters ? trnsIds.filter(id => matches(props.trnsItems?.[id])) : trnsIds
+  // Copy before sorting: `trnsIds` is often a computed array other consumers share.
+  const result = hasFilters
+    ? trnsIds.filter(id => matches(props.trnsItems?.[id]))
+    : props.sort ? [...trnsIds] : trnsIds
 
   if (props.sort)
     result.sort((a, b) => (props.trnsItems?.[b]?.date ?? 0) - (props.trnsItems?.[a]?.date ?? 0))
