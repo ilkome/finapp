@@ -100,11 +100,18 @@ test.describe('offline and sync', () => {
   const walletLink = () => page.locator('a[href^="/wallets/"]').first()
   const syncDot = () => page.getByTestId('sync-issue-dot')
 
+  const isIdb = () => test.info().project.name === 'offline-idb'
+
   test.beforeAll(async ({ browser }) => {
     test.skip(!(await backendUp()), 'local Supabase + PowerSync are down')
     await proxy('on')
     e2e = await login(E2E_EMAIL, E2E_PASSWORD)
     context = await browser.newContext({ locale: 'en-US', viewport: { height: 900, width: 1280 } })
+    if (isIdb()) {
+      await context.addInitScript(() => {
+        Object.defineProperty(Navigator.prototype, 'userAgentData', { get: () => undefined })
+      })
+    }
     page = await context.newPage()
   })
 
@@ -118,6 +125,22 @@ test.describe('offline and sync', () => {
     await page.goto('/dashboard')
     await expect(walletLink()).toBeVisible({ timeout: 60_000 })
     await expect(syncDot()).toBeHidden({ timeout: 60_000 })
+
+    // The run must exercise the storage its project is for.
+    const storage = await page.evaluate(async () => {
+      const opfs: string[] = []
+      for await (const name of (await navigator.storage.getDirectory() as unknown as { keys: () => AsyncIterable<string> }).keys())
+        opfs.push(name)
+      return { idb: (await indexedDB.databases()).map(db => db.name), opfs }
+    })
+    if (isIdb()) {
+      expect(storage.idb).toContain('finapp.db')
+      expect(storage.opfs).not.toContain('finapp-opfs.db')
+    }
+    else {
+      expect(storage.opfs).toContain('finapp-opfs.db')
+      expect(storage.idb).not.toContain('finapp.db')
+    }
 
     // Workbox precaches during install, which completes before `ready` resolves.
     await page.evaluate(() => navigator.serviceWorker.ready)

@@ -7,7 +7,12 @@ import { defineConfig, devices } from '@playwright/test'
 const port = 3080
 
 export default defineConfig({
-  projects: [{ name: 'offline', use: { ...devices['Desktop Chrome'] } }],
+  // Chromium opens the local db on OPFS; `offline-idb` hides `navigator.userAgentData`, which sends
+  // the app down the IndexedDB path that iOS and Firefox use (see the spec's beforeAll).
+  projects: [
+    { name: 'offline', use: { ...devices['Desktop Chrome'] } },
+    { name: 'offline-idb', use: { ...devices['Desktop Chrome'] } },
+  ],
   reporter: [['list']],
   retries: 0,
   testDir: './tests/e2e',
@@ -25,4 +30,6 @@ export default defineConfig({
     timeout: 600_000,
     url: `http://localhost:${port}`,
   },
+  // Both projects drive the same backend and network proxy, so they must not overlap.
+  workers: 1,
 })
