@@ -1,0 +1,27 @@
+{
+  "items": [
+    {
+      "byMonth": [
+        { "fine": 0, "interest": 830.15, "month": "03.2026" },
+        { "fine": 30, "interest": 910.01, "month": "04.2026" }
+      ],
+      "currencyCode": "RUB",
+      "debt": 42100,
+      "fine": 30,
+      "interest": 1740.16,
+      "minPayment": { "amount": 3500, "date": "20.05", "status": "overdue" },
+      "name": "Credit card",
+      "walletId": "r1"
+    },
+    {
+      "byMonth": [],
+      "currencyCode": "RUB",
+      "debt": 0,
+      "fine": 0,
+      "interest": 0,
+      "minPayment": null,
+      "name": "Installments",
+      "walletId": "r2"
+    }
+  ]
+}

@@ -101,6 +101,13 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     syncConfig: (source, target) => { target.contextBlocks.walletDescription = clonePanelConfig(source.contextBlocks.walletDescription) },
     titleKey: 'stat.config.contextBlocks.walletDescription',
   },
+  walletLoan: {
+    getIsShow: config => config.contextBlocks.walletLoan.isShow,
+    icon: 'lucide:landmark',
+    setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { walletLoan: { isShow: value } }),
+    syncConfig: (source, target) => { target.contextBlocks.walletLoan = clonePanelConfig(source.contextBlocks.walletLoan) },
+    titleKey: 'stat.config.contextBlocks.walletLoan',
+  },
   wallets: {
     getIsShow: config => config.wallets.isShow,
     icon: 'hugeicons:wallet-01',

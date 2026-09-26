@@ -1,0 +1,5 @@
+{
+  "currencyCode": "RUB",
+  "loan": { "isOverdue": true, "monthsLeft": 58, "nextDate": "01.10", "payment": 12500, "until": "03.2031" },
+  "minPayment": { "amount": 3200, "date": "25.09", "status": "overdue" }
+}

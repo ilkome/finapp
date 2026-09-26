@@ -96,6 +96,8 @@ const typeItems = computed<TabsItem[]>(() => [
         :bottomSheetStyle="{ maxHeight }"
       />
 
+      <LoansTrnFormFields />
+
       <TrnFormMainCalculator />
     </div>
   </div>

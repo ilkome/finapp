@@ -75,8 +75,17 @@ export const walletEth = 'demo_w_eth'
 export const walletUsdt = 'demo_w_usdt'
 export const walletRandomFiat = 'demo_w_random_fiat'
 export const walletRandomCrypto = 'demo_w_random_crypto'
+export const walletMortgage = 'demo_w_mortgage'
+export const walletCarLoan = 'demo_w_car_loan'
+export const walletPersonalLoan = 'demo_w_personal_loan'
+export const walletCashLoan = 'demo_w_cash_loan'
+export const walletInstallment = 'demo_w_installment'
+export const walletRenovationLoan = 'demo_w_renovation_loan'
 export const walletLent = 'demo_w_lent'
 export const walletBorrowed = 'demo_w_borrowed'
+export const walletVacationLoan = 'demo_w_vacation_loan'
+export const walletStudentLoan = 'demo_w_student_loan'
+export const walletEuroLoan = 'demo_w_euro_loan'
 
 /**
  * Every amount in this file is RUB-scale. The generator converts it at the demo rates into the
@@ -424,6 +433,24 @@ export const data: {
       type: 'debt',
       updatedAt: 1585408895295,
     },
+    [walletCarLoan]: {
+      color: '#64748b',
+      currency: 'RUB',
+      desc: { en: 'Paid off early once, lower payment since', ru: 'Досрочное погашение с уменьшением платежа' },
+      name: { en: 'Car loan', ru: 'Автокредит' },
+      order: 15,
+      type: 'credit',
+      updatedAt: 1585408895295,
+    },
+    [walletCashLoan]: {
+      color: '#78716c',
+      currency: 'RUB',
+      desc: { en: 'No published rate, bank schedule, two interest-only months', ru: 'Ставка не указана, график банка, два месяца только проценты' },
+      name: { en: 'Cash loan', ru: 'Кредит наличными' },
+      order: 17,
+      type: 'credit',
+      updatedAt: 1585408895295,
+    },
     [walletCashRub]: {
       color: '#3b82f6',
       currency: 'RUB',
@@ -490,6 +517,24 @@ export const data: {
       type: 'crypto',
       updatedAt: 1585408895295,
     },
+    [walletEuroLoan]: {
+      color: '#4f46e5',
+      currency: 'EUR',
+      desc: { en: 'In euros, paid from the debit card with conversion', ru: 'В евро, платежи с дебетовой карты с конвертацией' },
+      name: { en: 'Euro loan', ru: 'Кредит в евро' },
+      order: 21,
+      type: 'credit',
+      updatedAt: 1585408895295,
+    },
+    [walletInstallment]: {
+      color: '#a8a29e',
+      currency: 'RUB',
+      desc: { en: 'Interest-free, paid off', ru: 'Без процентов, выплачена' },
+      name: { en: 'Sofa installment', ru: 'Рассрочка на диван' },
+      order: 18,
+      type: 'credit',
+      updatedAt: 1585408895295,
+    },
     [walletLent]: {
       color: '#14b8a6',
       currency: 'RUB',
@@ -497,6 +542,24 @@ export const data: {
       name: { en: 'Lent to Alex', ru: 'Одолжил Саше' },
       order: 23,
       type: 'debt',
+      updatedAt: 1585408895295,
+    },
+    [walletMortgage]: {
+      color: '#475569',
+      currency: 'RUB',
+      desc: { en: 'Checked against the debt the bank reports', ru: 'Сверка с долгом, который сообщает банк' },
+      name: { en: 'Mortgage', ru: 'Ипотека' },
+      order: 14,
+      type: 'credit',
+      updatedAt: 1585408895295,
+    },
+    [walletPersonalLoan]: {
+      color: '#94a3b8',
+      currency: 'RUB',
+      desc: { en: 'Differentiated payments, a month caught up with a fee', ru: 'Дифференцированные платежи, пропуск с пеней' },
+      name: { en: 'Personal loan', ru: 'Потребительский кредит' },
+      order: 16,
+      type: 'credit',
       updatedAt: 1585408895295,
     },
     [walletRandomCrypto]: {
@@ -517,6 +580,15 @@ export const data: {
       type: 'cashless',
       updatedAt: 1585408895295,
     },
+    [walletRenovationLoan]: {
+      color: '#57534e',
+      currency: 'RUB',
+      desc: { en: 'Paid off early in one go', ru: 'Погашен досрочно одним платежом' },
+      name: { en: 'Renovation loan', ru: 'Кредит на ремонт' },
+      order: 19,
+      type: 'credit',
+      updatedAt: 1585408895295,
+    },
     [walletSavings]: {
       color: '#8b5cf6',
       currency: 'USD',
@@ -525,6 +597,15 @@ export const data: {
       name: { en: 'Savings', ru: 'Накопления' },
       order: 6,
       type: 'deposit',
+      updatedAt: 1585408895295,
+    },
+    [walletStudentLoan]: {
+      color: '#16a34a',
+      currency: 'USD',
+      desc: { en: 'In the foreign currency, interest accrued by days', ru: 'В валюте, проценты начисляются по дням' },
+      name: { en: 'Student loan', ru: 'Образовательный кредит' },
+      order: 22,
+      type: 'credit',
       updatedAt: 1585408895295,
     },
     [walletUsd]: {
@@ -543,6 +624,15 @@ export const data: {
       name: { en: 'Tether', ru: 'Tether' },
       order: 12,
       type: 'crypto',
+      updatedAt: 1585408895295,
+    },
+    [walletVacationLoan]: {
+      color: '#0891b2',
+      currency: 'RUB',
+      desc: { en: '6 months, paid off on schedule', ru: '6 месяцев, выплачен по графику' },
+      name: { en: 'Vacation loan', ru: 'Кредит на отпуск' },
+      order: 20,
+      type: 'credit',
       updatedAt: 1585408895295,
     },
   },
@@ -629,6 +719,60 @@ export type DemoIncomeRule = {
 }
 
 /**
+ * Loans with different terms, each taken `monthsAgo` and repaid monthly from the debit card, so
+ * together they show every state the loans page knows. Deviations count due payments back from
+ * the latest one (0 = the latest).
+ * `purchase`: the loan paid a seller directly, so the credit wallet spends it in that category;
+ * without it the money lands on the debit card.
+ */
+export type DemoLoan = {
+  /** null: the bank publishes no rate; the schedule then comes from the bank, built at `bankRate`. */
+  annualRate: number | null
+  /** Bank sync pushed the debt it reports, so the loan checks the wallet against it. */
+  bankDebt?: boolean
+  bankRate?: number
+  /** This payment is skipped and paid together with the next one, plus a late fee. */
+  catchUp?: number
+  /** Where the money comes from and payments go out; the main debit card when omitted. */
+  debitWalletId?: WalletId
+  interestMethod?: 'monthly' | 'daily'
+  /** Payment numbers (from 1) the bank made interest-only: a payment holiday. */
+  interestOnly?: number[]
+  /** This payment is paid a few days late. */
+  late?: number
+  /** Days after the due date the bank still counts as on time. */
+  lateAfterDays?: number
+  /** The latest due payment is not paid yet: the loan shows it overdue. */
+  missed?: boolean
+  monthsAgo: number
+  overpaymentMode: 'reducePayment' | 'reduceTerm'
+  paymentDay: number
+  /** With this payment the whole debt left is paid off, which closes the loan early. */
+  payoff?: number
+  /** An extra payment on its own day, three weeks before this payment. */
+  prepayment?: { amount: number, paymentsAgo: number }
+  principalAmount: number
+  purchase?: { categoryId: CategoryId, desc: LocaleString }
+  scheduleType: 'annuity' | 'differentiated'
+  termMonths: number
+  walletId: WalletId
+}
+
+export const demoLoans: DemoLoan[] = [
+  { annualRate: 9.5, bankDebt: true, interestMethod: 'daily', lateAfterDays: 5, monthsAgo: 40, overpaymentMode: 'reducePayment', paymentDay: 5, principalAmount: 4500000, purchase: { categoryId: catHome, desc: { en: 'Apartment purchase', ru: 'Покупка квартиры' } }, scheduleType: 'annuity', termMonths: 240, walletId: walletMortgage },
+  { annualRate: 16.9, late: 2, monthsAgo: 14, overpaymentMode: 'reducePayment', paymentDay: 10, prepayment: { amount: 150000, paymentsAgo: 6 }, principalAmount: 1200000, purchase: { categoryId: catTransport, desc: { en: 'Car purchase', ru: 'Покупка автомобиля' } }, scheduleType: 'annuity', termMonths: 60, walletId: walletCarLoan },
+  { annualRate: 24.9, catchUp: 4, missed: true, monthsAgo: 8, overpaymentMode: 'reduceTerm', paymentDay: 20, principalAmount: 300000, scheduleType: 'differentiated', termMonths: 24, walletId: walletPersonalLoan },
+  { annualRate: null, bankRate: 21.9, interestOnly: [4, 5], monthsAgo: 11, overpaymentMode: 'reduceTerm', paymentDay: 15, principalAmount: 500000, scheduleType: 'annuity', termMonths: 36, walletId: walletCashLoan },
+  { annualRate: 18.5, monthsAgo: 30, overpaymentMode: 'reduceTerm', paymentDay: 12, payoff: 9, principalAmount: 400000, purchase: { categoryId: catHome, desc: { en: 'Renovation', ru: 'Ремонт' } }, scheduleType: 'annuity', termMonths: 36, walletId: walletRenovationLoan },
+  { annualRate: 14.9, monthsAgo: 10, overpaymentMode: 'reduceTerm', paymentDay: 18, principalAmount: 120000, purchase: { categoryId: catTravel, desc: { en: 'Vacation', ru: 'Отпуск' } }, scheduleType: 'annuity', termMonths: 6, walletId: walletVacationLoan },
+  { annualRate: 7.9, debitWalletId: walletUsd, interestMethod: 'daily', monthsAgo: 10, overpaymentMode: 'reducePayment', paymentDay: 1, principalAmount: 400000, scheduleType: 'annuity', termMonths: 36, walletId: walletStudentLoan },
+  { annualRate: 4.5, monthsAgo: 20, overpaymentMode: 'reduceTerm', paymentDay: 28, principalAmount: 1200000, purchase: { categoryId: catHome, desc: { en: 'Holiday flat', ru: 'Квартира у моря' } }, scheduleType: 'annuity', termMonths: 84, walletId: walletEuroLoan },
+  { annualRate: 0, monthsAgo: 13, overpaymentMode: 'reduceTerm', paymentDay: 25, principalAmount: 90000, purchase: { categoryId: catHome, desc: { en: 'Sofa', ru: 'Диван' } }, scheduleType: 'annuity', termMonths: 12, walletId: walletInstallment },
+]
+
+export const loanDebitWalletId = walletDebitRub
+
+/**
  * Money lent and borrowed between people, as transfers with the debit card: `out` leaves the card
  * (lending, or paying a borrowed debt back), `in` comes back to it. A debt wallet is positive while
  * someone owes you and negative while you owe.
@@ -659,10 +803,10 @@ export const salaryConfig = {
   desc: { en: 'Salary', ru: 'Зарплата' } as LocaleString,
   /** After this many months from start, salary gets a raise */
   raiseAfterMonths: 12,
-  raisedMax: 150000,
-  raisedMin: 120000,
-  startMax: 110000,
-  startMin: 80000,
+  raisedMax: 220000,
+  raisedMin: 190000,
+  startMax: 180000,
+  startMin: 150000,
   walletId: walletDebitRub,
 }
 

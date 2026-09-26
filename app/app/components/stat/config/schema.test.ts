@@ -68,6 +68,7 @@ const defaultConfig: MiniItemConfig = {
     categoryChildren: { isShow: true },
     walletBalance: { isShow: true },
     walletDescription: { isShow: true },
+    walletLoan: { isShow: true },
   },
   date: {
     isPinned: true,
@@ -228,11 +229,12 @@ describe('applyConfigUpdate', () => {
       'categoryChildren',
       'walletBalance',
       'walletDescription',
+      'walletLoan',
       'navigation',
       'summary',
       'trns',
       'chart',
-      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription'].includes(id)),
+      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription', 'walletLoan'].includes(id)),
     ])
   })
 
@@ -243,11 +245,12 @@ describe('applyConfigUpdate', () => {
       'categoryChildren',
       'walletBalance',
       'walletDescription',
+      'walletLoan',
       'navigation',
       'summary',
       'trns',
       'chart',
-      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription'].includes(id)),
+      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription', 'walletLoan'].includes(id)),
     ])
   })
 

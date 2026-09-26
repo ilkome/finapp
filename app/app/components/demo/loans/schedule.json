@@ -1,0 +1,10 @@
+{
+  "currencyCode": "RUB",
+  "firstUnpaidIndex": 1,
+  "rows": [
+    { "amount": 12500, "canReset": true, "date": "01.03.2026", "delta": 0, "fine": 0, "interest": 9800.15, "isPayable": false, "paymentNumber": 1, "principal": 2699.85, "principalFree": null, "status": "paid" },
+    { "amount": 12507.34, "canReset": false, "date": "01.04.2026", "delta": 7.34, "fine": 0, "interest": 9750.01, "isPayable": true, "paymentNumber": 2, "principal": 2757.33, "principalFree": null, "status": "partial" },
+    { "amount": 12500, "canReset": false, "date": "01.05.2026", "delta": 0, "fine": 0, "interest": 9700, "isPayable": true, "paymentNumber": 3, "principal": 2800, "principalFree": null, "status": "scheduled" },
+    { "amount": 0, "canReset": true, "date": "01.06.2026", "delta": 0, "fine": 0, "interest": 0, "isPayable": true, "paymentNumber": 4, "principal": 0, "principalFree": "holiday", "status": "scheduled" }
+  ]
+}

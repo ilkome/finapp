@@ -1,0 +1,277 @@
+{
+  "bankSchedule": [
+    {
+      "date": "2024-07-11",
+      "interestPart": 76108.76,
+      "paymentNumber": 1,
+      "principalPart": 3595.86,
+      "totalAmount": 79704.62
+    },
+    {
+      "date": "2024-08-11",
+      "interestPart": 78500.7,
+      "paymentNumber": 2,
+      "principalPart": 7.95,
+      "totalAmount": 78508.65
+    },
+    {
+      "date": "2024-09-11",
+      "interestPart": 78500.38,
+      "paymentNumber": 3,
+      "principalPart": 8.43,
+      "totalAmount": 78508.81
+    },
+    {
+      "date": "2024-10-11",
+      "interestPart": 75967.78,
+      "paymentNumber": 4,
+      "principalPart": 3807.33,
+      "totalAmount": 79775.11
+    },
+    {
+      "date": "2024-11-11",
+      "interestPart": 78346.5,
+      "paymentNumber": 5,
+      "principalPart": 239.25,
+      "totalAmount": 78585.75
+    },
+    {
+      "date": "2024-12-11",
+      "interestPart": 75809.84,
+      "paymentNumber": 6,
+      "principalPart": 4044.24,
+      "totalAmount": 79854.08
+    },
+    {
+      "date": "2025-01-11",
+      "interestPart": 78173.72,
+      "paymentNumber": 7,
+      "principalPart": 498.42,
+      "totalAmount": 78672.14
+    },
+    {
+      "date": "2025-02-11",
+      "interestPart": 4805.74,
+      "paymentNumber": 8,
+      "principalPart": 110550.39,
+      "totalAmount": 115356.13
+    },
+    {
+      "date": "2025-03-11",
+      "interestPart": 4093.04,
+      "paymentNumber": 9,
+      "principalPart": 111619.44,
+      "totalAmount": 115712.48
+    },
+    {
+      "date": "2025-04-11",
+      "interestPart": 4254.76,
+      "paymentNumber": 10,
+      "principalPart": 111376.86,
+      "totalAmount": 115631.62
+    },
+    {
+      "date": "2025-05-11",
+      "interestPart": 3850.2,
+      "paymentNumber": 11,
+      "principalPart": 111983.7,
+      "totalAmount": 115833.9
+    },
+    {
+      "date": "2025-06-11",
+      "interestPart": 3700.84,
+      "paymentNumber": 12,
+      "principalPart": 112207.74,
+      "totalAmount": 115908.58
+    },
+    {
+      "date": "2025-07-07",
+      "interestPart": 2870.52,
+      "paymentNumber": 13,
+      "principalPart": 61279.05,
+      "totalAmount": 64149.57
+    },
+    {
+      "date": "2025-07-07",
+      "interestPart": 0.0,
+      "paymentNumber": 14,
+      "principalPart": 1318781.34,
+      "totalAmount": 1318781.34
+    }
+  ],
+  "params": {
+    "annualRate": 27.24,
+    "firstPaymentDate": "2024-07-11",
+    "overpaymentMode": "reduceTerm",
+    "paymentDay": 11,
+    "principalAmount": 1950000,
+    "scheduleType": "annuity",
+    "startDate": "2024-06-11",
+    "termMonths": 24
+  },
+  "trns": [
+    {
+      "amount": 79704.62,
+      "date": "2024-07-11",
+      "id": "y1m",
+      "kind": "payment"
+    },
+    {
+      "amount": 76108.76,
+      "date": "2024-07-11",
+      "id": "y1i",
+      "kind": "interest"
+    },
+    {
+      "amount": 78508.65,
+      "date": "2024-08-11",
+      "id": "y2m",
+      "kind": "payment"
+    },
+    {
+      "amount": 78500.7,
+      "date": "2024-08-11",
+      "id": "y2i",
+      "kind": "interest"
+    },
+    {
+      "amount": 78508.81,
+      "date": "2024-09-11",
+      "id": "y3m",
+      "kind": "payment"
+    },
+    {
+      "amount": 78500.38,
+      "date": "2024-09-11",
+      "id": "y3i",
+      "kind": "interest"
+    },
+    {
+      "amount": 79775.11,
+      "date": "2024-10-11",
+      "id": "y4m",
+      "kind": "payment"
+    },
+    {
+      "amount": 75967.78,
+      "date": "2024-10-11",
+      "id": "y4i",
+      "kind": "interest"
+    },
+    {
+      "amount": 78585.75,
+      "date": "2024-11-11",
+      "id": "y5m",
+      "kind": "payment"
+    },
+    {
+      "amount": 78346.5,
+      "date": "2024-11-11",
+      "id": "y5i",
+      "kind": "interest"
+    },
+    {
+      "amount": 79854.08,
+      "date": "2024-12-11",
+      "id": "y6m",
+      "kind": "payment"
+    },
+    {
+      "amount": 75809.84,
+      "date": "2024-12-11",
+      "id": "y6i",
+      "kind": "interest"
+    },
+    {
+      "amount": 78672.14,
+      "date": "2025-01-11",
+      "id": "y7m",
+      "kind": "payment"
+    },
+    {
+      "amount": 78173.72,
+      "date": "2025-01-11",
+      "id": "y7i",
+      "kind": "interest"
+    },
+    {
+      "amount": 115356.13,
+      "date": "2025-02-11",
+      "id": "y8m",
+      "kind": "payment"
+    },
+    {
+      "amount": 4805.74,
+      "date": "2025-02-11",
+      "id": "y8i",
+      "kind": "interest"
+    },
+    {
+      "amount": 115712.48,
+      "date": "2025-03-11",
+      "id": "y9m",
+      "kind": "payment"
+    },
+    {
+      "amount": 4093.04,
+      "date": "2025-03-11",
+      "id": "y9i",
+      "kind": "interest"
+    },
+    {
+      "amount": 115631.62,
+      "date": "2025-04-11",
+      "id": "y10m",
+      "kind": "payment"
+    },
+    {
+      "amount": 4254.76,
+      "date": "2025-04-11",
+      "id": "y10i",
+      "kind": "interest"
+    },
+    {
+      "amount": 115833.9,
+      "date": "2025-05-11",
+      "id": "y11m",
+      "kind": "payment"
+    },
+    {
+      "amount": 3850.2,
+      "date": "2025-05-11",
+      "id": "y11i",
+      "kind": "interest"
+    },
+    {
+      "amount": 115908.58,
+      "date": "2025-06-11",
+      "id": "y12m",
+      "kind": "payment"
+    },
+    {
+      "amount": 3700.84,
+      "date": "2025-06-11",
+      "id": "y12i",
+      "kind": "interest"
+    },
+    {
+      "amount": 64149.57,
+      "date": "2025-07-07",
+      "id": "y13m",
+      "kind": "payment"
+    },
+    {
+      "amount": 2870.52,
+      "date": "2025-07-07",
+      "id": "y13i",
+      "kind": "interest"
+    },
+    {
+      "amount": 1318781.34,
+      "date": "2025-07-07",
+      "id": "y14m",
+      "kind": "payment"
+    }
+  ],
+  "walletBalance": 0.0
+}

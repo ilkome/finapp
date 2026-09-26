@@ -1,8 +1,11 @@
-import { addMonths, getMonth, startOfMonth, startOfYear, subMonths, subYears } from 'date-fns'
+import { UTCDate } from '@date-fns/utc'
+import { addDays, addMonths, getMonth, startOfMonth, startOfYear, subMonths, subYears } from 'date-fns'
 import localforage from 'localforage'
 import { localInstantToCivilDay } from '~~/utils/date/civil'
 
 import type { Categories } from '~/components/categories/types'
+import type { LoanParams, LoanTrn, ScheduleOverride } from '~/components/loans/engine/types'
+import type { LoanScheduleRows } from '~/components/loans/types'
 import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnItem, Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
@@ -11,7 +14,12 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { currencies as currencyCatalog } from '~/components/currencies/currencies'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import currencies from '~/components/demo/currencies.json'
-import { data, debtMoves, expenseRules, foreignCurrency, incomeRules, mainCurrency, monthlySettlements, oneOffExpenses, randomCryptoCurrencies, randomFiatCurrencies, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub, walletRandomCrypto, walletRandomFiat, walletUsd } from '~/components/demo/data'
+import { data, debtMoves, demoLoans, expenseRules, foreignCurrency, incomeRules, loanDebitWalletId, mainCurrency, monthlySettlements, oneOffExpenses, randomCryptoCurrencies, randomFiatCurrencies, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub, walletRandomCrypto, walletRandomFiat, walletStudentLoan, walletUsd } from '~/components/demo/data'
+import { paramsOf } from '~/components/loans/engine/derive'
+import { reconcileSchedule } from '~/components/loans/engine/reconcile'
+import { generateSchedule, round2 } from '~/components/loans/engine/schedule'
+import { loanIdFor, loanItemSchema, loanScheduleRowIdFor, loanScheduleRowSchema } from '~/components/loans/types'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -63,6 +71,21 @@ function randInt(min: number, max: number): number {
 
 function randItem<T>(arr: T[]): T {
   return arr[Math.floor(random() * arr.length)]!
+}
+
+/**
+ * A bank schedule as bank sync stores it, every row: the `interestOnly` payments repay no principal
+ * and push the term out by as many months, like a payment holiday does.
+ */
+function bankSchedule(params: LoanParams, interestOnly: number[]): ScheduleOverride[] {
+  const extended = { ...params, termMonths: params.termMonths + interestOnly.length }
+  const overrides: ScheduleOverride[] = []
+  for (const n of interestOnly) {
+    const row = generateSchedule(extended, overrides)[n - 1]!
+    overrides.push({ date: row.date, interestPart: row.interestPart, paymentNumber: n, principalPart: 0, source: 'bank', totalAmount: row.interestPart })
+  }
+  return generateSchedule(extended, overrides).map(({ date, interestPart, paymentNumber, principalPart, totalAmount }) =>
+    ({ date, interestPart, paymentNumber, principalPart, source: 'bank' as const, totalAmount }))
 }
 
 function roundAmount(n: number): number {
@@ -118,6 +141,7 @@ export function useDemo() {
         wallet.currency = main
     }
     Object.assign(translatedData.wallets[walletUsd]!, { currency: foreign, name: locale === 'ru' ? `Счёт ${foreign}` : `${foreign} account` })
+    translatedData.wallets[walletStudentLoan]!.currency = foreign
     /** A RUB-scale amount from data.ts in the currency of the wallet it lands on. */
     const money = (rubScale: number, walletId: string) => convert(roundAmount(rubScale), 'RUB', translatedData.wallets[walletId]!.currency)
     /** A RUB-scale round figure (a limit, a principal) kept round in the main currency. */
@@ -132,10 +156,15 @@ export function useDemo() {
     const crypto = randItem(Object.keys(randomCryptoCurrencies))
     Object.assign(translatedData.wallets[walletRandomCrypto]!, { currency: crypto, name: randomCryptoCurrencies[crypto] })
 
+    const today = localInstantToCivilDay(Date.now())
+    const cardDue = addMonths(new UTCDate(today), 1)
     const creditLimit = round(300000)
     Object.assign(translatedData.wallets[walletCreditRub]!, {
       creditLimit,
       desc: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${creditLimit.toLocaleString(locale)}`,
+      minPaymentAmount: money(8000, walletCreditRub),
+      minPaymentDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth(), 25).getTime(),
+      minPaymentUpdatedAt: today,
     })
 
     useUserStore().setUserBaseCurrency(main)
@@ -353,7 +382,109 @@ export function useDemo() {
       trn.enteredAt = instant
     }
 
+    // --- Loans: each due payment is one transfer from the loan's debit wallet (converted when the
+    // currencies differ) plus its interest as the credit wallet's own expense. The plan is re-read after every payment, so a prepayment re-solves the
+    // tail the way the app does. Dates are civil days already, so this runs after the snap.
+    const at = (date: number) => ({ date, enteredAt: date, updatedAt: Date.now() })
+    const scheduleRows: LoanScheduleRows = {}
+    const loans = demoLoans.map((config) => {
+      const currency = translatedData.wallets[config.walletId]!.currency
+      const debitWalletId = config.debitWalletId ?? loanDebitWalletId
+      /** A loan-currency amount as it leaves or reaches the debit wallet. */
+      const onDebit = (amount: number) => convert(amount, currency, translatedData.wallets[debitWalletId]!.currency)
+      const taken = subMonths(new Date(endDate), config.monthsAgo)
+      const start = new UTCDate(taken.getFullYear(), taken.getMonth(), config.paymentDay)
+      const loan = loanItemSchema.parse({
+        annualRate: config.annualRate,
+        debitWalletId,
+        firstPaymentDate: addMonths(start, 1).getTime(),
+        interestMethod: config.interestMethod,
+        lateAfterDays: config.lateAfterDays,
+        overpaymentMode: config.overpaymentMode,
+        paymentDay: config.paymentDay,
+        principalAmount: round(config.principalAmount, currency),
+        scheduleType: config.scheduleType,
+        startDate: start.getTime(),
+        termMonths: config.termMonths,
+        walletId: config.walletId,
+      })
+      const loanId = loanIdFor(loan.walletId)
+      const params = paramsOf(loan)
+      const overrides = config.bankRate === undefined ? [] : bankSchedule({ ...params, annualRate: config.bankRate }, config.interestOnly ?? [])
+      for (const row of overrides)
+        scheduleRows[loanScheduleRowIdFor(loanId, row.paymentNumber)] = loanScheduleRowSchema.parse({ ...row, loanId, updatedAt: Date.now() })
+
+      trns[trnIndex++] = config.purchase
+        ? { ...at(loan.startDate), amount: loan.principalAmount, categoryId: config.purchase.categoryId, desc: config.purchase.desc[locale], type: TrnType.Expense, walletId: loan.walletId } satisfies TrnItem
+        : { ...at(loan.startDate), categoryId: 'transfer', expenseAmount: loan.principalAmount, expenseWalletId: loan.walletId, incomeAmount: onDebit(loan.principalAmount), incomeWalletId: debitWalletId, type: TrnType.Transfer } satisfies TrnItem
+
+      const schedule = generateSchedule(params, overrides)
+      const dueCount = schedule.filter(row => row.date <= today).length
+      /** Payment number of a deviation counted back from the latest due payment. */
+      const numberAgo = (ago: number | undefined) => ago === undefined ? null : dueCount - ago
+
+      const paid: LoanTrn[] = []
+      const skipped = new Set<number>()
+      let prepaid = false
+      let carried: { interest: number, total: number } | null = null
+      const pay = (kind: LoanTrn['kind'], amount: number, date: number) => {
+        const id = `demo_loan_${loan.walletId}_${paid.length}`
+        paid.push({ amount, date, id, kind })
+        trns[id] = kind === 'payment'
+          ? { ...at(date), categoryId: 'transfer', expenseAmount: onDebit(amount), expenseWalletId: debitWalletId, incomeAmount: amount, incomeWalletId: loan.walletId, type: TrnType.Transfer } satisfies TrnItem
+          : { ...at(date), amount, categoryId: kind === 'interest' ? 'loanInterest' : 'loanFine', type: TrnType.Expense, walletId: loan.walletId } satisfies TrnItem
+      }
+
+      for (;;) {
+        // By status: a row caught up by an earlier payment is paid without transactions of its own.
+        const row = reconcileSchedule(params, schedule, paid, today)
+          .find(r => (r.status === 'scheduled' || r.status === 'overdue') && r.totalAmount > 0 && !skipped.has(r.paymentNumber))
+        if (!row || row.date > today)
+          break
+        const n = row.paymentNumber
+
+        if ((config.missed && n === dueCount) || n === numberAgo(config.catchUp)) {
+          skipped.add(n)
+          if (n !== dueCount)
+            carried = { interest: row.interestPart, total: row.totalAmount }
+          continue
+        }
+        if (n === numberAgo(config.payoff)) {
+          // The whole debt left before this row plus its interest: the tail re-solves to nothing.
+          pay('payment', round2(row.remainingBalance + row.principalPart + row.interestPart), row.date)
+          pay('interest', row.interestPart, row.date)
+          break
+        }
+        if (!prepaid && n === numberAgo(config.prepayment?.paymentsAgo)) {
+          // Re-read the plan: under reducePayment the prepayment lowers this very payment.
+          pay('payment', round(config.prepayment!.amount, currency), addDays(new UTCDate(row.date), -21).getTime())
+          prepaid = true
+          continue
+        }
+
+        const date = n === numberAgo(config.late) ? addDays(new UTCDate(row.date), 5).getTime() : row.date
+        const interest = round2(row.interestPart + (carried?.interest ?? 0))
+        // The bank takes the late fee out of the payment, so the transfer carries it on top.
+        const fine = carried ? money(700, loan.walletId) : 0
+        pay('payment', round2(row.totalAmount + (carried?.total ?? 0) + fine), date)
+        if (interest > 0)
+          pay('interest', interest, date)
+        if (fine > 0)
+          pay('fine', fine, date)
+        carried = null
+      }
+
+      if (config.bankDebt) {
+        const balance = paid.reduce((total, trn) => trn.kind === 'payment' ? total - trn.amount : total + trn.amount, loan.principalAmount)
+        Object.assign(loan, { bankDebtAmount: round2(balance), bankDebtUpdatedAt: addDays(new UTCDate(today), -2).getTime() })
+      }
+      return loan
+    })
+
     trnsStore.setTrns(trns)
+    const loansStore = useLoansStore()
+    loansStore.setLoans(Object.fromEntries(loans.map(loan => [loanIdFor(loan.walletId), loan])))
+    loansStore.setScheduleRows(scheduleRows)
   }
 
   return {

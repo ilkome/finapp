@@ -87,6 +87,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
   ],
   walletBalance: [visibility],
   walletDescription: [visibility],
+  walletLoan: [visibility],
   wallets: [
     visibility,
     { id: 'wallets.displayMode', paths: ['wallets.displayMode'], titleKey: 'stat.config.wallets.displayMode' },
