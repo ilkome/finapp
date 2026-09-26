@@ -1,5 +1,5 @@
 import type {
-  AbstractPowerSyncDatabase,
+  CommonPowerSyncDatabase,
   PowerSyncBackendConnector,
   PowerSyncCredentials,
 } from '@powersync/web'
@@ -64,7 +64,7 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     }
   }
 
-  async uploadData(database: AbstractPowerSyncDatabase): Promise<void> {
+  async uploadData(database: CommonPowerSyncDatabase): Promise<void> {
     const transaction = await database.getNextCrudTransaction()
     if (!transaction)
       return
