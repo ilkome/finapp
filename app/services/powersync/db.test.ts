@@ -20,7 +20,7 @@ vi.mock('@powersync/web', () => {
       createdWith.push(options)
     }
   }
-  return { LogLevels: { debug: 20, error: 50, info: 30, trace: 10, warn: 40 }, PowerSyncDatabase }
+  return { LogLevels: { debug: 20, error: 50, info: 30, trace: 10, warn: 40 }, PowerSyncDatabase, WASQLiteVFS: { IDBBatchAtomicVFS: 'IDBBatchAtomicVFS', OPFSWriteAheadVFS: 'OPFSWriteAheadVFS' } }
 })
 vi.mock('~~/services/powersync/AppSchema', () => ({ AppSchema: {} }))
 
@@ -54,7 +54,7 @@ describe('getPowerSyncDb', () => {
   it('uses the PowerSync 2 database options API', async () => {
     await getPowerSyncDb()
     expect(createdWith.at(-1)).toEqual({
-      database: { dbFilename: 'finapp.db', preparedStatementsCache: 64, worker: expect.any(String) },
+      database: { dbFilename: 'finapp.db', preparedStatementsCache: 64, vfs: 'IDBBatchAtomicVFS', worker: expect.any(String) },
       logger: { log: expect.any(Function) },
       schema: {},
       sync: { worker: expect.any(String) },
