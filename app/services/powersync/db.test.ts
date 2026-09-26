@@ -53,16 +53,17 @@ describe('pausePowerSync', () => {
 describe('getPowerSyncDb', () => {
   it('uses the PowerSync 2 database options API', async () => {
     await getPowerSyncDb()
-    expect(createdWith).toEqual([{
+    expect(createdWith.at(-1)).toEqual({
       database: { dbFilename: 'finapp.db', preparedStatementsCache: 64, worker: expect.any(String) },
       logger: { log: expect.any(Function) },
       schema: {},
       sync: { worker: expect.any(String) },
-    }])
+    })
   })
 
   it('downgrades network failures to warn and keeps other errors at error', async () => {
-    const { logger } = createdWith[0] as { logger: { log: (r: { error?: unknown, level: number, message: string }) => void } }
+    await getPowerSyncDb()
+    const { logger } = createdWith.at(-1) as { logger: { log: (r: { error?: unknown, level: number, message: string }) => void } }
     const error = vi.spyOn(console, 'error').mockImplementation(() => {})
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
 
