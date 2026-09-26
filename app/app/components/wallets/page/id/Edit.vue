@@ -6,11 +6,11 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { canGoBack, navigateAfterSave } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
-const route = useRoute()
+const route = useRoute('wallets-id-edit')
 const router = useRouter()
 const walletsStore = useWalletsStore()
 
-const walletId = computed(() => route.params.id) as Ref<WalletId>
+const walletId = computed<WalletId>(() => route.params.id)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 
 const walletForm = ref<WalletItem | undefined>(

@@ -21,6 +21,8 @@ const emit = defineEmits<{
 }>()
 
 const route = useRoute()
+// The sidebar is global: only wallet and category pages carry an `id` param.
+const activeId = computed(() => 'id' in route.params ? route.params.id : undefined)
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
@@ -142,7 +144,7 @@ function startResize(event: PointerEvent) {
               <WalletsItem
                 v-for="(walletId, index) in sidebarWalletIds"
                 :key="walletId"
-                :activeItemId="(route.params.id as string)"
+                :activeItemId="activeId"
                 :contextMenuItems="getWalletContextMenuItems(walletId as WalletId)"
                 :lineWidth="index === sidebarWalletIds.length - 1 ? 0 : 1"
                 :wallet="walletsStore.itemsComputed[walletId]!"
@@ -152,7 +154,7 @@ function startResize(event: PointerEvent) {
                 :baseCurrencyCode="currenciesStore.base"
                 isShowRate
                 isShowIcon
-                :to="walletId === route.params.id ? '/dashboard' : `/wallets/${walletId}`"
+                :to="walletId === activeId ? '/dashboard' : `/wallets/${walletId}`"
               />
             </template>
 
@@ -161,13 +163,13 @@ function startResize(event: PointerEvent) {
               <CategoriesItem
                 v-for="(categoryId, index) in categoriesStore.sidebarCategoryIds"
                 :key="categoryId"
-                :activeItemId="(route.params.id as string)"
+                :activeItemId="activeId"
                 :categoryId
                 :category="categoriesStore.items[categoryId]!"
                 :lineWidth="index === categoriesStore.sidebarCategoryIds.length - 1 ? 0 : 1"
                 isShowParent
                 stacked
-                :to="categoryId === route.params.id ? '/dashboard' : `/categories/${categoryId}`"
+                :to="categoryId === activeId ? '/dashboard' : `/categories/${categoryId}`"
               />
             </template>
           </div>

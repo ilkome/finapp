@@ -92,6 +92,14 @@ export default defineNuxtConfig({
     },
   },
 
+  experimental: {
+    // PWA service worker owns update detection; the hourly builds/latest.json poll is redundant.
+    appManifest: false,
+    buildCache: true,
+    typedPages: true,
+    typescriptPlugin: true,
+  },
+
   fonts: {
     defaults: {
       subsets: ['cyrillic', 'latin', 'latin-ext'],
@@ -104,7 +112,7 @@ export default defineNuxtConfig({
     ],
   },
   future: {
-    compatibilityVersion: 4,
+    compatibilityVersion: 5,
   },
 
   i18n: {
@@ -396,5 +404,10 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+
+  vue: {
+    // Every component is Composition API; dropping Options API support shrinks the Vue runtime.
+    optionsApi: false,
   },
 })

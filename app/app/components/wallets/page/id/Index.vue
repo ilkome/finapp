@@ -3,7 +3,6 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 
 import type { StatContextBlockId } from '~/components/stat/config/schema'
 import type { TrnId } from '~/components/trns/types'
-import type { WalletId } from '~/components/wallets/types'
 
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { useLoansStore } from '~/components/loans/useLoansStore'
@@ -20,7 +19,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
-const route = useRoute()
+const route = useRoute('wallets-id')
 const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
@@ -28,7 +27,7 @@ const walletsStore = useWalletsStore()
 const loansStore = useLoansStore()
 const { statHeader } = useStatPageHost()
 
-const walletId = computed(() => route.params.id as WalletId)
+const walletId = computed(() => route.params.id)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
 const isCredit = computed(() => wallet.value?.type === 'credit')
 const contextBlockIds = computed<readonly StatContextBlockId[]>(() => [
