@@ -10,6 +10,8 @@
   "scripts": {
     "build": "nuxt generate",
     "check:deps": "node scripts/check-single-reka-ui.mjs",
+    "perf:boot": "node scripts/perf-cdp.mjs boot",
+    "perf:edit": "node scripts/perf-cdp.mjs edit",
     "dev": "nuxt dev --port=3050 --public --dotenv=.env.cloud",
     "dev:cloud": "nuxt dev --port=3050 --public --dotenv=.env.cloud",
     "dev:local": "nuxt dev --port=3050 --public --dotenv=.env.local",
