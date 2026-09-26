@@ -10,6 +10,7 @@ import { normalizeActiveViews, rowToView, useStatViewsStore, viewToRow } from '~
 const h = vi.hoisted(() => ({
   auth: { uid: { value: null } },
   demo: { value: true },
+  persistStoreCache: vi.fn(),
   upsertRows: vi.fn(),
   watchTable: vi.fn(),
 }))
@@ -19,6 +20,7 @@ vi.mock('~~/services/powersync/db', () => ({ watchTable: h.watchTable }))
 vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: vi.fn(), upsertRows: h.upsertRows }))
 vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
 vi.mock('~/composables/useSupabase', () => ({ useSupabaseAuth: () => h.auth }))
+vi.mock('~/composables/useStoreCache', () => ({ persistStoreCache: h.persistStoreCache }))
 
 describe('useStatViewsStore demo persistence', () => {
   beforeEach(() => {
@@ -135,5 +137,46 @@ describe('active view conflict resolution', () => {
       { id: 'older', isActive: false },
       { id: 'newer', isActive: true },
     ])
+  })
+})
+
+describe('cold-start snapshot', () => {
+  const saved = (id: string) => StatViewSchema.parse({
+    autoRule: null,
+    config: { base: structuredClone(defaultConfig), blockRules: {} },
+    createdAt: 1,
+    id,
+    isActive: true,
+    isAutoEnabled: false,
+    name: id,
+    scope: 'dashboard',
+    sortOrder: 0,
+    updatedAt: 1,
+    userId: 'u1',
+  })
+
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    h.demo.value = false
+    h.persistStoreCache.mockReset()
+    h.watchTable.mockReset()
+  })
+
+  it('shows the cached views before the first watch emission, skipping invalid ones', async () => {
+    const store = useStatViewsStore()
+    store.primeFromCache([saved('mine'), { broken: true }])
+    await store.init('dashboard')
+
+    expect(store.isLoaded).toBe(false)
+    expect(store.savedViews.map(view => view.id)).toEqual(['mine'])
+  })
+
+  it('mirrors every watch emission into the snapshot', async () => {
+    const store = useStatViewsStore()
+    await store.init('dashboard')
+    const onRows = h.watchTable.mock.calls[0]![2] as (rows: unknown[]) => void
+    onRows([viewToRow(saved('mine'))].map(row => ({ ...row, id: 'mine' })))
+
+    expect(h.persistStoreCache).toHaveBeenCalledWith('statViews', [expect.objectContaining({ id: 'mine' })])
   })
 })

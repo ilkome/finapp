@@ -6,6 +6,7 @@ import { deleteRow, upsertRows } from '~~/services/powersync/mutations'
 
 import { useDemo } from '~/components/demo/useDemo'
 import { resolveWriteUid } from '~/composables/useAuthSession'
+import { persistStoreCache } from '~/composables/useStoreCache'
 import { showErrorToast } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
@@ -89,16 +90,27 @@ export const useStatViewsStore = defineStore('statViews', () => {
     items.value = next.toSorted(compareViews)
   }
 
+  function parseViews(values: unknown[]): StatView[] {
+    return values.map((value) => {
+      const parsed = StatViewSchema.safeParse(value)
+      return parsed.success ? parsed.data as StatView : null
+    }).filter((view): view is StatView => !!view)
+  }
+
+  /** Cold-start paint from the per-user snapshot, so the saved layout shows before SQLite emits. */
+  function primeFromCache(data: unknown[] | null): void {
+    if (isDemo.value || !data || isLoaded.value)
+      return
+    setItems(parseViews(data))
+  }
+
   async function init(scope: StatViewScope = 'dashboard') {
     activeScope.value = scope
     watchController?.abort()
     isLoaded.value = false
     if (isDemo.value) {
       const stored = await localforage.getItem<unknown[]>(`${DEMO_KEY}.${scope}`)
-      setItems((stored ?? []).map((value) => {
-        const parsed = StatViewSchema.safeParse(value)
-        return parsed.success ? parsed.data as StatView : null
-      }).filter((view): view is StatView => !!view && view.scope === scope))
+      setItems(parseViews(stored ?? []).filter(view => view.scope === scope))
       isLoaded.value = true
       return
     }
@@ -107,6 +119,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
       const normalized = normalizeActiveViews(received)
       setItems(normalized)
       isLoaded.value = true
+      persistStoreCache('statViews', normalized)
       const changed = normalized.filter((view, index) => view.isActive !== received[index]!.isActive)
       if (changed.length) {
         void upsertRows('stat_views', changed.map(view => ({ id: view.id, row: viewToRow(view) })))
@@ -291,7 +304,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
     }
   }
 
-  return { create, init, isDemo, isLoaded, items, remove, reorder, savedViews, setActive, update, updateMany, views }
+  return { create, init, isDemo, isLoaded, items, primeFromCache, remove, reorder, savedViews, setActive, update, updateMany, views }
 })
 
 export { normalizeActiveViews, rowToView, viewToRow }

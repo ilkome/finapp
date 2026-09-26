@@ -15,6 +15,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { useStatViewsStore } from '~/components/stat/views/useStatViewsStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -43,6 +44,7 @@ export function useInitApp() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const loansStore = useLoansStore()
+  const statViewsStore = useStatViewsStore()
 
   // True once all three data stores have received their first local-SQLite watch emission (even
   // an empty one) - the real "local data is on screen" signal the onboarding gate waits on. Demo
@@ -125,6 +127,7 @@ export function useInitApp() {
         userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
         currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
         loansStore.primeFromCache((snap.loans as LoansCache) ?? null)
+        statViewsStore.primeFromCache((snap.statViews as unknown[]) ?? null)
       }
       performance.mark('cache:prime:end')
       performance.measure('cache:prime', 'cache:prime:start', 'cache:prime:end')
