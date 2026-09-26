@@ -22,6 +22,8 @@ config.global.mocks = { $t: (key: string) => key, cn }
 config.global.stubs = {
   Amount: { props: ['amount', 'currencyCode'], template: '<span data-amount>{{ amount }} {{ currencyCode }}</span>' },
   Icon: { props: ['name'], template: '<i :data-icon="name" />' },
+  NuxtLink: { props: ['to'], template: '<a :href="to"><slot /></a>' },
+  UButton: { emits: ['click'], template: '<button type="button" @click="$emit(\'click\')"><slot /></button>' },
   UTooltip: { template: '<div><slot /></div>' },
 }
 
@@ -34,7 +36,9 @@ const modules = import.meta.glob<{ default: Component }>([
   '!~/components/ui/ContextMenuMy.vue',
   '!~/components/ui/Header.vue',
   '~/components/categories/Name.vue',
+  '~/components/form/Element.vue',
   '~/components/form/Input.vue',
+  '~/components/form/Switch.vue',
   '~/components/wallets/Item*.vue',
   '~/components/wallets/Icon.vue',
   '~/components/trns/Item.vue',

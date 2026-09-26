@@ -7,7 +7,7 @@ import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isSystemCategoryId } from '~/components/categories/utils'
+import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -37,6 +37,31 @@ const transfer: CategoryItem = {
   showInLastUsed: false,
   showInQuickSelector: false,
 }
+
+// Reserved loan categories: shared by every credit product (the product is the credit wallet the
+// expense is on, not the category). Unlike transfer/adjustment they are real spending,
+// so they stay in statistics.
+const loanInterest: CategoryItem = {
+  color: '',
+  icon: 'mdi:percent',
+  isExcludeFromStats: false,
+  name: 'Loan interest',
+  parentId: 0,
+  showInLastUsed: false,
+  showInQuickSelector: false,
+}
+
+const loanFine: CategoryItem = {
+  color: '',
+  icon: 'mdi:alert-circle-outline',
+  isExcludeFromStats: false,
+  name: 'Loan fees',
+  parentId: 0,
+  showInLastUsed: false,
+  showInQuickSelector: false,
+}
+
+const syntheticCategories = { adjustment, loanFine, loanInterest, transfer }
 
 type CategoriesStore = {
   categoriesForBeParent: ComputedRef<CategoryId[]>
@@ -70,7 +95,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const { uid } = useSupabaseAuth()
   const nuxtApp = useNuxtApp()
 
-  const items = shallowRef<Categories>({ adjustment, transfer })
+  const items = shallowRef<Categories>({ ...syntheticCategories })
 
   // Localized display names for the synthetic system categories. Set via $i18n
   // (never useI18n() here: outside setup it throws vue-i18n code 26) and refreshed
@@ -79,10 +104,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   watch(() => nuxtApp.$i18n.locale.value, () => {
     adjustment.name = nuxtApp.$i18n.t('trnForm.adjustmentTitle')
     transfer.name = nuxtApp.$i18n.t('trnForm.transferTitle')
+    loanInterest.name = nuxtApp.$i18n.t('trnForm.loanInterestTitle')
+    loanFine.name = nuxtApp.$i18n.t('trnForm.loanFineTitle')
     items.value = { ...items.value }
   }, { immediate: true })
   const hasItems = computed(() =>
-    Object.keys(items.value).some(id => id !== 'transfer' && id !== 'adjustment'),
+    Object.keys(items.value).some(id => !isReservedCategoryId(id)),
   )
   // True after the first local-SQLite emission; reset on (re)subscribe so a new user waits for theirs.
   const isLoaded = ref(false)
@@ -137,7 +164,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return categoriesRootIds.value.filter((id: CategoryId) =>
-      !usedCategoryIds.value.has(id) && id !== 'transfer',
+      !usedCategoryIds.value.has(id) && !isReservedCategoryId(id),
     )
   })
 
@@ -259,7 +286,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   function setCategories(values: Categories | null) {
-    const categories = values ? { ...values, adjustment, transfer } : { adjustment, transfer }
+    const categories = values ? { ...values, ...syntheticCategories } : { ...syntheticCategories }
     items.value = categories
     if (isDemo.value)
       debouncedPersist(categories)
@@ -271,7 +298,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   function primeFromCache(data: Categories | null): void {
     if (isDemo.value || !data || isLoaded.value)
       return
-    items.value = { ...data, adjustment, transfer }
+    items.value = { ...data, ...syntheticCategories }
   }
 
   function hasChildren(categoryId: CategoryId) {
@@ -354,7 +381,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   function saveCategory({ id, isUpdateChildCategoriesColor, nextChildIds, values }: AddCategoryParams) {
-    if (id === 'transfer' || id === 'adjustment')
+    if (isReservedCategoryId(id))
       return
 
     const prev = items.value
@@ -406,7 +433,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   function deleteCategory(id: CategoryId, trnsIds?: TrnId[]) {
-    if (id === 'transfer' || id === 'adjustment')
+    if (isReservedCategoryId(id))
       return
 
     const prevCategories = items.value

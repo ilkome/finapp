@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+import type { StatContextBlockId } from '~/components/stat/config/schema'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
+import { useLoansStore } from '~/components/loans/useLoansStore'
+import LoansWalletActions from '~/components/loans/WalletActions.vue'
+import { walletBalanceItems } from '~/components/loans/walletBalanceItems'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { useStatDrilldownPage } from '~/components/stat/page/useStatDrilldownPage'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
@@ -21,13 +25,17 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
+const loansStore = useLoansStore()
 const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id as WalletId)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
-const contextBlockIds = computed(() => wallet.value?.desc
-  ? ['walletBalance', 'walletDescription'] as const
-  : ['walletBalance'] as const)
+const isCredit = computed(() => wallet.value?.type === 'credit')
+const contextBlockIds = computed<readonly StatContextBlockId[]>(() => [
+  'walletBalance',
+  ...(wallet.value?.desc ? ['walletDescription' as const] : []),
+  ...(isCredit.value ? ['walletLoan' as const] : []),
+])
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
 const { statSnapshot, storage, storageKey, storageQuery } = useStatDrilldownPage({ id: walletId, kind: 'wallet' })
 
@@ -84,13 +92,14 @@ onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
-const walletBalanceItems = computed(() => wallet.value?.type === 'credit'
-  ? [
-      { amount: total.value, title: t('wallets.form.credit.debt') },
-      { amount: walletCreditLimit.value - (-total.value), title: t('wallets.form.credit.available') },
-      { amount: walletCreditLimit.value, title: t('wallets.form.credit.limit') },
-    ]
-  : [{ amount: total.value, title: t('money.balance') }])
+const hasLoan = computed(() => loansStore.loanIdByWalletId.has(walletId.value))
+const balanceItems = computed(() => walletBalanceItems({
+  creditLimit: walletCreditLimit.value,
+  hasLoan: hasLoan.value,
+  isCredit: isCredit.value,
+  t,
+  total: total.value,
+}))
 
 function onClickEdit() {
   router.push(`/wallets/${walletId.value}/edit`)
@@ -113,8 +122,11 @@ function onClickDelete() {
   isShowDeleteConfirm.value = true
 }
 
+const loanActions = shallowRef<InstanceType<typeof LoansWalletActions> | null>(null)
+
 const menuItems = computed<DropdownMenuItem[][]>(() => [[
   { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onClickEdit },
+  ...(loanActions.value?.menuItems ?? []),
 ], [
   { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete },
 ]])
@@ -163,6 +175,12 @@ async function onDeleteConfirm() {
       @confirm="onDeleteConfirm"
     />
 
+    <LoansWalletActions
+      v-if="isCredit"
+      ref="loanActions"
+      :walletId
+    />
+
     <StatLayout
       :hiddenPanels
       :storageKey
@@ -174,7 +192,7 @@ async function onDeleteConfirm() {
       <template #walletBalance>
         <div class="wallet-balance-summary -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:flex-wrap md:overflow-visible md:px-0">
           <StatSumItemView
-            v-for="item in walletBalanceItems"
+            v-for="item in balanceItems"
             :key="item.title"
             :amount="item.amount"
             class="min-w-0 flex-1 basis-0 snap-start snap-always md:w-max md:flex-none md:basis-auto md:snap-none"
@@ -184,6 +202,10 @@ async function onDeleteConfirm() {
             variant="summary"
           />
         </div>
+      </template>
+
+      <template #walletLoan>
+        <LoansWalletSection :walletId />
       </template>
 
       <template #walletDescription>

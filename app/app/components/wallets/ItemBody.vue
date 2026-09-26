@@ -88,6 +88,12 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
           />
         </div>
 
+        <LoansWalletCardLine
+          v-if="props.isShowCreditLimit && wallet.type === 'credit'"
+          :wallet="props.wallet"
+          :walletId="props.walletId"
+        />
+
         <div
           v-if="props.isShowCreditLimit && wallet.type === 'credit' && walletCreditLimit"
           class="flex items-center gap-0.5 opacity-70"

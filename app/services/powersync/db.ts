@@ -275,7 +275,7 @@ export async function waitForUploadsDrained(timeoutMs = 8000): Promise<number> {
 
 export type SyncStatusSnapshot = { connected: boolean, pending: number, uploadError: string | null }
 
-const SYNCED_TABLES = ['categories', 'stat_views', 'trns', 'user_settings', 'wallets'] as const
+const SYNCED_TABLES = ['categories', 'loan_schedule_rows', 'loans', 'stat_views', 'trns', 'user_settings', 'wallets'] as const
 
 /**
  * Observe connection + upload-queue state for the UI. `onChange` fires on every PowerSync

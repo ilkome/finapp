@@ -27,6 +27,9 @@ export function useTrnFormSubmit() {
       values: trnFormData.values,
     })
 
+    if (trnFormData.extra)
+      trnsStore.saveTrn(trnFormData.extra)
+
     if (isVibrateSupported.value)
       vibrate()
 

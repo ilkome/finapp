@@ -1,9 +1,11 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import type { LoanItem } from '~/components/loans/types'
 import type { TrnItem } from '~/components/trns/types'
 import type { WalletItem } from '~/components/wallets/types'
 
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -210,6 +212,43 @@ describe('useWalletsStore', () => {
       expect(store.items?.w1).toBeUndefined()
       expect(trnsStore.items?.t1).toBeUndefined()
       expect(h.deleteRow).not.toHaveBeenCalled()
+    })
+
+    it('cascades to the loan of a deleted credit wallet', async () => {
+      const store = useWalletsStore()
+      store.setWallets({ credit1: wallet({ type: 'credit' }) })
+      const loansStore = useLoansStore()
+      loansStore.setLoans({ l1: {
+        annualRate: 12,
+        contractNumber: '',
+        desc: '',
+        firstPaymentDate: 1,
+        overpaymentMode: 'reducePayment',
+        paymentDay: 10,
+        principalAmount: 1000,
+        scheduleType: 'annuity',
+        startDate: 1,
+        termMonths: 12,
+        updatedAt: 1,
+        walletId: 'credit1',
+      } as LoanItem })
+      loansStore.setScheduleRows({ r1: {
+        date: 1,
+        interestPart: 1,
+        loanId: 'l1',
+        paymentNumber: 1,
+        principalPart: 1,
+        source: 'manual',
+        totalAmount: 2,
+        updatedAt: 1,
+      } })
+
+      await store.deleteWallet('credit1')
+
+      expect(loansStore.items.l1).toBeUndefined()
+      expect(Object.keys(loansStore.scheduleRows)).toEqual([])
+      expect(h.deleteRow).toHaveBeenCalledWith('loans', 'l1')
+      expect(h.deleteRow).toHaveBeenCalledWith('loan_schedule_rows', 'r1')
     })
   })
 })

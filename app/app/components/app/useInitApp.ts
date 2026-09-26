@@ -3,6 +3,8 @@ import { hasAnyLocalData, waitForFirstSync, waitForLocalDbOwner } from '~~/servi
 
 import type { Categories } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
+import type { Loans, LoanScheduleRows } from '~/components/loans/types'
+import type { LoansCache } from '~/components/loans/useLoansStore'
 import type { Trns } from '~/components/trns/types'
 import type { User, UserSettingsCache } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
@@ -11,6 +13,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { ratesSchema } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { userSettingsSchema } from '~/components/user/types'
@@ -39,6 +42,7 @@ export function useInitApp() {
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
+  const loansStore = useLoansStore()
 
   // True once all three data stores have received their first local-SQLite watch emission (even
   // an empty one) - the real "local data is on screen" signal the onboarding gate waits on. Demo
@@ -99,6 +103,7 @@ export function useInitApp() {
     currenciesStore.initCurrencies()
     categoriesStore.initCategories()
     walletsStore.initWallets()
+    loansStore.initLoans()
     trnsStore.initTrns()
   }
 
@@ -119,6 +124,7 @@ export function useInitApp() {
         walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
         userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
         currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
+        loansStore.primeFromCache((snap.loans as LoansCache) ?? null)
       }
       performance.mark('cache:prime:end')
       performance.measure('cache:prime', 'cache:prime:start', 'cache:prime:end')
@@ -128,13 +134,15 @@ export function useInitApp() {
 
   // Demo mode keeps its own localforage-backed cache (no backend).
   async function loadDemoFromCache() {
-    const [user, rawUserSettings, rawCurrencies, categories, wallets, trns] = await Promise.all([
+    const [user, rawUserSettings, rawCurrencies, categories, wallets, trns, loans, loanScheduleRows] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem(STORAGE_KEYS.userSettings),
       localforage.getItem<{ rates?: unknown }>(STORAGE_KEYS.currencies),
       localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
       localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
       localforage.getItem<Trns | null>(STORAGE_KEYS.trns),
+      localforage.getItem<Loans | null>(STORAGE_KEYS.loans),
+      localforage.getItem<LoanScheduleRows | null>(STORAGE_KEYS.loanScheduleRows),
     ])
 
     userStore.setUser(user ?? null)
@@ -152,6 +160,8 @@ export function useInitApp() {
     walletsStore.setWallets(wallets ?? null)
     categoriesStore.setCategories(categories ?? null)
     trnsStore.setTrns(trns ?? null)
+    loansStore.setLoans(loans ?? {})
+    loansStore.setScheduleRows(loanScheduleRows ?? {})
   }
 
   // Offline-first: local PowerSync SQLite is the only data source the UI reads. This arms the live

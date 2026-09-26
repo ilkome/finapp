@@ -18,6 +18,8 @@ streams:
       - SELECT * FROM trns WHERE "userId" = auth.user_id()
       - SELECT * FROM user_settings WHERE "userId" = auth.user_id()
       - SELECT * FROM stat_views WHERE "userId" = auth.user_id()
+      - SELECT * FROM loans WHERE "userId" = auth.user_id()
+      - SELECT * FROM loan_schedule_rows WHERE "userId" = auth.user_id()
 
   # Global exchange rates: shared across all users.
   rates:

@@ -162,5 +162,7 @@ describe('prepareUploadData', () => {
     expect(prepareUploadData('stat_views', { autoRule: null })).toEqual({ autoRule: null })
     const row = { config: '{"value":1}' }
     expect(prepareUploadData('wallets', row)).toBe(row)
+    const loanRow = { principalAmount: 300000, walletId: 'w1' }
+    expect(prepareUploadData('loans', loanRow)).toBe(loanRow)
   })
 })

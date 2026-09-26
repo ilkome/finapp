@@ -52,6 +52,10 @@ export function useMenuData() {
         icon: 'hugeicons:wallet-01',
         name: t('wallets.name'),
       },
+      loans: {
+        icon: 'lucide:landmark',
+        name: t('loans.page.title'),
+      },
       categories: {
         icon: 'hugeicons:folder-library',
         name: t('categories.name'),

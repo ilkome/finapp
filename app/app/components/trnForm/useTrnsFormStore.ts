@@ -2,12 +2,15 @@ import { todayCivilDayEpoch } from '~~/utils/date/civil'
 import { generateId } from '~~/utils/generateId'
 
 import type { CategoryId } from '~/components/categories/types'
+import type { TrnFormValuesWithLoan } from '~/components/loans/types'
 import type { TrnFormUi } from '~/components/trnForm/types'
 import type { CalculatorKey } from '~/components/trnForm/utils/calculate'
-import type { TransferSide, TrnFormValues, TrnId, TrnItem } from '~/components/trns/types'
+import type { TransferSide, TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { formatLoanInterest } from '~/components/loans/formatLoanInterest'
+import { useLoanPaymentDraft } from '~/components/loans/useLoanPaymentDraft'
 import { createExpressionString, evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
 import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
 import { validate } from '~/components/trnForm/utils/validate'
@@ -33,7 +36,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
 
-  const values = reactive<TrnFormValues>({
+  const values = reactive<TrnFormValuesWithLoan>({
     amount: [0, 0, 0],
     amountRaw: ['', '', ''],
     categoryId: null,
@@ -41,6 +44,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     desc: undefined,
     expenseWalletId: null,
     incomeWalletId: null,
+    loanInterest: undefined,
     transferType: 'expense',
     trnId: null,
     trnType: TrnType.Expense,
@@ -199,6 +203,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.amount = [0, 0, 0]
     values.amountRaw = ['', '', '']
     values.desc = undefined
+    values.loanInterest = undefined
     values.trnId = null
   }
 
@@ -210,6 +215,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.desc = undefined
     values.expenseWalletId = null
     values.incomeWalletId = null
+    values.loanInterest = undefined
     values.transferType = 'expense'
     values.trnId = null
     values.trnType = TrnType.Expense
@@ -261,7 +267,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
         values.categoryId = 'transfer'
       }
 
-      values.amountRaw = values.amount.map(i => formatInput(i)) as TrnFormValues['amountRaw']
+      values.amountRaw = values.amount.map(i => formatInput(i)) as TrnFormValuesWithLoan['amountRaw']
       values.trnType = props.trn.type
       values.desc = props.trn.desc
       values.date = props.trn.date
@@ -302,7 +308,12 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       return
     }
 
+    const loanInterestTrn = values.trnType === TrnType.Transfer
+      ? formatLoanInterest(values)
+      : undefined
+
     return {
+      extra: loanInterestTrn ? { id: generateId(), values: loanInterestTrn } : undefined,
       id: values.trnId ?? generateId(),
       values: data,
     }
@@ -357,6 +368,8 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
     values.date = date
   }
 
+  const loanDraft = useLoanPaymentDraft(values, { openFormForCreate })
+
   function openFormForDuplicate(trnId: TrnId) {
     const trn = trnsStore.items?.[trnId] as TrnItem
 
@@ -375,6 +388,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
   }
 
   return {
+    ...loanDraft,
     $reset,
     activeAmountIdx,
     closeTrnFormModal,

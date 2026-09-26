@@ -12,6 +12,7 @@ import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed
 import { getAmountInRate, getWalletsTotals } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -229,6 +230,12 @@ export const useWalletsStore = defineStore('wallets', () => {
 
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
+
+    // Cascade to a credit wallet's loan so it doesn't survive the wallet it belongs to.
+    const loansStore = useLoansStore()
+    const loanId = loansStore.loanIdByWalletId.get(id)
+    if (loanId)
+      loansStore.deleteLoan(loanId)
 
     if (isDemo.value)
       return

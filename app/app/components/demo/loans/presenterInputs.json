@@ -1,0 +1,46 @@
+{
+  "cost": {
+    "byMonth": [
+      { "fine": 0, "interest": 9800.15, "month": 1772409600000 },
+      { "fine": 30, "interest": 9750.01, "month": 1775001600000 }
+    ],
+    "fine": 30,
+    "interest": 19550.16
+  },
+  "loan": {
+    "annualRate": 24.5,
+    "contractNumber": "C-1",
+    "desc": "",
+    "firstPaymentDate": 1772409600000,
+    "overpaymentMode": "reducePayment",
+    "paymentDay": 1,
+    "principalAmount": 350000,
+    "scheduleType": "annuity",
+    "startDate": 1770940800000,
+    "termMonths": 60,
+    "updatedAt": 1772409600000,
+    "walletId": "w1"
+  },
+  "summary": {
+    "effectiveRate": 26.8,
+    "interestShare": 0.89,
+    "isClosed": false,
+    "nextPayment": { "amount": 12500, "date": 1775088000000 },
+    "overdueCount": 2,
+    "paidFine": 0,
+    "paidInterest": 48000,
+    "paidPrincipal": 6000,
+    "paidTotal": 54000,
+    "plannedEndDate": 1930089600000,
+    "plannedInterest": 301000,
+    "plannedTotal": 651000,
+    "remaining": -341000,
+    "rows": [
+      { "date": 1772409600000, "interestPart": 9800.15, "paidAt": 1772409600000, "paidFine": 0, "paidInterest": 9800.15, "paidPrincipal": 2699.85, "paymentNumber": 1, "principalPart": 2699.85, "remainingBalance": 347300.15, "source": "generated", "status": "paid", "totalAmount": 12500, "trnIds": ["t1"] },
+      { "date": 1775001600000, "interestPart": 9750.01, "paidAt": null, "paidFine": 0, "paidInterest": 4000, "paidPrincipal": 1000, "paymentNumber": 2, "principalPart": 2757.33, "remainingBalance": 344542.82, "source": "generated", "status": "partial", "totalAmount": 12507.34, "trnIds": ["t2"] },
+      { "date": 1777680000000, "interestPart": 9700, "paidAt": null, "paidFine": 0, "paidInterest": 0, "paidPrincipal": 0, "paymentNumber": 3, "principalPart": 2800, "remainingBalance": 341742.82, "source": "generated", "status": "scheduled", "totalAmount": 12500, "trnIds": [] },
+      { "date": 1780358400000, "interestPart": 9700, "paidAt": null, "paidFine": 0, "paidInterest": 0, "paidPrincipal": 0, "paymentNumber": 4, "principalPart": 2800, "remainingBalance": 338942.82, "source": "generated", "status": "scheduled", "totalAmount": 12500, "trnIds": [] }
+    ],
+    "unrecognized": 1200
+  }
+}

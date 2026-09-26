@@ -133,6 +133,7 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
       <slot v-if="entry.block === 'categoryChildren'" name="categoryChildren" />
       <slot v-else-if="entry.block === 'walletBalance'" name="walletBalance" />
       <slot v-else-if="entry.block === 'walletDescription'" name="walletDescription" />
+      <slot v-else-if="entry.block === 'walletLoan'" name="walletLoan" />
       <div
         v-else-if="entry.block === 'navigation'"
         :ref="setNavigationElement"

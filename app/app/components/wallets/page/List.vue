@@ -325,6 +325,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
         />
 
         <div class="grid content-start gap-3 @xl/page:gap-4 @3xl/main:max-w-sm">
+          <LoansDueThisMonth />
           <WalletsStatistics
             :isShowList="showStatistics"
             :storageKey="statisticsStorageKey"

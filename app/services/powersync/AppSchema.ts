@@ -28,6 +28,9 @@ const wallets = new Table(
     isArchived: column.integer,
     isExcludeInTotal: column.integer,
     isWithdrawal: column.integer,
+    minPaymentAmount: column.real,
+    minPaymentDate: column.integer, // civil day
+    minPaymentUpdatedAt: column.integer,
     name: column.text,
     order: column.integer,
     type: column.text,
@@ -54,6 +57,50 @@ const trns = new Table(
     walletId: column.text,
   },
   { indexes: { user: ['userId'], userDate: ['userId', 'date'] } },
+)
+
+const loans = new Table(
+  {
+    annualRate: column.real,
+    bankDebtAmount: column.real,
+    bankDebtUpdatedAt: column.integer,
+    contractNumber: column.text,
+    debitWalletId: column.text,
+    desc: column.text,
+    firstPaymentDate: column.integer, // civil day
+    interestMethod: column.text,
+    lateAfterDays: column.integer,
+    nextPaymentDate: column.integer, // civil day
+    nextPaymentInterest: column.real,
+    nextPaymentPrincipal: column.real,
+    overpaymentMode: column.text,
+    paymentDay: column.integer,
+    prepayWindowDays: column.integer,
+    principalAmount: column.real,
+    scheduleType: column.text,
+    startDate: column.integer, // civil day
+    termMonths: column.integer,
+    updatedAt: column.integer,
+    userId: column.text,
+    walletId: column.text,
+  },
+  { indexes: { user: ['userId'] } },
+)
+
+// Only imported or hand-edited rows; a generated row is represented by its absence.
+const loan_schedule_rows = new Table(
+  {
+    date: column.integer, // civil day
+    interestPart: column.real,
+    loanId: column.text,
+    paymentNumber: column.integer,
+    principalPart: column.real,
+    source: column.text,
+    totalAmount: column.real,
+    updatedAt: column.integer,
+    userId: column.text,
+  },
+  { indexes: { loan: ['userId', 'loanId'], user: ['userId'] } },
 )
 
 const user_settings = new Table({
@@ -85,6 +132,8 @@ const stat_views = new Table({
 
 export const AppSchema = new Schema({
   categories,
+  loan_schedule_rows,
+  loans,
   rates,
   stat_views,
   trns,

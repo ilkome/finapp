@@ -1,11 +1,12 @@
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { isReservedCategoryId } from '~/components/categories/utils'
 
 type Item = { color?: 'error', icon: string, label: string, onSelect: () => void }
 
 export function isMenuableCategory(categoryId: CategoryId): boolean {
-  return categoryId !== 'transfer' && categoryId !== 'adjustment'
+  return !isReservedCategoryId(categoryId)
 }
 
 export function useCategoryMenuItems() {

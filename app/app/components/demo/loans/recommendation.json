@@ -1,0 +1,11 @@
+{
+  "avalanche": { "interestSaved": 64200, "name": "Mortgage", "newEndDate": "01.02.2030", "walletId": "w1" },
+  "baseCurrencyCode": "RUB",
+  "extra": 50000,
+  "freeMoney": 84200,
+  "snowball": { "interestSaved": 1200.5, "name": "Car loan", "newEndDate": null, "walletId": "w2" },
+  "wallets": [
+    { "amount": 60000, "currencyCode": "RUB", "isSelected": true, "name": "Cash", "walletId": "c1" },
+    { "amount": 24200, "currencyCode": "RUB", "isSelected": false, "name": "Debit card", "walletId": "c2" }
+  ]
+}

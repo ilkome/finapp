@@ -66,6 +66,9 @@ describe('useCategoriesStore', () => {
       expect(store.hasItems).toBe(false) // only synthetic entries present
       expect(store.items.adjustment).toBeDefined()
       expect(store.items.transfer).toBeDefined()
+      // Reserved but not excluded from stats: loan interest and fees are real spending.
+      expect(store.items.loanInterest).toMatchObject({ isExcludeFromStats: false })
+      expect(store.items.loanFine).toMatchObject({ isExcludeFromStats: false })
 
       store.initCategories()
       expect(h.watchTable.mock.calls[0]?.[0]).toBe('SELECT * FROM categories')
@@ -151,6 +154,8 @@ describe('useCategoriesStore', () => {
 
       await store.saveCategory({ id: 'transfer', isUpdateChildCategoriesColor: false, values: category() })
       await store.saveCategory({ id: 'adjustment', isUpdateChildCategoriesColor: false, values: category() })
+      await store.saveCategory({ id: 'loanInterest', isUpdateChildCategoriesColor: false, values: category() })
+      await store.saveCategory({ id: 'loanFine', isUpdateChildCategoriesColor: false, values: category() })
 
       expect(h.upsertRows).not.toHaveBeenCalled()
     })
@@ -204,6 +209,7 @@ describe('useCategoriesStore', () => {
       store.setCategories(cats({ c1: category() }))
 
       await store.deleteCategory('adjustment')
+      await store.deleteCategory('loanInterest')
       expect(h.deleteRow).not.toHaveBeenCalled()
     })
   })

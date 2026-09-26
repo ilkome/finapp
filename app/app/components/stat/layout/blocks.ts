@@ -2,7 +2,7 @@ import type { MiniItemConfig, StatConfigBlockId, StatContextBlockId, StatReportB
 import type { StatBlockPanelId } from '~/components/stat/views/types'
 
 import { PANELS } from '~/components/stat/config/panels/registry'
-import { statReportBlockOrder } from '~/components/stat/config/schema'
+import { statContextBlockIds, statReportBlockOrder } from '~/components/stat/config/schema'
 
 export type StatLayoutEntry = {
   block?: StatConfigBlockId
@@ -16,6 +16,10 @@ type Params = {
   hasWalletFilter: boolean
   hiddenPanels?: StatBlockPanelId[]
   showWallets?: boolean
+}
+
+function isContextBlock(block: StatConfigBlockId): block is StatContextBlockId {
+  return (statContextBlockIds as readonly string[]).includes(block)
 }
 
 function isReportBlock(block: StatConfigBlockId): block is StatReportBlockId {
@@ -34,7 +38,7 @@ export function resolveStatLayoutBlocks({ config, contextBlockIds, hasWalletFilt
   const orderedBlocks = config.page.blockOrder.filter((block) => {
     if (hidden.has(block))
       return false
-    if (block === 'categoryChildren' || block === 'walletBalance' || block === 'walletDescription')
+    if (isContextBlock(block))
       return available.has(block) && PANELS[block].getIsShow(config)
     if (block === 'navigation')
       return config.date.isShow
