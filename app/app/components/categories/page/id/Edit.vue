@@ -7,10 +7,10 @@ import { canGoBack, navigateAfterSave } from '~/composables/useNavigationHistory
 
 const { t } = useI18n()
 const router = useRouter()
-const route = useRoute()
+const route = useRoute('categories-id-edit')
 const categoriesStore = useCategoriesStore()
 
-const categoryId = computed<CategoryId>(() => String(route.params.id))
+const categoryId = computed<CategoryId>(() => route.params.id)
 const category = computed(() => categoriesStore.items[categoryId.value])
 // On a hard navigation the store hydrates from PowerSync after setup, so
 // `category` is undefined initially - parse `?? {}` to avoid throwing, then
