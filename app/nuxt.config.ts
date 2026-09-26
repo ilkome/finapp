@@ -262,6 +262,9 @@ export default defineNuxtConfig({
     // restart instead of reloading the app under the user.
     registerType: 'prompt',
     workbox: {
+      // First install (and after the clear-cache button) would leave the open page uncontrolled until
+      // the next load, so lazy chunks there bypass the precache. Updates still wait for the prompt.
+      clientsClaim: true,
       globIgnores: ['**/200*', '**/404*', 'og-image.png', 'screenshot-*.png'],
       globPatterns: [
         '**/*.{js,json,css,html,png,svg,ico,woff2}',
