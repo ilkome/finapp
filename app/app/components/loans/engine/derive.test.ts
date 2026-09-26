@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
+import type { ScheduleOverride } from '~/components/loans/engine/types'
 import type { LoanItem, LoanScheduleRowItem } from '~/components/loans/types'
 
-import { bankNextPaymentAmount, deriveDue, deriveLoan, overridesByLoan, paramsOf, projectionParams } from '~/components/loans/engine/derive'
+import { bankNextPaymentAmount, createDeriveLoanMemo, deriveDue, deriveLoan, overridesByLoan, paramsOf, projectionParams } from '~/components/loans/engine/derive'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
 
@@ -224,5 +225,29 @@ describe('bankNextPaymentAmount', () => {
   it('replaces the engine amount in deriveDue', () => {
     const summary = { isClosed: false, rows: [{ date: day('2026-10-01'), paidInterest: 0, paidPrincipal: 0, status: 'scheduled', totalAmount: 8000 }] } as any
     expect(deriveDue([{ bankAmount: 5000.01, currency: 'RUB', summary, walletId: 'credit1' }], [], day('2026-09-23'))?.amount).toBe(5000.01)
+  })
+})
+
+describe('createDeriveLoanMemo', () => {
+  const overrides: ScheduleOverride[] = []
+  const payment = { amount: 1065, date: day('2026-01-15'), id: 't1', kind: 'payment' as const }
+
+  it('reuses the summary while the loan inputs are unchanged', () => {
+    const derive = createDeriveLoanMemo()
+    const first = derive('l1', loan, overrides, [payment], -11_000, day('2026-02-01'))
+
+    expect(derive('l1', loan, overrides, [{ ...payment }], -11_000, day('2026-02-01'))).toBe(first)
+  })
+
+  it('re-derives when one of its trns, the balance, the day or the loan changes', () => {
+    const derive = createDeriveLoanMemo()
+    const first = derive('l1', loan, overrides, [payment], -11_000, day('2026-02-01'))
+
+    const byTrn = derive('l1', loan, overrides, [{ ...payment, amount: 1100 }], -11_000, day('2026-02-01'))
+    expect(byTrn).not.toBe(first)
+    expect(byTrn).toEqual(deriveLoan(loan, overrides, [{ ...payment, amount: 1100 }], -11_000, day('2026-02-01')))
+    expect(derive('l1', loan, overrides, [{ ...payment, amount: 1100 }], -10_900, day('2026-02-01'))).not.toBe(byTrn)
+    expect(derive('l1', loan, overrides, [{ ...payment, amount: 1100 }], -10_900, day('2026-02-02'))).not.toBe(byTrn)
+    expect(derive('l1', { ...loan }, overrides, [{ ...payment, amount: 1100 }], -10_900, day('2026-02-02'))).not.toBe(byTrn)
   })
 })
