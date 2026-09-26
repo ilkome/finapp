@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineOptions({ name: 'CategoriesId' })
+usePauseWhenInactive()
 
 definePageMeta({
   key: (route) => {

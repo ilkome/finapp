@@ -4,6 +4,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 defineOptions({ name: 'Dashboard' })
+usePauseWhenInactive()
 
 const { t } = useI18n()
 const { bootState } = useInitApp()
