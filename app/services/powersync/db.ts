@@ -77,25 +77,59 @@ export function waitForLocalDbOwner(userId: string, timeoutMs = 30000): Promise<
   })
 }
 
+const IDB_FILENAME = 'finapp.db'
+// Its own name: PowerSync keys its shared workers by file name, so reusing the IndexedDB one
+// after the move would hand the new db a connection to the old one.
+const OPFS_FILENAME = 'finapp-opfs.db'
+
 /**
- * Singleton PowerSync database (local SQLite, WASM + IndexedDB VFS: multi-tab, no COOP/COEP).
+ * OPFS in WAL mode serves the boot watches from parallel read connections instead of queueing
+ * them on one IndexedDB connection. Its VFS opens access handles in `readwrite-unsafe` mode,
+ * which only Chromium 121+ has; other browsers stay on IndexedDB.
+ */
+export function supportsOpfsWal(nav: Partial<Navigator> | undefined = globalThis.navigator): boolean {
+  const brands = (nav as { userAgentData?: { brands?: { brand: string, version: string }[] } } | undefined)?.userAgentData?.brands
+  const chromium = brands?.find(b => b.brand === 'Chromium')
+  return !!chromium && Number(chromium.version) >= 121 && typeof nav?.storage?.getDirectory === 'function'
+}
+
+async function hasIdbDatabase(name: string): Promise<boolean> {
+  try {
+    return (await globalThis.indexedDB.databases()).some(db => db.name === name)
+  }
+  catch {
+    return false
+  }
+}
+
+/** Resolves once the delete lands, or at once when another connection blocks it (it lands later). */
+function deleteIdbDatabase(name: string): Promise<void> {
+  return new Promise((resolve) => {
+    const request = globalThis.indexedDB.deleteDatabase(name)
+    request.onsuccess = request.onerror = request.onblocked = () => resolve()
+  })
+}
+
+/**
+ * Singleton PowerSync database (local SQLite in a worker, OPFS where supported, else IndexedDB).
  * `@powersync/web` (+ schema) is dynamically imported on first call so its bundle stays out of
  * the entry chunk - the login page and demo mode never parse it.
  */
 export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
   _dbPromise ??= (async () => {
-    const [{ LogLevels, PowerSyncDatabase }, { AppSchema }, { default: workerUrl }] = await Promise.all([
+    const [{ LogLevels, PowerSyncDatabase, WASQLiteVFS }, { AppSchema }, { default: workerUrl }] = await Promise.all([
       import('@powersync/web'),
       import('./AppSchema'),
       import('@powersync/web/bundled_worker?worker&url'),
     ])
-    _db = new PowerSyncDatabase({
+    const create = (vfs: typeof WASQLiteVFS[keyof typeof WASQLiteVFS], singleTab = false) => new PowerSyncDatabase({
       database: {
-        dbFilename: 'finapp.db',
+        dbFilename: vfs === WASQLiteVFS.OPFSWriteAheadVFS ? OPFS_FILENAME : IDB_FILENAME,
+        vfs,
         // The in-app review browser exposes `SharedWorker` but cannot start a module one, so
         // PowerSync's shared worker dies and the app never leaves the skeleton. `pnpm dev:review`
         // sets the flag; every other run exercises the real multi-tab path.
-        ...(import.meta.env.VITE_POWERSYNC_SINGLE_TAB ? { enableMultiTabs: false } : {}),
+        ...(singleTab || import.meta.env.VITE_POWERSYNC_SINGLE_TAB ? { enableMultiTabs: false } : {}),
         // Watch re-queries, upserts and queue counts repeat the same few statements; cache them in the worker.
         preparedStatementsCache: 64,
         worker: workerUrl,
@@ -121,6 +155,36 @@ export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
         worker: workerUrl,
       },
     })
+
+    if (!supportsOpfsWal()) {
+      _db = create(WASQLiteVFS.IDBBatchAtomicVFS)
+      return _db
+    }
+    // Moving to OPFS starts from an empty file that re-syncs from the server, so the old
+    // IndexedDB db is dropped only online (offline, the first local write would replace the
+    // cached view with a near-empty table) and once its upload queue is empty.
+    if (await hasIdbDatabase(IDB_FILENAME)) {
+      if (!globalThis.navigator.onLine) {
+        _db = create(WASQLiteVFS.IDBBatchAtomicVFS)
+        return _db
+      }
+      // Probed in its own worker: closing a shared-worker client leaves the shared worker's
+      // IndexedDB connection open, which blocks the delete and every later open of that db.
+      const probe = create(WASQLiteVFS.IDBBatchAtomicVFS, true)
+      await probe.init()
+      const pending = (await probe.getUploadQueueStats()).count
+      await probe.close()
+      if (pending > 0) {
+        logger.warn(`staying on IndexedDB until ${pending} op(s) upload`)
+        _db = create(WASQLiteVFS.IDBBatchAtomicVFS)
+        return _db
+      }
+      // ponytail: a tab still on the old build keeps the IndexedDB db open, so the delete only
+      // lands once it closes and its not-yet-uploaded ops are lost then. Single-user app, rare.
+      await deleteIdbDatabase(IDB_FILENAME)
+      logger.log('moved local db to OPFS')
+    }
+    _db = create(WASQLiteVFS.OPFSWriteAheadVFS)
     return _db
   })()
   return _dbPromise

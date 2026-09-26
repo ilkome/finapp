@@ -273,10 +273,10 @@ export default defineNuxtConfig({
       importScripts: ['/sw-push.js'],
       manifestTransforms: [
         (entries) => {
-          // The runtime loads exactly one wasm build. Vite's own copies under _nuxt/ and the
-          // mc-/sync variants would add ~12 MB to every install on a phone.
+          // The runtime loads the sync wasm build (OPFS) or the async one (IndexedDB fallback). Vite's
+          // own copies under _nuxt/ and the mc- (encryption) variants would add ~4 MB to every install.
           const manifest = entries.filter(e =>
-            !e.url.endsWith('.wasm') || /powersync-assets\/wa-sqlite-async-.*\.wasm$/.test(e.url),
+            !e.url.endsWith('.wasm') || /powersync-assets\/wa-sqlite-[\w-]+\.wasm$/.test(e.url),
           )
           const hasWasm = manifest.some(e => e.url.endsWith('.wasm'))
           if (!hasWasm) {
