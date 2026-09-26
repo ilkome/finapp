@@ -41,7 +41,6 @@ async function loadMiddleware(): Promise<MiddlewareFn> {
 
 describe('auth.global middleware', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
     isDemoRef.value = false
     hasPersistedSessionMock.mockReturnValue(false)
   })

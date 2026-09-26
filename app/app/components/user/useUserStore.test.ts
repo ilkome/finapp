@@ -32,7 +32,6 @@ describe('useUserStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     h.demo.value = false
-    setItem.mockClear()
   })
 
   describe('setUser localforage gating (real mode is the source of truth)', () => {

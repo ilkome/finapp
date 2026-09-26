@@ -15,7 +15,6 @@ const setItem = vi.mocked(localforage.setItem)
 
 describe('createDebouncedPersist', () => {
   beforeEach(() => {
-    setItem.mockClear()
     unblockPersist()
   })
   afterEach(() => {
@@ -49,7 +48,6 @@ describe('createDebouncedPersist', () => {
 
 describe('showErrorToast', () => {
   beforeEach(() => {
-    toastAddMock.mockClear()
     initializeStoreSyncToast({ add: toastAddMock } as unknown as ReturnType<typeof useToast>)
   })
 
