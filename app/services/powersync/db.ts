@@ -96,6 +96,8 @@ export function getPowerSyncDb(): Promise<PowerSyncDatabase> {
         // PowerSync's shared worker dies and the app never leaves the skeleton. `pnpm dev:review`
         // sets the flag; every other run exercises the real multi-tab path.
         ...(import.meta.env.VITE_POWERSYNC_SINGLE_TAB ? { enableMultiTabs: false } : {}),
+        // Watch re-queries, upserts and queue counts repeat the same few statements; cache them in the worker.
+        preparedStatementsCache: 64,
         worker: workerUrl,
       },
       logger: {
