@@ -4,7 +4,8 @@ import process from 'node:process'
 // Runs e2e against a real production build. The reka-ui chunk-duplication
 // inject regression only surfaces in the minified, code-split bundle - the
 // default config serves `pnpm dev:local`, which can't reproduce it.
-const port = Number(process.env.E2E_PORT) || 3050
+// Own port and never reuse: a dev server on the same port would be tested instead of the build.
+const port = Number(process.env.E2E_PORT) || 3090
 
 export default defineConfig({
   projects: [{ name: 'demo', use: { ...devices['Desktop Chrome'] } }],
@@ -18,7 +19,7 @@ export default defineConfig({
   },
   webServer: {
     command: `pnpm build && PORT=${port} node scripts/serve-static.mjs`,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     stderr: 'pipe',
     stdout: 'ignore',
     timeout: 300_000,
