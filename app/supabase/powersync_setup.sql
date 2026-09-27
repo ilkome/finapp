@@ -30,4 +30,6 @@ create publication powersync for table
   public.trns,
   public.user_settings,
   public.stat_views,
+  public.loans,
+  public.loan_schedule_rows,
   public.rates;
