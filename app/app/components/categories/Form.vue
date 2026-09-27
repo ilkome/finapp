@@ -6,6 +6,7 @@ import type { CategoryForm, CategoryId } from '~/components/categories/types'
 import icons from '~/assets/js/icons'
 import { categoryFormSchema } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { isReservedCategoryId } from '~/components/categories/utils'
 import { showErrorToast } from '~/composables/useStoreSync'
 
 const props = defineProps<{
@@ -71,7 +72,7 @@ const childrenCandidateIds = computed<CategoryId[]>(() => {
   const roots = rootsWithOwnChildren.value
   const result: CategoryId[] = []
   for (const id of Object.keys(items)) {
-    if (id === 'adjustment' || id === 'transfer' || id === editCategoryId)
+    if (isReservedCategoryId(id) || id === editCategoryId)
       continue
     const cat = items[id]
     if (!cat)

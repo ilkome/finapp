@@ -704,6 +704,8 @@ export default {
     filterAll: 'All',
     filterWallet: 'Wallet',
     filterWalletAndCategory: 'Wallet & Category',
+    loanFineTitle: 'Loan fees',
+    loanInterestTitle: 'Loan interest',
     titleEditTrn: 'Edit transaction',
     transfer: {
       expenseLabel: 'Transfer from',

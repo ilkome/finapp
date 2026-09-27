@@ -1,5 +1,22 @@
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
+const LOAN_CATEGORY_IDS = new Set(['loanInterest', 'loanFine'])
+
+export function isLoanCategoryId(id?: CategoryId | null): boolean {
+  return !!id && LOAN_CATEGORY_IDS.has(id)
+}
+
+/**
+ * Reserved ids are synthetic categories injected by the store, never real rows, so they
+ * can never be edited, deleted or reparented. 'loanInterest'/'loanFine' are reserved but
+ * not system: they are ordinary expenses and do count in statistics.
+ */
+const RESERVED_CATEGORY_IDS = new Set(['transfer', 'adjustment', ...LOAN_CATEGORY_IDS])
+
+export function isReservedCategoryId(id?: CategoryId | null): boolean {
+  return !!id && RESERVED_CATEGORY_IDS.has(id)
+}
+
 /**
  * System categories are synthetic (not real user rows): 'transfer' holds wallet
  * transfers, 'adjustment' holds balance corrections. Their transactions are kept

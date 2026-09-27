@@ -704,6 +704,8 @@ export default {
     filterAll: 'Все',
     filterWallet: 'Кошелек',
     filterWalletAndCategory: 'Кошелек и Категория',
+    loanFineTitle: 'Пени и комиссии',
+    loanInterestTitle: 'Проценты по кредиту',
     titleEditTrn: 'Редактирование транзакции',
     transfer: {
       expenseLabel: 'Перевод из',
