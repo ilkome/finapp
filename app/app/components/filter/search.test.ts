@@ -41,8 +41,8 @@ describe('searchCategories', () => {
     expect(searchCategories('', items, hasChildren)).toEqual([])
   })
 
-  it('excludes the transfer and adjustment pseudo-categories', () => {
-    expect(searchCategories('adjustment', items, hasChildren)).toEqual([])
+  it('excludes transfer but finds adjustment', () => {
+    expect(searchCategories('adjustment', items, hasChildren)).toEqual(['adjustment'])
     expect(searchCategories('transfer', items, hasChildren)).toEqual([])
   })
 

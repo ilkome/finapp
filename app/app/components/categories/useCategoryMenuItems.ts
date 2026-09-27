@@ -5,10 +5,6 @@ import { isReservedCategoryId } from '~/components/categories/utils'
 
 type Item = { color?: 'error', icon: string, label: string, onSelect: () => void }
 
-export function isMenuableCategory(categoryId: CategoryId): boolean {
-  return !isReservedCategoryId(categoryId)
-}
-
 export function useCategoryMenuItems() {
   const { t } = useI18n()
   const router = useRouter()
@@ -26,13 +22,16 @@ export function useCategoryMenuItems() {
   }
 
   return {
-    delete(categoryId: CategoryId, onDelete: (id: CategoryId) => void): Item {
-      return {
+    // Reserved categories are editable but never deletable.
+    delete(categoryId: CategoryId, onDelete: (id: CategoryId) => void): Item[] {
+      if (isReservedCategoryId(categoryId))
+        return []
+      return [{
         color: 'error',
         icon: 'lucide:trash-2',
         label: t('base.delete'),
         onSelect: () => onDelete(categoryId),
-      }
+      }]
     },
 
     edit(categoryId: CategoryId, opts?: { onEdit?: (id: CategoryId) => void, returnBack?: boolean }): Item {
@@ -63,7 +62,7 @@ export function useCategoryMenuItems() {
     // already a favorite (favorites supersede recents in the UI).
     quickToggles(categoryId: CategoryId): Item[] | null {
       const cat = categoriesStore.items[categoryId]
-      if (!cat || categoriesStore.hasChildren(categoryId))
+      if (!cat || categoriesStore.hasChildren(categoryId) || isReservedCategoryId(categoryId))
         return null
 
       const items: Item[] = [{

@@ -13,7 +13,7 @@ import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('cache')
 
-export type CacheSlice = 'categories' | 'rates' | 'statViews' | 'trns' | 'user' | 'wallets'
+export type CacheSlice = 'categories' | 'categoryOverrides' | 'rates' | 'statViews' | 'trns' | 'user' | 'wallets'
 
 export type StoreSnapshot = Partial<Record<CacheSlice, unknown>>
 

@@ -24,7 +24,7 @@ const selectUi = { content: 'z-[80]' }
 const entityKey = computed(() => props.modelValue.kind === 'walletSelection' ? 'wallet' : 'category')
 const availableIds = computed(() => props.modelValue.kind === 'walletSelection'
   ? Object.keys(walletsStore.itemsComputed).filter(id => !walletsStore.itemsComputed[id]?.isArchived)
-  : Object.keys(categoriesStore.items).filter(id => id !== 'transfer' && id !== 'adjustment'))
+  : Object.keys(categoriesStore.items).filter(id => id !== 'transfer'))
 const options = computed(() => [
   ...(props.pageScoped ? [] : [{ label: t(`stat.views.conditions.selection.${entityKey.value}.all`), value: 'all' }]),
   { label: t(`stat.views.conditions.selection.${entityKey.value}.any`), value: 'any' },

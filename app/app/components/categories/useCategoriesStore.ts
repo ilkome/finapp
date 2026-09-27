@@ -1,13 +1,14 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import { watchTable } from '~~/services/powersync/db'
-import { deleteRow, upsertRows } from '~~/services/powersync/mutations'
+import { deleteRow, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
 
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
+import type { CategoryOverrides } from '~/components/categories/utils'
 import type { TrnId } from '~/components/trns/types'
 
-import { compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { TrnType } from '~/components/trns/types'
@@ -61,7 +62,7 @@ const loanFine: CategoryItem = {
   showInQuickSelector: false,
 }
 
-const syntheticCategories = { adjustment, loanFine, loanInterest, transfer }
+const syntheticCategories: Record<CategoryId, CategoryItem> = { adjustment, loanFine, loanInterest, transfer }
 
 type CategoriesStore = {
   categoriesForBeParent: ComputedRef<CategoryId[]>
@@ -80,10 +81,13 @@ type CategoriesStore = {
   isLoaded: import('vue').Ref<boolean>
   isTransactible: (categoryId: CategoryId) => boolean
   items: import('vue').ShallowRef<Categories>
+  overrides: import('vue').ShallowRef<CategoryOverrides>
   primeFromCache: (data: Categories | null) => void
+  primeOverridesFromCache: (data: unknown) => void
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<void> | void
   setCategories: (values: Categories | null) => void
+  setCategoryOverrides: (values: CategoryOverrides) => void
   sidebarCategoryIds: ComputedRef<CategoryId[]>
 }
 
@@ -95,7 +99,14 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const { uid } = useSupabaseAuth()
   const nuxtApp = useNuxtApp()
 
-  const items = shallowRef<Categories>({ ...syntheticCategories })
+  const items = shallowRef<Categories>({ ...syntheticCategories } as Categories)
+  const overrides = shallowRef<CategoryOverrides>({})
+  // Last user rows, kept so an overrides or locale change can re-render without a new emission.
+  let rows: Categories | null = null
+
+  function render(): Categories {
+    return { ...rows, ...applyCategoryOverrides(syntheticCategories, overrides.value) } as Categories
+  }
 
   // Localized display names for the synthetic system categories. Set via $i18n
   // (never useI18n() here: outside setup it throws vue-i18n code 26) and refreshed
@@ -106,7 +117,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     transfer.name = nuxtApp.$i18n.t('trnForm.transferTitle')
     loanInterest.name = nuxtApp.$i18n.t('trnForm.loanInterestTitle')
     loanFine.name = nuxtApp.$i18n.t('trnForm.loanFineTitle')
-    items.value = { ...items.value }
+    items.value = render()
   }, { immediate: true })
   const hasItems = computed(() =>
     Object.keys(items.value).some(id => !isReservedCategoryId(id)),
@@ -115,6 +126,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const isLoaded = ref(false)
 
   let watchController: AbortController | null = null
+  let overridesWatchController: AbortController | null = null
 
   const categoriesIds = computed(() => Object.keys(items.value))
 
@@ -142,7 +154,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return categoriesIds.value
-      .filter(id => items.value[id]?.parentId === 0 && id !== 'transfer' && id !== 'adjustment')
+      .filter(id => items.value[id]?.parentId === 0 && id !== 'transfer')
       .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
@@ -257,6 +269,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   )
 
   const debouncedPersist = createDebouncedPersist<Categories>(STORAGE_KEYS.categories)
+  const debouncedPersistOverrides = createDebouncedPersist<CategoryOverrides>(STORAGE_KEYS.categoryOverrides)
 
   /** Real mode: subscribe to local SQLite. setCategories re-adds synthetic entries. */
   function initCategories(): void {
@@ -283,10 +296,18 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       setCategories(map)
     })
     logger.log('watching categories')
+
+    overridesWatchController?.abort()
+    overridesWatchController = watchTable<Row>('SELECT "categoryOverrides" FROM user_settings LIMIT 1', [], (settings) => {
+      // No row yet means the first sync hasn't landed: keep the primed overrides.
+      if (settings[0])
+        setCategoryOverrides(parseCategoryOverrides(settings[0].categoryOverrides))
+    })
   }
 
   function setCategories(values: Categories | null) {
-    const categories = values ? { ...values, ...syntheticCategories } : { ...syntheticCategories }
+    rows = values
+    const categories = render()
     items.value = categories
     if (isDemo.value)
       debouncedPersist(categories)
@@ -298,7 +319,54 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   function primeFromCache(data: Categories | null): void {
     if (isDemo.value || !data || isLoaded.value)
       return
-    items.value = { ...data, ...syntheticCategories }
+    rows = data
+    items.value = render()
+  }
+
+  function setCategoryOverrides(values: CategoryOverrides) {
+    overrides.value = values
+    items.value = render()
+    if (isDemo.value) {
+      debouncedPersistOverrides(values)
+    }
+    else {
+      persistStoreCache('categoryOverrides', values)
+      persistStoreCache('categories', items.value)
+    }
+  }
+
+  function primeOverridesFromCache(data: unknown): void {
+    if (isDemo.value || !data || isLoaded.value)
+      return
+    overrides.value = parseCategoryOverrides(data)
+    items.value = render()
+  }
+
+  /** Reserved categories have no row: their edits go to the per-user overrides in user_settings. */
+  function saveReservedCategory(id: CategoryId, values: CategoryItem) {
+    const base = syntheticCategories[id]
+    if (!base)
+      return
+
+    const prev = overrides.value
+    const next = { ...prev }
+    const override = toCategoryOverride(values, base)
+    if (override)
+      next[id] = override
+    else
+      delete next[id]
+    setCategoryOverrides(next)
+
+    if (isDemo.value)
+      return
+
+    const userId = resolveWriteUid(uid.value)
+    return upsertRow('user_settings', userId, { categoryOverrides: JSON.stringify(next), userId })
+      .catch((e) => {
+        setCategoryOverrides(prev)
+        logger.error('saveReservedCategory failed', e)
+        showErrorToast('categories.errors.saveFailed')
+      })
   }
 
   function hasChildren(categoryId: CategoryId) {
@@ -382,7 +450,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
 
   function saveCategory({ id, isUpdateChildCategoriesColor, nextChildIds, values }: AddCategoryParams) {
     if (isReservedCategoryId(id))
-      return
+      return saveReservedCategory(id, values)
 
     const prev = items.value
     const prevChildIds = getChildrenIds(id)
@@ -482,10 +550,13 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     isLoaded,
     isTransactible,
     items,
+    overrides,
     primeFromCache,
+    primeOverridesFromCache,
     recentCategoriesIds,
     saveCategory,
     setCategories,
+    setCategoryOverrides,
     sidebarCategoryIds,
   }
 })

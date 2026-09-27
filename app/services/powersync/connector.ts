@@ -15,6 +15,7 @@ const logger = createLogger('powersync-connector')
 
 const JSON_COLUMNS: Record<string, string[]> = {
   stat_views: ['autoRule', 'config'],
+  user_settings: ['categoryOverrides'],
 }
 
 export function prepareUploadData(table: string, data: Record<string, unknown>): Record<string, unknown> {

@@ -140,6 +140,7 @@ export default {
     selectParent: 'Вся «{name}»',
     selectParentHint: 'со всеми подкатегориями',
     singular: 'Категория',
+    system: 'Системные',
     title: 'Категории',
     view: {
       childrenView: 'Дочерние категории',

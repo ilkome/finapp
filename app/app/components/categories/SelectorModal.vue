@@ -6,7 +6,8 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { compareCategoryIds } from '~/components/categories/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
@@ -64,12 +65,7 @@ function toggleFavoritesFilter() {
 
 const allRootIds = computed<CategoryId[]>(() => {
   const items = categoriesStore.items
-  const ids = [...categoriesStore.categoriesRootIds]
-  if (items.adjustment)
-    ids.push('adjustment')
-  return ids.sort((a, b) =>
-    (items[a]?.name ?? '').localeCompare(items[b]?.name ?? ''),
-  )
+  return [...categoriesStore.categoriesRootIds].sort((a, b) => compareCategoryIds(a, b, items))
 })
 
 const {
@@ -196,8 +192,6 @@ async function onDeleteConfirm() {
 const categoryMenu = useCategoryMenuItems()
 
 function getCategoryContextMenuItems(categoryId: CategoryId) {
-  if (!isMenuableCategory(categoryId))
-    return undefined
   const editOpts = isLaptop.value
     ? { returnBack: true }
     : { onEdit: (id: CategoryId) => { editingCategoryId.value = id } }
@@ -205,7 +199,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
   return [
     [categoryMenu.edit(categoryId, editOpts)],
     ...(qt ? [qt] : []),
-    [categoryMenu.delete(categoryId, onClickDelete)],
+    ...[categoryMenu.delete(categoryId, onClickDelete)].filter(group => group.length),
   ]
 }
 

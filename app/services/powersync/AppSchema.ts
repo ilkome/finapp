@@ -58,6 +58,7 @@ const trns = new Table(
 
 const user_settings = new Table({
   baseCurrency: column.text,
+  categoryOverrides: column.text, // JSON-encoded CategoryOverrides
   locale: column.text,
   timezone: column.text, // IANA tz captured at entry; used by the civil-date backfill
   userId: column.text,
