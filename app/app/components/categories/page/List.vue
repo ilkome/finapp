@@ -6,7 +6,8 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { isReservedCategoryId } from '~/components/categories/utils'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
@@ -14,10 +15,14 @@ const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
-const { folderIcon, isExpanded, toggle, toggleAll } = useCategoriesExpanded(
-  'categoriesPage',
-  computed(() => categoriesStore.categoriesRootIds),
-)
+const userIds = computed(() => categoriesStore.categoriesRootIds.filter(id => !isReservedCategoryId(id)))
+// Reserved categories get their own section, transfer included (pickers use the roots without it).
+const systemIds = computed(() => categoriesStore.categoriesRootIds.length
+  ? [...categoriesStore.categoriesRootIds.filter(isReservedCategoryId), 'transfer']
+  : [])
+const listIds = computed(() => [...userIds.value, ...systemIds.value])
+
+const { folderIcon, isExpanded, toggle, toggleAll } = useCategoriesExpanded('categoriesPage', listIds)
 
 useHead({ title: t('categories.title') })
 
@@ -97,12 +102,10 @@ async function onDeleteConfirm() {
 const categoryMenu = useCategoryMenuItems()
 
 function getCategoryContextMenuItems(categoryId: CategoryId) {
-  if (!isMenuableCategory(categoryId))
-    return undefined
   const open = categoryMenu.open(categoryId)
   return [
     [...(open ? [open] : []), categoryMenu.edit(categoryId)],
-    [categoryMenu.delete(categoryId, onClickDelete)],
+    ...[categoryMenu.delete(categoryId, onClickDelete)].filter(group => group.length),
   ]
 }
 </script>
@@ -211,20 +214,28 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
       v-else
       class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
     >
-      <CategoriesList
-        :backgroundType
-        :ids="categoriesStore.categoriesRootIds"
-        :categoriesItemProps="{
-          isRoundIcon,
-          isShowChildrenCount,
-          leftMenuButton: true,
-          lineWidth: 1,
-        }"
-        :childrenView="categoriesView"
-        :expanded="{ isExpanded, toggle }"
-        :getContextMenuItems="getCategoryContextMenuItems"
-        :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
-      />
+      <div
+        v-for="section in [{ ids: userIds, title: '' }, { ids: systemIds, title: t('categories.system') }]"
+        :key="section.title"
+      >
+        <UiTitleSection v-if="section.title" class="pt-6 pb-2">
+          {{ section.title }}
+        </UiTitleSection>
+        <CategoriesList
+          :backgroundType
+          :ids="section.ids"
+          :categoriesItemProps="{
+            isRoundIcon,
+            isShowChildrenCount,
+            leftMenuButton: true,
+            lineWidth: 1,
+          }"
+          :childrenView="categoriesView"
+          :expanded="{ isExpanded, toggle }"
+          :getContextMenuItems="getCategoryContextMenuItems"
+          :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
+        />
+      </div>
     </div>
 
     <LayoutConfirmModal

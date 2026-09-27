@@ -146,16 +146,33 @@ describe('useCategoriesStore', () => {
       expect(toastAddMock).toHaveBeenCalledTimes(1)
     })
 
-    it('is a no-op for the synthetic transfer/adjustment ids', async () => {
+    it('writes reserved category edits to user_settings overrides, never to categories', async () => {
       const store = useCategoriesStore()
       store.setCategories(cats({ c1: category() }))
 
-      await store.saveCategory({ id: 'transfer', isUpdateChildCategoriesColor: false, values: category() })
-      await store.saveCategory({ id: 'adjustment', isUpdateChildCategoriesColor: false, values: category() })
-      await store.saveCategory({ id: 'loanInterest', isUpdateChildCategoriesColor: false, values: category() })
-      await store.saveCategory({ id: 'loanFine', isUpdateChildCategoriesColor: false, values: category() })
+      await store.saveCategory({ id: 'loanInterest', isUpdateChildCategoriesColor: false, values: category({ name: 'Interest', parentId: 'c1' }) })
+      await store.saveCategory({ id: 'transfer', isUpdateChildCategoriesColor: false, values: category({ name: 'Moves', parentId: 'c1' }) })
 
       expect(h.upsertRows).not.toHaveBeenCalled()
+      const [table, id, row] = h.upsertRow.mock.calls.at(-1)!
+      expect([table, id]).toEqual(['user_settings', 'u1'])
+      expect(JSON.parse(row.categoryOverrides)).toEqual({
+        loanInterest: { color: '#111', icon: 'mdi:cat', name: 'Interest' },
+        transfer: { color: '#111', icon: 'mdi:cat', name: 'Moves' },
+      })
+      // Reserved categories never leave root.
+      expect(store.items.loanInterest).toMatchObject({ name: 'Interest', parentId: 0 })
+      expect(store.items.transfer).toMatchObject({ name: 'Moves', parentId: 0 })
+    })
+
+    it('applies overrides synced from user_settings', () => {
+      const store = useCategoriesStore()
+      store.initCategories()
+      h.watchCallbacks[0]!([categoryRow('c1')])
+      h.watchCallbacks[1]!([{ categoryOverrides: JSON.stringify({ loanFine: { name: 'Fees' } }) }])
+
+      expect(store.items.loanFine?.name).toBe('Fees')
+      expect(store.items.c1).toBeDefined()
     })
 
     it('does not touch PowerSync in demo mode', async () => {
@@ -208,6 +225,7 @@ describe('useCategoriesStore', () => {
 
       await store.deleteCategory('adjustment')
       await store.deleteCategory('loanInterest')
+      await store.deleteCategory('transfer')
       expect(h.deleteRow).not.toHaveBeenCalled()
     })
   })

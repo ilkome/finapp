@@ -7,7 +7,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
@@ -73,12 +73,10 @@ async function onDeleteChildConfirm() {
 const categoryMenu = useCategoryMenuItems()
 
 function getCategoryContextMenuItems(categoryId: CategoryId) {
-  if (!isMenuableCategory(categoryId))
-    return undefined
   const open = categoryMenu.open(categoryId)
   return [
     [...(open ? [open] : []), categoryMenu.edit(categoryId)],
-    [categoryMenu.delete(categoryId, onClickDeleteChild)],
+    ...[categoryMenu.delete(categoryId, onClickDeleteChild)].filter(group => group.length),
   ]
 }
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Categories } from '~/components/categories/types'
 
-import { computeChildrenDiff, getTransactibleCategoriesIds } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 
 export const mockCategories: Categories = {
   child1: {
@@ -146,5 +146,32 @@ describe('computeChildrenDiff', () => {
 
   it('returns empty diffs when sets are equal regardless of order', () => {
     expect(computeChildrenDiff(['a', 'b'], ['b', 'a'])).toEqual({ added: [], removed: [] })
+  })
+})
+
+describe('category overrides', () => {
+  const base = { color: '', icon: 'mdi:percent', isExcludeFromStats: false, name: 'Loan interest', parentId: 0 as const, showInLastUsed: false, showInQuickSelector: false }
+  const defaults = { loanInterest: base, transfer: { ...base, icon: 'mdi:repeat', name: 'Transfer' } }
+  const rows = { child: { ...base, name: 'Child', parentId: 'root' }, root: { ...base, name: 'Root' } } as unknown as Categories
+
+  it('parses tolerantly: bad json, non-reserved ids and invalid fields are dropped', () => {
+    expect(parseCategoryOverrides('{oops')).toEqual({})
+    expect(parseCategoryOverrides(null)).toEqual({})
+    expect(parseCategoryOverrides('{"c1":{"name":"x"},"transfer":{"name":"Moves","icon":5}}')).toEqual({ transfer: { name: 'Moves' } })
+  })
+
+  it('keeps the localized default name when no name is overridden', () => {
+    const result = applyCategoryOverrides(defaults, { loanInterest: { color: 'red' } })
+    expect(result.loanInterest).toMatchObject({ color: 'red', name: 'Loan interest', parentId: 0 })
+  })
+
+  it('stores only name, color and icon that differ from the default, never a parent', () => {
+    expect(toCategoryOverride(base, base)).toBeUndefined()
+    expect(toCategoryOverride({ ...base, name: ' Interest ', parentId: 'root' }, base)).toEqual({ name: 'Interest' })
+  })
+
+  it('sorts reserved categories after user ones', () => {
+    const items = { ...rows, adjustment: { ...base, name: 'Adjustment' }, zeta: { ...base, name: 'Zeta' } } as unknown as Categories
+    expect(['adjustment', 'zeta', 'root'].sort((a, b) => compareCategoryIds(a, b, items))).toEqual(['root', 'zeta', 'adjustment'])
   })
 })

@@ -1,3 +1,5 @@
+import { z } from 'zod/v4'
+
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
 const LOAN_CATEGORY_IDS = new Set(['loanInterest', 'loanFine'])
@@ -7,14 +9,85 @@ export function isLoanCategoryId(id?: CategoryId | null): boolean {
 }
 
 /**
- * Reserved ids are synthetic categories injected by the store, never real rows, so they
- * can never be edited, deleted or reparented. 'loanInterest'/'loanFine' are reserved but
- * not system: they are ordinary expenses and do count in statistics.
+ * Reserved ids are synthetic categories injected by the store, never real rows: always root,
+ * never deleted, never parents. Only name, color and icon are editable, through per-user
+ * overrides. 'loanInterest'/'loanFine' are reserved but not system: they are ordinary
+ * expenses and count in statistics.
  */
 const RESERVED_CATEGORY_IDS = new Set(['transfer', 'adjustment', ...LOAN_CATEGORY_IDS])
 
 export function isReservedCategoryId(id?: CategoryId | null): boolean {
   return !!id && RESERVED_CATEGORY_IDS.has(id)
+}
+
+const categoryOverrideSchema = z.object({
+  color: z.string().optional().catch(undefined),
+  icon: z.string().trim().min(1).optional().catch(undefined),
+  name: z.string().trim().min(1).optional().catch(undefined),
+})
+
+export type CategoryOverride = z.infer<typeof categoryOverrideSchema>
+export type CategoryOverrides = Partial<Record<CategoryId, CategoryOverride>>
+
+/** Tolerant read of the stored map (JSON text from SQLite or an object): bad entries are dropped, never thrown. */
+export function parseCategoryOverrides(raw: unknown): CategoryOverrides {
+  let value = raw
+  if (typeof raw === 'string') {
+    try {
+      value = JSON.parse(raw)
+    }
+    catch {
+      return {}
+    }
+  }
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    return {}
+
+  const result: CategoryOverrides = {}
+  for (const [id, entry] of Object.entries(value)) {
+    if (!isReservedCategoryId(id))
+      continue
+    const parsed = categoryOverrideSchema.safeParse(entry)
+    if (parsed.success)
+      result[id] = parsed.data
+  }
+  return result
+}
+
+/** The reserved categories as the user sees them: localized defaults with their overrides on top. */
+export function applyCategoryOverrides(
+  defaults: Record<CategoryId, CategoryItem>,
+  overrides: CategoryOverrides,
+): Record<CategoryId, CategoryItem> {
+  const result: Record<CategoryId, CategoryItem> = {}
+  for (const [id, base] of Object.entries(defaults)) {
+    const override = overrides[id]
+    const item = { ...base }
+    if (override?.name)
+      item.name = override.name
+    if (override?.color !== undefined)
+      item.color = override.color
+    if (override?.icon)
+      item.icon = override.icon
+    result[id] = item
+  }
+  return result
+}
+
+/**
+ * Only the fields that differ from the default. A name equal to the localized default is not
+ * stored, so it keeps following the app language.
+ */
+export function toCategoryOverride(values: CategoryItem, base: CategoryItem): CategoryOverride | undefined {
+  const override: CategoryOverride = {}
+  const name = values.name.trim()
+  if (name && name !== base.name)
+    override.name = name
+  if (values.color !== base.color)
+    override.color = values.color
+  if (values.icon && values.icon !== base.icon)
+    override.icon = values.icon
+  return Object.keys(override).length ? override : undefined
 }
 
 /**
@@ -125,12 +198,14 @@ export function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryIte
   return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)
 }
 
+/** Reserved categories always sort after the user's own. */
 export function compareCategoryIds(idA: CategoryId, idB: CategoryId, items: Categories): number {
   const catA = items[idA]
   const catB = items[idB]
   if (!catA || !catB)
     return 0
-  return compareCategoriesByParentAndName(catA, catB, items)
+  return Number(isReservedCategoryId(idA)) - Number(isReservedCategoryId(idB))
+    || compareCategoriesByParentAndName(catA, catB, items)
 }
 
 export function computeChildrenDiff(prev: CategoryId[], next: CategoryId[]): { added: CategoryId[], removed: CategoryId[] } {

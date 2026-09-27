@@ -43,8 +43,12 @@ const hasChildren = computed(() => selectedChildIds.value.length > 0)
 const hadChildrenInitially = computed(() => prevChildIds.value.length > 0)
 const isRootCategory = computed(() => props.categoryForm.parentId === 0)
 const isNewCategory = computed(() => !props.categoryId)
+// Reserved categories keep only name, color and icon editable.
+const isReserved = isReservedCategoryId(props.categoryId)
 const isAllowChangeParent = computed(() =>
-  !hasChildren.value && categoriesStore.categoriesForBeParent.length > 0,
+  !isReserved
+  && !hasChildren.value
+  && categoriesStore.categoriesForBeParent.length > 0,
 )
 // A root can manage children only if it has no direct transactions of its own,
 // otherwise adopting children would hide its trns from stats.
@@ -148,7 +152,8 @@ function getParentName(id: CategoryId): string {
 }
 
 const isAllowManageChildren = computed(() =>
-  isRootCategory.value
+  !isReserved
+  && isRootCategory.value
   && canHaveChildren.value
   && (childrenCandidateIds.value.length > 0 || prevChildIds.value.length > 0),
 )
@@ -346,7 +351,7 @@ async function onSave() {
       </UiButtonWithRight>
 
       <!-- Options -->
-      <div>
+      <div v-if="!isReserved">
         <UiSwitchItem
           v-if="hasChildren"
           :checkboxValue="isUpdateChildCategoriesColor"

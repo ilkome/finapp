@@ -1,5 +1,6 @@
 export const STORAGE_KEYS = {
   categories: 'finapp.categories',
+  categoryOverrides: 'finapp.categoryOverrides',
   currencies: 'finapp.currencies',
   trns: 'finapp.trns',
   user: 'finapp.user',

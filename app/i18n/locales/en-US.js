@@ -140,6 +140,7 @@ export default {
     selectParent: 'Whole «{name}»',
     selectParentHint: 'incl. all subcategories',
     singular: 'Category',
+    system: 'System',
     title: 'Categories',
     view: {
       childrenView: 'Child categories',

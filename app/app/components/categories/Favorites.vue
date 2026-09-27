@@ -4,7 +4,7 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
-import { isMenuableCategory, useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 
 const props = defineProps<{
   // Single-select highlight (trn form) or multi-select set (stat filter); the
@@ -47,8 +47,6 @@ function onClickNew() {
 const categoryMenu = useCategoryMenuItems()
 
 function getCategoryContextMenuItems(categoryId: CategoryId) {
-  if (!isMenuableCategory(categoryId))
-    return undefined
   const editOpts = isLaptop.value
     ? { returnBack: true }
     : { onEdit: (id: CategoryId) => { editingCategoryId.value = id } }
@@ -56,7 +54,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
   return [
     [categoryMenu.edit(categoryId, editOpts)],
     ...(qt ? [qt] : []),
-    [categoryMenu.delete(categoryId, requestDelete)],
+    ...[categoryMenu.delete(categoryId, requestDelete)].filter(group => group.length),
   ]
 }
 

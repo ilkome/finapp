@@ -29,7 +29,7 @@ export function useSearch() {
       return items
 
     for (const id of Object.keys(categoriesStore.items)) {
-      if (id === 'transfer' || id === 'adjustment')
+      if (id === 'transfer')
         continue
 
       const category = categoriesStore.items[id as CategoryId]

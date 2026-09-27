@@ -268,6 +268,7 @@ export const useUserStore = defineStore('user', () => {
     blockPersist()
     trnsStore.setTrns(null)
     categoriesStore.setCategories(null)
+    categoriesStore.setCategoryOverrides({})
     walletsStore.setWallets(null)
     useTrnsFormStore().$reset()
     useCookie<boolean>('finapp.isOnboarded').value = false

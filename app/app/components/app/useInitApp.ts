@@ -8,6 +8,7 @@ import type { User, UserSettingsCache } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { parseCategoryOverrides } from '~/components/categories/utils'
 import { ratesSchema } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
@@ -122,6 +123,7 @@ export function useInitApp() {
         userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
         currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
         statViewsStore.primeFromCache((snap.statViews as unknown[]) ?? null)
+        categoriesStore.primeOverridesFromCache(snap.categoryOverrides)
       }
       performance.mark('cache:prime:end')
       performance.measure('cache:prime', 'cache:prime:start', 'cache:prime:end')
@@ -131,11 +133,12 @@ export function useInitApp() {
 
   // Demo mode keeps its own localforage-backed cache (no backend).
   async function loadDemoFromCache() {
-    const [user, rawUserSettings, rawCurrencies, categories, wallets, trns] = await Promise.all([
+    const [user, rawUserSettings, rawCurrencies, categories, categoryOverrides, wallets, trns] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem(STORAGE_KEYS.userSettings),
       localforage.getItem<{ rates?: unknown }>(STORAGE_KEYS.currencies),
       localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
+      localforage.getItem(STORAGE_KEYS.categoryOverrides),
       localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
       localforage.getItem<Trns | null>(STORAGE_KEYS.trns),
     ])
@@ -153,6 +156,7 @@ export function useInitApp() {
       currenciesStore.setRates(rates.data)
 
     walletsStore.setWallets(wallets ?? null)
+    categoriesStore.setCategoryOverrides(parseCategoryOverrides(categoryOverrides))
     categoriesStore.setCategories(categories ?? null)
     trnsStore.setTrns(trns ?? null)
   }

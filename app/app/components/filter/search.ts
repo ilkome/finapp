@@ -16,7 +16,7 @@ export function searchCategories(query: string, items: Categories, hasChildren: 
   const ids: CategoryId[] = []
   for (const id in items) {
     const cat = items[id]
-    if (!cat || id === 'transfer' || id === 'adjustment' || hasChildren(id))
+    if (!cat || id === 'transfer' || hasChildren(id))
       continue
     const parent = items[cat.parentId]
     if (cat.name.toLowerCase().includes(query) || parent?.name.toLowerCase().includes(query))
