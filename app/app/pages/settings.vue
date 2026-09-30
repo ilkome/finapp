@@ -8,6 +8,11 @@ import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
+const LINKS = [
+  { href: 'https://github.com/ilkome/finapp', icon: 'mdi:github', labelKey: 'settings.github' },
+  { href: 'https://finapp-docs.ilko.me/', icon: 'lucide:book-open', labelKey: 'login.menu.documentation' },
+]
+
 const { locale, t } = useI18n()
 const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
@@ -117,6 +122,24 @@ function onGenerateDemoData() {
           :title="t('user.title')"
         >
           <UserViewLogout isShowSignOut />
+        </UiSettingsCard>
+
+        <UiSettingsCard :title="t('settings.links')">
+          <div class="flex flex-wrap gap-2">
+            <UButton
+              v-for="link in LINKS"
+              :key="link.href"
+              :href="link.href"
+              :icon="link.icon"
+              :label="t(link.labelKey)"
+              color="neutral"
+              rel="noopener"
+              size="md"
+              target="_blank"
+              trailingIcon="lucide:external-link"
+              variant="outline"
+            />
+          </div>
         </UiSettingsCard>
 
         <!-- About -->

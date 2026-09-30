@@ -343,6 +343,8 @@ export default {
 
   settings: {
     deleteButton: 'Delete my data',
+    github: 'GitHub',
+    links: 'Links',
     menuLabels: 'Show labels in bottom menu',
     title: 'Settings',
   },

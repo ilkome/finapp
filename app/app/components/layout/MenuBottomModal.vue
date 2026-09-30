@@ -1,16 +1,11 @@
 <script setup lang="ts">
 import pkg from '~~/package.json'
 
-import { useDemo } from '~/components/demo/useDemo'
 import { isSearchOpen } from '~/components/search/useSearch'
-import { useUserStore } from '~/components/user/useUserStore'
-import { showSuccessToast } from '~/composables/useStoreSync'
 
 const emit = defineEmits<{ close: [] }>()
 
-const { locale, t } = useI18n()
-const userStore = useUserStore()
-const { generateDemoData, isDemo } = useDemo()
+const { t } = useI18n()
 const config = useRuntimeConfig()
 const isCompact = ref(false)
 
@@ -19,11 +14,6 @@ function onSearchClick() {
   nextTick(() => {
     isSearchOpen.value = true
   })
-}
-
-async function updateDemo() {
-  await generateDemoData(locale.value)
-  showSuccessToast('demo.updated')
 }
 
 async function clearCachesAndReload() {
@@ -73,16 +63,6 @@ async function clearCachesAndReload() {
               </template>
 
               <template #rootAfter>
-                <div v-if="isDemo" class="grid gap-2 px-3 py-2">
-                  <UiButtonAccent @click="updateDemo">
-                    {{ t('demo.update') }}
-                  </UiButtonAccent>
-
-                  <UiButtonAccent variant="outline" @click="userStore.signOut">
-                    {{ t('demo.exit') }}
-                  </UiButtonAccent>
-                </div>
-
                 <div v-if="!config.public.isProd" class="grid justify-items-center gap-1 px-3 pt-2 pb-1">
                   <UButton
                     :label="t('app.updateCache')"

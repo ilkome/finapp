@@ -6,9 +6,6 @@ import { useUserStore } from '~/components/user/useUserStore'
 
 export type UserMenuPanel = 'appearance' | 'color' | 'locale' | 'neutral' | 'primary' | 'radius' | 'theme'
 
-export const USER_MENU_GITHUB_URL = 'https://github.com/ilkome/finapp'
-export const USER_MENU_DOCS_URL = 'https://finapp-docs.ilko.me/'
-
 export const USER_MENU_THEME_ICONS: Record<string, string> = {
   dark: 'i-lucide-moon',
   light: 'i-lucide-sun',

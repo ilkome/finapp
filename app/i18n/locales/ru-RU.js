@@ -343,6 +343,8 @@ export default {
 
   settings: {
     deleteButton: 'Удалить все мои данные',
+    github: 'GitHub',
+    links: 'Ссылки',
     menuLabels: 'Подписи в нижнем меню',
     title: 'Настройки',
   },

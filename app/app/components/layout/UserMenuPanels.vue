@@ -3,8 +3,6 @@ import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
 
 import { useDemo } from '~/components/demo/useDemo'
 import {
-  USER_MENU_DOCS_URL,
-  USER_MENU_GITHUB_URL,
   USER_MENU_PANEL_CHILDREN,
   USER_MENU_PANEL_CHILDREN_PHONE,
   USER_MENU_THEME_ICONS,
@@ -12,9 +10,10 @@ import {
 } from '~/components/layout/useUserMenuData'
 import { BLACK_PRIMARY, colorLabel, swatchPalette } from '~/components/theme/useThemeOptions'
 import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
+import { showSuccessToast } from '~/composables/useStoreSync'
 
-// The one user menu body: account + sync status, language, appearance, session actions and
-// links. Containers (header popover, sidebar popover, mobile bottom sheet) only pick a trigger
+// The one user menu body: demo actions or account + sync status, language, appearance and
+// session actions. Containers (header popover, sidebar popover, mobile bottom sheet) only pick a trigger
 // and fill the `root` / `rootAfter` slots. Panel state lives here, so a container that unmounts
 // its content on close reopens on the root list.
 // Session actions (enable demo / sign out) only make sense for a signed-in user; the login page
@@ -45,6 +44,11 @@ const {
   toggleTheme,
   userStore,
 } = useUserMenuData()
+
+async function updateDemo() {
+  await generateDemoData(locale.value)
+  showSuccessToast('demo.updated')
+}
 
 async function enableDemo() {
   isDemo.value = 'true'
@@ -110,178 +114,195 @@ function back() {
   panelStack.value = panelStack.value.slice(0, -1)
 }
 
+// Desktop popovers keep the root list's height on every sub-panel: a short one (language) would
+// otherwise shrink the popover and move it under the pointer; long ones scroll inside.
+const panelsElement = useTemplateRef<HTMLElement>('panels')
+const rootHeight = ref<number | null>(null)
+watch(activePanel, (panel, previous) => {
+  if (previous === 'root' && panelsElement.value)
+    rootHeight.value = panelsElement.value.offsetHeight
+})
+const lockedHeight = computed(() => isLaptop.value && activePanel.value !== 'root' && rootHeight.value
+  ? `${rootHeight.value}px`
+  : undefined)
+
 const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm interactive px-2 py-1.5 text-left text-sm font-medium tracking-wide text-toned'
 const iconSlotClass = 'flex min-w-7 justify-center'
 const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 text-xs text-muted interactive data-checked:bg-elevated data-checked:text-default'
 </script>
 
 <template>
-  <UiPanelSlide :direction :panelKey="activePanel">
-    <UiPanelBack
-      v-if="activePanel !== 'root'"
-      :title="panelTitle"
-      @back="back"
-    />
-
-    <div v-if="activePanel === 'root'" class="grid gap-0.5">
-      <template v-if="userStore.currentUser">
-        <div class="mx-2 flex items-start gap-2 py-2">
-          <div class="min-w-0 grow">
-            <UserViewLogout :compact="isLaptop" hideEmail />
-          </div>
-          <UiActionButton
-            :ariaLabel="t(isDark ? 'theme.light' : 'theme.dark')"
-            class="shrink-0"
-            @click="toggleTheme"
-          >
-            <Icon :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'" size="20" />
-          </UiActionButton>
-        </div>
-        <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
-      </template>
-
-      <slot name="root" />
-
-      <button
-        v-for="row in childRows"
-        :key="row.id"
-        :class="rowClass"
-        type="button"
-        @click="open(row.id)"
-      >
-        <span :class="iconSlotClass">
-          <UIcon :name="row.icon" class="size-5 text-muted" />
-        </span>
-        <span class="grow">{{ row.title }}</span>
-        <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
-        <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
-      </button>
-
-      <!-- On the phone the bottom nav's own menu already lists Settings (via itemsModal in its
-           #root slot); here it only replaces the sidebar's standalone icon on desktop. -->
-      <button
-        v-if="isLaptop"
-        :class="rowClass"
-        type="button"
-        @click="router.push('/settings'); emit('close')"
-      >
-        <span :class="iconSlotClass">
-          <UIcon name="hugeicons:settings-01" class="size-5 text-muted" />
-        </span>
-        <span class="grow">{{ t('settings.title') }}</span>
-      </button>
-
-      <template v-if="sessionActions">
-        <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
-
-        <button
-          v-if="!isDemo"
-          :class="rowClass"
-          type="button"
-          @click="enableDemo"
-        >
-          <span :class="iconSlotClass">
-            <UIcon name="mdi:play-box-outline" class="size-5 text-muted" />
-          </span>
-          <span class="grow">{{ t('login.openDemo') }}</span>
-        </button>
-
-        <button
-          :class="rowClass"
-          type="button"
-          @click="userStore.signOut()"
-        >
-          <span :class="iconSlotClass">
-            <UIcon name="i-lucide-log-out" class="size-5 text-muted" />
-          </span>
-          <span class="grow">{{ isDemo ? t('demo.exit') : t('user.logout') }}</span>
-        </button>
-      </template>
-
-      <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
-
-      <a
-        v-for="link in [{ href: USER_MENU_GITHUB_URL, icon: 'mdi:github', label: 'GitHub' }, { href: USER_MENU_DOCS_URL, icon: 'lucide:book-open', label: t('login.menu.documentation') }]"
-        :key="link.href"
-        :class="rowClass"
-        :href="link.href"
-        rel="noopener"
-        target="_blank"
-        @click="emit('close')"
-      >
-        <span :class="iconSlotClass">
-          <UIcon :name="link.icon" class="size-5 text-muted" />
-        </span>
-        <span class="grow">{{ link.label }}</span>
-        <UIcon name="lucide:external-link" class="size-4 shrink-0 text-dimmed" />
-      </a>
-
-      <slot name="rootAfter" />
-    </div>
-
-    <div v-else-if="childRows.length" class="grid gap-0.5">
-      <button
-        v-for="row in childRows"
-        :key="row.id"
-        :class="rowClass"
-        type="button"
-        @click="open(row.id)"
-      >
-        <span :class="iconSlotClass">
-          <UIcon :name="row.icon" class="size-5 text-muted" />
-        </span>
-        <span class="grow">{{ row.title }}</span>
-        <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
-        <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
-      </button>
-
-      <!-- Bottom-nav labels only exist on the phone layout. -->
-      <UiSwitchItem
-        v-if="activePanel === 'appearance' && !isLaptop"
-        :checkboxValue="isShowMenuLabels"
-        :title="t('settings.menuLabels')"
-        class="mt-1"
-        @click="isShowMenuLabels = !isShowMenuLabels"
+  <div
+    ref="panels"
+    :class="lockedHeight && 'overflow-y-auto'"
+    :style="{ height: lockedHeight }"
+  >
+    <UiPanelSlide :direction :panelKey="activePanel">
+      <UiPanelBack
+        v-if="activePanel !== 'root'"
+        :title="panelTitle"
+        @back="back"
       />
-    </div>
 
-    <div v-else class="grid gap-1">
-      <template v-for="group in groups" :key="group.title ?? ''">
-        <span v-if="group.title" class="px-2 pt-2 text-xs text-muted">{{ group.title }}</span>
-        <div
-          :class="isCompact ? 'flex gap-2 overflow-x-auto py-1' : 'grid gap-0.5'"
-          :data-sheet-no-drag="isCompact ? '' : undefined"
-        >
-          <button
-            v-for="option in group.options"
-            :key="option.key"
-            :class="isCompact ? compactClass : rowClass"
-            :data-checked="isCompact && option.checked ? '' : undefined"
-            type="button"
-            @click="option.select"
-          >
-            <span v-if="option.icon || option.chip || option.radius != null" :class="iconSlotClass">
-              <UIcon v-if="option.icon" :name="option.icon" class="size-5 text-muted" />
-              <span v-else-if="option.chip === BLACK_PRIMARY" class="size-5 shrink-0 rounded-full bg-black dark:bg-white" />
-              <span
-                v-else-if="option.chip"
-                class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
-                :style="{
-                  '--chip-light': `var(--color-${swatchPalette(option.chip)}-500)`,
-                  '--chip-dark': `var(--color-${swatchPalette(option.chip)}-400)`,
-                }"
-              />
-              <span
-                v-else
-                class="size-5 shrink-0 bg-elevated ring-1 ring-accented"
-                :style="{ borderRadius: `${option.radius}rem` }"
-              />
+      <div v-if="activePanel === 'root'" class="grid gap-0.5">
+        <template v-if="isDemo">
+          <button :class="rowClass" type="button" @click="updateDemo">
+            <span :class="iconSlotClass">
+              <UIcon name="lucide:refresh-cw" class="size-5 text-muted" />
             </span>
-            <span class="grow">{{ option.label }}</span>
-            <UIcon v-if="option.checked && !isCompact" name="lucide:check" class="size-4 shrink-0 text-primary" />
+            <span class="grow">{{ t('demo.update') }}</span>
           </button>
-        </div>
-      </template>
-    </div>
-  </UiPanelSlide>
+
+          <button :class="rowClass" type="button" @click="userStore.signOut()">
+            <span :class="iconSlotClass">
+              <UIcon name="i-lucide-log-out" class="size-5 text-muted" />
+            </span>
+            <span class="grow">{{ t('demo.exit') }}</span>
+          </button>
+
+          <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
+        </template>
+
+        <template v-else-if="userStore.currentUser">
+          <div class="mx-2 flex items-start gap-2 py-2">
+            <div class="min-w-0 grow">
+              <UserViewLogout :compact="isLaptop" hideEmail />
+            </div>
+            <UiActionButton
+              :ariaLabel="t(isDark ? 'theme.light' : 'theme.dark')"
+              class="shrink-0"
+              @click="toggleTheme"
+            >
+              <Icon :name="isDark ? 'i-lucide-sun' : 'i-lucide-moon'" size="20" />
+            </UiActionButton>
+          </div>
+          <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
+        </template>
+
+        <slot name="root" />
+
+        <button
+          v-for="row in childRows"
+          :key="row.id"
+          :class="rowClass"
+          type="button"
+          @click="open(row.id)"
+        >
+          <span :class="iconSlotClass">
+            <UIcon :name="row.icon" class="size-5 text-muted" />
+          </span>
+          <span class="grow">{{ row.title }}</span>
+          <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
+          <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
+        </button>
+
+        <!-- On the phone the bottom nav's own menu already lists Settings (via itemsModal in its
+           #root slot); here it only replaces the sidebar's standalone icon on desktop. -->
+        <button
+          v-if="isLaptop"
+          :class="rowClass"
+          type="button"
+          @click="router.push('/settings'); emit('close')"
+        >
+          <span :class="iconSlotClass">
+            <UIcon name="hugeicons:settings-01" class="size-5 text-muted" />
+          </span>
+          <span class="grow">{{ t('settings.title') }}</span>
+        </button>
+
+        <template v-if="sessionActions && !isDemo">
+          <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
+
+          <button
+            :class="rowClass"
+            type="button"
+            @click="enableDemo"
+          >
+            <span :class="iconSlotClass">
+              <UIcon name="mdi:play-box-outline" class="size-5 text-muted" />
+            </span>
+            <span class="grow">{{ t('login.openDemo') }}</span>
+          </button>
+
+          <button
+            :class="rowClass"
+            type="button"
+            @click="userStore.signOut()"
+          >
+            <span :class="iconSlotClass">
+              <UIcon name="i-lucide-log-out" class="size-5 text-muted" />
+            </span>
+            <span class="grow">{{ t('user.logout') }}</span>
+          </button>
+        </template>
+
+        <slot name="rootAfter" />
+      </div>
+
+      <div v-else-if="childRows.length" class="grid gap-0.5">
+        <button
+          v-for="row in childRows"
+          :key="row.id"
+          :class="rowClass"
+          type="button"
+          @click="open(row.id)"
+        >
+          <span :class="iconSlotClass">
+            <UIcon :name="row.icon" class="size-5 text-muted" />
+          </span>
+          <span class="grow">{{ row.title }}</span>
+          <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
+          <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
+        </button>
+
+        <!-- Bottom-nav labels only exist on the phone layout. -->
+        <UiSwitchItem
+          v-if="activePanel === 'appearance' && !isLaptop"
+          :checkboxValue="isShowMenuLabels"
+          :title="t('settings.menuLabels')"
+          class="mt-1"
+          @click="isShowMenuLabels = !isShowMenuLabels"
+        />
+      </div>
+
+      <div v-else class="grid gap-1">
+        <template v-for="group in groups" :key="group.title ?? ''">
+          <span v-if="group.title" class="px-2 pt-2 text-xs text-muted">{{ group.title }}</span>
+          <div
+            :class="isCompact ? 'flex gap-2 overflow-x-auto py-1' : 'grid gap-0.5'"
+            :data-sheet-no-drag="isCompact ? '' : undefined"
+          >
+            <button
+              v-for="option in group.options"
+              :key="option.key"
+              :class="isCompact ? compactClass : rowClass"
+              :data-checked="isCompact && option.checked ? '' : undefined"
+              type="button"
+              @click="option.select"
+            >
+              <span v-if="option.icon || option.chip || option.radius != null" :class="iconSlotClass">
+                <UIcon v-if="option.icon" :name="option.icon" class="size-5 text-muted" />
+                <span v-else-if="option.chip === BLACK_PRIMARY" class="size-5 shrink-0 rounded-full bg-black dark:bg-white" />
+                <span
+                  v-else-if="option.chip"
+                  class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
+                  :style="{
+                    '--chip-light': `var(--color-${swatchPalette(option.chip)}-500)`,
+                    '--chip-dark': `var(--color-${swatchPalette(option.chip)}-400)`,
+                  }"
+                />
+                <span
+                  v-else
+                  class="size-5 shrink-0 bg-elevated ring-1 ring-accented"
+                  :style="{ borderRadius: `${option.radius}rem` }"
+                />
+              </span>
+              <span class="grow">{{ option.label }}</span>
+              <UIcon v-if="option.checked && !isCompact" name="lucide:check" class="size-4 shrink-0 text-primary" />
+            </button>
+          </div>
+        </template>
+      </div>
+    </UiPanelSlide>
+  </div>
 </template>
