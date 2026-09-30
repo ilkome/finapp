@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { backSkipPattern, backTo, compactBottom = false, mobileAfterScrolls = false, sticky = true } = defineProps<{
+const { backSkipPattern, backTo, mobileAfterScrolls = false, sticky = true } = defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
-  compactBottom?: boolean
   mobileAfterScrolls?: boolean
   sticky?: boolean
 }>()
@@ -40,13 +39,13 @@ function onBack() {
     <div
       ref="mainElement"
       data-ui-header-main
-      class="grid min-h-12 max-w-7xl items-center"
+      class="grid max-w-7xl items-center px-2 pt-2 pb-px lg:px-4"
       :class="[
-        compactBottom ? 'px-2 pt-2 pb-px lg:px-4' : 'p-2 lg:p-4',
         sticky && mobileAfterScrolls && 'sticky top-0 z-20 bg-default/90 backdrop-blur md:static md:bg-transparent md:backdrop-blur-none',
       ]"
     >
-      <div class="flex grow items-center">
+      <!-- min-h: one action button, so headers without actions keep the same height. -->
+      <div class="flex min-h-10.5 grow items-center">
         <button
           v-if="backTo"
           type="button"

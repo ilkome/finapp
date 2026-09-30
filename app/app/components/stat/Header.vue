@@ -10,7 +10,6 @@ import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 const props = withDefaults(defineProps<{
   backSkipPattern?: RegExp
   backTo?: string
-  compactBottom?: boolean
   menuItems?: DropdownMenuItem[][]
   sticky?: boolean
 }>(), {
@@ -37,7 +36,6 @@ defineExpose({ stickyMainElement, stickyRootElement })
     ref="uiHeader"
     :backSkipPattern="backSkipPattern"
     :backTo="backTo"
-    :compactBottom="props.compactBottom"
     :sticky="props.sticky"
   >
     <slot name="title" />

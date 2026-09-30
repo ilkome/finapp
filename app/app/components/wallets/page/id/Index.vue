@@ -143,7 +143,6 @@ async function onDeleteConfirm() {
       ref="statHeader"
       :backSkipPattern="walletDetailHistoryPattern"
       backTo="/wallets"
-      compactBottom
       :menuItems
     >
       <template #title>

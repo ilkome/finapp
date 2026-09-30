@@ -34,7 +34,7 @@ useHead({ title: t('trns.history') })
 
 <template>
   <UiPage>
-    <StatHeader ref="statHeader" compactBottom>
+    <StatHeader ref="statHeader">
       <template #title>
         <UiHeaderTitle>{{ t('trns.history') }}</UiHeaderTitle>
       </template>

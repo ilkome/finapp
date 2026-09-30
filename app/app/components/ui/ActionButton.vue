@@ -22,11 +22,14 @@ const emit = defineEmits<{
       size === 'md' ? 'min-h-10.5' : 'min-h-8',
       variant === 'icon' && 'rounded-full text-xl text-muted',
       variant === 'text' && 'px-3 text-sm text-highlighted',
-      isActive && 'bg-elevated/30',
       disabled && 'pointer-events-none opacity-30',
     )"
     @click="(e: Event) => emit('click', e)"
   >
-    <slot />
+    <!-- Filled at icon-button scale so it reads as the same size as its unfilled neighbours. -->
+    <span v-if="isActive" class="grid size-8 place-items-center rounded-full bg-primary text-inverted">
+      <slot />
+    </span>
+    <slot v-else />
   </button>
 </template>

@@ -237,7 +237,6 @@ async function onDeleteConfirm() {
       ref="statHeader"
       :backSkipPattern="isStatDrilldown ? undefined : categoryDetailHistoryPattern"
       :backTo="isStatDrilldown ? '/dashboard' : category.parentId ? `/categories/${category.parentId}` : '/categories'"
-      compactBottom
       :menuItems
     >
       <template #title>

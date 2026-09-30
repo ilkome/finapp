@@ -62,7 +62,6 @@ watch(filter.categoriesIds, () => {
   <UiPage>
     <StatHeader
       ref="statHeader"
-      compactBottom
     >
       <template #title>
         <UiHeaderTitle>{{ t('stat.title') }}</UiHeaderTitle>
