@@ -35,7 +35,7 @@ const { t } = useI18n()
       </UiText>
     </div>
 
-    <div v-else-if="props.loan" class="flex items-center gap-1.5" data-loan-card-line>
+    <div v-else-if="props.loan" class="flex flex-wrap items-center gap-x-1.5" data-loan-card-line>
       <Amount
         :amount="props.loan.payment"
         :currencyCode="props.currencyCode"
@@ -44,11 +44,11 @@ const { t } = useI18n()
         align="left"
         variant="secondary"
       />
-      <UiText variant="meta">
-        × {{ t('loans.monthsShort', { count: props.loan.monthsLeft }) }} → {{ props.loan.until }}
-      </UiText>
-      <UiText v-if="props.loan.nextDate" variant="meta">
+      <UiText v-if="props.loan.nextDate" variant="meta" class="whitespace-nowrap">
         · {{ props.loan.nextDate }}
+      </UiText>
+      <UiText variant="meta" class="whitespace-nowrap">
+        · {{ t('loans.monthsShort', { count: props.loan.monthsLeft }) }} {{ t('loans.by') }} {{ props.loan.until }}
       </UiText>
       <UiBadge
         v-if="props.loan.isOverdue"

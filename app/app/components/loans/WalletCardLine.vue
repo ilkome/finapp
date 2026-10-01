@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { formatByLocale, todayCivilDayEpoch } from '~~/utils/date/civil'
+import { formatByLocale } from '~~/utils/date/civil'
 
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
@@ -12,6 +12,7 @@ const props = defineProps<{
 }>()
 
 const dateLocale = useDateLocale()
+const today = useCivilToday()
 const loansStore = useLoansStore()
 
 const entry = computed(() => loansStore.byWalletId.get(props.walletId))
@@ -33,7 +34,7 @@ const loan = computed(() => {
 })
 
 const minPayment = computed(() => {
-  const found = minPaymentOf(props.wallet, loansStore.trnsByCreditWallet.get(props.walletId) ?? [], todayCivilDayEpoch())
+  const found = minPaymentOf(props.wallet, loansStore.trnsByCreditWallet.get(props.walletId) ?? [], today.value)
   return found && { ...found, date: formatByLocale(found.date, 'dd.MM', dateLocale.value) }
 })
 </script>
