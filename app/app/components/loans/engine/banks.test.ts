@@ -103,6 +103,9 @@ describe('loan B (708 000 at 22.64%, holiday and top-ups)', () => {
     expect(partial.interestSaved).toBeGreaterThan(0)
     expect(partial.newEndDate).toBeLessThan(summary.plannedEndDate!)
 
+    // The bank accrues by days, our re-solve by rate / 12: nothing extra still saves nothing.
+    expect(whatIf(params, paid, 0, 'reduceTerm', day('2025-09-22')).interestSaved).toBe(0)
+
     const full = whatIf(params, paid, summary.remaining + 1, 'reduceTerm', day('2025-09-22'))
     expect(full.interestSaved).toBeCloseTo(summary.plannedInterest, 2)
     expect(full.newEndDate).toBe(day('2025-09-22'))

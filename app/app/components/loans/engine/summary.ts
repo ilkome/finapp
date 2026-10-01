@@ -101,10 +101,19 @@ export function whatIf(
   // A bank schedule is only fact for the rows already paid: the unpaid ones are the bank's own
   // plan, which the prepayment rewrites, so they are re-solved like generated rows here.
   const plan = tail.map(row => ({ ...row, source: 'generated' as const }))
-  const rebuilt = rebuildTail({ ...params, overpaymentMode: mode }, plan, round2(balance - extra))
+  const solve = (start: number) => rebuildTail({ ...params, overpaymentMode: mode }, plan, start)
+  const rebuilt = solve(round2(balance - extra))
+
+  // Our re-solve charges interest its own way (rate / 12, the contract rate) while the bank's plan
+  // accrues by days, so the two never agree even with nothing extra paid. Scale the re-solved
+  // interest by how far the model is off the plan: no extra saves 0, paying it all off saves the
+  // whole planned interest.
+  const planned = sum(tail, row => row.interestPart)
+  const model = sum(solve(balance), row => row.interestPart)
+  const scale = model > 0 ? planned / model : 1
 
   return {
-    interestSaved: round2(sum(tail, row => row.interestPart) - sum(rebuilt, row => row.interestPart)),
+    interestSaved: round2(planned - sum(rebuilt, row => row.interestPart) * scale),
     newEndDate: rebuilt.at(-1)?.date ?? today,
   }
 }
