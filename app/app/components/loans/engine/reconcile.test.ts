@@ -264,15 +264,14 @@ describe('reconcileSchedule after a deviation from the plan', () => {
     expect(round2(out[0]!.paidPrincipal + out.slice(1).reduce((total, row) => total + row.principalPart, 0))).toBe(120_000)
   })
 
-  it('closes a bank row recorded in whole units, not one short by more', () => {
+  it('matches a bank row to the kopeck', () => {
     const bankRows = generateSchedule(big).map(row => ({ ...row, source: 'bank' as const }))
     const r1 = bankRows[0]!
-    // 12 735.37 recorded as 12 735 and 35 634.25 as 35 634: the bank row still closes.
-    const rounded = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', Math.floor(r1.principalPart), Math.floor(r1.interestPart)), day('2026-01-20'))
-    const short = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', r1.principalPart - 1.5, r1.interestPart), day('2026-01-20'))
+    const short = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', r1.principalPart - 0.01, r1.interestPart), day('2026-01-20'))
+    const exact = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', r1.principalPart, r1.interestPart), day('2026-01-20'))
 
-    expect(rounded[0]?.status).toBe('paid')
     expect(short[0]?.status).toBe('partial')
+    expect(exact[0]?.status).toBe('paid')
   })
 
   it('takes the late threshold and the prepayment window from the loan', () => {
