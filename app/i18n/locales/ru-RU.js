@@ -274,10 +274,15 @@ export default {
     extraAmount: 'Досрочный платёж',
     fine: 'Пени и комиссии',
     form: {
+      advanced: 'Дополнительно',
       annualRate: 'Ставка, % годовых',
       contractNumber: 'Номер договора',
       debitWalletId: 'Счёт списания',
       desc: 'Описание',
+      errors: {
+        principalAmount: 'Укажите сумму кредита',
+        termMonths: 'Укажите срок от 1 месяца',
+      },
       firstPaymentDate: 'Дата первого платежа',
       interestMethod: 'Начисление процентов',
       lateAfterDays: 'Без просрочки, дней после срока',

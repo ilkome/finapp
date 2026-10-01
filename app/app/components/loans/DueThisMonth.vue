@@ -31,7 +31,7 @@ const isOverdue = computed(() => !!due.value && due.value.nearestDate < today.va
         variant="summary"
       />
 
-      <UiText variant="meta" :class="isOverdue && 'text-error'">
+      <UiText variant="meta" :class="isOverdue && 'text-error!'">
         {{ t('loans.by') }} {{ formatByLocale(due.nearestDate, 'dd.MM', dateLocale) }}
       </UiText>
 

@@ -274,10 +274,15 @@ export default {
     extraAmount: 'Extra payment',
     fine: 'Fees and fines',
     form: {
+      advanced: 'More settings',
       annualRate: 'Annual rate, %',
       contractNumber: 'Contract number',
       debitWalletId: 'Debit wallet',
       desc: 'Description',
+      errors: {
+        principalAmount: 'Enter the loan amount',
+        termMonths: 'Enter a term of at least 1 month',
+      },
       firstPaymentDate: 'First payment date',
       interestMethod: 'Interest accrual',
       lateAfterDays: 'On time within, days after the due date',

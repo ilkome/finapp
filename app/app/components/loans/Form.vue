@@ -37,7 +37,26 @@ const debitWalletOptions = computed(() => [
     .map(id => ({ label: walletsStore.items?.[id]?.name ?? id, value: id })),
 ])
 
+// Required numbers the schema alone would accept as 0 and save as an empty loan.
+const errors = ref<{ principalAmount?: string, termMonths?: string }>({})
+const isShowAdvanced = ref(false)
+
+function onChangeFirstPaymentDate(value: number | null) {
+  if (value === null)
+    return
+  form.value.firstPaymentDate = value
+  // Civil days are UTC midnight, so the UTC day of month is the payment day.
+  form.value.paymentDay = new Date(value).getUTCDate()
+}
+
 function onSave() {
+  errors.value = {
+    principalAmount: form.value.principalAmount > 0 ? undefined : t('loans.form.errors.principalAmount'),
+    termMonths: form.value.termMonths >= 1 ? undefined : t('loans.form.errors.termMonths'),
+  }
+  if (errors.value.principalAmount || errors.value.termMonths)
+    return
+
   const values = loanItemSchema.safeParse({ ...form.value, updatedAt: Date.now() })
   if (!values.success) {
     showErrorToast('loans.errors.saveFailed')
@@ -56,63 +75,67 @@ function onSave() {
       </template>
       <FormInput
         type="number"
-        :modelValue="String(form.principalAmount)"
+        inputmode="decimal"
+        data-loan-form="principalAmount"
+        :modelValue="form.principalAmount || ''"
         @update:modelValue="(value: string) => form.principalAmount = Number(value) || 0"
       />
+      <UiText v-if="errors.principalAmount" variant="meta" class="pt-1 text-error!">
+        {{ errors.principalAmount }}
+      </UiText>
     </FormElement>
 
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.annualRate') }}
-      </template>
-      <FormInput
-        type="number"
-        :modelValue="form.annualRate === null ? '' : String(form.annualRate)"
-        @update:modelValue="(value: string) => form.annualRate = value.trim() === '' ? null : Number(value) || 0"
-      />
-    </FormElement>
+    <div class="grid grid-cols-2 gap-3">
+      <FormElement>
+        <template #label>
+          {{ t('loans.form.annualRate') }}
+        </template>
+        <FormInput
+          type="number"
+          inputmode="decimal"
+          :modelValue="form.annualRate === null ? '' : String(form.annualRate)"
+          @update:modelValue="(value: string) => form.annualRate = value.trim() === '' ? null : Number(value) || 0"
+        />
+      </FormElement>
 
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.startDate') }}
-      </template>
-      <FormDate
-        :modelValue="form.startDate"
-        @update:modelValue="(value: number | null) => { if (value !== null) form.startDate = value }"
-      />
-    </FormElement>
+      <FormElement>
+        <template #label>
+          {{ t('loans.form.termMonths') }}
+        </template>
+        <FormInput
+          type="number"
+          inputmode="numeric"
+          data-loan-form="termMonths"
+          :modelValue="form.termMonths || ''"
+          @update:modelValue="(value: string) => form.termMonths = Math.round(Number(value)) || 0"
+        />
+        <UiText v-if="errors.termMonths" variant="meta" class="pt-1 text-error!">
+          {{ errors.termMonths }}
+        </UiText>
+      </FormElement>
+    </div>
 
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.firstPaymentDate') }}
-      </template>
-      <FormDate
-        :modelValue="form.firstPaymentDate"
-        @update:modelValue="(value: number | null) => { if (value !== null) form.firstPaymentDate = value }"
-      />
-    </FormElement>
+    <div class="grid grid-cols-2 gap-3">
+      <FormElement>
+        <template #label>
+          {{ t('loans.form.startDate') }}
+        </template>
+        <FormDate
+          :modelValue="form.startDate"
+          @update:modelValue="(value: number | null) => { if (value !== null) form.startDate = value }"
+        />
+      </FormElement>
 
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.termMonths') }}
-      </template>
-      <FormInput
-        type="number"
-        :modelValue="String(form.termMonths)"
-        @update:modelValue="(value: string) => form.termMonths = Number(value) || 1"
-      />
-    </FormElement>
-
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.paymentDay') }}
-      </template>
-      <FormInput
-        type="number"
-        :modelValue="String(form.paymentDay)"
-        @update:modelValue="(value: string) => form.paymentDay = Math.min(31, Math.max(1, Number(value) || 1))"
-      />
-    </FormElement>
+      <FormElement>
+        <template #label>
+          {{ t('loans.form.firstPaymentDate') }}
+        </template>
+        <FormDate
+          :modelValue="form.firstPaymentDate"
+          @update:modelValue="onChangeFirstPaymentDate"
+        />
+      </FormElement>
+    </div>
 
     <FormElement>
       <template #label>
@@ -128,52 +151,6 @@ function onSave() {
 
     <FormElement>
       <template #label>
-        {{ t('loans.form.overpaymentMode') }}
-      </template>
-      <UiTabs
-        :items="overpaymentModeOptions"
-        :modelValue="form.overpaymentMode"
-        size="sm"
-        @update:modelValue="(value) => form.overpaymentMode = value as LoanItem['overpaymentMode']"
-      />
-    </FormElement>
-
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.interestMethod') }}
-      </template>
-      <UiTabs
-        :items="interestMethodOptions"
-        :modelValue="form.interestMethod"
-        size="sm"
-        @update:modelValue="(value) => form.interestMethod = value as LoanItem['interestMethod']"
-      />
-    </FormElement>
-
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.lateAfterDays') }}
-      </template>
-      <FormInput
-        type="number"
-        :modelValue="String(form.lateAfterDays)"
-        @update:modelValue="(value: string) => form.lateAfterDays = days(value)"
-      />
-    </FormElement>
-
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.prepayWindowDays') }}
-      </template>
-      <FormInput
-        type="number"
-        :modelValue="String(form.prepayWindowDays)"
-        @update:modelValue="(value: string) => form.prepayWindowDays = days(value)"
-      />
-    </FormElement>
-
-    <FormElement>
-      <template #label>
         {{ t('loans.form.debitWalletId') }}
       </template>
       <FormSelect
@@ -183,26 +160,110 @@ function onSave() {
       />
     </FormElement>
 
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.contractNumber') }}
-      </template>
-      <FormInput
-        :modelValue="form.contractNumber"
-        @update:modelValue="(value: string) => form.contractNumber = value"
-      />
-    </FormElement>
+    <UCollapsible v-model:open="isShowAdvanced">
+      <button
+        type="button"
+        class="-mx-3 flex min-h-10.5 w-[calc(100%+1.5rem)] items-center gap-1 rounded-md interactive px-3 text-left"
+        :aria-expanded="isShowAdvanced"
+        data-loan-form-advanced
+      >
+        <UiTitleSection>
+          {{ t('loans.form.advanced') }}
+        </UiTitleSection>
+        <Icon
+          :name="isShowAdvanced ? 'lucide:chevron-down' : 'lucide:chevron-right'"
+          class="shrink-0 text-muted"
+          size="18"
+        />
+      </button>
 
-    <FormElement>
-      <template #label>
-        {{ t('loans.form.desc') }}
+      <template #content>
+        <div class="grid gap-4 pt-3">
+          <FormElement>
+            <template #label>
+              {{ t('loans.form.paymentDay') }}
+            </template>
+            <FormInput
+              type="number"
+              inputmode="numeric"
+              :modelValue="String(form.paymentDay)"
+              @update:modelValue="(value: string) => form.paymentDay = Math.min(31, Math.max(1, Number(value) || 1))"
+            />
+          </FormElement>
+
+          <FormElement>
+            <template #label>
+              {{ t('loans.form.overpaymentMode') }}
+            </template>
+            <UiTabs
+              :items="overpaymentModeOptions"
+              :modelValue="form.overpaymentMode"
+              size="sm"
+              @update:modelValue="(value) => form.overpaymentMode = value as LoanItem['overpaymentMode']"
+            />
+          </FormElement>
+
+          <FormElement>
+            <template #label>
+              {{ t('loans.form.interestMethod') }}
+            </template>
+            <UiTabs
+              :items="interestMethodOptions"
+              :modelValue="form.interestMethod"
+              size="sm"
+              @update:modelValue="(value) => form.interestMethod = value as LoanItem['interestMethod']"
+            />
+          </FormElement>
+
+          <div class="grid grid-cols-2 gap-3">
+            <FormElement>
+              <template #label>
+                {{ t('loans.form.lateAfterDays') }}
+              </template>
+              <FormInput
+                type="number"
+                inputmode="numeric"
+                :modelValue="String(form.lateAfterDays)"
+                @update:modelValue="(value: string) => form.lateAfterDays = days(value)"
+              />
+            </FormElement>
+
+            <FormElement>
+              <template #label>
+                {{ t('loans.form.prepayWindowDays') }}
+              </template>
+              <FormInput
+                type="number"
+                inputmode="numeric"
+                :modelValue="String(form.prepayWindowDays)"
+                @update:modelValue="(value: string) => form.prepayWindowDays = days(value)"
+              />
+            </FormElement>
+          </div>
+
+          <FormElement>
+            <template #label>
+              {{ t('loans.form.contractNumber') }}
+            </template>
+            <FormInput
+              :modelValue="form.contractNumber"
+              @update:modelValue="(value: string) => form.contractNumber = value"
+            />
+          </FormElement>
+
+          <FormElement>
+            <template #label>
+              {{ t('loans.form.desc') }}
+            </template>
+            <FormTextarea
+              :placeholder="t('loans.form.desc')"
+              :modelValue="form.desc"
+              @update:modelValue="(value: string) => form.desc = value"
+            />
+          </FormElement>
+        </div>
       </template>
-      <FormTextarea
-        :placeholder="t('loans.form.desc')"
-        :modelValue="form.desc"
-        @update:modelValue="(value: string) => form.desc = value"
-      />
-    </FormElement>
+    </UCollapsible>
 
     <div class="flex-center">
       <UiButtonAccent class="sm:max-w-xs" @click="onSave">

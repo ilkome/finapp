@@ -217,7 +217,7 @@ const repaidShare = computed(() => props.principalAmount > 0 ? repaid.value / pr
         class="flex items-baseline justify-between gap-2"
         :class="{ 'opacity-60': props.bankDebt.isStale }"
       >
-        <UiText variant="caption" :class="props.bankDebt.diff !== 0 && 'text-warning'">
+        <UiText variant="caption" :class="props.bankDebt.diff !== 0 && 'text-warning!'">
           {{ props.bankDebt.diff === 0 ? t('loans.bankDebt.reconciled') : t('loans.bankDebt.off') }}
         </UiText>
         <div class="flex items-baseline gap-2">
