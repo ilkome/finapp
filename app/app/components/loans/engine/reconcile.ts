@@ -9,12 +9,13 @@ export const PREPAY_WINDOW_DAYS = 15
 
 /**
  * How far a row's payment may fall short and still close it. Bank and manual rows are the bank's
- * own figures, so they match to the kopeck. A generated row is our estimate: the bank accrues
+ * own figures, but wallets and bank feeds often record them in whole units (12 735 for 12 735.37),
+ * so they close within one currency unit. A generated row is our estimate: the bank accrues
  * interest by days while we charge rate / 12, so its real payment differs by up to about 1%. The
  * shortfall is not lost either way: the balance follows the principal actually repaid.
  */
 function tolerance(row: ScheduleRow, due: number): number {
-  return row.source === 'generated' ? due * 0.01 : 0.005
+  return row.source === 'generated' ? Math.max(due * 0.01, 1) : 1
 }
 
 function paidOf(row: PaymentRow): number {

@@ -10,6 +10,8 @@ export type LoanScheduleViewRow = {
   delta: number
   fine: number
   interest: number
+  /** Imported from the bank: resetting it drops the bank's figures, not a manual edit. */
+  isBank: boolean
   isPayable: boolean
   paymentNumber: number
   principal: number
@@ -28,7 +30,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   edit: [row: LoanScheduleViewRow]
   pay: [row: LoanScheduleViewRow]
-  resetRow: [paymentNumber: number]
+  resetRow: [row: LoanScheduleViewRow]
 }>()
 
 const { t } = useI18n()
@@ -157,9 +159,9 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
               v-if="row.canReset"
               type="button"
               class="rounded-sm bg-elevated/60 px-2 py-1 text-xs"
-              @click="emit('resetRow', row.paymentNumber)"
+              @click="emit('resetRow', row)"
             >
-              {{ t('loans.resetRow') }}
+              {{ row.isBank ? t('loans.resetBankRow') : t('loans.resetRow') }}
             </button>
           </div>
         </div>

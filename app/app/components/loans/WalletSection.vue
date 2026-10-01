@@ -17,6 +17,7 @@ const props = defineProps<{
   walletId: WalletId
 }>()
 
+const { t } = useI18n()
 const dateLocale = useDateLocale()
 const today = useCivilToday()
 const loansStore = useLoansStore()
@@ -100,8 +101,10 @@ function onSaveEdit() {
   editing.value = null
 }
 
-function onResetRow(paymentNumber: number) {
-  const id = overrideIdByNumber.value.get(paymentNumber)
+const resetting = ref<LoanScheduleViewRow | null>(null)
+
+function onResetRow() {
+  const id = resetting.value && overrideIdByNumber.value.get(resetting.value.paymentNumber)
   if (id)
     loansStore.deleteScheduleRow(id)
 }
@@ -131,7 +134,16 @@ function onPay(row: LoanScheduleViewRow) {
       :rows="scheduleRows"
       @edit="onEdit"
       @pay="onPay"
-      @resetRow="onResetRow"
+      @resetRow="(row: LoanScheduleViewRow) => resetting = row"
+    />
+
+    <LayoutConfirmModal
+      v-if="resetting"
+      :confirmLabel="resetting.isBank ? t('loans.resetBankRow') : t('loans.resetRow')"
+      :description="resetting.isBank ? t('loans.resetBankRowConfirm') : undefined"
+      :title="t('loans.resetRowConfirm')"
+      @closed="resetting = null"
+      @confirm="onResetRow"
     />
 
     <LoansScheduleRowForm

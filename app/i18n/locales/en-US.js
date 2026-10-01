@@ -339,7 +339,10 @@ export default {
       snowballHint: 'The smallest debt, closed first for the motivation.',
       title: 'Where to send extra money',
     },
+    resetBankRow: 'Remove bank figures',
+    resetBankRowConfirm: 'The bank figures for this payment are removed. The next import brings them back.',
     resetRow: 'Reset to plan',
+    resetRowConfirm: 'Reset this payment to the plan?',
     revolving: {
       title: 'Credit cards and instalments',
     },

@@ -9,7 +9,11 @@ const dateLocale = useDateLocale()
 const loansStore = useLoansStore()
 const currenciesStore = useCurrenciesStore()
 
+const today = useCivilToday()
+
 const due = computed(() => loansStore.dueThisMonth)
+// The nearest date is the oldest unpaid row, so a past one means something is overdue.
+const isOverdue = computed(() => !!due.value && due.value.nearestDate < today.value)
 </script>
 
 <template>
@@ -26,8 +30,16 @@ const due = computed(() => loansStore.dueThisMonth)
       variant="secondary"
     />
 
-    <UiText variant="meta">
+    <UiText variant="meta" :class="isOverdue && 'text-error'">
       {{ formatByLocale(due.nearestDate, 'dd.MM', dateLocale) }}
     </UiText>
+
+    <span
+      v-if="isOverdue"
+      class="rounded-sm bg-error/15 px-2 py-0.5 text-2xs leading-4 text-error"
+      data-loan-due-overdue
+    >
+      {{ t('loans.overdue') }}
+    </span>
   </div>
 </template>

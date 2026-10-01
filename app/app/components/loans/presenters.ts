@@ -92,6 +92,7 @@ export function toScheduleViewRows(rows: PaymentRow[], overrideNumbers: Set<numb
       delta: isSettled ? Math.round((paid - row.totalAmount) * 100) / 100 : 0,
       fine: row.paidFine,
       interest: isSettled ? row.paidInterest : row.interestPart,
+      isBank: row.source === 'bank',
       isPayable: !isSettled || row.status === 'partial',
       paymentNumber: row.paymentNumber,
       principal: isSettled ? row.paidPrincipal : row.principalPart,

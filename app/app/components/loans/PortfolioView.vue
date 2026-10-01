@@ -105,8 +105,12 @@ const cells = computed(() => [
       </div>
 
       <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <UiText variant="meta">
+        <!-- 0 means nothing settled yet, not a free loan: the contract rate alone stands in. -->
+        <UiText v-if="item.effectiveRate > 0" variant="meta">
           {{ t('loans.effectiveRate') }}: {{ item.effectiveRate }}%{{ item.contractRate === null ? '' : ` / ${item.contractRate}%` }}
+        </UiText>
+        <UiText v-else-if="item.contractRate !== null" variant="meta">
+          {{ t('loans.contractRate') }}: {{ item.contractRate }}%
         </UiText>
 
         <UiText variant="meta">

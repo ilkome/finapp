@@ -39,7 +39,7 @@ describe('loansScheduleView', () => {
     const wrapper = mount(LoansScheduleView, { props: schedule as any })
     await wrapper.find('[data-loan-row="1"]').trigger('click')
     await wrapper.findAll('button').find(b => b.text() === 'loans.resetRow')!.trigger('click')
-    expect(wrapper.emitted('resetRow')).toEqual([[1]])
+    expect(wrapper.emitted('resetRow')).toEqual([[expect.objectContaining({ paymentNumber: 1 })]])
   })
 
   it('collapses around the first unpaid row and expands on demand', async () => {
@@ -50,6 +50,7 @@ describe('loansScheduleView', () => {
       delta: 0,
       fine: 0,
       interest: 10,
+      isBank: false,
       isPayable: true,
       paymentNumber: i + 1,
       principal: 90,
