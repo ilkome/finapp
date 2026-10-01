@@ -25,6 +25,9 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
+const isShowWallets = ref(false)
+const selectedCount = computed(() => props.wallets.filter(wallet => wallet.isSelected).length)
+
 const picks = computed(() => [
   { key: 'avalanche', pick: props.avalanche },
   { key: 'snowball', pick: props.snowball },
@@ -37,20 +40,36 @@ const picks = computed(() => [
       {{ t('loans.recommendation.title') }}
     </UiTitleSection>
 
-    <div class="flex items-baseline justify-between gap-2">
-      <UiText variant="caption">
-        {{ t('loans.recommendation.freeMoney') }}
-      </UiText>
+    <button
+      type="button"
+      class="-mx-2 flex min-h-10.5 items-center gap-2 rounded-md interactive px-2 text-left"
+      :aria-expanded="isShowWallets"
+      data-loan-free-wallets-toggle
+      @click="isShowWallets = !isShowWallets"
+    >
+      <div class="grid">
+        <UiText variant="caption">
+          {{ t('loans.recommendation.freeMoney') }}
+        </UiText>
+        <UiText variant="meta">
+          {{ t('loans.recommendation.fromWallets', { n: selectedCount, total: props.wallets.length }) }}
+        </UiText>
+      </div>
       <Amount
         :amount="props.freeMoney"
         :currencyCode="props.baseCurrencyCode"
         :isShowBaseRate="false"
-        align="left"
+        class="ml-auto"
         variant="secondary"
       />
-    </div>
+      <Icon
+        :name="isShowWallets ? 'lucide:chevron-up' : 'lucide:chevron-down'"
+        class="shrink-0 text-muted"
+        size="18"
+      />
+    </button>
 
-    <div class="grid">
+    <div v-if="isShowWallets" class="grid">
       <div
         v-for="wallet in props.wallets"
         :key="wallet.walletId"
@@ -73,12 +92,29 @@ const picks = computed(() => [
       </div>
     </div>
 
-    <FormInput
-      type="number"
-      :modelValue="String(props.extra)"
-      :placeholder="t('loans.extraAmount')"
-      @update:modelValue="(value: string) => emit('update:extra', Number(value) || 0)"
-    />
+    <div class="grid gap-1">
+      <UiText variant="caption">
+        {{ t('loans.extraAmount') }}, {{ props.baseCurrencyCode }}
+      </UiText>
+      <div class="flex items-center gap-2">
+        <FormInput
+          type="number"
+          inputmode="decimal"
+          :modelValue="String(props.extra)"
+          @update:modelValue="(value: string) => emit('update:extra', Number(value) || 0)"
+        />
+        <UButton
+          color="neutral"
+          size="sm"
+          variant="soft"
+          class="shrink-0"
+          data-loan-extra-all
+          @click="emit('update:extra', Math.round(props.freeMoney))"
+        >
+          {{ t('loans.recommendation.allFree') }}
+        </UButton>
+      </div>
+    </div>
 
     <UiText v-if="picks.length === 0" variant="meta">
       {{ t('loans.recommendation.empty') }}
@@ -94,22 +130,26 @@ const picks = computed(() => [
         {{ t(`loans.recommendation.${item.key}`) }}
       </UiText>
 
-      <div class="flex flex-wrap items-baseline gap-2">
-        <UiText variant="navigation">
-          {{ item.pick.name }}
+      <UiText variant="navigation">
+        {{ item.pick.name }}
+      </UiText>
+
+      <div class="flex flex-wrap items-baseline gap-x-1.5">
+        <UiText variant="meta">
+          {{ t('loans.interestSaved') }}
         </UiText>
         <Amount
           :amount="item.pick.interestSaved"
           :currencyCode="props.baseCurrencyCode"
           :isShowBaseRate="false"
-          class="ml-auto"
           align="left"
           variant="secondary"
         />
-        <UiText v-if="item.pick.newEndDate" variant="meta">
-          → {{ item.pick.newEndDate }}
-        </UiText>
       </div>
+
+      <UiText v-if="item.pick.newEndDate" variant="meta">
+        {{ t('loans.recommendation.closesOn', { date: item.pick.newEndDate }) }}
+      </UiText>
 
       <UiText variant="meta">
         {{ t(`loans.recommendation.${item.key}Hint`) }}

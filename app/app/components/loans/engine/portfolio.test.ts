@@ -78,7 +78,7 @@ describe('derivePortfolio', () => {
     expect(totals.paidFine).toBe(0)
   })
 
-  it('keeps native and base amounts side by side and shares interest across the portfolio', () => {
+  it('keeps native and base amounts side by side', () => {
     const { items } = derivePortfolio(input)
 
     const usdItem = items.find(item => item.walletId === 'w2')!
@@ -87,9 +87,6 @@ describe('derivePortfolio', () => {
     expect(usdItem.paidInterestBase).toBe(usdItem.paidInterest * 100)
     expect(usdItem.contractRate).toBe(20)
     expect(usdItem.nextPayment).not.toBeNull()
-
-    const share = items.reduce((total, item) => total + item.interestShareOfPortfolio, 0)
-    expect(share).toBeCloseTo(1, 10)
   })
 
   it('sorts by effective rate, closed loans last', () => {

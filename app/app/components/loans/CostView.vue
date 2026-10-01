@@ -5,9 +5,15 @@ const props = defineProps<{
   currencyCode: string
   fine: number
   interest: number
+  /** Off where the same totals already sit next to it. */
+  isHideTotals?: boolean
 }>()
 
 const { t } = useI18n()
+
+const RECENT = 6
+const isShowAll = ref(false)
+const shownMonths = computed(() => isShowAll.value ? props.byMonth : props.byMonth.slice(-RECENT))
 </script>
 
 <template>
@@ -16,7 +22,7 @@ const { t } = useI18n()
       {{ t('loans.cost') }}
     </UiTitleSection>
 
-    <div class="grid grid-cols-2 gap-2">
+    <div v-if="!props.isHideTotals" class="grid grid-cols-2 gap-2">
       <LoansStatCell
         :amount="props.interest"
         :currencyCode="props.currencyCode"
@@ -31,7 +37,7 @@ const { t } = useI18n()
 
     <div class="grid">
       <div
-        v-for="item in props.byMonth"
+        v-for="item in shownMonths"
         :key="item.month"
         class="border-elevated/40 flex items-baseline gap-2 border-b py-1.5 last:border-0"
         data-loan-cost-month
@@ -57,5 +63,15 @@ const { t } = useI18n()
         </div>
       </div>
     </div>
+
+    <button
+      v-if="props.byMonth.length > RECENT"
+      type="button"
+      class="justify-self-start text-xs text-muted"
+      data-loan-cost-show-all
+      @click="isShowAll = !isShowAll"
+    >
+      {{ isShowAll ? t('loans.showLess') : t('loans.showAll') }}
+    </button>
   </div>
 </template>

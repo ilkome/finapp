@@ -4,8 +4,6 @@ import type { MinPaymentStatus } from '~/components/loans/minPayment'
 import { minPaymentStatusClass } from '~/components/loans/minPayment'
 
 export type LoansRevolvingViewItem = {
-  /** Interest and fees of this card, by preformatted month. */
-  byMonth: { fine: number, interest: number, month: string }[]
   currencyCode: string
   /** Debt on the card, as a positive number. */
   debt: number
@@ -73,11 +71,12 @@ const { t } = useI18n()
           </UiText>
         </div>
 
-        <div class="flex flex-wrap items-baseline gap-x-4">
-          <UiText variant="meta">
+        <div v-if="item.interest || item.fine" class="flex flex-wrap items-baseline gap-x-1.5" data-loan-revolving-cost>
+          <UiText v-if="item.interest" variant="meta">
             {{ t('loans.interest') }}
           </UiText>
           <Amount
+            v-if="item.interest"
             :amount="item.interest"
             :currencyCode="item.currencyCode"
             :isShowBaseRate="false"
@@ -96,34 +95,6 @@ const { t } = useI18n()
             variant="secondary"
             class="text-expense-1!"
           />
-        </div>
-
-        <div
-          v-for="month in item.byMonth"
-          :key="month.month"
-          class="flex items-baseline gap-2"
-          data-loan-revolving-month
-        >
-          <UiText variant="meta">
-            {{ month.month }}
-          </UiText>
-          <div class="ml-auto flex items-baseline gap-3">
-            <Amount
-              v-if="month.interest"
-              :amount="month.interest"
-              :currencyCode="item.currencyCode"
-              :isShowBaseRate="false"
-              variant="secondary"
-            />
-            <Amount
-              v-if="month.fine"
-              :amount="month.fine"
-              :currencyCode="item.currencyCode"
-              :isShowBaseRate="false"
-              variant="secondary"
-              class="text-expense-1!"
-            />
-          </div>
         </div>
       </div>
     </UiElement>

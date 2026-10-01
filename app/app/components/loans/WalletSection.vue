@@ -29,7 +29,7 @@ const day = computed(() => {
   const locale = dateLocale.value
   return (ms: number) => formatByLocale(ms, 'dd.MM.yyyy', locale)
 })
-const month = (ms: number) => formatByLocale(ms, 'MM.yyyy', dateLocale.value)
+const month = (ms: number) => formatByLocale(ms, 'LLL yyyy', dateLocale.value)
 
 const currencyCode = computed(() => walletsStore.items?.[props.walletId]?.currency ?? 'USD')
 const entry = computed(() => loansStore.byWalletId.get(props.walletId))

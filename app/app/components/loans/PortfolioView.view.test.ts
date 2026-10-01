@@ -5,25 +5,30 @@ import portfolio from '~/components/demo/loans/portfolio.json'
 import LoansPortfolioView from '~/components/loans/PortfolioView.vue'
 
 describe('loansPortfolioView', () => {
-  it('renders the base-currency totals and one row per loan', () => {
+  it('renders the base-currency totals and the open loans, closed ones on demand', async () => {
     const wrapper = mount(LoansPortfolioView, { props: portfolio as any })
 
     expect(wrapper.find('[data-loan-total="remaining"] [data-amount]').text()).toBe('301000 RUB')
     expect(wrapper.find('[data-loan-total="paidInterest"] [data-amount]').text()).toBe('15000 RUB')
 
     const rows = wrapper.findAll('[data-loan-portfolio-item]')
-    expect(rows).toHaveLength(2)
+    expect(rows).toHaveLength(1)
     expect(rows[0]!.attributes('href')).toBe('/wallets/w1')
-    expect(rows[0]!.text()).toContain('19.4% / 18%')
-    expect(rows[0]!.text()).toContain('72%')
+    expect(rows[0]!.text()).toContain('18%')
+    expect(rows[0]!.find('[data-loan-rate="effective"]').exists()).toBe(true)
     expect(rows[0]!.text()).toContain('loans.overdue: 2')
     expect(rows[0]!.text()).toContain('15.05.2026')
-    expect(rows[1]!.text()).toContain('loans.closed')
+
+    await wrapper.find('[data-loan-show-closed]').trigger('click')
+    const all = wrapper.findAll('[data-loan-portfolio-item]')
+    expect(all).toHaveLength(2)
+    expect(all[1]!.text()).toContain('loans.closed')
   })
 
   it('shows the empty hint instead of a list', () => {
     const wrapper = mount(LoansPortfolioView, { props: { ...portfolio, items: [] } as any })
     expect(wrapper.findAll('[data-loan-portfolio-item]')).toHaveLength(0)
     expect(wrapper.text()).toContain('loans.portfolio.empty')
+    expect(wrapper.find('[data-loan-show-closed]').exists()).toBe(false)
   })
 })

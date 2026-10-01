@@ -17,29 +17,27 @@ const isOverdue = computed(() => !!due.value && due.value.nearestDate < today.va
 </script>
 
 <template>
-  <div v-if="due" class="flex items-center gap-2 px-2 py-1" data-loan-due>
-    <UiText variant="meta">
+  <div v-if="due" class="grid gap-1 rounded-sm bg-elevated/30 px-3 py-2" data-loan-due>
+    <UiText variant="caption">
       {{ t('loans.dueThisMonth') }}
     </UiText>
 
-    <Amount
-      :amount="due.amount"
-      :currencyCode="currenciesStore.base"
-      :isShowBaseRate="false"
-      align="left"
-      variant="secondary"
-    />
+    <div class="flex flex-wrap items-baseline gap-x-2">
+      <Amount
+        :amount="due.amount"
+        :currencyCode="currenciesStore.base"
+        :isShowBaseRate="false"
+        align="left"
+        variant="summary"
+      />
 
-    <UiText variant="meta" :class="isOverdue && 'text-error'">
-      {{ formatByLocale(due.nearestDate, 'dd.MM', dateLocale) }}
-    </UiText>
+      <UiText variant="meta" :class="isOverdue && 'text-error'">
+        {{ t('loans.by') }} {{ formatByLocale(due.nearestDate, 'dd.MM', dateLocale) }}
+      </UiText>
 
-    <UiBadge
-      v-if="isOverdue"
-      tone="error"
-      data-loan-due-overdue
-    >
-      {{ t('loans.overdue') }}
-    </UiBadge>
+      <UiBadge v-if="isOverdue" tone="error" data-loan-due-overdue>
+        {{ t('loans.overdue') }}
+      </UiBadge>
+    </div>
   </div>
 </template>

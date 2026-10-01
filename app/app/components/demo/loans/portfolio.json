@@ -5,7 +5,6 @@
       "contractRate": 18,
       "currencyCode": "RUB",
       "effectiveRate": 19.4,
-      "interestShareOfPortfolio": 0.72,
       "isClosed": false,
       "name": "Mortgage",
       "nextPayment": { "amount": 54000, "date": "15.05.2026" },
@@ -17,8 +16,7 @@
     {
       "contractRate": 9,
       "currencyCode": "USD",
-      "effectiveRate": 9.1,
-      "interestShareOfPortfolio": 0.28,
+      "effectiveRate": null,
       "isClosed": true,
       "name": "Car loan",
       "nextPayment": null,

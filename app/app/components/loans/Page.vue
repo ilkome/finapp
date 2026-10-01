@@ -14,6 +14,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { paramsOf, projectionParams } from '~/components/loans/engine/derive'
 import { derivePortfolio } from '~/components/loans/engine/portfolio'
 import { minPaymentOf } from '~/components/loans/minPayment'
+import { shownEffectiveRate } from '~/components/loans/presenters'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { filterWalletsByViewType } from '~/components/wallets/filters'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -32,7 +33,7 @@ useSeoMeta({
 })
 
 const day = (ms: number) => formatByLocale(ms, 'dd.MM.yyyy', dateLocale.value)
-const month = (ms: number) => formatByLocale(ms, 'MM.yyyy', dateLocale.value)
+const month = (ms: number) => formatByLocale(ms, 'LLL yyyy', dateLocale.value)
 
 function toBase(amount: number, currencyCode: CurrencyCode) {
   return getAmountInRate({ amount, baseCurrencyCode: currenciesStore.base, currencyCode, rates: currenciesStore.rates })
@@ -43,10 +44,16 @@ function fromBase(amount: number, currencyCode: CurrencyCode) {
   return getAmountInRate({ amount, baseCurrencyCode: currencyCode, currencyCode: currenciesStore.base, rates: currenciesStore.rates })
 }
 
-/** Wallets that can pay a loan off: liquid, still in use, and not a credit product themselves. */
+/**
+ * Wallets that can pay a loan off: liquid, still in use, not a credit product themselves, and with
+ * money on them - an overdrawn wallet would only count as zero.
+ */
 const freeMoneyWalletIds = computed<WalletId[]>(() =>
   filterWalletsByViewType(walletsStore.sortedIds, walletsStore.itemsComputed, 'isWithdrawal')
-    .filter(id => walletsStore.itemsComputed[id]?.type !== 'credit'))
+    .filter((id) => {
+      const wallet = walletsStore.itemsComputed[id]
+      return wallet?.type !== 'credit' && (wallet?.amount ?? 0) > 0
+    }))
 
 // An empty list means "all of them", so a fresh user gets a sensible default without a write.
 const pickedWalletIds = useStorage<WalletId[]>('loans.recommendation.walletIds', [])
@@ -79,8 +86,8 @@ const portfolio = computed(() => derivePortfolio({ extra: extra.value, fromBase,
 const portfolioItems = computed<LoansPortfolioViewItem[]>(() => portfolio.value.items.map(item => ({
   contractRate: item.contractRate,
   currencyCode: item.currency,
-  effectiveRate: item.effectiveRate,
-  interestShareOfPortfolio: item.interestShareOfPortfolio,
+  // 0 means nothing settled yet, not a free loan.
+  effectiveRate: item.effectiveRate > 0 ? shownEffectiveRate(item.contractRate, item.effectiveRate) : null,
   isClosed: item.isClosed,
   name: item.name,
   nextPayment: item.nextPayment && { amount: item.nextPayment.amount, date: day(item.nextPayment.date) },
@@ -137,7 +144,6 @@ const revolvingItems = computed<LoansRevolvingViewItem[]>(() => walletsStore.sor
   const minPayment = minPaymentOf(wallet, loansStore.trnsByCreditWallet.get(walletId) ?? [], today.value)
 
   return [{
-    byMonth: cost.byMonth.map(item => ({ fine: item.fine, interest: item.interest, month: month(item.month) })),
     currencyCode: wallet.currency,
     debt: Math.abs(wallet.amount),
     fine: cost.fine,
@@ -172,16 +178,16 @@ function onToggleWallet(walletId: WalletId) {
           :items="portfolioItems"
           :totals="portfolio.totals"
         />
-        <LoansCostView v-if="costProps.byMonth.length" v-bind="costProps" />
-      </div>
-
-      <div class="grid content-start gap-6 @3xl/main:max-w-sm">
         <LoansRecommendationView
           v-bind="recommendationProps"
           @toggleWallet="onToggleWallet"
           @update:extra="(value: number) => extraInput = value"
         />
+      </div>
+
+      <div class="grid content-start gap-6 @3xl/main:max-w-sm">
         <LoansRevolvingView :items="revolvingItems" />
+        <LoansCostView v-if="costProps.byMonth.length" v-bind="costProps" />
       </div>
     </div>
   </UiPage>

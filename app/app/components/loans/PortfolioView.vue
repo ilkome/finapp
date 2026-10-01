@@ -2,9 +2,8 @@
 export type LoansPortfolioViewItem = {
   contractRate: number | null
   currencyCode: string
-  effectiveRate: number
-  /** Share of this loan in the portfolio's paid plus planned interest, 0..1. */
-  interestShareOfPortfolio: number
+  /** Rate the paid interest amounts to; null when it says nothing the contract rate does not. */
+  effectiveRate: number | null
   isClosed: boolean
   name: string
   /** Amount in the loan's own currency plus a preformatted civil day. */
@@ -30,12 +29,18 @@ const props = defineProps<{
 
 const { t } = useI18n()
 
+const isShowClosed = ref(false)
+
 const cells = computed(() => [
   { key: 'remaining', title: t('loans.portfolio.remaining'), value: props.totals.remaining },
   { key: 'paidTotal', title: t('loans.paidTotal'), value: props.totals.paidTotal },
   { key: 'paidInterest', title: t('loans.paidInterest'), value: props.totals.paidInterest },
   { key: 'plannedInterest', title: t('loans.plannedInterest'), value: props.totals.plannedInterest },
 ])
+
+const openItems = computed(() => props.items.filter(item => !item.isClosed))
+const closedItems = computed(() => props.items.filter(item => item.isClosed))
+const shownItems = computed(() => isShowClosed.value ? [...openItems.value, ...closedItems.value] : openItems.value)
 </script>
 
 <template>
@@ -60,78 +65,77 @@ const cells = computed(() => [
       {{ t('loans.portfolio.empty') }}
     </UiText>
 
-    <UiElement
-      v-for="(item, index) in props.items"
-      :key="item.walletId"
-      :lineWidth="index === props.items.length - 1 ? 0 : 3"
-      :to="`/wallets/${item.walletId}`"
-      data-loan-portfolio-item
-      insideClasses="items-start"
+    <div class="grid">
+      <UiElement
+        v-for="(item, index) in shownItems"
+        :key="item.walletId"
+        :lineWidth="index === shownItems.length - 1 ? 0 : 3"
+        :to="`/wallets/${item.walletId}`"
+        data-loan-portfolio-item
+        insideClasses="items-start"
+      >
+        <div class="grid min-w-0 grow gap-0.5">
+          <div class="flex items-baseline gap-2">
+            <UiText variant="navigation" class="truncate">
+              {{ item.name }}
+            </UiText>
+
+            <UiBadge v-if="item.isClosed" tone="muted">
+              {{ t('loans.closed') }}
+            </UiBadge>
+
+            <UiBadge v-if="item.overdueCount > 0" tone="error">
+              {{ t('loans.overdue') }}: {{ item.overdueCount }}
+            </UiBadge>
+
+            <Amount
+              :amount="item.remaining"
+              :currencyCode="item.currencyCode"
+              :isShowBaseRate="false"
+              class="ml-auto"
+              variant="secondary"
+            />
+          </div>
+
+          <div v-if="item.nextPayment" class="flex flex-wrap items-baseline gap-x-1.5">
+            <UiText variant="meta">
+              {{ t('loans.nextPayment') }}
+            </UiText>
+            <Amount
+              :amount="item.nextPayment.amount"
+              :currencyCode="item.currencyCode"
+              :isShowBaseRate="false"
+              align="left"
+              variant="secondary"
+            />
+            <UiText variant="meta">
+              {{ item.nextPayment.date }}
+            </UiText>
+          </div>
+
+          <div class="flex flex-wrap items-baseline gap-x-1.5">
+            <UiText v-if="item.contractRate !== null" variant="meta">
+              {{ item.contractRate }}%
+            </UiText>
+            <UiText v-if="item.effectiveRate !== null" variant="meta" data-loan-rate="effective">
+              {{ t('loans.effectiveRateHint', { rate: item.effectiveRate }) }}
+            </UiText>
+            <UiText v-if="item.plannedEndDate" variant="meta">
+              {{ t('loans.by') }} {{ item.plannedEndDate }}
+            </UiText>
+          </div>
+        </div>
+      </UiElement>
+    </div>
+
+    <button
+      v-if="closedItems.length > 0"
+      type="button"
+      class="justify-self-start text-xs text-muted"
+      data-loan-show-closed
+      @click="isShowClosed = !isShowClosed"
     >
-      <div class="grid min-w-0 grow gap-1">
-        <div class="flex flex-wrap items-baseline gap-2">
-          <UiText variant="navigation">
-            {{ item.name }}
-          </UiText>
-
-          <UiBadge
-            v-if="item.isClosed"
-            tone="muted"
-          >
-            {{ t('loans.closed') }}
-          </UiBadge>
-
-          <UiBadge
-            v-if="item.overdueCount > 0"
-            tone="error"
-          >
-            {{ t('loans.overdue') }}: {{ item.overdueCount }}
-          </UiBadge>
-
-          <Amount
-            :amount="item.remaining"
-            :currencyCode="item.currencyCode"
-            :isShowBaseRate="false"
-            class="ml-auto"
-            align="left"
-            variant="secondary"
-          />
-        </div>
-
-        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-          <!-- 0 means nothing settled yet, not a free loan: the contract rate alone stands in. -->
-          <UiText v-if="item.effectiveRate > 0" variant="meta">
-            {{ t('loans.effectiveRate') }}: {{ item.effectiveRate }}%{{ item.contractRate === null ? '' : ` / ${item.contractRate}%` }}
-          </UiText>
-          <UiText v-else-if="item.contractRate !== null" variant="meta">
-            {{ t('loans.contractRate') }}: {{ item.contractRate }}%
-          </UiText>
-
-          <UiText variant="meta">
-            {{ t('loans.portfolio.interestShare') }}: {{ Math.round(item.interestShareOfPortfolio * 100) }}%
-          </UiText>
-
-          <UiText v-if="item.plannedEndDate" variant="meta">
-            → {{ item.plannedEndDate }}
-          </UiText>
-        </div>
-
-        <div v-if="item.nextPayment" class="flex items-baseline gap-2">
-          <UiText variant="meta">
-            {{ t('loans.nextPayment') }}
-          </UiText>
-          <Amount
-            :amount="item.nextPayment.amount"
-            :currencyCode="item.currencyCode"
-            :isShowBaseRate="false"
-            align="left"
-            variant="secondary"
-          />
-          <UiText variant="meta">
-            {{ item.nextPayment.date }}
-          </UiText>
-        </div>
-      </div>
-    </UiElement>
+      {{ isShowClosed ? t('loans.showLess') : t('loans.portfolio.showClosed', { n: closedItems.length }) }}
+    </button>
   </div>
 </template>

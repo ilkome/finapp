@@ -20,8 +20,6 @@ export type PortfolioItem = {
   contractRate: number | null
   currency: CurrencyCode
   effectiveRate: number
-  /** Share of this loan in the portfolio's paid plus planned interest, 0..1. */
-  interestShareOfPortfolio: number
   isClosed: boolean
   name: string
   nextPayment: { amount: number, amountBase: number, date: number } | null
@@ -103,7 +101,6 @@ export function derivePortfolio(input: PortfolioInput): Portfolio {
       contractRate: annualRate,
       currency,
       effectiveRate: summary.effectiveRate,
-      interestShareOfPortfolio: 0,
       isClosed: summary.isClosed,
       name,
       nextPayment: summary.nextPayment
@@ -123,12 +120,6 @@ export function derivePortfolio(input: PortfolioInput): Portfolio {
 
   for (const key of Object.keys(totals) as (keyof PortfolioTotals)[])
     totals[key] = round2(totals[key])
-
-  const interestTotal = totals.paidInterest + totals.plannedInterest
-  if (interestTotal > 0) {
-    for (const item of items)
-      item.interestShareOfPortfolio = (item.paidInterestBase + item.plannedInterestBase) / interestTotal
-  }
 
   // A loan with nothing settled yet has no effective rate: its contract rate stands in for it.
   const rateOf = (item: PortfolioItem) => item.effectiveRate || (item.contractRate ?? 0)
