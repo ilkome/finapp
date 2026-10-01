@@ -49,6 +49,7 @@ export function toSummaryProps(params: {
     effectiveRate: shownEffectiveRate(loan.annualRate, summary.effectiveRate),
     interestMissing: summary.interestMissing,
     isClosed: summary.isClosed,
+    monthsLeft: summary.rows.filter(row => row.status !== 'paid' && row.status !== 'late').length,
     nextPayment: next ? { amount: next.amount, date: day(next.date) } : null,
     overdueCount: summary.overdueCount,
     overpaid,
@@ -56,8 +57,10 @@ export function toSummaryProps(params: {
     paidTotal: summary.paidTotal,
     plannedEndDate: summary.plannedEndDate === null ? null : day(summary.plannedEndDate),
     plannedInterest: summary.plannedInterest,
+    principalAmount: loan.principalAmount,
     principalFreeInterest: principalFree.settledInterest,
     principalFreeMonths: principalFree.settledMonths,
+    remaining: summary.remaining,
     unrecognized: summary.unrecognized,
   }
 }

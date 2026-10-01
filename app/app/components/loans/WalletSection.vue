@@ -67,6 +67,7 @@ const whatIfMode = ref<OverpaymentMode>('reducePayment')
 const whatIf = computed(() => loansStore.getWhatIf(props.walletId, extra.value, whatIfMode.value))
 
 const editing = ref<LoanScheduleRowDraft | null>(null)
+const isShowLoanForm = ref(false)
 
 function onEdit(row: LoanScheduleViewRow) {
   const source = entry.value?.summary.rows.find(item => item.paymentNumber === row.paymentNumber)
@@ -109,8 +110,8 @@ function onResetRow() {
     loansStore.deleteScheduleRow(id)
 }
 
-function onPay(row: LoanScheduleViewRow) {
-  const source = entry.value?.summary.rows.find(item => item.paymentNumber === row.paymentNumber)
+function onPay(paymentNumber: number) {
+  const source = entry.value?.summary.rows.find(item => item.paymentNumber === paymentNumber)
   if (!source)
     return
   trnsFormStore.openFormForLoanPayment({
@@ -121,11 +122,46 @@ function onPay(row: LoanScheduleViewRow) {
     walletId: props.walletId,
   })
 }
+
+function onPayNext() {
+  const row = entry.value?.summary.rows[firstUnpaidIndex.value]
+  if (row)
+    onPay(row.paymentNumber)
+}
 </script>
 
 <template>
   <div class="grid gap-4">
-    <LoansSummaryView v-if="summaryProps" v-bind="summaryProps" />
+    <LoansSummaryView
+      v-if="summaryProps"
+      v-bind="summaryProps"
+      @pay="onPayNext"
+    />
+
+    <div v-else class="flex flex-wrap items-center gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-empty>
+      <UiText variant="meta" class="grow">
+        {{ t('loans.emptyHint') }}
+      </UiText>
+      <UButton
+        color="neutral"
+        icon="i-lucide-landmark"
+        size="sm"
+        variant="soft"
+        @click="isShowLoanForm = true"
+      >
+        {{ t('loans.add') }}
+      </UButton>
+    </div>
+
+    <UModal
+      v-model:open="isShowLoanForm"
+      :title="t('loans.add')"
+      :ui="{ content: 'max-w-lg' }"
+    >
+      <template #body>
+        <LoansForm :walletId @afterSave="isShowLoanForm = false" />
+      </template>
+    </UModal>
 
     <LoansScheduleView
       v-if="entry"
@@ -133,7 +169,7 @@ function onPay(row: LoanScheduleViewRow) {
       :firstUnpaidIndex
       :rows="scheduleRows"
       @edit="onEdit"
-      @pay="onPay"
+      @pay="(row: LoanScheduleViewRow) => onPay(row.paymentNumber)"
       @resetRow="(row: LoanScheduleViewRow) => resetting = row"
     />
 
@@ -146,15 +182,24 @@ function onPay(row: LoanScheduleViewRow) {
       @confirm="onResetRow"
     />
 
-    <LoansScheduleRowForm
-      v-if="entry && editing"
-      :modelValue="editing"
-      @cancel="editing = null"
-      @save="onSaveEdit"
-      @update:modelValue="(value) => editing = value"
-    />
+    <UModal
+      :open="!!editing"
+      :title="t('loans.editRow')"
+      :ui="{ content: 'max-w-md' }"
+      @update:open="(isOpen: boolean) => { if (!isOpen) editing = null }"
+    >
+      <template #body>
+        <LoansScheduleRowForm
+          v-if="editing"
+          :modelValue="editing"
+          @cancel="editing = null"
+          @save="onSaveEdit"
+          @update:modelValue="(value) => editing = value"
+        />
+      </template>
+    </UModal>
 
-    <LoansCostView v-bind="costProps" />
+    <LoansCostView v-if="costProps.byMonth.length" v-bind="costProps" :isHideTotals="!!entry" />
 
     <LoansWhatIfView
       v-if="entry && !entry.summary.isClosed && Math.abs(entry.summary.unrecognized) < 0.01 && whatIf"

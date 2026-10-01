@@ -25,15 +25,16 @@ function patch(partial: Partial<LoanScheduleRowDraft>) {
 </script>
 
 <template>
-  <div class="grid gap-2 rounded-sm bg-elevated/30 p-3">
-    <UiTitleSection>
-      {{ t('loans.editRow') }}
-    </UiTitleSection>
-
-    <FormDate
-      :modelValue="props.modelValue.date"
-      @update:modelValue="(value: number | null) => { if (value !== null) patch({ date: value }) }"
-    />
+  <div class="grid gap-3">
+    <FormElement>
+      <template #label>
+        {{ t('common.date') }}
+      </template>
+      <FormDate
+        :modelValue="props.modelValue.date"
+        @update:modelValue="(value: number | null) => { if (value !== null) patch({ date: value }) }"
+      />
+    </FormElement>
     <FormElement>
       <template #label>
         {{ t('loans.principal') }}

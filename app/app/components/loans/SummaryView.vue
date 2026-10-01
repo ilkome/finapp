@@ -15,6 +15,8 @@ const props = defineProps<{
   /** Settled payments recorded without their interest expense. */
   interestMissing: number
   isClosed: boolean
+  /** Unpaid payments left on the schedule. */
+  monthsLeft: number
   nextPayment: { amount: number, date: string } | null
   overdueCount: number
   /** Interest and fines paid so far. */
@@ -25,16 +27,26 @@ const props = defineProps<{
   /** Preformatted civil day. */
   plannedEndDate: string | null
   plannedInterest: number
+  /** The amount borrowed. */
+  principalAmount: number
   /** Interest paid in the settled months that repaid no principal. */
   principalFreeInterest: number
   principalFreeMonths: number
+  /** Debt left, as a positive number. */
+  remaining: number
   /** Gap between the wallet balance and the reconciled principal. 0 when the import matches. */
   unrecognized: number
+}>()
+
+const emit = defineEmits<{
+  pay: []
 }>()
 
 const { t } = useI18n()
 
 const percent = computed(() => `${Math.round(props.overpaidShare * 100)}%`)
+const repaid = computed(() => Math.max(0, Math.min(props.principalAmount, props.principalAmount - props.remaining)))
+const repaidShare = computed(() => props.principalAmount > 0 ? repaid.value / props.principalAmount : 0)
 </script>
 
 <template>
@@ -44,20 +56,116 @@ const percent = computed(() => `${Math.round(props.overpaidShare * 100)}%`)
         {{ t('loans.title') }}
       </UiTitleSection>
 
-      <UiBadge
-        v-if="props.isClosed"
-        tone="muted"
-      >
+      <UiBadge v-if="props.isClosed" tone="muted">
         {{ t('loans.closed') }}
       </UiBadge>
 
-      <UiBadge
-        v-if="props.overdueCount > 0"
-        tone="error"
-      >
+      <UiBadge v-if="props.overdueCount > 0" tone="error">
         {{ t('loans.overdue') }}: {{ props.overdueCount }}
       </UiBadge>
     </div>
+
+    <div v-if="props.principalAmount > 0" class="grid gap-1.5" data-loan-progress>
+      <div class="flex flex-wrap items-baseline gap-x-1.5">
+        <UiText variant="caption">
+          {{ t('loans.repaid') }}
+        </UiText>
+        <Amount
+          :amount="repaid"
+          :currencyCode="props.currencyCode"
+          align="left"
+          variant="secondary"
+        />
+        <UiText variant="caption">
+          {{ t('loans.of') }}
+        </UiText>
+        <Amount
+          :amount="props.principalAmount"
+          :currencyCode="props.currencyCode"
+          align="left"
+          variant="secondary"
+        />
+      </div>
+
+      <div
+        class="h-1.5 overflow-hidden rounded-full bg-elevated/60"
+        role="progressbar"
+        :aria-valuenow="Math.round(repaidShare * 100)"
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
+        <div class="h-full rounded-full bg-primary" :style="{ width: `${repaidShare * 100}%` }" />
+      </div>
+
+      <UiText v-if="!props.isClosed && props.monthsLeft > 0" variant="meta">
+        {{ t('loans.monthsLeft', props.monthsLeft) }}<template v-if="props.plannedEndDate">
+          · {{ t('loans.by') }} {{ props.plannedEndDate }}
+        </template>
+      </UiText>
+    </div>
+
+    <div
+      v-if="props.nextPayment"
+      class="flex items-center gap-3 rounded-sm bg-elevated/30 px-3 py-2"
+      data-loan-next-payment
+    >
+      <div class="grid gap-0.5">
+        <UiText variant="caption">
+          {{ t('loans.nextPayment') }} · {{ props.nextPayment.date }}
+        </UiText>
+        <Amount
+          :amount="props.nextPayment.amount"
+          :currencyCode="props.currencyCode"
+          align="left"
+          variant="summary"
+        />
+      </div>
+      <UButton
+        class="ml-auto"
+        color="primary"
+        size="sm"
+        data-loan-pay-next
+        @click="emit('pay')"
+      >
+        {{ t('loans.pay') }}
+      </UButton>
+    </div>
+
+    <LoansNotice
+      v-if="props.debitShortfall !== null"
+      :amount="props.debitShortfall"
+      :currencyCode="props.currencyCode"
+      :title="t('loans.notEnoughOnDebit')"
+      data-loan-warning="shortfall"
+      tone="error"
+    />
+
+    <LoansNotice
+      v-if="props.unrecognized !== 0"
+      :amount="props.unrecognized"
+      :currencyCode="props.currencyCode"
+      :hint="t('loans.unrecognizedHint')"
+      :title="t('loans.unrecognized')"
+      data-loan-warning="unrecognized"
+      tone="warning"
+    />
+
+    <LoansNotice
+      v-if="props.interestMissing > 0"
+      :hint="t('loans.interestMissing.hint')"
+      :title="t('loans.interestMissing.summary', props.interestMissing)"
+      data-loan-warning="interestMissing"
+      tone="warning"
+    />
+
+    <LoansNotice
+      v-if="props.principalFreeMonths > 0"
+      :amount="props.principalFreeInterest"
+      :currencyCode="props.currencyCode"
+      :title="t('loans.principalFree.summary', props.principalFreeMonths)"
+      data-loan-warning="principalFree"
+      tone="warning"
+    />
 
     <div class="grid grid-cols-2 gap-2">
       <LoansStatCell
@@ -95,116 +203,36 @@ const percent = computed(() => `${Math.round(props.overpaidShare * 100)}%`)
         <UiText variant="caption">
           {{ t('loans.plannedOverpayment') }}
         </UiText>
-        <div class="flex items-baseline gap-2">
-          <Amount
-            :amount="props.plannedInterest"
-            :currencyCode="props.currencyCode"
-            align="left"
-            variant="secondary"
-          />
-          <UiText v-if="props.plannedEndDate" variant="meta">
-            {{ props.plannedEndDate }}
-          </UiText>
-        </div>
+        <Amount
+          :amount="props.plannedInterest"
+          :currencyCode="props.currencyCode"
+          align="left"
+          variant="secondary"
+        />
       </div>
 
-      <div v-if="props.nextPayment" class="flex items-baseline justify-between gap-2">
-        <UiText variant="caption">
-          {{ t('loans.nextPayment') }}
+      <div
+        v-if="props.bankDebt"
+        data-loan-bank-debt
+        class="flex items-baseline justify-between gap-2"
+        :class="{ 'opacity-60': props.bankDebt.isStale }"
+      >
+        <UiText variant="caption" :class="props.bankDebt.diff !== 0 && 'text-warning'">
+          {{ props.bankDebt.diff === 0 ? t('loans.bankDebt.reconciled') : t('loans.bankDebt.off') }}
         </UiText>
         <div class="flex items-baseline gap-2">
           <Amount
-            :amount="props.nextPayment.amount"
+            v-if="props.bankDebt.diff !== 0"
+            :amount="props.bankDebt.diff"
             :currencyCode="props.currencyCode"
             align="left"
             variant="secondary"
           />
           <UiText variant="meta">
-            {{ props.nextPayment.date }}
+            {{ props.bankDebt.date }}
           </UiText>
         </div>
       </div>
-    </div>
-
-    <div
-      v-if="props.bankDebt"
-      data-loan-bank-debt
-      class="flex items-baseline justify-between gap-2 rounded-sm px-3 py-2"
-      :class="[props.bankDebt.diff === 0 ? 'bg-elevated/30' : 'bg-warning/10', { 'opacity-60': props.bankDebt.isStale }]"
-    >
-      <UiText variant="caption">
-        {{ props.bankDebt.diff === 0 ? t('loans.bankDebt.reconciled') : t('loans.bankDebt.off') }}
-      </UiText>
-      <div class="flex items-baseline gap-2">
-        <Amount
-          v-if="props.bankDebt.diff !== 0"
-          :amount="props.bankDebt.diff"
-          :currencyCode="props.currencyCode"
-          align="left"
-          variant="secondary"
-        />
-        <UiText variant="meta">
-          {{ props.bankDebt.date }}
-        </UiText>
-      </div>
-    </div>
-
-    <div
-      v-if="props.principalFreeMonths > 0"
-      data-loan-warning="principalFree"
-      class="flex items-baseline justify-between gap-2 rounded-sm bg-warning/10 px-3 py-2"
-    >
-      <UiText variant="caption">
-        {{ t('loans.principalFree.summary', props.principalFreeMonths) }}
-      </UiText>
-      <Amount
-        :amount="props.principalFreeInterest"
-        :currencyCode="props.currencyCode"
-        align="left"
-        variant="secondary"
-      />
-    </div>
-
-    <div
-      v-if="props.interestMissing > 0"
-      data-loan-warning="interestMissing"
-      class="grid gap-1 rounded-sm bg-warning/10 px-3 py-2"
-    >
-      <UiText variant="navigation">
-        {{ t('loans.interestMissing.summary', props.interestMissing) }}
-      </UiText>
-      <UiText variant="meta">
-        {{ t('loans.interestMissing.hint') }}
-      </UiText>
-    </div>
-
-    <div
-      v-if="props.unrecognized !== 0"
-      data-loan-warning="unrecognized"
-      class="grid gap-1 rounded-sm bg-warning/10 px-3 py-2"
-    >
-      <UiText variant="navigation">
-        {{ t('loans.unrecognized') }}: {{ props.unrecognized }}
-      </UiText>
-      <UiText variant="meta">
-        {{ t('loans.unrecognizedHint') }}
-      </UiText>
-    </div>
-
-    <div
-      v-if="props.debitShortfall !== null"
-      data-loan-warning="shortfall"
-      class="grid gap-1 rounded-sm bg-error/10 px-3 py-2"
-    >
-      <UiText variant="navigation">
-        {{ t('loans.notEnoughOnDebit') }}
-      </UiText>
-      <Amount
-        :amount="props.debitShortfall"
-        :currencyCode="props.currencyCode"
-        align="left"
-        variant="secondary"
-      />
     </div>
   </div>
 </template>

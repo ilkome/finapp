@@ -22,7 +22,8 @@ describe('loansScheduleView', () => {
     const wrapper = mount(LoansScheduleView, { props: schedule as any })
     await wrapper.find('[data-loan-row="2"]').trigger('click')
 
-    expect(wrapper.find('[data-loan-delta]').text()).toContain('7.34')
+    expect(wrapper.find('[data-loan-delta] [data-amount]').text()).toBe('7.34 RUB')
+    expect(wrapper.find('[data-loan-status-label]').text()).toBe('loans.status.partial')
     expect(wrapper.text()).toContain('loans.principal')
     expect(wrapper.text()).toContain('loans.pay')
     // Only rows stored as an override offer the reset.
@@ -59,7 +60,9 @@ describe('loansScheduleView', () => {
     }))
     const wrapper = mount(LoansScheduleView, { props: { currencyCode: 'RUB', firstUnpaidIndex: 20, rows } as any })
 
-    expect(wrapper.findAll('[data-loan-row]')).toHaveLength(11)
+    const shown = wrapper.findAll('[data-loan-row]')
+    expect(shown.map(row => Number(row.attributes('data-loan-row')))).toEqual([19, 20, 21, 22, 23, 24])
+    expect(wrapper.find('[data-loan-current]').attributes('data-loan-row')).toBe('21')
     await wrapper.findAll('button').at(-1)!.trigger('click')
     expect(wrapper.findAll('[data-loan-row]')).toHaveLength(30)
   })

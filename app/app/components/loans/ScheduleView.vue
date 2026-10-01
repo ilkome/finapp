@@ -35,15 +35,19 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const WINDOW = 5
+// Collapsed: the last two payments for context, the current one and the next three.
+const BEFORE = 2
+const AFTER = 3
 const isShowAll = ref(false)
 const expanded = ref<number | null>(null)
 
+const currentNumber = computed(() => props.rows[props.firstUnpaidIndex]?.paymentNumber ?? null)
+
 const visibleRows = computed(() => {
-  if (isShowAll.value || props.rows.length <= WINDOW * 2 + 1)
+  if (isShowAll.value || props.rows.length <= BEFORE + AFTER + 1)
     return props.rows
   const center = props.firstUnpaidIndex < 0 ? props.rows.length - 1 : props.firstUnpaidIndex
-  return props.rows.slice(Math.max(0, center - WINDOW), center + WINDOW + 1)
+  return props.rows.slice(Math.max(0, center - BEFORE), center + AFTER + 1)
 })
 
 const statusClass: Record<LoanScheduleViewRow['status'], string> = {
@@ -69,7 +73,10 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
       >
         <button
           type="button"
-          class="flex w-full items-center gap-2 text-left"
+          class="-mx-2 flex w-[calc(100%+1rem)] items-center gap-2 rounded-sm px-2 py-0.5 text-left"
+          :class="row.paymentNumber === currentNumber && 'bg-elevated/40'"
+          :aria-expanded="expanded === row.paymentNumber"
+          :data-loan-current="row.paymentNumber === currentNumber || undefined"
           :data-loan-row="row.paymentNumber"
           @click="expanded = expanded === row.paymentNumber ? null : row.paymentNumber"
         >
@@ -101,6 +108,10 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
         </button>
 
         <div v-if="expanded === row.paymentNumber" class="grid gap-2 pl-4">
+          <UiText variant="meta" data-loan-status-label>
+            {{ t(`loans.status.${row.status}`) }}
+          </UiText>
+
           <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
             <UiText variant="meta">
               {{ t('loans.principal') }}
@@ -135,9 +146,17 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
             </template>
           </div>
 
-          <UiText v-if="row.delta" variant="meta" data-loan-delta>
-            {{ t('loans.deltaVsPlan') }}: {{ row.delta }}
-          </UiText>
+          <div v-if="row.delta" class="flex items-baseline gap-1.5" data-loan-delta>
+            <UiText variant="meta">
+              {{ t('loans.deltaVsPlan') }}
+            </UiText>
+            <Amount
+              :amount="row.delta"
+              :currencyCode="props.currencyCode"
+              align="left"
+              variant="secondary"
+            />
+          </div>
 
           <div class="flex flex-wrap gap-2">
             <UButton

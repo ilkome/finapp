@@ -8,17 +8,30 @@ describe('loansSummaryView', () => {
   it('renders the facts header from plain JSON', () => {
     const wrapper = mount(LoansSummaryView, { props: summary as any })
     expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual([
+      '60000 RUB',
+      '300000 RUB',
+      '12500 RUB',
+      '15000 RUB',
+      '1200 RUB',
       '54000 RUB',
       '48000 RUB',
       '301000 RUB',
-      '12500 RUB',
-      '15000 RUB',
     ])
+    expect(wrapper.find('[role="progressbar"]').attributes('aria-valuenow')).toBe('20')
     expect(wrapper.text()).toContain('loans.overpaid')
     expect(wrapper.text()).toContain('24.5%')
     expect(wrapper.find('[data-loan-rate="effective"]').exists()).toBe(true)
     expect(wrapper.text()).toContain('loans.overdue: 2')
     expect(wrapper.text()).not.toContain('loans.closed')
+  })
+
+  it('pays the next payment from its card', async () => {
+    const wrapper = mount(LoansSummaryView, { props: summary as any })
+    await wrapper.find('[data-loan-pay-next]').trigger('click')
+    expect(wrapper.emitted('pay')).toHaveLength(1)
+
+    await wrapper.setProps({ nextPayment: null })
+    expect(wrapper.find('[data-loan-pay-next]').exists()).toBe(false)
   })
 
   it('shows both warnings only when they apply', () => {

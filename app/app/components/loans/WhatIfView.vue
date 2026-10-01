@@ -24,11 +24,17 @@ const modeItems = computed(() => (['reducePayment', 'reduceTerm'] as const).map(
       {{ t('loans.whatIf') }}
     </UiTitleSection>
 
-    <FormInput
-      :modelValue="String(props.extra)"
-      :placeholder="t('loans.extraAmount')"
-      @update:modelValue="(value: string) => emit('update:extra', Number(value) || 0)"
-    />
+    <div class="grid gap-1">
+      <UiText variant="caption">
+        {{ t('loans.extraAmount') }}, {{ props.currencyCode }}
+      </UiText>
+      <FormInput
+        type="number"
+        inputmode="decimal"
+        :modelValue="String(props.extra)"
+        @update:modelValue="(value: string) => emit('update:extra', Number(value) || 0)"
+      />
+    </div>
 
     <UiTabs
       :items="modeItems"
