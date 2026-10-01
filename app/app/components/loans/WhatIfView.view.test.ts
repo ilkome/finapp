@@ -16,7 +16,7 @@ describe('loansWhatIfView', () => {
     await wrapper.find('input').setValue('1000')
     expect(wrapper.emitted('update:extra')).toEqual([[1000]])
 
-    await wrapper.find('[data-loan-mode="reducePayment"]').trigger('click')
+    await wrapper.findAll('button').find(b => b.text() === 'loans.modes.reducePayment')!.trigger('click')
     expect(wrapper.emitted('update:mode')).toEqual([['reducePayment']])
   })
 })

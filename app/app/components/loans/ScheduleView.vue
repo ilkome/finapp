@@ -57,9 +57,9 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
 
 <template>
   <div class="grid gap-2">
-    <UiText variant="section">
+    <UiTitleSection>
       {{ t('loans.schedule') }}
-    </UiText>
+    </UiTitleSection>
 
     <div class="grid">
       <div
@@ -83,13 +83,13 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
             {{ row.date }}
           </UiText>
 
-          <span
+          <UiBadge
             v-if="row.principalFree"
-            class="rounded-sm bg-warning/15 px-2 py-0.5 text-2xs leading-4 text-warning"
+            tone="warning"
             :data-loan-principal-free="row.principalFree"
           >
             {{ t(`loans.principalFree.${row.principalFree}`) }}
-          </span>
+          </UiBadge>
 
           <div class="ml-auto">
             <Amount
@@ -140,29 +140,32 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
           </UiText>
 
           <div class="flex flex-wrap gap-2">
-            <button
+            <UButton
               v-if="row.isPayable"
-              type="button"
-              class="rounded-sm bg-elevated/60 px-2 py-1 text-xs"
+              color="neutral"
+              size="xs"
+              variant="soft"
               @click="emit('pay', row)"
             >
               {{ t('loans.pay') }}
-            </button>
-            <button
-              type="button"
-              class="rounded-sm bg-elevated/60 px-2 py-1 text-xs"
+            </UButton>
+            <UButton
+              color="neutral"
+              size="xs"
+              variant="soft"
               @click="emit('edit', row)"
             >
               {{ t('base.edit') }}
-            </button>
-            <button
+            </UButton>
+            <UButton
               v-if="row.canReset"
-              type="button"
-              class="rounded-sm bg-elevated/60 px-2 py-1 text-xs"
+              :color="row.isBank ? 'error' : 'neutral'"
+              size="xs"
+              variant="soft"
               @click="emit('resetRow', row)"
             >
               {{ row.isBank ? t('loans.resetBankRow') : t('loans.resetRow') }}
-            </button>
+            </UButton>
           </div>
         </div>
       </div>

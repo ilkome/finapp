@@ -34,12 +34,12 @@ const isOverdue = computed(() => !!due.value && due.value.nearestDate < today.va
       {{ formatByLocale(due.nearestDate, 'dd.MM', dateLocale) }}
     </UiText>
 
-    <span
+    <UiBadge
       v-if="isOverdue"
-      class="rounded-sm bg-error/15 px-2 py-0.5 text-2xs leading-4 text-error"
+      tone="error"
       data-loan-due-overdue
     >
       {{ t('loans.overdue') }}
-    </span>
+    </UiBadge>
   </div>
 </template>

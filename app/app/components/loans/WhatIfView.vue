@@ -15,14 +15,14 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const modes = ['reducePayment', 'reduceTerm'] as const
+const modeItems = computed(() => (['reducePayment', 'reduceTerm'] as const).map(value => ({ label: t(`loans.modes.${value}`), value })))
 </script>
 
 <template>
   <div class="grid gap-2">
-    <UiText variant="section">
+    <UiTitleSection>
       {{ t('loans.whatIf') }}
-    </UiText>
+    </UiTitleSection>
 
     <FormInput
       :modelValue="String(props.extra)"
@@ -30,19 +30,12 @@ const modes = ['reducePayment', 'reduceTerm'] as const
       @update:modelValue="(value: string) => emit('update:extra', Number(value) || 0)"
     />
 
-    <div class="flex gap-2">
-      <button
-        v-for="item in modes"
-        :key="item"
-        type="button"
-        class="rounded-sm px-2 py-1 text-xs"
-        :class="props.mode === item ? 'bg-primary/20 text-highlighted' : 'bg-elevated/40 text-muted'"
-        :data-loan-mode="item"
-        @click="emit('update:mode', item)"
-      >
-        {{ t(`loans.modes.${item}`) }}
-      </button>
-    </div>
+    <UiTabs
+      :items="modeItems"
+      :modelValue="props.mode"
+      size="xs"
+      @update:modelValue="(value) => emit('update:mode', value as typeof props.mode)"
+    />
 
     <div class="flex items-baseline justify-between gap-2 rounded-sm bg-elevated/30 px-3 py-2">
       <UiText variant="caption">

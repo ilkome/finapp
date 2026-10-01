@@ -33,9 +33,9 @@ const picks = computed(() => [
 
 <template>
   <div class="grid gap-2">
-    <UiText variant="section">
+    <UiTitleSection>
       {{ t('loans.recommendation.title') }}
-    </UiText>
+    </UiTitleSection>
 
     <div class="flex items-baseline justify-between gap-2">
       <UiText variant="caption">

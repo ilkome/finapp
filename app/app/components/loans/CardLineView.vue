@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { MinPaymentStatus } from '~/components/loans/minPayment'
 
+import { minPaymentStatusClass } from '~/components/loans/minPayment'
+
 const props = defineProps<{
   currencyCode: string
   /** A loan's own line; wallets without a `loans` row pass null and rely on `minPayment`. */
@@ -23,13 +25,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-
-const statusClass: Record<MinPaymentStatus, string> = {
-  due: 'bg-warning',
-  overdue: 'bg-error',
-  paid: 'bg-success',
-  stale: 'bg-muted',
-}
 </script>
 
 <template>
@@ -55,19 +50,19 @@ const statusClass: Record<MinPaymentStatus, string> = {
       <UiText v-if="props.loan.nextDate" variant="meta">
         · {{ props.loan.nextDate }}
       </UiText>
-      <span
+      <UiBadge
         v-if="props.loan.isOverdue"
-        class="rounded-sm bg-error/15 px-1 text-2xs leading-4 text-error"
+        tone="error"
         data-loan-card-overdue
       >
         {{ t('loans.overdue') }}
-      </span>
+      </UiBadge>
     </div>
 
     <div v-if="props.minPayment" class="flex items-center gap-1.5" data-loan-card-min>
       <span
         class="size-1.5 shrink-0 rounded-full"
-        :class="statusClass[props.minPayment.status]"
+        :class="minPaymentStatusClass[props.minPayment.status]"
         :data-loan-min-status="props.minPayment.status"
       />
       <UiText variant="meta">

@@ -26,9 +26,9 @@ function patch(partial: Partial<LoanScheduleRowDraft>) {
 
 <template>
   <div class="grid gap-2 rounded-sm bg-elevated/30 p-3">
-    <UiText variant="section">
+    <UiTitleSection>
       {{ t('loans.editRow') }}
-    </UiText>
+    </UiTitleSection>
 
     <FormDate
       :modelValue="props.modelValue.date"
@@ -72,7 +72,7 @@ function patch(partial: Partial<LoanScheduleRowDraft>) {
       <UiButtonAccent @click="emit('save')">
         {{ t('base.save') }}
       </UiButtonAccent>
-      <UiButtonAccent @click="emit('cancel')">
+      <UiButtonAccent color="neutral" variant="ghost" @click="emit('cancel')">
         {{ t('base.cancel') }}
       </UiButtonAccent>
     </div>

@@ -52,3 +52,10 @@ export function minPaymentOf(
     status: minPaymentStatus({ amount: wallet.minPaymentAmount, date: wallet.minPaymentDate, paidSince, today, updatedAt }),
   }
 }
+
+export const minPaymentStatusClass: Record<MinPaymentStatus, string> = {
+  due: 'bg-warning',
+  overdue: 'bg-error',
+  paid: 'bg-success',
+  stale: 'bg-muted',
+}

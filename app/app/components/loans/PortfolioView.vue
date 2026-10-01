@@ -40,103 +40,98 @@ const cells = computed(() => [
 
 <template>
   <div class="grid gap-2">
-    <UiText variant="section">
+    <UiTitleSection>
       {{ t('loans.portfolio.title') }}
-    </UiText>
+    </UiTitleSection>
 
     <div class="grid grid-cols-2 gap-2">
-      <div
+      <LoansStatCell
         v-for="cell in cells"
         :key="cell.key"
-        class="rounded-sm bg-elevated/30 px-3 py-2"
+        :amount="cell.value"
+        :currencyCode="props.baseCurrencyCode"
         :data-loan-total="cell.key"
-      >
-        <UiText variant="caption">
-          {{ cell.title }}
-        </UiText>
-        <Amount
-          :amount="cell.value"
-          :currencyCode="props.baseCurrencyCode"
-          :isShowBaseRate="false"
-          align="left"
-          variant="summary"
-        />
-      </div>
+        :isShowBaseRate="false"
+        :title="cell.title"
+      />
     </div>
 
     <UiText v-if="props.items.length === 0" variant="meta">
       {{ t('loans.portfolio.empty') }}
     </UiText>
 
-    <NuxtLink
-      v-for="item in props.items"
+    <UiElement
+      v-for="(item, index) in props.items"
       :key="item.walletId"
+      :lineWidth="index === props.items.length - 1 ? 0 : 3"
       :to="`/wallets/${item.walletId}`"
-      class="border-elevated/40 grid gap-1 border-b py-2 last:border-0"
       data-loan-portfolio-item
+      insideClasses="items-start"
     >
-      <div class="flex flex-wrap items-baseline gap-2">
-        <UiText variant="navigation">
-          {{ item.name }}
-        </UiText>
+      <div class="grid min-w-0 grow gap-1">
+        <div class="flex flex-wrap items-baseline gap-2">
+          <UiText variant="navigation">
+            {{ item.name }}
+          </UiText>
 
-        <span
-          v-if="item.isClosed"
-          class="rounded-sm bg-elevated/60 px-2 py-0.5 text-2xs leading-4 text-muted"
-        >
-          {{ t('loans.closed') }}
-        </span>
+          <UiBadge
+            v-if="item.isClosed"
+            tone="muted"
+          >
+            {{ t('loans.closed') }}
+          </UiBadge>
 
-        <span
-          v-if="item.overdueCount > 0"
-          class="rounded-sm bg-error/15 px-2 py-0.5 text-2xs leading-4 text-error"
-        >
-          {{ t('loans.overdue') }}: {{ item.overdueCount }}
-        </span>
+          <UiBadge
+            v-if="item.overdueCount > 0"
+            tone="error"
+          >
+            {{ t('loans.overdue') }}: {{ item.overdueCount }}
+          </UiBadge>
 
-        <Amount
-          :amount="item.remaining"
-          :currencyCode="item.currencyCode"
-          :isShowBaseRate="false"
-          class="ml-auto"
-          align="left"
-          variant="secondary"
-        />
+          <Amount
+            :amount="item.remaining"
+            :currencyCode="item.currencyCode"
+            :isShowBaseRate="false"
+            class="ml-auto"
+            align="left"
+            variant="secondary"
+          />
+        </div>
+
+        <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <!-- 0 means nothing settled yet, not a free loan: the contract rate alone stands in. -->
+          <UiText v-if="item.effectiveRate > 0" variant="meta">
+            {{ t('loans.effectiveRate') }}: {{ item.effectiveRate }}%{{ item.contractRate === null ? '' : ` / ${item.contractRate}%` }}
+          </UiText>
+          <UiText v-else-if="item.contractRate !== null" variant="meta">
+            {{ t('loans.contractRate') }}: {{ item.contractRate }}%
+          </UiText>
+
+          <UiText variant="meta">
+            {{ t('loans.portfolio.interestShare') }}: {{ Math.round(item.interestShareOfPortfolio * 100) }}%
+          </UiText>
+
+          <UiText v-if="item.plannedEndDate" variant="meta">
+            → {{ item.plannedEndDate }}
+          </UiText>
+        </div>
+
+        <div v-if="item.nextPayment" class="flex items-baseline gap-2">
+          <UiText variant="meta">
+            {{ t('loans.nextPayment') }}
+          </UiText>
+          <Amount
+            :amount="item.nextPayment.amount"
+            :currencyCode="item.currencyCode"
+            :isShowBaseRate="false"
+            align="left"
+            variant="secondary"
+          />
+          <UiText variant="meta">
+            {{ item.nextPayment.date }}
+          </UiText>
+        </div>
       </div>
-
-      <div class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-        <!-- 0 means nothing settled yet, not a free loan: the contract rate alone stands in. -->
-        <UiText v-if="item.effectiveRate > 0" variant="meta">
-          {{ t('loans.effectiveRate') }}: {{ item.effectiveRate }}%{{ item.contractRate === null ? '' : ` / ${item.contractRate}%` }}
-        </UiText>
-        <UiText v-else-if="item.contractRate !== null" variant="meta">
-          {{ t('loans.contractRate') }}: {{ item.contractRate }}%
-        </UiText>
-
-        <UiText variant="meta">
-          {{ t('loans.portfolio.interestShare') }}: {{ Math.round(item.interestShareOfPortfolio * 100) }}%
-        </UiText>
-
-        <UiText v-if="item.plannedEndDate" variant="meta">
-          → {{ item.plannedEndDate }}
-        </UiText>
-      </div>
-
-      <div v-if="item.nextPayment" class="flex items-baseline gap-2">
-        <UiText variant="meta">
-          {{ t('loans.nextPayment') }}
-        </UiText>
-        <Amount
-          :amount="item.nextPayment.amount"
-          :currencyCode="item.currencyCode"
-          :isShowBaseRate="false"
-          align="left"
-          variant="secondary"
-        />
-        <UiText variant="meta">
-          {{ item.nextPayment.date }}
-        </UiText>
-      </div>
-    </NuxtLink>
+    </UiElement>
   </div>
 </template>

@@ -118,10 +118,11 @@ function onSave() {
       <template #label>
         {{ t('loans.form.scheduleType') }}
       </template>
-      <FormSelect
-        :options="scheduleTypeOptions"
-        :value="form.scheduleType"
-        @change="(value: string) => form.scheduleType = value as LoanItem['scheduleType']"
+      <UiTabs
+        :items="scheduleTypeOptions"
+        :modelValue="form.scheduleType"
+        size="sm"
+        @update:modelValue="(value) => form.scheduleType = value as LoanItem['scheduleType']"
       />
     </FormElement>
 
@@ -129,10 +130,11 @@ function onSave() {
       <template #label>
         {{ t('loans.form.overpaymentMode') }}
       </template>
-      <FormSelect
-        :options="overpaymentModeOptions"
-        :value="form.overpaymentMode"
-        @change="(value: string) => form.overpaymentMode = value as LoanItem['overpaymentMode']"
+      <UiTabs
+        :items="overpaymentModeOptions"
+        :modelValue="form.overpaymentMode"
+        size="sm"
+        @update:modelValue="(value) => form.overpaymentMode = value as LoanItem['overpaymentMode']"
       />
     </FormElement>
 
@@ -140,10 +142,11 @@ function onSave() {
       <template #label>
         {{ t('loans.form.interestMethod') }}
       </template>
-      <FormSelect
-        :options="interestMethodOptions"
-        :value="form.interestMethod"
-        @change="(value: string) => form.interestMethod = value as LoanItem['interestMethod']"
+      <UiTabs
+        :items="interestMethodOptions"
+        :modelValue="form.interestMethod"
+        size="sm"
+        @update:modelValue="(value) => form.interestMethod = value as LoanItem['interestMethod']"
       />
     </FormElement>
 

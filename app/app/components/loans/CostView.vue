@@ -12,34 +12,21 @@ const { t } = useI18n()
 
 <template>
   <div class="grid gap-2">
-    <UiText variant="section">
+    <UiTitleSection>
       {{ t('loans.cost') }}
-    </UiText>
+    </UiTitleSection>
 
-    <div class="flex flex-wrap items-baseline gap-x-6 gap-y-1 rounded-sm bg-elevated/30 px-3 py-2">
-      <div class="grid gap-1">
-        <UiText variant="caption">
-          {{ t('loans.interest') }}
-        </UiText>
-        <Amount
-          :amount="props.interest"
-          :currencyCode="props.currencyCode"
-          align="left"
-          variant="summary"
-        />
-      </div>
-
-      <div class="grid gap-1">
-        <UiText variant="caption">
-          {{ t('loans.fine') }}
-        </UiText>
-        <Amount
-          :amount="props.fine"
-          :currencyCode="props.currencyCode"
-          align="left"
-          variant="summary"
-        />
-      </div>
+    <div class="grid grid-cols-2 gap-2">
+      <LoansStatCell
+        :amount="props.interest"
+        :currencyCode="props.currencyCode"
+        :title="t('loans.interest')"
+      />
+      <LoansStatCell
+        :amount="props.fine"
+        :currencyCode="props.currencyCode"
+        :title="t('loans.fine')"
+      />
     </div>
 
     <div class="grid">

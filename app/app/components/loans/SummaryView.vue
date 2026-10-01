@@ -40,49 +40,37 @@ const percent = computed(() => `${Math.round(props.overpaidShare * 100)}%`)
 <template>
   <div class="grid gap-3">
     <div class="flex flex-wrap items-center gap-2">
-      <UiText variant="section">
+      <UiTitleSection>
         {{ t('loans.title') }}
-      </UiText>
+      </UiTitleSection>
 
-      <span
+      <UiBadge
         v-if="props.isClosed"
-        class="rounded-sm bg-elevated/60 px-2 py-0.5 text-2xs leading-4 text-muted"
+        tone="muted"
       >
         {{ t('loans.closed') }}
-      </span>
+      </UiBadge>
 
-      <span
+      <UiBadge
         v-if="props.overdueCount > 0"
-        class="rounded-sm bg-error/15 px-2 py-0.5 text-2xs leading-4 text-error"
+        tone="error"
       >
         {{ t('loans.overdue') }}: {{ props.overdueCount }}
-      </span>
+      </UiBadge>
     </div>
 
     <div class="grid grid-cols-2 gap-2">
-      <div class="rounded-sm bg-elevated/30 px-3 py-2">
-        <UiText variant="caption">
-          {{ t('loans.paidTotal') }}
-        </UiText>
-        <Amount
-          :amount="props.paidTotal"
-          :currencyCode="props.currencyCode"
-          align="left"
-          variant="summary"
-        />
-      </div>
+      <LoansStatCell
+        :amount="props.paidTotal"
+        :currencyCode="props.currencyCode"
+        :title="t('loans.paidTotal')"
+      />
 
-      <div class="rounded-sm bg-elevated/30 px-3 py-2">
-        <UiText variant="caption">
-          {{ t('loans.overpaid') }} · {{ t('loans.ofPrincipal', { share: percent }) }}
-        </UiText>
-        <Amount
-          :amount="props.overpaid"
-          :currencyCode="props.currencyCode"
-          align="left"
-          variant="summary"
-        />
-      </div>
+      <LoansStatCell
+        :amount="props.overpaid"
+        :currencyCode="props.currencyCode"
+        :title="`${t('loans.overpaid')} · ${t('loans.ofPrincipal', { share: percent })}`"
+      />
     </div>
 
     <div class="grid gap-1.5 rounded-sm bg-elevated/30 px-3 py-2">
