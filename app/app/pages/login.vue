@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useDemo } from '~/components/demo/useDemo'
 import { showErrorToast } from '~/composables/useStoreSync'
-import { useSupabaseAuth } from '~/composables/useSupabase'
+import { useSupabase, useSupabaseAuth } from '~/composables/useSupabase'
 
-const { session, signInWithGoogle } = useSupabaseAuth()
+const { sendEmailOtp, session, signInWithGoogle, verifyEmailOtp } = useSupabaseAuth()
 const logger = createLogger('login')
 
 definePageMeta({
@@ -25,24 +25,35 @@ const isLoading = ref(false)
 
 // Set right before redirecting to Google, read on return: marks this load as the OAuth callback.
 const OAUTH_PENDING_KEY = 'finapp.oauthPending'
-const isOauthReturn = ref(false)
+
+// Matches `otp_length` in supabase/config.toml and the dashboard.
+const OTP_LENGTH = 6
+// Supabase rejects a second email to the same address within 60s by default.
+const RESEND_COOLDOWN_S = 60
+
+const email = ref('')
+const sentTo = ref<string | null>(null)
+const lastSentTo = ref<string | null>(null)
+const otp = ref<number[]>([])
+const { remaining: resendIn, start: startResendCooldown } = useCountdown(RESEND_COOLDOWN_S)
+
+function buildRedirectTo() {
+  const redirect = getSafeRedirectPath(route.query.redirect)
+  const base = `${window.location.origin}/login`
+  return redirect === '/dashboard'
+    ? base
+    : `${base}?redirect=${encodeURIComponent(redirect)}`
+}
 
 async function onGoogle() {
   isDemo.value = null
   isLoading.value = true
 
   try {
-    const redirect = getSafeRedirectPath(route.query.redirect)
-    const base = `${window.location.origin}/login`
-    const redirectTo
-      = redirect === '/dashboard'
-        ? base
-        : `${base}?redirect=${encodeURIComponent(redirect)}`
-
     // Survives the full-page redirect to Google and back (detectSessionInUrl can strip ?code= before we read it).
     sessionStorage.setItem(OAUTH_PENDING_KEY, '1')
 
-    const { error } = await signInWithGoogle(redirectTo)
+    const { error } = await signInWithGoogle(buildRedirectTo())
     if (error)
       throw error
   }
@@ -54,65 +65,115 @@ async function onGoogle() {
   }
 }
 
+async function onSendEmail() {
+  const value = email.value.trim()
+  if (!value || isLoading.value)
+    return
+
+  // The code from the last email is still valid: reopen the code step instead of hitting
+  // Supabase's per-address resend limit.
+  if (value === lastSentTo.value && resendIn.value > 0) {
+    sentTo.value = value
+    return
+  }
+
+  isDemo.value = null
+  isLoading.value = true
+  try {
+    const { error } = await sendEmailOtp(value, buildRedirectTo(), locale.value)
+    // 429 = an email went to this address moments ago (e.g. before a reload): its code still works.
+    if (error && error.status !== 429)
+      throw error
+    sentTo.value = value
+    lastSentTo.value = value
+    otp.value = []
+    startResendCooldown()
+  }
+  catch (e: unknown) {
+    logger.error('email otp send error:', e)
+    showErrorToast('login.error')
+  }
+  finally {
+    isLoading.value = false
+  }
+}
+
+async function onVerify() {
+  const token = otp.value.join('')
+  if (!sentTo.value || token.length !== OTP_LENGTH || isLoading.value)
+    return
+
+  isLoading.value = true
+  const { error } = await verifyEmailOtp(sentTo.value, token)
+  if (error) {
+    logger.error('email otp verify error:', error)
+    showErrorToast('login.email.invalidCode')
+    otp.value = []
+    isLoading.value = false
+  }
+  // On success the session watcher redirects.
+}
+
+function onChangeEmail() {
+  sentTo.value = null
+  otp.value = []
+}
+
 async function openDemo() {
   isDemo.value = 'true'
   await generateDemoData(locale.value)
   router.push(getSafeRedirectPath(route.query.redirect))
 }
 
-// If the session never lands (user aborted the Google flow, hit back, or the provider
-// errored silently), give up on the spinner instead of hanging forever.
-const OAUTH_RETURN_TIMEOUT_MS = 10_000
-let oauthTimeout: ReturnType<typeof setTimeout> | undefined
-
-function clearOauthReturn() {
-  if (oauthTimeout) {
-    clearTimeout(oauthTimeout)
-    oauthTimeout = undefined
-  }
-  sessionStorage.removeItem(OAUTH_PENDING_KEY)
-  isOauthReturn.value = false
-  isLoading.value = false
+// Drop callback params so a reload does not repeat the toast.
+function clearCallbackParams() {
+  router.replace({ query: route.query.redirect ? { redirect: route.query.redirect } : {} })
 }
 
-onMounted(() => {
+onMounted(async () => {
   const params = new URLSearchParams(window.location.search)
+  // Supabase reports a failed redirect in the query (PKCE) or the hash (implicit).
+  const hash = new URLSearchParams(window.location.hash.slice(1))
+  const errorCode = params.get('error_code') ?? hash.get('error_code')
+  const errorText = params.get('error_description') ?? hash.get('error_description') ?? params.get('error') ?? hash.get('error')
   const pending = sessionStorage.getItem(OAUTH_PENDING_KEY) === '1'
+  const hasCode = params.has('code')
+  sessionStorage.removeItem(OAUTH_PENDING_KEY)
 
-  if (params.has('error')) {
-    sessionStorage.removeItem(OAUTH_PENDING_KEY)
-    logger.error(
-      'google auth error:',
-      params.get('error_description') ?? params.get('error'),
-    )
-    showErrorToast('login.error')
+  if (errorCode || errorText) {
+    logger.error('auth redirect error:', errorCode, errorText)
+    showErrorToast(errorCode === 'otp_expired' ? 'login.email.linkExpired' : 'login.error')
+    clearCallbackParams()
     return
   }
 
-  if (pending || params.has('code')) {
-    isOauthReturn.value = true
-    isLoading.value = true
-    oauthTimeout = setTimeout(() => {
-      logger.error('google auth timed out: no session after OAuth return')
-      clearOauthReturn()
-    }, OAUTH_RETURN_TIMEOUT_MS)
+  if (!pending && !hasCode)
+    return
+
+  isLoading.value = true
+  // Resolves once detectSessionInUrl has exchanged ?code=, or skipped it because this
+  // browser holds no PKCE verifier (magic link opened outside the browser that asked for it).
+  const { error } = await useSupabase().auth.initialize()
+  const { data } = await useSupabase().auth.getSession()
+  if (data.session)
+    return
+
+  isLoading.value = false
+  if (error)
+    logger.error('auth callback error:', error)
+  // pending without a code = the user backed out of Google: nothing to report.
+  if (hasCode) {
+    showErrorToast(pending ? 'login.error' : 'login.email.linkOtherBrowser')
+    clearCallbackParams()
   }
 })
 
-onUnmounted(() => {
-  if (oauthTimeout)
-    clearTimeout(oauthTimeout)
-})
-
+// Fires for the Google/magic-link return, a verified code, and a sign-in in another tab.
 watch(
   session,
   (next) => {
-    if (next && isOauthReturn.value) {
-      if (oauthTimeout)
-        clearTimeout(oauthTimeout)
-      sessionStorage.removeItem(OAUTH_PENDING_KEY)
+    if (next)
       router.replace(getSafeRedirectPath(route.query.redirect))
-    }
   },
   { immediate: true },
 )
@@ -137,7 +198,7 @@ watch(
           {{ t("login.description") }}
         </div>
 
-        <div class="grid min-w-80 items-center gap-3 pt-22">
+        <div class="grid w-80 max-w-full items-center gap-3 pt-22">
           <button
             class="shiny-pro"
             :disabled="isLoading"
@@ -153,6 +214,71 @@ watch(
               {{ t("login.signInWithGoogle") }}
             </span>
           </button>
+
+          <USeparator
+            :label="t('login.or')"
+            :ui="{ label: 'text-muted' }"
+            class="p-3"
+          />
+
+          <form
+            v-if="!sentTo"
+            class="grid gap-2"
+            @submit.prevent="onSendEmail"
+          >
+            <UInput
+              v-model="email"
+              :disabled="isLoading"
+              :placeholder="t('login.email.placeholder')"
+              autocomplete="email"
+              required
+              size="xl"
+              type="email"
+            />
+            <UButton
+              :disabled="isLoading"
+              :label="t('login.email.send')"
+              block
+              color="neutral"
+              size="xl"
+              type="submit"
+              variant="subtle"
+            />
+          </form>
+
+          <div
+            v-else
+            class="grid justify-items-center gap-3 text-center"
+          >
+            <div class="text-sm text-muted">
+              {{ t('login.email.sent') }}
+            </div>
+            <UPinInput
+              v-model="otp"
+              :length="OTP_LENGTH"
+              autofocus
+              otp
+              size="xl"
+              type="number"
+              @complete="onVerify"
+            />
+            <div class="flex gap-2">
+              <UButton
+                :disabled="isLoading || resendIn > 0"
+                :label="resendIn > 0 ? t('login.email.resendIn', { s: resendIn }) : t('login.email.resend')"
+                color="neutral"
+                variant="ghost"
+                @click="onSendEmail"
+              />
+              <UButton
+                :disabled="isLoading"
+                :label="t('login.email.change')"
+                color="neutral"
+                variant="ghost"
+                @click="onChangeEmail"
+              />
+            </div>
+          </div>
 
           <USeparator
             :label="t('login.or')"

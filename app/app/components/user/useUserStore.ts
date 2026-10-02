@@ -46,7 +46,7 @@ function toUser(u: { email?: string | null, id: string, user_metadata?: Record<s
 }
 
 export const useUserStore = defineStore('user', () => {
-  const { session, signOut: supabaseSignOut, user: authUser } = useSupabaseAuth()
+  const { saveAuthLocale, session, signOut: supabaseSignOut, user: authUser } = useSupabaseAuth()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
@@ -105,6 +105,20 @@ export const useUserStore = defineStore('user', () => {
       setUser(next)
     },
     { immediate: true },
+  )
+
+  // Auth emails read the language from user_metadata.locale. Wait for the settings row so the
+  // default 'en' never overwrites a stored 'ru'; a failed write (offline) retries on the next change.
+  watch(
+    () => [locale.value, authUser.value?.user_metadata?.locale, isSettingsLoaded.value] as const,
+    ([value, authLocale, isLoaded]) => {
+      if (!isLoaded || isDemo.value || !authUser.value || value === authLocale)
+        return
+      saveAuthLocale(value).then(({ error }) => {
+        if (error)
+          logger.warn('saveAuthLocale failed', error)
+      })
+    },
   )
 
   function persistUserSettings() {

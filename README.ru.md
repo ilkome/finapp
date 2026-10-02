@@ -130,7 +130,7 @@ docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync
 docker compose -f powersync/docker-compose.yaml up -d
 ```
 
-На экране входа - **Вход через Google** и **Демо-режим**. Email/password остаётся включённым в бэкенде Supabase (его использует тестовый пользователь из сида для E2E), но в UI не выводится.
+На экране входа - **Вход через Google**, **вход по email** (6-значный код и magic link в одном письме) и **Демо-режим**. Локально письма для входа попадают в Mailpit: http://127.0.0.1:54324. Email/password остаётся включённым в бэкенде Supabase (его использует тестовый пользователь из сида для E2E), но в UI не выводится.
 
 ### Seed-данные (локальный тестовый пользователь)
 

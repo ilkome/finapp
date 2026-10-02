@@ -54,6 +54,14 @@ export function useSupabaseAuth() {
 
   return {
     isAuthReady,
+    // Mirrors the app locale into user_metadata so auth emails use it (see sendEmailOtp).
+    saveAuthLocale: (locale: string) => client.auth.updateUser({ data: { locale } }),
+    // One email carries both a magic link (PKCE, works only in the browser that requested it)
+    // and a 6-digit code (works anywhere, e.g. when the mail app opens the link outside the PWA).
+    // `data` lands in user_metadata only when this call creates the user; existing users get
+    // `locale` from saveAuthLocale. The email templates pick the language from `.Data.locale`.
+    sendEmailOtp: (email: string, emailRedirectTo: string, locale: string) =>
+      client.auth.signInWithOtp({ email, options: { data: { locale }, emailRedirectTo, shouldCreateUser: true } }),
     session,
     // OAuth redirect flow: supabase-js stores a PKCE verifier and navigates to Google.
     // On return, `detectSessionInUrl` exchanges the code (see login.vue). `redirectTo` must
@@ -65,5 +73,7 @@ export function useSupabaseAuth() {
     signOut: () => client.auth.signOut({ scope: 'local' }),
     uid: computed<string | null>(() => session.value?.user?.id ?? null),
     user: computed(() => session.value?.user ?? null),
+    verifyEmailOtp: (email: string, token: string) =>
+      client.auth.verifyOtp({ email, token, type: 'email' }),
   }
 }

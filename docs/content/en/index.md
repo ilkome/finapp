@@ -126,7 +126,7 @@ Features
   Secure [authentication]{.text-primary}
 
   #description
-  Sign in with Google to sync data across devices. Or try demo mode without an account.
+  Sign in with Google or email to sync data across devices. Or try demo mode without an account.
   :::
 
   :::u-page-feature

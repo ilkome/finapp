@@ -257,6 +257,17 @@ export default {
 
   login: {
     description: 'Powerful open-source finance application',
+    email: {
+      change: 'Change email',
+      invalidCode: 'Wrong code.',
+      linkExpired: 'The link has expired. Request a new code.',
+      linkOtherBrowser: 'Open the link on the same device or enter the code from the email.',
+      placeholder: 'Email',
+      resend: 'Send again',
+      resendIn: 'Send again in {s}s',
+      send: 'Get code',
+      sent: 'Code sent. Check your email.',
+    },
     error: 'Login failed. Please try again.',
     menu: {
       documentation: 'Documentation',

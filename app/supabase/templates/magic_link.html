@@ -1,0 +1,9 @@
+{{ if eq (or .Data.locale "") "ru" }}
+<p><a href="{{ .ConfirmationURL }}">Войти в Finapp</a></p>
+<p style="font-size:28px;font-weight:600;letter-spacing:6px">{{ .Token }}</p>
+<p style="color:#888">Код действует 1 час. Если вы не входили, проигнорируйте письмо.</p>
+{{ else }}
+<p><a href="{{ .ConfirmationURL }}">Sign in to Finapp</a></p>
+<p style="font-size:28px;font-weight:600;letter-spacing:6px">{{ .Token }}</p>
+<p style="color:#888">The code expires in 1 hour. Didn't request it? Ignore this email.</p>
+{{ end }}
