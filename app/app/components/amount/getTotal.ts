@@ -3,7 +3,10 @@ import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 
+import { currencies } from '~/components/currencies/currencies'
 import { TrnType } from '~/components/trns/types'
+
+const precisionByCurrency = new Map(currencies.map(c => [c.code, c.precision ?? 2]))
 
 export function getAmountInRate({
   amount,
@@ -183,6 +186,14 @@ export function getWalletsTotals(props: {
       addToWallet(trn.incomeWalletId, trn.incomeAmount)
       addToWallet(trn.expenseWalletId, -trn.expenseAmount)
     }
+  }
+
+  // Summing kopecks as floats leaves noise (a repaid loan sums to 6.75e-11, not 0), and formatAmount
+  // expands any non-zero value it would hide, so a closed credit showed a debt. Snap to the currency's precision,
+  // but never below kopecks: RUB displays 0 decimals while balances (credit cards, loans) are kept to the kopeck.
+  for (const [walletId, total] of totals) {
+    const factor = 10 ** Math.max(precisionByCurrency.get(walletsItems[walletId]!.currency) ?? 2, 2)
+    totals.set(walletId, Math.round(total * factor) / factor + 0)
   }
 
   return totals

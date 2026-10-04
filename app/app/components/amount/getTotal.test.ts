@@ -6,6 +6,7 @@ import { walletsItems } from '~~/mocks/wallets'
 import type { TrnId } from '~/components/trns/types'
 
 import { addTotals, getTotal, getWalletsTotals } from '~/components/amount/getTotal'
+import { TrnType } from '~/components/trns/types'
 
 describe('total of Transactions', () => {
   it('correct empty result and correct total structure', () => {
@@ -395,5 +396,30 @@ describe('getWalletsTotals', () => {
     expect(totals.get('walletCashUSD')).toBe(630)
     expect(totals.get('walletRUB')).toBe(700)
     expect(totals.get('walletCreditUSD')).toBe(-40)
+  })
+
+  it('snaps float noise to the currency precision, so a repaid credit is exactly 0', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: { amount: 0.1, categoryId: 'income', date: 1, type: TrnType.Income, updatedAt: 1, walletId: 'walletCashUSD' },
+        t2: { amount: 0.2, categoryId: 'income', date: 1, type: TrnType.Income, updatedAt: 1, walletId: 'walletCashUSD' },
+        t3: { amount: 0.3, categoryId: 'category1', date: 1, type: TrnType.Expense, updatedAt: 1, walletId: 'walletCashUSD' },
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletCashUSD')).toBe(0)
+  })
+
+  it('keeps kopecks on a currency displayed without decimals', () => {
+    const totals = getWalletsTotals({
+      trnsItems: {
+        t1: { amount: 1500000, categoryId: 'category1', date: 1, type: TrnType.Expense, updatedAt: 1, walletId: 'walletRUB' },
+        t2: { amount: 24554.95, categoryId: 'income', date: 1, type: TrnType.Income, updatedAt: 1, walletId: 'walletRUB' },
+      },
+      walletsItems,
+    })
+
+    expect(totals.get('walletRUB')).toBe(-1475445.05)
   })
 })
