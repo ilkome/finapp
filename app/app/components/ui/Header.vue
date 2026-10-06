@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { backSkipPattern, backTo, mobileAfterScrolls = false, sticky = true } = defineProps<{
+const { actionsAfterTitle = false, backSkipPattern, backTo, mobileAfterScrolls = false, sticky = true } = defineProps<{
+  /** Actions right after the title instead of pushed to the right edge. */
+  actionsAfterTitle?: boolean
   backSkipPattern?: RegExp
   backTo?: string
   mobileAfterScrolls?: boolean
@@ -60,7 +62,7 @@ function onBack() {
           <slot />
         </div>
 
-        <div class="ml-auto flex shrink-0 flex-nowrap items-center gap-1 pl-2">
+        <div class="flex shrink-0 flex-nowrap items-center gap-1 pl-2" :class="!actionsAfterTitle && 'ml-auto'">
           <slot name="actions" />
         </div>
       </div>

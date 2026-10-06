@@ -112,7 +112,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
 
 <template>
   <UiPage>
-    <UiHeader>
+    <UiHeader actionsAfterTitle>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
         <UTooltip :text="$t('base.toggleFolders')">

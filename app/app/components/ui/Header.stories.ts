@@ -16,4 +16,5 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 export const Default: Story = {}
+export const ActionsAfterTitle: Story = { args: { actionsAfterTitle: true } }
 export const WithBack: Story = { args: { backTo: '/' } }

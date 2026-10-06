@@ -117,7 +117,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
 
 <template>
   <UiPage>
-    <UiHeader>
+    <UiHeader actionsAfterTitle>
       <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
 
       <template #actions>
