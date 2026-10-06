@@ -64,7 +64,7 @@
 }
 
 @utility page-wrapper {
-  @apply @xl/page:max-w-2xl grow px-3 @md/page:px-4;
+  @apply @xl/page:max-w-2xl grow px-2 lg:px-4 2xl:px-8;
 }
 
 @utility bottom-sheet-drag-classes-custom {

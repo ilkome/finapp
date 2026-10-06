@@ -41,13 +41,13 @@ function onBack() {
     <div
       ref="mainElement"
       data-ui-header-main
-      class="grid max-w-7xl items-center px-2 pt-2 pb-px lg:px-4"
+      class="grid max-w-7xl items-center px-2 pt-2 pb-px lg:px-4 lg:pt-6 2xl:px-8 2xl:pt-8"
       :class="[
         sticky && mobileAfterScrolls && 'sticky top-0 z-20 bg-default/90 backdrop-blur md:static md:bg-transparent md:backdrop-blur-none',
       ]"
     >
-      <!-- min-h: one action button, so headers without actions keep the same height. -->
-      <div class="flex min-h-10.5 grow items-center">
+      <!-- min-h: the actions pill, so headers without actions keep the same height. -->
+      <div class="flex min-h-12 grow items-center">
         <button
           v-if="backTo"
           type="button"
@@ -62,7 +62,12 @@ function onBack() {
           <slot />
         </div>
 
-        <div class="flex shrink-0 flex-nowrap items-center gap-1 pl-2" :class="!actionsAfterTitle && 'ml-auto'">
+        <div
+          v-if="$slots.actions"
+          data-ui-header-actions
+          class="ml-2 flex shrink-0 flex-nowrap items-center rounded-full border border-default/80 bg-default/20 p-0.5 dark:bg-neutral-800/50"
+          :class="!actionsAfterTitle && 'ml-auto'"
+        >
           <slot name="actions" />
         </div>
       </div>
