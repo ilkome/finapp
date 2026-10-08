@@ -1,0 +1,8 @@
+diff --git a/dist/runtime/components/Toaster.vue b/dist/runtime/components/Toaster.vue
+--- a/dist/runtime/components/Toaster.vue
++++ b/dist/runtime/components/Toaster.vue
+@@ -49,3 +49,3 @@
+     case "top-left":
+     case "bottom-left":
+-      return "left";
++      return "right";

@@ -7,10 +7,12 @@ import { useGuard } from '~/components/user/useGuard'
 const colorMode = useColorMode()
 const { style } = useThemeOptions()
 const { t } = useI18n()
-const toaster: ToasterProps = {
-  position: 'top-left',
+const isLaptop = useIsLaptop()
+const toaster = computed<ToasterProps>(() => ({
+  expand: false,
+  position: isLaptop.value ? 'top-left' : 'top-center',
   progress: false,
-}
+}))
 
 useEventListener(document, 'click', (e) => {
   const target = e.target as HTMLElement

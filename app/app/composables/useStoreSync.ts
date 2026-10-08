@@ -60,7 +60,7 @@ type ToastType = keyof typeof emoByType
 function showToast(type: ToastType, key: string, params?: Record<string, unknown>) {
   const toast = getToast()
   const t = getT()
-  return toast.add({ color: type, description: t ? t(key, params ?? {}) : key, title: random(emoByType[type]) })
+  return toast.add({ color: type, description: t ? t(key, params ?? {}) : key, id: `${type}:${key}`, title: random(emoByType[type]) })
 }
 
 /**
@@ -80,6 +80,7 @@ export function showActionToast(
     actions: [{ label: t ? t(actionLabelKey) : actionLabelKey, onClick }],
     color: type,
     description: t ? t(messageKey, params ?? {}) : messageKey,
+    id: `${type}:${messageKey}`,
     title: random(emoByType[type]),
   })
 }
