@@ -362,6 +362,13 @@ export default {
     github: 'GitHub',
     links: 'Ссылки',
     menuLabels: 'Подписи в нижнем меню',
+    sections: {
+      about: 'О приложении',
+      account: 'Аккаунт',
+      appearance: 'Оформление',
+      beta: 'Бета',
+      general: 'Основные',
+    },
     sidebarLists: 'Кошельки и категории в сайдбаре',
     title: 'Настройки',
   },

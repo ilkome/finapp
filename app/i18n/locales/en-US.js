@@ -362,6 +362,13 @@ export default {
     github: 'GitHub',
     links: 'Links',
     menuLabels: 'Show labels in bottom menu',
+    sections: {
+      about: 'About',
+      account: 'Account',
+      appearance: 'Appearance',
+      beta: 'Beta',
+      general: 'General',
+    },
     sidebarLists: 'Show wallets and categories in sidebar',
     title: 'Settings',
   },
