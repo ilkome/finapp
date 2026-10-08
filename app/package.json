@@ -5,7 +5,7 @@
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "engines": {
-    "node": ">=24.12.0"
+    "node": ">=24.15.0"
   },
   "scripts": {
     "build": "nuxt generate",
@@ -80,7 +80,7 @@
     "defu": "^6.1.7",
     "es-toolkit": "^1.52.0",
     "happy-dom": "^20.14.5",
-    "nuxt": "^4.5.2",
+    "nuxt": "^4.6.0",
     "storybook": "^10.6.0",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
