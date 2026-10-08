@@ -95,7 +95,9 @@ export default defineNuxtConfig({
   experimental: {
     // PWA service worker owns update detection; the hourly builds/latest.json poll is redundant.
     appManifest: false,
-    buildCache: true,
+    // Off: with Nuxt 4.5.2 + @nuxt/fonts 0.14.0 a cache-restored build skips `vite:compiled`,
+    // so @nuxt/fonts ships empty /_fonts/*.woff2 placeholders.
+    // buildCache: true,
     typedPages: true,
     typescriptPlugin: true,
   },
