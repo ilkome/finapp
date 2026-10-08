@@ -1,0 +1,76 @@
+{
+  "baseCurrencyCode": "RUB",
+  "groups": [
+    {
+      "days": [
+        {
+          "date": 1788998400000,
+          "items": [
+            {
+              "trnItem": {
+                "amount": 3500,
+                "category": { "color": "#e0745a", "icon": "mdi:calendar-clock", "name": "Loan payment", "parentId": 0 },
+                "categoryId": "loanPayment",
+                "date": 1788998400000,
+                "desc": "",
+                "id": "upcoming:r1",
+                "type": 0,
+                "updatedAt": 1788998400000,
+                "wallet": { "color": "#3b82f6", "creditLimit": 0, "currency": "RUB", "id": "r1", "isArchived": false, "name": "Credit card", "order": 1, "type": "credit" },
+                "walletId": "r1"
+              },
+              "walletId": "r1"
+            }
+          ],
+          "sum": null
+        }
+      ],
+      "key": "overdue",
+      "label": "Overdue"
+    },
+    {
+      "days": [
+        {
+          "date": 1789084800000,
+          "items": [
+            {
+              "trnItem": {
+                "amount": 21000,
+                "category": { "color": "#e0745a", "icon": "mdi:calendar-clock", "name": "Loan payment", "parentId": 0 },
+                "categoryId": "loanPayment",
+                "date": 1789084800000,
+                "desc": "Principal 18000 / Interest 3000",
+                "id": "upcoming:w1",
+                "type": 0,
+                "updatedAt": 1789084800000,
+                "wallet": { "color": "#3b82f6", "creditLimit": 0, "currency": "RUB", "id": "w1", "isArchived": false, "name": "Mortgage", "order": 2, "type": "credit" },
+                "walletId": "w1"
+              },
+              "walletId": "w1"
+            },
+            {
+              "trnItem": {
+                "amount": 4000,
+                "category": { "color": "#e0745a", "icon": "mdi:calendar-clock", "name": "Loan payment", "parentId": 0 },
+                "categoryId": "loanPayment",
+                "date": 1789084800000,
+                "desc": "",
+                "id": "upcoming:r2",
+                "type": 0,
+                "updatedAt": 1789084800000,
+                "wallet": { "color": "#3b82f6", "creditLimit": 0, "currency": "RUB", "id": "r2", "isArchived": false, "name": "Installments", "order": 3, "type": "credit" },
+                "walletId": "r2"
+              },
+              "walletId": "r2"
+            }
+          ],
+          "sum": 25000
+        }
+      ],
+      "key": "nearest",
+      "label": "11 Sep"
+    }
+  ],
+  "isOverdue": true,
+  "total": 28500
+}

@@ -5,12 +5,12 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import { random } from '~/assets/js/emo'
 import { colorsArray } from '~/components/color/colors'
 
-export const walletTypes = ['cash', 'credit', 'cashless', 'deposit', 'crypto', 'debt'] as const
+export const walletTypes = ['cash', 'credit', 'loan', 'cashless', 'deposit', 'crypto', 'debt'] as const
 export type WalletType = typeof walletTypes[number]
 
 export type WalletId = string
 
-export type WalletViewTypes = WalletType | 'isAvailable' | 'isWithdrawal' | 'isArchived' | 'isExcludeInTotal'
+export type WalletViewTypes = WalletType | 'isAvailable' | 'isAvailableAll' | 'isWithdrawal' | 'isArchived' | 'isExcludeInTotal'
 
 const walletBaseSchema = z.object({
   color: z.string().default(() => random(colorsArray)),
@@ -28,6 +28,13 @@ export const walletItemSchema = z.discriminatedUnion('type', [
   z.object({
     ...walletBaseSchema.shape,
     creditLimit: z.number().default(0),
+    // Minimum payment summary pushed by bank sync; absent until a sync provides it.
+    minPaymentAmount: z.number().optional(),
+    // Civil day the minimum is due.
+    minPaymentDate: z.number().optional(),
+    // Civil day the billing period this minimum belongs to STARTED (not the sync run time), so a
+    // payment made early in the period still counts after a later sync overwrites this field.
+    minPaymentUpdatedAt: z.number().optional(),
     type: z.literal('credit'),
   }),
   z.object({
@@ -47,6 +54,9 @@ export type WalletsComputed = Record<WalletId, WalletItemComputed>
 
 export type WalletsGroupedBy = 'type' | 'currency' | 'none'
 export type WalletsCurrencyFiltered = 'all' | CurrencyCode
+
+/** A credit card or a loan: money owed, not owned. */
+export const isCreditProduct = (type: WalletType | undefined) => type === 'credit' || type === 'loan'
 
 /**
  * Calculate credit available: credit limit minus absolute amount used.

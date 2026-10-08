@@ -15,6 +15,8 @@ create table public.loans (
   "scheduleType" text not null,
   "overpaymentMode" text not null,
   "debitWalletId" text,
+  -- Set by the user when the bank closed the loan with a balance gap left; null while it is open.
+  "closedDate" bigint,
   -- Reconciliation settings; null falls back to the defaults (monthly accrual, 3 days, 15 days),
   -- so bank sync never has to write them.
   "interestMethod" text,

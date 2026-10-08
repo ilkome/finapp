@@ -10,6 +10,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 
 const { maxHeight = '60vh', sidebarHeader = false } = defineProps<{
   maxHeight?: string
@@ -22,6 +23,7 @@ const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const { submit } = useTrnFormSubmit()
+const isLoans = useFeature('loans')
 const walletId = computed(() =>
   trnsFormStore.values.walletId ?? walletsStore.sortedIds[0],
 )
@@ -95,6 +97,8 @@ const typeItems = computed<TabsItem[]>(() => [
         v-if="trnsFormStore.values.trnType === TrnType.Transfer"
         :bottomSheetStyle="{ maxHeight }"
       />
+
+      <LoansTrnFormFields v-if="isLoans" />
 
       <TrnFormMainCalculator />
     </div>

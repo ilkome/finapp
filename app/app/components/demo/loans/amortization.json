@@ -1,0 +1,23 @@
+{
+  "currencyCode": "RUB",
+  "rows": [
+    {
+      "interest": 3000,
+      "isPaid": true,
+      "label": "01.26",
+      "principal": 7000
+    },
+    {
+      "interest": 2900,
+      "isPaid": false,
+      "label": "02.26",
+      "principal": 7100
+    },
+    {
+      "interest": 2800,
+      "isPaid": false,
+      "label": "03.26",
+      "principal": 7200
+    }
+  ]
+}

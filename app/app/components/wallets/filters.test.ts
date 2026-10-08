@@ -104,6 +104,14 @@ describe('filterWalletsByViewType', () => {
     expect(result).not.toContain('archived')
   })
 
+  it('isAvailable counts cards only, isAvailableAll adds loans', () => {
+    const withLoan = { ...wallets, loanUSD: wallet({ amount: -900, currency: 'USD', type: 'loan' }) }
+    const ids = Object.keys(withLoan)
+    expect(filterWalletsByViewType(ids, withLoan, 'isAvailable')).not.toContain('loanUSD')
+    expect(filterWalletsByViewType(ids, withLoan, 'isAvailableAll')).toContain('loanUSD')
+    expect(filterWalletsByViewType(ids, withLoan, 'isAvailableAll')).toContain('creditUSD')
+  })
+
   it('isAvailable: excludes archived credit wallets', () => {
     const walletsWithArchivedCredit = {
       ...wallets,

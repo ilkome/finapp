@@ -4,8 +4,10 @@ import { generateId } from '~~/utils/generateId'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
+import { manualMinPaymentDates } from '~/components/loans/minPayment'
 import { walletItemSchema, walletTypes } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 import { showErrorToast } from '~/composables/useStoreSync'
 
 const props = defineProps<{
@@ -22,10 +24,14 @@ const { t } = useI18n()
 const walletsStore = useWalletsStore()
 
 const editWalletId = props.walletId ?? generateId()
-const walletType = walletTypes.map(value => ({
-  label: t(`money.types.${value}`),
-  value,
-}))
+const isLoans = useFeature('loans')
+// A wallet that already is a loan keeps its type in the list with the feature off.
+const walletType = computed(() => walletTypes
+  .filter(value => value !== 'loan' || isLoans.value || props.walletForm.type === 'loan')
+  .map(value => ({
+    label: t(`money.types.${value}`),
+    value,
+  })))
 
 const modals = ref({
   colors: false,
@@ -37,6 +43,13 @@ const walletPlaceholder = computed(() => ({
   amount: 0,
   name: props.walletForm.name ? props.walletForm.name : t('wallets.form.name.label'),
 }))
+
+function onChangeMinPaymentDate(date: number | null) {
+  const fields = manualMinPaymentDates(date)
+  // undefined clears the field; the emit type only lists set values.
+  emit('update', 'minPaymentDate' as keyof WalletItem, fields.minPaymentDate as number)
+  emit('update', 'minPaymentUpdatedAt' as keyof WalletItem, fields.minPaymentUpdatedAt as number)
+}
 
 async function onSave() {
   const values = walletItemSchema.safeParse(props.walletForm)
@@ -134,6 +147,31 @@ async function onSave() {
           @update:modelValue="(value: string) => emit('update', 'creditLimit' as keyof WalletItem, +value)"
         />
       </FormElement>
+
+      <!-- Minimum payment -->
+      <div v-if="isLoans && props.walletForm.type === 'credit'" class="grid grid-cols-2 gap-3">
+        <FormElement>
+          <template #label>
+            {{ t('loans.toPay.minPayment') }}
+          </template>
+          <FormInput
+            :placeholder="t('loans.toPay.minPayment')"
+            :modelValue="props.walletForm.minPaymentAmount ?? ''"
+            @update:modelValue="(value: string) => emit('update', 'minPaymentAmount' as keyof WalletItem, (+value || undefined) as number)"
+          />
+        </FormElement>
+        <FormElement>
+          <template #label>
+            {{ t('wallets.form.credit.minPaymentDate') }}
+          </template>
+          <FormDate
+            clearable
+            :modelValue="props.walletForm.minPaymentDate ?? null"
+            :title="t('wallets.form.credit.minPaymentDate')"
+            @update:modelValue="onChangeMinPaymentDate"
+          />
+        </FormElement>
+      </div>
 
       <!-- Options -->
       <div class="grid gap-1">

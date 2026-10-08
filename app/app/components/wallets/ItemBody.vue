@@ -2,6 +2,7 @@
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { getCreditAvailable } from '~/components/wallets/types'
+import { useFeature } from '~/composables/useFeatures'
 
 const props = defineProps<{
   activeItemId?: WalletId | null
@@ -24,6 +25,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: [walletId: WalletId]
 }>()
+
+const isLoans = useFeature('loans')
 
 const classes = computed(() => ({
   'bg-elevated/30': props.compact,
@@ -87,6 +90,12 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
             class="text-xs opacity-70"
           />
         </div>
+
+        <LoansWalletCardLine
+          v-if="isLoans && props.isShowCreditLimit && wallet.type === 'credit'"
+          :wallet="props.wallet"
+          :walletId="props.walletId"
+        />
 
         <div
           v-if="props.isShowCreditLimit && wallet.type === 'credit' && walletCreditLimit"

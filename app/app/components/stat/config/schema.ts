@@ -34,7 +34,7 @@ export const walletDisplayModes = ['recent', 'period'] as const
 export const walletSelectionModes = ['multiple', 'single'] as const
 export const walletValueModes = ['balance', 'period'] as const
 export const categoryGroupingOptions = ['auto', 'parent', 'child'] as const
-export const statContextBlockIds = ['categoryChildren', 'walletBalance', 'walletDescription'] as const
+export const statContextBlockIds = ['categoryChildren', 'loansDue', 'walletBalance', 'walletDescription', 'walletLoan'] as const
 export type StatContextBlockId = typeof statContextBlockIds[number]
 const leadingStatConfigBlockOrder = [...statContextBlockIds, 'navigation', 'summary'] as const
 export const statReportBlockOrder = ['vertical', 'catsRound', 'catsList', 'trns'] as const
@@ -60,11 +60,15 @@ export function normalizeStatConfigBlockOrder(value: unknown): StatConfigBlockId
     }
   }
 
-  for (const id of [...leadingStatConfigBlockOrder].reverse()) {
-    if (!seen.has(id)) {
-      seen.add(id)
-      result.unshift(id)
-    }
+  // A leading block missing from a stored order (a newly added one) goes back beside its
+  // neighbours, not to the very top - otherwise every existing order would show it first.
+  for (let i = 0; i < leadingStatConfigBlockOrder.length; i++) {
+    const id = leadingStatConfigBlockOrder[i]!
+    if (seen.has(id))
+      continue
+    seen.add(id)
+    const previous = leadingStatConfigBlockOrder.slice(0, i).findLast(candidate => result.includes(candidate))
+    result.splice(previous ? result.indexOf(previous) + 1 : 0, 0, id)
   }
   for (const id of statConfigBlockOrder) {
     if (!seen.has(id))
@@ -149,12 +153,16 @@ export const ConfigSchema = z.object({
   }),
   contextBlocks: z.object({
     categoryChildren: z.object({ isShow: z.boolean() }),
+    loansDue: z.object({ isShow: z.boolean() }).default({ isShow: true }),
     walletBalance: z.object({ isShow: z.boolean() }),
     walletDescription: z.object({ isShow: z.boolean() }),
+    walletLoan: z.object({ isShow: z.boolean() }).default({ isShow: true }),
   }).default({
     categoryChildren: { isShow: true },
+    loansDue: { isShow: true },
     walletBalance: { isShow: true },
     walletDescription: { isShow: true },
+    walletLoan: { isShow: true },
   }),
   date: z.object({
     isPinned: z.boolean(),
@@ -252,8 +260,10 @@ export const defaultConfig: MiniItemConfig = {
 
   contextBlocks: {
     categoryChildren: { isShow: true },
+    loansDue: { isShow: true },
     walletBalance: { isShow: true },
     walletDescription: { isShow: true },
+    walletLoan: { isShow: true },
   },
 
   date: {

@@ -2,6 +2,7 @@ import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 import { getAmountInRate } from '~/components/amount/getTotal'
+import { isCreditProduct } from '~/components/wallets/types'
 
 type CountItem = {
   id: string
@@ -35,6 +36,7 @@ export function computeWalletCounts(params: {
     debt: 0,
     deposit: 0,
     excludeInTotal: 0,
+    loan: 0,
     total: 0,
     withdrawal: 0,
   }
@@ -64,7 +66,7 @@ export function computeWalletCounts(params: {
     if (wallet.isExcludeInTotal && !includeExcludedInStats)
       continue
 
-    if (wallet.type !== 'credit')
+    if (!isCreditProduct(wallet.type))
       sum.total += amount
 
     switch (wallet.type) {
@@ -79,6 +81,9 @@ export function computeWalletCounts(params: {
         if (wallet.creditLimit)
           sum.creditPossible += convert(wallet.creditLimit, wallet.currency ?? 'USD')
         break
+      case 'loan':
+        sum.loan += amount
+        break
       case 'crypto':
         sum.crypto += amount
         break
@@ -90,7 +95,8 @@ export function computeWalletCounts(params: {
         break
     }
 
-    if (wallet.isWithdrawal)
+    // A debt is not money to withdraw: credit products join "available" through their own rows, not twice.
+    if (wallet.isWithdrawal && !isCreditProduct(wallet.type))
       sum.withdrawal += amount
   }
 
@@ -100,10 +106,16 @@ export function computeWalletCounts(params: {
       isShow: hasArchivedWallet,
       value: sum.archived,
     },
+    // A big loan would keep one combined row always negative, so cards and loans get a row each.
     available: {
       id: 'isAvailable',
       isShow: sum.withdrawal !== 0 && sum.credit !== 0,
       value: sum.withdrawal + sum.credit,
+    },
+    availableAll: {
+      id: 'isAvailableAll',
+      isShow: sum.withdrawal !== 0 && sum.loan !== 0,
+      value: sum.withdrawal + sum.credit + sum.loan,
     },
     cash: {
       id: 'cash',
@@ -140,6 +152,11 @@ export function computeWalletCounts(params: {
       id: 'isExcludeInTotal',
       isShow: sum.excludeInTotal !== 0,
       value: sum.excludeInTotal,
+    },
+    loan: {
+      id: 'loan',
+      isShow: sum.loan !== 0,
+      value: sum.loan,
     },
     total: {
       id: 'total',

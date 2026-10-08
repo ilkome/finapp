@@ -177,6 +177,12 @@ function setStatPanelVisibility(panel: StatBlockPanelId, config: MiniItemConfig,
     case 'walletDescription':
       config.contextBlocks.walletDescription.isShow = isVisible
       break
+    case 'walletLoan':
+      config.contextBlocks.walletLoan.isShow = isVisible
+      break
+    case 'loansDue':
+      config.contextBlocks.loansDue.isShow = isVisible
+      break
     case 'wallets':
       config.wallets.isShow = isVisible
       break
@@ -199,6 +205,10 @@ export function resolveConfigUpdatePanel<K extends keyof MiniItemConfig>(
       return 'walletBalance'
     if ('walletDescription' in value)
       return 'walletDescription'
+    if ('walletLoan' in value)
+      return 'walletLoan'
+    if ('loansDue' in value)
+      return 'loansDue'
   }
   if (key === 'summary')
     return 'summary'

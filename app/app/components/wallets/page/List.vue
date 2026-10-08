@@ -12,6 +12,7 @@ import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
 import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStatistics } from '~/components/wallets/useWalletsStatistics'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 
 const { t } = useI18n()
 
@@ -21,6 +22,7 @@ useSeoMeta({
 })
 
 const walletsStore = useWalletsStore()
+const isLoans = useFeature('loans')
 
 // Same rule as the statistics page: the side column pins below the sticky header only when it fits whole.
 const header = useTemplateRef<{ mainElement: HTMLElement | null }>('header')
@@ -346,6 +348,7 @@ function cycleGrouping() {
         />
 
         <div class="grid content-start gap-3 @xl/page:gap-4 @3xl/main:max-w-sm">
+          <LoansDueThisMonth v-if="isLoans" />
           <WalletsStatistics
             :isShowList="showStatistics"
             :storageKey="statisticsStorageKey"

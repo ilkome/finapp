@@ -2,12 +2,14 @@
 import type { Range } from '~~/utils/date/types'
 
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useFeature } from '~/composables/useFeatures'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -26,8 +28,12 @@ const baseMaxRange = computed(() => trnsStore.getRange(walletSourceTrnsIds.value
 const contextualMaxRange = shallowRef<Range | null>(null)
 const maxRange = computed(() => contextualMaxRange.value ?? baseMaxRange.value)
 
+const loansStore = useLoansStore()
+const isLoans = useFeature('loans')
+
 const { contentWidth, statConfig, statDate } = useStatPageProviders({
   config: { stableStorage: true, storageKey },
+  contextBlockIds: () => isLoans.value && loansStore.dueThisMonth ? ['loansDue'] : [],
   date: { key: storageKey, maxRange, queryParams: () => route.query },
   filter,
 })
@@ -76,6 +82,10 @@ watch(filter.categoriesIds, () => {
       hasChildren
       showWallets
       @contextualMaxRange="contextualMaxRange = $event"
-    />
+    >
+      <template #loansDue>
+        <LoansDueThisMonth class="max-w-sm" />
+      </template>
+    </StatLayout>
   </UiPage>
 </template>

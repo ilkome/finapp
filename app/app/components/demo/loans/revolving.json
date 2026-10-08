@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "currencyCode": "RUB",
+      "debt": 42100,
+      "fine": 30,
+      "interest": 1740.16,
+      "minPayment": {
+        "amount": 3500,
+        "date": "20.05",
+        "status": "overdue"
+      },
+      "name": "Credit card",
+      "walletId": "r1"
+    },
+    {
+      "currencyCode": "RUB",
+      "debt": 0,
+      "fine": 0,
+      "interest": 0,
+      "minPayment": null,
+      "name": "Installments",
+      "walletId": "r2"
+    }
+  ]
+}

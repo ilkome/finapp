@@ -10,14 +10,26 @@ import { useTrnsFormStore } from './useTrnsFormStore'
 vi.mock('~/components/categories/useCategoriesStore', () => ({
   useCategoriesStore: () => ({
     categoriesIdsForTrnValues: ['c1', 'c2'],
-    items: { c1: { name: 'Food' }, c2: { name: 'Transport' } },
+    items: {
+      c1: { name: 'Food' },
+      c2: { name: 'Transport' },
+      loanFine: { name: 'Loan fees' },
+      loanInterest: { name: 'Loan interest' },
+    },
   }),
 }))
 
+const h = vi.hoisted(() => ({ recentWalletIds: [] as string[] }))
+
 vi.mock('~/components/wallets/useWalletsStore', () => ({
   useWalletsStore: () => ({
-    items: { w1: { currency: 'USD', name: 'Cash' }, w2: { currency: 'USD', name: 'Card' } },
-    sortedIds: ['w1', 'w2'],
+    items: {
+      c1w: { currency: 'USD', name: 'Credit card', type: 'credit' },
+      w1: { currency: 'USD', name: 'Cash', type: 'cash' },
+      w2: { currency: 'USD', name: 'Card', type: 'cashless' },
+    },
+    get recentWalletIds() { return h.recentWalletIds },
+    sortedIds: ['w1', 'w2', 'c1w'],
   }),
 }))
 
@@ -42,6 +54,7 @@ vi.mock('~/components/amount/utils', () => ({
 
 beforeEach(() => {
   setActivePinia(createPinia())
+  h.recentWalletIds = []
 })
 
 describe('useTrnsFormStore', () => {
@@ -239,6 +252,138 @@ describe('useTrnsFormStore', () => {
 
       expect(result).toBeDefined()
       expect(result!.id).toBe('existing-trn-id')
+    })
+  })
+
+  describe('interest of a transfer into a credit wallet', () => {
+    it('offers a disabled interest draft for a new transfer into a credit wallet only', () => {
+      const store = useTrnsFormStore()
+      store.values.trnType = TrnType.Transfer
+      store.values.incomeWalletId = 'c1w'
+      expect(store.values.loanInterest).toEqual({ amount: 0, amountRaw: '', isEnabled: false })
+
+      store.values.incomeWalletId = 'w2'
+      expect(store.values.loanInterest).toBeUndefined()
+    })
+
+    it('is reset by $reset', () => {
+      const store = useTrnsFormStore()
+      store.openFormForLoanPayment({ date: 1700000000000, interest: 250, principal: 1000, walletId: 'c1w' })
+
+      store.$reset()
+
+      expect(store.values.loanInterest).toBeUndefined()
+    })
+  })
+
+  describe('openFormForLoanPayment', () => {
+    it('prefills a transfer plus the interest draft', () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForLoanPayment({
+        date: 1700000000000,
+        interest: 250,
+        principal: 1000,
+        walletId: 'c1w',
+      })
+
+      expect(store.ui.isShow).toBe(true)
+      expect(store.values.trnType).toBe(TrnType.Transfer)
+      expect(store.values.expenseWalletId).toBe('w1')
+      expect(store.values.incomeWalletId).toBe('c1w')
+      expect(store.values.amount).toEqual([0, 1250, 1250])
+      expect(store.values.date).toBe(1700000000000)
+      expect(store.values.loanInterest).toEqual({
+        amount: 250,
+        amountRaw: '250',
+        isEnabled: true,
+      })
+    })
+
+    it('prefers the most recently used non-credit wallet over the first sorted one', () => {
+      h.recentWalletIds = ['c1w', 'w2', 'w1']
+      const store = useTrnsFormStore()
+
+      store.openFormForLoanPayment({
+        date: 1700000000000,
+        interest: 0,
+        principal: 1000,
+        walletId: 'c1w',
+      })
+
+      expect(store.values.expenseWalletId).toBe('w2')
+    })
+
+    it('uses the given debit wallet and skips a zero interest', () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForLoanPayment({
+        date: 1700000000000,
+        debitWalletId: 'w2',
+        interest: 0,
+        principal: 500,
+        walletId: 'c1w',
+      })
+
+      expect(store.values.expenseWalletId).toBe('w2')
+      expect(store.values.loanInterest).toBeUndefined()
+    })
+
+    it('submits the whole payment and the interest as the credit wallet expense together', async () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForLoanPayment({
+        date: 1700000000000,
+        interest: 250,
+        principal: 1000,
+        walletId: 'c1w',
+      })
+
+      const result = await store.onSubmit()
+
+      expect(result!.values).toMatchObject({
+        expenseAmount: 1250,
+        expenseWalletId: 'w1',
+        incomeAmount: 1250,
+        incomeWalletId: 'c1w',
+        type: TrnType.Transfer,
+      })
+      expect(result!.extra!.values).toMatchObject({
+        amount: 250,
+        categoryId: 'loanInterest',
+        type: TrnType.Expense,
+        walletId: 'c1w',
+      })
+    })
+
+    it('drops the interest expense when the toggle is off', async () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForLoanPayment({
+        date: 1700000000000,
+        interest: 250,
+        principal: 1000,
+        walletId: 'c1w',
+      })
+      store.values.loanInterest!.isEnabled = false
+
+      const result = await store.onSubmit()
+
+      expect(result!.extra).toBeUndefined()
+    })
+
+    it('keeps the interest amount editable', () => {
+      const store = useTrnsFormStore()
+
+      store.openFormForLoanPayment({
+        date: 1700000000000,
+        interest: 250,
+        principal: 1000,
+        walletId: 'c1w',
+      })
+      store.onChangeLoanInterestAmount('300')
+
+      expect(store.values.loanInterest!.amount).toBe(300)
     })
   })
 

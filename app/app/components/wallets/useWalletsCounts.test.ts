@@ -398,6 +398,29 @@ describe('computeWalletCounts', () => {
     // available = withdrawal - |credit| = -500 - 1000 = -1500
     expect(result.available!.value).toBe(-1500)
   })
+
+  it('keeps loans apart from credit cards, out of the total, and counts each debt once in available', () => {
+    const wallets = {
+      card: wallet({ amount: -300, creditLimit: 1000, currency: 'USD', type: 'credit' }),
+      cash: wallet({ amount: 1000, currency: 'USD', isWithdrawal: true, type: 'cash' }),
+      loan: wallet({ amount: -500, currency: 'USD', isWithdrawal: true, type: 'loan' }),
+    }
+
+    const result = computeWalletCounts({
+      baseCurrency: 'USD',
+      rates,
+      totalWalletsCount: 3,
+      walletIds: ['cash', 'card', 'loan'],
+      wallets,
+    })
+
+    expect(result.total!.value).toBe(1000)
+    expect(result.credit).toMatchObject({ secondValue: 1000, value: -300 })
+    expect(result.loan).toMatchObject({ isShow: true, value: -500 })
+    expect(result.withdrawal!.value).toBe(1000)
+    expect(result.available!.value).toBe(700)
+    expect(result.availableAll).toMatchObject({ isShow: true, value: 200 })
+  })
 })
 
 describe('sumWalletAmounts', () => {

@@ -1,0 +1,27 @@
+{
+  "bankDebt": null,
+  "closedDate": null,
+  "contractRate": 24.5,
+  "currencyCode": "RUB",
+  "debitShortfall": 15000,
+  "effectiveRate": 26.8,
+  "interestMissing": 0,
+  "isClosed": false,
+  "monthsLeft": 53,
+  "nextPayment": {
+    "amount": 12500,
+    "date": "01.10.2026"
+  },
+  "openedDate": "15.01.2025",
+  "overdueCount": 2,
+  "overpaid": 48000,
+  "overpaidShare": 0.16,
+  "paidTotal": 54000,
+  "plannedEndDate": "01.03.2031",
+  "plannedInterest": 301000,
+  "principalAmount": 300000,
+  "principalFreeInterest": 0,
+  "principalFreeMonths": 0,
+  "remaining": 240000,
+  "unrecognized": 1200
+}
