@@ -354,6 +354,11 @@ export default {
 
   settings: {
     deleteButton: 'Delete my data',
+    features: {
+      description: 'Still in development. Turned on for this device only.',
+      emailSignIn: 'Sign in with an email code',
+      title: 'Beta features',
+    },
     github: 'GitHub',
     links: 'Links',
     menuLabels: 'Show labels in bottom menu',

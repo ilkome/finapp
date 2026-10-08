@@ -130,7 +130,7 @@ docker exec -i supabase_db_app psql -U postgres -d postgres < supabase/powersync
 docker compose -f powersync/docker-compose.yaml up -d
 ```
 
-The login screen offers **Sign in with Google**, **email sign-in** (a 6-digit code plus a magic link in one email) and **Demo mode**. Locally the sign-in emails land in Mailpit at http://127.0.0.1:54324. Email/password stays enabled in the Supabase backend - used by the local seed test user for E2E - but is not exposed in the UI.
+The login screen offers **Sign in with Google**, **email sign-in** (a 6-digit code plus a magic link in one email; a beta feature, off until enabled in Settings → Beta features) and **Demo mode**. Locally the sign-in emails land in Mailpit at http://127.0.0.1:54324. Email/password stays enabled in the Supabase backend - used by the local seed test user for E2E - but is not exposed in the UI.
 
 ### Seed data (local test user)
 

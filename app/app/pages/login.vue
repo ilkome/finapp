@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDemo } from '~/components/demo/useDemo'
+import { useFeature } from '~/composables/useFeatures'
 import { showErrorToast } from '~/composables/useStoreSync'
 import { useSupabase, useSupabaseAuth } from '~/composables/useSupabase'
 
@@ -22,6 +23,7 @@ const route = useRoute()
 const router = useRouter()
 
 const isLoading = ref(false)
+const isEmailSignIn = useFeature('emailSignIn')
 
 // Set right before redirecting to Google, read on return: marks this load as the OAuth callback.
 const OAUTH_PENDING_KEY = 'finapp.oauthPending'
@@ -215,70 +217,72 @@ watch(
             </span>
           </button>
 
-          <USeparator
-            :label="t('login.or')"
-            :ui="{ label: 'text-muted' }"
-            class="p-3"
-          />
+          <template v-if="isEmailSignIn">
+            <USeparator
+              :label="t('login.or')"
+              :ui="{ label: 'text-muted' }"
+              class="p-3"
+            />
 
-          <form
-            v-if="!sentTo"
-            class="grid gap-2"
-            @submit.prevent="onSendEmail"
-          >
-            <UInput
-              v-model="email"
-              :disabled="isLoading"
-              :placeholder="t('login.email.placeholder')"
-              autocomplete="email"
-              required
-              size="xl"
-              type="email"
-            />
-            <UButton
-              :disabled="isLoading"
-              :label="t('login.email.send')"
-              block
-              color="neutral"
-              size="xl"
-              type="submit"
-              variant="subtle"
-            />
-          </form>
-
-          <div
-            v-else
-            class="grid justify-items-center gap-3 text-center"
-          >
-            <div class="text-sm text-muted">
-              {{ t('login.email.sent') }}
-            </div>
-            <UPinInput
-              v-model="otp"
-              :length="OTP_LENGTH"
-              autofocus
-              otp
-              size="xl"
-              type="number"
-              @complete="onVerify"
-            />
-            <div class="flex gap-2">
-              <UButton
-                :disabled="isLoading || resendIn > 0"
-                :label="resendIn > 0 ? t('login.email.resendIn', { s: resendIn }) : t('login.email.resend')"
-                color="neutral"
-                variant="ghost"
-                @click="onSendEmail"
+            <form
+              v-if="!sentTo"
+              class="grid gap-2"
+              @submit.prevent="onSendEmail"
+            >
+              <UInput
+                v-model="email"
+                :disabled="isLoading"
+                :placeholder="t('login.email.placeholder')"
+                autocomplete="email"
+                required
+                size="xl"
+                type="email"
               />
               <UButton
                 :disabled="isLoading"
-                :label="t('login.email.change')"
+                :label="t('login.email.send')"
+                block
                 color="neutral"
-                variant="ghost"
-                @click="onChangeEmail"
+                size="xl"
+                type="submit"
+                variant="subtle"
               />
+            </form>
+
+            <div
+              v-else
+              class="grid justify-items-center gap-3 text-center"
+            >
+              <div class="text-sm text-muted">
+                {{ t('login.email.sent') }}
+              </div>
+              <UPinInput
+                v-model="otp"
+                :length="OTP_LENGTH"
+                autofocus
+                otp
+                size="xl"
+                type="number"
+                @complete="onVerify"
+              />
+              <div class="flex gap-2">
+                <UButton
+                  :disabled="isLoading || resendIn > 0"
+                  :label="resendIn > 0 ? t('login.email.resendIn', { s: resendIn }) : t('login.email.resend')"
+                  color="neutral"
+                  variant="ghost"
+                  @click="onSendEmail"
+                />
+                <UButton
+                  :disabled="isLoading"
+                  :label="t('login.email.change')"
+                  color="neutral"
+                  variant="ghost"
+                  @click="onChangeEmail"
+                />
+              </div>
             </div>
-          </div>
+          </template>
 
           <USeparator
             :label="t('login.or')"

@@ -40,6 +40,12 @@ Do not duplicate those details here. Inspect their source when the task depends 
 - Sections and containers (`*Section.vue`, `stat/report/*`, `filter/Selected.vue`, ...) own every store and provider call and pass plain values down.
 - Every `View` has a `*.view.test.ts` that mounts it from a fixture under `stat/fixtures/` (vitest project `view`).
 
+## Feature flags
+
+- An in-development feature hides behind `useFeature(id)` from `app/app/composables/useFeatures.ts`: per device, off by default, toggled in Settings → Beta.
+- A flag gates UI entry points only (menu items, routes, blocks, form fields). Data, sync, stores, and calculations stay on.
+- When the feature ships, delete its id and every `useFeature('<id>')` check.
+
 ## Domain invariants
 
 - `TrnType` values are Expense `0`, Income `1`, and Transfer `2`.

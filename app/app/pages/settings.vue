@@ -6,6 +6,7 @@ import type { LocaleSlug } from '~/components/locale/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useUserStore } from '~/components/user/useUserStore'
+import { featureIds, useFeatures } from '~/composables/useFeatures'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 const LINKS = [
@@ -18,6 +19,7 @@ const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
 const { generateDemoData } = useDemo()
 const { isDemo } = useDemo()
+const features = useFeatures()
 const isShowBaseCurrencyModal = ref(false)
 
 useSeoMeta({
@@ -96,6 +98,20 @@ function onGenerateDemoData() {
           >
             {{ t('demo.update') }}
           </UButton>
+        </UiSettingsCard>
+
+        <!-- Features in development -->
+        <UiSettingsCard
+          :title="t('settings.features.title')"
+          :description="t('settings.features.description')"
+        >
+          <UiSwitchItem
+            v-for="id in featureIds"
+            :key="id"
+            :checkboxValue="features[id]"
+            :title="t(`settings.features.${id}`)"
+            @click="features[id] = !features[id]"
+          />
         </UiSettingsCard>
 
         <!-- Delete -->

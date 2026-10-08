@@ -354,6 +354,11 @@ export default {
 
   settings: {
     deleteButton: 'Удалить все мои данные',
+    features: {
+      description: 'Ещё в разработке. Включаются только на этом устройстве.',
+      emailSignIn: 'Вход по коду из письма',
+      title: 'Бета-функции',
+    },
     github: 'GitHub',
     links: 'Ссылки',
     menuLabels: 'Подписи в нижнем меню',
