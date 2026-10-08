@@ -357,6 +357,7 @@ export default {
     github: 'GitHub',
     links: 'Links',
     menuLabels: 'Show labels in bottom menu',
+    sidebarLists: 'Show wallets and categories in sidebar',
     title: 'Settings',
   },
 

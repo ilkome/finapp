@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import type { TabsItem } from '@nuxt/ui'
-
 import { useStorage } from '@vueuse/core'
 
 import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { canStickStatCategories } from '~/components/stat/statFeed'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
@@ -22,6 +21,14 @@ useSeoMeta({
 })
 
 const walletsStore = useWalletsStore()
+
+// Same rule as the statistics page: the side column pins below the sticky header only when it fits whole.
+const header = useTemplateRef<{ mainElement: HTMLElement | null }>('header')
+const { height: stickyTop } = useElementSize(() => header.value?.mainElement, undefined, { box: 'border-box' })
+const sideColumn = useTemplateRef<HTMLElement>('sideColumn')
+const { height: sideColumnHeight } = useElementSize(sideColumn)
+const { height: viewportHeight } = useWindowSize()
+const canStickSideColumn = computed(() => canStickStatCategories(stickyTop.value, sideColumnHeight.value, viewportHeight.value))
 const currenciesStore = useCurrenciesStore()
 const isSorting = ref(false)
 const isOpen = ref(false)
@@ -107,18 +114,27 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
 
-const groupNavItems = computed<TabsItem[]>(() =>
-  groupTabs.value.map(item => ({
-    label: item.label,
-    value: item.id,
-  })),
-)
+const groupIcons: Record<WalletsGroupedBy, string> = {
+  currency: 'lucide:coins',
+  none: 'lucide:list',
+  type: 'lucide:layers',
+}
+
+const currentGroupTab = computed(() => groupTabs.value.find(tab => tab.id === groupedBy.value) ?? groupTabs.value[0]!)
+
+function cycleGrouping() {
+  const tabs = groupTabs.value
+  const index = tabs.findIndex(tab => tab.id === groupedBy.value)
+  groupedBy.value = tabs[(index + 1) % tabs.length]!.id
+}
 </script>
 
 <template>
   <UiPage>
     <UiHeader actionsAfterTitle>
-      <UiHeaderTitle>{{ t('wallets.name') }}</UiHeaderTitle>
+      <UiHeaderTitle class="mr-4 lg:-mt-8">
+        {{ t('wallets.name') }}
+      </UiHeaderTitle>
 
       <template #actions>
         <UTooltip :text="t('base.done')">
@@ -316,7 +332,12 @@ const groupNavItems = computed<TabsItem[]>(() =>
     >
       <!-- The currency strip scrolls across the whole column so it is not clipped at
            max-w-sm; the blocks below keep that width. -->
-      <div class="grid content-start @xl/page:order-1 @xl/page:pt-1">
+      <div
+        ref="sideColumn"
+        class="grid content-start @xl/page:order-1 @xl/page:self-start @xl/page:pt-1"
+        :class="canStickSideColumn && '@xl/page:sticky'"
+        :style="canStickSideColumn ? { top: `${stickyTop}px` } : undefined"
+      >
         <WalletsCurrencies
           v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
           :currencyFiltered
@@ -338,17 +359,10 @@ const groupNavItems = computed<TabsItem[]>(() =>
       </div>
 
       <div class="@xl/page:pt-1 @3xl/main:max-w-sm">
-        <div class="mb-2 flex min-h-12 items-center gap-2">
-          <UiTabs
-            :items="groupNavItems"
-            :modelValue="groupedBy"
-            class="w-full"
-            @update:modelValue="(v) => groupedBy = v as WalletsGroupedBy"
-          />
-
+        <div class="mb-2 flex min-h-12 items-center justify-end gap-1">
           <div
             v-if="groupedBy !== 'none'"
-            class="ml-auto flex items-center gap-1"
+            class="flex items-center gap-1"
           >
             <UTooltip :text="$t('base.toggleGrouping')">
               <UiActionButton
@@ -379,6 +393,12 @@ const groupNavItems = computed<TabsItem[]>(() =>
               </UiActionButton>
             </UTooltip>
           </div>
+
+          <UTooltip :text="currentGroupTab.label">
+            <UiActionButton :ariaLabel="currentGroupTab.label" @click="cycleGrouping">
+              <Icon :name="groupIcons[currentGroupTab.id]" size="18" />
+            </UiActionButton>
+          </UTooltip>
         </div>
 
         <div class="pb-6 md:max-w-lg @xl/page:max-w-lg">
@@ -400,7 +420,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
           <WalletsSortableList
             v-if="groupedBy !== 'none' && groupedWalletsWithIds"
             :ids="Object.keys(groupedWalletsWithIds)"
-            class="grid"
+            class="grid gap-4"
             @update="keys => setSortOrder([], keys)"
           >
             <template #default="{ id: groupPrimary }">
@@ -412,6 +432,7 @@ const groupNavItems = computed<TabsItem[]>(() =>
                   <UiTitleDropRight
                     :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
                     @click="toggleMap(groupPrimary)"
+                    @longPress="isSorting = true"
                   >
                     <div class="font-tertiary text-base leading-none font-semibold text-toned!">
                       {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}

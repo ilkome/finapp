@@ -52,11 +52,18 @@ onMounted(() => {
   })
 })
 
+// The config drawer (w-100) only hides the sidebar when the page would otherwise be squeezed
+// below a usable width (768px matches the stat split-layout threshold).
+const STAT_CONFIG_WIDTH = 400
+const MIN_PAGE_WIDTH_WITH_CONFIG = 768
+const isSidebarHiddenByStatConfig = computed(() => isStatConfigOpen.value
+  && width.value < (isShowSidebar.value ? sidebarWidth.value : 48) + MIN_PAGE_WIDTH_WITH_CONFIG + STAT_CONFIG_WIDTH + 16)
+
 const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
   showShell.value && 'bg-muted',
-  showShell.value && (isStatConfigOpen.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-(--sidebar-width)' : 'md:pl-12'),
+  showShell.value && (isSidebarHiddenByStatConfig.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-(--sidebar-width)' : 'md:pl-12'),
   isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
   isOnboarded.value && isStatConfigOpen.value && 'md:pr-100',
 ))
@@ -110,7 +117,7 @@ defineShortcuts({
       <template v-if="showShell">
         <LayoutSidebar
           v-model:width="sidebarWidth"
-          :isHidden="isStatConfigOpen"
+          :isHidden="isSidebarHiddenByStatConfig"
           :isShowSidebar
           @toggleSidebar="isShowSidebar = !isShowSidebar"
         />

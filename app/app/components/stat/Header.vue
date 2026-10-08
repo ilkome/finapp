@@ -36,6 +36,7 @@ defineExpose({ stickyMainElement, stickyRootElement })
     ref="uiHeader"
     :backSkipPattern="backSkipPattern"
     :backTo="backTo"
+    flatActionsDesktop
     :sticky="props.sticky"
   >
     <slot name="title" />

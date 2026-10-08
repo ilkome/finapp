@@ -10,6 +10,7 @@ import {
 } from '~/components/layout/useUserMenuData'
 import { BLACK_PRIMARY, colorLabel, swatchPalette } from '~/components/theme/useThemeOptions'
 import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
+import { useSidebarListsVisibility } from '~/composables/useSidebarListsVisibility'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 // The one user menu body: demo actions or account + sync status, language, appearance and
@@ -25,6 +26,7 @@ const { locale, t } = useI18n()
 const router = useRouter()
 const isLaptop = useIsLaptop()
 const isShowMenuLabels = useMenuLabelVisibility()
+const isShowSidebarLists = useSidebarListsVisibility()
 const { generateDemoData, isDemo } = useDemo()
 const {
   blackAsPrimary,
@@ -254,6 +256,15 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
           <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
           <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
         </button>
+
+        <UiSwitchItem
+          v-if="activePanel === 'appearance' && isLaptop"
+          :checkboxValue="isShowSidebarLists"
+          :title="t('settings.sidebarLists')"
+          class="mt-1"
+          trailing
+          @click="isShowSidebarLists = !isShowSidebarLists"
+        />
 
         <!-- Bottom-nav labels only exist on the phone layout. -->
         <UiSwitchItem

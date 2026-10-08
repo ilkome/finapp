@@ -15,7 +15,7 @@ const isOpen = ref(false)
     :align="collapsed ? 'start' : 'center'"
     :isOpen="isOpen"
     popoverBodyClass="md:pb-0"
-    popoverContentClass="w-64"
+    popoverContentClass="w-74"
     @openModal="isOpen = true"
     @closeModal="isOpen = false"
   >

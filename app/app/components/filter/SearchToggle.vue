@@ -36,60 +36,65 @@ function close() {
   input.value?.blur()
 }
 
+// Open: the first press clears the query, the next one (or the first, when empty) closes.
+function onToggle() {
+  if (!isOpen.value)
+    return open()
+  if (value.value) {
+    value.value = ''
+    input.value?.focus()
+    return
+  }
+  close()
+}
+
 onClickOutside(root, close)
-// Capture: on desktop the page scrolls inside a layout div, not the window.
-useEventListener(window, 'scroll', close, { capture: true, passive: true })
+// Close on the user scrolling, not on any scroll event: the feed reloads on every query change
+// and restores its scroll position, and focusing the input can scroll the strip.
+function closeOnUserScroll(event: Event) {
+  if (!root.value?.contains(event.target as Node))
+    close()
+}
+useEventListener(window, ['wheel', 'touchmove'], closeOnUserScroll, { capture: true, passive: true })
 </script>
 
 <template>
-  <div ref="root" class="contents">
+  <!-- Grows in place from the round button; the rest of the row slides right instead of being covered. -->
+  <div
+    ref="root"
+    :class="cn(
+      'relative flex h-9 shrink-0 items-center rounded-full bg-elevated transition-[width] duration-200 ease-out [interpolate-size:allow-keywords]',
+      isOpen ? 'w-auto ring-1 ring-primary ring-inset' : 'w-9',
+    )"
+  >
     <button
       type="button"
-      :aria-label="t('base.search')"
+      :aria-label="!isOpen ? t('base.search') : value ? t('base.clear') : t('base.close')"
       :class="cn(
-        'relative flex size-9 shrink-0 items-center justify-center rounded-full interactive bg-elevated text-muted',
+        'relative flex size-9 shrink-0 items-center justify-center rounded-full interactive text-muted',
         hasSearch && 'text-highlighted',
+        isOpen && 'hover:bg-primary! hover:text-inverted',
       )"
-      @click="open"
+      @click="onToggle"
     >
-      <Icon name="lucide:search" size="18" />
+      <Icon :name="isOpen ? 'lucide:x' : 'lucide:search'" size="18" />
       <span
-        v-if="hasSearch"
+        v-if="hasSearch && !isOpen"
         class="absolute top-1 right-1 size-1.5 rounded-full bg-primary"
       />
     </button>
 
-    <!-- Covers the whole row so the period, filter and chips vanish while typing; the row keeps its height. -->
-    <Transition
-      enterActiveClass="transition-[opacity,transform] duration-200 ease-out"
-      enterFromClass="scale-x-90 opacity-0"
-      leaveActiveClass="transition-[opacity,transform] duration-150 ease-in"
-      leaveToClass="scale-x-90 opacity-0"
+    <input
+      v-if="isOpen"
+      ref="input"
+      v-model="value"
+      type="text"
+      :aria-label="t('base.search')"
+      :size="Math.max(t('trns.filter.search').length, value.length) + 1"
+      class="m-0 h-full min-w-0 grow bg-transparent py-0 pr-4 pl-1 text-sm outline-none placeholder:text-muted"
+      :placeholder="t('trns.filter.search')"
+      @keydown.enter.prevent="close"
+      @keydown.escape.stop="close"
     >
-      <div
-        v-if="isOpen"
-        class="absolute inset-x-2 inset-y-0 z-10 origin-left md:inset-x-0"
-      >
-        <input
-          ref="input"
-          v-model="value"
-          type="text"
-          :aria-label="t('base.search')"
-          class="m-0 size-full theme-rounded-control border border-primary bg-elevated py-0 pr-9 pl-4 text-sm outline-none placeholder:text-muted"
-          :placeholder="t('trns.filter.search')"
-          @keydown.enter.prevent="close"
-          @keydown.escape.stop="close"
-        >
-        <button
-          v-if="value"
-          type="button"
-          :aria-label="t('base.clear')"
-          class="absolute inset-y-0 right-0 flex w-9 items-center justify-center text-muted hover:text-highlighted"
-          @click="value = ''"
-        >
-          <Icon name="lucide:x" size="16" />
-        </button>
-      </div>
-    </Transition>
   </div>
 </template>

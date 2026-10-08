@@ -357,6 +357,7 @@ export default {
     github: 'GitHub',
     links: 'Ссылки',
     menuLabels: 'Подписи в нижнем меню',
+    sidebarLists: 'Кошельки и категории в сайдбаре',
     title: 'Настройки',
   },
 

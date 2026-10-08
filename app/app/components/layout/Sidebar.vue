@@ -8,6 +8,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { SIDEBAR_COLLAPSE_WIDTH, SIDEBAR_DEFAULT_WIDTH, SIDEBAR_MAX_WIDTH, SIDEBAR_MIN_WIDTH } from '~/components/layout/sidebarWidth'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useSidebarListsVisibility } from '~/composables/useSidebarListsVisibility'
 
 const props = defineProps<{
   isHidden?: boolean
@@ -28,6 +29,7 @@ const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
 
+const isShowSidebarLists = useSidebarListsVisibility()
 const walletMenu = useWalletMenuItems()
 
 function getWalletContextMenuItems(walletId: WalletId) {
@@ -130,7 +132,7 @@ function startResize(event: PointerEvent) {
         >
           <LayoutSidebarMenu :hideKeys="['settings']" class="px-2 pb-2" />
 
-          <div class="px-2 pb-6">
+          <div v-if="isShowSidebarLists" class="px-2 pb-6">
             <div class="pb-2 pl-1">
               <UiTabs
                 v-model="activeTab"

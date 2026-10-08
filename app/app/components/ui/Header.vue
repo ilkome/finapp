@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { canGoBack, navigateBackSkipping } from '~/composables/useNavigationHistory'
 
-const { actionsAfterTitle = false, backSkipPattern, backTo, mobileAfterScrolls = false, sticky = true } = defineProps<{
+const { actionsAfterTitle = false, backSkipPattern, backTo, flatActionsDesktop = false, mobileAfterScrolls = false, sticky = true } = defineProps<{
   /** Actions right after the title instead of pushed to the right edge. */
   actionsAfterTitle?: boolean
   backSkipPattern?: RegExp
   backTo?: string
+  /** Actions drop the pill outline; on desktop they also sit higher and further right. */
+  flatActionsDesktop?: boolean
   mobileAfterScrolls?: boolean
   sticky?: boolean
 }>()
@@ -66,7 +68,7 @@ function onBack() {
           v-if="$slots.actions"
           data-ui-header-actions
           class="ml-2 flex shrink-0 flex-nowrap items-center rounded-full border border-default/80 bg-default/20 p-0.5 dark:bg-neutral-800/50"
-          :class="!actionsAfterTitle && 'ml-auto'"
+          :class="[!actionsAfterTitle && 'ml-auto', flatActionsDesktop && 'border-transparent bg-transparent lg:-mt-10 lg:-mr-2 dark:bg-transparent']"
         >
           <slot name="actions" />
         </div>
