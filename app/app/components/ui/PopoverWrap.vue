@@ -31,7 +31,7 @@ const emit = defineEmits<{
       v-if="$slots.default"
       :class="cn(
         props.isShowScroll ? 'scroller overflow-y-auto overscroll-contain' : 'grid flex-1 overflow-hidden',
-        'min-h-0 px-2 py-px md:pb-4',
+        'min-h-0 px-3 py-px md:pb-4',
         props.contentClass,
       )"
     >

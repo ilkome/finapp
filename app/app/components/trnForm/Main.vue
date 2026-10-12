@@ -57,7 +57,7 @@ const typeItems = computed<TabsItem[]>(() => [
       <TrnsItem
         v-if="editedTrnItem"
         :trnItem="editedTrnItem"
-        class="group mx-3 rounded-lg bg-elevated/50"
+        class="group rounded-lg bg-elevated/50"
         @click="trnsFormStore.values.trnId = null"
       />
 

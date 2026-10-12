@@ -908,12 +908,10 @@ export default {
   trns: {
     bulk: {
       category: 'Category',
-      clearDescription: 'Clear description',
       date: 'Date',
       deleted: '{count} transactions deleted',
       deleteTitle: 'Delete selected transactions?',
       description: 'Description',
-      descriptionPlaceholder: 'Description for selected transactions',
       updated: '{count} transactions updated',
       wallet: 'Wallet',
     },
