@@ -94,13 +94,13 @@ function onGenerateDemoData() {
           <template v-if="activeSection === 'general'">
             <!-- Language -->
             <UiSettingsCard :title="t('locale.title')">
-              <FormSelect
-                :options="[
+              <UiOptionGrid
+                :items="[
                   { label: t('locale.ru'), value: 'ru' },
                   { label: t('locale.en'), value: 'en' },
                 ]"
-                :value="locale"
-                @change="(loc: string) => userStore.saveUserLocale(loc as LocaleSlug)"
+                :modelValue="locale"
+                @update:modelValue="(loc: string) => userStore.saveUserLocale(loc as LocaleSlug)"
               />
             </UiSettingsCard>
 

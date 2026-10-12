@@ -31,9 +31,6 @@ const modePreference = computed({
     colorMode.preference = option
   },
 })
-const selectedModeItem = computed(() =>
-  modeItems.value.find(m => m.value === modePreference.value),
-)
 
 const primaryItems = computed(() => [
   { label: colorLabel(t, BLACK_PRIMARY), value: BLACK_PRIMARY },
@@ -59,25 +56,16 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
 
 <template>
   <UiSettingsCard :title="t('theme.picker.theme')">
-    <USelectMenu
-      v-model="modePreference"
-      :items="modeItems"
-      valueKey="value"
-      :searchInput="false"
-    >
-      <template #leading>
-        <UIcon :name="selectedModeItem?.icon" class="size-5" />
+    <UiOptionGrid v-model="modePreference" :items="modeItems">
+      <template #swatch="{ value }">
+        <UIcon :name="modeItems.find(m => m.value === value)!.icon" class="size-6" />
       </template>
-      <template #item-leading="{ item }">
-        <UIcon :name="item.icon" class="size-5" />
-      </template>
-    </USelectMenu>
+    </UiOptionGrid>
   </UiSettingsCard>
 
   <UiSettingsCard :title="t('theme.picker.primary')">
-    <ThemeOptionSheet
+    <UiOptionGrid
       v-model="primarySelected"
-      :label="t('theme.picker.primary')"
       :items="primaryItems"
     >
       <template #swatch="{ value }">
@@ -94,13 +82,12 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
           }"
         />
       </template>
-    </ThemeOptionSheet>
+    </UiOptionGrid>
   </UiSettingsCard>
 
   <UiSettingsCard :title="t('theme.picker.neutral')">
-    <ThemeOptionSheet
+    <UiOptionGrid
       v-model="neutral"
-      :label="t('theme.picker.neutral')"
       :items="neutralItems"
     >
       <template #swatch="{ value }">
@@ -112,13 +99,12 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
           }"
         />
       </template>
-    </ThemeOptionSheet>
+    </UiOptionGrid>
   </UiSettingsCard>
 
   <UiSettingsCard :title="t('theme.picker.radius')">
-    <ThemeOptionSheet
+    <UiOptionGrid
       v-model="radius"
-      :label="t('theme.picker.radius')"
       :items="radiusItems"
     >
       <template #swatch="{ value }">
@@ -127,7 +113,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
           :style="{ borderRadius: `${value}rem` }"
         />
       </template>
-    </ThemeOptionSheet>
+    </UiOptionGrid>
   </UiSettingsCard>
 
   <!-- Bottom-nav labels only exist on the phone layout. -->
