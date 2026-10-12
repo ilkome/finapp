@@ -250,7 +250,7 @@ export function buildAxisChartOption({
   yAxis.min = isShowScale ? scale.min : undefined
   yAxis.splitNumber = 2
   yAxis.splitLine.show = false
-  yAxis.axisPointer.label.formatter = (props: { value: number }) => formatChartAmount(+props.value, locale) ?? ''
+  yAxis.axisPointer.label.formatter = (props: { value: number }) => formatChartAmount(+props.value) ?? ''
 
   const tooltip = data.tooltip as Record<string, any>
   tooltip.show = viewportWidth >= 500

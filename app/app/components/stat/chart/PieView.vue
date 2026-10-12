@@ -18,7 +18,6 @@ use([
   SVGRenderer,
 ])
 
-const { locale } = useI18n()
 // Avoid entrance animation while enabling transitions for subsequent data updates.
 const isInitialRender = ref(true)
 const total = computed(() => pieData.reduce((acc, item) => acc + item.value, 0))
@@ -44,7 +43,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="hasData" class="size-12 shrink-0 cursor-default **:cursor-default!" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total, locale)}`">
+  <div v-if="hasData" class="size-12 shrink-0 cursor-default **:cursor-default!" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total)}`">
     <VChart :option :updateOptions="{ notMerge: true }" autoresize />
   </div>
 </template>

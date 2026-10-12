@@ -33,9 +33,8 @@ describe('formatChartAmount', () => {
     expect(formatChartAmount('5')).toBe('5')
   })
 
-  it('formats a normal number unchanged', () => {
-    const expected = new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 0, minimumFractionDigits: 0 }).format(1234)
-    expect(formatChartAmount(1234, 'ru-RU')).toBe(expected)
+  it('formats thousands with a space, like formatAmount', () => {
+    expect(formatChartAmount(1234)).toBe('1 234')
   })
 })
 

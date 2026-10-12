@@ -131,7 +131,7 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
             :class="row.amount > 0 ? 'text-income-1!' : 'text-highlighted'"
             class="shrink-0 px-2 text-right font-secondary text-base"
           >
-            {{ formatChartAmount(row.amount, locale) }}
+            {{ formatChartAmount(row.amount) }}
           </div>
         </div>
       </div>

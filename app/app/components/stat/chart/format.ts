@@ -5,6 +5,8 @@ import { formatByLocale, formatDateWithOptionalYear, todayCivilDayEpoch } from '
 import type { LocaleSlug } from '~/components/locale/types'
 import type { SeriesSlug } from '~/components/stat/types'
 
+import { formatAmount } from '~/components/amount/utils'
+
 export function resolveChartValueType(showValueType: boolean | undefined, value: number | null): SeriesSlug | undefined {
   if (!showValueType || !value)
     return undefined
@@ -69,18 +71,8 @@ export function formatCompactChartAmount(amount: number | string | undefined) {
   return compactFormatter.format(Number.isFinite(n) ? n : 0)
 }
 
-const amountFormatters = new Map<string, Intl.NumberFormat>()
-
-export function formatChartAmount(amount: number | string | undefined, locale = 'en') {
-  let formatter = amountFormatters.get(locale)
-  if (!formatter) {
-    formatter = new Intl.NumberFormat(locale, {
-      maximumFractionDigits: 0,
-      minimumFractionDigits: 0,
-    })
-    amountFormatters.set(locale, formatter)
-  }
+export function formatChartAmount(amount: number | string | undefined) {
   // echarts reports empty datapoints as undefined / '-'; Intl renders those as "не число".
   const n = Number(amount)
-  return formatter.format(Number.isFinite(n) ? n : 0)
+  return formatAmount(Number.isFinite(n) ? n : 0, undefined, { precision: 0 })
 }
