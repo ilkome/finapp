@@ -79,7 +79,7 @@ index 4dd1803e5df3ab8b85d25888547b99002cc95585..f2c7c767d1b16cda504cda983e72133c
  			const adjacent = sorted[adjacentIdx];
  			if (shouldAdvance) {
 diff --git a/dist/composables/useSwipeDismiss.cjs b/dist/composables/useSwipeDismiss.cjs
-index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e688d38d5 100644
+index 4d006131326587f9103457c7f69728d357ccab08..93eea26cef1190ec2010bd38c02f3e756b8bbada 100644
 --- a/dist/composables/useSwipeDismiss.cjs
 +++ b/dist/composables/useSwipeDismiss.cjs
 @@ -12,6 +12,12 @@ const AXIS_LOCK_BIAS = 2;
@@ -104,16 +104,15 @@ index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e
  	const hasVertical = (0, vue.computed)(() => (0, vue.toValue)(directions).includes("up") || (0, vue.toValue)(directions).includes("down"));
  	const hasHorizontal = (0, vue.computed)(() => (0, vue.toValue)(directions).includes("left") || (0, vue.toValue)(directions).includes("right"));
  	const allowUp = (0, vue.computed)(() => (0, vue.toValue)(directions).includes("up"));
-@@ -102,6 +108,8 @@ function useSwipeDismiss(options) {
+@@ -102,6 +108,7 @@ function useSwipeDismiss(options) {
  	let lockedAxis = null;
  	let activePointerId = null;
  	let pointerStarted = false;
-+	let pointerOnControl = false;
 +	let pointerCaptured = false;
  	function getThreshold(el, dir) {
  		if (typeof swipeThresholdProp === "function") return Math.max(0, swipeThresholdProp({
  			element: el,
-@@ -206,6 +214,23 @@ function useSwipeDismiss(options) {
+@@ -206,6 +213,23 @@ function useSwipeDismiss(options) {
  		};
  		const newDx = hasHorizontal.value ? dampAxis(deltaX, allowLeft.value, allowRight.value) : exponent(deltaX);
  		const newDy = hasVertical.value ? dampAxis(deltaY, allowUp.value, allowDown.value) : exponent(deltaY);
@@ -137,7 +136,28 @@ index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e
  		return {
  			x: newDx,
  			y: newDy
-@@ -330,7 +355,8 @@ function useSwipeDismiss(options) {
+@@ -242,9 +266,19 @@ function useSwipeDismiss(options) {
+ 		const rawDx = pos.x - dragStartPos.x;
+ 		const rawDy = pos.y - dragStartPos.y;
+ 		if (isFirstMove) {
+-			isFirstMove = false;
+ 			const absX = Math.abs(rawDx);
+ 			const absY = Math.abs(rawDy);
++			if (Math.max(absX, absY) < AXIS_LOCK_SLOP) return;
++			isFirstMove = false;
++			// A single-axis drawer leaves a drag along the other axis to the content (a carousel,
++			// a horizontal list) instead of locking it onto its own axis.
++			if (!hasHorizontal.value && absX > absY + AXIS_LOCK_BIAS || !hasVertical.value && absY > absX + AXIS_LOCK_BIAS) {
++				if (activePointerId !== null) try {
++					el.releasePointerCapture(activePointerId);
++				} catch {}
++				reset();
++				return;
++			}
+ 			if (hasVertical.value && hasHorizontal.value) lockedAxis = absX > absY ? "horizontal" : "vertical";
+ 			else if (hasVertical.value) lockedAxis = "vertical";
+ 			else lockedAxis = "horizontal";
+@@ -330,7 +364,8 @@ function useSwipeDismiss(options) {
  		if (e.button !== 0) return;
  		if (canStart && !canStart()) return;
  		const target = e.target;
@@ -147,15 +167,13 @@ index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e
  		const el = elementRef.value;
  		if (!el) return;
  		startSwipe(el, {
-@@ -339,8 +365,16 @@ function useSwipeDismiss(options) {
+@@ -339,8 +374,14 @@ function useSwipeDismiss(options) {
  		});
  		activePointerId = e.pointerId;
  		pointerStarted = true;
 +		pointerCaptured = false;
-+		// Capturing on a control would retarget its click to the drawer, so a press on a control
-+		// captures only once it moves past the slop: a click stays a click, a drag becomes a swipe.
-+		pointerOnControl = Boolean(target?.closest(DEFAULT_IGNORE_SELECTOR));
-+		if (!pointerOnControl) capturePointer(el, e.pointerId);
++		// Capturing on press would retarget the click to the drawer, so the pointer is captured only
++		// once it moves past the slop: a click stays a click, a drag becomes a swipe.
 +	}
 +	function capturePointer(el, pointerId) {
 +		pointerCaptured = true;
@@ -165,18 +183,18 @@ index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e
  		} catch {}
  	}
  	function onPointerMove(e) {
-@@ -351,6 +385,10 @@ function useSwipeDismiss(options) {
+@@ -351,6 +392,10 @@ function useSwipeDismiss(options) {
  			finishSwipe(el);
  			return;
  		}
-+		if (pointerOnControl && !pointerCaptured) {
++		if (!pointerCaptured) {
 +			if (Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) < AXIS_LOCK_SLOP) return;
 +			capturePointer(el, e.pointerId);
 +		}
  		processMove(el, {
  			x: e.clientX,
  			y: e.clientY
-@@ -384,7 +422,8 @@ function useSwipeDismiss(options) {
+@@ -384,7 +429,8 @@ function useSwipeDismiss(options) {
  		if (!(0, vue.toValue)(options.enabled)) return;
  		if (canStart && !canStart()) return;
  		const target = e.target;
@@ -187,7 +205,7 @@ index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e
  		if (!el) return;
  		crossAxisScrollable = null;
 diff --git a/dist/composables/useSwipeDismiss.js b/dist/composables/useSwipeDismiss.js
-index 028be68633a2f970d015fdfead258d492a85218f..ad43379d12210efd27ee9d556008492d5d796871 100644
+index 028be68633a2f970d015fdfead258d492a85218f..def305e8338189a4adeeff8247f7040e65994e35 100644
 --- a/dist/composables/useSwipeDismiss.js
 +++ b/dist/composables/useSwipeDismiss.js
 @@ -11,6 +11,12 @@ const AXIS_LOCK_BIAS = 2;
@@ -212,16 +230,15 @@ index 028be68633a2f970d015fdfead258d492a85218f..ad43379d12210efd27ee9d556008492d
  	const hasVertical = computed(() => toValue(directions).includes("up") || toValue(directions).includes("down"));
  	const hasHorizontal = computed(() => toValue(directions).includes("left") || toValue(directions).includes("right"));
  	const allowUp = computed(() => toValue(directions).includes("up"));
-@@ -101,6 +107,8 @@ function useSwipeDismiss(options) {
+@@ -101,6 +107,7 @@ function useSwipeDismiss(options) {
  	let lockedAxis = null;
  	let activePointerId = null;
  	let pointerStarted = false;
-+	let pointerOnControl = false;
 +	let pointerCaptured = false;
  	function getThreshold(el, dir) {
  		if (typeof swipeThresholdProp === "function") return Math.max(0, swipeThresholdProp({
  			element: el,
-@@ -205,6 +213,23 @@ function useSwipeDismiss(options) {
+@@ -205,6 +212,23 @@ function useSwipeDismiss(options) {
  		};
  		const newDx = hasHorizontal.value ? dampAxis(deltaX, allowLeft.value, allowRight.value) : exponent(deltaX);
  		const newDy = hasVertical.value ? dampAxis(deltaY, allowUp.value, allowDown.value) : exponent(deltaY);
@@ -245,7 +262,28 @@ index 028be68633a2f970d015fdfead258d492a85218f..ad43379d12210efd27ee9d556008492d
  		return {
  			x: newDx,
  			y: newDy
-@@ -329,7 +354,8 @@ function useSwipeDismiss(options) {
+@@ -241,9 +265,19 @@ function useSwipeDismiss(options) {
+ 		const rawDx = pos.x - dragStartPos.x;
+ 		const rawDy = pos.y - dragStartPos.y;
+ 		if (isFirstMove) {
+-			isFirstMove = false;
+ 			const absX = Math.abs(rawDx);
+ 			const absY = Math.abs(rawDy);
++			if (Math.max(absX, absY) < AXIS_LOCK_SLOP) return;
++			isFirstMove = false;
++			// A single-axis drawer leaves a drag along the other axis to the content (a carousel,
++			// a horizontal list) instead of locking it onto its own axis.
++			if (!hasHorizontal.value && absX > absY + AXIS_LOCK_BIAS || !hasVertical.value && absY > absX + AXIS_LOCK_BIAS) {
++				if (activePointerId !== null) try {
++					el.releasePointerCapture(activePointerId);
++				} catch {}
++				reset();
++				return;
++			}
+ 			if (hasVertical.value && hasHorizontal.value) lockedAxis = absX > absY ? "horizontal" : "vertical";
+ 			else if (hasVertical.value) lockedAxis = "vertical";
+ 			else lockedAxis = "horizontal";
+@@ -329,7 +363,8 @@ function useSwipeDismiss(options) {
  		if (e.button !== 0) return;
  		if (canStart && !canStart()) return;
  		const target = e.target;
@@ -255,15 +293,13 @@ index 028be68633a2f970d015fdfead258d492a85218f..ad43379d12210efd27ee9d556008492d
  		const el = elementRef.value;
  		if (!el) return;
  		startSwipe(el, {
-@@ -338,8 +364,16 @@ function useSwipeDismiss(options) {
+@@ -338,8 +373,14 @@ function useSwipeDismiss(options) {
  		});
  		activePointerId = e.pointerId;
  		pointerStarted = true;
 +		pointerCaptured = false;
-+		// Capturing on a control would retarget its click to the drawer, so a press on a control
-+		// captures only once it moves past the slop: a click stays a click, a drag becomes a swipe.
-+		pointerOnControl = Boolean(target?.closest(DEFAULT_IGNORE_SELECTOR));
-+		if (!pointerOnControl) capturePointer(el, e.pointerId);
++		// Capturing on press would retarget the click to the drawer, so the pointer is captured only
++		// once it moves past the slop: a click stays a click, a drag becomes a swipe.
 +	}
 +	function capturePointer(el, pointerId) {
 +		pointerCaptured = true;
@@ -273,18 +309,18 @@ index 028be68633a2f970d015fdfead258d492a85218f..ad43379d12210efd27ee9d556008492d
  		} catch {}
  	}
  	function onPointerMove(e) {
-@@ -350,6 +384,10 @@ function useSwipeDismiss(options) {
+@@ -350,6 +391,10 @@ function useSwipeDismiss(options) {
  			finishSwipe(el);
  			return;
  		}
-+		if (pointerOnControl && !pointerCaptured) {
++		if (!pointerCaptured) {
 +			if (Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) < AXIS_LOCK_SLOP) return;
 +			capturePointer(el, e.pointerId);
 +		}
  		processMove(el, {
  			x: e.clientX,
  			y: e.clientY
-@@ -383,7 +421,8 @@ function useSwipeDismiss(options) {
+@@ -383,7 +428,8 @@ function useSwipeDismiss(options) {
  		if (!toValue(options.enabled)) return;
  		if (canStart && !canStart()) return;
  		const target = e.target;

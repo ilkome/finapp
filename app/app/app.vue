@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { ToasterProps } from '@nuxt/ui'
 
+import { DrawerProvider } from 'reka-ui'
+
 import { useThemeOptions } from '~/components/theme/useThemeOptions'
 import { useGuard } from '~/components/user/useGuard'
 
@@ -53,12 +55,16 @@ useGuard()
 </script>
 
 <template>
-  <UApp :toaster="toaster">
+  <!-- A drawer's scroll lock takes the scrollbar away: the body is padded by its width and
+       `--scrollbar-width` lets fixed layers stop short of it, so nothing shifts sideways. -->
+  <UApp :toaster="toaster" :scrollBody="{ padding: true }">
     <NuxtLoadingIndicator :height="2" color="var(--ui-primary)" />
     <NuxtPwaManifest />
 
-    <NuxtLayout v-slot="{ keepalive }">
-      <NuxtPage :keepalive="keepalive" />
-    </NuxtLayout>
+    <DrawerProvider>
+      <NuxtLayout v-slot="{ keepalive }">
+        <NuxtPage :keepalive="keepalive" />
+      </NuxtLayout>
+    </DrawerProvider>
   </UApp>
 </template>

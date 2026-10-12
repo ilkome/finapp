@@ -33,6 +33,8 @@ let unregister: (() => void) | null = null
 watch(open, (value) => {
   if (value) {
     unregister ??= registerDrawer(close)
+    // The scaled page background pivots on the viewport, which sits this far down the scroll-locked page.
+    document.documentElement.style.setProperty('--drawer-scroll-y', `${window.scrollY}px`)
     return
   }
   unregister?.()
@@ -74,10 +76,14 @@ function expandOnWheel(event: WheelEvent) {
     @update:openComplete="value => !value && emit('closed')"
   >
     <DrawerPortal :forceMount="props.forceMount">
-      <DrawerOverlay class="drawer-overlay fixed inset-0 z-50 bg-overlay" :forceMount="props.forceMount" />
-      <!-- No initial focus: on the phone it would raise the keyboard for the first field. -->
+      <!-- Reka skips the overlay of a nested drawer unless forced. -->
+      <DrawerOverlay class="drawer-overlay fixed inset-0 z-50 bg-overlay" :forceMount="props.forceMount" forceRender />
+      <!-- No initial focus: on the phone it would raise the keyboard for the first field.
+           `present` reaches reka's DismissableLayer through attrs, which the Drawer does not pass itself:
+           without it a closed kept-mounted drawer keeps the body pointer lock and swallows Escape. -->
       <DrawerContent
         :forceMount="props.forceMount"
+        :present="open"
         :class="[
           props.isPassthrough && 'border border-b-0 border-accented',
           isTouch && !isExpanded && '[&_.drawer-body]:overflow-hidden [&_.scroller-block]:overflow-hidden',
@@ -86,8 +92,9 @@ function expandOnWheel(event: WheelEvent) {
         ]"
         :style="[height, props.contentStyle]"
         :data-snap="snapPoints ? '' : undefined"
+        :data-passthrough="props.isPassthrough ? '' : undefined"
         :initialFocus="false"
-        class="drawer fixed inset-x-0 bottom-0 z-50 mx-auto flex w-full max-w-md flex-col overflow-hidden rounded-t-xl bg-default outline-none"
+        class="drawer fixed right-(--scrollbar-width,0px) bottom-0 left-0 z-50 mx-auto flex w-full max-w-md flex-col overflow-hidden rounded-t-xl bg-default outline-none"
         @interactOutside="e => props.isPassthrough && e.preventDefault()"
         @wheel.passive="expandOnWheel"
       >
@@ -100,6 +107,8 @@ function expandOnWheel(event: WheelEvent) {
             </DrawerTitle>
             <slot name="header" />
           </div>
+          <!-- reka requires a title for screen readers even when the drawer shows none. -->
+          <DrawerTitle v-if="!props.title" class="sr-only" />
           <slot :close />
         </div>
       </DrawerContent>
