@@ -1,7 +1,7 @@
 <template>
   <a
     aria-label="ilko.me"
-    class="flex-center gap-2 rounded-full interactive px-4 py-2 text-muted transition-colors hover:text-primary"
+    class="flex items-center justify-center gap-2 rounded-full interactive px-4 py-2 text-muted transition-colors hover:text-primary"
     href="https://ilko.me"
   >
     <span class="text-sm">ilko.me</span>

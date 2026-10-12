@@ -34,7 +34,7 @@ const elementClasses = computed(() => cn(
     <div :class="elementClasses">
       <div
         v-if="slots.leftIcon"
-        class="flex-center min-w-8"
+        class="flex items-center justify-center min-w-8"
       >
         <slot name="leftIcon" />
       </div>

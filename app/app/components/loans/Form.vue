@@ -326,7 +326,7 @@ function onSave() {
       </template>
     </UCollapsible>
 
-    <div class="flex-center">
+    <div class="flex items-center justify-center">
       <UiButtonAccent class="sm:max-w-xs" @click="onSave">
         {{ t('base.save') }}
       </UiButtonAccent>

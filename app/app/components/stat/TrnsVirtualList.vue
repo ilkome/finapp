@@ -287,7 +287,7 @@ onBeforeUnmount(() => {
           >
             <button
               type="button"
-              class="flex-center w-full rounded-sm bg-elevated px-5 py-2 text-sm text-muted hover:bg-accented"
+              class="flex items-center justify-center w-full rounded-sm bg-elevated px-5 py-2 text-sm text-muted hover:bg-accented"
               @click="infinite.loadMore('manual')"
             >
               {{ t('trns.more') }}

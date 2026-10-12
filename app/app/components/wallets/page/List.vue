@@ -351,7 +351,7 @@ function cycleGrouping() {
 
     <div
       v-if="!walletsStore.hasItems"
-      class="flex-center grow flex-col"
+      class="flex items-center justify-center grow flex-col"
     >
       <UiTitleSection class="pb-4">
         {{ t('wallets.new') }}
