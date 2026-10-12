@@ -1,13 +1,14 @@
 {
   "name": "@finapp/app",
   "type": "module",
-  "version": "8.3.0-beta.228",
+  "version": "8.3.0-beta.231",
   "private": true,
   "packageManager": "pnpm@11.1.2",
   "engines": {
-    "node": ">=24.12.0"
+    "node": ">=24.15.0"
   },
   "scripts": {
+    "backup": "node scripts/backup-finapp.mjs",
     "build": "nuxt generate",
     "check:deps": "node scripts/check-single-reka-ui.mjs",
     "perf:boot": "node scripts/perf-cdp.mjs boot",
@@ -17,6 +18,7 @@
     "dev:local": "nuxt dev --port=3050 --public --dotenv=.env.local",
     "dev:production": "nuxt dev --port=3050 --public --dotenv=.env.production",
     "dev:review": "VITE_POWERSYNC_SINGLE_TAB=1 nuxt dev --port=3050 --public --dotenv=.env.local",
+    "lint:dead": "knip",
     "preview": "nuxt preview",
     "storybook": "storybook dev -p 6006",
     "storybook:build": "storybook build",
@@ -45,14 +47,11 @@
     "@tanstack/vue-virtual": "^3.13.39",
     "@vue/devtools-api": "^8.2.1",
     "echarts": "^6.1.0",
-    "fuse.js": "^7.5.0",
-    "gsap": "^3.15.0",
     "localforage": "^1.10.0",
     "motion-v": "^2.4.4",
     "pinia": "^4.0.3",
     "reka-ui": "2.10.4",
     "swiper": "^14.2.0",
-    "vaul-vue": "^0.4.1",
     "vite": "^8.3.1",
     "vue": "^3.5.43",
     "vue-echarts": "^8.3.0"
@@ -63,7 +62,6 @@
     "@nuxt/eslint": "^1.17.0",
     "@nuxt/ui": "^4.11.2",
     "@nuxtjs/i18n": "^10.6.0",
-    "@playwright/mcp": "^0.0.82",
     "@playwright/test": "^1.63.0",
     "@storybook/addon-a11y": "^10.6.0",
     "@storybook/addon-docs": "^10.6.0",
@@ -80,7 +78,8 @@
     "defu": "^6.1.7",
     "es-toolkit": "^1.52.0",
     "happy-dom": "^20.14.5",
-    "nuxt": "^4.5.2",
+    "knip": "^6.41.0",
+    "nuxt": "^4.6.1",
     "storybook": "^10.6.0",
     "tailwind-merge": "^3.7.0",
     "tailwindcss": "^4.3.3",
@@ -88,10 +87,6 @@
     "vitest": "^5.0.1",
     "vue-i18n": "^11.4.12",
     "vue-tsc": "^3.3.11",
-    "workbox-core": "^7.4.1",
-    "workbox-precaching": "^7.4.1",
-    "workbox-routing": "^7.4.1",
-    "workbox-strategies": "^7.4.1",
     "zod": "^4.6.5"
   }
 }
