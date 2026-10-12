@@ -80,7 +80,6 @@ const snapPoints = useSheetSnapPoints()
           <template #trigger="{ isActive }">
             <UiTitleDropdown :isActive>
               <span class="text-nowrap">
-                {{ t(isWallet ? 'wallets.name' : 'categories.name') }}:
                 {{ count ? t('settings.sidebar.selected', { count }) : t('settings.sidebar.auto') }}
               </span>
             </UiTitleDropdown>

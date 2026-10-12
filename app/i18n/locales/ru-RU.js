@@ -524,8 +524,8 @@ export default {
       sidebar: 'Сайдбар',
     },
     sidebar: {
-      auto: 'автоматически',
-      selected: 'выбрано {count}',
+      auto: 'Автоматически',
+      selected: 'Выбрано {count}',
       title: 'Сайдбар',
     },
     title: 'Настройки',
