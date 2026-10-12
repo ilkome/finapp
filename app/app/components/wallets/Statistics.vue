@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { StatisticsViewItem } from '~/components/wallets/StatisticsView.vue'
 import type { WalletsStatistics } from '~/components/wallets/useWalletsStatistics'
@@ -20,7 +22,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const isShown = useStoredToggle(props.storageKey, true)
+const isShown = useStorage(props.storageKey, true)
 
 function toItems(items: { id: string, secondValue?: number, value: number }[]): StatisticsViewItem[] {
   return items.map(item => ({ id: item.id, secondValue: item.secondValue, title: t(`money.types.${item.id}`), value: item.value }))

@@ -24,7 +24,7 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 
 type FilterBy = 'wallet' | 'all' | 'walletAndCategory'
-const filterBy = useStorage<FilterBy>('filterBy', 'wallet')
+const filterBy = useStorage<FilterBy>('finapp.trnsSlideFilterBy', 'wallet')
 
 const trnsIds = computed(() => {
   const walletsIds: WalletId[] = []

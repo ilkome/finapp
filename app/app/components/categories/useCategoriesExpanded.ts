@@ -17,7 +17,7 @@ export function useCategoriesExpanded(
     {} as CategoriesState,
   )
   const defaultExpanded = options.persistDefault
-    ? useStorage(`categoriesOpenedDefault:${storageKey}`, false)
+    ? useStorage(`finapp.categoriesOpenedDefault:${storageKey}`, false)
     : ref(false)
 
   function isExpanded(id: CategoryId) {

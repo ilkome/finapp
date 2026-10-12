@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Range } from '~~/utils/date/types'
 
+import { useStorage } from '@vueuse/core'
+
 import type { Grouped } from '~/components/stat/date/types'
 import type { StatDateRangeOption } from '~/components/stat/date/useRangeOptions'
 
@@ -12,7 +14,7 @@ const emit = defineEmits<{
 }>()
 
 const statDate = inject(statDateKey)!
-const isGranularityOpen = useStoredToggle('stat-date-granularity', true)
+const isGranularityOpen = useStorage('finapp.stat-date-granularity', true)
 const { options } = useStatDateRangeOptions()
 
 function onSelectRange(option: StatDateRangeOption) {

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoryWithData, SeriesSlugSelected } from '~/components/stat/types'
 
@@ -57,7 +59,7 @@ function onAmountOpen(categoryId: CategoryId) {
   emit('openCategory', categoryId, filteredType)
 }
 
-const isListShown = useStoredToggle(`${props.storageKey}-${props.type}-list`, true)
+const isListShown = useStorage(`${props.storageKey}-${props.type}-list`, true)
 </script>
 
 <template>

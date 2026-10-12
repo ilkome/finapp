@@ -27,10 +27,10 @@ export function useStatReport(params: UseStatReportParams) {
     isShowWithDesc: ref(false),
   }
   const statItemStorageKey = computed(() =>
-    `finapp-${params.statDate.params.value.granularityBy}-${params.storageKey.value}-${params.filter.categoriesIds.value.join(',')}`,
+    `finapp.${params.statDate.params.value.granularityBy}-${params.storageKey.value}-${params.filter.categoriesIds.value.join(',')}`,
   )
   const filteredType = useStorage<SeriesSlugSelected>(
-    `finapp-filtered-type-${params.type.value}-${statItemStorageKey.value}`,
+    `finapp.filtered-type-${params.type.value}-${statItemStorageKey.value}`,
     params.initialFilteredType ?? 'net',
   )
   if (params.initialFilteredType !== undefined)
@@ -102,7 +102,7 @@ export function useStatReport(params: UseStatReportParams) {
     chartXAxisLabels: chart.chartXAxisLabels,
     effectiveChartType: chart.effectiveChartType,
     effectiveFilteredCategoriesIds,
-    effectiveIntervals: data.effectiveIntervals,
+    effectiveIntervals: data.intervalsDataWithFilteredCategories,
     filteredCategoriesIds,
     filteredChildCategoryId,
     filteredType,

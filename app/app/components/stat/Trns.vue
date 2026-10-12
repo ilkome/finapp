@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { StatReportContext } from '~/components/stat/report/types'
 import type { TrnId } from '~/components/trns/types'
 
@@ -16,7 +18,7 @@ const { t } = useI18n()
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 const isHistoryAvailable = inject(statHistoryAvailableKey, computed(() => true))
 
-const shown = useStoredToggle(`${props.storageKey}-trns`, true)
+const shown = useStorage(`${props.storageKey}-trns`, true)
 const isShowTitle = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTitle ?? true)
 const isShowTypeTabs = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTypeTabs ?? true)
 const isQuickCategoryFocused = computed(() => (props.ctx?.filteredCategoriesIds.value.length ?? 0) > 0)

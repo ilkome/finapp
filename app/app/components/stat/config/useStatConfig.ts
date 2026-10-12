@@ -36,10 +36,10 @@ export function useStatConfig({
   const configStorageQuery = computed(() => toValue(storageQuery) ?? route.value.query)
   const configStorageKey = computed(() => {
     if (stableStorage)
-      return `finapp-${toValue(storageKey)}`
+      return `finapp.${toValue(storageKey)}`
     const query = configStorageQuery.value
     const queryKey = Object.entries(query).map(([k, v]) => `${k}=${v}`).join('&')
-    return `finapp-${toValue(storageKey)}-${queryKey}`
+    return `finapp.${toValue(storageKey)}-${queryKey}`
   })
   const resolvedStorage = storage ?? localStorage
 

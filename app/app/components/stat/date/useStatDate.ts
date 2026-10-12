@@ -18,7 +18,7 @@ export function useStatDate({
   queryParams,
   storage,
 }: UseStatDateOptions) {
-  const paramsStorageKey = computed(() => `${toValue(key)}-params`)
+  const paramsStorageKey = computed(() => `finapp.${toValue(key)}-params`)
   const resolvedStorage = storage ?? localStorage
   const defaults = defu(initParams ?? {}, defaultStatDateParams) as StatDateParams
   const params = useStorage<StatDateParams>(paramsStorageKey, {} as StatDateParams, resolvedStorage, {

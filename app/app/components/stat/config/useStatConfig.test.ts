@@ -74,10 +74,10 @@ describe('normalizeStoredStatConfig', () => {
     useStatConfig({ storageKey: pageStorageKey })
 
     const storageKey = storageKeys.at(-1) as MaybeRefOrGetter<string>
-    expect(toValue(storageKey)).toBe('finapp-dashboard-summary-')
+    expect(toValue(storageKey)).toBe('finapp.dashboard-summary-')
 
     pageStorageKey.value = 'dashboard-expense'
-    expect(toValue(storageKey)).toBe('finapp-dashboard-expense-')
+    expect(toValue(storageKey)).toBe('finapp.dashboard-expense-')
   })
 
   it('prevents stable config instances from overwriting each other through storage events', () => {
@@ -92,7 +92,7 @@ describe('normalizeStoredStatConfig', () => {
   it('uses initialConfig even if storage has a different valid value', () => {
     const storedValue = structuredClone(defaultConfig)
     storedValue.chart.type = 'line'
-    storageState.set('finapp-dashboard-summary-', storedValue)
+    storageState.set('finapp.dashboard-summary-', storedValue)
 
     const statConfig = useStatConfig({
       initialConfig: { ...defaultConfig, chart: { ...defaultConfig.chart, type: 'pie' } },

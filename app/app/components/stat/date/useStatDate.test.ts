@@ -104,10 +104,10 @@ describe('storage key', () => {
     useStatDate({ key: pageStorageKey, maxRange })
 
     const storageKey = storageKeys.at(-1) as MaybeRefOrGetter<string>
-    expect(toValue(storageKey)).toBe('wallet-summary-params')
+    expect(toValue(storageKey)).toBe('finapp.wallet-summary-params')
 
     pageStorageKey.value = 'wallet-expense'
-    expect(toValue(storageKey)).toBe('wallet-expense-params')
+    expect(toValue(storageKey)).toBe('finapp.wallet-expense-params')
   })
 })
 

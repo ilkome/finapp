@@ -23,7 +23,7 @@ type UseStatFilterStorageOptions = {
 }
 
 function statFilterStorageKey(storageKey: MaybeRefOrGetter<string>) {
-  return computed(() => `${toValue(storageKey)}-filters`)
+  return computed(() => `finapp.${toValue(storageKey)}-filters`)
 }
 
 export function useStatFilterStorage({ filter, storage = localStorage, storageKey }: UseStatFilterStorageOptions) {
