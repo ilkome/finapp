@@ -83,6 +83,7 @@ function toggle(id: string) {
 
 <template>
   <USelect
+    data-reka-swipe-ignore
     class="min-w-36 grow"
     :content="{ position: 'item-aligned' }"
     :items="options"
@@ -94,6 +95,7 @@ function toggle(id: string) {
 
   <template v-if="modelValue.kind === 'categoryCount'">
     <USelect
+      data-reka-swipe-ignore
       class="w-16 shrink-0"
       :content="{ position: 'item-aligned' }"
       :items="['<', '<=', '=', '!=', '>=', '>']"

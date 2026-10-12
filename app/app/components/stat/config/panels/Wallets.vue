@@ -31,6 +31,7 @@ const valueModeItems = computed(() => walletValueModes.map(value => ({
 
     <StatConfigFieldRow parameterId="wallets.selectionMode" :title="t('stat.config.wallets.selectionMode')">
       <USelect
+        data-reka-swipe-ignore
         class="w-40 shrink-0"
         :aria-label="t('stat.config.wallets.selectionMode')"
         :content="{ position: 'item-aligned' }"
@@ -43,6 +44,7 @@ const valueModeItems = computed(() => walletValueModes.map(value => ({
 
     <StatConfigFieldRow parameterId="wallets.valueMode" :title="t('stat.config.wallets.valueMode')">
       <USelect
+        data-reka-swipe-ignore
         class="w-40 shrink-0"
         :aria-label="t('stat.config.wallets.valueMode')"
         :content="{ position: 'item-aligned' }"
@@ -55,6 +57,7 @@ const valueModeItems = computed(() => walletValueModes.map(value => ({
 
     <StatConfigFieldRow parameterId="wallets.displayMode" :title="t('stat.config.wallets.displayMode')">
       <USelect
+        data-reka-swipe-ignore
         class="w-40 shrink-0"
         :aria-label="t('stat.config.wallets.displayMode')"
         :content="{ position: 'item-aligned' }"

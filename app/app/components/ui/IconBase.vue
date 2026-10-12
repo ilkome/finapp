@@ -15,7 +15,7 @@ const props = defineProps<{
       backgroundColor: props.invert ? props.color : 'transparent',
     }"
     :class="cn(
-      'flex items-center justify-center aspect-square overflow-hidden text-icon-primary',
+      'flex aspect-square items-center justify-center overflow-hidden text-icon-primary',
       props.invert && cn('rounded-full w-7 p-1.5', props.class),
       props.invert && !props.color && 'bg-muted text-muted!',
     )"

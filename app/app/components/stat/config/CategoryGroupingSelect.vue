@@ -20,6 +20,7 @@ const items = computed(() => categoryGroupingOptions.map(value => ({
 <template>
   <StatConfigFieldRow :parameterId :title="t('stat.config.categories.grouping.title')">
     <USelect
+      data-reka-swipe-ignore
       class="w-40 shrink-0"
       :aria-label="t('stat.config.categories.grouping.title')"
       :content="{ position: 'item-aligned' }"

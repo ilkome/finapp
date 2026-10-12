@@ -27,6 +27,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
     />
     <StatConfigFieldRow parameterId="categories.list.trendType" :title="t('stat.config.categories.list.trendType')">
       <USelect
+        data-reka-swipe-ignore
         class="w-40 shrink-0"
         :aria-label="t('stat.config.categories.list.trendType')"
         :content="{ position: 'item-aligned' }"
@@ -41,6 +42,7 @@ const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(
       :title="t('stat.config.categories.list.backgroundType')"
     >
       <USelect
+        data-reka-swipe-ignore
         class="w-40 shrink-0"
         :aria-label="t('stat.config.categories.list.backgroundType')"
         :content="{ position: 'item-aligned' }"

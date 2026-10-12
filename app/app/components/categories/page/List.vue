@@ -102,6 +102,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
             <div class="pb-2">
               <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
                 <USelect
+                  data-reka-swipe-ignore
                   class="w-40 shrink-0"
                   :aria-label="t('stat.config.categories.list.backgroundType')"
                   :content="{ position: 'item-aligned' }"
@@ -114,6 +115,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
 
               <StatConfigFieldRow :title="t('categories.view.childrenView')">
                 <USelect
+                  data-reka-swipe-ignore
                   class="w-40 shrink-0"
                   :aria-label="t('categories.view.childrenView')"
                   :content="{ position: 'item-aligned' }"
