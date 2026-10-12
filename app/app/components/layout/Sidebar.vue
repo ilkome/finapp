@@ -6,9 +6,9 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { SIDEBAR_COLLAPSE_WIDTH, SIDEBAR_DEFAULT_WIDTH, SIDEBAR_MAX_WIDTH, SIDEBAR_MIN_WIDTH } from '~/components/layout/sidebarWidth'
+import { useSidebarCategoryIds, useSidebarListsVisibility, useSidebarWalletIds } from '~/components/layout/useSidebarLists'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
-import { useSidebarListsVisibility } from '~/composables/useSidebarListsVisibility'
 
 const props = defineProps<{
   isHidden?: boolean
@@ -29,7 +29,7 @@ const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const categoriesStore = useCategoriesStore()
 
-const isShowSidebarLists = useSidebarListsVisibility()
+const visibility = useSidebarListsVisibility()
 const walletMenu = useWalletMenuItems()
 
 function getWalletContextMenuItems(walletId: WalletId) {
@@ -39,14 +39,34 @@ function getWalletContextMenuItems(walletId: WalletId) {
 }
 
 type SidebarTab = 'categories' | 'wallets'
-const activeTab = ref<SidebarTab>('wallets')
-
-const sidebarWalletIds = computed(() => walletsStore.recentWalletIds.slice(0, 10))
-
-const tabItems = computed<TabsItem[]>(() => [
-  { label: t('wallets.name'), value: 'wallets' },
-  { label: t('categories.name'), value: 'categories' },
+const pickedTab = ref<SidebarTab>('wallets')
+const shownTabs = computed<SidebarTab[]>(() => [
+  ...(visibility.wallets.value ? ['wallets' as const] : []),
+  ...(visibility.categories.value ? ['categories' as const] : []),
 ])
+const activeTab = computed<SidebarTab | undefined>({
+  get: () => shownTabs.value.includes(pickedTab.value) ? pickedTab.value : shownTabs.value[0],
+  set: (tab) => {
+    if (tab)
+      pickedTab.value = tab
+  },
+})
+
+const pickedWalletIds = useSidebarWalletIds()
+const pickedCategoryIds = useSidebarCategoryIds()
+const sidebarWalletIds = computed(() => {
+  const picked = pickedWalletIds.value.filter(id => !!walletsStore.itemsComputed[id])
+  return picked.length ? picked : walletsStore.recentWalletIds.slice(0, 10)
+})
+const sidebarCategoryIds = computed(() => {
+  const picked = pickedCategoryIds.value.filter(id => !!categoriesStore.items[id])
+  return picked.length ? picked : categoriesStore.sidebarCategoryIds
+})
+
+const tabItems = computed<TabsItem[]>(() => shownTabs.value.map(tab => ({
+  label: t(tab === 'wallets' ? 'wallets.name' : 'categories.name'),
+  value: tab,
+})))
 
 const isResizing = ref(false)
 
@@ -131,8 +151,8 @@ function startResize(event: PointerEvent) {
         >
           <LayoutSidebarMenu class="px-2 pb-2" />
 
-          <div v-if="isShowSidebarLists" class="px-2 pb-6">
-            <div class="pb-2 pl-1">
+          <div v-if="shownTabs.length" class="px-2 pb-6">
+            <div v-if="shownTabs.length > 1" class="pb-2 pl-1">
               <UiTabs
                 v-model="activeTab"
                 size="xs"
@@ -160,14 +180,14 @@ function startResize(event: PointerEvent) {
             </template>
 
             <!-- Categories -->
-            <template v-if="activeTab === 'categories' && categoriesStore.sidebarCategoryIds.length > 0">
+            <template v-if="activeTab === 'categories' && sidebarCategoryIds.length > 0">
               <CategoriesItem
-                v-for="(categoryId, index) in categoriesStore.sidebarCategoryIds"
+                v-for="(categoryId, index) in sidebarCategoryIds"
                 :key="categoryId"
                 :activeItemId="activeId"
                 :categoryId
                 :category="categoriesStore.items[categoryId]!"
-                :lineWidth="index === categoriesStore.sidebarCategoryIds.length - 1 ? 0 : 1"
+                :lineWidth="index === sidebarCategoryIds.length - 1 ? 0 : 1"
                 isShowParent
                 stacked
                 :to="categoryId === activeId ? '/dashboard' : `/categories/${categoryId}`"

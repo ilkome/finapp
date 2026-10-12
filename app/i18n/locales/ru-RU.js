@@ -522,7 +522,13 @@ export default {
       beta: 'Бета',
       general: 'Основные',
     },
-    sidebarLists: 'Кошельки и категории в сайдбаре',
+    sidebar: {
+      auto: 'автоматически',
+      categories: 'Категории в сайдбаре',
+      selected: 'выбрано {count}',
+      title: 'Сайдбар',
+      wallets: 'Кошельки в сайдбаре',
+    },
     title: 'Настройки',
   },
 

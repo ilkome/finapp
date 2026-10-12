@@ -15,9 +15,12 @@ const props = withDefaults(defineProps<{
   // an item closes the sheet right away instead of staging it for the URL filter.
   activeCategoryId?: CategoryId
   activeWalletId?: WalletId
+  /** Entity tabs only, without the extras slide. */
+  hideMore?: boolean
   initialSlide?: 'category' | 'wallet'
   isExpanded?: boolean
   mode?: 'filter' | 'select'
+  title?: string
 }>(), {
   initialSlide: 'wallet',
   mode: 'filter',
@@ -52,7 +55,7 @@ const entityTypes = computed<FilterEntityType[]>(() => isSelectMode.value
       ...(filter!.canFilterWallets ? ['wallet' as const] : []),
       ...(filter!.canFilterCategories ? ['category' as const] : []),
     ])
-const slides = computed<FilterSlide[]>(() => isSelectMode.value ? entityTypes.value : [...entityTypes.value, 'more'])
+const slides = computed<FilterSlide[]>(() => isSelectMode.value || props.hideMore ? entityTypes.value : [...entityTypes.value, 'more'])
 
 const createItems = computed<DropdownMenuItem[]>(() => entityTypes.value.map(value => ({
   icon: value === 'wallet' ? 'i-hugeicons-wallet-01' : 'i-hugeicons-folder-library',
@@ -112,9 +115,9 @@ const tabItems = computed<TabsItem[]>(() => slides.value.map((slide, index) => (
 })))
 
 const activeEntityType = computed(() => slides.value[activeTabIdx.value])
-const headerTitle = computed(() => isSelectMode.value
+const headerTitle = computed(() => props.title ?? (isSelectMode.value
   ? t(activeEntityType.value === 'wallet' ? 'wallets.singular' : 'categories.singular')
-  : undefined)
+  : undefined))
 </script>
 
 <template>

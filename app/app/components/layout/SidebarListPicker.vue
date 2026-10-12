@@ -1,0 +1,122 @@
+<script setup lang="ts">
+import type { CategoryId } from '~/components/categories/types'
+import type { FilterProvider } from '~/components/filter/types'
+import type { WalletId } from '~/components/wallets/types'
+
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { defaultFilterExtras } from '~/components/filter/extras'
+import { filterKey } from '~/components/filter/injectionKeys'
+import { useSidebarCategoryIds, useSidebarListsVisibility, useSidebarWalletIds } from '~/components/layout/useSidebarLists'
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
+const props = defineProps<{
+  kind: 'category' | 'wallet'
+}>()
+
+const { t } = useI18n()
+const walletsStore = useWalletsStore()
+const categoriesStore = useCategoriesStore()
+const storedWalletIds = useSidebarWalletIds()
+const storedCategoryIds = useSidebarCategoryIds()
+const isWallet = props.kind === 'wallet'
+const isShown = useSidebarListsVisibility()[isWallet ? 'wallets' : 'categories']
+const currenciesStore = useCurrenciesStore()
+
+// Ids of deleted items stay in storage until the next apply; they are never shown.
+const walletsIds = computed(() => storedWalletIds.value.filter(id => !!walletsStore.items?.[id]))
+const categoriesIds = computed(() => storedCategoryIds.value.filter(id => !!categoriesStore.items[id]))
+
+// The filter panel reads only this subset; the rest of FilterProvider belongs to the URL filter.
+const provider = {
+  applyFilter: (next: { categories: CategoryId[], wallets: WalletId[] }) => {
+    if (isWallet)
+      storedWalletIds.value = next.wallets
+    else
+      storedCategoryIds.value = next.categories
+  },
+  canFilterCategories: !isWallet,
+  canFilterWallets: isWallet,
+  categoriesIds: computed(() => isWallet ? [] : categoriesIds.value),
+  extras: computed(() => defaultFilterExtras),
+  isShow: computed(() => (isWallet ? walletsIds.value : categoriesIds.value).length > 0),
+  walletsIds: computed(() => isWallet ? walletsIds.value : []),
+} as unknown as FilterProvider
+provide(filterKey, provider)
+
+const pickedIds = computed<string[]>(() => isWallet ? walletsIds.value : categoriesIds.value)
+const count = computed(() => pickedIds.value.length)
+
+function saveOrder(ids: string[]) {
+  if (isWallet)
+    storedWalletIds.value = ids as WalletId[]
+  else
+    storedCategoryIds.value = ids as CategoryId[]
+}
+const isOpen = ref(false)
+const snapPoints = useSheetSnapPoints()
+</script>
+
+<template>
+  <div class="grid gap-2">
+    <UiSwitchItem
+      :checkboxValue="isShown"
+      :title="t(isWallet ? 'settings.sidebar.wallets' : 'settings.sidebar.categories')"
+      trailing
+      @toggle="isShown = !isShown"
+    />
+
+    <template v-if="isShown">
+      <BottomSheetOrDropdown
+        class="justify-self-start"
+        :isOpen
+        popoverBodyClass="py-0! md:pb-0!"
+        :snapPoints
+        @closeModal="isOpen = false"
+        @openModal="isOpen = true"
+      >
+        <template #trigger="{ isActive }">
+          <UiTitleDropdown :isActive>
+            <span class="text-nowrap">
+              {{ t(isWallet ? 'wallets.name' : 'categories.name') }}:
+              {{ count ? t('settings.sidebar.selected', { count }) : t('settings.sidebar.auto') }}
+            </span>
+          </UiTitleDropdown>
+        </template>
+
+        <template #custom="{ close, isExpanded }">
+          <FilterPanel hideMore :isExpanded :title="t('settings.sidebar.title')" @close="close" />
+        </template>
+      </BottomSheetOrDropdown>
+
+      <WalletsSortableList
+        v-if="count > 1"
+        :ids="pickedIds"
+        class="grid gap-1"
+        @update="saveOrder"
+      >
+        <template #default="{ id }">
+          <div class="flex items-center gap-1">
+            <WalletsSortHandle />
+            <WalletsItem
+              v-if="isWallet"
+              :baseCurrencyCode="currenciesStore.base"
+              class="grow"
+              isShowIcon
+              :wallet="walletsStore.itemsComputed[id as WalletId]!"
+              :walletId="id as WalletId"
+            />
+            <CategoriesItem
+              v-else
+              :category="categoriesStore.items[id as CategoryId]!"
+              :categoryId="id as CategoryId"
+              class="grow"
+              isShowParent
+              stacked
+            />
+          </div>
+        </template>
+      </WalletsSortableList>
+    </template>
+  </div>
+</template>

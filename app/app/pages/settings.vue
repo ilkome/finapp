@@ -19,6 +19,7 @@ const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
 const { generateDemoData, isDemo } = useDemo()
 const features = useFeatures()
+const isLaptop = useIsLaptop()
 const isShowBaseCurrencyModal = ref(false)
 
 useSeoMeta({
@@ -112,7 +113,17 @@ function onGenerateDemoData() {
             <NotificationsSettings />
           </template>
 
-          <ThemePicker v-else-if="activeSection === 'appearance'" />
+          <template v-else-if="activeSection === 'appearance'">
+            <ThemePicker />
+
+            <!-- The sidebar exists only on the laptop layout. -->
+            <UiSettingsCard v-if="isLaptop" :title="t('settings.sidebar.title')">
+              <div class="grid gap-4">
+                <LayoutSidebarListPicker kind="wallet" />
+                <LayoutSidebarListPicker kind="category" />
+              </div>
+            </UiSettingsCard>
+          </template>
 
           <template v-else-if="activeSection === 'account'">
             <!-- User -->

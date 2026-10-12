@@ -2,6 +2,7 @@
 import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
 
 import { useDemo } from '~/components/demo/useDemo'
+import { useSidebarListsVisibility } from '~/components/layout/useSidebarLists'
 import {
   USER_MENU_PANEL_CHILDREN,
   USER_MENU_PANEL_CHILDREN_PHONE,
@@ -10,7 +11,6 @@ import {
 } from '~/components/layout/useUserMenuData'
 import { BLACK_PRIMARY, colorLabel, swatchPalette } from '~/components/theme/useThemeOptions'
 import { useMenuLabelVisibility } from '~/composables/useMenuLabelVisibility'
-import { useSidebarListsVisibility } from '~/composables/useSidebarListsVisibility'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 // The one user menu body: demo actions or account + sync status, language, appearance and
@@ -26,7 +26,7 @@ const { locale, t } = useI18n()
 const router = useRouter()
 const isLaptop = useIsLaptop()
 const isShowMenuLabels = useMenuLabelVisibility()
-const isShowSidebarLists = useSidebarListsVisibility()
+const sidebarLists = useSidebarListsVisibility()
 const { generateDemoData, isDemo } = useDemo()
 const {
   blackAsPrimary,
@@ -257,14 +257,17 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
           <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
         </button>
 
-        <UiSwitchItem
-          v-if="activePanel === 'appearance' && isLaptop"
-          :checkboxValue="isShowSidebarLists"
-          :title="t('settings.sidebarLists')"
-          class="mt-1"
-          trailing
-          @toggle="isShowSidebarLists = !isShowSidebarLists"
-        />
+        <template v-if="activePanel === 'appearance' && isLaptop">
+          <UiSwitchItem
+            v-for="kind in (['wallets', 'categories'] as const)"
+            :key="kind"
+            :checkboxValue="sidebarLists[kind].value"
+            :title="t(`settings.sidebar.${kind}`)"
+            class="mt-1"
+            trailing
+            @toggle="sidebarLists[kind].value = !sidebarLists[kind].value"
+          />
+        </template>
 
         <!-- Bottom-nav labels only exist on the phone layout. -->
         <UiSwitchItem

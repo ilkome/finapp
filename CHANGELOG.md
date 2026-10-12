@@ -6,6 +6,7 @@
 
 ## ✨ New
 
+- Settings: wallets and categories in the sidebar are turned on separately; pick which ones show and drag them into order, or leave the automatic choice.
 - Forms: wallet and category forms open as a dialog on desktop, like the loan forms; the phone keeps the bottom sheet.
 
 ## ⚡ Performance
