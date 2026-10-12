@@ -1,4 +1,4 @@
-// Read-only backup of a finapp user's Supabase data via PostgREST (service-role). Resolves the
+// Server admin tool: needs the project's service-role key. Read-only backup of one finapp user's Supabase data via PostgREST (service-role). Resolves the
 // user's uid by email, then dumps each table filtered to that user, to a timestamped JSON file
 // OUTSIDE the repo (financial data must never be committed). Secrets come from env, never args.
 //
@@ -20,37 +20,35 @@ const email = process.env.SB_EMAIL
 const label = process.env.SB_LABEL || 'backup'
 const outDir = process.env.SB_OUTDIR || join(homedir(), 'finapp-backups')
 
-if (!url || !key) {
-  console.error('need SB_URL and SB_SERVICE_ROLE')
+if (!url || !key || !email) {
+  console.error('need SB_URL, SB_SERVICE_ROLE and SB_EMAIL (the dump is always scoped to one user)')
   process.exit(1)
 }
 
 const headers = { apikey: key, Authorization: `Bearer ${key}` }
-const USER_TABLES = ['wallets', 'categories', 'trns', 'user_settings', 'stat_views', 'budgets', 'budget_assignments', 'recurrences']
+// Same set as services/powersync/tables.ts (tables.test.ts keeps them in step).
+const USER_TABLES = ['categories', 'loan_schedule_rows', 'loans', 'stat_views', 'trns', 'user_settings', 'wallets']
 const GLOBAL_TABLES = ['rates'] // no userId column
 
-let uid = null
-if (email) {
-  const r = await fetch(`${url}/auth/v1/admin/users?per_page=500`, { headers })
-  if (!r.ok) {
-    console.error('admin/users failed', r.status, await r.text())
-    process.exit(1)
-  }
-  const j = await r.json()
-  const users = j.users || j
-  const u = users.find(x => (x.email || '').toLowerCase() === email.toLowerCase())
-  if (!u) {
-    console.error(`user not found: ${email}. known: ${users.map(x => x.email).join(', ')}`)
-    process.exit(1)
-  }
-  uid = u.id
-  console.log(`user ${email} -> ${uid}`)
+const r = await fetch(`${url}/auth/v1/admin/users?per_page=500`, { headers })
+if (!r.ok) {
+  console.error('admin/users failed', r.status, await r.text())
+  process.exit(1)
 }
+const j = await r.json()
+const users = j.users || j
+const u = users.find(x => (x.email || '').toLowerCase() === email.toLowerCase())
+if (!u) {
+  console.error(`user not found: ${email}`)
+  process.exit(1)
+}
+const uid = u.id
+console.log(`user ${email} -> ${uid}`)
 
 const out = { meta: { at: new Date().toISOString(), email, label, uid, url }, tables: {} }
 
 async function dump(table, filtered) {
-  const filter = filtered && uid ? `&userId=eq.${uid}` : ''
+  const filter = filtered ? `&userId=eq.${uid}` : ''
   // PostgREST caps each response (default 1000), so page until a short page comes back.
   const pageSize = 1000
   const all = []
@@ -59,10 +57,11 @@ async function dump(table, filtered) {
     if (!r.ok) {
       if (offset === 0) {
         console.error(`  ${table}: HTTP ${r.status} ${await r.text()}`)
-        out.tables[table] = { error: r.status }
-        return
+        process.exit(1)
       }
-      break
+      // A failed later page would save a silently truncated table.
+      console.error(`  ${table}: HTTP ${r.status} at offset ${offset}`)
+      process.exit(1)
     }
     const rows = await r.json()
     all.push(...rows)

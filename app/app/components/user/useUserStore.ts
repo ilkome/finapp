@@ -3,13 +3,16 @@ import type { Row } from '~~/services/powersync/transforms'
 import localforage from 'localforage'
 import { disconnectPowerSync, getPowerSyncDb, waitForUploadsDrained, watchTable } from '~~/services/powersync/db'
 import { upsertRow } from '~~/services/powersync/mutations'
+import { SYNCED_TABLES } from '~~/services/powersync/tables'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LocaleSlug } from '~/components/locale/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useDemo } from '~/components/demo/useDemo'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { useStatViewsStore } from '~/components/stat/views/useStatViewsStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -284,6 +287,10 @@ export const useUserStore = defineStore('user', () => {
     categoriesStore.setCategories(null)
     categoriesStore.setCategoryOverrides({})
     walletsStore.setWallets(null)
+    const loansStore = useLoansStore()
+    loansStore.setLoans({})
+    loansStore.setScheduleRows({})
+    useStatViewsStore().items = []
     useTrnsFormStore().$reset()
     useCookie<boolean>('finapp.isOnboarded').value = false
     await Promise.all(Object.values(STORAGE_KEYS).map(key => localforage.removeItem(key)))
@@ -300,11 +307,10 @@ export const useUserStore = defineStore('user', () => {
 
     try {
       const db = await getPowerSyncDb()
-      await db.execute('DELETE FROM trns')
-      await db.execute('DELETE FROM categories')
-      await db.execute('DELETE FROM wallets')
-      await db.execute('DELETE FROM stat_views')
-      await db.execute('DELETE FROM user_settings')
+      await db.writeTransaction(async (tx) => {
+        for (const table of SYNCED_TABLES)
+          await tx.execute(`DELETE FROM ${table}`)
+      })
     }
     catch (e) {
       logger.error('removeAllUserData failed', e)

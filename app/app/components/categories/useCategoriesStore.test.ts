@@ -14,6 +14,7 @@ const h = vi.hoisted(() => {
   return {
     auth: { session: { value: null }, signOut: vi.fn(), uid: { value: 'u1' }, user: { value: null } },
     deleteRow: vi.fn(),
+    deleteRows: vi.fn(),
     demo: { value: false },
     upsertRow: vi.fn(),
     upsertRows: vi.fn(),
@@ -26,7 +27,7 @@ const h = vi.hoisted(() => {
 })
 
 vi.mock('~~/services/powersync/db', () => ({ watchTable: h.watchTable }))
-vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
+vi.mock('~~/services/powersync/mutations', () => ({ deleteRow: h.deleteRow, deleteRows: h.deleteRows, upsertRow: h.upsertRow, upsertRows: h.upsertRows }))
 vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }) }))
 vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))
 
@@ -56,6 +57,7 @@ describe('useCategoriesStore', () => {
     h.upsertRow.mockReset().mockResolvedValue(undefined)
     h.upsertRows.mockReset().mockResolvedValue(undefined)
     h.deleteRow.mockReset().mockResolvedValue(undefined)
+    h.deleteRows.mockReset().mockResolvedValue(undefined)
   })
 
   describe('hydration via watch', () => {
@@ -199,7 +201,7 @@ describe('useCategoriesStore', () => {
       expect(trnsStore.items?.t1).toBeUndefined()
       expect(trnsStore.items?.t2).toBeDefined()
       expect(h.deleteRow).toHaveBeenCalledWith('categories', 'c1')
-      expect(h.deleteRow).toHaveBeenCalledWith('trns', 't1')
+      expect(h.deleteRows).toHaveBeenCalledWith('trns', ['t1'])
     })
 
     it('restores the category and cascaded trns when the write fails', async () => {

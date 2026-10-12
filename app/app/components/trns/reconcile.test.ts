@@ -2,7 +2,7 @@ import type { Row } from '~~/services/powersync/transforms'
 
 import { describe, expect, it } from 'vitest'
 
-import { reconcileTrns, rowsToTrns } from '~/components/trns/reconcile'
+import { reconcileRows, reconcileTrns, rowsToTrns } from '~/components/trns/reconcile'
 
 function expenseRow(id: string, updatedAt: number | null, amount = 100): Row {
   return {
@@ -75,5 +75,22 @@ describe('reconcileTrns', () => {
     // null updatedAt reads back as a stable 0 (transforms.ts), so it matches.
     const next = reconcileTrns(prev, [expenseRow('a', null)])
     expect(next).toBe(prev)
+  })
+})
+
+describe('reconcileRows', () => {
+  const toItem = (row: { id: string, updatedAt?: number | null }) => ({ id: row.id, ...(row.updatedAt != null ? { updatedAt: row.updatedAt } : {}) })
+
+  it('keeps identity when updatedAt is unchanged, including missing timestamps', () => {
+    const rows = [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: null }]
+    const prev = reconcileRows(null, rows, toItem)!
+    expect(reconcileRows(prev, [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: null }], toItem)).toBe(prev)
+  })
+
+  it('reuses unchanged objects and rebuilds changed ones', () => {
+    const prev = reconcileRows(null, [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: 1 }], toItem)!
+    const next = reconcileRows(prev, [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: 2 }], toItem)!
+    expect(next.a).toBe(prev.a)
+    expect(next.b).not.toBe(prev.b)
   })
 })

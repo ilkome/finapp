@@ -1,7 +1,7 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import { watchTable } from '~~/services/powersync/db'
-import { deleteRow, upsertRow, upsertRows } from '~~/services/powersync/mutations'
+import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
 
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
@@ -11,11 +11,12 @@ import type { TrnId } from '~/components/trns/types'
 import { applyCategoryOverrides, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { reconcileRows } from '~/components/trns/reconcile'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
-import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
+import { createDebouncedPersist, persistOptimistic } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
@@ -278,11 +279,11 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     watchController?.abort()
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
     let isFirstEmit = true
-    watchController = watchTable<Row>('SELECT * FROM categories', [], (rows) => {
+    watchController = watchTable<Row>('SELECT * FROM categories', [], (dbRows) => {
       const isFirst = isFirstEmit
       isFirstEmit = false
       isLoaded.value = true
-      if (!rows.length) {
+      if (!dbRows.length) {
         // An empty FIRST emission means local SQLite hasn't received the first sync yet
         // (fresh device) - keep the primed cache. Later empty emissions are genuine wipes.
         if (isFirst && hasItems.value)
@@ -290,18 +291,21 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
         setCategories(null)
         return
       }
-      const map: Categories = {} as Categories
-      for (const row of rows)
-        map[row.id] = rowToCategory(row)
-      setCategories(map)
+      const next = reconcileRows(rows, dbRows, rowToCategory) as Categories | null
+      if (next !== rows)
+        setCategories(next)
     })
     logger.log('watching categories')
 
     overridesWatchController?.abort()
+    let lastOverridesRaw: unknown
     overridesWatchController = watchTable<Row>('SELECT "categoryOverrides" FROM user_settings LIMIT 1', [], (settings) => {
       // No row yet means the first sync hasn't landed: keep the primed overrides.
-      if (settings[0])
-        setCategoryOverrides(parseCategoryOverrides(settings[0].categoryOverrides))
+      // Any user_settings write (locale, timezone) re-emits: skip when the column is unchanged.
+      if (!settings[0] || settings[0].categoryOverrides === lastOverridesRaw)
+        return
+      lastOverridesRaw = settings[0].categoryOverrides
+      setCategoryOverrides(parseCategoryOverrides(lastOverridesRaw))
     })
   }
 
@@ -361,12 +365,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return
 
     const userId = resolveWriteUid(uid.value)
-    return upsertRow('user_settings', userId, { categoryOverrides: JSON.stringify(next), userId })
-      .catch((e) => {
-        setCategoryOverrides(prev)
-        logger.error('saveReservedCategory failed', e)
-        showErrorToast('categories.errors.saveFailed')
-      })
+    return persistOptimistic(upsertRow('user_settings', userId, { categoryOverrides: JSON.stringify(next), userId }), {
+      errorKey: 'categories.errors.saveFailed',
+      label: 'saveReservedCategory',
+      logger,
+      rollback: () => setCategoryOverrides(prev),
+    }).then(() => undefined)
   }
 
   function hasChildren(categoryId: CategoryId) {
@@ -492,12 +496,12 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
         rows.push({ id: cid, row: categoryToRow(item, userId) })
     }
 
-    return upsertRows('categories', rows)
-      .catch((e) => {
-        setCategories(prev) // roll back the optimistic update if the local write failed
-        logger.error('saveCategory failed', e)
-        showErrorToast('categories.errors.saveFailed')
-      })
+    return persistOptimistic(upsertRows('categories', rows), {
+      errorKey: 'categories.errors.saveFailed',
+      label: 'saveCategory',
+      logger,
+      rollback: () => setCategories(prev),
+    }).then(() => undefined)
   }
 
   function deleteCategory(id: CategoryId, trnsIds?: TrnId[]) {
@@ -516,21 +520,16 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (isDemo.value)
       return
 
-    // Cascade: delete the category and its transactions.
-    const writes: Promise<void>[] = [deleteRow('categories', id)]
-    if (trnsIds?.length) {
-      for (const trnId of trnsIds) writes.push(deleteRow('trns', trnId))
-    }
-
-    return Promise.all(writes)
-      .then(() => undefined)
-      .catch((e) => {
-        // Roll back the category and its cascaded trns if the local write failed.
+    // Cascade: delete the category and its transactions; roll both back if the local write failed.
+    return persistOptimistic(Promise.all([deleteRow('categories', id), deleteRows('trns', trnsIds ?? [])]), {
+      errorKey: 'categories.errors.deleteFailed',
+      label: 'deleteCategory',
+      logger,
+      rollback: () => {
         setCategories(prevCategories)
         trnsStore.setTrns(prevTrns)
-        logger.error('deleteCategory failed', e)
-        showErrorToast('categories.errors.deleteFailed')
-      })
+      },
+    }).then(() => undefined)
   }
 
   return {

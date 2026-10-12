@@ -70,24 +70,33 @@ export class SupabaseConnector implements PowerSyncBackendConnector {
     if (!transaction)
       return
 
-    // Op currently being applied: a fatal failure discards it plus every op after it.
+    // First op of the group being applied: a fatal failure discards it plus every op after it.
     let failedIndex = -1
     try {
-      for (const [i, op] of transaction.crud.entries()) {
+      const { crud } = transaction
+      for (let i = 0; i < crud.length;) {
         failedIndex = i
+        const op = crud[i]!
+        // Consecutive PUTs / DELETEs on one table go as one request; a PATCH carries its own payload.
+        let end = i + 1
+        if (op.op !== UpdateType.PATCH) {
+          while (end < crud.length && crud[end]!.op === op.op && crud[end]!.table === op.table)
+            end++
+        }
+        const group = crud.slice(i, end)
+        i = end
+
         const table = this.client.from(op.table)
         let result
         switch (op.op) {
-          case UpdateType.PUT: {
-            const record = { ...prepareUploadData(op.table, op.opData ?? {}), id: op.id }
-            result = await table.upsert(record)
+          case UpdateType.PUT:
+            result = await table.upsert(group.map(o => ({ ...prepareUploadData(o.table, o.opData ?? {}), id: o.id })))
             break
-          }
           case UpdateType.PATCH:
             result = await table.update(prepareUploadData(op.table, op.opData ?? {})).eq('id', op.id)
             break
           case UpdateType.DELETE:
-            result = await table.delete().eq('id', op.id)
+            result = await table.delete().in('id', group.map(o => o.id))
             break
         }
 
