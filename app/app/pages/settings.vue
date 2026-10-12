@@ -69,7 +69,7 @@ function onGenerateDemoData() {
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="page-wrapper">
+    <div class="grow px-2 lg:px-4 2xl:px-8">
       <!-- Color swatches use the full width; other sections keep a readable column. -->
       <div
         :class="activeSection === 'appearance' ? '@2xl/page:grid-cols-[12rem_minmax(0,1fr)]' : '@2xl/page:grid-cols-[12rem_minmax(0,32rem)]'"
