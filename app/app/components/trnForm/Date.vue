@@ -43,7 +43,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
       isShowCloseBtn
     >
       <template #trigger>
-        <UiActionButton class="grid size-full content-center justify-start! px-2 text-left text-muted">
+        <UiActionButton class="grid size-full content-center justify-start! rounded-md! px-2 text-left text-muted">
           <div class="text-sm text-highlighted">
             {{ dateLabel }}
           </div>

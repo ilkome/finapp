@@ -48,6 +48,8 @@
 - Notifications stack, merge duplicates and can be swiped away.
 - Page headers: one height on every page, actions in a pill on desktop and plain icons on the phone.
 - Demo: every wallet type, debts both ways, crypto and random-currency wallets.
+- Description: one sheet in the transaction form and in bulk edit, saved as you type, no save button.
+- Calendar: follows the app language, and the period calendar shows two months side by side on desktop.
 
 ## ⚡ Performance
 
@@ -62,6 +64,7 @@
 - Totals: a transaction whose wallet was deleted is skipped instead of being counted as dollars, matching wallet balances.
 - Wallets: balances snap to the currency's minor unit (JPY to whole yen, BTC to 8 decimals).
 - Statistics: chart amounts use one number style in every place and language.
+- Statistics: picking a day or a range in the period calendar applies it instead of failing.
 - Switches can be reached with Tab and toggled with Enter or Space.
 - The installed app takes over the open page on its first install.
 

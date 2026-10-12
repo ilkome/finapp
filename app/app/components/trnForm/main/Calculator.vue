@@ -83,7 +83,7 @@ onLongPress(
       <button
         :aria-label="t(isMath ? 'base.apply' : 'base.save')"
         :class="cn(
-          'hover:scale-1.02 flex size-full w-12 items-center justify-center rounded-sm p-1 py-4 text-center transition @xs/trnForm:w-14 @sm/trnForm:w-16',
+          'hover:scale-1.02 flex size-full w-12 items-center justify-center rounded-md p-1 py-4 text-center transition @xs/trnForm:w-14 @sm/trnForm:w-16',
           !isMath && isSubmittable
             ? 'bg-primary/50 text-icon-primary hover:bg-primary/80'
             : 'bg-elevated! text-highlighted hover:bg-elevated/30',

@@ -908,12 +908,10 @@ export default {
   trns: {
     bulk: {
       category: 'Категория',
-      clearDescription: 'Удалить описание',
       date: 'Дата',
       deleted: 'Транзакции удалены: {count}',
       deleteTitle: 'Удалить выбранные транзакции?',
       description: 'Описание',
-      descriptionPlaceholder: 'Описание для выбранных транзакций',
       updated: 'Транзакции изменены: {count}',
       wallet: 'Кошелёк',
     },

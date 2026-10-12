@@ -4,19 +4,11 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 
-const desc = ref('')
-watch(
-  () => trnsFormStore.values.desc,
-  (value) => {
-    desc.value = value ?? ''
-  },
-  { immediate: true },
-)
-
-function onSave(close: () => void) {
-  trnsFormStore.values.desc = desc.value
-  close()
-}
+// Written straight into the form: the sheet has no save button, closing it keeps the text.
+const desc = computed({
+  get: () => trnsFormStore.values.desc ?? '',
+  set: (value: string) => { trnsFormStore.values.desc = value },
+})
 </script>
 
 <template>
@@ -37,39 +29,11 @@ function onSave(close: () => void) {
       </UiActionButton>
     </template>
 
-    <template #content="{ close }">
-      <div class="grid min-w-80 gap-4">
-        <div class="px-2">
-          <div class="relative">
-            <FormTextarea
-              v-model="desc"
-              autoResize
-              :placeholder="t('trnForm.description.placeholder')"
-            />
-            <UButton
-              v-if="desc"
-              type="button"
-              :aria-label="$t('base.clear')"
-              class="mt-1"
-              color="neutral"
-              icon="i-lucide-eraser"
-              size="xs"
-              variant="ghost"
-              @click="desc = ''"
-            >
-              {{ $t('base.clear') }}
-            </UButton>
-          </div>
-        </div>
-
-        <div class="flex items-center justify-center px-2 pb-4 md:pb-0">
-          <UiButtonAccent
-            @click="onSave(close)"
-          >
-            {{ t('base.save') }}
-          </UiButtonAccent>
-        </div>
-      </div>
+    <template #content>
+      <FormDescriptionSheet
+        v-model="desc"
+        :placeholder="t('trnForm.description.placeholder')"
+      />
     </template>
   </DrawerOrDropdown>
 </template>

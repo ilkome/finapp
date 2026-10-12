@@ -163,8 +163,6 @@ watch(description, (value) => {
     <DrawerOrDropdown
       v-model:open="isDescriptionOpen"
       class="flex shrink-0 grow-0 snap-start gap-1"
-      popoverBodyClass="md:pb-3"
-      :collapsedSnap="500"
       :title="t('trns.bulk.description')"
       isShowCloseBtn
       keyboardTrigger
@@ -177,21 +175,12 @@ watch(description, (value) => {
       </template>
 
       <template #content="{ close }">
-        <div class="grid min-w-80 gap-2 px-3 md:px-1">
-          <UTextarea
-            v-model="description"
-            autofocus
-            :placeholder="t('trns.bulk.descriptionPlaceholder')"
-            autoresize
-          />
-          <UiButtonAccent
-            color="neutral"
-            variant="soft"
-            @click="stageClearDescription(close)"
-          >
-            {{ t('trns.bulk.clearDescription') }}
-          </UiButtonAccent>
-        </div>
+        <FormDescriptionSheet
+          v-model="description"
+          isClearableWhenEmpty
+          :placeholder="t('trnForm.description.placeholder')"
+          @clearEmpty="stageClearDescription(close)"
+        />
       </template>
     </DrawerOrDropdown>
 
