@@ -23,15 +23,13 @@ export function formatAmount(amount: number, currencyCode?: CurrencyCode, {
   const currencySettings = currencyCode ? currencyMap.get(currencyCode) : undefined
   const p = precision ?? currencySettings?.precision ?? 2
 
-  const formatted = getFormatter(p).format(amount)
-
   // If rounding hides a non-zero value, show significant digits
-  if (amount !== 0 && Number(formatted.replace(/,/g, '')) === 0) {
+  if (amount !== 0 && Math.abs(amount) < 0.5 * 10 ** -p) {
     const significant = getFormatter(Math.min(Math.max(-Math.floor(Math.log10(Math.abs(amount))) + 1, p), 20))
     return significant.format(amount).replace(/,/g, ' ')
   }
 
-  return formatted.replace(/,/g, ' ')
+  return getFormatter(p).format(amount).replace(/,/g, ' ')
 }
 
 export function getCurrencySymbol(currencyCode?: CurrencyCode) {

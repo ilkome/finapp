@@ -8,7 +8,7 @@ import type { ChartSeries, IntervalData, SeriesSlugSelected, StatReportType } fr
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCashflowPieData, hideSingleColorPie } from '~/components/stat/chart/cashflowPie'
-import { buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
+import { aggregateCategoryTotals, buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
 import { resolveEffectiveChartType, shouldUseQuickCategoryCashflowSeries } from '~/components/stat/chart/types'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { applyChartValueDisplay } from '~/components/stat/chart/valueDisplay'
@@ -81,7 +81,7 @@ export function useStatReportChart(params: {
   }
 
   const chartSeries = computed<ChartSeries[]>(() => {
-    const intervals = params.data.chartEffectiveIntervals.value
+    const intervals = params.data.chartIntervalsDataWithFilteredCategories.value
     const selectedInterval = params.statDate.selectedInterval.value
     const chartType = effectiveChartType.value
     // A category page is the same scope as a quick category filter: one category's cashflow,
@@ -102,13 +102,13 @@ export function useStatReportChart(params: {
       series = buildCategoriesSeries({
         categoriesItems: categoriesStore.items ?? {},
         chartType,
-        computeTotalForTrnsIds: params.data.chartEffectiveComputeTotal.value,
+        computeTotalForTrnsIds: params.data.computeTotalForTrnsIds,
         excludedCategoriesIds: params.data.statExcludedIds.value,
         filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
         grouping: categoryBreakdownFilter.value.grouping,
         intervals,
         otherName: t('stat.config.chart.other'),
-        trnsItems: params.data.chartEffectiveItems.value,
+        trnsItems: params.data.trnsItems.value,
         type: categoriesBreakdownType.value,
       })
       const average = computeSeriesAverage(categoriesBreakdownType.value, intervals)
@@ -142,20 +142,19 @@ export function useStatReportChart(params: {
   const chartXAxisLabels = computed(() =>
     params.data.chartIntervalsDataWithFilteredCategories.value.map(interval => interval.range.start),
   )
-  function buildCategoryPieData(type: 'expense' | 'income') {
-    const intervals = params.data.isIntervalSelected.value
+  const pieAggregated = computed(() => aggregateCategoryTotals({
+    categoriesItems: categoriesStore.items ?? {},
+    computeTotalForTrnsIds: params.data.computeTotalForTrnsIds,
+    excludedCategoriesIds: params.data.statExcludedIds.value,
+    filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
+    grouping: categoryBreakdownFilter.value.grouping,
+    intervals: params.data.isIntervalSelected.value
       ? [params.data.intervalsDataWithFilteredCategories.value[params.statDate.params.value.intervalSelected]!]
-      : params.data.intervalsDataWithFilteredCategories.value
-    return buildCategoriesPieData({
-      categoriesItems: categoriesStore.items ?? {},
-      computeTotalForTrnsIds: params.data.computeTotalForTrnsIds,
-      excludedCategoriesIds: params.data.statExcludedIds.value,
-      filterCategoriesIds: categoryBreakdownFilter.value.filterCategoriesIds,
-      grouping: categoryBreakdownFilter.value.grouping,
-      intervals,
-      trnsItems: params.data.trnsItems.value,
-      type,
-    })
+      : params.data.intervalsDataWithFilteredCategories.value,
+    trnsItems: params.data.trnsItems.value,
+  }))
+  function buildCategoryPieData(type: 'expense' | 'income') {
+    return buildCategoriesPieData({ aggregated: pieAggregated.value, categoriesItems: categoriesStore.items ?? {}, type })
   }
   const summaryCategoryPieData = computed(() => {
     const expense = buildCategoryPieData('expense')

@@ -17,36 +17,36 @@ type AggregateParams = {
   grouping: CategoryGrouping
   intervals: IntervalData[]
   trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>>
-  type: SeriesSlugSelected
 }
 
 type BuildSeriesParams = AggregateParams & {
   chartType: ChartType | undefined
   otherName?: string
+  type: SeriesSlugSelected
 }
+
+type CategoryTotal = { expense: number, income: number, net: number }
 
 export type CategoryPieDatum = {
   color: string
   value: number
 }
 
-type AggregatedTotals = {
+export type AggregatedTotals = {
+  /** For each interval: displayCategoryId -> its totals in that interval. */
+  perIntervalTotals: Record<CategoryId, CategoryTotal>[]
+}
+
+type CategoryValues = {
   /** displayCategoryId -> total over the full range. */
   categoryTotals: Record<CategoryId, number>
   /** Category ids with a non-zero total, sorted by absolute total descending. */
   orderedCategoryIds: CategoryId[]
-  /** For each interval: displayCategoryId -> trnIds that fell into it. */
-  perIntervalByCategory: Record<CategoryId, TrnId[]>[]
+  /** For each interval: displayCategoryId -> value. */
+  perIntervalValues: Record<CategoryId, number>[]
 }
 
 const OTHER_CATEGORY_COLOR = 'var(--ui-text-dimmed)'
-
-function getCategoryValue(
-  total: { expense: number, income: number, net: number },
-  type: SeriesSlugSelected,
-): number {
-  return type === 'net' ? total.net : total[type]
-}
 
 function resolveCategoryColor(categoriesItems: Categories, categoryId: CategoryId): string {
   return categoriesItems[categoryId]?.color ?? OTHER_CATEGORY_COLOR
@@ -89,9 +89,9 @@ function resolveCategoryId(
 /**
  * Single source of truth for category breakdown numbers.
  * Buckets transactions per interval by display category, then sums each
- * category's total across the whole range. System categories (transfer,
- * adjustment) and out-of-filter categories are excluded. Both the bar/line series and focused donut are
- * derived from this so their numbers always agree.
+ * category's totals once per bucket. System categories (transfer, adjustment) and
+ * out-of-filter categories are excluded. The bar/line series and the donuts all pick their
+ * values from this so their numbers always agree.
  */
 export function aggregateCategoryTotals({
   categoriesItems,
@@ -101,7 +101,6 @@ export function aggregateCategoryTotals({
   grouping,
   intervals,
   trnsItems,
-  type,
 }: AggregateParams): AggregatedTotals {
   const filterSet = filterCategoriesIds?.length ? new Set(filterCategoriesIds) : undefined
   const isIncluded = (categoryId: CategoryId | undefined): categoryId is CategoryId => (
@@ -120,7 +119,7 @@ export function aggregateCategoryTotals({
     : new Set<CategoryId>()
 
   // For each interval, build a map of displayCategoryId -> trnIds[]
-  const perIntervalByCategory: Record<CategoryId, TrnId[]>[] = intervals.map((interval) => {
+  const perIntervalTotals = intervals.map((interval) => {
     const bucket: Record<CategoryId, TrnId[]> = {}
     for (const trnId of interval.trnsIds) {
       const rawCategoryId = trnsItems[trnId]?.categoryId
@@ -134,24 +133,34 @@ export function aggregateCategoryTotals({
       bucket[displayId] ??= []
       bucket[displayId].push(trnId)
     }
-    return bucket
+    const totals: Record<CategoryId, CategoryTotal> = {}
+    for (const [categoryId, trnIds] of Object.entries(bucket)) {
+      const { expense, income, net } = computeTotalForTrnsIds(trnIds)
+      totals[categoryId] = { expense, income, net }
+    }
+    return totals
   })
 
-  // Union of category ids across all intervals + their totals over the full range
+  return { perIntervalTotals }
+}
+
+export function pickCategoryValues({ perIntervalTotals }: AggregatedTotals, type: SeriesSlugSelected): CategoryValues {
   const categoryTotals: Record<CategoryId, number> = {}
-  for (const bucket of perIntervalByCategory) {
-    for (const [catId, trnIds] of Object.entries(bucket)) {
-      const value = getCategoryValue(computeTotalForTrnsIds(trnIds), type)
-      categoryTotals[catId] = (categoryTotals[catId] ?? 0) + value
+  const perIntervalValues = perIntervalTotals.map((totals) => {
+    const values: Record<CategoryId, number> = {}
+    for (const [categoryId, total] of Object.entries(totals)) {
+      values[categoryId] = total[type]
+      categoryTotals[categoryId] = (categoryTotals[categoryId] ?? 0) + total[type]
     }
-  }
+    return values
+  })
 
   // Net income keeps its sign for axis charts, while category priority follows magnitude.
   const orderedCategoryIds = Object.keys(categoryTotals)
     .filter(id => categoryTotals[id] !== 0)
     .sort((a, b) => Math.abs(categoryTotals[b]!) - Math.abs(categoryTotals[a]!))
 
-  return { categoryTotals, orderedCategoryIds, perIntervalByCategory }
+  return { categoryTotals, orderedCategoryIds, perIntervalValues }
 }
 
 export function buildCategoriesSeries({
@@ -167,7 +176,7 @@ export function buildCategoriesSeries({
   type,
 }: BuildSeriesParams): ChartSeries[] {
   const axisChartType = resolveEChartsSeriesType(chartType === 'pie' ? 'bar' : chartType)
-  const { categoryTotals, orderedCategoryIds, perIntervalByCategory } = aggregateCategoryTotals({
+  const { categoryTotals, orderedCategoryIds, perIntervalValues: valuesByInterval } = pickCategoryValues(aggregateCategoryTotals({
     categoriesItems,
     computeTotalForTrnsIds,
     excludedCategoriesIds,
@@ -175,15 +184,7 @@ export function buildCategoriesSeries({
     grouping,
     intervals,
     trnsItems,
-    type,
-  })
-
-  const valuesByInterval = perIntervalByCategory.map(bucket => Object.fromEntries(
-    Object.entries(bucket).map(([categoryId, trnIds]) => [
-      categoryId,
-      getCategoryValue(computeTotalForTrnsIds(trnIds), type),
-    ]),
-  ) as Record<CategoryId, number>)
+  }), type)
   const { highlighted, remainder } = partitionHighlightedItems({
     getMagnitude: item => item.value,
     items: orderedCategoryIds.map(id => ({ id, value: categoryTotals[id] ?? 0 })),
@@ -230,19 +231,12 @@ export function buildCategoriesSeries({
 /**
  * Focused-donut slices, derived from the same aggregation as the bar series.
  */
-export function buildCategoriesPieData(
-  { categoriesItems, computeTotalForTrnsIds, excludedCategoriesIds, filterCategoriesIds, grouping, intervals, trnsItems, type }: AggregateParams,
-): CategoryPieDatum[] {
-  const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
-    categoriesItems,
-    computeTotalForTrnsIds,
-    excludedCategoriesIds,
-    filterCategoriesIds,
-    grouping,
-    intervals,
-    trnsItems,
-    type,
-  })
+export function buildCategoriesPieData({ aggregated, categoriesItems, type }: {
+  aggregated: AggregatedTotals
+  categoriesItems: Categories
+  type: SeriesSlugSelected
+}): CategoryPieDatum[] {
+  const { categoryTotals, orderedCategoryIds } = pickCategoryValues(aggregated, type)
 
   const { highlighted, remainder } = partitionHighlightedItems({
     getMagnitude: item => item.value,

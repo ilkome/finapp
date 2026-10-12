@@ -5,14 +5,13 @@ import type { CategoryId } from '~/components/categories/types'
 import type { FilterProvider } from '~/components/filter/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { SeriesSlugSelected } from '~/components/stat/types'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnType } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { shouldUseContextualMaxRange } from '~/components/stat/report/contextualMaxRange'
 import { getTypesMapping, getUsedWalletIds } from '~/components/stat/utils'
 import { getWalletPeriodTotals, sortWalletIdsByPeriodTotal } from '~/components/stat/walletPeriodTotals'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -48,14 +47,15 @@ export function useStatWalletPeriod(params: Params) {
 
   function byTypes(types: TrnType[]) {
     const items = trnsStore.items ?? {}
-    return periodTrnsIds.value.filter(id => types.includes(items[id]!.type))
+    const typesSet = new Set(types)
+    return periodTrnsIds.value.filter(id => typesSet.has(items[id]!.type))
   }
 
   const walletPeriodTotals = computed(() => getWalletPeriodTotals({
     excludedCategoryIds: focusedCategoriesIds.value || params.filter.categoriesIds.value.length > 0
       ? undefined
       : categoriesStore.excludedFromStatsIds,
-    trnsIds: byTypes([TrnType.Expense, TrnType.Income]),
+    trnsIds: periodTrnsIds.value,
     trnsItems: trnsStore.items ?? {},
   }))
 

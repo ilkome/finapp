@@ -109,3 +109,23 @@ describe('buildStatReportSelection', () => {
     expect([...reads.values()]).toEqual([1, 1, 1])
   })
 })
+
+describe('buildSortedStatReportSelection', () => {
+  it('matches sorting every candidate by date and then filtering by type', () => {
+    const trnsItems = Object.fromEntries(Array.from({ length: 200 }, (_, i) => [
+      `t${i}`,
+      { amount: 1, categoryId: `c${i % 7}`, date: (i * 37) % 50, type: i % 3, walletId: 'w' },
+    ])) as unknown as Trns
+    const sourceIds = [...Object.keys(trnsItems), 'missing']
+    const trnsTypes = [TrnType.Expense, TrnType.Income]
+    const expected = sourceIds
+      .map(id => ({ id, trn: trnsItems[id] }))
+      .sort((a, b) => (b.trn?.date ?? 0) - (a.trn?.date ?? 0))
+      .filter(({ trn }) => trn && trnsTypes.includes(trn.type))
+      .map(({ id, trn }) => ({ categoryId: trn!.categoryId, id }))
+
+    const result = buildSortedStatReportSelection({ sourceIds, trnsItems, trnsTypes })
+
+    expect(result.map(({ categoryId, id }) => ({ categoryId, id }))).toEqual(expected)
+  })
+})
