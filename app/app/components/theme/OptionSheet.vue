@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T extends string | number">
 const props = defineProps<{
   items: { label: string, value: T }[]
+  /** Title of the sheet; the settings card above it names the option. */
   label: string
 }>()
 
@@ -11,9 +12,7 @@ const selected = computed(() => props.items.find(i => i.value === model.value))
 </script>
 
 <template>
-  <div class="flex flex-col items-start gap-1">
-    <span class="text-xs text-muted">{{ props.label }}</span>
-
+  <div class="flex flex-col items-start">
     <BottomSheetOrDropdown
       :title="props.label"
       :isOpen="isOpen"

@@ -58,82 +58,84 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
 </script>
 
 <template>
-  <UiSettingsCard :title="t('theme.title')">
-    <div class="grid gap-3">
-      <!-- Theme mode -->
-      <div class="flex flex-col items-start gap-1">
-        <span class="text-xs text-muted">{{ t('theme.picker.theme') }}</span>
-        <USelectMenu
-          v-model="modePreference"
-          :items="modeItems"
-          valueKey="value"
-          :searchInput="false"
-        >
-          <template #leading>
-            <UIcon :name="selectedModeItem?.icon" class="size-5" />
-          </template>
-          <template #item-leading="{ item }">
-            <UIcon :name="item.icon" class="size-5" />
-          </template>
-        </USelectMenu>
-      </div>
+  <UiSettingsCard :title="t('theme.picker.theme')">
+    <USelectMenu
+      v-model="modePreference"
+      :items="modeItems"
+      valueKey="value"
+      :searchInput="false"
+    >
+      <template #leading>
+        <UIcon :name="selectedModeItem?.icon" class="size-5" />
+      </template>
+      <template #item-leading="{ item }">
+        <UIcon :name="item.icon" class="size-5" />
+      </template>
+    </USelectMenu>
+  </UiSettingsCard>
 
-      <ThemeOptionSheet
-        v-model="primarySelected"
-        :label="t('theme.picker.primary')"
-        :items="primaryItems"
-      >
-        <template #swatch="{ value }">
-          <span
-            v-if="value === BLACK_PRIMARY"
-            class="size-6 rounded-full bg-black dark:bg-white"
-          />
-          <span
-            v-else
-            class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-            :style="{
-              '--color-light': `var(--color-${value}-500)`,
-              '--color-dark': `var(--color-${value}-400)`,
-            }"
-          />
-        </template>
-      </ThemeOptionSheet>
+  <UiSettingsCard :title="t('theme.picker.primary')">
+    <ThemeOptionSheet
+      v-model="primarySelected"
+      :label="t('theme.picker.primary')"
+      :items="primaryItems"
+    >
+      <template #swatch="{ value }">
+        <span
+          v-if="value === BLACK_PRIMARY"
+          class="size-6 rounded-full bg-black dark:bg-white"
+        />
+        <span
+          v-else
+          class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+          :style="{
+            '--color-light': `var(--color-${value}-500)`,
+            '--color-dark': `var(--color-${value}-400)`,
+          }"
+        />
+      </template>
+    </ThemeOptionSheet>
+  </UiSettingsCard>
 
-      <ThemeOptionSheet
-        v-model="neutral"
-        :label="t('theme.picker.neutral')"
-        :items="neutralItems"
-      >
-        <template #swatch="{ value }">
-          <span
-            class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
-            :style="{
-              '--color-light': `var(--color-${swatchPalette(value)}-500)`,
-              '--color-dark': `var(--color-${swatchPalette(value)}-400)`,
-            }"
-          />
-        </template>
-      </ThemeOptionSheet>
+  <UiSettingsCard :title="t('theme.picker.neutral')">
+    <ThemeOptionSheet
+      v-model="neutral"
+      :label="t('theme.picker.neutral')"
+      :items="neutralItems"
+    >
+      <template #swatch="{ value }">
+        <span
+          class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+          :style="{
+            '--color-light': `var(--color-${swatchPalette(value)}-500)`,
+            '--color-dark': `var(--color-${swatchPalette(value)}-400)`,
+          }"
+        />
+      </template>
+    </ThemeOptionSheet>
+  </UiSettingsCard>
 
-      <ThemeOptionSheet
-        v-model="radius"
-        :label="t('theme.picker.radius')"
-        :items="radiusItems"
-      >
-        <template #swatch="{ value }">
-          <span
-            class="size-6 border-2 border-accented bg-elevated"
-            :style="{ borderRadius: `${value}rem` }"
-          />
-        </template>
-      </ThemeOptionSheet>
+  <UiSettingsCard :title="t('theme.picker.radius')">
+    <ThemeOptionSheet
+      v-model="radius"
+      :label="t('theme.picker.radius')"
+      :items="radiusItems"
+    >
+      <template #swatch="{ value }">
+        <span
+          class="size-6 border-2 border-accented bg-elevated"
+          :style="{ borderRadius: `${value}rem` }"
+        />
+      </template>
+    </ThemeOptionSheet>
+  </UiSettingsCard>
 
-      <UiSwitchItem
-        :checkboxValue="isShowMenuLabels"
-        :title="t('settings.menuLabels')"
-        class="border-t border-default pt-3 md:hidden"
-        @toggle="isShowMenuLabels = !isShowMenuLabels"
-      />
-    </div>
+  <!-- Bottom-nav labels only exist on the phone layout. -->
+  <UiSettingsCard class="md:hidden" :title="t('base.menu')">
+    <UiSwitchItem
+      :checkboxValue="isShowMenuLabels"
+      :title="t('settings.menuLabels')"
+      @toggle="isShowMenuLabels = !isShowMenuLabels"
+    />
   </UiSettingsCard>
 </template>
