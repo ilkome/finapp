@@ -1,6 +1,6 @@
 export const EXPANDED_DETENT_EPSILON = 1
-export const FLICK_MIN_DISTANCE = 8
-export const FLICK_VELOCITY_THRESHOLD = 0.6
+const FLICK_MIN_DISTANCE = 8
+const FLICK_VELOCITY_THRESHOLD = 0.6
 export const PERCENT_BASE = 100
 
 export function hasDetents(points: number[] | undefined): points is number[] {

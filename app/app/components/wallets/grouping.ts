@@ -2,20 +2,20 @@ import type { WalletId, WalletItem, WalletItemComputed, WalletsGroupedBy } from 
 
 type WalletsGroupedByExcludedNone = Exclude<WalletsGroupedBy, 'none'>
 
-export type WalletGroup = {
+type WalletGroup = {
   groups?: Record<string, WalletId[]>
   ids: WalletId[]
 }
 export type GroupedWallets = Record<string, WalletGroup>
 
-export type GroupToggleState = {
+type GroupToggleState = {
   groups?: Record<string, boolean>
   show?: boolean
 }
 type ToggleMapByGroup = Record<string, GroupToggleState>
 export type WalletsToggleMap = Partial<Record<WalletsGroupedByExcludedNone, ToggleMapByGroup>>
 
-export type ToggleStatus = {
+type ToggleStatus = {
   isAllOpen: boolean
   isAllOpenInside: boolean
   isAnyOpen: boolean

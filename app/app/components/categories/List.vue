@@ -5,7 +5,7 @@ import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 
-export type CategoriesListExpanded = {
+type CategoriesListExpanded = {
   isExpanded: (id: CategoryId) => boolean
   toggle: (id: CategoryId) => void
 }

@@ -17,8 +17,8 @@ const walletSelectionConditionSchema = z.object({ ids: z.array(z.string().min(1)
 const categorySelectionConditionSchema = z.object({ ids: z.array(z.string().min(1)), kind: z.literal('categorySelection'), mode: entitySelectionModeSchema })
   .refine(condition => condition.mode !== 'selected' || condition.ids.length > 0, { message: 'Selected categories require at least one id', path: ['ids'] })
   .refine(condition => condition.mode === 'selected' || condition.ids.length === 0, { message: 'Only selected categories may contain ids', path: ['ids'] })
-export const ConditionSchema = z.discriminatedUnion('kind', [periodConditionSchema, categoryCountConditionSchema, contentWidthConditionSchema, walletSelectionConditionSchema, categorySelectionConditionSchema])
-export type Condition = z.infer<typeof ConditionSchema>
+const ConditionSchema = z.discriminatedUnion('kind', [periodConditionSchema, categoryCountConditionSchema, contentWidthConditionSchema, walletSelectionConditionSchema, categorySelectionConditionSchema])
+type Condition = z.infer<typeof ConditionSchema>
 export type ConditionGroup = { children: Array<Condition | ConditionGroup>, operator: 'and' | 'or' }
 export const ConditionGroupSchema: z.ZodType<ConditionGroup> = z.lazy(() => z.object({
   // A group starts empty: the editor adds conditions one by one, and an empty group
@@ -42,7 +42,7 @@ function stripToPageConditions(value: unknown): unknown {
       : pageConditionKinds.has((child as Condition).kind)))
   return { ...group, children }
 }
-export const PageConditionGroupSchema = z.preprocess(stripToPageConditions, ConditionGroupSchema)
+const PageConditionGroupSchema = z.preprocess(stripToPageConditions, ConditionGroupSchema)
 
 const blockRuleSchema = z.object({
   condition: ConditionGroupSchema,
@@ -53,7 +53,7 @@ const blockRuleSchema = z.object({
   parameterIds: z.array(z.string()).optional(),
 })
 const blockRulesSchema = z.partialRecord(z.enum(statConfigPanelIds), z.array(blockRuleSchema))
-export const StatViewConfigSchema = z.object({
+const StatViewConfigSchema = z.object({
   base: ConfigSchema,
   blockRules: blockRulesSchema,
 }).superRefine((config, ctx) => {
@@ -85,5 +85,3 @@ export const StatViewSchema = z.object({
   if (view.isAutoEnabled && !view.autoRule)
     ctx.addIssue({ code: 'custom', message: 'Automatic views require a rule', path: ['autoRule'] })
 })
-
-export type StatViewRecord = z.infer<typeof StatViewSchema>

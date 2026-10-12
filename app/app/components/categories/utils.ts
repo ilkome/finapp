@@ -4,10 +4,6 @@ import type { Categories, CategoryId, CategoryItem } from '~/components/categori
 
 const LOAN_CATEGORY_IDS = new Set(['loanInterest', 'loanFine'])
 
-export function isLoanCategoryId(id?: CategoryId | null): boolean {
-  return !!id && LOAN_CATEGORY_IDS.has(id)
-}
-
 /**
  * Reserved ids are synthetic categories injected by the store, never real rows: always root,
  * never deleted, never parents. Only name, color and icon are editable, through per-user
@@ -138,61 +134,12 @@ export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId
   return result
 }
 
-/**
- * All descendant category ids of `categoryId` (children, grandchildren, ...), excluding itself.
- * Aggregates a parent category's subtree. Builds a parent->children map once,
- * then walks it iteratively so a deep or (defensively) cyclic tree can't recurse unbounded.
- */
-export function getDescendantIds(items: Categories, categoryId: CategoryId): CategoryId[] {
-  if (!items)
-    return []
-
-  const childrenMap = new Map<CategoryId, CategoryId[]>()
-  for (const id of Object.keys(items)) {
-    const parentId = items[id]?.parentId
-    if (parentId) {
-      const pid = String(parentId)
-      if (!childrenMap.has(pid))
-        childrenMap.set(pid, [])
-      childrenMap.get(pid)!.push(id)
-    }
-  }
-
-  const result: CategoryId[] = []
-  const seen = new Set<CategoryId>()
-  const stack = [...(childrenMap.get(String(categoryId)) ?? [])]
-  while (stack.length) {
-    const id = stack.pop()!
-    if (seen.has(id))
-      continue
-    seen.add(id)
-    result.push(id)
-    const kids = childrenMap.get(String(id))
-    if (kids)
-      stack.push(...kids)
-  }
-
-  return result
-}
-
-/** `categoryId` plus all its descendants. */
-export function getCategorySubtreeIds(items: Categories, categoryId: CategoryId): CategoryId[] {
-  return [categoryId, ...getDescendantIds(items, categoryId)]
-}
-
-export function getParentCategoryIdOrReturnSame(items: Categories, categoryId: CategoryId): CategoryId {
-  const category = items[categoryId]
-  if (!category || category.parentId === 0)
-    return categoryId
-  return category.parentId ?? categoryId
-}
-
 export function getParentCategoryIdOrUndefined(items: Categories, categoryId: CategoryId): CategoryId | undefined {
   const category = items[categoryId]
   return category?.parentId === 0 ? undefined : category?.parentId
 }
 
-export function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, items: Categories): number {
+function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, items: Categories): number {
   const parentNameA = items[a.parentId]?.name ?? ''
   const parentNameB = items[b.parentId]?.name ?? ''
   return parentNameA.localeCompare(parentNameB) || a.name.localeCompare(b.name)

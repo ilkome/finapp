@@ -49,17 +49,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     applyLocal(view)
     void store.setActive(view.id)
   }
-  function cycle() {
-    const list = store.views
-    if (!list.length)
-      return
-    if (activeId.value === null) {
-      apply(list[0]!)
-      return
-    }
-    const index = list.findIndex(view => view.id === activeId.value)
-    apply(list[index < 0 || index === list.length - 1 ? 0 : index + 1]!)
-  }
+
   async function duplicate(source: StatView) {
     const names = new Set(store.views.map(view => view.name))
     let suffix = 2
@@ -171,5 +161,5 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       appliedId.value = null
   }, { immediate: true })
 
-  return { activeId, activeView, apply, context, cycle, duplicate, remove, saveCurrentConfig, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
+  return { activeId, activeView, apply, context, duplicate, remove, saveCurrentConfig, store, syncPanelAcrossViews, updateBlockRules, updateMetadata }
 }

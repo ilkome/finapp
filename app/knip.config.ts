@@ -1,0 +1,29 @@
+import type { KnipConfig } from 'knip'
+
+export default {
+  entry: [
+    // CLI tools run by hand or from package.json scripts.
+    'scripts/*.mjs',
+    // Deno edge functions deployed by the Supabase CLI.
+    'supabase/functions/*/index.ts',
+    // Loaded by the generated service worker via `pwa.workbox.importScripts` in nuxt.config.
+    'public/sw-push.js',
+    // Lazy loaded by @nuxtjs/i18n from the `i18n.locales[].file` names in nuxt.config.
+    'i18n/locales/*.js',
+    // Resolved by .storybook/main.ts as an auto-import and component dir, not by an import.
+    '.storybook/stubs/*',
+  ],
+  // Supabase CLI is installed globally, not as a package dependency.
+  ignoreBinaries: ['supabase'],
+  ignoreDependencies: [
+    // Icon sets read by @nuxt/icon from `icon.collections` and `i-<set>-*` / `<set>:*` strings.
+    '@iconify-json/hugeicons',
+    '@iconify-json/lucide',
+    '@iconify-json/mdi',
+    // Peer of `nuxi typecheck`.
+    'vue-tsc',
+    // Deno `jsr:` / `npm:` specifiers in supabase/functions, resolved by Deno, not package.json.
+    'jsr',
+    'npm',
+  ],
+} satisfies KnipConfig

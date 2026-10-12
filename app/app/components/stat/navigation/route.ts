@@ -1,7 +1,6 @@
 import type { CategoryId } from '~/components/categories/types'
-import type { StatCategoryNavigationOptions, StatCategoryRouteOptions, StatWalletNavigationOptions, StatWalletRouteOptions } from '~/components/stat/navigation/types'
+import type { StatCategoryNavigationOptions, StatCategoryRouteOptions, StatWalletRouteOptions } from '~/components/stat/navigation/types'
 import type { SeriesSlugSelected } from '~/components/stat/types'
-import type { WalletId } from '~/components/wallets/types'
 
 import { saveStatNavigationSnapshot } from '~/components/stat/navigation/storage'
 
@@ -46,22 +45,6 @@ export function useStatCategoryNavigation(options: StatCategoryNavigationOptions
       isDrilldown: snapshot !== null,
       snapshotId,
       walletsIds: toValue(options.walletsIds),
-    }))
-  }
-}
-
-export function useStatWalletNavigation(options: StatWalletNavigationOptions) {
-  const router = useRouter()
-
-  return function openStatWallet(walletId: WalletId) {
-    const snapshot = toValue(options.snapshot)
-    const snapshotId = snapshot ? saveStatNavigationSnapshot(snapshot) : null
-
-    return router.push(buildStatWalletRoute({
-      categoriesIds: toValue(options.categoriesIds),
-      isDrilldown: snapshot !== null,
-      snapshotId,
-      walletId,
     }))
   }
 }

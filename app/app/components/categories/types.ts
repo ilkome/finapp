@@ -22,10 +22,6 @@ export type CategoryItem = CategoryForm & {
   updatedAt?: number
 }
 
-export type CategoryItemWithId = CategoryItem & {
-  id: CategoryId
-}
-
 export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', CategoryItem>
 
 export type AddCategoryParams = {

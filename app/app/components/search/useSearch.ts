@@ -15,7 +15,7 @@ export type SearchResultItem = CommandPaletteItem & {
 }
 
 export const isSearchOpen = ref(false)
-export const searchTerm = ref('')
+const searchTerm = ref('')
 
 export function useSearch() {
   const { t } = useI18n()

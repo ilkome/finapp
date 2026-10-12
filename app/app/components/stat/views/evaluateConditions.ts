@@ -30,7 +30,7 @@ function comparePeriod(range: StatViewContext['range'], unit: 'day' | 'week' | '
   return add(start, Math.max(0, value - 1)).getTime() <= end.getTime()
 }
 
-export function evaluateCondition(condition: Condition, context: StatViewContext): boolean {
+function evaluateCondition(condition: Condition, context: StatViewContext): boolean {
   if (condition.kind === 'walletSelection') {
     if (condition.mode === 'all')
       return true
@@ -75,7 +75,7 @@ export function evaluateConditionGroup(group: ConditionGroup, context: StatViewC
 
 // Auto rules bind a view to a page, so they must not see filters, the period or the layout -
 // those change while the user stays put and would flip the view under them.
-export function pageScopedContext(context: StatViewContext): StatViewContext {
+function pageScopedContext(context: StatViewContext): StatViewContext {
   return {
     ...context,
     selectedCategoryIds: context.pageCategoryId ? [context.pageCategoryId] : [],

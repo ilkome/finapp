@@ -7,7 +7,7 @@ import type { StatConfigPanelId } from '~/components/stat/types'
 export type StatViewScope = 'dashboard'
 export type ConditionComparator = '<' | '<=' | '=' | '!=' | '>=' | '>'
 
-export type PeriodCondition = {
+type PeriodCondition = {
   comparator: ConditionComparator
   kind: 'period'
   unit: Period
@@ -21,7 +21,7 @@ export type CategoryCountCondition = {
   value: number
 }
 
-export type ContentWidthCondition = {
+type ContentWidthCondition = {
   comparator: ConditionComparator
   kind: 'contentWidth'
   unit: 'px'

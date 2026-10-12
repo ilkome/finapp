@@ -1,6 +1,6 @@
 import type { CrudEntry } from '@powersync/web'
 
-export type DivergencePlan = {
+type DivergencePlan = {
   /** True when any non-PUT op diverged; only a full re-sync can restore those. */
   needsReload: boolean
   /** Local rows to delete - rejected inserts (PUT) the server never accepted. */

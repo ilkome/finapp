@@ -1,4 +1,4 @@
-export type OfflineState = 'preparing' | 'ready' | 'unavailable' | 'updateReady' | 'updating'
+type OfflineState = 'preparing' | 'ready' | 'unavailable' | 'updateReady' | 'updating'
 
 // Module-level: one subscription for every menu that renders the status line.
 const state = ref<OfflineState>('unavailable')

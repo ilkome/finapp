@@ -2,7 +2,7 @@ import type { BrowserContext, Locator, Page } from '@playwright/test'
 
 import { expect } from '@playwright/test'
 
-export const DEMO_SEED = 42
+const DEMO_SEED = 42
 // Mid-month weekday, so "this month" / "this week" periods have data on both sides.
 export const DEMO_NOW = new Date('2026-09-11T10:00:00')
 

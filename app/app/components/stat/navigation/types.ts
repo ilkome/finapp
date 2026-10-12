@@ -21,11 +21,6 @@ export type StatCategoryNavigationOptions = {
   walletsIds: MaybeRefOrGetter<readonly WalletId[]>
 }
 
-export type StatWalletNavigationOptions = {
-  categoriesIds: MaybeRefOrGetter<readonly CategoryId[]>
-  snapshot: MaybeRefOrGetter<StatNavigationSnapshotInput | null>
-}
-
 export type StatCategoryRouteOptions = {
   categoryId: CategoryId
   isDrilldown: boolean
