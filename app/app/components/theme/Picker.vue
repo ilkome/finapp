@@ -109,7 +109,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
     >
       <template #swatch="{ value }">
         <span
-          class="size-6 border-2 border-accented bg-elevated"
+          class="size-6 border-2 border-primary bg-primary/15"
           :style="{ borderRadius: `${value}rem` }"
         />
       </template>
