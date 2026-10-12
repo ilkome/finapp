@@ -4,7 +4,7 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 
-import { getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
+import { calendarNavButton, getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
@@ -31,6 +31,10 @@ function onUpdate(date: CalendarDate) {
   <UCalendar
     v-model="date"
     :maxValue="maxDate"
+    :prevMonth="calendarNavButton"
+    :nextMonth="calendarNavButton"
+    :prevYear="calendarNavButton"
+    :nextYear="calendarNavButton"
     class="p-3"
     @update:modelValue="onUpdate"
   />

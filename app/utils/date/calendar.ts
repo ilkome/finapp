@@ -15,3 +15,6 @@ export function parseUCalendarDate(date: number) {
 export function getUCalendarCivilDate(date: CalendarDate) {
   return toCivilDayEpoch(date.year, date.month - 1, date.day)
 }
+
+/** Month/year arrows of every UCalendar: a filled button, so they read as controls (Nuxt UI prevMonth/nextMonth/prevYear/nextYear props). */
+export const calendarNavButton = { color: 'neutral', variant: 'soft' } as const

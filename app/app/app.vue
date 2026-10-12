@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ToasterProps } from '@nuxt/ui'
 
+import { en, ru } from '@nuxt/ui/locale'
 import { DrawerProvider } from 'reka-ui'
 
 import { useThemeOptions } from '~/components/theme/useThemeOptions'
@@ -8,7 +9,9 @@ import { useGuard } from '~/components/user/useGuard'
 
 const colorMode = useColorMode()
 const { style } = useThemeOptions()
-const { t } = useI18n()
+const { locale, t } = useI18n()
+// Nuxt UI components (UCalendar month and weekday names) follow the app language.
+const uiLocale = computed(() => locale.value === 'ru' ? ru : en)
 const isLaptop = useIsLaptop()
 const toaster = computed<ToasterProps>(() => ({
   expand: false,
@@ -57,7 +60,7 @@ useGuard()
 <template>
   <!-- A drawer's scroll lock takes the scrollbar away: the body is padded by its width and
        `--scrollbar-width` lets fixed layers stop short of it, so nothing shifts sideways. -->
-  <UApp :toaster="toaster" :scrollBody="{ padding: true }">
+  <UApp :locale="uiLocale" :toaster="toaster" :scrollBody="{ padding: true }">
     <NuxtLoadingIndicator :height="2" color="var(--ui-primary)" />
     <NuxtPwaManifest />
 

@@ -4,7 +4,7 @@
  */
 import type { CalendarDate } from '@internationalized/date'
 
-import { getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
+import { calendarNavButton, getUCalendarCivilDate, parseUCalendarDate } from '~~/utils/date/calendar'
 import { formatDateWithOptionalYear } from '~~/utils/date/civil'
 
 const props = defineProps<{
@@ -66,6 +66,10 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
         <!-- @vue-ignore -->
         <UCalendar
           :modelValue="calendarDate"
+          :prevMonth="calendarNavButton"
+          :nextMonth="calendarNavButton"
+          :prevYear="calendarNavButton"
+          :nextYear="calendarNavButton"
           class="px-2 pt-0 pb-2"
           @update:modelValue="(d: CalendarDate) => onPick(d, close)"
         />

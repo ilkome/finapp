@@ -17,7 +17,7 @@ const label = computed(() => statDateRangeLabel({
     v-model:open="statDate.modal.value.dateSelector"
     :title="t('dates.select')"
     popoverBodyClass="md:pb-3"
-    popoverContentClass="md:w-96 md:max-w-[calc(100vw-1rem)]"
+    popoverContentClass="md:w-max md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
     class="flex grow-0 gap-1"
     isShowCloseBtn
