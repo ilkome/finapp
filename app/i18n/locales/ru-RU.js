@@ -525,10 +525,8 @@ export default {
     },
     sidebar: {
       auto: 'автоматически',
-      categories: 'Категории в сайдбаре',
       selected: 'выбрано {count}',
       title: 'Сайдбар',
-      wallets: 'Кошельки в сайдбаре',
     },
     title: 'Настройки',
   },

@@ -123,12 +123,10 @@ function onGenerateDemoData() {
 
           <ThemePicker v-else-if="activeSection === 'appearance'" />
 
-          <UiSettingsCard v-else-if="activeSection === 'sidebar'" :title="t('settings.sidebar.title')">
-            <div class="grid gap-4">
-              <LayoutSidebarListPicker kind="wallet" />
-              <LayoutSidebarListPicker kind="category" />
-            </div>
-          </UiSettingsCard>
+          <div v-else-if="activeSection === 'sidebar'" class="grid gap-4">
+            <LayoutSidebarListPicker kind="wallet" />
+            <LayoutSidebarListPicker kind="category" />
+          </div>
 
           <template v-else-if="activeSection === 'account'">
             <!-- User -->

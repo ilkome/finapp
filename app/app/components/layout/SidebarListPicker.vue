@@ -62,7 +62,7 @@ const snapPoints = useSheetSnapPoints()
   <div class="grid gap-2">
     <UiSwitchItem
       :checkboxValue="isShown"
-      :title="t(isWallet ? 'settings.sidebar.wallets' : 'settings.sidebar.categories')"
+      :title="t(isWallet ? 'wallets.name' : 'categories.name')"
       trailing
       @toggle="isShown = !isShown"
     />

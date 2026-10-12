@@ -525,10 +525,8 @@ export default {
     },
     sidebar: {
       auto: 'Automatic',
-      categories: 'Categories in sidebar',
       selected: '{count} selected',
       title: 'Sidebar',
-      wallets: 'Wallets in sidebar',
     },
     title: 'Settings',
   },
