@@ -17,8 +17,7 @@ const LINKS = [
 const { locale, t } = useI18n()
 const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
-const { generateDemoData } = useDemo()
-const { isDemo } = useDemo()
+const { generateDemoData, isDemo } = useDemo()
 const features = useFeatures()
 const isShowBaseCurrencyModal = ref(false)
 
@@ -27,12 +26,13 @@ useSeoMeta({
   title: t('settings.title'),
 })
 
-const confirmRemoveUserData = ref(false)
+const confirm = useConfirm()
 const route = useRoute()
 const router = useRouter()
 
-const sections = ['general', 'appearance', 'account', 'beta', 'about'] as const
-type Section = typeof sections[number]
+type Section = 'general' | 'appearance' | 'account' | 'beta' | 'about'
+// Beta disappears with the last flag instead of showing an empty card.
+const sections: Section[] = ['general', 'appearance', 'account', ...(featureIds.length ? ['beta' as const] : []), 'about']
 
 // In the query, so a reload or a shared link reopens the same section.
 const activeSection = computed<Section>({
@@ -40,8 +40,9 @@ const activeSection = computed<Section>({
   set: tab => router.replace({ query: { ...route.query, tab } }),
 })
 
-function removeAllUserData() {
-  confirmRemoveUserData.value = false
+async function removeAllUserData() {
+  if (!await confirm.ask({ description: t('alerts.willDeleteEverything'), title: t('settings.deleteButton') }))
+    return
   userStore.removeAllUserData()
   showSuccessToast('alerts.removedUserData')
   router.replace('/dashboard')
@@ -109,9 +110,6 @@ function onGenerateDemoData() {
 
             <!-- Notifications -->
             <NotificationsSettings />
-
-            <!-- Extension point for layers (e.g. premium Telegram card) -->
-            <ExtensionSlot name="settings" />
           </template>
 
           <ThemePicker v-else-if="activeSection === 'appearance'" />
@@ -151,7 +149,7 @@ function onGenerateDemoData() {
                   variant="soft"
                   color="error"
                   size="md"
-                  @click="confirmRemoveUserData = true"
+                  @click="removeAllUserData"
                 >
                   {{ t('settings.deleteButton') }}
                 </UButton>
@@ -170,7 +168,7 @@ function onGenerateDemoData() {
               :key="id"
               :checkboxValue="features[id]"
               :title="t(`settings.features.${id}`)"
-              @click="features[id] = !features[id]"
+              @toggle="features[id] = !features[id]"
             />
           </UiSettingsCard>
 
@@ -200,14 +198,6 @@ function onGenerateDemoData() {
         </div>
       </div>
     </div>
-
-    <LayoutConfirmModal
-      v-if="confirmRemoveUserData"
-      :title="t('settings.deleteButton')"
-      :description="t('alerts.willDeleteEverything')"
-      @closed="confirmRemoveUserData = false"
-      @confirm="removeAllUserData"
-    />
 
     <CurrenciesModal
       v-if="isShowBaseCurrencyModal"

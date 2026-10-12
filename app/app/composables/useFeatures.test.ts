@@ -1,18 +1,26 @@
 // @vitest-environment happy-dom
-import { beforeEach, expect, it } from 'vitest'
+import { beforeEach, expect, it, vi } from 'vitest'
 
-import { useFeatures } from './useFeatures'
+// The store is a module singleton, so each test loads a fresh module after setting storage.
+async function useFeatures() {
+  return (await import('./useFeatures')).useFeatures()
+}
 
-beforeEach(() => localStorage.clear())
-
-it('starts with every feature off', () => {
-  expect(useFeatures().value.emailSignIn).toBe(false)
+beforeEach(() => {
+  localStorage.clear()
+  vi.resetModules()
 })
 
-it('keeps a stored choice and backfills flags missing from it', () => {
-  localStorage.setItem('finapp.features', JSON.stringify({ emailSignIn: true }))
-  expect(useFeatures().value.emailSignIn).toBe(true)
+it('starts with every feature off', async () => {
+  expect((await useFeatures()).value).toEqual({ emailSignIn: false, loans: false })
+})
 
-  localStorage.setItem('finapp.features', '{}')
-  expect(useFeatures().value.emailSignIn).toBe(false)
+it('keeps a stored choice and backfills flags missing from it', async () => {
+  localStorage.setItem('finapp.features', JSON.stringify({ emailSignIn: true }))
+  expect((await useFeatures()).value).toEqual({ emailSignIn: true, loans: false })
+})
+
+it('shares one ref between calls', async () => {
+  const { useFeatures } = await import('./useFeatures')
+  expect(useFeatures()).toBe(useFeatures())
 })
