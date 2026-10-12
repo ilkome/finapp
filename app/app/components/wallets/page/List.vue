@@ -129,7 +129,7 @@ function cycleGrouping() {
 <template>
   <UiPage>
     <UiHeader actionsAfterTitle>
-      <UiHeaderTitle class="mr-4 lg:-mt-8">
+      <UiHeaderTitle>
         {{ t('wallets.name') }}
       </UiHeaderTitle>
 
