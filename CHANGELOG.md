@@ -23,11 +23,11 @@
 
 ## 💳 Loans (beta)
 
-- Credit cards and loans: schedules, payments with interest, portfolio, payoff recommendation and what-if. See the credit and loans reference in the docs.
+- Credit cards and loans: schedules, payments with interest, portfolio, payoff recommendation and what-if. Turn on in Settings → Beta → Loans and credit cards. See the credit and loans reference in the docs.
 
 ## ✉️ Email sign-in (beta)
 
-- Sign in with a 6-digit code or a magic link from one email; the code works in any browser, including the installed app.
+- Sign in with a 6-digit code or a magic link from one email; the code works in any browser, including the installed app. Turn on in Settings → Beta → Sign in with an email code.
 
 ## ⚙️ Settings
 
@@ -35,7 +35,7 @@
 - Appearance: theme, primary and background colors and corner radius are picked right on the page and preview live.
 - Language picked right on the page.
 - Sidebar tab: turn wallets and categories on separately, pick which ones show and drag them into order, or leave the automatic choice.
-- Beta tab for features still in development.
+- Beta tab: features still in development, each turned on per device and off by default.
 - Links to GitHub and the docs.
 
 ## ✨ New
