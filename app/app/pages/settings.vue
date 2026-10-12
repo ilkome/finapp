@@ -70,7 +70,11 @@ function onGenerateDemoData() {
     </UiHeader>
 
     <div class="page-wrapper">
-      <div class="grid gap-4 px-2 pt-2 pb-12 @2xl/page:grid-cols-[12rem_minmax(0,32rem)] @2xl/page:gap-8">
+      <!-- Color swatches use the full width; other sections keep a readable column. -->
+      <div
+        :class="activeSection === 'appearance' ? '@2xl/page:grid-cols-[12rem_minmax(0,1fr)]' : '@2xl/page:grid-cols-[12rem_minmax(0,32rem)]'"
+        class="grid gap-4 px-2 pt-2 pb-12 @2xl/page:gap-8"
+      >
         <nav
           :aria-label="t('settings.title')"
           class="-mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 gap-1 overflow-x-auto px-2 @2xl/page:mx-0 @2xl/page:flex-col @2xl/page:self-start @2xl/page:overflow-visible @2xl/page:px-0"
