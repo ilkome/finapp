@@ -55,7 +55,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
       <div class="flex items-center gap-2">
         <div
           v-if="props.isSort"
-          class="sortHandle -my-1.5 flex-center cursor-grab self-stretch rounded-md px-1 text-muted group-hover:bg-accented active:cursor-grabbing"
+          class="sortHandle -my-1.5 flex items-center justify-center cursor-grab self-stretch rounded-md px-1 text-muted group-hover:bg-accented active:cursor-grabbing"
         >
           <Icon name="lucide:grip-vertical" size="20" />
         </div>

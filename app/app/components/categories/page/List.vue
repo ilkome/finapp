@@ -148,7 +148,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <!-- Empty -->
     <div
       v-if="categoriesStore.categoriesRootIds.length === 0"
-      class="flex-center grow flex-col"
+      class="flex items-center justify-center grow flex-col"
     >
       <UiTitleSection class="pb-4">
         {{ t('categories.new') }}

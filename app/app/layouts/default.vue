@@ -98,7 +98,7 @@ defineShortcuts({
   >
     <div
       v-if="bootState === 'error'"
-      class="flex-center h-dvh flex-col gap-6 px-4 text-center"
+      class="flex items-center justify-center h-dvh flex-col gap-6 px-4 text-center"
     >
       <UiLogo size="lg" />
       <p class="text-muted">

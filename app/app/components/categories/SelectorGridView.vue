@@ -51,7 +51,7 @@ const itemClasses = 'rounded-md bg-elevated/30'
       :aria-label="t('categories.new')"
       @click="emit('new')"
     >
-      <div class="flex-center size-8 shrink-0 rounded-full bg-elevated/60 text-icon-primary">
+      <div class="flex items-center justify-center size-8 shrink-0 rounded-full bg-elevated/60 text-icon-primary">
         <Icon name="lucide:plus" size="18" />
       </div>
       <span class="text-sm text-muted">{{ t('categories.new') }}</span>

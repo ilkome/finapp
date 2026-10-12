@@ -15,10 +15,6 @@
   }
 }
 
-@utility flex-center {
-  @apply flex items-center justify-center;
-}
-
 @utility theme-rounded-control {
   /* 0.5rem maps to half of the tallest shared 42px control. */
   border-radius: calc(var(--ui-radius) * 2.625);

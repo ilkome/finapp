@@ -167,7 +167,7 @@ async function handleDeleteConfirm(id: TrnId) {
           :items="getTransactionContextMenuItems(rawItem as SearchResultItem)"
         >
           <div class="flex w-full items-start gap-3 text-start">
-            <div class="flex-center min-w-8">
+            <div class="flex items-center justify-center min-w-8">
               <UiIconBase
                 :name="getTrn(rawItem as SearchResultItem)?.category?.icon ?? ''"
                 :color="getTrn(rawItem as SearchResultItem)?.category?.color"

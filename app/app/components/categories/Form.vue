@@ -363,7 +363,7 @@ async function onSave() {
       </div>
     </div>
 
-    <div class="flex-center">
+    <div class="flex items-center justify-center">
       <UiButtonAccent
         class="sm:max-w-xs"
         @click="onSave"
@@ -396,7 +396,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="flex-center p-2">
+      <div class="flex items-center justify-center p-2">
         <UiButtonAccent
           @click="close"
         >
@@ -446,7 +446,7 @@ async function onSave() {
           <div
             v-for="icon in iconGroup"
             :key="icon"
-            :class="cn('flex-center size-10 rounded-full border-2 border-transparent text-icon-primary',
+            :class="cn('flex items-center justify-center size-10 rounded-full border-2 border-transparent text-icon-primary',
                        icon === props.categoryForm.icon && 'border-primary',
             )"
             :style="{ background: props.categoryForm.color }"

@@ -98,7 +98,7 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
         :data-stat-chart-tooltip-icon="isDev ? row.icon : undefined"
         :data-stat-chart-tooltip-value="isDev ? row.value : undefined"
       >
-        <div class="flex-center min-w-8">
+        <div class="flex items-center justify-center min-w-8">
           <UiIconBase
             v-if="row.icon && isRoundCategoryIcon"
             :color="row.color"
@@ -112,7 +112,7 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
             :name="row.icon"
             class="w-6!"
           />
-          <div v-else class="flex-center size-7 shrink-0">
+          <div v-else class="flex items-center justify-center size-7 shrink-0">
             <div class="size-2.5 rounded-full" :style="{ background: row.color }" />
           </div>
         </div>

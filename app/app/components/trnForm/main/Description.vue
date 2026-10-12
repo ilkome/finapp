@@ -64,7 +64,7 @@ function onSave(close: () => void) {
           </div>
         </div>
 
-        <div class="flex-center px-2 pb-4 md:pb-0">
+        <div class="flex items-center justify-center px-2 pb-4 md:pb-0">
           <UiButtonAccent
             @click="onSave(close)"
           >

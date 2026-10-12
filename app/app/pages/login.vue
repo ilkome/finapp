@@ -186,7 +186,7 @@ watch(
     class="mx-auto grid size-full h-dvh max-w-xl grid-rows-[auto_1fr_auto] px-2 py-3"
   >
     <div class="flex items-center justify-end">
-      <div class="w-fit max-md:fixed max-md:top-5 max-md:right-5 max-md:z-30">
+      <div class="w-fit max-md:fixed max-md:right-5 max-md:bottom-5 max-md:z-30">
         <LayoutHeaderMenu />
       </div>
     </div>
@@ -302,7 +302,7 @@ watch(
       </div>
     </div>
 
-    <div class="flex-co flex-center pl-2">
+    <div class="flex flex-col items-center justify-center pl-2">
       <AppCopyright />
     </div>
   </div>

@@ -194,7 +194,7 @@ async function onSave() {
       </div>
     </div>
 
-    <div class="flex-center">
+    <div class="flex items-center justify-center">
       <UiButtonAccent
         class="sm:max-w-xs"
         @click="onSave"
@@ -234,7 +234,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="flex-center py-2">
+      <div class="flex items-center justify-center py-2">
         <UiButtonAccent
           @click="close"
         >

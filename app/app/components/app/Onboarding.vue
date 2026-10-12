@@ -27,7 +27,7 @@ const introText = computed(() => {
       </div>
     </div>
 
-    <div class="flex-center flex-col gap-6 px-4 text-center">
+    <div class="flex items-center justify-center flex-col gap-6 px-4 text-center">
       <UiLogo size="lg" />
 
       <div class="flex flex-col gap-2">
