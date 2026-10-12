@@ -3,7 +3,7 @@
   "type": "module",
   "version": "9.0.0-beta.2",
   "private": true,
-  "packageManager": "pnpm@11.1.2",
+  "packageManager": "pnpm@12.11.2",
   "engines": {
     "node": ">=24.15.0"
   },
@@ -43,7 +43,7 @@
     "@pinia/nuxt": "^1.0.2",
     "@powersync/common": "^2.3.0",
     "@powersync/web": "^2.4.1",
-    "@supabase/supabase-js": "^2.117.1",
+    "@supabase/supabase-js": "^2.117.3",
     "@tanstack/vue-virtual": "^3.13.39",
     "@vue/devtools-api": "^8.2.1",
     "echarts": "^6.1.0",
