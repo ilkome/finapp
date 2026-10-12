@@ -1,7 +1,5 @@
 import type { LocationQuery } from 'vue-router'
 
-import { z } from 'zod'
-
 import type { Categories } from '~/components/categories/types'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnItem, TrnsViewType } from '~/components/trns/types'
@@ -23,7 +21,7 @@ export type FilterExtras = {
   type: TrnsViewType
 }
 
-export type ExtrasChip = {
+type ExtrasChip = {
   icon: string
   key: 'amount' | 'desc' | 'descText' | 'search' | 'type'
   label: string
@@ -39,15 +37,6 @@ export type ExtrasChipLabels = {
   type: string
   types: Record<Exclude<TrnsViewType, 'all'>, string>
 }
-
-export const filterExtrasSchema = z.object({
-  amountMax: z.number().nullable(),
-  amountMin: z.number().nullable(),
-  desc: z.enum(['all', 'with', 'without']),
-  descText: z.string(),
-  search: z.string(),
-  type: z.enum(trnsViewTypes),
-}) satisfies z.ZodType<FilterExtras>
 
 export const defaultFilterExtras: FilterExtras = {
   amountMax: null,
@@ -162,10 +151,10 @@ export function extrasChips(extras: FilterExtras, currency: CurrencyCode, labels
   return chips
 }
 
-export type ExtrasMatcherContext = {
-  baseCurrency?: CurrencyCode
+type ExtrasMatcherContext = {
+  baseCurrency: CurrencyCode
   categories?: Categories | null
-  rates?: Rates
+  rates: Rates
   wallets: Wallets | null
 }
 
@@ -187,7 +176,7 @@ export function createExtrasMatcher(extras: FilterExtras, ctx: ExtrasMatcherCont
     const currencyCode = ctx.wallets?.[walletId]?.currency
     if (!currencyCode)
       return amount
-    return getAmountInRate({ amount, baseCurrencyCode: ctx.baseCurrency, currencyCode, rates: ctx.rates })
+    return getAmountInRate(amount, currencyCode, ctx.baseCurrency, ctx.rates)
   }
 
   function searchTargets(trn: TrnItem, description: string): string[] {

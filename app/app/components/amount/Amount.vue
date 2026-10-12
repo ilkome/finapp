@@ -2,10 +2,10 @@
 import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/amount/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 
-import { useAmount } from '~/components/amount/useAmount'
 import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
-export type AmountProps = {
+type AmountProps = {
   align?: 'left' | 'center' | 'right'
   amount: number
   colorize?: MoneyTypeSlug
@@ -37,7 +37,7 @@ const emit = defineEmits<{
   click: [e: Event]
 }>()
 
-const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
+const currenciesStore = useCurrenciesStore()
 </script>
 
 <template>
@@ -74,13 +74,13 @@ const { baseCurrencyCode, getAmountInBaseRate } = useAmount()
       />
 
       <AmountItem
-        v-if="isShowBaseRate && currencyCode !== baseCurrencyCode"
+        v-if="isShowBaseRate && currencyCode !== currenciesStore.base"
         :align="align"
-        :amount="getAmountInBaseRate({ amount, currencyCode })"
+        :amount="formatAmount(currenciesStore.toBase(amount, currencyCode), currenciesStore.base)"
         :isShowMinus="isShowMinus"
         :isShowPlus="isShowPlus"
         :isShowSymbol="isShowSymbol"
-        :symbol="getCurrencySymbol(baseCurrencyCode)"
+        :symbol="getCurrencySymbol(currenciesStore.base)"
         class="text-xs opacity-70"
       />
     </template>

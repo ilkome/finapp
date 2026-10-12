@@ -3,16 +3,36 @@ import { ratesBasedOnUsd as rates } from '~~/mocks/rates'
 import { trnsItems } from '~~/mocks/trns'
 import { walletsItems } from '~~/mocks/wallets'
 
+import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { addTotals, getTotal, getWalletsTotals } from '~/components/amount/getTotal'
+import { createToBase, getAmountInRate, getTotal, getWalletsTotals, MissingRateError } from '~/components/amount/getTotal'
 import { TrnType } from '~/components/trns/types'
+
+function toBaseFixture(rates: Rates, base: CurrencyCode) {
+  return (amount: number, currency: CurrencyCode) => getAmountInRate(amount, currency, base, rates)
+}
+
+describe('getAmountInRate', () => {
+  it('keeps the amount when currency is the base', () => {
+    expect(getAmountInRate(40, 'USD', 'USD', rates)).toEqual(40)
+  })
+
+  it('converts RUB to USD base', () => {
+    expect(getAmountInRate(70, 'RUB', 'USD', rates)).toEqual(1.0810810810810811)
+  })
+
+  it('converts RUB to EUR base', () => {
+    expect(getAmountInRate(70, 'RUB', 'EUR', rates)).toEqual(1.0383135135135135)
+  })
+})
 
 describe('total of Transactions', () => {
   it('correct empty result and correct total structure', () => {
     const trnsIds: TrnId[] = []
 
     const total = getTotal({
+      toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
       walletsItems,
@@ -24,6 +44,7 @@ describe('total of Transactions', () => {
       expenseTransfers: 0,
       income: 0,
       incomeTransfers: 0,
+      missingRates: [],
       net: 0,
       sumTransfers: 0,
     })
@@ -31,11 +52,10 @@ describe('total of Transactions', () => {
 
   it('total in RUB Wallet converted to USD', () => {
     const trnsIds = ['transactionIncomeWalletOneRUB700']
-    const baseCurrencyCode = 'USD'
+    const toBase = toBaseFixture(rates, 'USD')
 
     const total = getTotal({
-      baseCurrencyCode,
-      rates,
+      toBase,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -51,11 +71,10 @@ describe('total of Transactions', () => {
 
   it('total in RUB Wallet converted to EUR', () => {
     const trnsIds = ['transactionIncomeWalletOneRUB700']
-    const baseCurrencyCode = 'EUR'
+    const toBase = toBaseFixture(rates, 'EUR')
 
     const total = getTotal({
-      baseCurrencyCode,
-      rates,
+      toBase,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -74,11 +93,10 @@ describe('total of Transactions', () => {
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
     ]
-    const baseCurrencyCode = 'USD'
+    const toBase = toBaseFixture(rates, 'USD')
 
     const total = getTotal({
-      baseCurrencyCode,
-      rates,
+      toBase,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -97,11 +115,10 @@ describe('total of Transactions', () => {
       'transactionIncomeWalletOneRUB700',
       'transactionExpenseWalletCashUSD400',
     ]
-    const baseCurrencyCode = 'EUR'
+    const toBase = toBaseFixture(rates, 'EUR')
 
     const total = getTotal({
-      baseCurrencyCode,
-      rates,
+      toBase,
       trnsIds,
       trnsItems,
       walletsItems,
@@ -115,33 +132,6 @@ describe('total of Transactions', () => {
     expect(total.sumTransfers).toEqual(0)
   })
 
-  it('total in Wallet Cash USD with Transfers and adjustments', () => {
-    const walletsIds = ['walletCashUSD']
-    const trnsIds = [
-      'transactionIncomeWalletCashUSD1000',
-      'transactionExpenseWalletCashUSD400',
-      'transferExpenseWalletCashUSD10IncomeWalletRUB700',
-      'transferExpenseWalletCreditUSD40IncomeWalletCashUSD40',
-      'adjustmentIncomeWalletCashUSD30',
-      'adjustmentExpenseWalletCashUSD30',
-    ]
-
-    const total = getTotal({
-      trnsIds,
-      trnsItems,
-      walletsIds,
-      walletsItems,
-    })
-
-    expect(total.income).toEqual(1000)
-    expect(total.expense).toEqual(400)
-    expect(total.net).toEqual(600)
-    expect(total.incomeTransfers).toEqual(40)
-    expect(total.expenseTransfers).toEqual(10)
-    expect(total.sumTransfers).toEqual(30)
-    expect(total.adjustment).toEqual(0)
-  })
-
   it('adjustment income adds to adjustment, expense subtracts', () => {
     const trnsIds = [
       'adjustmentIncomeWalletCashUSD200',
@@ -149,6 +139,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
       walletsItems,
@@ -168,6 +159,7 @@ describe('total of Transactions', () => {
 
     const total = getTotal({
       excludedCategoriesIds: new Set(['expense']),
+      toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
       walletsItems,
@@ -186,6 +178,7 @@ describe('total of Transactions', () => {
 
     const total = getTotal({
       excludedCategoriesIds: new Set(['transfer', 'adjustment']),
+      toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
       walletsItems,
@@ -205,6 +198,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
       walletsItems,
@@ -216,34 +210,7 @@ describe('total of Transactions', () => {
     expect(total.expenseTransfers).toEqual(50)
   })
 
-  it('single-leg transfer counts only when its wallet is in the walletsIds filter', () => {
-    const trnsIds = [
-      'singleLegTransferExpenseWalletCashUSD50',
-      'singleLegTransferIncomeWalletCashUSD60',
-    ]
-
-    const included = getTotal({
-      trnsIds,
-      trnsItems,
-      walletsIds: ['walletCashUSD'],
-      walletsItems,
-    })
-
-    expect(included.incomeTransfers).toEqual(60)
-    expect(included.expenseTransfers).toEqual(50)
-
-    const excluded = getTotal({
-      trnsIds,
-      trnsItems,
-      walletsIds: ['walletRUB'],
-      walletsItems,
-    })
-
-    expect(excluded.incomeTransfers).toEqual(0)
-    expect(excluded.expenseTransfers).toEqual(0)
-  })
-
-  it('total of Transfers when no Wallets filter provided', () => {
+  it('transfers count both legs', () => {
     const trnsIds = [
       'transactionIncomeWalletCashUSD1000',
       'transactionExpenseWalletCashUSD400',
@@ -251,6 +218,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
       walletsItems,
@@ -265,59 +233,55 @@ describe('total of Transactions', () => {
   })
 })
 
-describe('addTotals', () => {
-  it('sums every field of two totals', () => {
-    const a = {
-      adjustment: 1,
-      expense: 2,
-      expenseTransfers: 3,
-      income: 4,
-      incomeTransfers: 5,
-      net: 6,
-      sumTransfers: 7,
-    }
-    const b = {
-      adjustment: 10,
-      expense: 20,
-      expenseTransfers: 30,
-      income: 40,
-      incomeTransfers: 50,
-      net: 60,
-      sumTransfers: 70,
-    }
+describe('createToBase', () => {
+  const prod = (rates: Rates, missing: string[] = []) =>
+    createToBase(() => 'USD', () => rates, { isDev: false, onMissing: c => missing.push(c) })
 
-    expect(addTotals(a, b)).toEqual({
-      adjustment: 11,
-      expense: 22,
-      expenseTransfers: 33,
-      income: 44,
-      incomeTransfers: 55,
-      net: 66,
-      sumTransfers: 77,
-    })
+  it('converts at face value while rates are not loaded, reporting nothing', () => {
+    const missing: string[] = []
+    expect(prod({}, missing)(70, 'RUB')).toBe(70)
+    expect(createToBase(() => 'USD', () => ({}), { isDev: true, onMissing: () => {} })(70, 'RUB')).toBe(70)
+    expect(missing).toEqual([])
   })
 
-  it('is a no-op when merging with a zero total', () => {
-    const zero = {
-      adjustment: 0,
-      expense: 0,
-      expenseTransfers: 0,
-      income: 0,
-      incomeTransfers: 0,
-      net: 0,
-      sumTransfers: 0,
-    }
-    const a = {
-      adjustment: 1,
-      expense: 2,
-      expenseTransfers: 3,
-      income: 4,
-      incomeTransfers: 5,
-      net: 6,
-      sumTransfers: 7,
-    }
+  it('throws MissingRateError in dev when loaded rates lack the currency', () => {
+    const toBase = createToBase(() => 'USD', () => rates, { isDev: true, onMissing: () => {} })
+    expect(() => toBase(1, 'GBP')).toThrow(MissingRateError)
+  })
 
-    expect(addTotals(a, zero)).toEqual(a)
+  it('returns undefined in prod and reports the currency, including a missing base', () => {
+    const missing: string[] = []
+    expect(prod(rates, missing)(1, 'GBP')).toBeUndefined()
+    expect(createToBase(() => 'GBP', () => rates, { isDev: false, onMissing: c => missing.push(c) })(1, 'USD')).toBeUndefined()
+    expect(missing).toEqual(['GBP', 'GBP'])
+  })
+
+  it('converts normally when the rate is present', () => {
+    expect(prod(rates)(70, 'RUB')).toBe(getAmountInRate(70, 'RUB', 'USD', rates))
+  })
+
+  it('getTotal excludes an amount without a rate and lists its currency', () => {
+    const total = getTotal({
+      toBase: prod({ USD: 1 }),
+      trnsIds: ['transactionIncomeWalletOneRUB700', 'transactionIncomeWalletCashUSD1000'],
+      trnsItems,
+      walletsItems,
+    })
+    expect(total.income).toBe(1000)
+    expect(total.missingRates).toEqual(['RUB'])
+  })
+})
+
+describe('getTotal orphan trns', () => {
+  it('skips an income/expense whose wallet is missing', () => {
+    const total = getTotal({
+      toBase: toBaseFixture(rates, 'USD'),
+      trnsIds: ['orphan'],
+      trnsItems: { orphan: { amount: 100, categoryId: 'category1', date: 1, type: TrnType.Expense, updatedAt: 1, walletId: 'missingWallet' } },
+      walletsItems,
+    })
+
+    expect(total.expense).toEqual(0)
   })
 })
 

@@ -10,18 +10,15 @@ import type { StatDateProvider } from '~/components/stat/date/types'
 import type { SeriesSlugSelected, StatReportSelectedRecord, StatReportType } from '~/components/stat/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 
-import { getTotal } from '~/components/amount/getTotal'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay as isPeriodOneDayFn } from '~/components/stat/intervals'
 import { deferStatDevMetricsUpdate, getStatMetricNow, statDevMetrics } from '~/components/stat/statDevMetrics'
 import { getSelectedType, getSelectedTypeForSum, getTypesMapping, getTypesToShow } from '~/components/stat/utils'
 import { createTrnMatcher } from '~/components/trns/getTrns'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
-export type StatReportSelection = {
+type StatReportSelection = {
   filteredIds: TrnId[]
   quickFilteredIds: TrnId[]
   selectedIds: TrnId[]
@@ -34,22 +31,22 @@ export function buildSortedStatReportSelection(params: {
 }): StatReportSelectedRecord[] {
   const startedAt = import.meta.dev ? getStatMetricNow() : 0
   const matchesType = createTrnMatcher({ trnsTypes: params.trnsTypes })
-  const candidates = (params.sourceIds ?? [])
-    .map(id => ({ id, trn: params.trnsItems[id] }))
-    .sort((a, b) => (b.trn?.date ?? 0) - (a.trn?.date ?? 0))
-  const selected: StatReportSelectedRecord[] = []
-  for (const { id, trn } of candidates) {
-    if (!matchesType(trn))
-      continue
-    selected.push({ categoryId: trn.categoryId, id })
+  const sourceIds = params.sourceIds ?? []
+  // Filter before sorting so only matching trns are sorted; `date` rides along to avoid a lookup per comparison.
+  const selected: (StatReportSelectedRecord & { date: number })[] = []
+  for (const id of sourceIds) {
+    const trn = params.trnsItems[id]
+    if (matchesType(trn))
+      selected.push({ categoryId: trn.categoryId, date: trn.date, id })
   }
+  selected.sort((a, b) => b.date - a.date)
 
   if (import.meta.dev) {
     const duration = getStatMetricNow() - startedAt
     deferStatDevMetricsUpdate(() => {
       statDevMetrics.reportSelectionCount.value++
       statDevMetrics.reportSelectionDuration.value = duration
-      statDevMetrics.reportSelectionVisitedIds.value = candidates.length
+      statDevMetrics.reportSelectionVisitedIds.value = sourceIds.length
     })
   }
   return selected
@@ -115,8 +112,6 @@ export function useStatReportData(params: {
 }) {
   const trnsStore = useTrnsStore()
   const categoriesStore = useCategoriesStore()
-  const walletsStore = useWalletsStore()
-  const currenciesStore = useCurrenciesStore()
   const { computeTotalForTrnsIds } = useAmount()
   const chartRange = computed<Range>(() => ({
     end: params.chartIntervals.value.at(-1)?.end ?? params.statDate.range.value.end,
@@ -157,17 +152,8 @@ export function useStatReportData(params: {
     params.applyStatsExclusion?.value && !hasCategoryFilter.value ? categoriesStore.excludedFromStatsIds : undefined,
   )
 
-  function computeTotalForStat(ids?: TrnId[]): TotalReturns {
-    if (!statExcludedIds.value)
-      return computeTotalForTrnsIds(ids)
-    return getTotal({
-      baseCurrencyCode: currenciesStore.base,
-      excludedCategoriesIds: statExcludedIds.value,
-      rates: currenciesStore.rates,
-      trnsIds: ids,
-      trnsItems: trnsStore.items ?? {},
-      walletsItems: walletsStore.items ?? {},
-    })
+  function computeTotalForStat(ids: TrnId[]): TotalReturns {
+    return computeTotalForTrnsIds(ids, { excludedCategoriesIds: statExcludedIds.value })
   }
 
   const intervalsData = computed(() => bucketTrnsByIntervals(
@@ -181,7 +167,7 @@ export function useStatReportData(params: {
         trnsStore.items ?? {},
         rangeTrnsIdsWithFilteredCategories.value,
         params.statDate.intervalsInRange.value,
-        computeTotalForTrnsIds,
+        computeTotalForStat,
       )
     : intervalsData.value)
 
@@ -224,7 +210,7 @@ export function useStatReportData(params: {
         trnsStore.items ?? {},
         chartRangeTrnsIdsWithFilteredCategories.value,
         params.chartIntervals.value,
-        computeTotalForTrnsIds,
+        computeTotalForStat,
       )
     : chartIntervalsData.value)
 
@@ -254,7 +240,7 @@ export function useStatReportData(params: {
     const ids = isIntervalSelected.value
       ? intervalsDataWithFilteredCategories.value[params.statDate.params.value.intervalSelected]?.trnsIds
       : rangeTrnsIdsWithFilteredCategories.value
-    return computeTotalForStat(ids)
+    return computeTotalForStat(ids ?? [])
   })
   const averageTotal = computed(() => {
     if (differenceInDays(params.statDate.range.value.end, params.statDate.range.value.start) < 2)
@@ -268,12 +254,8 @@ export function useStatReportData(params: {
 
   return {
     averageTotal,
-    chartEffectiveComputeTotal: computed(() => computeTotalForTrnsIds),
-    chartEffectiveIntervals: chartIntervalsDataWithFilteredCategories,
-    chartEffectiveItems: computed(() => trnsStore.items ?? {}),
     chartIntervalsDataWithFilteredCategories,
     computeTotalForTrnsIds,
-    effectiveIntervals: intervalsDataWithFilteredCategories,
     intervalsDataWithFilteredCategories,
     isIntervalSelected,
     isPeriodOneDay,

@@ -15,6 +15,7 @@ const zeroTotal: TotalReturns = {
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
+  missingRates: [],
   net: 0,
   sumTransfers: 0,
 }

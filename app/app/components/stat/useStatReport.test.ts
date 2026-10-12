@@ -23,6 +23,7 @@ const zeroTotal: TotalReturns = {
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
+  missingRates: [],
   net: 0,
   sumTransfers: 0,
 }
@@ -68,6 +69,7 @@ vi.mock('~/components/categories/useCategoriesStore', () => ({
 }))
 
 const categoryBreakdownMocks = vi.hoisted(() => ({
+  aggregateCategoryTotals: vi.fn(() => ({ perIntervalTotals: [] })),
   buildCategoriesPieData: vi.fn<() => CategoryPieDatum[]>(() => []),
   buildCategoriesSeries: vi.fn(() => []),
 }))
@@ -80,6 +82,7 @@ const computeTotalMock = vi.fn((): TotalReturns => ({
   expenseTransfers: 0,
   income: 0,
   incomeTransfers: 0,
+  missingRates: [],
   net: 0,
   sumTransfers: 0,
 }))
@@ -253,8 +256,11 @@ describe('useStatReport', () => {
 
     void report.focusedCategoryPieData.value
 
+    expect(categoryBreakdownMocks.aggregateCategoryTotals).toHaveBeenLastCalledWith(
+      expect.objectContaining({ intervals: [expect.objectContaining({ range: intervals[1] })] }),
+    )
     expect(categoryBreakdownMocks.buildCategoriesPieData).toHaveBeenLastCalledWith(
-      expect.objectContaining({ intervals: [expect.objectContaining({ range: intervals[1] })], type: 'income' }),
+      expect.objectContaining({ type: 'income' }),
     )
   })
 
@@ -435,7 +441,7 @@ describe('useStatReport', () => {
 
       bucketTrnsByIntervalsMock.mockReturnValue([{
         range: intervals[0]!,
-        total: { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0, net: 0, sumTransfers: 0 },
+        total: { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0, missingRates: [], net: 0, sumTransfers: 0 },
         trnsIds: intervalTrnsIds,
       }])
 

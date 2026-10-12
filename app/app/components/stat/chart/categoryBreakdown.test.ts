@@ -1,13 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
 import type { Categories, CategoryId } from '~/components/categories/types'
-import type { IntervalData } from '~/components/stat/types'
+import type { IntervalData, SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import {
   aggregateCategoryTotals,
   buildCategoriesPieData,
   buildCategoriesSeries,
+  pickCategoryValues,
 } from '~/components/stat/chart/categoryBreakdown'
 
 // Each trn maps 1:1 to a category with a fixed expense amount.
@@ -61,6 +62,7 @@ function singleInterval(trnIds: TrnId[]): IntervalData[] {
       expenseTransfers: 0,
       income: 0,
       incomeTransfers: 0,
+      missingRates: [],
       net: 0,
       sumTransfers: 0,
     },
@@ -78,9 +80,17 @@ const baseParams = {
 
 const allTrnIds: TrnId[] = Object.keys(amounts)
 
+function aggregate(params: Parameters<typeof aggregateCategoryTotals>[0] & { type: SeriesSlugSelected }) {
+  return pickCategoryValues(aggregateCategoryTotals(params), params.type)
+}
+
+function pieData(params: Parameters<typeof aggregateCategoryTotals>[0] & { type: SeriesSlugSelected }) {
+  return buildCategoriesPieData({ aggregated: aggregateCategoryTotals(params), categoriesItems: params.categoriesItems, type: params.type })
+}
+
 describe('aggregateCategoryTotals', () => {
   it('sorts categories by total descending and excludes transfers', () => {
-    const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
+    const { categoryTotals, orderedCategoryIds } = aggregate({
       ...baseParams,
       intervals: singleInterval(allTrnIds),
     })
@@ -103,7 +113,7 @@ describe('aggregateCategoryTotals', () => {
   })
 
   it('drops categories in excludedCategoriesIds', () => {
-    const { categoryTotals, orderedCategoryIds } = aggregateCategoryTotals({
+    const { categoryTotals, orderedCategoryIds } = aggregate({
       ...baseParams,
       excludedCategoriesIds: new Set(['c01', 'c03']),
       intervals: singleInterval(allTrnIds),
@@ -130,7 +140,7 @@ describe('aggregateCategoryTotals', () => {
       c: { categoryId: 'loner' },
     } as unknown as Record<TrnId, Pick<TrnItem, 'categoryId'>>
 
-    const { orderedCategoryIds } = aggregateCategoryTotals({
+    const { orderedCategoryIds } = aggregate({
       categoriesItems: items,
       computeTotalForTrnsIds: ids => ({ expense: ids.length * 10, income: 0, net: -ids.length * 10 }),
       grouping: 'auto',
@@ -176,7 +186,7 @@ describe('aggregateCategoryTotals', () => {
 
 describe('buildCategoriesPieData', () => {
   it('groups categories after the largest five into one silent donut slice', () => {
-    const pie = buildCategoriesPieData({
+    const pie = pieData({
       ...baseParams,
       intervals: singleInterval(allTrnIds),
     })
@@ -186,7 +196,7 @@ describe('buildCategoriesPieData', () => {
   })
 
   it('uses the category color for each slice', () => {
-    const pie = buildCategoriesPieData({
+    const pie = pieData({
       ...baseParams,
       intervals: singleInterval(['t01']),
     })
@@ -205,7 +215,7 @@ describe('buildCategoriesPieData', () => {
       'var(--ui-text-dimmed)',
     ]
 
-    const pie = buildCategoriesPieData({ ...baseParams, intervals })
+    const pie = pieData({ ...baseParams, intervals })
     const series = buildCategoriesSeries({ ...baseParams, chartType: 'bar', intervals })
 
     expect(pie.map(item => item.color)).toEqual(expectedColors)
@@ -241,14 +251,14 @@ describe('buildCategoriesPieData', () => {
       0,
     )
 
-    const pie = buildCategoriesPieData({ ...baseParams, intervals })
+    const pie = pieData({ ...baseParams, intervals })
     const pieTotal = pie.reduce((acc, s) => acc + s.value, 0)
 
     expect(pieTotal).toBe(barTotal)
   })
 
   it('respects the category filter', () => {
-    const pie = buildCategoriesPieData({
+    const pie = pieData({
       ...baseParams,
       filterCategoriesIds: ['c01', 'c02'] as CategoryId[],
       intervals: singleInterval(allTrnIds),
