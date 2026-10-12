@@ -90,7 +90,7 @@ function onGenerateDemoData() {
           </button>
         </nav>
 
-        <div class="grid content-start gap-4">
+        <div class="grid content-start gap-8">
           <template v-if="activeSection === 'general'">
             <!-- Language -->
             <UiSettingsCard :title="t('locale.title')">
@@ -107,7 +107,7 @@ function onGenerateDemoData() {
             <!-- Currency -->
             <UiSettingsCard :title="t('currencies.base')">
               <button
-                class="group relative inline-flex min-h-10.5 min-w-40 items-center gap-2 rounded-md bg-elevated/30 px-4 py-2 pe-10 text-sm text-highlighted ring ring-accented transition-colors ring-inset hover:bg-elevated/50! focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                class="group relative inline-flex min-h-10.5 min-w-40 items-center gap-2 theme-rounded-control bg-elevated/30 px-4 py-2 pe-10 text-sm text-highlighted ring ring-accented transition-colors ring-inset hover:bg-elevated/50! focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 @click="isShowBaseCurrencyModal = true"
               >
                 <span class="truncate">{{ currenciesStore.base }}</span>
@@ -123,7 +123,7 @@ function onGenerateDemoData() {
 
           <ThemePicker v-else-if="activeSection === 'appearance'" />
 
-          <div v-else-if="activeSection === 'sidebar'" class="grid">
+          <div v-else-if="activeSection === 'sidebar'" class="grid gap-8">
             <LayoutSidebarListPicker kind="wallet" />
             <LayoutSidebarListPicker kind="category" />
           </div>
