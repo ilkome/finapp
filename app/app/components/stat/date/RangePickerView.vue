@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import type { CalendarDate } from '@internationalized/date'
 import type { TabsItem } from '@nuxt/ui'
 import type { Range } from '~~/utils/date/types'
 
-import { getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
+import { calendarNavButton, getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
+import { u } from '~~/utils/date/civil'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 
 import type { Grouped, StatDateRangeParams } from '~/components/stat/date/types'
 import type { StatDateRangeOption } from '~/components/stat/date/useRangeOptions'
@@ -43,8 +46,15 @@ const dateRange = ref({
   start: parseUCalendarDate(props.range.start),
 })
 
-function onSelectRange(value: { end: unknown, start: unknown }) {
-  emit('setRangeByCalendar', { end: value.end, start: value.start } as Range)
+// The calendar emits after the first click too, with no end yet: wait for both ends.
+// One day picked twice is a single-day range.
+function onSelectRange(value: { end?: CalendarDate, start?: CalendarDate } | null) {
+  if (!value?.start || !value.end)
+    return
+  emit('setRangeByCalendar', {
+    end: getEndOf(u(getUCalendarCivilDate(value.end)), 'day').getTime(),
+    start: getStartOf(u(getUCalendarCivilDate(value.start)), 'day').getTime(),
+  })
   emit('close')
 }
 
@@ -142,6 +152,10 @@ function onSelectOption(option: StatDateRangeOption) {
     <UCalendar
       v-if="viewTab === 'calendar'"
       v-model="dateRange"
+      :prevMonth="calendarNavButton"
+      :nextMonth="calendarNavButton"
+      :prevYear="calendarNavButton"
+      :nextYear="calendarNavButton"
       :maxValue="getUCalendarToday()"
       :numberOfMonths="2"
       range
