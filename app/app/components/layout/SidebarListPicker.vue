@@ -59,77 +59,79 @@ const snapPoints = useSheetSnapPoints()
 </script>
 
 <template>
-  <div class="grid gap-2">
-    <UiSwitchItem
-      :checkboxValue="isShown"
-      :title="t(isWallet ? 'wallets.name' : 'categories.name')"
-      trailing
-      @toggle="isShown = !isShown"
-    />
+  <UiSettingsCard :title="t(isWallet ? 'wallets.name' : 'categories.name')">
+    <div class="grid gap-2">
+      <UiSwitchItem
+        :checkboxValue="isShown"
+        :title="t('settings.sidebar.show')"
+        trailing
+        @toggle="isShown = !isShown"
+      />
 
-    <template v-if="isShown">
-      <div class="flex items-center gap-2">
-        <BottomSheetOrDropdown
-          class="justify-self-start"
-          :isOpen
-          popoverBodyClass="py-0! md:pb-0!"
-          :snapPoints
-          @closeModal="isOpen = false"
-          @openModal="isOpen = true"
+      <template v-if="isShown">
+        <div class="flex items-center gap-2">
+          <BottomSheetOrDropdown
+            class="justify-self-start"
+            :isOpen
+            popoverBodyClass="py-0! md:pb-0!"
+            :snapPoints
+            @closeModal="isOpen = false"
+            @openModal="isOpen = true"
+          >
+            <template #trigger="{ isActive }">
+              <UiTitleDropdown :isActive>
+                <span class="text-nowrap">
+                  {{ count ? t('settings.sidebar.selected', { count }) : t('settings.sidebar.auto') }}
+                </span>
+              </UiTitleDropdown>
+            </template>
+
+            <template #custom="{ close, isExpanded }">
+              <FilterPanel hideMore :isExpanded :title="t('settings.sidebar.title')" @close="close" />
+            </template>
+          </BottomSheetOrDropdown>
+
+          <UTooltip v-if="count > 1" :text="t('base.sort')">
+            <UiActionButton :ariaLabel="t('base.sort')" @click="isSortOpen = true">
+              <Icon name="lucide:arrow-down-up" size="20" />
+            </UiActionButton>
+          </UTooltip>
+        </div>
+
+        <BottomSheetOrModal
+          v-if="isSortOpen"
+          :title="t('base.sort')"
+          @closed="isSortOpen = false"
         >
-          <template #trigger="{ isActive }">
-            <UiTitleDropdown :isActive>
-              <span class="text-nowrap">
-                {{ count ? t('settings.sidebar.selected', { count }) : t('settings.sidebar.auto') }}
-              </span>
-            </UiTitleDropdown>
-          </template>
-
-          <template #custom="{ close, isExpanded }">
-            <FilterPanel hideMore :isExpanded :title="t('settings.sidebar.title')" @close="close" />
-          </template>
-        </BottomSheetOrDropdown>
-
-        <UTooltip v-if="count > 1" :text="t('base.sort')">
-          <UiActionButton :ariaLabel="t('base.sort')" @click="isSortOpen = true">
-            <Icon name="lucide:arrow-down-up" size="20" />
-          </UiActionButton>
-        </UTooltip>
-      </div>
-
-      <BottomSheetOrModal
-        v-if="isSortOpen"
-        :title="t('base.sort')"
-        @closed="isSortOpen = false"
-      >
-        <WalletsSortableList
-          :ids="pickedIds"
-          class="grid gap-1"
-          @update="saveOrder"
-        >
-          <template #default="{ id }">
-            <div class="flex items-center gap-1">
-              <WalletsSortHandle />
-              <WalletsItem
-                v-if="isWallet"
-                :baseCurrencyCode="currenciesStore.base"
-                class="grow"
-                isShowIcon
-                :wallet="walletsStore.itemsComputed[id as WalletId]!"
-                :walletId="id as WalletId"
-              />
-              <CategoriesItem
-                v-else
-                :category="categoriesStore.items[id as CategoryId]!"
-                :categoryId="id as CategoryId"
-                class="grow"
-                isShowParent
-                stacked
-              />
-            </div>
-          </template>
-        </WalletsSortableList>
-      </BottomSheetOrModal>
-    </template>
-  </div>
+          <WalletsSortableList
+            :ids="pickedIds"
+            class="grid gap-1"
+            @update="saveOrder"
+          >
+            <template #default="{ id }">
+              <div class="flex items-center gap-1">
+                <WalletsSortHandle />
+                <WalletsItem
+                  v-if="isWallet"
+                  :baseCurrencyCode="currenciesStore.base"
+                  class="grow"
+                  isShowIcon
+                  :wallet="walletsStore.itemsComputed[id as WalletId]!"
+                  :walletId="id as WalletId"
+                />
+                <CategoriesItem
+                  v-else
+                  :category="categoriesStore.items[id as CategoryId]!"
+                  :categoryId="id as CategoryId"
+                  class="grow"
+                  isShowParent
+                  stacked
+                />
+              </div>
+            </template>
+          </WalletsSortableList>
+        </BottomSheetOrModal>
+      </template>
+    </div>
+  </UiSettingsCard>
 </template>

@@ -123,7 +123,7 @@ function onGenerateDemoData() {
 
           <ThemePicker v-else-if="activeSection === 'appearance'" />
 
-          <div v-else-if="activeSection === 'sidebar'" class="grid gap-4">
+          <div v-else-if="activeSection === 'sidebar'" class="grid">
             <LayoutSidebarListPicker kind="wallet" />
             <LayoutSidebarListPicker kind="category" />
           </div>

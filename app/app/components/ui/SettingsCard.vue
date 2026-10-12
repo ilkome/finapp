@@ -9,7 +9,7 @@ defineProps<{
 <template>
   <div>
     <div :class="cn($slots.default || $slots.footer ? 'pb-2' : 'pb-4')">
-      <div class="mb-2 border-b border-default pb-2 text-lg font-semibold">
+      <div class="mb-2 text-lg font-semibold">
         {{ title }}
       </div>
 

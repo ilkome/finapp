@@ -526,6 +526,7 @@ export default {
     sidebar: {
       auto: 'Automatic',
       selected: '{count} selected',
+      show: 'Show in sidebar',
       title: 'Sidebar',
     },
     title: 'Settings',

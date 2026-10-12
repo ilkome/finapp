@@ -526,6 +526,7 @@ export default {
     sidebar: {
       auto: 'Автоматически',
       selected: 'Выбрано {count}',
+      show: 'Показывать в сайдбаре',
       title: 'Сайдбар',
     },
     title: 'Настройки',
