@@ -43,7 +43,7 @@ function onBack() {
     <div
       ref="mainElement"
       data-ui-header-main
-      class="grid max-w-7xl items-center px-2 pt-2 pb-px lg:px-4 lg:pt-6 2xl:px-8 2xl:pt-8"
+      class="grid max-w-7xl items-center px-2 pt-2 pb-px lg:px-4 lg:pt-3 2xl:px-8 2xl:pt-4"
       :class="[
         sticky && mobileAfterScrolls && 'sticky top-0 z-20 bg-default/90 backdrop-blur md:static md:bg-transparent md:backdrop-blur-none',
       ]"
@@ -68,7 +68,7 @@ function onBack() {
           v-if="$slots.actions"
           data-ui-header-actions
           class="ml-auto flex shrink-0 flex-nowrap items-center rounded-full border border-transparent p-0.5"
-          :class="[actionsAfterTitle && 'md:ml-6', flatActionsDesktop ? 'lg:-mt-10 lg:-mr-2' : 'md:border-default/80 md:bg-default/20 md:dark:bg-neutral-800/50']"
+          :class="[actionsAfterTitle && 'md:ml-6', flatActionsDesktop ? 'lg:-mt-7 lg:-mr-2 2xl:-mt-6' : 'md:border-default/80 md:bg-default/20 md:dark:bg-neutral-800/50']"
         >
           <slot name="actions" />
         </div>
