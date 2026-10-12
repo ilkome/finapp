@@ -32,7 +32,7 @@ const isLaptop = useIsLaptop()
     <template #default="{ close }">
       <UiTitleModal>{{ props.title }}</UiTitleModal>
       <slot v-if="props.isBare" :close />
-      <div v-else class="bottom-sheet-content-inside scroller-block">
+      <div v-else class="drawer-body scroller-block">
         <slot :close />
       </div>
     </template>

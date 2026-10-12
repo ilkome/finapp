@@ -83,7 +83,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           </UiActionButton>
         </UTooltip>
 
-        <BottomSheetOrDropdown
+        <DrawerOrDropdown
           align="end"
           :isOpen="isViewSettingsOpen"
           popoverBodyClass="md:pb-0"
@@ -141,7 +141,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
               />
             </div>
           </template>
-        </BottomSheetOrDropdown>
+        </DrawerOrDropdown>
       </template>
     </UiHeader>
 

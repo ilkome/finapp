@@ -387,7 +387,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+      <div class="drawer-body scroller-block">
         <ColorPalette
           :activeColor="props.categoryForm.color"
           :icon="props.categoryForm.icon"
@@ -420,7 +420,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+      <div class="drawer-body scroller-block">
         <FormElement class="pt-2 pb-4">
           <template #label>
             {{ t('categories.form.icon.desc') }}
@@ -457,7 +457,7 @@ async function onSave() {
         </div>
       </div>
 
-      <div class="bottom-sheet-content-bottom">
+      <div class="drawer-footer">
         <UiButtonAccent
           @click="close"
         >
@@ -487,7 +487,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+      <div class="drawer-body scroller-block">
         <div
           v-if="childrenCandidateIds.length === 0"
           class="p-4 text-center text-muted"
@@ -554,7 +554,7 @@ async function onSave() {
         </template>
       </div>
 
-      <div class="bottom-sheet-content-bottom">
+      <div class="drawer-footer">
         <UiButtonAccent
           @click="applyChildrenSelection(close)"
         >
@@ -572,7 +572,7 @@ async function onSave() {
     <template #default="{ close }">
       <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+      <div class="drawer-body scroller-block">
         <UiChipButton
           :isActive="props.categoryForm.parentId === 0"
           @click="onParentSelect(false, close)"
@@ -588,7 +588,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="bottom-sheet-content-bottom">
+      <div class="drawer-footer">
         <UiButtonAccent
           @click="close"
         >

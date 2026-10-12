@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-type Mod = typeof import('./useSheetHistory')
+type Mod = typeof import('./useDrawerHistory')
 type Guard = (to: { fullPath: string }, from: { fullPath: string }) => boolean | void
 
 let popstate: ((e: PopStateEvent) => void) | undefined
@@ -21,8 +21,8 @@ async function load(): Promise<Mod> {
     if ((type as string) === 'popstate')
       popstate = fn as (e: PopStateEvent) => void
   })
-  const mod = await import('./useSheetHistory')
-  mod.installSheetHistory({
+  const mod = await import('./useDrawerHistory')
+  mod.installDrawerHistory({
     beforeEach: (fn: Guard) => { guard = fn },
     push,
     replace,
@@ -50,11 +50,11 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-describe('useSheetHistory', () => {
+describe('useDrawerHistory', () => {
   it('defers the synthetic push to a microtask, then pushes once per open sheet', async () => {
     const mod = await load()
-    mod.registerSheet(vi.fn())
-    mod.registerSheet(vi.fn())
+    mod.registerDrawer(vi.fn())
+    mod.registerDrawer(vi.fn())
     expect(window.history.pushState).not.toHaveBeenCalled()
     await flush()
     expect(window.history.pushState).toHaveBeenCalledTimes(2)
@@ -68,7 +68,7 @@ describe('useSheetHistory', () => {
     } as HTMLElement
     vi.spyOn(document, 'scrollingElement', 'get').mockReturnValue(scrollingElement)
 
-    mod.registerSheet(vi.fn())
+    mod.registerDrawer(vi.fn())
     scrollingElement.scrollTop = 0
     await flush()
 
@@ -77,7 +77,7 @@ describe('useSheetHistory', () => {
       '',
     )
     expect(window.history.pushState).toHaveBeenCalledWith(
-      expect.objectContaining({ __sheet: true, scroll: null }),
+      expect.objectContaining({ __drawer: true, scroll: null }),
       '',
     )
   })
@@ -88,7 +88,7 @@ describe('useSheetHistory', () => {
       scrollLeft: 12,
       scrollTop: 840,
     } as HTMLElement)
-    const unregister = mod.registerSheet(vi.fn())
+    const unregister = mod.registerDrawer(vi.fn())
     await flush()
     unregister()
     await flush()
@@ -106,7 +106,7 @@ describe('useSheetHistory', () => {
       scrollTop: 720,
     } as HTMLElement)
     const close = vi.fn()
-    const unregister = mod.registerSheet(close)
+    const unregister = mod.registerDrawer(close)
     await flush()
 
     back()
@@ -118,13 +118,13 @@ describe('useSheetHistory', () => {
 
   it('leaves history untouched when one sheet closes as another opens', async () => {
     const mod = await load()
-    const unregisterA = mod.registerSheet(vi.fn())
+    const unregisterA = mod.registerDrawer(vi.fn())
     await flush()
     vi.mocked(window.history.pushState).mockClear()
     vi.mocked(window.history.go).mockClear()
 
     unregisterA()
-    mod.registerSheet(vi.fn())
+    mod.registerDrawer(vi.fn())
     await flush()
 
     expect(window.history.pushState).not.toHaveBeenCalled()
@@ -135,8 +135,8 @@ describe('useSheetHistory', () => {
     const mod = await load()
     const closeA = vi.fn()
     const closeB = vi.fn()
-    mod.registerSheet(closeA)
-    mod.registerSheet(closeB)
+    mod.registerDrawer(closeA)
+    mod.registerDrawer(closeB)
     await flush()
 
     back()
@@ -150,7 +150,7 @@ describe('useSheetHistory', () => {
   it('closes sheets and replaces the synthetic entry on route change (no history.go)', async () => {
     const mod = await load()
     const close = vi.fn()
-    const unregister = mod.registerSheet(close)
+    const unregister = mod.registerDrawer(close)
     await flush()
 
     const result = guard!({ fullPath: '/x' }, { fullPath: '/y' })
@@ -170,7 +170,7 @@ describe('useSheetHistory', () => {
   it('allows navigation without touching history when no synthetic entry exists yet', async () => {
     const mod = await load()
     const close = vi.fn()
-    mod.registerSheet(close) // registered but reconcile microtask not flushed
+    mod.registerDrawer(close) // registered but reconcile microtask not flushed
 
     const result = guard!({ fullPath: '/x' }, { fullPath: '/y' })
     expect(close).toHaveBeenCalledTimes(1)
@@ -181,7 +181,7 @@ describe('useSheetHistory', () => {
 
   it('bounces a Forward into a consumed synthetic entry', async () => {
     await load()
-    vi.spyOn(window.history, 'state', 'get').mockReturnValue({ __sheet: true })
+    vi.spyOn(window.history, 'state', 'get').mockReturnValue({ __drawer: true })
     back()
     expect(window.history.back).toHaveBeenCalled()
   })
@@ -190,9 +190,9 @@ describe('useSheetHistory', () => {
     vi.resetModules()
     push = vi.fn()
     vi.spyOn(window, 'addEventListener').mockImplementation(() => {})
-    vi.spyOn(window.history, 'state', 'get').mockReturnValue({ __sheet: true })
-    const mod = await import('./useSheetHistory')
-    mod.installSheetHistory({ beforeEach: () => {}, push } as never)
+    vi.spyOn(window.history, 'state', 'get').mockReturnValue({ __drawer: true })
+    const mod = await import('./useDrawerHistory')
+    mod.installDrawerHistory({ beforeEach: () => {}, push } as never)
     expect(window.history.replaceState).toHaveBeenCalled()
   })
 })

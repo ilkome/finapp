@@ -13,7 +13,7 @@ const label = computed(() => statDateRangeLabel({
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     :title="t('dates.select')"
     :isOpen="statDate.modal.value.dateSelector"
     popoverBodyClass="md:pb-3"
@@ -39,5 +39,5 @@ const label = computed(() => statDateRangeLabel({
         @close="close"
       />
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

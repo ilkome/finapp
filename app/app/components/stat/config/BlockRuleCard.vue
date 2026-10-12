@@ -52,7 +52,7 @@ function setExpanded(open: boolean) {
       <Icon name="lucide:grip-vertical" size="20" />
     </div>
     <div class="min-w-0 grow">
-      <BottomSheetOrDropdown
+      <DrawerOrDropdown
         align="end"
         :isOpen="isExpanded"
         popoverBodyClass="p-0!"
@@ -98,7 +98,7 @@ function setExpanded(open: boolean) {
             </div>
           </div>
         </template>
-      </BottomSheetOrDropdown>
+      </DrawerOrDropdown>
     </div>
   </UiElement>
 </template>

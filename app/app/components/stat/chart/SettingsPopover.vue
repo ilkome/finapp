@@ -4,7 +4,7 @@ const isOpen = ref(false)
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     align="end"
     :isOpen
     popoverBodyClass="px-3 pb-3"
@@ -26,5 +26,5 @@ const isOpen = ref(false)
     <template #content>
       <StatConfigPanelsChart class="pb-2 md:pb-0" isShowSyncButton />
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

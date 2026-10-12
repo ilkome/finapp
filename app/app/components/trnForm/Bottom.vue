@@ -72,9 +72,9 @@ onMounted(init)
 </script>
 
 <template>
-  <BottomSheet
+  <Drawer
     :isShow="isShow"
-    dragClassesCustom="bottom-sheet-drag-classes-custom max-h-[98dvh]"
+    contentClass="bottom-sheet-drag-classes-custom max-h-[98dvh]"
     @closed="trnsFormStore.onClose()"
   >
     <template #handler>
@@ -126,5 +126,5 @@ onMounted(init)
 
       <div class="trnForm__pagination" />
     </div>
-  </BottomSheet>
+  </Drawer>
 </template>

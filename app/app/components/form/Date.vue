@@ -41,7 +41,7 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     :title="props.title ?? t('common.date')"
     :isOpen="isOpen"
     popoverBodyClass="md:pb-2"
@@ -83,5 +83,5 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
         </div>
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

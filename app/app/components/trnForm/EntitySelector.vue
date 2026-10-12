@@ -6,7 +6,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
-  bottomSheetStyle?: Record<string, string>
+  drawerStyle?: Record<string, string>
   categoryId?: CategoryId
   walletId?: WalletId
 }>()
@@ -27,8 +27,8 @@ const initialSlide = ref<'category' | 'wallet'>('wallet')
 </script>
 
 <template>
-  <BottomSheetOrDropdown
-    :bottomSheetStyle="props.bottomSheetStyle"
+  <DrawerOrDropdown
+    :drawerStyle="props.drawerStyle"
     :isOpen="isShow"
     popoverBodyClass="py-0! md:pb-0!"
     @closeModal="isShow = false"
@@ -79,5 +79,5 @@ const initialSlide = ref<'category' | 'wallet'>('wallet')
         @selectWallet="emit('selectWallet', $event)"
       />
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

@@ -163,7 +163,7 @@ onBeforeUnmount(() => {
     </UiTitleModal>
 
     <div
-      class="bottom-sheet-content-inside scroller-block"
+      class="drawer-body scroller-block"
       data-stat-trns-quick-view
     >
       <TrnsList

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   align?: 'center' | 'end' | 'start'
-  bottomSheetStyle?: Record<string, string>
-  dragClassesCustom?: string
+  contentClass?: string
+  drawerStyle?: Record<string, string>
   isOpen?: boolean
   isPassthrough?: boolean
   isShowCloseBtn?: boolean
@@ -111,24 +111,24 @@ function closeMobileSheet(closeSheet: () => void) {
     <slot name="trigger" :isActive="props.isOpen" />
 
     <Teleport to="body">
-      <BottomSheet
+      <Drawer
         v-if="props.unmountOnHide ? props.isOpen : hasOpened"
         :isShow="props.unmountOnHide ? true : props.isOpen"
-        :dragClassesCustom="`${props.dragClassesCustom ?? ''} bottom-sheet-drag-classes-custom`"
-        :dragStyle="props.bottomSheetStyle"
+        :contentClass="`${props.contentClass ?? ''} bottom-sheet-drag-classes-custom`"
+        :contentStyle="props.drawerStyle"
         :isPassthrough="props.isPassthrough"
         :snapPoints="props.snapPoints"
         @closed="emit('closeModal')"
       >
         <template #default="{ close, isExpanded }">
-          <div class="bottom-sheet-content">
+          <div class="drawer-content">
             <UiTitleModal v-if="props.title" :class="props.titleClass">
               {{ props.title }}
             </UiTitleModal>
 
             <div
               v-if="$slots.content"
-              :class="cn('bottom-sheet-content-inside scroller-block', props.sheetBodyClass)"
+              :class="cn('drawer-body scroller-block', props.sheetBodyClass)"
             >
               <slot name="content" :close="() => closeMobileSheet(close)" :isExpanded />
             </div>
@@ -141,7 +141,7 @@ function closeMobileSheet(closeSheet: () => void) {
             />
           </div>
         </template>
-      </BottomSheet>
+      </Drawer>
     </Teleport>
   </div>
 </template>

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { useBodyScrollLock } from 'reka-ui'
 
-import { registerSheet } from '~/composables/useSheetHistory'
+import { registerDrawer } from '~/composables/useDrawerHistory'
 
-import { resolveDetentFractions } from './geometry'
-import { useBottomSheetDrag } from './useBottomSheetDrag'
+import { resolveDetentFractions } from '../bottomSheet/geometry'
+import { useBottomSheetDrag } from '../bottomSheet/useBottomSheetDrag'
 
 const props = defineProps<{
-  dragClassesCustom?: string
-  dragStyle?: Record<string, string>
+  contentClass?: string
+  contentStyle?: Record<string, string>
   isExpanded?: boolean
   // Live-preview mode: no backdrop, page keeps scrolling and stays clickable; closes by drag/back only.
   isPassthrough?: boolean
@@ -52,7 +52,7 @@ const {
 } = useBottomSheetDrag({
   containerRef,
   drag,
-  dragStyle: toRef(() => props.dragStyle),
+  dragStyle: toRef(() => props.contentStyle),
   emit,
   expanded: toRef(() => props.isExpanded),
   handlerRef,
@@ -80,7 +80,7 @@ let unregisterHistory: (() => void) | null = null
 function registerHistory() {
   if (unregisterHistory)
     return
-  unregisterHistory = registerSheet(() => close())
+  unregisterHistory = registerDrawer(() => close())
 }
 function deregisterHistory() {
   unregisterHistory?.()
@@ -129,7 +129,7 @@ const dragClasses = computed(() => [
     'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
     'transition-opacity transition-transform': !isDragging.value && opened.value,
   },
-  props.dragClassesCustom,
+  props.contentClass,
 ])
 </script>
 

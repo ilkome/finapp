@@ -93,7 +93,7 @@ const viewActionItems = computed(() => [
         />
 
         <div class="shrink-0">
-          <BottomSheetOrDropdown
+          <DrawerOrDropdown
             align="end"
             :isOpen="isViewsOpen"
             :title="$t('stat.views.menu.label')"
@@ -112,7 +112,7 @@ const viewActionItems = computed(() => [
             <template #content>
               <StatViewsList class="pb-4 md:pb-0" />
             </template>
-          </BottomSheetOrDropdown>
+          </DrawerOrDropdown>
         </div>
 
         <UDropdownMenu v-if="viewActionItems.length" :items="viewActionItems" :content="{ align: 'end' }" :modal="false">

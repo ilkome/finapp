@@ -36,7 +36,7 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     :isStart="false"
     @changeDate="changeDate"
   >
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
       :title="t('common.date')"
       :isOpen="isShow"
       class="grow"
@@ -60,6 +60,6 @@ function changeDate(way: 'prev' | 'next' | 'today') {
           <TrnFormCalendar :onClose="close" />
         </div>
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
   </UiNavArrows>
 </template>

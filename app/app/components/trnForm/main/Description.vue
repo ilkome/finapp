@@ -20,11 +20,11 @@ function onSave(close: () => void) {
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     :isOpen="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
     class="shrink-0 grow-0!"
-    dragClassesCustom="bottom-sheet-drag-classes-custom"
+    contentClass="bottom-sheet-drag-classes-custom"
     isShowCloseBtn
     @closeModal="trnsFormStore.closeTrnFormModal('description')"
     @openModal="trnsFormStore.openTrnFormModal('description')"
@@ -73,5 +73,5 @@ function onSave(close: () => void) {
         </div>
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

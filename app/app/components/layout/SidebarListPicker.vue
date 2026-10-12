@@ -70,7 +70,7 @@ const snapPoints = useSheetSnapPoints()
 
       <template v-if="isShown">
         <div class="flex items-center gap-2">
-          <BottomSheetOrDropdown
+          <DrawerOrDropdown
             class="justify-self-start"
             :isOpen
             popoverBodyClass="py-0! md:pb-0!"
@@ -89,7 +89,7 @@ const snapPoints = useSheetSnapPoints()
             <template #custom="{ close, isExpanded }">
               <FilterPanel hideMore :isExpanded :title="t('settings.sidebar.title')" @close="close" />
             </template>
-          </BottomSheetOrDropdown>
+          </DrawerOrDropdown>
 
           <UTooltip v-if="count > 1" :text="t('base.sort')">
             <UiActionButton :ariaLabel="t('base.sort')" @click="isSortOpen = true">

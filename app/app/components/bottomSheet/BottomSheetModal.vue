@@ -6,9 +6,9 @@ defineEmits<{
 
 <template>
   <Teleport to="body">
-    <BottomSheet
+    <Drawer
       isShow
-      dragClassesCustom="bottom-sheet-drag-classes-custom min-h-[50dvh]"
+      contentClass="bottom-sheet-drag-classes-custom min-h-[50dvh]"
       @closed="$emit('closed')"
     >
       <template #handler>
@@ -16,10 +16,10 @@ defineEmits<{
       </template>
 
       <template #default="{ close }">
-        <div class="bottom-sheet-content">
+        <div class="drawer-content">
           <slot :close="close" />
         </div>
       </template>
-    </BottomSheet>
+    </Drawer>
   </Teleport>
 </template>

@@ -11,7 +11,7 @@ const isOpen = ref(false)
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     :align="collapsed ? 'start' : 'center'"
     :isOpen="isOpen"
     popoverBodyClass="md:pb-0"
@@ -53,5 +53,5 @@ const isOpen = ref(false)
         <LayoutUserMenuPanels sessionActions @close="close" />
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

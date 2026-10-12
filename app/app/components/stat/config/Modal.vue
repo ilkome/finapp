@@ -62,7 +62,7 @@ onBeforeUnmount(onClose)
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     v-if="width < 767"
     :isOpen
     :unmountOnHide="false"
@@ -81,32 +81,32 @@ onBeforeUnmount(onClose)
       <UiTitleModal>
         {{ t('stat.config.menu.label') }}
       </UiTitleModal>
-      <div class="bottom-sheet-content-inside scroller-block gap-4 px-3! pb-0!">
+      <div class="drawer-body scroller-block gap-4 px-3! pb-0!">
         <div class="grid min-w-0 gap-4">
           <slot :close="onClose" />
         </div>
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 
   <Teleport v-if="width < 767" to="body">
-    <LazyBottomSheet
+    <LazyDrawer
       v-if="isOpen && activePanel"
       isShow
-      dragClassesCustom="bottom-sheet-drag-classes-custom"
+      contentClass="bottom-sheet-drag-classes-custom"
       @closed="back()"
     >
       <template #handler>
         <BottomSheetHandler />
       </template>
 
-      <div class="bottom-sheet-content">
+      <div class="drawer-content">
         <UiTitleModal>{{ panelTitle }}</UiTitleModal>
-        <div class="bottom-sheet-content-inside scroller-block px-3!">
+        <div class="drawer-body scroller-block px-3!">
           <StatConfigPanelScreen :panel="activePanel" />
         </div>
       </div>
-    </LazyBottomSheet>
+    </LazyDrawer>
   </Teleport>
 
   <template v-else>

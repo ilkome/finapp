@@ -30,9 +30,9 @@ async function clearCachesAndReload() {
 
 <template>
   <Teleport to="body">
-    <LazyBottomSheet
+    <LazyDrawer
       isShow
-      :dragClassesCustom="isCompact ? 'bottom-sheet-drag-classes-custom sheet-preview-border' : 'bottom-sheet-drag-classes-custom'"
+      :contentClass="isCompact ? 'bottom-sheet-drag-classes-custom sheet-preview-border' : 'bottom-sheet-drag-classes-custom'"
       :isPassthrough="isCompact"
       @closed="emit('close')"
     >
@@ -40,8 +40,8 @@ async function clearCachesAndReload() {
         <BottomSheetHandler />
       </template>
 
-      <div class="bottom-sheet-content">
-        <div class="bottom-sheet-content-inside overflow-y-hidden! p-0!">
+      <div class="drawer-content">
+        <div class="drawer-body overflow-y-hidden! p-0!">
           <div class="h-full max-h-[98dvh] scroller-block overflow-y-auto px-3 pt-4 pb-2">
             <LayoutUserMenuPanels @close="emit('close')" @compact="isCompact = $event">
               <template #root>
@@ -83,6 +83,6 @@ async function clearCachesAndReload() {
           </div>
         </div>
       </div>
-    </LazyBottomSheet>
+    </LazyDrawer>
   </Teleport>
 </template>

@@ -6,7 +6,7 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 
 const props = defineProps<{
-  bottomSheetStyle?: Record<string, string>
+  drawerStyle?: Record<string, string>
 }>()
 
 const trnsFormStore = useTrnsFormStore()
@@ -62,7 +62,7 @@ watch(
       <div class="flex items-center gap-2 pt-3">
         <TrnFormSelectorWallet
           v-if="trnsFormStore.transferExpenseWalletId"
-          :bottomSheetStyle="props.bottomSheetStyle"
+          :drawerStyle="props.drawerStyle"
           :disabledWalletIds="trnsFormStore.transferIncomeWalletId ? [trnsFormStore.transferIncomeWalletId] : []"
           :title="t('trnForm.transfer.expenseModal')"
           :walletId="trnsFormStore.transferExpenseWalletId"
@@ -76,7 +76,7 @@ watch(
 
         <TrnFormSelectorWallet
           v-if="trnsFormStore.transferIncomeWalletId"
-          :bottomSheetStyle="props.bottomSheetStyle"
+          :drawerStyle="props.drawerStyle"
           :disabledWalletIds="trnsFormStore.transferExpenseWalletId ? [trnsFormStore.transferExpenseWalletId] : []"
           :title="t('trnForm.transfer.incomeModal')"
           :walletId="trnsFormStore.transferIncomeWalletId"
@@ -111,7 +111,7 @@ watch(
 
             <TrnFormSelectorWallet
               v-if="slug === 'income' && trnsFormStore.transferIncomeWalletId"
-              :bottomSheetStyle="props.bottomSheetStyle"
+              :drawerStyle="props.drawerStyle"
               :disabledWalletIds="trnsFormStore.transferExpenseWalletId ? [trnsFormStore.transferExpenseWalletId] : []"
               :title="t(`trnForm.transfer.${slug}Modal`)"
               :walletId="trnsFormStore.transferIncomeWalletId"
@@ -120,7 +120,7 @@ watch(
 
             <TrnFormSelectorWallet
               v-if="slug === 'expense' && trnsFormStore.transferExpenseWalletId"
-              :bottomSheetStyle="props.bottomSheetStyle"
+              :drawerStyle="props.drawerStyle"
               :disabledWalletIds="trnsFormStore.transferIncomeWalletId ? [trnsFormStore.transferIncomeWalletId] : []"
               :title="t(`trnForm.transfer.${slug}Modal`)"
               :walletId="trnsFormStore.transferExpenseWalletId"

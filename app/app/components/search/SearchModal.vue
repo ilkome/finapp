@@ -30,7 +30,7 @@ function onSelect(item: SearchResultItem) {
   }
 }
 
-function onBottomSheetClosed() {
+function onDrawerClosed() {
   isSearchOpen.value = false
   searchTerm.value = ''
 }
@@ -69,14 +69,14 @@ watch(isSearchOpen, async (isOpen) => {
     </template>
   </UModal>
 
-  <!-- Mobile: BottomSheet -->
+  <!-- Mobile: Drawer -->
   <Teleport to="body">
-    <BottomSheet
+    <Drawer
       v-if="!isDesktop && isSearchOpen"
       isShow
-      dragClassesCustom="bottom-sheet-drag-classes-custom"
+      contentClass="bottom-sheet-drag-classes-custom"
       :snapPoints="snapPoints"
-      @closed="onBottomSheetClosed"
+      @closed="onDrawerClosed"
     >
       <template #handler>
         <BottomSheetHandler />
@@ -84,7 +84,7 @@ watch(isSearchOpen, async (isOpen) => {
 
       <template #default="{ isExpanded }">
         <div
-          class="bottom-sheet-content"
+          class="drawer-content"
           :class="isExpanded === undefined ? 'max-h-[70dvh]' : 'h-full'"
         >
           <UiTitleModal>{{ t('search.title') }}</UiTitleModal>
@@ -95,6 +95,6 @@ watch(isSearchOpen, async (isOpen) => {
           />
         </div>
       </template>
-    </BottomSheet>
+    </Drawer>
   </Teleport>
 </template>

@@ -4,7 +4,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
-  bottomSheetStyle?: Record<string, string>
+  drawerStyle?: Record<string, string>
   disabledWalletIds?: WalletId[]
   title?: string
   walletId: WalletId
@@ -22,11 +22,11 @@ const isLaptop = useIsLaptop()
 </script>
 
 <template>
-  <BottomSheetOrDropdown
-    :bottomSheetStyle="props.bottomSheetStyle"
+  <DrawerOrDropdown
+    :drawerStyle="props.drawerStyle"
     :isOpen="isShow"
     :title="props.title"
-    dragClassesCustom="bottom-sheet-drag-classes-custom h-full"
+    contentClass="bottom-sheet-drag-classes-custom h-full"
     isShowCloseBtn
     @closeModal="isShow = false"
     @openModal="isShow = true"
@@ -53,5 +53,5 @@ const isLaptop = useIsLaptop()
         @selected="(id: WalletId) => emit('selected', id)"
       />
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

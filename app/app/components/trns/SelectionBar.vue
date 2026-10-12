@@ -161,7 +161,7 @@ watch(description, (value) => {
       @click="apply"
     />
 
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
       class="flex shrink-0 grow-0 snap-start gap-1"
       :isOpen="isDescriptionOpen"
       popoverBodyClass="md:pb-3"
@@ -197,9 +197,9 @@ watch(description, (value) => {
           </UiButtonAccent>
         </div>
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
 
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
       v-if="!hasTransfer"
       class="flex shrink-0 grow-0 snap-start gap-1"
       :isOpen="isCategoryOpen"
@@ -233,9 +233,9 @@ watch(description, (value) => {
           />
         </div>
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
 
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
       v-if="!hasTransfer"
       class="flex shrink-0 grow-0 snap-start gap-1"
       :isOpen="isWalletOpen"
@@ -268,7 +268,7 @@ watch(description, (value) => {
           />
         </div>
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
 
     <FormDate
       v-model="date"

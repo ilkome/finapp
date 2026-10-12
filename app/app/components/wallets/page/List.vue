@@ -182,7 +182,7 @@ function cycleGrouping() {
           </UTooltip>
         </div>
 
-        <BottomSheetOrDropdown
+        <DrawerOrDropdown
           v-if="walletsStore.sortedIds.length > 1"
           align="end"
           :isOpen="isOpen"
@@ -334,7 +334,7 @@ function cycleGrouping() {
               </div>
             </div>
           </template>
-        </BottomSheetOrDropdown>
+        </DrawerOrDropdown>
 
         <UTooltip :text="t('base.done')">
           <UiActionButton

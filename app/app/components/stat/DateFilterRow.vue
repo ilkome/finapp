@@ -21,7 +21,7 @@ const snapPoints = useSheetSnapPoints()
       <FilterSearchToggle />
     </template>
 
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
       class="flex shrink-0 snap-start snap-always gap-1"
       :isOpen="isFilterOpen"
       popoverBodyClass="py-0! md:pb-0!"
@@ -40,7 +40,7 @@ const snapPoints = useSheetSnapPoints()
       <template #custom="{ close, isExpanded }">
         <FilterPanel :isExpanded="isExpanded" @close="close" />
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
     <FilterSelected
       v-if="filter.isShow.value"
       class="snap-start snap-always *:snap-start *:snap-always"

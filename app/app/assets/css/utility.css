@@ -68,16 +68,16 @@
   @apply border border-b-0 border-accented;
 }
 
-@utility bottom-sheet-content {
+@utility drawer-content {
   @apply grid h-full max-h-[98dvh] grid-rows-[auto_1fr_auto] overflow-hidden;
   padding-bottom: calc(env(safe-area-inset-bottom) - 22px);
 }
 
-@utility bottom-sheet-content-inside {
+@utility drawer-body {
   @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-3 py-px;
 }
 
-@utility bottom-sheet-content-bottom {
+@utility drawer-footer {
   @apply flex items-center justify-center p-2;
 }
 

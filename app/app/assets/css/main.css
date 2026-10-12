@@ -29,7 +29,7 @@
   }
 
   /* Reka UI popper portals (UPopover, UDropdownMenu, UContextMenu, UTooltip)
-     render at body level with inline z-index: auto. Bump above BottomSheet (z-50)
+     render at body level with inline z-index: auto. Bump above Drawer (z-50)
      and trnForm Sidebar (z-50) so nested menus stay clickable inside modals. */
   [data-reka-popper-content-wrapper] {
     z-index: 60 !important;

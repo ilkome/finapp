@@ -55,7 +55,7 @@ test.describe('Categories children selector on /new', () => {
 
     await page.getByText(T.childCategories).first().click()
 
-    const sheet = page.locator('.bottom-sheet-content').last()
+    const sheet = page.locator('.drawer-content').last()
     const candidates = sheet.locator('button[aria-pressed]')
     await expect(candidates.first()).toBeVisible()
     await candidates.nth(0).click()
@@ -94,7 +94,7 @@ test.describe('Categories children selector on /new', () => {
 
     // Demo seeds always include "Entertainment" as a root with children but no own trns,
     // so it appears in categoriesForBeParent. Click it inside the bottom sheet.
-    const sheet = page.locator('.bottom-sheet-content').last()
+    const sheet = page.locator('.drawer-content').last()
     const target = sheet.getByText(/^(Entertainment|Развлечения)$/).first()
     // Selecting a parent closes the sheet automatically (onParentSelect → close()).
     await target.click()
