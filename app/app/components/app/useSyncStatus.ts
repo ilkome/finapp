@@ -15,16 +15,18 @@ export function useSyncStatus() {
   const { isDemo } = useDemo()
 
   // uid resolves asynchronously after the first render, so subscribe from a watch, not at call time.
-  // The watch binds to the first caller's scope (the header menu, which lives as long as the app).
+  // Detached scope: the watch must outlive whichever component called first.
   if (import.meta.client && !armed) {
     armed = true
     let stop: (() => void) | null = null
-    watch(
+    effectScope(true).run(() => watch(
       () => userStore.uid,
       (uid) => {
         if (uid && !isDemo.value && !stop) {
           stop = subscribeSyncStatus((next) => {
-            status.value = next
+            const prev = status.value
+            if (prev.connected !== next.connected || prev.pending !== next.pending || prev.uploadError !== next.uploadError)
+              status.value = next
           })
         }
         else if (!uid && stop) {
@@ -34,7 +36,7 @@ export function useSyncStatus() {
         }
       },
       { immediate: true },
-    )
+    ))
   }
 
   return {
