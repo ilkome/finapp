@@ -521,6 +521,7 @@ export default {
       appearance: 'Appearance',
       beta: 'Beta',
       general: 'General',
+      sidebar: 'Sidebar',
     },
     sidebar: {
       auto: 'Automatic',

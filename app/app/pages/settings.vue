@@ -31,13 +31,21 @@ const confirm = useConfirm()
 const route = useRoute()
 const router = useRouter()
 
-type Section = 'general' | 'appearance' | 'account' | 'beta' | 'about'
+type Section = 'general' | 'appearance' | 'sidebar' | 'account' | 'beta' | 'about'
 // Beta disappears with the last flag instead of showing an empty card.
-const sections: Section[] = ['general', 'appearance', 'account', ...(featureIds.length ? ['beta' as const] : []), 'about']
+// The sidebar exists only on the laptop layout.
+const sections = computed<Section[]>(() => [
+  'general',
+  'appearance',
+  ...(isLaptop.value ? ['sidebar' as const] : []),
+  'account',
+  ...(featureIds.length ? ['beta' as const] : []),
+  'about',
+])
 
 // In the query, so a reload or a shared link reopens the same section.
 const activeSection = computed<Section>({
-  get: () => sections.find(id => id === route.query.tab) ?? 'general',
+  get: () => sections.value.find(id => id === route.query.tab) ?? 'general',
   set: tab => router.replace({ query: { ...route.query, tab } }),
 })
 
@@ -113,17 +121,14 @@ function onGenerateDemoData() {
             <NotificationsSettings />
           </template>
 
-          <template v-else-if="activeSection === 'appearance'">
-            <ThemePicker />
+          <ThemePicker v-else-if="activeSection === 'appearance'" />
 
-            <!-- The sidebar exists only on the laptop layout. -->
-            <UiSettingsCard v-if="isLaptop" :title="t('settings.sidebar.title')">
-              <div class="grid gap-4">
-                <LayoutSidebarListPicker kind="wallet" />
-                <LayoutSidebarListPicker kind="category" />
-              </div>
-            </UiSettingsCard>
-          </template>
+          <UiSettingsCard v-else-if="activeSection === 'sidebar'" :title="t('settings.sidebar.title')">
+            <div class="grid gap-4">
+              <LayoutSidebarListPicker kind="wallet" />
+              <LayoutSidebarListPicker kind="category" />
+            </div>
+          </UiSettingsCard>
 
           <template v-else-if="activeSection === 'account'">
             <!-- User -->

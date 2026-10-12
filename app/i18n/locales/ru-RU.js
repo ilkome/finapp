@@ -521,6 +521,7 @@ export default {
       appearance: 'Оформление',
       beta: 'Бета',
       general: 'Основные',
+      sidebar: 'Сайдбар',
     },
     sidebar: {
       auto: 'автоматически',
