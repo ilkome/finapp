@@ -1,0 +1,30 @@
+# TODO
+
+## Try `server.builder: 'vite'` again
+
+Nuxt 4.6 `@nuxt/vite-server` builds faster than Nitro (build 7s vs 10-23s, dev HTML 2.5s vs 3.4s), but on 2026-10-08 it broke the app because these modules hook into Nitro:
+
+- `@nuxtjs/i18n` 10.6.0 registers its defines in `nitro:init`: dev fails with `ReferenceError: __ROUTE_NAME_SEPARATOR__ is not defined`.
+- `@nuxt/fonts` 0.14.0 emits `/_fonts/*.woff2` via Nitro `publicAssets`: the build ships CSS pointing at missing fonts.
+- `@vite-pwa/nuxt` 1.1.1: no `sw.js` or `manifest.webmanifest`, so offline mode is gone.
+
+Retry when all three work without Nitro. Check: the app mounts in `pnpm dev`, `.output/public` has `_fonts/`, `sw.js` and `manifest.webmanifest`, and the offline e2e suite passes.
+
+## Follow-ups
+
+- Missing exchange rate UI: `app/app/components/amount/getTotal.ts` `TotalReturns.missingRates` lists currencies left out of a total. Show a warning badge next to the incomplete total on the stat summary (`stat/report/`) and the wallets page totals, and a one-time `showErrorToast('currencies.errors.missingRate')` from `currencies/useCurrenciesStore.ts` `onMissing` (i18n key `currencies.errors.missingRate`, en + ru). `wallets/counts.ts` sums through `toBase`, which counts a missing rate as 0, so it needs `tryToBase` too to report there.
+
+## Deferred optimizations
+
+Known ceilings left on purpose. Fix one when its trigger shows up.
+
+- `app/app/components/trns/reconcile.ts` `reconcileRows`: a row the transform rejects (invalid loan or schedule row) makes the length check fail on every emit, so the loans maps rebuild on each SQLite emission instead of only on change. Trigger: `skipped invalid loan row` in logs. Fix: remember skipped ids with their `updatedAt` and count them in the no-op check.
+- `app/app/components/categories/useCategoriesStore.ts` + `user/useUserStore.ts`: two watches on `user_settings`; the categories one now skips unchanged `categoryOverrides`, but every settings write still runs the second query. Trigger: settings writes show up in profiles. Fix: one watch in the user store exposing `categoryOverrides`.
+- `app/app/components/loans/useLoansStore.ts` `costByWalletId`: no memo, `costOf` walks each credit wallet's trns on every trn change. A content key would cost the same single pass, and the portfolio recomputes through `byWalletId` anyway. Trigger: credit wallets with thousands of trns showing in a profile. Fix: memo per wallet keyed on the trns array identity once `trnsByCreditWallet` keeps unchanged arrays.
+- `app/app/components/amount/getTotal.ts` `getWalletsTotals`: walks the whole trn history on every trn change (`walletTotals` computed in the wallets store), O(N). Trigger: a wallets-store recompute showing in a profile on a large account. Fix: incremental per-wallet totals in the trns store on `saveTrns` / `removeTrns`.
+- `app/app/components/stat/intervals.ts` `bucketTrnsByIntervals` and `stat/chart/categoryBreakdown.ts`: one `getTotal` call per interval and per interval x category, each computing every bucket to read one. Measured at 2.2-2.4 ms for 20k trns in 15k interval x category buckets (3 years daily x 30 categories), so not worth it now. On 10k trns x 365 daily intervals x 30 categories the chart series plus the three category pies now aggregate once (3.4 ms, was 6.1 ms with five passes), and the `stat/categories/categoryViews.ts` trend nest adds 1.5 ms on top of 1.1 ms for the views. Trigger: the stat page or categories chart showing `getTotal` in a profile. Fix: `getTotal` over an iterable that buckets by interval / `categoryId` in one walk (`getTotalsByCategory`), or a `sumTrns(ids, pick, toBase)` returning one number.
+- `app/app/components/categories/utils.ts` `getTransactibleCategoriesIds`: rebuilds a children map over all categories per call, and one stat report recompute calls it 4+ times (`useStatReportData.ts` `filteredTransactibleCategoryIds` and `selection`, `useStatReportChart.ts` `categoryBreakdownFilter`, `useStatWalletPeriod.ts`). About 4 us per call at 30 categories, so not worth it. Trigger: hundreds of categories or the call showing in a profile. Fix: read the store's `childrenMap` computed (mind it sorts children, the util keeps insertion order) and reuse `filteredTransactibleCategoryIds` in `selection` and the chart.
+- `app/app/components/trns/useTrnsStore.ts` + `wallets/useWalletsStore.ts` `hasItems`: `Object.keys(items).length` allocates an N-element array per store change. A `for...in` early return measured the same (0.6 ms at 10k trns) on a freshly replaced map, since V8 builds the enum cache either way. Trigger: `hasItems` showing in a profile. Fix: a count kept by the code that builds the map.
+- `app/app/components/wallets/useWalletsCounts.ts` `totalWalletsCount`: walks `itemsComputed` inside `counts`, which already depends on `itemsComputed`, so a separate computed saves no recompute and the walk is over wallets only. Trigger: none expected. Fix: `walletsStore.sortedIds` with an archived check on `items`.
+- `app/app/components/stat/report/useStatReportData.ts` `rangeTrnsIds` + `chartRangeTrnsIds`: two full walks over the page trns with overlapping ranges (the chart range is the buffered superset when the chart window is on), about 0.6 ms each at 10k trns. The stat buckets cannot be sliced from the chart buckets: `chartRangeTrnsIds` is filtered by `selectedTypesMapping` while `rangeTrnsIds` keeps every type, and interval totals need transfers. Trigger: these walks showing in a profile. Fix: one walk over the chart range without the type filter, apply the types only when bucketing the chart.
+- `app/app/components/demo/buildDemoLoans.ts` payment loop: a full `reconcileSchedule` per payment, so a loan costs payments x reconcile; all demo loans build in ~15 ms cold (vitest, M-series), on first demo open and on "Update demo data". Trigger: a longer or older demo loan pushing generation past ~100 ms. Fix: reconcile once per deviation (prepayment, catch-up, payoff) and walk the plain rows from that result.
