@@ -2,7 +2,6 @@
 import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
 
 import { useDemo } from '~/components/demo/useDemo'
-import { useSidebarListsVisibility } from '~/components/layout/useSidebarLists'
 import {
   USER_MENU_PANEL_CHILDREN,
   USER_MENU_PANEL_CHILDREN_PHONE,
@@ -26,7 +25,6 @@ const { locale, t } = useI18n()
 const router = useRouter()
 const isLaptop = useIsLaptop()
 const isShowMenuLabels = useMenuLabelVisibility()
-const sidebarLists = useSidebarListsVisibility()
 const { generateDemoData, isDemo } = useDemo()
 const {
   blackAsPrimary,
@@ -256,18 +254,6 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
           <span class="text-xs font-normal text-dimmed capitalize">{{ row.value }}</span>
           <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
         </button>
-
-        <template v-if="activePanel === 'appearance' && isLaptop">
-          <UiSwitchItem
-            v-for="kind in (['wallets', 'categories'] as const)"
-            :key="kind"
-            :checkboxValue="sidebarLists[kind].value"
-            :title="t(`settings.sidebar.${kind}`)"
-            class="mt-1"
-            trailing
-            @toggle="sidebarLists[kind].value = !sidebarLists[kind].value"
-          />
-        </template>
 
         <!-- Bottom-nav labels only exist on the phone layout. -->
         <UiSwitchItem
