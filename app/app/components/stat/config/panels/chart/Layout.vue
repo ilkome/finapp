@@ -81,6 +81,7 @@ const activeBarLayout = computed(() => statConfig.chart.value.isGrouped ? 'stack
 
   <StatConfigFieldRow v-if="activeChartType === 'bar'" parameterId="chart.isGrouped" :title="t('stat.view.barLayout.title')">
     <USelect
+      data-reka-swipe-ignore
       class="w-40 shrink-0"
       :aria-label="t('stat.view.barLayout.title')"
       :content="{ position: 'item-aligned' }"

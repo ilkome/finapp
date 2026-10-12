@@ -44,6 +44,7 @@ const cellClasses = 'flex w-10 shrink-0 items-center justify-center self-stretch
     >
       <div
         class="sortHandle cursor-grab active:cursor-grabbing" :class="[cellClasses]"
+        data-reka-swipe-ignore
         :aria-label="$t('base.sort')"
       >
         <Icon name="lucide:grip-vertical" size="20" />

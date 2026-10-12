@@ -11,13 +11,11 @@ const isOpen = ref(false)
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
+    v-model:open="isOpen"
     :align="collapsed ? 'start' : 'center'"
-    :isOpen="isOpen"
     popoverBodyClass="md:pb-0"
     popoverContentClass="w-74"
-    @openModal="isOpen = true"
-    @closeModal="isOpen = false"
   >
     <template #trigger="{ isActive }">
       <UTooltip :text="triggerLabel" :disabled="!collapsed">
@@ -53,5 +51,5 @@ const isOpen = ref(false)
         <LayoutUserMenuPanels sessionActions @close="close" />
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

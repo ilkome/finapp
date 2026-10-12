@@ -36,13 +36,11 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     :isStart="false"
     @changeDate="changeDate"
   >
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
+      v-model:open="isShow"
       :title="t('common.date')"
-      :isOpen="isShow"
       class="grow"
       isShowCloseBtn
-      @openModal="isShow = true"
-      @closeModal="isShow = false"
     >
       <template #trigger>
         <UiActionButton class="grid size-full content-center justify-start! px-2 text-left text-muted">
@@ -60,6 +58,6 @@ function changeDate(way: 'prev' | 'next' | 'today') {
           <TrnFormCalendar :onClose="close" />
         </div>
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
   </UiNavArrows>
 </template>

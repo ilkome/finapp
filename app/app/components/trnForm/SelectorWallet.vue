@@ -4,8 +4,8 @@ import type { WalletId } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
-  bottomSheetStyle?: Record<string, string>
   disabledWalletIds?: WalletId[]
+  drawerStyle?: Record<string, string>
   title?: string
   walletId: WalletId
 }>()
@@ -22,14 +22,12 @@ const isLaptop = useIsLaptop()
 </script>
 
 <template>
-  <BottomSheetOrDropdown
-    :bottomSheetStyle="props.bottomSheetStyle"
-    :isOpen="isShow"
+  <DrawerOrDropdown
+    v-model:open="isShow"
+    :drawerStyle="props.drawerStyle"
     :title="props.title"
-    dragClassesCustom="bottom-sheet-drag-classes-custom h-full"
+    contentClass="h-full"
     isShowCloseBtn
-    @closeModal="isShow = false"
-    @openModal="isShow = true"
   >
     <template #trigger>
       <WalletsItem
@@ -53,5 +51,5 @@ const isLaptop = useIsLaptop()
         @selected="(id: WalletId) => emit('selected', id)"
       />
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

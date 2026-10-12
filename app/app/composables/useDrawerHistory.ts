@@ -8,9 +8,9 @@ import type { Router } from 'vue-router'
  */
 
 type ScrollPosition = { left: number, top: number }
-type SheetEntry = { requestClose: () => void, restoreScroll: boolean, scroll: ScrollPosition }
+type DrawerEntry = { requestClose: () => void, restoreScroll: boolean, scroll: ScrollPosition }
 
-const stack: SheetEntry[] = []
+const stack: DrawerEntry[] = []
 
 // Synthetic entries actually pushed, tracked apart from stack.length so a burst
 // of open/close in one tick reconciles to a single net history change - closing
@@ -35,7 +35,7 @@ function getScrollPosition(): ScrollPosition {
 function pushEntry(scroll: ScrollPosition) {
   const currentState = { ...window.history.state, scroll }
   window.history.replaceState(currentState, '')
-  window.history.pushState({ ...currentState, __sheet: true, scroll: null }, '')
+  window.history.pushState({ ...currentState, __drawer: true, scroll: null }, '')
   syntheticDepth += 1
 }
 
@@ -92,7 +92,7 @@ function onPopState() {
   if (stack.length === 0) {
     // Forward into an already-consumed synthetic entry: bounce back so it can
     // neither re-open a sheet nor strand a phantom entry.
-    if (window.history.state?.__sheet) {
+    if (window.history.state?.__drawer) {
       poppingSelf = true
       window.history.back()
     }
@@ -103,8 +103,8 @@ function onPopState() {
   stack.pop()?.requestClose()
 }
 
-export function registerSheet(requestClose: () => void): () => void {
-  const entry: SheetEntry = { requestClose, restoreScroll: true, scroll: getScrollPosition() }
+export function registerDrawer(requestClose: () => void): () => void {
+  const entry: DrawerEntry = { requestClose, restoreScroll: true, scroll: getScrollPosition() }
   let unregistered = false
   stack.push(entry)
   scheduleReconcile()
@@ -132,7 +132,7 @@ export function registerSheet(requestClose: () => void): () => void {
   }
 }
 
-export function installSheetHistory(r: Router): void {
+export function installDrawerHistory(r: Router): void {
   if (installed)
     return
   installed = true
@@ -140,8 +140,8 @@ export function installSheetHistory(r: Router): void {
 
   window.addEventListener('popstate', onPopState)
 
-  if (window.history.state?.__sheet)
-    window.history.replaceState({ ...window.history.state, __sheet: undefined }, '')
+  if (window.history.state?.__drawer)
+    window.history.replaceState({ ...window.history.state, __drawer: undefined }, '')
 
   // Navigating away closes every open sheet. The topmost synthetic entry we sit
   // on is consumed by re-issuing the navigation as a replace(): this avoids the

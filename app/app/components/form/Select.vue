@@ -20,6 +20,7 @@ const model = computed({
 <template>
   <USelectMenu
     v-model="model"
+    data-reka-swipe-ignore
     :items="props.options"
     :searchInput="false"
     valueKey="value"

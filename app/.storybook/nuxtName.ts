@@ -1,8 +1,8 @@
 const words = (part: string) => part.match(/[A-Z]?[a-z0-9]+|[A-Z]+(?![a-z])/g) ?? []
 
 // Nuxt's component name: folder words + file words, minus the folder tail the file name already
-// starts with (`amount/Amount.vue` -> `Amount`, `bottomSheet/BottomSheetModal.vue` ->
-// `BottomSheetModal`) and minus a trailing `Index`.
+// starts with (`amount/Amount.vue` -> `Amount`, `drawer/DrawerOrDropdown.vue` ->
+// `DrawerOrDropdown`) and minus a trailing `Index`.
 export function nuxtComponentName(relativePath: string) {
   const parts = relativePath.replace(/\.vue$/, '').split('/')
   const file = words(parts.pop()!).map(word => word.toLowerCase())

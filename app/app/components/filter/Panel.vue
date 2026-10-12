@@ -18,7 +18,6 @@ const props = withDefaults(defineProps<{
   /** Entity tabs only, without the extras slide. */
   hideMore?: boolean
   initialSlide?: 'category' | 'wallet'
-  isExpanded?: boolean
   mode?: 'filter' | 'select'
   title?: string
 }>(), {
@@ -122,13 +121,12 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
 
 <template>
   <div
-    class="relative grid w-full min-w-0 grid-rows-[auto_1fr] overflow-hidden"
-    :class="[
-      !isSelectMode && '[&_.scroller-block]:pb-20',
-      props.isExpanded === undefined
-        ? 'max-h-[min(600px,85dvh)] min-h-[min(50dvh,600px)]'
-        : 'h-full',
-    ]"
+    class="
+      relative grid max-h-[min(600px,85dvh)] min-h-[min(50dvh,600px)] w-full min-w-0 grid-rows-[auto_1fr]
+      overflow-hidden group-data-snap/drawer:h-full group-data-snap/drawer:max-h-none
+      group-data-snap/drawer:min-h-0
+    "
+    :class="!isSelectMode && '[&_.scroller-block]:pb-20'"
   >
     <div class="relative z-20 bg-default/90 backdrop-blur">
       <FilterPanelHeader
@@ -215,9 +213,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
     <div
       v-if="!isSelectMode"
       class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2 md:px-1"
-      :style="props.isExpanded !== undefined
-        ? { transform: 'translateY(calc(-1 * var(--sheet-ty, 0px)))' }
-        : undefined"
+      style="transform: translateY(calc(-1 * var(--drawer-snap-point-offset, 0px)))"
     >
       <div
         class="pointer-events-none absolute inset-x-0 -top-6 bottom-0 -z-10"

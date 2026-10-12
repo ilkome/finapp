@@ -62,12 +62,12 @@ onBeforeUnmount(onClose)
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
     v-if="width < 767"
-    :isOpen
+    :open="isOpen"
+    :title="t('stat.config.menu.label')"
     :unmountOnHide="false"
-    @openModal="onOpen"
-    @closeModal="onClose"
+    @update:open="value => value ? onOpen() : onClose()"
   >
     <template #trigger>
       <UiTriggerButton
@@ -78,36 +78,21 @@ onBeforeUnmount(onClose)
     </template>
 
     <template #custom>
-      <UiTitleModal>
-        {{ t('stat.config.menu.label') }}
-      </UiTitleModal>
-      <div class="bottom-sheet-content-inside scroller-block gap-4 px-3! pb-0!">
+      <div class="drawer-body gap-4 pb-0!">
         <div class="grid min-w-0 gap-4">
           <slot :close="onClose" />
         </div>
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 
-  <Teleport v-if="width < 767" to="body">
-    <LazyBottomSheet
-      v-if="isOpen && activePanel"
-      isShow
-      dragClassesCustom="bottom-sheet-drag-classes-custom"
-      @closed="back()"
-    >
-      <template #handler>
-        <BottomSheetHandler />
-      </template>
-
-      <div class="bottom-sheet-content">
-        <UiTitleModal>{{ panelTitle }}</UiTitleModal>
-        <div class="bottom-sheet-content-inside scroller-block px-3!">
-          <StatConfigPanelScreen :panel="activePanel" />
-        </div>
+  <template v-if="width < 767">
+    <LazyDrawer v-if="isOpen && activePanel" :title="panelTitle" @closed="back()">
+      <div class="drawer-body">
+        <StatConfigPanelScreen :panel="activePanel" />
       </div>
-    </LazyBottomSheet>
-  </Teleport>
+    </LazyDrawer>
+  </template>
 
   <template v-else>
     <UTooltip :text="t('stat.config.menu.label')">

@@ -70,6 +70,7 @@ function conditionActionItems(index: number) {
       <div v-if="'children' in child" class="grid gap-2">
         <USelect
           v-if="index > 0"
+          data-reka-swipe-ignore
           class="w-20"
           :content="{ position: 'item-aligned' }"
           :items="operators"
@@ -94,6 +95,7 @@ function conditionActionItems(index: number) {
         <div class="flex min-w-0 flex-wrap items-center gap-1">
           <USelect
             v-if="index > 0"
+            data-reka-swipe-ignore
             class="w-20 shrink-0"
             :content="{ position: 'item-aligned' }"
             :items="operators"

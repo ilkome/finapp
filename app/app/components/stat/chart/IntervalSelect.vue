@@ -32,6 +32,7 @@ const availableIntervals = computed(() =>
 <template>
   <USelect
     v-if="availableIntervals.length > 1"
+    data-reka-swipe-ignore
     :modelValue="period"
     :items="availableIntervals"
     :ui="{

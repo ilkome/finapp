@@ -26,6 +26,9 @@ const editCategoryId = props.categoryId ?? generateId()
 const isUpdateChildCategoriesColor = ref(true)
 const prevChildIds = computed(() => props.categoryId ? categoriesStore.getChildrenIds(props.categoryId) : [])
 const selectedChildIds = ref<CategoryId[]>([...prevChildIds.value])
+const childrenTitle = computed(() => selectedChildIds.value.length > 0
+  ? `${t('categories.form.selectChildren')} (${t('categories.form.children.selected', { count: selectedChildIds.value.length })})`
+  : t('categories.form.selectChildren'))
 let lastSyncedPrevIds = [...prevChildIds.value]
 
 // Don't blow away user's in-progress selection when prevChildIds changes due
@@ -374,20 +377,21 @@ async function onSave() {
   </div>
 
   <!-- Colors -->
-  <BottomSheetModal
+  <Drawer
     v-if="modals.colors"
+    :title="t('categories.form.selectColor')"
+    contentClass="min-h-[50dvh]"
     @closed="modals.colors = false"
   >
-    <template #default="{ close }">
-      <div>
-        <UiTitleModal>{{ t('categories.form.selectColor') }}</UiTitleModal>
-        <CategoriesItem
-          :categoryId="editCategoryId"
-          :category="categoryPlaceholder"
-        />
-      </div>
+    <template #header>
+      <CategoriesItem
+        :categoryId="editCategoryId"
+        :category="categoryPlaceholder"
+      />
+    </template>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+    <template #default="{ close }">
+      <div class="drawer-body">
         <ColorPalette
           :activeColor="props.categoryForm.color"
           :icon="props.categoryForm.icon"
@@ -404,23 +408,24 @@ async function onSave() {
         </UiButtonAccent>
       </div>
     </template>
-  </BottomSheetModal>
+  </Drawer>
 
   <!-- Icon -->
-  <BottomSheetModal
+  <Drawer
     v-if="modals.icon"
+    :title="t('categories.form.selectIcon')"
+    contentClass="min-h-[50dvh]"
     @closed="modals.icon = false"
   >
-    <template #default="{ close }">
-      <div class="grid gap-3 pt-3 pb-1">
-        <UiTitleModal>{{ t('categories.form.selectIcon') }}</UiTitleModal>
-        <CategoriesItem
-          :categoryId="editCategoryId"
-          :category="categoryPlaceholder"
-        />
-      </div>
+    <template #header>
+      <CategoriesItem
+        :categoryId="editCategoryId"
+        :category="categoryPlaceholder"
+      />
+    </template>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+    <template #default="{ close }">
+      <div class="drawer-body">
         <FormElement class="pt-2 pb-4">
           <template #label>
             {{ t('categories.form.icon.desc') }}
@@ -446,7 +451,7 @@ async function onSave() {
           <div
             v-for="icon in iconGroup"
             :key="icon"
-            :class="cn('flex items-center justify-center size-10 rounded-full border-2 border-transparent text-icon-primary',
+            :class="cn('flex size-10 items-center justify-center rounded-full border-2 border-transparent text-icon-primary',
                        icon === props.categoryForm.icon && 'border-primary',
             )"
             :style="{ background: props.categoryForm.color }"
@@ -457,7 +462,7 @@ async function onSave() {
         </div>
       </div>
 
-      <div class="bottom-sheet-content-bottom">
+      <div class="drawer-footer">
         <UiButtonAccent
           @click="close"
         >
@@ -465,29 +470,26 @@ async function onSave() {
         </UiButtonAccent>
       </div>
     </template>
-  </BottomSheetModal>
+  </Drawer>
 
   <!-- Children -->
-  <BottomSheetModal
+  <Drawer
     v-if="modals.children"
+    :title="childrenTitle"
+    contentClass="min-h-[50dvh]"
     @closed="modals.children = false; childrenSearch = ''"
   >
-    <template #default="{ close }">
-      <UiTitleModal>
-        {{ t('categories.form.selectChildren') }}
-        <span v-if="selectedChildIds.length > 0" class="ml-2 text-sm font-normal text-muted">
-          {{ t('categories.form.children.selected', { count: selectedChildIds.length }) }}
-        </span>
-      </UiTitleModal>
-
+    <template #header>
       <div class="px-3 pt-1 pb-2">
         <FormInput
           v-model="childrenSearch"
           :placeholder="t('categories.form.children.searchPlaceholder')"
         />
       </div>
+    </template>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+    <template #default="{ close }">
+      <div class="drawer-body">
         <div
           v-if="childrenCandidateIds.length === 0"
           class="p-4 text-center text-muted"
@@ -554,7 +556,7 @@ async function onSave() {
         </template>
       </div>
 
-      <div class="bottom-sheet-content-bottom">
+      <div class="drawer-footer">
         <UiButtonAccent
           @click="applyChildrenSelection(close)"
         >
@@ -562,17 +564,17 @@ async function onSave() {
         </UiButtonAccent>
       </div>
     </template>
-  </BottomSheetModal>
+  </Drawer>
 
   <!-- Parent -->
-  <BottomSheetModal
+  <Drawer
     v-if="modals.parent"
+    :title="t('categories.form.selectParent')"
+    contentClass="min-h-[50dvh]"
     @closed="modals.parent = false"
   >
     <template #default="{ close }">
-      <UiTitleModal>{{ t('categories.form.selectParent') }}</UiTitleModal>
-
-      <div class="bottom-sheet-content-inside scroller-block">
+      <div class="drawer-body">
         <UiChipButton
           :isActive="props.categoryForm.parentId === 0"
           @click="onParentSelect(false, close)"
@@ -588,7 +590,7 @@ async function onSave() {
         />
       </div>
 
-      <div class="bottom-sheet-content-bottom">
+      <div class="drawer-footer">
         <UiButtonAccent
           @click="close"
         >
@@ -596,5 +598,5 @@ async function onSave() {
         </UiButtonAccent>
       </div>
     </template>
-  </BottomSheetModal>
+  </Drawer>
 </template>

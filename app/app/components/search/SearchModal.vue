@@ -9,7 +9,6 @@ const { isSearchOpen, searchTerm } = useSearch()
 const trnsFormStore = useTrnsFormStore()
 
 const isDesktop = useIsLaptop()
-const snapPoints = useSheetSnapPoints(0.42)
 
 function onSelect(item: SearchResultItem) {
   isSearchOpen.value = false
@@ -30,7 +29,7 @@ function onSelect(item: SearchResultItem) {
   }
 }
 
-function onBottomSheetClosed() {
+function onDrawerClosed() {
   isSearchOpen.value = false
   searchTerm.value = ''
 }
@@ -69,32 +68,13 @@ watch(isSearchOpen, async (isOpen) => {
     </template>
   </UModal>
 
-  <!-- Mobile: BottomSheet -->
-  <Teleport to="body">
-    <BottomSheet
-      v-if="!isDesktop && isSearchOpen"
-      isShow
-      dragClassesCustom="bottom-sheet-drag-classes-custom"
-      :snapPoints="snapPoints"
-      @closed="onBottomSheetClosed"
-    >
-      <template #handler>
-        <BottomSheetHandler />
-      </template>
-
-      <template #default="{ isExpanded }">
-        <div
-          class="bottom-sheet-content"
-          :class="isExpanded === undefined ? 'max-h-[70dvh]' : 'h-full'"
-        >
-          <UiTitleModal>{{ t('search.title') }}</UiTitleModal>
-
-          <SearchCommandPalette
-            :class="isExpanded === undefined ? 'h-[70dvh] px-2' : 'h-full px-2'"
-            @select="onSelect"
-          />
-        </div>
-      </template>
-    </BottomSheet>
-  </Teleport>
+  <!-- Mobile: Drawer -->
+  <Drawer
+    v-if="!isDesktop && isSearchOpen"
+    :title="t('search.title')"
+    :collapsedSnap="0.42"
+    @closed="onDrawerClosed"
+  >
+    <SearchCommandPalette class="h-full px-2" @select="onSelect" />
+  </Drawer>
 </template>

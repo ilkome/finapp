@@ -55,7 +55,8 @@ function saveOrder(ids: string[]) {
 }
 const isOpen = ref(false)
 const isSortOpen = ref(false)
-const snapPoints = useSheetSnapPoints()
+const [DefineBody, ReuseBody] = createReusableTemplate()
+const isLaptop = useIsLaptop()
 </script>
 
 <template>
@@ -70,13 +71,11 @@ const snapPoints = useSheetSnapPoints()
 
       <template v-if="isShown">
         <div class="flex items-center gap-2">
-          <BottomSheetOrDropdown
+          <DrawerOrDropdown
+            v-model:open="isOpen"
             class="justify-self-start"
-            :isOpen
             popoverBodyClass="py-0! md:pb-0!"
-            :snapPoints
-            @closeModal="isOpen = false"
-            @openModal="isOpen = true"
+            :collapsedSnap="500"
           >
             <template #trigger="{ isActive }">
               <UiTitleDropdown :isActive>
@@ -86,10 +85,10 @@ const snapPoints = useSheetSnapPoints()
               </UiTitleDropdown>
             </template>
 
-            <template #custom="{ close, isExpanded }">
-              <FilterPanel hideMore :isExpanded :title="t('settings.sidebar.title')" @close="close" />
+            <template #custom="{ close }">
+              <FilterPanel hideMore :title="t('settings.sidebar.title')" @close="close" />
             </template>
-          </BottomSheetOrDropdown>
+          </DrawerOrDropdown>
 
           <UTooltip v-if="count > 1" :text="t('base.sort')">
             <UiActionButton :ariaLabel="t('base.sort')" @click="isSortOpen = true">
@@ -98,11 +97,7 @@ const snapPoints = useSheetSnapPoints()
           </UTooltip>
         </div>
 
-        <BottomSheetOrModal
-          v-if="isSortOpen"
-          :title="t('base.sort')"
-          @closed="isSortOpen = false"
-        >
+        <DefineBody>
           <WalletsSortableList
             :ids="pickedIds"
             class="grid gap-1"
@@ -130,7 +125,34 @@ const snapPoints = useSheetSnapPoints()
               </div>
             </template>
           </WalletsSortableList>
-        </BottomSheetOrModal>
+        </DefineBody>
+
+        <template v-if="isSortOpen">
+          <UModal
+            v-if="isLaptop"
+            defaultOpen
+            :title="t('base.sort')"
+            :ui="{ content: 'max-w-lg' }"
+            @after:leave="isSortOpen = false"
+          >
+            <template #body>
+              <ReuseBody />
+            </template>
+          </UModal>
+
+          <Drawer
+            v-else
+            :title="t('base.sort')"
+            contentClass="min-h-[50dvh]"
+            @closed="isSortOpen = false"
+          >
+            <template #default>
+              <div class="drawer-body">
+                <ReuseBody />
+              </div>
+            </template>
+          </Drawer>
+        </template>
       </template>
     </div>
   </UiSettingsCard>

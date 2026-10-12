@@ -11,12 +11,10 @@ const isOpen = ref(false)
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
+    v-model:open="isOpen"
     align="end"
-    :isOpen="isOpen"
     popoverBodyClass="md:pb-0"
-    @openModal="isOpen = true"
-    @closeModal="isOpen = false"
   >
     <template #trigger="{ isActive }">
       <span class="relative inline-flex">
@@ -43,5 +41,5 @@ const isOpen = ref(false)
         <LayoutUserMenuPanels :sessionActions @close="close" />
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

@@ -83,14 +83,12 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
           </UiActionButton>
         </UTooltip>
 
-        <BottomSheetOrDropdown
+        <DrawerOrDropdown
+          v-model:open="isViewSettingsOpen"
           align="end"
-          :isOpen="isViewSettingsOpen"
           popoverBodyClass="md:pb-0"
           popoverContentClass="w-80 max-w-[calc(100vw-1rem)]"
           :title="t('stat.config.menu.label')"
-          @closeModal="isViewSettingsOpen = false"
-          @openModal="isViewSettingsOpen = true"
         >
           <template #trigger>
             <UTooltip :text="t('stat.config.menu.label')">
@@ -104,6 +102,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
             <div class="pb-2">
               <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
                 <USelect
+                  data-reka-swipe-ignore
                   class="w-40 shrink-0"
                   :aria-label="t('stat.config.categories.list.backgroundType')"
                   :content="{ position: 'item-aligned' }"
@@ -116,6 +115,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
 
               <StatConfigFieldRow :title="t('categories.view.childrenView')">
                 <USelect
+                  data-reka-swipe-ignore
                   class="w-40 shrink-0"
                   :aria-label="t('categories.view.childrenView')"
                   :content="{ position: 'item-aligned' }"
@@ -141,14 +141,14 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
               />
             </div>
           </template>
-        </BottomSheetOrDropdown>
+        </DrawerOrDropdown>
       </template>
     </UiHeader>
 
     <!-- Empty -->
     <div
       v-if="categoriesStore.categoriesRootIds.length === 0"
-      class="flex items-center justify-center grow flex-col"
+      class="flex grow flex-col items-center justify-center"
     >
       <UiTitleSection class="pb-4">
         {{ t('categories.new') }}

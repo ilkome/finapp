@@ -56,7 +56,7 @@ const walletColorsUsed = computed(() => {
             )"
             @click="emit('click', color)"
           >
-            <div class="flex items-center justify-center h-10" :style="{ background: color }">
+            <div class="flex h-10 items-center justify-center" :style="{ background: color }">
               <Icon
                 v-if="props.isCategory && (categoryIconByColor.has(color) || color === props.activeColor)"
                 :name="props.activeColor === color ? props.icon ?? '' : categoryIconByColor.get(color) ?? ''"

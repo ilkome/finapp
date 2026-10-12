@@ -20,14 +20,12 @@ function onSave(close: () => void) {
 </script>
 
 <template>
-  <BottomSheetOrDropdown
-    :isOpen="trnsFormStore.modal.description"
+  <DrawerOrDropdown
+    :open="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
     class="shrink-0 grow-0!"
-    dragClassesCustom="bottom-sheet-drag-classes-custom"
     isShowCloseBtn
-    @closeModal="trnsFormStore.closeTrnFormModal('description')"
-    @openModal="trnsFormStore.openTrnFormModal('description')"
+    @update:open="value => value ? trnsFormStore.openTrnFormModal('description') : trnsFormStore.closeTrnFormModal('description')"
   >
     <template #trigger>
       <UiActionButton class="relative overflow-visible">
@@ -73,5 +71,5 @@ function onSave(close: () => void) {
         </div>
       </div>
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

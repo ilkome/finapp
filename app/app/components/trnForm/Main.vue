@@ -86,7 +86,7 @@ const typeItems = computed<TabsItem[]>(() => [
       <!-- Selected -->
       <TrnFormEntitySelector
         v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
-        :bottomSheetStyle="{ maxHeight }"
+        :drawerStyle="{ maxHeight }"
         :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
         :walletId
         @selectCategory="(id: CategoryId) => trnsFormStore.values.categoryId = id"
@@ -95,7 +95,7 @@ const typeItems = computed<TabsItem[]>(() => [
 
       <TrnFormMainAmountTransfer
         v-if="trnsFormStore.values.trnType === TrnType.Transfer"
-        :bottomSheetStyle="{ maxHeight }"
+        :drawerStyle="{ maxHeight }"
       />
 
       <LoansTrnFormFields v-if="isLoans" />

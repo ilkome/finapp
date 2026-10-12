@@ -29,60 +29,47 @@ async function clearCachesAndReload() {
 </script>
 
 <template>
-  <Teleport to="body">
-    <LazyBottomSheet
-      isShow
-      :dragClassesCustom="isCompact ? 'bottom-sheet-drag-classes-custom sheet-preview-border' : 'bottom-sheet-drag-classes-custom'"
-      :isPassthrough="isCompact"
-      @closed="emit('close')"
-    >
-      <template #handler>
-        <BottomSheetHandler />
-      </template>
+  <LazyDrawer :isPassthrough="isCompact" @closed="emit('close')">
+    <div class="drawer-body overflow-y-hidden! p-0!">
+      <div class="h-full max-h-[98dvh] scroller-block overflow-y-auto px-3 pt-4 pb-2">
+        <LayoutUserMenuPanels @close="emit('close')" @compact="isCompact = $event">
+          <template #root>
+            <div
+              class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-toned"
+              @click="onSearchClick"
+            >
+              <div class="flex min-w-7 items-center justify-center">
+                <Icon name="lucide:search" size="22" class="leading-none" />
+              </div>
+              <div class="text-sm font-medium tracking-wide">
+                {{ t('search.title') }}
+              </div>
+            </div>
 
-      <div class="bottom-sheet-content">
-        <div class="bottom-sheet-content-inside overflow-y-hidden! p-0!">
-          <div class="h-full max-h-[98dvh] scroller-block overflow-y-auto px-3 pt-4 pb-2">
-            <LayoutUserMenuPanels @close="emit('close')" @compact="isCompact = $event">
-              <template #root>
-                <div
-                  class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-toned"
-                  @click="onSearchClick"
-                >
-                  <div class="flex min-w-7 items-center justify-center">
-                    <Icon name="lucide:search" size="22" class="leading-none" />
-                  </div>
-                  <div class="text-sm font-medium tracking-wide">
-                    {{ t('search.title') }}
-                  </div>
-                </div>
+            <LayoutSidebarMenu source="itemsModal" />
 
-                <LayoutSidebarMenu source="itemsModal" />
+            <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
+          </template>
 
-                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
-              </template>
+          <template #rootAfter>
+            <div v-if="!config.public.isProd" class="grid justify-items-center gap-1 px-3 pt-2 pb-1">
+              <UButton
+                :label="t('app.updateCache')"
+                class="text-muted"
+                color="neutral"
+                icon="lucide:refresh-cw"
+                size="xs"
+                variant="ghost"
+                @click="clearCachesAndReload"
+              />
 
-              <template #rootAfter>
-                <div v-if="!config.public.isProd" class="grid justify-items-center gap-1 px-3 pt-2 pb-1">
-                  <UButton
-                    :label="t('app.updateCache')"
-                    class="text-muted"
-                    color="neutral"
-                    icon="lucide:refresh-cw"
-                    size="xs"
-                    variant="ghost"
-                    @click="clearCachesAndReload"
-                  />
-
-                  <div class="text-center text-xs text-muted">
-                    {{ t('app.version') }} {{ pkg.version }}
-                  </div>
-                </div>
-              </template>
-            </LayoutUserMenuPanels>
-          </div>
-        </div>
+              <div class="text-center text-xs text-muted">
+                {{ t('app.version') }} {{ pkg.version }}
+              </div>
+            </div>
+          </template>
+        </LayoutUserMenuPanels>
       </div>
-    </LazyBottomSheet>
-  </Teleport>
+    </div>
+  </LazyDrawer>
 </template>

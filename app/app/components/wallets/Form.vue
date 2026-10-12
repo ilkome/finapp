@@ -212,21 +212,22 @@ async function onSave() {
   />
 
   <!-- Colors  -->
-  <BottomSheetModal
+  <Drawer
     v-if="modals.colors"
+    :title="t('color.label')"
+    contentClass="min-h-[50dvh]"
     @closed="modals.colors = false"
   >
-    <template #default="{ close }">
-      <div>
-        <UiTitleModal>{{ t('color.label') }}</UiTitleModal>
-        <WalletsItem
-          :walletId="props.walletId ?? editWalletId"
-          :wallet="walletPlaceholder"
-          isShowIcon
-        />
-      </div>
+    <template #header>
+      <WalletsItem
+        :walletId="props.walletId ?? editWalletId"
+        :wallet="walletPlaceholder"
+        isShowIcon
+      />
+    </template>
 
-      <div class="bottom-sheet-content-inside scroller-block">
+    <template #default="{ close }">
+      <div class="drawer-body">
         <ColorPalette
           :activeColor="props.walletForm.color"
           isWallet
@@ -242,5 +243,5 @@ async function onSave() {
         </UiButtonAccent>
       </div>
     </template>
-  </BottomSheetModal>
+  </Drawer>
 </template>

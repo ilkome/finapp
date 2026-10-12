@@ -13,6 +13,9 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+// vueuse types a binding as a prop option, so a function type must stay `any`.
+const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
+const isLaptop = useIsLaptop()
 const categoriesStore = useCategoriesStore()
 
 const category = computed(() =>
@@ -22,14 +25,35 @@ const categoryForm = ref(categoryFormSchema.parse(category.value ?? {}))
 </script>
 
 <template>
-  <BottomSheetOrModal isBare :title="category?.name || t('categories.createNewTitle')" @closed="emit('closed')">
-    <template #default="{ close }">
-      <CategoriesForm
-        :categoryId="props.categoryId"
-        :categoryForm="categoryForm"
-        @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
-        @afterSave="close"
-      />
+  <DefineBody v-slot="{ close }">
+    <CategoriesForm
+      :categoryId="props.categoryId"
+      :categoryForm="categoryForm"
+      @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
+      @afterSave="close"
+    />
+  </DefineBody>
+
+  <UModal
+    v-if="isLaptop"
+    defaultOpen
+    :title="category?.name || t('categories.createNewTitle')"
+    :ui="{ content: 'max-w-lg' }"
+    @after:leave="emit('closed')"
+  >
+    <template #body="{ close }">
+      <ReuseBody :close />
     </template>
-  </BottomSheetOrModal>
+  </UModal>
+
+  <Drawer
+    v-else
+    :title="category?.name || t('categories.createNewTitle')"
+    contentClass="min-h-[50dvh]"
+    @closed="emit('closed')"
+  >
+    <template #default="{ close }">
+      <ReuseBody :close />
+    </template>
+  </Drawer>
 </template>

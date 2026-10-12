@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { DrawerIndent, DrawerIndentBackground } from 'reka-ui'
+
 import { useInitApp } from '~/components/app/useInitApp'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { SIDEBAR_DEFAULT_WIDTH } from '~/components/layout/sidebarWidth'
@@ -70,12 +72,17 @@ const layoutClasses = computed(() => cn(
 
 useAsyncData('app', initApp)
 
-defineShortcuts({
-  'escape': () => {
-    if (isStatConfigOpen.value)
-      closeStatConfig()
-    else if (trnsFormStore.ui.isShow)
-      trnsFormStore.ui.isShow = false
+// A registered shortcut prevents the key's default, so Escape is bound only while there is something
+// here to close: otherwise reka drawers and popovers ignore the prevented Escape. On phones the
+// trn form is a drawer that closes its topmost layer itself.
+defineShortcuts(computed(() => ({
+  ...(isStatConfigOpen.value || (trnsFormStore.ui.isShow && width.value >= 767)) && {
+    escape: () => {
+      if (isStatConfigOpen.value)
+        closeStatConfig()
+      else
+        trnsFormStore.ui.isShow = false
+    },
   },
   'meta_\\': () => {
     isShowSidebar.value = !isShowSidebar.value
@@ -88,7 +95,7 @@ defineShortcuts({
   'meta_k': () => {
     isSearchOpen.value = !isSearchOpen.value
   },
-})
+})))
 </script>
 
 <template>
@@ -98,7 +105,7 @@ defineShortcuts({
   >
     <div
       v-if="bootState === 'error'"
-      class="flex items-center justify-center h-dvh flex-col gap-6 px-4 text-center"
+      class="flex h-dvh flex-col items-center justify-center gap-6 px-4 text-center"
     >
       <UiLogo size="lg" />
       <p class="text-muted">
@@ -123,7 +130,11 @@ defineShortcuts({
         />
       </template>
 
-      <div :class="showShell ? 'flex min-h-dvh flex-col md:py-4 md:pr-4' : 'flex flex-1 items-center justify-center'">
+      <DrawerIndentBackground class="drawer-indent-background" />
+      <DrawerIndent
+        class="drawer-indent"
+        :class="showShell ? 'flex min-h-dvh flex-col md:py-4 md:pr-4' : 'flex flex-1 items-center justify-center'"
+      >
         <div :class="showShell ? 'bg-default md:border-accented relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-lg' : 'w-full max-w-lg px-4'">
           <main
             id="pageScroll"
@@ -133,7 +144,7 @@ defineShortcuts({
             <slot :keepalive />
           </main>
         </div>
-      </div>
+      </DrawerIndent>
 
       <SearchModal v-if="showShell" />
       <template v-if="showShell">

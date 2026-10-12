@@ -40,7 +40,7 @@ const isOpen = ref(false)
 const menuPanel = ref<'root' | 'statistics'>('root')
 
 // The sort modal is a sheet of its own, and on touch so is this menu. Opening it before the
-// menu unregisters stacks it above the menu in the sheet history, whose cleanup then closes
+// menu unregisters stacks it above the menu in the drawer history, whose cleanup then closes
 // everything above itself - so the modal would flash open and vanish. Wait for the menu first.
 let afterMenuClose: (() => void) | null = null
 
@@ -48,7 +48,9 @@ function closeMenu() {
   isOpen.value = false
   const run = afterMenuClose
   afterMenuClose = null
-  run?.()
+  // `open` flips before the drawer's watcher unregisters it; wait a tick so the next sheet stacks above nothing.
+  if (run)
+    nextTick(run)
 }
 
 function openAfterMenu(action: () => void, close: () => void) {
@@ -182,15 +184,14 @@ function cycleGrouping() {
           </UTooltip>
         </div>
 
-        <BottomSheetOrDropdown
+        <DrawerOrDropdown
           v-if="walletsStore.sortedIds.length > 1"
           align="end"
-          :isOpen="isOpen"
+          :open="isOpen"
           popoverBodyClass="md:py-2 [view-transition-name:ui-panel]"
           popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
-          sheetBodyClass="[view-transition-name:ui-panel]"
-          @closeModal="closeMenu"
-          @openModal="() => { menuPanel = 'root'; isOpen = true }"
+          bodyClass="[view-transition-name:ui-panel]"
+          @update:open="value => value ? (menuPanel = 'root', isOpen = true) : closeMenu()"
         >
           <template #trigger>
             <UTooltip :text="$t('base.moreOptions')">
@@ -334,7 +335,7 @@ function cycleGrouping() {
               </div>
             </div>
           </template>
-        </BottomSheetOrDropdown>
+        </DrawerOrDropdown>
 
         <UTooltip :text="t('base.done')">
           <UiActionButton
@@ -351,7 +352,7 @@ function cycleGrouping() {
 
     <div
       v-if="!walletsStore.hasItems"
-      class="flex items-center justify-center grow flex-col"
+      class="flex grow flex-col items-center justify-center"
     >
       <UiTitleSection class="pb-4">
         {{ t('wallets.new') }}

@@ -43,24 +43,22 @@ onBeforeUnmount(() => {
   resizeObserver?.disconnect()
 })
 
-function init() {
-  if (!sliderObj.value) {
-    sliderObj.value = new Swiper(sliderRef.value!, {
-      init: false,
-      initialSlide: 1,
-      longSwipesMs: 60,
-      longSwipesRatio: 0.1,
-      modules: [Pagination],
-      pagination: {
-        clickable: true,
-        el: '.trnForm__pagination',
-      },
-      shortSwipes: false,
-      slidesPerView: 'auto',
-    })
-    setTrnFormHeight()
-    sliderObj.value.init()
-  }
+function init(el: HTMLElement) {
+  sliderObj.value = new Swiper(el, {
+    init: false,
+    initialSlide: 1,
+    longSwipesMs: 60,
+    longSwipesRatio: 0.1,
+    modules: [Pagination],
+    pagination: {
+      clickable: true,
+      el: '.trnForm__pagination',
+    },
+    shortSwipes: false,
+    slidesPerView: 'auto',
+  })
+  setTrnFormHeight()
+  sliderObj.value.init()
 }
 
 watch(isShow, () => {
@@ -68,21 +66,24 @@ watch(isShow, () => {
     sliderObj.value.slideTo(1, 0)
 })
 
-onMounted(init)
+// Reka renders the drawer content after this component mounts, so the slider waits for its element.
+watch(sliderRef, (el) => {
+  sliderObj.value?.destroy()
+  sliderObj.value = null
+  if (el)
+    init(el)
+}, { flush: 'post' })
 </script>
 
 <template>
-  <BottomSheet
-    :isShow="isShow"
-    dragClassesCustom="bottom-sheet-drag-classes-custom max-h-[98dvh]"
+  <Drawer
+    forceMount
+    :open="isShow"
     @closed="trnsFormStore.onClose()"
+    @update:open="value => !value && (trnsFormStore.ui.isShow = false)"
   >
-    <template #handler>
-      <BottomSheetHandler />
-    </template>
-
     <div class="trnForm @container/trnForm bg-default">
-      <div ref="sliderRef" class="swiper-container" data-sheet-no-drag>
+      <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
           <!-- History -->
           <div
@@ -126,5 +127,5 @@ onMounted(init)
 
       <div class="trnForm__pagination" />
     </div>
-  </BottomSheet>
+  </Drawer>
 </template>

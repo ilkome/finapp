@@ -12,7 +12,6 @@ const props = withDefaults(defineProps<{
 const filter = inject(filterKey)!
 const { summaryText } = useFilterSummary()
 const isFilterOpen = ref(false)
-const snapPoints = useSheetSnapPoints()
 </script>
 
 <template>
@@ -21,15 +20,13 @@ const snapPoints = useSheetSnapPoints()
       <FilterSearchToggle />
     </template>
 
-    <BottomSheetOrDropdown
+    <DrawerOrDropdown
+      v-model:open="isFilterOpen"
       class="flex shrink-0 snap-start snap-always gap-1"
-      :isOpen="isFilterOpen"
       popoverBodyClass="py-0! md:pb-0!"
-      :snapPoints="snapPoints"
+      :collapsedSnap="500"
       :unmountOnHide="false"
       keyboardTrigger
-      @closeModal="isFilterOpen = false"
-      @openModal="isFilterOpen = true"
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
@@ -37,10 +34,10 @@ const snapPoints = useSheetSnapPoints()
         </UiTitleDropdown>
       </template>
 
-      <template #custom="{ close, isExpanded }">
-        <FilterPanel :isExpanded="isExpanded" @close="close" />
+      <template #custom="{ close }">
+        <FilterPanel @close="close" />
       </template>
-    </BottomSheetOrDropdown>
+    </DrawerOrDropdown>
     <FilterSelected
       v-if="filter.isShow.value"
       class="snap-start snap-always *:snap-start *:snap-always"

@@ -13,17 +13,15 @@ const label = computed(() => statDateRangeLabel({
 </script>
 
 <template>
-  <BottomSheetOrDropdown
+  <DrawerOrDropdown
+    v-model:open="statDate.modal.value.dateSelector"
     :title="t('dates.select')"
-    :isOpen="statDate.modal.value.dateSelector"
     popoverBodyClass="md:pb-3"
     popoverContentClass="md:w-96 md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
     class="flex grow-0 gap-1"
     isShowCloseBtn
     keyboardTrigger
-    @openModal="statDate.modal.value.dateSelector = true"
-    @closeModal="statDate.modal.value.dateSelector = false"
   >
     <template #trigger="{ isActive }">
       <UiTitleDropdown data-stat-date-range :isActive>
@@ -39,5 +37,5 @@ const label = computed(() => statDateRangeLabel({
         @close="close"
       />
     </template>
-  </BottomSheetOrDropdown>
+  </DrawerOrDropdown>
 </template>

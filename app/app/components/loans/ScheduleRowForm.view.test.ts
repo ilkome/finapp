@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import draft from '~/components/demo/loans/scheduleRowDraft.json'
 import LoansScheduleRowForm from '~/components/loans/ScheduleRowForm.vue'
 
-// FormDate pulls in the real calendar popover (UCalendar/BottomSheetOrDropdown); a pure View
+// FormDate pulls in the real calendar popover (UCalendar/DrawerOrDropdown); a pure View
 // test only needs to see the value it renders and that it can emit an update.
 const FormDateStub = {
   emits: ['update:modelValue'],

@@ -26,6 +26,7 @@ defineEmits<{
     <div
       v-if="sortable"
       class="sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center rounded-l-sm text-muted hover:bg-accented active:cursor-grabbing"
+      data-reka-swipe-ignore
       :aria-label="$t('stat.views.drag')"
       @click.stop
     >

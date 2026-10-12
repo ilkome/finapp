@@ -8,7 +8,10 @@ overrides:
 
 patchedDependencies:
   # Swipe toasts right to dismiss while they stay on the left (swipe direction is hardwired to position).
-  '@nuxt/ui@4.11.2': patches/@nuxt__ui@4.11.2.patch
+  '@nuxt/ui@4.11.3': patches/@nuxt__ui@4.11.3.patch
+  # Drawer: swipes start on buttons and honor data-reka-swipe-ignore (unovue/reka-ui#2982), 60px sequential
+  # snap commit, rubber-band past the top snap point.
+  reka-ui@2.10.5: patches/reka-ui@2.10.5.patch
 
 allowBuilds:
   '@journeyapps/wa-sqlite': true

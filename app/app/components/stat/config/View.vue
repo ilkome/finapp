@@ -85,6 +85,7 @@ watch(isConfigOpen, (isOpen) => {
       <div class="-mt-px rounded-lg border border-transparent">
         <StatConfigFieldRow :title="t('stat.view.pageLayout.title')">
           <USelect
+            data-reka-swipe-ignore
             class="w-40 shrink-0"
             :aria-label="t('stat.view.pageLayout.title')"
             :content="{ position: 'item-aligned' }"

@@ -27,19 +27,19 @@ const tabsScrollItems = Array.from({ length: 15 }, (_, i) => ({ label: `Item ${i
                 Backgrounds
               </div>
               <div class="flex flex-wrap gap-0">
-                <div class="flex items-center justify-center size-20 bg-default">
+                <div class="flex size-20 items-center justify-center bg-default">
                   default
                 </div>
-                <div class="flex items-center justify-center size-20 bg-muted">
+                <div class="flex size-20 items-center justify-center bg-muted">
                   muted
                 </div>
-                <div class="flex items-center justify-center size-20 bg-elevated">
+                <div class="flex size-20 items-center justify-center bg-elevated">
                   elevated
                 </div>
-                <div class="flex items-center justify-center size-20 bg-accented">
+                <div class="flex size-20 items-center justify-center bg-accented">
                   accented
                 </div>
-                <div class="flex items-center justify-center size-20 bg-inverted text-inverted">
+                <div class="flex size-20 items-center justify-center bg-inverted text-inverted">
                   inverted
                 </div>
               </div>

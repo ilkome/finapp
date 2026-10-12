@@ -22,6 +22,7 @@ const chartLayoutItems = computed(() => resolveChartLayoutOptions(statConfig.pag
 <template>
   <StatConfigFieldRow v-if="activeChartType !== 'pie'" parameterId="chart.valueDisplay" :title="t('stat.view.valueDisplay.title')">
     <USelect
+      data-reka-swipe-ignore
       class="w-40 shrink-0"
       :aria-label="t('stat.view.valueDisplay.title')"
       :content="{ position: 'item-aligned' }"
@@ -44,6 +45,7 @@ const chartLayoutItems = computed(() => resolveChartLayoutOptions(statConfig.pag
 
   <StatConfigFieldRow v-if="canSplit" parameterId="chart.layout" :title="t('stat.view.chartLayout.title')">
     <USelect
+      data-reka-swipe-ignore
       class="w-40 shrink-0"
       :aria-label="t('stat.view.chartLayout.title')"
       :content="{ position: 'item-aligned' }"

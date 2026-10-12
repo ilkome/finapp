@@ -29,7 +29,7 @@
   }
 
   /* Reka UI popper portals (UPopover, UDropdownMenu, UContextMenu, UTooltip)
-     render at body level with inline z-index: auto. Bump above BottomSheet (z-50)
+     render at body level with inline z-index: auto. Bump above Drawer (z-50)
      and trnForm Sidebar (z-50) so nested menus stay clickable inside modals. */
   [data-reka-popper-content-wrapper] {
     z-index: 60 !important;
@@ -81,4 +81,142 @@
 
 ::view-transition-new(ui-panel) {
   animation: 120ms cubic-bezier(0.4, 0, 0.2, 1) both ui-panel-in;
+}
+
+/*
+ * Reka Drawer motion. The drawer is teleported to body, so these are global. The live drag and the
+ * snap point ride `transform`; the enter/exit keyframes animate `translate`, so they compose with it.
+ * The bleed hangs below the screen edge: a pull past the full height rubber-bands it into view
+ * instead of lifting the drawer off the bottom.
+ */
+.drawer {
+  --bleed: 48px;
+  margin-bottom: calc(-1 * var(--bleed));
+  padding-bottom: var(--bleed);
+  transform: translateY(calc(var(--drawer-snap-point-offset, 0px) + var(--drawer-swipe-movement-y, 0px)));
+  transform-origin: 50% 0;
+  transition-duration: 450ms;
+  transition-property: transform, scale, translate;
+  transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* A parent recedes behind its nested drawers and returns as the front one is swiped away. */
+  &[data-nested-drawer-open] {
+    --recede: calc(var(--nested-drawers, 0) * (1 - var(--drawer-swipe-progress, 0)));
+    scale: calc(1 - 0.05 * var(--recede));
+    translate: 0 calc(-0.75rem * var(--recede));
+  }
+
+  /* Reka clears the flag only once the nested drawer has animated out; the parent returns alongside. */
+  &[data-nested-drawer-open]:not(:has(~ .drawer[data-state='open'])) {
+    --recede: 0;
+  }
+
+  /* The live swipe of a nested drawer drives the recede, so it must not lag behind a transition. */
+  &[data-nested-drawer-open]:has(~ .drawer[data-swiping]) {
+    transition-duration: 0ms;
+  }
+
+  &[data-state='open'] {
+    animation: drawer-slide-in 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  /* A closing drawer lets taps through to the page instead of holding them until the exit ends;
+     `!important` beats the inline `pointer-events` reka sets. */
+  &[data-state='closed'] {
+    animation: drawer-slide-out 450ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    pointer-events: none !important;
+  }
+
+  &[data-swiping] {
+    transition-duration: 0ms;
+    user-select: none;
+  }
+}
+
+.drawer-overlay {
+  opacity: calc(1 - var(--drawer-progress, 0));
+
+  &[data-state='open'] {
+    animation: drawer-fade-in 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &[data-state='closed'] {
+    animation: drawer-fade-out 450ms cubic-bezier(0.32, 0.72, 0, 1) forwards;
+    pointer-events: none !important;
+  }
+}
+
+/*
+ * The page behind a modal drawer shrinks into a card over a dark backdrop (phones only: wider screens
+ * open popovers). The pivot is the top of the viewport inside the scroll-locked page, and the clip
+ * rounds the visible part. A live-preview drawer keeps the page as it is.
+ */
+@media (width < 48rem) {
+  .drawer-indent-background {
+    background: black;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    position: fixed;
+    transition: opacity 450ms cubic-bezier(0.32, 0.72, 0, 1);
+
+    &[data-active] {
+      opacity: 1;
+    }
+  }
+
+  .drawer-indent {
+    background: var(--ui-bg);
+    position: relative;
+    /* Outside the active state, so the page scales back around the same point instead of the middle
+       of the whole page. */
+    transform-origin: 50% var(--drawer-scroll-y, 0px);
+    transition-duration: 450ms;
+    transition-property: scale, translate;
+    transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+
+    &[data-active] {
+      --indent: calc(1 - var(--drawer-swipe-progress, 0));
+      clip-path: inset(var(--drawer-scroll-y, 0px) 0 calc(100% - var(--drawer-scroll-y, 0px) - 100dvh) round 12px);
+      scale: calc(1 - 0.06 * var(--indent));
+      translate: 0 calc((env(safe-area-inset-top) + 0.5rem) * var(--indent));
+    }
+  }
+
+  body:has(.drawer[data-passthrough][data-state='open']) .drawer-indent {
+    clip-path: none;
+    scale: none;
+    translate: none;
+  }
+
+  body:has(.drawer[data-passthrough][data-state='open']) .drawer-indent-background {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-slide-in {
+  from {
+    translate: 0 calc(100% - var(--bleed));
+  }
+}
+
+/* Kept-mounted drawers stay in the DOM when closed: the exit holds its last frame, hidden. */
+@keyframes drawer-slide-out {
+  to {
+    translate: 0 calc(100% - var(--bleed));
+    visibility: hidden;
+  }
+}
+
+@keyframes drawer-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-fade-out {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
 }
