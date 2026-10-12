@@ -71,8 +71,8 @@ function onGenerateDemoData() {
             :key="id"
             :aria-current="activeSection === id ? 'page' : undefined"
             :class="cn(
-              'shrink-0 snap-start theme-rounded-control border border-transparent px-3 py-1.5 text-left text-sm text-muted transition-colors hover:text-highlighted',
-              activeSection === id && 'border-accented text-highlighted',
+              'shrink-0 snap-start theme-rounded-control px-3 py-1.5 text-left text-sm text-muted transition-colors hover:bg-elevated/50 hover:text-highlighted',
+              activeSection === id && 'bg-elevated/30 text-highlighted',
             )"
             type="button"
             @click="activeSection = id"
