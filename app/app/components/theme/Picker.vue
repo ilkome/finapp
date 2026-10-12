@@ -132,7 +132,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
         :checkboxValue="isShowMenuLabels"
         :title="t('settings.menuLabels')"
         class="border-t border-default pt-3 md:hidden"
-        @click="isShowMenuLabels = !isShowMenuLabels"
+        @toggle="isShowMenuLabels = !isShowMenuLabels"
       />
     </div>
   </UiSettingsCard>

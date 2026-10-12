@@ -88,7 +88,7 @@ function removeParameter(id: string) {
           :checkboxValue="!rule.isHidden"
           :title="$t('stat.views.blockRules.parameters.visibility')"
           trailing
-          @click="emit('update', { ...rule, isHidden: !rule.isHidden })"
+          @toggle="emit('update', { ...rule, isHidden: !rule.isHidden })"
         />
         <UButton
           :aria-label="$t('stat.views.blockRules.removeParameter')"

@@ -47,7 +47,7 @@ async function toggle() {
         :busy="isBusy"
         :checkboxValue="isSubscribed"
         :title="isSubscribed ? t('notifications.statusOn') : t('notifications.statusOff')"
-        @click="toggle"
+        @toggle="toggle"
       />
 
       <div v-if="needsInstallForIos" class="px-2 pt-1 text-xs text-muted">

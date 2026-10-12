@@ -38,7 +38,7 @@ function toggle() {
       :disabled="props.disabled"
       :title="props.title"
       trailing
-      @click="toggle"
+      @toggle="toggle"
     />
     <UButton
       v-if="removeParameter"

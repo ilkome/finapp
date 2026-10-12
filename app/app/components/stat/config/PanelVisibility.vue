@@ -22,6 +22,6 @@ function toggle() {
     :checkboxValue="isVisible"
     :title="$t('stat.views.blockRules.parameters.visibility')"
     trailing
-    @click="toggle"
+    @toggle="toggle"
   />
 </template>

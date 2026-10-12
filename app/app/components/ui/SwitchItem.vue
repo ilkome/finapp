@@ -8,24 +8,25 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  click: [e: boolean]
+  toggle: [e: boolean]
 }>()
 
 function handleClick() {
   if (props.busy || props.disabled)
     return
-  emit('click', props.checkboxValue)
+  emit('toggle', props.checkboxValue)
 }
 </script>
 
 <template>
-  <div
+  <button
+    type="button"
     role="switch"
     :aria-checked="checkboxValue"
     :aria-disabled="disabled || undefined"
     :aria-label="title"
     :class="cn(
-      'flex grow items-center gap-3 rounded-sm py-2 pr-2 pl-3 text-sm hover:bg-elevated/50',
+      'flex grow items-center gap-3 rounded-sm py-2 pr-2 pl-3 text-left text-sm hover:bg-elevated/50',
       busy && 'pointer-events-none opacity-60',
       disabled && 'pointer-events-none opacity-50',
       trailing && 'flex-row-reverse',
@@ -38,5 +39,5 @@ function handleClick() {
     <div class="grow text-muted">
       {{ title }}
     </div>
-  </div>
+  </button>
 </template>

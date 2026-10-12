@@ -263,7 +263,7 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
           :title="t('settings.sidebarLists')"
           class="mt-1"
           trailing
-          @click="isShowSidebarLists = !isShowSidebarLists"
+          @toggle="isShowSidebarLists = !isShowSidebarLists"
         />
 
         <!-- Bottom-nav labels only exist on the phone layout. -->
@@ -272,7 +272,7 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
           :checkboxValue="isShowMenuLabels"
           :title="t('settings.menuLabels')"
           class="mt-1"
-          @click="isShowMenuLabels = !isShowMenuLabels"
+          @toggle="isShowMenuLabels = !isShowMenuLabels"
         />
       </div>
 

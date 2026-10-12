@@ -277,7 +277,7 @@ onBeforeUnmount(() => {
               :checkboxValue="isShowHistoryWithDesc"
               :title="t('trns.filter.showTrnsWithDesc')"
               showCheckbox
-              @click="toggleHistoryWithDesc"
+              @toggle="toggleHistoryWithDesc"
             />
           </div>
 

@@ -40,7 +40,7 @@ const { t } = useI18n()
       :checkboxValue="isShowWithDesc"
       :title="t('trns.filter.showTrnsWithDesc')"
       showCheckbox
-      @click="emit('update:isShowWithDesc', !isShowWithDesc)"
+      @toggle="emit('update:isShowWithDesc', !isShowWithDesc)"
     />
   </div>
 </template>
