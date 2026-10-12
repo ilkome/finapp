@@ -1,7 +1,9 @@
-import type { CurrencyCode, Rates } from '~/components/currencies/types'
-import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
+import type { CurrencyCode } from '~/components/currencies/types'
+import type { WalletId, WalletItemComputed, WalletType } from '~/components/wallets/types'
 
-import { getAmountInRate } from '~/components/amount/getTotal'
+import { isCreditProduct, walletTypes } from '~/components/wallets/types'
+
+type ToBase = (amount: number, currency: CurrencyCode) => number
 
 type CountItem = {
   id: string
@@ -11,29 +13,19 @@ type CountItem = {
 }
 
 export function computeWalletCounts(params: {
-  baseCurrency?: CurrencyCode
   includeArchivedInStats?: boolean
   includeExcludedInStats?: boolean
-  rates?: Rates
+  toBase: ToBase
   totalWalletsCount: number
   walletIds: WalletId[]
   wallets: Record<WalletId, WalletItemComputed>
 }): Record<string, CountItem> {
-  const { baseCurrency, includeArchivedInStats = false, includeExcludedInStats = false, rates, totalWalletsCount, walletIds, wallets } = params
+  const { includeArchivedInStats = false, includeExcludedInStats = false, toBase, totalWalletsCount, walletIds, wallets } = params
 
-  function convert(amount: number, currencyCode: CurrencyCode): number {
-    return getAmountInRate({ amount, baseCurrencyCode: baseCurrency, currencyCode, rates })
-  }
-
+  const byType = Object.fromEntries(walletTypes.map(type => [type, 0])) as Record<WalletType, number>
   const sum = {
     archived: 0,
-    cash: 0,
-    cashless: 0,
-    credit: 0,
     creditPossible: 0,
-    crypto: 0,
-    debt: 0,
-    deposit: 0,
     excludeInTotal: 0,
     total: 0,
     withdrawal: 0,
@@ -46,7 +38,7 @@ export function computeWalletCounts(params: {
     if (!wallet)
       continue
 
-    const amount = convert(wallet.amount ?? 0, wallet.currency ?? 'USD')
+    const amount = toBase(wallet.amount ?? 0, wallet.currency)
 
     // "Archived" and "not in total" are independent slices: a wallet flagged both shows in both.
     if (wallet.isArchived) {
@@ -64,33 +56,15 @@ export function computeWalletCounts(params: {
     if (wallet.isExcludeInTotal && !includeExcludedInStats)
       continue
 
-    if (wallet.type !== 'credit')
+    if (!isCreditProduct(wallet.type))
       sum.total += amount
 
-    switch (wallet.type) {
-      case 'cash':
-        sum.cash += amount
-        break
-      case 'cashless':
-        sum.cashless += amount
-        break
-      case 'credit':
-        sum.credit += amount
-        if (wallet.creditLimit)
-          sum.creditPossible += convert(wallet.creditLimit, wallet.currency ?? 'USD')
-        break
-      case 'crypto':
-        sum.crypto += amount
-        break
-      case 'debt':
-        sum.debt += amount
-        break
-      case 'deposit':
-        sum.deposit += amount
-        break
-    }
+    byType[wallet.type] += amount
+    if (wallet.type === 'credit' && wallet.creditLimit)
+      sum.creditPossible += toBase(wallet.creditLimit, wallet.currency)
 
-    if (wallet.isWithdrawal)
+    // A debt is not money to withdraw: credit products join "available" through their own rows, not twice.
+    if (wallet.isWithdrawal && !isCreditProduct(wallet.type))
       sum.withdrawal += amount
   }
 
@@ -100,46 +74,57 @@ export function computeWalletCounts(params: {
       isShow: hasArchivedWallet,
       value: sum.archived,
     },
+    // A big loan would keep one combined row always negative, so cards and loans get a row each.
     available: {
       id: 'isAvailable',
-      isShow: sum.withdrawal !== 0 && sum.credit !== 0,
-      value: sum.withdrawal + sum.credit,
+      isShow: sum.withdrawal !== 0 && byType.credit !== 0,
+      value: sum.withdrawal + byType.credit,
+    },
+    availableAll: {
+      id: 'isAvailableAll',
+      isShow: sum.withdrawal !== 0 && byType.loan !== 0,
+      value: sum.withdrawal + byType.credit + byType.loan,
     },
     cash: {
       id: 'cash',
-      isShow: totalWalletsCount > 1 && sum.cash !== 0,
-      value: sum.cash,
+      isShow: totalWalletsCount > 1 && byType.cash !== 0,
+      value: byType.cash,
     },
     cashless: {
       id: 'cashless',
-      isShow: sum.cashless !== 0,
-      value: sum.cashless,
+      isShow: byType.cashless !== 0,
+      value: byType.cashless,
     },
     credit: {
       id: 'credit',
-      isShow: sum.credit !== 0,
+      isShow: byType.credit !== 0,
       secondValue: sum.creditPossible,
-      value: sum.credit,
+      value: byType.credit,
     },
     crypto: {
       id: 'crypto',
-      isShow: sum.crypto !== 0,
-      value: sum.crypto,
+      isShow: byType.crypto !== 0,
+      value: byType.crypto,
     },
     debt: {
       id: 'debt',
-      isShow: sum.debt !== 0,
-      value: sum.debt,
+      isShow: byType.debt !== 0,
+      value: byType.debt,
     },
     deposit: {
       id: 'deposit',
-      isShow: sum.deposit !== 0,
-      value: sum.deposit,
+      isShow: byType.deposit !== 0,
+      value: byType.deposit,
     },
     excludeInTotal: {
       id: 'isExcludeInTotal',
       isShow: sum.excludeInTotal !== 0,
       value: sum.excludeInTotal,
+    },
+    loan: {
+      id: 'loan',
+      isShow: byType.loan !== 0,
+      value: byType.loan,
     },
     total: {
       id: 'total',
@@ -154,34 +139,23 @@ export function computeWalletCounts(params: {
   }
 }
 
-export function sumWalletAmounts(params: {
-  baseCurrency?: CurrencyCode
-  convert?: boolean
-  rates?: Rates
-  walletIds: WalletId[]
-  wallets: Record<WalletId, WalletItemComputed>
-}): number {
-  const { baseCurrency, convert = true, rates, walletIds, wallets } = params
-
+export function sumWalletsInBase(walletIds: WalletId[], wallets: Record<WalletId, WalletItemComputed>, toBase: ToBase): number {
   let total = 0
   for (const id of walletIds) {
     const wallet = wallets[id]
-    if (!wallet)
-      continue
-
-    if (convert) {
-      total += getAmountInRate({
-        amount: wallet.amount,
-        baseCurrencyCode: baseCurrency,
-        currencyCode: wallet.currency,
-        rates,
-      })
-    }
-    else {
-      if (!wallet.isExcludeInTotal)
-        total += wallet.amount
-    }
+    if (wallet)
+      total += toBase(wallet.amount, wallet.currency)
   }
+  return total
+}
 
+/** Sum in the wallets' own currency (a same-currency group), leaving out "not in total" wallets. */
+export function sumWalletsInOwnCurrency(walletIds: WalletId[], wallets: Record<WalletId, WalletItemComputed>): number {
+  let total = 0
+  for (const id of walletIds) {
+    const wallet = wallets[id]
+    if (wallet && !wallet.isExcludeInTotal)
+      total += wallet.amount
+  }
   return total
 }

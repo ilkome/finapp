@@ -1,5 +1,7 @@
 import type { WalletId, WalletItemComputed, WalletsCurrencyFiltered, WalletsGroupedBy, WalletViewTypes } from '~/components/wallets/types'
 
+import { isCreditProduct } from '~/components/wallets/types'
+
 export function filterWalletsByCurrency(
   wallets: Record<WalletId, WalletItemComputed>,
   groupedBy: WalletsGroupedBy,
@@ -28,9 +30,10 @@ export function filterWalletsByViewType(
     const archivedFilter = showArchived || !wallet.isArchived
 
     switch (viewType) {
-      case 'isWithdrawal': return wallet.isWithdrawal && archivedFilter
+      case 'isWithdrawal': return wallet.isWithdrawal && !isCreditProduct(wallet.type) && archivedFilter
       case 'isExcludeInTotal': return wallet.isExcludeInTotal && archivedFilter
-      case 'isAvailable': return (wallet.type === 'credit' || wallet.isWithdrawal) && archivedFilter
+      case 'isAvailable': return (wallet.type === 'credit' || (wallet.isWithdrawal && !isCreditProduct(wallet.type))) && archivedFilter
+      case 'isAvailableAll': return (isCreditProduct(wallet.type) || wallet.isWithdrawal) && archivedFilter
       case 'total': return archivedFilter
       default: return wallet.type === viewType && archivedFilter
     }

@@ -402,3 +402,35 @@ export const currencies: {
 }, {
   code: 'ZWL',
 }]
+
+const precisionByCode = new Map(currencies.map(c => [c.code, c.precision ?? 2]))
+
+/** Display precision from the list above (RUB shows whole units); 2 when unknown. */
+function currencyPrecision(code: string | undefined): number {
+  return (code ? precisionByCode.get(code) : undefined) ?? 2
+}
+
+// Older engines (Safari < 15.4) lack supportedValuesOf: every code Intl accepts then reads as ISO.
+const isoCodes = typeof Intl.supportedValuesOf === 'function' ? new Set(Intl.supportedValuesOf('currency')) : null
+const minorUnitByCode = new Map<string, number>()
+
+/**
+ * Decimal places of the currency's minor unit, for money math (RUB 2, JPY 0, KWD 3). ISO 4217 via
+ * Intl; crypto is not in ISO, so it falls back to the list's precision (BTC 8).
+ */
+export function currencyMinorUnit(code: string | undefined): number {
+  if (!code)
+    return 2
+  let digits = minorUnitByCode.get(code)
+  if (digits === undefined) {
+    digits = currencyPrecision(code)
+    if (!isoCodes || isoCodes.has(code)) {
+      try {
+        digits = new Intl.NumberFormat('en', { currency: code, style: 'currency' }).resolvedOptions().maximumFractionDigits ?? 2
+      }
+      catch {} // a code longer than three letters (USDT) is not a currency to Intl
+    }
+    minorUnitByCode.set(code, digits)
+  }
+  return digits
+}

@@ -1,0 +1,38 @@
+{
+  "baseCurrencyCode": "RUB",
+  "items": [
+    {
+      "contractRate": 18,
+      "currencyCode": "RUB",
+      "effectiveRate": 19.4,
+      "isClosed": false,
+      "name": "Mortgage",
+      "nextPayment": { "amount": 54000, "date": "15.05.2026" },
+      "overdueCount": 2,
+      "period": null,
+      "plannedEndDate": "01.02.2032",
+      "remaining": 301000,
+      "walletId": "w1"
+    },
+    {
+      "contractRate": 9,
+      "currencyCode": "USD",
+      "effectiveRate": null,
+      "isClosed": true,
+      "name": "Car loan",
+      "nextPayment": null,
+      "overdueCount": 0,
+      "period": "10.03.2022 - 15.04.2026",
+      "plannedEndDate": null,
+      "remaining": 0,
+      "walletId": "w2"
+    }
+  ],
+  "totals": {
+    "paidFine": 30,
+    "paidInterest": 15000,
+    "paidTotal": 48000,
+    "plannedInterest": 12500,
+    "remaining": 301000
+  }
+}

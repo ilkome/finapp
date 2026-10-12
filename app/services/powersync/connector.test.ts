@@ -11,7 +11,7 @@ vi.mock('@powersync/web', () => ({
 function makeClient(result: { error: unknown }): SupabaseClient {
   const resolve = () => Promise.resolve(result)
   const builder = {
-    delete: () => ({ eq: resolve }),
+    delete: () => ({ eq: resolve, in: resolve }),
     update: () => ({ eq: resolve }),
     upsert: resolve,
   }
@@ -24,7 +24,7 @@ function makeClientSeq(results: { error: unknown }[]): SupabaseClient {
   let i = 0
   const next = () => Promise.resolve(results[i++] ?? { error: null })
   const builder = {
-    delete: () => ({ eq: next }),
+    delete: () => ({ eq: next, in: next }),
     update: () => ({ eq: next }),
     upsert: next,
   }
@@ -123,6 +123,25 @@ describe('uploadData', () => {
     expect(onError.mock.calls[0]?.[1]).toEqual([patchOp])
   })
 
+  it('sends consecutive PUTs and DELETEs on one table as one request each', async () => {
+    const upsert = vi.fn(async () => ({ error: null }))
+    const inFn = vi.fn(async () => ({ error: null }))
+    const client = { from: () => ({ delete: () => ({ in: inFn }), upsert }) } as unknown as SupabaseClient
+    const { complete, database } = makeDb([
+      putOp,
+      { id: 'trn2', op: 'PUT', opData: { amount: 2 }, table: 'trns' },
+      { id: 'trn3', op: 'DELETE', table: 'trns' },
+      { id: 'trn4', op: 'DELETE', table: 'trns' },
+    ])
+
+    await new SupabaseConnector(client, 'http://ps').uploadData(database)
+
+    expect(upsert).toHaveBeenCalledTimes(1)
+    expect(upsert).toHaveBeenCalledWith([{ amount: 1, id: 'trn1' }, { amount: 2, id: 'trn2' }])
+    expect(inFn).toHaveBeenCalledWith('id', ['trn3', 'trn4'])
+    expect(complete).toHaveBeenCalledTimes(1)
+  })
+
   it('rethrows a retryable error without completing or surfacing', async () => {
     const onError = vi.fn()
     setUploadErrorHandler(onError)
@@ -162,5 +181,7 @@ describe('prepareUploadData', () => {
     expect(prepareUploadData('stat_views', { autoRule: null })).toEqual({ autoRule: null })
     const row = { config: '{"value":1}' }
     expect(prepareUploadData('wallets', row)).toBe(row)
+    const loanRow = { principalAmount: 300000, walletId: 'w1' }
+    expect(prepareUploadData('loans', loanRow)).toBe(loanRow)
   })
 })

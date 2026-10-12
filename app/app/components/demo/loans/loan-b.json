@@ -1,0 +1,692 @@
+{
+  "bankSchedule": [
+    {
+      "date": "2023-06-04",
+      "interestPart": 1984.07,
+      "paymentNumber": 1,
+      "principalPart": 0.0,
+      "totalAmount": 1984.07
+    },
+    {
+      "date": "2023-06-08",
+      "interestPart": 44.09,
+      "paymentNumber": 2,
+      "principalPart": 0.0,
+      "totalAmount": 44.09
+    },
+    {
+      "date": "2023-07-04",
+      "interestPart": 5731.75,
+      "paymentNumber": 3,
+      "principalPart": 4128.37,
+      "totalAmount": 9860.12
+    },
+    {
+      "date": "2023-08-04",
+      "interestPart": 6760.73,
+      "paymentNumber": 4,
+      "principalPart": 3099.39,
+      "totalAmount": 9860.12
+    },
+    {
+      "date": "2023-08-05",
+      "interestPart": 29.95,
+      "paymentNumber": 5,
+      "principalPart": 0.0,
+      "totalAmount": 29.95
+    },
+    {
+      "date": "2023-09-04",
+      "interestPart": 6705.72,
+      "paymentNumber": 6,
+      "principalPart": 3154.4,
+      "totalAmount": 9860.12
+    },
+    {
+      "date": "2023-10-04",
+      "interestPart": 6435.22,
+      "paymentNumber": 7,
+      "principalPart": 3424.9,
+      "totalAmount": 9860.12
+    },
+    {
+      "date": "2023-11-04",
+      "interestPart": 6588.93,
+      "paymentNumber": 8,
+      "principalPart": 3271.19,
+      "totalAmount": 9860.12
+    },
+    {
+      "date": "2023-12-04",
+      "interestPart": 6320.19,
+      "paymentNumber": 9,
+      "principalPart": 3539.93,
+      "totalAmount": 9860.12
+    },
+    {
+      "date": "2024-01-04",
+      "interestPart": 0.0,
+      "paymentNumber": 10,
+      "principalPart": 0.0,
+      "totalAmount": 0.0
+    },
+    {
+      "date": "2024-02-04",
+      "interestPart": 6346.32,
+      "paymentNumber": 11,
+      "principalPart": 0.0,
+      "totalAmount": 6346.32
+    },
+    {
+      "date": "2024-03-04",
+      "interestPart": 6346.32,
+      "paymentNumber": 12,
+      "principalPart": 0.0,
+      "totalAmount": 6346.32
+    },
+    {
+      "date": "2024-04-04",
+      "interestPart": 6346.32,
+      "paymentNumber": 13,
+      "principalPart": 0.0,
+      "totalAmount": 6346.32
+    },
+    {
+      "date": "2024-05-04",
+      "interestPart": 6259.38,
+      "paymentNumber": 14,
+      "principalPart": 3980.68,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-06-04",
+      "interestPart": 6397.37,
+      "paymentNumber": 15,
+      "principalPart": 3842.69,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-07-04",
+      "interestPart": 6124.99,
+      "paymentNumber": 16,
+      "principalPart": 4115.07,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-08-04",
+      "interestPart": 6256.11,
+      "paymentNumber": 17,
+      "principalPart": 3983.95,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-09-04",
+      "interestPart": 6185.39,
+      "paymentNumber": 18,
+      "principalPart": 4054.67,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-10-04",
+      "interestPart": 5916.21,
+      "paymentNumber": 19,
+      "principalPart": 4323.85,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-11-04",
+      "interestPart": 6036.67,
+      "paymentNumber": 20,
+      "principalPart": 4203.39,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2024-12-04",
+      "interestPart": 5769.73,
+      "paymentNumber": 21,
+      "principalPart": 4470.33,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-01-04",
+      "interestPart": 5882.7,
+      "paymentNumber": 22,
+      "principalPart": 4357.36,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-02-04",
+      "interestPart": 5805.36,
+      "paymentNumber": 23,
+      "principalPart": 4434.7,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-03-04",
+      "interestPart": 5172.45,
+      "paymentNumber": 24,
+      "principalPart": 5067.61,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-04-04",
+      "interestPart": 5636.69,
+      "paymentNumber": 25,
+      "principalPart": 4603.37,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-05-04",
+      "interestPart": 5375.78,
+      "paymentNumber": 26,
+      "principalPart": 4864.28,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-06-04",
+      "interestPart": 5468.63,
+      "paymentNumber": 27,
+      "principalPart": 4771.43,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-07-04",
+      "interestPart": 5210.26,
+      "paymentNumber": 28,
+      "principalPart": 5029.8,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-08-04",
+      "interestPart": 5294.65,
+      "paymentNumber": 29,
+      "principalPart": 4945.41,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-09-04",
+      "interestPart": 5206.87,
+      "paymentNumber": 30,
+      "principalPart": 5033.19,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-10-04",
+      "interestPart": 4952.44,
+      "paymentNumber": 31,
+      "principalPart": 5287.62,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-11-04",
+      "interestPart": 5023.66,
+      "paymentNumber": 32,
+      "principalPart": 5216.4,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2025-12-04",
+      "interestPart": 4772.0,
+      "paymentNumber": 33,
+      "principalPart": 5468.06,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-01-04",
+      "interestPart": 4834.01,
+      "paymentNumber": 34,
+      "principalPart": 5406.05,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-02-04",
+      "interestPart": 4738.05,
+      "paymentNumber": 35,
+      "principalPart": 5502.01,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-03-04",
+      "interestPart": 4191.31,
+      "paymentNumber": 36,
+      "principalPart": 6048.75,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-04-04",
+      "interestPart": 4533.01,
+      "paymentNumber": 37,
+      "principalPart": 5707.05,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-05-04",
+      "interestPart": 4288.75,
+      "paymentNumber": 38,
+      "principalPart": 5951.31,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-06-04",
+      "interestPart": 4326.07,
+      "paymentNumber": 39,
+      "principalPart": 5913.99,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-07-04",
+      "interestPart": 4084.93,
+      "paymentNumber": 40,
+      "principalPart": 6155.13,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-08-04",
+      "interestPart": 4111.83,
+      "paymentNumber": 41,
+      "principalPart": 6128.23,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-09-04",
+      "interestPart": 4003.05,
+      "paymentNumber": 42,
+      "principalPart": 6237.01,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-10-04",
+      "interestPart": 3766.78,
+      "paymentNumber": 43,
+      "principalPart": 6473.28,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-11-04",
+      "interestPart": 3777.44,
+      "paymentNumber": 44,
+      "principalPart": 6462.62,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2026-12-04",
+      "interestPart": 3544.57,
+      "paymentNumber": 45,
+      "principalPart": 6695.49,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-01-04",
+      "interestPart": 3543.87,
+      "paymentNumber": 46,
+      "principalPart": 6696.19,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-02-04",
+      "interestPart": 3425.01,
+      "paymentNumber": 47,
+      "principalPart": 6815.05,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-03-04",
+      "interestPart": 2984.29,
+      "paymentNumber": 48,
+      "principalPart": 7255.77,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-04-04",
+      "interestPart": 3175.24,
+      "paymentNumber": 49,
+      "principalPart": 7064.82,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-05-04",
+      "interestPart": 2951.46,
+      "paymentNumber": 50,
+      "principalPart": 7288.6,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-06-04",
+      "interestPart": 2920.46,
+      "paymentNumber": 51,
+      "principalPart": 7319.6,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-07-04",
+      "interestPart": 2700.51,
+      "paymentNumber": 52,
+      "principalPart": 7539.55,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-08-04",
+      "interestPart": 2656.7,
+      "paymentNumber": 53,
+      "principalPart": 7583.36,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-09-04",
+      "interestPart": 2522.09,
+      "paymentNumber": 54,
+      "principalPart": 7717.97,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-10-04",
+      "interestPart": 2308.15,
+      "paymentNumber": 55,
+      "principalPart": 7931.91,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-11-04",
+      "interestPart": 2244.29,
+      "paymentNumber": 56,
+      "principalPart": 7995.77,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2027-12-04",
+      "interestPart": 2034.55,
+      "paymentNumber": 57,
+      "principalPart": 8205.51,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-01-04",
+      "interestPart": 1956.71,
+      "paymentNumber": 58,
+      "principalPart": 8283.35,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-02-04",
+      "interestPart": 1809.68,
+      "paymentNumber": 59,
+      "principalPart": 8430.38,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-03-04",
+      "interestPart": 1552.93,
+      "paymentNumber": 60,
+      "principalPart": 8687.13,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-04-04",
+      "interestPart": 1505.83,
+      "paymentNumber": 61,
+      "principalPart": 8734.23,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-05-04",
+      "interestPart": 1307.22,
+      "paymentNumber": 62,
+      "principalPart": 8932.84,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-06-04",
+      "interestPart": 1192.22,
+      "paymentNumber": 63,
+      "principalPart": 9047.84,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-07-04",
+      "interestPart": 998.34,
+      "paymentNumber": 64,
+      "principalPart": 9241.72,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-08-04",
+      "interestPart": 867.57,
+      "paymentNumber": 65,
+      "principalPart": 9372.49,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-09-04",
+      "interestPart": 701.2,
+      "paymentNumber": 66,
+      "principalPart": 9538.86,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-10-04",
+      "interestPart": 514.73,
+      "paymentNumber": 67,
+      "principalPart": 9725.33,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-11-04",
+      "interestPart": 359.25,
+      "paymentNumber": 68,
+      "principalPart": 9880.81,
+      "totalAmount": 10240.06
+    },
+    {
+      "date": "2028-11-26",
+      "interestPart": 130.48,
+      "paymentNumber": 69,
+      "principalPart": 10357.96,
+      "totalAmount": 10488.44
+    }
+  ],
+  "params": {
+    "annualRate": 20.9,
+    "firstPaymentDate": "2023-06-04",
+    "overpaymentMode": "reducePayment",
+    "paymentDay": 4,
+    "principalAmount": 385000,
+    "scheduleType": "annuity",
+    "startDate": "2023-05-26",
+    "termMonths": 66
+  },
+  "trns": [
+    {
+      "amount": 1984.07,
+      "date": "2023-06-08",
+      "id": "b1m",
+      "kind": "payment"
+    },
+    {
+      "amount": 1984.07,
+      "date": "2023-06-08",
+      "id": "b1i",
+      "kind": "interest"
+    },
+    {
+      "amount": 44.09,
+      "date": "2023-06-08",
+      "id": "b2m",
+      "kind": "payment"
+    },
+    {
+      "amount": 44.09,
+      "date": "2023-06-08",
+      "id": "b2i",
+      "kind": "interest"
+    },
+    {
+      "amount": 6.41,
+      "date": "2023-06-08",
+      "id": "b3m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6.41,
+      "date": "2023-06-08",
+      "id": "b3i",
+      "kind": "interest"
+    },
+    {
+      "amount": 9860.12,
+      "date": "2023-07-04",
+      "id": "b4m",
+      "kind": "payment"
+    },
+    {
+      "amount": 5731.75,
+      "date": "2023-07-04",
+      "id": "b4i",
+      "kind": "interest"
+    },
+    {
+      "amount": 9865.77,
+      "date": "2023-08-05",
+      "id": "b5m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6766.38,
+      "date": "2023-08-05",
+      "id": "b5i",
+      "kind": "interest"
+    },
+    {
+      "amount": 29.95,
+      "date": "2023-08-05",
+      "id": "b6m",
+      "kind": "payment"
+    },
+    {
+      "amount": 29.95,
+      "date": "2023-08-05",
+      "id": "b6i",
+      "kind": "interest"
+    },
+    {
+      "amount": 7.14,
+      "date": "2023-08-05",
+      "id": "b7m",
+      "kind": "payment"
+    },
+    {
+      "amount": 7.14,
+      "date": "2023-08-05",
+      "id": "b7i",
+      "kind": "interest"
+    },
+    {
+      "amount": 9860.12,
+      "date": "2023-09-04",
+      "id": "b8m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6705.72,
+      "date": "2023-09-04",
+      "id": "b8i",
+      "kind": "interest"
+    },
+    {
+      "amount": 9882.7,
+      "date": "2023-10-08",
+      "id": "b9m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6457.8,
+      "date": "2023-10-08",
+      "id": "b9i",
+      "kind": "interest"
+    },
+    {
+      "amount": 28.77,
+      "date": "2023-10-08",
+      "id": "b10m",
+      "kind": "payment"
+    },
+    {
+      "amount": 28.77,
+      "date": "2023-10-08",
+      "id": "b10i",
+      "kind": "interest"
+    },
+    {
+      "amount": 9877.06,
+      "date": "2023-11-07",
+      "id": "b11m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6605.87,
+      "date": "2023-11-07",
+      "id": "b11i",
+      "kind": "interest"
+    },
+    {
+      "amount": 21.95,
+      "date": "2023-11-07",
+      "id": "b12m",
+      "kind": "payment"
+    },
+    {
+      "amount": 21.95,
+      "date": "2023-11-07",
+      "id": "b12i",
+      "kind": "interest"
+    },
+    {
+      "amount": 9850.25,
+      "date": "2023-12-04",
+      "id": "b13m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6310.32,
+      "date": "2023-12-04",
+      "id": "b13i",
+      "kind": "interest"
+    },
+    {
+      "amount": 6346.32,
+      "date": "2024-02-04",
+      "id": "b14m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6346.32,
+      "date": "2024-02-04",
+      "id": "b14i",
+      "kind": "interest"
+    },
+    {
+      "amount": 6346.32,
+      "date": "2024-03-04",
+      "id": "b15m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6346.32,
+      "date": "2024-03-04",
+      "id": "b15i",
+      "kind": "interest"
+    },
+    {
+      "amount": 6346.32,
+      "date": "2024-04-04",
+      "id": "b16m",
+      "kind": "payment"
+    },
+    {
+      "amount": 6346.32,
+      "date": "2024-04-04",
+      "id": "b16i",
+      "kind": "interest"
+    }
+  ],
+  "walletBalance": -364381.82
+}

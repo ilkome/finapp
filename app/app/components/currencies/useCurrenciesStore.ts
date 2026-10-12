@@ -5,8 +5,9 @@ import { defineStore } from 'pinia'
 import { watchTable } from '~~/services/powersync/db'
 import { rowToRates } from '~~/services/powersync/transforms'
 
-import type { Rates } from '~/components/currencies/types'
+import type { CurrencyCode, Rates } from '~/components/currencies/types'
 
+import { createToBase, getAmountInRate } from '~/components/amount/getTotal'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -58,11 +59,35 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     rates.value = data
   }
 
+  const reportedMissing = new Set<CurrencyCode>()
+  /** For totals: `undefined` when loaded rates lack the currency, see `createToBase`. */
+  const tryToBase = createToBase(() => base.value, () => rates.value, {
+    isDev: import.meta.dev,
+    onMissing(currency) {
+      if (reportedMissing.has(currency))
+        return
+      reportedMissing.add(currency)
+      logger.error('missing rate', currency)
+    },
+  })
+
+  /** A missing rate counts as 0, never 1:1. */
+  function toBase(amount: number, currencyCode: CurrencyCode): number {
+    return tryToBase(amount, currencyCode) ?? 0
+  }
+
+  function fromBase(amount: number, currencyCode: CurrencyCode): number {
+    return getAmountInRate(amount, base.value, currencyCode, rates.value)
+  }
+
   return {
     base,
+    fromBase,
     initCurrencies,
     primeFromCache,
     rates,
     setRates,
+    toBase,
+    tryToBase,
   }
 })

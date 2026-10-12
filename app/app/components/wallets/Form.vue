@@ -2,10 +2,12 @@
 import { generateId } from '~~/utils/generateId'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletId, WalletItem, WalletType } from '~/components/wallets/types'
+import type { WalletFormKey, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
+import { manualMinPaymentDates } from '~/components/loans/minPayment'
 import { walletItemSchema, walletTypes } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 import { showErrorToast } from '~/composables/useStoreSync'
 
 const props = defineProps<{
@@ -15,17 +17,21 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   afterSave: []
-  update: [key: keyof WalletItem, value: WalletItem[keyof WalletItem]]
+  update: [key: WalletFormKey, value: unknown]
 }>()
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
 
 const editWalletId = props.walletId ?? generateId()
-const walletType = walletTypes.map(value => ({
-  label: t(`money.types.${value}`),
-  value,
-}))
+const isLoans = useFeature('loans')
+// A wallet that already is a loan keeps its type in the list with the feature off.
+const walletType = computed(() => walletTypes
+  .filter(value => value !== 'loan' || isLoans.value || props.walletForm.type === 'loan')
+  .map(value => ({
+    label: t(`money.types.${value}`),
+    value,
+  })))
 
 const modals = ref({
   colors: false,
@@ -37,6 +43,12 @@ const walletPlaceholder = computed(() => ({
   amount: 0,
   name: props.walletForm.name ? props.walletForm.name : t('wallets.form.name.label'),
 }))
+
+function onChangeMinPaymentDate(date: number | null) {
+  const fields = manualMinPaymentDates(date)
+  emit('update', 'minPaymentDate', fields.minPaymentDate)
+  emit('update', 'minPaymentUpdatedAt', fields.minPaymentUpdatedAt)
+}
 
 async function onSave() {
   const values = walletItemSchema.safeParse(props.walletForm)
@@ -131,9 +143,34 @@ async function onSave() {
         <FormInput
           :placeholder="t('wallets.form.credit.limit')"
           :modelValue="props.walletForm.creditLimit ?? ''"
-          @update:modelValue="(value: string) => emit('update', 'creditLimit' as keyof WalletItem, +value)"
+          @update:modelValue="(value: string) => emit('update', 'creditLimit', +value)"
         />
       </FormElement>
+
+      <!-- Minimum payment -->
+      <div v-if="isLoans && props.walletForm.type === 'credit'" class="grid grid-cols-2 gap-3">
+        <FormElement>
+          <template #label>
+            {{ t('loans.toPay.minPayment') }}
+          </template>
+          <FormInput
+            :placeholder="t('loans.toPay.minPayment')"
+            :modelValue="props.walletForm.minPaymentAmount ?? ''"
+            @update:modelValue="(value: string) => emit('update', 'minPaymentAmount', +value > 0 ? +value : undefined)"
+          />
+        </FormElement>
+        <FormElement>
+          <template #label>
+            {{ t('wallets.form.credit.minPaymentDate') }}
+          </template>
+          <FormDate
+            clearable
+            :modelValue="props.walletForm.minPaymentDate ?? null"
+            :title="t('wallets.form.credit.minPaymentDate')"
+            @update:modelValue="onChangeMinPaymentDate"
+          />
+        </FormElement>
+      </div>
 
       <!-- Options -->
       <div class="grid gap-1">
@@ -141,17 +178,17 @@ async function onSave() {
           <UiSwitchItem
             :checkboxValue="props.walletForm.isWithdrawal ?? false"
             :title="t('money.options.withdrawal')"
-            @click="emit('update', 'isWithdrawal', !props.walletForm.isWithdrawal)"
+            @toggle="emit('update', 'isWithdrawal', !props.walletForm.isWithdrawal)"
           />
           <UiSwitchItem
             :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
             :title="t('money.options.isExcludeInTotal')"
-            @click="emit('update', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
+            @toggle="emit('update', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
           />
           <UiSwitchItem
             :checkboxValue="props.walletForm.isArchived ?? false"
             :title="t('money.totals.archived')"
-            @click="emit('update', 'isArchived', !props.walletForm.isArchived)"
+            @toggle="emit('update', 'isArchived', !props.walletForm.isArchived)"
           />
         </div>
       </div>

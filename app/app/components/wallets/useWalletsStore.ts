@@ -1,37 +1,30 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import { watchTable } from '~~/services/powersync/db'
-import { deleteRow, upsertRow, upsertRows } from '~~/services/powersync/mutations'
+import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { rowToWallet, walletToRow } from '~~/services/powersync/transforms'
-import { uniqueElementsBy } from '~~/utils/simple'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { TrnId } from '~/components/trns/types'
 import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed } from '~/components/wallets/types'
 
-import { getAmountInRate, getWalletsTotals } from '~/components/amount/getTotal'
+import { getWalletsTotals } from '~/components/amount/getTotal'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
+import { reconcileRows } from '~/components/trns/reconcile'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
+import { isCreditProduct } from '~/components/wallets/types'
 import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
-import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
+import { createDebouncedPersist, persistOptimistic } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('wallets')
-
-function rowsToWallets(rows: Row[]): Wallets | null {
-  if (!rows.length)
-    return null
-  const map: Wallets = {}
-  for (const row of rows)
-    map[row.id] = rowToWallet(row)
-  return map
-}
 
 export const useWalletsStore = defineStore('wallets', () => {
   const trnsStore = useTrnsStore()
@@ -81,17 +74,17 @@ export const useWalletsStore = defineStore('wallets', () => {
       // (fresh device) - keep the primed cache. Later empty emissions are genuine wipes.
       if (isFirst && !rows.length && hasItems.value)
         return
-      setWallets(rowsToWallets(rows))
+      const next = reconcileRows(items.value, rows, rowToWallet)
+      if (next !== items.value)
+        setWallets(next)
     })
     logger.log('watching wallets')
   }
 
   function saveWallet({ id, values }: { id: WalletId, values: WalletItem }) {
-    // Set default currency based on first created wallet
     if (!hasItems.value)
       useUserStore().saveUserBaseCurrency(values.currency)
 
-    // A new wallet is one whose id isn't already in the store.
     const isNew = !(items.value && id in items.value)
 
     if (isNew) {
@@ -104,6 +97,14 @@ export const useWalletsStore = defineStore('wallets', () => {
 
     const prev = items.value
 
+    // Retyped away from a credit product: its loan has nothing left to track.
+    if (isCreditProduct(prev?.[id]?.type) && !isCreditProduct(values.type)) {
+      const loansStore = useLoansStore()
+      const loanId = loansStore.loanIdByWalletId.get(id)
+      if (loanId)
+        loansStore.deleteLoan(loanId)
+    }
+
     // Optimistic update (instant UI). In real mode the watch re-emits the same shape.
     setWallets({
       ...(items.value ?? {}),
@@ -113,10 +114,11 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (isDemo.value)
       return
 
-    upsertRow('wallets', id, walletToRow(values, resolveWriteUid(uid.value))).catch((e) => {
-      setWallets(prev) // roll back the optimistic update if the local write failed
-      logger.error('saveWallet failed', e)
-      showErrorToast('wallets.errors.saveFailed')
+    void persistOptimistic(upsertRow('wallets', id, walletToRow(values, resolveWriteUid(uid.value))), {
+      errorKey: 'wallets.errors.saveFailed',
+      label: 'saveWallet',
+      logger,
+      rollback: () => setWallets(prev),
     })
   }
 
@@ -133,7 +135,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (isDemo.value)
       return
 
-    upsertRows(
+    void persistOptimistic(upsertRows(
       'wallets',
       ids
         .filter(walletId => items.value?.[walletId])
@@ -141,10 +143,11 @@ export const useWalletsStore = defineStore('wallets', () => {
           id: walletId,
           row: walletToRow({ ...items.value![walletId]!, order: index }, resolveWriteUid(uid.value)),
         })),
-    ).catch((e) => {
-      setWallets(prev) // restore the previous order if the local write failed
-      logger.error('saveWalletsOrder failed', e)
-      showErrorToast('wallets.errors.orderFailed')
+    ), {
+      errorKey: 'wallets.errors.orderFailed',
+      label: 'saveWalletsOrder',
+      logger,
+      rollback: () => setWallets(prev),
     })
   }
 
@@ -191,7 +194,6 @@ export const useWalletsStore = defineStore('wallets', () => {
       .filter(id => items.value?.[id])
   })
 
-  // Wallet totals in a single pass over all trns.
   const walletTotals = computed(() =>
     getWalletsTotals({
       trnsItems: trnsStore.items ?? {},
@@ -199,26 +201,30 @@ export const useWalletsStore = defineStore('wallets', () => {
     }),
   )
 
-  const itemsComputed = computed<WalletsComputed>(() =>
-    sortedIds.value.reduce((acc, id) => {
+  // Reuse a wallet's previous object when nothing it shows changed, so a trn save re-renders only
+  // the rows of the wallets it touched instead of every wallet row.
+  let prevComputed = new Map<WalletId, { source: WalletItem, value: WalletItemComputed }>()
+  const itemsComputed = computed<WalletsComputed>(() => {
+    const next = new Map<WalletId, { source: WalletItem, value: WalletItemComputed }>()
+    const result = sortedIds.value.reduce((acc, id) => {
       const wallet = items.value?.[id]
       if (!wallet)
         return acc
-      acc[id] = {
-        ...wallet,
-        amount: walletTotals.value.get(id) ?? 0,
-        rate: getAmountInRate({
-          amount: 1,
-          baseCurrencyCode: currenciesStore.base,
-          currencyCode: wallet.currency,
-          rates: currenciesStore.rates,
-        }),
-      }
+      const amount = walletTotals.value.get(id) ?? 0
+      const rate = currenciesStore.toBase(1, wallet.currency)
+      const prev = prevComputed.get(id)
+      const value = prev && prev.source === wallet && prev.value.amount === amount && prev.value.rate === rate
+        ? prev.value
+        : { ...wallet, amount, rate }
+      next.set(id, { source: wallet, value })
+      acc[id] = value
       return acc
-    }, {} as Record<WalletId, WalletItemComputed>),
-  )
+    }, {} as Record<WalletId, WalletItemComputed>)
+    prevComputed = next
+    return result
+  })
 
-  const currenciesUsed = computed<CurrencyCode[]>(() => uniqueElementsBy(itemsComputed.value, 'currency'))
+  const currenciesUsed = computed<CurrencyCode[]>(() => [...new Set(sortedIds.value.map(id => items.value![id]!.currency))])
 
   async function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
     const prevWallets = items.value
@@ -230,28 +236,36 @@ export const useWalletsStore = defineStore('wallets', () => {
     if (trnsIds?.length)
       trnsStore.removeTrnsFromStore(trnsIds)
 
+    // Cascade to a credit wallet's loan so it doesn't survive the wallet it belongs to.
+    const loansStore = useLoansStore()
+    const loanId = loansStore.loanIdByWalletId.get(id)
+    if (loanId)
+      loansStore.deleteLoan(loanId)
+
     if (isDemo.value)
       return
 
     // Real mode: the wallet's transactions must also be deleted from the DB,
     // otherwise the trns watch would re-add them after the optimistic removal.
-    try {
-      await Promise.all([
-        deleteRow('wallets', id),
-        ...(trnsIds ?? []).map(trnId => deleteRow('trns', trnId)),
-      ])
-    }
-    catch (e) {
-      // Roll back the wallet and its cascaded trns if the local write failed.
-      setWallets(prevWallets)
-      trnsStore.setTrns(prevTrns)
-      logger.error('deleteWallet failed', e)
-      showErrorToast('wallets.errors.deleteFailed')
-    }
+    await persistOptimistic(Promise.all([deleteRow('wallets', id), deleteRows('trns', trnsIds ?? [])]), {
+      errorKey: 'wallets.errors.deleteFailed',
+      label: 'deleteWallet',
+      logger,
+      rollback: () => {
+        setWallets(prevWallets)
+        trnsStore.setTrns(prevTrns)
+      },
+    })
+  }
+
+  /** A wallet missing for a tick (deleted, not yet synced) reads as the base currency. */
+  function currencyOf(walletId: WalletId): CurrencyCode {
+    return items.value?.[walletId]?.currency ?? currenciesStore.base
   }
 
   return {
     currenciesUsed,
+    currencyOf,
     deleteWallet,
     hasItems,
     initWallets,

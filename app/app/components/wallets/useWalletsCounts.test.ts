@@ -2,9 +2,11 @@ import { describe, expect, it } from 'vitest'
 
 import type { WalletItemComputed } from '~/components/wallets/types'
 
-import { computeWalletCounts, sumWalletAmounts } from '~/components/wallets/counts'
+import { getAmountInRate } from '~/components/amount/getTotal'
+import { computeWalletCounts, sumWalletsInBase, sumWalletsInOwnCurrency } from '~/components/wallets/counts'
 
 const rates = { EUR: 0.96, RUB: 64.75, USD: 1 }
+const toBaseIn = (base: string) => (amount: number, currency: string) => getAmountInRate(amount, currency, base, rates)
 
 function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currency' | 'type'>): WalletItemComputed {
   return {
@@ -23,8 +25,7 @@ function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed
 describe('computeWalletCounts', () => {
   it('returns zeros for empty wallet list', () => {
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 0,
       walletIds: [],
       wallets: {},
@@ -42,8 +43,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1'],
       wallets,
@@ -60,8 +60,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -78,8 +77,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -97,8 +95,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -116,8 +113,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -132,8 +128,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1'],
       wallets,
@@ -149,8 +144,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 1,
       walletIds: ['w1'],
       wallets,
@@ -166,8 +160,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -182,8 +175,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 1,
       walletIds: ['w1'],
       wallets,
@@ -198,8 +190,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 1,
       walletIds: ['w1'],
       wallets,
@@ -214,8 +205,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 5,
       walletIds: ['w1'],
       wallets,
@@ -231,8 +221,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -252,8 +241,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 3,
       walletIds: ['w1', 'w2', 'w3'],
       wallets,
@@ -269,8 +257,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 1,
       walletIds: ['w1'],
       wallets,
@@ -281,8 +268,7 @@ describe('computeWalletCounts', () => {
 
   it('skips missing wallets', () => {
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 1,
       walletIds: ['nonexistent'],
       wallets: {},
@@ -302,8 +288,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 6,
       walletIds: ['w1', 'w2', 'w3', 'w4', 'w5', 'w6'],
       wallets,
@@ -326,8 +311,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 1,
       walletIds: ['w1'],
       wallets,
@@ -344,7 +328,7 @@ describe('computeWalletCounts', () => {
       w2: wallet({ amount: 300, currency: 'USD', isExcludeInTotal: true, isWithdrawal: true, type: 'cashless' }),
     }
 
-    const params = { baseCurrency: 'USD' as const, rates, totalWalletsCount: 2, walletIds: ['w1', 'w2'], wallets }
+    const params = { toBase: toBaseIn('USD'), totalWalletsCount: 2, walletIds: ['w1', 'w2'], wallets }
 
     const off = computeWalletCounts(params)
     expect(off.total!.value).toBe(1000)
@@ -364,7 +348,7 @@ describe('computeWalletCounts', () => {
       w1: wallet({ amount: 500, currency: 'USD', isArchived: true, isExcludeInTotal: true, type: 'cash' }),
     }
 
-    const params = { baseCurrency: 'USD' as const, rates, totalWalletsCount: 1, walletIds: ['w1'], wallets }
+    const params = { toBase: toBaseIn('USD'), totalWalletsCount: 1, walletIds: ['w1'], wallets }
 
     const off = computeWalletCounts(params)
     expect(off.archived!.value).toBe(500)
@@ -388,8 +372,7 @@ describe('computeWalletCounts', () => {
     }
 
     const result = computeWalletCounts({
-      baseCurrency: 'USD',
-      rates,
+      toBase: toBaseIn('USD'),
       totalWalletsCount: 2,
       walletIds: ['w1', 'w2'],
       wallets,
@@ -398,83 +381,49 @@ describe('computeWalletCounts', () => {
     // available = withdrawal - |credit| = -500 - 1000 = -1500
     expect(result.available!.value).toBe(-1500)
   })
-})
 
-describe('sumWalletAmounts', () => {
-  it('sums with currency conversion', () => {
+  it('keeps loans apart from credit cards, out of the total, and counts each debt once in available', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 6475, currency: 'RUB', type: 'cashless' }),
+      card: wallet({ amount: -300, creditLimit: 1000, currency: 'USD', type: 'credit' }),
+      cash: wallet({ amount: 1000, currency: 'USD', isWithdrawal: true, type: 'cash' }),
+      loan: wallet({ amount: -500, currency: 'USD', isWithdrawal: true, type: 'loan' }),
     }
 
-    const result = sumWalletAmounts({
-      baseCurrency: 'USD',
-      convert: true,
-      rates,
-      walletIds: ['w1', 'w2'],
+    const result = computeWalletCounts({
+      toBase: toBaseIn('USD'),
+      totalWalletsCount: 3,
+      walletIds: ['cash', 'card', 'loan'],
       wallets,
     })
 
-    // 1000 + 6475/64.75 = 1100
-    expect(result).toBe(1100)
+    expect(result.total!.value).toBe(1000)
+    expect(result.credit).toMatchObject({ secondValue: 1000, value: -300 })
+    expect(result.loan).toMatchObject({ isShow: true, value: -500 })
+    expect(result.withdrawal!.value).toBe(1000)
+    expect(result.available!.value).toBe(700)
+    expect(result.availableAll).toMatchObject({ isShow: true, value: 200 })
   })
+})
 
+describe('sumWalletsInBase', () => {
+  it('converts every wallet, including isExcludeInTotal', () => {
+    const wallets = {
+      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 6475, currency: 'RUB', isExcludeInTotal: true, type: 'cashless' }),
+    }
+
+    // 1000 + 6475/64.75 = 1100
+    expect(sumWalletsInBase(['w1', 'w2', 'missing'], wallets, toBaseIn('USD'))).toBe(1100)
+  })
+})
+
+describe('sumWalletsInOwnCurrency', () => {
   it('sums without conversion, excludes isExcludeInTotal', () => {
     const wallets = {
       w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
       w2: wallet({ amount: 500, currency: 'USD', isExcludeInTotal: true, type: 'cashless' }),
     }
 
-    const result = sumWalletAmounts({
-      convert: false,
-      walletIds: ['w1', 'w2'],
-      wallets,
-    })
-
-    expect(result).toBe(1000)
-  })
-
-  it('includes isExcludeInTotal when converting', () => {
-    const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 500, currency: 'USD', isExcludeInTotal: true, type: 'cashless' }),
-    }
-
-    const result = sumWalletAmounts({
-      baseCurrency: 'USD',
-      convert: true,
-      rates,
-      walletIds: ['w1', 'w2'],
-      wallets,
-    })
-
-    expect(result).toBe(1500)
-  })
-
-  it('skips missing wallets', () => {
-    const result = sumWalletAmounts({
-      baseCurrency: 'USD',
-      convert: true,
-      rates,
-      walletIds: ['nonexistent'],
-      wallets: {},
-    })
-
-    expect(result).toBe(0)
-  })
-
-  it('defaults to convert=true', () => {
-    const wallets = {
-      w1: wallet({ amount: 6475, currency: 'RUB', type: 'cash' }),
-    }
-
-    const result = sumWalletAmounts({
-      baseCurrency: 'USD',
-      rates,
-      walletIds: ['w1'],
-      wallets,
-    })
-
-    expect(result).toBe(100)
+    expect(sumWalletsInOwnCurrency(['w1', 'w2', 'missing'], wallets)).toBe(1000)
   })
 })

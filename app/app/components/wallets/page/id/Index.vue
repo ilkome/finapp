@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
+import type { StatContextBlockId } from '~/components/stat/config/schema'
 import type { TrnId } from '~/components/trns/types'
 
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
+import LoansWalletActions from '~/components/loans/WalletActions.vue'
+import { walletBalanceItems } from '~/components/loans/walletBalanceItems'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { useStatDrilldownPage } from '~/components/stat/page/useStatDrilldownPage'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
@@ -11,7 +14,9 @@ import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { isCreditProduct } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 import { showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
@@ -24,9 +29,13 @@ const { statHeader } = useStatPageHost()
 
 const walletId = computed(() => route.params.id)
 const wallet = computed(() => walletsStore.items?.[walletId.value])
-const contextBlockIds = computed(() => wallet.value?.desc
-  ? ['walletBalance', 'walletDescription'] as const
-  : ['walletBalance'] as const)
+const isCredit = computed(() => isCreditProduct(wallet.value?.type))
+const isLoans = useFeature('loans')
+const contextBlockIds = computed<readonly StatContextBlockId[]>(() => [
+  'walletBalance',
+  ...(wallet.value?.desc ? ['walletDescription' as const] : []),
+  ...(isLoans.value && isCredit.value ? ['walletLoan' as const] : []),
+])
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
 const { statSnapshot, storage, storageKey, storageQuery } = useStatDrilldownPage({ id: walletId, kind: 'wallet' })
 
@@ -49,7 +58,8 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
   },
   contextBlockIds,
   date: {
-    initParams: statSnapshot?.date,
+    // A loan moves once a month over years: the whole history by month says more than the default recent range.
+    initParams: statSnapshot?.date ?? (wallet.value?.type === 'loan' ? { granularityBy: 'month', isShowMaxRange: true } : undefined),
     key: storageKey,
     maxRange,
     queryParams: () => route.query,
@@ -83,42 +93,39 @@ onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
 const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
-const walletBalanceItems = computed(() => wallet.value?.type === 'credit'
-  ? [
-      { amount: total.value, title: t('wallets.form.credit.debt') },
-      { amount: walletCreditLimit.value - (-total.value), title: t('wallets.form.credit.available') },
-      { amount: walletCreditLimit.value, title: t('wallets.form.credit.limit') },
-    ]
-  : [{ amount: total.value, title: t('money.balance') }])
+const balanceItems = computed(() => walletBalanceItems({
+  creditLimit: walletCreditLimit.value,
+  hasLoan: wallet.value?.type === 'loan',
+  isCredit: isCredit.value,
+  t,
+  total: total.value,
+}))
 
 function onClickEdit() {
   router.push(`/wallets/${walletId.value}/edit`)
 }
 
-const deleteDescText = computed(() => {
-  if (trnsIds.value.length > 0)
-    return t('wallets.form.delete.alertWithTrns')
-  return undefined
-})
+const confirm = useConfirm()
 
-const deleteHighlight = computed(() => {
-  if (trnsIds.value.length > 0)
-    return t('trns.plural', trnsIds.value.length)
-  return undefined
-})
-
-const isShowDeleteConfirm = ref(false)
-function onClickDelete() {
-  isShowDeleteConfirm.value = true
-}
+const loanActions = shallowRef<InstanceType<typeof LoansWalletActions> | null>(null)
 
 const menuItems = computed<DropdownMenuItem[][]>(() => [[
   { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onClickEdit },
+  ...(loanActions.value?.menuItems ?? []),
 ], [
   { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete },
 ]])
 
-async function onDeleteConfirm() {
+async function onClickDelete() {
+  const count = trnsIds.value.length
+  const confirmed = await confirm.ask({
+    description: count > 0 ? t('wallets.form.delete.alertWithTrns') : undefined,
+    highlight: count > 0 ? t('trns.plural', count) : undefined,
+    title: t('wallets.form.delete.title'),
+  })
+  if (!confirmed)
+    return
+
   const deleteTrnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({
     walletsIds: [walletId.value],
   })]
@@ -126,7 +133,6 @@ async function onDeleteConfirm() {
   router.push('/wallets')
   await walletsStore.deleteWallet(walletId.value, deleteTrnsIds)
 
-  // Give some time to complete redirect
   setTimeout(() => {
     showSuccessToast(deleteTrnsIds.length > 0
       ? 'wallets.form.delete.okWithTrns'
@@ -152,13 +158,10 @@ async function onDeleteConfirm() {
       </template>
     </StatHeader>
 
-    <LayoutConfirmModal
-      v-if="isShowDeleteConfirm"
-      :title="t('wallets.form.delete.title')"
-      :description="deleteDescText"
-      :highlight="deleteHighlight"
-      @closed="isShowDeleteConfirm = false"
-      @confirm="onDeleteConfirm"
+    <LoansWalletActions
+      v-if="isLoans && wallet.type === 'loan'"
+      ref="loanActions"
+      :walletId
     />
 
     <StatLayout
@@ -172,7 +175,7 @@ async function onDeleteConfirm() {
       <template #walletBalance>
         <div class="wallet-balance-summary -mx-2 flex snap-x snap-mandatory scroll-px-2 gap-2 overflow-x-auto px-2 md:mx-0 md:scroll-px-0 md:flex-wrap md:overflow-visible md:px-0">
           <StatSumItemView
-            v-for="item in walletBalanceItems"
+            v-for="item in balanceItems"
             :key="item.title"
             :amount="item.amount"
             class="min-w-0 flex-1 basis-0 snap-start snap-always md:w-max md:flex-none md:basis-auto md:snap-none"
@@ -182,6 +185,10 @@ async function onDeleteConfirm() {
             variant="summary"
           />
         </div>
+      </template>
+
+      <template #walletLoan>
+        <LoansWalletSection :walletId />
       </template>
 
       <template #walletDescription>

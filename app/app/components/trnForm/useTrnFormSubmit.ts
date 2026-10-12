@@ -22,10 +22,16 @@ export function useTrnFormSubmit() {
     if (!trnFormData)
       return
 
-    trnsStore.saveTrn({
-      id: trnFormData.id,
-      values: trnFormData.values,
-    })
+    if (trnFormData.extra) {
+      // One write transaction: the transfer and its interest land or roll back together.
+      void trnsStore.saveTrns({
+        [trnFormData.extra.id]: trnFormData.extra.values,
+        [trnFormData.id]: { ...trnFormData.values, updatedAt: Date.now() },
+      })
+    }
+    else {
+      trnsStore.saveTrn({ id: trnFormData.id, values: trnFormData.values })
+    }
 
     if (isVibrateSupported.value)
       vibrate()

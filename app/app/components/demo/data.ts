@@ -1,3 +1,5 @@
+import { addCivilMonths, epochToCivilParts, toCivilDayEpoch } from '~~/utils/date/civil'
+
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { WalletId, WalletItem } from '~/components/wallets/types'
 
@@ -23,60 +25,69 @@ type DemoWalletItem = Partial<Omit<WalletItem, 'color' | 'currency' | 'desc' | '
 }
 
 // --- Category IDs ---
-export const catFood = 'demo_cat_food'
-export const catFoodGroceries = 'demo_cat_food_groceries'
-export const catFoodCafe = 'demo_cat_food_cafe'
-export const catFoodDelivery = 'demo_cat_food_delivery'
+const catFood = 'demo_cat_food'
+const catFoodGroceries = 'demo_cat_food_groceries'
+const catFoodCafe = 'demo_cat_food_cafe'
+const catFoodDelivery = 'demo_cat_food_delivery'
 
-export const catTransport = 'demo_cat_transport'
-export const catTransportFuel = 'demo_cat_transport_fuel'
-export const catTransportPublic = 'demo_cat_transport_public'
-export const catTransportParking = 'demo_cat_transport_parking'
-export const catTransportService = 'demo_cat_transport_service'
+const catTransport = 'demo_cat_transport'
+const catTransportFuel = 'demo_cat_transport_fuel'
+const catTransportPublic = 'demo_cat_transport_public'
+const catTransportParking = 'demo_cat_transport_parking'
+const catTransportService = 'demo_cat_transport_service'
 
-export const catHome = 'demo_cat_home'
-export const catHomeRent = 'demo_cat_home_rent'
-export const catHomeElectricity = 'demo_cat_home_electricity'
-export const catHomeInternet = 'demo_cat_home_internet'
-export const catHomeWater = 'demo_cat_home_water'
+const catHome = 'demo_cat_home'
+const catHomeRent = 'demo_cat_home_rent'
+const catHomeElectricity = 'demo_cat_home_electricity'
+const catHomeInternet = 'demo_cat_home_internet'
+const catHomeWater = 'demo_cat_home_water'
 
-export const catHealth = 'demo_cat_health'
-export const catHealthPharmacy = 'demo_cat_health_pharmacy'
-export const catHealthDoctor = 'demo_cat_health_doctor'
+const catHealth = 'demo_cat_health'
+const catHealthPharmacy = 'demo_cat_health_pharmacy'
+const catHealthDoctor = 'demo_cat_health_doctor'
 
-export const catEntertainment = 'demo_cat_entertainment'
-export const catEntertainmentSubscriptions = 'demo_cat_entertainment_subs'
-export const catEntertainmentMovies = 'demo_cat_entertainment_movies'
-export const catEntertainmentHobby = 'demo_cat_entertainment_hobby'
+const catEntertainment = 'demo_cat_entertainment'
+const catEntertainmentSubscriptions = 'demo_cat_entertainment_subs'
+const catEntertainmentMovies = 'demo_cat_entertainment_movies'
+const catEntertainmentHobby = 'demo_cat_entertainment_hobby'
 
-export const catClothing = 'demo_cat_clothing'
-export const catSport = 'demo_cat_sport'
-export const catEducation = 'demo_cat_education'
-export const catTravel = 'demo_cat_travel'
-export const catPets = 'demo_cat_pets'
-export const catGifts = 'demo_cat_gifts'
-export const catFamily = 'demo_cat_family'
+const catClothing = 'demo_cat_clothing'
+const catSport = 'demo_cat_sport'
+const catEducation = 'demo_cat_education'
+const catTravel = 'demo_cat_travel'
+const catPets = 'demo_cat_pets'
+const catGifts = 'demo_cat_gifts'
+const catFamily = 'demo_cat_family'
 
-export const catSalary = 'demo_cat_salary'
-export const catFreelance = 'demo_cat_freelance'
-export const catInvestments = 'demo_cat_investments'
-export const catCashback = 'demo_cat_cashback'
+const catSalary = 'demo_cat_salary'
+const catFreelance = 'demo_cat_freelance'
+const catInvestments = 'demo_cat_investments'
+const catCashback = 'demo_cat_cashback'
 
 // --- Wallet IDs ---
 export const walletCashRub = 'demo_w_cash_rub'
 export const walletDebitRub = 'demo_w_debit_rub'
 export const walletCreditRub = 'demo_w_credit_rub'
 export const walletUsd = 'demo_w_usd'
-export const walletDepositEur = 'demo_w_deposit_eur'
-export const walletCrypto = 'demo_w_crypto'
-export const walletDebt = 'demo_w_debt'
-export const walletSavings = 'demo_w_savings'
-export const walletEth = 'demo_w_eth'
-export const walletUsdt = 'demo_w_usdt'
+const walletDepositEur = 'demo_w_deposit_eur'
+const walletCrypto = 'demo_w_crypto'
+const walletDebt = 'demo_w_debt'
+const walletSavings = 'demo_w_savings'
+const walletEth = 'demo_w_eth'
+const walletUsdt = 'demo_w_usdt'
 export const walletRandomFiat = 'demo_w_random_fiat'
 export const walletRandomCrypto = 'demo_w_random_crypto'
-export const walletLent = 'demo_w_lent'
-export const walletBorrowed = 'demo_w_borrowed'
+const walletMortgage = 'demo_w_mortgage'
+const walletCarLoan = 'demo_w_car_loan'
+const walletPersonalLoan = 'demo_w_personal_loan'
+const walletCashLoan = 'demo_w_cash_loan'
+const walletInstallment = 'demo_w_installment'
+const walletRenovationLoan = 'demo_w_renovation_loan'
+const walletLent = 'demo_w_lent'
+const walletBorrowed = 'demo_w_borrowed'
+const walletVacationLoan = 'demo_w_vacation_loan'
+export const walletStudentLoan = 'demo_w_student_loan'
+const walletEuroLoan = 'demo_w_euro_loan'
 
 /**
  * Every amount in this file is RUB-scale. The generator converts it at the demo rates into the
@@ -424,6 +435,24 @@ export const data: {
       type: 'debt',
       updatedAt: 1585408895295,
     },
+    [walletCarLoan]: {
+      color: '#64748b',
+      currency: 'RUB',
+      desc: { en: 'Paid off early once, lower payment since', ru: 'Досрочное погашение с уменьшением платежа' },
+      name: { en: 'Car loan', ru: 'Автокредит' },
+      order: 15,
+      type: 'loan',
+      updatedAt: 1585408895295,
+    },
+    [walletCashLoan]: {
+      color: '#78716c',
+      currency: 'RUB',
+      desc: { en: 'No published rate, bank schedule, two interest-only months', ru: 'Ставка не указана, график банка, два месяца только проценты' },
+      name: { en: 'Cash loan', ru: 'Кредит наличными' },
+      order: 17,
+      type: 'loan',
+      updatedAt: 1585408895295,
+    },
     [walletCashRub]: {
       color: '#3b82f6',
       currency: 'RUB',
@@ -490,6 +519,24 @@ export const data: {
       type: 'crypto',
       updatedAt: 1585408895295,
     },
+    [walletEuroLoan]: {
+      color: '#4f46e5',
+      currency: 'EUR',
+      desc: { en: 'In euros, paid from the debit card with conversion', ru: 'В евро, платежи с дебетовой карты с конвертацией' },
+      name: { en: 'Euro loan', ru: 'Кредит в евро' },
+      order: 21,
+      type: 'loan',
+      updatedAt: 1585408895295,
+    },
+    [walletInstallment]: {
+      color: '#a8a29e',
+      currency: 'RUB',
+      desc: { en: 'Interest-free, paid off', ru: 'Без процентов, выплачена' },
+      name: { en: 'Sofa installment', ru: 'Рассрочка на диван' },
+      order: 18,
+      type: 'loan',
+      updatedAt: 1585408895295,
+    },
     [walletLent]: {
       color: '#14b8a6',
       currency: 'RUB',
@@ -497,6 +544,24 @@ export const data: {
       name: { en: 'Lent to Alex', ru: 'Одолжил Саше' },
       order: 23,
       type: 'debt',
+      updatedAt: 1585408895295,
+    },
+    [walletMortgage]: {
+      color: '#475569',
+      currency: 'RUB',
+      desc: { en: 'Checked against the debt the bank reports', ru: 'Сверка с долгом, который сообщает банк' },
+      name: { en: 'Mortgage', ru: 'Ипотека' },
+      order: 14,
+      type: 'loan',
+      updatedAt: 1585408895295,
+    },
+    [walletPersonalLoan]: {
+      color: '#94a3b8',
+      currency: 'RUB',
+      desc: { en: 'Differentiated payments, a month caught up with a fee', ru: 'Дифференцированные платежи, пропуск с пеней' },
+      name: { en: 'Personal loan', ru: 'Потребительский кредит' },
+      order: 16,
+      type: 'loan',
       updatedAt: 1585408895295,
     },
     [walletRandomCrypto]: {
@@ -517,6 +582,15 @@ export const data: {
       type: 'cashless',
       updatedAt: 1585408895295,
     },
+    [walletRenovationLoan]: {
+      color: '#57534e',
+      currency: 'RUB',
+      desc: { en: 'Paid off early in one go', ru: 'Погашен досрочно одним платежом' },
+      name: { en: 'Renovation loan', ru: 'Кредит на ремонт' },
+      order: 19,
+      type: 'loan',
+      updatedAt: 1585408895295,
+    },
     [walletSavings]: {
       color: '#8b5cf6',
       currency: 'USD',
@@ -525,6 +599,15 @@ export const data: {
       name: { en: 'Savings', ru: 'Накопления' },
       order: 6,
       type: 'deposit',
+      updatedAt: 1585408895295,
+    },
+    [walletStudentLoan]: {
+      color: '#16a34a',
+      currency: 'USD',
+      desc: { en: 'In the foreign currency, interest accrued by days', ru: 'В валюте, проценты начисляются по дням' },
+      name: { en: 'Student loan', ru: 'Образовательный кредит' },
+      order: 22,
+      type: 'loan',
       updatedAt: 1585408895295,
     },
     [walletUsd]: {
@@ -543,6 +626,15 @@ export const data: {
       name: { en: 'Tether', ru: 'Tether' },
       order: 12,
       type: 'crypto',
+      updatedAt: 1585408895295,
+    },
+    [walletVacationLoan]: {
+      color: '#0891b2',
+      currency: 'RUB',
+      desc: { en: '6 months, paid off on schedule', ru: '6 месяцев, выплачен по графику' },
+      name: { en: 'Vacation loan', ru: 'Кредит на отпуск' },
+      order: 20,
+      type: 'loan',
       updatedAt: 1585408895295,
     },
   },
@@ -629,6 +721,64 @@ export type DemoIncomeRule = {
 }
 
 /**
+ * Loans with different terms, each taken `monthsAgo` and repaid monthly from the debit card, so
+ * together they show every state the loans page knows. Deviations count due payments back from
+ * the latest one (0 = the latest).
+ * `purchase`: the loan paid a seller directly, so the credit wallet spends it in that category;
+ * without it the money lands on the debit card.
+ */
+export type DemoLoan = {
+  /** null: the bank publishes no rate; the schedule then comes from the bank, built at `bankRate`. */
+  annualRate: number | null
+  /** Bank sync pushed the debt it reports, so the loan checks the wallet against it. */
+  bankDebt?: boolean
+  bankRate?: number
+  /** This payment is skipped and paid together with the next one, plus a late fee. */
+  catchUp?: number
+  /** Where the money comes from and payments go out; the main debit card when omitted. */
+  debitWalletId?: WalletId
+  interestMethod?: 'monthly' | 'daily'
+  /** Payment numbers (from 1) the bank made interest-only: a payment holiday. */
+  interestOnly?: number[]
+  /** This payment is paid a few days late. */
+  late?: number
+  /** Days after the due date the bank still counts as on time. */
+  lateAfterDays?: number
+  /** The latest due payment is not paid yet: the loan shows it overdue. */
+  missed?: boolean
+  monthsAgo: number
+  overpaymentMode: 'reducePayment' | 'reduceTerm'
+  paymentDay: number
+  /** With this payment the whole debt left is paid off, which closes the loan early. */
+  payoff?: number
+  /** An extra payment on its own day, some weeks before this payment. */
+  prepayment?: { amount: number, paymentsAgo: number }
+  principalAmount: number
+  purchase?: { categoryId: CategoryId, desc: LocaleString }
+  scheduleType: 'annuity' | 'differentiated'
+  termMonths: number
+  walletId: WalletId
+}
+
+/** The civil day a demo loan was taken: `monthsAgo` before the civil day `today`, on its payment day. */
+export function demoLoanStart(config: Pick<DemoLoan, 'monthsAgo' | 'paymentDay'>, today: number): number {
+  const { month, year } = epochToCivilParts(addCivilMonths(today, -config.monthsAgo))
+  return toCivilDayEpoch(year, month, config.paymentDay)
+}
+
+export const demoLoans: DemoLoan[] = [
+  { annualRate: 9.5, bankDebt: true, interestMethod: 'daily', lateAfterDays: 5, monthsAgo: 40, overpaymentMode: 'reducePayment', paymentDay: 5, principalAmount: 4500000, purchase: { categoryId: catHome, desc: { en: 'Apartment purchase', ru: 'Покупка квартиры' } }, scheduleType: 'annuity', termMonths: 240, walletId: walletMortgage },
+  { annualRate: 16.9, late: 2, monthsAgo: 14, overpaymentMode: 'reducePayment', paymentDay: 10, prepayment: { amount: 150000, paymentsAgo: 6 }, principalAmount: 1200000, purchase: { categoryId: catTransport, desc: { en: 'Car purchase', ru: 'Покупка автомобиля' } }, scheduleType: 'annuity', termMonths: 60, walletId: walletCarLoan },
+  { annualRate: 24.9, catchUp: 4, missed: true, monthsAgo: 8, overpaymentMode: 'reduceTerm', paymentDay: 20, principalAmount: 300000, scheduleType: 'differentiated', termMonths: 24, walletId: walletPersonalLoan },
+  { annualRate: null, bankRate: 21.9, interestOnly: [4, 5], monthsAgo: 11, overpaymentMode: 'reduceTerm', paymentDay: 15, principalAmount: 500000, scheduleType: 'annuity', termMonths: 36, walletId: walletCashLoan },
+  { annualRate: 18.5, monthsAgo: 30, overpaymentMode: 'reduceTerm', paymentDay: 12, payoff: 9, principalAmount: 400000, purchase: { categoryId: catHome, desc: { en: 'Renovation', ru: 'Ремонт' } }, scheduleType: 'annuity', termMonths: 36, walletId: walletRenovationLoan },
+  { annualRate: 14.9, monthsAgo: 10, overpaymentMode: 'reduceTerm', paymentDay: 18, principalAmount: 120000, purchase: { categoryId: catTravel, desc: { en: 'Vacation', ru: 'Отпуск' } }, scheduleType: 'annuity', termMonths: 6, walletId: walletVacationLoan },
+  { annualRate: 7.9, debitWalletId: walletUsd, interestMethod: 'daily', monthsAgo: 10, overpaymentMode: 'reducePayment', paymentDay: 1, principalAmount: 400000, scheduleType: 'annuity', termMonths: 36, walletId: walletStudentLoan },
+  { annualRate: 4.5, monthsAgo: 20, overpaymentMode: 'reduceTerm', paymentDay: 28, principalAmount: 1200000, purchase: { categoryId: catHome, desc: { en: 'Holiday flat', ru: 'Квартира у моря' } }, scheduleType: 'annuity', termMonths: 84, walletId: walletEuroLoan },
+  { annualRate: 0, monthsAgo: 13, overpaymentMode: 'reduceTerm', paymentDay: 25, principalAmount: 90000, purchase: { categoryId: catHome, desc: { en: 'Sofa', ru: 'Диван' } }, scheduleType: 'annuity', termMonths: 12, walletId: walletInstallment },
+]
+
+/**
  * Money lent and borrowed between people, as transfers with the debit card: `out` leaves the card
  * (lending, or paying a borrowed debt back), `in` comes back to it. A debt wallet is positive while
  * someone owes you and negative while you owe.
@@ -659,10 +809,10 @@ export const salaryConfig = {
   desc: { en: 'Salary', ru: 'Зарплата' } as LocaleString,
   /** After this many months from start, salary gets a raise */
   raiseAfterMonths: 12,
-  raisedMax: 150000,
-  raisedMin: 120000,
-  startMax: 110000,
-  startMin: 80000,
+  raisedMax: 220000,
+  raisedMin: 190000,
+  startMax: 180000,
+  startMin: 150000,
   walletId: walletDebitRub,
 }
 

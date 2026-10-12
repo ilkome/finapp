@@ -12,6 +12,7 @@ import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
 import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStatistics } from '~/components/wallets/useWalletsStatistics'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 
 const { t } = useI18n()
 
@@ -21,6 +22,7 @@ useSeoMeta({
 })
 
 const walletsStore = useWalletsStore()
+const isLoans = useFeature('loans')
 
 // Same rule as the statistics page: the side column pins below the sticky header only when it fits whole.
 const header = useTemplateRef<{ mainElement: HTMLElement | null }>('header')
@@ -54,13 +56,7 @@ function openAfterMenu(action: () => void, close: () => void) {
   close()
 }
 
-const {
-  cancelDelete,
-  confirmDelete,
-  deleteInfo,
-  deleteWalletId,
-  requestDelete,
-} = useWalletDelete()
+const { requestDelete } = useWalletDelete()
 
 const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
 const showArchived = useStorage<boolean>(WALLET_STORAGE_KEYS.showArchived, false)
@@ -82,6 +78,7 @@ const {
 const {
   counts,
   countWalletsSum,
+  countWalletsSumInOwnCurrency,
 } = useWalletsCounts(selectedWalletsIdsWithCurrency, includeArchivedInStats, includeExcludedInStats)
 
 const statisticsStorageKey = computed(() => `${WALLET_STORAGE_KEYS.totalPrefix}${groupedBy.value}`)
@@ -221,7 +218,7 @@ function cycleGrouping() {
                   :checkboxValue="showStatistics"
                   :title="t('wallets.options.showStatistics')"
                   trailing
-                  @click="showStatistics = !showStatistics"
+                  @toggle="showStatistics = !showStatistics"
                 />
 
                 <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
@@ -284,25 +281,25 @@ function cycleGrouping() {
                     :checkboxValue="showArchived"
                     :title="t('wallets.options.showArchived')"
                     trailing
-                    @click="showArchived = !showArchived"
+                    @toggle="showArchived = !showArchived"
                   />
                   <UiSwitchItem
                     :checkboxValue="includeArchivedInStats"
                     :title="t('wallets.options.includeArchivedInStats')"
                     trailing
-                    @click="includeArchivedInStats = !includeArchivedInStats"
+                    @toggle="includeArchivedInStats = !includeArchivedInStats"
                   />
                   <UiSwitchItem
                     :checkboxValue="includeExcludedInStats"
                     :title="t('wallets.options.includeExcludedInStats')"
                     trailing
-                    @click="includeExcludedInStats = !includeExcludedInStats"
+                    @toggle="includeExcludedInStats = !includeExcludedInStats"
                   />
                   <UiSwitchItem
                     :checkboxValue="isShowGroupCount"
                     :title="t('wallets.options.showGroupCount')"
                     trailing
-                    @click="isShowGroupCount = !isShowGroupCount"
+                    @toggle="isShowGroupCount = !isShowGroupCount"
                   />
                 </div>
               </div>
@@ -346,6 +343,7 @@ function cycleGrouping() {
         />
 
         <div class="grid content-start gap-3 @xl/page:gap-4 @3xl/main:max-w-sm">
+          <LoansDueThisMonth v-if="isLoans" />
           <WalletsStatistics
             :isShowList="showStatistics"
             :storageKey="statisticsStorageKey"
@@ -455,7 +453,7 @@ function cycleGrouping() {
                         />
                         <Amount
                           v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                          :amount="countWalletsSum(groupedWalletsWithIds[groupPrimary]!.ids, false)"
+                          :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.ids)"
                           :currencyCode="groupPrimary"
                           :isShowBaseRate="false"
                           variant="secondary"
@@ -502,7 +500,7 @@ function cycleGrouping() {
                                 />
                                 <Amount
                                   v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                                  :amount="countWalletsSum(groupedWalletsWithIds[groupPrimary]!.groups![groupSecondary]!, false)"
+                                  :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.groups![groupSecondary]!)"
                                   :currencyCode="groupPrimary"
                                   :isShowBaseRate="false"
                                   variant="secondary"
@@ -553,13 +551,4 @@ function cycleGrouping() {
       </div>
     </div>
   </UiPage>
-
-  <LayoutConfirmModal
-    v-if="deleteWalletId"
-    :title="t('wallets.form.delete.title')"
-    :description="deleteInfo.descText"
-    :highlight="deleteInfo.highlight"
-    @closed="cancelDelete"
-    @confirm="confirmDelete"
-  />
 </template>

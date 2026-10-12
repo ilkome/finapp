@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WalletId, WalletItem } from '~/components/wallets/types'
+import type { WalletFormKey, WalletId } from '~/components/wallets/types'
 
 import { walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -24,18 +24,14 @@ const walletForm = ref(
     : walletItemSchema.parse({ type: 'cash' }),
 )
 
-function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
+function updateField(key: WalletFormKey, value: unknown) {
   (walletForm.value as Record<string, unknown>)[key] = value
 }
 </script>
 
 <template>
-  <BottomSheetModal @closed="emit('closed')">
+  <BottomSheetOrModal isBare :title="wallet?.name || t('wallets.createNewTitle')" @closed="emit('closed')">
     <template #default="{ close }">
-      <UiTitleModal>
-        {{ wallet?.name || t('wallets.createNewTitle') }}
-      </UiTitleModal>
-
       <WalletsForm
         :walletId="props.walletId"
         :walletForm
@@ -43,5 +39,5 @@ function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem])
         @afterSave="close"
       />
     </template>
-  </BottomSheetModal>
+  </BottomSheetOrModal>
 </template>

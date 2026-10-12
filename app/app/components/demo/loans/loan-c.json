@@ -1,0 +1,277 @@
+{
+  "bankSchedule": [
+    {
+      "date": "2023-03-20",
+      "interestPart": 43204.38,
+      "paymentNumber": 1,
+      "principalPart": 37906.36,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-04-20",
+      "interestPart": 46416.87,
+      "paymentNumber": 2,
+      "principalPart": 34693.87,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-05-20",
+      "interestPart": 43664.87,
+      "paymentNumber": 3,
+      "principalPart": 37445.87,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-06-20",
+      "interestPart": 43721.02,
+      "paymentNumber": 4,
+      "principalPart": 37389.72,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-07-20",
+      "interestPart": 40958.49,
+      "paymentNumber": 5,
+      "principalPart": 40152.25,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-08-20",
+      "interestPart": 40823.28,
+      "paymentNumber": 6,
+      "principalPart": 40287.46,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-09-20",
+      "interestPart": 39317.75,
+      "paymentNumber": 7,
+      "principalPart": 41792.99,
+      "totalAmount": 81110.74
+    },
+    {
+      "date": "2023-10-20",
+      "interestPart": 2574.27,
+      "paymentNumber": 8,
+      "principalPart": 58248.28,
+      "totalAmount": 60822.55
+    },
+    {
+      "date": "2023-11-20",
+      "interestPart": 2506.72,
+      "paymentNumber": 9,
+      "principalPart": 58315.83,
+      "totalAmount": 60822.55
+    },
+    {
+      "date": "2023-12-20",
+      "interestPart": 2277.27,
+      "paymentNumber": 10,
+      "principalPart": 58545.28,
+      "totalAmount": 60822.55
+    },
+    {
+      "date": "2024-01-20",
+      "interestPart": 2199.04,
+      "paymentNumber": 11,
+      "principalPart": 58623.51,
+      "totalAmount": 60822.55
+    },
+    {
+      "date": "2024-02-20",
+      "interestPart": 2044.69,
+      "paymentNumber": 12,
+      "principalPart": 58777.86,
+      "totalAmount": 60822.55
+    },
+    {
+      "date": "2024-03-14",
+      "interestPart": 1402.21,
+      "paymentNumber": 13,
+      "principalPart": 47097.79,
+      "totalAmount": 48500.0
+    },
+    {
+      "date": "2024-03-14",
+      "interestPart": 0.0,
+      "paymentNumber": 14,
+      "principalPart": 670722.93,
+      "totalAmount": 670722.93
+    }
+  ],
+  "params": {
+    "annualRate": 21.5,
+    "firstPaymentDate": "2023-03-20",
+    "overpaymentMode": "reduceTerm",
+    "paymentDay": 20,
+    "principalAmount": 1280000,
+    "scheduleType": "annuity",
+    "startDate": "2023-02-20",
+    "termMonths": 24
+  },
+  "trns": [
+    {
+      "amount": 81110.74,
+      "date": "2023-03-20",
+      "id": "y1m",
+      "kind": "payment"
+    },
+    {
+      "amount": 43204.38,
+      "date": "2023-03-20",
+      "id": "y1i",
+      "kind": "interest"
+    },
+    {
+      "amount": 81110.74,
+      "date": "2023-04-20",
+      "id": "y2m",
+      "kind": "payment"
+    },
+    {
+      "amount": 46416.87,
+      "date": "2023-04-20",
+      "id": "y2i",
+      "kind": "interest"
+    },
+    {
+      "amount": 81110.74,
+      "date": "2023-05-20",
+      "id": "y3m",
+      "kind": "payment"
+    },
+    {
+      "amount": 43664.87,
+      "date": "2023-05-20",
+      "id": "y3i",
+      "kind": "interest"
+    },
+    {
+      "amount": 81110.74,
+      "date": "2023-06-20",
+      "id": "y4m",
+      "kind": "payment"
+    },
+    {
+      "amount": 43721.02,
+      "date": "2023-06-20",
+      "id": "y4i",
+      "kind": "interest"
+    },
+    {
+      "amount": 81110.74,
+      "date": "2023-07-20",
+      "id": "y5m",
+      "kind": "payment"
+    },
+    {
+      "amount": 40958.49,
+      "date": "2023-07-20",
+      "id": "y5i",
+      "kind": "interest"
+    },
+    {
+      "amount": 81110.74,
+      "date": "2023-08-20",
+      "id": "y6m",
+      "kind": "payment"
+    },
+    {
+      "amount": 40823.28,
+      "date": "2023-08-20",
+      "id": "y6i",
+      "kind": "interest"
+    },
+    {
+      "amount": 81110.74,
+      "date": "2023-09-20",
+      "id": "y7m",
+      "kind": "payment"
+    },
+    {
+      "amount": 39317.75,
+      "date": "2023-09-20",
+      "id": "y7i",
+      "kind": "interest"
+    },
+    {
+      "amount": 60822.55,
+      "date": "2023-10-20",
+      "id": "y8m",
+      "kind": "payment"
+    },
+    {
+      "amount": 2574.27,
+      "date": "2023-10-20",
+      "id": "y8i",
+      "kind": "interest"
+    },
+    {
+      "amount": 60822.55,
+      "date": "2023-11-20",
+      "id": "y9m",
+      "kind": "payment"
+    },
+    {
+      "amount": 2506.72,
+      "date": "2023-11-20",
+      "id": "y9i",
+      "kind": "interest"
+    },
+    {
+      "amount": 60822.55,
+      "date": "2023-12-20",
+      "id": "y10m",
+      "kind": "payment"
+    },
+    {
+      "amount": 2277.27,
+      "date": "2023-12-20",
+      "id": "y10i",
+      "kind": "interest"
+    },
+    {
+      "amount": 60822.55,
+      "date": "2024-01-20",
+      "id": "y11m",
+      "kind": "payment"
+    },
+    {
+      "amount": 2199.04,
+      "date": "2024-01-20",
+      "id": "y11i",
+      "kind": "interest"
+    },
+    {
+      "amount": 60822.55,
+      "date": "2024-02-20",
+      "id": "y12m",
+      "kind": "payment"
+    },
+    {
+      "amount": 2044.69,
+      "date": "2024-02-20",
+      "id": "y12i",
+      "kind": "interest"
+    },
+    {
+      "amount": 48500.0,
+      "date": "2024-03-14",
+      "id": "y13m",
+      "kind": "payment"
+    },
+    {
+      "amount": 1402.21,
+      "date": "2024-03-14",
+      "id": "y13i",
+      "kind": "interest"
+    },
+    {
+      "amount": 670722.93,
+      "date": "2024-03-14",
+      "id": "y14m",
+      "kind": "payment"
+    }
+  ],
+  "walletBalance": 0.0
+}

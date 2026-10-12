@@ -1,41 +1,65 @@
+import { roundTo } from '~~/utils/amount/round'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 
-import { currencies } from '~/components/currencies/currencies'
+import { currencyMinorUnit } from '~/components/currencies/currencies'
 import { TrnType } from '~/components/trns/types'
 
-const precisionByCurrency = new Map(currencies.map(c => [c.code, c.precision ?? 2]))
-
-export function getAmountInRate({
-  amount,
-  baseCurrencyCode,
-  currencyCode,
-  rates,
-}: {
-  amount: number
-  baseCurrencyCode?: CurrencyCode
-  currencyCode: CurrencyCode
-  rates?: Rates
-}): number {
-  if (!baseCurrencyCode || !rates)
+/** Converts `amount` from `currency` into `base`. */
+export function getAmountInRate(amount: number, currency: CurrencyCode, base: CurrencyCode, rates: Rates): number {
+  if (base === currency)
     return amount
+  return amount / (rates[currency] ?? 1) * (rates[base] ?? 1)
+}
 
-  if (baseCurrencyCode !== currencyCode)
-    return amount / (rates[currencyCode] ?? 1) * (rates[baseCurrencyCode] ?? 1)
+export class MissingRateError extends Error {
+  constructor(readonly currency: CurrencyCode) {
+    super(`Missing rate for ${currency}`)
+    this.name = 'MissingRateError'
+  }
+}
 
-  return amount
+/**
+ * Converter that refuses to guess: once rates are loaded, a currency (or base) without a rate
+ * throws in dev and returns `undefined` in prod, so the amount is left out of a total instead of
+ * counted at 1:1. Before rates load (empty object) it converts at face value and never reports.
+ */
+export function createToBase(
+  getBase: () => CurrencyCode,
+  getRates: () => Rates,
+  { isDev, onMissing }: { isDev: boolean, onMissing: (currency: CurrencyCode) => void },
+) {
+  return (amount: number, currency: CurrencyCode): number | undefined => {
+    const base = getBase()
+    if (currency === base)
+      return amount
+    const rates = getRates()
+    const from = rates[currency]
+    const to = rates[base]
+    if (from === undefined || to === undefined) {
+      if (Object.keys(rates).length === 0)
+        return amount
+      const missing = from === undefined ? currency : base
+      if (isDev)
+        throw new MissingRateError(missing)
+      onMissing(missing)
+      return undefined
+    }
+    return amount / from * to
+  }
 }
 
 type TotalProps = {
-  baseCurrencyCode?: CurrencyCode
   /** Category ids to drop from income/expense (dashboard "exclude from stats"). Balances never pass this. */
   excludedCategoriesIds?: ReadonlySet<CategoryId>
-  rates?: Rates
-  trnsIds?: TrnId[]
+  /** `undefined` means no rate: the amount is skipped and its currency listed in `missingRates`. */
+  toBase: (amount: number, currency: CurrencyCode) => number | undefined
+  /** Already filtered by wallet/category upstream (`filterTrnsIds`), so there is no wallet filter here. */
+  trnsIds: TrnId[]
   trnsItems: Record<TrnId, TrnItem>
-  walletsIds?: WalletId[]
   walletsItems: Record<WalletId, WalletItem>
 }
 
@@ -45,113 +69,60 @@ export type TotalReturns = {
   expenseTransfers: number
   income: number
   incomeTransfers: number
+  /** Currencies left out for lack of a rate; non-empty means the total is incomplete. */
+  missingRates: CurrencyCode[]
   net: number
   sumTransfers: number
 }
 
-export function getTotal(props: TotalProps): TotalReturns {
-  const { baseCurrencyCode, rates, trnsIds, trnsItems, walletsIds, walletsItems } = props
-  const walletsSet = walletsIds?.length ? new Set(walletsIds) : null
+type Bucket = 'adjustment' | 'expense' | 'expenseTransfers' | 'income' | 'incomeTransfers'
 
-  function getAmount(amount: number, currencyCode: CurrencyCode) {
-    return getAmountInRate({
-      amount,
-      baseCurrencyCode,
-      currencyCode,
-      rates,
-    })
+export function getTotal({ excludedCategoriesIds, toBase, trnsIds, trnsItems, walletsItems }: TotalProps): TotalReturns {
+  const totals: Record<Bucket, number> = { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0 }
+  const missingRates = new Set<CurrencyCode>()
+
+  // An orphan trn (wallet deleted) is skipped everywhere, matching wallet balances.
+  function add(bucket: Bucket, walletId: WalletId, amount: number) {
+    const wallet = walletsItems[walletId]
+    if (!wallet)
+      return
+    const converted = toBase(amount, wallet.currency)
+    if (converted === undefined)
+      missingRates.add(wallet.currency)
+    else
+      totals[bucket] += converted
   }
 
-  let income = 0
-  let expense = 0
-  let incomeTransfers = 0
-  let expenseTransfers = 0
-  let adjustment = 0
-
-  for (const trnId of trnsIds || []) {
+  for (const trnId of trnsIds) {
     const trn = trnsItems[trnId]
     if (!trn)
       continue
 
-    if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
-      if (trn.categoryId === 'adjustment') {
-        const wallet = walletsItems[trn.walletId]
-        const amount = getAmount(trn.amount, wallet?.currency ?? 'USD')
-        adjustment += trn.type === TrnType.Income ? amount : -amount
-        continue
+    if (trn.type === TrnType.Transfer) {
+      if ('incomeWalletId' in trn && walletsItems[trn.incomeWalletId] && walletsItems[trn.expenseWalletId]) {
+        add('incomeTransfers', trn.incomeWalletId, trn.incomeAmount)
+        add('expenseTransfers', trn.expenseWalletId, trn.expenseAmount)
       }
-      // Single-leg transfer (bank import, counterparty account not in finapp): moves money
-      // between accounts, so it belongs in the transfer buckets - never income/expense.
-      if (trn.categoryId === 'transfer') {
-        if (!walletsSet || walletsSet.has(trn.walletId)) {
-          const wallet = walletsItems[trn.walletId]
-          const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
-          if (trn.type === TrnType.Income)
-            incomeTransfers += sum
-          else
-            expenseTransfers += sum
-        }
-        continue
-      }
-      // Excluded-from-stats categories are kept in balances/lists but not counted here.
-      if (props.excludedCategoriesIds?.has(trn.categoryId))
-        continue
-      const wallet = walletsItems[trn.walletId]
-      const sum = getAmount(trn.amount, wallet?.currency ?? 'USD')
-
-      if (trn.type === TrnType.Income)
-        income += sum
-      else
-        expense += sum
+      continue
     }
 
-    else if (trn.type === TrnType.Transfer && 'incomeWalletId' in trn) {
-      const incomeWallet = walletsItems[trn.incomeWalletId]
-      const expenseWallet = walletsItems[trn.expenseWalletId]
-      if (!incomeWallet || !expenseWallet)
-        continue
-
-      const incomeAmount = getAmount(trn.incomeAmount, incomeWallet.currency)
-      const expenseAmount = getAmount(trn.expenseAmount, expenseWallet.currency)
-
-      if (walletsSet) {
-        if (walletsSet.has(trn.incomeWalletId))
-          incomeTransfers += incomeAmount
-
-        if (walletsSet.has(trn.expenseWalletId))
-          expenseTransfers += expenseAmount
-      }
-      else {
-        incomeTransfers += incomeAmount
-        expenseTransfers += expenseAmount
-      }
-    }
+    const isIncome = trn.type === TrnType.Income
+    if (trn.categoryId === 'adjustment')
+      add('adjustment', trn.walletId, isIncome ? trn.amount : -trn.amount)
+    // Single-leg transfer (bank import, counterparty account not in finapp): moves money
+    // between accounts, so it belongs in the transfer buckets - never income/expense.
+    else if (trn.categoryId === 'transfer')
+      add(isIncome ? 'incomeTransfers' : 'expenseTransfers', trn.walletId, trn.amount)
+    // Excluded-from-stats categories are kept in balances/lists but not counted here.
+    else if (!excludedCategoriesIds?.has(trn.categoryId))
+      add(isIncome ? 'income' : 'expense', trn.walletId, trn.amount)
   }
 
-  const net = income - expense
-  const sumTransfers = incomeTransfers - expenseTransfers
-
   return {
-    adjustment,
-    expense,
-    expenseTransfers,
-    income,
-    incomeTransfers,
-    net,
-    sumTransfers,
-  }
-}
-
-/** Merges two totals field by field - used to combine actuals with a forecast total. */
-export function addTotals(a: TotalReturns, b: TotalReturns): TotalReturns {
-  return {
-    adjustment: a.adjustment + b.adjustment,
-    expense: a.expense + b.expense,
-    expenseTransfers: a.expenseTransfers + b.expenseTransfers,
-    income: a.income + b.income,
-    incomeTransfers: a.incomeTransfers + b.incomeTransfers,
-    net: a.net + b.net,
-    sumTransfers: a.sumTransfers + b.sumTransfers,
+    ...totals,
+    missingRates: [...missingRates],
+    net: totals.income - totals.expense,
+    sumTransfers: totals.incomeTransfers - totals.expenseTransfers,
   }
 }
 
@@ -170,11 +141,7 @@ export function getWalletsTotals(props: {
     totals.set(walletId, (totals.get(walletId) ?? 0) + amount)
   }
 
-  for (const trnId of Object.keys(trnsItems)) {
-    const trn = trnsItems[trnId]
-    if (!trn)
-      continue
-
+  for (const trn of Object.values(trnsItems)) {
     if (trn.type === TrnType.Income || trn.type === TrnType.Expense) {
       if (!walletsItems[trn.walletId])
         continue
@@ -189,12 +156,11 @@ export function getWalletsTotals(props: {
   }
 
   // Summing kopecks as floats leaves noise (a repaid loan sums to 6.75e-11, not 0), and formatAmount
-  // expands any non-zero value it would hide, so a closed credit showed a debt. Snap to the currency's precision,
-  // but never below kopecks: RUB displays 0 decimals while balances (credit cards, loans) are kept to the kopeck.
-  for (const [walletId, total] of totals) {
-    const factor = 10 ** Math.max(precisionByCurrency.get(walletsItems[walletId]!.currency) ?? 2, 2)
-    totals.set(walletId, Math.round(total * factor) / factor + 0)
-  }
+  // expands any non-zero value it would hide, so a closed credit showed a debt. Snap to the minor unit,
+  // not the display precision: RUB displays 0 decimals while balances are kept to the kopeck.
+  // `+ 0` turns the `-0` that rounding a tiny negative leaves into `0`.
+  for (const [walletId, total] of totals)
+    totals.set(walletId, roundTo(total, currencyMinorUnit(walletsItems[walletId]!.currency)) + 0)
 
   return totals
 }

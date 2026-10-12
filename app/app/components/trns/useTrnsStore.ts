@@ -17,7 +17,7 @@ import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
-import { createDebouncedPersist, showErrorToast } from '~/composables/useStoreSync'
+import { createDebouncedPersist, persistOptimistic } from '~/composables/useStoreSync'
 import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
@@ -134,12 +134,7 @@ export const useTrnsStore = defineStore('trns', () => {
       if (isFirst && !rows.length && hasItems.value)
         return
       const prev = items.value
-      // Cold-start instrumentation: per-row materialize+transform cost vs the SQLite scan
-      // (`ps:watch:trns` measure) - feeds the blob-cache architecture decision.
-      const transformStart = isFirst ? performance.now() : 0
       const next = prev ? reconcileTrns(prev, rows) : rowsToTrns(rows)
-      if (isFirst)
-        performance.measure('trns:first-transform', { duration: performance.now() - transformStart, start: transformStart })
       // reconcileTrns returns `prev` (same ref) when nothing changed - skip the rebuild
       // (this is the echo of our own optimistic write).
       if (next !== prev)
@@ -160,38 +155,34 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return
 
-    upsertRow('trns', id, trnToRow(valuesWithEditDate, resolveWriteUid(uid.value))).catch((e) => {
-      setTrns(prev) // roll back the optimistic update if the local write failed
-      logger.error('saveTrn failed', e)
-      showErrorToast('trns.errors.saveFailed')
+    void persistOptimistic(upsertRow('trns', id, trnToRow(valuesWithEditDate, resolveWriteUid(uid.value))), {
+      errorKey: 'trns.errors.saveFailed',
+      label: 'saveTrn',
+      logger,
+      rollback: () => setTrns(prev),
     })
   }
 
-  async function saveTrns(values: Record<TrnId, TrnItem>): Promise<boolean> {
-    const entries = Object.entries(values)
+  async function saveTrns(input: Record<TrnId, TrnItem>): Promise<boolean> {
+    // enteredAt is stamped once at creation and preserved across edits, as in saveTrn.
+    const entries = Object.entries(input).map(([id, trn]) =>
+      [id, { ...trn, enteredAt: trn.enteredAt ?? items.value?.[id]?.enteredAt ?? Date.now() }] as const)
     if (!entries.length)
       return true
 
     const prev = items.value
-    setTrns({ ...(items.value ?? {}), ...values })
+    setTrns({ ...(items.value ?? {}), ...Object.fromEntries(entries) })
 
     if (isDemo.value)
       return true
 
-    try {
-      const userId = resolveWriteUid(uid.value)
-      await upsertRows('trns', entries.map(([id, trn]) => ({
-        id,
-        row: trnToRow(trn, userId),
-      })))
-      return true
-    }
-    catch (e) {
-      setTrns(prev)
-      logger.error('saveTrns failed', e)
-      showErrorToast('trns.errors.saveFailed')
-      return false
-    }
+    const userId = resolveWriteUid(uid.value)
+    return persistOptimistic(upsertRows('trns', entries.map(([id, trn]) => ({ id, row: trnToRow(trn, userId) }))), {
+      errorKey: 'trns.errors.saveFailed',
+      label: 'saveTrns',
+      logger,
+      rollback: () => setTrns(prev),
+    })
   }
 
   function deleteTrn(id: TrnId) {
@@ -203,10 +194,11 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return
 
-    deleteRow('trns', id).catch((e) => {
-      setTrns(prev) // restore the deleted trn if the local write failed
-      logger.error('deleteTrn failed', e)
-      showErrorToast('trns.errors.deleteFailed')
+    void persistOptimistic(deleteRow('trns', id), {
+      errorKey: 'trns.errors.deleteFailed',
+      label: 'deleteTrn',
+      logger,
+      rollback: () => setTrns(prev),
     })
   }
 
@@ -224,16 +216,12 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return true
 
-    try {
-      await deleteRows('trns', uniqueIds)
-      return true
-    }
-    catch (e) {
-      setTrns(prev)
-      logger.error('deleteTrns failed', e)
-      showErrorToast('trns.errors.deleteFailed')
-      return false
-    }
+    return persistOptimistic(deleteRows('trns', uniqueIds), {
+      errorKey: 'trns.errors.deleteFailed',
+      label: 'deleteTrns',
+      logger,
+      rollback: () => setTrns(prev),
+    })
   }
 
   /** Remove trns from the in-memory store only (used when a wallet/category is deleted). */

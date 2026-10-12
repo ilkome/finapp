@@ -1,10 +1,11 @@
 import { todayCivilDayEpoch } from '~~/utils/date/civil'
 
-import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
+import type { TrnFormValuesWithLoan } from '~/components/loans/types'
+import type { Transaction, Transfer } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
 
-function formatTransaction(props: TrnFormValues): Transaction | false {
+function formatTransaction(props: TrnFormValuesWithLoan): Transaction | false {
   if (props.trnType === TrnType.Transfer || !props.categoryId || !props.walletId) {
     return false
   }
@@ -26,7 +27,7 @@ function formatTransaction(props: TrnFormValues): Transaction | false {
   return data
 }
 
-function formatTransfer(props: TrnFormValues): Transfer | false {
+function formatTransfer(props: TrnFormValuesWithLoan): Transfer | false {
   if (props.trnType !== TrnType.Transfer || !props.expenseWalletId || !props.incomeWalletId) {
     return false
   }

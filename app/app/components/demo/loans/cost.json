@@ -1,0 +1,9 @@
+{
+  "byMonth": [
+    { "fine": 0, "interest": 9800.15, "month": "03.2026" },
+    { "fine": 30, "interest": 9750.01, "month": "04.2026" }
+  ],
+  "currencyCode": "RUB",
+  "fine": 30,
+  "interest": 19550.16
+}

@@ -1,8 +1,10 @@
 /* eslint-disable perfectionist/sort-objects */
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useFeature } from '~/composables/useFeatures'
 
 export type MenuItem = {
   badge?: number
@@ -23,6 +25,8 @@ export function useMenuData() {
   const trnsFormStore = useTrnsFormStore()
   const walletsStore = useWalletsStore()
   const categoriesStore = useCategoriesStore()
+  const loansStore = useLoansStore()
+  const isLoans = useFeature('loans')
   const { isSearchOpen } = useSearch()
   const route = useRoute()
 
@@ -52,6 +56,13 @@ export function useMenuData() {
         icon: 'hugeicons:wallet-01',
         name: t('wallets.name'),
       },
+      ...(isLoans.value && {
+        loans: {
+          badge: loansStore.urgentIds.size,
+          icon: 'lucide:landmark',
+          name: t('loans.page.title'),
+        },
+      }),
       categories: {
         icon: 'hugeicons:folder-library',
         name: t('categories.name'),

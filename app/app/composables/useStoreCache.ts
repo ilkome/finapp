@@ -7,24 +7,36 @@ import { createLogger } from '~/utils/logger'
 
 // Per-user localforage snapshot of the watch-driven stores, read at cold start to paint the
 // dashboard from the last session before PowerSync's db.init + first query scan finish; the live
-// watches then reconcile to SQLite truth. One blob = a single IndexedDB read of an internally
-// consistent snapshot. Stores toRaw() reactive refs first (IndexedDB can't clone a Vue proxy).
-// Keyed by uid so users never read each other's snapshot. Demo mode uses its own cache.
+// watches then reconcile to SQLite truth. One key per slice, so a wallet reorder or a rates tick
+// does not re-clone the whole trns map into IndexedDB. Stores toRaw() reactive refs first
+// (IndexedDB can't clone a Vue proxy). Keyed by uid so users never read each other's snapshot.
+// Demo mode uses its own cache.
 
 const logger = createLogger('cache')
 
-export type CacheSlice = 'categories' | 'categoryOverrides' | 'rates' | 'statViews' | 'trns' | 'user' | 'wallets'
+const SLICES = ['categories', 'categoryOverrides', 'loans', 'rates', 'statViews', 'trns', 'user', 'wallets'] as const
 
-export type StoreSnapshot = Partial<Record<CacheSlice, unknown>>
+type CacheSlice = typeof SLICES[number]
 
-// In-memory copy of the whole blob: seeded by the cold-start read, then updated per slice. The
-// debounced write stores it as is - a slice this session never touched (a store whose first watch
-// emission matched the primed cache persists nothing) still comes from the seed, and no write has
-// to read the 1+ MB blob back first.
-const snapshot: StoreSnapshot = {}
+type StoreSnapshot = Partial<Record<CacheSlice, unknown>>
 
-function cacheKey(uid: string): string {
+// Slices changed since the last flush; the debounced write stores only these.
+const pending: StoreSnapshot = {}
+
+function legacyKey(uid: string): string {
   return `finapp.cache.${uid}`
+}
+
+function sliceKey(uid: string, slice: CacheSlice): string {
+  return `${legacyKey(uid)}.${slice}`
+}
+
+/** Split the pre-slice single blob into slice keys once. A slice persisted this session wins. */
+async function migrateLegacy(uid: string, stored: StoreSnapshot): Promise<void> {
+  await Promise.all(SLICES
+    .filter(slice => stored[slice] !== undefined && !(slice in pending))
+    .map(slice => localforage.setItem(sliceKey(uid, slice), stored[slice])))
+  await localforage.removeItem(legacyKey(uid))
 }
 
 /** Read the current user's whole snapshot. Null when absent or no session. */
@@ -33,12 +45,18 @@ export async function readStoreCache(): Promise<StoreSnapshot | null> {
   if (!uid)
     return null
   try {
-    const stored = await localforage.getItem<StoreSnapshot>(cacheKey(uid))
-    for (const [slice, data] of Object.entries(stored ?? {})) {
-      if (!(slice in snapshot))
-        snapshot[slice as CacheSlice] = data
+    const legacy = await localforage.getItem<StoreSnapshot>(legacyKey(uid))
+    if (legacy) {
+      await migrateLegacy(uid, legacy)
+      return legacy
     }
-    return stored
+    const values = await Promise.all(SLICES.map(slice => localforage.getItem(sliceKey(uid, slice))))
+    const stored: StoreSnapshot = {}
+    SLICES.forEach((slice, i) => {
+      if (values[i] != null)
+        stored[slice] = values[i]
+    })
+    return Object.keys(stored).length ? stored : null
   }
   catch (e) {
     logger.error('read err', e)
@@ -48,18 +66,21 @@ export async function readStoreCache(): Promise<StoreSnapshot | null> {
 
 let persist: (() => void) | null = null
 
-/** Update one slice and persist the snapshot (debounced, per-user). No-op while persist is blocked. */
+/** Update one slice and persist it (debounced, per-user). No-op while persist is blocked. */
 export function persistStoreCache(slice: CacheSlice, data: unknown): void {
   if (isPersistBlocked() || !getPersistedUid())
     return
-  snapshot[slice] = data
+  pending[slice] = data
   if (!persist) {
     persist = debounce(() => {
       const uid = getPersistedUid()
       if (!uid)
         return
-      void localforage.setItem(cacheKey(uid), { ...snapshot })
-        .catch(e => logger.error('WRITE err', e))
+      for (const [slice, value] of Object.entries(pending)) {
+        delete pending[slice as CacheSlice]
+        void localforage.setItem(sliceKey(uid, slice as CacheSlice), value)
+          .catch(e => logger.error('WRITE err', e))
+      }
     }, 400)
   }
   persist()
@@ -67,10 +88,11 @@ export function persistStoreCache(slice: CacheSlice, data: unknown): void {
 
 /** Remove a user's snapshot (sign-out / wipe). Defaults to the current session uid. */
 export async function clearStoreCache(uid?: string | null): Promise<void> {
-  for (const key of Object.keys(snapshot))
-    delete snapshot[key as CacheSlice]
+  for (const key of Object.keys(pending))
+    delete pending[key as CacheSlice]
   const target = uid ?? getPersistedUid()
   if (!target)
     return
-  await localforage.removeItem(cacheKey(target)).catch(() => {})
+  await Promise.all([legacyKey(target), ...SLICES.map(slice => sliceKey(target, slice))]
+    .map(key => localforage.removeItem(key).catch(() => {})))
 }

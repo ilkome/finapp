@@ -58,6 +58,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     { id: 'date.isShowQuick', paths: ['date.isShowQuick'], titleKey: 'stat.config.date.quick.label' },
     { id: 'date.quickRanges', paths: ['date.quickRangeIds', 'date.quickRangeOrderIds'], titleKey: 'stat.config.date.quick.period' },
   ],
+  loansDue: [visibility],
   navigation: [
     visibility,
     { id: 'date.isPinned', paths: ['date.isPinned'], titleKey: 'stat.config.navigation.pin' },
@@ -87,6 +88,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
   ],
   walletBalance: [visibility],
   walletDescription: [visibility],
+  walletLoan: [visibility],
   wallets: [
     visibility,
     { id: 'wallets.displayMode', paths: ['wallets.displayMode'], titleKey: 'stat.config.wallets.displayMode' },

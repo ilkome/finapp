@@ -1,3 +1,4 @@
+import { UTCDate } from '@date-fns/utc'
 import { addMonths, getMonth, startOfMonth, startOfYear, subMonths, subYears } from 'date-fns'
 import localforage from 'localforage'
 import { localInstantToCivilDay } from '~~/utils/date/civil'
@@ -7,11 +8,14 @@ import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnItem, Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
+import { formatAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { currencies as currencyCatalog } from '~/components/currencies/currencies'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { buildDemoLoans } from '~/components/demo/buildDemoLoans'
 import currencies from '~/components/demo/currencies.json'
-import { data, debtMoves, expenseRules, foreignCurrency, incomeRules, mainCurrency, monthlySettlements, oneOffExpenses, randomCryptoCurrencies, randomFiatCurrencies, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub, walletRandomCrypto, walletRandomFiat, walletUsd } from '~/components/demo/data'
+import { data, debtMoves, expenseRules, foreignCurrency, incomeRules, mainCurrency, monthlySettlements, oneOffExpenses, randomCryptoCurrencies, randomFiatCurrencies, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub, walletRandomCrypto, walletRandomFiat, walletStudentLoan, walletUsd } from '~/components/demo/data'
+import { useLoansStore } from '~/components/loans/useLoansStore'
 import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -118,6 +122,7 @@ export function useDemo() {
         wallet.currency = main
     }
     Object.assign(translatedData.wallets[walletUsd]!, { currency: foreign, name: locale === 'ru' ? `Счёт ${foreign}` : `${foreign} account` })
+    translatedData.wallets[walletStudentLoan]!.currency = foreign
     /** A RUB-scale amount from data.ts in the currency of the wallet it lands on. */
     const money = (rubScale: number, walletId: string) => convert(roundAmount(rubScale), 'RUB', translatedData.wallets[walletId]!.currency)
     /** A RUB-scale round figure (a limit, a principal) kept round in the main currency. */
@@ -132,10 +137,15 @@ export function useDemo() {
     const crypto = randItem(Object.keys(randomCryptoCurrencies))
     Object.assign(translatedData.wallets[walletRandomCrypto]!, { currency: crypto, name: randomCryptoCurrencies[crypto] })
 
+    const today = localInstantToCivilDay(Date.now())
+    const cardDue = addMonths(new UTCDate(today), 1)
     const creditLimit = round(300000)
     Object.assign(translatedData.wallets[walletCreditRub]!, {
       creditLimit,
-      desc: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${creditLimit.toLocaleString(locale)}`,
+      desc: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${formatAmount(creditLimit, undefined, { precision: 0 })}`,
+      minPaymentAmount: money(8000, walletCreditRub),
+      minPaymentDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth(), 25).getTime(),
+      minPaymentUpdatedAt: today,
     })
 
     useUserStore().setUserBaseCurrency(main)
@@ -208,13 +218,12 @@ export function useDemo() {
       }
     }
 
-    // --- Incomes: salary with raise after 12 months ---
+    // --- Incomes: salary with a yearly raise ---
     const startMonth = startOfMonth(new Date(startDate))
     let month = startMonth
     let monthIndex = 0
 
     while (month.getTime() < endDate) {
-      // Salary on ~5th of each month
       const salaryDate = month.getTime() + 4 * 24 * 60 * 60 * 1000 + random() * 2 * 24 * 60 * 60 * 1000
       if (salaryDate < endDate) {
         const isRaised = monthIndex >= salaryConfig.raiseAfterMonths
@@ -345,7 +354,7 @@ export function useDemo() {
     }
 
     // Civil-day model: snap each generated instant to its local calendar day (UTC-midnight)
-    // and keep the original instant as enteredAt. See plans/civil-date-migration.md.
+    // and keep the original instant as enteredAt.
     for (const id in trns) {
       const trn = trns[id]!
       const instant = trn.date
@@ -353,7 +362,13 @@ export function useDemo() {
       trn.enteredAt = instant
     }
 
+    const built = buildDemoLoans({ convert, currencyOf: walletId => translatedData.wallets[walletId]!.currency, locale, money, round, today })
+    Object.assign(trns, built.trns)
+
     trnsStore.setTrns(trns)
+    const loansStore = useLoansStore()
+    loansStore.setLoans(built.loans)
+    loansStore.setScheduleRows(built.scheduleRows)
   }
 
   return {

@@ -1,6 +1,7 @@
 import type { LockContext } from '@powersync/web'
 
 import { getPowerSyncDb } from './db'
+import { SYNCED_TABLES } from './tables'
 
 // PowerSync client tables are SQLite views with INSTEAD OF triggers: they take plain
 // INSERT/UPDATE/DELETE but not `INSERT ... ON CONFLICT`, so upsert = existence check + INSERT/UPDATE.
@@ -8,8 +9,7 @@ import { getPowerSyncDb } from './db'
 // Every mutation targets one of these trusted literals (callers never pass user input). The
 // guard hardens the string-interpolated SQL below; column names come from transforms.ts (fixed
 // keys) and row values are always parameterized.
-// Mirrors the tables in AppSchema (not imported: that would pull @powersync/common into the entry chunk).
-const WRITABLE_TABLES = new Set(['categories', 'stat_views', 'trns', 'user_settings', 'wallets'])
+const WRITABLE_TABLES = new Set<string>(SYNCED_TABLES)
 
 function assertTable(table: string): void {
   if (!WRITABLE_TABLES.has(table))

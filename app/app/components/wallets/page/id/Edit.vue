@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WalletId, WalletItem } from '~/components/wallets/types'
+import type { WalletFormKey, WalletId, WalletItem } from '~/components/wallets/types'
 
 import { walletItemSchema } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -36,7 +36,7 @@ watch(
   { immediate: true },
 )
 
-function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
+function updateField(key: WalletFormKey, value: unknown) {
   if (walletForm.value)
     (walletForm.value as Record<string, unknown>)[key] = value
 }

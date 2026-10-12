@@ -3,6 +3,8 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 
 import { createLogger } from '~/utils/logger'
 
+import { SYNCED_TABLES } from './tables'
+
 const logger = createLogger('powersync')
 
 let _db: PowerSyncDatabase | null = null
@@ -298,11 +300,10 @@ export async function waitForUploadsDrained(timeoutMs = 8000): Promise<number> {
 
 export type SyncStatusSnapshot = { connected: boolean, pending: number, uploadError: string | null }
 
-const SYNCED_TABLES = ['categories', 'stat_views', 'trns', 'user_settings', 'wallets'] as const
-
 /**
- * Observe connection + upload-queue state for the UI. `onChange` fires on every PowerSync
- * status change and on every local write (each touches the queue). Returns a stop function.
+ * Observe connection + upload-queue state for the UI. Status changes (one per download-progress
+ * tick during a large sync) only re-read `db.currentStatus`; the queue is re-counted on table
+ * changes alone, throttled. Returns a stop function.
  */
 export function subscribeSyncStatus(onChange: (s: SyncStatusSnapshot) => void): () => void {
   const stops: (() => void)[] = []
@@ -311,17 +312,28 @@ export function subscribeSyncStatus(onChange: (s: SyncStatusSnapshot) => void): 
     .then((db) => {
       if (stopped)
         return
-      const refresh = async () => {
+      let pending = 0
+      let countSeq = 0
+      const emit = () => {
+        if (stopped)
+          return
         const status = db.currentStatus
-        const pending = (await db.getUploadQueueStats()).count
         // A failed upload while disconnected is just "offline", not a server rejection.
         const uploadError = status.connected ? (status.uploadError?.message ?? null) : null
-        if (!stopped)
-          onChange({ connected: status.connected, pending, uploadError })
+        onChange({ connected: status.connected, pending, uploadError })
       }
-      stops.push(db.registerListener({ statusChanged: () => void refresh() }))
-      stops.push(db.onChangeWithCallback({ onChange: () => void refresh() }, { tables: [...SYNCED_TABLES], throttleMs: 500 }))
-      void refresh()
+      const recount = async () => {
+        const seq = ++countSeq
+        const count = (await db.getUploadQueueStats()).count
+        // Counts can resolve out of order: only the latest request may land.
+        if (seq !== countSeq)
+          return
+        pending = count
+        emit()
+      }
+      stops.push(db.registerListener({ statusChanged: emit }))
+      stops.push(db.onChangeWithCallback({ onChange: () => void recount() }, { tables: [...SYNCED_TABLES], throttleMs: 500 }))
+      void recount()
     })
     .catch((e: unknown) => logger.error('sync status subscribe failed', e))
   return () => {
@@ -353,8 +365,7 @@ export async function waitForFirstSync(timeoutMs = 30000): Promise<boolean> {
 export async function hasAnyLocalData(): Promise<boolean> {
   const db = await getPowerSyncDb()
   for (const table of ['wallets', 'categories', 'trns'] as const) {
-    const row = await db.get<{ c: number }>(`SELECT count(*) as c FROM ${table}`)
-    if ((row?.c ?? 0) > 0)
+    if (await db.getOptional(`SELECT 1 FROM ${table} LIMIT 1`))
       return true
   }
   return false
@@ -397,7 +408,7 @@ export function watchTable<TRow = Record<string, unknown>>(
             onRows(rows)
           },
         },
-        // PowerSync coalesces table-change events within `throttleMs` (default 30ms) into one re-query.
+        // PowerSync coalesces table-change events within `throttleMs` into one re-query.
         { signal: controller.signal, ...(throttleMs != null ? { throttleMs } : {}) },
       )
     })

@@ -48,6 +48,13 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     },
     titleKey: 'stat.config.chartShow.title',
   },
+  loansDue: {
+    getIsShow: config => config.contextBlocks.loansDue.isShow,
+    icon: 'lucide:calendar-clock',
+    setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { loansDue: { isShow: value } }),
+    syncConfig: (source, target) => { target.contextBlocks.loansDue = clonePanelConfig(source.contextBlocks.loansDue) },
+    titleKey: 'stat.config.contextBlocks.loansDue',
+  },
   navigation: {
     getIsShow: config => config.date.isShow,
     icon: 'lucide:calendar-range',
@@ -100,6 +107,13 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
     setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { walletDescription: { isShow: value } }),
     syncConfig: (source, target) => { target.contextBlocks.walletDescription = clonePanelConfig(source.contextBlocks.walletDescription) },
     titleKey: 'stat.config.contextBlocks.walletDescription',
+  },
+  walletLoan: {
+    getIsShow: config => config.contextBlocks.walletLoan.isShow,
+    icon: 'lucide:landmark',
+    setIsShow: (provider, value) => provider.updateConfig('contextBlocks', { walletLoan: { isShow: value } }),
+    syncConfig: (source, target) => { target.contextBlocks.walletLoan = clonePanelConfig(source.contextBlocks.walletLoan) },
+    titleKey: 'stat.config.contextBlocks.walletLoan',
   },
   wallets: {
     getIsShow: config => config.wallets.isShow,

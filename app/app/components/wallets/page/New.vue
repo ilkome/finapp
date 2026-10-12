@@ -1,17 +1,18 @@
 <script setup lang="ts">
-import type { WalletItem } from '~/components/wallets/types'
+import type { WalletFormKey } from '~/components/wallets/types'
 
-import { walletItemSchema } from '~/components/wallets/types'
+import { walletItemSchema, walletTypes } from '~/components/wallets/types'
 import { canGoBack } from '~/composables/useNavigationHistory'
 
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
-const walletForm = ref(walletItemSchema.parse({ type: 'cash' }))
+const queryType = walletTypes.find(type => type === route.query.type)
+const walletForm = ref(walletItemSchema.parse({ type: queryType ?? 'cash' }))
 
 const isOnboarding = computed(() => 'onboarding' in route.query)
 
-function updateField(key: keyof WalletItem, value: WalletItem[keyof WalletItem]) {
+function updateField(key: WalletFormKey, value: unknown) {
   (walletForm.value as Record<string, unknown>)[key] = value
 }
 

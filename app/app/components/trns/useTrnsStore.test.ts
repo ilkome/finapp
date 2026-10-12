@@ -185,6 +185,16 @@ describe('useTrnsStore', () => {
       ])
     })
 
+    it('keeps enteredAt of an edited trn and stamps a new one', async () => {
+      const store = useTrnsStore()
+      store.setTrns({ a: expense({ enteredAt: 5 }) })
+
+      await store.saveTrns({ a: expense({ desc: 'Edited' }), b: expense() })
+
+      expect(store.items?.a?.enteredAt).toBe(5)
+      expect(store.items?.b?.enteredAt).toBeGreaterThan(5)
+    })
+
     it('restores the whole batch when the write fails', async () => {
       const store = useTrnsStore()
       const initial = { a: expense(), b: expense() }

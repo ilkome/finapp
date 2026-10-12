@@ -21,35 +21,37 @@ export function rowsToTrns(rows: Row[]): Trns | null {
  *   caller can skip the update entirely - this suppresses the redundant rebuild
  *   the watch fires as an echo of our own optimistic write.
  * - Otherwise returns a new map, reusing the previous object for every unchanged
- *   row (matched on `updatedAt`) so the O(N) `rowToTrn` transform runs only for
- *   rows that were actually added or changed.
+ *   row (matched on `updatedAt`) so the transform runs only for rows that were
+ *   actually added or changed.
  *
- * `updatedAt` reads deterministically (null -> 0, see transforms.ts), so even
- * rows without a timestamp compare stably and are correctly suppressed.
+ * A missing `updatedAt` reads as 0 on both sides, so rows without a timestamp
+ * compare stably and are correctly suppressed.
  */
-export function reconcileTrns(prev: Trns, rows: Row[]): Trns | null {
-  let dirty = rows.length !== Object.keys(prev).length
-  if (!dirty) {
-    for (const row of rows) {
-      const existing = prev[row.id]
-      if (!existing || existing.updatedAt !== Number(row.updatedAt)) {
-        dirty = true
-        break
-      }
-    }
-  }
-  if (!dirty)
+export function reconcileRows<T extends { updatedAt?: number }>(
+  prev: Record<string, T> | null,
+  rows: Row[],
+  // null skips a row the transform rejects.
+  rowToItem: (row: Row) => T | null,
+): Record<string, T> | null {
+  const old = prev ?? {}
+  const same = (item: T | undefined, row: Row) => !!item && (item.updatedAt ?? 0) === Number(row.updatedAt ?? 0)
+
+  if (rows.length === Object.keys(old).length && rows.every(row => same(old[row.id], row)))
     return prev
 
   if (!rows.length)
     return null
 
-  const next: Trns = {}
+  const next: Record<string, T> = {}
   for (const row of rows) {
-    const existing = prev[row.id]
-    next[row.id] = existing && existing.updatedAt === Number(row.updatedAt)
-      ? existing
-      : rowToTrn(row)
+    const existing = old[row.id]
+    const item = same(existing, row) ? existing! : rowToItem(row)
+    if (item)
+      next[row.id] = item
   }
   return next
+}
+
+export function reconcileTrns(prev: Trns, rows: Row[]): Trns | null {
+  return reconcileRows(prev, rows, rowToTrn) as Trns | null
 }

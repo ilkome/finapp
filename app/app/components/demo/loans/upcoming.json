@@ -1,0 +1,59 @@
+{
+  "baseCurrencyCode": "RUB",
+  "groups": [
+    {
+      "days": [
+        {
+          "date": 1788998400000,
+          "items": [
+            {
+              "amount": 3500,
+              "currencyCode": "RUB",
+              "label": "Loan payment",
+              "walletId": "r1",
+              "walletName": "Credit card"
+            }
+          ],
+          "sum": null
+        }
+      ],
+      "key": "overdue",
+      "label": "Overdue"
+    },
+    {
+      "days": [
+        {
+          "date": 1789084800000,
+          "items": [
+            {
+              "amount": 21000,
+              "currencyCode": "RUB",
+              "desc": "Principal 18000 / Interest 3000",
+              "label": "Loan payment",
+              "walletId": "w1",
+              "walletName": "Mortgage"
+            },
+            {
+              "amount": 4000,
+              "currencyCode": "RUB",
+              "label": "Loan payment",
+              "walletId": "r2",
+              "walletName": "Installments"
+            }
+          ],
+          "sum": 25000
+        }
+      ],
+      "key": "nearest",
+      "label": "11 Sep"
+    }
+  ],
+  "isOverdue": true,
+  "total": 28500,
+  "openKeys": [
+    "overdue",
+    "week",
+    "month",
+    "later"
+  ]
+}

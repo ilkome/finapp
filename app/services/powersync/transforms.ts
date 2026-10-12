@@ -1,14 +1,19 @@
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
+import type { LoanItem, LoanScheduleRowItem } from '~/components/loans/types'
 import type { TrnItem } from '~/components/trns/types'
 import type { WalletItem, WalletType } from '~/components/wallets/types'
 
+import { loanItemSchema, loanScheduleRowSchema } from '~/components/loans/types'
 import { TrnType } from '~/components/trns/types'
+import { createLogger } from '~/utils/logger'
 
 // Raw SQLite row: every synced table includes an `id` text primary key.
 export type Row = Record<string, any> & { id: string }
 
 // null updatedAt -> 0 (epoch), never Date.now(): stable across reads so reconcile change-detection works.
+const logger = createLogger('transforms')
+
 const ts = (v: unknown): number => (v == null ? 0 : Number(v))
 
 // --- read: SQLite row -> Pinia item shape -------------------------------------
@@ -56,8 +61,16 @@ export function rowToWallet(row: Row): WalletItem {
     updatedAt: ts(row.updatedAt),
   }
 
-  if (row.type === 'credit')
-    return { ...base, creditLimit: Number(row.creditLimit ?? 0), type: 'credit' }
+  if (row.type === 'credit') {
+    return {
+      ...base,
+      creditLimit: Number(row.creditLimit ?? 0),
+      type: 'credit',
+      ...(row.minPaymentAmount != null ? { minPaymentAmount: Number(row.minPaymentAmount) } : {}),
+      ...(row.minPaymentDate != null ? { minPaymentDate: Number(row.minPaymentDate) } : {}),
+      ...(row.minPaymentUpdatedAt != null ? { minPaymentUpdatedAt: Number(row.minPaymentUpdatedAt) } : {}),
+    }
+  }
 
   return { ...base, type: row.type as Exclude<WalletType, 'credit'> }
 }
@@ -73,6 +86,28 @@ export function rowToCategory(row: Row): CategoryItem {
     showInQuickSelector: !!row.showInQuickSelector,
     ...(row.updatedAt != null ? { updatedAt: Number(row.updatedAt) } : {}),
   }
+}
+
+// SQLite returns null for every unset column, including columns added after the row was
+// written: drop them so the schema defaults and optional fields apply.
+function definedColumns(row: Row): Record<string, unknown> {
+  return Object.fromEntries(Object.entries(row).filter(([, value]) => value != null))
+}
+
+/** Null for a row the schema rejects: one bad synced row must not stop every other loan. */
+export function rowToLoan(row: Row): LoanItem | null {
+  // null is a real value here (no published rate); updatedAt reads null as 0, stable across emits.
+  const parsed = loanItemSchema.safeParse({ ...definedColumns(row), annualRate: row.annualRate ?? null, updatedAt: ts(row.updatedAt) })
+  if (!parsed.success)
+    logger.error('skipped invalid loan row', row.id, parsed.error.issues)
+  return parsed.success ? parsed.data : null
+}
+
+export function rowToLoanScheduleRow(row: Row): LoanScheduleRowItem | null {
+  const parsed = loanScheduleRowSchema.safeParse({ ...definedColumns(row), updatedAt: ts(row.updatedAt) })
+  if (!parsed.success)
+    logger.error('skipped invalid schedule row', row.id, parsed.error.issues)
+  return parsed.success ? parsed.data : null
 }
 
 export function rowToRates(row: Row): Rates | null {
@@ -117,7 +152,11 @@ export function trnToRow(item: TrnItem, userId: string): Record<string, unknown>
     }
   }
 
-  return { ...base, amount: item.amount, walletId: item.walletId }
+  return {
+    ...base,
+    amount: item.amount,
+    walletId: item.walletId,
+  }
 }
 
 export function walletToRow(item: WalletItem, userId: string): Record<string, unknown> {
@@ -129,9 +168,55 @@ export function walletToRow(item: WalletItem, userId: string): Record<string, un
     isArchived: item.isArchived ? 1 : 0,
     isExcludeInTotal: item.isExcludeInTotal ? 1 : 0,
     isWithdrawal: item.isWithdrawal ? 1 : 0,
+    minPaymentAmount: item.type === 'credit' ? (item.minPaymentAmount ?? null) : null,
+    minPaymentDate: item.type === 'credit' ? (item.minPaymentDate ?? null) : null,
+    minPaymentUpdatedAt: item.type === 'credit' ? (item.minPaymentUpdatedAt ?? null) : null,
     name: item.name,
     order: Math.round(item.order ?? 0), // integer column - round, don't silently truncate
     type: item.type,
+    updatedAt: item.updatedAt ?? Date.now(),
+    userId,
+  }
+}
+
+export function loanToRow(item: LoanItem, userId: string): Record<string, unknown> {
+  return {
+    annualRate: item.annualRate,
+    // Bank figures pass through untouched, so editing the loan never wipes what bank sync pushed.
+    bankDebtAmount: item.bankDebtAmount ?? null,
+    bankDebtUpdatedAt: item.bankDebtUpdatedAt ?? null,
+    closedDate: item.closedDate ?? null,
+    contractNumber: item.contractNumber || null,
+    debitWalletId: item.debitWalletId ?? null,
+    desc: item.desc || null,
+    firstPaymentDate: item.firstPaymentDate,
+    interestMethod: item.interestMethod,
+    lateAfterDays: item.lateAfterDays,
+    nextPaymentDate: item.nextPaymentDate ?? null,
+    nextPaymentInterest: item.nextPaymentInterest ?? null,
+    nextPaymentPrincipal: item.nextPaymentPrincipal ?? null,
+    overpaymentMode: item.overpaymentMode,
+    paymentDay: item.paymentDay,
+    prepayWindowDays: item.prepayWindowDays,
+    principalAmount: item.principalAmount,
+    scheduleType: item.scheduleType,
+    startDate: item.startDate,
+    termMonths: item.termMonths,
+    updatedAt: item.updatedAt ?? Date.now(),
+    userId,
+    walletId: item.walletId,
+  }
+}
+
+export function loanScheduleRowToRow(item: LoanScheduleRowItem, userId: string): Record<string, unknown> {
+  return {
+    date: item.date,
+    interestPart: item.interestPart,
+    loanId: item.loanId,
+    paymentNumber: item.paymentNumber,
+    principalPart: item.principalPart,
+    source: item.source,
+    totalAmount: item.totalAmount,
     updatedAt: item.updatedAt ?? Date.now(),
     userId,
   }

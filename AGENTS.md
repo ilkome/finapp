@@ -31,14 +31,15 @@ Do not duplicate those details here. Inspect their source when the task depends 
 - PowerSync tables are SQLite views. Use the existing mutation helpers instead of `ON CONFLICT` writes.
 - Entity IDs are client-generated text values. Do not add foreign-key assumptions that require upload ordering.
 - Demo mode bypasses PowerSync and uses its own in-memory and localforage persistence path.
+- A comment never carries a count, size, duration or default that is defined in code; it names the setting instead.
 - The in-app review browser cannot start a module `SharedWorker`, so PowerSync's multi-tab worker dies there. Run `pnpm dev:review` (sets `VITE_POWERSYNC_SINGLE_TAB=1`) for that browser only; every other run must keep the shared-worker path.
 
 ## Pure UI views
 
-- Components named `*View.vue` under `app/app/components/{stat,wallets,categories,trns,filter}/` are pure: props in, emits out. They never import a store, call `inject()`, `useRoute()`, or read app state; labels arrive as props and `t()` is only for static UI strings.
+- Components named `*View.vue` under `app/app/components/{stat,wallets,categories,trns,filter,loans}/` are pure: props in, emits out. They never import a store, call `inject()`, `useRoute()`, or read app state; labels arrive as props and `t()` is only for static UI strings.
 - A `View` prop type must be JSON-serializable (no refs, functions, class instances, or `Date`; dates are ms-epoch numbers).
 - Sections and containers (`*Section.vue`, `stat/report/*`, `filter/Selected.vue`, ...) own every store and provider call and pass plain values down.
-- Every `View` has a `*.view.test.ts` that mounts it from a fixture under `stat/fixtures/` (vitest project `view`).
+- Every `View` has a `*.view.test.ts` that mounts it from a JSON fixture: `stat/fixtures/` for stat, wallets, categories, trns and filter views, `demo/loans/` for loans views (vitest project `view`).
 
 ## Feature flags
 
@@ -52,6 +53,9 @@ Do not duplicate those details here. Inspect their source when the task depends 
 - Adjustment is not a transaction type. It is an Expense or Income with `categoryId === 'adjustment'`.
 - Transfers use `categoryId === 'transfer'`.
 - Adjustments affect wallet balances but are excluded from regular income and expense statistics.
+- Wallet type `credit` is a credit card, `loan` is a loan contract; `isCreditProduct` covers both.
+- `loanInterest` and `loanFine` are reserved categories like `transfer` and `adjustment`, but they are ordinary expenses and count in statistics.
+- A loan payment is a transfer into the credit wallet; its interest is a separate expense in `loanInterest`.
 
 ## Pushes to dev
 

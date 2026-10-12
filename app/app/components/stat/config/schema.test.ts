@@ -66,8 +66,10 @@ const defaultConfig: MiniItemConfig = {
   },
   contextBlocks: {
     categoryChildren: { isShow: true },
+    loansDue: { isShow: true },
     walletBalance: { isShow: true },
     walletDescription: { isShow: true },
+    walletLoan: { isShow: true },
   },
   date: {
     isPinned: true,
@@ -218,6 +220,13 @@ describe('applyConfigUpdate', () => {
     expect(result!.categories.round).toEqual(defaultConfig.categories.round)
   })
 
+  it('backfills the loans block for a config saved before it existed', () => {
+    const { loansDue: _, ...contextBlocks } = defaultConfig.contextBlocks
+    const result = ConfigSchema.parse({ ...defaultConfig, contextBlocks })
+
+    expect(result.contextBlocks.loansDue).toEqual({ isShow: true })
+  })
+
   it('normalizes a partial block order without duplicates', () => {
     const result = ConfigSchema.parse({
       ...defaultConfig,
@@ -226,13 +235,15 @@ describe('applyConfigUpdate', () => {
 
     expect(result.page.blockOrder).toEqual([
       'categoryChildren',
+      'loansDue',
       'walletBalance',
       'walletDescription',
+      'walletLoan',
       'navigation',
       'summary',
       'trns',
       'chart',
-      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription'].includes(id)),
+      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'loansDue', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription', 'walletLoan'].includes(id)),
     ])
   })
 
@@ -241,13 +252,15 @@ describe('applyConfigUpdate', () => {
 
     expect(result?.page.blockOrder).toEqual([
       'categoryChildren',
+      'loansDue',
       'walletBalance',
       'walletDescription',
+      'walletLoan',
       'navigation',
       'summary',
       'trns',
       'chart',
-      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription'].includes(id)),
+      ...statConfigBlockOrder.filter(id => !['categoryChildren', 'chart', 'loansDue', 'navigation', 'summary', 'trns', 'walletBalance', 'walletDescription', 'walletLoan'].includes(id)),
     ])
   })
 
