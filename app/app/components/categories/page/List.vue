@@ -66,6 +66,14 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <UiHeader actionsAfterTitle>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
+        <UTooltip :text="$t('categories.new')">
+          <NuxtLink to="/categories/new">
+            <UiActionButton :ariaLabel="$t('categories.new')">
+              <Icon name="lucide:plus" size="24" />
+            </UiActionButton>
+          </NuxtLink>
+        </UTooltip>
+
         <UTooltip :text="$t('base.toggleFolders')">
           <UiActionButton
             :ariaLabel="$t('base.toggleFolders')"
@@ -134,14 +142,6 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
             </div>
           </template>
         </BottomSheetOrDropdown>
-
-        <UTooltip :text="$t('categories.new')">
-          <NuxtLink to="/categories/new">
-            <UiActionButton :ariaLabel="$t('categories.new')">
-              <Icon name="lucide:plus" size="24" />
-            </UiActionButton>
-          </NuxtLink>
-        </UTooltip>
       </template>
     </UiHeader>
 

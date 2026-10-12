@@ -134,14 +134,17 @@ function cycleGrouping() {
       </UiHeaderTitle>
 
       <template #actions>
-        <UTooltip :text="t('base.done')">
-          <UiActionButton
-            v-if="isSorting"
-            :ariaLabel="t('base.done')"
-            isActive
-            @click="isSorting = false"
-          >
-            <Icon name="lucide:check" size="20" />
+        <UTooltip :text="$t('wallets.new')">
+          <NuxtLink to="/wallets/new">
+            <UiActionButton :ariaLabel="$t('wallets.new')">
+              <Icon name="lucide:plus" size="24" />
+            </UiActionButton>
+          </NuxtLink>
+        </UTooltip>
+
+        <UTooltip :text="currentGroupTab.label">
+          <UiActionButton :ariaLabel="currentGroupTab.label" @click="cycleGrouping">
+            <Icon :name="groupIcons[currentGroupTab.id]" size="18" />
           </UiActionButton>
         </UTooltip>
 
@@ -178,20 +181,6 @@ function cycleGrouping() {
             </UiActionButton>
           </UTooltip>
         </div>
-
-        <UTooltip :text="currentGroupTab.label">
-          <UiActionButton :ariaLabel="currentGroupTab.label" @click="cycleGrouping">
-            <Icon :name="groupIcons[currentGroupTab.id]" size="18" />
-          </UiActionButton>
-        </UTooltip>
-
-        <UTooltip :text="$t('wallets.new')">
-          <NuxtLink to="/wallets/new">
-            <UiActionButton :ariaLabel="$t('wallets.new')">
-              <Icon name="lucide:plus" size="24" />
-            </UiActionButton>
-          </NuxtLink>
-        </UTooltip>
 
         <BottomSheetOrDropdown
           v-if="walletsStore.sortedIds.length > 1"
@@ -346,6 +335,17 @@ function cycleGrouping() {
             </div>
           </template>
         </BottomSheetOrDropdown>
+
+        <UTooltip :text="t('base.done')">
+          <UiActionButton
+            v-if="isSorting"
+            :ariaLabel="t('base.done')"
+            isActive
+            @click="isSorting = false"
+          >
+            <Icon name="lucide:check" size="20" />
+          </UiActionButton>
+        </UTooltip>
       </template>
     </UiHeader>
 
