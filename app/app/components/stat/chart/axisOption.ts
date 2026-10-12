@@ -8,7 +8,7 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
-import { baseOption, buildChartGuideMarkLine, buildChartSeries, resolveCenteredBarGeometry, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
+import { buildChartGuideMarkLine, buildChartSeries, createBaseOption, resolveCenteredBarGeometry, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 
 export function buildAxisChartOption({
   chartConfig,
@@ -197,7 +197,7 @@ export function buildAxisChartOption({
         type: 'custom',
         z: 0,
       }]
-  const data = defu(baseOption, {
+  const data = defu(createBaseOption(), {
     dataZoom: [{
       disabled: !isDataZoomEnabled,
       endValue: isDataZoomEnabled ? endIndex : Math.max(0, xAxisLabels.length - 1),

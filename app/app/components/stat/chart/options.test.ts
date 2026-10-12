@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { ChartSeries } from '~/components/stat/types'
 
-import { baseOption, buildChartGuideMarkLine, buildChartSeries, filterChartTooltipParams, resolveCenteredBarGeometry, resolveChartAverage, resolveChartGuideValues, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition, resolveChartTooltipSeries, resolveChartTooltipValue, resolveStackedBarBorderRadius, sortChartTooltipParams } from '~/components/stat/chart/options'
+import { buildChartGuideMarkLine, buildChartSeries, createBaseOption, filterChartTooltipParams, resolveCenteredBarGeometry, resolveChartAverage, resolveChartGuideValues, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition, resolveChartTooltipSeries, resolveChartTooltipValue, resolveStackedBarBorderRadius, sortChartTooltipParams } from '~/components/stat/chart/options'
 
 const baseSeries: ChartSeries = {
   data: [0, 10, 0, 5],
@@ -12,7 +12,7 @@ const baseSeries: ChartSeries = {
 
 describe('buildChartSeries', () => {
   it('disables series animation while data zoom moves the viewport', () => {
-    expect(baseOption?.animation).toBe(false)
+    expect(createBaseOption().animation).toBe(false)
   })
 
   it('nulls zero values for bar series instead of a floored stub', () => {

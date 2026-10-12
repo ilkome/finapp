@@ -34,90 +34,94 @@ export const seriesOptions: Record<SeriesSlug, SeriesOption> = {
   },
 }
 
-export const baseOption: EChartsOption['baseOption'] = {
-  animation: false,
+// A factory, not a shared object: buildAxisChartOption mutates nested axes, and defu keeps
+// references to defaults-only keys, so two charts on one page would share one yAxis.
+export function createBaseOption(): NonNullable<EChartsOption['baseOption']> {
+  return {
+    animation: false,
 
-  grid: {
-    bottom: '0',
-    left: '5',
-    outerBoundsContain: 'axisLabel',
-    outerBoundsMode: 'same',
-    right: '5',
-    top: '5',
-  },
+    grid: {
+      bottom: '0',
+      left: '5',
+      outerBoundsContain: 'axisLabel',
+      outerBoundsMode: 'same',
+      right: '5',
+      top: '5',
+    },
 
-  tooltip: {
-    axisPointer: {
-      animation: false,
-      shadowStyle: {
-        color: 'color-mix(in oklab, var(--ui-bg-elevated) 50%, transparent)',
+    tooltip: {
+      axisPointer: {
+        animation: false,
+        shadowStyle: {
+          color: 'color-mix(in oklab, var(--ui-bg-elevated) 50%, transparent)',
+        },
+        type: 'shadow',
       },
-      type: 'shadow',
+      backgroundColor: 'transparent',
+      borderWidth: 0,
+      confine: true,
+      padding: 0,
+      trigger: 'axis',
     },
-    backgroundColor: 'transparent',
-    borderWidth: 0,
-    confine: true,
-    padding: 0,
-    trigger: 'axis',
-  },
 
-  xAxis: {
-    axisLabel: {
-      color: 'var(--chart-label)',
-      fontSize: 8,
-    },
-    axisLine: {
-      lineStyle: {
-        color: 'var(--chart-line)',
+    xAxis: {
+      axisLabel: {
+        color: 'var(--chart-label)',
+        fontSize: 8,
       },
-    },
-    axisPointer: {
-      label: {
-        backgroundColor: 'var(--chart-line)',
-        color: 'var(--chart-axisLabel)',
-        margin: 10,
+      axisLine: {
+        lineStyle: {
+          color: 'var(--chart-line)',
+        },
       },
-      shadowStyle: {
-        color: 'color-mix(in oklab, var(--ui-bg-elevated) 50%, transparent)',
+      axisPointer: {
+        label: {
+          backgroundColor: 'var(--chart-line)',
+          color: 'var(--chart-axisLabel)',
+          margin: 10,
+        },
+        shadowStyle: {
+          color: 'color-mix(in oklab, var(--ui-bg-elevated) 50%, transparent)',
+        },
+        z: 0,
       },
-      z: 0,
+      axisTick: {
+        interval: 0,
+      },
+      type: 'category',
     },
-    axisTick: {
-      interval: 0,
-    },
-    type: 'category',
-  },
 
-  yAxis: {
-    axisLabel: {
-      color: 'var(--chart-label)',
-      formatter: (n: number) => formatCompactChartAmount(n),
-      show: false,
-    },
-    axisLine: {
-      lineStyle: {
-        color: 'var(--chart-splitLine)',
+    yAxis: {
+      axisLabel: {
+        color: 'var(--chart-label)',
+        formatter: (n: number) => formatCompactChartAmount(n),
+        show: false,
       },
-    },
-    axisPointer: {
-      label: {
-        backgroundColor: 'var(--chart-line)',
-        color: 'var(--chart-axisLabel)',
-        formatter: props => formatChartAmount(+props.value) ?? '',
+      axisLine: {
+        lineStyle: {
+          color: 'var(--chart-splitLine)',
+        },
       },
-      snap: true,
-    },
-    minInterval: 1,
+      axisPointer: {
+        label: {
+          backgroundColor: 'var(--chart-line)',
+          color: 'var(--chart-axisLabel)',
+          formatter: props => formatChartAmount(+props.value) ?? '',
+        },
+        snap: true,
+      },
+      minInterval: 1,
 
-    position: 'right',
-    splitLine: {
-      lineStyle: {
-        color: 'var(--chart-line)',
+      position: 'right',
+      splitLine: {
+        lineStyle: {
+          color: 'var(--chart-line)',
+        },
+        show: false,
       },
-      show: false,
+      type: 'value',
     },
-    type: 'value',
-  },
+  }
 }
 
 export function filterChartTooltipParams<T extends { value: unknown }>(params: T[]): Array<T & { value: number }> {

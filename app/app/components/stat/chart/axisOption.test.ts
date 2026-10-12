@@ -17,6 +17,13 @@ function buildOption(overrides: Partial<Options> = {}) {
 }
 
 describe('buildAxisChartOption', () => {
+  it('keeps each chart its own y axis when two charts are built (split expense and income)', () => {
+    const big = buildOption()
+    const bigMax = (big.yAxis as { max: number }).max
+    buildOption({ series: chartFixture.series.map(item => ({ ...item, data: item.data.map(() => 1) })) })
+    expect((big.yAxis as { max: number }).max).toBe(bigMax)
+  })
+
   it('renders one series per input plus the scale guide when isShowScale is on', () => {
     const option = buildOption()
     const series = option.series as unknown[]
