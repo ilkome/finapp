@@ -6,6 +6,7 @@ import {
   createDebouncedPersist,
   initializeStoreSyncToast,
   isPersistBlocked,
+  persistOptimistic,
   showErrorToast,
   unblockPersist,
 } from '~/composables/useStoreSync'
@@ -58,5 +59,28 @@ describe('showErrorToast', () => {
     expect(toastAddMock).toHaveBeenCalledWith(
       expect.objectContaining({ color: 'error', description: 'sync.errors.uploadRejected' }),
     )
+  })
+})
+
+describe('persistOptimistic', () => {
+  beforeEach(() => {
+    initializeStoreSyncToast({ add: toastAddMock } as unknown as ReturnType<typeof useToast>)
+  })
+
+  it('returns true and skips rollback on success', async () => {
+    const rollback = vi.fn()
+    const logger = { error: vi.fn() }
+    expect(await persistOptimistic(Promise.resolve(), { errorKey: 'k', label: 'save', logger, rollback })).toBe(true)
+    expect(rollback).not.toHaveBeenCalled()
+  })
+
+  it('rolls back, logs and toasts on failure', async () => {
+    const rollback = vi.fn()
+    const logger = { error: vi.fn() }
+    const err = new Error('boom')
+    expect(await persistOptimistic(Promise.reject(err), { errorKey: 'x.failed', label: 'save', logger, rollback })).toBe(false)
+    expect(rollback).toHaveBeenCalledTimes(1)
+    expect(logger.error).toHaveBeenCalledWith('save failed', err)
+    expect(toastAddMock).toHaveBeenCalledWith(expect.objectContaining({ color: 'error', description: 'x.failed' }))
   })
 })

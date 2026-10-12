@@ -35,7 +35,7 @@ export type TrnsListFilterState = {
 export type TransferSide = 'expense' | 'income'
 
 const baseTrnSchema = z.object({
-  // Civil day (UTC-midnight ms-epoch); the bucketing truth. See plans/civil-date-migration.md.
+  // Civil day (UTC-midnight ms-epoch); the bucketing truth.
   date: z.number(),
   desc: z.string().optional(),
   // Original entry instant (ms-epoch); audit/ordering only, never used for bucketing.

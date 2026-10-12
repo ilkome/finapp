@@ -23,7 +23,7 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
-const showDeleteConfirm = ref<TrnId | null>(null)
+const confirm = useConfirm()
 
 function getCategory(item: SearchResultItem) {
   return categoriesStore.items?.[item.entityId]
@@ -86,15 +86,14 @@ function getTransactionContextMenuItems(item: SearchResultItem) {
       color: 'error' as const,
       icon: 'lucide:trash-2',
       label: t('base.delete'),
-      onSelect: () => { showDeleteConfirm.value = item.entityId as TrnId },
+      onSelect: () => handleDeleteConfirm(item.entityId as TrnId),
     },
   ]]
 }
 
-function handleDeleteConfirm() {
-  if (showDeleteConfirm.value)
-    trnsStore.deleteTrn(showDeleteConfirm.value)
-  showDeleteConfirm.value = null
+async function handleDeleteConfirm(id: TrnId) {
+  if (await confirm.ask({ title: t('trnForm.delete.alert') }))
+    trnsStore.deleteTrn(id)
 }
 </script>
 
@@ -253,12 +252,5 @@ function handleDeleteConfirm() {
         </UiContextMenuMy>
       </template>
     </UCommandPalette>
-
-    <LayoutConfirmModal
-      v-if="showDeleteConfirm"
-      :title="t('trnForm.delete.alert')"
-      @closed="showDeleteConfirm = null"
-      @confirm="handleDeleteConfirm"
-    />
   </div>
 </template>

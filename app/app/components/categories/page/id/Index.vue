@@ -7,6 +7,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { StatReportType } from '~/components/stat/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
@@ -27,48 +28,7 @@ const router = useRouter()
 const trnsFormStore = useTrnsFormStore()
 const trnsStore = useTrnsStore()
 const { statHeader } = useStatPageHost()
-const deleteChildId = ref<CategoryId | null>(null)
-
-const deleteChildTrnsCount = computed(() => {
-  if (!deleteChildId.value)
-    return 0
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildrenIdsOrParent(deleteChildId.value),
-  }).length
-})
-
-const deleteChildDescText = computed(() =>
-  deleteChildTrnsCount.value > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
-)
-
-const deleteChildHighlight = computed(() =>
-  deleteChildTrnsCount.value > 0 ? t('trns.plural', deleteChildTrnsCount.value) : undefined,
-)
-
-function onClickDeleteChild(childCategoryId: CategoryId) {
-  deleteChildId.value = childCategoryId
-}
-
-async function onDeleteChildConfirm() {
-  if (!deleteChildId.value)
-    return
-
-  const childId = deleteChildId.value
-  const childTrnsIds = [...trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildrenIdsOrParent(childId),
-  })]
-
-  deleteChildId.value = null
-  await categoriesStore.deleteCategory(childId, childTrnsIds)
-
-  setTimeout(() => {
-    showSuccessToast(childTrnsIds.length > 0
-      ? 'categories.form.delete.okWithTrns'
-      : 'categories.form.delete.okWithoutTrns', childTrnsIds.length > 0
-      ? { length: childTrnsIds.length, trns: t('trns.plural', childTrnsIds.length) }
-      : undefined)
-  }, 300)
-}
+const { requestDelete: onClickDeleteChild } = useCategoryDelete()
 
 const categoryMenu = useCategoryMenuItems()
 
@@ -191,16 +151,9 @@ const menuItems = computed<DropdownMenuItem[][] | undefined>(() => categoryId.va
 
 useHead({ title: category.value?.name })
 
-const deleteDescText = computed(() =>
-  trnsIds.value.length > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
-)
+const confirm = useConfirm()
 
-const deleteHighlight = computed(() =>
-  trnsIds.value.length > 0 ? t('trns.plural', trnsIds.value.length) : undefined,
-)
-
-const isShowDeleteConfirm = ref(false)
-function onClickDelete() {
+async function onClickDelete() {
   for (const id of Object.keys(categoriesStore.items)) {
     if (categoriesStore.items[id]?.parentId === categoryId.value) {
       showErrorToast('categories.form.delete.errorChildren')
@@ -209,10 +162,15 @@ function onClickDelete() {
     }
   }
 
-  isShowDeleteConfirm.value = true
-}
+  const count = trnsIds.value.length
+  const confirmed = await confirm.ask({
+    description: count > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
+    highlight: count > 0 ? t('trns.plural', count) : undefined,
+    title: t('categories.form.delete.title'),
+  })
+  if (!confirmed)
+    return
 
-async function onDeleteConfirm() {
   const deleteTrnsIds = [...trnsStore.getStoreTrnsIds({
     categoriesIds: categoriesStore.getChildrenIdsOrParent(categoryId.value),
   })]
@@ -246,24 +204,6 @@ async function onDeleteConfirm() {
         />
       </template>
     </StatHeader>
-
-    <LayoutConfirmModal
-      v-if="isShowDeleteConfirm"
-      :title="t('categories.form.delete.title')"
-      :description="deleteDescText"
-      :highlight="deleteHighlight"
-      @closed="isShowDeleteConfirm = false"
-      @confirm="onDeleteConfirm"
-    />
-
-    <LayoutConfirmModal
-      v-if="deleteChildId"
-      :title="t('categories.form.delete.title')"
-      :description="deleteChildDescText"
-      :highlight="deleteChildHighlight"
-      @closed="deleteChildId = null"
-      @confirm="onDeleteChildConfirm"
-    />
 
     <StatLayout
       :categoryId

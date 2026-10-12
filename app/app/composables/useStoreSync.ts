@@ -92,3 +92,20 @@ export function showErrorToast(key: string, params?: Record<string, unknown>) {
 export function showSuccessToast(key: string, params?: Record<string, unknown>) {
   return showToast('success', key, params)
 }
+
+/** Await a local write that follows an optimistic store update; on failure undo it, log and toast. */
+export async function persistOptimistic(
+  write: Promise<unknown>,
+  { errorKey, label, logger, rollback }: { errorKey: string, label: string, logger: { error: (...args: unknown[]) => void }, rollback: () => void },
+): Promise<boolean> {
+  try {
+    await write
+    return true
+  }
+  catch (e) {
+    rollback()
+    logger.error(`${label} failed`, e)
+    showErrorToast(errorKey)
+    return false
+  }
+}

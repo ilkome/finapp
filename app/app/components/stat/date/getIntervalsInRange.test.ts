@@ -5,7 +5,7 @@ import type { IntervalsInRangeProps } from '~/components/stat/date/types'
 
 import { getIntervalsInRange } from '~/components/stat/date/params'
 
-// Civil-day model: boundaries are computed in UTC (see plans/civil-date-migration.md).
+// Civil-day model: boundaries are computed in UTC.
 const monthStart = (y: number, m: number) => Date.UTC(y, m, 1)
 const monthEnd = (y: number, m: number) => Date.UTC(y, m + 1, 1) - 1
 const dayStart = (y: number, m: number, d: number) => Date.UTC(y, m, d)

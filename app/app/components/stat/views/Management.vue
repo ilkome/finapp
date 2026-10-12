@@ -17,7 +17,7 @@ const name = ref('')
 const nameInput = useTemplateRef<{ inputRef?: HTMLInputElement }>('nameInput')
 const isAutoEnabled = ref(false)
 const isViewsOpen = ref(false)
-const isDeleteOpen = ref(false)
+const confirm = useConfirm()
 
 const current = computed(() => controller?.activeView.value ?? null)
 const isAdaptive = computed(() => isAdaptiveViewId(current.value?.id))
@@ -66,7 +66,11 @@ const viewActionItems = computed(() => [
     : [[{ icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: () => nextTick(() => nameInput.value?.inputRef?.focus()) }]]),
   ...(isAdaptive.value
     ? []
-    : [[{ color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => { isDeleteOpen.value = true } }]]),
+    : [[{ color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: async () => {
+        const view = current.value
+        if (view && await confirm.ask({ description: t('stat.views.deleteConfirm'), title: '' }))
+          controller?.remove(view.id)
+      } }]]),
 ])
 </script>
 
@@ -130,13 +134,5 @@ const viewActionItems = computed(() => [
       />
     </div>
     <div aria-hidden="true" class="mx-2 -my-px h-px bg-elevated/50" />
-
-    <LayoutConfirmModal
-      v-if="isDeleteOpen"
-      :description="$t('stat.views.deleteConfirm')"
-      title=""
-      @closed="isDeleteOpen = false"
-      @confirm="current && controller.remove(current.id)"
-    />
   </section>
 </template>

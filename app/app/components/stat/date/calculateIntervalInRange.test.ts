@@ -7,7 +7,7 @@ import type { IntervalsInRangeProps } from '~/components/stat/date/types'
 
 import { calculateIntervalInRange } from '~/components/stat/date/params'
 
-// Civil-day model: boundaries are computed in UTC (see plans/civil-date-migration.md),
+// Civil-day model: boundaries are computed in UTC,
 // so expectations use Date.UTC, not local-time date-fns helpers.
 const endOfDayUTC = (y: number, m: number, d: number) => Date.UTC(y, m, d + 1) - 1
 

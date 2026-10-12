@@ -6,10 +6,9 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { compareCategoryIds } from '~/components/categories/utils'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
 type CategoryFilter = 'all' | 'favorites'
 
@@ -35,20 +34,18 @@ const emit = defineEmits<{
 const { t } = useI18n()
 const router = useRouter()
 const categoriesStore = useCategoriesStore()
-const trnsStore = useTrnsStore()
 
 const isLaptop = useIsLaptop()
 
 const search = ref('')
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
 
-const filter = useStorage<CategoryFilter>('finapp-categories-selector-filter', 'all')
+const filter = useStorage<CategoryFilter>('finapp.categories-selector-filter', 'all')
 const view = useStorage<'list' | 'grid'>('finapp.categoriesSelectorView', 'list')
 const isRoundIcon = useCategoriesIconStyle()
 
 const editingCategoryId = ref<CategoryId | null>(null)
 const isCreatingNewCategory = ref(false)
-const deleteCategoryId = ref<CategoryId | null>(null)
 
 const hasFavorites = computed(() => categoriesStore.favoriteCategoriesIds.length > 0)
 const hasRecent = computed(() => categoriesStore.recentCategoriesIds.length > 0)
@@ -142,52 +139,7 @@ function onClickNew() {
     isCreatingNewCategory.value = true
 }
 
-const deleteTrnsCount = computed(() => {
-  if (!deleteCategoryId.value)
-    return 0
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildrenIdsOrParent(deleteCategoryId.value),
-  }).length
-})
-
-const deleteDescText = computed(() =>
-  deleteTrnsCount.value > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
-)
-
-const deleteHighlight = computed(() =>
-  deleteTrnsCount.value > 0 ? t('trns.plural', deleteTrnsCount.value) : undefined,
-)
-
-function onClickDelete(categoryId: CategoryId) {
-  for (const id of Object.keys(categoriesStore.items)) {
-    if (categoriesStore.items[id]?.parentId === categoryId) {
-      showErrorToast('categories.form.delete.errorChildren')
-      return
-    }
-  }
-  deleteCategoryId.value = categoryId
-}
-
-async function onDeleteConfirm() {
-  if (!deleteCategoryId.value)
-    return
-
-  const categoryId = deleteCategoryId.value
-  const trnsIds = [...trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildrenIdsOrParent(categoryId),
-  })]
-
-  deleteCategoryId.value = null
-  await categoriesStore.deleteCategory(categoryId, trnsIds)
-
-  setTimeout(() => {
-    showSuccessToast(trnsIds.length > 0
-      ? 'categories.form.delete.okWithTrns'
-      : 'categories.form.delete.okWithoutTrns', trnsIds.length > 0
-      ? { length: trnsIds.length, trns: t('trns.plural', trnsIds.length) }
-      : undefined)
-  }, 300)
-}
+const { requestDelete: onClickDelete } = useCategoryDelete()
 
 const categoryMenu = useCategoryMenuItems()
 
@@ -430,15 +382,6 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
       v-if="(editingCategoryId || isCreatingNewCategory) && !isLaptop"
       :categoryId="editingCategoryId ?? undefined"
       @closed="editingCategoryId = null; isCreatingNewCategory = false"
-    />
-
-    <LayoutConfirmModal
-      v-if="deleteCategoryId"
-      :title="t('categories.form.delete.title')"
-      :description="deleteDescText"
-      :highlight="deleteHighlight"
-      @closed="deleteCategoryId = null"
-      @confirm="onDeleteConfirm"
     />
   </div>
 </template>

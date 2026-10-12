@@ -27,7 +27,7 @@ const date = ref<number | null>(null)
 const categoryId = ref<CategoryId | null>(null)
 const walletId = ref<WalletId | null>(null)
 const isDescriptionOpen = ref(false)
-const showDeleteConfirm = ref(false)
+const confirm = useConfirm()
 const isCategoryOpen = ref(false)
 const isWalletOpen = ref(false)
 
@@ -112,14 +112,13 @@ async function apply() {
 }
 
 async function confirmDelete() {
-  if (busy.value)
+  if (busy.value || !await confirm.ask({ title: t('trns.bulk.deleteTitle') }))
     return
 
   const ids = [...selection.ids.value]
   busy.value = true
   const deleted = await trnsStore.deleteTrns(ids)
   busy.value = false
-  showDeleteConfirm.value = false
   if (!deleted)
     return
 
@@ -292,14 +291,7 @@ watch(description, (value) => {
       :label="t('base.delete')"
       size="lg"
       variant="soft"
-      @click="showDeleteConfirm = true"
-    />
-
-    <LayoutConfirmModal
-      v-if="showDeleteConfirm"
-      :title="t('trns.bulk.deleteTitle')"
-      @closed="showDeleteConfirm = false"
-      @confirm="confirmDelete"
+      @click="confirmDelete"
     />
   </div>
 </template>

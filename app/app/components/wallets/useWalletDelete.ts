@@ -10,52 +10,29 @@ export function useWalletDelete() {
   const walletsStore = useWalletsStore()
   const trnsStore = useTrnsStore()
 
-  const deleteWalletId = ref<WalletId | null>(null)
+  const confirm = useConfirm()
 
-  const deleteInfo = computed(() => {
-    if (!deleteWalletId.value)
-      return { count: 0, descText: undefined as string | undefined, highlight: undefined as string | undefined }
-
-    const count = trnsStore.getStoreTrnsIds({ walletsIds: [deleteWalletId.value] }).length
-    return {
-      count,
-      descText: count > 0 ? t('wallets.form.delete.alertWithTrns') : undefined,
+  async function requestDelete(walletId: WalletId) {
+    const trnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({ walletsIds: [walletId] })]
+    const count = trnsIds.length
+    const confirmed = await confirm.ask({
+      description: count > 0 ? t('wallets.form.delete.alertWithTrns') : undefined,
       highlight: count > 0 ? t('trns.plural', count) : undefined,
-    }
-  })
-
-  function requestDelete(walletId: WalletId) {
-    deleteWalletId.value = walletId
-  }
-
-  function cancelDelete() {
-    deleteWalletId.value = null
-  }
-
-  async function confirmDelete() {
-    if (!deleteWalletId.value)
+      title: t('wallets.form.delete.title'),
+    })
+    if (!confirmed)
       return
 
-    const walletId = deleteWalletId.value
-    const trnsIds: TrnId[] = [...trnsStore.getStoreTrnsIds({ walletsIds: [walletId] })]
-
-    deleteWalletId.value = null
     await walletsStore.deleteWallet(walletId, trnsIds)
 
     setTimeout(() => {
-      showSuccessToast(trnsIds.length > 0
+      showSuccessToast(count > 0
         ? 'wallets.form.delete.okWithTrns'
-        : 'wallets.form.delete.okWithoutTrns', trnsIds.length > 0
-        ? { length: trnsIds.length, trns: t('trns.plural', trnsIds.length) }
+        : 'wallets.form.delete.okWithoutTrns', count > 0
+        ? { length: count, trns: t('trns.plural', count) }
         : undefined)
     }, 300)
   }
 
-  return {
-    cancelDelete,
-    confirmDelete,
-    deleteInfo,
-    deleteWalletId,
-    requestDelete,
-  }
+  return { requestDelete }
 }

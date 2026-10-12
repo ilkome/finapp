@@ -6,28 +6,18 @@ const props = defineProps<{
   title?: string
 }>()
 
+// Opened through useConfirm(): useOverlay passes `open` and `after:leave`, which fall through to UModal
 const emit = defineEmits<{
-  closed: []
-  confirm: []
+  close: [confirmed: boolean]
 }>()
 
 const { t } = useI18n()
 
-const isOpen = ref(true)
-
 function confirm() {
-  emit('confirm')
-  isOpen.value = false
-}
-
-function onClosed() {
-  emit('closed')
+  emit('close', true)
 }
 
 useEventListener('keydown', (e: KeyboardEvent) => {
-  if (!isOpen.value)
-    return
-
   if (e.key === 'Enter') {
     e.preventDefault()
     confirm()
@@ -37,10 +27,9 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 
 <template>
   <UModal
-    v-model:open="isOpen"
     :title="props.title ?? t('base.sure')"
     :ui="{ overlay: 'z-[70]', content: 'z-[70] max-w-sm divide-y-0', footer: 'justify-between' }"
-    @after:leave="onClosed"
+    @update:open="(open: boolean) => !open && emit('close', false)"
   >
     <template v-if="description || highlight" #body>
       <div class="text-muted">

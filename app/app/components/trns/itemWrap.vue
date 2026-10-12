@@ -32,7 +32,7 @@ const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
 
 const isSelected = computed(() => selection?.has(props.trnId) ?? false)
 
-const showDeleteConfirm = ref(false)
+const confirm = useConfirm()
 
 // On a stat page the menu narrows the page itself: the wallet and category filters are added
 // here, and the day goes into the URL only, so Back restores the period the user had.
@@ -144,7 +144,7 @@ const contextMenuItems = computed(() => {
       color: 'error' as const,
       icon: 'lucide:trash-2',
       label: t('base.delete'),
-      onSelect: () => { showDeleteConfirm.value = true },
+      onSelect: handleDeleteConfirm,
     },
   ]]
 })
@@ -171,9 +171,9 @@ async function duplicate() {
   openFormForDuplicate(props.trnId)
 }
 
-function handleDeleteConfirm() {
-  trnsStore.deleteTrn(props.trnId)
-  showDeleteConfirm.value = false
+async function handleDeleteConfirm() {
+  if (await confirm.ask({ title: t('trnForm.delete.alert') }))
+    trnsStore.deleteTrn(props.trnId)
 }
 </script>
 
@@ -187,11 +187,4 @@ function handleDeleteConfirm() {
       @click="click"
     />
   </UiContextMenuMy>
-
-  <LayoutConfirmModal
-    v-if="showDeleteConfirm"
-    :title="t('trnForm.delete.alert')"
-    @closed="showDeleteConfirm = false"
-    @confirm="handleDeleteConfirm"
-  />
 </template>

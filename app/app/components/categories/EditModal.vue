@@ -22,12 +22,8 @@ const categoryForm = ref(categoryFormSchema.parse(category.value ?? {}))
 </script>
 
 <template>
-  <BottomSheetModal @closed="emit('closed')">
+  <BottomSheetOrModal isBare :title="category?.name || t('categories.createNewTitle')" @closed="emit('closed')">
     <template #default="{ close }">
-      <UiTitleModal>
-        {{ category?.name || t('categories.createNewTitle') }}
-      </UiTitleModal>
-
       <CategoriesForm
         :categoryId="props.categoryId"
         :categoryForm="categoryForm"
@@ -35,5 +31,5 @@ const categoryForm = ref(categoryFormSchema.parse(category.value ?? {}))
         @afterSave="close"
       />
     </template>
-  </BottomSheetModal>
+  </BottomSheetOrModal>
 </template>

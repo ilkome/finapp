@@ -29,13 +29,7 @@ const isLaptop = useIsLaptop()
 const editingCategoryId = ref<CategoryId | null>(null)
 const isCreatingNewCategory = ref(false)
 
-const {
-  cancelDelete,
-  confirmDelete,
-  deleteCategoryId,
-  deleteInfo,
-  requestDelete,
-} = useCategoryDelete()
+const { requestDelete } = useCategoryDelete()
 
 function onClickNew() {
   if (isLaptop.value)
@@ -110,15 +104,6 @@ const sections = computed<FavoritesSection[]>(() => {
       v-if="(editingCategoryId || isCreatingNewCategory) && !isLaptop"
       :categoryId="editingCategoryId ?? undefined"
       @closed="editingCategoryId = null; isCreatingNewCategory = false"
-    />
-
-    <LayoutConfirmModal
-      v-if="deleteCategoryId"
-      :description="deleteInfo.descText"
-      :highlight="deleteInfo.highlight"
-      :title="t('categories.form.delete.title')"
-      @closed="cancelDelete"
-      @confirm="confirmDelete"
     />
   </div>
 </template>

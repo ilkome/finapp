@@ -8,7 +8,7 @@ import { useStatConditionTitles } from '~/components/stat/views/useConditionTitl
 const { t } = useI18n()
 const { conditionGroupTitle } = useStatConditionTitles()
 const controller = inject(statViewControllerKey, null)
-const deleteId = ref<string | null>(null)
+const confirm = useConfirm()
 const [viewsParent, sortedViewIds] = useDragAndDrop([] as string[], {
   dragHandle: '.sortableSelectionHandle',
 })
@@ -53,7 +53,10 @@ function viewActionItems(id: string) {
   return [[
     { icon: 'i-lucide-copy', label: t('base.duplicate'), onSelect: () => duplicate(id) },
   ], [
-    { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: () => { deleteId.value = id } },
+    { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: async () => {
+      if (await confirm.ask({ description: t('stat.views.deleteConfirm'), title: '' }))
+        controller?.remove(id)
+    } },
   ]]
 }
 
@@ -110,13 +113,5 @@ watch(() => savedViews.value.map(view => view.id), (ids) => {
         </template>
       </UiSortableSelectionItem>
     </div>
-
-    <LayoutConfirmModal
-      v-if="deleteId"
-      :description="$t('stat.views.deleteConfirm')"
-      title=""
-      @closed="deleteId = null"
-      @confirm="controller.remove(deleteId!)"
-    />
   </div>
 </template>

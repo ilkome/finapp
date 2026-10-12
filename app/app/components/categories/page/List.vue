@@ -6,14 +6,12 @@ import type { CategoryId } from '~/components/categories/types'
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
 import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { isReservedCategoryId } from '~/components/categories/utils'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const trnsStore = useTrnsStore()
 
 const userIds = computed(() => categoriesStore.categoriesRootIds.filter(id => !isReservedCategoryId(id)))
 // Reserved categories get their own section, transfer included (pickers use the roots without it).
@@ -50,54 +48,7 @@ const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
   value,
 })))
 
-const deleteCategoryId = ref<CategoryId | null>(null)
-
-const deleteTrnsCount = computed(() => {
-  if (!deleteCategoryId.value)
-    return 0
-  return trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildrenIdsOrParent(deleteCategoryId.value),
-  }).length
-})
-
-const deleteDescText = computed(() =>
-  deleteTrnsCount.value > 0 ? t('categories.form.delete.alertWithTrns') : undefined,
-)
-
-const deleteHighlight = computed(() =>
-  deleteTrnsCount.value > 0 ? t('trns.plural', deleteTrnsCount.value) : undefined,
-)
-
-function onClickDelete(categoryId: CategoryId) {
-  for (const id of Object.keys(categoriesStore.items)) {
-    if (categoriesStore.items[id]?.parentId === categoryId) {
-      showErrorToast('categories.form.delete.errorChildren')
-      return
-    }
-  }
-  deleteCategoryId.value = categoryId
-}
-
-async function onDeleteConfirm() {
-  if (!deleteCategoryId.value)
-    return
-
-  const categoryId = deleteCategoryId.value
-  const trnsIds = [...trnsStore.getStoreTrnsIds({
-    categoriesIds: categoriesStore.getChildrenIdsOrParent(categoryId),
-  })]
-
-  deleteCategoryId.value = null
-  await categoriesStore.deleteCategory(categoryId, trnsIds)
-
-  setTimeout(() => {
-    showSuccessToast(trnsIds.length > 0
-      ? 'categories.form.delete.okWithTrns'
-      : 'categories.form.delete.okWithoutTrns', trnsIds.length > 0
-      ? { length: trnsIds.length, trns: t('trns.plural', trnsIds.length) }
-      : undefined)
-  }, 300)
-}
+const { requestDelete: onClickDelete } = useCategoryDelete()
 
 const categoryMenu = useCategoryMenuItems()
 
@@ -171,14 +122,14 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
                 :checkboxValue="isShowChildrenCount"
                 :title="t('categories.view.showChildrenCount')"
                 trailing
-                @click="isShowChildrenCount = !isShowChildrenCount"
+                @toggle="isShowChildrenCount = !isShowChildrenCount"
               />
 
               <UiSwitchItem
                 :checkboxValue="isRoundIcon"
                 :title="t('stat.catButtons.isRoundIcon')"
                 trailing
-                @click="isRoundIcon = !isRoundIcon"
+                @toggle="isRoundIcon = !isRoundIcon"
               />
             </div>
           </template>
@@ -237,14 +188,5 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         />
       </div>
     </div>
-
-    <LayoutConfirmModal
-      v-if="deleteCategoryId"
-      :title="t('categories.form.delete.title')"
-      :description="deleteDescText"
-      :highlight="deleteHighlight"
-      @closed="deleteCategoryId = null"
-      @confirm="onDeleteConfirm"
-    />
   </UiPage>
 </template>

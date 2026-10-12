@@ -170,7 +170,7 @@ const modals = ref({
   parent: false,
 })
 
-const childrenConfirm = ref<{ closeModal: () => void, count: number } | null>(null)
+const confirm = useConfirm()
 
 const categoryPlaceholder = computed(() => ({
   ...props.categoryForm,
@@ -204,30 +204,13 @@ function toggleChildSelection(id: CategoryId) {
     selectedChildIds.value = [...selectedChildIds.value, id]
 }
 
-function applyChildrenSelection(close: () => void) {
+async function applyChildrenSelection(close: () => void) {
   const removedCount = prevChildIds.value.filter(id => !selectedChildIds.value.includes(id)).length
-  if (removedCount >= 2) {
-    childrenConfirm.value = { closeModal: close, count: removedCount }
+  if (removedCount >= 2 && !await confirm.ask({ description: t('categories.form.children.confirmRemove', { count: removedCount }) })) {
+    selectedChildIds.value = [...prevChildIds.value]
     return
   }
   close()
-}
-
-const childrenConfirmResolved = ref(false)
-
-function onChildrenConfirm() {
-  childrenConfirmResolved.value = true
-  childrenConfirm.value?.closeModal()
-  childrenConfirm.value = null
-}
-
-function onChildrenConfirmClosed() {
-  if (!childrenConfirmResolved.value) {
-    // User dismissed without confirming — revert selection back
-    selectedChildIds.value = [...prevChildIds.value]
-  }
-  childrenConfirmResolved.value = false
-  childrenConfirm.value = null
 }
 
 async function onSave() {
@@ -356,26 +339,26 @@ async function onSave() {
           v-if="hasChildren"
           :checkboxValue="isUpdateChildCategoriesColor"
           :title="t('categories.form.childColor')"
-          @click="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
+          @toggle="isUpdateChildCategoriesColor = !isUpdateChildCategoriesColor"
         />
 
         <UiSwitchItem
           v-if="!hasChildren"
           :checkboxValue="props.categoryForm.showInQuickSelector"
           :title="t('categories.form.favoriteCategory')"
-          @click="emit('update', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
+          @toggle="emit('update', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
         />
         <UiSwitchItem
           v-if="!hasChildren"
           :checkboxValue="props.categoryForm.showInLastUsed"
           :title="t('categories.form.recentCategory')"
-          @click="emit('update', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
+          @toggle="emit('update', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
         />
         <UiSwitchItem
           v-if="!hasChildren"
           :checkboxValue="!!props.categoryForm.isExcludeFromStats"
           :title="t('categories.form.excludeFromStats')"
-          @click="emit('update', 'isExcludeFromStats', !props.categoryForm.isExcludeFromStats)"
+          @toggle="emit('update', 'isExcludeFromStats', !props.categoryForm.isExcludeFromStats)"
         />
       </div>
     </div>
@@ -580,13 +563,6 @@ async function onSave() {
       </div>
     </template>
   </BottomSheetModal>
-
-  <LayoutConfirmModal
-    v-if="childrenConfirm"
-    :description="t('categories.form.children.confirmRemove', { count: childrenConfirm.count })"
-    @closed="onChildrenConfirmClosed"
-    @confirm="onChildrenConfirm"
-  />
 
   <!-- Parent -->
   <BottomSheetModal

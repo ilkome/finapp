@@ -48,13 +48,7 @@ const searchQuery = computed(() => (props.searchQuery ?? search.value).trim().to
 const editingWalletId = ref<WalletId | null>(null)
 const isCreatingNewWallet = ref(false)
 
-const {
-  cancelDelete,
-  confirmDelete,
-  deleteInfo,
-  deleteWalletId,
-  requestDelete,
-} = useWalletDelete()
+const { requestDelete } = useWalletDelete()
 
 const currencyFiltered = useStorage<CurrencyCode>(WALLET_STORAGE_KEYS.selectorCurrency, 'all')
 const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
@@ -296,15 +290,6 @@ defineExpose({ groupingItems })
       v-if="props.withHeader && (editingWalletId || isCreatingNewWallet) && !isLaptop"
       :walletId="editingWalletId ?? undefined"
       @closed="editingWalletId = null; isCreatingNewWallet = false"
-    />
-
-    <LayoutConfirmModal
-      v-if="deleteWalletId"
-      :title="t('wallets.form.delete.title')"
-      :description="deleteInfo.descText"
-      :highlight="deleteInfo.highlight"
-      @closed="cancelDelete"
-      @confirm="confirmDelete"
     />
   </div>
 </template>
