@@ -55,7 +55,6 @@ function saveOrder(ids: string[]) {
 }
 const isOpen = ref(false)
 const isSortOpen = ref(false)
-const snapPoints = useSheetSnapPoints()
 </script>
 
 <template>
@@ -71,12 +70,10 @@ const snapPoints = useSheetSnapPoints()
       <template v-if="isShown">
         <div class="flex items-center gap-2">
           <DrawerOrDropdown
+            v-model:open="isOpen"
             class="justify-self-start"
-            :isOpen
             popoverBodyClass="py-0! md:pb-0!"
-            :snapPoints
-            @closeModal="isOpen = false"
-            @openModal="isOpen = true"
+            :collapsedSnap="500"
           >
             <template #trigger="{ isActive }">
               <UiTitleDropdown :isActive>
@@ -86,8 +83,8 @@ const snapPoints = useSheetSnapPoints()
               </UiTitleDropdown>
             </template>
 
-            <template #custom="{ close, isExpanded }">
-              <FilterPanel hideMore :isExpanded :title="t('settings.sidebar.title')" @close="close" />
+            <template #custom="{ close }">
+              <FilterPanel hideMore :title="t('settings.sidebar.title')" @close="close" />
             </template>
           </DrawerOrDropdown>
 

@@ -73,16 +73,13 @@ onMounted(init)
 
 <template>
   <Drawer
-    :isShow="isShow"
-    contentClass="bottom-sheet-drag-classes-custom max-h-[98dvh]"
+    forceMount
+    :open="isShow"
     @closed="trnsFormStore.onClose()"
+    @update:open="value => !value && (trnsFormStore.ui.isShow = false)"
   >
-    <template #handler>
-      <BottomSheetHandler />
-    </template>
-
     <div class="trnForm @container/trnForm bg-default">
-      <div ref="sliderRef" class="swiper-container" data-sheet-no-drag>
+      <div ref="sliderRef" class="swiper-container" data-reka-swipe-ignore>
         <div class="swiper-wrapper">
           <!-- History -->
           <div

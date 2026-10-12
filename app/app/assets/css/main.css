@@ -82,3 +82,64 @@
 ::view-transition-new(ui-panel) {
   animation: 120ms cubic-bezier(0.4, 0, 0.2, 1) both ui-panel-in;
 }
+
+/*
+ * Reka Drawer motion. The drawer is teleported to body, so these are global. The live drag and the
+ * snap point ride `transform`; the enter/exit keyframes animate `translate`, so they compose with it.
+ * The bleed hangs below the screen edge: a pull past the full height rubber-bands it into view
+ * instead of lifting the drawer off the bottom.
+ */
+.drawer {
+  --bleed: 48px;
+  margin-bottom: calc(-1 * var(--bleed));
+  padding-bottom: var(--bleed);
+  transform: translateY(calc(var(--drawer-snap-point-offset, 0px) + var(--drawer-swipe-movement-y, 0px)));
+  transition: transform 450ms cubic-bezier(0.32, 0.72, 0, 1);
+
+  &[data-state='open'] {
+    animation: drawer-slide-in 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &[data-state='closed'] {
+    animation: drawer-slide-out 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &[data-swiping] {
+    transition-duration: 0ms;
+    user-select: none;
+  }
+}
+
+.drawer-overlay {
+  &[data-state='open'] {
+    animation: drawer-fade-in 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
+  &[data-state='closed'] {
+    animation: drawer-fade-out 450ms cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@keyframes drawer-slide-in {
+  from {
+    translate: 0 calc(100% - var(--bleed));
+  }
+}
+
+@keyframes drawer-slide-out {
+  to {
+    translate: 0 calc(100% - var(--bleed));
+  }
+}
+
+@keyframes drawer-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes drawer-fade-out {
+  to {
+    opacity: 0;
+  }
+}

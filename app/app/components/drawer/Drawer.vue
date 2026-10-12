@@ -1,166 +1,108 @@
 <script setup lang="ts">
-import { useBodyScrollLock } from 'reka-ui'
+import { DrawerContent, DrawerHandle, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTitle } from 'reka-ui'
 
 import { registerDrawer } from '~/composables/useDrawerHistory'
 
-import { resolveDetentFractions } from '../bottomSheet/geometry'
-import { useBottomSheetDrag } from '../bottomSheet/useBottomSheetDrag'
-
 const props = defineProps<{
+  // Resting height of the lower snap point, as a viewport fraction (<= 1) or pixels (> 1). The drawer
+  // opens there and expands to the top snap point by swipe, wheel or scroll; absent => free height.
+  collapsedSnap?: number
   contentClass?: string
   contentStyle?: Record<string, string>
-  isExpanded?: boolean
-  // Live-preview mode: no backdrop, page keeps scrolling and stays clickable; closes by drag/back only.
+  // Kept-mounted drawers: reka unmounts closed content unless forced.
+  forceMount?: boolean
+  // Live-preview mode: no overlay, the page stays scrollable and clickable; closes by swipe, Escape or Back.
   isPassthrough?: boolean
-  isShow?: boolean
-  // Detent sizes as viewport fractions (<= 1) or absolute pixels (> 1); the
-  // largest is the expanded/rendered height, the rest are collapsed detents.
-  // Enables the iOS/Android-style sheet that opens partway and expands on drag.
-  // Absent => classic single-state sheet.
-  snapPoints?: number[]
+  title?: string
 }>()
 
 const emit = defineEmits<{
   closed: []
 }>()
 
-const settings = {
-  pixelOffsetToStartClosing: 20,
-  pixelsNeedToDragForClose: 60,
+// `v-if`-mounted drawers leave this unbound: closing flips the local state, `closed` follows the animation.
+const open = defineModel<boolean>('open', { default: true })
+
+const TOP_SNAP = 0.98
+
+function close() {
+  open.value = false
 }
 
-const drag = ref<HTMLElement | null>(null)
-const containerRef = ref<HTMLElement | null>(null)
-const handlerRef = ref<HTMLElement | null>(null)
-
-const { height: dragHeight } = useElementSize(drag)
-const { height: windowHeight } = useWindowSize()
-
-const {
-  close,
-  dragMoved,
-  dragStyles,
-  init,
-  isDragging,
-  isExpanded,
-  onTransitionEnd,
-  opened,
-  overflowClasses,
-  overlayStyles,
-  removeEvents,
-  wrapClasses,
-} = useBottomSheetDrag({
-  containerRef,
-  drag,
-  dragStyle: toRef(() => props.contentStyle),
-  emit,
-  expanded: toRef(() => props.isExpanded),
-  handlerRef,
-  settings,
-  snapPoints: toRef(() => props.snapPoints),
-  windowHeight,
-})
-
-// In detent mode the sheet renders at a fixed height (the largest/expanded snap
-// point) so collapsed offsets are deterministic; detents slide it via transform.
-// Snap points accept viewport fractions (<= 1) or absolute pixels (> 1).
-const detentStyle = computed(() => {
-  const fractions = resolveDetentFractions(props.snapPoints, windowHeight.value)
-  if (fractions.length === 0)
-    return null
-  const expanded = fractions[fractions.length - 1]!
-  return { height: `${expanded * 100}dvh` }
-})
-
-const isBodyLocked = useBodyScrollLock(false)
-
-// Nested sheets keep `isShow` static true and signal open/close by mount/unmount,
-// so registration runs via the immediate watch and cleanup via onBeforeUnmount.
-let unregisterHistory: (() => void) | null = null
-function registerHistory() {
-  if (unregisterHistory)
+let unregister: (() => void) | null = null
+watch(open, (value) => {
+  if (value) {
+    unregister ??= registerDrawer(close)
     return
-  unregisterHistory = registerDrawer(() => close())
-}
-function deregisterHistory() {
-  unregisterHistory?.()
-  unregisterHistory = null
-}
+  }
+  unregister?.()
+  unregister = null
+}, { immediate: true })
+onBeforeUnmount(() => unregister?.())
 
-watch(
-  () => props.isShow,
-  (value) => {
-    if (value) {
-      isBodyLocked.value = !props.isPassthrough
-      init()
-      registerHistory()
-    }
+const snapPoints = computed(() => props.collapsedSnap === undefined ? undefined : [props.collapsedSnap, TOP_SNAP])
 
-    if (!value) {
-      isBodyLocked.value = false
-      removeEvents()
-      deregisterHistory()
-    }
+// Snap points are measured against the drawer's own height, so it is as tall as the top one.
+// The bleed is added on top: it hangs below the screen edge.
+const height = computed(() => snapPoints.value ? { height: `calc(${TOP_SNAP * 100}dvh + var(--bleed))` } : undefined)
 
-    if (!value && opened.value) {
-      close()
-    }
-  },
-  { immediate: true },
-)
-
-// The user menu flips into preview mode while already open.
-watch(() => props.isPassthrough, (value) => {
-  if (props.isShow)
-    isBodyLocked.value = !value
+const snapPoint = ref<number | string | null>(snapPoints.value?.[0] ?? null)
+watch(open, (value) => {
+  if (value)
+    snapPoint.value = snapPoints.value?.[0] ?? null
 })
 
-onBeforeUnmount(() => {
-  isBodyLocked.value = false
-  removeEvents()
-  deregisterHistory()
-})
+const isExpanded = computed(() => !snapPoints.value || snapPoint.value === TOP_SNAP)
 
-const dragClasses = computed(() => [
-  {
-    '[&_.scroller-block]:touch-none [&_.scroller-block]:overflow-hidden': isExpanded.value === false,
-    'duration-100': !isDragging.value && opened.value,
-    'pointer-events-none': dragMoved.value && dragStyles.value.transform,
-    'rounded-tl-xl rounded-tr-xl': dragHeight.value < windowHeight.value,
-    'transition-opacity transition-transform': !isDragging.value && opened.value,
-  },
-  props.contentClass,
-])
+// Below the top snap point the drawer only follows a swipe that does not start in a scrollable list,
+// so on touch the list stops scrolling there and a swipe up on it lifts the drawer. A mouse wheel
+// scrolls the list right away and lifts the drawer with it.
+const isTouch = useMediaQuery('(pointer: coarse)')
+function expandOnWheel(event: WheelEvent) {
+  if (!isExpanded.value && event.deltaY > 0)
+    snapPoint.value = TOP_SNAP
+}
 </script>
 
 <template>
-  <div
-    ref="containerRef"
-    :class="[wrapClasses, props.isPassthrough && 'pointer-events-none']"
-    class="fixed inset-0 z-50 size-full overflow-hidden select-none"
+  <DrawerRoot
+    v-model:open="open"
+    v-model:snapPoint="snapPoint"
+    :modal="!props.isPassthrough"
+    :snapPoints
+    snapToSequentialPoints
+    @update:openComplete="value => !value && emit('closed')"
   >
-    <div
-      v-if="!props.isPassthrough"
-      :class="overflowClasses"
-      :style="overlayStyles"
-      class="pointer-events-auto absolute inset-0 z-10 size-full bg-overlay"
-      @click="close()"
-    />
+    <DrawerPortal :forceMount="props.forceMount">
+      <DrawerOverlay class="drawer-overlay fixed inset-0 z-50 bg-overlay" :forceMount="props.forceMount" />
+      <!-- No initial focus: on the phone it would raise the keyboard for the first field. -->
+      <DrawerContent
+        :forceMount="props.forceMount"
+        :class="[
+          props.isPassthrough && 'border border-b-0 border-accented',
+          isTouch && !isExpanded && '[&_.drawer-body]:overflow-hidden [&_.scroller-block]:overflow-hidden',
+          snapPoints && 'group/drawer',
+          props.contentClass,
+        ]"
+        :style="[height, props.contentStyle]"
+        :data-snap="snapPoints ? '' : undefined"
+        :initialFocus="false"
+        class="drawer fixed inset-x-0 bottom-0 z-50 mx-auto flex w-full max-w-md flex-col overflow-hidden rounded-t-xl bg-default outline-none"
+        @interactOutside="e => props.isPassthrough && e.preventDefault()"
+        @wheel.passive="expandOnWheel"
+      >
+        <DrawerHandle class="absolute top-1.5 left-1/2 z-30 h-1 w-8 -translate-x-1/2 rounded-sm bg-inverted" />
 
-    <div
-      ref="drag"
-      :class="dragClasses"
-      :style="[dragStyles, detentStyle]"
-      class="drag pointer-events-auto absolute bottom-0 left-1/2 z-10 w-full -translate-x-1/2 translate-y-0 overflow-hidden"
-      @transitionend="onTransitionEnd"
-    >
-      <div ref="handlerRef">
-        <slot name="handler">
-          <BottomSheetHandler />
-        </slot>
-      </div>
-
-      <slot :close="close" :isExpanded="isExpanded" />
-    </div>
-  </div>
+        <div class="drawer-content">
+          <div v-if="props.title || $slots.header">
+            <DrawerTitle v-if="props.title" asChild>
+              <UiTitleModal>{{ props.title }}</UiTitleModal>
+            </DrawerTitle>
+            <slot name="header" />
+          </div>
+          <slot :close />
+        </div>
+      </DrawerContent>
+    </DrawerPortal>
+  </DrawerRoot>
 </template>

@@ -154,16 +154,14 @@ onBeforeUnmount(() => {
     <CategoriesQuickAdd />
   </div>
 
-  <BottomSheetModal
+  <Drawer
     v-if="props.block === 'trns' && ctx.modalSource.value"
+    :title="ctx.modalTrnsIds.value.length > 0 ? `${t('trns.title')} ${ctx.modalTrnsIds.value.length}` : undefined"
+    contentClass="min-h-[50dvh]"
     @closed="ctx.closeModal"
   >
-    <UiTitleModal v-if="ctx.modalTrnsIds.value.length > 0">
-      {{ t('trns.title') }} {{ ctx.modalTrnsIds.value.length }}
-    </UiTitleModal>
-
     <div
-      class="drawer-body scroller-block"
+      class="drawer-body"
       data-stat-trns-quick-view
     >
       <TrnsList
@@ -179,6 +177,6 @@ onBeforeUnmount(() => {
         @click="ctx.closeModal"
       />
     </div>
-  </BottomSheetModal>
+  </Drawer>
 </template>
     :baseCategoryViews

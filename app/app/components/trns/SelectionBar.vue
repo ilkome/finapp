@@ -16,7 +16,6 @@ const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const walletsStore = useWalletsStore()
 const selection = inject(trnsSelectionKey)!
-const snapPoints = useSheetSnapPoints()
 // Nested refs of an injected plain object are not unwrapped in the template.
 const count = selection.count
 
@@ -162,16 +161,13 @@ watch(description, (value) => {
     />
 
     <DrawerOrDropdown
+      v-model:open="isDescriptionOpen"
       class="flex shrink-0 grow-0 snap-start gap-1"
-      :isOpen="isDescriptionOpen"
       popoverBodyClass="md:pb-3"
-      :snapPoints="snapPoints"
+      :collapsedSnap="500"
       :title="t('trns.bulk.description')"
-      titleClass="pt-3! pb-3!"
       isShowCloseBtn
       keyboardTrigger
-      @closeModal="isDescriptionOpen = false"
-      @openModal="isDescriptionOpen = true"
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
@@ -201,16 +197,13 @@ watch(description, (value) => {
 
     <DrawerOrDropdown
       v-if="!hasTransfer"
+      v-model:open="isCategoryOpen"
       class="flex shrink-0 grow-0 snap-start gap-1"
-      :isOpen="isCategoryOpen"
       popoverBodyClass="py-0! md:pb-0!"
-      :snapPoints="snapPoints"
+      :collapsedSnap="500"
       :title="t('trns.bulk.category')"
-      titleClass="pt-3! pb-2!"
       isShowCloseBtn
       keyboardTrigger
-      @closeModal="isCategoryOpen = false"
-      @openModal="isCategoryOpen = true"
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
@@ -219,10 +212,9 @@ watch(description, (value) => {
         </UiTitleDropdown>
       </template>
 
-      <template #custom="{ close, isExpanded }">
+      <template #custom="{ close }">
         <div
-          class="grid min-w-80 overflow-hidden"
-          :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'"
+          class="grid h-[65dvh] max-h-160 min-w-80 overflow-hidden group-data-snap/drawer:h-full group-data-snap/drawer:max-h-none"
         >
           <CategoriesSelectorModal
             autofocus
@@ -237,16 +229,13 @@ watch(description, (value) => {
 
     <DrawerOrDropdown
       v-if="!hasTransfer"
+      v-model:open="isWalletOpen"
       class="flex shrink-0 grow-0 snap-start gap-1"
-      :isOpen="isWalletOpen"
       popoverBodyClass="py-0! md:pb-0!"
-      :snapPoints="snapPoints"
+      :collapsedSnap="500"
       :title="t('trns.bulk.wallet')"
-      titleClass="pt-3! pb-2!"
       isShowCloseBtn
       keyboardTrigger
-      @closeModal="isWalletOpen = false"
-      @openModal="isWalletOpen = true"
     >
       <template #trigger="{ isActive }">
         <UiTitleDropdown :isActive>
@@ -255,10 +244,9 @@ watch(description, (value) => {
         </UiTitleDropdown>
       </template>
 
-      <template #custom="{ close, isExpanded }">
+      <template #custom="{ close }">
         <div
-          class="grid min-w-80 overflow-hidden"
-          :class="isExpanded === undefined ? 'h-[65dvh] max-h-160' : 'h-full'"
+          class="grid h-[65dvh] max-h-160 min-w-80 overflow-hidden group-data-snap/drawer:h-full group-data-snap/drawer:max-h-none"
         >
           <WalletsSelector
             compactDesktop

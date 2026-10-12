@@ -37,12 +37,10 @@ function changeDate(way: 'prev' | 'next' | 'today') {
     @changeDate="changeDate"
   >
     <DrawerOrDropdown
+      v-model:open="isShow"
       :title="t('common.date')"
-      :isOpen="isShow"
       class="grow"
       isShowCloseBtn
-      @openModal="isShow = true"
-      @closeModal="isShow = false"
     >
       <template #trigger>
         <UiActionButton class="grid size-full content-center justify-start! px-2 text-left text-muted">

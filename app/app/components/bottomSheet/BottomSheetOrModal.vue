@@ -28,13 +28,12 @@ const isLaptop = useIsLaptop()
     </template>
   </UModal>
 
-  <BottomSheetModal v-else @closed="emit('closed')">
+  <Drawer v-else :title="props.title" contentClass="min-h-[50dvh]" @closed="emit('closed')">
     <template #default="{ close }">
-      <UiTitleModal>{{ props.title }}</UiTitleModal>
       <slot v-if="props.isBare" :close />
-      <div v-else class="drawer-body scroller-block">
+      <div v-else class="drawer-body">
         <slot :close />
       </div>
     </template>
-  </BottomSheetModal>
+  </Drawer>
 </template>

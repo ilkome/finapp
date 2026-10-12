@@ -47,6 +47,7 @@ function setExpanded(open: boolean) {
   >
     <div
       class="blockRuleSortHandle sortHandle flex w-12 shrink-0 cursor-grab items-center justify-center self-stretch text-muted hover:bg-accented active:cursor-grabbing"
+      data-reka-swipe-ignore
       :aria-label="$t('stat.views.drag')"
     >
       <Icon name="lucide:grip-vertical" size="20" />
@@ -54,11 +55,10 @@ function setExpanded(open: boolean) {
     <div class="min-w-0 grow">
       <DrawerOrDropdown
         align="end"
-        :isOpen="isExpanded"
+        :open="isExpanded"
         popoverBodyClass="p-0!"
         popoverContentClass="z-[70] max-h-[calc(100dvh-1rem)] w-85 max-w-[calc(100vw-1rem)] overscroll-contain"
-        @openModal="setExpanded(true)"
-        @closeModal="setExpanded(false)"
+        @update:open="setExpanded"
       >
         <template #trigger>
           <button

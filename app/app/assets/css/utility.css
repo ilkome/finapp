@@ -59,15 +59,6 @@
   }
 }
 
-@utility bottom-sheet-drag-classes-custom {
-  @apply bg-default max-w-md rounded-t-xl;
-}
-
-/* Live-preview sheets have no overlay, so an edge separates them from the page. */
-@utility sheet-preview-border {
-  @apply border border-b-0 border-accented;
-}
-
 @utility drawer-content {
   @apply grid h-full max-h-[98dvh] grid-rows-[auto_1fr_auto] overflow-hidden;
   padding-bottom: calc(env(safe-area-inset-bottom) - 22px);
@@ -75,6 +66,8 @@
 
 @utility drawer-body {
   @apply grid h-full bg-default gap-1 overflow-hidden overflow-y-auto px-3 py-px;
+  scrollbar-width: auto;
+  overscroll-behavior: contain;
 }
 
 @utility drawer-footer {

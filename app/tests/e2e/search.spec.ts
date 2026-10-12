@@ -70,11 +70,11 @@ test.describe('mobile search sheet', () => {
 
     const bottomNavigation = page.locator('.fixed.bottom-0.left-0.z-20')
     await bottomNavigation.locator('.mx-auto > div').last().click()
-    const menuSheet = page.locator('.drag').last()
+    const menuSheet = page.locator('.drawer').last()
     await menuSheet.getByText(/^(Search|Поиск)$/).click()
 
     const palette = page.locator('[data-search-command-palette]')
-    const sheet = page.locator('.drag').filter({ has: palette })
+    const sheet = page.locator('.drawer').filter({ has: palette })
     await expect(palette).toBeVisible()
     await expect.poll(async () => (await sheet.boundingBox())?.y ?? 0)
       .toBeGreaterThan(mobile.viewport.height * 0.5)

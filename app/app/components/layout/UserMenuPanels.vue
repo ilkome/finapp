@@ -270,7 +270,7 @@ const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 t
           <span v-if="group.title" class="px-2 pt-2 text-xs text-muted">{{ group.title }}</span>
           <div
             :class="isCompact ? 'flex gap-2 overflow-x-auto py-1' : 'grid gap-0.5'"
-            :data-sheet-no-drag="isCompact ? '' : undefined"
+            :data-reka-swipe-ignore="isCompact ? '' : undefined"
           >
             <button
               v-for="option in group.options"

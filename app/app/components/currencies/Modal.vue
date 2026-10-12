@@ -21,10 +21,8 @@ function select(code: CurrencyCode, close: () => void) {
 </script>
 
 <template>
-  <BottomSheetModal @closed="emit('close')">
+  <Drawer :title="t('currencies.select')" contentClass="min-h-[50dvh]" @closed="emit('close')">
     <template #default="{ close }">
-      <UiTitleModal>{{ t('currencies.select') }}</UiTitleModal>
-
       <CurrenciesList
         :active="props.activeCode"
         :isShowAllButton="props.isShowAllButton"
@@ -32,5 +30,5 @@ function select(code: CurrencyCode, close: () => void) {
         @select="(c: CurrencyCode) => select(c, close)"
       />
     </template>
-  </BottomSheetModal>
+  </Drawer>
 </template>

@@ -84,13 +84,11 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         </UTooltip>
 
         <DrawerOrDropdown
+          v-model:open="isViewSettingsOpen"
           align="end"
-          :isOpen="isViewSettingsOpen"
           popoverBodyClass="md:pb-0"
           popoverContentClass="w-80 max-w-[calc(100vw-1rem)]"
           :title="t('stat.config.menu.label')"
-          @closeModal="isViewSettingsOpen = false"
-          @openModal="isViewSettingsOpen = true"
         >
           <template #trigger>
             <UTooltip :text="t('stat.config.menu.label')">
@@ -148,7 +146,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <!-- Empty -->
     <div
       v-if="categoriesStore.categoriesRootIds.length === 0"
-      class="flex items-center justify-center grow flex-col"
+      class="flex grow flex-col items-center justify-center"
     >
       <UiTitleSection class="pb-4">
         {{ t('categories.new') }}

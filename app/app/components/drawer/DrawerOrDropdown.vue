@@ -1,64 +1,40 @@
 <script setup lang="ts">
 const props = withDefaults(defineProps<{
   align?: 'center' | 'end' | 'start'
+  bodyClass?: string
+  collapsedSnap?: number
   contentClass?: string
   drawerStyle?: Record<string, string>
-  isOpen?: boolean
-  isPassthrough?: boolean
   isShowCloseBtn?: boolean
   keyboardTrigger?: boolean
   popoverBodyClass?: string
   popoverContentClass?: string
-  sheetBodyClass?: string
-  snapPoints?: number[]
   title?: string
-  titleClass?: string
   unmountOnHide?: boolean
 }>(), {
   align: 'start',
   unmountOnHide: true,
 })
 
-const emit = defineEmits<{
-  closeModal: []
-  openModal: []
-}>()
+const open = defineModel<boolean>('open', { default: false })
 
 const isLaptop = useIsLaptop()
 
-const open = ref(false)
-
-// Render the kept-mounted sheet only once it has first opened.
-const hasOpened = ref(false)
-watch(() => props.isOpen, (value) => {
+// The drawer mounts on first open and stays through its exit animation: a closing `open` must not
+// unmount it. Kept-mounted ones (unmountOnHide=false) never leave.
+const isMounted = ref(false)
+watch(open, (value) => {
   if (value)
-    hasOpened.value = true
+    isMounted.value = true
 }, { immediate: true })
 
-// The desktop popover owns its open state, so mirror the controlled prop both ways: that lets
-// something other than the trigger open it (a context-menu action) and keeps the parent's flag
-// honest when it closes on its own (outside click, Escape).
-watch(() => props.isOpen, (value) => {
-  if (value)
-    open.value = true
-})
-
-watch(open, (value) => {
-  if (!value)
-    emit('closeModal')
-})
-
-function closeDesktopPopover() {
-  open.value = false
+function onClosed() {
+  if (props.unmountOnHide)
+    isMounted.value = false
 }
 
-function closeMobileSheet(closeSheet: () => void) {
-  if (props.unmountOnHide) {
-    closeSheet()
-    return
-  }
-
-  emit('closeModal')
+function close() {
+  open.value = false
 }
 </script>
 
@@ -81,20 +57,13 @@ function closeMobileSheet(closeSheet: () => void) {
     <template #content>
       <UiPopoverWrap
         :title="props.title"
-        :titleClass="props.titleClass"
         :contentClass="props.popoverBodyClass"
         :isShowCloseBtn="props.isShowCloseBtn"
         :isShowScroll="!$slots.custom"
-        @close="closeDesktopPopover"
+        @close="close"
       >
-        <slot
-          name="content"
-          :close="closeDesktopPopover"
-        />
-        <slot
-          name="custom"
-          :close="closeDesktopPopover"
-        />
+        <slot name="content" :close />
+        <slot name="custom" :close />
       </UiPopoverWrap>
     </template>
   </UPopover>
@@ -104,44 +73,29 @@ function closeMobileSheet(closeSheet: () => void) {
     class="grow"
     :role="props.keyboardTrigger ? 'button' : undefined"
     :tabindex="props.keyboardTrigger ? 0 : undefined"
-    @click="emit('openModal')"
-    @keydown.enter.prevent="props.keyboardTrigger && emit('openModal')"
-    @keydown.space.prevent="props.keyboardTrigger && emit('openModal')"
+    @click="open = true"
+    @keydown.enter.prevent="props.keyboardTrigger && (open = true)"
+    @keydown.space.prevent="props.keyboardTrigger && (open = true)"
   >
-    <slot name="trigger" :isActive="props.isOpen" />
+    <slot name="trigger" :isActive="open" />
 
-    <Teleport to="body">
-      <Drawer
-        v-if="props.unmountOnHide ? props.isOpen : hasOpened"
-        :isShow="props.unmountOnHide ? true : props.isOpen"
-        :contentClass="`${props.contentClass ?? ''} bottom-sheet-drag-classes-custom`"
-        :contentStyle="props.drawerStyle"
-        :isPassthrough="props.isPassthrough"
-        :snapPoints="props.snapPoints"
-        @closed="emit('closeModal')"
-      >
-        <template #default="{ close, isExpanded }">
-          <div class="drawer-content">
-            <UiTitleModal v-if="props.title" :class="props.titleClass">
-              {{ props.title }}
-            </UiTitleModal>
+    <Drawer
+      v-if="isMounted"
+      v-model:open="open"
+      :title="props.title"
+      :collapsedSnap="props.collapsedSnap"
+      :contentClass="props.contentClass"
+      :contentStyle="props.drawerStyle"
+      :forceMount="!props.unmountOnHide"
+      @closed="onClosed"
+    >
+      <template #default="{ close: closeDrawer }">
+        <div v-if="$slots.content" :class="cn('drawer-body', props.bodyClass)">
+          <slot name="content" :close="closeDrawer" />
+        </div>
 
-            <div
-              v-if="$slots.content"
-              :class="cn('drawer-body scroller-block', props.sheetBodyClass)"
-            >
-              <slot name="content" :close="() => closeMobileSheet(close)" :isExpanded />
-            </div>
-
-            <slot
-              v-if="$slots.custom"
-              name="custom"
-              :close="() => closeMobileSheet(close)"
-              :isExpanded
-            />
-          </div>
-        </template>
-      </Drawer>
-    </Teleport>
+        <slot v-if="$slots.custom" name="custom" :close="closeDrawer" />
+      </template>
+    </Drawer>
   </div>
 </template>

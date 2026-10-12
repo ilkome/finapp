@@ -1,0 +1,296 @@
+diff --git a/dist/Drawer/DrawerContentImpl.cjs b/dist/Drawer/DrawerContentImpl.cjs
+index 575ab40d366ac4089dc501723d7be3886d85ae09..ff7428cd59724ccc7a78ac81fcf21f5dfef40ba7 100644
+--- a/dist/Drawer/DrawerContentImpl.cjs
++++ b/dist/Drawer/DrawerContentImpl.cjs
+@@ -112,6 +112,9 @@ var DrawerContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
+ 				x: require_Drawer_utils.DRAWER_CSS_VARS.swipeMovementX,
+ 				y: require_Drawer_utils.DRAWER_CSS_VARS.swipeMovementY
+ 			},
++			ignoreSelectorWhenTouch: false,
++			ignoreSelectorWhenPointer: false,
++			oppositeLimit: () => activeSnapPointOffset.value ?? 0,
+ 			canStart: () => !rootContext.nestedSwiping.value,
+ 			onDismiss() {
+ 				if (!hasSnapPoints.value) rootContext.onOpenChange(false, "swipe");
+diff --git a/dist/Drawer/DrawerContentImpl.js b/dist/Drawer/DrawerContentImpl.js
+index abc917c09f01be8ddad4f5fc850db886f26c3b71..30a320aa760aec3ab16a4ebcd2d6cf8623a4bf08 100644
+--- a/dist/Drawer/DrawerContentImpl.js
++++ b/dist/Drawer/DrawerContentImpl.js
+@@ -111,6 +111,9 @@ var DrawerContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
+ 				x: DRAWER_CSS_VARS.swipeMovementX,
+ 				y: DRAWER_CSS_VARS.swipeMovementY
+ 			},
++			ignoreSelectorWhenTouch: false,
++			ignoreSelectorWhenPointer: false,
++			oppositeLimit: () => activeSnapPointOffset.value ?? 0,
+ 			canStart: () => !rootContext.nestedSwiping.value,
+ 			onDismiss() {
+ 				if (!hasSnapPoints.value) rootContext.onOpenChange(false, "swipe");
+diff --git a/dist/composables/useDrawerSnapPoints.cjs b/dist/composables/useDrawerSnapPoints.cjs
+index a09ba2ade9ab36a22bd2a9376dcae9ed0b692dc0..dafbd51cf9329dbf7654321638df3cc7eb17dbaf 100644
+--- a/dist/composables/useDrawerSnapPoints.cjs
++++ b/dist/composables/useDrawerSnapPoints.cjs
+@@ -7,6 +7,8 @@ const SNAP_VELOCITY_THRESHOLD = .5;
+ const SNAP_VELOCITY_MULTIPLIER = 300;
+ const MAX_SNAP_VELOCITY = 4;
+ const FAST_SWIPE_VELOCITY = .5;
++// Sequential mode commits to the next point after this much drag, without having to cross it.
++const SEQUENTIAL_COMMIT_DISTANCE = 60;
+ function parseSnapPoint(value, viewportHeight, rootFontSize) {
+ 	let result = null;
+ 	if (typeof value === "number") result = value >= 0 && value <= 1 ? value * viewportHeight : value;
+@@ -99,7 +101,11 @@ function useDrawerSnapPoints(options) {
+ 			}
+ 			const dragDir = Math.sign(dragDelta);
+ 			const velDir = Math.sign(velSigned);
+-			const shouldAdvance = velDir === dragDir && Math.abs(velSigned) >= FAST_SWIPE_VELOCITY;
++			const shouldAdvance = velDir === dragDir && Math.abs(velSigned) >= FAST_SWIPE_VELOCITY || Math.abs(dragDelta) >= SEQUENTIAL_COMMIT_DISTANCE;
++			if (shouldAdvance && dragDir > 0 && currentIdx === sorted.length - 1) {
++				onSnapPointChange(null);
++				return;
++			}
+ 			const adjacentIdx = Math.max(0, Math.min(sorted.length - 1, currentIdx + dragDir));
+ 			const adjacent = sorted[adjacentIdx];
+ 			if (shouldAdvance) {
+diff --git a/dist/composables/useDrawerSnapPoints.js b/dist/composables/useDrawerSnapPoints.js
+index 4dd1803e5df3ab8b85d25888547b99002cc95585..f2c7c767d1b16cda504cda983e72133ccec5c127 100644
+--- a/dist/composables/useDrawerSnapPoints.js
++++ b/dist/composables/useDrawerSnapPoints.js
+@@ -6,6 +6,8 @@ const SNAP_VELOCITY_THRESHOLD = .5;
+ const SNAP_VELOCITY_MULTIPLIER = 300;
+ const MAX_SNAP_VELOCITY = 4;
+ const FAST_SWIPE_VELOCITY = .5;
++// Sequential mode commits to the next point after this much drag, without having to cross it.
++const SEQUENTIAL_COMMIT_DISTANCE = 60;
+ function parseSnapPoint(value, viewportHeight, rootFontSize) {
+ 	let result = null;
+ 	if (typeof value === "number") result = value >= 0 && value <= 1 ? value * viewportHeight : value;
+@@ -98,7 +100,11 @@ function useDrawerSnapPoints(options) {
+ 			}
+ 			const dragDir = Math.sign(dragDelta);
+ 			const velDir = Math.sign(velSigned);
+-			const shouldAdvance = velDir === dragDir && Math.abs(velSigned) >= FAST_SWIPE_VELOCITY;
++			const shouldAdvance = velDir === dragDir && Math.abs(velSigned) >= FAST_SWIPE_VELOCITY || Math.abs(dragDelta) >= SEQUENTIAL_COMMIT_DISTANCE;
++			if (shouldAdvance && dragDir > 0 && currentIdx === sorted.length - 1) {
++				onSnapPointChange(null);
++				return;
++			}
+ 			const adjacentIdx = Math.max(0, Math.min(sorted.length - 1, currentIdx + dragDir));
+ 			const adjacent = sorted[adjacentIdx];
+ 			if (shouldAdvance) {
+diff --git a/dist/composables/useSwipeDismiss.cjs b/dist/composables/useSwipeDismiss.cjs
+index 4d006131326587f9103457c7f69728d357ccab08..9a3f1d360f5a77d3cff055d88c5eb16e688d38d5 100644
+--- a/dist/composables/useSwipeDismiss.cjs
++++ b/dist/composables/useSwipeDismiss.cjs
+@@ -12,6 +12,12 @@ const AXIS_LOCK_BIAS = 2;
+ const MIN_RELEASE_VELOCITY_DURATION_MS = 16;
+ const MAX_RELEASE_VELOCITY_AGE_MS = 80;
+ const DEFAULT_IGNORE_SELECTOR = "button,a,input,select,textarea,label,[role=\"button\"]";
++const SWIPE_IGNORE_SELECTOR = "[data-reka-swipe-ignore]";
++// Fields keep the mouse for text selection even when controls may start a swipe.
++const FIELD_SELECTOR = "input,select,textarea,[contenteditable]";
++function isRangeInput(target) {
++	return target.tagName === "INPUT" && target.type === "range";
++}
+ function findScrollableAncestor(el, axis) {
+ 	if (!el || el === document.body) return null;
+ 	const style = window.getComputedStyle(el);
+@@ -57,7 +63,7 @@ function canSwipeFromScrollEdge(scrollTarget, deltaX, deltaY, flags) {
+ 	return null;
+ }
+ function useSwipeDismiss(options) {
+-	const { elementRef, directions, movementCssVars, swipeThreshold: swipeThresholdProp, canStart, onDismiss, onProgress, onCancel, onSwipeStart, onRelease, onSwipingChange } = options;
++	const { elementRef, directions, movementCssVars, swipeThreshold: swipeThresholdProp, canStart, ignoreSelectorWhenTouch = true, ignoreSelectorWhenPointer = true, oppositeLimit, onDismiss, onProgress, onCancel, onSwipeStart, onRelease, onSwipingChange } = options;
+ 	const hasVertical = (0, vue.computed)(() => (0, vue.toValue)(directions).includes("up") || (0, vue.toValue)(directions).includes("down"));
+ 	const hasHorizontal = (0, vue.computed)(() => (0, vue.toValue)(directions).includes("left") || (0, vue.toValue)(directions).includes("right"));
+ 	const allowUp = (0, vue.computed)(() => (0, vue.toValue)(directions).includes("up"));
+@@ -102,6 +108,8 @@ function useSwipeDismiss(options) {
+ 	let lockedAxis = null;
+ 	let activePointerId = null;
+ 	let pointerStarted = false;
++	let pointerOnControl = false;
++	let pointerCaptured = false;
+ 	function getThreshold(el, dir) {
+ 		if (typeof swipeThresholdProp === "function") return Math.max(0, swipeThresholdProp({
+ 			element: el,
+@@ -206,6 +214,23 @@ function useSwipeDismiss(options) {
+ 		};
+ 		const newDx = hasHorizontal.value ? dampAxis(deltaX, allowLeft.value, allowRight.value) : exponent(deltaX);
+ 		const newDy = hasVertical.value ? dampAxis(deltaY, allowUp.value, allowDown.value) : exponent(deltaY);
++		// Against the dismiss direction the drag is linear up to `oppositeLimit` (the room left to the
++		// last snap point), then rubber-bands, so the popup never runs off past its full size.
++		const limit = oppositeLimit?.();
++		const dismiss = (0, vue.toValue)(directions)[0];
++		if (limit != null && dismiss) {
++			const opposite = -require_Drawer_utils.getDisplacement(dismiss, deltaX, deltaY);
++			if (opposite > limit) {
++				const damped = (dismiss === "down" || dismiss === "right" ? -1 : 1) * (limit + (opposite - limit) ** .5);
++				return dismiss === "up" || dismiss === "down" ? {
++					x: newDx,
++					y: damped
++				} : {
++					x: damped,
++					y: newDy
++				};
++			}
++		}
+ 		return {
+ 			x: newDx,
+ 			y: newDy
+@@ -330,7 +355,8 @@ function useSwipeDismiss(options) {
+ 		if (e.button !== 0) return;
+ 		if (canStart && !canStart()) return;
+ 		const target = e.target;
+-		if (target?.closest(DEFAULT_IGNORE_SELECTOR)) return;
++		if (target?.closest(SWIPE_IGNORE_SELECTOR)) return;
++		if (target?.closest(ignoreSelectorWhenPointer ? DEFAULT_IGNORE_SELECTOR : FIELD_SELECTOR)) return;
+ 		const el = elementRef.value;
+ 		if (!el) return;
+ 		startSwipe(el, {
+@@ -339,8 +365,16 @@ function useSwipeDismiss(options) {
+ 		});
+ 		activePointerId = e.pointerId;
+ 		pointerStarted = true;
++		pointerCaptured = false;
++		// Capturing on a control would retarget its click to the drawer, so a press on a control
++		// captures only once it moves past the slop: a click stays a click, a drag becomes a swipe.
++		pointerOnControl = Boolean(target?.closest(DEFAULT_IGNORE_SELECTOR));
++		if (!pointerOnControl) capturePointer(el, e.pointerId);
++	}
++	function capturePointer(el, pointerId) {
++		pointerCaptured = true;
+ 		try {
+-			el.setPointerCapture(e.pointerId);
++			el.setPointerCapture(pointerId);
+ 		} catch {}
+ 	}
+ 	function onPointerMove(e) {
+@@ -351,6 +385,10 @@ function useSwipeDismiss(options) {
+ 			finishSwipe(el);
+ 			return;
+ 		}
++		if (pointerOnControl && !pointerCaptured) {
++			if (Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) < AXIS_LOCK_SLOP) return;
++			capturePointer(el, e.pointerId);
++		}
+ 		processMove(el, {
+ 			x: e.clientX,
+ 			y: e.clientY
+@@ -384,7 +422,8 @@ function useSwipeDismiss(options) {
+ 		if (!(0, vue.toValue)(options.enabled)) return;
+ 		if (canStart && !canStart()) return;
+ 		const target = e.target;
+-		if (target?.closest(DEFAULT_IGNORE_SELECTOR)) return;
++		if (target?.closest(SWIPE_IGNORE_SELECTOR)) return;
++		if (ignoreSelectorWhenTouch ? target?.closest(DEFAULT_IGNORE_SELECTOR) : e.composedPath().some(isRangeInput)) return;
+ 		const el = elementRef.value;
+ 		if (!el) return;
+ 		crossAxisScrollable = null;
+diff --git a/dist/composables/useSwipeDismiss.js b/dist/composables/useSwipeDismiss.js
+index 028be68633a2f970d015fdfead258d492a85218f..ad43379d12210efd27ee9d556008492d5d796871 100644
+--- a/dist/composables/useSwipeDismiss.js
++++ b/dist/composables/useSwipeDismiss.js
+@@ -11,6 +11,12 @@ const AXIS_LOCK_BIAS = 2;
+ const MIN_RELEASE_VELOCITY_DURATION_MS = 16;
+ const MAX_RELEASE_VELOCITY_AGE_MS = 80;
+ const DEFAULT_IGNORE_SELECTOR = "button,a,input,select,textarea,label,[role=\"button\"]";
++const SWIPE_IGNORE_SELECTOR = "[data-reka-swipe-ignore]";
++// Fields keep the mouse for text selection even when controls may start a swipe.
++const FIELD_SELECTOR = "input,select,textarea,[contenteditable]";
++function isRangeInput(target) {
++	return target.tagName === "INPUT" && target.type === "range";
++}
+ function findScrollableAncestor(el, axis) {
+ 	if (!el || el === document.body) return null;
+ 	const style = window.getComputedStyle(el);
+@@ -56,7 +62,7 @@ function canSwipeFromScrollEdge(scrollTarget, deltaX, deltaY, flags) {
+ 	return null;
+ }
+ function useSwipeDismiss(options) {
+-	const { elementRef, directions, movementCssVars, swipeThreshold: swipeThresholdProp, canStart, onDismiss, onProgress, onCancel, onSwipeStart, onRelease, onSwipingChange } = options;
++	const { elementRef, directions, movementCssVars, swipeThreshold: swipeThresholdProp, canStart, ignoreSelectorWhenTouch = true, ignoreSelectorWhenPointer = true, oppositeLimit, onDismiss, onProgress, onCancel, onSwipeStart, onRelease, onSwipingChange } = options;
+ 	const hasVertical = computed(() => toValue(directions).includes("up") || toValue(directions).includes("down"));
+ 	const hasHorizontal = computed(() => toValue(directions).includes("left") || toValue(directions).includes("right"));
+ 	const allowUp = computed(() => toValue(directions).includes("up"));
+@@ -101,6 +107,8 @@ function useSwipeDismiss(options) {
+ 	let lockedAxis = null;
+ 	let activePointerId = null;
+ 	let pointerStarted = false;
++	let pointerOnControl = false;
++	let pointerCaptured = false;
+ 	function getThreshold(el, dir) {
+ 		if (typeof swipeThresholdProp === "function") return Math.max(0, swipeThresholdProp({
+ 			element: el,
+@@ -205,6 +213,23 @@ function useSwipeDismiss(options) {
+ 		};
+ 		const newDx = hasHorizontal.value ? dampAxis(deltaX, allowLeft.value, allowRight.value) : exponent(deltaX);
+ 		const newDy = hasVertical.value ? dampAxis(deltaY, allowUp.value, allowDown.value) : exponent(deltaY);
++		// Against the dismiss direction the drag is linear up to `oppositeLimit` (the room left to the
++		// last snap point), then rubber-bands, so the popup never runs off past its full size.
++		const limit = oppositeLimit?.();
++		const dismiss = toValue(directions)[0];
++		if (limit != null && dismiss) {
++			const opposite = -getDisplacement(dismiss, deltaX, deltaY);
++			if (opposite > limit) {
++				const damped = (dismiss === "down" || dismiss === "right" ? -1 : 1) * (limit + (opposite - limit) ** .5);
++				return dismiss === "up" || dismiss === "down" ? {
++					x: newDx,
++					y: damped
++				} : {
++					x: damped,
++					y: newDy
++				};
++			}
++		}
+ 		return {
+ 			x: newDx,
+ 			y: newDy
+@@ -329,7 +354,8 @@ function useSwipeDismiss(options) {
+ 		if (e.button !== 0) return;
+ 		if (canStart && !canStart()) return;
+ 		const target = e.target;
+-		if (target?.closest(DEFAULT_IGNORE_SELECTOR)) return;
++		if (target?.closest(SWIPE_IGNORE_SELECTOR)) return;
++		if (target?.closest(ignoreSelectorWhenPointer ? DEFAULT_IGNORE_SELECTOR : FIELD_SELECTOR)) return;
+ 		const el = elementRef.value;
+ 		if (!el) return;
+ 		startSwipe(el, {
+@@ -338,8 +364,16 @@ function useSwipeDismiss(options) {
+ 		});
+ 		activePointerId = e.pointerId;
+ 		pointerStarted = true;
++		pointerCaptured = false;
++		// Capturing on a control would retarget its click to the drawer, so a press on a control
++		// captures only once it moves past the slop: a click stays a click, a drag becomes a swipe.
++		pointerOnControl = Boolean(target?.closest(DEFAULT_IGNORE_SELECTOR));
++		if (!pointerOnControl) capturePointer(el, e.pointerId);
++	}
++	function capturePointer(el, pointerId) {
++		pointerCaptured = true;
+ 		try {
+-			el.setPointerCapture(e.pointerId);
++			el.setPointerCapture(pointerId);
+ 		} catch {}
+ 	}
+ 	function onPointerMove(e) {
+@@ -350,6 +384,10 @@ function useSwipeDismiss(options) {
+ 			finishSwipe(el);
+ 			return;
+ 		}
++		if (pointerOnControl && !pointerCaptured) {
++			if (Math.hypot(e.clientX - dragStartPos.x, e.clientY - dragStartPos.y) < AXIS_LOCK_SLOP) return;
++			capturePointer(el, e.pointerId);
++		}
+ 		processMove(el, {
+ 			x: e.clientX,
+ 			y: e.clientY
+@@ -383,7 +421,8 @@ function useSwipeDismiss(options) {
+ 		if (!toValue(options.enabled)) return;
+ 		if (canStart && !canStart()) return;
+ 		const target = e.target;
+-		if (target?.closest(DEFAULT_IGNORE_SELECTOR)) return;
++		if (target?.closest(SWIPE_IGNORE_SELECTOR)) return;
++		if (ignoreSelectorWhenTouch ? target?.closest(DEFAULT_IGNORE_SELECTOR) : e.composedPath().some(isRangeInput)) return;
+ 		const el = elementRef.value;
+ 		if (!el) return;
+ 		crossAxisScrollable = null;

@@ -6,8 +6,8 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
-  drawerStyle?: Record<string, string>
   categoryId?: CategoryId
+  drawerStyle?: Record<string, string>
   walletId?: WalletId
 }>()
 
@@ -28,11 +28,9 @@ const initialSlide = ref<'category' | 'wallet'>('wallet')
 
 <template>
   <DrawerOrDropdown
+    v-model:open="isShow"
     :drawerStyle="props.drawerStyle"
-    :isOpen="isShow"
     popoverBodyClass="py-0! md:pb-0!"
-    @closeModal="isShow = false"
-    @openModal="isShow = true"
   >
     <template #trigger>
       <div class="grid grid-cols-2 gap-2">
@@ -67,12 +65,11 @@ const initialSlide = ref<'category' | 'wallet'>('wallet')
       </div>
     </template>
 
-    <template #custom="{ close, isExpanded }">
+    <template #custom="{ close }">
       <FilterPanel
         :activeCategoryId="props.categoryId"
         :activeWalletId="props.walletId"
         :initialSlide
-        :isExpanded
         mode="select"
         @close="close"
         @selectCategory="emit('selectCategory', $event)"

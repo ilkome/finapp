@@ -12,12 +12,10 @@ const isOpen = ref(false)
 
 <template>
   <DrawerOrDropdown
+    v-model:open="isOpen"
     :align="collapsed ? 'start' : 'center'"
-    :isOpen="isOpen"
     popoverBodyClass="md:pb-0"
     popoverContentClass="w-74"
-    @openModal="isOpen = true"
-    @closeModal="isOpen = false"
   >
     <template #trigger="{ isActive }">
       <UTooltip :text="triggerLabel" :disabled="!collapsed">

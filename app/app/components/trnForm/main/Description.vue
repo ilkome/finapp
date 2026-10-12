@@ -21,13 +21,11 @@ function onSave(close: () => void) {
 
 <template>
   <DrawerOrDropdown
-    :isOpen="trnsFormStore.modal.description"
+    :open="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
     class="shrink-0 grow-0!"
-    contentClass="bottom-sheet-drag-classes-custom"
     isShowCloseBtn
-    @closeModal="trnsFormStore.closeTrnFormModal('description')"
-    @openModal="trnsFormStore.openTrnFormModal('description')"
+    @update:open="value => value ? trnsFormStore.openTrnFormModal('description') : trnsFormStore.closeTrnFormModal('description')"
   >
     <template #trigger>
       <UiActionButton class="relative overflow-visible">

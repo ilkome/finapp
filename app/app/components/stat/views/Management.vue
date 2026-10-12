@@ -94,11 +94,9 @@ const viewActionItems = computed(() => [
 
         <div class="shrink-0">
           <DrawerOrDropdown
+            v-model:open="isViewsOpen"
             align="end"
-            :isOpen="isViewsOpen"
             :title="$t('stat.views.menu.label')"
-            @openModal="isViewsOpen = true"
-            @closeModal="isViewsOpen = false"
           >
             <template #trigger>
               <UButton

@@ -42,13 +42,10 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
 
 <template>
   <DrawerOrDropdown
+    v-model:open="isOpen"
     :title="props.title ?? t('common.date')"
-    :isOpen="isOpen"
     popoverBodyClass="md:pb-2"
-    titleClass="pt-3! pb-2!"
     isShowCloseBtn
-    @openModal="isOpen = true"
-    @closeModal="isOpen = false"
   >
     <template #trigger="{ isActive }">
       <slot name="trigger" :isActive="isActive" :label="label">
