@@ -134,6 +134,8 @@
 }
 
 .drawer-overlay {
+  opacity: calc(1 - var(--drawer-progress, 0));
+
   &[data-state='open'] {
     animation: drawer-fade-in 450ms cubic-bezier(0.32, 0.72, 0, 1);
   }

@@ -25,7 +25,7 @@
   --ui-warning: var(--ui-color-warning-400);
   --ui-error: var(--ui-color-error-400);
 
-  --color-overlay: #000000cc;
+  --color-overlay: #00000099;
 }
 
 /*
@@ -47,11 +47,11 @@
   --ui-warning: var(--ui-color-warning-500);
   --ui-error: var(--ui-color-error-500);
 
-  --color-overlay: #00000099;
+  --color-overlay: #00000066;
 }
 
 @theme static {
-  --color-overlay: #00000099;
+  --color-overlay: #00000066;
   --color-expense-1: oklch(0.63 0.24 24.81);
   --color-expense-2: oklch(0.63 0.24 24.81 / 0.5);
   --color-income-1: oklch(0.65 0.2 142.06);

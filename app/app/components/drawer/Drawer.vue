@@ -54,6 +54,26 @@ watch(open, (value) => {
     snapPoint.value = snapPoints.value?.[0] ?? null
 })
 
+// Reka's own `update:openComplete` never fires on close: Presence unmounts the content on the same
+// `animationend`, and the unmount drops reka's listener before it runs. The exit keyframes end here.
+function onAnimationEnd(event: AnimationEvent) {
+  if (event.target === event.currentTarget && event.animationName === 'drawer-slide-out')
+    emit('closed')
+}
+
+// Reka writes the swipe progress only onto the content, so the overlay mirrors it to fade with the
+// drag. A parent's content also receives its nested drawer's progress: only its own swipe (or the
+// reset to 0) counts, and the last value carries the overlay into its exit fade.
+const contentRef = useTemplateRef<{ $el?: HTMLElement }>('content')
+const overlayRef = useTemplateRef<{ $el?: HTMLElement }>('overlay')
+const contentEl = computed(() => contentRef.value?.$el)
+useMutationObserver(contentEl, () => {
+  const el = contentEl.value
+  const progress = el?.style.getPropertyValue('--drawer-swipe-progress') || '0'
+  if (el?.hasAttribute('data-swiping') || Number(progress) === 0)
+    overlayRef.value?.$el?.style.setProperty('--drawer-progress', progress)
+}, { attributeFilter: ['style', 'data-swiping'] })
+
 const isExpanded = computed(() => !snapPoints.value || snapPoint.value === TOP_SNAP)
 
 // Below the top snap point the drawer only follows a swipe that does not start in a scrollable list,
@@ -73,15 +93,15 @@ function expandOnWheel(event: WheelEvent) {
     :modal="!props.isPassthrough"
     :snapPoints
     snapToSequentialPoints
-    @update:openComplete="value => !value && emit('closed')"
   >
     <DrawerPortal :forceMount="props.forceMount">
       <!-- Reka skips the overlay of a nested drawer unless forced. -->
-      <DrawerOverlay class="drawer-overlay fixed inset-0 z-50 bg-overlay" :forceMount="props.forceMount" forceRender />
+      <DrawerOverlay ref="overlay" class="drawer-overlay fixed inset-0 z-50 bg-overlay" :forceMount="props.forceMount" forceRender />
       <!-- No initial focus: on the phone it would raise the keyboard for the first field.
            `present` reaches reka's DismissableLayer through attrs, which the Drawer does not pass itself:
            without it a closed kept-mounted drawer keeps the body pointer lock and swallows Escape. -->
       <DrawerContent
+        ref="content"
         :forceMount="props.forceMount"
         :present="open"
         :class="[
@@ -95,6 +115,7 @@ function expandOnWheel(event: WheelEvent) {
         :data-passthrough="props.isPassthrough ? '' : undefined"
         :initialFocus="false"
         class="drawer fixed right-(--scrollbar-width,0px) bottom-0 left-0 z-50 mx-auto flex w-full max-w-md flex-col overflow-hidden rounded-t-xl bg-default outline-none"
+        @animationend="onAnimationEnd"
         @interactOutside="e => props.isPassthrough && e.preventDefault()"
         @wheel.passive="expandOnWheel"
       >
