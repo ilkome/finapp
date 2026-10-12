@@ -145,6 +145,46 @@ function cycleGrouping() {
           </UiActionButton>
         </UTooltip>
 
+        <div
+          v-if="groupedBy !== 'none'"
+          class="flex items-center gap-1"
+        >
+          <UTooltip :text="$t('base.toggleGrouping')">
+            <UiActionButton
+              :ariaLabel="$t('base.toggleGrouping')"
+              @click="toggleSecondaryGrouping"
+            >
+              <Icon
+                :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
+                size="18"
+              />
+            </UiActionButton>
+          </UTooltip>
+
+          <UTooltip :text="$t('base.toggleFolders')">
+            <UiActionButton :ariaLabel="$t('base.toggleFolders')" @click="toggleOpened">
+              <Icon
+                v-if="typeGroupsStatus.isAllOpen"
+                name="lucide:folder-open"
+              />
+              <Icon
+                v-else-if="typeGroupsStatus.isAnyOpen"
+                name="lucide:folder-open-dot"
+              />
+              <Icon
+                v-else
+                name="lucide:folder"
+              />
+            </UiActionButton>
+          </UTooltip>
+        </div>
+
+        <UTooltip :text="currentGroupTab.label">
+          <UiActionButton :ariaLabel="currentGroupTab.label" @click="cycleGrouping">
+            <Icon :name="groupIcons[currentGroupTab.id]" size="18" />
+          </UiActionButton>
+        </UTooltip>
+
         <UTooltip :text="$t('wallets.new')">
           <NuxtLink to="/wallets/new">
             <UiActionButton :ariaLabel="$t('wallets.new')">
@@ -357,48 +397,6 @@ function cycleGrouping() {
       </div>
 
       <div class="@xl/page:pt-1 @3xl/main:max-w-sm">
-        <div class="mb-2 flex min-h-12 items-center justify-end gap-1">
-          <div
-            v-if="groupedBy !== 'none'"
-            class="flex items-center gap-1"
-          >
-            <UTooltip :text="$t('base.toggleGrouping')">
-              <UiActionButton
-                :ariaLabel="$t('base.toggleGrouping')"
-                @click="toggleSecondaryGrouping"
-              >
-                <Icon
-                  :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
-                  size="18"
-                />
-              </UiActionButton>
-            </UTooltip>
-
-            <UTooltip :text="$t('base.toggleFolders')">
-              <UiActionButton :ariaLabel="$t('base.toggleFolders')" @click="toggleOpened">
-                <Icon
-                  v-if="typeGroupsStatus.isAllOpen"
-                  name="lucide:folder-open"
-                />
-                <Icon
-                  v-else-if="typeGroupsStatus.isAnyOpen"
-                  name="lucide:folder-open-dot"
-                />
-                <Icon
-                  v-else
-                  name="lucide:folder"
-                />
-              </UiActionButton>
-            </UTooltip>
-          </div>
-
-          <UTooltip :text="currentGroupTab.label">
-            <UiActionButton :ariaLabel="currentGroupTab.label" @click="cycleGrouping">
-              <Icon :name="groupIcons[currentGroupTab.id]" size="18" />
-            </UiActionButton>
-          </UTooltip>
-        </div>
-
         <div class="pb-6 md:max-w-lg @xl/page:max-w-lg">
           <WalletsSortableList
             v-if="groupedBy === 'none'"
