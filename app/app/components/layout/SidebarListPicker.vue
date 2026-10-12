@@ -55,6 +55,8 @@ function saveOrder(ids: string[]) {
 }
 const isOpen = ref(false)
 const isSortOpen = ref(false)
+const [DefineBody, ReuseBody] = createReusableTemplate()
+const isLaptop = useIsLaptop()
 </script>
 
 <template>
@@ -95,11 +97,7 @@ const isSortOpen = ref(false)
           </UTooltip>
         </div>
 
-        <BottomSheetOrModal
-          v-if="isSortOpen"
-          :title="t('base.sort')"
-          @closed="isSortOpen = false"
-        >
+        <DefineBody>
           <WalletsSortableList
             :ids="pickedIds"
             class="grid gap-1"
@@ -127,7 +125,34 @@ const isSortOpen = ref(false)
               </div>
             </template>
           </WalletsSortableList>
-        </BottomSheetOrModal>
+        </DefineBody>
+
+        <template v-if="isSortOpen">
+          <UModal
+            v-if="isLaptop"
+            defaultOpen
+            :title="t('base.sort')"
+            :ui="{ content: 'max-w-lg' }"
+            @after:leave="isSortOpen = false"
+          >
+            <template #body>
+              <ReuseBody />
+            </template>
+          </UModal>
+
+          <Drawer
+            v-else
+            :title="t('base.sort')"
+            contentClass="min-h-[50dvh]"
+            @closed="isSortOpen = false"
+          >
+            <template #default>
+              <div class="drawer-body">
+                <ReuseBody />
+              </div>
+            </template>
+          </Drawer>
+        </template>
       </template>
     </div>
   </UiSettingsCard>

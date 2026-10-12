@@ -13,6 +13,9 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+// vueuse types a binding as a prop option, so a function type must stay `any`.
+const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
+const isLaptop = useIsLaptop()
 const walletsStore = useWalletsStore()
 
 const wallet = computed(() =>
@@ -30,14 +33,35 @@ function updateField(key: WalletFormKey, value: unknown) {
 </script>
 
 <template>
-  <BottomSheetOrModal isBare :title="wallet?.name || t('wallets.createNewTitle')" @closed="emit('closed')">
-    <template #default="{ close }">
-      <WalletsForm
-        :walletId="props.walletId"
-        :walletForm
-        @update="updateField"
-        @afterSave="close"
-      />
+  <DefineBody v-slot="{ close }">
+    <WalletsForm
+      :walletId="props.walletId"
+      :walletForm
+      @update="updateField"
+      @afterSave="close"
+    />
+  </DefineBody>
+
+  <UModal
+    v-if="isLaptop"
+    defaultOpen
+    :title="wallet?.name || t('wallets.createNewTitle')"
+    :ui="{ content: 'max-w-lg' }"
+    @after:leave="emit('closed')"
+  >
+    <template #body="{ close }">
+      <ReuseBody :close />
     </template>
-  </BottomSheetOrModal>
+  </UModal>
+
+  <Drawer
+    v-else
+    :title="wallet?.name || t('wallets.createNewTitle')"
+    contentClass="min-h-[50dvh]"
+    @closed="emit('closed')"
+  >
+    <template #default="{ close }">
+      <ReuseBody :close />
+    </template>
+  </Drawer>
 </template>
