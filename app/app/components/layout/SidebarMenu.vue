@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import { useMenuData } from '~/components/layout/useMenuData'
 
-const { hideKeys, isShowText = true, source = 'items' } = defineProps<{
-  hideKeys?: string[]
+const { isShowText = true, source = 'items' } = defineProps<{
   isShowText?: boolean
   source?: 'items' | 'itemsModal'
 }>()
 
 const { items, itemsModal } = useMenuData()
-const menuItems = computed(() => {
-  const source_ = source === 'itemsModal' ? itemsModal.value : items.value
-  return hideKeys?.length
-    ? Object.fromEntries(Object.entries(source_).filter(([key]) => !hideKeys.includes(key)))
-    : source_
-})
+const menuItems = computed(() => source === 'itemsModal' ? itemsModal.value : items.value)
 </script>
 
 <template>
