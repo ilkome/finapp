@@ -63,9 +63,9 @@ const isLaptop = useIsLaptop()
   <UiSettingsCard :title="t(isWallet ? 'wallets.name' : 'categories.name')">
     <div class="grid gap-2">
       <UiSwitchItem
+        class="min-h-10.5 rounded-md!"
         :checkboxValue="isShown"
         :title="t('settings.sidebar.show')"
-        trailing
         @toggle="isShown = !isShown"
       />
 
@@ -74,11 +74,10 @@ const isLaptop = useIsLaptop()
           <DrawerOrDropdown
             v-model:open="isOpen"
             class="justify-self-start"
-            popoverBodyClass="py-0! md:pb-0!"
             :collapsedSnap="500"
           >
             <template #trigger="{ isActive }">
-              <UiTitleDropdown :isActive>
+              <UiTitleDropdown class="min-h-10.5!" :isActive>
                 <span class="text-nowrap">
                   {{ count ? t('settings.sidebar.selected', { count }) : t('settings.sidebar.auto') }}
                 </span>
@@ -128,17 +127,16 @@ const isLaptop = useIsLaptop()
         </DefineBody>
 
         <template v-if="isSortOpen">
-          <UModal
+          <UiModalWrap
             v-if="isLaptop"
             defaultOpen
             :title="t('base.sort')"
-            :ui="{ content: 'max-w-lg' }"
             @after:leave="isSortOpen = false"
           >
-            <template #body>
+            <template #default>
               <ReuseBody />
             </template>
-          </UModal>
+          </UiModalWrap>
 
           <Drawer
             v-else

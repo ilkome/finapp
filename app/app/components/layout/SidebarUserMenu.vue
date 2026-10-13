@@ -14,7 +14,6 @@ const isOpen = ref(false)
   <DrawerOrDropdown
     v-model:open="isOpen"
     :align="collapsed ? 'start' : 'center'"
-    popoverBodyClass="md:pb-0"
     popoverContentClass="w-74"
   >
     <template #trigger="{ isActive }">

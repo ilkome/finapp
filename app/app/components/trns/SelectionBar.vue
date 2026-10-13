@@ -188,7 +188,6 @@ watch(description, (value) => {
       v-if="!hasTransfer"
       v-model:open="isCategoryOpen"
       class="flex shrink-0 grow-0 snap-start gap-1"
-      popoverBodyClass="py-0! md:pb-0!"
       :collapsedSnap="500"
       :title="t('trns.bulk.category')"
       isShowCloseBtn
@@ -207,7 +206,6 @@ watch(description, (value) => {
         >
           <CategoriesSelectorModal
             autofocus
-            compactDesktop
             hideCreate
             :selectedIds="categoryId ? [categoryId] : []"
             @selected="(id: CategoryId) => stageCategory(id, close)"
@@ -220,7 +218,6 @@ watch(description, (value) => {
       v-if="!hasTransfer"
       v-model:open="isWalletOpen"
       class="flex shrink-0 grow-0 snap-start gap-1"
-      popoverBodyClass="py-0! md:pb-0!"
       :collapsedSnap="500"
       :title="t('trns.bulk.wallet')"
       isShowCloseBtn
@@ -238,7 +235,6 @@ watch(description, (value) => {
           class="grid h-[65dvh] max-h-160 min-w-80 overflow-hidden group-data-snap/drawer:h-full group-data-snap/drawer:max-h-none"
         >
           <WalletsSelector
-            compactDesktop
             :selectedIds="walletId ? [walletId] : []"
             withHeader
             @selected="(id: WalletId) => stageWallet(id, close)"

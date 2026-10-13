@@ -126,8 +126,8 @@ const lockedHeight = computed(() => isLaptop.value && activePanel.value !== 'roo
   ? `${rootHeight.value}px`
   : undefined)
 
-const rowClass = 'flex min-h-11 w-full items-center gap-3 rounded-sm interactive px-2 py-1.5 text-left text-sm font-medium tracking-wide text-toned'
-const iconSlotClass = 'flex min-w-7 justify-center'
+const rowClass = 'flex min-h-10.5 w-full items-center gap-3 rounded-sm interactive py-1.5 pr-2 pl-3 text-left text-sm leading-none font-medium tracking-wide text-toned'
+const iconSlotClass = 'flex shrink-0 justify-center'
 const compactClass = 'flex shrink-0 flex-col items-center gap-1 rounded-md p-2 text-xs text-muted interactive data-checked:bg-elevated data-checked:text-default'
 </script>
 

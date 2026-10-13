@@ -199,17 +199,16 @@ function onPayNext() {
     </DefineBody>
 
     <template v-if="isShowLoanForm">
-      <UModal
+      <UiModalWrap
         v-if="isLaptop"
         defaultOpen
         :title="entry ? t('loans.edit') : t('loans.add')"
-        :ui="{ content: 'max-w-lg' }"
         @after:leave="isShowLoanForm = false"
       >
-        <template #body="{ close }">
+        <template #default="{ close }">
           <ReuseBody :close />
         </template>
-      </UModal>
+      </UiModalWrap>
 
       <Drawer
         v-else

@@ -47,7 +47,7 @@ const isLaptop = useIsLaptop()
         :disabledIds="props.disabledWalletIds"
         :filterAtTop="isLaptop"
         withHeader
-        class="min-w-80 px-2"
+        class="min-w-80"
         @selected="(id: WalletId) => emit('selected', id)"
       />
     </template>

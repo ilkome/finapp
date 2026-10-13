@@ -21,7 +21,7 @@ function toNumber(value: string | number): number | null {
 </script>
 
 <template>
-  <div class="grid h-full scroller-block content-start gap-5 overflow-y-auto px-3 pt-3 pb-20 md:px-1">
+  <div class="grid h-full scroller-block content-start gap-5 overflow-y-auto px-3 pt-3 pb-20">
     <div class="grid gap-2">
       <div class="text-sm font-medium text-muted">
         {{ t('trns.fields.type') }}

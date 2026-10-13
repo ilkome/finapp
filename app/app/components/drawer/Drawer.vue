@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { DrawerContent, DrawerHandle, DrawerOverlay, DrawerPortal, DrawerRoot, DrawerTitle } from 'reka-ui'
 
+import { afterDrawerClosedKey } from '~/components/drawer/useAfterDrawerClosed'
 import { registerDrawer } from '~/composables/useDrawerHistory'
 
 const props = defineProps<{
@@ -29,9 +30,26 @@ function close() {
   open.value = false
 }
 
+// The page keeps its size behind a live-preview drawer. An attribute on the root, not a
+// `body:has(...)` rule: Chrome invalidates every element under a `:has()` subject on each drawer
+// state change. The menu turns live preview on and off while it stays open.
+const isPassthroughOpen = computed(() => open.value && !!props.isPassthrough)
+watch(isPassthroughOpen, (value, previous) => {
+  if (value || previous)
+    document.documentElement.toggleAttribute('data-drawer-passthrough', value)
+}, { immediate: true })
+
+const afterClosed: (() => void)[] = []
+function runAfterClosed() {
+  afterClosed.splice(0).forEach(fn => fn())
+}
+provide(afterDrawerClosedKey, fn => open.value ? afterClosed.push(fn) : fn())
+
 let unregister: (() => void) | null = null
 watch(open, (value) => {
   if (value) {
+    // Reopened before the exit ended: the pending work is due now.
+    runAfterClosed()
     unregister ??= registerDrawer(close)
     // The scaled page background pivots on the viewport, which sits this far down the scroll-locked page.
     document.documentElement.style.setProperty('--drawer-scroll-y', `${window.scrollY}px`)
@@ -40,7 +58,12 @@ watch(open, (value) => {
   unregister?.()
   unregister = null
 }, { immediate: true })
-onBeforeUnmount(() => unregister?.())
+onBeforeUnmount(() => {
+  unregister?.()
+  runAfterClosed()
+  if (isPassthroughOpen.value)
+    document.documentElement.removeAttribute('data-drawer-passthrough')
+})
 
 const snapPoints = computed(() => props.collapsedSnap === undefined ? undefined : [props.collapsedSnap, TOP_SNAP])
 
@@ -57,8 +80,10 @@ watch(open, (value) => {
 // Reka's own `update:openComplete` never fires on close: Presence unmounts the content on the same
 // `animationend`, and the unmount drops reka's listener before it runs. The exit keyframes end here.
 function onAnimationEnd(event: AnimationEvent) {
-  if (event.target === event.currentTarget && event.animationName === 'drawer-slide-out')
-    emit('closed')
+  if (event.target !== event.currentTarget || event.animationName !== 'drawer-slide-out')
+    return
+  emit('closed')
+  runAfterClosed()
 }
 
 // Reka writes the swipe progress only onto the content, so the overlay mirrors it to fade with the
@@ -97,13 +122,10 @@ function expandOnWheel(event: WheelEvent) {
     <DrawerPortal :forceMount="props.forceMount">
       <!-- Reka skips the overlay of a nested drawer unless forced. -->
       <DrawerOverlay ref="overlay" class="drawer-overlay fixed inset-0 z-50 bg-overlay" :forceMount="props.forceMount" forceRender />
-      <!-- No initial focus: on the phone it would raise the keyboard for the first field.
-           `present` reaches reka's DismissableLayer through attrs, which the Drawer does not pass itself:
-           without it a closed kept-mounted drawer keeps the body pointer lock and swallows Escape. -->
+      <!-- No initial focus: on the phone it would raise the keyboard for the first field. -->
       <DrawerContent
         ref="content"
         :forceMount="props.forceMount"
-        :present="open"
         :class="[
           props.isPassthrough && 'border border-b-0 border-accented',
           isTouch && !isExpanded && '[&_.drawer-body]:overflow-hidden [&_.scroller-block]:overflow-hidden',
@@ -112,7 +134,6 @@ function expandOnWheel(event: WheelEvent) {
         ]"
         :style="[height, props.contentStyle]"
         :data-snap="snapPoints ? '' : undefined"
-        :data-passthrough="props.isPassthrough ? '' : undefined"
         :initialFocus="false"
         class="drawer fixed right-(--scrollbar-width,0px) bottom-0 left-0 z-50 mx-auto flex w-full max-w-md flex-col overflow-hidden rounded-t-xl bg-default outline-none"
         @animationend="onAnimationEnd"

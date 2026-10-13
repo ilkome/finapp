@@ -133,14 +133,12 @@ function toggle(id: string) {
     <template #content>
       <WalletsSelector
         v-if="modelValue.kind === 'walletSelection'"
-        compactDesktop
         hideHeader
         :selectedIds="modelValue.ids"
         @selected="toggle"
       />
       <CategoriesSelectorModal
         v-else
-        compactDesktop
         hideCreate
         :selectedIds="modelValue.ids"
         selectableParents

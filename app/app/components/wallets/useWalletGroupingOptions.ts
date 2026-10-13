@@ -10,11 +10,11 @@ export function useWalletGroupingOptions() {
   const { t } = useI18n()
   const walletsStore = useWalletsStore()
 
-  return computed<{ id: WalletsGroupedBy, label: string }[]>(() => [
-    { id: 'none', label: t('wallets.page.none') },
-    { id: 'type', label: t('wallets.page.type') },
+  return computed<{ icon: string, id: WalletsGroupedBy, label: string }[]>(() => [
+    { icon: 'lucide:ban', id: 'none', label: t('wallets.page.none') },
+    { icon: 'lucide:shapes', id: 'type', label: t('wallets.page.type') },
     ...(walletsStore.currenciesUsed.length > 1
-      ? [{ id: 'currency' as const, label: t('wallets.page.currencies') }]
+      ? [{ icon: 'lucide:coins', id: 'currency' as const, label: t('wallets.page.currencies') }]
       : []),
   ])
 }

@@ -39,6 +39,14 @@ function onClose() {
   closeOverlay()
 }
 
+// The sheet animates out before the overlay closes: closing it saves the config and re-renders the
+// whole dashboard, which would drop the exit frames.
+const isSheetOpen = ref(isOpen.value)
+watch(isOpen, value => isSheetOpen.value = value)
+function closeSheet() {
+  isSheetOpen.value = false
+}
+
 function onSidebarKeydown(event: KeyboardEvent) {
   if (event.key !== 'Escape' && event.key !== 'Backspace')
     return
@@ -55,6 +63,8 @@ function onSidebarKeydown(event: KeyboardEvent) {
 function onOpen() {
   trnsFormStore.ui.isShow = false
   openOverlay()
+  // Reopened during the exit: the overlay never closed, so its watcher stays quiet.
+  isSheetOpen.value = true
 }
 
 onDeactivated(onClose)
@@ -64,10 +74,11 @@ onBeforeUnmount(onClose)
 <template>
   <DrawerOrDropdown
     v-if="width < 767"
-    :open="isOpen"
+    :open="isSheetOpen"
     :title="t('stat.config.menu.label')"
     :unmountOnHide="false"
-    @update:open="value => value ? onOpen() : onClose()"
+    @closed="onClose"
+    @update:open="value => value ? onOpen() : closeSheet()"
   >
     <template #trigger>
       <UiTriggerButton
@@ -80,7 +91,7 @@ onBeforeUnmount(onClose)
     <template #custom>
       <div class="drawer-body gap-4 pb-0!">
         <div class="grid min-w-0 gap-4">
-          <slot :close="onClose" />
+          <slot :close="closeSheet" />
         </div>
       </div>
     </template>
@@ -110,22 +121,23 @@ onBeforeUnmount(onClose)
           @keydown="onSidebarKeydown"
         >
           <div class="relative h-full overflow-hidden rounded-md border border-accented bg-default shadow-2xl lg:rounded-lg">
+            <UiButtonClose @click="onClose" />
+
             <div class="h-full overflow-x-clip overflow-y-auto overscroll-contain">
-              <div class="sticky top-0 z-20 flex min-h-14 items-center gap-1 bg-default/90 px-2 backdrop-blur">
-                <UButton
-                  v-if="activePanel"
-                  :aria-label="t('base.previous')"
-                  class="shrink-0"
-                  color="neutral"
-                  icon="i-lucide-arrow-left"
-                  variant="ghost"
-                  @click="back()"
-                />
-                <UiHeaderTitle class="min-w-0 grow truncate px-2 md:text-xl">
-                  {{ activePanel ? panelTitle : t('stat.config.menu.label') }}
-                </UiHeaderTitle>
-                <UiButtonClose class="shrink-0" @click="onClose" />
-              </div>
+              <UiTitleModal hasClose>
+                <div class="flex items-center gap-2">
+                  <UButton
+                    v-if="activePanel"
+                    :aria-label="t('base.previous')"
+                    class="-my-2 shrink-0"
+                    color="neutral"
+                    icon="i-lucide-arrow-left"
+                    variant="ghost"
+                    @click="back()"
+                  />
+                  <span class="min-w-0 truncate">{{ activePanel ? panelTitle : t('stat.config.menu.label') }}</span>
+                </div>
+              </UiTitleModal>
 
               <AnimatePresence :custom="direction" mode="wait" :initial="false">
                 <Motion

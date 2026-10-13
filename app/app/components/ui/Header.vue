@@ -68,7 +68,7 @@ function onBack() {
           v-if="$slots.actions"
           data-ui-header-actions
           class="ml-auto flex shrink-0 flex-nowrap items-center rounded-full border border-transparent p-0.5"
-          :class="[actionsAfterTitle && 'md:ml-6', flatActionsDesktop ? 'lg:-mt-7 lg:-mr-2 2xl:-mt-6' : 'md:border-default/80 md:bg-default/20 md:dark:bg-neutral-800/50']"
+          :class="[actionsAfterTitle && 'md:ml-6', flatActionsDesktop ? 'lg:-mt-2 lg:-mr-2 2xl:-mt-4.5' : 'md:border-default/80 md:bg-default/20 md:dark:bg-neutral-800/50']"
         >
           <slot name="actions" />
         </div>

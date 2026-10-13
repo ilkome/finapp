@@ -56,7 +56,7 @@ function setExpanded(open: boolean) {
       <DrawerOrDropdown
         align="end"
         :open="isExpanded"
-        popoverBodyClass="p-0!"
+        popoverBodyClass="p-0"
         popoverContentClass="z-[70] max-h-[calc(100dvh-1rem)] w-85 max-w-[calc(100vw-1rem)] overscroll-contain"
         @update:open="setExpanded"
       >

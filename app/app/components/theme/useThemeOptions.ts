@@ -43,8 +43,8 @@ export function swatchPalette(color: string) {
 export function useThemeOptions() {
   const appConfig = useAppConfig()
 
-  const radius = useLocalStorage('nuxt-ui-radius', 0.375)
-  const blackAsPrimary = useLocalStorage('nuxt-ui-black-as-primary', true)
+  const radius = useLocalStorage('nuxt-ui-radius', 0.5)
+  const blackAsPrimary = useLocalStorage('nuxt-ui-black-as-primary', false)
 
   function setBlackAsPrimary(value: boolean) {
     blackAsPrimary.value = value

@@ -49,6 +49,8 @@
 - Page headers: one height on every page, actions in a pill on desktop and plain icons on the phone.
 - Demo: every wallet type, debts both ways, crypto and random-currency wallets.
 - Description: one sheet in the transaction form and in bulk edit, saved as you type, no save button.
+- Transaction form: no history slide; it opens faster and the page behind it scales smoothly. Settings → Appearance can turn off the page scaling behind drawers.
+- Drawers: swipes and closes no longer stutter, a nested sheet drags its parent along, a sheet reopens in place after a swipe, and filters and view settings apply once their sheet has closed. The menu's Color and Rounding panels open again.
 - Calendar: follows the app language, and the period calendar shows two months side by side on desktop.
 
 ## ⚡ Performance

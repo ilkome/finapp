@@ -2,6 +2,7 @@
 const props = defineProps<{
   hasSelection?: boolean
   icon: string
+  iconClass?: string
   isActive?: boolean
   labelMode?: boolean
   outlined?: boolean
@@ -38,7 +39,7 @@ const emit = defineEmits<{
         :class="props.outlined && 'border border-(--ui-bg-elevated)/50'"
         @click="emit('click', $event)"
       >
-        <Icon :name="props.icon" :class="props.isActive && 'text-primary'" size="20" />
+        <Icon :name="props.icon" :class="cn(props.isActive && 'text-primary', props.iconClass)" size="20" />
       </UiActionButton>
     </UChip>
 
@@ -49,7 +50,7 @@ const emit = defineEmits<{
       :class="props.outlined && 'border border-(--ui-bg-elevated)/50'"
       @click="emit('click', $event)"
     >
-      <Icon :name="props.icon" :class="props.isActive && 'text-primary'" size="20" />
+      <Icon :name="props.icon" :class="cn(props.isActive && 'text-primary', props.iconClass)" size="20" />
     </UiActionButton>
   </UTooltip>
 </template>

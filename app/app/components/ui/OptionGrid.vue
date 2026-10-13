@@ -13,8 +13,8 @@ const model = defineModel<T>({ required: true })
       :key="item.value"
       type="button"
       :aria-pressed="item.value === model"
-      class="flex shrink-0 flex-col items-center gap-1 rounded-md interactive p-2 text-xs"
-      :class="item.value === model ? 'bg-elevated text-default' : 'text-muted'"
+      class="flex min-h-10.5 shrink-0 items-center gap-2 rounded-md bg-elevated/30 px-4 text-sm ring ring-inset hover:bg-elevated/50"
+      :class="item.value === model ? 'text-highlighted ring-2 ring-primary' : 'text-muted ring-accented'"
       @click="model = item.value"
     >
       <slot name="swatch" :value="item.value" />

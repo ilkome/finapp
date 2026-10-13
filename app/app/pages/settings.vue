@@ -14,6 +14,17 @@ const LINKS = [
   { href: 'https://finapp-docs.ilko.me/', icon: 'lucide:book-open', labelKey: 'login.menu.documentation' },
 ]
 
+type Section = 'general' | 'appearance' | 'sidebar' | 'account' | 'beta' | 'about'
+
+const SECTION_ICONS: Record<Section, string> = {
+  about: 'lucide:info',
+  account: 'lucide:user',
+  appearance: 'lucide:palette',
+  beta: 'lucide:flask-conical',
+  general: 'lucide:settings',
+  sidebar: 'lucide:panel-left',
+}
+
 const { locale, t } = useI18n()
 const userStore = useUserStore()
 const currenciesStore = useCurrenciesStore()
@@ -31,7 +42,6 @@ const confirm = useConfirm()
 const route = useRoute()
 const router = useRouter()
 
-type Section = 'general' | 'appearance' | 'sidebar' | 'account' | 'beta' | 'about'
 // Beta disappears with the last flag instead of showing an empty card.
 // The sidebar exists only on the laptop layout.
 const sections = computed<Section[]>(() => [
@@ -73,24 +83,29 @@ function onGenerateDemoData() {
       <!-- Color swatches use the full width; other sections keep a readable column. -->
       <div
         :class="activeSection === 'appearance' ? '@2xl/page:grid-cols-[12rem_minmax(0,1fr)]' : '@2xl/page:grid-cols-[12rem_minmax(0,32rem)]'"
-        class="grid gap-4 px-2 pt-2 pb-12 @2xl/page:gap-8"
+        class="grid gap-4 pt-2 pb-12 @2xl/page:gap-8"
       >
         <nav
           :aria-label="t('settings.title')"
-          class="-mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 gap-1 overflow-x-auto px-2 @2xl/page:mx-0 @2xl/page:flex-col @2xl/page:self-start @2xl/page:overflow-visible @2xl/page:px-0"
+          class="-mx-2 scroll-strip flex snap-x snap-mandatory scroll-px-2 gap-1 overflow-x-auto px-2 @2xl/page:mr-0 @2xl/page:-ml-2 @2xl/page:flex-col @2xl/page:self-start @2xl/page:overflow-visible @2xl/page:px-0"
         >
           <button
             v-for="id in sections"
             :key="id"
             :aria-current="activeSection === id ? 'page' : undefined"
             :class="cn(
-              'shrink-0 snap-start theme-rounded-control px-3 py-1.5 text-left text-sm text-muted transition-colors hover:bg-elevated/50 hover:text-highlighted',
-              activeSection === id && 'bg-elevated/30 text-highlighted',
+              'flex min-h-11 shrink-0 snap-start items-center gap-3 rounded-md interactive px-2 py-1.5 text-left text-muted md:min-h-9.5',
+              activeSection === id && 'text-primary',
             )"
             type="button"
             @click="activeSection = id"
           >
-            {{ t(`settings.sections.${id}`) }}
+            <span class="flex min-w-8 items-center justify-center">
+              <Icon :name="SECTION_ICONS[id]" size="22" />
+            </span>
+            <UiText variant="navigation">
+              {{ t(`settings.sections.${id}`) }}
+            </UiText>
           </button>
         </nav>
 
@@ -111,7 +126,7 @@ function onGenerateDemoData() {
             <!-- Currency -->
             <UiSettingsCard :title="t('currencies.base')">
               <button
-                class="group relative inline-flex min-h-10.5 min-w-40 items-center gap-2 theme-rounded-control bg-elevated/30 px-4 py-2 pe-10 text-sm text-highlighted ring ring-accented transition-colors ring-inset hover:bg-elevated/50! focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
+                class="group relative inline-flex min-h-10.5 min-w-40 items-center gap-2 rounded-md bg-elevated/30 px-4 py-2 pe-10 text-sm text-highlighted ring ring-accented transition-colors ring-inset hover:bg-elevated/50! focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
                 @click="isShowBaseCurrencyModal = true"
               >
                 <span class="truncate">{{ currenciesStore.base }}</span>
@@ -147,6 +162,7 @@ function onGenerateDemoData() {
               :title="t('demo.update')"
             >
               <UButton
+                class="min-h-10.5 rounded-md px-4"
                 variant="outline"
                 color="secondary"
                 size="md"
@@ -164,6 +180,7 @@ function onGenerateDemoData() {
             >
               <template #footer>
                 <UButton
+                  class="min-h-10.5 rounded-md px-4"
                   variant="soft"
                   color="error"
                   size="md"
@@ -184,6 +201,7 @@ function onGenerateDemoData() {
             <UiSwitchItem
               v-for="id in featureIds"
               :key="id"
+              class="min-h-10.5 rounded-md!"
               :checkboxValue="features[id]"
               :title="t(`settings.features.${id}`)"
               @toggle="features[id] = !features[id]"
@@ -196,6 +214,7 @@ function onGenerateDemoData() {
                 <UButton
                   v-for="link in LINKS"
                   :key="link.href"
+                  class="min-h-10.5 rounded-md px-4"
                   :href="link.href"
                   :icon="link.icon"
                   :label="t(link.labelKey)"

@@ -34,17 +34,16 @@ const categoryForm = ref(categoryFormSchema.parse(category.value ?? {}))
     />
   </DefineBody>
 
-  <UModal
+  <UiModalWrap
     v-if="isLaptop"
     defaultOpen
     :title="category?.name || t('categories.createNewTitle')"
-    :ui="{ content: 'max-w-lg' }"
     @after:leave="emit('closed')"
   >
-    <template #body="{ close }">
+    <template #default="{ close }">
       <ReuseBody :close />
     </template>
-  </UModal>
+  </UiModalWrap>
 
   <Drawer
     v-else

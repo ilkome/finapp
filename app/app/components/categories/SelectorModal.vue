@@ -4,18 +4,15 @@ import { useStorage } from '@vueuse/core'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
-import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { compareCategoryIds } from '~/components/categories/utils'
-
-type CategoryFilter = 'all' | 'favorites'
+import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
 const props = defineProps<{
   activeItemId?: CategoryId
   autofocus?: boolean
-  compactDesktop?: boolean
   hide?: () => void
   hideCreate?: boolean
   hideHeader?: boolean
@@ -40,25 +37,13 @@ const isLaptop = useIsLaptop()
 const search = ref('')
 const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
 
-const filter = useStorage<CategoryFilter>('finapp.categories-selector-filter', 'all')
-const view = useStorage<'list' | 'grid'>('finapp.categoriesSelectorView', 'list')
-const isRoundIcon = useCategoriesIconStyle()
+const { childrenView: view, isRoundIcon, isShowChildrenCount, layout } = useCategoriesViewSettings()
+const isColumns = computed(() => layout.value === 'columns')
+// Favorites and recent come first in the sheet; their toggles hide them.
+const blocksOpen = useStorage<Record<string, boolean>>('finapp.categoriesBlocksOpen', { all: true, favorites: true, recent: true, system: true }, localStorage, { mergeDefaults: true })
 
 const editingCategoryId = ref<CategoryId | null>(null)
 const isCreatingNewCategory = ref(false)
-
-const hasFavorites = computed(() => categoriesStore.favoriteCategoriesIds.length > 0)
-const hasRecent = computed(() => categoriesStore.recentCategoriesIds.length > 0)
-const hasFavoritesOrRecent = computed(() => hasFavorites.value || hasRecent.value)
-
-watch(hasFavoritesOrRecent, (any) => {
-  if (!any && filter.value !== 'all')
-    filter.value = 'all'
-}, { immediate: true })
-
-function toggleFavoritesFilter() {
-  filter.value = filter.value === 'favorites' ? 'all' : 'favorites'
-}
 
 const allRootIds = computed<CategoryId[]>(() => {
   const items = categoriesStore.items
@@ -124,13 +109,10 @@ const filteredRecent = computed<CategoryId[]>(() => {
   return categoriesStore.recentCategoriesIds.filter(id => nameMatches(id, q))
 })
 
-const hasNoMatches = computed(() => {
-  if (!searchQuery.value)
-    return false
-  if (filter.value === 'all')
-    return filteredAllRootIds.value.length === 0
-  return filteredFavorites.value.length === 0 && filteredRecent.value.length === 0
-})
+const hasNoMatches = computed(() => !!searchQuery.value
+  && filteredAllRootIds.value.length === 0
+  && filteredFavorites.value.length === 0
+  && filteredRecent.value.length === 0)
 
 function onClickNew() {
   if (isLaptop.value)
@@ -189,7 +171,7 @@ onMounted(focusSearch)
 watch(() => props.autofocus, focusSearch)
 
 // Lets a host with its own toolbar (the filter sheet) drive the view controls.
-defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavoritesFilter, view })
+defineExpose({ folderIcon, toggleAll })
 </script>
 
 <template>
@@ -199,8 +181,6 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
       class="sticky top-0 z-20 flex items-center gap-2 bg-default/90 px-3 backdrop-blur"
       :class="[
         props.hideSearch ? 'justify-end py-1' : 'py-2',
-        // Stay aligned with the list below, which drops to md:px-1 in compact mode.
-        props.compactDesktop && 'md:px-1',
       ]"
     >
       <input
@@ -212,57 +192,78 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
         :placeholder="t('categories.search.placeholder')"
       >
       <div class="flex items-center gap-0.5">
-        <UiTriggerButton
-          v-if="filter === 'all'"
-          :icon="view === 'list' ? 'lucide:layout-grid' : 'lucide:list'"
-          outlined
-          :title="$t('base.toggleView')"
-          @click="view = view === 'list' ? 'grid' : 'list'"
-        />
+        <CategoriesViewSettings hideBackground>
+          <template #trigger>
+            <UiTriggerButton icon="lucide:settings-2" outlined :title="$t('stat.config.menu.label')" />
+          </template>
+        </CategoriesViewSettings>
 
         <UiTriggerButton
-          v-if="filter === 'all'"
           :icon="folderIcon"
           outlined
           :title="$t('base.toggleFolders')"
           @click="toggleAll"
         />
 
-        <UiTriggerButton
-          v-if="hasFavoritesOrRecent"
-          icon="lucide:star"
-          :isActive="filter === 'favorites'"
-          outlined
-          :title="$t('categories.favorite')"
-          @click="toggleFavoritesFilter"
-        />
-
-        <UiActionButton
+        <UDropdownMenu
           v-if="!props.hideCreate"
-          :ariaLabel="$t('categories.new')"
-          @click="onClickNew"
+          :content="{ align: 'end' }"
+          :items="[[{ label: $t('categories.new'), onSelect: onClickNew }]]"
+          :modal="false"
         >
-          <Icon name="lucide:plus" size="20" />
-        </UiActionButton>
+          <UiTriggerButton icon="lucide:ellipsis-vertical" outlined :title="$t('base.moreOptions')" />
+        </UDropdownMenu>
       </div>
     </div>
 
     <div
       class="h-full scroller-block overflow-y-auto px-3 pt-1 pb-4"
-      :class="props.compactDesktop && 'md:px-1'"
     >
-      <div v-show="filter === 'all'">
-        <div
-          v-if="hasNoMatches"
-          class="p-4 text-center text-muted"
-        >
-          {{ t('categories.form.children.noMatches') }}
+      <div
+        v-if="hasNoMatches"
+        class="p-4 text-center text-muted"
+      >
+        {{ t('categories.form.children.noMatches') }}
+      </div>
+
+      <UCollapsible
+        v-for="block in [
+          { id: 'favorites', ids: filteredFavorites },
+          { id: 'recent', ids: filteredRecent },
+        ].filter(block => block.ids.length)"
+        :key="block.id"
+        :open="blocksOpen[block.id]"
+      >
+        <div class="sticky top-0 z-10 flex items-stretch bg-default">
+          <UiTitleDropRight :isShown="blocksOpen[block.id]" @click="blocksOpen[block.id] = !blocksOpen[block.id]">
+            <div class="font-tertiary text-base leading-none font-semibold text-toned!">
+              {{ t(`categories.blocks.${block.id}`) }}
+            </div>
+
+            <div class="text-xs leading-none tracking-wide text-dimmed">
+              {{ block.ids.length }}
+            </div>
+          </UiTitleDropRight>
         </div>
 
-        <template v-else>
-          <template
+        <template #content>
+          <CategoriesSelectorGrid
+            :activeItemId="props.activeItemId"
+            class="pb-4"
+            :getContextMenuItems="getCategoryContextMenuItems"
+            :ids="block.ids"
+            :selectedIds="props.selectedIds"
+            @selected="onSelect"
+          />
+        </template>
+      </UCollapsible>
+
+      <div>
+        <div :class="isColumns && 'grid gap-1 3sm:grid-cols-2'">
+          <div
             v-for="rootId in filteredAllRootIds"
             :key="rootId"
+            :class="isColumns && isRootExpanded(rootId) && categoriesStore.hasChildren(rootId) && 'col-span-full'"
           >
             <CategoriesItem
               :activeItemId="props.activeItemId"
@@ -272,20 +273,24 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
               :isExpanded="isRootExpanded(rootId)"
               :isRoundIcon="isRoundIcon"
               :isShowChevron="categoriesStore.hasChildren(rootId)"
+              :isShowChildrenCount="isShowChildrenCount"
               :hideLeftMenuButton="true"
               :leftMenuButton="true"
-              :lineWidth="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId) ? 0 : 1"
+              :lineWidth="isColumns || (isRootExpanded(rootId) && categoriesStore.hasChildren(rootId)) ? 0 : 1"
               :selectedIds="props.selectedIds"
-              class="group"
+              :stacked="isColumns"
+              :class="isColumns ? 'group rounded-md bg-elevated/30' : 'group'"
               @click="onRootClick(rootId)"
               @toggle="toggle(rootId)"
             />
 
             <div
               v-if="isRootExpanded(rootId) && categoriesStore.hasChildren(rootId)"
-              :class="view === 'grid'
-                ? 'ml-2 pr-2 pb-4 pl-3'
-                : '-mt-px ml-5 pb-1 pl-3'"
+              :class="isColumns
+                ? 'ml-2 pt-1 pl-3'
+                : view === 'grid'
+                  ? 'ml-2 pr-2 pb-4 pl-3'
+                  : '-mt-px ml-5 pb-1 pl-3'"
             >
               <button
                 v-if="props.selectableParents"
@@ -310,7 +315,26 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
                 </div>
               </button>
 
-              <template v-if="view === 'list'">
+              <div v-if="isColumns" class="grid gap-1 3sm:grid-cols-2">
+                <CategoriesItem
+                  v-for="childId in visibleChildrenIds(rootId)"
+                  :key="childId"
+                  :activeItemId="props.activeItemId"
+                  :category="categoriesStore.items[childId]!"
+                  :categoryId="childId"
+                  :contextMenuItems="getCategoryContextMenuItems(childId)"
+                  :hideLeftMenuButton="true"
+                  :isRoundIcon="isRoundIcon"
+                  :leftMenuButton="true"
+                  :lineWidth="0"
+                  :selectedIds="props.selectedIds"
+                  class="group rounded-md bg-elevated/30"
+                  stacked
+                  @click="onSelect(childId)"
+                />
+              </div>
+
+              <template v-else-if="view === 'list'">
                 <CategoriesItem
                   v-for="childId in visibleChildrenIds(rootId)"
                   :key="childId"
@@ -339,42 +363,8 @@ defineExpose({ filter, folderIcon, hasFavoritesOrRecent, toggleAll, toggleFavori
                 />
               </div>
             </div>
-          </template>
-        </template>
-      </div>
-
-      <div v-show="filter !== 'all'">
-        <div
-          v-if="hasNoMatches"
-          class="p-4 text-center text-muted"
-        >
-          {{ t('categories.form.children.noMatches') }}
-        </div>
-
-        <template v-else>
-          <CategoriesSelectorGrid
-            v-if="filteredFavorites.length > 0"
-            :activeItemId="props.activeItemId"
-            :getContextMenuItems="getCategoryContextMenuItems"
-            :ids="filteredFavorites"
-            :selectedIds="props.selectedIds"
-            @selected="onSelect"
-          />
-
-          <div v-if="filteredRecent.length > 0">
-            <div class="sticky top-0 z-10 pt-5 pb-4 font-tertiary text-lg leading-none font-semibold">
-              {{ t('categories.recentCategories') }}
-            </div>
-            <CategoriesSelectorGrid
-              :activeItemId="props.activeItemId"
-              :getContextMenuItems="getCategoryContextMenuItems"
-              :ids="filteredRecent"
-              :selectedIds="props.selectedIds"
-              class="pt-px"
-              @selected="onSelect"
-            />
           </div>
-        </template>
+        </div>
       </div>
     </div>
 

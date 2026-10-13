@@ -31,7 +31,10 @@ async function load(): Promise<Mod> {
 }
 
 function back() {
-  popstate?.(new PopStateEvent('popstate'))
+  const event = new PopStateEvent('popstate')
+  const stop = vi.spyOn(event, 'stopImmediatePropagation')
+  popstate?.(event)
+  return stop
 }
 
 beforeEach(() => {
@@ -95,7 +98,7 @@ describe('useDrawerHistory', () => {
     expect(window.history.go).toHaveBeenCalledWith(-1)
     expect(window.scrollTo).not.toHaveBeenCalled()
 
-    back()
+    expect(back()).toHaveBeenCalled()
     expect(window.scrollTo).toHaveBeenCalledWith({ left: 12, top: 840 })
   })
 
@@ -139,7 +142,7 @@ describe('useDrawerHistory', () => {
     mod.registerDrawer(closeB)
     await flush()
 
-    back()
+    expect(back()).toHaveBeenCalled()
     expect(closeB).toHaveBeenCalledTimes(1)
     expect(closeA).not.toHaveBeenCalled()
 
@@ -177,6 +180,11 @@ describe('useDrawerHistory', () => {
     expect(result).toBe(true)
     expect(window.history.go).not.toHaveBeenCalled()
     expect(replace).not.toHaveBeenCalled()
+  })
+
+  it('leaves a real Back to the router', async () => {
+    await load()
+    expect(back()).not.toHaveBeenCalled()
   })
 
   it('bounces a Forward into a consumed synthetic entry', async () => {

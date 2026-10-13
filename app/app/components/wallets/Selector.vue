@@ -4,20 +4,20 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 import { useStorage } from '@vueuse/core'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletSortOrders, WalletsToggleMap } from '~/components/wallets/grouping'
+import type { WalletSortOrders } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
-import { applyToggle, buildWalletGroups, sortWalletGroups } from '~/components/wallets/grouping'
+import { buildWalletGroups, sortWalletGroups } from '~/components/wallets/grouping'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletGroupingOptions } from '~/components/wallets/useWalletGroupingOptions'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
+import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   activeItemId?: WalletId
   autofocus?: boolean
-  compactDesktop?: boolean
   currencyAboveAction?: boolean
   disabledIds?: WalletId[]
   filterAtTop?: boolean
@@ -85,18 +85,26 @@ const walletGroups = computed(() => {
       }))
     : [{ ids: selectedWalletsIdsWithCurrency.value, key: 'all', label: '' }]
 })
-const toggledMap = useStorage<WalletsToggleMap>(WALLET_STORAGE_KEYS.toggleMap, {})
+const { toggleMap: toggleGroup, toggleOpened: toggleAllGroups, typeGroupsStatus: groupsStatus, walletsToggledMap: toggledMap }
+  = useWalletsGrouping(selectedWalletsIdsWithCurrency, groupedBy)
 const isGroupOpen = (key: string) => groupedBy.value === 'none' || (toggledMap.value[groupedBy.value]?.[key]?.show ?? true)
-function toggleGroup(key: string) {
-  toggledMap.value = applyToggle(toggledMap.value, groupedBy.value, key)
-}
 const groupingOptions = useWalletGroupingOptions()
-const groupingItems = computed<DropdownMenuItem[]>(() => groupingOptions.value.map(option => ({
-  checked: groupedBy.value === option.id,
-  label: option.label,
-  onSelect: () => { groupedBy.value = option.id },
-  type: 'checkbox' as const,
-})))
+function cycleGrouping() {
+  const options = groupingOptions.value
+  const index = options.findIndex(option => option.id === groupedBy.value)
+  groupedBy.value = options[(index + 1) % options.length]!.id
+}
+const groupingItems = computed<DropdownMenuItem[][]>(() => [[
+  { icon: 'lucide:list-tree', label: t('wallets.page.groupBy'), type: 'label' },
+  { class: 'ms-2!', type: 'separator' },
+  ...groupingOptions.value.map(option => ({
+    checked: groupedBy.value === option.id,
+    icon: option.icon,
+    label: option.label,
+    onSelect: () => { groupedBy.value = option.id },
+    type: 'checkbox' as const,
+  })),
+]])
 
 const walletMenu = useWalletMenuItems()
 
@@ -149,19 +157,16 @@ async function focusSearch() {
 onMounted(focusSearch)
 watch(() => props.autofocus, focusSearch)
 
-defineExpose({ groupingItems })
+defineExpose({ cycleGrouping, groupedBy, groupingItems, groupsStatus, toggleAllGroups })
 </script>
 
 <template>
   <div class="flex h-full min-h-0 flex-col overflow-hidden">
     <div
       v-if="props.withHeader && !props.hideHeader"
-      class="flex items-center gap-2 bg-default py-2"
+      class="flex items-center gap-2 bg-default px-3 py-2"
       :class="{
         'justify-end': props.hideSearch,
-        // Keep the search aligned with the padded list below it.
-        'px-3': props.selectedIds !== undefined,
-        'md:px-1': props.selectedIds !== undefined && props.compactDesktop,
       }"
     >
       <input
@@ -182,10 +187,9 @@ defineExpose({ groupingItems })
 
     <div class="relative grid min-h-0 flex-1 overflow-hidden">
       <div
-        class="h-full scroller-block overflow-y-auto py-px"
+        class="h-full scroller-block space-y-1 overflow-y-auto px-3 py-px"
         :class="{
-          'space-y-1 px-3 pt-2': props.selectedIds !== undefined,
-          'md:px-1': props.selectedIds !== undefined && props.compactDesktop,
+          'pt-2': !(props.filterAtTop && walletsStore.currenciesUsed.length > 1),
           'pb-28!': props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pb-16': !props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
           'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
@@ -220,36 +224,15 @@ defineExpose({ groupingItems })
                 v-for="walletId in group.ids"
                 :key="walletId"
               >
-                <div
-                  v-if="props.selectedIds !== undefined"
-                  :class="cn(
-                    'flex items-center rounded-md border border-transparent bg-elevated/30 select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent',
-                    props.selectedIds.includes(walletId) && 'border-primary/40',
-                  )"
-                  @click="onClickWallet(walletId)"
-                >
-                  <WalletsItem
-                    :activeItemId="props.activeItemId ?? null"
-                    :contextMenuItems="getWalletContextMenuItems(walletId)"
-                    :walletId
-                    :wallet="walletsStore.itemsComputed[walletId]!"
-                    :lineWidth="4"
-                    bodyClass="group/item min-w-0 flex-1"
-                    isShowIcon
-                    isShowCreditLimit
-                  />
-                </div>
-
                 <WalletsItem
-                  v-else
                   :activeItemId="props.activeItemId ?? null"
                   :contextMenuItems="getWalletContextMenuItems(walletId)"
+                  :isSelected="props.selectedIds?.includes(walletId)"
                   :walletId
                   :wallet="walletsStore.itemsComputed[walletId]!"
-                  :lineWidth="4"
-                  class="group/item"
                   isShowIcon
                   isShowCreditLimit
+                  withBackground
                   @click="onClickWallet(walletId)"
                 />
               </template>
@@ -273,7 +256,8 @@ defineExpose({ groupingItems })
           class="pointer-events-none absolute left-0 z-20 w-full"
           :class="props.filterAtTop
             ? 'top-0'
-            : props.currencyAboveAction ? 'bottom-14' : 'bottom-2'"
+            : props.currencyAboveAction ? 'bottom-14 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)]' : 'bottom-2'"
+          :style="props.currencyAboveAction && !props.filterAtTop ? 'transform: translateY(calc(-1 * var(--drawer-snap-lift, 0px)))' : undefined"
         >
           <div class="swiper-no-swiping pointer-events-auto w-full touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain px-2 [&::-webkit-scrollbar]:hidden">
             <WalletsCurrencies

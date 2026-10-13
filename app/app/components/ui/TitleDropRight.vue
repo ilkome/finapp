@@ -29,7 +29,7 @@ function onClick() {
 <template>
   <div
     ref="root"
-    class="flex min-h-9.5 min-w-10.5 grow items-center gap-1 rounded-sm interactive px-3 pb-0"
+    class="flex min-h-9.5 min-w-10.5 grow items-center gap-1 rounded-md interactive px-3 pb-0"
     @click="onClick"
   >
     <slot />

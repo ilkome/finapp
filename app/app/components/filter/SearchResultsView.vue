@@ -20,7 +20,7 @@ const hasNoResults = computed(() => props.wallets.length === 0 && props.categori
 </script>
 
 <template>
-  <div class="h-full scroller-block overflow-y-auto px-3 pb-20 md:px-1">
+  <div class="h-full scroller-block overflow-y-auto px-3 pb-20">
     <div
       v-if="hasNoResults"
       class="p-4 text-center text-muted"
@@ -33,24 +33,17 @@ const hasNoResults = computed(() => props.wallets.length === 0 && props.categori
         {{ t('wallets.title') }}
       </UiTitleModal>
       <div class="grid gap-1 pt-1">
-        <div
+        <WalletsItem
           v-for="{ wallet, walletId } in props.wallets"
           :key="walletId"
-          :class="cn(
-            'flex items-center rounded-md border border-transparent bg-elevated/30 select-none hover:bg-elevated/50 [&_.uiElement:hover]:bg-transparent',
-            props.pendingWallets.includes(walletId) && 'border-primary/40',
-          )"
+          :isSelected="props.pendingWallets.includes(walletId)"
+          :wallet="wallet"
+          :walletId="walletId"
+          isShowCreditLimit
+          isShowIcon
+          withBackground
           @click="emit('toggleWallet', walletId)"
-        >
-          <WalletsItem
-            :wallet="wallet"
-            :walletId="walletId"
-            :lineWidth="4"
-            class="min-w-0 flex-1"
-            isShowCreditLimit
-            isShowIcon
-          />
-        </div>
+        />
       </div>
     </template>
 

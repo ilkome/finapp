@@ -38,8 +38,8 @@ export default defineAppConfig({
       slots: {
         // Months stack on a phone, sit side by side from md up (the range picker shows two).
         body: 'flex-col! space-y-8! md:flex-row! md:space-y-0! md:space-x-0! md:gap-6',
-        header: 'gap-1.5',
         cellTrigger: 'data-[disabled]:hover:bg-transparent data-disabled:text-dimmed! data-disabled:opacity-50 data-today:bg-primary/10',
+        header: 'gap-1.5',
         // Russian month names come lowercase from Intl ("сентябрь"). The heading text sits in a button,
         // and buttons reset text-transform, so it is set on the children too.
         heading: 'capitalize [&_*]:capitalize',
@@ -47,8 +47,8 @@ export default defineAppConfig({
       },
     },
     colors: {
-      neutral: 'neutral',
-      primary: 'black',
+      neutral: 'zinc',
+      primary: 'yellow',
     },
     commandPalette: {
       slots: {
@@ -67,7 +67,7 @@ export default defineAppConfig({
     },
     popover: {
       slots: {
-        content: 'w-[22rem] max-w-sm',
+        content: 'w-[22rem] max-w-sm border border-accented ring-0',
       },
     },
     radioGroup: {

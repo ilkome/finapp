@@ -23,7 +23,6 @@ const isFilterOpen = ref(false)
     <DrawerOrDropdown
       v-model:open="isFilterOpen"
       class="flex shrink-0 snap-start snap-always gap-1"
-      popoverBodyClass="py-0! md:pb-0!"
       :collapsedSnap="500"
       :unmountOnHide="false"
       keyboardTrigger

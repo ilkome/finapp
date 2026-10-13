@@ -10,7 +10,9 @@ patchedDependencies:
   # Swipe toasts right to dismiss while they stay on the left (swipe direction is hardwired to position).
   '@nuxt/ui@4.11.3': patches/@nuxt__ui@4.11.3.patch
   # Drawer: swipes start on buttons and honor data-reka-swipe-ignore (unovue/reka-ui#2982), 60px sequential
-  # snap commit, rubber-band past the top snap point.
+  # snap commit, rubber-band past the top snap point. Ours: a closed kept-mounted drawer releases its
+  # DismissableLayer while staying mounted and starts its next open from a clean swipe state; a nested
+  # drawer's swipe drives its parent, not the page; switching `modal` keeps the content mounted.
   reka-ui@2.10.5: patches/reka-ui@2.10.5.patch
 
 allowBuilds:

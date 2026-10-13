@@ -167,7 +167,7 @@ overrides:
 
 patchedDependencies:
   '@nuxt/ui@4.11.3': 18b2c7876ac8ac4b1cbb0b14ff40552c6ce3904f4c089d6f2f76fe5abcf68acf
-  reka-ui@2.10.5: 2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615
+  reka-ui@2.10.5: 4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee
 
 importers:
 
@@ -256,7 +256,7 @@ importers:
         version: 4.0.3(@vue/devtools-api@8.2.1)(typescript@6.0.3)(vue@3.5.43(typescript@6.0.3))
       reka-ui:
         specifier: 2.10.5
-        version: 2.10.5(patch_hash=2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615)(vue@3.5.43(typescript@6.0.3))
+        version: 2.10.5(patch_hash=4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee)(vue@3.5.43(typescript@6.0.3))
       swiper:
         specifier: ^14.2.0
         version: 14.2.0
@@ -14283,7 +14283,7 @@ snapshots:
       motion-v: 2.4.4(@vueuse/core@14.4.0(vue@3.5.43(typescript@6.0.3)))(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(vue@3.5.43(typescript@6.0.3))
       ohash: 2.0.12
       pathe: 2.0.3
-      reka-ui: 2.10.5(patch_hash=2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615)(vue@3.5.43(typescript@6.0.3))
+      reka-ui: 2.10.5(patch_hash=4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee)(vue@3.5.43(typescript@6.0.3))
       scule: 1.3.0
       tailwind-merge: 3.7.0
       tailwind-variants: 3.3.1(tailwind-merge@3.7.0)(tailwindcss@4.3.3)
@@ -14294,7 +14294,7 @@ snapshots:
       unplugin: 3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.64.5)(vite@8.3.3(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       unplugin-auto-import: 21.1.0(@nuxt/kit@4.6.1(@nuxt/schema@4.6.1)(confbox@0.2.4)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.141.0)(rolldown@1.2.11)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.64.5)(vite@8.3.3(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))))(@vueuse/core@14.4.0(vue@3.5.43(typescript@6.0.3)))(esbuild@0.28.2)(oxc-parser@0.141.0)(rolldown@1.2.11)(rollup@4.64.5)(vite@8.3.3(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
       unplugin-vue-components: 32.1.0(@nuxt/kit@4.6.1(@nuxt/schema@4.6.1)(confbox@0.2.4)(dotenv@17.4.2)(giget@3.3.1)(jiti@2.7.0)(magic-string@1.4.3)(mlly@1.8.2)(oxc-parser@0.141.0)(rolldown@1.2.11)(unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.64.5)(vite@8.3.3(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))))(esbuild@0.28.2)(rolldown@1.2.11)(rollup@4.64.5)(vite@8.3.3(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))(vue@3.5.43(typescript@6.0.3))
-      vaul-vue: 0.4.1(reka-ui@2.10.5(patch_hash=2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615)(vue@3.5.43(typescript@6.0.3)))(vue@3.5.43(typescript@6.0.3))
+      vaul-vue: 0.4.1(reka-ui@2.10.5(patch_hash=4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee)(vue@3.5.43(typescript@6.0.3)))(vue@3.5.43(typescript@6.0.3))
       vue-component-type-helpers: 3.3.12
     optionalDependencies:
       '@internationalized/date': 3.12.4
@@ -23021,7 +23021,7 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
 
-  reka-ui@2.10.5(patch_hash=2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615)(vue@3.5.43(typescript@6.0.3)):
+  reka-ui@2.10.5(patch_hash=4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee)(vue@3.5.43(typescript@6.0.3)):
     dependencies:
       '@floating-ui/dom': 1.8.0
       '@floating-ui/vue': 1.1.11(vue@3.5.43(typescript@6.0.3))
@@ -24453,10 +24453,10 @@ snapshots:
     transitivePeerDependencies:
       - '@vue/composition-api'
 
-  vaul-vue@0.4.1(reka-ui@2.10.5(patch_hash=2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615)(vue@3.5.43(typescript@6.0.3)))(vue@3.5.43(typescript@6.0.3)):
+  vaul-vue@0.4.1(reka-ui@2.10.5(patch_hash=4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee)(vue@3.5.43(typescript@6.0.3)))(vue@3.5.43(typescript@6.0.3)):
     dependencies:
       '@vueuse/core': 10.11.1(vue@3.5.43(typescript@6.0.3))
-      reka-ui: 2.10.5(patch_hash=2ec3b3f4dca17fc339f08648316205e1ddbf965aa7c80659a1858ed152ab9615)(vue@3.5.43(typescript@6.0.3))
+      reka-ui: 2.10.5(patch_hash=4dff4f76566bcd6951a33466573354aa2da9f2787c38e39e3161a986c554a8ee)(vue@3.5.43(typescript@6.0.3))
       vue: 3.5.43(typescript@6.0.3)
     transitivePeerDependencies:
       - '@vue/composition-api'

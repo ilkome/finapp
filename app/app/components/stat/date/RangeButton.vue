@@ -16,7 +16,6 @@ const label = computed(() => statDateRangeLabel({
   <DrawerOrDropdown
     v-model:open="statDate.modal.value.dateSelector"
     :title="t('dates.select')"
-    popoverBodyClass="md:pb-3"
     popoverContentClass="md:w-max md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
     class="flex grow-0 gap-1"
@@ -33,7 +32,7 @@ const label = computed(() => statDateRangeLabel({
 
     <template #content="{ close }">
       <StatDateRangePicker
-        class="min-w-0 pb-2 md:min-w-90.5 md:px-1 md:pb-0"
+        class="min-w-0 pb-2 md:min-w-90.5 md:pb-0"
         @close="close"
       />
     </template>
