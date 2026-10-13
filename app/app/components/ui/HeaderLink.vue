@@ -3,7 +3,7 @@ const props = withDefaults(defineProps<{
   icon?: string
   iconSize?: number
 }>(), {
-  iconSize: 22,
+  iconSize: 20,
 })
 
 const emit = defineEmits<{
@@ -13,19 +13,15 @@ const emit = defineEmits<{
 
 <template>
   <div
-    class="flex min-h-11 items-center gap-3 rounded-sm interactive px-2 py-1.5 text-sm font-medium"
+    class="flex min-h-10.5 items-center gap-3 rounded-sm interactive py-1.5 pr-2 pl-3 text-sm leading-none font-medium tracking-wide"
     @click="e => emit('click', e)"
   >
-    <div
+    <Icon
       v-if="props.icon"
-      class="flex min-w-8 items-center justify-center"
-    >
-      <Icon
-        :name="props.icon"
-        :size="props.iconSize"
-        class="text-muted"
-      />
-    </div>
+      :name="props.icon"
+      :size="props.iconSize"
+      class="shrink-0 text-muted"
+    />
 
     <slot />
   </div>

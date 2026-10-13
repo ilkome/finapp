@@ -79,7 +79,13 @@ function scheduleReconcile() {
   setTimeout(reconcile, 0)
 }
 
-function onPopState() {
+// A pop between synthetic entries stays on the same URL, yet vue-router would still resolve it into a
+// fresh route object, and everything reading the route re-renders under the closing sheet. The
+// router never saw these entries, so its own history position stays consistent without the event.
+function onPopState(event: PopStateEvent) {
+  if (poppingSelf || stack.length > 0 || window.history.state?.__drawer)
+    event.stopImmediatePropagation()
+
   if (poppingSelf) {
     poppingSelf = false
     if (pendingSelfPopRestore) {
@@ -102,6 +108,11 @@ function onPopState() {
   syntheticDepth -= 1
   stack.pop()?.requestClose()
 }
+
+// Registered on import, not in installDrawerHistory: window runs popstate listeners in registration
+// order, and this one has to come before the router's, which it creates while the plugins run.
+if (typeof window !== 'undefined')
+  window.addEventListener('popstate', onPopState)
 
 export function registerDrawer(requestClose: () => void): () => void {
   const entry: DrawerEntry = { requestClose, restoreScroll: true, scroll: getScrollPosition() }
@@ -137,8 +148,6 @@ export function installDrawerHistory(r: Router): void {
     return
   installed = true
   router = r
-
-  window.addEventListener('popstate', onPopState)
 
   if (window.history.state?.__drawer)
     window.history.replaceState({ ...window.history.state, __drawer: undefined }, '')

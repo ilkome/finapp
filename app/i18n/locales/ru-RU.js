@@ -75,6 +75,7 @@ export default {
       removeFromRecent: 'Не показывать в недавних',
     },
     allTitle: 'Все',
+    blocks: { all: 'Все категории', favorites: 'Избранные', recent: 'Недавние', system: 'Системные категории' },
     createNewTitle: 'Добавление категории',
     errors: {
       deleteFailed: 'Не удалось удалить категорию',
@@ -148,6 +149,8 @@ export default {
         grid: 'Облако',
         list: 'Список',
       },
+      layout: 'Вид',
+      layouts: { columns: 'Колонки', list: 'Список' },
       showChildrenCount: 'Показывать количество дочерних',
     },
   },
@@ -889,9 +892,6 @@ export default {
       transferAmountEmpty: 'Суммы перевода не могут быть пустыми',
       transferSameWallet: 'Перевод в тот же кошелек',
     },
-    filterAll: 'Все',
-    filterWallet: 'Кошелек',
-    filterWalletAndCategory: 'Кошелек и Категория',
     loanFineTitle: 'Пени и комиссии',
     loanInterestTitle: 'Проценты по кредиту',
     loanOfWhichInterest: 'Из них проценты',
@@ -1011,8 +1011,9 @@ export default {
       showStatistics: 'Показывать статистику',
     },
     page: {
-      currencies: 'Валюты',
-      none: 'Список',
+      currencies: 'Валюта',
+      groupBy: 'Группировать',
+      none: 'Нет',
       type: 'Тип',
     },
     search: {

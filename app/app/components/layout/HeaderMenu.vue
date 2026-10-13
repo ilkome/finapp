@@ -14,7 +14,6 @@ const isOpen = ref(false)
   <DrawerOrDropdown
     v-model:open="isOpen"
     align="end"
-    popoverBodyClass="md:pb-0"
   >
     <template #trigger="{ isActive }">
       <span class="relative inline-flex">
@@ -37,7 +36,7 @@ const isOpen = ref(false)
     </template>
 
     <template #content="{ close }">
-      <div class="w-full py-2 max-md:pt-6">
+      <div class="w-full py-3 md:py-2">
         <LayoutUserMenuPanels :sessionActions @close="close" />
       </div>
     </template>

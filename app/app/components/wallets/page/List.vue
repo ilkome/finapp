@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import type { WalletsGroupedBy, WalletType } from '~/components/wallets/types'
+import type { WalletId, WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { canStickStatCategories } from '~/components/stat/statFeed'
@@ -15,6 +15,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
 
 const { t } = useI18n()
+const router = useRouter()
 
 useSeoMeta({
   ogTitle: t('wallets.name'),
@@ -33,6 +34,9 @@ const { height: viewportHeight } = useWindowSize()
 const canStickSideColumn = computed(() => canStickStatCategories(stickyTop.value, sideColumnHeight.value, viewportHeight.value))
 const currenciesStore = useCurrenciesStore()
 const isSorting = ref(false)
+const isLaptop = useIsLaptop()
+// vueuse types a binding as a prop option, so a function type must stay `any`.
+const [DefineSortBody, ReuseSortBody] = createReusableTemplate()
 const isOpen = ref(false)
 
 // Statistics settings are a panel of this same menu, the way the user menu nests its panels -
@@ -113,19 +117,19 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
 
-const groupIcons: Record<WalletsGroupedBy, string> = {
-  currency: 'lucide:coins',
-  none: 'lucide:list',
-  type: 'lucide:layers',
-}
-
 const currentGroupTab = computed(() => groupTabs.value.find(tab => tab.id === groupedBy.value) ?? groupTabs.value[0]!)
 
-function cycleGrouping() {
-  const tabs = groupTabs.value
-  const index = tabs.findIndex(tab => tab.id === groupedBy.value)
-  groupedBy.value = tabs[(index + 1) % tabs.length]!.id
-}
+const groupingItems = computed(() => [[
+  { icon: 'lucide:list-tree', label: t('wallets.page.groupBy'), type: 'label' as const },
+  { class: 'ms-2!', type: 'separator' as const },
+  ...groupTabs.value.map(tab => ({
+    checked: groupedBy.value === tab.id,
+    icon: tab.icon,
+    label: tab.label,
+    onSelect: () => { groupedBy.value = tab.id },
+    type: 'checkbox' as const,
+  })),
+]])
 </script>
 
 <template>
@@ -136,60 +140,55 @@ function cycleGrouping() {
       </UiHeaderTitle>
 
       <template #actions>
-        <UTooltip :text="$t('wallets.new')">
-          <NuxtLink to="/wallets/new">
-            <UiActionButton :ariaLabel="$t('wallets.new')">
-              <Icon name="lucide:plus" size="24" />
-            </UiActionButton>
-          </NuxtLink>
-        </UTooltip>
-
-        <UTooltip :text="currentGroupTab.label">
-          <UiActionButton :ariaLabel="currentGroupTab.label" @click="cycleGrouping">
-            <Icon :name="groupIcons[currentGroupTab.id]" size="18" />
+        <UTooltip :text="$t('base.toggleGrouping')">
+          <UiActionButton
+            :ariaLabel="$t('base.toggleGrouping')"
+            :disabled="groupedBy === 'none'"
+            @click="toggleSecondaryGrouping"
+          >
+            <Icon
+              :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
+              size="18"
+            />
           </UiActionButton>
         </UTooltip>
 
-        <div
-          v-if="groupedBy !== 'none'"
-          class="flex items-center gap-1"
-        >
-          <UTooltip :text="$t('base.toggleGrouping')">
-            <UiActionButton
-              :ariaLabel="$t('base.toggleGrouping')"
-              @click="toggleSecondaryGrouping"
-            >
-              <Icon
-                :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
-                size="18"
-              />
-            </UiActionButton>
-          </UTooltip>
+        <UTooltip :text="$t('base.toggleFolders')">
+          <UiActionButton
+            :ariaLabel="$t('base.toggleFolders')"
+            :disabled="groupedBy === 'none'"
+            @click="toggleOpened"
+          >
+            <Icon
+              v-if="typeGroupsStatus.isAllOpen"
+              name="lucide:folder-open"
+            />
+            <Icon
+              v-else-if="typeGroupsStatus.isAnyOpen"
+              name="lucide:folder-open-dot"
+            />
+            <Icon
+              v-else
+              name="lucide:folder"
+            />
+          </UiActionButton>
+        </UTooltip>
 
-          <UTooltip :text="$t('base.toggleFolders')">
-            <UiActionButton :ariaLabel="$t('base.toggleFolders')" @click="toggleOpened">
-              <Icon
-                v-if="typeGroupsStatus.isAllOpen"
-                name="lucide:folder-open"
-              />
-              <Icon
-                v-else-if="typeGroupsStatus.isAnyOpen"
-                name="lucide:folder-open-dot"
-              />
-              <Icon
-                v-else
-                name="lucide:folder"
-              />
+        <UDropdownMenu :content="{ align: 'end' }" :items="groupingItems" :modal="false">
+          <UTooltip :text="currentGroupTab.label">
+            <UiActionButton :ariaLabel="$t('base.toggleView')">
+              <Icon name="lucide:list-tree" size="20" />
             </UiActionButton>
           </UTooltip>
-        </div>
+        </UDropdownMenu>
 
         <DrawerOrDropdown
-          v-if="walletsStore.sortedIds.length > 1"
           align="end"
+          isShowCloseBtn
           :open="isOpen"
-          popoverBodyClass="md:py-2 [view-transition-name:ui-panel]"
+          popoverBodyClass="[view-transition-name:ui-panel]"
           popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
+          :title="menuPanel === 'statistics' ? t('statistics.title') : undefined"
           bodyClass="[view-transition-name:ui-panel]"
           @update:open="value => value ? (menuPanel = 'root', isOpen = true) : closeMenu()"
         >
@@ -206,10 +205,10 @@ function cycleGrouping() {
 
           <template #content="{ close }">
             <div>
-              <div v-if="menuPanel === 'statistics'" class="grid gap-3 pt-4 pb-2 md:py-0">
+              <div v-if="menuPanel === 'statistics'" class="grid gap-3 py-3 md:py-0">
                 <UiPanelBack
                   class="group"
-                  :title="t('statistics.title')"
+                  :title="t('base.previous')"
                   @back="showMenuPanel('root')"
                 >
                   <UPopover
@@ -283,10 +282,15 @@ function cycleGrouping() {
                 </div>
               </div>
 
-              <div v-else class="pt-4 pb-3 md:py-0">
+              <div v-else class="py-3 md:-mx-2 md:py-1">
+                <UiHeaderLink icon="lucide:plus" @click="() => openAfterMenu(() => router.push('/wallets/new'), close)">
+                  {{ t('wallets.new') }}
+                </UiHeaderLink>
+
                 <UiHeaderLink
+                  v-if="walletsStore.sortedIds.length > 1"
                   icon="lucide:arrow-down-up"
-                  @click="() => openAfterMenu(() => isSorting = !isSorting, close)"
+                  @click="() => openAfterMenu(() => isSorting = true, close)"
                 >
                   {{ t('wallets.sortTitle') }}
                 </UiHeaderLink>
@@ -336,17 +340,6 @@ function cycleGrouping() {
             </div>
           </template>
         </DrawerOrDropdown>
-
-        <UTooltip :text="t('base.done')">
-          <UiActionButton
-            v-if="isSorting"
-            :ariaLabel="t('base.done')"
-            isActive
-            @click="isSorting = false"
-          >
-            <Icon name="lucide:check" size="20" />
-          </UiActionButton>
-        </UTooltip>
       </template>
     </UiHeader>
 
@@ -407,7 +400,6 @@ function cycleGrouping() {
           >
             <template #default="{ id: walletId }">
               <WalletsPageListItem
-                :isSort="isSorting"
                 :walletId
                 @delete="requestDelete"
               />
@@ -417,7 +409,7 @@ function cycleGrouping() {
           <WalletsSortableList
             v-if="groupedBy !== 'none' && groupedWalletsWithIds"
             :ids="Object.keys(groupedWalletsWithIds)"
-            class="grid gap-4"
+            class="grid gap-1"
             @update="keys => setSortOrder([], keys)"
           >
             <template #default="{ id: groupPrimary }">
@@ -425,11 +417,9 @@ function cycleGrouping() {
                 :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
               >
                 <div class="flex items-stretch">
-                  <WalletsSortHandle v-if="isSorting" />
                   <UiTitleDropRight
                     :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
                     @click="toggleMap(groupPrimary)"
-                    @longPress="isSorting = true"
                   >
                     <div class="font-tertiary text-base leading-none font-semibold text-toned!">
                       {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
@@ -466,7 +456,7 @@ function cycleGrouping() {
                   <WalletsSortableList
                     v-if="hasGroups(groupedWalletsWithIds[groupPrimary]!.groups)"
                     :ids="Object.keys(groupedWalletsWithIds[groupPrimary]!.groups!)"
-                    class="grid pl-6"
+                    class="grid pb-4.5 pl-6"
                     @update="keys => setSortOrder([groupPrimary], keys)"
                   >
                     <template #default="{ id: groupSecondary }">
@@ -475,7 +465,6 @@ function cycleGrouping() {
                         class="group grid"
                       >
                         <div class="flex items-stretch">
-                          <WalletsSortHandle v-if="isSorting" />
                           <UiTitleDropRight
                             :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
                             @click="toggleMap(groupPrimary, groupSecondary)"
@@ -517,7 +506,6 @@ function cycleGrouping() {
                           >
                             <template #default="{ id: walletId }">
                               <WalletsPageListItem
-                                :isSort="isSorting"
                                 :walletId
                                 @delete="requestDelete"
                               />
@@ -531,12 +519,11 @@ function cycleGrouping() {
                   <WalletsSortableList
                     v-else
                     :ids="groupedWalletsWithIds[groupPrimary]!.ids"
-                    class="grid gap-1 py-1"
+                    class="grid gap-1 pt-1.5 pb-6"
                     @update="ids => setSortOrder([groupPrimary], ids)"
                   >
                     <template #default="{ id: walletId }">
                       <WalletsPageListItem
-                        :isSort="isSorting"
                         :walletId
                         @delete="requestDelete"
                       />
@@ -549,5 +536,52 @@ function cycleGrouping() {
         </div>
       </div>
     </div>
+
+    <DefineSortBody>
+      <WalletsSortableList
+        :ids="walletsStore.sortedIds"
+        class="grid gap-1"
+        @update="ids => walletsStore.saveWalletsOrder(ids as WalletId[])"
+      >
+        <template #default="{ id }">
+          <div class="flex items-center gap-1">
+            <WalletsSortHandle />
+            <WalletsItem
+              :baseCurrencyCode="currenciesStore.base"
+              class="grow"
+              isShowIcon
+              :wallet="walletsStore.itemsComputed[id as WalletId]!"
+              :walletId="id as WalletId"
+            />
+          </div>
+        </template>
+      </WalletsSortableList>
+    </DefineSortBody>
+
+    <template v-if="isSorting">
+      <UiModalWrap
+        v-if="isLaptop"
+        defaultOpen
+        :title="t('wallets.sortTitle')"
+        @after:leave="isSorting = false"
+      >
+        <template #default>
+          <ReuseSortBody />
+        </template>
+      </UiModalWrap>
+
+      <Drawer
+        v-else
+        :title="t('wallets.sortTitle')"
+        contentClass="min-h-[50dvh]"
+        @closed="isSorting = false"
+      >
+        <template #default>
+          <div class="drawer-body">
+            <ReuseSortBody />
+          </div>
+        </template>
+      </Drawer>
+    </template>
   </UiPage>
 </template>

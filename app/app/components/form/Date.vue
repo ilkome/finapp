@@ -44,7 +44,6 @@ function onPick(date: CalendarDate | undefined, close: () => void) {
   <DrawerOrDropdown
     v-model:open="isOpen"
     :title="props.title ?? t('common.date')"
-    popoverBodyClass="md:pb-2"
     isShowCloseBtn
   >
     <template #trigger="{ isActive }">

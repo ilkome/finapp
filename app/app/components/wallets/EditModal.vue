@@ -42,17 +42,16 @@ function updateField(key: WalletFormKey, value: unknown) {
     />
   </DefineBody>
 
-  <UModal
+  <UiModalWrap
     v-if="isLaptop"
     defaultOpen
     :title="wallet?.name || t('wallets.createNewTitle')"
-    :ui="{ content: 'max-w-lg' }"
     @after:leave="emit('closed')"
   >
-    <template #body="{ close }">
+    <template #default="{ close }">
       <ReuseBody :close />
     </template>
-  </UModal>
+  </UiModalWrap>
 
   <Drawer
     v-else

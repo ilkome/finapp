@@ -51,17 +51,17 @@ function save(close: () => void) {
     />
   </DefineBody>
 
-  <UModal
+  <UiModalWrap
     v-if="isLaptop"
     defaultOpen
+    contentClass="max-w-md"
     :title="t('loans.editRow')"
-    :ui="{ content: 'max-w-md' }"
     @after:leave="emit('closed')"
   >
-    <template #body="{ close }">
+    <template #default="{ close }">
       <ReuseBody :close />
     </template>
-  </UModal>
+  </UiModalWrap>
 
   <Drawer
     v-else

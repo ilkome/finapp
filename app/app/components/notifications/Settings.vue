@@ -44,6 +44,7 @@ async function toggle() {
 
     <template v-else>
       <UiSwitchItem
+        class="min-h-10.5 rounded-md!"
         :busy="isBusy"
         :checkboxValue="isSubscribed"
         :title="isSubscribed ? t('notifications.statusOn') : t('notifications.statusOff')"

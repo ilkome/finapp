@@ -58,7 +58,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
   <UiSettingsCard :title="t('theme.picker.theme')">
     <UiOptionGrid v-model="modePreference" :items="modeItems">
       <template #swatch="{ value }">
-        <UIcon :name="modeItems.find(m => m.value === value)!.icon" class="size-6" />
+        <UIcon :name="modeItems.find(m => m.value === value)!.icon" class="size-5" />
       </template>
     </UiOptionGrid>
   </UiSettingsCard>
@@ -71,11 +71,11 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
       <template #swatch="{ value }">
         <span
           v-if="value === BLACK_PRIMARY"
-          class="size-6 rounded-full bg-black dark:bg-white"
+          class="size-5 rounded-full bg-black dark:bg-white"
         />
         <span
           v-else
-          class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+          class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
           :style="{
             '--color-light': `var(--color-${value}-500)`,
             '--color-dark': `var(--color-${value}-400)`,
@@ -92,7 +92,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
     >
       <template #swatch="{ value }">
         <span
-          class="size-6 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
+          class="size-5 rounded-full bg-(--color-light) dark:bg-(--color-dark)"
           :style="{
             '--color-light': `var(--color-${swatchPalette(value)}-500)`,
             '--color-dark': `var(--color-${swatchPalette(value)}-400)`,
@@ -109,7 +109,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
     >
       <template #swatch="{ value }">
         <span
-          class="size-6 border-2 border-primary bg-primary/15"
+          class="size-5 border-2 border-primary bg-primary/15"
           :style="{ borderRadius: `${value}rem` }"
         />
       </template>
@@ -119,6 +119,7 @@ const neutralItems = computed(() => neutralColors.map(c => ({ label: colorLabel(
   <!-- Bottom-nav labels only exist on the phone layout. -->
   <UiSettingsCard class="md:hidden" :title="t('base.menu')">
     <UiSwitchItem
+      class="min-h-10.5 rounded-md!"
       :checkboxValue="isShowMenuLabels"
       :title="t('settings.menuLabels')"
       @toggle="isShowMenuLabels = !isShowMenuLabels"

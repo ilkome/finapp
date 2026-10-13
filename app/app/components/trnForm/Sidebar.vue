@@ -1,48 +1,14 @@
 <script setup lang="ts">
-import Swiper from 'swiper'
-import { Pagination } from 'swiper/modules'
-
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 import { closeAllContextMenus } from '~/composables/useContextMenuRegistry'
 
-import 'swiper/css'
-
-const { t } = useI18n()
 const trnsFormStore = useTrnsFormStore()
 const isShow = computed(() => trnsFormStore.ui.isShow)
 
-const sliderRef = ref<HTMLElement | null>(null)
-const sliderObj = shallowRef<Swiper | null>(null)
-
-function init() {
-  if (!sliderObj.value) {
-    sliderObj.value = new Swiper(sliderRef.value!, {
-      init: true,
-      initialSlide: 0,
-      longSwipesMs: 60,
-      longSwipesRatio: 0.1,
-      modules: [Pagination],
-      pagination: {
-        clickable: true,
-        el: '.trnForm__pagination',
-      },
-      shortSwipes: false,
-      slidesPerView: 'auto',
-    })
-  }
-}
-
-watch(isShow, async (v) => {
-  if (v) {
+watch(isShow, (v) => {
+  if (v)
     closeAllContextMenus()
-    await nextTick()
-    init()
-  }
-  else {
-    sliderObj.value?.destroy()
-    sliderObj.value = null
-  }
 })
 </script>
 
@@ -57,48 +23,21 @@ watch(isShow, async (v) => {
           <UiButtonClose @click="trnsFormStore.onClose()" />
         </div>
 
-        <div ref="sliderRef" class="swiper-container h-full bg-default">
-          <div class="swiper-wrapper">
-            <!-- Main -->
-            <div class="swiper-slide h-full">
-              <div class="grid h-full scroller-block grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain">
-                <TrnFormMain
-                  maxHeight="100vh"
-                  sidebarHeader
-                  class="pb-0!"
-                />
-                <div
-                  v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
-                  class="grid gap-2 pb-6"
-                >
-                  <TrnFormSelectionCategoriesFast
-                    @selectCategory="id => trnsFormStore.values.categoryId = id"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <!-- Quick selector -->
-            <div
-              class="swiper-slide"
-              :style="{ height: '100%' }"
-            >
-              <div class="h-full scroller-block overflow-y-auto overscroll-contain">
-                <UiTitleSection class="sticky top-0 z-10 bg-default px-4 pt-5 pb-3 md:text-xl">
-                  {{ t('trns.history') }}
-                </UiTitleSection>
-
-                <TrnFormTrnsSlide
-                  :slider="sliderObj"
-                  :mainSlideIdx="0"
-                  class="px-2 pb-6"
-                />
-              </div>
-            </div>
+        <div class="grid h-full scroller-block grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain bg-default">
+          <TrnFormMain
+            maxHeight="100vh"
+            sidebarHeader
+            class="pb-0!"
+          />
+          <div
+            v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
+            class="grid gap-2 pb-6"
+          >
+            <TrnFormSelectionCategoriesFast
+              @selectCategory="id => trnsFormStore.values.categoryId = id"
+            />
           </div>
         </div>
-
-        <div class="trnForm__pagination" />
       </div>
     </div>
   </Transition>

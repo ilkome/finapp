@@ -1,5 +1,63 @@
+diff --git a/dist/Drawer/DrawerContent.cjs b/dist/Drawer/DrawerContent.cjs
+index fb904d746bb722a13c23464671b4cfb9491def6f..204be9fb7887c8f36e892873007717280874e463 100644
+--- a/dist/Drawer/DrawerContent.cjs
++++ b/dist/Drawer/DrawerContent.cjs
+@@ -94,6 +94,7 @@ var DrawerContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
+ 					..._ctx.$attrs
+ 				}, {
+ 					"trap-focus": shouldTrapFocus.value,
++					"present": rootContext.open.value,
+ 					"disable-outside-pointer-events": true,
+ 					onCloseAutoFocus: _cache[0] || (_cache[0] = (e) => {
+ 						if (!e.defaultPrevented) {
+@@ -111,7 +112,7 @@ var DrawerContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
+ 					default: (0, vue.withCtx)(() => [(0, vue.renderSlot)(_ctx.$slots, "default")]),
+ 					_: 3
+ 				}, 16, ["trap-focus"])) : ((0, vue.openBlock)(), (0, vue.createBlock)(require_Drawer_DrawerContentImpl.DrawerContentImpl_default, (0, vue.mergeProps)({
+-					key: 1,
++					key: 0,
+ 					ref: (0, vue.unref)(forwardRef)
+ 				}, {
+ 					...props,
+@@ -119,6 +120,7 @@ var DrawerContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
+ 					..._ctx.$attrs
+ 				}, {
+ 					"trap-focus": shouldTrapFocus.value,
++					"present": rootContext.open.value,
+ 					"disable-outside-pointer-events": false,
+ 					onCloseAutoFocus: onCloseAutoFocusNonModal,
+ 					onInteractOutside: onInteractOutsideNonModal
+diff --git a/dist/Drawer/DrawerContent.js b/dist/Drawer/DrawerContent.js
+index a51e9214d694da6afc3e96c7b82187499484238f..176a189a45f728a4c86095796746d9ffa214c784 100644
+--- a/dist/Drawer/DrawerContent.js
++++ b/dist/Drawer/DrawerContent.js
+@@ -93,6 +93,7 @@ var DrawerContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
+ 					..._ctx.$attrs
+ 				}, {
+ 					"trap-focus": shouldTrapFocus.value,
++					"present": rootContext.open.value,
+ 					"disable-outside-pointer-events": true,
+ 					onCloseAutoFocus: _cache[0] || (_cache[0] = (e) => {
+ 						if (!e.defaultPrevented) {
+@@ -110,7 +111,7 @@ var DrawerContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
+ 					default: withCtx(() => [renderSlot(_ctx.$slots, "default")]),
+ 					_: 3
+ 				}, 16, ["trap-focus"])) : (openBlock(), createBlock(DrawerContentImpl_default, mergeProps({
+-					key: 1,
++					key: 0,
+ 					ref: unref(forwardRef)
+ 				}, {
+ 					...props,
+@@ -118,6 +119,7 @@ var DrawerContent_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */
+ 					..._ctx.$attrs
+ 				}, {
+ 					"trap-focus": shouldTrapFocus.value,
++					"present": rootContext.open.value,
+ 					"disable-outside-pointer-events": false,
+ 					onCloseAutoFocus: onCloseAutoFocusNonModal,
+ 					onInteractOutside: onInteractOutsideNonModal
 diff --git a/dist/Drawer/DrawerContentImpl.cjs b/dist/Drawer/DrawerContentImpl.cjs
-index 575ab40d366ac4089dc501723d7be3886d85ae09..ff7428cd59724ccc7a78ac81fcf21f5dfef40ba7 100644
+index 575ab40d366ac4089dc501723d7be3886d85ae09..220cfff6635331b6059a6125b0608eb99bc16529 100644
 --- a/dist/Drawer/DrawerContentImpl.cjs
 +++ b/dist/Drawer/DrawerContentImpl.cjs
 @@ -112,6 +112,9 @@ var DrawerContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
@@ -12,8 +70,20 @@ index 575ab40d366ac4089dc501723d7be3886d85ae09..ff7428cd59724ccc7a78ac81fcf21f5d
  			canStart: () => !rootContext.nestedSwiping.value,
  			onDismiss() {
  				if (!hasSnapPoints.value) rootContext.onOpenChange(false, "swipe");
+@@ -234,6 +237,11 @@ var DrawerContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
+ 		(0, vue.watch)(() => rootContext.nestedOpenDrawerCount.value, (n) => {
+ 			currentElement.value?.style.setProperty(require_Drawer_utils.DRAWER_CSS_VARS.nestedDrawers, `${n}`);
+ 		});
++		(0, vue.watch)(() => rootContext.open.value, (isOpen) => {
++			if (!isOpen) return;
++			currentElement.value?.style.setProperty(require_Drawer_utils.DRAWER_CSS_VARS.swipeMovementX, "0px");
++			currentElement.value?.style.setProperty(require_Drawer_utils.DRAWER_CSS_VARS.swipeMovementY, "0px");
++		});
+ 		let unsubscribeNestedProgress;
+ 		(0, vue.onMounted)(() => {
+ 			rootContext.contentElement.value = currentElement.value;
 diff --git a/dist/Drawer/DrawerContentImpl.js b/dist/Drawer/DrawerContentImpl.js
-index abc917c09f01be8ddad4f5fc850db886f26c3b71..30a320aa760aec3ab16a4ebcd2d6cf8623a4bf08 100644
+index abc917c09f01be8ddad4f5fc850db886f26c3b71..985cfe034a5055a135054932a992cfce0397aec3 100644
 --- a/dist/Drawer/DrawerContentImpl.js
 +++ b/dist/Drawer/DrawerContentImpl.js
 @@ -111,6 +111,9 @@ var DrawerContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
@@ -26,6 +96,84 @@ index abc917c09f01be8ddad4f5fc850db886f26c3b71..30a320aa760aec3ab16a4ebcd2d6cf86
  			canStart: () => !rootContext.nestedSwiping.value,
  			onDismiss() {
  				if (!hasSnapPoints.value) rootContext.onOpenChange(false, "swipe");
+@@ -233,6 +236,11 @@ var DrawerContentImpl_vue_vue_type_script_setup_true_lang_default = /* @__PURE__
+ 		watch(() => rootContext.nestedOpenDrawerCount.value, (n) => {
+ 			currentElement.value?.style.setProperty(DRAWER_CSS_VARS.nestedDrawers, `${n}`);
+ 		});
++		watch(() => rootContext.open.value, (isOpen) => {
++			if (!isOpen) return;
++			currentElement.value?.style.setProperty(DRAWER_CSS_VARS.swipeMovementX, "0px");
++			currentElement.value?.style.setProperty(DRAWER_CSS_VARS.swipeMovementY, "0px");
++		});
+ 		let unsubscribeNestedProgress;
+ 		onMounted(() => {
+ 			rootContext.contentElement.value = currentElement.value;
+diff --git a/dist/Drawer/DrawerRoot.cjs b/dist/Drawer/DrawerRoot.cjs
+index 2a7fb2de1c3339151410b94a1c812da059399252..5f106b3ee8fd4b9bee33efe81338588af7bf02d7 100644
+--- a/dist/Drawer/DrawerRoot.cjs
++++ b/dist/Drawer/DrawerRoot.cjs
+@@ -136,8 +136,8 @@ var DrawerRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ (0,
+ 			},
+ 			onNestedSwipeProgressChange(progress) {
+ 				nestedSwipeProgressStore.set(progress);
+-				parentContext?.notifyParentSwipeProgressChange?.(progress);
+-				providerContext?.visualStateStore.set({ swipeProgress: progress });
++				if (parentContext) parentContext.nestedSwipeProgressStore.set(progress);
++				else providerContext?.visualStateStore.set({ swipeProgress: progress });
+ 			},
+ 			onSwipingChange(swiping) {
+ 				isSwiping.value = swiping;
+@@ -165,8 +165,15 @@ var DrawerRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ (0,
+ 			handleOpenChange(!open.value, "trigger-press");
+ 		}
+ 		(0, vue.watch)(open, (isOpen) => {
+-			if (isOpen) providerContext?.setDrawerOpen(contentId, true);
+-			else providerContext?.setDrawerOpen(contentId, false);
++			if (isOpen) {
++				providerContext?.setDrawerOpen(contentId, true);
++				nestedSwipeProgressStore.set(0);
++			}
++			else {
++				providerContext?.setDrawerOpen(contentId, false);
++				if (parentContext) parentContext.nestedSwipeProgressStore.set(0);
++				else providerContext?.visualStateStore.set({ swipeProgress: 0 });
++			}
+ 		}, { immediate: true });
+ 		(0, vue.onUnmounted)(() => {
+ 			providerContext?.removeDrawer(contentId);
+diff --git a/dist/Drawer/DrawerRoot.js b/dist/Drawer/DrawerRoot.js
+index 9dc8e37bb8a2e2fcafa2ff2ae520377af550a741..a2aa253ec7c2ab5b64ed873ee2a276d81490479c 100644
+--- a/dist/Drawer/DrawerRoot.js
++++ b/dist/Drawer/DrawerRoot.js
+@@ -135,8 +135,8 @@ var DrawerRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
+ 			},
+ 			onNestedSwipeProgressChange(progress) {
+ 				nestedSwipeProgressStore.set(progress);
+-				parentContext?.notifyParentSwipeProgressChange?.(progress);
+-				providerContext?.visualStateStore.set({ swipeProgress: progress });
++				if (parentContext) parentContext.nestedSwipeProgressStore.set(progress);
++				else providerContext?.visualStateStore.set({ swipeProgress: progress });
+ 			},
+ 			onSwipingChange(swiping) {
+ 				isSwiping.value = swiping;
+@@ -164,8 +164,15 @@ var DrawerRoot_vue_vue_type_script_setup_true_lang_default = /* @__PURE__ */ def
+ 			handleOpenChange(!open.value, "trigger-press");
+ 		}
+ 		watch(open, (isOpen) => {
+-			if (isOpen) providerContext?.setDrawerOpen(contentId, true);
+-			else providerContext?.setDrawerOpen(contentId, false);
++			if (isOpen) {
++				providerContext?.setDrawerOpen(contentId, true);
++				nestedSwipeProgressStore.set(0);
++			}
++			else {
++				providerContext?.setDrawerOpen(contentId, false);
++				if (parentContext) parentContext.nestedSwipeProgressStore.set(0);
++				else providerContext?.visualStateStore.set({ swipeProgress: 0 });
++			}
+ 		}, { immediate: true });
+ 		onUnmounted(() => {
+ 			providerContext?.removeDrawer(contentId);
 diff --git a/dist/composables/useDrawerSnapPoints.cjs b/dist/composables/useDrawerSnapPoints.cjs
 index a09ba2ade9ab36a22bd2a9376dcae9ed0b692dc0..dafbd51cf9329dbf7654321638df3cc7eb17dbaf 100644
 --- a/dist/composables/useDrawerSnapPoints.cjs

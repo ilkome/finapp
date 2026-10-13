@@ -6,7 +6,7 @@ import { useStorage } from '@vueuse/core'
  * from the categories page, mirroring the equivalent stat page option.
  */
 export function useCategoriesIconStyle() {
-  return useStorage<boolean>('finapp.categoriesIsRoundIcon', true, localStorage, {
+  return useStorage<boolean>('finapp.categoriesIsRoundIcon', false, localStorage, {
     mergeDefaults: true,
   })
 }

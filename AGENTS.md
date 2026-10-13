@@ -32,7 +32,7 @@ Do not duplicate those details here. Inspect their source when the task depends 
 - Entity IDs are client-generated text values. Do not add foreign-key assumptions that require upload ordering.
 - Demo mode bypasses PowerSync and uses its own in-memory and localforage persistence path.
 - A comment never carries a count, size, duration or default that is defined in code; it names the setting instead.
-- `reka-ui` is pinned to the version `@nuxt/ui` pins (`pnpm --filter @finapp/app check:deps`) and carries `patches/reka-ui@2.10.5.patch` for the Drawer (unovue/reka-ui#2982: swipes start on buttons, `data-reka-swipe-ignore`). Once a release includes #2982, keep only our parts of the patch.
+- `reka-ui` is pinned to the version `@nuxt/ui` pins (`pnpm --filter @finapp/app check:deps`) and carries `patches/reka-ui@2.10.5.patch` for the Drawer (unovue/reka-ui#2982: swipes start on buttons, `data-reka-swipe-ignore`) plus our fixes listed next to it in `pnpm-workspace.yaml` (kept-mounted drawers, nested swipe progress, `modal` switch). Keep them when upgrading unless the release fixes the same behavior. Never pass `present` to `DrawerContent` yourself: it falls through to reka's `Presence` and unmounts kept-mounted drawers. Once a release includes #2982, keep only our parts of the patch.
 - The in-app review browser cannot start a module `SharedWorker`, so PowerSync's multi-tab worker dies there. Run `pnpm dev:review` (sets `VITE_POWERSYNC_SINGLE_TAB=1`) for that browser only; every other run must keep the shared-worker path.
 
 ## Pure UI views

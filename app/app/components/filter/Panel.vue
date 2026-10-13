@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { DropdownMenuItem, TabsItem } from '@nuxt/ui'
+import type { TabsItem } from '@nuxt/ui'
 
 import type { CategoryId } from '~/components/categories/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import CategoriesSelectorModal from '~/components/categories/SelectorModal.vue'
+import { useAfterDrawerClosed } from '~/components/drawer/useAfterDrawerClosed'
 import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilterDraft } from '~/components/filter/useFilterDraft'
 import { useSwiperTabs } from '~/components/filter/useSwiperTabs'
@@ -56,12 +57,6 @@ const entityTypes = computed<FilterEntityType[]>(() => isSelectMode.value
     ])
 const slides = computed<FilterSlide[]>(() => isSelectMode.value || props.hideMore ? entityTypes.value : [...entityTypes.value, 'more'])
 
-const createItems = computed<DropdownMenuItem[]>(() => entityTypes.value.map(value => ({
-  icon: value === 'wallet' ? 'i-hugeicons-wallet-01' : 'i-hugeicons-folder-library',
-  label: t(value === 'wallet' ? 'base.addWallet' : 'base.addCategory'),
-  onSelect: () => createEntity(value),
-})))
-
 function createEntity(value: FilterEntityType) {
   if (isLaptop.value) {
     router.push(value === 'wallet' ? '/wallets/new?returnBack=1' : '/categories/new?returnBack=1')
@@ -80,8 +75,9 @@ const draft = isSelectMode.value ? null : useFilterDraft(filter!)
 // (which disables Apply) can never trap the user with a stale active filter.
 const showReset = computed(() => !isSelectMode.value && (draft!.hasPending.value || filter!.isShow.value))
 
+const afterDrawerClosed = useAfterDrawerClosed()
 function apply() {
-  draft!.apply()
+  afterDrawerClosed(() => draft!.apply())
   emit('close')
 }
 
@@ -131,20 +127,15 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
     <div class="relative z-20 bg-default/90 backdrop-blur">
       <FilterPanelHeader
         v-model:search="search"
-        :activeSlide="activeEntityType"
-        :categoriesSelector
-        :createItems
         :isShowClose="isLaptop"
         :mode="props.mode"
         :showReset
         :title="headerTitle"
-        :walletsSelector
-        @addActive="createEntity(activeEntityType as FilterEntityType)"
         @close="emit('close')"
         @reset="draft?.reset()"
       />
 
-      <div v-if="tabItems.length > 1 && !searchQuery" class="px-3 pb-px md:px-1">
+      <div v-if="tabItems.length > 1 && !searchQuery" class="px-3 pb-px">
         <UiTabs
           isEqual
           :items="tabItems"
@@ -170,31 +161,43 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                 v-if="slide === 'more'"
                 :modelValue="draft!.pendingExtras.value" @update:modelValue="v => draft!.pendingExtras.value = v"
               />
-              <WalletsSelector
-                v-else-if="slide === 'wallet'"
-                :ref="(el: any) => walletsSelector = el"
-                :activeItemId="isSelectMode ? props.activeWalletId : undefined"
-                :autofocus="false"
-                compactDesktop
-                :currencyAboveAction="!isSelectMode"
-                groupingMenu
-                hideHeader
-                :searchQuery
-                :selectedIds="isSelectMode ? undefined : draft!.pendingWallets.value"
-                withHeader
-                @selected="selectWallet"
-              />
-              <CategoriesSelectorModal
-                v-else
-                :ref="(el: any) => categoriesSelector = el"
-                :activeItemId="isSelectMode ? props.activeCategoryId : undefined"
-                :autofocus="false"
-                compactDesktop
-                hideHeader
-                :searchQuery
-                :selectedIds="isSelectMode ? undefined : draft!.pendingCategories.value"
-                @selected="selectCategory"
-              />
+              <template v-else>
+                <div class="flex size-full min-h-0 flex-col">
+                  <FilterSelectToolbar
+                    :activeSlide="slide"
+                    :categoriesSelector
+                    :walletsSelector
+                    @addActive="createEntity(slide)"
+                  />
+
+                  <!-- A 2px gap under the toolbar, whichever entity list follows it. -->
+                  <div class="grid min-h-0 flex-1 [&_.scroller-block]:pt-0.5!">
+                    <WalletsSelector
+                      v-if="slide === 'wallet'"
+                      :ref="(el: any) => walletsSelector = el"
+                      :activeItemId="isSelectMode ? props.activeWalletId : undefined"
+                      :autofocus="false"
+                      :currencyAboveAction="!isSelectMode"
+                      groupingMenu
+                      hideHeader
+                      :searchQuery
+                      :selectedIds="isSelectMode ? undefined : draft!.pendingWallets.value"
+                      withHeader
+                      @selected="selectWallet"
+                    />
+                    <CategoriesSelectorModal
+                      v-else
+                      :ref="(el: any) => categoriesSelector = el"
+                      :activeItemId="isSelectMode ? props.activeCategoryId : undefined"
+                      :autofocus="false"
+                      hideHeader
+                      :searchQuery
+                      :selectedIds="isSelectMode ? undefined : draft!.pendingCategories.value"
+                      @selected="selectCategory"
+                    />
+                  </div>
+                </div>
+              </template>
             </div>
           </div>
         </div>
@@ -212,8 +215,8 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
 
     <div
       v-if="!isSelectMode"
-      class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2 md:px-1"
-      style="transform: translateY(calc(-1 * var(--drawer-snap-point-offset, 0px)))"
+      class="absolute inset-x-0 bottom-0 z-10 flex items-center gap-2 px-3 py-2 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)]"
+      style="transform: translateY(calc(-1 * var(--drawer-snap-lift, 0px)))"
     >
       <div
         class="pointer-events-none absolute inset-x-0 -top-6 bottom-0 -z-10"

@@ -26,7 +26,7 @@ function handleClick() {
     :aria-disabled="disabled || undefined"
     :aria-label="title"
     :class="cn(
-      'flex grow items-center gap-3 rounded-sm py-2 pr-2 pl-3 text-left text-sm hover:bg-elevated/50',
+      'flex min-h-10.5 w-full grow items-center gap-3 rounded-sm py-1.5 pr-2 pl-3 text-left text-sm leading-none font-medium tracking-wide hover:bg-elevated/50',
       busy && 'pointer-events-none opacity-60',
       disabled && 'pointer-events-none opacity-50',
       trailing && 'flex-row-reverse',
@@ -36,7 +36,7 @@ function handleClick() {
     <Icon v-if="busy" name="lucide:loader-circle" class="size-5 animate-spin text-muted" />
     <FormSwitch v-else :value="checkboxValue" />
 
-    <div class="grow text-muted">
+    <div class="grow text-toned">
       {{ title }}
     </div>
   </button>

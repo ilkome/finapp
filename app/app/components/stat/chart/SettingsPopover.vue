@@ -7,7 +7,7 @@ const isOpen = ref(false)
   <DrawerOrDropdown
     v-model:open="isOpen"
     align="end"
-    popoverBodyClass="px-3 pb-3"
+    isShowCloseBtn
     popoverContentClass="z-[60] w-88 max-w-[calc(100vw-1rem)] overscroll-contain"
     :title="t('stat.config.chart.settings')"
   >

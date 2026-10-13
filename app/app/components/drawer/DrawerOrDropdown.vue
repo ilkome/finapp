@@ -16,6 +16,11 @@ const props = withDefaults(defineProps<{
   unmountOnHide: true,
 })
 
+const emit = defineEmits<{
+  // After the drawer's exit animation; a popover reports it as soon as it closes.
+  closed: []
+}>()
+
 const open = defineModel<boolean>('open', { default: false })
 
 const isLaptop = useIsLaptop()
@@ -31,7 +36,13 @@ watch(open, (value) => {
 function onClosed() {
   if (props.unmountOnHide)
     isMounted.value = false
+  emit('closed')
 }
+
+watch(open, (value) => {
+  if (!value && isLaptop.value)
+    emit('closed')
+})
 
 function close() {
   open.value = false

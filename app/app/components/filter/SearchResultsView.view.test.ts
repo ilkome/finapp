@@ -13,7 +13,7 @@ describe('filterSearchResultsView', () => {
     expect(wrapper.text()).toContain('Dollar card')
     expect(wrapper.findAllComponents(ItemView).map(item => item.props('categoryId'))).toEqual(['groceries', 'taxi'])
 
-    await wrapper.find('.select-none').trigger('click')
+    await wrapper.find('.uiElement').trigger('click')
     expect(wrapper.emitted('toggleWallet')).toEqual([['card']])
     wrapper.findAllComponents(ItemView)[1]!.vm.$emit('click')
     expect(wrapper.emitted('toggleCategory')).toEqual([['taxi']])

@@ -26,12 +26,13 @@ useEventListener('keydown', (e: KeyboardEvent) => {
 </script>
 
 <template>
-  <UModal
+  <UiModalWrap
+    contentClass="z-[70] max-w-sm"
+    overlayClass="z-[70]"
     :title="props.title ?? t('base.sure')"
-    :ui="{ overlay: 'z-[70]', content: 'z-[70] max-w-sm divide-y-0', footer: 'justify-between' }"
     @update:open="(open: boolean) => !open && emit('close', false)"
   >
-    <template v-if="description || highlight" #body>
+    <template v-if="description || highlight" #default>
       <div class="text-muted">
         {{ description }}
         <span v-if="highlight" class="font-medium text-error">
@@ -62,5 +63,5 @@ useEventListener('keydown', (e: KeyboardEvent) => {
         {{ props.confirmLabel || t('base.delete') }}
       </UButton>
     </template>
-  </UModal>
+  </UiModalWrap>
 </template>

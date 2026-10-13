@@ -76,7 +76,7 @@ const viewActionItems = computed(() => [
 
 <template>
   <section v-if="controller" class="grid">
-    <div class="grid gap-3 pb-2 md:px-1 md:pb-4">
+    <div class="grid gap-3 pb-2 md:pb-4">
       <div class="flex min-w-0 items-center gap-1">
         <UInput
           ref="nameInput"
@@ -96,6 +96,7 @@ const viewActionItems = computed(() => [
           <DrawerOrDropdown
             v-model:open="isViewsOpen"
             align="end"
+            isShowCloseBtn
             :title="$t('stat.views.menu.label')"
           >
             <template #trigger>

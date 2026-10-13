@@ -16,10 +16,14 @@ const props = defineProps<{
   categoriesItemProps?: Partial<CategoryItemProps>
   childrenView?: 'list' | 'grid'
   expanded?: CategoriesListExpanded
+  getChildrenIds?: (categoryId: CategoryId) => CategoryId[]
   getContextMenuItems?: (categoryId: CategoryId) => any[][] | undefined
   getTo?: (categoryId: CategoryId) => string
   ids: CategoryId[]
   insideClasses?: string
+  isFlat?: boolean
+  isStickyParents?: boolean
+  layout?: 'columns' | 'list'
 }>()
 
 const emit = defineEmits<{
@@ -36,7 +40,7 @@ function toRow(categoryId: CategoryId, withChildren: boolean): CategoryListRow |
     category,
     categoryId,
     children: withChildren
-      ? categoriesStore.getChildrenIds(categoryId).map(id => toRow(id, false)).filter(row => row !== null)
+      ? (props.getChildrenIds?.(categoryId) ?? categoriesStore.getChildrenIds(categoryId)).map(id => toRow(id, false)).filter(row => row !== null)
       : undefined,
     contextMenuItems: props.getContextMenuItems?.(categoryId),
     parentCategory: categoriesStore.items[category.parentId],
@@ -57,8 +61,15 @@ const expandedIds = computed(() => props.expanded ? props.ids.filter(id => props
     :expandedIds="expandedIds"
     :insideClasses="props.insideClasses"
     :isExpandable="!!props.expanded"
+    :isFlat="props.isFlat"
+    :isStickyParents="props.isStickyParents"
+    :layout="props.layout"
     :rows="rows"
     @click="emit('click', $event)"
     @toggleExpand="props.expanded?.toggle($event)"
-  />
+  >
+    <template v-if="$slots.childrenPrepend" #childrenPrepend="slotProps">
+      <slot name="childrenPrepend" v-bind="slotProps" />
+    </template>
+  </CategoriesListView>
 </template>

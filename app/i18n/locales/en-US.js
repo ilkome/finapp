@@ -75,6 +75,7 @@ export default {
       removeFromRecent: 'Hide from recent',
     },
     allTitle: 'All',
+    blocks: { all: 'All categories', favorites: 'Favorites', recent: 'Recent', system: 'System categories' },
     createNewTitle: 'New category',
     errors: {
       deleteFailed: 'Failed to delete category',
@@ -148,6 +149,8 @@ export default {
         grid: 'Cloud',
         list: 'List',
       },
+      layout: 'View',
+      layouts: { columns: 'Columns', list: 'List' },
       showChildrenCount: 'Show children count',
     },
   },
@@ -889,9 +892,6 @@ export default {
       transferAmountEmpty: 'Transfer amounts can not be empty',
       transferSameWallet: 'Transfer in same wallet',
     },
-    filterAll: 'All',
-    filterWallet: 'Wallet',
-    filterWalletAndCategory: 'Wallet & Category',
     loanFineTitle: 'Loan fees',
     loanInterestTitle: 'Loan interest',
     loanOfWhichInterest: 'Of which interest',
@@ -1011,8 +1011,9 @@ export default {
       showStatistics: 'Show statistics',
     },
     page: {
-      currencies: 'Currencies',
-      none: 'List',
+      currencies: 'Currency',
+      groupBy: 'Group by',
+      none: 'None',
       type: 'Type',
     },
     search: {

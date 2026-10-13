@@ -30,7 +30,6 @@ const initialSlide = ref<'category' | 'wallet'>('wallet')
   <DrawerOrDropdown
     v-model:open="isShow"
     :drawerStyle="props.drawerStyle"
-    popoverBodyClass="py-0! md:pb-0!"
   >
     <template #trigger>
       <div class="grid grid-cols-2 gap-2">

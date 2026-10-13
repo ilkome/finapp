@@ -65,7 +65,7 @@ const { applyUpdate, offlineState } = useOfflineReady()
 
     <UButton
       v-if="props.isShowSignOut"
-      class="px-4"
+      class="min-h-10.5 justify-self-start rounded-md px-4"
       icon="lucide:log-out"
       @click="userStore.signOut"
     >

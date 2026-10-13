@@ -1,16 +1,20 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
-
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesExpanded } from '~/components/categories/useCategoriesExpanded'
-import { useCategoriesIconStyle } from '~/components/categories/useCategoriesIconStyle'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
 import { isReservedCategoryId } from '~/components/categories/utils'
 
 const { t } = useI18n()
+const header = useTemplateRef<{ mainElement: HTMLElement | null }>('header')
+const headerHeight = ref(0)
+// useElementSize reads 0 for this header, so observe it directly.
+useResizeObserver(() => header.value?.mainElement, ([entry]) => {
+  headerHeight.value = entry?.borderBoxSize?.[0]?.blockSize ?? entry?.contentRect.height ?? 0
+})
+const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
 const userIds = computed(() => categoriesStore.categoriesRootIds.filter(id => !isReservedCategoryId(id)))
@@ -24,29 +28,11 @@ const { folderIcon, isExpanded, toggle, toggleAll } = useCategoriesExpanded('cat
 
 useHead({ title: t('categories.title') })
 
-const categoriesView = useStorage<'list' | 'grid'>('finapp.categoriesView', 'list', localStorage, {
-  mergeDefaults: true,
-})
-
-const backgroundType = useStorage<'category' | 'none' | 'standard'>('finapp.categoriesBackgroundType', 'none', localStorage, {
-  mergeDefaults: true,
-})
-
-const isShowChildrenCount = useStorage<boolean>('finapp.categoriesShowChildrenCount', false, localStorage, {
-  mergeDefaults: true,
-})
-
-const isRoundIcon = useCategoriesIconStyle()
-
-const isViewSettingsOpen = ref(false)
-const backgroundTypeItems = computed(() => ['none', 'category', 'standard'].map(value => ({
-  label: t(`stat.config.categories.list.backgroundTypes.${value}`),
-  value,
-})))
-const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
-  label: t(`categories.view.childrenViews.${value}`),
-  value,
-})))
+const isMenuOpen = ref(false)
+function addCategory(close: () => void) {
+  close()
+  router.push('/categories/new')
+}
 
 const { requestDelete: onClickDelete } = useCategoryDelete()
 
@@ -63,16 +49,10 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
 
 <template>
   <UiPage>
-    <UiHeader actionsAfterTitle>
+    <UiHeader ref="header" actionsAfterTitle>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UTooltip :text="$t('categories.new')">
-          <NuxtLink to="/categories/new">
-            <UiActionButton :ariaLabel="$t('categories.new')">
-              <Icon name="lucide:plus" size="24" />
-            </UiActionButton>
-          </NuxtLink>
-        </UTooltip>
+        <CategoriesViewSettings />
 
         <UTooltip :text="$t('base.toggleFolders')">
           <UiActionButton
@@ -84,61 +64,24 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         </UTooltip>
 
         <DrawerOrDropdown
-          v-model:open="isViewSettingsOpen"
+          v-model:open="isMenuOpen"
           align="end"
-          popoverBodyClass="md:pb-0"
-          popoverContentClass="w-80 max-w-[calc(100vw-1rem)]"
-          :title="t('stat.config.menu.label')"
+          isShowCloseBtn
+          popoverContentClass="w-64 max-w-[calc(100vw-1rem)]"
         >
           <template #trigger>
-            <UTooltip :text="t('stat.config.menu.label')">
-              <UiActionButton :ariaLabel="t('stat.config.menu.label')">
-                <Icon name="lucide:settings-2" size="20" />
+            <UTooltip :text="$t('base.moreOptions')">
+              <UiActionButton :ariaLabel="$t('base.moreOptions')">
+                <Icon name="lucide:ellipsis-vertical" size="20" />
               </UiActionButton>
             </UTooltip>
           </template>
 
-          <template #content>
-            <div class="pb-2">
-              <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
-                <USelect
-                  data-reka-swipe-ignore
-                  class="w-40 shrink-0"
-                  :aria-label="t('stat.config.categories.list.backgroundType')"
-                  :content="{ position: 'item-aligned' }"
-                  :items="backgroundTypeItems"
-                  :modelValue="backgroundType"
-                  :ui="{ content: 'z-[60]' }"
-                  @update:modelValue="value => backgroundType = value as 'category' | 'none' | 'standard'"
-                />
-              </StatConfigFieldRow>
-
-              <StatConfigFieldRow :title="t('categories.view.childrenView')">
-                <USelect
-                  data-reka-swipe-ignore
-                  class="w-40 shrink-0"
-                  :aria-label="t('categories.view.childrenView')"
-                  :content="{ position: 'item-aligned' }"
-                  :items="childrenViewItems"
-                  :modelValue="categoriesView"
-                  :ui="{ content: 'z-[60]' }"
-                  @update:modelValue="value => categoriesView = value as 'grid' | 'list'"
-                />
-              </StatConfigFieldRow>
-
-              <UiSwitchItem
-                :checkboxValue="isShowChildrenCount"
-                :title="t('categories.view.showChildrenCount')"
-                trailing
-                @toggle="isShowChildrenCount = !isShowChildrenCount"
-              />
-
-              <UiSwitchItem
-                :checkboxValue="isRoundIcon"
-                :title="t('stat.catButtons.isRoundIcon')"
-                trailing
-                @toggle="isRoundIcon = !isRoundIcon"
-              />
+          <template #content="{ close }">
+            <div class="py-3 md:-mx-2 md:py-1">
+              <UiHeaderLink @click="addCategory(close)">
+                {{ t('categories.new') }}
+              </UiHeaderLink>
             </div>
           </template>
         </DrawerOrDropdown>
@@ -163,30 +106,14 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <!-- List -->
     <div
       v-else
-      class="max-w-4xl grow px-2 lg:px-4 2xl:px-8"
+      class="grow px-2 lg:px-4 2xl:px-8"
+      :style="{ '--sticky-top': `${headerHeight}px` }"
     >
-      <div
-        v-for="section in [{ ids: userIds, title: '' }, { ids: systemIds, title: t('categories.system') }]"
-        :key="section.title"
-      >
-        <UiTitleSection v-if="section.title" class="pt-6 pb-2">
-          {{ section.title }}
-        </UiTitleSection>
-        <CategoriesList
-          :backgroundType
-          :ids="section.ids"
-          :categoriesItemProps="{
-            isRoundIcon,
-            isShowChildrenCount,
-            leftMenuButton: true,
-            lineWidth: 1,
-          }"
-          :childrenView="categoriesView"
-          :expanded="{ isExpanded, toggle }"
-          :getContextMenuItems="getCategoryContextMenuItems"
-          :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
-        />
-      </div>
+      <CategoriesBlocks
+        :expanded="{ isExpanded, toggle }"
+        :getContextMenuItems="getCategoryContextMenuItems"
+        :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
+      />
     </div>
   </UiPage>
 </template>

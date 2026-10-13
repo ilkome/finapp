@@ -11,6 +11,7 @@ const props = defineProps<{
   baseCurrencyCode?: string
   compact?: boolean
   insideClasses?: string
+  isSelected?: boolean
   isShowBaseRate?: boolean
   isShowCreditLimit?: boolean
   isShowIcon?: boolean
@@ -20,6 +21,8 @@ const props = defineProps<{
   to?: string
   wallet: WalletItemComputed
   walletId: WalletId
+  /** Row background of the lists; `compact` has its own. */
+  withBackground?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -29,9 +32,10 @@ const emit = defineEmits<{
 const isLoans = useFeature('loans')
 
 const classes = computed(() => ({
-  'bg-elevated/30': props.compact,
+  'bg-elevated/30': props.compact || props.withBackground,
   'group': props.isSort,
-  'rounded-md': props.compact,
+  'inset-ring-1 inset-ring-primary/40': props.isSelected,
+  'rounded-md': props.compact || props.withBackground,
 }))
 
 const walletCreditLimit = computed(() =>

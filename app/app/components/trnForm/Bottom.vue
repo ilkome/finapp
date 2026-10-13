@@ -46,7 +46,6 @@ onBeforeUnmount(() => {
 function init(el: HTMLElement) {
   sliderObj.value = new Swiper(el, {
     init: false,
-    initialSlide: 1,
     longSwipesMs: 60,
     longSwipesRatio: 0.1,
     modules: [Pagination],
@@ -63,7 +62,7 @@ function init(el: HTMLElement) {
 
 watch(isShow, () => {
   if (isShow.value && sliderObj.value)
-    sliderObj.value.slideTo(1, 0)
+    sliderObj.value.slideTo(0, 0)
 })
 
 // Reka renders the drawer content after this component mounts, so the slider waits for its element.
@@ -85,18 +84,6 @@ watch(sliderRef, (el) => {
     <div class="trnForm @container/trnForm bg-default">
       <div ref="sliderRef" class="swiper-container">
         <div class="swiper-wrapper">
-          <!-- History -->
-          <div
-            class="swiper-slide h-full overflow-y-auto bg-default"
-            :style="{ height: maxHeight }"
-          >
-            <TrnFormTrnsSlide
-              :slider="sliderObj"
-              :mainSlideIdx="1"
-              class="overflow-hidden px-2 pt-4 pb-6"
-            />
-          </div>
-
           <!-- Main -->
           <div class="swiper-slide getHeight bg-default">
             <div class="h-full scroller-block overflow-y-auto">
