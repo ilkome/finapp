@@ -16,7 +16,8 @@
       ],
       "port": 3050,
       "env": {
-        "VITE_POWERSYNC_SINGLE_TAB": "1"
+        "VITE_POWERSYNC_SINGLE_TAB": "1",
+        "NUXT_IGNORE_LOCK": "1"
       }
     },
     {
@@ -34,7 +35,25 @@
       ],
       "port": 3051,
       "env": {
-        "VITE_POWERSYNC_SINGLE_TAB": "1"
+        "VITE_POWERSYNC_SINGLE_TAB": "1",
+        "NUXT_IGNORE_LOCK": "1"
+      }
+    },
+    {
+      "name": "phone",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "--filter",
+        "./app",
+        "exec",
+        "nuxt",
+        "dev",
+        "--port=3053",
+        "--public"
+      ],
+      "port": 3053,
+      "env": {
+        "NUXT_IGNORE_LOCK": "1"
       }
     }
   ]
