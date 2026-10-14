@@ -115,7 +115,7 @@ function startResize(event: PointerEvent) {
     <div class="relative flex h-full flex-col overflow-hidden">
       <div
         :class="props.isShowSidebar && 'px-2'"
-        class="flex shrink-0 items-center gap-1 pt-4"
+        class="flex shrink-0 items-center gap-1 pt-3"
       >
         <div v-if="props.isShowSidebar" class="grow px-3 py-2">
           <UiLogo />
@@ -147,7 +147,7 @@ function startResize(event: PointerEvent) {
 
         <div
           v-else
-          class="grid content-start gap-8 pt-3 pb-16"
+          class="grid content-start gap-6 pt-2 pb-16"
         >
           <LayoutSidebarMenu class="px-2 pb-2" />
 
@@ -155,7 +155,10 @@ function startResize(event: PointerEvent) {
             <div v-if="shownTabs.length > 1" class="pb-2 pl-1">
               <UiTabs
                 v-model="activeTab"
+                :grow="false"
+                :itemGrow="false"
                 size="xs"
+                variant="flat"
                 :items="tabItems"
               />
             </div>
