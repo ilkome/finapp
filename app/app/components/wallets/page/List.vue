@@ -3,6 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 import type { WalletId, WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
+import SideMenu from '~/components/ui/SideMenu.vue'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { canStickStatCategories } from '~/components/stat/statFeed'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -37,7 +38,10 @@ const isSorting = ref(false)
 const isLaptop = useIsLaptop()
 // vueuse types a binding as a prop option, so a function type must stay `any`.
 const [DefineSortBody, ReuseSortBody] = createReusableTemplate()
+const [DefineStatBody, ReuseStatBody] = createReusableTemplate()
+const [DefineStatHint, ReuseStatHint] = createReusableTemplate()
 const isOpen = ref(false)
+const isStatSideOpen = ref(false)
 
 // Statistics settings are a panel of this same menu, the way the user menu nests its panels -
 // a second popover or sheet on top of the menu is neither the house pattern nor safe on touch.
@@ -97,18 +101,20 @@ function showMenuPanel(panel: 'root' | 'statistics') {
 }
 
 function openStatisticsPanel() {
-  menuPanel.value = 'statistics'
+  menuPanel.value = 'root'
   isOpen.value = true
+  if (isLaptop.value)
+    nextTick(() => isStatSideOpen.value = true)
+  else
+    menuPanel.value = 'statistics'
 }
 
 const {
   groupedWalletsWithIds,
-  groupTabs,
-  isSecondaryGroupingActive,
+  primary,
   setSortOrder,
   toggleMap,
   toggleOpened,
-  toggleSecondaryGrouping,
   typeGroupsStatus,
   walletsToggledMap,
 } = useWalletsGrouping(selectedWalletsIds, groupedBy)
@@ -116,23 +122,82 @@ const {
 function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
-
-const currentGroupTab = computed(() => groupTabs.value.find(tab => tab.id === groupedBy.value) ?? groupTabs.value[0]!)
-
-const groupingItems = computed(() => [[
-  { icon: 'lucide:list-tree', label: t('wallets.page.groupBy'), type: 'label' as const },
-  { class: 'ms-2!', type: 'separator' as const },
-  ...groupTabs.value.map(tab => ({
-    checked: groupedBy.value === tab.id,
-    icon: tab.icon,
-    label: tab.label,
-    onSelect: () => { groupedBy.value = tab.id },
-    type: 'checkbox' as const,
-  })),
-]])
 </script>
 
 <template>
+  <DefineStatHint>
+      <UPopover
+        :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
+        :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
+      >
+        <button
+          type="button"
+          :aria-label="t('statistics.hints')"
+          class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
+          @click.stop
+        >
+          <Icon name="lucide:info" size="18" />
+        </button>
+
+        <template #content>
+          <div
+            class="scroller grid gap-3 overflow-y-auto p-3"
+            style="max-height: var(--reka-popper-available-height, 60dvh)"
+          >
+            <div v-for="row in statistics.hintRows.value" :key="row.id">
+              <UiText variant="navigation">
+                {{ row.title }}
+              </UiText>
+
+              <UiText variant="meta" class="pt-1 leading-snug!">
+                {{ row.hint }}
+              </UiText>
+            </div>
+          </div>
+        </template>
+      </UPopover>
+  </DefineStatHint>
+
+  <DefineStatBody>
+    <UiSwitchItem
+      :checkboxValue="showStatistics"
+      :title="t('wallets.options.showStatistics')"
+      trailing
+      @toggle="showStatistics = !showStatistics"
+    />
+
+    <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
+      <UiText variant="meta" class="px-2">
+        {{ t('statistics.pinned') }}
+      </UiText>
+
+      <WalletsStatisticsSortGroup
+        :items="statistics.pinnedRows.value"
+        :pinnedIds="statistics.pinnedIds.value"
+        showPin
+        @togglePinned="statistics.togglePinned"
+        @update="statistics.reorderPinned"
+      />
+    </div>
+
+    <div class="grid gap-1">
+      <UiText variant="meta" class="px-2">
+        {{ t('statistics.list') }}
+      </UiText>
+
+      <WalletsStatisticsSortGroup
+        :hiddenIds="statistics.hiddenIds.value"
+        :items="statistics.listRows.value"
+        :pinnedIds="statistics.pinnedIds.value"
+        showHide
+        showPin
+        @toggleHidden="statistics.toggleHidden"
+        @togglePinned="statistics.togglePinned"
+        @update="statistics.reorderList"
+      />
+    </div>
+  </DefineStatBody>
+
   <UiPage>
     <UiHeader actionsAfterTitle>
       <UiHeaderTitle>
@@ -140,19 +205,6 @@ const groupingItems = computed(() => [[
       </UiHeaderTitle>
 
       <template #actions>
-        <UTooltip :text="$t('base.toggleGrouping')">
-          <UiActionButton
-            :ariaLabel="$t('base.toggleGrouping')"
-            :disabled="groupedBy === 'none'"
-            @click="toggleSecondaryGrouping"
-          >
-            <Icon
-              :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
-              size="18"
-            />
-          </UiActionButton>
-        </UTooltip>
-
         <UTooltip :text="$t('base.toggleFolders')">
           <UiActionButton
             :ariaLabel="$t('base.toggleFolders')"
@@ -174,13 +226,15 @@ const groupingItems = computed(() => [[
           </UiActionButton>
         </UTooltip>
 
-        <UDropdownMenu :content="{ align: 'end' }" :items="groupingItems" :modal="false">
-          <UTooltip :text="currentGroupTab.label">
-            <UiActionButton :ariaLabel="$t('base.toggleView')">
+        <WalletsGroupMenu
+          v-model:groupedBy="groupedBy"
+        >
+          <UTooltip :text="$t('base.toggleGrouping')">
+            <UiActionButton :ariaLabel="$t('base.toggleGrouping')">
               <Icon name="lucide:list-tree" size="20" />
             </UiActionButton>
           </UTooltip>
-        </UDropdownMenu>
+        </WalletsGroupMenu>
 
         <DrawerOrDropdown
           align="end"
@@ -211,75 +265,10 @@ const groupingItems = computed(() => [[
                   :title="t('base.previous')"
                   @back="showMenuPanel('root')"
                 >
-                  <UPopover
-                    :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
-                    :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
-                  >
-                    <button
-                      type="button"
-                      :aria-label="t('statistics.hints')"
-                      class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
-                      @click.stop
-                    >
-                      <Icon name="lucide:info" size="18" />
-                    </button>
-
-                    <template #content>
-                      <div
-                        class="scroller grid gap-3 overflow-y-auto p-3"
-                        style="max-height: var(--reka-popper-available-height, 60dvh)"
-                      >
-                        <div v-for="row in statistics.hintRows.value" :key="row.id">
-                          <UiText variant="navigation">
-                            {{ row.title }}
-                          </UiText>
-
-                          <UiText variant="meta" class="pt-1 leading-snug!">
-                            {{ row.hint }}
-                          </UiText>
-                        </div>
-                      </div>
-                    </template>
-                  </UPopover>
+                  <ReuseStatHint />
                 </UiPanelBack>
 
-                <UiSwitchItem
-                  :checkboxValue="showStatistics"
-                  :title="t('wallets.options.showStatistics')"
-                  trailing
-                  @toggle="showStatistics = !showStatistics"
-                />
-
-                <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
-                  <UiText variant="meta" class="px-2">
-                    {{ t('statistics.pinned') }}
-                  </UiText>
-
-                  <WalletsStatisticsSortGroup
-                    :items="statistics.pinnedRows.value"
-                    :pinnedIds="statistics.pinnedIds.value"
-                    showPin
-                    @togglePinned="statistics.togglePinned"
-                    @update="statistics.reorderPinned"
-                  />
-                </div>
-
-                <div class="grid gap-1">
-                  <UiText variant="meta" class="px-2">
-                    {{ t('statistics.list') }}
-                  </UiText>
-
-                  <WalletsStatisticsSortGroup
-                    :hiddenIds="statistics.hiddenIds.value"
-                    :items="statistics.listRows.value"
-                    :pinnedIds="statistics.pinnedIds.value"
-                    showHide
-                    showPin
-                    @toggleHidden="statistics.toggleHidden"
-                    @togglePinned="statistics.togglePinned"
-                    @update="statistics.reorderList"
-                  />
-                </div>
+                <ReuseStatBody />
               </div>
 
               <div v-else class="py-3 md:-mx-2 md:py-1">
@@ -295,7 +284,30 @@ const groupingItems = computed(() => [[
                   {{ t('wallets.sortTitle') }}
                 </UiHeaderLink>
 
+                <SideMenu v-if="isLaptop" v-model:open="isStatSideOpen" contentClass="w-88">
+                  <UiHeaderLink icon="lucide:chart-column" class="data-[state=open]:bg-elevated">
+                    {{ t('statistics.title') }}
+
+                    <Icon
+                      name="lucide:chevron-right"
+                      size="16"
+                      class="ml-auto text-muted"
+                    />
+                  </UiHeaderLink>
+
+                  <template #content>
+                    <div class="grid gap-3">
+                      <div class="flex items-center px-2">
+                        <span class="grow text-sm font-medium text-toned">{{ t('statistics.title') }}</span>
+                        <ReuseStatHint />
+                      </div>
+                      <ReuseStatBody />
+                    </div>
+                  </template>
+                </SideMenu>
+
                 <UiHeaderLink
+                  v-else
                   icon="lucide:chart-column"
                   @click="showMenuPanel('statistics')"
                 >
@@ -370,7 +382,7 @@ const groupingItems = computed(() => [[
         :style="canStickSideColumn ? { top: `${stickyTop}px` } : undefined"
       >
         <WalletsCurrencies
-          v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
+          v-if="walletsStore.currenciesUsed.length > 1 && primary !== 'currency'"
           :currencyFiltered
           class="mb-2"
           @selectFilterCurrency="code => currencyFiltered = code"
@@ -422,7 +434,7 @@ const groupingItems = computed(() => [[
                     @click="toggleMap(groupPrimary)"
                   >
                     <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-                      {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
+                      {{ primary === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
                     </div>
 
                     <div
@@ -441,7 +453,7 @@ const groupingItems = computed(() => [[
                           variant="row"
                         />
                         <Amount
-                          v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                          v-if="primary === 'currency' && currenciesStore.base !== groupPrimary"
                           :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.ids)"
                           :currencyCode="groupPrimary"
                           :isShowBaseRate="false"
@@ -470,7 +482,7 @@ const groupingItems = computed(() => [[
                             @click="toggleMap(groupPrimary, groupSecondary)"
                           >
                             <div class="font-tertiary text-base leading-none font-semibold">
-                              {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
+                              {{ primary === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
                             </div>
 
                             <div
@@ -487,7 +499,7 @@ const groupingItems = computed(() => [[
                                   :isShowBaseRate="false"
                                 />
                                 <Amount
-                                  v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                                  v-if="primary === 'currency' && currenciesStore.base !== groupPrimary"
                                   :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.groups![groupSecondary]!)"
                                   :currencyCode="groupPrimary"
                                   :isShowBaseRate="false"
