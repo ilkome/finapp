@@ -42,6 +42,12 @@
   [data-reka-popper-content-wrapper]:has([role='menu']) {
     pointer-events: auto !important;
   }
+
+  /* Reka forces `pointer-events: auto` inline on every context-menu trigger so a right-click can
+     jump between them; while a menu is open the rows behind it must stay inert instead. */
+  body:has([role='menu'][data-state='open']) [data-context-trigger] {
+    pointer-events: none !important;
+  }
 }
 
 /* Category chips morph between their old and new slots via view transitions. Only the named
