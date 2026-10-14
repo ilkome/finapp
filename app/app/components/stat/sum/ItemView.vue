@@ -27,17 +27,17 @@ const { t } = useI18n()
       props.variant === 'plain'
         ? 'px-1 pb-1'
         : props.variant === 'summary'
-          ? 'relative flex h-14 items-center rounded-sm border border-transparent bg-elevated/30 px-3 py-0.5'
-          : 'flex-1 flex-wrap rounded-sm border border-transparent bg-elevated/30 px-3 py-2 @2xl/stat:max-w-max',
-      props.isActive && 'border-primary/40 bg-elevated/30',
+          ? 'relative flex h-14 items-center rounded-md border border-transparent bg-elevated/30 px-3 py-0.5 @2xl/stat:h-auto @2xl/stat:p-3'
+          : 'flex-1 flex-wrap rounded-md border border-transparent bg-elevated/30 px-3 py-2 @2xl/stat:max-w-max',
+      props.isActive && 'bg-elevated/70',
     )"
     @click="(e: Event) => emit('click', e)"
     @keydown.enter.prevent="(e: Event) => emit('click', e)"
     @keydown.space.prevent="(e: Event) => emit('click', e)"
   >
     <div :class="props.variant === 'summary' ? 'flex w-full items-center gap-5' : 'flex items-end gap-5'">
-      <div class="grid gap-1">
-        <UiText variant="caption">
+      <div class="grid min-w-0 gap-1">
+        <UiText variant="caption" class="truncate">
           {{ props.title ?? t(`money.${props.type}`) }}
         </UiText>
 

@@ -18,6 +18,12 @@
 }
 
 @layer base {
+  /* App feel: links and controls keep the arrow; utilities (cursor-grab, cursor-not-allowed) still override. */
+  a,
+  [role="button"] {
+    cursor: default;
+  }
+
   html,
   body {
     @apply antialiased text-default select-none;

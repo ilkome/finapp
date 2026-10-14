@@ -64,7 +64,7 @@ const isSidebarHiddenByStatConfig = computed(() => isStatConfigOpen.value
 const showShell = computed(() => bootState.value === 'ready')
 const layoutClasses = computed(() => cn(
   'flex min-h-dvh flex-col transition-all duration-300 ease-in-out',
-  showShell.value && 'bg-muted',
+  showShell.value && 'bg-[color-mix(in_oklab,var(--ui-bg),var(--ui-bg-muted)_30%)]',
   showShell.value && (isSidebarHiddenByStatConfig.value ? 'md:pl-3' : isShowSidebar.value ? 'md:pl-(--sidebar-width)' : 'md:pl-12'),
   isOnboarded.value && trnsFormStore.ui.isShow && 'md:pr-90',
   isOnboarded.value && isStatConfigOpen.value && 'md:pr-100',
@@ -133,7 +133,7 @@ defineShortcuts(computed(() => ({
       <DrawerIndentBackground class="drawer-indent-background" />
       <DrawerIndent
         class="drawer-indent"
-        :class="showShell ? 'flex min-h-dvh flex-col md:py-4 md:pr-4' : 'flex flex-1 items-center justify-center'"
+        :class="showShell ? 'flex min-h-dvh flex-col md:py-2 md:pr-2' : 'flex flex-1 items-center justify-center'"
       >
         <div :class="showShell ? 'bg-default md:border-accented relative z-10 flex max-w-5xl flex-1 flex-col contain-paint md:rounded-md md:border lg:rounded-lg' : 'w-full max-w-lg px-4'">
           <main

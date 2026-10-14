@@ -6,6 +6,8 @@ const props = defineProps<{
   currencyCode: string
   /** Summary mode with a category focus: the focused type replaces the tiles on narrow layouts. */
   focused?: StatSumRecord | null
+  // The tile charts are off (summary setting or the pie main chart): no chart and no room for it.
+  isShowPie?: boolean
   // Without the "Итого" tile there is room for the pie on narrow layouts too.
   isShowPieOnNarrow?: boolean
   /** Summary mode: one tile per record. Single mode: `single` only. */
@@ -61,7 +63,7 @@ const tileClass = 'flex min-h-10.5 min-w-min flex-1 items-center interactive @2x
             :type="item.type"
           />
 
-          <div :class="props.isShowPieOnNarrow ? 'flex' : 'hidden @2xl/stat:flex'" class="ml-auto w-12 shrink-0 items-center justify-center">
+          <div v-if="props.isShowPie" :class="props.isShowPieOnNarrow ? 'flex' : 'hidden @2xl/stat:flex'" class="order-first w-12 shrink-0 items-center justify-center">
             <slot name="summaryPie" :type="item.type" />
           </div>
         </StatSumItemView>
@@ -86,8 +88,8 @@ const tileClass = 'flex min-h-10.5 min-w-min flex-1 items-center interactive @2x
         />
 
         <div
-          v-if="props.single.type === 'expense' || props.single.type === 'income'"
-          class="ml-auto flex w-12 shrink-0 items-center justify-center"
+          v-if="props.isShowPie && (props.single.type === 'expense' || props.single.type === 'income')"
+          class="order-first flex w-12 shrink-0 items-center justify-center"
         >
           <slot name="summaryPie" :type="props.single.type" />
         </div>

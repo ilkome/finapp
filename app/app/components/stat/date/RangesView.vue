@@ -65,6 +65,7 @@ function onSelect(id: string | number) {
       :grow="!props.vertical"
       :itemClass="props.itemClass"
       :size
+      variant="flat"
       :items="tabItems"
       :modelValue="selectedId"
       @update:modelValue="onSelect"

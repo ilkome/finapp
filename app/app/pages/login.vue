@@ -342,7 +342,6 @@ watch(
   isolation: isolate;
   overflow: hidden;
   width: 100%;
-  cursor: pointer;
   padding: 1.05rem 2.5rem;
   outline-offset: 4px;
   border: 1px solid transparent;

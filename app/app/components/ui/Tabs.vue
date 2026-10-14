@@ -12,7 +12,7 @@ const props = withDefaults(defineProps<{
   items: TabsItem[]
   modelValue?: number | string
   size?: 'md' | 'sm' | 'xs'
-  variant?: 'link' | 'pill' | 'text'
+  variant?: 'flat' | 'link' | 'pill' | 'text'
 }>(), { align: 'center', grow: true, itemGrow: true, size: 'md', variant: 'pill' })
 
 const emit = defineEmits<{ 'update:modelValue': [value: number | string] }>()
@@ -20,6 +20,12 @@ const emit = defineEmits<{ 'update:modelValue': [value: number | string] }>()
 const listRef = useTemplateRef<HTMLElement>('listRef')
 
 const sizes = {
+  // Borderless tabs pressed together: the active one is filled, the rest only get a fill on hover.
+  flat: {
+    md: 'px-3 py-1.5 text-sm gap-1.5',
+    sm: 'px-2.5 py-1.5 text-xs gap-1.5',
+    xs: 'px-2 py-1 text-xs gap-1',
+  },
   link: {
     md: 'px-3 pt-1.5 pb-2 text-sm gap-1.5',
     sm: 'px-2.5 pt-1.5 pb-2 text-xs gap-1.5',
@@ -67,17 +73,18 @@ watch(() => props.modelValue, () => nextTick(scrollToActive))
       type="button"
       :aria-pressed="item.value === props.modelValue"
       :class="cn(
-        'relative inline-flex shrink-0 items-center rounded-md font-medium whitespace-nowrap transition-colors',
+        'relative inline-flex shrink-0 items-center font-medium whitespace-nowrap transition-colors',
+        props.variant === 'flat' ? 'rounded-full' : 'rounded-md',
         props.variant === 'pill' && 'theme-rounded-control-inner',
         props.itemGrow && 'grow',
         props.align === 'left' ? 'justify-start' : 'justify-center',
         item.value === props.modelValue
-          ? (props.variant === 'pill'
+          ? (props.variant === 'pill' || props.variant === 'flat'
             ? 'bg-primary text-inverted shadow-xs'
             : props.variant === 'link'
               ? 'text-primary after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-primary'
               : 'text-primary')
-          : 'text-muted hover:text-default',
+          : props.variant === 'flat' ? 'text-muted hover:bg-elevated/50 hover:text-default' : 'text-muted hover:text-default',
         sizes[props.variant][props.size],
         props.isEqual && 'basis-0',
         props.itemClass,
