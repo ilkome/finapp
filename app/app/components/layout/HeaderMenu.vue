@@ -8,31 +8,47 @@ const { sessionActions = false } = defineProps<{ sessionActions?: boolean }>()
 const { t } = useI18n()
 const { hasIssue: hasSyncIssue, status: syncStatus } = useSyncStatus()
 const isOpen = ref(false)
+const isLaptop = useIsLaptop()
+const [DefineTrigger, ReuseTrigger] = createReusableTemplate<{ isActive: boolean }>()
 </script>
 
 <template>
+  <DefineTrigger v-slot="{ isActive }">
+    <span class="relative inline-flex">
+      <UButton
+        :aria-label="t('login.menu.title')"
+        :variant="isActive ? 'soft' : 'ghost'"
+        class="text-muted max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:border-default/80 max-md:bg-default/20 max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
+        color="neutral"
+        icon="i-lucide-menu"
+        size="lg"
+        square
+      />
+      <!-- Offline / unsynced-changes marker; details live in the menu's account block. -->
+      <span
+        v-if="hasSyncIssue"
+        :title="t('sync.status.pending', { count: syncStatus.pending })"
+        class="pointer-events-none absolute top-0.5 right-0.5 size-2 rounded-full bg-warning"
+      />
+    </span>
+  </DefineTrigger>
+
+  <LayoutUserMenuDropdown
+    v-if="isLaptop"
+    v-model:open="isOpen"
+    align="end"
+    :sessionActions="sessionActions"
+  >
+    <ReuseTrigger :isActive="isOpen" />
+  </LayoutUserMenuDropdown>
+
   <DrawerOrDropdown
+    v-else
     v-model:open="isOpen"
     align="end"
   >
     <template #trigger="{ isActive }">
-      <span class="relative inline-flex">
-        <UButton
-          :aria-label="t('login.menu.title')"
-          :variant="isActive ? 'soft' : 'ghost'"
-          class="text-muted max-md:size-12 max-md:justify-center max-md:rounded-2xl max-md:border max-md:border-default/80 max-md:bg-default/20 max-md:shadow-lg max-md:backdrop-blur-xl max-md:dark:bg-neutral-800/50"
-          color="neutral"
-          icon="i-lucide-menu"
-          size="lg"
-          square
-        />
-        <!-- Offline / unsynced-changes marker; details live in the menu's account block. -->
-        <span
-          v-if="hasSyncIssue"
-          :title="t('sync.status.pending', { count: syncStatus.pending })"
-          class="pointer-events-none absolute top-0.5 right-0.5 size-2 rounded-full bg-warning"
-        />
-      </span>
+      <ReuseTrigger :isActive />
     </template>
 
     <template #content="{ close }">
