@@ -1,3 +1,29 @@
+diff --git a/dist/ContextMenu/ContextMenuTrigger.cjs b/dist/ContextMenu/ContextMenuTrigger.cjs
+index b84d469aa960598ffb92de1f4adc8f7cae948366..5cb590139b9a221c35daad428b3fcdd35bbe4b63 100644
+--- a/dist/ContextMenu/ContextMenuTrigger.cjs
++++ b/dist/ContextMenu/ContextMenuTrigger.cjs
+@@ -61,7 +61,7 @@ var ContextMenuTrigger_vue_vue_type_script_setup_true_lang_default = /* @__PURE_
+ 				if (!event.defaultPrevented) {
+ 					clearLongPress();
+ 					handleOpen(event);
+-					event.preventDefault();
++					if (!require_ContextMenu_utils.isTouchOrPen(event)) event.preventDefault();
+ 				}
+ 			}
+ 		}
+diff --git a/dist/ContextMenu/ContextMenuTrigger.js b/dist/ContextMenu/ContextMenuTrigger.js
+index 7cc1a9184035bb4c427ac2168ffd724efed03918..dd2cfe6c78f500e6320857c8a9b95ed98cd188f0 100644
+--- a/dist/ContextMenu/ContextMenuTrigger.js
++++ b/dist/ContextMenu/ContextMenuTrigger.js
+@@ -60,7 +60,7 @@ var ContextMenuTrigger_vue_vue_type_script_setup_true_lang_default = /* @__PURE_
+ 				if (!event.defaultPrevented) {
+ 					clearLongPress();
+ 					handleOpen(event);
+-					event.preventDefault();
++					if (!isTouchOrPen(event)) event.preventDefault();
+ 				}
+ 			}
+ 		}
 diff --git a/dist/Drawer/DrawerContent.cjs b/dist/Drawer/DrawerContent.cjs
 index fb904d746bb722a13c23464671b4cfb9491def6f..204be9fb7887c8f36e892873007717280874e463 100644
 --- a/dist/Drawer/DrawerContent.cjs

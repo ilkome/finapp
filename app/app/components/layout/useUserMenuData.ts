@@ -124,3 +124,58 @@ export function useUserMenuData() {
     userStore,
   }
 }
+
+export type UserMenuOption = { checked: boolean, chip?: string, icon?: string, key: string, label: string, radius?: number, select: () => void }
+export type UserMenuGroup = { options: UserMenuOption[], title?: string }
+
+// The "pick one of N" groups of every leaf panel; both the phone sheet and the laptop dropdown render them.
+export function useUserMenuGroups() {
+  const { locale, t } = useI18n()
+  const {
+    blackAsPrimary,
+    localeOptions,
+    neutral,
+    neutralColors,
+    primary,
+    primaryColors,
+    radius,
+    radiuses,
+    setBlackAsPrimary,
+    setTheme,
+    themeOptions,
+    themePreference,
+    userStore,
+  } = useUserMenuData()
+
+  const primaryOptions = computed<UserMenuOption[]>(() => [
+    { checked: blackAsPrimary.value, chip: BLACK_PRIMARY, key: BLACK_PRIMARY, label: colorLabel(t, BLACK_PRIMARY), select: () => setBlackAsPrimary(true) },
+    ...primaryColors.map(c => ({ checked: !blackAsPrimary.value && primary.value === c, chip: c, key: c, label: colorLabel(t, c), select: () => primary.value = c })),
+  ])
+  const neutralOptions = computed<UserMenuOption[]>(() =>
+    neutralColors.map(c => ({ checked: neutral.value === c, chip: c, key: c, label: colorLabel(t, c), select: () => neutral.value = c })),
+  )
+
+  function groupsFor(panel: 'root' | UserMenuPanel): UserMenuGroup[] {
+    switch (panel) {
+      case 'locale':
+        return [{ options: localeOptions.value.map(o => ({ checked: locale.value === o.value, key: o.value, label: o.label, select: () => userStore.saveUserLocale(o.value) })) }]
+      case 'theme':
+        return [{ options: themeOptions.map(o => ({ checked: themePreference.value === o.value, icon: USER_MENU_THEME_ICONS[o.value], key: o.value, label: o.label, select: () => setTheme(o.value) })) }]
+      case 'primary':
+        return [{ options: primaryOptions.value }]
+      case 'neutral':
+        return [{ options: neutralOptions.value }]
+      case 'color':
+        return [
+          { options: primaryOptions.value, title: t('theme.picker.primary') },
+          { options: neutralOptions.value, title: t('theme.picker.neutral') },
+        ]
+      case 'radius':
+        return [{ options: radiuses.map(r => ({ checked: radius.value === r, key: String(r), label: String(r), radius: r, select: () => radius.value = r })) }]
+      default:
+        return []
+    }
+  }
+
+  return { groupsFor }
+}

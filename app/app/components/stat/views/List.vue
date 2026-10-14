@@ -85,7 +85,7 @@ watch(() => savedViews.value.map(view => view.id), (ids) => {
     >
       {{ adaptive.name }}
       <template #actions>
-        <UDropdownMenu :items="[[{ icon: 'i-lucide-copy', label: t('base.duplicate'), onSelect: () => duplicate(adaptive!.id) }]]" :content="{ align: 'end' }" :modal="false">
+        <UDropdownMenu :items="[[{ icon: 'i-lucide-copy', label: t('base.duplicate'), onSelect: () => duplicate(adaptive!.id) }]]" :content="{ align: 'end' }">
           <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
         </UDropdownMenu>
       </template>
@@ -107,7 +107,7 @@ watch(() => savedViews.value.map(view => view.id), (ids) => {
         </template>
 
         <template #actions>
-          <UDropdownMenu :items="viewActionItems(viewId)" :content="{ align: 'end' }" :modal="false">
+          <UDropdownMenu :items="viewActionItems(viewId)" :content="{ align: 'end' }">
             <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
           </UDropdownMenu>
         </template>

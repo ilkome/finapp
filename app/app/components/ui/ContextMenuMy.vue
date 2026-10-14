@@ -21,7 +21,8 @@ const props = withDefaults(defineProps<{
 }>(), {
   descriptionKey: 'description',
   labelKey: 'label',
-  modal: false,
+  // Modal: reka locks the page (no hover, no clicks behind), so the first outside tap only closes the menu.
+  modal: true,
   portal: true,
   pressOpenDelay: 500,
 })
@@ -75,10 +76,11 @@ const ui = computed(() => tv({
     @update:open="(v) => emit('update:open', v)"
   >
     <RegistryBridge />
-    <ContextMenuTrigger asChild :disabled="props.disabled">
+    <ContextMenuTrigger asChild data-context-trigger :disabled="props.disabled">
       <slot />
     </ContextMenuTrigger>
     <UContextMenuContent
+      class="max-w-72"
       :items="props.items"
       :portal="props.portal"
       :labelKey="props.labelKey"

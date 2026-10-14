@@ -114,7 +114,7 @@ const viewActionItems = computed(() => [
           </DrawerOrDropdown>
         </div>
 
-        <UDropdownMenu v-if="viewActionItems.length" :items="viewActionItems" :content="{ align: 'end' }" :modal="false">
+        <UDropdownMenu v-if="viewActionItems.length" :items="viewActionItems" :content="{ align: 'end' }">
           <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
         </UDropdownMenu>
       </div>

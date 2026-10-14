@@ -77,7 +77,6 @@ function setExpanded(open: boolean) {
             <UDropdownMenu
               :items="ruleActionItems"
               :content="{ align: 'end' }"
-              :modal="false"
             >
               <StatViewsMoreButton class="size-8!" :ariaLabel="$t('base.moreOptions')" />
             </UDropdownMenu>
