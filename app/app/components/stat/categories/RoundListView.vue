@@ -45,7 +45,7 @@ function transitionName(categoryId: CategoryId) {
       :class="{
         'opacity-60': selected.size > 0 && !selected.has(row.item.id),
         'opacity-50': !selected.has(row.item.id) && row.item.value === 0,
-        'border-primary/40!': selected.has(row.item.id),
+        'bg-elevated/70!': selected.has(row.item.id),
       }"
       class="transition-opacity"
       @click="emit('click', $event)"

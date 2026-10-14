@@ -19,7 +19,7 @@ const elementClasses = computed(() => cn(
   // Rows overlap by the base -my-0.25, so the highlight is painted by an overlay inset by that
   // 1px instead of on the row itself: neighbours cannot cover it and the row keeps its height.
   {
-    'relative z-10 after:pointer-events-none after:absolute after:inset-0 after:-z-10 after:rounded-md after:border after:border-primary/40 after:bg-elevated/30 after:content-[""]': props.isActive,
+    'relative z-10 after:pointer-events-none after:absolute after:inset-0 after:-z-10 after:rounded-md after:bg-elevated/30 after:content-[""]': props.isActive,
   },
 ))
 </script>

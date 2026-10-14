@@ -32,9 +32,9 @@ const emit = defineEmits<{
 const isLoans = useFeature('loans')
 
 const classes = computed(() => ({
-  'bg-elevated/30': props.compact || props.withBackground,
+  'bg-elevated/30': (props.compact || props.withBackground) && !props.isSelected,
+  'bg-elevated/70': props.isSelected,
   'group': props.isSort,
-  'inset-ring-1 inset-ring-primary/40': props.isSelected,
   'rounded-md': props.compact || props.withBackground,
 }))
 
