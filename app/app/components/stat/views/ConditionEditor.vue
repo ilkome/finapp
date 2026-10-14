@@ -127,7 +127,7 @@ function conditionActionItems(index: number) {
           </template>
         </div>
         <div class="absolute -top-1 -right-1 flex justify-end">
-          <UDropdownMenu :items="conditionActionItems(index)" :content="{ align: 'end' }" :modal="false">
+          <UDropdownMenu :items="conditionActionItems(index)" :content="{ align: 'end' }">
             <StatViewsMoreButton :ariaLabel="$t('base.moreOptions')" />
           </UDropdownMenu>
         </div>

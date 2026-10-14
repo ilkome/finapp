@@ -209,7 +209,6 @@ defineExpose({ folderIcon, toggleAll })
           v-if="!props.hideCreate"
           :content="{ align: 'end' }"
           :items="[[{ label: $t('categories.new'), onSelect: onClickNew }]]"
-          :modal="false"
         >
           <UiTriggerButton icon="lucide:ellipsis-vertical" outlined :title="$t('base.moreOptions')" />
         </UDropdownMenu>

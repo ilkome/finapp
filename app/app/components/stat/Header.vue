@@ -55,7 +55,6 @@ defineExpose({ stickyMainElement, stickyRootElement })
           v-if="props.menuItems"
           :content="{ align: 'end' }"
           :items="props.menuItems"
-          :modal="false"
         >
           <UTooltip :text="$t('base.moreOptions')">
             <UiActionButton :ariaLabel="$t('base.moreOptions')">
