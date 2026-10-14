@@ -141,6 +141,7 @@ export default {
     selectParent: 'Вся «{name}»',
     selectParentHint: 'со всеми подкатегориями',
     singular: 'Категория',
+    sortFavorites: 'Сортировать избранное',
     system: 'Системные',
     title: 'Категории',
     view: {
@@ -149,8 +150,6 @@ export default {
         grid: 'Облако',
         list: 'Список',
       },
-      layout: 'Вид',
-      layouts: { columns: 'Колонки', list: 'Список' },
       showChildrenCount: 'Показывать количество дочерних',
     },
   },
@@ -1012,9 +1011,11 @@ export default {
     },
     page: {
       currencies: 'Валюта',
+      currencyType: 'Валюта, затем тип',
       groupBy: 'Группировать',
       none: 'Нет',
       type: 'Тип',
+      typeCurrency: 'Тип, затем валюта',
     },
     search: {
       placeholder: 'Поиск',

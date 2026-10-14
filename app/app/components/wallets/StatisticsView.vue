@@ -59,9 +59,7 @@ const { t } = useI18n()
     <div v-if="props.isShowList" class="group relative md:max-w-lg">
       <div class="-my-px overflow-hidden">
         <UCollapsible v-model:open="isShown">
-          <UiTitleDropRight :isShown="isShown">
-            <UiEntityName>{{ t('statistics.title') }}</UiEntityName>
-          </UiTitleDropRight>
+          <UiTitleDropRight :isShown="isShown" :title="t('statistics.title')" />
 
           <template #content>
             <div class="rounded-md bg-elevated/30 py-px">

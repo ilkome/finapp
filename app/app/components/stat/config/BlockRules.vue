@@ -8,6 +8,7 @@ import type { BlockRule, ConditionGroup, StatBlockPanelId } from '~/components/s
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { cloneBlockRule } from '~/components/stat/views/blockRules'
 import { useStatConditionTitles } from '~/components/stat/views/useConditionTitles'
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
 const props = defineProps<{
   panel: StatBlockPanelId
@@ -23,6 +24,7 @@ const isDefaultExpanded = useStorage(`finapp.statConfig.defaultRuleExpanded.${pr
 let syncingFromStore = false
 const [sortParent, rules] = useDragAndDrop([] as BlockRule[], {
   dragHandle: '.blockRuleSortHandle',
+  plugins: [sortInsertLine()],
 })
 
 const sourceFingerprint = computed(() => JSON.stringify(controller.activeView.value?.config.blockRules[props.panel] ?? []))

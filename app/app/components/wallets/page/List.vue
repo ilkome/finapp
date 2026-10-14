@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
+import type { WalletSortOrders } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { canStickStatCategories } from '~/components/stat/statFeed'
+import SideMenu from '~/components/ui/SideMenu.vue'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
@@ -32,20 +34,42 @@ const sideColumn = useTemplateRef<HTMLElement>('sideColumn')
 const { height: sideColumnHeight } = useElementSize(sideColumn)
 const { height: viewportHeight } = useWindowSize()
 const canStickSideColumn = computed(() => canStickStatCategories(stickyTop.value, sideColumnHeight.value, viewportHeight.value))
+// In one column the currency strip pins above the list, so group titles pin below it; it is hidden in two columns.
+const currenciesBar = useTemplateRef<HTMLElement>('currenciesBar')
+const { height: currenciesBarHeight } = useElementSize(currenciesBar, undefined, { box: 'border-box' })
 const currenciesStore = useCurrenciesStore()
 const isSorting = ref(false)
+// Drags save as they happen; cancel puts back the order the sort started from.
+const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
+let sortSnapshot: { ids: WalletId[], sortOrders: WalletSortOrders } | null = null
+
+function startSorting() {
+  sortSnapshot = { ids: [...walletsStore.sortedIds], sortOrders: structuredClone(toRaw(sortOrders.value)) }
+  isSorting.value = true
+}
+
+function cancelSorting() {
+  if (sortSnapshot) {
+    if (sortSnapshot.ids.some((id, index) => id !== walletsStore.sortedIds[index]))
+      walletsStore.saveWalletsOrder(sortSnapshot.ids)
+    sortOrders.value = sortSnapshot.sortOrders
+  }
+  sortSnapshot = null
+  isSorting.value = false
+}
 const isLaptop = useIsLaptop()
 // vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineSortBody, ReuseSortBody] = createReusableTemplate()
+const [DefineStatBody, ReuseStatBody] = createReusableTemplate()
+const [DefineStatHint, ReuseStatHint] = createReusableTemplate()
 const isOpen = ref(false)
+const isStatSideOpen = ref(false)
 
 // Statistics settings are a panel of this same menu, the way the user menu nests its panels -
 // a second popover or sheet on top of the menu is neither the house pattern nor safe on touch.
 const menuPanel = ref<'root' | 'statistics'>('root')
 
-// The sort modal is a sheet of its own, and on touch so is this menu. Opening it before the
-// menu unregisters stacks it above the menu in the drawer history, whose cleanup then closes
-// everything above itself - so the modal would flash open and vanish. Wait for the menu first.
+// Opening a sheet (or routing) before the menu unregisters stacks it above the menu in the drawer
+// history, whose cleanup then closes everything above itself - so it would flash open and vanish. Wait for the menu first.
 let afterMenuClose: (() => void) | null = null
 
 function closeMenu() {
@@ -73,13 +97,14 @@ const isShowGroupCount = useStorage<boolean>('finapp.walletsShowGroupCount', fal
   mergeDefaults: true,
 })
 
+// Archived wallets counted in the sums are listed too.
 const {
   currencyFiltered,
   selectedWalletsIds,
   selectedWalletsIdsWithCurrency,
   setWalletViewType,
   walletViewType,
-} = useWalletsFilter(groupedBy, showArchived)
+} = useWalletsFilter(groupedBy, computed(() => showArchived.value || includeArchivedInStats.value))
 
 const {
   counts,
@@ -97,249 +122,264 @@ function showMenuPanel(panel: 'root' | 'statistics') {
 }
 
 function openStatisticsPanel() {
-  menuPanel.value = 'statistics'
+  menuPanel.value = 'root'
   isOpen.value = true
+  if (isLaptop.value)
+    nextTick(() => isStatSideOpen.value = true)
+  else
+    menuPanel.value = 'statistics'
 }
 
 const {
   groupedWalletsWithIds,
-  groupTabs,
-  isSecondaryGroupingActive,
+  primary,
   setSortOrder,
   toggleMap,
   toggleOpened,
-  toggleSecondaryGrouping,
   typeGroupsStatus,
   walletsToggledMap,
 } = useWalletsGrouping(selectedWalletsIds, groupedBy)
 
+function isFlagGroup(key: string) {
+  return key === 'isArchived' || key === 'isExcludeInTotal'
+}
+
 function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
 }
-
-const currentGroupTab = computed(() => groupTabs.value.find(tab => tab.id === groupedBy.value) ?? groupTabs.value[0]!)
-
-const groupingItems = computed(() => [[
-  { icon: 'lucide:list-tree', label: t('wallets.page.groupBy'), type: 'label' as const },
-  { class: 'ms-2!', type: 'separator' as const },
-  ...groupTabs.value.map(tab => ({
-    checked: groupedBy.value === tab.id,
-    icon: tab.icon,
-    label: tab.label,
-    onSelect: () => { groupedBy.value = tab.id },
-    type: 'checkbox' as const,
-  })),
-]])
 </script>
 
 <template>
+  <DefineStatHint>
+    <UPopover
+      :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
+      :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
+    >
+      <button
+        type="button"
+        :aria-label="t('statistics.hints')"
+        class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
+        @click.stop
+      >
+        <Icon name="lucide:info" size="18" />
+      </button>
+
+      <template #content>
+        <div
+          class="scroller grid gap-3 overflow-y-auto p-3"
+          style="max-height: var(--reka-popper-available-height, 60dvh)"
+        >
+          <div v-for="row in statistics.hintRows.value" :key="row.id">
+            <UiText variant="navigation">
+              {{ row.title }}
+            </UiText>
+
+            <UiText variant="meta" class="pt-1 leading-snug!">
+              {{ row.hint }}
+            </UiText>
+          </div>
+        </div>
+      </template>
+    </UPopover>
+  </DefineStatHint>
+
+  <DefineStatBody>
+    <UiSwitchItem
+      :checkboxValue="showStatistics"
+      :title="t('wallets.options.showStatistics')"
+      trailing
+      @toggle="showStatistics = !showStatistics"
+    />
+
+    <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
+      <UiText variant="meta" class="px-2">
+        {{ t('statistics.pinned') }}
+      </UiText>
+
+      <WalletsStatisticsSortGroup
+        :items="statistics.pinnedRows.value"
+        :pinnedIds="statistics.pinnedIds.value"
+        showPin
+        @togglePinned="statistics.togglePinned"
+        @update="statistics.reorderPinned"
+      />
+    </div>
+
+    <div class="grid gap-1">
+      <UiText variant="meta" class="px-2">
+        {{ t('statistics.list') }}
+      </UiText>
+
+      <WalletsStatisticsSortGroup
+        :hiddenIds="statistics.hiddenIds.value"
+        :items="statistics.listRows.value"
+        :pinnedIds="statistics.pinnedIds.value"
+        showHide
+        showPin
+        @toggleHidden="statistics.toggleHidden"
+        @togglePinned="statistics.togglePinned"
+        @update="statistics.reorderList"
+      />
+    </div>
+  </DefineStatBody>
+
   <UiPage>
-    <UiHeader actionsAfterTitle>
+    <UiHeader ref="header" actionsAfterTitle>
       <UiHeaderTitle>
         {{ t('wallets.name') }}
       </UiHeaderTitle>
 
       <template #actions>
-        <UTooltip :text="$t('base.toggleGrouping')">
-          <UiActionButton
-            :ariaLabel="$t('base.toggleGrouping')"
-            :disabled="groupedBy === 'none'"
-            @click="toggleSecondaryGrouping"
-          >
-            <Icon
-              :name="isSecondaryGroupingActive ? 'lucide:network' : 'lucide:folder-tree'"
-              size="18"
-            />
-          </UiActionButton>
-        </UTooltip>
+        <UiSortActions v-if="isSorting" @apply="isSorting = false" @cancel="cancelSorting" />
 
-        <UTooltip :text="$t('base.toggleFolders')">
-          <UiActionButton
-            :ariaLabel="$t('base.toggleFolders')"
-            :disabled="groupedBy === 'none'"
-            @click="toggleOpened"
-          >
-            <Icon
-              v-if="typeGroupsStatus.isAllOpen"
-              name="lucide:folder-open"
-            />
-            <Icon
-              v-else-if="typeGroupsStatus.isAnyOpen"
-              name="lucide:folder-open-dot"
-            />
-            <Icon
-              v-else
-              name="lucide:folder"
-            />
-          </UiActionButton>
-        </UTooltip>
-
-        <UDropdownMenu :content="{ align: 'end' }" :items="groupingItems" :modal="false">
-          <UTooltip :text="currentGroupTab.label">
-            <UiActionButton :ariaLabel="$t('base.toggleView')">
-              <Icon name="lucide:list-tree" size="20" />
+        <template v-else>
+          <UTooltip v-if="groupedBy !== 'none'" :text="$t('base.toggleFolders')">
+            <UiActionButton
+              :ariaLabel="$t('base.toggleFolders')"
+              @click="toggleOpened"
+            >
+              <Icon
+                v-if="typeGroupsStatus.isAllOpen"
+                name="lucide:folder-open"
+              />
+              <Icon
+                v-else-if="typeGroupsStatus.isAnyOpen"
+                name="lucide:folder-open-dot"
+              />
+              <Icon
+                v-else
+                name="lucide:folder"
+              />
             </UiActionButton>
           </UTooltip>
-        </UDropdownMenu>
 
-        <DrawerOrDropdown
-          align="end"
-          isShowCloseBtn
-          :open="isOpen"
-          popoverBodyClass="[view-transition-name:ui-panel]"
-          popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
-          :title="menuPanel === 'statistics' ? t('statistics.title') : undefined"
-          bodyClass="[view-transition-name:ui-panel]"
-          @update:open="value => value ? (menuPanel = 'root', isOpen = true) : closeMenu()"
-        >
-          <template #trigger>
-            <UTooltip :text="$t('base.moreOptions')">
-              <UiActionButton
-                :ariaLabel="$t('base.moreOptions')"
-                @click="menuPanel = 'root'"
-              >
-                <Icon name="lucide:ellipsis-vertical" size="20" />
+          <WalletsGroupMenu
+            v-model:groupedBy="groupedBy"
+          >
+            <UTooltip :text="$t('base.toggleGrouping')">
+              <UiActionButton :ariaLabel="$t('base.toggleGrouping')">
+                <Icon name="lucide:list-tree" size="20" />
               </UiActionButton>
             </UTooltip>
-          </template>
+          </WalletsGroupMenu>
 
-          <template #content="{ close }">
-            <div>
-              <div v-if="menuPanel === 'statistics'" class="grid gap-3 py-3 md:py-0">
-                <UiPanelBack
-                  class="group"
-                  :title="t('base.previous')"
-                  @back="showMenuPanel('root')"
+          <DrawerOrDropdown
+            align="end"
+            isShowCloseBtn
+            :open="isOpen"
+            popoverBodyClass="[view-transition-name:ui-panel]"
+            popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
+            :title="menuPanel === 'statistics' ? t('statistics.title') : undefined"
+            bodyClass="[view-transition-name:ui-panel]"
+            @update:open="value => value ? (menuPanel = 'root', isOpen = true) : closeMenu()"
+          >
+            <template #trigger>
+              <UTooltip :text="$t('base.moreOptions')">
+                <UiActionButton
+                  :ariaLabel="$t('base.moreOptions')"
+                  @click="menuPanel = 'root'"
                 >
-                  <UPopover
-                    :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
-                    :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
+                  <Icon name="lucide:ellipsis-vertical" size="20" />
+                </UiActionButton>
+              </UTooltip>
+            </template>
+
+            <template #content="{ close }">
+              <div>
+                <div v-if="menuPanel === 'statistics'" class="grid gap-3 py-3 md:py-0">
+                  <UiPanelBack
+                    class="group"
+                    :title="t('base.previous')"
+                    @back="showMenuPanel('root')"
                   >
-                    <button
-                      type="button"
-                      :aria-label="t('statistics.hints')"
-                      class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
-                      @click.stop
-                    >
-                      <Icon name="lucide:info" size="18" />
-                    </button>
+                    <ReuseStatHint />
+                  </UiPanelBack>
+
+                  <ReuseStatBody />
+                </div>
+
+                <div v-else class="py-3 md:-mx-2 md:py-1">
+                  <UiHeaderLink icon="lucide:plus" @click="() => openAfterMenu(() => router.push('/wallets/new'), close)">
+                    {{ t('wallets.new') }}
+                  </UiHeaderLink>
+
+                  <UiHeaderLink
+                    v-if="walletsStore.sortedIds.length > 1"
+                    icon="lucide:arrow-down-up"
+                    @click="() => { startSorting(); close() }"
+                  >
+                    {{ t('wallets.sortTitle') }}
+                  </UiHeaderLink>
+
+                  <SideMenu v-if="isLaptop" v-model:open="isStatSideOpen" contentClass="w-88">
+                    <UiHeaderLink icon="lucide:chart-column" class="data-[state=open]:bg-elevated">
+                      {{ t('statistics.title') }}
+
+                      <Icon
+                        name="lucide:chevron-right"
+                        size="16"
+                        class="ml-auto text-muted"
+                      />
+                    </UiHeaderLink>
 
                     <template #content>
-                      <div
-                        class="scroller grid gap-3 overflow-y-auto p-3"
-                        style="max-height: var(--reka-popper-available-height, 60dvh)"
-                      >
-                        <div v-for="row in statistics.hintRows.value" :key="row.id">
-                          <UiText variant="navigation">
-                            {{ row.title }}
-                          </UiText>
-
-                          <UiText variant="meta" class="pt-1 leading-snug!">
-                            {{ row.hint }}
-                          </UiText>
+                      <div class="grid gap-3">
+                        <div class="flex items-center px-2">
+                          <span class="grow text-sm font-medium text-toned">{{ t('statistics.title') }}</span>
+                          <ReuseStatHint />
                         </div>
+                        <ReuseStatBody />
                       </div>
                     </template>
-                  </UPopover>
-                </UiPanelBack>
+                  </SideMenu>
 
-                <UiSwitchItem
-                  :checkboxValue="showStatistics"
-                  :title="t('wallets.options.showStatistics')"
-                  trailing
-                  @toggle="showStatistics = !showStatistics"
-                />
+                  <UiHeaderLink
+                    v-else
+                    icon="lucide:chart-column"
+                    @click="showMenuPanel('statistics')"
+                  >
+                    {{ t('statistics.title') }}
 
-                <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
-                  <UiText variant="meta" class="px-2">
-                    {{ t('statistics.pinned') }}
-                  </UiText>
+                    <Icon
+                      name="lucide:chevron-right"
+                      size="16"
+                      class="ml-auto text-muted"
+                    />
+                  </UiHeaderLink>
 
-                  <WalletsStatisticsSortGroup
-                    :items="statistics.pinnedRows.value"
-                    :pinnedIds="statistics.pinnedIds.value"
-                    showPin
-                    @togglePinned="statistics.togglePinned"
-                    @update="statistics.reorderPinned"
-                  />
-                </div>
+                  <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
-                <div class="grid gap-1">
-                  <UiText variant="meta" class="px-2">
-                    {{ t('statistics.list') }}
-                  </UiText>
-
-                  <WalletsStatisticsSortGroup
-                    :hiddenIds="statistics.hiddenIds.value"
-                    :items="statistics.listRows.value"
-                    :pinnedIds="statistics.pinnedIds.value"
-                    showHide
-                    showPin
-                    @toggleHidden="statistics.toggleHidden"
-                    @togglePinned="statistics.togglePinned"
-                    @update="statistics.reorderList"
-                  />
-                </div>
-              </div>
-
-              <div v-else class="py-3 md:-mx-2 md:py-1">
-                <UiHeaderLink icon="lucide:plus" @click="() => openAfterMenu(() => router.push('/wallets/new'), close)">
-                  {{ t('wallets.new') }}
-                </UiHeaderLink>
-
-                <UiHeaderLink
-                  v-if="walletsStore.sortedIds.length > 1"
-                  icon="lucide:arrow-down-up"
-                  @click="() => openAfterMenu(() => isSorting = true, close)"
-                >
-                  {{ t('wallets.sortTitle') }}
-                </UiHeaderLink>
-
-                <UiHeaderLink
-                  icon="lucide:chart-column"
-                  @click="showMenuPanel('statistics')"
-                >
-                  {{ t('statistics.title') }}
-
-                  <Icon
-                    name="lucide:chevron-right"
-                    size="16"
-                    class="ml-auto text-muted"
-                  />
-                </UiHeaderLink>
-
-                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
-
-                <div>
-                  <UiSwitchItem
-                    :checkboxValue="showArchived"
-                    :title="t('wallets.options.showArchived')"
-                    trailing
-                    @toggle="showArchived = !showArchived"
-                  />
-                  <UiSwitchItem
-                    :checkboxValue="includeArchivedInStats"
-                    :title="t('wallets.options.includeArchivedInStats')"
-                    trailing
-                    @toggle="includeArchivedInStats = !includeArchivedInStats"
-                  />
-                  <UiSwitchItem
-                    :checkboxValue="includeExcludedInStats"
-                    :title="t('wallets.options.includeExcludedInStats')"
-                    trailing
-                    @toggle="includeExcludedInStats = !includeExcludedInStats"
-                  />
-                  <UiSwitchItem
-                    :checkboxValue="isShowGroupCount"
-                    :title="t('wallets.options.showGroupCount')"
-                    trailing
-                    @toggle="isShowGroupCount = !isShowGroupCount"
-                  />
+                  <div>
+                    <UiSwitchItem
+                      :checkboxValue="showArchived"
+                      :title="t('wallets.options.showArchived')"
+                      trailing
+                      @toggle="showArchived = !showArchived"
+                    />
+                    <UiSwitchItem
+                      :checkboxValue="includeArchivedInStats"
+                      :title="t('wallets.options.includeArchivedInStats')"
+                      trailing
+                      @toggle="includeArchivedInStats = !includeArchivedInStats"
+                    />
+                    <UiSwitchItem
+                      :checkboxValue="includeExcludedInStats"
+                      :title="t('wallets.options.includeExcludedInStats')"
+                      trailing
+                      @toggle="includeExcludedInStats = !includeExcludedInStats"
+                    />
+                    <UiSwitchItem
+                      :checkboxValue="isShowGroupCount"
+                      :title="t('wallets.options.showGroupCount')"
+                      trailing
+                      @toggle="isShowGroupCount = !isShowGroupCount"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </template>
-        </DrawerOrDropdown>
+            </template>
+          </DrawerOrDropdown>
+        </template>
       </template>
     </UiHeader>
 
@@ -361,6 +401,18 @@ const groupingItems = computed(() => [[
       v-else
       class="grid max-w-5xl grow px-2 lg:px-4 2xl:px-8 @xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12"
     >
+      <div
+        v-if="walletsStore.currenciesUsed.length > 1 && primary !== 'currency'"
+        ref="currenciesBar"
+        class="sticky z-19 -mx-2 bg-default px-2 py-1 @xl/page:hidden"
+        :style="{ top: `${stickyTop}px` }"
+      >
+        <WalletsCurrencies
+          :currencyFiltered
+          @selectFilterCurrency="code => currencyFiltered = code"
+        />
+      </div>
+
       <!-- The currency strip scrolls across the whole column so it is not clipped at
            max-w-sm; the blocks below keep that width. -->
       <div
@@ -370,9 +422,9 @@ const groupingItems = computed(() => [[
         :style="canStickSideColumn ? { top: `${stickyTop}px` } : undefined"
       >
         <WalletsCurrencies
-          v-if="walletsStore.currenciesUsed.length > 1 && groupedBy !== 'currency'"
+          v-if="walletsStore.currenciesUsed.length > 1 && primary !== 'currency'"
           :currencyFiltered
-          class="mb-2"
+          class="mb-2 hidden @xl/page:block"
           @selectFilterCurrency="code => currencyFiltered = code"
         />
 
@@ -401,6 +453,7 @@ const groupingItems = computed(() => [[
             <template #default="{ id: walletId }">
               <WalletsPageListItem
                 :walletId
+                :isSort="isSorting"
                 @delete="requestDelete"
               />
             </template>
@@ -416,15 +469,13 @@ const groupingItems = computed(() => [[
               <UCollapsible
                 :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
               >
-                <div class="flex items-stretch">
+                <div class="sticky z-18 flex items-stretch bg-default" :style="{ top: `${stickyTop + currenciesBarHeight}px` }">
+                  <WalletsSortHandle v-if="isSorting" />
                   <UiTitleDropRight
                     :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
+                    :title="primary === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary"
                     @click="toggleMap(groupPrimary)"
                   >
-                    <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-                      {{ groupedBy === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
-                    </div>
-
                     <div
                       v-if="isShowGroupCount"
                       class="text-xs leading-none tracking-wide text-dimmed"
@@ -435,14 +486,14 @@ const groupingItems = computed(() => [[
                     <template #after>
                       <div class="ml-auto opacity-60">
                         <Amount
-                          :amount="countWalletsSum(groupedWalletsWithIds[groupPrimary]!.ids)"
+                          :amount="countWalletsSum(groupedWalletsWithIds[groupPrimary]!.ids, isFlagGroup(groupPrimary))"
                           :currencyCode="currenciesStore.base"
                           :isShowBaseRate="false"
                           variant="row"
                         />
                         <Amount
-                          v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
-                          :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.ids)"
+                          v-if="primary === 'currency' && currenciesStore.base !== groupPrimary"
+                          :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.ids, isFlagGroup(groupPrimary))"
                           :currencyCode="groupPrimary"
                           :isShowBaseRate="false"
                           variant="secondary"
@@ -465,14 +516,13 @@ const groupingItems = computed(() => [[
                         class="group grid"
                       >
                         <div class="flex items-stretch">
+                          <WalletsSortHandle v-if="isSorting" />
                           <UiTitleDropRight
                             :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
+                            isNested
+                            :title="primary === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary"
                             @click="toggleMap(groupPrimary, groupSecondary)"
                           >
-                            <div class="font-tertiary text-base leading-none font-semibold">
-                              {{ groupedBy === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
-                            </div>
-
                             <div
                               v-if="isShowGroupCount"
                               class="text-xs leading-none tracking-wide text-dimmed"
@@ -487,7 +537,7 @@ const groupingItems = computed(() => [[
                                   :isShowBaseRate="false"
                                 />
                                 <Amount
-                                  v-if="groupedBy === 'currency' && currenciesStore.base !== groupPrimary"
+                                  v-if="primary === 'currency' && currenciesStore.base !== groupPrimary"
                                   :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.groups![groupSecondary]!)"
                                   :currencyCode="groupPrimary"
                                   :isShowBaseRate="false"
@@ -507,6 +557,7 @@ const groupingItems = computed(() => [[
                             <template #default="{ id: walletId }">
                               <WalletsPageListItem
                                 :walletId
+                                :isSort="isSorting"
                                 @delete="requestDelete"
                               />
                             </template>
@@ -525,6 +576,7 @@ const groupingItems = computed(() => [[
                     <template #default="{ id: walletId }">
                       <WalletsPageListItem
                         :walletId
+                        :isSort="isSorting"
                         @delete="requestDelete"
                       />
                     </template>
@@ -536,52 +588,5 @@ const groupingItems = computed(() => [[
         </div>
       </div>
     </div>
-
-    <DefineSortBody>
-      <WalletsSortableList
-        :ids="walletsStore.sortedIds"
-        class="grid gap-1"
-        @update="ids => walletsStore.saveWalletsOrder(ids as WalletId[])"
-      >
-        <template #default="{ id }">
-          <div class="flex items-center gap-1">
-            <WalletsSortHandle />
-            <WalletsItem
-              :baseCurrencyCode="currenciesStore.base"
-              class="grow"
-              isShowIcon
-              :wallet="walletsStore.itemsComputed[id as WalletId]!"
-              :walletId="id as WalletId"
-            />
-          </div>
-        </template>
-      </WalletsSortableList>
-    </DefineSortBody>
-
-    <template v-if="isSorting">
-      <UiModalWrap
-        v-if="isLaptop"
-        defaultOpen
-        :title="t('wallets.sortTitle')"
-        @after:leave="isSorting = false"
-      >
-        <template #default>
-          <ReuseSortBody />
-        </template>
-      </UiModalWrap>
-
-      <Drawer
-        v-else
-        :title="t('wallets.sortTitle')"
-        contentClass="min-h-[50dvh]"
-        @closed="isSorting = false"
-      >
-        <template #default>
-          <div class="drawer-body">
-            <ReuseSortBody />
-          </div>
-        </template>
-      </Drawer>
-    </template>
   </UiPage>
 </template>

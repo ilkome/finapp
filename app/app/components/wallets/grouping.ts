@@ -1,4 +1,4 @@
-import type { WalletId, WalletItem, WalletItemComputed, WalletsGroupedBy } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemComputed, WalletsGroupedBy, WalletsPrimaryGrouping } from '~/components/wallets/types'
 
 type WalletsGroupedByExcludedNone = Exclude<WalletsGroupedBy, 'none'>
 
@@ -22,6 +22,17 @@ type ToggleStatus = {
   isAnyOpenInside: boolean
 }
 
+const primaryByGrouping: Record<WalletsGroupedBy, WalletsPrimaryGrouping> = {
+  currency: 'currency',
+  currencyType: 'currency',
+  none: 'none',
+  type: 'type',
+  typeCurrency: 'type',
+}
+
+export const groupingPrimary = (groupedBy: WalletsGroupedBy) => primaryByGrouping[groupedBy]
+export const hasSecondaryGrouping = (groupedBy: WalletsGroupedBy) => groupedBy === 'typeCurrency' || groupedBy === 'currencyType'
+
 const groupingStrategies = {
   currency: { primary: 'currency', secondary: 'type' },
   type: { primary: 'type', secondary: 'currency' },
@@ -38,10 +49,13 @@ export function groupWalletsByProperty(
   }) as Record<string, WalletId[]>
 }
 
+// By type, flagged wallets leave their type group for trailing groups, in this order; the first match wins.
+const FLAG_GROUPS = ['isExcludeInTotal', 'isArchived'] as const
+
 export function buildWalletGroups(
   ids: WalletId[],
   wallets: Record<WalletId, WalletItemComputed>,
-  groupedBy: WalletsGroupedBy,
+  groupedBy: WalletsPrimaryGrouping,
   useSecondary: boolean,
 ): GroupedWallets | false {
   if (groupedBy === 'none')
@@ -49,7 +63,15 @@ export function buildWalletGroups(
 
   const strategy = groupingStrategies[groupedBy]
 
-  const primaryGrouped = groupWalletsByProperty(ids, wallets, strategy.primary)
+  const flagOf = (id: WalletId) => groupedBy === 'type'
+    ? (wallets[id]?.isExcludeInTotal ? 'isExcludeInTotal' : wallets[id]?.isArchived ? 'isArchived' : undefined)
+    : undefined
+  const primaryGrouped = groupWalletsByProperty(ids.filter(id => !flagOf(id)), wallets, strategy.primary)
+  for (const flag of FLAG_GROUPS) {
+    const flagged = ids.filter(id => flagOf(id) === flag)
+    if (flagged.length)
+      primaryGrouped[flag] = flagged
+  }
 
   if (!useSecondary) {
     return Object.fromEntries(

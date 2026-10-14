@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
+
 const props = defineProps<{
   hiddenIds?: string[]
   items: { hint?: string, id: string, title: string }[]
@@ -17,6 +19,7 @@ const emit = defineEmits<{
 
 const [parent, sorted] = useDragAndDrop([...props.items], {
   dragHandle: '.sortHandle',
+  plugins: [sortInsertLine()],
 })
 
 watch(sorted, items => emit('update', items.map(item => item.id)))
@@ -42,13 +45,7 @@ const cellClasses = 'flex w-10 shrink-0 items-center justify-center self-stretch
       class="flex min-h-11 items-center overflow-hidden rounded-sm text-sm hover:bg-elevated/50"
       :class="props.hiddenIds?.includes(item.id) && 'opacity-50'"
     >
-      <div
-        class="sortHandle cursor-grab active:cursor-grabbing" :class="[cellClasses]"
-        data-reka-swipe-ignore
-        :aria-label="$t('base.sort')"
-      >
-        <Icon name="lucide:grip-vertical" size="20" />
-      </div>
+      <WalletsSortHandle />
 
       <div class="grow truncate">
         {{ item.title }}

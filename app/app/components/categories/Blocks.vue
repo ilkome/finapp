@@ -3,6 +3,7 @@ import { useStorage } from '@vueuse/core'
 
 import type { CategoryListRow } from '~/components/categories/ListView.vue'
 import type { CategoryId } from '~/components/categories/types'
+import type { CategoriesViewScope } from '~/composables/useCategoriesViewSettings'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isReservedCategoryId } from '~/components/categories/utils'
@@ -16,6 +17,9 @@ const props = defineProps<{
   getContextMenuItems?: (categoryId: CategoryId) => any[][] | undefined
   /** Set on the page, where a row is a link; without it a row click is a pick. */
   getTo?: (categoryId: CategoryId) => string
+  /** Favorites show drag handles and save their order. */
+  isSortFavorites?: boolean
+  scope?: CategoriesViewScope
   searchQuery?: string
   selectableParents?: boolean
   selectedIds?: CategoryId[]
@@ -27,10 +31,11 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const categoriesStore = useCategoriesStore()
-const { backgroundType, childrenView, isRoundIcon, isShowChildrenCount, layout } = useCategoriesViewSettings()
+const { backgroundType, childrenView, isRoundIcon, isShowChildrenCount } = useCategoriesViewSettings(props.scope)
 
 type CategoriesBlock = 'all' | 'favorites' | 'recent' | 'system'
-const blocksOpen = useStorage<Record<CategoriesBlock, boolean>>('finapp.categoriesBlocksOpen', { all: true, favorites: true, recent: true, system: true }, localStorage, { mergeDefaults: true })
+// Each scope (page, form sheets) remembers its own open blocks, like its view settings.
+const blocksOpen = useStorage<Record<CategoriesBlock, boolean>>(props.scope === 'form' ? 'finapp.categoriesBlocksOpen.form' : 'finapp.categoriesBlocksOpen', { all: true, favorites: true, recent: true, system: true }, localStorage, { mergeDefaults: true })
 
 const query = computed(() => (props.searchQuery ?? '').trim().toLowerCase())
 
@@ -111,26 +116,59 @@ const itemProps = computed(() => ({
     :class="index === blocks.length - 1 && !blocksOpen[block.id] && 'pb-6'"
     :open="blocksOpen[block.id]"
   >
-    <div class="sticky top-(--sticky-top,0px) z-10 flex items-stretch bg-default">
-      <UiTitleDropRight :isShown="blocksOpen[block.id]" @click="blocksOpen[block.id] = !blocksOpen[block.id]">
-        <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-          {{ t(`categories.blocks.${block.id}`) }}
-        </div>
-
-        <div class="text-xs leading-none tracking-wide text-dimmed">
+    <div class="sticky top-(--sticky-top,0px) z-12 flex items-stretch bg-default">
+      <UiTitleDropRight :isShown="blocksOpen[block.id]" :title="t(`categories.blocks.${block.id}`)" @click="blocksOpen[block.id] = !blocksOpen[block.id]">
+        <div v-if="isShowChildrenCount" class="text-xs leading-none tracking-wide text-dimmed">
           {{ block.count }}
         </div>
       </UiTitleDropRight>
     </div>
 
     <template #content>
+      <WalletsSortableList
+        v-if="block.id === 'favorites' && isSortFavorites"
+        :ids="block.ids"
+        class="grid gap-1 pt-1.5 pb-6"
+        @update="ids => categoriesStore.saveFavoritesOrder(ids)"
+      >
+        <template #default="{ id }">
+          <div class="flex items-stretch overflow-hidden rounded-md bg-elevated/30 hover:bg-elevated/50">
+            <WalletsSortHandle />
+            <CategoriesItem
+              :category="categoriesStore.items[id]!"
+              :categoryId="id"
+              class="min-w-0 grow"
+              isShowParent
+              :isRoundIcon
+              :lineWidth="0"
+              stacked
+            />
+          </div>
+        </template>
+      </WalletsSortableList>
+
+      <!-- The flat blocks share the transaction form's quick grid: two columns from phone width. -->
+      <CategoriesSelectorGrid
+        v-else-if="block.isFlat"
+        :activeItemId
+        class="pt-1.5 pb-6"
+        :getContextMenuItems
+        :getTo
+        :ids="block.ids"
+        :backgroundType
+        :isRoundIcon
+        :isTwoColumns="scope === 'form'"
+        :selectedIds
+        @selected="id => onClick(id, true)"
+      />
+
       <CategoriesList
+        v-else
         :activeItemId
         :backgroundType
         :categoriesItemProps="itemProps"
         :childrenView
         class="pb-6"
-        :class="layout === 'list' && 'max-w-4xl'"
         :expanded="block.isFlat ? undefined : { isExpanded, toggle: expanded.toggle }"
         :getChildrenIds="visibleChildrenIds"
         :getContextMenuItems
@@ -138,7 +176,7 @@ const itemProps = computed(() => ({
         :ids="block.ids"
         :isFlat="block.isFlat"
         :isStickyParents="!block.isFlat"
-        :layout
+        layout="columns"
         @click="id => onClick(id, block.isFlat)"
       >
         <template v-if="selectableParents" #childrenPrepend="{ row }: { row: CategoryListRow }">

@@ -2,6 +2,9 @@
 import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
+// The context menu wrapper renders no element of its own, so attrs (a host's `class="grow"`) go to the body.
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps<{
   activeItemId?: WalletId | null
   amount?: number
@@ -18,7 +21,6 @@ const props = defineProps<{
   isShowCreditLimit?: boolean
   isShowIcon?: boolean
   isShowRate?: boolean
-  isSort?: boolean
   lineWidth?: number
   to?: string
   wallet: WalletItemComputed
@@ -31,9 +33,10 @@ const emit = defineEmits<{
   click: [walletId: WalletId]
 }>()
 
+const attrs = useAttrs()
 const bodyProps = computed(() => {
   const { bodyClass, contextMenuItems: _, ...rest } = props
-  return { ...rest, class: bodyClass }
+  return { ...attrs, ...rest, class: [bodyClass, attrs.class] }
 })
 </script>
 

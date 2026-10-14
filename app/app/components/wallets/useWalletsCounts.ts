@@ -23,8 +23,14 @@ export function useWalletsCounts(
     wallets: walletsStore.itemsComputed,
   }))
 
-  const countWalletsSum = (walletsIds: WalletId[]) => sumWalletsInBase(walletsIds, walletsStore.itemsComputed, currenciesStore.toBase)
-  const countWalletsSumInOwnCurrency = (walletsIds: WalletId[]) => sumWalletsInOwnCurrency(walletsIds, walletsStore.itemsComputed)
+  // A group made of flagged wallets ("Archived", "Not in total") shows its own sum whatever the switches.
+  const flagsFor = (isFlagGroup?: boolean) => isFlagGroup
+    ? { includeArchived: true, includeExcluded: true }
+    : { includeArchived: includeArchivedInStats.value, includeExcluded: includeExcludedInStats.value }
+  const countWalletsSum = (walletsIds: WalletId[], isFlagGroup?: boolean) =>
+    sumWalletsInBase(walletsIds, walletsStore.itemsComputed, currenciesStore.toBase, flagsFor(isFlagGroup))
+  const countWalletsSumInOwnCurrency = (walletsIds: WalletId[], isFlagGroup?: boolean) =>
+    sumWalletsInOwnCurrency(walletsIds, walletsStore.itemsComputed, flagsFor(isFlagGroup))
 
   return {
     counts,

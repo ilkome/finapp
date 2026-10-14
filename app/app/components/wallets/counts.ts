@@ -49,11 +49,9 @@ export function computeWalletCounts(params: {
     if (wallet.isExcludeInTotal)
       sum.excludeInTotal += amount
 
-    // Either flag opts the wallet out of every regular row until its own switch is on, so the
+    // A flagged wallet stays out of every regular row until a matching switch is on, so the
     // per-type rows always add up to the total.
-    if (wallet.isArchived && !includeArchivedInStats)
-      continue
-    if (wallet.isExcludeInTotal && !includeExcludedInStats)
+    if (!isCountedInTotals(wallet, { includeArchived: includeArchivedInStats, includeExcluded: includeExcludedInStats }))
       continue
 
     if (!isCreditProduct(wallet.type))
@@ -139,22 +137,32 @@ export function computeWalletCounts(params: {
   }
 }
 
-export function sumWalletsInBase(walletIds: WalletId[], wallets: Record<WalletId, WalletItemComputed>, toBase: ToBase): number {
+type StatsFlags = { includeArchived?: boolean, includeExcluded?: boolean }
+
+/** Whether a wallet counts toward totals: each switch adds the wallets carrying its flag, whatever their other flag. */
+export function isCountedInTotals(wallet: WalletItemComputed, flags: StatsFlags = {}): boolean {
+  if (!wallet.isArchived && !wallet.isExcludeInTotal)
+    return true
+  return (wallet.isArchived && !!flags.includeArchived) || (wallet.isExcludeInTotal && !!flags.includeExcluded)
+}
+
+/** Sum in base currency of the wallets that count toward totals. */
+export function sumWalletsInBase(walletIds: WalletId[], wallets: Record<WalletId, WalletItemComputed>, toBase: ToBase, flags?: StatsFlags): number {
   let total = 0
   for (const id of walletIds) {
     const wallet = wallets[id]
-    if (wallet)
+    if (wallet && isCountedInTotals(wallet, flags))
       total += toBase(wallet.amount, wallet.currency)
   }
   return total
 }
 
-/** Sum in the wallets' own currency (a same-currency group), leaving out "not in total" wallets. */
-export function sumWalletsInOwnCurrency(walletIds: WalletId[], wallets: Record<WalletId, WalletItemComputed>): number {
+/** Sum in the wallets' own currency (a same-currency group) of the wallets that count toward totals. */
+export function sumWalletsInOwnCurrency(walletIds: WalletId[], wallets: Record<WalletId, WalletItemComputed>, flags?: StatsFlags): number {
   let total = 0
   for (const id of walletIds) {
     const wallet = wallets[id]
-    if (wallet && !wallet.isExcludeInTotal)
+    if (wallet && isCountedInTotals(wallet, flags))
       total += wallet.amount
   }
   return total

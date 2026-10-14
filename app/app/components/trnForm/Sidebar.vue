@@ -34,6 +34,7 @@ watch(isShow, (v) => {
             class="grid gap-2 pb-6"
           >
             <TrnFormSelectionCategoriesFast
+              isCollapsible
               @selectCategory="id => trnsFormStore.values.categoryId = id"
             />
           </div>

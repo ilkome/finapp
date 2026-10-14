@@ -356,9 +356,9 @@ describe('computeWalletCounts', () => {
     expect(off.total!.value).toBe(0)
     expect(off.cash!.value).toBe(0)
 
-    // One switch is not enough - the other flag still keeps it out of the regular rows.
-    const archivedOnly = computeWalletCounts({ ...params, includeArchivedInStats: true })
-    expect(archivedOnly.total!.value).toBe(0)
+    // Either switch brings it in.
+    expect(computeWalletCounts({ ...params, includeArchivedInStats: true }).total!.value).toBe(500)
+    expect(computeWalletCounts({ ...params, includeExcludedInStats: true }).total!.value).toBe(500)
 
     const both = computeWalletCounts({ ...params, includeArchivedInStats: true, includeExcludedInStats: true })
     expect(both.total!.value).toBe(500)
@@ -406,14 +406,18 @@ describe('computeWalletCounts', () => {
 })
 
 describe('sumWalletsInBase', () => {
-  it('converts every wallet, including isExcludeInTotal', () => {
+  it('converts wallets counted in totals, honoring the switches', () => {
     const wallets = {
       w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
       w2: wallet({ amount: 6475, currency: 'RUB', isExcludeInTotal: true, type: 'cashless' }),
     }
 
+    expect(sumWalletsInBase(['w1', 'w2', 'missing'], wallets, toBaseIn('USD'))).toBe(1000)
     // 1000 + 6475/64.75 = 1100
-    expect(sumWalletsInBase(['w1', 'w2', 'missing'], wallets, toBaseIn('USD'))).toBe(1100)
+    expect(sumWalletsInBase(['w1', 'w2'], wallets, toBaseIn('USD'), { includeExcluded: true })).toBe(1100)
+    const archived = { a: wallet({ amount: 300, currency: 'USD', isArchived: true, type: 'cash' }) }
+    expect(sumWalletsInBase(['a'], archived, toBaseIn('USD'))).toBe(0)
+    expect(sumWalletsInBase(['a'], archived, toBaseIn('USD'), { includeArchived: true })).toBe(300)
   })
 })
 
@@ -425,5 +429,6 @@ describe('sumWalletsInOwnCurrency', () => {
     }
 
     expect(sumWalletsInOwnCurrency(['w1', 'w2', 'missing'], wallets)).toBe(1000)
+    expect(sumWalletsInOwnCurrency(['w1', 'w2'], wallets, { includeExcluded: true })).toBe(1500)
   })
 })
