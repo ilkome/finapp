@@ -3,6 +3,7 @@ import type { DropdownMenuItem } from '@nuxt/ui'
 
 import type CategoriesSelectorModal from '~/components/categories/SelectorModal.vue'
 import type WalletsSelector from '~/components/wallets/Selector.vue'
+import type { WalletsGroupedBy } from '~/components/wallets/types'
 
 // Controls under the tabs of the entity sheets (transaction form picker and stat filter): the
 // same set the wallets and categories pages offer, scoped to the active slide. Right to left:
@@ -43,9 +44,12 @@ const moreItems = computed<DropdownMenuItem[][]>(() => [[{
         :title="t('base.toggleFolders')"
         @click="wallets.toggleAllGroups()"
       />
-      <UDropdownMenu :content="{ align: 'end' }" :items="wallets.groupingItems" :modal="false">
+      <WalletsGroupMenu
+        :groupedBy="wallets.groupedBy"
+        @update:groupedBy="(v: WalletsGroupedBy) => wallets!.setGroupedBy(v)"
+      >
         <UiTriggerButton icon="lucide:list-tree" :title="t('base.toggleGrouping')" />
-      </UDropdownMenu>
+      </WalletsGroupMenu>
     </template>
 
     <template v-if="categories">
@@ -61,7 +65,7 @@ const moreItems = computed<DropdownMenuItem[][]>(() => [[{
       />
     </template>
 
-    <UDropdownMenu :content="{ align: 'end' }" :items="moreItems" :modal="false">
+    <UDropdownMenu :content="{ align: 'end' }" :items="moreItems">
       <UiTriggerButton icon="lucide:ellipsis-vertical" :title="t('base.moreOptions')" />
     </UDropdownMenu>
   </div>

@@ -1013,6 +1013,8 @@ export default {
     page: {
       currencies: 'Валюта',
       groupBy: 'Группировать',
+      currencyType: 'Валюта, затем тип',
+      typeCurrency: 'Тип, затем валюта',
       none: 'Нет',
       type: 'Тип',
     },

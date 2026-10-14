@@ -52,7 +52,9 @@ export type WalletItemComputed = WalletItem & {
 export type Wallets = Record<WalletId, WalletItem>
 export type WalletsComputed = Record<WalletId, WalletItemComputed>
 
-export type WalletsGroupedBy = 'type' | 'currency' | 'none'
+/** `typeCurrency` groups by type with currency subgroups; `currencyType` is the reverse. */
+export type WalletsGroupedBy = 'type' | 'currency' | 'typeCurrency' | 'currencyType' | 'none'
+export type WalletsPrimaryGrouping = 'type' | 'currency' | 'none'
 export type WalletsCurrencyFiltered = 'all' | CurrencyCode
 
 /** A credit card or a loan: money owed, not owned. */

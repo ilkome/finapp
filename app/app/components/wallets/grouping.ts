@@ -1,4 +1,4 @@
-import type { WalletId, WalletItem, WalletItemComputed, WalletsGroupedBy } from '~/components/wallets/types'
+import type { WalletId, WalletItem, WalletItemComputed, WalletsGroupedBy, WalletsPrimaryGrouping } from '~/components/wallets/types'
 
 type WalletsGroupedByExcludedNone = Exclude<WalletsGroupedBy, 'none'>
 
@@ -22,6 +22,17 @@ type ToggleStatus = {
   isAnyOpenInside: boolean
 }
 
+const primaryByGrouping: Record<WalletsGroupedBy, WalletsPrimaryGrouping> = {
+  currency: 'currency',
+  currencyType: 'currency',
+  none: 'none',
+  type: 'type',
+  typeCurrency: 'type',
+}
+
+export const groupingPrimary = (groupedBy: WalletsGroupedBy) => primaryByGrouping[groupedBy]
+export const hasSecondaryGrouping = (groupedBy: WalletsGroupedBy) => groupedBy === 'typeCurrency' || groupedBy === 'currencyType'
+
 const groupingStrategies = {
   currency: { primary: 'currency', secondary: 'type' },
   type: { primary: 'type', secondary: 'currency' },
@@ -41,7 +52,7 @@ export function groupWalletsByProperty(
 export function buildWalletGroups(
   ids: WalletId[],
   wallets: Record<WalletId, WalletItemComputed>,
-  groupedBy: WalletsGroupedBy,
+  groupedBy: WalletsPrimaryGrouping,
   useSecondary: boolean,
 ): GroupedWallets | false {
   if (groupedBy === 'none')

@@ -1,5 +1,6 @@
 import type { WalletId, WalletItemComputed, WalletsCurrencyFiltered, WalletsGroupedBy, WalletViewTypes } from '~/components/wallets/types'
 
+import { groupingPrimary } from '~/components/wallets/grouping'
 import { isCreditProduct } from '~/components/wallets/types'
 
 export function filterWalletsByCurrency(
@@ -8,7 +9,7 @@ export function filterWalletsByCurrency(
   currencyFilter: WalletsCurrencyFiltered,
 ): WalletId[] {
   const ids = Object.keys(wallets)
-  if (groupedBy === 'currency' || currencyFilter === 'all')
+  if (groupingPrimary(groupedBy) === 'currency' || currencyFilter === 'all')
     return ids
   return ids.filter(id => wallets[id]?.currency === currencyFilter)
 }

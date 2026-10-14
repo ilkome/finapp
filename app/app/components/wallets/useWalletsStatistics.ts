@@ -83,7 +83,7 @@ export function useWalletsStatistics(storageKey: Ref<string>, counts: ComputedRe
     const description = hint(id)
 
     return [...(description
-      ? [[{ description, label: t(`money.types.${id}`), type: 'label' as const }]]
+      ? [[{ description, label: t(`money.types.${id}`), type: 'label' as const, ui: { itemDescription: 'overflow-visible text-clip whitespace-normal' } }]]
       : []), [{
       icon: isPinned ? 'i-lucide-pin-off' : 'i-lucide-pin',
       label: isPinned ? t('base.unpin') : t('base.pin'),

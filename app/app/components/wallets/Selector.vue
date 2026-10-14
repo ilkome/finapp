@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
-
 import { useStorage } from '@vueuse/core'
 
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { WalletSortOrders } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
-import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
-import { buildWalletGroups, sortWalletGroups } from '~/components/wallets/grouping'
+import { WALLET_STORAGE_KEYS, walletStorageKey } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
-import { useWalletGroupingOptions } from '~/components/wallets/useWalletGroupingOptions'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
 import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -21,13 +16,15 @@ const props = defineProps<{
   currencyAboveAction?: boolean
   disabledIds?: WalletId[]
   filterAtTop?: boolean
-  // Group rows by type / currency; the host renders the picker from the exposed `groupingItems`.
+  // Group rows by type / currency; the host renders `WalletsGroupMenu` and drives `setGroupedBy`.
   groupingMenu?: boolean
   hide?: () => void
   hideHeader?: boolean
   hideSearch?: boolean
   searchQuery?: string
   selectedIds?: WalletId[]
+  // Own grouping / expand state per host (trn form, filter, ...); the wallets page owns the unscoped one.
+  storageScope?: string
   withHeader?: boolean
 }>()
 
@@ -69,42 +66,36 @@ const hasNoMatches = computed(() =>
   !!searchQuery.value && selectedWalletsIdsWithCurrency.value.length === 0,
 )
 
-const groupedBy = useStorage<WalletsGroupedBy>(WALLET_STORAGE_KEYS.groupedBy, 'none')
-// Same key the page's drag-to-reorder writes to - grouped wallets must sort the same way here.
-const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
+const groupedBy = useStorage<WalletsGroupedBy>(walletStorageKey(WALLET_STORAGE_KEYS.groupedBy, props.storageScope), 'none')
+const activeGroupedBy = computed<WalletsGroupedBy>(() => props.groupingMenu ? groupedBy.value : 'none')
+const {
+  groupedWalletsWithIds,
+  primary,
+  toggleMap: toggleGroup,
+  toggleOpened: toggleAllGroups,
+  typeGroupsStatus: groupsStatus,
+  walletsToggledMap: toggledMap,
+} = useWalletsGrouping(selectedWalletsIdsWithCurrency, activeGroupedBy, props.storageScope)
+
 const walletGroups = computed(() => {
-  const built = props.groupingMenu
-    ? buildWalletGroups(selectedWalletsIdsWithCurrency.value, walletsStore.itemsComputed, groupedBy.value, false)
-    : false
-  const groups = built ? sortWalletGroups(built, groupedBy.value, sortOrders.value) : false
-  return groups
-    ? Object.entries(groups).map(([key, group]) => ({
-        ids: group.ids,
-        key,
-        label: groupedBy.value === 'type' ? t(`money.types.${key}`) : key,
-      }))
-    : [{ ids: selectedWalletsIdsWithCurrency.value, key: 'all', label: '' }]
+  const groups = groupedWalletsWithIds.value
+  if (!groups)
+    return [{ ids: selectedWalletsIdsWithCurrency.value, key: 'all', label: '', subgroups: [] }]
+  const primaryLabel = (key: string) => primary.value === 'type' ? t(`money.types.${key}`) : key
+  const secondaryLabel = (key: string) => primary.value === 'currency' ? t(`money.types.${key}`) : key
+  return Object.entries(groups).map(([key, group]) => ({
+    ids: group.ids,
+    key,
+    label: primaryLabel(key),
+    subgroups: Object.entries(group.groups ?? {}).map(([subKey, ids]) => ({ ids, key: subKey, label: secondaryLabel(subKey) })),
+  }))
 })
-const { toggleMap: toggleGroup, toggleOpened: toggleAllGroups, typeGroupsStatus: groupsStatus, walletsToggledMap: toggledMap }
-  = useWalletsGrouping(selectedWalletsIdsWithCurrency, groupedBy)
-const isGroupOpen = (key: string) => groupedBy.value === 'none' || (toggledMap.value[groupedBy.value]?.[key]?.show ?? true)
-const groupingOptions = useWalletGroupingOptions()
-function cycleGrouping() {
-  const options = groupingOptions.value
-  const index = options.findIndex(option => option.id === groupedBy.value)
-  groupedBy.value = options[(index + 1) % options.length]!.id
+function isGroupOpen(key: string, subKey?: string) {
+  if (activeGroupedBy.value === 'none')
+    return true
+  const group = toggledMap.value[activeGroupedBy.value]?.[key]
+  return (subKey ? group?.groups?.[subKey] : group?.show) ?? true
 }
-const groupingItems = computed<DropdownMenuItem[][]>(() => [[
-  { icon: 'lucide:list-tree', label: t('wallets.page.groupBy'), type: 'label' },
-  { class: 'ms-2!', type: 'separator' },
-  ...groupingOptions.value.map(option => ({
-    checked: groupedBy.value === option.id,
-    icon: option.icon,
-    label: option.label,
-    onSelect: () => { groupedBy.value = option.id },
-    type: 'checkbox' as const,
-  })),
-]])
 
 const walletMenu = useWalletMenuItems()
 
@@ -157,7 +148,12 @@ async function focusSearch() {
 onMounted(focusSearch)
 watch(() => props.autofocus, focusSearch)
 
-defineExpose({ cycleGrouping, groupedBy, groupingItems, groupsStatus, toggleAllGroups })
+defineExpose({
+  groupedBy,
+  groupsStatus,
+  setGroupedBy: (value: WalletsGroupedBy) => { groupedBy.value = value },
+  toggleAllGroups,
+})
 </script>
 
 <template>
@@ -219,23 +215,55 @@ defineExpose({ cycleGrouping, groupedBy, groupingItems, groupsStatus, toggleAllG
           </UiTitleDropRight>
 
           <template #content>
-            <div class="grid gap-1" :class="group.label && 'py-1'">
-              <template
+            <div v-if="group.subgroups.length" class="grid gap-1 pl-4">
+              <UCollapsible
+                v-for="sub in group.subgroups"
+                :key="sub.key"
+                :open="isGroupOpen(group.key, sub.key)"
+                class="grid"
+              >
+                <UiTitleDropRight
+                  :isShown="isGroupOpen(group.key, sub.key)"
+                  @click="toggleGroup(group.key, sub.key)"
+                >
+                  <div class="font-tertiary text-base leading-none font-semibold">
+                    {{ sub.label }}
+                  </div>
+                </UiTitleDropRight>
+
+                <template #content>
+                  <div class="grid gap-1 py-1">
+                    <WalletsItem
+                      v-for="walletId in sub.ids"
+                      :key="walletId"
+                      :activeItemId="props.activeItemId ?? null"
+                      :contextMenuItems="getWalletContextMenuItems(walletId)"
+                      :isSelected="props.selectedIds?.includes(walletId)"
+                      :walletId
+                      :wallet="walletsStore.itemsComputed[walletId]!"
+                      isShowIcon
+                      isShowCreditLimit
+                      withBackground
+                      @click="onClickWallet(walletId)"
+                    />
+                  </div>
+                </template>
+              </UCollapsible>
+            </div>
+            <div v-else class="grid gap-1" :class="group.label && 'py-1'">
+              <WalletsItem
                 v-for="walletId in group.ids"
                 :key="walletId"
-              >
-                <WalletsItem
-                  :activeItemId="props.activeItemId ?? null"
-                  :contextMenuItems="getWalletContextMenuItems(walletId)"
-                  :isSelected="props.selectedIds?.includes(walletId)"
-                  :walletId
-                  :wallet="walletsStore.itemsComputed[walletId]!"
-                  isShowIcon
-                  isShowCreditLimit
-                  withBackground
-                  @click="onClickWallet(walletId)"
-                />
-              </template>
+                :activeItemId="props.activeItemId ?? null"
+                :contextMenuItems="getWalletContextMenuItems(walletId)"
+                :isSelected="props.selectedIds?.includes(walletId)"
+                :walletId
+                :wallet="walletsStore.itemsComputed[walletId]!"
+                isShowIcon
+                isShowCreditLimit
+                withBackground
+                @click="onClickWallet(walletId)"
+              />
             </div>
           </template>
         </UCollapsible>

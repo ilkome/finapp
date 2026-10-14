@@ -1013,6 +1013,8 @@ export default {
     page: {
       currencies: 'Currency',
       groupBy: 'Group by',
+      currencyType: 'Currency, then type',
+      typeCurrency: 'Type, then currency',
       none: 'None',
       type: 'Type',
     },

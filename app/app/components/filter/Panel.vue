@@ -179,6 +179,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                       :autofocus="false"
                       :currencyAboveAction="!isSelectMode"
                       groupingMenu
+                      :storageScope="isSelectMode ? 'select' : 'filter'"
                       hideHeader
                       :searchQuery
                       :selectedIds="isSelectMode ? undefined : draft!.pendingWallets.value"
