@@ -46,7 +46,7 @@ const { t } = useI18n()
       >
         <StatSumItemView
           :amount="item.value"
-          class="min-w-max flex-1 snap-start snap-always @xl/page:min-w-0"
+          class="max-w-56 min-w-32 flex-1 snap-start snap-always @xl/page:max-w-none @xl/page:min-w-0"
           :currencyCode="props.currencyCode"
           :isActive="props.activeType === item.id"
           :title="item.title"
@@ -64,7 +64,7 @@ const { t } = useI18n()
           </UiTitleDropRight>
 
           <template #content>
-            <div class="rounded-sm bg-elevated/30 py-px">
+            <div class="rounded-md bg-elevated/30 py-px">
               <UiContextMenuMy
                 v-for="(item, index) in props.items"
                 :key="item.id"
@@ -77,8 +77,8 @@ const { t } = useI18n()
                   insideClasses="min-h-11!"
                   @click="emit('click', item.id)"
                 >
-                  <div class="grow pl-1 text-sm leading-none text-muted">
-                    <div>
+                  <div class="min-w-0 grow pl-1 text-sm leading-none text-muted">
+                    <div class="truncate">
                       {{ item.title }}
                     </div>
 

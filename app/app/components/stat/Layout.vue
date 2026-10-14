@@ -115,7 +115,7 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
 <template>
   <div
     ref="statLayout"
-    class="grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-2 px-2 pb-24 stat-layout lg:px-4 2xl:px-8"
+    class="grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-2 px-2 pb-24 stat-layout lg:gap-5 lg:px-4 2xl:px-8"
     :data-stat-chart-layout="statConfig.chart.value.layout"
     :data-stat-page-layout="statConfig.page.value.layout"
     :data-stat-report-context-count="isDev ? statDevMetrics.reportContextCount.value : undefined"
@@ -179,5 +179,11 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
 <style scoped>
 [data-stat-pinned-block] + [data-stat-pinned-block] {
   margin-top: -0.5rem;
+}
+
+@media (min-width: 64rem) {
+  [data-stat-pinned-block] + [data-stat-pinned-block] {
+    margin-top: -1.25rem;
+  }
 }
 </style>

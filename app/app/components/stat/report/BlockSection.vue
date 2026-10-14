@@ -54,7 +54,7 @@ const combinedGroups = computed(() => {
 <template>
   <div v-if="visibleBlocks.length" class="grid min-w-0 gap-8" :data-stat-block="visibleBlocks.join(' ')">
     <template v-if="!isSplit">
-      <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="combined">
+      <div class="@container/stat grid min-w-0 content-start gap-5" data-stat-report-content="combined">
         <template v-for="(group, groupIndex) in combinedGroups" :key="`${group.kind}-${groupIndex}`">
           <StatReportDetails
             v-if="group.kind === 'round'"
@@ -64,12 +64,12 @@ const combinedGroups = computed(() => {
           />
           <div
             v-else
-            class="grid min-w-0 content-start gap-3"
+            class="grid min-w-0 content-start gap-5"
             :class="group.blocks.includes('trns') && group.blocks.some(block => block === 'catsList' || block === 'vertical') && 'stat-responsive-two-column-grid'"
           >
             <div
               v-if="group.blocks.some(block => block === 'catsList' || block === 'vertical')"
-              class="grid min-w-0 content-start gap-3"
+              class="grid min-w-0 content-start gap-5"
             >
               <StatReportDetails
                 v-for="block in group.blocks.filter(block => block === 'catsList' || block === 'vertical')"
@@ -93,7 +93,7 @@ const combinedGroups = computed(() => {
     </template>
     <template v-else-if="contexts.split">
       <div class="stat-two-column-grid">
-        <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="expense">
+        <div class="@container/stat grid min-w-0 content-start gap-5" data-stat-report-content="expense">
           <StatReportDetails
             v-for="block in visibleBlocks"
             :key="block"
@@ -103,7 +103,7 @@ const combinedGroups = computed(() => {
             managedLayout
           />
         </div>
-        <div class="@container/stat grid min-w-0 content-start gap-2" data-stat-report-content="income">
+        <div class="@container/stat grid min-w-0 content-start gap-5" data-stat-report-content="income">
           <StatReportDetails
             v-for="block in visibleBlocks"
             :key="block"

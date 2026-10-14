@@ -57,6 +57,7 @@ function toggleAverage() {
     <StatSumView
       :currencyCode="currenciesStore.base"
       :focused
+      :isShowPie
       :isShowPieOnNarrow="config.summary.isHideTotal"
       :items
       :single
