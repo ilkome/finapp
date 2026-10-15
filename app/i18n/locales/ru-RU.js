@@ -959,6 +959,7 @@ export default {
       adjustment: 'Корректировка',
       expense: 'Расход',
       income: 'Доход',
+      loanPayment: 'Погашение кредита',
       transfer: 'Перевод',
     },
   },

@@ -959,6 +959,7 @@ export default {
       adjustment: 'Adjustment',
       expense: 'Expense',
       income: 'Income',
+      loanPayment: 'Loan payment',
       transfer: 'Transfer',
     },
   },

@@ -2,6 +2,7 @@
 import type { TrnItemFull } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
+import { isCreditProduct } from '~/components/wallets/types'
 
 const props = defineProps<{
   compact?: boolean
@@ -13,6 +14,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   click: []
 }>()
+
+const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && isCreditProduct(props.trnItem.incomeWallet?.type))
 </script>
 
 <template>
@@ -52,7 +55,7 @@ const emit = defineEmits<{
               size="16"
             />
             <UiEntityName variant="compact">
-              {{ trnItem.category.name }}
+              {{ isLoanPayment ? $t('trns.types.loanPayment') : trnItem.category.name }}
             </UiEntityName>
           </div>
         </template>
@@ -98,6 +101,13 @@ const emit = defineEmits<{
           v-if="trnItem.type === TrnType.Transfer"
           class="grid gap-1"
         >
+          <UiText
+            v-if="isLoanPayment && !compact"
+            variant="caption"
+          >
+            {{ $t('trns.types.loanPayment') }}
+          </UiText>
+
           <div class="flex items-center gap-1">
             <UiEntityName>
               {{ trnItem.expenseWallet.name }}
