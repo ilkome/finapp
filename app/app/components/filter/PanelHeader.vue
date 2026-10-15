@@ -17,27 +17,7 @@ const emit = defineEmits<{
 const isSelectMode = computed(() => props.mode === 'select')
 const showClose = computed(() => props.isShowClose || isSelectMode.value)
 
-const search = defineModel<string>('search', { default: '' })
-
 const { t } = useI18n()
-const searchInput = useTemplateRef<HTMLInputElement>('searchInput')
-const isSearchOpen = ref(false)
-
-async function openSearch() {
-  isSearchOpen.value = true
-  await nextTick()
-  const focus = () => searchInput.value?.focus()
-  requestAnimationFrame(focus)
-  setTimeout(focus, 250)
-}
-
-// The search trigger lives in each slide's toolbar; the search itself spans every entity.
-defineExpose({ openSearch })
-
-function closeSearch() {
-  search.value = ''
-  isSearchOpen.value = false
-}
 </script>
 
 <template>
@@ -55,34 +35,6 @@ function closeSearch() {
       </template>
     </UiTitleModal>
 
-    <UiButtonClose v-if="showClose && !isSearchOpen" @click="emit('close')" />
-
-    <!-- Expanded search covers the title and the toolbar; it sits above the title's sticky z-20. -->
-    <div
-      v-if="isSearchOpen"
-      class="absolute inset-x-3 inset-y-1 z-30 rounded-md bg-default"
-    >
-      <input
-        ref="searchInput"
-        v-model="search"
-        type="text"
-        :aria-label="t('base.search')"
-        class="m-0 size-full rounded-md border border-transparent bg-elevated/30 py-2 pr-11 pl-4 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
-        :placeholder="t('base.search')"
-        @keydown.escape.stop="closeSearch"
-      >
-      <div class="absolute inset-y-1 right-1 aspect-square">
-        <UTooltip :text="t('base.close')">
-          <button
-            type="button"
-            :aria-label="t('base.close')"
-            class="flex size-full items-center justify-center rounded-full interactive bg-elevated text-muted"
-            @click="closeSearch"
-          >
-            <Icon name="lucide:x" size="18" />
-          </button>
-        </UTooltip>
-      </div>
-    </div>
+    <UiButtonClose v-if="showClose" @click="emit('close')" />
   </div>
 </template>
