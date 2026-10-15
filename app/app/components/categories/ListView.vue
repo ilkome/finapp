@@ -38,8 +38,8 @@ const emit = defineEmits<{
 // Two columns in narrow hosts (phones, the form sheet); the list's own width, not the viewport, decides when to widen.
 const flowColumnsClass = 'columns-2 gap-x-1 @2xl/catlist:columns-[12rem] @2xl/catlist:gap-x-10 *:mb-1 *:break-inside-avoid'
 const gridColumnsClass = 'grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-1 gap-x-10'
-// Above an active row's z-10 highlight, below the block title's z-20.
-const stickyParentClass = 'sticky top-[calc(var(--sticky-top,0px)+2.375rem)] z-15 bg-default'
+// Stacking: active row highlight z-10 < sticky parent z-11 < block title z-12 < page header z-20.
+const stickyParentClass = 'sticky top-[calc(var(--sticky-top,0px)+2.375rem)] z-11 bg-default'
 // Hosts without a background setting (the form sheet) keep the card look of the columns.
 const columnsBackground = computed(() => props.backgroundType ?? 'standard')
 const isChildrenGrid = computed(() => props.childrenView === 'grid')

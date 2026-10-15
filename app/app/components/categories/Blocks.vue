@@ -116,7 +116,7 @@ const itemProps = computed(() => ({
     :class="index === blocks.length - 1 && !blocksOpen[block.id] && 'pb-6'"
     :open="blocksOpen[block.id]"
   >
-    <div class="sticky top-(--sticky-top,0px) z-20 flex items-stretch bg-default">
+    <div class="sticky top-(--sticky-top,0px) z-12 flex items-stretch bg-default">
       <UiTitleDropRight :isShown="blocksOpen[block.id]" @click="blocksOpen[block.id] = !blocksOpen[block.id]">
         <div class="font-tertiary text-base leading-none font-semibold text-toned!">
           {{ t(`categories.blocks.${block.id}`) }}
