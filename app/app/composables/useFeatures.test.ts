@@ -12,12 +12,12 @@ beforeEach(() => {
 })
 
 it('starts with every feature off', async () => {
-  expect((await useFeatures()).value).toEqual({ emailSignIn: false, loans: false })
+  expect((await useFeatures()).value).toEqual({ emailSignIn: false, loans: false, trnPreview: false })
 })
 
 it('keeps a stored choice and backfills flags missing from it', async () => {
   localStorage.setItem('finapp.features', JSON.stringify({ emailSignIn: true }))
-  expect((await useFeatures()).value).toEqual({ emailSignIn: true, loans: false })
+  expect((await useFeatures()).value).toEqual({ emailSignIn: true, loans: false, trnPreview: false })
 })
 
 it('shares one ref between calls', async () => {

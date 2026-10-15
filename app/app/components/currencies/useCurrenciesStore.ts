@@ -2,8 +2,9 @@ import type { Row } from '~~/services/powersync/transforms'
 
 import localforage from 'localforage'
 import { defineStore } from 'pinia'
-import { watchTable } from '~~/services/powersync/db'
+import { getPowerSyncDb, watchTable } from '~~/services/powersync/db'
 import { rowToRates } from '~~/services/powersync/transforms'
+import { civilDayKey } from '~~/utils/date/civil'
 
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 
@@ -80,9 +81,20 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     return getAmountInRate(amount, base.value, currencyCode, rates.value)
   }
 
+  /** Rates of the civil day `date` or the closest day before it; `null` when the synced history starts later. Demo keeps no history. */
+  async function getRatesOn(date: number): Promise<Rates | null> {
+    if (isDemo.value)
+      return null
+
+    const db = await getPowerSyncDb()
+    const row = await db.getOptional<Row>('SELECT * FROM rates WHERE date <= ? ORDER BY date DESC LIMIT 1', [civilDayKey(date)])
+    return row ? rowToRates(row) : null
+  }
+
   return {
     base,
     fromBase,
+    getRatesOn,
     initCurrencies,
     primeFromCache,
     rates,
