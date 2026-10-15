@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
+import type { WalletSortOrders } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
-import SideMenu from '~/components/ui/SideMenu.vue'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { canStickStatCategories } from '~/components/stat/statFeed'
+import SideMenu from '~/components/ui/SideMenu.vue'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
@@ -35,9 +36,26 @@ const { height: viewportHeight } = useWindowSize()
 const canStickSideColumn = computed(() => canStickStatCategories(stickyTop.value, sideColumnHeight.value, viewportHeight.value))
 const currenciesStore = useCurrenciesStore()
 const isSorting = ref(false)
+// Drags save as they happen; cancel puts back the order the sort started from.
+const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
+let sortSnapshot: { ids: WalletId[], sortOrders: WalletSortOrders } | null = null
+
+function startSorting() {
+  sortSnapshot = { ids: [...walletsStore.sortedIds], sortOrders: structuredClone(toRaw(sortOrders.value)) }
+  isSorting.value = true
+}
+
+function cancelSorting() {
+  if (sortSnapshot) {
+    if (sortSnapshot.ids.some((id, index) => id !== walletsStore.sortedIds[index]))
+      walletsStore.saveWalletsOrder(sortSnapshot.ids)
+    sortOrders.value = sortSnapshot.sortOrders
+  }
+  sortSnapshot = null
+  isSorting.value = false
+}
 const isLaptop = useIsLaptop()
 // vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineSortBody, ReuseSortBody] = createReusableTemplate()
 const [DefineStatBody, ReuseStatBody] = createReusableTemplate()
 const [DefineStatHint, ReuseStatHint] = createReusableTemplate()
 const isOpen = ref(false)
@@ -47,9 +65,8 @@ const isStatSideOpen = ref(false)
 // a second popover or sheet on top of the menu is neither the house pattern nor safe on touch.
 const menuPanel = ref<'root' | 'statistics'>('root')
 
-// The sort modal is a sheet of its own, and on touch so is this menu. Opening it before the
-// menu unregisters stacks it above the menu in the drawer history, whose cleanup then closes
-// everything above itself - so the modal would flash open and vanish. Wait for the menu first.
+// Opening a sheet (or routing) before the menu unregisters stacks it above the menu in the drawer
+// history, whose cleanup then closes everything above itself - so it would flash open and vanish. Wait for the menu first.
 let afterMenuClose: (() => void) | null = null
 
 function closeMenu() {
@@ -126,36 +143,36 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
 <template>
   <DefineStatHint>
-      <UPopover
-        :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
-        :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
+    <UPopover
+      :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
+      :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
+    >
+      <button
+        type="button"
+        :aria-label="t('statistics.hints')"
+        class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
+        @click.stop
       >
-        <button
-          type="button"
-          :aria-label="t('statistics.hints')"
-          class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
-          @click.stop
+        <Icon name="lucide:info" size="18" />
+      </button>
+
+      <template #content>
+        <div
+          class="scroller grid gap-3 overflow-y-auto p-3"
+          style="max-height: var(--reka-popper-available-height, 60dvh)"
         >
-          <Icon name="lucide:info" size="18" />
-        </button>
+          <div v-for="row in statistics.hintRows.value" :key="row.id">
+            <UiText variant="navigation">
+              {{ row.title }}
+            </UiText>
 
-        <template #content>
-          <div
-            class="scroller grid gap-3 overflow-y-auto p-3"
-            style="max-height: var(--reka-popper-available-height, 60dvh)"
-          >
-            <div v-for="row in statistics.hintRows.value" :key="row.id">
-              <UiText variant="navigation">
-                {{ row.title }}
-              </UiText>
-
-              <UiText variant="meta" class="pt-1 leading-snug!">
-                {{ row.hint }}
-              </UiText>
-            </div>
+            <UiText variant="meta" class="pt-1 leading-snug!">
+              {{ row.hint }}
+            </UiText>
           </div>
-        </template>
-      </UPopover>
+        </div>
+      </template>
+    </UPopover>
   </DefineStatHint>
 
   <DefineStatBody>
@@ -205,87 +222,115 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       </UiHeaderTitle>
 
       <template #actions>
-        <UTooltip :text="$t('base.toggleFolders')">
-          <UiActionButton
-            :ariaLabel="$t('base.toggleFolders')"
-            :disabled="groupedBy === 'none'"
-            @click="toggleOpened"
-          >
-            <Icon
-              v-if="typeGroupsStatus.isAllOpen"
-              name="lucide:folder-open"
-            />
-            <Icon
-              v-else-if="typeGroupsStatus.isAnyOpen"
-              name="lucide:folder-open-dot"
-            />
-            <Icon
-              v-else
-              name="lucide:folder"
-            />
-          </UiActionButton>
-        </UTooltip>
+        <UiSortActions v-if="isSorting" @apply="isSorting = false" @cancel="cancelSorting" />
 
-        <WalletsGroupMenu
-          v-model:groupedBy="groupedBy"
-        >
-          <UTooltip :text="$t('base.toggleGrouping')">
-            <UiActionButton :ariaLabel="$t('base.toggleGrouping')">
-              <Icon name="lucide:list-tree" size="20" />
+        <template v-else>
+          <UTooltip :text="$t('base.toggleFolders')">
+            <UiActionButton
+              :ariaLabel="$t('base.toggleFolders')"
+              :disabled="groupedBy === 'none'"
+              @click="toggleOpened"
+            >
+              <Icon
+                v-if="typeGroupsStatus.isAllOpen"
+                name="lucide:folder-open"
+              />
+              <Icon
+                v-else-if="typeGroupsStatus.isAnyOpen"
+                name="lucide:folder-open-dot"
+              />
+              <Icon
+                v-else
+                name="lucide:folder"
+              />
             </UiActionButton>
           </UTooltip>
-        </WalletsGroupMenu>
 
-        <DrawerOrDropdown
-          align="end"
-          isShowCloseBtn
-          :open="isOpen"
-          popoverBodyClass="[view-transition-name:ui-panel]"
-          popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
-          :title="menuPanel === 'statistics' ? t('statistics.title') : undefined"
-          bodyClass="[view-transition-name:ui-panel]"
-          @update:open="value => value ? (menuPanel = 'root', isOpen = true) : closeMenu()"
-        >
-          <template #trigger>
-            <UTooltip :text="$t('base.moreOptions')">
-              <UiActionButton
-                :ariaLabel="$t('base.moreOptions')"
-                @click="menuPanel = 'root'"
-              >
-                <Icon name="lucide:ellipsis-vertical" size="20" />
+          <WalletsGroupMenu
+            v-model:groupedBy="groupedBy"
+          >
+            <UTooltip :text="$t('base.toggleGrouping')">
+              <UiActionButton :ariaLabel="$t('base.toggleGrouping')">
+                <Icon name="lucide:list-tree" size="20" />
               </UiActionButton>
             </UTooltip>
-          </template>
+          </WalletsGroupMenu>
 
-          <template #content="{ close }">
-            <div>
-              <div v-if="menuPanel === 'statistics'" class="grid gap-3 py-3 md:py-0">
-                <UiPanelBack
-                  class="group"
-                  :title="t('base.previous')"
-                  @back="showMenuPanel('root')"
+          <DrawerOrDropdown
+            align="end"
+            isShowCloseBtn
+            :open="isOpen"
+            popoverBodyClass="[view-transition-name:ui-panel]"
+            popoverContentClass="w-88 max-w-[calc(100vw-1rem)]"
+            :title="menuPanel === 'statistics' ? t('statistics.title') : undefined"
+            bodyClass="[view-transition-name:ui-panel]"
+            @update:open="value => value ? (menuPanel = 'root', isOpen = true) : closeMenu()"
+          >
+            <template #trigger>
+              <UTooltip :text="$t('base.moreOptions')">
+                <UiActionButton
+                  :ariaLabel="$t('base.moreOptions')"
+                  @click="menuPanel = 'root'"
                 >
-                  <ReuseStatHint />
-                </UiPanelBack>
+                  <Icon name="lucide:ellipsis-vertical" size="20" />
+                </UiActionButton>
+              </UTooltip>
+            </template>
 
-                <ReuseStatBody />
-              </div>
+            <template #content="{ close }">
+              <div>
+                <div v-if="menuPanel === 'statistics'" class="grid gap-3 py-3 md:py-0">
+                  <UiPanelBack
+                    class="group"
+                    :title="t('base.previous')"
+                    @back="showMenuPanel('root')"
+                  >
+                    <ReuseStatHint />
+                  </UiPanelBack>
 
-              <div v-else class="py-3 md:-mx-2 md:py-1">
-                <UiHeaderLink icon="lucide:plus" @click="() => openAfterMenu(() => router.push('/wallets/new'), close)">
-                  {{ t('wallets.new') }}
-                </UiHeaderLink>
+                  <ReuseStatBody />
+                </div>
 
-                <UiHeaderLink
-                  v-if="walletsStore.sortedIds.length > 1"
-                  icon="lucide:arrow-down-up"
-                  @click="() => openAfterMenu(() => isSorting = true, close)"
-                >
-                  {{ t('wallets.sortTitle') }}
-                </UiHeaderLink>
+                <div v-else class="py-3 md:-mx-2 md:py-1">
+                  <UiHeaderLink icon="lucide:plus" @click="() => openAfterMenu(() => router.push('/wallets/new'), close)">
+                    {{ t('wallets.new') }}
+                  </UiHeaderLink>
 
-                <SideMenu v-if="isLaptop" v-model:open="isStatSideOpen" contentClass="w-88">
-                  <UiHeaderLink icon="lucide:chart-column" class="data-[state=open]:bg-elevated">
+                  <UiHeaderLink
+                    v-if="walletsStore.sortedIds.length > 1"
+                    icon="lucide:arrow-down-up"
+                    @click="() => { startSorting(); close() }"
+                  >
+                    {{ t('wallets.sortTitle') }}
+                  </UiHeaderLink>
+
+                  <SideMenu v-if="isLaptop" v-model:open="isStatSideOpen" contentClass="w-88">
+                    <UiHeaderLink icon="lucide:chart-column" class="data-[state=open]:bg-elevated">
+                      {{ t('statistics.title') }}
+
+                      <Icon
+                        name="lucide:chevron-right"
+                        size="16"
+                        class="ml-auto text-muted"
+                      />
+                    </UiHeaderLink>
+
+                    <template #content>
+                      <div class="grid gap-3">
+                        <div class="flex items-center px-2">
+                          <span class="grow text-sm font-medium text-toned">{{ t('statistics.title') }}</span>
+                          <ReuseStatHint />
+                        </div>
+                        <ReuseStatBody />
+                      </div>
+                    </template>
+                  </SideMenu>
+
+                  <UiHeaderLink
+                    v-else
+                    icon="lucide:chart-column"
+                    @click="showMenuPanel('statistics')"
+                  >
                     {{ t('statistics.title') }}
 
                     <Icon
@@ -295,63 +340,39 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                     />
                   </UiHeaderLink>
 
-                  <template #content>
-                    <div class="grid gap-3">
-                      <div class="flex items-center px-2">
-                        <span class="grow text-sm font-medium text-toned">{{ t('statistics.title') }}</span>
-                        <ReuseStatHint />
-                      </div>
-                      <ReuseStatBody />
-                    </div>
-                  </template>
-                </SideMenu>
+                  <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
-                <UiHeaderLink
-                  v-else
-                  icon="lucide:chart-column"
-                  @click="showMenuPanel('statistics')"
-                >
-                  {{ t('statistics.title') }}
-
-                  <Icon
-                    name="lucide:chevron-right"
-                    size="16"
-                    class="ml-auto text-muted"
-                  />
-                </UiHeaderLink>
-
-                <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
-
-                <div>
-                  <UiSwitchItem
-                    :checkboxValue="showArchived"
-                    :title="t('wallets.options.showArchived')"
-                    trailing
-                    @toggle="showArchived = !showArchived"
-                  />
-                  <UiSwitchItem
-                    :checkboxValue="includeArchivedInStats"
-                    :title="t('wallets.options.includeArchivedInStats')"
-                    trailing
-                    @toggle="includeArchivedInStats = !includeArchivedInStats"
-                  />
-                  <UiSwitchItem
-                    :checkboxValue="includeExcludedInStats"
-                    :title="t('wallets.options.includeExcludedInStats')"
-                    trailing
-                    @toggle="includeExcludedInStats = !includeExcludedInStats"
-                  />
-                  <UiSwitchItem
-                    :checkboxValue="isShowGroupCount"
-                    :title="t('wallets.options.showGroupCount')"
-                    trailing
-                    @toggle="isShowGroupCount = !isShowGroupCount"
-                  />
+                  <div>
+                    <UiSwitchItem
+                      :checkboxValue="showArchived"
+                      :title="t('wallets.options.showArchived')"
+                      trailing
+                      @toggle="showArchived = !showArchived"
+                    />
+                    <UiSwitchItem
+                      :checkboxValue="includeArchivedInStats"
+                      :title="t('wallets.options.includeArchivedInStats')"
+                      trailing
+                      @toggle="includeArchivedInStats = !includeArchivedInStats"
+                    />
+                    <UiSwitchItem
+                      :checkboxValue="includeExcludedInStats"
+                      :title="t('wallets.options.includeExcludedInStats')"
+                      trailing
+                      @toggle="includeExcludedInStats = !includeExcludedInStats"
+                    />
+                    <UiSwitchItem
+                      :checkboxValue="isShowGroupCount"
+                      :title="t('wallets.options.showGroupCount')"
+                      trailing
+                      @toggle="isShowGroupCount = !isShowGroupCount"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </template>
-        </DrawerOrDropdown>
+            </template>
+          </DrawerOrDropdown>
+        </template>
       </template>
     </UiHeader>
 
@@ -413,6 +434,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
             <template #default="{ id: walletId }">
               <WalletsPageListItem
                 :walletId
+                :isSort="isSorting"
                 @delete="requestDelete"
               />
             </template>
@@ -429,6 +451,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                 :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
               >
                 <div class="flex items-stretch">
+                  <WalletsSortHandle v-if="isSorting" />
                   <UiTitleDropRight
                     :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
                     @click="toggleMap(groupPrimary)"
@@ -477,6 +500,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                         class="group grid"
                       >
                         <div class="flex items-stretch">
+                          <WalletsSortHandle v-if="isSorting" />
                           <UiTitleDropRight
                             :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
                             @click="toggleMap(groupPrimary, groupSecondary)"
@@ -519,6 +543,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                             <template #default="{ id: walletId }">
                               <WalletsPageListItem
                                 :walletId
+                                :isSort="isSorting"
                                 @delete="requestDelete"
                               />
                             </template>
@@ -537,6 +562,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                     <template #default="{ id: walletId }">
                       <WalletsPageListItem
                         :walletId
+                        :isSort="isSorting"
                         @delete="requestDelete"
                       />
                     </template>
@@ -548,52 +574,5 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         </div>
       </div>
     </div>
-
-    <DefineSortBody>
-      <WalletsSortableList
-        :ids="walletsStore.sortedIds"
-        class="grid gap-1"
-        @update="ids => walletsStore.saveWalletsOrder(ids as WalletId[])"
-      >
-        <template #default="{ id }">
-          <div class="flex items-center gap-1">
-            <WalletsSortHandle />
-            <WalletsItem
-              :baseCurrencyCode="currenciesStore.base"
-              class="grow"
-              isShowIcon
-              :wallet="walletsStore.itemsComputed[id as WalletId]!"
-              :walletId="id as WalletId"
-            />
-          </div>
-        </template>
-      </WalletsSortableList>
-    </DefineSortBody>
-
-    <template v-if="isSorting">
-      <UiModalWrap
-        v-if="isLaptop"
-        defaultOpen
-        :title="t('wallets.sortTitle')"
-        @after:leave="isSorting = false"
-      >
-        <template #default>
-          <ReuseSortBody />
-        </template>
-      </UiModalWrap>
-
-      <Drawer
-        v-else
-        :title="t('wallets.sortTitle')"
-        contentClass="min-h-[50dvh]"
-        @closed="isSorting = false"
-      >
-        <template #default>
-          <div class="drawer-body">
-            <ReuseSortBody />
-          </div>
-        </template>
-      </Drawer>
-    </template>
   </UiPage>
 </template>

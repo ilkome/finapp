@@ -30,6 +30,17 @@ useHead({ title: t('categories.title') })
 
 const isMenuOpen = ref(false)
 const isSortingFavorites = ref(false)
+let favoritesSnapshot: CategoryId[] = []
+
+function startSortingFavorites() {
+  favoritesSnapshot = [...categoriesStore.favoriteCategoriesIds]
+  isSortingFavorites.value = true
+}
+
+function cancelSortingFavorites() {
+  categoriesStore.saveFavoritesOrder(favoritesSnapshot)
+  isSortingFavorites.value = false
+}
 function addCategory(close: () => void) {
   close()
   router.push('/categories/new')
@@ -53,46 +64,50 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <UiHeader ref="header" actionsAfterTitle>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <UTooltip :text="$t('base.toggleFolders')">
-          <UiActionButton
-            :ariaLabel="$t('base.toggleFolders')"
-            @click="toggleAll"
+        <UiSortActions v-if="isSortingFavorites" @apply="isSortingFavorites = false" @cancel="cancelSortingFavorites" />
+
+        <template v-else>
+          <UTooltip :text="$t('base.toggleFolders')">
+            <UiActionButton
+              :ariaLabel="$t('base.toggleFolders')"
+              @click="toggleAll"
+            >
+              <Icon :name="folderIcon" size="20" />
+            </UiActionButton>
+          </UTooltip>
+
+          <CategoriesViewSettings />
+
+          <DrawerOrDropdown
+            v-model:open="isMenuOpen"
+            align="end"
+            isShowCloseBtn
+            popoverContentClass="w-64 max-w-[calc(100vw-1rem)]"
           >
-            <Icon :name="folderIcon" size="20" />
-          </UiActionButton>
-        </UTooltip>
+            <template #trigger>
+              <UTooltip :text="$t('base.moreOptions')">
+                <UiActionButton :ariaLabel="$t('base.moreOptions')">
+                  <Icon name="lucide:ellipsis-vertical" size="20" />
+                </UiActionButton>
+              </UTooltip>
+            </template>
 
-        <CategoriesViewSettings />
-
-        <DrawerOrDropdown
-          v-model:open="isMenuOpen"
-          align="end"
-          isShowCloseBtn
-          popoverContentClass="w-64 max-w-[calc(100vw-1rem)]"
-        >
-          <template #trigger>
-            <UTooltip :text="$t('base.moreOptions')">
-              <UiActionButton :ariaLabel="$t('base.moreOptions')">
-                <Icon name="lucide:ellipsis-vertical" size="20" />
-              </UiActionButton>
-            </UTooltip>
-          </template>
-
-          <template #content="{ close }">
-            <div class="py-3 md:-mx-2 md:py-1">
-              <UiHeaderLink @click="addCategory(close)">
-                {{ t('categories.new') }}
-              </UiHeaderLink>
-              <UiHeaderLink
-                v-if="categoriesStore.favoriteCategoriesIds.length > 1"
-                icon="lucide:arrow-down-up"
-                @click="() => { isSortingFavorites = !isSortingFavorites; close() }"
-              >
-                {{ isSortingFavorites ? t('base.done') : t('categories.sortFavorites') }}
-              </UiHeaderLink>
-            </div>
-          </template>
-        </DrawerOrDropdown>
+            <template #content="{ close }">
+              <div class="py-3 md:-mx-2 md:py-1">
+                <UiHeaderLink @click="addCategory(close)">
+                  {{ t('categories.new') }}
+                </UiHeaderLink>
+                <UiHeaderLink
+                  v-if="categoriesStore.favoriteCategoriesIds.length > 1"
+                  icon="lucide:arrow-down-up"
+                  @click="() => { startSortingFavorites(); close() }"
+                >
+                  {{ t('categories.sortFavorites') }}
+                </UiHeaderLink>
+              </div>
+            </template>
+          </DrawerOrDropdown>
+        </template>
       </template>
     </UiHeader>
 

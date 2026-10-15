@@ -25,12 +25,13 @@ const contextMenuItems = computed(() => [
 </script>
 
 <template>
-  <UiRowBackground class="group" type="standard">
+  <UiRowBackground class="group flex items-stretch" type="standard">
+    <WalletsSortHandle v-if="props.isSort" />
     <WalletsItem
+      class="min-w-0 grow"
       :wallet="walletsStore.itemsComputed[props.walletId]!"
       :walletId="props.walletId"
       :contextMenuItems="contextMenuItems"
-      :isSort="props.isSort"
       isShowBaseRate
       isShowCreditLimit
       isShowIcon

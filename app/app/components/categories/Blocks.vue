@@ -136,12 +136,12 @@ const itemProps = computed(() => ({
         @update="ids => categoriesStore.saveFavoritesOrder(ids)"
       >
         <template #default="{ id }">
-          <div class="flex items-center gap-1">
+          <div class="flex items-stretch overflow-hidden rounded-md bg-elevated/30 hover:bg-elevated/50">
             <WalletsSortHandle />
             <CategoriesItem
               :category="categoriesStore.items[id]!"
               :categoryId="id"
-              class="grow rounded-md bg-elevated/30"
+              class="min-w-0 grow"
               isShowParent
               :isRoundIcon
               :lineWidth="0"

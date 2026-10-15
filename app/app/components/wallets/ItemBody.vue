@@ -16,7 +16,6 @@ const props = defineProps<{
   isShowCreditLimit?: boolean
   isShowIcon?: boolean
   isShowRate?: boolean
-  isSort?: boolean
   lineWidth?: number
   to?: string
   wallet: WalletItemComputed
@@ -34,7 +33,6 @@ const isLoans = useFeature('loans')
 const classes = computed(() => ({
   'bg-elevated/30': (props.compact || props.withBackground) && !props.isSelected,
   'bg-elevated/70': props.isSelected,
-  'group': props.isSort,
   'rounded-md': props.compact || props.withBackground,
 }))
 
@@ -55,22 +53,11 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
     @click="emit('click', props.walletId)"
   >
     <!-- Icon -->
-    <template v-if="props.isShowIcon || props.isSort" #leftIcon>
-      <div class="flex items-center gap-2">
-        <div
-          v-if="props.isSort"
-          class="sortHandle -my-1.5 flex cursor-grab items-center justify-center self-stretch rounded-md px-1 text-muted group-hover:bg-accented active:cursor-grabbing"
-          data-reka-swipe-ignore
-        >
-          <Icon name="lucide:grip-vertical" size="20" />
-        </div>
-
-        <WalletsIcon
-          v-if="props.isShowIcon"
-          :name="wallet.name"
-          :color="wallet.color"
-        />
-      </div>
+    <template v-if="props.isShowIcon" #leftIcon>
+      <WalletsIcon
+        :name="wallet.name"
+        :color="wallet.color"
+      />
     </template>
 
     <!-- Main -->
@@ -159,7 +146,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
           {{ wallet.name }}
         </UiEntityName>
 
-        <div v-if="!isSort">
+        <div>
           <Amount
             v-if="walletCreditLimit"
             :amount="displayAmount"

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
+
 // Drag reorder over any id list; rows drag only by their `.sortHandle`, so hosts toggle sorting
 // by showing or hiding the handle.
 const props = defineProps<{
@@ -15,6 +17,7 @@ const emit = defineEmits<{
 const [parent, sorted] = useDragAndDrop([...props.ids], {
   dragHandle: '.sortHandle',
   group: useId(),
+  plugins: [sortInsertLine()],
 })
 
 watch(sorted, (ids) => {

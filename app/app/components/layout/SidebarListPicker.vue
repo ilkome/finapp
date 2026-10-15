@@ -103,7 +103,7 @@ const isLaptop = useIsLaptop()
             @update="saveOrder"
           >
             <template #default="{ id }">
-              <div class="flex items-center gap-1">
+              <div class="flex items-stretch overflow-hidden rounded-sm hover:bg-elevated/50">
                 <WalletsSortHandle />
                 <WalletsItem
                   v-if="isWallet"

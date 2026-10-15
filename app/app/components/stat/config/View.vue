@@ -9,6 +9,7 @@ import { isStatConfigRuleNav, useStatConfigNav } from '~/components/stat/config/
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { useStatConfigAvailablePanels } from '~/components/stat/config/useStatConfigPanels'
 import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
 const { t } = useI18n()
 const { isOpen: isConfigOpen } = useStatConfigOverlay()
@@ -19,6 +20,7 @@ const { width } = useWindowSize()
 const { activePanel, back, open: openPanel } = useStatConfigNav()
 const [blockSortParent, sortedBlockIds] = useDragAndDrop([] as StatConfigBlockId[], {
   dragHandle: '.sortHandle',
+  plugins: [sortInsertLine()],
 })
 
 const availablePanels = useStatConfigAvailablePanels()

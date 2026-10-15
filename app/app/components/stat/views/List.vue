@@ -4,6 +4,7 @@ import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { isAdaptiveViewId } from '~/components/stat/views/adaptiveView'
 import { useStatConditionTitles } from '~/components/stat/views/useConditionTitles'
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
 const { t } = useI18n()
 const { conditionGroupTitle } = useStatConditionTitles()
@@ -11,6 +12,7 @@ const controller = inject(statViewControllerKey, null)
 const confirm = useConfirm()
 const [viewsParent, sortedViewIds] = useDragAndDrop([] as string[], {
   dragHandle: '.sortableSelectionHandle',
+  plugins: [sortInsertLine()],
 })
 
 const views = computed(() => controller?.store.views ?? [])

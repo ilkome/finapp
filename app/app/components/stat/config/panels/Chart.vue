@@ -5,6 +5,7 @@ import type { QuickRangeOptionId } from '~/components/stat/date/useRangeOptions'
 
 import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 import { quickRangeOptionIds, useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
 const { isShowSyncButton = false } = defineProps<{
   isShowSyncButton?: boolean
@@ -18,7 +19,7 @@ const quickRangeItemById = computed(() => new Map(dateRangeOptions.value.map(opt
 const quickRangeValue = computed<QuickRangeOptionId[]>(() => statConfig.date.value.quickRangeIds)
 const [quickRangeSortParent, sortedQuickRangeIds] = useDragAndDrop(
   [...statConfig.date.value.quickRangeOrderIds] as QuickRangeOptionId[],
-  { dragHandle: '.sortableSelectionHandle' },
+  { dragHandle: '.sortableSelectionHandle', plugins: [sortInsertLine()] },
 )
 
 watch(() => statConfig.date.value.quickRangeOrderIds, (ids) => {
