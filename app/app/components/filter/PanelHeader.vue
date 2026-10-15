@@ -56,10 +56,10 @@ function closeSearch() {
 
     <UiButtonClose v-if="showClose && !isSearchOpen" @click="emit('close')" />
 
-    <!-- Expanded search covers the title and the toolbar. -->
+    <!-- Expanded search covers the title and the toolbar; it sits above the title's sticky z-20. -->
     <div
       v-if="isSearchOpen"
-      class="absolute inset-x-3 inset-y-1 z-10 rounded-md bg-default"
+      class="absolute inset-x-3 inset-y-1 z-30 rounded-md bg-default"
     >
       <input
         ref="searchInput"
