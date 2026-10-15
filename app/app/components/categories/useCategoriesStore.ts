@@ -1,5 +1,6 @@
 import type { Row } from '~~/services/powersync/transforms'
 
+import { useStorage } from '@vueuse/core'
 import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
@@ -8,7 +9,7 @@ import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/
 import type { CategoryOverrides } from '~/components/categories/utils'
 import type { TrnId } from '~/components/trns/types'
 
-import { applyCategoryOverrides, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareByStoredOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
@@ -87,6 +88,7 @@ type CategoriesStore = {
   primeOverridesFromCache: (data: unknown) => void
   recentCategoriesIds: ComputedRef<CategoryId[]>
   saveCategory: (params: AddCategoryParams) => Promise<void> | void
+  saveFavoritesOrder: (ids: CategoryId[]) => void
   setCategories: (values: Categories | null) => void
   setCategoryOverrides: (values: CategoryOverrides) => void
   sidebarCategoryIds: ComputedRef<CategoryId[]>
@@ -184,14 +186,20 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const transactibleIds = computed(() => getTransactibleCategoriesIds(items.value))
   const transactibleIdsSet = computed(() => new Set(transactibleIds.value))
 
+  // ponytail: per-device order, categories have no `order` column; add one if it must sync.
+  const favoritesOrder = useStorage<CategoryId[]>('finapp.categoriesFavoritesOrder', [])
   const favoriteCategoriesIds = computed(() => {
     if (!hasItems.value)
       return []
 
     return categoriesIds.value
       .filter(id => items.value[id]?.showInQuickSelector)
-      .sort((a, b) => compareCategoryIds(a, b, items.value))
+      .sort((a, b) => compareByStoredOrder(a, b, favoritesOrder.value) || compareCategoryIds(a, b, items.value))
   })
+
+  function saveFavoritesOrder(ids: CategoryId[]) {
+    favoritesOrder.value = ids
+  }
 
   // Categories excluded from dashboard stats/charts. Includes the two system
   // categories via their `isExcludeFromStats: true` default. Leaf-only flag, so
@@ -554,6 +562,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     primeOverridesFromCache,
     recentCategoriesIds,
     saveCategory,
+    saveFavoritesOrder,
     setCategories,
     setCategoryOverrides,
     sidebarCategoryIds,

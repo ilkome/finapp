@@ -1,15 +1,19 @@
 <script setup lang="ts">
+import { useStorage } from '@vueuse/core'
+
 import type { FavoritesSection } from '~/components/categories/FavoritesView.vue'
 import type { CategoryId } from '~/components/categories/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
 const props = defineProps<{
   // Single-select highlight (trn form) or multi-select set (stat filter); the
   // grid renders whichever is passed.
   activeItemId?: CategoryId
+  isCollapsible?: boolean
   selectedIds?: CategoryId[]
   // Show all categories when there are no favorites and no recent (trn form,
   // which has no full tree underneath).
@@ -25,6 +29,11 @@ const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
 const isLaptop = useIsLaptop()
+// The quick grid follows the form sheets' view settings.
+const { backgroundType, isRoundIcon } = useCategoriesViewSettings('form')
+// The quick grid folds its sections on its own, apart from the form sheets' blocks.
+const blocksOpen = useStorage<Record<string, boolean>>('finapp.categoriesQuickOpen', {}, localStorage, { mergeDefaults: true })
+const collapsedKeys = computed(() => Object.keys(blocksOpen.value).filter(key => blocksOpen.value[key] === false))
 
 const editingCategoryId = ref<CategoryId | null>(null)
 const isCreatingNewCategory = ref(false)
@@ -72,8 +81,8 @@ const sections = computed<FavoritesSection[]>(() => {
 
   if (favorites.length) {
     result.push({
-      // The new-category button lives on the last grid only.
-      isShowNew: recent.length === 0,
+      // The new-category button lives on the last grid only, and on touch: a laptop adds from the categories page.
+      isShowNew: recent.length === 0 && !isLaptop.value,
       items: toItems(favorites),
       key: 'favorites',
       title: t('categories.favoriteCategories'),
@@ -81,10 +90,10 @@ const sections = computed<FavoritesSection[]>(() => {
   }
 
   if (recent.length)
-    result.push({ isShowNew: true, items: toItems(recent), key: 'recent', title: t('categories.recentCategories') })
+    result.push({ isShowNew: !isLaptop.value, items: toItems(recent), key: 'recent', title: t('categories.recentCategories') })
 
   if (!result.length && props.showFallback && categoriesStore.categoriesIdsForTrnValues.length)
-    result.push({ isShowNew: true, items: toItems(categoriesStore.categoriesIdsForTrnValues), key: 'all' })
+    result.push({ isShowNew: !isLaptop.value, items: toItems(categoriesStore.categoriesIdsForTrnValues), key: 'all' })
 
   return result
 })
@@ -94,10 +103,15 @@ const sections = computed<FavoritesSection[]>(() => {
   <div>
     <CategoriesFavoritesView
       :activeItemId="props.activeItemId"
+      :backgroundType
+      :collapsedKeys
+      :isCollapsible="props.isCollapsible"
+      :isRoundIcon
       :sections
       :selectedIds="props.selectedIds"
       @new="onClickNew"
       @selected="id => emit('selected', id)"
+      @toggle="key => blocksOpen[key] = blocksOpen[key] === false"
     />
 
     <CategoriesEditModal

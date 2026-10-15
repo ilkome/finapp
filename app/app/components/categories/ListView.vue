@@ -35,7 +35,8 @@ const emit = defineEmits<{
 }>()
 
 // Flat lists and children fill a column top to bottom before starting the next one.
-const flowColumnsClass = 'columns-[12rem] gap-x-10 *:mb-1 *:break-inside-avoid'
+// Two columns in narrow hosts (phones, the form sheet); the list's own width, not the viewport, decides when to widen.
+const flowColumnsClass = 'columns-2 gap-x-1 @2xl/catlist:columns-[12rem] @2xl/catlist:gap-x-10 *:mb-1 *:break-inside-avoid'
 const gridColumnsClass = 'grid grid-cols-[repeat(auto-fill,minmax(12rem,1fr))] gap-1 gap-x-10'
 const stickyParentClass = 'sticky top-[calc(var(--sticky-top,0px)+2.375rem)] z-9 bg-default'
 // Hosts without a background setting (the form sheet) keep the card look of the columns.
@@ -53,7 +54,7 @@ function isRowExpanded(row: CategoryListRow) {
 </script>
 
 <template>
-  <div v-if="props.layout === 'columns'" :class="props.isFlat ? flowColumnsClass : gridColumnsClass" class="pt-1.5">
+  <div v-if="props.layout === 'columns'" :class="props.isFlat ? flowColumnsClass : gridColumnsClass" class="@container/catlist pt-1.5">
     <div
       v-for="row in rows"
       :key="row.categoryId"

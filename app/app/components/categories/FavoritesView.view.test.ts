@@ -24,4 +24,18 @@ describe('categoriesFavoritesView', () => {
     await wrapper.find('button[aria-label="categories.new"]').trigger('click')
     expect(wrapper.emitted('new')).toHaveLength(1)
   })
+
+  it('folds titled sections under a toggle', async () => {
+    const wrapper = mount(FavoritesView, {
+      global: { stubs: { ...stubs, UCollapsible: { template: '<div><slot /><slot name="content" /></div>' } } },
+      props: {
+        collapsedKeys: ['favorites'],
+        isCollapsible: true,
+        sections: [{ items: grid.items.slice(0, 2), key: 'favorites', title: 'Favorites' }],
+      } as any,
+    })
+
+    await wrapper.find('.interactive').trigger('click')
+    expect(wrapper.emitted('toggle')?.at(-1)).toEqual(['favorites'])
+  })
 })

@@ -29,6 +29,7 @@ const { folderIcon, isExpanded, toggle, toggleAll } = useCategoriesExpanded('cat
 useHead({ title: t('categories.title') })
 
 const isMenuOpen = ref(false)
+const isSortingFavorites = ref(false)
 function addCategory(close: () => void) {
   close()
   router.push('/categories/new')
@@ -52,8 +53,6 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
     <UiHeader ref="header" actionsAfterTitle>
       <UiHeaderTitle>{{ t('categories.name') }}</UiHeaderTitle>
       <template #actions>
-        <CategoriesViewSettings />
-
         <UTooltip :text="$t('base.toggleFolders')">
           <UiActionButton
             :ariaLabel="$t('base.toggleFolders')"
@@ -62,6 +61,8 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
             <Icon :name="folderIcon" size="20" />
           </UiActionButton>
         </UTooltip>
+
+        <CategoriesViewSettings />
 
         <DrawerOrDropdown
           v-model:open="isMenuOpen"
@@ -81,6 +82,13 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
             <div class="py-3 md:-mx-2 md:py-1">
               <UiHeaderLink @click="addCategory(close)">
                 {{ t('categories.new') }}
+              </UiHeaderLink>
+              <UiHeaderLink
+                v-if="categoriesStore.favoriteCategoriesIds.length > 1"
+                icon="lucide:arrow-down-up"
+                @click="() => { isSortingFavorites = !isSortingFavorites; close() }"
+              >
+                {{ isSortingFavorites ? t('base.done') : t('categories.sortFavorites') }}
               </UiHeaderLink>
             </div>
           </template>
@@ -113,6 +121,7 @@ function getCategoryContextMenuItems(categoryId: CategoryId) {
         :expanded="{ isExpanded, toggle }"
         :getContextMenuItems="getCategoryContextMenuItems"
         :getTo="(categoryId: CategoryId) => `/categories/${categoryId}`"
+        :isSortFavorites="isSortingFavorites"
       />
     </div>
   </UiPage>

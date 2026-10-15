@@ -1,23 +1,19 @@
 <script setup lang="ts">
+import type { CategoriesViewScope } from '~/composables/useCategoriesViewSettings'
+
 import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
-// The "View settings" control of every category list: the categories page and each selection sheet
-// edit the same stored values.
 const props = defineProps<{
-  hideBackground?: boolean
+  scope?: CategoriesViewScope
 }>()
 
 const { t } = useI18n()
-const { backgroundType, childrenView, isRoundIcon, isShowChildrenCount, layout } = useCategoriesViewSettings()
+const { backgroundType, childrenView, isRoundIcon, isShowChildrenCount } = useCategoriesViewSettings(props.scope)
 
 const isOpen = ref(false)
 
 const backgroundTypeItems = computed(() => ['category', 'standard'].map(value => ({
   label: t(`stat.config.categories.list.backgroundTypes.${value}`),
-  value,
-})))
-const layoutItems = computed(() => ['list', 'columns'].map(value => ({
-  label: t(`categories.view.layouts.${value}`),
   value,
 })))
 const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
@@ -27,9 +23,11 @@ const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
 </script>
 
 <template>
+  <!-- An icon trigger: the wrapper's default grow would push its toolbar neighbours apart. -->
   <DrawerOrDropdown
     v-model:open="isOpen"
     align="end"
+    class="grow-0!"
     isShowCloseBtn
     popoverBodyClass="md:pb-3!"
     popoverContentClass="z-[80] w-80 max-w-[calc(100vw-1rem)]"
@@ -47,7 +45,7 @@ const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
 
     <template #content>
       <div class="pb-3 md:pb-0">
-        <StatConfigFieldRow v-if="!props.hideBackground" :title="t('stat.config.categories.list.backgroundType')">
+        <StatConfigFieldRow :title="t('stat.config.categories.list.backgroundType')">
           <USelect
             data-reka-swipe-ignore
             class="w-40 shrink-0"
@@ -57,19 +55,6 @@ const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
             :modelValue="backgroundType"
             :ui="{ content: 'z-[90]' }"
             @update:modelValue="value => backgroundType = value as 'category' | 'standard'"
-          />
-        </StatConfigFieldRow>
-
-        <StatConfigFieldRow :title="t('categories.view.layout')">
-          <USelect
-            data-reka-swipe-ignore
-            class="w-40 shrink-0"
-            :aria-label="t('categories.view.layout')"
-            :content="{ position: 'item-aligned' }"
-            :items="layoutItems"
-            :modelValue="layout"
-            :ui="{ content: 'z-[90]' }"
-            @update:modelValue="value => layout = value as 'columns' | 'list'"
           />
         </StatConfigFieldRow>
 

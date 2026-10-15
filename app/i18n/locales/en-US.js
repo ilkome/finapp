@@ -141,6 +141,7 @@ export default {
     selectParent: 'Whole «{name}»',
     selectParentHint: 'incl. all subcategories',
     singular: 'Category',
+    sortFavorites: 'Sort favorites',
     system: 'System',
     title: 'Categories',
     view: {
@@ -149,8 +150,6 @@ export default {
         grid: 'Cloud',
         list: 'List',
       },
-      layout: 'View',
-      layouts: { columns: 'Columns', list: 'List' },
       showChildrenCount: 'Show children count',
     },
   },
@@ -1014,11 +1013,11 @@ export default {
     },
     page: {
       currencies: 'Currency',
-      groupBy: 'Group by',
       currencyType: 'Currency, then type',
-      typeCurrency: 'Type, then currency',
+      groupBy: 'Group by',
       none: 'None',
       type: 'Type',
+      typeCurrency: 'Type, then currency',
     },
     search: {
       placeholder: 'Search',
