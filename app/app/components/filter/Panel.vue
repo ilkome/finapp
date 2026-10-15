@@ -173,8 +173,8 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                     @search="panelHeader?.openSearch()"
                   />
 
-                  <!-- A 2px gap under the toolbar, whichever entity list follows it. -->
-                  <div class="grid min-h-0 flex-1 [&_.scroller-block]:pt-0.5!">
+                  <!-- A 2px gap under the toolbar, outside the scroller: padding there would leave a slit above sticky titles. -->
+                  <div class="grid min-h-0 flex-1 pt-0.5 [&_.scroller-block]:pt-0!">
                     <WalletsSelector
                       v-if="slide === 'wallet'"
                       :ref="(el: any) => walletsSelector = el"

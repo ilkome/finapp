@@ -144,7 +144,7 @@ defineExpose({ folderIcon, toggleAll })
       </div>
     </div>
 
-    <div class="h-full scroller-block overflow-y-auto px-3 pt-1 pb-4">
+    <div class="h-full scroller-block overflow-y-auto px-3 pb-4">
       <CategoriesBlocks
         :activeItemId="props.activeItemId"
         :expanded="{ isExpanded, toggle }"
