@@ -2,7 +2,7 @@
 const props = defineProps<{
   isShowClose?: boolean
   // 'select': the transaction form's single-pick sheet. Its per-slide actions live in a toolbar
-  // under the tabs (as in the stat filter), so the header keeps only the title, reset, search and close.
+  // under the tabs (as in the stat filter), so the header keeps only the title, reset and close.
   mode?: 'filter' | 'select'
   showReset: boolean
   // Overrides the "Фильтры" title - the single-pick sheet shows the active slide's name instead.
@@ -31,6 +31,9 @@ async function openSearch() {
   setTimeout(focus, 250)
 }
 
+// The search trigger lives in each slide's toolbar; the search itself spans every entity.
+defineExpose({ openSearch })
+
 function closeSearch() {
   search.value = ''
   isSearchOpen.value = false
@@ -49,8 +52,6 @@ function closeSearch() {
           :title="t('base.reset')"
           @click="emit('reset')"
         />
-
-        <UiTriggerButton icon="lucide:search" :title="t('base.search')" @click="openSearch" />
       </template>
     </UiTitleModal>
 

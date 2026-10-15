@@ -39,6 +39,7 @@ const filter = isSelectMode.value ? null : inject(filterKey)!
 const isLaptop = useIsLaptop()
 
 const search = ref('')
+const panelHeader = useTemplateRef<{ openSearch: () => void }>('panelHeader')
 // Function refs: the selectors sit inside the slide v-for, where a string ref becomes an array.
 const walletsSelector = shallowRef<InstanceType<typeof WalletsSelector> | null>(null)
 const categoriesSelector = shallowRef<InstanceType<typeof CategoriesSelectorModal> | null>(null)
@@ -126,6 +127,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
   >
     <div class="relative z-20 bg-default/90 backdrop-blur">
       <FilterPanelHeader
+        ref="panelHeader"
         v-model:search="search"
         :isShowClose="isLaptop"
         :mode="props.mode"
@@ -168,6 +170,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                     :categoriesSelector
                     :walletsSelector
                     @addActive="createEntity(slide)"
+                    @search="panelHeader?.openSearch()"
                   />
 
                   <!-- A 2px gap under the toolbar, whichever entity list follows it. -->

@@ -16,6 +16,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   addActive: []
+  search: []
 }>()
 
 const { t } = useI18n()
@@ -37,6 +38,8 @@ const moreItems = computed<DropdownMenuItem[][]>(() => [[{
 
 <template>
   <div v-if="wallets || categories" class="flex items-center justify-end gap-1 px-3 pt-0.5">
+    <UiTriggerButton class="mr-auto" icon="lucide:search" :title="t('base.search')" @click="emit('search')" />
+
     <template v-if="wallets">
       <UiTriggerButton
         v-if="wallets.groupedBy !== 'none'"
