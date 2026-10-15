@@ -22,7 +22,7 @@ import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const adjustment: CategoryItem = {
-  color: '',
+  color: '#64748b',
   icon: 'mdi:plus-minus',
   isExcludeFromStats: true,
   name: 'Adjustment',
@@ -32,7 +32,7 @@ const adjustment: CategoryItem = {
 }
 
 const transfer: CategoryItem = {
-  color: '',
+  color: '#64748b',
   icon: 'mdi:repeat',
   isExcludeFromStats: true,
   name: 'Transfer',
@@ -45,7 +45,7 @@ const transfer: CategoryItem = {
 // expense is on, not the category). Unlike transfer/adjustment they are real spending,
 // so they stay in statistics.
 const loanInterest: CategoryItem = {
-  color: '',
+  color: '#ef4444',
   icon: 'mdi:percent',
   isExcludeFromStats: false,
   name: 'Loan interest',
@@ -55,7 +55,7 @@ const loanInterest: CategoryItem = {
 }
 
 const loanFine: CategoryItem = {
-  color: '',
+  color: '#f59e0b',
   icon: 'mdi:alert-circle-outline',
   isExcludeFromStats: false,
   name: 'Loan fees',
