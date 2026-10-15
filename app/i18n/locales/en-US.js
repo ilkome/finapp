@@ -645,12 +645,13 @@ export default {
         title: 'Average totals',
       },
       summary: {
-        hideTotal: 'Hide the total',
         pin: 'Pin while scrolling',
         showChart: 'Show charts',
+        showTotal: 'Show the total',
         title: 'Spending and income',
       },
       trns: {
+        showDescFilter: 'Show the "Only with description" checkbox',
         showHistory: 'Show previous transactions',
         showTitle: 'Title',
         showTypeTabs: 'Show transaction type tabs',

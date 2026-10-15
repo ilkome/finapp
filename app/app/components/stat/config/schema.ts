@@ -24,6 +24,8 @@ export function resolveChartLayoutOptions(pageLayout: PageLayout): ChartLayout[]
 }
 
 /** Each page layout has a default chart mode; the other option of the pair reverts it by hand. */
+export const SUMMARY_TOTAL_WIDE_QUERY = '(min-width: 1000px)'
+
 function alignChartLayoutToPage(pageLayout: PageLayout): ChartLayout {
   return pageLayout === 'split' ? 'split' : 'combined-wide'
 }
@@ -180,13 +182,15 @@ export const ConfigSchema = z.object({
     layout: z.enum(['combined', 'split']),
   }),
   summary: z.object({
-    isHideTotal: z.boolean().default(false),
     isPinned: z.boolean(),
     isShow: z.boolean().default(true),
     isShowChart: z.boolean(),
+    /** Unset follows the screen: shown from `SUMMARY_TOTAL_WIDE_QUERY` up. */
+    isShowTotal: z.boolean().optional(),
   }),
   trns: z.object({
     isShow: z.boolean(),
+    isShowDescFilter: z.boolean().default(false),
     isShowHistory: z.boolean(),
     isShowTitle: z.boolean(),
     isShowTypeTabs: z.boolean(),
@@ -281,7 +285,6 @@ export const defaultConfig: MiniItemConfig = {
   },
 
   summary: {
-    isHideTotal: false,
     isPinned: true,
     isShow: true,
     isShowChart: true,
@@ -289,6 +292,7 @@ export const defaultConfig: MiniItemConfig = {
 
   trns: {
     isShow: true,
+    isShowDescFilter: false,
     isShowHistory: true,
     isShowTitle: true,
     isShowTypeTabs: true,

@@ -84,13 +84,13 @@ const defaultConfig: MiniItemConfig = {
     layout: 'combined',
   },
   summary: {
-    isHideTotal: false,
     isPinned: true,
     isShow: true,
     isShowChart: true,
   },
   trns: {
     isShow: true,
+    isShowDescFilter: false,
     isShowHistory: true,
     isShowTitle: true,
     isShowTypeTabs: true,

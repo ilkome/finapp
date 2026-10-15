@@ -72,12 +72,13 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     visibility,
     { id: 'summary.isPinned', paths: ['summary.isPinned'], titleKey: 'stat.config.summary.pin' },
     { id: 'summary.isShowChart', paths: ['summary.isShowChart'], titleKey: 'stat.config.summary.showChart' },
-    { id: 'summary.isHideTotal', paths: ['summary.isHideTotal'], titleKey: 'stat.config.summary.hideTotal' },
+    { id: 'summary.isShowTotal', paths: ['summary.isShowTotal'], titleKey: 'stat.config.summary.showTotal' },
   ],
   trns: [
     visibility,
     { id: 'trns.isShowTitle', paths: ['trns.isShowTitle'], titleKey: 'stat.config.trns.showTitle' },
     { id: 'trns.isShowTypeTabs', paths: ['trns.isShowTypeTabs'], titleKey: 'stat.config.trns.showTypeTabs' },
+    { id: 'trns.isShowDescFilter', paths: ['trns.isShowDescFilter'], titleKey: 'stat.config.trns.showDescFilter' },
     { id: 'trns.isShowHistory', paths: ['trns.isShowHistory'], titleKey: 'stat.config.trns.showHistory' },
   ],
   vertical: [

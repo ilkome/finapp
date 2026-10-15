@@ -16,6 +16,10 @@ const isHistoryAvailable = inject(statHistoryAvailableKey, computed(() => true))
       :title="t('stat.config.trns.showTypeTabs')"
     />
     <StatConfigSwitch
+      path="trns.isShowDescFilter"
+      :title="t('stat.config.trns.showDescFilter')"
+    />
+    <StatConfigSwitch
       v-if="isHistoryAvailable"
       path="trns.isShowHistory"
       :title="t('stat.config.trns.showHistory')"
