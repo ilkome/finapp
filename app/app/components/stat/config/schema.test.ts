@@ -91,6 +91,7 @@ const defaultConfig: MiniItemConfig = {
   },
   trns: {
     isShow: true,
+    isShowDescFilter: false,
     isShowHistory: true,
     isShowTitle: true,
     isShowTypeTabs: true,

@@ -21,6 +21,7 @@ const isHistoryAvailable = inject(statHistoryAvailableKey, computed(() => true))
 const shown = useStorage(`${props.storageKey}-trns`, true)
 const isShowTitle = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTitle ?? true)
 const isShowTypeTabs = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowTypeTabs ?? true)
+const isShowDescFilter = computed(() => props.ctx?.params.statConfig.config.value.trns.isShowDescFilter ?? false)
 const isQuickCategoryFocused = computed(() => (props.ctx?.filteredCategoriesIds.value.length ?? 0) > 0)
 const isOpen = computed({
   get: () => isQuickCategoryFocused.value || !isShowTitle.value || shown.value,
@@ -77,7 +78,7 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
           :isShowGroupSum="!isPeriodOneDay"
           :trnsIds="selectedTrnsIds"
           isShowExpense
-          isShowFilterByDesc
+          :isShowFilterByDesc="isShowDescFilter"
           isShowIncome
           isShowTransfers
           :isShowFilterByType="isShowTypeTabs"

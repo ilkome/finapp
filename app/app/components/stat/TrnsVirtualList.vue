@@ -77,6 +77,7 @@ const {
 } = createTypeFilterControls(historyCandidateIds)
 const isShowHistoryWithDesc = props.ctx.trnsViewState.isShowHistoryWithDesc ?? ref(false)
 const isShowTypeTabs = computed(() => props.ctx.params.statConfig.config.value.trns.isShowTypeTabs)
+const isShowDescFilter = computed(() => props.ctx.params.statConfig.config.value.trns.isShowDescFilter)
 const localFeedFilter = computed(() => ({
   ...localFilter.value,
   showHistoryWithDesc: isShowHistoryWithDesc.value,
@@ -216,7 +217,7 @@ onBeforeUnmount(() => {
       <TrnsListFilterControls
         :filterBy
         :isAllTrnsWithDesc
-        :isShowFilterByDesc="true"
+        :isShowFilterByDesc="isShowDescFilter"
         :isShowFilterByType="isShowTypeTabs"
         :isShowWithDesc
         :isTrnsWithDesc
@@ -274,6 +275,7 @@ onBeforeUnmount(() => {
             />
 
             <UiSwitchItem
+              v-if="isShowDescFilter"
               :checkboxValue="isShowHistoryWithDesc"
               :title="t('trns.filter.showTrnsWithDesc')"
               showCheckbox

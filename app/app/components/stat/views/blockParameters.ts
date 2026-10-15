@@ -78,6 +78,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     visibility,
     { id: 'trns.isShowTitle', paths: ['trns.isShowTitle'], titleKey: 'stat.config.trns.showTitle' },
     { id: 'trns.isShowTypeTabs', paths: ['trns.isShowTypeTabs'], titleKey: 'stat.config.trns.showTypeTabs' },
+    { id: 'trns.isShowDescFilter', paths: ['trns.isShowDescFilter'], titleKey: 'stat.config.trns.showDescFilter' },
     { id: 'trns.isShowHistory', paths: ['trns.isShowHistory'], titleKey: 'stat.config.trns.showHistory' },
   ],
   vertical: [

@@ -652,6 +652,7 @@ export default {
         title: 'Spending and income',
       },
       trns: {
+        showDescFilter: 'Show the "Only with description" checkbox',
         showHistory: 'Show previous transactions',
         showTitle: 'Title',
         showTypeTabs: 'Show transaction type tabs',

@@ -29,6 +29,7 @@ export type StatConfigBooleanPath
     | 'summary.isHideTotal'
     | 'summary.isPinned'
     | 'summary.isShowChart'
+    | 'trns.isShowDescFilter'
     | 'trns.isShowHistory'
     | 'trns.isShowTitle'
     | 'trns.isShowTypeTabs'
@@ -147,6 +148,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'summary.isShowChart': {
     get: config => config.summary.isShowChart,
     set: (provider, value) => provider.updateConfig('summary', { isShowChart: value }),
+  },
+  'trns.isShowDescFilter': {
+    get: config => config.trns.isShowDescFilter,
+    set: (provider, value) => provider.updateConfig('trns', { isShowDescFilter: value }),
   },
   'trns.isShowHistory': {
     get: config => config.trns.isShowHistory,

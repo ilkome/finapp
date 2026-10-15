@@ -187,6 +187,7 @@ export const ConfigSchema = z.object({
   }),
   trns: z.object({
     isShow: z.boolean(),
+    isShowDescFilter: z.boolean().default(false),
     isShowHistory: z.boolean(),
     isShowTitle: z.boolean(),
     isShowTypeTabs: z.boolean(),
@@ -289,6 +290,7 @@ export const defaultConfig: MiniItemConfig = {
 
   trns: {
     isShow: true,
+    isShowDescFilter: false,
     isShowHistory: true,
     isShowTitle: true,
     isShowTypeTabs: true,
