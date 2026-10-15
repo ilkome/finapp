@@ -225,10 +225,9 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         <UiSortActions v-if="isSorting" @apply="isSorting = false" @cancel="cancelSorting" />
 
         <template v-else>
-          <UTooltip :text="$t('base.toggleFolders')">
+          <UTooltip v-if="groupedBy !== 'none'" :text="$t('base.toggleFolders')">
             <UiActionButton
               :ariaLabel="$t('base.toggleFolders')"
-              :disabled="groupedBy === 'none'"
               @click="toggleOpened"
             >
               <Icon
