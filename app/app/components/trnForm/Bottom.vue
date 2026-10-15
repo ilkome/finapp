@@ -88,9 +88,7 @@ watch(sliderRef, (el) => {
           <div class="swiper-slide getHeight bg-default">
             <div class="h-full scroller-block overflow-y-auto">
               <div class="max-h-[98dvh]">
-                <TrnFormMain
-                  :maxHeight
-                />
+                <TrnFormMain />
               </div>
             </div>
           </div>

@@ -25,7 +25,6 @@ watch(isShow, (v) => {
 
         <div class="grid h-full scroller-block grid-rows-[auto_1fr] items-start gap-4 overflow-y-auto overscroll-contain bg-default">
           <TrnFormMain
-            maxHeight="100vh"
             sidebarHeader
             class="pb-0!"
           />

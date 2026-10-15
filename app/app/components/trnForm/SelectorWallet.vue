@@ -5,7 +5,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   disabledWalletIds?: WalletId[]
-  drawerStyle?: Record<string, string>
   title?: string
   walletId: WalletId
 }>()
@@ -24,7 +23,7 @@ const isLaptop = useIsLaptop()
 <template>
   <DrawerOrDropdown
     v-model:open="isShow"
-    :drawerStyle="props.drawerStyle"
+    :collapsedSnap="500"
     :title="props.title"
     contentClass="h-full"
     isShowCloseBtn

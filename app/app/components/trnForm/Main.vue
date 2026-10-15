@@ -12,8 +12,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
 
-const { maxHeight = '60vh', sidebarHeader = false } = defineProps<{
-  maxHeight?: string
+const { sidebarHeader = false } = defineProps<{
   sidebarHeader?: boolean
 }>()
 
@@ -86,7 +85,6 @@ const typeItems = computed<TabsItem[]>(() => [
       <!-- Selected -->
       <TrnFormEntitySelector
         v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
-        :drawerStyle="{ maxHeight }"
         :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
         :walletId
         @selectCategory="(id: CategoryId) => trnsFormStore.values.categoryId = id"
@@ -95,7 +93,6 @@ const typeItems = computed<TabsItem[]>(() => [
 
       <TrnFormMainAmountTransfer
         v-if="trnsFormStore.values.trnType === TrnType.Transfer"
-        :drawerStyle="{ maxHeight }"
       />
 
       <LoansTrnFormFields v-if="isLoans" />

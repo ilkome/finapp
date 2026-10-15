@@ -126,7 +126,6 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
   >
     <div class="relative z-20 bg-default/90 backdrop-blur">
       <FilterPanelHeader
-        v-model:search="search"
         :isShowClose="isLaptop"
         :mode="props.mode"
         :showReset
@@ -146,7 +145,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
     </div>
 
     <div class="min-h-0 min-w-0">
-      <div v-show="!searchQuery" class="grid h-full min-h-0">
+      <div class="grid h-full min-h-0">
         <div
           ref="sliderRef"
           class="swiper size-full min-h-0 min-w-0 overflow-hidden"
@@ -164,14 +163,27 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
               <template v-else>
                 <div class="flex size-full min-h-0 flex-col">
                   <FilterSelectToolbar
+                    v-model:search="search"
                     :activeSlide="slide"
                     :categoriesSelector
                     :walletsSelector
                     @addActive="createEntity(slide)"
                   />
 
-                  <!-- A 2px gap under the toolbar, whichever entity list follows it. -->
-                  <div class="grid min-h-0 flex-1 [&_.scroller-block]:pt-0.5!">
+                  <!-- The search spans every entity, so each slide shows the same results under its toolbar. -->
+                  <div v-if="searchQuery" class="grid min-h-0 flex-1">
+                    <FilterSearchResults
+                      v-if="searchQuery"
+                      :pendingCategories="draft?.pendingCategories.value ?? (props.activeCategoryId ? [props.activeCategoryId] : [])"
+                      :pendingWallets="draft?.pendingWallets.value ?? (props.activeWalletId ? [props.activeWalletId] : [])"
+                      :searchQuery
+                      @toggleCategory="selectCategory"
+                      @toggleWallet="selectWallet"
+                    />
+                  </div>
+
+                  <!-- A 2px gap under the toolbar, outside the scroller: padding there would leave a slit above sticky titles. -->
+                  <div v-show="!searchQuery" class="grid min-h-0 flex-1 pt-0.5 [&_.scroller-block]:pt-0!">
                     <WalletsSelector
                       v-if="slide === 'wallet'"
                       :ref="(el: any) => walletsSelector = el"
@@ -203,15 +215,6 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
           </div>
         </div>
       </div>
-
-      <FilterSearchResults
-        v-if="searchQuery && !isSelectMode"
-        :pendingCategories="draft!.pendingCategories.value"
-        :pendingWallets="draft!.pendingWallets.value"
-        :searchQuery
-        @toggleCategory="draft!.toggleCategory"
-        @toggleWallet="draft!.toggleWallet"
-      />
     </div>
 
     <div
