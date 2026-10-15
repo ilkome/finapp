@@ -84,7 +84,6 @@ const defaultConfig: MiniItemConfig = {
     layout: 'combined',
   },
   summary: {
-    isHideTotal: false,
     isPinned: true,
     isShow: true,
     isShowChart: true,

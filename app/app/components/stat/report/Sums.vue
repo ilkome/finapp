@@ -3,6 +3,7 @@ import type { StatSumsCtx } from '~/components/stat/report/types'
 import type { StatSumRecord } from '~/components/stat/sum/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { SUMMARY_TOTAL_WIDE_QUERY } from '~/components/stat/config/schema'
 import { buildStatSummaryItems } from '~/components/stat/sum/summaryItems'
 import { useStatAverage } from '~/components/stat/sum/useStatAverage'
 
@@ -17,10 +18,12 @@ const { averages, isShow: isShowAverage } = useStatAverage({
 })
 
 const config = computed(() => props.ctx.params.statConfig.config.value)
+const isWide = useMediaQuery(SUMMARY_TOTAL_WIDE_QUERY)
+const isShowTotal = computed(() => config.value.summary.isShowTotal ?? isWide.value)
 const isShowPie = computed(() => config.value.summary.isShowChart && props.ctx.effectiveChartType.value !== 'pie')
 
 const items = computed<StatSumRecord[]>(() => buildStatSummaryItems(props.ctx.rangeTotal.value, props.ctx.filteredType.value)
-  .filter(item => item.type !== 'net' || !config.value.summary.isHideTotal)
+  .filter(item => item.type !== 'net' || isShowTotal.value)
   .map(item => ({ ...item, average: averages.value?.[item.type] })))
 
 const focused = computed<StatSumRecord | null>(() => {
@@ -58,7 +61,7 @@ function toggleAverage() {
       :currencyCode="currenciesStore.base"
       :focused
       :isShowPie
-      :isShowPieOnNarrow="config.summary.isHideTotal"
+      :isShowPieOnNarrow="!isShowTotal"
       :items
       :single
       @click="ctx.onClickSumItemWrap"

@@ -1,6 +1,8 @@
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 
+import { SUMMARY_TOTAL_WIDE_QUERY } from '~/components/stat/config/schema'
+
 export type StatConfigBooleanPath
   = | 'categories.bars.isShowTooltip'
     | 'categories.bars.isShowTooltipChildren'
@@ -26,7 +28,7 @@ export type StatConfigBooleanPath
     | 'date.isPinned'
     | 'date.isShowNavigation'
     | 'date.isShowQuick'
-    | 'summary.isHideTotal'
+    | 'summary.isShowTotal'
     | 'summary.isPinned'
     | 'summary.isShowChart'
     | 'trns.isShowDescFilter'
@@ -137,10 +139,6 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
     get: config => config.date.isShowQuick,
     set: (provider, value) => provider.updateConfig('date', { isShowQuick: value }),
   },
-  'summary.isHideTotal': {
-    get: config => config.summary.isHideTotal,
-    set: (provider, value) => provider.updateConfig('summary', { isHideTotal: value }),
-  },
   'summary.isPinned': {
     get: config => config.summary.isPinned,
     set: (provider, value) => provider.updateConfig('summary', { isPinned: value }),
@@ -148,6 +146,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'summary.isShowChart': {
     get: config => config.summary.isShowChart,
     set: (provider, value) => provider.updateConfig('summary', { isShowChart: value }),
+  },
+  'summary.isShowTotal': {
+    get: config => config.summary.isShowTotal ?? window.matchMedia(SUMMARY_TOTAL_WIDE_QUERY).matches,
+    set: (provider, value) => provider.updateConfig('summary', { isShowTotal: value }),
   },
   'trns.isShowDescFilter': {
     get: config => config.trns.isShowDescFilter,

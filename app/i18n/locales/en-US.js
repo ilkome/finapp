@@ -645,9 +645,9 @@ export default {
         title: 'Average totals',
       },
       summary: {
-        hideTotal: 'Hide the total',
         pin: 'Pin while scrolling',
         showChart: 'Show charts',
+        showTotal: 'Show the total',
         title: 'Spending and income',
       },
       trns: {

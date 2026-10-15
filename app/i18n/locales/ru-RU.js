@@ -645,9 +645,9 @@ export default {
         title: 'Средние суммы',
       },
       summary: {
-        hideTotal: 'Не показывать итог',
         pin: 'Закреплять при прокрутке',
         showChart: 'Показывать графики',
+        showTotal: 'Показывать итог',
         title: 'Траты и доходы',
       },
       trns: {
