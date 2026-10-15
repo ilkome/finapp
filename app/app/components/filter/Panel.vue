@@ -205,12 +205,12 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
       </div>
 
       <FilterSearchResults
-        v-if="searchQuery && !isSelectMode"
-        :pendingCategories="draft!.pendingCategories.value"
-        :pendingWallets="draft!.pendingWallets.value"
+        v-if="searchQuery"
+        :pendingCategories="draft?.pendingCategories.value ?? (props.activeCategoryId ? [props.activeCategoryId] : [])"
+        :pendingWallets="draft?.pendingWallets.value ?? (props.activeWalletId ? [props.activeWalletId] : [])"
         :searchQuery
-        @toggleCategory="draft!.toggleCategory"
-        @toggleWallet="draft!.toggleWallet"
+        @toggleCategory="selectCategory"
+        @toggleWallet="selectWallet"
       />
     </div>
 

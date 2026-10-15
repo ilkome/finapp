@@ -18,15 +18,16 @@ const emit = defineEmits<{
   toggleWallet: [id: WalletId]
 }>()
 
-const filter = inject(filterKey)!
+// The transaction form's single-pick sheet has no filter: both entities are searchable there.
+const filter = inject(filterKey, null)
 const categoriesStore = useCategoriesStore()
 const walletsStore = useWalletsStore()
 
-const wallets = computed(() => filter.canFilterWallets
+const wallets = computed(() => (filter?.canFilterWallets ?? true)
   ? searchWallets(props.searchQuery, walletsStore.itemsComputed).map(walletId => ({ wallet: walletsStore.itemsComputed[walletId]!, walletId }))
   : [])
 
-const categories = computed(() => filter.canFilterCategories
+const categories = computed(() => (filter?.canFilterCategories ?? true)
   ? searchCategories(props.searchQuery, categoriesStore.items, categoriesStore.hasChildren).map((categoryId) => {
       const category = categoriesStore.items[categoryId]!
       return { category, categoryId, parentCategory: categoriesStore.items[category.parentId] }
