@@ -32,11 +32,13 @@ config.global.stubs = {
 // Register the pure views and the leaf components they compose the way Nuxt does
 // (folder prefix + file name: `ui/Text.vue` -> `UiText`), so a test passes props only.
 // ContextMenuMy and Header pull in `#imports`, which only exists inside Nuxt.
+// SideMenu calls `ref` at module scope, which runs before the auto-import stubs above (eager globs are hoisted).
 const modules = import.meta.glob<{ default: Component }>([
   '~/components/**/*View.vue',
   '~/components/ui/*.vue',
   '!~/components/ui/ContextMenuMy.vue',
   '!~/components/ui/Header.vue',
+  '!~/components/ui/SideMenu.vue',
   '~/components/categories/Name.vue',
   '~/components/loans/StatCell.vue',
   '~/components/loans/StatusBadges.vue',
