@@ -13,6 +13,7 @@ patchedDependencies:
   # snap commit, rubber-band past the top snap point. Ours: a closed kept-mounted drawer releases its
   # DismissableLayer while staying mounted and starts its next open from a clean swipe state; a nested
   # drawer's swipe drives its parent, not the page; switching `modal` keeps the content mounted.
+  # ContextMenuTrigger leaves a touch long-press `contextmenu` unprevented: Chrome Android drops the first tap on the open menu otherwise.
   reka-ui@2.10.5: patches/reka-ui@2.10.5.patch
 
 allowBuilds:
