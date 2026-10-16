@@ -248,3 +248,7 @@
     visibility: hidden;
   }
 }
+
+[role='menu'][data-item-picked][data-state='closed'] {
+  animation: none !important;
+}
