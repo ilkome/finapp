@@ -37,6 +37,7 @@ describe('trnsItem', () => {
     expect(mount(TrnsItem, { props: transfer('loan') as any }).text()).toContain('trns.types.loanPayment')
     expect(mount(TrnsItem, { props: transfer('credit') as any }).text()).toContain('trns.types.loanPayment')
     expect(mount(TrnsItem, { props: transfer('cash') as any }).text()).not.toContain('trns.types.loanPayment')
+    expect(mount(TrnsItem, { props: transfer('cash') as any }).findAll('[data-amount]').map(el => el.text())).toEqual(['100 USD'])
   })
 
   it('group sum renders only non-zero sides', () => {
