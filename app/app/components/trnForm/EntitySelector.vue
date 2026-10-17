@@ -7,7 +7,6 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
   categoryId?: CategoryId
-  drawerStyle?: Record<string, string>
   walletId?: WalletId
 }>()
 
@@ -29,7 +28,7 @@ const initialSlide = ref<'category' | 'wallet'>('wallet')
 <template>
   <DrawerOrDropdown
     v-model:open="isShow"
-    :drawerStyle="props.drawerStyle"
+    :collapsedSnap="500"
   >
     <template #trigger>
       <div class="grid grid-cols-2 gap-2">

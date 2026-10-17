@@ -5,10 +5,6 @@ import type { TransferSide } from '~/components/trns/types'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { TrnType } from '~/components/trns/types'
 
-const props = defineProps<{
-  drawerStyle?: Record<string, string>
-}>()
-
 const trnsFormStore = useTrnsFormStore()
 const { t } = useI18n()
 
@@ -62,7 +58,6 @@ watch(
       <div class="flex items-center gap-2 pt-3">
         <TrnFormSelectorWallet
           v-if="trnsFormStore.transferExpenseWalletId"
-          :drawerStyle="props.drawerStyle"
           :disabledWalletIds="trnsFormStore.transferIncomeWalletId ? [trnsFormStore.transferIncomeWalletId] : []"
           :title="t('trnForm.transfer.expenseModal')"
           :walletId="trnsFormStore.transferExpenseWalletId"
@@ -76,7 +71,6 @@ watch(
 
         <TrnFormSelectorWallet
           v-if="trnsFormStore.transferIncomeWalletId"
-          :drawerStyle="props.drawerStyle"
           :disabledWalletIds="trnsFormStore.transferExpenseWalletId ? [trnsFormStore.transferExpenseWalletId] : []"
           :title="t('trnForm.transfer.incomeModal')"
           :walletId="trnsFormStore.transferIncomeWalletId"
@@ -111,7 +105,6 @@ watch(
 
             <TrnFormSelectorWallet
               v-if="slug === 'income' && trnsFormStore.transferIncomeWalletId"
-              :drawerStyle="props.drawerStyle"
               :disabledWalletIds="trnsFormStore.transferExpenseWalletId ? [trnsFormStore.transferExpenseWalletId] : []"
               :title="t(`trnForm.transfer.${slug}Modal`)"
               :walletId="trnsFormStore.transferIncomeWalletId"
@@ -120,7 +113,6 @@ watch(
 
             <TrnFormSelectorWallet
               v-if="slug === 'expense' && trnsFormStore.transferExpenseWalletId"
-              :drawerStyle="props.drawerStyle"
               :disabledWalletIds="trnsFormStore.transferIncomeWalletId ? [trnsFormStore.transferIncomeWalletId] : []"
               :title="t(`trnForm.transfer.${slug}Modal`)"
               :walletId="trnsFormStore.transferExpenseWalletId"
