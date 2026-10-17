@@ -62,6 +62,18 @@ describe('buildWalletGroups', () => {
     expect(buildWalletGroups(allIds, wallets, 'none', false)).toBe(false)
   })
 
+  it('moves archived wallets into a trailing archived group by type', () => {
+    const withArchived = { ...wallets, oldCash: wallet({ amount: 1, currency: 'RUB', isArchived: true, type: 'cash' }) }
+    const result = buildWalletGroups([...allIds, 'oldCash'], withArchived, 'type', true)
+    if (!result)
+      throw new Error('expected groups')
+
+    expect(result.cash!.ids).not.toContain('oldCash')
+    expect(result.isArchived!.ids).toEqual(['oldCash'])
+    expect(Object.keys(result).at(-1)).toBe('isArchived')
+    expect(buildWalletGroups([...allIds, 'oldCash'], withArchived, 'currency', false) && 'isArchived' in buildWalletGroups([...allIds, 'oldCash'], withArchived, 'currency', false)).toBe(false)
+  })
+
   it('builds primary groups by type', () => {
     const result = buildWalletGroups(allIds, wallets, 'type', false)
     expect(result).not.toBe(false)

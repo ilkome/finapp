@@ -49,6 +49,8 @@ export function groupWalletsByProperty(
   }) as Record<string, WalletId[]>
 }
 
+const ARCHIVED_GROUP = 'isArchived'
+
 export function buildWalletGroups(
   ids: WalletId[],
   wallets: Record<WalletId, WalletItemComputed>,
@@ -60,7 +62,11 @@ export function buildWalletGroups(
 
   const strategy = groupingStrategies[groupedBy]
 
-  const primaryGrouped = groupWalletsByProperty(ids, wallets, strategy.primary)
+  // By type, archived wallets leave their type group for a single trailing "Archived" group.
+  const archivedIds = groupedBy === 'type' ? ids.filter(id => wallets[id]?.isArchived) : []
+  const primaryGrouped = groupWalletsByProperty(archivedIds.length ? ids.filter(id => !wallets[id]?.isArchived) : ids, wallets, strategy.primary)
+  if (archivedIds.length)
+    primaryGrouped[ARCHIVED_GROUP] = archivedIds
 
   if (!useSecondary) {
     return Object.fromEntries(
