@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
-import { filterKey } from '~/components/filter/injectionKeys'
-import { statDateKey } from '~/components/stat/injectionKeys'
-import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
 import { isTransfer } from '~/components/trns/types'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { useTrnActions } from '~/components/trns/useTrnActions'
+import { useFeature } from '~/composables/useFeatures'
 
 defineOptions({ inheritAttrs: false })
 
@@ -22,71 +20,26 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-const route = useRoute()
-const router = useRouter()
-const filter = inject(filterKey, null)
-const statDate = inject(statDateKey, null)
-const trnsStore = useTrnsStore()
 const selection = inject(trnsSelectionKey, null)
-const { openFormForDuplicate, openFormForEdit } = useTrnsFormStore()
+const actions = useTrnActions()
+const isPreviewFeature = useFeature('trnPreview')
+const isShowPreview = ref(false)
 
 const isSelected = computed(() => selection?.has(props.trnId) ?? false)
-
-const confirm = useConfirm()
-
-// On a stat page the menu narrows the page itself: the wallet and category filters are added
-// here, and the day goes into the URL only, so Back restores the period the user had.
-function filterByDate(date: number) {
-  if (statDate) {
-    router.push({
-      query: {
-        ...route.query,
-        customDate: `${date}`,
-      },
-    })
-    return
-  }
-
-  router.push({
-    path: '/dashboard',
-    query: { customDate: `${date}` },
-  })
-}
-
-function filterByCategory(categoryId: string) {
-  if (filter?.canFilterCategories) {
-    filter.setCategoryId(categoryId)
-    return
-  }
-
-  return router.push(`/categories/${categoryId}`)
-}
-
-function filterByWallet(walletId: string) {
-  if (filter?.canFilterWallets) {
-    filter.setWallets([walletId])
-    return
-  }
-
-  return router.push(`/wallets/${walletId}`)
-}
-
-const isCategoryPage = computed(() => /^\/categories\/[^/]+$/.test(route.path))
-const isWalletPage = computed(() => /^\/wallets\/[^/]+$/.test(route.path))
 
 const contextMenuItems = computed(() => {
   const trnItem = props.trnItem
   const filterItems = []
 
-  if (!isCategoryPage.value && trnItem.categoryId !== 'transfer') {
+  if (actions.canFilterCategory(trnItem)) {
     filterItems.push({
       icon: 'hugeicons:folder-library',
       label: t('trns.filter.byCategory'),
-      onSelect: () => filterByCategory(trnItem.categoryId),
+      onSelect: () => actions.filterByCategory(trnItem.categoryId),
     })
   }
 
-  if (!isWalletPage.value) {
+  if (!actions.isWalletPage.value) {
     if (isTransfer(trnItem)) {
       const expenseWalletId = trnItem.expenseWalletId
       const incomeWalletId = trnItem.incomeWalletId
@@ -94,11 +47,11 @@ const contextMenuItems = computed(() => {
         children: [
           {
             label: trnItem.expenseWallet.name,
-            onSelect: () => filterByWallet(expenseWalletId),
+            onSelect: () => actions.filterByWallet(expenseWalletId),
           },
           {
             label: trnItem.incomeWallet.name,
-            onSelect: () => filterByWallet(incomeWalletId),
+            onSelect: () => actions.filterByWallet(incomeWalletId),
           },
         ],
         icon: 'hugeicons:wallet-01',
@@ -110,7 +63,7 @@ const contextMenuItems = computed(() => {
       filterItems.push({
         icon: 'hugeicons:wallet-01',
         label: t('trns.filter.byWallet'),
-        onSelect: () => filterByWallet(walletId),
+        onSelect: () => actions.filterByWallet(walletId),
       })
     }
   }
@@ -118,7 +71,7 @@ const contextMenuItems = computed(() => {
   filterItems.push({
     icon: 'lucide:calendar-days',
     label: t('trns.filter.byDate'),
-    onSelect: () => filterByDate(trnItem.date),
+    onSelect: () => actions.filterByDate(trnItem.date),
   })
 
   return [[
@@ -144,15 +97,20 @@ const contextMenuItems = computed(() => {
       color: 'error' as const,
       icon: 'lucide:trash-2',
       label: t('base.delete'),
-      onSelect: handleDeleteConfirm,
+      onSelect: () => actions.deleteWithConfirm(props.trnId),
     },
   ]]
 })
 
-// While a selection is active the row is a selection target, not a shortcut to the form.
+// While a selection is active the row is a selection target, not a shortcut to the preview or form.
 function click() {
   if (selection?.count.value) {
     selection.toggle(props.trnId)
+    return
+  }
+
+  if (isPreviewFeature.value) {
+    isShowPreview.value = true
     return
   }
 
@@ -162,18 +120,13 @@ function click() {
 async function openEdit() {
   emit('click')
   await nextTick()
-  openFormForEdit(props.trnId)
+  actions.edit(props.trnId)
 }
 
 async function duplicate() {
   emit('click')
   await nextTick()
-  openFormForDuplicate(props.trnId)
-}
-
-async function handleDeleteConfirm() {
-  if (await confirm.ask({ title: t('trnForm.delete.alert') }))
-    trnsStore.deleteTrn(props.trnId)
+  actions.duplicate(props.trnId)
 }
 </script>
 
@@ -181,10 +134,18 @@ async function handleDeleteConfirm() {
   <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
     <TrnsItem
       :compact="props.compact"
-      :isActive="isSelected"
+      :isActive="isSelected || isShowPreview"
       :trnItem
       :date
       @click="click"
     />
   </UiContextMenuMy>
+
+  <TrnsPreviewSection
+    v-if="isShowPreview"
+    :trnId="props.trnId"
+    :trnItem="props.trnItem"
+    @closed="isShowPreview = false"
+    @leave="emit('click')"
+  />
 </template>
