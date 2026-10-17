@@ -49,7 +49,8 @@ export function groupWalletsByProperty(
   }) as Record<string, WalletId[]>
 }
 
-const ARCHIVED_GROUP = 'isArchived'
+// By type, flagged wallets leave their type group for trailing groups, in this order; the first match wins.
+const FLAG_GROUPS = ['isExcludeInTotal', 'isArchived'] as const
 
 export function buildWalletGroups(
   ids: WalletId[],
@@ -62,11 +63,15 @@ export function buildWalletGroups(
 
   const strategy = groupingStrategies[groupedBy]
 
-  // By type, archived wallets leave their type group for a single trailing "Archived" group.
-  const archivedIds = groupedBy === 'type' ? ids.filter(id => wallets[id]?.isArchived) : []
-  const primaryGrouped = groupWalletsByProperty(archivedIds.length ? ids.filter(id => !wallets[id]?.isArchived) : ids, wallets, strategy.primary)
-  if (archivedIds.length)
-    primaryGrouped[ARCHIVED_GROUP] = archivedIds
+  const flagOf = (id: WalletId) => groupedBy === 'type'
+    ? (wallets[id]?.isArchived ? 'isArchived' : wallets[id]?.isExcludeInTotal ? 'isExcludeInTotal' : undefined)
+    : undefined
+  const primaryGrouped = groupWalletsByProperty(ids.filter(id => !flagOf(id)), wallets, strategy.primary)
+  for (const flag of FLAG_GROUPS) {
+    const flagged = ids.filter(id => flagOf(id) === flag)
+    if (flagged.length)
+      primaryGrouped[flag] = flagged
+  }
 
   if (!useSecondary) {
     return Object.fromEntries(

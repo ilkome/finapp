@@ -74,6 +74,21 @@ describe('buildWalletGroups', () => {
     expect(buildWalletGroups([...allIds, 'oldCash'], withArchived, 'currency', false)).not.toHaveProperty('isArchived')
   })
 
+  it('moves excluded-from-total wallets into their own group before archived', () => {
+    const withFlags = {
+      ...wallets,
+      hidden: wallet({ amount: 1, currency: 'RUB', isExcludeInTotal: true, type: 'cash' }),
+      oldHidden: wallet({ amount: 1, currency: 'RUB', isArchived: true, isExcludeInTotal: true, type: 'cash' }),
+    }
+    const result = buildWalletGroups([...allIds, 'hidden', 'oldHidden'], withFlags, 'type', false)
+    if (!result)
+      throw new Error('expected groups')
+
+    expect(result.isExcludeInTotal!.ids).toEqual(['hidden'])
+    expect(result.isArchived!.ids).toEqual(['oldHidden'])
+    expect(Object.keys(result).slice(-2)).toEqual(['isExcludeInTotal', 'isArchived'])
+  })
+
   it('builds primary groups by type', () => {
     const result = buildWalletGroups(allIds, wallets, 'type', false)
     expect(result).not.toBe(false)
