@@ -71,7 +71,7 @@ describe('buildWalletGroups', () => {
     expect(result.cash!.ids).not.toContain('oldCash')
     expect(result.isArchived!.ids).toEqual(['oldCash'])
     expect(Object.keys(result).at(-1)).toBe('isArchived')
-    expect(buildWalletGroups([...allIds, 'oldCash'], withArchived, 'currency', false) && 'isArchived' in buildWalletGroups([...allIds, 'oldCash'], withArchived, 'currency', false)).toBe(false)
+    expect(buildWalletGroups([...allIds, 'oldCash'], withArchived, 'currency', false)).not.toHaveProperty('isArchived')
   })
 
   it('builds primary groups by type', () => {

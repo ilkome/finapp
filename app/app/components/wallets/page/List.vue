@@ -34,6 +34,9 @@ const sideColumn = useTemplateRef<HTMLElement>('sideColumn')
 const { height: sideColumnHeight } = useElementSize(sideColumn)
 const { height: viewportHeight } = useWindowSize()
 const canStickSideColumn = computed(() => canStickStatCategories(stickyTop.value, sideColumnHeight.value, viewportHeight.value))
+// In one column the currency strip pins above the list, so group titles pin below it; it is hidden in two columns.
+const currenciesBar = useTemplateRef<HTMLElement>('currenciesBar')
+const { height: currenciesBarHeight } = useElementSize(currenciesBar, undefined, { box: 'border-box' })
 const currenciesStore = useCurrenciesStore()
 const isSorting = ref(false)
 // Drags save as they happen; cancel puts back the order the sort started from.
@@ -216,7 +219,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
   </DefineStatBody>
 
   <UiPage>
-    <UiHeader actionsAfterTitle>
+    <UiHeader ref="header" actionsAfterTitle>
       <UiHeaderTitle>
         {{ t('wallets.name') }}
       </UiHeaderTitle>
@@ -393,6 +396,18 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
       v-else
       class="grid max-w-5xl grow px-2 lg:px-4 2xl:px-8 @xl/page:grid-cols-2 @xl/page:gap-6 @3xl/page:gap-12"
     >
+      <div
+        v-if="walletsStore.currenciesUsed.length > 1 && primary !== 'currency'"
+        ref="currenciesBar"
+        class="sticky z-19 -mx-2 bg-default px-2 py-1 @xl/page:hidden"
+        :style="{ top: `${stickyTop}px` }"
+      >
+        <WalletsCurrencies
+          :currencyFiltered
+          @selectFilterCurrency="code => currencyFiltered = code"
+        />
+      </div>
+
       <!-- The currency strip scrolls across the whole column so it is not clipped at
            max-w-sm; the blocks below keep that width. -->
       <div
@@ -404,7 +419,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         <WalletsCurrencies
           v-if="walletsStore.currenciesUsed.length > 1 && primary !== 'currency'"
           :currencyFiltered
-          class="mb-2"
+          class="mb-2 hidden @xl/page:block"
           @selectFilterCurrency="code => currencyFiltered = code"
         />
 
@@ -449,7 +464,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
               <UCollapsible
                 :open="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
               >
-                <div class="flex items-stretch">
+                <div class="sticky z-18 flex items-stretch bg-default" :style="{ top: `${stickyTop + currenciesBarHeight}px` }">
                   <WalletsSortHandle v-if="isSorting" />
                   <UiTitleDropRight
                     :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
