@@ -40,11 +40,7 @@ const emit = defineEmits<{
         :open="!props.collapsedKeys?.includes(section.key)"
       >
         <div class="flex items-stretch px-3">
-          <UiTitleDropRight :isShown="!props.collapsedKeys?.includes(section.key)" @click="emit('toggle', section.key)">
-            <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-              {{ section.title }}
-            </div>
-          </UiTitleDropRight>
+          <UiTitleDropRight :isShown="!props.collapsedKeys?.includes(section.key)" :title="section.title" @click="emit('toggle', section.key)" />
         </div>
 
         <template #content>

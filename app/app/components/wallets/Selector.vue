@@ -207,12 +207,9 @@ defineExpose({
           <UiTitleDropRight
             v-if="group.label"
             :isShown="isGroupOpen(group.key)"
+            :title="group.label"
             @click="toggleGroup(group.key)"
-          >
-            <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-              {{ group.label }}
-            </div>
-          </UiTitleDropRight>
+          />
 
           <template #content>
             <div v-if="group.subgroups.length" class="grid gap-1 pl-4">
@@ -224,12 +221,10 @@ defineExpose({
               >
                 <UiTitleDropRight
                   :isShown="isGroupOpen(group.key, sub.key)"
+                  isNested
+                  :title="sub.label"
                   @click="toggleGroup(group.key, sub.key)"
-                >
-                  <div class="font-tertiary text-base leading-none font-semibold">
-                    {{ sub.label }}
-                  </div>
-                </UiTitleDropRight>
+                />
 
                 <template #content>
                   <div class="grid gap-1 py-1">

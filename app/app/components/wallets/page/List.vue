@@ -468,12 +468,9 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                   <WalletsSortHandle v-if="isSorting" />
                   <UiTitleDropRight
                     :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.show ?? true"
+                    :title="primary === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary"
                     @click="toggleMap(groupPrimary)"
                   >
-                    <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-                      {{ primary === 'type' ? t(`money.types.${groupPrimary}`) : groupPrimary }}
-                    </div>
-
                     <div
                       v-if="isShowGroupCount"
                       class="text-xs leading-none tracking-wide text-dimmed"
@@ -517,12 +514,10 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                           <WalletsSortHandle v-if="isSorting" />
                           <UiTitleDropRight
                             :isShown="walletsToggledMap[groupedBy]?.[groupPrimary]?.groups?.[groupSecondary] ?? true"
+                            isNested
+                            :title="primary === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary"
                             @click="toggleMap(groupPrimary, groupSecondary)"
                           >
-                            <div class="font-tertiary text-base leading-none font-semibold">
-                              {{ primary === 'currency' ? t(`money.types.${groupSecondary}`) : groupSecondary }}
-                            </div>
-
                             <div
                               v-if="isShowGroupCount"
                               class="text-xs leading-none tracking-wide text-dimmed"

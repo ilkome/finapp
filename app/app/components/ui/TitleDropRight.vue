@@ -2,7 +2,10 @@
 import { onLongPress } from '@vueuse/core'
 
 const props = defineProps<{
+  // Nested groups drop the toned color so they read under their parent.
+  isNested?: boolean
   isShown?: boolean
+  title?: string
 }>()
 const emit = defineEmits<{
   click: []
@@ -32,6 +35,13 @@ function onClick() {
     class="flex min-h-9.5 min-w-10.5 grow items-center gap-1 rounded-md interactive px-3 pb-0"
     @click="onClick"
   >
+    <div
+      v-if="props.title"
+      class="font-tertiary text-base leading-none font-semibold"
+      :class="!props.isNested && 'text-toned!'"
+    >
+      {{ props.title }}
+    </div>
     <slot />
 
     <Icon

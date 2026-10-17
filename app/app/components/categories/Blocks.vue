@@ -117,11 +117,7 @@ const itemProps = computed(() => ({
     :open="blocksOpen[block.id]"
   >
     <div class="sticky top-(--sticky-top,0px) z-12 flex items-stretch bg-default">
-      <UiTitleDropRight :isShown="blocksOpen[block.id]" @click="blocksOpen[block.id] = !blocksOpen[block.id]">
-        <div class="font-tertiary text-base leading-none font-semibold text-toned!">
-          {{ t(`categories.blocks.${block.id}`) }}
-        </div>
-
+      <UiTitleDropRight :isShown="blocksOpen[block.id]" :title="t(`categories.blocks.${block.id}`)" @click="blocksOpen[block.id] = !blocksOpen[block.id]">
         <div v-if="isShowChildrenCount" class="text-xs leading-none tracking-wide text-dimmed">
           {{ block.count }}
         </div>
