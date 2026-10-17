@@ -84,9 +84,8 @@ describe('buildWalletGroups', () => {
     if (!result)
       throw new Error('expected groups')
 
-    expect(result.isExcludeInTotal!.ids).toEqual(['hidden'])
-    expect(result.isArchived!.ids).toEqual(['oldHidden'])
-    expect(Object.keys(result).slice(-2)).toEqual(['isExcludeInTotal', 'isArchived'])
+    expect(result.isExcludeInTotal!.ids).toEqual(['hidden', 'oldHidden'])
+    expect(result).not.toHaveProperty('isArchived')
   })
 
   it('builds primary groups by type', () => {

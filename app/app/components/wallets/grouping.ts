@@ -64,7 +64,7 @@ export function buildWalletGroups(
   const strategy = groupingStrategies[groupedBy]
 
   const flagOf = (id: WalletId) => groupedBy === 'type'
-    ? (wallets[id]?.isArchived ? 'isArchived' : wallets[id]?.isExcludeInTotal ? 'isExcludeInTotal' : undefined)
+    ? (wallets[id]?.isExcludeInTotal ? 'isExcludeInTotal' : wallets[id]?.isArchived ? 'isArchived' : undefined)
     : undefined
   const primaryGrouped = groupWalletsByProperty(ids.filter(id => !flagOf(id)), wallets, strategy.primary)
   for (const flag of FLAG_GROUPS) {
