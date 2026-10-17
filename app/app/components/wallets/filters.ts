@@ -25,14 +25,16 @@ export function filterWalletsByViewType(
     if (!wallet)
       return false
 
+    // The flag rows list every wallet in their sum, archived or not.
     if (viewType === 'isArchived')
       return wallet.isArchived
+    if (viewType === 'isExcludeInTotal')
+      return wallet.isExcludeInTotal
 
     const archivedFilter = showArchived || !wallet.isArchived
 
     switch (viewType) {
       case 'isWithdrawal': return wallet.isWithdrawal && !isCreditProduct(wallet.type) && archivedFilter
-      case 'isExcludeInTotal': return wallet.isExcludeInTotal && archivedFilter
       case 'isAvailable': return (wallet.type === 'credit' || (wallet.isWithdrawal && !isCreditProduct(wallet.type))) && archivedFilter
       case 'isAvailableAll': return (isCreditProduct(wallet.type) || wallet.isWithdrawal) && archivedFilter
       case 'total': return archivedFilter

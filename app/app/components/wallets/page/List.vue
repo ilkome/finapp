@@ -97,13 +97,14 @@ const isShowGroupCount = useStorage<boolean>('finapp.walletsShowGroupCount', fal
   mergeDefaults: true,
 })
 
+// Archived wallets counted in the sums are listed too.
 const {
   currencyFiltered,
   selectedWalletsIds,
   selectedWalletsIdsWithCurrency,
   setWalletViewType,
   walletViewType,
-} = useWalletsFilter(groupedBy, showArchived)
+} = useWalletsFilter(groupedBy, computed(() => showArchived.value || includeArchivedInStats.value))
 
 const {
   counts,
@@ -138,6 +139,10 @@ const {
   typeGroupsStatus,
   walletsToggledMap,
 } = useWalletsGrouping(selectedWalletsIds, groupedBy)
+
+function isFlagGroup(key: string) {
+  return key === 'isArchived' || key === 'isExcludeInTotal'
+}
 
 function hasGroups(groups: Record<string, unknown> | undefined) {
   return groups ? Object.keys(groups).length > 0 : false
@@ -481,14 +486,14 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                     <template #after>
                       <div class="ml-auto opacity-60">
                         <Amount
-                          :amount="countWalletsSum(groupedWalletsWithIds[groupPrimary]!.ids)"
+                          :amount="countWalletsSum(groupedWalletsWithIds[groupPrimary]!.ids, isFlagGroup(groupPrimary))"
                           :currencyCode="currenciesStore.base"
                           :isShowBaseRate="false"
                           variant="row"
                         />
                         <Amount
                           v-if="primary === 'currency' && currenciesStore.base !== groupPrimary"
-                          :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.ids)"
+                          :amount="countWalletsSumInOwnCurrency(groupedWalletsWithIds[groupPrimary]!.ids, isFlagGroup(groupPrimary))"
                           :currencyCode="groupPrimary"
                           :isShowBaseRate="false"
                           variant="secondary"

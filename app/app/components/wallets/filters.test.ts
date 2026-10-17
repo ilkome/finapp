@@ -138,7 +138,7 @@ describe('filterWalletsByViewType', () => {
     expect(result).not.toContain('archived')
   })
 
-  it('isExcludeInTotal: excludes archived wallets', () => {
+  it('isExcludeInTotal: lists archived ones too, matching the row sum', () => {
     const walletsWithArchivedExcluded = {
       ...wallets,
       archivedExcluded: wallet({ amount: 200, currency: 'USD', isArchived: true, isExcludeInTotal: true, type: 'cashless' }),
@@ -146,7 +146,7 @@ describe('filterWalletsByViewType', () => {
     const ids = Object.keys(walletsWithArchivedExcluded)
     const result = filterWalletsByViewType(ids, walletsWithArchivedExcluded, 'isExcludeInTotal')
     expect(result).toContain('excludeUSD')
-    expect(result).not.toContain('archivedExcluded')
+    expect(result).toContain('archivedExcluded')
   })
 
   it('cashless: returns cashless wallets', () => {
