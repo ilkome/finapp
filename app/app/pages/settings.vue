@@ -134,7 +134,7 @@ function onGenerateDemoData() {
             :class="cn(
               'flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm ring transition-colors ring-inset',
               activeSection === id
-                ? 'bg-primary text-white ring-transparent'
+                ? 'bg-primary/20 text-highlighted ring-transparent'
                 : 'bg-elevated/30 text-muted ring-accented',
             )"
             type="button"
