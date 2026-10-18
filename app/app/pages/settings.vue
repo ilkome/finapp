@@ -135,10 +135,10 @@ function onGenerateDemoData() {
             :key="id"
             :aria-current="activeSection === id ? 'page' : undefined"
             :class="cn(
-              'flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm ring transition-colors ring-inset',
+              'flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm transition-colors',
               activeSection === id
-                ? 'bg-primary/10 text-primary ring-transparent'
-                : 'bg-elevated/30 text-muted ring-accented',
+                ? 'bg-primary/10 text-primary'
+                : 'bg-elevated/30 text-muted',
             )"
             type="button"
             @click="activeSection = id"
