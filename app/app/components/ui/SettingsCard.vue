@@ -9,9 +9,10 @@ defineProps<{
 <template>
   <div>
     <div :class="cn($slots.default || $slots.footer ? 'pb-2' : 'pb-4')">
-      <div class="mb-2 text-lg font-semibold">
+      <!-- Same face as the category block titles (UiTitleDropRight). -->
+      <UiTitleSection class="mb-2 block text-toned!">
         {{ title }}
-      </div>
+      </UiTitleSection>
 
       <div
         v-if="description"
