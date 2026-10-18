@@ -81,12 +81,24 @@ watch(sliderRef, (el) => {
     : null
 }, { flush: 'post' })
 
+const tabsRef = useTemplateRef<HTMLElement>('tabsRef')
+
+// Centers the active tab in the strip; scrollIntoView would also scroll the page.
+function scrollTabIntoView() {
+  const strip = tabsRef.value
+  const tab = strip?.querySelector<HTMLElement>('[aria-current="page"]')
+  if (strip && tab)
+    strip.scrollTo({ behavior: 'smooth', left: tab.offsetLeft - (strip.clientWidth - tab.clientWidth) / 2 })
+}
+
 watch(activeSection, (id) => {
   const idx = sections.value.indexOf(id)
   if (slider.value && slider.value.activeIndex !== idx)
     slider.value.slideTo(idx)
+  nextTick(scrollTabIntoView)
 })
 
+onMounted(scrollTabIntoView)
 onBeforeUnmount(() => slider.value?.destroy(true, true))
 
 async function removeAllUserData() {
@@ -111,6 +123,7 @@ function onGenerateDemoData() {
 
       <template v-if="!isLaptop" #selected>
         <nav
+          ref="tabsRef"
           :aria-label="t('settings.title')"
           class="-mx-2 scroll-strip flex gap-2 overflow-x-auto px-2 pt-1 pb-2"
         >
@@ -121,7 +134,7 @@ function onGenerateDemoData() {
             :class="cn(
               'flex min-h-10 shrink-0 items-center gap-2 rounded-md px-3 text-sm ring transition-colors ring-inset',
               activeSection === id
-                ? 'bg-elevated/70 text-primary ring-primary'
+                ? 'bg-primary text-white ring-transparent'
                 : 'bg-elevated/30 text-muted ring-accented',
             )"
             type="button"
