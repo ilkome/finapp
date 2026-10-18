@@ -2,13 +2,14 @@ import colors from 'tailwindcss/colors'
 
 import { omit } from '#ui/utils'
 
+import { blackAsPrimaryCss, radiusCss, RADIUSES, snapRadius } from './themeCss'
+
 // Tailwind ships these next to the real palettes, but none of them is a usable accent.
 const NON_PALETTE_COLORS = ['inherit', 'current', 'transparent', 'black', 'white']
 
 // slate/gray/zinc/neutral/stone are Tailwind palettes; taupe/mauve/mist/olive are
 // the extra neutrals @nuxt/ui's docs offer - their palettes live in `theme.css`.
 const NEUTRAL_COLORS = ['neutral', 'zinc', 'stone', 'taupe', 'mauve', 'slate', 'gray', 'mist', 'olive']
-const RADIUSES = [0, 0.25, 0.375, 0.5]
 
 const PRIMARY_COLORS = Object.keys(
   omit(colors, [...NON_PALETTE_COLORS, ...NEUTRAL_COLORS] as (keyof typeof colors)[]),
@@ -44,6 +45,7 @@ export function useThemeOptions() {
   const appConfig = useAppConfig()
 
   const radius = useLocalStorage('nuxt-ui-radius', 0.5)
+  radius.value = snapRadius(radius.value)
   const blackAsPrimary = useLocalStorage('nuxt-ui-black-as-primary', false)
 
   function setBlackAsPrimary(value: boolean) {
@@ -71,10 +73,8 @@ export function useThemeOptions() {
     },
   })
 
-  const radiusStyle = computed(() => `:root { --ui-radius: ${radius.value}rem; }`)
-  const blackAsPrimaryStyle = computed(() =>
-    blackAsPrimary.value ? `:root { --ui-primary: black; } .dark { --ui-primary: #ededed; }` : ':root {}',
-  )
+  const radiusStyle = computed(() => radiusCss(radius.value))
+  const blackAsPrimaryStyle = computed(() => blackAsPrimaryCss(blackAsPrimary.value))
 
   const style = [
     { id: 'nuxt-ui-radius', innerHTML: radiusStyle, tagPriority: -2 },
