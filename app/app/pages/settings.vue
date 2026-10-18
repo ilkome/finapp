@@ -72,6 +72,8 @@ watch(sliderRef, (el) => {
   slider.value?.destroy(true, true)
   slider.value = el
     ? new Swiper(el, {
+        // The page scrolls, so its length follows the shown slide, not the tallest one.
+        autoHeight: true,
         initialSlide: sections.value.indexOf(activeSection.value),
         longSwipesMs: 60,
         longSwipesRatio: 0.1,
@@ -116,8 +118,9 @@ function onGenerateDemoData() {
 </script>
 
 <template>
-  <UiPage :class="!isLaptop && 'flex h-[calc(100dvh-64px-env(safe-area-inset-bottom))] flex-col'">
-    <!-- Phones: the slides fill the height between the header and the bottom menu, so a swipe works on empty space too. -->
+  <UiPage :class="!isLaptop && 'flex min-h-[calc(100dvh-64px-env(safe-area-inset-bottom))] flex-col'">
+    <!-- Phones: the slider fills at least the height between the header and the bottom menu, so a swipe works on empty space
+         too; the page itself scrolls, so content passes under the blurred header and menu. -->
     <UiHeader>
       <UiHeaderTitle>{{ t('settings.title') }}</UiHeaderTitle>
 
@@ -156,7 +159,7 @@ function onGenerateDemoData() {
         <div
           v-for="id in renderedSections"
           :key="id"
-          class="swiper-slide overflow-y-auto overscroll-contain px-2 pt-2 pb-12"
+          class="swiper-slide px-2 pt-2 pb-12"
         >
           <div class="grid content-start gap-8">
             <template v-if="id === 'general'">
