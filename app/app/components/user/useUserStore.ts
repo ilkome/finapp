@@ -140,7 +140,9 @@ export const useUserStore = defineStore('user', () => {
 
   /** Write the 'user' snapshot slice (identity + settings) for the next cold start. */
   function persistUserCache() {
-    if (isDemo.value)
+    // Before the settings row is read, baseCurrency/locale are still the defaults: a session that
+    // resolves first (setUser) would write 'USD' over the snapshot the next cold start paints from.
+    if (isDemo.value || !isSettingsLoaded.value)
       return
     // toRaw: IndexedDB can't structure-clone a Vue proxy, so persist the plain target.
     persistStoreCache('user', {
