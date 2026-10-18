@@ -79,6 +79,8 @@ watch(sliderRef, (el) => {
         longSwipesRatio: 0.1,
         on: { slideChange: sw => activeSection.value = sections.value[sw.activeIndex] ?? 'general' },
         shortSwipes: false,
+        // With autoHeight the wrapper ends at the slide's content; the container fills the rest of the screen.
+        touchEventsTarget: 'container',
       })
     : null
 }, { flush: 'post' })
