@@ -7,7 +7,7 @@ import type { Wallets } from '~/components/wallets/types'
 import { balanceSeries, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
-import { detectRegular, monthlyCategorySpending, previousMonths, typicalAmount } from '~/components/wallets/analytics/regular'
+import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
@@ -91,14 +91,23 @@ describe('regular spending', () => {
     ['r3', 'rent', '2026-03-03', 520],
     ['t1', 'tv', '2026-03-10', 900],
     ['i1', 'loan_interest', '2026-03-10', 70],
+    ['n1', 'food', '2026-04-02', 30],
   ].map(([id, categoryId, date, amount]) => [id, { categoryId, createdAt: 0, date: day(date as string), fromAmount: amount, fromWalletId: 'cash', type: 'expense', updatedAt: 0 }]))
+  spending.s1 = { categoryId: 'salary', createdAt: 0, date: day('2026-02-05'), toAmount: 3000, toWalletId: 'cash', type: 'income', updatedAt: 0 } as Trns[string]
 
-  const monthly = monthlyCategorySpending({ excludedCategoryIds: new Set(), months, toBase, trnsItems: spending, walletsItems: wallets })
+  const all = monthlySums({ excludedCategoryIds: new Set(), months: [...months, currentMonth(today)], toBase, trnsItems: spending, walletsItems: wallets })
+  const monthly = sliceMonthlySums(all, 0, -1).spending
 
   it('sums by category and month, loan interest left to the loan payment', () => {
     expect(months[0]!.start).toBe(day('2026-01-01'))
     expect(monthly.get('rent')).toEqual([500, 500, 520])
     expect(monthly.has('loan_interest')).toBe(false)
+  })
+
+  it('splits one pass into the window and the current month, income included', () => {
+    expect(monthly.has('food')).toBe(false)
+    expect(sliceMonthlySums(all, -1)).toEqual({ income: [0], spending: new Map([['food', [30]]]) })
+    expect(sliceMonthlySums(all, 0, -1).income).toEqual([0, 3000, 0])
   })
 
   it('takes a category spent in enough months, overrides win', () => {

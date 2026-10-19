@@ -61,42 +61,68 @@ function countedWalletId(trn: TrnItem, params: SumParams): WalletId | undefined 
   return walletId
 }
 
+/** Index of the month holding `date`; `months` are ascending and do not overlap. */
 function monthIndex(months: Range[], date: number): number {
-  return months.findIndex(month => date >= month.start && date <= month.end)
+  let low = 0
+  let high = months.length - 1
+  while (low <= high) {
+    const middle = (low + high) >> 1
+    const month = months[middle]!
+    if (date < month.start)
+      high = middle - 1
+    else if (date > month.end)
+      low = middle + 1
+    else
+      return middle
+  }
+  return -1
 }
 
-/** Base-currency expense per category and month, aligned with `months`. */
-export function monthlyCategorySpending(params: SumParams): Map<CategoryId, number[]> {
-  const result = new Map<CategoryId, number[]>()
+export type MonthlySums = {
+  /** Base-currency income per month. */
+  income: number[]
+  /** Base-currency expense per category and month. */
+  spending: Map<CategoryId, number[]>
+}
+
+/** Expense per category and income per month in one pass over the trns, aligned with `months`. */
+export function monthlySums(params: SumParams): MonthlySums {
+  const length = params.months.length
+  const spending = new Map<CategoryId, number[]>()
+  const income = Array.from<number>({ length }).fill(0)
   for (const trn of Object.values(params.trnsItems)) {
-    const walletId = trn.type === 'expense' ? countedWalletId(trn, params) : undefined
-    if (!walletId || SKIPPED_CATEGORY_IDS.has(trn.categoryId!))
+    const walletId = countedWalletId(trn, params)
+    if (!walletId || (trn.type === 'expense' && SKIPPED_CATEGORY_IDS.has(trn.categoryId!)))
       continue
     const index = monthIndex(params.months, trn.date)
     if (index < 0)
       continue
+    const currency = params.walletsItems[walletId]!.currencyCode
+    if (trn.type === 'income') {
+      income[index]! += params.toBase(trn.toAmount!, currency)
+      continue
+    }
     const categoryId = params.rollUp?.(trn.categoryId!) ?? trn.categoryId!
-    const data = result.get(categoryId) ?? Array.from<number>({ length: params.months.length }).fill(0)
-    data[index]! += params.toBase(trn.fromAmount!, params.walletsItems[walletId]!.currencyCode)
-    result.set(categoryId, data)
+    let data = spending.get(categoryId)
+    if (!data) {
+      data = Array.from<number>({ length }).fill(0)
+      spending.set(categoryId, data)
+    }
+    data[index]! += params.toBase(trn.fromAmount!, currency)
   }
-  for (const [categoryId, data] of result)
-    result.set(categoryId, data.map(value => Math.round(value)))
-  return result
+  for (const [categoryId, data] of spending)
+    spending.set(categoryId, data.map(value => Math.round(value)))
+  return { income: income.map(value => Math.round(value)), spending }
 }
 
-/** Base-currency income per month, aligned with `months`. */
-export function monthlyIncome(params: SumParams): number[] {
-  const result = Array.from<number>({ length: params.months.length }).fill(0)
-  for (const trn of Object.values(params.trnsItems)) {
-    const walletId = trn.type === 'income' ? countedWalletId(trn, params) : undefined
-    if (!walletId)
-      continue
-    const index = monthIndex(params.months, trn.date)
-    if (index >= 0)
-      result[index]! += params.toBase(trn.toAmount!, params.walletsItems[walletId]!.currencyCode)
+/** The sums of `months.slice(start, end)`. */
+export function sliceMonthlySums(sums: MonthlySums, start: number, end?: number): MonthlySums {
+  return {
+    income: sums.income.slice(start, end),
+    spending: new Map([...sums.spending]
+      .map(([categoryId, data]) => [categoryId, data.slice(start, end)] as const)
+      .filter(([, data]) => data.some(value => value !== 0))),
   }
-  return result.map(value => Math.round(value))
 }
 
 /** A typical month of `values` in whole minor units; zero months count, so a one-off purchase does not look monthly. */

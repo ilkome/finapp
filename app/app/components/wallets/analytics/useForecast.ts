@@ -13,7 +13,7 @@ import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
-import { currentMonth, detectRegular, monthlyCategorySpending, monthlyIncome, previousMonths, typicalAmount } from '~/components/wallets/analytics/regular'
+import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
 import { useForecastSettingsStore } from '~/components/wallets/analytics/useForecastSettingsStore'
 import { isCreditProduct, isWalletInForecast } from '~/components/wallets/types'
@@ -78,20 +78,24 @@ export function useForecast() {
     walletIds: new Set(countedWalletIds.value),
     walletsItems: walletsStore.items ?? {},
   }))
-  const windowMonths = computed(() => previousMonths(today.value, settings.value.historyMonths))
-  const thisMonth = computed(() => [currentMonth(today.value)])
+  // The history window and the current month in one pass over the trns.
+  const sums = computed(() => {
+    const months = [...previousMonths(today.value, settings.value.historyMonths), currentMonth(today.value)]
+    const all = monthlySums({ ...sumParams.value, months })
+    return { thisMonth: sliceMonthlySums(all, -1), window: sliceMonthlySums(all, 0, -1) }
+  })
 
   const regular = computed(() => detectRegular({
     amountMode: settings.value.regularAmountMode,
     minMonths: settings.value.regularMinMonths,
-    monthly: monthlyCategorySpending({ ...sumParams.value, months: windowMonths.value }),
+    monthly: sums.value.window.spending,
     overrides: overrides.value,
     windowMonths: settings.value.historyMonths,
   }))
-  const spentThisMonth = computed(() => monthlyCategorySpending({ ...sumParams.value, months: thisMonth.value }))
+  const spentThisMonth = computed(() => sums.value.thisMonth.spending)
 
-  const income = computed(() => typicalAmount(monthlyIncome({ ...sumParams.value, months: windowMonths.value }), settings.value.regularAmountMode))
-  const incomeThisMonth = computed(() => monthlyIncome({ ...sumParams.value, months: thisMonth.value })[0] ?? 0)
+  const income = computed(() => typicalAmount(sums.value.window.income, settings.value.regularAmountMode))
+  const incomeThisMonth = computed(() => sums.value.thisMonth.income[0] ?? 0)
 
   const until = computed(() => lastDayOfMonthCivil(addCivilMonths(today.value, settings.value.horizonMonths - 1)))
 
