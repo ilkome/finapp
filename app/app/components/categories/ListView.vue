@@ -61,7 +61,7 @@ function isRowExpanded(row: CategoryListRow) {
       :key="row.categoryId"
       :class="!props.isFlat && !row.parentCategory && 'col-span-full'"
     >
-      <div :class="props.isStickyParents && row.children?.length && stickyParentClass">
+      <div :class="props.isStickyParents && !!row.children?.length && stickyParentClass">
         <UiRowBackground
           :color="row.category.color"
           :type="columnsBackground"
@@ -140,7 +140,7 @@ function isRowExpanded(row: CategoryListRow) {
       v-for="row in rows"
       :key="row.categoryId"
     >
-      <div :class="props.isStickyParents && row.children?.length && stickyParentClass">
+      <div :class="props.isStickyParents && !!row.children?.length && stickyParentClass">
         <UiRowBackground
           :color="row.category.color"
           :type="props.backgroundType"
