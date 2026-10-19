@@ -9,9 +9,9 @@ describe('walletsAnalyticsLegendView', () => {
     const wrapper = mount(LegendView, { props: legend as any })
     expect(wrapper.text()).toContain('Cash')
     expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual(['1500 USD', '120 USD', '-300 USD'])
-    expect(wrapper.find('[data-legend-item="credit"]').attributes('aria-pressed')).toBe('false')
-    await wrapper.find('[data-legend-item="credit"]').trigger('click')
-    expect(wrapper.emitted('toggle')).toEqual([['credit']])
+    expect(wrapper.find('[data-legend-item="credit_card"]').attributes('aria-pressed')).toBe('false')
+    await wrapper.find('[data-legend-item="credit_card"]').trigger('click')
+    expect(wrapper.emitted('toggle')).toEqual([['credit_card']])
   })
 
   it('does not toggle when the legend is read-only', async () => {

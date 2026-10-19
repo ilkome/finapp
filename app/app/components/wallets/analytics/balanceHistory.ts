@@ -1,12 +1,8 @@
-import { roundTo } from '~~/utils/amount/round'
-
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { Trns } from '~/components/trns/types'
 import type { WalletId, WalletItemComputed, Wallets, WalletType } from '~/components/wallets/types'
 
 import { colorsWithoutShades } from '~/components/color/colors'
-import { currencyMinorUnit } from '~/components/currencies/currencies'
-import { TrnType } from '~/components/trns/types'
 import { computeWalletCounts } from '~/components/wallets/counts'
 import { isCreditProduct, walletTypes } from '~/components/wallets/types'
 
@@ -34,15 +30,10 @@ export const OTHER_SERIES_ID = 'other'
 export function walletBalancesAt(trnsItems: Trns, walletsItems: Wallets, ends: number[]): Record<WalletId, number>[] {
   const moves: { amount: number, date: number, walletId: WalletId }[] = []
   for (const trn of Object.values(trnsItems)) {
-    if (trn.type === TrnType.Transfer) {
-      if ('incomeWalletId' in trn && walletsItems[trn.incomeWalletId] && walletsItems[trn.expenseWalletId]) {
-        moves.push({ amount: trn.incomeAmount, date: trn.date, walletId: trn.incomeWalletId })
-        moves.push({ amount: -trn.expenseAmount, date: trn.date, walletId: trn.expenseWalletId })
-      }
-      continue
-    }
-    if (walletsItems[trn.walletId])
-      moves.push({ amount: trn.type === TrnType.Income ? trn.amount : -trn.amount, date: trn.date, walletId: trn.walletId })
+    if (trn.toWalletId && walletsItems[trn.toWalletId])
+      moves.push({ amount: trn.toAmount!, date: trn.date, walletId: trn.toWalletId })
+    if (trn.fromWalletId && walletsItems[trn.fromWalletId])
+      moves.push({ amount: -trn.fromAmount!, date: trn.date, walletId: trn.fromWalletId })
   }
   moves.sort((a, b) => a.date - b.date)
 
@@ -55,9 +46,7 @@ export function walletBalancesAt(trnsItems: Trns, walletsItems: Wallets, ends: n
       running[move.walletId] = (running[move.walletId] ?? 0) + move.amount
       index++
     }
-    // Snap float noise to the minor unit, as `getWalletsTotals` does, so a repaid loan reads 0.
-    result.push(Object.fromEntries(Object.entries(running).map(([walletId, total]) =>
-      [walletId, roundTo(total, currencyMinorUnit(walletsItems[walletId]!.currency)) + 0])))
+    result.push({ ...running })
   }
   return result
 }
@@ -77,7 +66,7 @@ export function balanceSeries(params: {
   const walletIds = params.walletIds.filter(id => wallets[id] && (scope === 'net' || !isCreditProduct(wallets[id]!.type)))
   const keyOf = (id: WalletId): string => {
     const wallet = wallets[id]!
-    return breakdown === 'total' ? 'total' : breakdown === 'type' ? wallet.type : breakdown === 'currency' ? wallet.currency : id
+    return breakdown === 'total' ? 'total' : breakdown === 'type' ? wallet.type : breakdown === 'currency' ? wallet.currencyCode : id
   }
 
   const series = new Map<string, number[]>()
@@ -86,7 +75,7 @@ export function balanceSeries(params: {
     for (const id of walletIds) {
       const key = keyOf(id)
       const data = series.get(key) ?? Array.from<number>({ length: balances.length }).fill(0)
-      data[index]! += toBase(point[id] ?? 0, wallets[id]!.currency)
+      data[index]! += toBase(point[id] ?? 0, wallets[id]!.currencyCode)
       series.set(key, data)
     }
   })
@@ -107,7 +96,7 @@ export function balanceSeries(params: {
 
   return entries.map(([id, data], index) => ({
     color: breakdown === 'wallet' && id !== OTHER_SERIES_ID ? wallets[id]?.color : seriesPalette[index % seriesPalette.length],
-    data,
+    data: data.map(value => Math.round(value)),
     id,
     name: breakdown === 'wallet' && id !== OTHER_SERIES_ID ? wallets[id]?.name : undefined,
   }))

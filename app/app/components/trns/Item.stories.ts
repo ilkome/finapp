@@ -16,4 +16,4 @@ type Story = StoryObj<typeof meta>
 export const Default: Story = {}
 export const Compact: Story = { args: { compact: true } as any }
 export const Active: Story = { args: { isActive: true } as any }
-export const Income: Story = { args: { trnItem: { ...trn.trnItem, amount: 3000, desc: 'Salary', type: 1 } } as any }
+export const Income: Story = { args: { trnItem: { ...trn.trnItem, categoryId: 'salary', description: 'Salary', fromAmount: undefined, fromWallet: undefined, fromWalletId: undefined, toAmount: 300000, toWallet: trn.trnItem.fromWallet, toWalletId: 'card', type: 'income' } } as any }

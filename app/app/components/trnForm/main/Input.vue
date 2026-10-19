@@ -1,6 +1,7 @@
 <script setup lang="ts">
-defineProps<{
-  amount: number
+import { evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
+
+const props = defineProps<{
   amountRaw: string
   highlight?: 'income' | 'expense'
   isShowSum: boolean
@@ -26,7 +27,7 @@ const { t } = useI18n()
       class="pointer-events-none absolute top-2 text-center text-sm text-highlighted/60"
       tabindex="0"
     >
-      {{ amount }}
+      {{ formatInput(evaluateExpression(props.amountRaw)) }}
     </div>
 
     <FormInput

@@ -21,7 +21,7 @@ export function useTrnActions() {
   const isWalletPage = computed(() => /^\/wallets\/[^/]+$/.test(route.path))
 
   function canFilterCategory(trnItem: TrnItemFull) {
-    return !isCategoryPage.value && trnItem.categoryId !== 'transfer'
+    return !isCategoryPage.value && !!trnItem.categoryId
   }
 
   // On a stat page the day goes into the URL only, so Back restores the period the user had.

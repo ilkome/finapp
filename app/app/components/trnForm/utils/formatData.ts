@@ -1,59 +1,44 @@
 import { todayCivilDayEpoch } from '~~/utils/date/civil'
 
 import type { TrnFormValuesWithLoan } from '~/components/loans/types'
-import type { Transaction, Transfer } from '~/components/trns/types'
+import type { TrnItem } from '~/components/trns/types'
 
-import { TrnType } from '~/components/trns/types'
-
-function formatTransaction(props: TrnFormValuesWithLoan): Transaction | false {
-  if (props.trnType === TrnType.Transfer || !props.categoryId || !props.walletId) {
-    return false
-  }
-
-  const data: Transaction = {
-    amount: props.amount[0],
-    categoryId: props.categoryId,
-
+/** Form values -> the flow shape: expense spends from a wallet, income lands in one, a transfer moves between them. */
+export function formatTrn(props: TrnFormValuesWithLoan): TrnItem | false {
+  const now = Date.now()
+  const base = {
+    createdAt: now,
     date: props.date || todayCivilDayEpoch(),
     type: props.trnType,
-
-    updatedAt: Date.now(),
-    walletId: props.walletId,
+    updatedAt: now,
+    ...(props.description ? { description: props.description } : {}),
   }
 
-  if (props.desc)
-    data.desc = props.desc
+  if (props.trnType === 'transfer') {
+    const fromWalletId = props.transferOutside === 'from' ? undefined : props.fromWalletId ?? undefined
+    const toWalletId = props.transferOutside === 'to' ? undefined : props.toWalletId ?? undefined
+    if (!fromWalletId && !toWalletId)
+      return false
+    return {
+      ...base,
+      ...(fromWalletId ? { fromAmount: props.amount[1], fromWalletId } : {}),
+      ...(toWalletId ? { toAmount: props.amount[2], toWalletId } : {}),
+    }
+  }
 
-  return data
-}
+  if (props.trnType === 'adjustment') {
+    if (!props.walletId)
+      return false
+    // An adjustment keeps the side it was created on: `transferType` holds it in the form.
+    return props.transferType === 'to'
+      ? { ...base, toAmount: props.amount[0], toWalletId: props.walletId }
+      : { ...base, fromAmount: props.amount[0], fromWalletId: props.walletId }
+  }
 
-function formatTransfer(props: TrnFormValuesWithLoan): Transfer | false {
-  if (props.trnType !== TrnType.Transfer || !props.expenseWalletId || !props.incomeWalletId) {
+  if (!props.categoryId || !props.walletId)
     return false
-  }
 
-  const data: Transfer = {
-    categoryId: 'transfer' as const,
-
-    date: props.date,
-    expenseAmount: props.amount[1],
-
-    expenseWalletId: props.expenseWalletId,
-    incomeAmount: props.amount[2],
-
-    incomeWalletId: props.incomeWalletId,
-    type: props.trnType,
-
-    updatedAt: Date.now(),
-  }
-
-  if (props.desc)
-    data.desc = props.desc
-
-  return data
-}
-
-export {
-  formatTransaction,
-  formatTransfer,
+  return props.trnType === 'income'
+    ? { ...base, categoryId: props.categoryId, toAmount: props.amount[0], toWalletId: props.walletId }
+    : { ...base, categoryId: props.categoryId, fromAmount: props.amount[0], fromWalletId: props.walletId }
 }

@@ -1,7 +1,7 @@
 // Daily exchange-rate refresh.
 //
 // Pulls two USD-based sources, merges them into one map and writes a single
-// `source = 'merged'` row into `public.rates`:
+// `source = 'merged'` row into `public.exchange_rates`:
 //   - Coinbase: no API key, ~all fiat + crypto. Used as the base layer.
 //   - OER (Open Exchange Rates): better fiat precision. Overlaid on top.
 //
@@ -9,7 +9,7 @@
 // and persist a single row per day rather than merging at read time.
 //
 // Writes use the service_role (auto-injected as SUPABASE_SERVICE_ROLE_KEY):
-// `rates` has a global read policy but no client INSERT policy.
+// `exchange_rates` has a global read policy but no client INSERT policy.
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
@@ -94,31 +94,11 @@ Deno.serve(async () => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   )
 
-  // The (date, source) unique index is on an expression (coalesce(source,'')),
-  // which PostgREST upsert can't target - so select-then-write.
-  const { data: existing, error: selErr } = await supabase
-    .from('rates')
-    .select('id')
-    .eq('date', date)
-    .eq('source', 'merged')
-    .maybeSingle()
-
-  if (selErr) {
-    console.error('rates select failed:', selErr)
-    return new Response(JSON.stringify({ error: selErr.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
-
-  const writeErr = existing
-    ? (await supabase
-        .from('rates')
-        .update({ rates: merged, updatedAt: Date.now() })
-        .eq('id', existing.id)).error
-    : (await supabase
-        .from('rates')
-        .insert({ date, source: 'merged', rates: merged, updatedAt: Date.now() })).error
+  // The id is the day and the source, so a repeated fetch of one day is one upsert.
+  const source = 'merged'
+  const { error: writeErr } = await supabase
+    .from('exchange_rates')
+    .upsert({ date: Date.parse(date), id: `${date}:${source}`, rates: merged, source, updated_at: Date.now() })
 
   if (writeErr) {
     console.error('rates write failed:', writeErr)

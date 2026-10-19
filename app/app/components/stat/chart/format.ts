@@ -5,8 +5,6 @@ import { formatByLocale, formatDateWithOptionalYear, todayCivilDayEpoch } from '
 import type { LocaleSlug } from '~/components/locale/types'
 import type { SeriesSlug } from '~/components/stat/types'
 
-import { formatAmount } from '~/components/amount/utils'
-
 export function resolveChartValueType(showValueType: boolean | undefined, value: number | null): SeriesSlug | undefined {
   if (!showValueType || !value)
     return undefined
@@ -71,8 +69,11 @@ export function formatCompactChartAmount(amount: number | string | undefined) {
   return compactFormatter.format(Number.isFinite(n) ? n : 0)
 }
 
+const wholeFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
+
+/** A chart value (decimal, see useStatReportChart) as whole units with space thousands, like formatAmount. */
 export function formatChartAmount(amount: number | string | undefined) {
   // echarts reports empty datapoints as undefined / '-'; Intl renders those as "не число".
   const n = Number(amount)
-  return formatAmount(Number.isFinite(n) ? n : 0, undefined, { precision: 0 })
+  return wholeFormatter.format(Number.isFinite(n) ? n : 0).replace(/,/g, ' ')
 }

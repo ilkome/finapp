@@ -2,6 +2,7 @@ import { addCivilDays, addCivilMonths, lastDayOfMonthCivil, startOfMonthCivil } 
 
 import type { PaymentRow } from '~/components/loans/engine/types'
 import type { GraceLine, MinPaymentStatus } from '~/components/loans/minPayment'
+import type { CardPaymentMode } from '~/components/wallets/analytics/forecastSettings'
 import type { WalletId } from '~/components/wallets/types'
 
 const DAY = 86_400_000
@@ -26,7 +27,7 @@ export function loanObligations(params: {
   return rows
     .filter(row => row.status !== 'paid' && row.date <= until)
     .map(row => ({
-      amount: toBase(Math.max(0, row.totalAmount - row.paidPrincipal - row.paidInterest - row.paidFine)),
+      amount: Math.round(toBase(Math.max(0, row.totalAmount - row.paidPrincipal - row.paidInterest - row.paidFine))),
       date: Math.max(row.date, today),
       kind: 'loan' as const,
       walletId,
@@ -35,23 +36,23 @@ export function loanObligations(params: {
 }
 
 /**
- * Card payments up to `until`: the minimum every month until the debt is covered, or (`full`) the
- * statement debt once. A stale or missing summary gives nothing: there is no date to pay by.
+ * Card payments up to `until`: the minimum every month until the debt is covered, or the
+ * statement debt once (`full_debt`). A stale or missing summary gives nothing: there is no date to pay by.
  */
 export function cardObligations(params: {
   debt: number
   grace: GraceLine | null
   minPayment: { amount: number, date: number, status: MinPaymentStatus } | null
-  mode: 'full' | 'min'
+  mode: CardPaymentMode
   toBase: (amount: number) => number
   today: number
   until: number
   walletId: WalletId
 }): Obligation[] {
   const { debt, grace, minPayment, mode, toBase, today, until, walletId } = params
-  const at = (amount: number, date: number): Obligation => ({ amount: toBase(amount), date: Math.max(date, today), kind: 'card', walletId })
+  const at = (amount: number, date: number): Obligation => ({ amount: Math.round(toBase(amount)), date: Math.max(date, today), kind: 'card', walletId })
 
-  if (mode === 'full') {
+  if (mode === 'full_debt') {
     if (grace?.date != null && (grace.status === 'due' || grace.status === 'overdue') && grace.amount > 0)
       return grace.date <= until ? [at(grace.amount, grace.date)] : []
     if (minPayment && (minPayment.status === 'due' || minPayment.status === 'overdue') && debt > 0)

@@ -7,7 +7,7 @@ import LoansWhatIfView from '~/components/loans/WhatIfView.vue'
 describe('loansWhatIfView', () => {
   it('renders the saving and the new end date', () => {
     const wrapper = mount(LoansWhatIfView, { props: whatIf as any })
-    expect(wrapper.find('[data-amount]').text()).toBe('64200 RUB')
+    expect(wrapper.find('[data-amount]').text()).toBe('6420000 RUB')
     expect(wrapper.text()).toContain('01.02.2030')
   })
 
@@ -16,7 +16,7 @@ describe('loansWhatIfView', () => {
     await wrapper.find('input').setValue('1000')
     expect(wrapper.emitted('update:extra')).toEqual([[1000]])
 
-    await wrapper.findAll('button').find(b => b.text() === 'loans.modes.reducePayment')!.trigger('click')
-    expect(wrapper.emitted('update:mode')).toEqual([['reducePayment']])
+    await wrapper.findAll('button').find(b => b.text() === 'loans.modes.reduce_payment')!.trigger('click')
+    expect(wrapper.emitted('update:mode')).toEqual([['reduce_payment']])
   })
 })

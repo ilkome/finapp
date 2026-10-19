@@ -2,64 +2,64 @@ import { describe, expect, it } from 'vitest'
 
 import type { Categories } from '~/components/categories/types'
 
-import { applyCategoryOverrides, compareByStoredOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareBySortOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 
 export const mockCategories: Categories = {
   child1: {
     color: 'red',
     icon: 'home',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'Selectable Child',
     parentId: 'withChilds',
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   child2: {
     color: 'red',
     icon: 'home',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'Selectable Child',
     parentId: 'withChilds',
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   root: {
     color: 'red',
     icon: 'home',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'Selectable Root',
     parentId: 0,
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   transfer: {
     color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
+    isInQuickSelector: false,
+    isInRecent: false,
     name: 'Transfer',
     parentId: 0,
-    showInLastUsed: false,
-    showInQuickSelector: false,
   },
   transfer2: {
     color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'перевод',
     parentId: 0,
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   transfer3: {
     color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'transfer',
     parentId: 0,
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   withChilds: {
     color: 'red',
     icon: 'home',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'No Selectable with childs',
     parentId: 0,
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
 }
 
@@ -67,34 +67,34 @@ const mockCategories2: Categories = {
   '241120_7fxrno': {
     color: '#701a75',
     icon: 'mdi:paper-roll-outline',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'Gas',
     parentId: '241120_k27ehb',
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   '241120_7wshaj': {
     color: '#52525b',
     icon: 'mdi:mushroom',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'Просто категория',
     parentId: 0,
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   '241120_k27ehb': {
     color: '#701a75',
     icon: 'mdi:truck-delivery',
+    isInQuickSelector: false,
+    isInRecent: true,
     name: 'Auto',
     parentId: 0,
-    showInLastUsed: true,
-    showInQuickSelector: false,
   },
   'transfer': {
     color: 'var(--ui-primary)',
     icon: 'mdi:repeat',
+    isInQuickSelector: false,
+    isInRecent: false,
     name: 'Transfer',
     parentId: 0,
-    showInLastUsed: false,
-    showInQuickSelector: false,
   },
 }
 
@@ -110,7 +110,6 @@ describe('getTransactibleCategoriesIds', () => {
   })
 
   it('empty categories object', () => {
-    // @ts-expect-error for test
     const result = getTransactibleCategoriesIds({})
     expect(result).toEqual([])
   })
@@ -150,7 +149,7 @@ describe('computeChildrenDiff', () => {
 })
 
 describe('category overrides', () => {
-  const base = { color: '', icon: 'mdi:percent', isExcludeFromStats: false, name: 'Loan interest', parentId: 0 as const, showInLastUsed: false, showInQuickSelector: false }
+  const base = { color: '', icon: 'mdi:percent', isExcludedFromStats: false, isInQuickSelector: false, isInRecent: false, name: 'Loan interest', parentId: 0 as const }
   const defaults = { loanInterest: base, transfer: { ...base, icon: 'mdi:repeat', name: 'Transfer' } }
   const rows = { child: { ...base, name: 'Child', parentId: 'root' }, root: { ...base, name: 'Root' } } as unknown as Categories
 
@@ -176,10 +175,11 @@ describe('category overrides', () => {
   })
 })
 
-describe('compareByStoredOrder', () => {
-  it('puts stored ids first in their order and leaves the rest to the fallback', () => {
+describe('compareBySortOrder', () => {
+  it('puts ordered categories first by sortOrder and leaves the rest to the fallback', () => {
+    const items: Record<string, { sortOrder?: number }> = { a: {}, b: { sortOrder: 1 }, c: { sortOrder: 0 }, d: { sortOrder: 2 } }
     const ids = ['d', 'c', 'b', 'a']
-    const sorted = ids.toSorted((x, y) => compareByStoredOrder(x, y, ['b', 'd']) || x.localeCompare(y))
+    const sorted = ids.toSorted((x, y) => compareBySortOrder(items[x], items[y]) || x.localeCompare(y))
     expect(sorted).toEqual(['b', 'd', 'a', 'c'])
   })
 })

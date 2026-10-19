@@ -69,8 +69,8 @@ Deno.serve(async (req) => {
 
   const { data: subs, error: selErr } = await supabase
     .from('push_subscriptions')
-    .select('id, endpoint, p256dh, auth')
-    .eq('userId', targetUserId)
+    .select('id, endpoint, p256dh_key, auth_secret')
+    .eq('user_id', targetUserId)
 
   if (selErr)
     return json({ error: selErr.message }, 500)
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
   await Promise.all(subs.map(async (s) => {
     try {
       await webpush.sendNotification(
-        { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } },
+        { endpoint: s.endpoint, keys: { p256dh: s.p256dh_key, auth: s.auth_secret } },
         body,
       )
       sent++

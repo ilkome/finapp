@@ -8,7 +8,7 @@ import { deriveUpcoming, urgentWalletIds } from '~/components/loans/engine/upcom
 const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
 const today = day('2026-09-10')
 
-const loan = { debitWalletId: 'debit' } as LoanItem
+const loan = { paymentWalletId: 'debit' } as LoanItem
 
 function summary(date: number | null, over: Partial<PaymentRow> = {}): LoanSummary {
   const row = { date, interestPart: 120, paymentNumber: 1, principalPart: 900, status: 'scheduled', totalAmount: 1020, ...over } as PaymentRow
@@ -24,7 +24,7 @@ describe('deriveUpcoming', () => {
     ], [], today)
 
     expect(items.map(item => item.walletId)).toEqual(['b', 'a'])
-    expect(items[0]).toMatchObject({ amount: 1020, debitWalletId: 'debit', interest: 120, kind: 'loan', overdue: true, principal: 900 })
+    expect(items[0]).toMatchObject({ amount: 1020, interest: 120, kind: 'loan', overdue: true, paymentWalletId: 'debit', principal: 900 })
     expect(items[1]!.overdue).toBe(false)
   })
 

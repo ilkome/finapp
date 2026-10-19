@@ -12,16 +12,17 @@ const today = day('2026-04-01')
 
 function loanItem(over: Partial<LoanItem>): LoanItem {
   return {
-    annualRate: 12,
+    annualRatePercent: 12,
     contractNumber: '',
-    desc: '',
+    createdAt: 1,
+    description: '',
     firstPaymentDate: day('2026-01-15'),
-    interestMethod: 'monthly',
+    interestAccrual: 'monthly',
     lateAfterDays: 3,
-    overpaymentMode: 'reducePayment',
-    paymentDay: 15,
-    prepayWindowDays: 15,
-    principalAmount: 12_000,
+    paymentDayOfMonth: 15,
+    prepaymentMode: 'reduce_payment',
+    prepaymentWindowDays: 15,
+    principalAmount: 1_200_000,
     scheduleType: 'annuity',
     startDate: day('2025-12-15'),
     termMonths: 12,
@@ -35,20 +36,20 @@ function loanItem(over: Partial<LoanItem>): LoanItem {
 function portfolioLoan(over: Partial<LoanItem>, currency: string, balance: number, name: string): PortfolioLoan {
   const loan = loanItem(over)
   const trns = [1, 2, 3].map(n => ({
-    amount: 100,
+    amount: 10_000,
     date: day(`2026-0${n}-15`),
     id: `i${n}${loan.walletId}`,
     kind: 'interest' as const,
   }))
   const principal = [1, 2, 3].map(n => ({
-    amount: 1000,
+    amount: 100_000,
     date: day(`2026-0${n}-15`),
     id: `p${n}${loan.walletId}`,
     kind: 'payment' as const,
   }))
 
   return {
-    annualRate: loan.annualRate,
+    annualRate: loan.annualRatePercent,
     cost: costOf([...trns, ...principal]),
     currency,
     name,
@@ -62,8 +63,8 @@ function portfolioLoan(over: Partial<LoanItem>, currency: string, balance: numbe
 const toBase = (amount: number, currency: string) => currency === 'USD' ? amount * 100 : amount
 const fromBase = (amount: number, currency: string) => currency === 'USD' ? amount / 100 : amount
 
-const rub = portfolioLoan({ walletId: 'w1' }, 'RUB', -9300, 'Rub loan')
-const usd = portfolioLoan({ annualRate: 20, walletId: 'w2' }, 'USD', -93, 'Usd loan')
+const rub = portfolioLoan({ walletId: 'w1' }, 'RUB', -930_000, 'Rub loan')
+const usd = portfolioLoan({ annualRatePercent: 20, walletId: 'w2' }, 'USD', -9300, 'Usd loan')
 
 const input = { fromBase, loans: [rub, usd], toBase }
 
@@ -82,8 +83,8 @@ describe('derivePortfolio', () => {
     const { items } = derivePortfolio(input)
 
     const usdItem = items.find(item => item.walletId === 'w2')!
-    expect(usdItem.remaining).toBe(93)
-    expect(usdItem.remainingBase).toBe(9300)
+    expect(usdItem.remaining).toBe(9300)
+    expect(usdItem.remainingBase).toBe(930_000)
     expect(usdItem.paidInterestBase).toBe(usdItem.paidInterest * 100)
     expect(usdItem.contractRate).toBe(20)
     expect(usdItem.nextPayment).not.toBeNull()
@@ -98,7 +99,7 @@ describe('derivePortfolio', () => {
   })
 
   it('sorts a loan with nothing settled yet by its contract rate', () => {
-    const fresh = portfolioLoan({ annualRate: 30, walletId: 'w5' }, 'RUB', -12_000, 'Fresh')
+    const fresh = portfolioLoan({ annualRatePercent: 30, walletId: 'w5' }, 'RUB', -1_200_000, 'Fresh')
     fresh.summary = { ...fresh.summary, effectiveRate: 0 }
     const { items } = derivePortfolio({ ...input, loans: [rub, fresh] })
 
@@ -106,9 +107,9 @@ describe('derivePortfolio', () => {
   })
 
   it('leaves a loan with no rate to project at out of the recommendation', () => {
-    const unknown = portfolioLoan({ walletId: 'w6' }, 'RUB', -9300, 'No rate')
+    const unknown = portfolioLoan({ walletId: 'w6' }, 'RUB', -930_000, 'No rate')
     unknown.summary = { ...unknown.summary, projectionRate: null }
-    const recommendation = recommend({ ...input, loans: [unknown, usd] }, 1000)
+    const recommendation = recommend({ ...input, loans: [unknown, usd] }, 100_000)
 
     expect(recommendation!.avalanche.walletId).toBe('w2')
     expect(recommendation!.snowball.walletId).toBe('w2')
@@ -118,13 +119,13 @@ describe('derivePortfolio', () => {
     const { interestByMonth } = derivePortfolio(input)
 
     expect(interestByMonth.map(item => item.month)).toEqual([day('2026-01-01'), day('2026-02-01'), day('2026-03-01')])
-    expect(interestByMonth[0]!.interest).toBe(100 + 100 * 100)
+    expect(interestByMonth[0]!.interest).toBe(10_000 + 10_000 * 100)
     expect(interestByMonth.every(item => item.fine === 0)).toBe(true)
   })
 
   it('recommends the biggest saving and the smallest debt', () => {
-    const small = portfolioLoan({ annualRate: 5, principalAmount: 6000, walletId: 'w4' }, 'RUB', -2000, 'Small')
-    const recommendation = recommend({ ...input, loans: [rub, usd, small] }, 1000)
+    const small = portfolioLoan({ annualRatePercent: 5, principalAmount: 600_000, walletId: 'w4' }, 'RUB', -200_000, 'Small')
+    const recommendation = recommend({ ...input, loans: [rub, usd, small] }, 100_000)
 
     expect(recommendation!.snowball.walletId).toBe('w4')
     expect(recommendation!.avalanche.interestSaved).toBeGreaterThan(0)
@@ -132,8 +133,8 @@ describe('derivePortfolio', () => {
   })
 
   it('closes right away when the extra covers the whole debt', () => {
-    const small = portfolioLoan({ annualRate: 5, principalAmount: 6000, walletId: 'w4' }, 'RUB', -2000, 'Small')
-    const recommendation = recommend({ ...input, loans: [small] }, 1_000_000)
+    const small = portfolioLoan({ annualRatePercent: 5, principalAmount: 600_000, walletId: 'w4' }, 'RUB', -200_000, 'Small')
+    const recommendation = recommend({ ...input, loans: [small] }, 100_000_000)
 
     expect(recommendation!.snowball.newEndDate).toBeNull()
   })
@@ -143,6 +144,6 @@ describe('derivePortfolio', () => {
 
     const closed = portfolioLoan({ walletId: 'w3' }, 'RUB', 0, 'Closed')
     closed.summary = { ...closed.summary, isClosed: true }
-    expect(recommend({ ...input, loans: [closed] }, 1000)).toBeNull()
+    expect(recommend({ ...input, loans: [closed] }, 100_000)).toBeNull()
   })
 })

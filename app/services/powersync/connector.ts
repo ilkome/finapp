@@ -9,17 +9,15 @@ import { UpdateType } from '@powersync/web'
 
 import { createLogger } from '~/utils/logger'
 
+import type { SyncedTableName } from './columns'
+
+import { JSON_COLUMNS } from './columns'
 import { notifyFatalUploadError } from './uploadErrorHandler'
 
 const logger = createLogger('powersync-connector')
 
-const JSON_COLUMNS: Record<string, string[]> = {
-  stat_views: ['autoRule', 'config'],
-  user_settings: ['categoryOverrides', 'forecastSettings'],
-}
-
 export function prepareUploadData(table: string, data: Record<string, unknown>): Record<string, unknown> {
-  const jsonColumns = JSON_COLUMNS[table]
+  const jsonColumns = JSON_COLUMNS[table as SyncedTableName]
   if (!jsonColumns)
     return data
 

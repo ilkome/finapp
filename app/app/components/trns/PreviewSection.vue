@@ -5,7 +5,6 @@ import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { getTransferRate, getTrnConversions } from '~/components/trns/preview'
-import { TrnType } from '~/components/trns/types'
 import { useTrnActions } from '~/components/trns/useTrnActions'
 import { isCreditProduct } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -36,44 +35,51 @@ watch(() => props.trnItem.date, async (date) => {
   ratesOnDate.value = await currenciesStore.getRatesOn(date).catch(() => null)
 }, { immediate: true })
 
-const amount = computed(() => props.trnItem.type === TrnType.Transfer ? props.trnItem.expenseAmount : props.trnItem.amount)
-const currency = computed(() => props.trnItem.type === TrnType.Transfer ? props.trnItem.expenseWallet.currency : props.trnItem.wallet.currency)
+const amount = computed(() => props.trnItem.fromAmount ?? props.trnItem.toAmount ?? 0)
+const currency = computed(() => (props.trnItem.fromWallet ?? props.trnItem.toWallet)?.currencyCode)
 
-const conversions = computed(() => getTrnConversions({
-  amount: amount.value,
-  base: currenciesStore.base,
-  currency: currency.value,
-  rates: currenciesStore.rates,
-  ratesOnDate: ratesOnDate.value,
-  walletCurrencies: walletsStore.currenciesUsed,
-}))
-
-const transferRate = computed(() => props.trnItem.type === TrnType.Transfer
-  ? getTransferRate({
-      expenseAmount: props.trnItem.expenseAmount,
-      expenseCurrency: props.trnItem.expenseWallet.currency,
-      incomeAmount: props.trnItem.incomeAmount,
-      incomeCurrency: props.trnItem.incomeWallet.currency,
+const conversions = computed(() => currency.value
+  ? getTrnConversions({
+      amount: amount.value,
+      base: currenciesStore.base,
+      currency: currency.value,
       rates: currenciesStore.rates,
       ratesOnDate: ratesOnDate.value,
+      walletCurrencies: walletsStore.currenciesUsed,
     })
-  : null)
+  : [])
+
+const transferRate = computed(() => {
+  const { fromAmount, fromWallet, toAmount, toWallet, type } = props.trnItem
+  return type === 'transfer' && fromWallet && toWallet
+    ? getTransferRate({
+        fromAmount: fromAmount ?? 0,
+        fromCurrency: fromWallet.currencyCode,
+        rates: currenciesStore.rates,
+        ratesOnDate: ratesOnDate.value,
+        toAmount: toAmount ?? 0,
+        toCurrency: toWallet.currencyCode,
+      })
+    : null
+})
 
 const loan = computed<TrnPreviewLoan | undefined>(() => {
   if (!isLoans.value)
     return undefined
   const trn = props.trnItem
-  if (trn.type === TrnType.Transfer) {
-    if (isCreditProduct(trn.incomeWallet.type))
-      return { kind: 'payment', name: trn.incomeWallet.name, walletId: trn.incomeWalletId }
-    if (isCreditProduct(trn.expenseWallet.type))
-      return { kind: 'credit', name: trn.expenseWallet.name, walletId: trn.expenseWalletId }
+  if (trn.type === 'transfer') {
+    if (trn.toWallet && trn.toWalletId && isCreditProduct(trn.toWallet.type))
+      return { kind: 'payment', name: trn.toWallet.name, walletId: trn.toWalletId }
+    if (trn.fromWallet && trn.fromWalletId && isCreditProduct(trn.fromWallet.type))
+      return { kind: 'credit', name: trn.fromWallet.name, walletId: trn.fromWalletId }
     return undefined
   }
-  if (!isCreditProduct(trn.wallet.type))
+  const wallet = trn.fromWallet ?? trn.toWallet
+  const walletId = trn.fromWalletId ?? trn.toWalletId
+  if (!wallet || !walletId || !isCreditProduct(wallet.type))
     return undefined
-  const kind = trn.categoryId === 'loanInterest' ? 'interest' : trn.categoryId === 'loanFine' ? 'fine' : 'credit'
-  return { kind, name: trn.wallet.name, walletId: trn.walletId }
+  const kind = trn.categoryId === 'loan_interest' ? 'interest' : trn.categoryId === 'loan_fine' ? 'fine' : 'credit'
+  return { kind, name: wallet.name, walletId }
 })
 
 // The trn date is a civil day (UTC midnight); entry and change are instants shown in local time.
@@ -84,8 +90,8 @@ const viewProps = computed(() => ({
   canFilterCategory: actions.canFilterCategory(props.trnItem),
   canFilterWallet: !actions.isWalletPage.value,
   conversions: conversions.value,
+  createdAtLabel: instantFormat.value.format(props.trnItem.createdAt),
   dateLabel: dayFormat.value.format(props.trnItem.date),
-  enteredAtLabel: props.trnItem.enteredAt ? instantFormat.value.format(props.trnItem.enteredAt) : undefined,
   hasRatesOnDate: !!ratesOnDate.value,
   loan: loan.value,
   transferRate: transferRate.value,
@@ -124,7 +130,7 @@ async function onDelete(close: () => void) {
       @edit="leaveWith(close, () => actions.edit(props.trnId))"
       @duplicate="leaveWith(close, () => actions.duplicate(props.trnId))"
       @delete="onDelete(close)"
-      @filterCategory="leaveWith(close, () => actions.filterByCategory(props.trnItem.categoryId))"
+      @filterCategory="leaveWith(close, () => actions.filterByCategory(props.trnItem.categoryId!))"
       @filterWallet="walletId => leaveWith(close, () => actions.filterByWallet(walletId))"
       @filterDate="leaveWith(close, () => actions.filterByDate(props.trnItem.date))"
       @openWallet="walletId => leaveWith(close, () => actions.openWallet(walletId))"

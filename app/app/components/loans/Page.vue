@@ -10,8 +10,7 @@ import type { LoansUpcomingViewGroup } from '~/components/loans/UpcomingView.vue
 import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
-import { formatAmount } from '~/components/amount/utils'
-import { currencyMinorUnit } from '~/components/currencies/currencies'
+import { amountToMinor, formatAmount } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { incomeWindow, debtToIncome as toDebtToIncome } from '~/components/loans/debtToIncome'
 import { paramsOf, projectionParams } from '~/components/loans/engine/derive'
@@ -48,7 +47,7 @@ const month = (ms: number) => formatByLocale(ms, 'LLL yyyy', dateLocale.value)
  * money on them - an overdrawn wallet would only count as zero.
  */
 const freeMoneyWalletIds = computed<WalletId[]>(() =>
-  filterWalletsByViewType(walletsStore.sortedIds, walletsStore.itemsComputed, 'isWithdrawal')
+  filterWalletsByViewType(walletsStore.sortedIds, walletsStore.itemsComputed, 'isWithdrawable')
     .filter((id) => {
       const wallet = walletsStore.itemsComputed[id]
       return !isCreditProduct(wallet?.type) && (wallet?.amount ?? 0) > 0
@@ -62,32 +61,31 @@ const selectedWalletIds = computed<WalletId[]>(() => {
 })
 
 // An overdrawn wallet cannot pay anything off, so it counts as zero rather than eating the others.
-const freeMoney = computed(() => selectedWalletIds.value.reduce((total, id) => {
+const freeMoney = computed(() => Math.round(selectedWalletIds.value.reduce((total, id) => {
   const wallet = walletsStore.itemsComputed[id]
-  return wallet ? total + Math.max(0, toBase(wallet.amount, wallet.currency)) : total
-}, 0))
+  return wallet ? total + Math.max(0, toBase(wallet.amount, walletsStore.currencyOf(id))) : total
+}, 0)))
 
 // Starts at 0: all free money would close every loan today and make the picks meaningless.
 const extra = useStorage('loans.recommendation.extra', 0)
 
 const loans = computed<PortfolioLoan[]>(() => [...loansStore.byWalletId].map(([walletId, { loan, summary }]) => {
-  const precision = currencyMinorUnit(walletsStore.items?.[walletId]?.currency)
   return {
-    annualRate: loan.annualRate,
+    annualRate: loan.annualRatePercent,
     cost: loansStore.costByWalletId.get(walletId) ?? { byMonth: [], fine: 0, interest: 0 },
     currency: walletsStore.currencyOf(walletId),
     name: walletsStore.items?.[walletId]?.name ?? '',
-    params: projectionParams(loan, summary, precision) ?? paramsOf(loan, precision),
+    params: projectionParams(loan, summary) ?? paramsOf(loan),
     summary,
     walletId,
   }
 }))
 
-const portfolioInput = computed(() => ({ basePrecision: currencyMinorUnit(currenciesStore.base), fromBase, loans: loans.value, toBase }))
+const portfolioInput = computed(() => ({ fromBase, loans: loans.value, toBase }))
 const portfolio = computed(() => derivePortfolio(portfolioInput.value))
 // Every pick runs what-if on every loan: wait for the user to stop typing.
 const extraDebounced = refDebounced(extra, 250)
-const recommendation = computed(() => recommend(portfolioInput.value, extraDebounced.value ?? 0))
+const recommendation = computed(() => recommend(portfolioInput.value, amountToMinor(extraDebounced.value ?? 0, currenciesStore.base)))
 
 const portfolioItems = computed<LoansPortfolioViewItem[]>(() => portfolio.value.items.map(item => ({
   contractRate: item.contractRate,
@@ -107,7 +105,7 @@ const portfolioItems = computed<LoansPortfolioViewItem[]>(() => portfolio.value.
 /** Credit cards and instalment limits, not amortized loans. */
 const revolvingWalletIds = computed(() => walletsStore.sortedIds.filter((walletId) => {
   const wallet = walletsStore.itemsComputed[walletId]
-  return wallet?.type === 'credit' && !wallet.isArchived
+  return wallet?.type === 'credit_card' && !wallet.isArchived
 }))
 
 // The page-wide cost covers every credit product: the cards' interest and fines join the loans'.
@@ -132,10 +130,10 @@ const costProps = computed(() => {
   }
 
   return {
-    byMonth: [...byMonth].sort(([a], [b]) => a - b).map(([ms, item]) => ({ fine: item.fine, interest: item.interest, month: month(ms) })),
+    byMonth: [...byMonth].sort(([a], [b]) => a - b).map(([ms, item]) => ({ fine: Math.round(item.fine), interest: Math.round(item.interest), month: month(ms) })),
     currencyCode: currenciesStore.base,
-    fine,
-    interest,
+    fine: Math.round(fine),
+    interest: Math.round(interest),
   }
 })
 
@@ -177,7 +175,7 @@ const revolvingItems = computed<LoansRevolvingViewItem[]>(() => revolvingWalletI
   const grace = loansStore.graceByWalletId.get(walletId) ?? null
 
   return {
-    currencyCode: wallet.currency,
+    currencyCode: walletsStore.currencyOf(walletId),
     debt: Math.abs(wallet.amount),
     fine: cost.fine,
     grace: grace && { amount: grace.amount, date: grace.date === null ? null : formatByLocale(grace.date, 'dd.MM', dateLocale.value), status: grace.status },
@@ -197,12 +195,12 @@ const upcomingGroups = computed<LoansUpcomingViewGroup[]>(() => groupUpcoming(lo
         return []
       let desc: string | undefined
       if (item.principal !== undefined && item.interest !== undefined)
-        desc = `${t('loans.principal')} ${formatAmount(item.principal, wallet.currency)} · ${t('loans.interest')} ${formatAmount(item.interest, wallet.currency)}`
+        desc = `${t('loans.principal')} ${formatAmount(item.principal, wallet.currencyCode)} · ${t('loans.interest')} ${formatAmount(item.interest, wallet.currencyCode)}`
       else if (item.minAmount !== undefined)
-        desc = `${t('loans.minPaymentShort')} ${formatAmount(item.minAmount, wallet.currency)}`
+        desc = `${t('loans.minPaymentShort')} ${formatAmount(item.minAmount, wallet.currencyCode)}`
       return [{
         amount: item.amount,
-        currencyCode: wallet.currency,
+        currencyCode: wallet.currencyCode,
         desc,
         label: t(item.isGrace ? 'loans.toPay.grace' : item.kind === 'card' ? 'loans.toPay.minPayment' : 'loans.toPay.payment'),
         walletId: item.walletId,
@@ -220,7 +218,7 @@ const upcomingOpenKeys = computed(() => Object.keys(upcomingOpen).filter(key => 
 
 const debtToIncome = computed(() => {
   const income = computeTotalForTrnsIds(trnsStore.getStoreTrnsIds({ dates: incomeWindow(today.value) })).income
-  const payments = loansStore.upcoming.reduce((total, item) => total + toBase(item.amount, item.currency), 0)
+  const payments = Math.round(loansStore.upcoming.reduce((total, item) => total + toBase(item.amount, item.currency), 0))
   return toDebtToIncome(payments, income)
 })
 

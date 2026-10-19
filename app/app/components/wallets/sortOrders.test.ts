@@ -1,25 +1,19 @@
 import { expect, it } from 'vitest'
 
-import { applyStoredOrder, sortWalletGroups } from '~/components/wallets/grouping'
+import { buildWalletGroups, reorderInSlots } from '~/components/wallets/grouping'
 
-it('keeps stored order, drops stale keys, appends new ones', () => {
-  expect(applyStoredOrder(['a', 'b', 'c', 'd'], ['c', 'x', 'a'])).toEqual(['c', 'a', 'b', 'd'])
-  expect(applyStoredOrder(['a', 'b'], undefined)).toEqual(['a', 'b'])
+it('reorders only the moved ids, inside the slots they hold', () => {
+  expect(reorderInSlots(['a', 'x', 'b', 'y', 'c'], ['c', 'a', 'b'])).toEqual(['c', 'x', 'a', 'y', 'b'])
+  expect(reorderInSlots(['a', 'b'], [])).toEqual(['a', 'b'])
 })
 
-it('orders primary groups, secondary groups and wallets by their own keys', () => {
-  const groups = {
-    cash: { groups: { RUB: ['r1', 'r2'], USD: ['u1'] }, ids: ['r1', 'r2', 'u1'] },
-    credit: { groups: {}, ids: ['c1', 'c2'] },
-  }
-  const sorted = sortWalletGroups(groups, 'type', {
-    'type': ['credit', 'cash'],
-    'type/cash': ['USD', 'RUB'],
-    'type/cash/RUB': ['r2', 'r1'],
-    'type/credit': ['c2', 'c1'],
-  })
-  expect(Object.keys(sorted)).toEqual(['credit', 'cash'])
-  expect(Object.keys(sorted.cash!.groups!)).toEqual(['USD', 'RUB'])
-  expect(sorted.cash!.groups!.RUB).toEqual(['r2', 'r1'])
-  expect(sorted.credit!.ids).toEqual(['c2', 'c1'])
+it('orders groups by their first wallet in the given order', () => {
+  const wallets = {
+    c1: { currencyCode: 'RUB', type: 'credit_card' },
+    r1: { currencyCode: 'RUB', type: 'cash' },
+    u1: { currencyCode: 'USD', type: 'cash' },
+  } as any
+  const groups = buildWalletGroups(['c1', 'u1', 'r1'], wallets, 'type', true) as any
+  expect(Object.keys(groups)).toEqual(['credit_card', 'cash'])
+  expect(Object.keys(groups.cash.groups)).toEqual(['USD', 'RUB'])
 })

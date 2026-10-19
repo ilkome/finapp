@@ -3,6 +3,7 @@ import { addCivilMonths, formatByLocale, lastDayOfMonthCivil, u } from '~~/utils
 
 import type { CategoryId } from '~/components/categories/types'
 import type { Obligation } from '~/components/wallets/analytics/forecast'
+import type { RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { ForecastRunway } from '~/components/wallets/analytics/ForecastSummaryView.vue'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -11,10 +12,11 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlyCategorySpending, monthlyIncome, previousMonths, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
 import { useForecastSettingsStore } from '~/components/wallets/analytics/useForecastSettingsStore'
-import { filterWalletsByViewType } from '~/components/wallets/filters'
+import { isCreditProduct, isWalletInForecast } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCivilToday } from '~/composables/useCivilToday'
 
@@ -33,22 +35,36 @@ export function useForecast() {
 
   const settings = computed(() => settingsStore.settings)
 
-  /** Wallets money can be taken from; the forecast starts from these unless a pick narrows them. */
-  const availableWalletIds = computed<WalletId[]>(() =>
-    filterWalletsByViewType(walletsStore.sortedIds, walletsStore.itemsComputed, 'isWithdrawal'))
-  const startWalletIds = computed<WalletId[]>(() => {
-    const picked = new Set(settings.value.walletIds)
-    const ids = availableWalletIds.value.filter(id => !picked.size || picked.has(id))
-    // Every picked wallet gone (deleted, archived) falls back to all of them rather than to zero.
-    return ids.length ? ids : availableWalletIds.value
-  })
-  const startBalance = computed(() => startWalletIds.value.reduce((sum, id) => {
+  /** Wallets the forecast can start from; credit products come in through their obligations. */
+  const availableWalletIds = computed<WalletId[]>(() => walletsStore.sortedIds.filter((id) => {
+    const wallet = walletsStore.items?.[id]
+    return !!wallet && !wallet.isArchived && !isCreditProduct(wallet.type)
+  }))
+  const startWalletIds = computed<WalletId[]>(() =>
+    availableWalletIds.value.filter(id => isWalletInForecast(walletsStore.items![id]!)))
+  const startBalance = computed(() => Math.round(startWalletIds.value.reduce((sum, id) => {
     const wallet = walletsStore.itemsComputed[id]
-    return wallet ? sum + currenciesStore.toBase(wallet.amount, wallet.currency) : sum
-  }, 0))
+    return wallet ? sum + currenciesStore.toBase(wallet.amount, wallet.currencyCode) : sum
+  }, 0)))
+
+  const overrides = computed(() => {
+    const result: Record<CategoryId, RegularOverride> = {}
+    for (const item of Object.values(settingsStore.categories)) {
+      const override = toRegularOverride(item, currenciesStore.toBase, currenciesStore.base)
+      if (override)
+        result[item.categoryId] = override
+    }
+    return result
+  })
+
+  function toggleStartWallet(walletId: WalletId) {
+    const wallet = walletsStore.items?.[walletId]
+    if (wallet)
+      walletsStore.saveWallet({ id: walletId, values: { ...wallet, isInForecast: !isWalletInForecast(wallet), updatedAt: Date.now() } })
+  }
 
   const rollUp = (categoryId: CategoryId): CategoryId => {
-    if (!settings.value.groupByParent)
+    if (!settings.value.isByParentCategory)
       return categoryId
     const parentId = categoriesStore.items[categoryId]?.parentId
     return parentId ? String(parentId) : categoryId
@@ -62,19 +78,19 @@ export function useForecast() {
     walletIds: new Set(countedWalletIds.value),
     walletsItems: walletsStore.items ?? {},
   }))
-  const windowMonths = computed(() => previousMonths(today.value, settings.value.windowMonths))
+  const windowMonths = computed(() => previousMonths(today.value, settings.value.historyMonths))
   const thisMonth = computed(() => [currentMonth(today.value)])
 
   const regular = computed(() => detectRegular({
-    amountMode: settings.value.amountMode,
-    minMonths: settings.value.minMonths,
+    amountMode: settings.value.regularAmountMode,
+    minMonths: settings.value.regularMinMonths,
     monthly: monthlyCategorySpending({ ...sumParams.value, months: windowMonths.value }),
-    overrides: settings.value.overrides,
-    windowMonths: settings.value.windowMonths,
+    overrides: overrides.value,
+    windowMonths: settings.value.historyMonths,
   }))
   const spentThisMonth = computed(() => monthlyCategorySpending({ ...sumParams.value, months: thisMonth.value }))
 
-  const income = computed(() => typicalAmount(monthlyIncome({ ...sumParams.value, months: windowMonths.value }), settings.value.amountMode))
+  const income = computed(() => typicalAmount(monthlyIncome({ ...sumParams.value, months: windowMonths.value }), settings.value.regularAmountMode))
   const incomeThisMonth = computed(() => monthlyIncome({ ...sumParams.value, months: thisMonth.value })[0] ?? 0)
 
   const until = computed(() => lastDayOfMonthCivil(addCivilMonths(today.value, settings.value.horizonMonths - 1)))
@@ -90,14 +106,14 @@ export function useForecast() {
     }
     for (const walletId of walletsStore.sortedIds) {
       const wallet = walletsStore.itemsComputed[walletId]
-      if (wallet?.type !== 'credit' || wallet.isArchived || loanWalletIds.has(walletId))
+      if (wallet?.type !== 'credit_card' || wallet.isArchived || loanWalletIds.has(walletId))
         continue
       result.push(...cardObligations({
         debt: Math.max(0, -wallet.amount),
         grace: loansStore.graceByWalletId.get(walletId) ?? null,
         minPayment: loansStore.minPaymentByWalletId.get(walletId) ?? null,
-        mode: settings.value.cardPayment,
-        toBase: amount => currenciesStore.toBase(amount, wallet.currency),
+        mode: settings.value.cardPaymentMode,
+        toBase: amount => currenciesStore.toBase(amount, wallet.currencyCode),
         today: today.value,
         until: until.value,
         walletId,
@@ -134,14 +150,17 @@ export function useForecast() {
 
   return {
     availableWalletIds,
+    categories: computed(() => settingsStore.categories),
     forecast,
     income,
     obligations,
     regular,
     runwayOf,
+    setCategory: settingsStore.setCategory,
     settings,
     startWalletIds,
     today,
+    toggleStartWallet,
     update: settingsStore.update,
   }
 }

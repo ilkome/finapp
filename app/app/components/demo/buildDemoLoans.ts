@@ -1,7 +1,8 @@
 import { addCivilDays, addCivilMonths } from '~~/utils/date/civil'
 
+import type { BankReports } from '~/components/bankReports/types'
 import type { LoanParams, LoanTrn, ScheduleOverride } from '~/components/loans/engine/types'
-import type { LoanItem, Loans, LoanScheduleRows } from '~/components/loans/types'
+import type { LoanItem, Loans, LoanScheduleOverrides } from '~/components/loans/types'
 import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnItem, Trns } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -9,9 +10,8 @@ import type { WalletId } from '~/components/wallets/types'
 import { demoLoans, demoLoanStart, walletDebitRub } from '~/components/demo/data'
 import { paramsOf } from '~/components/loans/engine/derive'
 import { reconcileSchedule } from '~/components/loans/engine/reconcile'
-import { generateSchedule, roundMoney } from '~/components/loans/engine/schedule'
-import { loanIdFor, loanItemSchema, loanScheduleRowIdFor, loanScheduleRowSchema } from '~/components/loans/types'
-import { TrnType } from '~/components/trns/types'
+import { generateSchedule } from '~/components/loans/engine/schedule'
+import { loanIdFor, loanItemSchema, loanScheduleOverrideIdFor, loanScheduleOverrideSchema } from '~/components/loans/types'
 
 /**
  * A bank's own schedule stored in full, every row: the `interestOnly` payments repay no principal
@@ -29,7 +29,8 @@ function bankSchedule(params: LoanParams, interestOnly: number[]): ScheduleOverr
 }
 
 /**
- * Demo loans with their trns and bank schedule rows. Each due payment is one transfer from the
+ * Demo loans with their trns, bank schedule overrides and bank reports (the debt a bank reports). Amounts are minor
+ * units: `convert`, `money` and `round` return minor units of the target currency. Each due payment is one transfer from the
  * loan's debit wallet (converted when the currencies differ) plus its interest as the credit
  * wallet's own expense. The plan is re-read after every payment, so a prepayment re-solves the tail
  * the way the app does. Every date is a civil day.
@@ -45,24 +46,25 @@ export function buildDemoLoans(ctx: {
   today: number
 }) {
   const { convert, currencyOf, locale, money, round, today } = ctx
-  const at = (date: number) => ({ date, enteredAt: date, updatedAt: Date.now() })
+  const at = (date: number) => ({ createdAt: date, date, updatedAt: Date.now() })
   const trns: Trns = {}
-  const scheduleRows: LoanScheduleRows = {}
+  const scheduleOverrides: LoanScheduleOverrides = {}
+  const bankReports: BankReports = {}
 
   const loans = demoLoans.map((config): LoanItem => {
     const currency = currencyOf(config.walletId)
-    const debitWalletId = config.debitWalletId ?? walletDebitRub
+    const paymentWalletId = config.debitWalletId ?? walletDebitRub
     /** A loan-currency amount as it leaves or reaches the debit wallet. */
-    const onDebit = (amount: number) => convert(amount, currency, currencyOf(debitWalletId))
+    const onDebit = (amount: number) => Math.round(convert(amount, currency, currencyOf(paymentWalletId)))
     const start = demoLoanStart(config, today)
     const loan = loanItemSchema.parse({
-      annualRate: config.annualRate,
-      debitWalletId,
+      annualRatePercent: config.annualRate,
       firstPaymentDate: addCivilMonths(start, 1),
-      interestMethod: config.interestMethod,
+      interestAccrual: config.interestMethod,
       lateAfterDays: config.lateAfterDays,
-      overpaymentMode: config.overpaymentMode,
-      paymentDay: config.paymentDay,
+      paymentDayOfMonth: config.paymentDay,
+      paymentWalletId,
+      prepaymentMode: config.overpaymentMode === 'reduceTerm' ? 'reduce_term' : 'reduce_payment',
       principalAmount: round(config.principalAmount, currency),
       scheduleType: config.scheduleType,
       startDate: start,
@@ -73,11 +75,11 @@ export function buildDemoLoans(ctx: {
     const params = paramsOf(loan)
     const overrides = config.bankRate === undefined ? [] : bankSchedule({ ...params, annualRate: config.bankRate }, config.interestOnly ?? [])
     for (const row of overrides)
-      scheduleRows[loanScheduleRowIdFor(loanId, row.paymentNumber)] = loanScheduleRowSchema.parse({ ...row, loanId, updatedAt: Date.now() })
+      scheduleOverrides[loanScheduleOverrideIdFor(loanId, row.paymentNumber)] = loanScheduleOverrideSchema.parse({ dueDate: row.date, interestAmount: row.interestPart, loanId, paymentNumber: row.paymentNumber, principalAmount: row.principalPart, source: row.source, totalAmount: row.totalAmount })
 
     trns[`demo_loan_${loan.walletId}_taken`] = config.purchase
-      ? { ...at(loan.startDate), amount: loan.principalAmount, categoryId: config.purchase.categoryId, desc: config.purchase.desc[locale], type: TrnType.Expense, walletId: loan.walletId } satisfies TrnItem
-      : { ...at(loan.startDate), categoryId: 'transfer', expenseAmount: loan.principalAmount, expenseWalletId: loan.walletId, incomeAmount: onDebit(loan.principalAmount), incomeWalletId: debitWalletId, type: TrnType.Transfer } satisfies TrnItem
+      ? { ...at(loan.startDate), categoryId: config.purchase.categoryId, description: config.purchase.desc[locale], fromAmount: loan.principalAmount, fromWalletId: loan.walletId, type: 'expense' } satisfies TrnItem
+      : { ...at(loan.startDate), fromAmount: loan.principalAmount, fromWalletId: loan.walletId, toAmount: onDebit(loan.principalAmount), toWalletId: paymentWalletId, type: 'transfer' } satisfies TrnItem
 
     const schedule = generateSchedule(params, overrides)
     const dueCount = schedule.filter(row => row.date <= today).length
@@ -92,8 +94,8 @@ export function buildDemoLoans(ctx: {
       const id = `demo_loan_${loan.walletId}_${paid.length}`
       paid.push({ amount, date, id, kind })
       trns[id] = kind === 'payment'
-        ? { ...at(date), categoryId: 'transfer', expenseAmount: onDebit(amount), expenseWalletId: debitWalletId, incomeAmount: amount, incomeWalletId: loan.walletId, type: TrnType.Transfer } satisfies TrnItem
-        : { ...at(date), amount, categoryId: kind === 'interest' ? 'loanInterest' : 'loanFine', type: TrnType.Expense, walletId: loan.walletId } satisfies TrnItem
+        ? { ...at(date), fromAmount: onDebit(amount), fromWalletId: paymentWalletId, toAmount: amount, toWalletId: loan.walletId, type: 'transfer' } satisfies TrnItem
+        : { ...at(date), categoryId: kind === 'interest' ? 'loan_interest' : 'loan_fine', fromAmount: amount, fromWalletId: loan.walletId, type: 'expense' } satisfies TrnItem
     }
 
     // Every pass settles or skips one row, so a pass count past twice the schedule means a row
@@ -114,22 +116,22 @@ export function buildDemoLoans(ctx: {
       }
       if (n === numberAgo(config.payoff)) {
         // The whole debt left before this row plus its interest: the tail re-solves to nothing.
-        pay('payment', roundMoney(params, row.remainingBalance + row.principalPart + row.interestPart), row.date)
+        pay('payment', row.remainingBalance + row.principalPart + row.interestPart, row.date)
         pay('interest', row.interestPart, row.date)
         break
       }
       if (!prepaid && n === numberAgo(config.prepayment?.paymentsAgo)) {
-        // Re-read the plan: under reducePayment the prepayment lowers this very payment.
+        // Re-read the plan: under reduce_payment the prepayment lowers this very payment.
         pay('payment', round(config.prepayment!.amount, currency), addCivilDays(row.date, -21))
         prepaid = true
         continue
       }
 
       const date = n === numberAgo(config.late) ? addCivilDays(row.date, 5) : row.date
-      const interest = roundMoney(params, row.interestPart + (carried?.interest ?? 0))
+      const interest = row.interestPart + (carried?.interest ?? 0)
       // The bank takes the late fee out of the payment, so the transfer carries it on top.
-      const fine = carried ? money(700, loan.walletId) : 0
-      pay('payment', roundMoney(params, row.totalAmount + (carried?.total ?? 0) + fine), date)
+      const fine = carried ? Math.round(money(700, loan.walletId)) : 0
+      pay('payment', row.totalAmount + (carried?.total ?? 0) + fine, date)
       if (interest > 0)
         pay('interest', interest, date)
       if (fine > 0)
@@ -139,14 +141,16 @@ export function buildDemoLoans(ctx: {
 
     if (config.bankDebt) {
       const balance = paid.reduce((total, trn) => trn.kind === 'payment' ? total - trn.amount : total + trn.amount, loan.principalAmount)
-      Object.assign(loan, { bankDebtAmount: roundMoney(params, balance), bankDebtUpdatedAt: addCivilDays(today, -2) })
+      const reportDate = addCivilDays(today, -2)
+      bankReports[loan.walletId] = { createdAt: reportDate, debtAmount: balance, debtReportDate: reportDate, updatedAt: reportDate }
     }
     return loan
   })
 
   return {
+    bankReports,
     loans: Object.fromEntries(loans.map(loan => [loanIdFor(loan.walletId), loan])) as Loans,
-    scheduleRows,
+    scheduleOverrides,
     trns,
   }
 }

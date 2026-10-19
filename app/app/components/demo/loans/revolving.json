@@ -2,18 +2,18 @@
   "items": [
     {
       "currencyCode": "RUB",
-      "debt": 42100,
-      "fine": 30,
-      "interest": 1740.16,
+      "debt": 4210000,
+      "fine": 3000,
+      "interest": 174016,
       "minPayment": {
-        "amount": 3500,
+        "amount": 350000,
         "date": "20.05",
         "status": "overdue"
       },
       "name": "Credit card",
       "walletId": "r1",
       "grace": {
-        "amount": 18000,
+        "amount": 1800000,
         "date": "25.06",
         "status": "due"
       }

@@ -58,7 +58,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
     const view = await store.create({
       autoRule: source.autoRule,
       config: cloneViewConfig(source.config),
-      isAutoEnabled: source.isAutoEnabled,
+      isAutoRuleEnabled: source.isAutoRuleEnabled,
       name: `${source.name} ${suffix}`,
       scope: source.scope,
     })
@@ -73,7 +73,7 @@ export function useStatViewController(config: Ref<MiniItemConfig>, context: Ref<
       appliedId.value = next.id
     return next
   }
-  async function updateMetadata(patch: Partial<Pick<StatView, 'autoRule' | 'isAutoEnabled' | 'name'>>) {
+  async function updateMetadata(patch: Partial<Pick<StatView, 'autoRule' | 'isAutoRuleEnabled' | 'name'>>) {
     if (!activeView.value)
       return null
     return persist(activeView.value.id, patch)

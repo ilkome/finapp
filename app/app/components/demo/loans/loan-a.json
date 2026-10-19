@@ -2,431 +2,431 @@
   "bankSchedule": [
     {
       "date": "2022-12-17",
-      "interestPart": 8299.73,
+      "interestPart": 829973,
       "paymentNumber": 1,
-      "principalPart": 5619.18,
-      "totalAmount": 13918.91
+      "principalPart": 561918,
+      "totalAmount": 1391891
     },
     {
       "date": "2023-01-17",
-      "interestPart": 8487.14,
+      "interestPart": 848714,
       "paymentNumber": 2,
-      "principalPart": 5431.77,
-      "totalAmount": 13918.91
+      "principalPart": 543177,
+      "totalAmount": 1391891
     },
     {
       "date": "2023-02-17",
-      "interestPart": 8400.87,
+      "interestPart": 840087,
       "paymentNumber": 3,
-      "principalPart": 5518.04,
-      "totalAmount": 13918.91
+      "principalPart": 551804,
+      "totalAmount": 1391891
     },
     {
       "date": "2023-03-17",
-      "interestPart": 0.0,
+      "interestPart": 0,
       "paymentNumber": 4,
-      "principalPart": 0.0,
-      "totalAmount": 0.0
+      "principalPart": 0,
+      "totalAmount": 0
     },
     {
       "date": "2023-04-17",
-      "interestPart": 8156.8,
+      "interestPart": 815680,
       "paymentNumber": 5,
-      "principalPart": 0.0,
-      "totalAmount": 8156.8
+      "principalPart": 0,
+      "totalAmount": 815680
     },
     {
       "date": "2023-05-17",
-      "interestPart": 8156.8,
+      "interestPart": 815680,
       "paymentNumber": 6,
-      "principalPart": 0.0,
-      "totalAmount": 8156.8
+      "principalPart": 0,
+      "totalAmount": 815680
     },
     {
       "date": "2023-06-17",
-      "interestPart": 8156.8,
+      "interestPart": 815680,
       "paymentNumber": 7,
-      "principalPart": 0.0,
-      "totalAmount": 8156.8
+      "principalPart": 0,
+      "totalAmount": 815680
     },
     {
       "date": "2023-07-17",
-      "interestPart": 8045.06,
+      "interestPart": 804506,
       "paymentNumber": 8,
-      "principalPart": 6537.09,
-      "totalAmount": 14582.15
+      "principalPart": 653709,
+      "totalAmount": 1458215
     },
     {
       "date": "2023-08-17",
-      "interestPart": 8209.41,
+      "interestPart": 820941,
       "paymentNumber": 9,
-      "principalPart": 6372.74,
-      "totalAmount": 14582.15
+      "principalPart": 637274,
+      "totalAmount": 1458215
     },
     {
       "date": "2023-09-17",
-      "interestPart": 8108.2,
+      "interestPart": 810820,
       "paymentNumber": 10,
-      "principalPart": 6473.95,
-      "totalAmount": 14582.15
+      "principalPart": 647395,
+      "totalAmount": 1458215
     },
     {
       "date": "2023-10-17",
-      "interestPart": 7747.14,
+      "interestPart": 774714,
       "paymentNumber": 11,
-      "principalPart": 6835.01,
-      "totalAmount": 14582.15
+      "principalPart": 683501,
+      "totalAmount": 1458215
     },
     {
       "date": "2023-11-17",
-      "interestPart": 7896.82,
+      "interestPart": 789682,
       "paymentNumber": 12,
-      "principalPart": 6685.33,
-      "totalAmount": 14582.15
+      "principalPart": 668533,
+      "totalAmount": 1458215
     },
     {
       "date": "2023-12-17",
-      "interestPart": 7539.33,
+      "interestPart": 753933,
       "paymentNumber": 13,
-      "principalPart": 7042.82,
-      "totalAmount": 14582.15
+      "principalPart": 704282,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-01-17",
-      "interestPart": 7678.79,
+      "interestPart": 767879,
       "paymentNumber": 14,
-      "principalPart": 6903.36,
-      "totalAmount": 14582.15
+      "principalPart": 690336,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-02-17",
-      "interestPart": 7569.15,
+      "interestPart": 756915,
       "paymentNumber": 15,
-      "principalPart": 7013.0,
-      "totalAmount": 14582.15
+      "principalPart": 701300,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-03-17",
-      "interestPart": 6976.62,
+      "interestPart": 697662,
       "paymentNumber": 16,
-      "principalPart": 7605.53,
-      "totalAmount": 14582.15
+      "principalPart": 760553,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-04-17",
-      "interestPart": 7336.97,
+      "interestPart": 733697,
       "paymentNumber": 17,
-      "principalPart": 7245.18,
-      "totalAmount": 14582.15
+      "principalPart": 724518,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-05-17",
-      "interestPart": 6988.94,
+      "interestPart": 698894,
       "paymentNumber": 18,
-      "principalPart": 7593.21,
-      "totalAmount": 14582.15
+      "principalPart": 759321,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-06-17",
-      "interestPart": 7101.31,
+      "interestPart": 710131,
       "paymentNumber": 19,
-      "principalPart": 7480.84,
-      "totalAmount": 14582.15
+      "principalPart": 748084,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-07-17",
-      "interestPart": 6757.25,
+      "interestPart": 675725,
       "paymentNumber": 20,
-      "principalPart": 7824.9,
-      "totalAmount": 14582.15
+      "principalPart": 782490,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-08-17",
-      "interestPart": 6858.22,
+      "interestPart": 685822,
       "paymentNumber": 21,
-      "principalPart": 7723.93,
-      "totalAmount": 14582.15
+      "principalPart": 772393,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-09-17",
-      "interestPart": 6735.54,
+      "interestPart": 673554,
       "paymentNumber": 22,
-      "principalPart": 7846.61,
-      "totalAmount": 14582.15
+      "principalPart": 784661,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-10-17",
-      "interestPart": 6397.67,
+      "interestPart": 639767,
       "paymentNumber": 23,
-      "principalPart": 8184.48,
-      "totalAmount": 14582.15
+      "principalPart": 818448,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-11-17",
-      "interestPart": 6480.94,
+      "interestPart": 648094,
       "paymentNumber": 24,
-      "principalPart": 8101.21,
-      "totalAmount": 14582.15
+      "principalPart": 810121,
+      "totalAmount": 1458215
     },
     {
       "date": "2024-12-17",
-      "interestPart": 6147.36,
+      "interestPart": 614736,
       "paymentNumber": 25,
-      "principalPart": 8434.79,
-      "totalAmount": 14582.15
+      "principalPart": 843479,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-01-17",
-      "interestPart": 6218.31,
+      "interestPart": 621831,
       "paymentNumber": 26,
-      "principalPart": 8363.84,
-      "totalAmount": 14582.15
+      "principalPart": 836384,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-02-17",
-      "interestPart": 6085.47,
+      "interestPart": 608547,
       "paymentNumber": 27,
-      "principalPart": 8496.68,
-      "totalAmount": 14582.15
+      "principalPart": 849668,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-03-17",
-      "interestPart": 5374.67,
+      "interestPart": 537467,
       "paymentNumber": 28,
-      "principalPart": 9207.48,
-      "totalAmount": 14582.15
+      "principalPart": 920748,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-04-17",
-      "interestPart": 5804.29,
+      "interestPart": 580429,
       "paymentNumber": 29,
-      "principalPart": 8777.86,
-      "totalAmount": 14582.15
+      "principalPart": 877786,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-05-17",
-      "interestPart": 5482.14,
+      "interestPart": 548214,
       "paymentNumber": 30,
-      "principalPart": 9100.01,
-      "totalAmount": 14582.15
+      "principalPart": 910001,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-06-17",
-      "interestPart": 5520.35,
+      "interestPart": 552035,
       "paymentNumber": 31,
-      "principalPart": 9061.8,
-      "totalAmount": 14582.15
+      "principalPart": 906180,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-07-17",
-      "interestPart": 5203.0,
+      "interestPart": 520300,
       "paymentNumber": 32,
-      "principalPart": 9379.15,
-      "totalAmount": 14582.15
+      "principalPart": 937915,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-08-17",
-      "interestPart": 5227.47,
+      "interestPart": 522747,
       "paymentNumber": 33,
-      "principalPart": 9354.68,
-      "totalAmount": 14582.15
+      "principalPart": 935468,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-09-17",
-      "interestPart": 5078.9,
+      "interestPart": 507890,
       "paymentNumber": 34,
-      "principalPart": 9503.25,
-      "totalAmount": 14582.15
+      "principalPart": 950325,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-10-17",
-      "interestPart": 4769.0,
+      "interestPart": 476900,
       "paymentNumber": 35,
-      "principalPart": 9813.15,
-      "totalAmount": 14582.15
+      "principalPart": 981315,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-11-17",
-      "interestPart": 4772.11,
+      "interestPart": 477211,
       "paymentNumber": 36,
-      "principalPart": 9810.04,
-      "totalAmount": 14582.15
+      "principalPart": 981004,
+      "totalAmount": 1458215
     },
     {
       "date": "2025-12-17",
-      "interestPart": 4467.39,
+      "interestPart": 446739,
       "paymentNumber": 37,
-      "principalPart": 10114.76,
-      "totalAmount": 14582.15
+      "principalPart": 1011476,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-01-17",
-      "interestPart": 4455.66,
+      "interestPart": 445566,
       "paymentNumber": 38,
-      "principalPart": 10126.49,
-      "totalAmount": 14582.15
+      "principalPart": 1012649,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-02-17",
-      "interestPart": 4294.83,
+      "interestPart": 429483,
       "paymentNumber": 39,
-      "principalPart": 10287.32,
-      "totalAmount": 14582.15
+      "principalPart": 1028732,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-03-17",
-      "interestPart": 3731.63,
+      "interestPart": 373163,
       "paymentNumber": 40,
-      "principalPart": 10850.52,
-      "totalAmount": 14582.15
+      "principalPart": 1085052,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-04-17",
-      "interestPart": 3959.11,
+      "interestPart": 395911,
       "paymentNumber": 41,
-      "principalPart": 10623.04,
-      "totalAmount": 14582.15
+      "principalPart": 1062304,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-05-17",
-      "interestPart": 3668.12,
+      "interestPart": 366812,
       "paymentNumber": 42,
-      "principalPart": 10914.03,
-      "totalAmount": 14582.15
+      "principalPart": 1091403,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-06-17",
-      "interestPart": 3617.06,
+      "interestPart": 361706,
       "paymentNumber": 43,
-      "principalPart": 10965.09,
-      "totalAmount": 14582.15
+      "principalPart": 1096509,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-07-17",
-      "interestPart": 3331.85,
+      "interestPart": 333185,
       "paymentNumber": 44,
-      "principalPart": 11250.3,
-      "totalAmount": 14582.15
+      "principalPart": 1125030,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-08-17",
-      "interestPart": 3264.23,
+      "interestPart": 326423,
       "paymentNumber": 45,
-      "principalPart": 11317.92,
-      "totalAmount": 14582.15
+      "principalPart": 1131792,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-09-17",
-      "interestPart": 3084.47,
+      "interestPart": 308447,
       "paymentNumber": 46,
-      "principalPart": 11497.68,
-      "totalAmount": 14582.15
+      "principalPart": 1149768,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-10-17",
-      "interestPart": 2808.26,
+      "interestPart": 280826,
       "paymentNumber": 47,
-      "principalPart": 11773.89,
-      "totalAmount": 14582.15
+      "principalPart": 1177389,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-11-17",
-      "interestPart": 2714.87,
+      "interestPart": 271487,
       "paymentNumber": 48,
-      "principalPart": 11867.28,
-      "totalAmount": 14582.15
+      "principalPart": 1186728,
+      "totalAmount": 1458215
     },
     {
       "date": "2026-12-17",
-      "interestPart": 2444.9,
+      "interestPart": 244490,
       "paymentNumber": 49,
-      "principalPart": 12137.25,
-      "totalAmount": 14582.15
+      "principalPart": 1213725,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-01-17",
-      "interestPart": 2333.63,
+      "interestPart": 233363,
       "paymentNumber": 50,
-      "principalPart": 12248.52,
-      "totalAmount": 14582.15
+      "principalPart": 1224852,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-02-17",
-      "interestPart": 2139.09,
+      "interestPart": 213909,
       "paymentNumber": 51,
-      "principalPart": 12443.06,
-      "totalAmount": 14582.15
+      "principalPart": 1244306,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-03-17",
-      "interestPart": 1753.59,
+      "interestPart": 175359,
       "paymentNumber": 52,
-      "principalPart": 12828.56,
-      "totalAmount": 14582.15
+      "principalPart": 1282856,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-04-17",
-      "interestPart": 1737.72,
+      "interestPart": 173772,
       "paymentNumber": 53,
-      "principalPart": 12844.43,
-      "totalAmount": 14582.15
+      "principalPart": 1284443,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-05-17",
-      "interestPart": 1484.25,
+      "interestPart": 148425,
       "paymentNumber": 54,
-      "principalPart": 13097.9,
-      "totalAmount": 14582.15
+      "principalPart": 1309790,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-06-17",
-      "interestPart": 1325.7,
+      "interestPart": 132570,
       "paymentNumber": 55,
-      "principalPart": 13256.45,
-      "totalAmount": 14582.15
+      "principalPart": 1325645,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-07-17",
-      "interestPart": 1079.19,
+      "interestPart": 107919,
       "paymentNumber": 56,
-      "principalPart": 13502.96,
-      "totalAmount": 14582.15
+      "principalPart": 1350296,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-08-17",
-      "interestPart": 900.71,
+      "interestPart": 90071,
       "paymentNumber": 57,
-      "principalPart": 13681.44,
-      "totalAmount": 14582.15
+      "principalPart": 1368144,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-09-17",
-      "interestPart": 683.41,
+      "interestPart": 68341,
       "paymentNumber": 58,
-      "principalPart": 13898.74,
-      "totalAmount": 14582.15
+      "principalPart": 1389874,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-10-17",
-      "interestPart": 447.75,
+      "interestPart": 44775,
       "paymentNumber": 59,
-      "principalPart": 14134.4,
-      "totalAmount": 14582.15
+      "principalPart": 1413440,
+      "totalAmount": 1458215
     },
     {
       "date": "2027-11-17",
-      "interestPart": 238.19,
+      "interestPart": 23819,
       "paymentNumber": 60,
-      "principalPart": 14997.06,
-      "totalAmount": 15235.25
+      "principalPart": 1499706,
+      "totalAmount": 1523525
     }
   ],
   "params": {
     "annualRate": 18.7,
     "firstPaymentDate": "2022-12-17",
-    "overpaymentMode": "reducePayment",
-    "paymentDay": 17,
-    "principalAmount": 540000,
+    "prepaymentMode": "reduce_payment",
+    "paymentDayOfMonth": 17,
+    "principalAmount": 54000000,
     "scheduleType": "annuity",
     "startDate": "2022-11-17",
     "termMonths": 60

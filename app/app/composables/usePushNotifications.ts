@@ -80,13 +80,13 @@ export function usePushNotifications() {
       const { error } = await supabase
         .from('push_subscriptions')
         .upsert({
-          auth: json.keys?.auth,
-          createdAt: now,
+          auth_secret: json.keys?.auth,
+          created_at: now,
           endpoint: sub.endpoint,
-          p256dh: json.keys?.p256dh,
-          updatedAt: now,
-          userAgent: navigator.userAgent,
-          userId: uid.value,
+          p256dh_key: json.keys?.p256dh,
+          updated_at: now,
+          user_agent: navigator.userAgent,
+          user_id: uid.value,
         }, { onConflict: 'endpoint' })
 
       if (error) {

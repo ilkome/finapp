@@ -1,11 +1,10 @@
 import type { CommandPaletteItem } from '@nuxt/ui'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { TransactionFull, TransferFull, TrnId } from '~/components/trns/types'
+import type { TrnId } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -29,9 +28,6 @@ export function useSearch() {
       return items
 
     for (const id of Object.keys(categoriesStore.items)) {
-      if (id === 'transfer')
-        continue
-
       const category = categoriesStore.items[id as CategoryId]
       if (!category)
         continue
@@ -71,8 +67,8 @@ export function useSearch() {
         entityType: 'wallet',
         id: `wallet-${id}`,
         label: wallet.name,
-        search: [wallet.name, wallet.desc].filter(Boolean).join(' '),
-        suffix: wallet.desc,
+        search: [wallet.name, wallet.description].filter(Boolean).join(' '),
+        suffix: wallet.description,
       })
     }
 
@@ -107,25 +103,17 @@ export function useSearch() {
       if (computed.categoryParent)
         searchParts.push(computed.categoryParent.name)
 
-      if (trn.type === TrnType.Transfer) {
-        const transfer = computed as TransferFull
-        if (transfer.expenseWallet)
-          searchParts.push(transfer.expenseWallet.name)
-        if (transfer.incomeWallet)
-          searchParts.push(transfer.incomeWallet.name)
-      }
-      else {
-        const transaction = computed as TransactionFull
-        if (transaction.wallet)
-          searchParts.push(transaction.wallet.name)
-      }
+      if (computed.fromWallet)
+        searchParts.push(computed.fromWallet.name)
+      if (computed.toWallet)
+        searchParts.push(computed.toWallet.name)
 
-      if (trn.desc)
-        searchParts.push(trn.desc)
+      if (trn.description)
+        searchParts.push(trn.description)
 
       let label = computed.category?.name ?? ''
-      if (trn.desc)
-        label = `${label} - ${trn.desc}`
+      if (trn.description)
+        label = `${label} - ${trn.description}`
 
       items.push({
         entityId: id,

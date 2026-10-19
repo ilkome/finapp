@@ -2,8 +2,6 @@ import type { Categories, CategoryId } from '~/components/categories/types'
 import type { CategoriesWithData, CategoryWithData } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { isSystemCategoryId } from '~/components/categories/utils'
-
 export function sortCategoriesByAmount(a: Pick<CategoryWithData, 'value'>, b: Pick<CategoryWithData, 'value'>): number {
   if (a.value === 0 && b.value === 0)
     return 0
@@ -37,7 +35,7 @@ export function collectCategoriesByTrns(params: {
     const categoryId = trnsItems[trnId]?.categoryId
     const category = categoryId && categoriesItems[categoryId]
 
-    if (!categoryId || !category || isSystemCategoryId(categoryId))
+    if (!categoryId || !category)
       continue
     if (excludedCategoriesIds?.has(categoryId))
       continue

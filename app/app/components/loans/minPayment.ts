@@ -1,10 +1,8 @@
-import { roundTo } from '~~/utils/amount/round'
-import { addCivilDays, addCivilMonths } from '~~/utils/date/civil'
+import { addCivilDays } from '~~/utils/date/civil'
 
+import type { BankReport } from '~/components/bankReports/types'
 import type { LoanTrn } from '~/components/loans/engine/types'
 import type { WalletItem } from '~/components/wallets/types'
-
-import { currencyMinorUnit } from '~/components/currencies/currencies'
 
 export type MinPaymentStatus = 'due' | 'overdue' | 'paid' | 'stale'
 
@@ -31,38 +29,34 @@ export function minPaymentStatus({ amount, date, paidSince, today, updatedAt }: 
   return today > date ? 'overdue' : 'due'
 }
 
-/**
- * Payments into the wallet from `since` on, rounded to its currency: a raw float sum can land just
- * below the minimum it exactly covers (100.10 + 200.70 = 300.79999999999995).
- */
-function paidSinceOf(wallet: WalletItem, trns: LoanTrn[], since: number): number {
-  const total = trns
+/** Payments into the wallet from `since` on. */
+function paidSinceOf(trns: LoanTrn[], since: number): number {
+  return trns
     .filter(trn => trn.kind === 'payment' && trn.date >= since)
     .reduce((sum, trn) => sum + trn.amount, 0)
-  return roundTo(total, currencyMinorUnit(wallet.currency))
 }
 
 /**
- * The minimum payment line of a revolving credit wallet, or null when no sync reported one.
- * "Paid" is decided by what reached the wallet since the billing period started, per the field
- * contract on `WalletItem.minPaymentUpdatedAt`: the bank reports the minimum for the period, not
- * whether it was met.
+ * The minimum payment line of a credit card, or null when its bank report has none.
+ * "Paid" is decided by what reached the wallet since the billing period started
+ * (`minPaymentPeriodStartDate`): the bank reports the minimum for the period, not whether it was met.
  */
 export function minPaymentOf(
-  wallet: WalletItem,
+  wallet: Pick<WalletItem, 'type'>,
+  report: BankReport | undefined,
   trns: LoanTrn[],
   today: number,
 ): { amount: number, date: number, status: MinPaymentStatus } | null {
-  if (wallet.type !== 'credit' || !wallet.minPaymentAmount || wallet.minPaymentDate == null)
+  if (wallet.type !== 'credit_card' || !report?.minPaymentAmount || report.minPaymentDueDate === undefined)
     return null
 
-  const updatedAt = wallet.minPaymentUpdatedAt ?? wallet.minPaymentDate
-  const paidSince = paidSinceOf(wallet, trns, updatedAt)
+  const updatedAt = report.minPaymentPeriodStartDate ?? report.minPaymentDueDate
+  const paidSince = paidSinceOf(trns, updatedAt)
 
   return {
-    amount: wallet.minPaymentAmount,
-    date: wallet.minPaymentDate,
-    status: minPaymentStatus({ amount: wallet.minPaymentAmount, date: wallet.minPaymentDate, paidSince, today, updatedAt }),
+    amount: report.minPaymentAmount,
+    date: report.minPaymentDueDate,
+    status: minPaymentStatus({ amount: report.minPaymentAmount, date: report.minPaymentDueDate, paidSince, today, updatedAt }),
   }
 }
 
@@ -76,38 +70,28 @@ export type GraceLine = {
 }
 
 /**
- * The interest-free (grace) line of a revolving credit wallet, or null when no sync reported one.
+ * The interest-free (grace) line of a credit card, or null when its bank report has none.
  * Paid is what reached the wallet since the last statement, falling back to the minimum's period
  * start when the statement day is unknown; a zero statement debt is always paid.
  */
-export function graceOf(wallet: WalletItem, trns: LoanTrn[], today: number): GraceLine | null {
-  if (wallet.type !== 'credit' || wallet.graceAmount == null)
+export function graceOf(wallet: Pick<WalletItem, 'type'>, report: BankReport | undefined, trns: LoanTrn[], today: number): GraceLine | null {
+  if (wallet.type !== 'credit_card' || report?.graceDebtAmount === undefined)
     return null
 
-  const statementDate = wallet.statementDate ?? null
-  if (wallet.graceAmount === 0)
-    return { amount: 0, date: wallet.graceEndDate ?? null, statementDate, status: 'paid' }
-  if (wallet.graceEndDate == null)
+  const statementDate = report.statementDate ?? null
+  if (report.graceDebtAmount === 0)
+    return { amount: 0, date: report.graceEndDate ?? null, statementDate, status: 'paid' }
+  if (report.graceEndDate === undefined)
     return null
 
-  const updatedAt = wallet.minPaymentUpdatedAt ?? statementDate ?? wallet.graceEndDate
+  const updatedAt = report.minPaymentPeriodStartDate ?? statementDate ?? report.graceEndDate
   const since = statementDate ?? updatedAt
-  const paidSince = paidSinceOf(wallet, trns, since)
+  const paidSince = paidSinceOf(trns, since)
 
   return {
-    amount: wallet.graceAmount,
-    date: wallet.graceEndDate,
+    amount: report.graceDebtAmount,
+    date: report.graceEndDate,
     statementDate,
-    status: minPaymentStatus({ amount: wallet.graceAmount, date: wallet.graceEndDate, paidSince, today, updatedAt }),
+    status: minPaymentStatus({ amount: report.graceDebtAmount, date: report.graceEndDate, paidSince, today, updatedAt }),
   }
-}
-
-/**
- * Fields of a minimum entered by hand: the billing period is taken as the month before the due day,
- * so payments made since then count towards it. null clears both.
- */
-export function manualMinPaymentDates(dueDate: number | null): { minPaymentDate?: number, minPaymentUpdatedAt?: number } {
-  return dueDate == null
-    ? { minPaymentDate: undefined, minPaymentUpdatedAt: undefined }
-    : { minPaymentDate: dueDate, minPaymentUpdatedAt: addCivilMonths(dueDate, -1) }
 }

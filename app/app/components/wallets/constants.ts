@@ -14,7 +14,6 @@ export const WALLET_STORAGE_KEYS = {
   selectorCurrency: 'finapp.wallets-selector-currency',
   showArchived: 'finapp.wallets-show-archived',
   showStatistics: 'finapp.wallets-show-statistics',
-  sortOrders: 'finapp.wallets-sort-orders',
   toggleMap: 'finapp.wallets-toggle-map',
   totalPrefix: 'finapp.wallets-total-',
 } as const

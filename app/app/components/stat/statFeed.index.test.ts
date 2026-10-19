@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
+import type { TrnItem } from '~/components/trns/types'
+
 import { buildStatFeedIndex } from '~/components/stat/statFeed'
-import { TrnType } from '~/components/trns/types'
 
 const periodSize = 100
 function rangeForOffset(offset: number) {
@@ -11,16 +12,17 @@ function rangeForOffset(offset: number) {
   }
 }
 
-function expense(date: number, desc?: string) {
+function expense(date: number, description?: string): TrnItem {
   return {
-    amount: 10,
     categoryId: 'expense',
+    createdAt: 1,
     date,
-    ...(desc ? { desc } : {}),
-    type: TrnType.Expense,
+    ...(description ? { description } : {}),
+    fromAmount: 1000,
+    fromWalletId: 'wallet',
+    type: 'expense',
     updatedAt: 1,
-    walletId: 'wallet',
-  } as const
+  }
 }
 
 function build(options: Partial<Parameters<typeof buildStatFeedIndex>[0]> = {}) {
@@ -66,15 +68,15 @@ describe('buildStatFeedIndex', () => {
       expense: expense(date),
       noted: expense(date, 'note'),
       transfer: {
-        categoryId: 'transfer' as const,
+        createdAt: 1,
         date,
-        expenseAmount: 10,
-        expenseWalletId: 'wallet',
-        incomeAmount: 10,
-        incomeWalletId: 'wallet-2',
-        type: TrnType.Transfer as const,
+        fromAmount: 1000,
+        fromWalletId: 'wallet',
+        toAmount: 1000,
+        toWalletId: 'wallet-2',
+        type: 'transfer',
         updatedAt: 1,
-      },
+      } satisfies TrnItem,
     }
 
     expect(build({ filter: { filterBy: 'expense', showHistoryWithDesc: true, showWithDesc: false }, items }).idsByOffset.get(1)).toEqual(['noted'])

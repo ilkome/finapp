@@ -1,24 +1,83 @@
 {
   "backgroundType": "none",
   "currencyCode": "USD",
-  "expandedIds": ["food"],
+  "expandedIds": [
+    "food"
+  ],
   "isShowParent": true,
-  "maxCategoryValues": { "expense": 1000, "income": 500 },
+  "maxCategoryValues": {
+    "expense": 100000,
+    "income": 50000
+  },
   "rows": [
     {
-      "category": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food", "parentId": 0 },
+      "category": {
+        "color": "#c04a30",
+        "icon": "lucide:apple",
+        "name": "Food",
+        "parentId": 0
+      },
       "children": [
         {
-          "category": { "color": "#e0745a", "icon": "lucide:utensils", "name": "Groceries", "parentId": "food" },
-          "item": { "id": "groceries", "name": "Groceries", "trnsIds": ["t1", "t2"], "value": -320.5 },
-          "parentCategory": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food", "parentId": 0 }
+          "category": {
+            "color": "#e0745a",
+            "icon": "lucide:utensils",
+            "name": "Groceries",
+            "parentId": "food"
+          },
+          "item": {
+            "id": "groceries",
+            "name": "Groceries",
+            "trnsIds": [
+              "t1",
+              "t2"
+            ],
+            "value": -32050
+          },
+          "parentCategory": {
+            "color": "#c04a30",
+            "icon": "lucide:apple",
+            "name": "Food",
+            "parentId": 0
+          }
         }
       ],
-      "item": { "categories": [{ "id": "groceries", "name": "Groceries", "trnsIds": ["t1", "t2"], "value": -320.5 }], "id": "food", "name": "Food", "trnsIds": ["t1", "t2"], "value": -320.5 }
+      "item": {
+        "categories": [
+          {
+            "id": "groceries",
+            "name": "Groceries",
+            "trnsIds": [
+              "t1",
+              "t2"
+            ],
+            "value": -32050
+          }
+        ],
+        "id": "food",
+        "name": "Food",
+        "trnsIds": [
+          "t1",
+          "t2"
+        ],
+        "value": -32050
+      }
     },
     {
-      "category": { "color": "#3b82f6", "icon": "lucide:car", "name": "Taxi", "parentId": 0 },
-      "item": { "id": "taxi", "name": "Taxi", "trnsIds": ["t3"], "value": -45 }
+      "category": {
+        "color": "#3b82f6",
+        "icon": "lucide:car",
+        "name": "Taxi",
+        "parentId": 0
+      },
+      "item": {
+        "id": "taxi",
+        "name": "Taxi",
+        "trnsIds": [
+          "t3"
+        ],
+        "value": -4500
+      }
     }
   ],
   "trendType": "bar"

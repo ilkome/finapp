@@ -13,7 +13,6 @@ import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { filterTrnsIds } from '~/components/trns/getTrns'
 import { reconcileTrns, rowsToTrns } from '~/components/trns/reconcile'
-import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
@@ -86,7 +85,7 @@ export const useTrnsStore = defineStore('trns', () => {
 
     for (const trnId of Object.keys(items.value!)) {
       const trn = items.value![trnId]
-      if (!trn || trn.categoryId === 'transfer' || trn.categoryId === 'adjustment')
+      if (!trn || trn.type === 'transfer' || trn.type === 'adjustment')
         continue
       if (trn.date > latestDate) {
         latestDate = trn.date
@@ -125,7 +124,7 @@ export const useTrnsStore = defineStore('trns', () => {
     watchController?.abort()
     isLoaded.value = false // re-subscribe (e.g. different user) waits for a fresh emission
     let isFirstEmit = true
-    watchController = watchTable<Row>('SELECT * FROM trns', [], (rows) => {
+    watchController = watchTable<Row>('SELECT * FROM transactions', [], (rows) => {
       const isFirst = isFirstEmit
       isFirstEmit = false
       isLoaded.value = true
@@ -144,9 +143,9 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   function saveTrn({ id, values }: { id: TrnId, values: TrnItem }) {
-    // enteredAt is stamped once at creation and preserved across edits (audit/ordering only).
-    const enteredAt = values.enteredAt ?? items.value?.[id]?.enteredAt ?? Date.now()
-    const valuesWithEditDate = { ...values, enteredAt, updatedAt: Date.now() }
+    // createdAt is stamped once at creation and preserved across edits.
+    const createdAt = items.value?.[id]?.createdAt ?? values.createdAt ?? Date.now()
+    const valuesWithEditDate = { ...values, createdAt, updatedAt: Date.now() }
     const prev = items.value
 
     // Optimistic update (instant UI). In real mode the watch re-emits the same shape.
@@ -155,7 +154,7 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return
 
-    void persistOptimistic(upsertRow('trns', id, trnToRow(valuesWithEditDate, resolveWriteUid(uid.value))), {
+    void persistOptimistic(upsertRow('transactions', id, trnToRow(valuesWithEditDate, resolveWriteUid(uid.value))), {
       errorKey: 'trns.errors.saveFailed',
       label: 'saveTrn',
       logger,
@@ -164,9 +163,9 @@ export const useTrnsStore = defineStore('trns', () => {
   }
 
   async function saveTrns(input: Record<TrnId, TrnItem>): Promise<boolean> {
-    // enteredAt is stamped once at creation and preserved across edits, as in saveTrn.
+    // createdAt is stamped once at creation and preserved across edits, as in saveTrn.
     const entries = Object.entries(input).map(([id, trn]) =>
-      [id, { ...trn, enteredAt: trn.enteredAt ?? items.value?.[id]?.enteredAt ?? Date.now() }] as const)
+      [id, { ...trn, createdAt: items.value?.[id]?.createdAt ?? trn.createdAt ?? Date.now() }] as const)
     if (!entries.length)
       return true
 
@@ -177,7 +176,7 @@ export const useTrnsStore = defineStore('trns', () => {
       return true
 
     const userId = resolveWriteUid(uid.value)
-    return persistOptimistic(upsertRows('trns', entries.map(([id, trn]) => ({ id, row: trnToRow(trn, userId) }))), {
+    return persistOptimistic(upsertRows('transactions', entries.map(([id, trn]) => ({ id, row: trnToRow(trn, userId) }))), {
       errorKey: 'trns.errors.saveFailed',
       label: 'saveTrns',
       logger,
@@ -194,7 +193,7 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return
 
-    void persistOptimistic(deleteRow('trns', id), {
+    void persistOptimistic(deleteRow('transactions', id), {
       errorKey: 'trns.errors.deleteFailed',
       label: 'deleteTrn',
       logger,
@@ -216,7 +215,7 @@ export const useTrnsStore = defineStore('trns', () => {
     if (isDemo.value)
       return true
 
-    return persistOptimistic(deleteRows('trns', uniqueIds), {
+    return persistOptimistic(deleteRows('transactions', uniqueIds), {
       errorKey: 'trns.errors.deleteFailed',
       label: 'deleteTrns',
       logger,
@@ -243,56 +242,25 @@ export const useTrnsStore = defineStore('trns', () => {
     if (!trn)
       return null
 
-    // Category (synthetic for special categoryIds)
-    let category = categoriesStore.items[trn.categoryId]
-    let categoryParent: typeof category | undefined
-
-    if (!category) {
-      if (trn.categoryId === 'transfer' || trn.categoryId === 'adjustment') {
-        category = trn.categoryId === 'transfer'
-          ? { color: '', icon: 'lucide:arrow-left-right', name: 'Transfer', parentId: 0, showInLastUsed: false, showInQuickSelector: false }
-          : { color: '', icon: 'lucide:scale', name: 'Adjustment', parentId: 0, showInLastUsed: false, showInQuickSelector: false }
-      }
-      else {
+    // The display look: the row's category, or the type's own look for a transfer or an adjustment.
+    const category = categoriesStore.getTrnLook(trn)
+    let categoryParent: TrnItemFull['category']
+    if (trn.categoryId) {
+      if (!category)
         return null
-      }
-    }
-    else if (category.parentId) {
-      categoryParent = categoriesStore.items[category.parentId]
-      if (!categoryParent)
-        return null
-    }
-
-    if (trn.type === TrnType.Transfer) {
-      const expenseWallet = walletsStore.items[trn.expenseWalletId]
-      if (!expenseWallet)
-        return null
-
-      const incomeWallet = walletsStore.items[trn.incomeWalletId]
-      if (!incomeWallet)
-        return null
-
-      return {
-        id,
-        ...trn,
-        category,
-        categoryParent,
-        expenseWallet,
-        incomeWallet,
+      if (category.parentId) {
+        categoryParent = categoriesStore.items[category.parentId]
+        if (!categoryParent)
+          return null
       }
     }
 
-    const wallet = walletsStore.items[trn.walletId]
-    if (!wallet)
+    const fromWallet = trn.fromWalletId ? walletsStore.items[trn.fromWalletId] : undefined
+    const toWallet = trn.toWalletId ? walletsStore.items[trn.toWalletId] : undefined
+    if ((trn.fromWalletId && !fromWallet) || (trn.toWalletId && !toWallet))
       return null
 
-    return {
-      id,
-      ...trn,
-      category,
-      categoryParent,
-      wallet,
-    }
+    return { id, ...trn, category, categoryParent, fromWallet, toWallet }
   }
 
   return {

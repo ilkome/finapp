@@ -86,9 +86,9 @@ async function editBench(cdp) {
     const trns = ${STORE}.get('trns')
     const items = trns.items ?? {}
     const id = ${JSON.stringify(opts.trn ?? null)} ?? Object.entries(items)
-      .filter(([, t]) => t.type === 0 && t.categoryId !== 'adjustment')
+      .filter(([, t]) => t.type === 'expense')
       .sort((a, b) => b[1].date - a[1].date)[0]?.[0]
-    return { amount: items[id]?.amount, count: Object.keys(items).length, id, path: location.pathname }`)
+    return { amount: items[id]?.fromAmount, count: Object.keys(items).length, id, path: location.pathname }`)
   if (info.amount === undefined)
     throw new Error('no transaction to edit')
   const edit = amount => cdp.evaluate(`
@@ -96,7 +96,7 @@ async function editBench(cdp) {
     const trns = ${STORE}.get('trns')
     const trn = trns.items['${info.id}']
     const t0 = performance.now()
-    trns.saveTrn({ id: '${info.id}', values: { ...trn, amount: ${amount} } })
+    trns.saveTrn({ id: '${info.id}', values: { ...trn, fromAmount: ${amount} } })
     await tick()
     return performance.now() - t0`)
 

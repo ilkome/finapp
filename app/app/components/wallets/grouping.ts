@@ -34,8 +34,8 @@ export const groupingPrimary = (groupedBy: WalletsGroupedBy) => primaryByGroupin
 export const hasSecondaryGrouping = (groupedBy: WalletsGroupedBy) => groupedBy === 'typeCurrency' || groupedBy === 'currencyType'
 
 const groupingStrategies = {
-  currency: { primary: 'currency', secondary: 'type' },
-  type: { primary: 'type', secondary: 'currency' },
+  currency: { primary: 'currencyCode', secondary: 'type' },
+  type: { primary: 'type', secondary: 'currencyCode' },
 } as const
 
 export function groupWalletsByProperty(
@@ -50,7 +50,7 @@ export function groupWalletsByProperty(
 }
 
 // By type, flagged wallets leave their type group for trailing groups, in this order; the first match wins.
-const FLAG_GROUPS = ['isExcludeInTotal', 'isArchived'] as const
+const FLAG_GROUPS = ['isExcludedFromTotal', 'isArchived'] as const
 
 export function buildWalletGroups(
   ids: WalletId[],
@@ -64,7 +64,7 @@ export function buildWalletGroups(
   const strategy = groupingStrategies[groupedBy]
 
   const flagOf = (id: WalletId) => groupedBy === 'type'
-    ? (wallets[id]?.isExcludeInTotal ? 'isExcludeInTotal' : wallets[id]?.isArchived ? 'isArchived' : undefined)
+    ? (wallets[id]?.isExcludedFromTotal ? 'isExcludedFromTotal' : wallets[id]?.isArchived ? 'isArchived' : undefined)
     : undefined
   const primaryGrouped = groupWalletsByProperty(ids.filter(id => !flagOf(id)), wallets, strategy.primary)
   for (const flag of FLAG_GROUPS) {
@@ -186,38 +186,14 @@ export function applyToggleAll(
   return result
 }
 
-/** Manual orders keyed by group path: `type`, `type/cash`, `type/cash/RUB`. */
-export type WalletSortOrders = Record<string, string[]>
-
-export function sortOrderKey(groupedBy: WalletsGroupedBy, ...path: string[]) {
-  return [groupedBy, ...path].join('/')
-}
-
-/** Stored order first (skipping stale keys), then anything new in its original position. */
-export function applyStoredOrder<T extends string>(keys: T[], stored?: string[]): T[] {
-  if (!stored?.length)
-    return keys
-  const known = stored.filter((k): k is T => keys.includes(k as T))
-  return [...known, ...keys.filter(k => !known.includes(k))]
-}
-
-export function sortWalletGroups(
-  groups: GroupedWallets,
-  groupedBy: WalletsGroupedBy,
-  orders: WalletSortOrders,
-): GroupedWallets {
-  const primaryKeys = applyStoredOrder(Object.keys(groups), orders[sortOrderKey(groupedBy)])
-  return Object.fromEntries(primaryKeys.map((primary) => {
-    const group = groups[primary]!
-    const primaryOrder = orders[sortOrderKey(groupedBy, primary)]
-    const secondaryKeys = applyStoredOrder(Object.keys(group.groups ?? {}), primaryOrder)
-    return [primary, {
-      groups: Object.fromEntries(secondaryKeys.map(secondary => [
-        secondary,
-        applyStoredOrder(group.groups![secondary]!, orders[sortOrderKey(groupedBy, primary, secondary)]),
-      ])),
-      // Without a secondary level the primary key holds the wallet order itself.
-      ids: secondaryKeys.length ? group.ids : applyStoredOrder(group.ids, primaryOrder),
-    }]
-  }))
+/** Puts `sequence` into the slots its ids hold in `order`; every other id keeps its place. */
+export function reorderInSlots<T extends string>(order: T[], sequence: T[]): T[] {
+  const moved = new Set(sequence)
+  const result = [...order]
+  let next = 0
+  for (let i = 0; i < result.length; i++) {
+    if (moved.has(result[i]!))
+      result[i] = sequence[next++]!
+  }
+  return result
 }

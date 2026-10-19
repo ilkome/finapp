@@ -9,6 +9,7 @@ import type { StatReportType } from '~/components/stat/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
+import { isReservedCategoryId } from '~/components/categories/utils'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
@@ -17,7 +18,6 @@ import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
@@ -65,9 +65,9 @@ const singleTrnType = computed<StatReportType | null>(() => {
     const trn = items[id]
     if (!trn)
       continue
-    if (trn.type === TrnType.Expense)
+    if (trn.type === 'expense')
       hasExpense = true
-    if (trn.type === TrnType.Income)
+    if (trn.type === 'income')
       hasIncome = true
     if (hasExpense && hasIncome)
       return null
@@ -141,13 +141,11 @@ function onEditClick() {
   router.push(`/categories/${categoryId.value}/edit`)
 }
 
-const menuItems = computed<DropdownMenuItem[][] | undefined>(() => categoryId.value === 'transfer'
-  ? undefined
-  : [[
-      { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onEditClick },
-    ], [
-      { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete },
-    ]])
+const menuItems = computed<DropdownMenuItem[][]>(() => [[
+  { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onEditClick },
+], ...(isReservedCategoryId(categoryId.value)
+  ? []
+  : [[{ color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete }]])])
 
 useHead({ title: category.value?.name })
 

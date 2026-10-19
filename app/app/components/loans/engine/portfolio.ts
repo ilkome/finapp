@@ -1,5 +1,3 @@
-import { roundTo } from '~~/utils/amount/round'
-
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LoanCost, LoanParams, LoanSummary } from '~/components/loans/engine/types'
 import type { WalletId } from '~/components/wallets/types'
@@ -58,8 +56,6 @@ export type PortfolioRecommendation = {
 }
 
 export type PortfolioInput = {
-  /** Decimal places of the base currency; 2 when omitted. */
-  basePrecision?: number
   fromBase: (amount: number, currency: CurrencyCode) => number
   loans: PortfolioLoan[]
   toBase: (amount: number, currency: CurrencyCode) => number
@@ -77,24 +73,25 @@ export type Portfolio = {
  */
 export function derivePortfolio(input: PortfolioInput): Portfolio {
   const { loans, toBase } = input
-  const roundBase = (amount: number) => roundTo(amount, input.basePrecision ?? 2)
+  const roundBase = Math.round
 
   const totals: PortfolioTotals = { paidFine: 0, paidInterest: 0, paidTotal: 0, plannedInterest: 0, remaining: 0 }
   const byMonth = new Map<number, { fine: number, interest: number }>()
 
   const items: PortfolioItem[] = loans.map(({ annualRate, cost, currency, name, params, summary, walletId }) => {
-    const base = (amount: number) => roundBase(toBase(amount, currency))
+    const raw = (amount: number) => toBase(amount, currency)
+    const base = (amount: number) => Math.round(raw(amount))
 
-    totals.paidFine += base(summary.paidFine)
-    totals.paidInterest += base(summary.paidInterest)
-    totals.paidTotal += base(summary.paidTotal)
-    totals.plannedInterest += base(summary.plannedInterest)
-    totals.remaining += base(summary.remaining)
+    totals.paidFine += raw(summary.paidFine)
+    totals.paidInterest += raw(summary.paidInterest)
+    totals.paidTotal += raw(summary.paidTotal)
+    totals.plannedInterest += raw(summary.plannedInterest)
+    totals.remaining += raw(summary.remaining)
 
     for (const month of cost.byMonth) {
       const bucket = byMonth.get(month.month) ?? { fine: 0, interest: 0 }
-      bucket.fine += base(month.fine)
-      bucket.interest += base(month.interest)
+      bucket.fine += raw(month.fine)
+      bucket.interest += raw(month.interest)
       byMonth.set(month.month, bucket)
     }
 
@@ -140,14 +137,14 @@ export function derivePortfolio(input: PortfolioInput): Portfolio {
 /** Where `extra` (free money in the base currency) would buy the most; separate so typing it skips the portfolio. */
 export function recommend(input: PortfolioInput, extra: number): PortfolioRecommendation | null {
   const { fromBase, loans, toBase } = input
-  const roundBase = (amount: number) => roundTo(amount, input.basePrecision ?? 2)
+  const roundBase = Math.round
   // Without a rate to project at, what-if would count the whole remaining interest as saved.
   const open = loans.filter(loan => !loan.summary.isClosed && loan.summary.projectionRate !== null)
   if (extra <= 0 || open.length === 0)
     return null
 
   const picks = open.map((loan) => {
-    const result = whatIf(loan.params, loan.summary.rows, fromBase(extra, loan.currency), 'reduceTerm')
+    const result = whatIf(loan.params, loan.summary.rows, fromBase(extra, loan.currency), 'reduce_term')
     return {
       pick: { interestSaved: roundBase(toBase(result.interestSaved, loan.currency)), newEndDate: result.newEndDate, walletId: loan.walletId },
       remainingBase: toBase(loan.summary.remaining, loan.currency),

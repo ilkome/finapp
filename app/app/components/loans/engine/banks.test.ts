@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { LoanParams, LoanTrn, LoanTrnKind, OverpaymentMode, ScheduleOverride, ScheduleType } from '~/components/loans/engine/types'
+import type { LoanParams, LoanTrn, LoanTrnKind, PrepaymentMode, ScheduleOverride, ScheduleType } from '~/components/loans/engine/types'
 
 import loanA from '~/components/demo/loans/loan-a.json'
 import loanB from '~/components/demo/loans/loan-b.json'
@@ -17,13 +17,12 @@ type RawTrn = typeof loanB['trns'][number]
 
 function toParams(raw: RawParams): LoanParams {
   return {
-    interestMethod: 'monthly',
+    interestAccrual: 'monthly',
     lateAfterDays: 3,
-    precision: 2,
-    prepayWindowDays: 15,
+    prepaymentWindowDays: 15,
     ...raw,
     firstPaymentDate: day(raw.firstPaymentDate),
-    overpaymentMode: raw.overpaymentMode as OverpaymentMode,
+    prepaymentMode: raw.prepaymentMode as PrepaymentMode,
     scheduleType: raw.scheduleType as ScheduleType,
     startDate: day(raw.startDate),
   }
@@ -58,12 +57,12 @@ describe('loan A (540 000 at 18.7%, daily interest)', () => {
     const rows = generateSchedule(params, bank)
 
     expect(rows).toHaveLength(60)
-    expect(rows[1]).toMatchObject({ date: day('2023-01-17'), interestPart: 8487.14, totalAmount: 13_918.91 })
+    expect(rows[1]).toMatchObject({ date: day('2023-01-17'), interestPart: 848_714, totalAmount: 1_391_891 })
     expect(rows[3]).toMatchObject({ date: day('2023-03-17'), principalPart: 0, totalAmount: 0 })
     expect(rows[3]?.remainingBalance).toBe(rows[2]?.remainingBalance)
     // Principal left after the interest-only months, the bank says 523 431.01.
     expect(rows[6]?.date).toBe(day('2023-06-17'))
-    expect(rows[6]?.remainingBalance).toBe(523_431.01)
+    expect(rows[6]?.remainingBalance).toBe(52_343_101)
   })
 
   it('pushes the term one month out when only the holiday months come from the bank', () => {
@@ -82,9 +81,9 @@ describe('loan B (385 000 at 20.9%, holiday and top-ups)', () => {
   const summary = summarizeLoan(params, paid, loanB.walletBalance)
 
   it('splits the feed by the bank schedule rows', () => {
-    expect(summary.paidTotal).toBeCloseTo(80_357.36, 2)
-    expect(summary.paidPrincipal).toBeCloseTo(20_618, 0)
-    expect(summary.paidInterest).toBeCloseTo(59_739, 0)
+    expect(summary.paidTotal).toBeCloseTo(8_035_736, 0)
+    expect(summary.paidPrincipal).toBeCloseTo(2_061_800, -2)
+    expect(summary.paidInterest).toBeCloseTo(5_973_900, -2)
     expect(summary.unrecognized).toBe(0)
     expect(summary.isClosed).toBe(false)
   })
@@ -103,15 +102,15 @@ describe('loan B (385 000 at 20.9%, holiday and top-ups)', () => {
   })
 
   it('re-solves the unpaid bank rows for a what-if prepayment', () => {
-    const partial = whatIf(params, paid, 80_000, 'reduceTerm')
+    const partial = whatIf(params, paid, 8_000_000, 'reduce_term')
     expect(partial.interestSaved).toBeGreaterThan(0)
     expect(partial.newEndDate).toBeLessThan(summary.plannedEndDate!)
 
     // The bank accrues by days, our re-solve by rate / 12: nothing extra still saves nothing.
-    expect(whatIf(params, paid, 0, 'reduceTerm').interestSaved).toBe(0)
-    expect(whatIf(params, paid, -3000, 'reduceTerm').interestSaved).toBe(0)
+    expect(whatIf(params, paid, 0, 'reduce_term').interestSaved).toBe(0)
+    expect(whatIf(params, paid, -300_000, 'reduce_term').interestSaved).toBe(0)
 
-    const full = whatIf(params, paid, summary.remaining + 1, 'reduceTerm')
+    const full = whatIf(params, paid, summary.remaining + 100, 'reduce_term')
     expect(full.interestSaved).toBeCloseTo(summary.plannedInterest, 2)
     expect(full.newEndDate).toBeNull()
   })
@@ -124,9 +123,9 @@ describe('loan C (1 280 000, promo rate then a low one, closed early)', () => {
   const summary = summarizeLoan(params, paid, loanC.walletBalance)
 
   it('matches the bank totals', () => {
-    expect(summary.paidTotal).toBe(1_591_110.86)
-    expect(summary.paidInterest).toBe(311_110.86)
-    expect(summary.paidPrincipal).toBe(1_280_000)
+    expect(summary.paidTotal).toBe(159_111_086)
+    expect(summary.paidInterest).toBe(31_111_086)
+    expect(summary.paidPrincipal).toBe(128_000_000)
   })
 
   it('explains the whole principal and closes the loan', () => {
@@ -143,8 +142,8 @@ describe('loan C (1 280 000, promo rate then a low one, closed early)', () => {
   })
 
   it('closes the payoff day as two rows: the partial payment and the rest of the principal', () => {
-    expect(paid.at(-2)).toMatchObject({ date: day('2024-03-14'), paidInterest: 1402.21, paidPrincipal: 47_097.79 })
-    expect(paid.at(-1)).toMatchObject({ date: day('2024-03-14'), paidInterest: 0, paidPrincipal: 670_722.93 })
+    expect(paid.at(-2)).toMatchObject({ date: day('2024-03-14'), paidInterest: 140_221, paidPrincipal: 4_709_779 })
+    expect(paid.at(-1)).toMatchObject({ date: day('2024-03-14'), paidInterest: 0, paidPrincipal: 67_072_293 })
   })
 
   // The contract rate hides the promo months; the bank's own split supports this rate.

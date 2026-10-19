@@ -23,7 +23,7 @@ export function adaptiveView(name: string, scope: StatViewScope, isActive: boole
     createdAt: 0,
     id: ADAPTIVE_VIEW_ID,
     isActive,
-    isAutoEnabled: false,
+    isAutoRuleEnabled: false,
     name,
     scope,
     sortOrder: -1,

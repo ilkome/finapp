@@ -1,43 +1,68 @@
 import { z } from 'zod/v4'
 
+import type { CategoryId } from '~/components/categories/types'
+
 export const amountModes = ['median', 'average', 'max', 'last'] as const
 export type AmountMode = typeof amountModes[number]
 
-const regularOverrideSchema = z.object({
-  /** Monthly amount in base currency; absent keeps the detected one. */
-  amount: z.number().min(0).optional(),
-  state: z.enum(['exclude', 'include']),
-})
-export type RegularOverride = z.infer<typeof regularOverrideSchema>
+export const cardPaymentModes = ['minimum', 'full_debt'] as const
+export type CardPaymentMode = typeof cardPaymentModes[number]
+
+/** A manual choice on a category: `state` absent keeps detection, `amount` (base currency) absent keeps the detected amount. */
+export type RegularOverride = {
+  amount?: number
+  state?: 'exclude' | 'include'
+}
 
 // `.catch` per field: one bad value from an older or newer client resets only itself.
 const forecastSettingsSchema = z.object({
-  amountMode: z.enum(amountModes).default('median').catch('median'),
   /** Card obligation: the minimum payment every month, or the whole statement debt once. */
-  cardPayment: z.enum(['full', 'min']).default('min').catch('min'),
-  /** Detect on parent categories, children summed in. */
-  groupByParent: z.boolean().default(false).catch(false),
+  cardPaymentMode: z.enum(cardPaymentModes).default('minimum').catch('minimum'),
+  historyMonths: z.number().int().min(1).max(24).default(6).catch(6),
   horizonMonths: z.number().int().min(1).max(60).default(12).catch(12),
-  /** A category is regular when it has spending in at least this many months of the window. */
-  minMonths: z.number().int().min(1).max(24).default(5).catch(5),
-  overrides: z.record(z.string(), regularOverrideSchema).default({}).catch({}),
-  /** Wallets the forecast starts from; empty means every wallet available for withdrawal. */
-  walletIds: z.array(z.string()).default([]).catch([]),
-  windowMonths: z.number().int().min(1).max(24).default(6).catch(6),
+  /** Detect on parent categories, children summed in. */
+  isByParentCategory: z.boolean().default(false).catch(false),
+  regularAmountMode: z.enum(amountModes).default('median').catch('median'),
+  /** A category is regular when it has spending in at least this many months of the history. */
+  regularMinMonths: z.number().int().min(1).max(24).default(5).catch(5),
 })
 
 export type ForecastSettings = z.infer<typeof forecastSettingsSchema>
 
-/** Stored value (JSON text from SQLite, an object from the cache, or nothing) to settings with every default filled. */
+/** A stored row (or nothing) to settings with every default filled. */
 export function parseForecastSettings(raw: unknown): ForecastSettings {
-  let value = raw
-  if (typeof raw === 'string') {
-    try {
-      value = JSON.parse(raw)
-    }
-    catch {
-      value = {}
-    }
+  return forecastSettingsSchema.parse(raw && typeof raw === 'object' ? raw : {})
+}
+
+const forecastCategorySchema = z.object({
+  categoryId: z.string().min(1),
+  currencyCode: z.string().optional(),
+  /** true include, false exclude, absent detected. */
+  isIncluded: z.boolean().optional(),
+  /** Minor units of `currencyCode`. */
+  monthlyAmount: z.number().int().min(0).optional(),
+})
+
+export type ForecastCategory = z.infer<typeof forecastCategorySchema>
+export type ForecastCategories = Record<CategoryId, ForecastCategory>
+
+/** Stored rows to categories by id; a row the schema rejects is dropped. */
+export function parseForecastCategories(raw: unknown): ForecastCategories {
+  const result: ForecastCategories = {}
+  for (const value of Array.isArray(raw) ? raw : Object.values(raw && typeof raw === 'object' ? raw : {})) {
+    const parsed = forecastCategorySchema.safeParse(value)
+    if (parsed.success)
+      result[parsed.data.categoryId] = parsed.data
   }
-  return forecastSettingsSchema.parse(value && typeof value === 'object' ? value : {})
+  return result
+}
+
+/** A stored category as the override detection uses, its amount in base currency. */
+export function toRegularOverride(item: ForecastCategory, toBase: (amount: number, currencyCode: string) => number, baseCode: string): RegularOverride | undefined {
+  const override: RegularOverride = {}
+  if (item.isIncluded !== undefined)
+    override.state = item.isIncluded ? 'include' : 'exclude'
+  if (item.monthlyAmount !== undefined)
+    override.amount = Math.round(toBase(item.monthlyAmount, item.currencyCode ?? baseCode))
+  return override.state || override.amount !== undefined ? override : undefined
 }

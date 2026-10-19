@@ -36,7 +36,7 @@ export function useStatReportContext(params: UseStatReportContextParams) {
     && !params.type.value
     && (report.filteredType.value === 'expense' || report.filteredType.value === 'income'),
   )
-  const shouldShowAmounts = computed(() => !params.categoryId?.value || params.categoryId.value !== 'transfer')
+  const shouldShowAmounts = computed(() => true)
   const hasCategoriesData = computed(() => !!params.hasChildren?.value || (params.preCategoriesIds?.value ?? []).length > 0)
   const filteredParentCategoryId = computed(() => getSelectedParentCategoryId({
     getChildrenIds: categoryId => categoriesStore.getChildrenIds(categoryId),

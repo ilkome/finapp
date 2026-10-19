@@ -1,129 +1,20 @@
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { TrnType } from '~/components/trns/types'
+// Amounts are minor units (USD and RUB: cents and kopecks); keys name them in whole units.
+const base = { createdAt: 12, date: 86400000, updatedAt: 12 }
 
 export const trnsItems: Record<TrnId, TrnItem> = {
-  adjustmentExpenseWalletCashUSD30: {
-    amount: 30,
-    categoryId: 'adjustment',
-    date: 123456,
-    type: TrnType.Expense,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  adjustmentExpenseWalletCashUSD50: {
-    amount: 50,
-    categoryId: 'adjustment',
-    date: 123456,
-    type: TrnType.Expense,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  adjustmentIncomeWalletCashUSD30: {
-    amount: 30,
-    categoryId: 'adjustment',
-    date: 123456,
-    type: TrnType.Income,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  adjustmentIncomeWalletCashUSD200: {
-    amount: 200,
-    categoryId: 'adjustment',
-    date: 123456,
-    type: TrnType.Income,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  singleLegTransferExpenseWalletCashUSD50: {
-    amount: 50,
-    categoryId: 'transfer',
-    date: 123456,
-    type: TrnType.Expense,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  singleLegTransferIncomeWalletCashUSD60: {
-    amount: 60,
-    categoryId: 'transfer',
-    date: 123456,
-    type: TrnType.Income,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  transactionExpenseWalletCashUSD400: {
-    amount: 400,
-    categoryId: 'expense',
-    date: 123456,
-    type: TrnType.Expense,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  transactionExpenseWalletOneRUB900: {
-    amount: 900,
-    categoryId: 'category1',
-    date: 123456,
-    type: TrnType.Expense,
-    updatedAt: 12,
-    walletId: 'walletOneRUB',
-  },
-
-  transactionIncomeWalletCashUSD1000: {
-    amount: 1000,
-    categoryId: 'income',
-    date: 123456,
-    type: TrnType.Income,
-    updatedAt: 12,
-    walletId: 'walletCashUSD',
-  },
-
-  transactionIncomeWalletOneRUB700: {
-    amount: 700,
-    categoryId: 'category1',
-    date: 123456,
-    type: TrnType.Income,
-    updatedAt: 12,
-    walletId: 'walletOneRUB',
-  },
-
-  transferExpenseWalletCashUSD10IncomeWalletRUB700: {
-    categoryId: 'transfer',
-    date: 123456,
-    expenseAmount: 10,
-    expenseWalletId: 'walletCashUSD',
-    incomeAmount: 700,
-    incomeWalletId: 'walletRUB',
-    type: TrnType.Transfer,
-    updatedAt: 12,
-  },
-
-  transferExpenseWalletCreditUSD40IncomeWalletCashUSD40: {
-    categoryId: 'transfer',
-    date: 123456,
-    expenseAmount: 40,
-    expenseWalletId: 'walletCreditUSD',
-    incomeAmount: 40,
-    incomeWalletId: 'walletCashUSD',
-    type: TrnType.Transfer,
-    updatedAt: 12,
-  },
-
-  transferExpenseWalletRUB300IncomeWalletCreditUSD10: {
-    categoryId: 'transfer',
-    date: 123456,
-    expenseAmount: 300,
-    expenseWalletId: 'walletRUB',
-    incomeAmount: 10,
-    incomeWalletId: 'walletCreditUSD',
-    type: TrnType.Transfer,
-    updatedAt: 12,
-  },
-
+  adjustmentExpenseWalletCashUSD30: { ...base, fromAmount: 3000, fromWalletId: 'walletCashUSD', type: 'adjustment' },
+  adjustmentExpenseWalletCashUSD50: { ...base, fromAmount: 5000, fromWalletId: 'walletCashUSD', type: 'adjustment' },
+  adjustmentIncomeWalletCashUSD30: { ...base, toAmount: 3000, toWalletId: 'walletCashUSD', type: 'adjustment' },
+  adjustmentIncomeWalletCashUSD200: { ...base, toAmount: 20000, toWalletId: 'walletCashUSD', type: 'adjustment' },
+  singleLegTransferExpenseWalletCashUSD50: { ...base, fromAmount: 5000, fromWalletId: 'walletCashUSD', type: 'transfer' },
+  singleLegTransferIncomeWalletCashUSD60: { ...base, toAmount: 6000, toWalletId: 'walletCashUSD', type: 'transfer' },
+  transactionExpenseWalletCashUSD400: { ...base, categoryId: 'expense', fromAmount: 40000, fromWalletId: 'walletCashUSD', type: 'expense' },
+  transactionExpenseWalletOneRUB900: { ...base, categoryId: 'category1', fromAmount: 90000, fromWalletId: 'walletOneRUB', type: 'expense' },
+  transactionIncomeWalletCashUSD1000: { ...base, categoryId: 'income', toAmount: 100000, toWalletId: 'walletCashUSD', type: 'income' },
+  transactionIncomeWalletOneRUB700: { ...base, categoryId: 'category1', toAmount: 70000, toWalletId: 'walletOneRUB', type: 'income' },
+  transferExpenseWalletCashUSD10IncomeWalletRUB700: { ...base, fromAmount: 1000, fromWalletId: 'walletCashUSD', toAmount: 70000, toWalletId: 'walletRUB', type: 'transfer' },
+  transferExpenseWalletCreditUSD40IncomeWalletCashUSD40: { ...base, fromAmount: 4000, fromWalletId: 'walletCreditUSD', toAmount: 4000, toWalletId: 'walletCashUSD', type: 'transfer' },
+  transferExpenseWalletRUB300IncomeWalletCreditUSD10: { ...base, fromAmount: 30000, fromWalletId: 'walletRUB', toAmount: 1000, toWalletId: 'walletCreditUSD', type: 'transfer' },
 }

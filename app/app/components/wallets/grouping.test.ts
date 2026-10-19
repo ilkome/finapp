@@ -5,26 +5,26 @@ import type { WalletItemComputed } from '~/components/wallets/types'
 
 import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus, groupWalletsByProperty } from '~/components/wallets/grouping'
 
-function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currency' | 'type'>): WalletItemComputed {
+function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currencyCode' | 'type'>): WalletItemComputed {
   return {
     color: 'blue',
-    desc: '',
+    description: '',
     isArchived: false,
-    isExcludeInTotal: false,
-    isWithdrawal: false,
+    isExcludedFromTotal: false,
+    isWithdrawable: false,
     name: 'Test',
-    order: 0,
+    sortOrder: 0,
     updatedAt: 0,
     ...overrides,
   } as WalletItemComputed
 }
 
 const wallets = {
-  cardRUB: wallet({ amount: 3000, currency: 'RUB', type: 'cashless' }),
-  cardUSD: wallet({ amount: 500, currency: 'USD', type: 'cashless' }),
-  cashRUB: wallet({ amount: 5000, currency: 'RUB', type: 'cash' }),
-  cashUSD: wallet({ amount: 100, currency: 'USD', type: 'cash' }),
-  creditUSD: wallet({ amount: -200, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+  cardRUB: wallet({ amount: 3000, currencyCode: 'RUB', type: 'bank_account' }),
+  cardUSD: wallet({ amount: 500, currencyCode: 'USD', type: 'bank_account' }),
+  cashRUB: wallet({ amount: 5000, currencyCode: 'RUB', type: 'cash' }),
+  cashUSD: wallet({ amount: 100, currencyCode: 'USD', type: 'cash' }),
+  creditUSD: wallet({ amount: -200, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
 } as Record<string, WalletItemComputed>
 
 const allIds = Object.keys(wallets)
@@ -32,14 +32,14 @@ const allIds = Object.keys(wallets)
 describe('groupWalletsByProperty', () => {
   it('groups by type', () => {
     const result = groupWalletsByProperty(allIds, wallets, 'type')
-    expect(Object.keys(result).sort()).toEqual(['cash', 'cashless', 'credit'])
-    expect(result.cashless).toEqual(['cardRUB', 'cardUSD'])
+    expect(Object.keys(result).sort()).toEqual(['bank_account', 'cash', 'credit_card'])
+    expect(result.bank_account).toEqual(['cardRUB', 'cardUSD'])
     expect(result.cash).toEqual(['cashRUB', 'cashUSD'])
-    expect(result.credit).toEqual(['creditUSD'])
+    expect(result.credit_card).toEqual(['creditUSD'])
   })
 
   it('groups by currency', () => {
-    const result = groupWalletsByProperty(allIds, wallets, 'currency')
+    const result = groupWalletsByProperty(allIds, wallets, 'currencyCode')
     expect(Object.keys(result).sort()).toEqual(['RUB', 'USD'])
     expect(result.RUB).toEqual(['cardRUB', 'cashRUB'])
     expect(result.USD).toEqual(['cardUSD', 'cashUSD', 'creditUSD'])
@@ -63,7 +63,7 @@ describe('buildWalletGroups', () => {
   })
 
   it('moves archived wallets into a trailing archived group by type', () => {
-    const withArchived = { ...wallets, oldCash: wallet({ amount: 1, currency: 'RUB', isArchived: true, type: 'cash' }) }
+    const withArchived = { ...wallets, oldCash: wallet({ amount: 1, currencyCode: 'RUB', isArchived: true, type: 'cash' }) }
     const result = buildWalletGroups([...allIds, 'oldCash'], withArchived, 'type', true)
     if (!result)
       throw new Error('expected groups')
@@ -77,14 +77,14 @@ describe('buildWalletGroups', () => {
   it('moves excluded-from-total wallets into their own group before archived', () => {
     const withFlags = {
       ...wallets,
-      hidden: wallet({ amount: 1, currency: 'RUB', isExcludeInTotal: true, type: 'cash' }),
-      oldHidden: wallet({ amount: 1, currency: 'RUB', isArchived: true, isExcludeInTotal: true, type: 'cash' }),
+      hidden: wallet({ amount: 1, currencyCode: 'RUB', isExcludedFromTotal: true, type: 'cash' }),
+      oldHidden: wallet({ amount: 1, currencyCode: 'RUB', isArchived: true, isExcludedFromTotal: true, type: 'cash' }),
     }
     const result = buildWalletGroups([...allIds, 'hidden', 'oldHidden'], withFlags, 'type', false)
     if (!result)
       throw new Error('expected groups')
 
-    expect(result.isExcludeInTotal!.ids).toEqual(['hidden', 'oldHidden'])
+    expect(result.isExcludedFromTotal!.ids).toEqual(['hidden', 'oldHidden'])
     expect(result).not.toHaveProperty('isArchived')
   })
 
@@ -94,7 +94,7 @@ describe('buildWalletGroups', () => {
     if (!result)
       return
 
-    expect(result.cashless!.ids).toEqual(['cardRUB', 'cardUSD'])
+    expect(result.bank_account!.ids).toEqual(['cardRUB', 'cardUSD'])
     expect(result.cash!.ids).toEqual(['cashRUB', 'cashUSD'])
     expect(result.cash!.groups).toEqual({})
   })
@@ -124,8 +124,8 @@ describe('buildWalletGroups', () => {
       return
 
     expect(result.USD!.groups!.cash).toEqual(['cashUSD'])
-    expect(result.USD!.groups!.cashless).toEqual(['cardUSD'])
-    expect(result.USD!.groups!.credit).toEqual(['creditUSD'])
+    expect(result.USD!.groups!.bank_account).toEqual(['cardUSD'])
+    expect(result.USD!.groups!.credit_card).toEqual(['creditUSD'])
   })
 })
 
@@ -214,8 +214,8 @@ describe('applyToggle', () => {
 
 describe('applyToggleAll', () => {
   const grouped = {
+    bank_account: { groups: { RUB: ['cardRUB'], USD: ['cardUSD'] }, ids: ['cardRUB', 'cardUSD'] },
     cash: { groups: { RUB: ['cashRUB'], USD: ['cashUSD'] }, ids: ['cashRUB', 'cashUSD'] },
-    cashless: { groups: { RUB: ['cardRUB'], USD: ['cardUSD'] }, ids: ['cardRUB', 'cardUSD'] },
   }
 
   it('opens all primary groups when none are open', () => {
@@ -223,7 +223,7 @@ describe('applyToggleAll', () => {
     const result = applyToggleAll({}, 'type', grouped, false, status)
 
     expect(result.type!.cash!.show).toBe(true)
-    expect(result.type!.cashless!.show).toBe(true)
+    expect(result.type!.bank_account!.show).toBe(true)
   })
 
   it('closes all primary groups when all are open', () => {
@@ -237,7 +237,7 @@ describe('applyToggleAll', () => {
     const result = applyToggleAll(map, 'type', grouped, false, status)
 
     expect(result.type!.cash!.show).toBe(false)
-    expect(result.type!.cashless!.show).toBe(false)
+    expect(result.type!.bank_account!.show).toBe(false)
   })
 
   it('with secondary: opens secondary when primary already open', () => {
@@ -252,7 +252,7 @@ describe('applyToggleAll', () => {
 
     expect(result.type!.cash!.groups!.RUB).toBe(true)
     expect(result.type!.cash!.groups!.USD).toBe(true)
-    expect(result.type!.cashless!.groups!.RUB).toBe(true)
+    expect(result.type!.bank_account!.groups!.RUB).toBe(true)
   })
 
   it('with secondary: closes everything when all open', () => {
@@ -267,7 +267,7 @@ describe('applyToggleAll', () => {
 
     expect(result.type!.cash!.show).toBe(false)
     expect(result.type!.cash!.groups!.RUB).toBe(false)
-    expect(result.type!.cashless!.show).toBe(false)
+    expect(result.type!.bank_account!.show).toBe(false)
   })
 
   it('does nothing for groupedBy "none"', () => {

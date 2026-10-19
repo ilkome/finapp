@@ -2,14 +2,15 @@ import type { Row } from '~~/services/powersync/transforms'
 
 import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, deleteRows, upsertRow } from '~~/services/powersync/mutations'
-import { loanScheduleRowToRow, loanToRow, rowToLoan, rowToLoanScheduleRow } from '~~/services/powersync/transforms'
+import { loanScheduleOverrideToRow, loanToRow, rowToLoan, rowToLoanScheduleOverride } from '~~/services/powersync/transforms'
 
+import type { BankReport } from '~/components/bankReports/types'
 import type { CurrencyCode } from '~/components/currencies/types'
-import type { LoanCost, LoanSummary, LoanTrn, OverpaymentMode, ScheduleOverride, WhatIfResult } from '~/components/loans/engine/types'
-import type { LoanId, LoanItem, Loans, LoanScheduleRowId, LoanScheduleRowItem, LoanScheduleRows } from '~/components/loans/types'
+import type { LoanCost, LoanSummary, LoanTrn, PrepaymentMode, ScheduleOverride, WhatIfResult } from '~/components/loans/engine/types'
+import type { LoanId, LoanItem, Loans, LoanScheduleOverrideId, LoanScheduleOverrideItem, LoanScheduleOverrides } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { currencyMinorUnit } from '~/components/currencies/currencies'
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { createDeriveLoanMemo, deriveDue, overridesByLoan, projectionParams } from '~/components/loans/engine/derive'
@@ -17,7 +18,7 @@ import { collectCreditTrns, costOf } from '~/components/loans/engine/ledger'
 import { whatIf } from '~/components/loans/engine/summary'
 import { deriveUpcoming, urgentWalletIds } from '~/components/loans/engine/upcoming'
 import { graceOf, minPaymentOf } from '~/components/loans/minPayment'
-import { loanItemSchema, loanScheduleRowSchema } from '~/components/loans/types'
+import { loanItemSchema, loanScheduleOverrideSchema } from '~/components/loans/types'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -35,35 +36,36 @@ const NO_OVERRIDES: ScheduleOverride[] = []
 
 export type LoansCache = {
   items: Loans
-  scheduleRows: LoanScheduleRows
+  scheduleOverrides: LoanScheduleOverrides
 }
 
 export const useLoansStore = defineStore('loans', () => {
   const trnsStore = useTrnsStore()
   const walletsStore = useWalletsStore()
   const currenciesStore = useCurrenciesStore()
+  const bankReportsStore = useBankReportsStore()
   const { isDemo } = useDemo()
   const { uid } = useSupabaseAuth()
   const today = useCivilToday()
 
   const items = shallowRef<Loans>({})
-  const scheduleRows = shallowRef<LoanScheduleRows>({})
+  const scheduleOverrides = shallowRef<LoanScheduleOverrides>({})
 
   let loansWatch: AbortController | null = null
-  let rowsWatch: AbortController | null = null
+  let overridesWatch: AbortController | null = null
 
   const persistItems = createDebouncedPersist<Loans>(STORAGE_KEYS.loans)
-  const persistRows = createDebouncedPersist<LoanScheduleRows>(STORAGE_KEYS.loanScheduleRows)
+  const persistOverrides = createDebouncedPersist<LoanScheduleOverrides>(STORAGE_KEYS.loanScheduleOverrides)
 
   const isLoaded = ref(false)
 
   function cache() {
     if (isDemo.value) {
       persistItems(items.value)
-      persistRows(scheduleRows.value)
+      persistOverrides(scheduleOverrides.value)
     }
     else {
-      persistStoreCache('loans', { items: items.value, scheduleRows: scheduleRows.value } satisfies LoansCache)
+      persistStoreCache('loans', { items: items.value, scheduleOverrides: scheduleOverrides.value } satisfies LoansCache)
     }
   }
 
@@ -72,8 +74,8 @@ export const useLoansStore = defineStore('loans', () => {
     cache()
   }
 
-  function setScheduleRows(values: LoanScheduleRows) {
-    scheduleRows.value = values
+  function setScheduleOverrides(values: LoanScheduleOverrides) {
+    scheduleOverrides.value = values
     cache()
   }
 
@@ -84,15 +86,15 @@ export const useLoansStore = defineStore('loans', () => {
       return
     if (!Object.keys(items.value).length)
       items.value = data.items ?? {}
-    if (!Object.keys(scheduleRows.value).length)
-      scheduleRows.value = data.scheduleRows ?? {}
+    if (!Object.keys(scheduleOverrides.value).length)
+      scheduleOverrides.value = data.scheduleOverrides ?? {}
   }
 
   function initLoans(): void {
     if (isDemo.value)
       return
     loansWatch?.abort()
-    rowsWatch?.abort()
+    overridesWatch?.abort()
     isLoaded.value = false
     loansWatch = watchTable<Row>('SELECT * FROM loans', [], (rows) => {
       isLoaded.value = true
@@ -100,10 +102,10 @@ export const useLoansStore = defineStore('loans', () => {
       if (next !== items.value)
         setLoans(next)
     })
-    rowsWatch = watchTable<Row>('SELECT * FROM loan_schedule_rows', [], (rows) => {
-      const next = reconcileRows(scheduleRows.value, rows, rowToLoanScheduleRow) ?? {}
-      if (next !== scheduleRows.value)
-        setScheduleRows(next)
+    overridesWatch = watchTable<Row>('SELECT * FROM loan_schedule_overrides', [], (rows) => {
+      const next = reconcileRows(scheduleOverrides.value, rows, rowToLoanScheduleOverride) ?? {}
+      if (next !== scheduleOverrides.value)
+        setScheduleOverrides(next)
     })
     logger.log('watching loans')
   }
@@ -123,14 +125,14 @@ export const useLoansStore = defineStore('loans', () => {
   )
 
   // Own computed so each loan's override list keeps its reference across trn edits (memo key).
-  const overridesByLoanId = computed(() => overridesByLoan(scheduleRows.value))
+  const overridesByLoanId = computed(() => overridesByLoan(scheduleOverrides.value))
   const deriveLoanMemo = createDeriveLoanMemo()
 
   /** Stored row ids per loan, keyed by payment number: the rows a wallet section can reset. */
-  const scheduleRowIdsByLoanId = computed(() => {
-    const result = new Map<LoanId, Map<number, LoanScheduleRowId>>()
-    for (const [id, row] of Object.entries(scheduleRows.value)) {
-      const ids = result.get(row.loanId) ?? new Map<number, LoanScheduleRowId>()
+  const scheduleOverrideIdsByLoanId = computed(() => {
+    const result = new Map<LoanId, Map<number, LoanScheduleOverrideId>>()
+    for (const [id, row] of Object.entries(scheduleOverrides.value)) {
+      const ids = result.get(row.loanId) ?? new Map<number, LoanScheduleOverrideId>()
       ids.set(row.paymentNumber, id)
       result.set(row.loanId, ids)
     }
@@ -150,7 +152,7 @@ export const useLoansStore = defineStore('loans', () => {
         trnsByCreditWallet.value.get(loan.walletId) ?? [],
         walletsStore.itemsComputed[loan.walletId]?.amount ?? 0,
         today.value,
-        currencyMinorUnit(walletsStore.currencyOf(loan.walletId)),
+        bankReportsStore.items[loan.walletId],
       )
       const old = prev?.get(loan.walletId)
       return [loan.walletId, old?.loan === loan && old.summary === summary ? old : { loan, summary }]
@@ -159,19 +161,19 @@ export const useLoansStore = defineStore('loans', () => {
 
   /** Interest and fees of every credit wallet, including the revolving ones with no `loans` row. */
   const costByWalletId = computed<Map<WalletId, LoanCost>>(() => new Map(
-    [...creditWalletIds.value].map(walletId => [walletId, costOf(trnsByCreditWallet.value.get(walletId) ?? [], currencyMinorUnit(walletsStore.items?.[walletId]?.currency))]),
+    [...creditWalletIds.value].map(walletId => [walletId, costOf(trnsByCreditWallet.value.get(walletId) ?? [])]),
   ))
 
   /** One minimum-payment line per credit wallet; the card line, sections and totals all read it. */
   const minPaymentByWalletId = computed(() => new Map([...creditWalletIds.value].flatMap((walletId) => {
     const wallet = walletsStore.items?.[walletId]
-    const found = wallet && minPaymentOf(wallet, trnsByCreditWallet.value.get(walletId) ?? [], today.value)
+    const found = wallet && minPaymentOf(wallet, bankReportsStore.items[walletId], trnsByCreditWallet.value.get(walletId) ?? [], today.value)
     return found ? [[walletId, found] as const] : []
   })))
 
   const graceByWalletId = computed(() => new Map([...creditWalletIds.value].flatMap((walletId) => {
     const wallet = walletsStore.items?.[walletId]
-    const found = wallet && graceOf(wallet, trnsByCreditWallet.value.get(walletId) ?? [], today.value)
+    const found = wallet && graceOf(wallet, bankReportsStore.items[walletId], trnsByCreditWallet.value.get(walletId) ?? [], today.value)
     return found ? [[walletId, found] as const] : []
   })))
 
@@ -179,8 +181,8 @@ export const useLoansStore = defineStore('loans', () => {
     [...byWalletId.value].map(([walletId, { loan, summary }]) => ({ currency: walletsStore.currencyOf(walletId), loan, summary, walletId })),
     [...creditWalletIds.value].flatMap((walletId) => {
       const wallet = walletsStore.items?.[walletId]
-      return wallet?.type === 'credit' && !wallet.isArchived && !loanIdByWalletId.value.has(walletId)
-        ? [{ currency: wallet.currency, grace: graceByWalletId.value.get(walletId) ?? null, minPayment: minPaymentByWalletId.value.get(walletId) ?? null, walletId }]
+      return wallet?.type === 'credit_card' && !wallet.isArchived && !loanIdByWalletId.value.has(walletId)
+        ? [{ currency: wallet.currencyCode, grace: graceByWalletId.value.get(walletId) ?? null, minPayment: minPaymentByWalletId.value.get(walletId) ?? null, walletId }]
         : []
     }),
     today.value,
@@ -195,20 +197,21 @@ export const useLoansStore = defineStore('loans', () => {
       if (loanIdByWalletId.value.has(walletId))
         continue
       const wallet = walletsStore.items?.[walletId]
-      if (wallet?.type !== 'credit')
+      if (wallet?.type !== 'credit_card')
         continue
+      const report: BankReport | undefined = bankReportsStore.items[walletId]
       // An overdue interest-free repayment counts like an overdue loan row, in place of a smaller minimum.
       const grace = graceByWalletId.value.get(walletId)
-      if (grace?.status === 'overdue' && grace.date != null && grace.amount > (wallet.minPaymentAmount ?? 0)) {
-        revolving.push({ currency: wallet.currency, minPaymentAmount: grace.amount, minPaymentDate: grace.date, walletId })
+      if (grace?.status === 'overdue' && grace.date != null && grace.amount > (report?.minPaymentAmount ?? 0)) {
+        revolving.push({ currency: wallet.currencyCode, minPaymentAmount: grace.amount, minPaymentDate: grace.date, walletId })
         continue
       }
-      if (!wallet.minPaymentAmount || wallet.minPaymentDate == null)
+      if (!report?.minPaymentAmount || report.minPaymentDueDate === undefined)
         continue
       // A minimum already met this period is nothing left to pay.
       if (minPaymentByWalletId.value.get(walletId)?.status === 'paid')
         continue
-      revolving.push({ currency: wallet.currency, minPaymentAmount: wallet.minPaymentAmount, minPaymentDate: wallet.minPaymentDate, walletId })
+      revolving.push({ currency: wallet.currencyCode, minPaymentAmount: report.minPaymentAmount, minPaymentDate: report.minPaymentDueDate, walletId })
     }
 
     return deriveDue(
@@ -243,70 +246,70 @@ export const useLoansStore = defineStore('loans', () => {
 
   function deleteLoan(id: LoanId) {
     const prevLoans = items.value
-    const prevRows = scheduleRows.value
+    const prevRows = scheduleOverrides.value
     const loans = { ...items.value }
     delete loans[id]
     setLoans(loans)
 
-    const ownRowIds = Object.keys(scheduleRows.value).filter(rowId => scheduleRows.value[rowId]?.loanId === id)
+    const ownRowIds = Object.keys(scheduleOverrides.value).filter(rowId => scheduleOverrides.value[rowId]?.loanId === id)
     if (ownRowIds.length) {
-      const rows = { ...scheduleRows.value }
+      const rows = { ...scheduleOverrides.value }
       for (const rowId of ownRowIds)
         delete rows[rowId]
-      setScheduleRows(rows)
+      setScheduleOverrides(rows)
     }
 
     if (isDemo.value)
       return
 
-    void persistOptimistic(Promise.all([deleteRow('loans', id), deleteRows('loan_schedule_rows', ownRowIds)]), {
+    void persistOptimistic(Promise.all([deleteRow('loans', id), deleteRows('loan_schedule_overrides', ownRowIds)]), {
       errorKey: 'loans.errors.deleteFailed',
       label: 'deleteLoan',
       logger,
       rollback: () => {
         setLoans(prevLoans)
-        setScheduleRows(prevRows)
+        setScheduleOverrides(prevRows)
       },
     })
   }
 
-  function saveScheduleRow(id: LoanScheduleRowId, values: LoanScheduleRowItem) {
-    if (!loanScheduleRowSchema.safeParse(values).success) {
-      logger.error('saveScheduleRow: invalid row', values)
+  function saveScheduleOverride(id: LoanScheduleOverrideId, values: LoanScheduleOverrideItem) {
+    if (!loanScheduleOverrideSchema.safeParse(values).success) {
+      logger.error('saveScheduleOverride: invalid row', values)
       return
     }
-    const prev = scheduleRows.value
-    setScheduleRows({ ...scheduleRows.value, [id]: values })
+    const prev = scheduleOverrides.value
+    setScheduleOverrides({ ...scheduleOverrides.value, [id]: values })
     if (isDemo.value)
       return
 
-    void persistOptimistic(upsertRow('loan_schedule_rows', id, loanScheduleRowToRow(values, resolveWriteUid(uid.value))), {
+    void persistOptimistic(upsertRow('loan_schedule_overrides', id, loanScheduleOverrideToRow(values, resolveWriteUid(uid.value))), {
       errorKey: 'loans.errors.saveFailed',
-      label: 'saveScheduleRow',
+      label: 'saveScheduleOverride',
       logger,
-      rollback: () => setScheduleRows(prev),
+      rollback: () => setScheduleOverrides(prev),
     })
   }
 
-  function deleteScheduleRow(id: LoanScheduleRowId) {
-    const prev = scheduleRows.value
-    const rows = { ...scheduleRows.value }
+  function deleteScheduleOverride(id: LoanScheduleOverrideId) {
+    const prev = scheduleOverrides.value
+    const rows = { ...scheduleOverrides.value }
     delete rows[id]
-    setScheduleRows(rows)
+    setScheduleOverrides(rows)
     if (isDemo.value)
       return
 
-    void persistOptimistic(deleteRow('loan_schedule_rows', id), {
+    void persistOptimistic(deleteRow('loan_schedule_overrides', id), {
       errorKey: 'loans.errors.deleteFailed',
-      label: 'deleteScheduleRow',
+      label: 'deleteScheduleOverride',
       logger,
-      rollback: () => setScheduleRows(prev),
+      rollback: () => setScheduleOverrides(prev),
     })
   }
 
-  function getWhatIf(walletId: WalletId, extra: number, mode: OverpaymentMode): WhatIfResult | null {
+  function getWhatIf(walletId: WalletId, extra: number, mode: PrepaymentMode): WhatIfResult | null {
     const entry = byWalletId.value.get(walletId)
-    const params = entry && projectionParams(entry.loan, entry.summary, currencyMinorUnit(walletsStore.items?.[walletId]?.currency))
+    const params = entry && projectionParams(entry.loan, entry.summary)
     if (!entry || !params)
       return null
     return whatIf(params, entry.summary.rows, extra, mode)
@@ -316,7 +319,7 @@ export const useLoansStore = defineStore('loans', () => {
     byWalletId,
     costByWalletId,
     deleteLoan,
-    deleteScheduleRow,
+    deleteScheduleOverride,
     dueThisMonth,
     getWhatIf,
     graceByWalletId,
@@ -326,11 +329,11 @@ export const useLoansStore = defineStore('loans', () => {
     minPaymentByWalletId,
     primeFromCache,
     saveLoan,
-    saveScheduleRow,
-    scheduleRowIdsByLoanId,
-    scheduleRows,
+    saveScheduleOverride,
+    scheduleOverrideIdsByLoanId,
+    scheduleOverrides,
     setLoans,
-    setScheduleRows,
+    setScheduleOverrides,
     trnsByCreditWallet,
     upcoming,
     urgentIds,

@@ -5,8 +5,8 @@ import type { LoanItem } from '~/components/loans/types'
 import type { TrnItem } from '~/components/trns/types'
 import type { WalletItem } from '~/components/wallets/types'
 
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useLoansStore } from '~/components/loans/useLoansStore'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { toastAddMock } from '~/test-utils/setup-store'
@@ -36,15 +36,15 @@ vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupaba
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 0))
 
 function wallet(over: Partial<WalletItem> = {}): WalletItem {
-  return { color: '#fff', currency: 'USD', desc: '', isArchived: false, isExcludeInTotal: false, isWithdrawal: false, name: 'Cash', order: 0, type: 'cash', updatedAt: 1, ...over } as WalletItem
+  return { color: '#fff', currencyCode: 'USD', description: '', isArchived: false, isExcludedFromTotal: false, isWithdrawable: false, name: 'Cash', sortOrder: 0, type: 'cash', updatedAt: 1, ...over } as WalletItem
 }
 
 function walletRow(id: string, order = 0) {
-  return { color: '#fff', currency: 'USD', desc: '', id, isArchived: 0, isExcludeInTotal: 0, isWithdrawal: 0, name: id, order, type: 'cash', updatedAt: 1 }
+  return { color: '#fff', currency_code: 'USD', description: '', id, isArchived: 0, isExcludedFromTotal: 0, isWithdrawable: 0, name: id, sort_order: order, type: 'cash', updatedAt: 1 }
 }
 
 function expense(over: Partial<TrnItem> = {}): TrnItem {
-  return { amount: 100, categoryId: 'food', date: 1700000000000, type: TrnType.Expense, updatedAt: 1, walletId: 'w1', ...over } as TrnItem
+  return { categoryId: 'food', createdAt: 1, date: 1700000000000, fromAmount: 100, fromWalletId: 'w1', type: 'expense', updatedAt: 1, ...over } as TrnItem
 }
 
 describe('useWalletsStore', () => {
@@ -68,7 +68,7 @@ describe('useWalletsStore', () => {
 
       h.watchCallbacks[0]!([walletRow('a', 0), walletRow('b', 1)])
       expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
-      expect(store.items?.a).toMatchObject({ currency: 'USD', type: 'cash' })
+      expect(store.items?.a).toMatchObject({ currencyCode: 'USD', type: 'cash' })
 
       // An empty emission after the first one is a genuine wipe and must apply.
       h.watchCallbacks[0]!([])
@@ -79,7 +79,7 @@ describe('useWalletsStore', () => {
       const store = useWalletsStore()
       store.initWallets()
 
-      store.setWallets({ a: { currency: 'USD', name: 'A', order: 0, type: 'cash' } } as never)
+      store.setWallets({ a: { currencyCode: 'USD', name: 'A', sortOrder: 0, type: 'cash' } } as never)
       h.watchCallbacks[0]!([])
       expect(store.items?.a).toBeDefined()
     })
@@ -102,18 +102,18 @@ describe('useWalletsStore', () => {
   describe('saveWallet', () => {
     it('assigns the next order to a new wallet and upserts it', async () => {
       const store = useWalletsStore()
-      store.setWallets({ w1: wallet({ order: 0 }) })
+      store.setWallets({ w1: wallet({ sortOrder: 0 }) })
 
       store.saveWallet({ id: 'w2', values: wallet({ name: 'Card' }) })
-      expect(store.items?.w2).toMatchObject({ name: 'Card', order: 1 }) // maxOrder + 1
+      expect(store.items?.w2).toMatchObject({ name: 'Card', sortOrder: 1 }) // maxOrder + 1
 
       await tick()
-      expect(h.upsertRow).toHaveBeenCalledWith('wallets', 'w2', expect.objectContaining({ order: 1, userId: 'u1' }))
+      expect(h.upsertRow).toHaveBeenCalledWith('wallets', 'w2', expect.objectContaining({ sort_order: 1, user_id: 'u1' }))
     })
 
     it('rolls back and toasts when the write fails', async () => {
       const store = useWalletsStore()
-      store.setWallets({ w1: wallet({ order: 0 }) })
+      store.setWallets({ w1: wallet({ sortOrder: 0 }) })
       const prev = store.items
       h.upsertRow.mockReset().mockRejectedValueOnce(new Error('boom'))
 
@@ -140,11 +140,11 @@ describe('useWalletsStore', () => {
   describe('saveWalletsOrder', () => {
     it('reorders optimistically and upserts every wallet', async () => {
       const store = useWalletsStore()
-      store.setWallets({ a: wallet({ order: 0 }), b: wallet({ order: 1 }) })
+      store.setWallets({ a: wallet({ sortOrder: 0 }), b: wallet({ sortOrder: 1 }) })
 
       store.saveWalletsOrder(['b', 'a'])
-      expect(store.items?.b?.order).toBe(0)
-      expect(store.items?.a?.order).toBe(1)
+      expect(store.items?.b?.sortOrder).toBe(0)
+      expect(store.items?.a?.sortOrder).toBe(1)
 
       await tick()
       expect(h.upsertRows).toHaveBeenCalledTimes(1)
@@ -154,7 +154,7 @@ describe('useWalletsStore', () => {
 
     it('restores the previous order and toasts when the write fails', async () => {
       const store = useWalletsStore()
-      store.setWallets({ a: wallet({ order: 0 }), b: wallet({ order: 1 }) })
+      store.setWallets({ a: wallet({ sortOrder: 0 }), b: wallet({ sortOrder: 1 }) })
       const prev = store.items
       h.upsertRows.mockReset().mockRejectedValueOnce(new Error('boom'))
 
@@ -169,7 +169,7 @@ describe('useWalletsStore', () => {
   describe('deleteWallet', () => {
     it('cascades: removes the wallet and its trns, deleting both in the DB', async () => {
       const trnsStore = useTrnsStore()
-      trnsStore.setTrns({ t1: expense(), t2: expense({ walletId: 'w2' }) })
+      trnsStore.setTrns({ t1: expense(), t2: expense({ fromWalletId: 'w2' }) })
       const store = useWalletsStore()
       store.setWallets({ w1: wallet() })
 
@@ -179,7 +179,7 @@ describe('useWalletsStore', () => {
       expect(trnsStore.items?.t1).toBeUndefined()
       expect(trnsStore.items?.t2).toBeDefined()
       expect(h.deleteRow).toHaveBeenCalledWith('wallets', 'w1')
-      expect(h.deleteRows).toHaveBeenCalledWith('trns', ['t1'])
+      expect(h.deleteRows).toHaveBeenCalledWith('transactions', ['t1'])
     })
 
     it('restores the wallet and cascaded trns when the write fails', async () => {
@@ -216,50 +216,30 @@ describe('useWalletsStore', () => {
 
     it('cascades to the loan of a deleted credit wallet', async () => {
       const store = useWalletsStore()
-      store.setWallets({ credit1: wallet({ type: 'credit' }) })
+      store.setWallets({ credit1: wallet({ type: 'credit_card' }) })
       const loansStore = useLoansStore()
-      loansStore.setLoans({ l1: {
-        annualRate: 12,
-        contractNumber: '',
-        desc: '',
-        firstPaymentDate: 1,
-        overpaymentMode: 'reducePayment',
-        paymentDay: 10,
-        principalAmount: 1000,
-        scheduleType: 'annuity',
-        startDate: 1,
-        termMonths: 12,
-        updatedAt: 1,
-        walletId: 'credit1',
-      } as LoanItem })
-      loansStore.setScheduleRows({ r1: {
-        date: 1,
-        interestPart: 1,
-        loanId: 'l1',
-        paymentNumber: 1,
-        principalPart: 1,
-        source: 'manual',
-        totalAmount: 2,
-        updatedAt: 1,
-      } })
+      loansStore.setLoans({ credit1: { walletId: 'credit1' } as LoanItem })
+      loansStore.setScheduleOverrides({ 'credit1:1': { loanId: 'credit1' } as never })
+      useBankReportsStore().setBankReports({ credit1: { createdAt: 1, minPaymentAmount: 100, updatedAt: 1 } })
 
       await store.deleteWallet('credit1')
 
-      expect(loansStore.items.l1).toBeUndefined()
-      expect(Object.keys(loansStore.scheduleRows)).toEqual([])
-      expect(h.deleteRow).toHaveBeenCalledWith('loans', 'l1')
-      expect(h.deleteRows).toHaveBeenCalledWith('loan_schedule_rows', ['r1'])
+      expect(loansStore.items.credit1).toBeUndefined()
+      expect(Object.keys(loansStore.scheduleOverrides)).toEqual([])
+      expect(h.deleteRow).toHaveBeenCalledWith('loans', 'credit1')
+      expect(h.deleteRows).toHaveBeenCalledWith('loan_schedule_overrides', ['credit1:1'])
+      expect(h.deleteRow).toHaveBeenCalledWith('bank_reports', 'credit1')
     })
 
     it('drops the loan when its wallet is retyped away from a credit product', () => {
       const store = useWalletsStore()
       store.setWallets({ credit1: wallet({ type: 'loan' }) })
       const loansStore = useLoansStore()
-      loansStore.setLoans({ l1: { walletId: 'credit1' } as LoanItem })
+      loansStore.setLoans({ credit1: { walletId: 'credit1' } as LoanItem })
 
       store.saveWallet({ id: 'credit1', values: wallet({ type: 'cash' }) })
 
-      expect(loansStore.items.l1).toBeUndefined()
+      expect(loansStore.items.credit1).toBeUndefined()
     })
   })
 
@@ -267,11 +247,11 @@ describe('useWalletsStore', () => {
     it('keeps the objects of wallets a trn change did not touch', () => {
       const store = useWalletsStore()
       const trnsStore = useTrnsStore()
-      store.setWallets({ w1: wallet({ order: 0 }), w2: wallet({ order: 1 }) })
+      store.setWallets({ w1: wallet({ sortOrder: 0 }), w2: wallet({ sortOrder: 1 }) })
       trnsStore.setTrns({ t1: expense() })
       const before = store.itemsComputed
 
-      trnsStore.setTrns({ t1: expense(), t2: expense({ amount: 50 }) })
+      trnsStore.setTrns({ t1: expense(), t2: expense({ fromAmount: 50 }) })
       const after = store.itemsComputed
 
       expect(after.w2).toBe(before.w2)

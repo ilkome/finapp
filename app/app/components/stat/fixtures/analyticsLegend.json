@@ -3,6 +3,6 @@
   "isToggleable": true,
   "items": [
     { "color": "#3b82f6", "id": "cash", "name": "Cash", "secondLabel": "change", "secondValue": 120, "value": 1500 },
-    { "color": "#ef4444", "id": "credit", "isHidden": true, "name": "Credit cards", "value": -300 }
+    { "color": "#ef4444", "id": "credit_card", "isHidden": true, "name": "Credit cards", "value": -300 }
   ]
 }

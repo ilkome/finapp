@@ -37,7 +37,7 @@ const trnsItems: Record<TrnId, Pick<TrnItem, 'categoryId'>> = {
   t08: { categoryId: 'c08' },
   t09: { categoryId: 'c09' },
   t10: { categoryId: 'c10' },
-  tTransfer: { categoryId: 'transfer' },
+  tTransfer: {},
 }
 
 const categoriesItems: Categories = Object.fromEntries(

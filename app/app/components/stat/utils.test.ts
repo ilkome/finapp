@@ -1,17 +1,16 @@
 import { describe, expect, it } from 'vitest'
 
 import { getNextWalletFilterIds, getSelectedType, getSelectedTypeForSum, getSortedFilterWalletsIds, getTypesMapping, getTypesToShow, getUsedWalletIds } from '~/components/stat/utils'
-import { TrnType } from '~/components/trns/types'
 
 describe('getTypesMapping', () => {
   it('includes transfers in the combined view so the transaction list can show them', () => {
-    expect(getTypesMapping('combined')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
-    expect(getTypesMapping('net')).toEqual([TrnType.Expense, TrnType.Income, TrnType.Transfer])
+    expect(getTypesMapping('combined')).toEqual(['expense', 'income', 'transfer', 'adjustment'])
+    expect(getTypesMapping('net')).toEqual(['expense', 'income', 'transfer', 'adjustment'])
   })
 
   it('keeps expense/income views pure (no transfers)', () => {
-    expect(getTypesMapping('expense')).toEqual([TrnType.Expense])
-    expect(getTypesMapping('income')).toEqual([TrnType.Income])
+    expect(getTypesMapping('expense')).toEqual(['expense'])
+    expect(getTypesMapping('income')).toEqual(['income'])
   })
 })
 
@@ -89,8 +88,8 @@ describe('getSortedFilterWalletsIds', () => {
 describe('getUsedWalletIds', () => {
   it('collects regular and transfer wallets in source order without duplicates', () => {
     expect(getUsedWalletIds(['transfer', 'expense', 'missing'], {
-      expense: { amount: 10, categoryId: 'food', date: 2, type: TrnType.Expense, updatedAt: 2, walletId: 'cash' },
-      transfer: { categoryId: 'transfer', date: 3, expenseAmount: 10, expenseWalletId: 'cash', incomeAmount: 10, incomeWalletId: 'card', type: TrnType.Transfer, updatedAt: 3 },
+      expense: { categoryId: 'food', createdAt: 2, date: 2, fromAmount: 1000, fromWalletId: 'cash', type: 'expense', updatedAt: 2 },
+      transfer: { createdAt: 3, date: 3, fromAmount: 1000, fromWalletId: 'cash', toAmount: 1000, toWalletId: 'card', type: 'transfer', updatedAt: 3 },
     })).toEqual(['cash', 'card'])
   })
 })

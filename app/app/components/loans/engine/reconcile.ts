@@ -2,12 +2,7 @@ import { addCivilDays } from '~~/utils/date/civil'
 
 import type { LoanParams, LoanTrn, PaymentRow, ScheduleRow } from '~/components/loans/engine/types'
 
-import { isHoliday, rebuildTail, roundMoney } from '~/components/loans/engine/schedule'
-
-/** Half the currency's minor unit: anything smaller is rounding, not money. */
-function halfUnit(params: LoanParams): number {
-  return 10 ** -(params.precision) / 2
-}
+import { isHoliday, rebuildTail } from '~/components/loans/engine/schedule'
 
 /**
  * How far a row's payment may fall short and still close it. Bank and manual rows are the bank's
@@ -16,11 +11,11 @@ function halfUnit(params: LoanParams): number {
  * shortfall is not lost either way: the balance follows the principal actually repaid.
  */
 function tolerance(params: LoanParams, row: ScheduleRow, due: number): number {
-  return row.source === 'generated' ? due * 0.01 : halfUnit(params)
+  return row.source === 'generated' ? due * 0.01 : 0.5
 }
 
 function paidOf(params: LoanParams, row: PaymentRow): number {
-  return roundMoney(params, row.paidPrincipal + row.paidInterest)
+  return Math.round(row.paidPrincipal + row.paidInterest)
 }
 
 /**
@@ -53,7 +48,7 @@ function isInterestMissing(row: PaymentRow): boolean {
 function repaidOf(params: LoanParams, row: PaymentRow): number {
   if (!isTouched(row))
     return row.principalPart
-  return isInterestMissing(row) ? roundMoney(params, row.paidPrincipal - row.interestPart) : row.paidPrincipal
+  return isInterestMissing(row) ? Math.round(row.paidPrincipal - row.interestPart) : row.paidPrincipal
 }
 
 /**
@@ -62,9 +57,9 @@ function repaidOf(params: LoanParams, row: PaymentRow): number {
  * charged a little more interest than planned, from reading as a prepayment.
  */
 function excessOf(params: LoanParams, row: PaymentRow): number {
-  if (row.paidPrincipal - row.principalPart <= halfUnit(params))
+  if (row.paidPrincipal - row.principalPart <= 0.5)
     return 0
-  const excess = roundMoney(params, paidOf(params, row) - row.totalAmount)
+  const excess = Math.round(paidOf(params, row) - row.totalAmount)
   return excess > 0 ? excess : 0
 }
 
@@ -119,7 +114,7 @@ function isClosedRow(params: LoanParams, row: PaymentRow): boolean {
  * from the plan, re-solves the tail right away and every later payment is matched against the plan
  * that is actually in force.
  *
- * The one date window: a payment more than `prepayWindowDays` before the next due date, with the
+ * The one date window: a payment more than `prepaymentWindowDays` before the next due date, with the
  * previous row closed, is a prepayment on its own day. Without it, matching by order alone would
  * take it for the next row's payment and shift every later payment one row. Inside the window a
  * payment stays the row's own, so paying a week early still works.
@@ -130,7 +125,7 @@ export function reconcileSchedule(
   trns: LoanTrn[],
   today: number,
 ): PaymentRow[] {
-  const { lateAfterDays, prepayWindowDays } = params
+  const { lateAfterDays, prepaymentWindowDays } = params
 
   let out: PaymentRow[] = [...rows]
     .sort((a, b) => a.paymentNumber - b.paymentNumber)
@@ -143,13 +138,13 @@ export function reconcileSchedule(
   function rebalance(from: number, to: number) {
     let balance = from > 0 ? out[from - 1]!.remainingBalance : params.principalAmount
     for (let i = from; i < to; i++) {
-      balance = roundMoney(params, balance - repaidOf(params, out[i]!))
+      balance = Math.round(balance - repaidOf(params, out[i]!))
       out[i]!.remainingBalance = balance
     }
-    balance = roundMoney(params, balance - repaidOf(params, out[to]!))
+    balance = Math.round(balance - repaidOf(params, out[to]!))
 
     const row = out[to]!
-    if (Math.abs(balance - row.remainingBalance) < halfUnit(params))
+    if (Math.abs(balance - row.remainingBalance) < 0.5)
       return
     row.remainingBalance = balance
     out = [...out.slice(0, to + 1), ...rebuildTail(params, out.slice(to + 1), balance, row.date)]
@@ -169,11 +164,11 @@ export function reconcileSchedule(
         break
 
       // The money moves, the transactions stay where they landed: the target has none of its own.
-      const interest = Math.min(excess, Math.max(roundMoney(params, source.paidInterest - source.interestPart), 0), target.interestPart)
-      source.paidInterest = roundMoney(params, source.paidInterest - interest)
-      source.paidPrincipal = roundMoney(params, source.paidPrincipal - excess + interest)
-      target.paidInterest = roundMoney(params, target.paidInterest + interest)
-      target.paidPrincipal = roundMoney(params, target.paidPrincipal + excess - interest)
+      const interest = Math.min(excess, Math.max(Math.round(source.paidInterest - source.interestPart), 0), target.interestPart)
+      source.paidInterest = Math.round(source.paidInterest - interest)
+      source.paidPrincipal = Math.round(source.paidPrincipal - excess + interest)
+      target.paidInterest = Math.round(target.paidInterest + interest)
+      target.paidPrincipal = Math.round(target.paidPrincipal + excess - interest)
       target.paidAt = source.paidAt
       from = to
     }
@@ -184,14 +179,14 @@ export function reconcileSchedule(
   /** Apply a transaction's money to a row. Interest and fines are taken out of the payment. */
   function apply(row: PaymentRow, trn: LoanTrn) {
     if (trn.kind === 'payment') {
-      row.paidPrincipal = roundMoney(params, row.paidPrincipal + trn.amount)
+      row.paidPrincipal = Math.round(row.paidPrincipal + trn.amount)
     }
     else {
-      row.paidPrincipal = roundMoney(params, row.paidPrincipal - trn.amount)
+      row.paidPrincipal = Math.round(row.paidPrincipal - trn.amount)
       if (trn.kind === 'interest')
-        row.paidInterest = roundMoney(params, row.paidInterest + trn.amount)
+        row.paidInterest = Math.round(row.paidInterest + trn.amount)
       else
-        row.paidFine = roundMoney(params, row.paidFine + trn.amount)
+        row.paidFine = Math.round(row.paidFine + trn.amount)
     }
     row.trnIds.push(trn.id)
     if (trn.kind === 'payment')
@@ -222,7 +217,7 @@ export function reconcileSchedule(
 
     const previous = out[cursor - 1]
     if (trn.kind === 'payment' && previous && !isTouched(row) && isClosedRow(params, previous)
-      && trn.date < addCivilDays(row.date, -prepayWindowDays)) {
+      && trn.date < addCivilDays(row.date, -prepaymentWindowDays)) {
       // Kept on the closed row without touching its paidAt: the prepayment moves the balance only.
       apply(previous, trn)
       rebalance(cursor - 1, cursor - 1)

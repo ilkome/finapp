@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import type { MoneyTypeNumber, MoneyTypeSlug } from '~/components/amount/types'
+import type { MoneyTypeSlug } from '~/components/amount/types'
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { TrnType } from '~/components/trns/types'
 
 import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 
 type AmountProps = {
   align?: 'left' | 'center' | 'right'
+  /** Minor units of `currencyCode`. */
   amount: number
   colorize?: MoneyTypeSlug
   currencyCode: CurrencyCode
@@ -14,8 +16,7 @@ type AmountProps = {
   isShowMinus?: boolean
   isShowPlus?: boolean
   isShowSymbol?: boolean
-  precision?: number
-  type?: MoneyTypeNumber
+  type?: TrnType
   variant?: 'compact' | 'default' | 'display' | 'row' | 'secondary' | 'summary'
 }
 
@@ -28,7 +29,6 @@ const {
   isShowMinus,
   isShowPlus,
   isShowSymbol = true,
-  precision,
   type,
   variant = 'default',
 } = defineProps<AmountProps>()
@@ -43,8 +43,8 @@ const currenciesStore = useCurrenciesStore()
 <template>
   <div
     :class="{
-      'text-expense-1!': colorize === 'expense' && type === 0,
-      'text-income-1!': colorize === 'income' && type === 1,
+      'text-expense-1!': colorize === 'expense' && type === 'expense',
+      'text-income-1!': colorize === 'income' && type === 'income',
       'text-2xs': variant === 'secondary',
       'text-xs': variant === 'compact',
       'text-sm': variant === 'row',
@@ -66,7 +66,7 @@ const currenciesStore = useCurrenciesStore()
     <template v-if="amount !== 0">
       <AmountItem
         :align="align"
-        :amount="formatAmount(amount, currencyCode, { precision })"
+        :amount="formatAmount(amount, currencyCode)"
         :isShowMinus="isShowMinus"
         :isShowPlus="isShowPlus"
         :isShowSymbol="isShowSymbol"

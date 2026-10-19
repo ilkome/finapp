@@ -1,6 +1,7 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import localforage from 'localforage'
+import { itemToRow, rowToItem } from '~~/services/powersync/columns'
 import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, upsertRows } from '~~/services/powersync/mutations'
 
@@ -16,44 +17,21 @@ import type { ConditionGroup, StatView, StatViewScope } from './types'
 import { adaptiveView, adaptiveViewConfig, isAdaptiveViewId } from './adaptiveView'
 import { StatViewSchema } from './schema'
 
-type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isActive' | 'isAutoEnabled' | 'name'>>
+type StatViewPatch = Partial<Pick<StatView, 'autoRule' | 'config' | 'isActive' | 'isAutoRuleEnabled' | 'name'>>
 
 const logger = createLogger('stat-views')
 const DEMO_KEY = 'finapp.statViews'
 const DEMO_USER_ID = 'demo'
 
 function rowToView(row: Row): StatView | null {
-  try {
-    const parsed = StatViewSchema.safeParse({
-      ...row,
-      autoRule: row.autoRule ? JSON.parse(String(row.autoRule)) : null,
-      config: JSON.parse(String(row.config)),
-      isActive: !!row.isActive,
-      isAutoEnabled: !!row.isAutoEnabled,
-      sortOrder: Number(row.sortOrder),
-    })
-    return parsed.success ? parsed.data as StatView : null
-  }
-  catch (error) {
-    logger.warn('skipping invalid synced view', error)
-    return null
-  }
+  const parsed = StatViewSchema.safeParse({ autoRule: null, ...rowToItem('stat_views', row), id: row.id })
+  if (!parsed.success)
+    logger.warn('skipping invalid synced view', parsed.error.issues)
+  return parsed.success ? parsed.data as StatView : null
 }
 
 function viewToRow(view: StatView): Record<string, unknown> {
-  const parsed = StatViewSchema.parse(view)
-  return {
-    autoRule: parsed.autoRule ? JSON.stringify(parsed.autoRule) : null,
-    config: JSON.stringify(parsed.config),
-    createdAt: parsed.createdAt,
-    isActive: parsed.isActive ? 1 : 0,
-    isAutoEnabled: parsed.isAutoEnabled ? 1 : 0,
-    name: parsed.name,
-    scope: parsed.scope,
-    sortOrder: parsed.sortOrder,
-    updatedAt: parsed.updatedAt,
-    userId: parsed.userId,
-  }
+  return itemToRow('stat_views', StatViewSchema.parse(view))
 }
 
 function normalizeActiveViews(views: StatView[]): StatView[] {
@@ -114,7 +92,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
       isLoaded.value = true
       return
     }
-    watchController = watchTable<Row>('SELECT * FROM stat_views WHERE scope = ? ORDER BY "sortOrder"', [scope], (rows) => {
+    watchController = watchTable<Row>('SELECT * FROM stat_views WHERE scope = ? ORDER BY sort_order', [scope], (rows) => {
       const received = rows.map(rowToView).filter((view): view is StatView => !!view)
       const normalized = normalizeActiveViews(received)
       setItems(normalized)
@@ -137,7 +115,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
     await upsertRows('stat_views', changed.map(view => ({ id: view.id, row: viewToRow(view) })))
   }
 
-  async function create(values: Pick<StatView, 'autoRule' | 'config' | 'isAutoEnabled' | 'name' | 'scope'> & Partial<Pick<StatView, 'id'>>) {
+  async function create(values: Pick<StatView, 'autoRule' | 'config' | 'isAutoRuleEnabled' | 'name' | 'scope'> & Partial<Pick<StatView, 'id'>>) {
     const existing = values.id ? items.value.find(view => view.id === values.id) : null
     if (existing)
       return existing
@@ -177,7 +155,7 @@ export const useStatViewsStore = defineStore('statViews', () => {
     const view = await create({
       autoRule: patch.autoRule ?? null,
       config: patch.config ?? adaptiveViewConfig(),
-      isAutoEnabled: patch.isAutoEnabled ?? false,
+      isAutoRuleEnabled: patch.isAutoRuleEnabled ?? false,
       name,
       scope: activeScope.value,
     })

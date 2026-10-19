@@ -1,8 +1,23 @@
 {
   "currencyCode": "USD",
   "items": [
-    { "amount": -1250.5, "average": -980, "isActive": false, "type": "expense" },
-    { "amount": 3000, "average": 2900, "isActive": true, "type": "income" },
-    { "amount": 1749.5, "average": 1920, "isActive": false, "type": "net" }
+    {
+      "amount": -125050,
+      "average": -98000,
+      "isActive": false,
+      "type": "expense"
+    },
+    {
+      "amount": 300000,
+      "average": 290000,
+      "isActive": true,
+      "type": "income"
+    },
+    {
+      "amount": 174950,
+      "average": 192000,
+      "isActive": false,
+      "type": "net"
+    }
   ]
 }

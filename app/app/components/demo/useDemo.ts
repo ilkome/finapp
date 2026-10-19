@@ -1,6 +1,7 @@
 import { UTCDate } from '@date-fns/utc'
 import { addMonths, getMonth, startOfMonth, startOfYear, subMonths, subYears } from 'date-fns'
 import localforage from 'localforage'
+import { markDataSchemaCurrent } from '~~/services/powersync/db'
 import { localInstantToCivilDay } from '~~/utils/date/civil'
 
 import type { Categories } from '~/components/categories/types'
@@ -8,15 +9,15 @@ import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnItem, Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { formatAmount } from '~/components/amount/utils'
+import { amountToMinor, formatAmount, scaleOf } from '~/components/amount/utils'
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { currencies as currencyCatalog } from '~/components/currencies/currencies'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { buildDemoLoans } from '~/components/demo/buildDemoLoans'
 import currencies from '~/components/demo/currencies.json'
 import { data, debtMoves, expenseRules, foreignCurrency, incomeRules, mainCurrency, monthlySettlements, oneOffExpenses, randomCryptoCurrencies, randomFiatCurrencies, salaryConfig, transferRules, walletCashRub, walletCreditRub, walletDebitRub, walletRandomCrypto, walletRandomFiat, walletStudentLoan, walletUsd } from '~/components/demo/data'
 import { useLoansStore } from '~/components/loans/useLoansStore'
-import { TrnType } from '~/components/trns/types'
+import { trnWalletDelta } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -74,13 +75,12 @@ function roundAmount(n: number): number {
 }
 
 const rates = currencies as Record<string, number>
-const precisionOf = new Map(currencyCatalog.map(c => [c.code, c.precision ?? 2]))
 
-/** Converts at the demo rates (units per 1 USD) and rounds to what the currency can show. */
+/** Converts minor units at the demo rates (units per 1 USD) into minor units of `to`. */
 function convert(amount: number, from: string, to: string): number {
-  const value = from === to ? amount : amount / (rates[from] ?? 1) * (rates[to] ?? 1)
-  const factor = 10 ** (precisionOf.get(to) ?? 2)
-  return Math.round(value * factor) / factor
+  if (from === to)
+    return amount
+  return Math.round(amount / (rates[from] ?? 1) * (rates[to] ?? 1) * 10 ** (scaleOf(to) - scaleOf(from)))
 }
 
 /** Random timestamp within a specific month of a given year. */
@@ -100,6 +100,8 @@ export function useDemo() {
   async function generateDemoData(locale: LocaleSlug) {
     random = createRandom()
     await localforage.clear()
+    // Freshly generated data is of the current schema; the boot check must not drop it as outdated.
+    markDataSchemaCurrent()
 
     const translatedData: {
       categories: Categories
@@ -110,7 +112,8 @@ export function useDemo() {
         return acc
       }, {} as Categories),
       wallets: Object.entries(data.wallets).reduce((acc, [id, wallet]) => {
-        acc[id] = { ...wallet, desc: wallet.desc[locale], name: wallet.name[locale] } as Wallets[string]
+        const { currency, desc, ...rest } = wallet
+        acc[id] = { ...rest, createdAt: wallet.updatedAt ?? Date.now(), currencyCode: currency, description: desc[locale], name: wallet.name[locale], ...(wallet.creditLimit !== undefined ? { creditLimit: amountToMinor(wallet.creditLimit, currency) } : {}) } as Wallets[string]
         return acc
       }, {} as Wallets),
     }
@@ -118,38 +121,42 @@ export function useDemo() {
     const main = mainCurrency[locale]
     const foreign = foreignCurrency[locale]
     for (const wallet of Object.values(translatedData.wallets)) {
-      if (wallet.currency === 'RUB')
-        wallet.currency = main
+      if (wallet.currencyCode === 'RUB')
+        wallet.currencyCode = main
     }
-    Object.assign(translatedData.wallets[walletUsd]!, { currency: foreign, name: locale === 'ru' ? `Счёт ${foreign}` : `${foreign} account` })
-    translatedData.wallets[walletStudentLoan]!.currency = foreign
-    /** A RUB-scale amount from data.ts in the currency of the wallet it lands on. */
-    const money = (rubScale: number, walletId: string) => convert(roundAmount(rubScale), 'RUB', translatedData.wallets[walletId]!.currency)
-    /** A RUB-scale round figure (a limit, a principal) kept round in the main currency. */
+    Object.assign(translatedData.wallets[walletUsd]!, { currencyCode: foreign, name: locale === 'ru' ? `Счёт ${foreign}` : `${foreign} account` })
+    translatedData.wallets[walletStudentLoan]!.currencyCode = foreign
+    const currencyOf = (walletId: string) => translatedData.wallets[walletId]!.currencyCode
+    /** A RUB-scale amount from data.ts in minor units of the wallet it lands on. */
+    const money = (rubScale: number, walletId: string) => convert(amountToMinor(roundAmount(rubScale), 'RUB'), 'RUB', currencyOf(walletId))
+    /** A RUB-scale round figure (a limit, a principal) kept round in the main currency, in its minor units. */
     const round = (rubScale: number, currency = main) => {
-      const value = convert(rubScale, 'RUB', currency)
-      const step = currency === 'RUB' ? 1000 : 100
-      return Math.round(value / step) * step
+      const step = amountToMinor(currency === 'RUB' ? 1000 : 100, currency)
+      return Math.round(convert(amountToMinor(rubScale, 'RUB'), 'RUB', currency) / step) * step
     }
 
     const fiat = randItem(randomFiatCurrencies.filter(code => code !== foreign))
-    Object.assign(translatedData.wallets[walletRandomFiat]!, { currency: fiat, name: locale === 'ru' ? `Счёт ${fiat}` : `${fiat} account` })
+    Object.assign(translatedData.wallets[walletRandomFiat]!, { currencyCode: fiat, name: locale === 'ru' ? `Счёт ${fiat}` : `${fiat} account` })
     const crypto = randItem(Object.keys(randomCryptoCurrencies))
-    Object.assign(translatedData.wallets[walletRandomCrypto]!, { currency: crypto, name: randomCryptoCurrencies[crypto] })
+    Object.assign(translatedData.wallets[walletRandomCrypto]!, { currencyCode: crypto, name: randomCryptoCurrencies[crypto] })
 
     const today = localInstantToCivilDay(Date.now())
     const cardDue = addMonths(new UTCDate(today), 1)
     const creditLimit = round(300000)
     Object.assign(translatedData.wallets[walletCreditRub]!, {
       creditLimit,
-      desc: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${formatAmount(creditLimit, undefined, { precision: 0 })}`,
-      graceAmount: money(52000, walletCreditRub),
+      description: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${formatAmount(creditLimit, main, { minorDisplay: 'never' })}`,
+    })
+    const cardReport = {
+      createdAt: today,
+      graceDebtAmount: money(52000, walletCreditRub),
       graceEndDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth() + 1, 10).getTime(),
       minPaymentAmount: money(8000, walletCreditRub),
-      minPaymentDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth(), 25).getTime(),
-      minPaymentUpdatedAt: today,
+      minPaymentDueDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth(), 25).getTime(),
+      minPaymentPeriodStartDate: today,
       statementDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth() - 1, 25).getTime(),
-    })
+      updatedAt: today,
+    }
 
     useUserStore().setUserBaseCurrency(main)
     currenciesStore.setRates(currencies)
@@ -185,13 +192,14 @@ export function useDemo() {
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
-        amount,
         categoryId: rule.categoryId,
+        createdAt: date,
         date,
-        ...(desc ? { desc } : {}),
-        type: TrnType.Expense,
+        ...(desc ? { description: desc } : {}),
+        fromAmount: amount,
+        fromWalletId: walletId,
+        type: 'expense',
         updatedAt: Date.now(),
-        walletId,
       } satisfies TrnItem
     }
 
@@ -210,13 +218,14 @@ export function useDemo() {
         const amount = money(randInt(oneOff.min, oneOff.max), walletId)
 
         trns[trnIndex++] = {
-          amount,
           categoryId: oneOff.categoryId,
+          createdAt: date,
           date,
-          desc: oneOff.desc[locale],
-          type: TrnType.Expense,
+          description: oneOff.desc[locale],
+          fromAmount: amount,
+          fromWalletId: walletId,
+          type: 'expense',
           updatedAt: Date.now(),
-          walletId,
         } satisfies TrnItem
       }
     }
@@ -235,13 +244,14 @@ export function useDemo() {
         const amount = money(randInt(min, max), salaryConfig.walletId)
 
         trns[trnIndex++] = {
-          amount,
           categoryId: salaryConfig.categoryId,
+          createdAt: salaryDate,
           date: salaryDate,
-          desc: salaryConfig.desc[locale],
-          type: TrnType.Income,
+          description: salaryConfig.desc[locale],
+          toAmount: amount,
+          toWalletId: salaryConfig.walletId,
+          type: 'income',
           updatedAt: Date.now(),
-          walletId: salaryConfig.walletId,
         } satisfies TrnItem
       }
       month = addMonths(month, 1)
@@ -257,34 +267,35 @@ export function useDemo() {
       const amount = money(randInt(rule.min, rule.max), walletId)
       const desc = rule.desc ? rule.desc[locale] : undefined
 
+      const date = startDate + random() * (endDate - startDate)
       trns[trnIndex++] = {
-        amount,
         categoryId: rule.categoryId,
-        date: startDate + random() * (endDate - startDate),
-        ...(desc ? { desc } : {}),
-        type: TrnType.Income,
+        createdAt: date,
+        date,
+        ...(desc ? { description: desc } : {}),
+        toAmount: amount,
+        toWalletId: walletId,
+        type: 'income',
         updatedAt: Date.now(),
-        walletId,
       } satisfies TrnItem
     }
 
     // --- Transfers ---
     for (let i = 0; i < config.transferCount; i++) {
       const rule = weightedPick(transferRules)
-      const from = translatedData.wallets[rule.expenseWalletId]!.currency
-      const to = translatedData.wallets[rule.incomeWalletId]!.currency
-      const expenseAmount = money(randInt(rule.amountMin, rule.amountMax), rule.expenseWalletId)
+      const fromAmount = money(randInt(rule.amountMin, rule.amountMax), rule.expenseWalletId)
       const desc = rule.desc ? rule.desc[locale] : undefined
+      const date = startDate + random() * (endDate - startDate)
 
       trns[trnIndex++] = {
-        categoryId: 'transfer',
-        date: startDate + random() * (endDate - startDate),
-        ...(desc ? { desc } : {}),
-        expenseAmount,
-        expenseWalletId: rule.expenseWalletId,
-        incomeAmount: convert(expenseAmount, from, to),
-        incomeWalletId: rule.incomeWalletId,
-        type: TrnType.Transfer,
+        createdAt: date,
+        date,
+        ...(desc ? { description: desc } : {}),
+        fromAmount,
+        fromWalletId: rule.expenseWalletId,
+        toAmount: convert(fromAmount, currencyOf(rule.expenseWalletId), currencyOf(rule.incomeWalletId)),
+        toWalletId: rule.incomeWalletId,
+        type: 'transfer',
         updatedAt: Date.now(),
       } satisfies TrnItem
     }
@@ -293,16 +304,16 @@ export function useDemo() {
     for (let i = 0; i < config.adjustmentsCount; i++) {
       const walletId = randItem(spendingWalletIds)
       const amount = money(randInt(1000, 20000), walletId)
-      const type = random() < 0.5 ? TrnType.Income : TrnType.Expense
+      const side = random() < 0.5 ? { toAmount: amount, toWalletId: walletId } : { fromAmount: amount, fromWalletId: walletId }
+      const date = startDate + random() * (endDate - startDate)
 
       trns[trnIndex++] = {
-        amount,
-        categoryId: 'adjustment',
-        date: startDate + random() * (endDate - startDate),
-        desc: locale === 'ru' ? 'Корректировка баланса' : 'Balance adjustment',
-        type,
+        ...side,
+        createdAt: date,
+        date,
+        description: locale === 'ru' ? 'Корректировка баланса' : 'Balance adjustment',
+        type: 'adjustment',
         updatedAt: Date.now(),
-        walletId,
       } satisfies TrnItem
     }
 
@@ -313,14 +324,15 @@ export function useDemo() {
       const amount = move.amount === 0 ? Math.abs(held) : round(move.amount)
       debtBalances.set(move.walletId, held + (move.direction === 'out' ? amount : -amount))
       const [from, to] = move.direction === 'out' ? [walletDebitRub, move.walletId] : [move.walletId, walletDebitRub]
+      const date = subMonths(new Date(endDate), move.monthsAgo).getTime()
       trns[trnIndex++] = {
-        categoryId: 'transfer',
-        date: subMonths(new Date(endDate), move.monthsAgo).getTime(),
-        expenseAmount: amount,
-        expenseWalletId: from,
-        incomeAmount: amount,
-        incomeWalletId: to,
-        type: TrnType.Transfer,
+        createdAt: date,
+        date,
+        fromAmount: amount,
+        fromWalletId: from,
+        toAmount: amount,
+        toWalletId: to,
+        type: 'transfer',
         updatedAt: Date.now(),
       } satisfies TrnItem
     }
@@ -330,48 +342,50 @@ export function useDemo() {
       const outflowByMonth = new Map<number, number>()
       for (const id in trns) {
         const trn = trns[id]!
-        if (trn.type === TrnType.Transfer || trn.walletId !== settlement.walletId)
+        if (trn.type === 'transfer')
+          continue
+        const delta = trnWalletDelta(trn, settlement.walletId)
+        if (!delta)
           continue
         const month = startOfMonth(new Date(trn.date)).getTime()
-        outflowByMonth.set(month, (outflowByMonth.get(month) ?? 0) + (trn.type === TrnType.Expense ? trn.amount : -trn.amount))
+        outflowByMonth.set(month, (outflowByMonth.get(month) ?? 0) - delta)
       }
       for (const [month, outflow] of outflowByMonth) {
         const date = addMonths(new Date(month), settlement.monthsLater).getTime() + (settlement.day - 1) * 24 * 60 * 60 * 1000
         // Rounded up: a little is left over, as with a real withdrawal or repayment.
-        const step = main === 'RUB' ? 1000 : 10
+        const step = amountToMinor(main === 'RUB' ? 1000 : 10, main)
         const amount = Math.ceil(outflow / step) * step
         if (date > endDate || amount <= 0)
           continue
         trns[trnIndex++] = {
-          categoryId: 'transfer',
+          createdAt: date,
           date,
-          desc: settlement.desc[locale],
-          expenseAmount: amount,
-          expenseWalletId: walletDebitRub,
-          incomeAmount: amount,
-          incomeWalletId: settlement.walletId,
-          type: TrnType.Transfer,
+          description: settlement.desc[locale],
+          fromAmount: amount,
+          fromWalletId: walletDebitRub,
+          toAmount: amount,
+          toWalletId: settlement.walletId,
+          type: 'transfer',
           updatedAt: Date.now(),
         } satisfies TrnItem
       }
     }
 
-    // Civil-day model: snap each generated instant to its local calendar day (UTC-midnight)
-    // and keep the original instant as enteredAt.
+    // Each generated instant becomes its local civil day; the instant stays as createdAt.
     for (const id in trns) {
       const trn = trns[id]!
-      const instant = trn.date
-      trn.date = localInstantToCivilDay(instant)
-      trn.enteredAt = instant
+      trn.createdAt = Math.round(trn.date)
+      trn.date = localInstantToCivilDay(trn.date)
     }
 
-    const built = buildDemoLoans({ convert, currencyOf: walletId => translatedData.wallets[walletId]!.currency, locale, money, round, today })
+    const built = buildDemoLoans({ convert, currencyOf, locale, money, round, today })
     Object.assign(trns, built.trns)
 
     trnsStore.setTrns(trns)
     const loansStore = useLoansStore()
     loansStore.setLoans(built.loans)
-    loansStore.setScheduleRows(built.scheduleRows)
+    loansStore.setScheduleOverrides(built.scheduleOverrides)
+    useBankReportsStore().setBankReports({ ...built.bankReports, [walletCreditRub]: cardReport })
   }
 
   return {

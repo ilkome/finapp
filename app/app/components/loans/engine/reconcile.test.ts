@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { roundTo } from '~~/utils/amount/round'
 
 import type { LoanParams, LoanTrn } from '~/components/loans/engine/types'
 
@@ -7,19 +6,18 @@ import { reconcileSchedule } from '~/components/loans/engine/reconcile'
 import { generateSchedule } from '~/components/loans/engine/schedule'
 import { summarizeLoan, whatIf } from '~/components/loans/engine/summary'
 
-const round2 = (value: number) => roundTo(value, 2)
+const round2 = Math.round
 const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
 
 const params: LoanParams = {
   annualRate: 12,
   firstPaymentDate: day('2026-01-15'),
-  interestMethod: 'monthly',
+  interestAccrual: 'monthly',
   lateAfterDays: 3,
-  overpaymentMode: 'reducePayment',
-  paymentDay: 15,
-  precision: 2,
-  prepayWindowDays: 15,
-  principalAmount: 12_000,
+  paymentDayOfMonth: 15,
+  prepaymentMode: 'reduce_payment',
+  prepaymentWindowDays: 15,
+  principalAmount: 1_200_000,
   scheduleType: 'annuity',
   startDate: day('2025-12-15'),
   termMonths: 12,
@@ -38,54 +36,54 @@ function payment(n: number, date: string, principal: number, interest: number): 
 describe('reconcileSchedule', () => {
   it('fills a row from two payment operations and marks a delayed payment late', () => {
     const trns: LoanTrn[] = [
-      { amount: 120, date: day('2026-01-15'), id: 'a1', kind: 'interest' },
-      { amount: 1020, date: day('2026-01-15'), id: 'a2', kind: 'payment' },
-      { amount: 46.19, date: day('2026-01-16'), id: 'a3', kind: 'payment' },
-      ...payment(2, '2026-02-25', 955.65, 110.54),
+      { amount: 12_000, date: day('2026-01-15'), id: 'a1', kind: 'interest' },
+      { amount: 102_000, date: day('2026-01-15'), id: 'a2', kind: 'payment' },
+      { amount: 4619, date: day('2026-01-16'), id: 'a3', kind: 'payment' },
+      ...payment(2, '2026-02-25', 95_565, 11_054),
     ]
     const out = reconcileSchedule(params, rows, trns, today)
 
     expect(out[0]?.status).toBe('paid')
     expect(out[0]?.trnIds).toEqual(['a1', 'a2', 'a3'])
-    expect(out[0]?.paidPrincipal).toBe(946.19)
+    expect(out[0]?.paidPrincipal).toBe(94_619)
     expect(out[1]?.status).toBe('late')
     expect(out[1]?.paidAt).toBe(day('2026-02-25'))
   })
 
   it('marks an untouched past row overdue and keeps a short payment partial', () => {
     const trns: LoanTrn[] = [
-      { amount: 120, date: day('2026-01-15'), id: 'b1', kind: 'interest' },
-      { amount: 620, date: day('2026-01-15'), id: 'b2', kind: 'payment' },
+      { amount: 12_000, date: day('2026-01-15'), id: 'b1', kind: 'interest' },
+      { amount: 62_000, date: day('2026-01-15'), id: 'b2', kind: 'payment' },
     ]
     const out = reconcileSchedule(params, rows, trns, today)
 
     expect(out[0]?.status).toBe('partial')
     expect(out[1]?.status).toBe('overdue')
     expect(out[2]?.status).toBe('scheduled')
-    expect(summarizeLoan(params, out, -11_500).overdueCount).toBe(1)
+    expect(summarizeLoan(params, out, -1_150_000).overdueCount).toBe(1)
   })
 
   it('reconciles a payment the same way whichever of its two operations comes first', () => {
-    const [interest, principal] = payment(1, '2026-01-15', 946.19, 120) as [LoanTrn, LoanTrn]
+    const [interest, principal] = payment(1, '2026-01-15', 94_619, 12_000) as [LoanTrn, LoanTrn]
     const forward = reconcileSchedule(params, rows, [interest, principal], today)
     const reversed = reconcileSchedule(params, rows, [principal, interest], today)
 
     expect(reversed).toEqual(forward.map(row => ({ ...row, trnIds: [...row.trnIds].reverse() })))
-    expect(forward[0]).toMatchObject({ paidInterest: 120, paidPrincipal: 946.19, status: 'paid' })
+    expect(forward[0]).toMatchObject({ paidInterest: 12_000, paidPrincipal: 94_619, status: 'paid' })
   })
 
   it('takes interest out of the payment whether the bank charges it before or after the transfer', () => {
     const before = reconcileSchedule(params, rows, [
-      { amount: 120, date: day('2026-01-15'), id: 'i', kind: 'interest' },
-      { amount: 1066.19, date: day('2026-01-17'), id: 'm', kind: 'payment' },
+      { amount: 12_000, date: day('2026-01-15'), id: 'i', kind: 'interest' },
+      { amount: 106_619, date: day('2026-01-17'), id: 'm', kind: 'payment' },
     ], today)
     const after = reconcileSchedule(params, rows, [
-      { amount: 1066.19, date: day('2026-01-14'), id: 'm', kind: 'payment' },
-      { amount: 120, date: day('2026-01-15'), id: 'i', kind: 'interest' },
+      { amount: 106_619, date: day('2026-01-14'), id: 'm', kind: 'payment' },
+      { amount: 12_000, date: day('2026-01-15'), id: 'i', kind: 'interest' },
     ], today)
 
     for (const out of [before, after]) {
-      expect(out[0]).toMatchObject({ paidInterest: 120, paidPrincipal: 946.19 })
+      expect(out[0]).toMatchObject({ paidInterest: 12_000, paidPrincipal: 94_619 })
       expect(['paid', 'late']).toContain(out[0]?.status)
       expect(out[1]?.trnIds).toEqual([])
     }
@@ -96,8 +94,8 @@ describe('reconcileSchedule', () => {
     const first = bankRows[0]!
     const second = bankRows[1]!
     const trns: LoanTrn[] = [
-      { amount: round2(first.interestPart - 0.5), date: first.date, id: 'i1', kind: 'interest' },
-      { amount: round2(first.totalAmount - 0.5), date: first.date, id: 'p1', kind: 'payment' },
+      { amount: round2(first.interestPart - 50), date: first.date, id: 'i1', kind: 'interest' },
+      { amount: round2(first.totalAmount - 50), date: first.date, id: 'p1', kind: 'payment' },
       // the next month's interest lands before its payment on that day
       { amount: second.interestPart, date: second.date, id: 'i2', kind: 'interest' },
       { amount: second.totalAmount, date: second.date, id: 'p2', kind: 'payment' },
@@ -109,8 +107,8 @@ describe('reconcileSchedule', () => {
   })
 
   it('reads interest charged with no payment as debt that grew', () => {
-    const out = reconcileSchedule(params, rows, [{ amount: 120, date: day('2026-01-15'), id: 'i', kind: 'interest' }], today)
-    expect(out[0]).toMatchObject({ paidInterest: 120, paidPrincipal: -120, status: 'partial' })
+    const out = reconcileSchedule(params, rows, [{ amount: 12_000, date: day('2026-01-15'), id: 'i', kind: 'interest' }], today)
+    expect(out[0]).toMatchObject({ paidInterest: 12_000, paidPrincipal: -12_000, status: 'partial' })
   })
 
   it('advances a row per payment when the feed records payments only', () => {
@@ -129,36 +127,36 @@ describe('reconcileSchedule', () => {
     expect(out[3]?.status).toBe('scheduled')
   })
 
-  it('keeps the term and lowers the payment after an overpayment (reducePayment)', () => {
-    const out = reconcileSchedule(params, rows, payment(1, '2026-01-15', 3946.19, 120), today)
+  it('keeps the term and lowers the payment after an overpayment (reduce_payment)', () => {
+    const out = reconcileSchedule(params, rows, payment(1, '2026-01-15', 394_619, 12_000), today)
 
     expect(out).toHaveLength(12)
-    expect(out[0]?.remainingBalance).toBe(8053.81)
-    expect(out[1]?.totalAmount).toBeLessThan(1066.19)
+    expect(out[0]?.remainingBalance).toBe(805_381)
+    expect(out[1]?.totalAmount).toBeLessThan(106_619)
     expect(out.at(-1)?.remainingBalance).toBe(0)
   })
 
-  it('keeps the payment and shortens the term after an overpayment (reduceTerm)', () => {
-    const reduceTerm: LoanParams = { ...params, overpaymentMode: 'reduceTerm' }
-    const out = reconcileSchedule(reduceTerm, rows, payment(1, '2026-01-15', 3946.19, 120), today)
+  it('keeps the payment and shortens the term after an overpayment (reduce_term)', () => {
+    const reduce_term: LoanParams = { ...params, prepaymentMode: 'reduce_term' }
+    const out = reconcileSchedule(reduce_term, rows, payment(1, '2026-01-15', 394_619, 12_000), today)
 
     expect(out.length).toBeLessThan(12)
-    expect(out[1]?.totalAmount).toBe(1066.19)
+    expect(out[1]?.totalAmount).toBe(106_619)
     expect(out.at(-1)?.remainingBalance).toBe(0)
   })
 })
 
 describe('summarizeLoan', () => {
-  const out = reconcileSchedule(params, rows, payment(1, '2026-01-15', 946.19, 120), today)
-  const summary = summarizeLoan(params, out, -11_053.81)
+  const out = reconcileSchedule(params, rows, payment(1, '2026-01-15', 94_619, 12_000), today)
+  const summary = summarizeLoan(params, out, -1_105_381)
 
   it('reports the paid facts and the plan left', () => {
-    expect(summary.paidTotal).toBe(1066.19)
-    expect(summary.paidPrincipal).toBe(946.19)
-    expect(summary.remaining).toBe(11_053.81)
+    expect(summary.paidTotal).toBe(106_619)
+    expect(summary.paidPrincipal).toBe(94_619)
+    expect(summary.remaining).toBe(1_105_381)
     expect(summary.unrecognized).toBe(0)
     expect(summary.isClosed).toBe(false)
-    expect(summary.nextPayment).toEqual({ amount: 1066.19, date: day('2026-02-15') })
+    expect(summary.nextPayment).toEqual({ amount: 106_619, date: day('2026-02-15') })
     expect(summary.plannedEndDate).toBe(day('2026-12-15'))
     expect(summary.effectiveRate).toBeCloseTo(12, 0)
   })
@@ -167,25 +165,25 @@ describe('summarizeLoan', () => {
     const withPartial = reconcileSchedule(
       params,
       rows,
-      [...payment(1, '2026-01-15', 946.19, 120), { amount: 500, date: day('2026-02-15'), id: 'p2p', kind: 'payment' }],
+      [...payment(1, '2026-01-15', 94_619, 12_000), { amount: 50_000, date: day('2026-02-15'), id: 'p2p', kind: 'payment' }],
       today,
     )
 
     expect(withPartial[1]?.status).toBe('partial')
-    expect(summarizeLoan(params, withPartial, -10_553.81).effectiveRate).toBeCloseTo(12, 0)
-    expect(summarizeLoan(params, withPartial, -10_553.81).unrecognized).toBe(0)
+    expect(summarizeLoan(params, withPartial, -1_055_381).effectiveRate).toBeCloseTo(12, 0)
+    expect(summarizeLoan(params, withPartial, -1_055_381).unrecognized).toBe(0)
   })
 
   it('projects the saving of an extra principal payment', () => {
-    const result = whatIf(params, out, 3000, 'reduceTerm')
+    const result = whatIf(params, out, 300_000, 'reduce_term')
 
     expect(result.interestSaved).toBeGreaterThan(0)
     expect(result.newEndDate).toBeLessThan(day('2026-12-15'))
   })
 
-  it('projects a smaller saving that keeps the end date with reducePayment', () => {
-    const term = whatIf(params, out, 3000, 'reduceTerm')
-    const payment = whatIf(params, out, 3000, 'reducePayment')
+  it('projects a smaller saving that keeps the end date with reduce_payment', () => {
+    const term = whatIf(params, out, 300_000, 'reduce_term')
+    const payment = whatIf(params, out, 300_000, 'reduce_payment')
 
     expect(payment.interestSaved).toBeGreaterThan(0)
     expect(payment.interestSaved).toBeLessThan(term.interestSaved)
@@ -201,14 +199,14 @@ describe('reconcileSchedule for other contracts', () => {
     const out = reconcileSchedule(loan, plan, trns, today)
 
     expect(out.slice(0, 2).map(row => row.status)).toEqual(['paid', 'paid'])
-    expect(out[1]!.principalPart).toBe(1000)
-    expect(summarizeLoan(loan, out, -10_000).unrecognized).toBe(0)
+    expect(out[1]!.principalPart).toBe(100_000)
+    expect(summarizeLoan(loan, out, -1_000_000).unrecognized).toBe(0)
   })
 
   it('settles a daily-interest schedule when the bank charged a little more interest', () => {
-    const loan: LoanParams = { ...params, interestMethod: 'daily' }
+    const loan: LoanParams = { ...params, interestAccrual: 'daily' }
     const plan = generateSchedule(loan)
-    const trns = plan.slice(0, 2).flatMap(row => payment(row.paymentNumber, new Date(row.date).toISOString().slice(0, 10), row.principalPart, round2(row.interestPart + 0.4)))
+    const trns = plan.slice(0, 2).flatMap(row => payment(row.paymentNumber, new Date(row.date).toISOString().slice(0, 10), row.principalPart, round2(row.interestPart + 40)))
     const out = reconcileSchedule(loan, plan, trns, today)
 
     expect(out.slice(0, 2).map(row => row.status)).toEqual(['paid', 'paid'])
@@ -217,7 +215,7 @@ describe('reconcileSchedule for other contracts', () => {
 })
 
 describe('reconcileSchedule after a deviation from the plan', () => {
-  const big: LoanParams = { ...params, principalAmount: 120_000 }
+  const big: LoanParams = { ...params, principalAmount: 12_000_000 }
   const until = day('2026-08-01')
 
   /** Pays every due row the amount the app currently plans for it; `extras[n]` goes on top of payment n. */
@@ -237,22 +235,22 @@ describe('reconcileSchedule after a deviation from the plan', () => {
     }
   }
 
-  for (const mode of ['reducePayment', 'reduceTerm'] as const) {
+  for (const mode of ['reduce_payment', 'reduce_term'] as const) {
     it(`keeps every payment after a prepayment paid (${mode})`, () => {
-      const out = payAsPlanned({ ...big, overpaymentMode: mode }, { 3: 30_000 })
+      const out = payAsPlanned({ ...big, prepaymentMode: mode }, { 3: 3_000_000 })
       const past = out.filter(row => row.date < until)
 
       expect(past).toHaveLength(7)
       expect(past.every(row => row.status === 'paid')).toBe(true)
       expect(out.at(-1)?.remainingBalance).toBe(0)
-      if (mode === 'reducePayment')
+      if (mode === 'reduce_payment')
         expect(out[3]?.totalAmount).toBeLessThan(out[1]!.totalAmount)
       else
         expect(out.length).toBeLessThan(12)
     })
 
     it(`reads a payment on its own day as a prepayment, not the next row (${mode})`, () => {
-      const out = payAsPlanned({ ...big, overpaymentMode: mode }, {}, [{ amount: 30_000, date: day('2026-02-25'), id: 'extra', kind: 'payment' }])
+      const out = payAsPlanned({ ...big, prepaymentMode: mode }, {}, [{ amount: 3_000_000, date: day('2026-02-25'), id: 'extra', kind: 'payment' }])
 
       expect(out.filter(row => row.date < until).every(row => row.status === 'paid')).toBe(true)
       expect(out[1]?.trnIds).toContain('extra')
@@ -261,7 +259,7 @@ describe('reconcileSchedule after a deviation from the plan', () => {
     })
 
     it(`catches up a skipped month with a double payment (${mode})`, () => {
-      const loan = { ...big, overpaymentMode: mode }
+      const loan = { ...big, prepaymentMode: mode }
       const plan = generateSchedule(loan)
       const [r1, r2, r3, r4] = plan as [typeof plan[0], typeof plan[0], typeof plan[0], typeof plan[0]]
       const trns = [
@@ -282,14 +280,14 @@ describe('reconcileSchedule after a deviation from the plan', () => {
     const [r1, r2, r3] = plan as [typeof plan[0], typeof plan[0], typeof plan[0]]
     const trns: LoanTrn[] = [
       ...payment(1, '2026-01-15', r1.principalPart, r1.interestPart),
-      { amount: round2(r2.totalAmount + r3.totalAmount + 700), date: day('2026-03-15'), id: 'm', kind: 'payment' },
+      { amount: round2(r2.totalAmount + r3.totalAmount + 70_000), date: day('2026-03-15'), id: 'm', kind: 'payment' },
       { amount: round2(r2.interestPart + r3.interestPart), date: day('2026-03-15'), id: 'i', kind: 'interest' },
-      { amount: 700, date: day('2026-03-15'), id: 'f', kind: 'fine' },
+      { amount: 70_000, date: day('2026-03-15'), id: 'f', kind: 'fine' },
     ]
     const out = reconcileSchedule(big, plan, trns, day('2026-03-20'))
 
     expect(out.map(row => row.status).slice(0, 4)).toEqual(['paid', 'late', 'paid', 'scheduled'])
-    expect(out[1]?.paidFine).toBe(700)
+    expect(out[1]?.paidFine).toBe(70_000)
     expect(out[3]?.totalAmount).toBe(r1.totalAmount)
   })
 
@@ -298,10 +296,10 @@ describe('reconcileSchedule after a deviation from the plan', () => {
     const [r1, r2, r3] = plan as [typeof plan[0], typeof plan[0], typeof plan[0]]
     const trns: LoanTrn[] = [
       ...payment(1, '2026-01-15', r1.principalPart, r1.interestPart),
-      { amount: round2(r2.totalAmount + r3.totalAmount + 700), date: day('2026-03-15'), id: 'm', kind: 'payment' },
+      { amount: round2(r2.totalAmount + r3.totalAmount + 70_000), date: day('2026-03-15'), id: 'm', kind: 'payment' },
       { amount: round2(r2.interestPart + r3.interestPart), date: day('2026-03-15'), id: 'i', kind: 'interest' },
-      { amount: 700, date: day('2026-03-15'), id: 'f', kind: 'fine' },
-      { amount: 5000, date: day('2026-03-25'), id: 'extra', kind: 'payment' },
+      { amount: 70_000, date: day('2026-03-15'), id: 'f', kind: 'fine' },
+      { amount: 500_000, date: day('2026-03-25'), id: 'extra', kind: 'payment' },
     ]
     const ids = reconcileSchedule(big, plan, trns, day('2026-03-30')).flatMap(row => row.trnIds)
 
@@ -311,18 +309,18 @@ describe('reconcileSchedule after a deviation from the plan', () => {
   it('carries a kopeck shortfall of a generated row into the tail', () => {
     const plan = generateSchedule(big)
     const r1 = plan[0]!
-    // 5.00 short: inside the 1% a generated row allows, so the row is paid, but the debt is not lost.
-    const out = reconcileSchedule(big, plan, payment(1, '2026-01-15', r1.principalPart - 5, r1.interestPart), day('2026-01-20'))
+    // 500 short: inside the 1% a generated row allows, so the row is paid, but the debt is not lost.
+    const out = reconcileSchedule(big, plan, payment(1, '2026-01-15', r1.principalPart - 500, r1.interestPart), day('2026-01-20'))
 
     expect(out[0]?.status).toBe('paid')
-    expect(out[0]?.remainingBalance).toBe(round2(r1.remainingBalance + 5))
-    expect(round2(out[0]!.paidPrincipal + out.slice(1).reduce((total, row) => total + row.principalPart, 0))).toBe(120_000)
+    expect(out[0]?.remainingBalance).toBe(round2(r1.remainingBalance + 500))
+    expect(round2(out[0]!.paidPrincipal + out.slice(1).reduce((total, row) => total + row.principalPart, 0))).toBe(12_000_000)
   })
 
   it('matches a bank row to the kopeck', () => {
     const bankRows = generateSchedule(big).map(row => ({ ...row, source: 'bank' as const }))
     const r1 = bankRows[0]!
-    const short = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', r1.principalPart - 0.01, r1.interestPart), day('2026-01-20'))
+    const short = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', r1.principalPart - 1, r1.interestPart), day('2026-01-20'))
     const exact = reconcileSchedule(big, bankRows, payment(1, '2026-01-15', r1.principalPart, r1.interestPart), day('2026-01-20'))
 
     expect(short[0]?.status).toBe('partial')
@@ -337,21 +335,21 @@ describe('reconcileSchedule after a deviation from the plan', () => {
     expect(reconcileSchedule(big, plan, fiveDaysLate, day('2026-01-25'))[0]?.status).toBe('late')
     expect(reconcileSchedule({ ...big, lateAfterDays: 5 }, plan, fiveDaysLate, day('2026-01-25'))[0]?.status).toBe('paid')
 
-    const early: LoanTrn[] = [...payment(1, '2026-01-15', r1.principalPart, r1.interestPart), { amount: 20_000, date: day('2026-02-05'), id: 'e', kind: 'payment' }]
+    const early: LoanTrn[] = [...payment(1, '2026-01-15', r1.principalPart, r1.interestPart), { amount: 2_000_000, date: day('2026-02-05'), id: 'e', kind: 'payment' }]
     // Ten days before the due date: the row's own early payment by default, a prepayment with a 5 day window.
     expect(reconcileSchedule(big, plan, early, day('2026-02-06'))[1]?.trnIds).toContain('e')
-    expect(reconcileSchedule({ ...big, prepayWindowDays: 5 }, plan, early, day('2026-02-06'))[0]?.trnIds).toContain('e')
+    expect(reconcileSchedule({ ...big, prepaymentWindowDays: 5 }, plan, early, day('2026-02-06'))[0]?.trnIds).toContain('e')
   })
 
   it('shows the re-solved amount on the rows paid after a prepayment', () => {
-    const out = payAsPlanned(big, { 3: 30_000 })
+    const out = payAsPlanned(big, { 3: 3_000_000 })
     expect(out[3]?.totalAmount).toBe(out[4]?.totalAmount)
     expect(out[3]?.paidPrincipal).toBe(out[3]?.principalPart)
   })
 })
 
 describe('summarizeLoan after a deviation from the plan', () => {
-  const big: LoanParams = { ...params, principalAmount: 120_000 }
+  const big: LoanParams = { ...params, principalAmount: 12_000_000 }
 
   function paid(loan: LoanParams, extras: Record<number, number>, until: number) {
     const trns: LoanTrn[] = []
@@ -364,22 +362,22 @@ describe('summarizeLoan after a deviation from the plan', () => {
     }
   }
 
-  for (const mode of ['reducePayment', 'reduceTerm'] as const) {
+  for (const mode of ['reduce_payment', 'reduce_term'] as const) {
     it(`keeps the effective rate on the contract rate after a prepayment (${mode})`, () => {
-      const loan = { ...big, overpaymentMode: mode }
-      const { out } = paid(loan, { 3: 30_000 }, day('2026-08-01'))
+      const loan = { ...big, prepaymentMode: mode }
+      const { out } = paid(loan, { 3: 3_000_000 }, day('2026-08-01'))
       const principal = out.reduce((total, row) => total + row.paidPrincipal, 0)
-      const summary = summarizeLoan(loan, out, -(120_000 - principal))
+      const summary = summarizeLoan(loan, out, -(12_000_000 - principal))
 
       expect(summary.effectiveRate).toBeCloseTo(12, 1)
       expect(summary.interestMissing).toBe(0)
     })
 
     it(`projects what-if from the real debt (${mode})`, () => {
-      const loan = { ...big, overpaymentMode: mode }
-      const { out } = paid(loan, { 3: 30_000 }, day('2026-08-01'))
-      const summary = summarizeLoan(loan, out, -round2(120_000 - out.reduce((total, row) => total + row.paidPrincipal, 0)))
-      const all = whatIf(loan, out, summary.remaining, 'reduceTerm')
+      const loan = { ...big, prepaymentMode: mode }
+      const { out } = paid(loan, { 3: 3_000_000 }, day('2026-08-01'))
+      const summary = summarizeLoan(loan, out, -round2(12_000_000 - out.reduce((total, row) => total + row.paidPrincipal, 0)))
+      const all = whatIf(loan, out, summary.remaining, 'reduce_term')
 
       expect(all.interestSaved).toBeCloseTo(summary.plannedInterest, 2)
       expect(all.newEndDate).toBeNull()
@@ -387,32 +385,32 @@ describe('summarizeLoan after a deviation from the plan', () => {
   }
 
   it('reports what a partial row still owes as the next payment', () => {
-    const out = reconcileSchedule(params, rows, [{ amount: 500, date: day('2026-01-15'), id: 'part', kind: 'payment' }], day('2026-01-20'))
-    expect(summarizeLoan(params, out, -11_500).nextPayment).toEqual({ amount: 566.19, date: day('2026-01-15') })
+    const out = reconcileSchedule(params, rows, [{ amount: 50_000, date: day('2026-01-15'), id: 'part', kind: 'payment' }], day('2026-01-20'))
+    expect(summarizeLoan(params, out, -1_150_000).nextPayment).toEqual({ amount: 56_619, date: day('2026-01-15') })
   })
 
   it('flags payments recorded without their interest and does not read them as prepayments', () => {
-    const trns: LoanTrn[] = [1, 2, 3].map(n => ({ amount: 1066.19, date: day(`2026-0${n}-15`), id: `m${n}`, kind: 'payment' }))
+    const trns: LoanTrn[] = [1, 2, 3].map(n => ({ amount: 106_619, date: day(`2026-0${n}-15`), id: `m${n}`, kind: 'payment' }))
     const out = reconcileSchedule(params, rows, trns, day('2026-03-20'))
-    const summary = summarizeLoan(params, out, -(12_000 - 3 * 1066.19))
+    const summary = summarizeLoan(params, out, -(1_200_000 - 3 * 106_619))
 
     expect(out.slice(0, 3).every(row => row.status === 'paid')).toBe(true)
-    expect(out[3]?.totalAmount).toBe(1066.19)
+    expect(out[3]?.totalAmount).toBe(106_619)
     expect(summary.interestMissing).toBe(3)
   })
 
   it('keeps the trns after a full early repayment in the rows', () => {
     const trns: LoanTrn[] = [
-      ...payment(1, '2026-01-15', 946.19, 120),
-      { amount: 11_053.81, date: day('2026-01-20'), id: 'off', kind: 'payment' },
-      { amount: 50, date: day('2026-01-21'), id: 'closing', kind: 'interest' },
-      { amount: 10, date: day('2026-02-20'), id: 'fine', kind: 'fine' },
+      ...payment(1, '2026-01-15', 94_619, 12_000),
+      { amount: 1_105_381, date: day('2026-01-20'), id: 'off', kind: 'payment' },
+      { amount: 5000, date: day('2026-01-21'), id: 'closing', kind: 'interest' },
+      { amount: 1000, date: day('2026-02-20'), id: 'fine', kind: 'fine' },
     ]
     const out = reconcileSchedule(params, rows, trns, today)
     const placed = out.flatMap(row => row.trnIds)
 
     expect(placed.toSorted()).toEqual(trns.map(trn => trn.id).toSorted())
-    expect(summarizeLoan(params, out, -60).unrecognized).toBe(0)
+    expect(summarizeLoan(params, out, -6000).unrecognized).toBe(0)
     // Closed on the payoff day: a prepayment leaves paidAt on the earlier payment.
     expect(summarizeLoan(params, out, 0).closedDate).toBe(day('2026-01-20'))
   })
@@ -420,8 +418,8 @@ describe('summarizeLoan after a deviation from the plan', () => {
   it('drops an unpaid holiday override after a full early repayment', () => {
     const holiday = { date: day('2026-06-15'), interestPart: 0, paymentNumber: 6, principalPart: 0, source: 'manual' as const, totalAmount: 0 }
     const trns: LoanTrn[] = [
-      ...payment(1, '2026-01-15', 946.19, 120),
-      { amount: 11_053.81, date: day('2026-01-20'), id: 'off', kind: 'payment' },
+      ...payment(1, '2026-01-15', 94_619, 12_000),
+      { amount: 1_105_381, date: day('2026-01-20'), id: 'off', kind: 'payment' },
     ]
     const out = reconcileSchedule(params, generateSchedule(params, [holiday]), trns, today)
 

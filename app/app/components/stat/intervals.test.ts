@@ -3,9 +3,7 @@ import type { Range } from '~~/utils/date/types'
 import { describe, expect, it } from 'vitest'
 
 import type { TotalReturns } from '~/components/amount/getTotal'
-import type { TrnItem } from '~/components/trns/types'
-
-import { TrnType } from '~/components/trns/types'
+import type { TrnItem, TrnType } from '~/components/trns/types'
 
 import { bucketTrnsByIntervals, computeAverageTotal, isPeriodOneDay } from './intervals'
 
@@ -24,15 +22,16 @@ function makeTotal(income: number, expense: number): TotalReturns {
   return { ...zeroTotal, expense, income, net: income - expense }
 }
 
-function makeTrn(date: number, type: TrnType = TrnType.Expense): TrnItem {
+function makeTrn(date: number, type: TrnType = 'expense'): TrnItem {
   return {
-    amount: 100,
     categoryId: 'food',
+    createdAt: date,
     date,
+    fromAmount: 10000,
+    fromWalletId: 'w1',
     type,
     updatedAt: date,
-    walletId: 'w1',
-  } as TrnItem
+  }
 }
 
 // --- bucketTrnsByIntervals ---
@@ -96,7 +95,7 @@ describe('bucketTrnsByIntervals', () => {
 
   it('skips transactions without date', () => {
     const trnsItems: Record<string, TrnItem> = {
-      t1: { amount: 100, categoryId: 'food', type: TrnType.Expense, updatedAt: 0, walletId: 'w1' } as TrnItem,
+      t1: { categoryId: 'food', fromAmount: 10000, fromWalletId: 'w1', type: 'expense', updatedAt: 0 } as unknown as TrnItem,
     }
 
     const result = bucketTrnsByIntervals(trnsItems, ['t1'], intervals, () => zeroTotal)

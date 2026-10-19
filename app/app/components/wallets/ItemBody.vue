@@ -37,7 +37,7 @@ const classes = computed(() => ({
 }))
 
 const walletCreditLimit = computed(() =>
-  props.wallet.type === 'credit' ? props.wallet.creditLimit : 0,
+  props.wallet.type === 'credit_card' ? props.wallet.creditLimit : 0,
 )
 const displayAmount = computed(() => props.amount ?? props.wallet.amount)
 </script>
@@ -69,7 +69,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
 
         <!-- Rate -->
         <div
-          v-if="props.isShowRate && props.baseCurrencyCode && wallet.currency !== props.baseCurrencyCode && wallet.rate"
+          v-if="props.isShowRate && props.baseCurrencyCode && wallet.currencyCode !== props.baseCurrencyCode && wallet.rate"
           class="opacity-90"
         >
           <Amount
@@ -90,12 +90,12 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
         />
 
         <div
-          v-if="props.isShowCreditLimit && wallet.type === 'credit' && walletCreditLimit"
+          v-if="props.isShowCreditLimit && wallet.type === 'credit_card' && walletCreditLimit"
           class="flex items-center gap-0.5 opacity-70"
         >
           <Amount
             :amount="getCreditAvailable(walletCreditLimit, wallet.amount)"
-            :currencyCode="wallet.currency"
+            :currencyCode="wallet.currencyCode"
             :isShowBaseRate="false"
             :isShowSymbol="false"
             align="left"
@@ -112,7 +112,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
           <Amount
             v-if="wallet.amount !== 0"
             :amount="walletCreditLimit"
-            :currencyCode="wallet.currency"
+            :currencyCode="wallet.currencyCode"
             :isShowBaseRate="false"
             :isShowSymbol="false"
             align="left"
@@ -125,14 +125,14 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
         <Amount
           v-if="walletCreditLimit"
           :amount="displayAmount"
-          :currencyCode="wallet.currency"
+          :currencyCode="wallet.currencyCode"
           :isShowBaseRate="props.isShowBaseRate"
           variant="row"
         />
         <Amount
           v-else
           :amount="displayAmount"
-          :currencyCode="wallet.currency"
+          :currencyCode="wallet.currencyCode"
           :isShowBaseRate="props.isShowBaseRate"
           variant="row"
         />
@@ -150,7 +150,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
           <Amount
             v-if="walletCreditLimit"
             :amount="displayAmount"
-            :currencyCode="wallet.currency"
+            :currencyCode="wallet.currencyCode"
             :isShowBaseRate="false"
             :isShowMinus="false"
             align="left"
@@ -159,7 +159,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
           <Amount
             v-else
             :amount="displayAmount"
-            :currencyCode="wallet.currency"
+            :currencyCode="wallet.currencyCode"
             :isShowBaseRate="props.isShowBaseRate"
             :isShowMinus="false"
             align="left"

@@ -2,11 +2,11 @@ import type { ComputedRef, Ref } from 'vue'
 
 import { useStorage } from '@vueuse/core'
 
-import type { GroupedWallets, WalletSortOrders, WalletsToggleMap } from '~/components/wallets/grouping'
+import type { GroupedWallets, WalletsToggleMap } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy } from '~/components/wallets/types'
 
 import { WALLET_STORAGE_KEYS, walletStorageKey } from '~/components/wallets/constants'
-import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus, groupingPrimary, hasSecondaryGrouping, sortOrderKey, sortWalletGroups } from '~/components/wallets/grouping'
+import { applyToggle, applyToggleAll, buildWalletGroups, computeToggleStatus, groupingPrimary, hasSecondaryGrouping, reorderInSlots } from '~/components/wallets/grouping'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 export type { GroupedWallets }
@@ -25,20 +25,27 @@ export function useWalletsGrouping(
     mergeDefaults: true,
   })
 
-  const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
+  // Ids arrive in `sortOrder`, so groups and wallets inside them follow the one synced order.
+  const groupedWalletsWithIds = computed<GroupedWallets | false>(() => buildWalletGroups(
+    selectedWalletsIds.value,
+    walletsStore.itemsComputed,
+    primary.value,
+    hasSecondary.value,
+  ))
 
-  const groupedWalletsWithIds = computed<GroupedWallets | false>(() => {
-    const groups = buildWalletGroups(
-      selectedWalletsIds.value,
-      walletsStore.itemsComputed,
-      primary.value,
-      hasSecondary.value,
-    )
-    return groups ? sortWalletGroups(groups, groupedBy.value, sortOrders.value) : groups
-  })
-
-  function setSortOrder(path: string[], ids: string[]) {
-    sortOrders.value = { ...sortOrders.value, [sortOrderKey(groupedBy.value, ...path)]: ids }
+  /** `keys` are the new order of what sits at `path`: primary groups, secondary groups or wallet ids. */
+  function setSortOrder(path: string[], keys: string[]) {
+    const groups = groupedWalletsWithIds.value
+    if (!groups)
+      return
+    const [primaryKey, secondaryKey] = path
+    const group = primaryKey ? groups[primaryKey] : undefined
+    const sequence = !primaryKey
+      ? keys.flatMap(k => groups[k]?.ids ?? [])
+      : secondaryKey || !Object.keys(group?.groups ?? {}).length
+        ? keys
+        : keys.flatMap(k => group?.groups?.[k] ?? [])
+    walletsStore.saveWalletsOrder(reorderInSlots(walletsStore.sortedIds, sequence))
   }
 
   function toggleMap(groupPrimary: string, groupSecondary?: string) {

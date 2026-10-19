@@ -9,11 +9,11 @@ describe('loansCostView', () => {
     const wrapper = mount(LoansCostView, { props: cost as any })
     expect(wrapper.findAll('[data-loan-cost-month]')).toHaveLength(2)
     expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual([
-      '19550.16 RUB',
-      '30 RUB',
-      '9800.15 RUB',
-      '9750.01 RUB',
-      '30 RUB',
+      '1955016 RUB',
+      '3000 RUB',
+      '980015 RUB',
+      '975001 RUB',
+      '3000 RUB',
     ])
   })
 })

@@ -17,7 +17,7 @@ export type StatisticsRow = {
   title: string
 }
 
-const ORDERED_KEYS = ['total', 'withdrawal', 'available', 'availableAll', 'excludeInTotal', 'archived', 'cash', 'cashless', 'deposit', 'credit', 'loan', 'crypto', 'debt'] as const
+const ORDERED_KEYS = ['total', 'withdrawal', 'available', 'availableAll', 'excludeInTotal', 'archived', 'cash', 'bank_account', 'deposit', 'credit_card', 'loan', 'crypto', 'debt'] as const
 
 /**
  * Which statistics rows exist, in what order, which are pinned and which are hidden.

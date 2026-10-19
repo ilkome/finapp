@@ -165,23 +165,21 @@ describe('uploadData', () => {
 })
 
 describe('prepareUploadData', () => {
-  it('decodes stat view JSON columns for Postgres jsonb', () => {
+  it('decodes JSON columns of the column map for Postgres jsonb', () => {
     expect(prepareUploadData('stat_views', {
-      autoRule: '{"operator":"and","conditions":[]}',
+      auto_rule: '{"operator":"and","conditions":[]}',
       config: '{"wallets":{"isShow":true}}',
       name: 'Classic',
     })).toEqual({
-      autoRule: { conditions: [], operator: 'and' },
+      auto_rule: { conditions: [], operator: 'and' },
       config: { wallets: { isShow: true } },
       name: 'Classic',
     })
   })
 
-  it('keeps nullable JSON and other tables unchanged', () => {
-    expect(prepareUploadData('stat_views', { autoRule: null })).toEqual({ autoRule: null })
+  it('keeps nullable JSON and tables without JSON columns unchanged', () => {
+    expect(prepareUploadData('stat_views', { auto_rule: null })).toEqual({ auto_rule: null })
     const row = { config: '{"value":1}' }
     expect(prepareUploadData('wallets', row)).toBe(row)
-    const loanRow = { principalAmount: 300000, walletId: 'w1' }
-    expect(prepareUploadData('loans', loanRow)).toBe(loanRow)
   })
 })

@@ -8,14 +8,14 @@ describe('loansSummaryView', () => {
   it('renders the facts header from plain JSON', () => {
     const wrapper = mount(LoansSummaryView, { props: summary as any })
     expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual([
-      '60000 RUB',
-      '300000 RUB',
-      '12500 RUB',
-      '15000 RUB',
-      '1200 RUB',
-      '54000 RUB',
-      '48000 RUB',
-      '301000 RUB',
+      '6000000 RUB',
+      '30000000 RUB',
+      '1250000 RUB',
+      '1500000 RUB',
+      '120000 RUB',
+      '5400000 RUB',
+      '4800000 RUB',
+      '30100000 RUB',
     ])
     expect(wrapper.find('[role="progressbar"]').attributes('aria-valuenow')).toBe('20')
     expect(wrapper.text()).toContain('loans.overpaid')

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
+import type { TrnItem } from '~/components/trns/types'
+
 import { buildStatVirtualRows } from '~/components/stat/statFeed'
-import { TrnType } from '~/components/trns/types'
 
 const periodSize = 100
 function rangeForOffset(offset: number) {
@@ -10,14 +11,15 @@ function rangeForOffset(offset: number) {
     start: 10_000 - (offset + 1) * periodSize + 1,
   }
 }
-const transaction = {
-  amount: 10,
+const transaction: TrnItem = {
   categoryId: 'expense',
+  createdAt: 1,
   date: rangeForOffset(2).start,
-  type: TrnType.Expense,
+  fromAmount: 1000,
+  fromWalletId: 'wallet',
+  type: 'expense',
   updatedAt: 1,
-  walletId: 'wallet',
-} as const
+}
 
 describe('buildStatVirtualRows', () => {
   it('renders a transaction once when materialized ranges overlap', () => {

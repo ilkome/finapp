@@ -37,7 +37,7 @@ describe('useStatViewsStore demo persistence', () => {
     const view = await store.create({
       autoRule: null,
       config: { base: structuredClone(defaultConfig), blockRules: {} },
-      isAutoEnabled: false,
+      isAutoRuleEnabled: false,
       name: 'Classic',
       scope: 'dashboard',
     })
@@ -51,8 +51,8 @@ describe('useStatViewsStore demo persistence', () => {
   it('keeps one selected view for every device', async () => {
     const store = useStatViewsStore()
     await store.init()
-    const first = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'First', scope: 'dashboard' })
-    const second = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Second', scope: 'dashboard' })
+    const first = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoRuleEnabled: false, name: 'First', scope: 'dashboard' })
+    const second = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoRuleEnabled: false, name: 'Second', scope: 'dashboard' })
 
     await store.setActive(second.id)
 
@@ -68,10 +68,10 @@ describe('useStatViewsStore demo persistence', () => {
   it('stores active selection in the synchronized table column', async () => {
     const store = useStatViewsStore()
     await store.init()
-    const view = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Active', scope: 'dashboard' })
+    const view = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoRuleEnabled: false, name: 'Active', scope: 'dashboard' })
     const row = viewToRow(view)
 
-    expect(row.isActive).toBe(1)
+    expect(row.is_active).toBe(1)
     expect(JSON.parse(String(row.config))).not.toHaveProperty('isActive')
     expect(rowToView({ id: view.id, ...row })?.isActive).toBe(true)
   })
@@ -82,7 +82,7 @@ describe('useStatViewsStore demo persistence', () => {
 
     expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: true, name: 'stat.views.adaptive' }])
 
-    const view = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Saved', scope: 'dashboard' })
+    const view = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoRuleEnabled: false, name: 'Saved', scope: 'dashboard' })
     expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: false }, { id: view.id, isActive: true }])
 
     await store.setActive(ADAPTIVE_VIEW_ID)
@@ -94,9 +94,9 @@ describe('useStatViewsStore demo persistence', () => {
     await store.init()
 
     const rule = { children: [{ ids: [], kind: 'walletSelection' as const, mode: 'any' as const }], operator: 'and' as const }
-    const forked = await store.update(ADAPTIVE_VIEW_ID, { autoRule: rule, isAutoEnabled: true })
+    const forked = await store.update(ADAPTIVE_VIEW_ID, { autoRule: rule, isAutoRuleEnabled: true })
 
-    expect(forked).toMatchObject({ autoRule: rule, isActive: true, isAutoEnabled: true, name: 'stat.views.mine' })
+    expect(forked).toMatchObject({ autoRule: rule, isActive: true, isAutoRuleEnabled: true, name: 'stat.views.mine' })
     expect(forked?.config.blockRules.catsRound).toHaveLength(3)
     expect(store.views).toMatchObject([{ id: ADAPTIVE_VIEW_ID, isActive: false }, { id: forked!.id }])
 
@@ -107,8 +107,8 @@ describe('useStatViewsStore demo persistence', () => {
   it('activates the adjacent view when the active view is removed', async () => {
     const store = useStatViewsStore()
     await store.init()
-    const first = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'First', scope: 'dashboard' })
-    const second = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoEnabled: false, name: 'Second', scope: 'dashboard' })
+    const first = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoRuleEnabled: false, name: 'First', scope: 'dashboard' })
+    const second = await store.create({ autoRule: null, config: { base: structuredClone(defaultConfig), blockRules: {} }, isAutoRuleEnabled: false, name: 'Second', scope: 'dashboard' })
 
     await store.remove(first.id)
 
@@ -124,7 +124,7 @@ describe('active view conflict resolution', () => {
       createdAt: 1,
       id: 'older',
       isActive: true,
-      isAutoEnabled: false,
+      isAutoRuleEnabled: false,
       name: 'Older',
       scope: 'dashboard',
       sortOrder: 0,
@@ -147,7 +147,7 @@ describe('cold-start snapshot', () => {
     createdAt: 1,
     id,
     isActive: true,
-    isAutoEnabled: false,
+    isAutoRuleEnabled: false,
     name: id,
     scope: 'dashboard',
     sortOrder: 0,

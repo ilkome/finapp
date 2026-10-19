@@ -1,28 +1,27 @@
 import { describe, expect, it } from 'vitest'
 
 import { getWalletPeriodTotals, sortWalletIdsByPeriodTotal } from '~/components/stat/walletPeriodTotals'
-import { TrnType } from '~/components/trns/types'
 
 describe('getWalletPeriodTotals', () => {
   it('returns income minus expenses for every wallet', () => {
     expect(getWalletPeriodTotals({
       trnsIds: ['income', 'expense', 'other'],
       trnsItems: {
-        expense: { amount: 40, categoryId: 'food', date: 2, type: TrnType.Expense, updatedAt: 2, walletId: 'cash' },
-        income: { amount: 100, categoryId: 'salary', date: 1, type: TrnType.Income, updatedAt: 1, walletId: 'cash' },
-        other: { amount: 30, categoryId: 'food', date: 3, type: TrnType.Expense, updatedAt: 3, walletId: 'card' },
+        expense: { categoryId: 'food', createdAt: 2, date: 2, fromAmount: 4000, fromWalletId: 'cash', type: 'expense', updatedAt: 2 },
+        income: { categoryId: 'salary', createdAt: 1, date: 1, toAmount: 10000, toWalletId: 'cash', type: 'income', updatedAt: 1 },
+        other: { categoryId: 'food', createdAt: 3, date: 3, fromAmount: 3000, fromWalletId: 'card', type: 'expense', updatedAt: 3 },
       },
-    })).toEqual({ card: -30, cash: 60 })
+    })).toEqual({ card: -3000, cash: 6000 })
   })
 
-  it('excludes system and explicitly excluded categories', () => {
+  it('excludes adjustments, transfers and explicitly excluded categories', () => {
     expect(getWalletPeriodTotals({
       excludedCategoryIds: new Set(['hidden']),
       trnsIds: ['adjustment', 'hidden', 'transfer'],
       trnsItems: {
-        adjustment: { amount: 20, categoryId: 'adjustment', date: 1, type: TrnType.Income, updatedAt: 1, walletId: 'cash' },
-        hidden: { amount: 30, categoryId: 'hidden', date: 2, type: TrnType.Income, updatedAt: 2, walletId: 'cash' },
-        transfer: { categoryId: 'transfer', date: 3, expenseAmount: 10, expenseWalletId: 'cash', incomeAmount: 10, incomeWalletId: 'card', type: TrnType.Transfer, updatedAt: 3 },
+        adjustment: { createdAt: 1, date: 1, toAmount: 2000, toWalletId: 'cash', type: 'adjustment', updatedAt: 1 },
+        hidden: { categoryId: 'hidden', createdAt: 2, date: 2, toAmount: 3000, toWalletId: 'cash', type: 'income', updatedAt: 2 },
+        transfer: { createdAt: 3, date: 3, fromAmount: 1000, fromWalletId: 'cash', toAmount: 1000, toWalletId: 'card', type: 'transfer', updatedAt: 3 },
       },
     })).toEqual({})
   })

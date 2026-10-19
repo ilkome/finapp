@@ -4,32 +4,31 @@ import { trnToRow } from '~~/services/powersync/transforms'
 import type { TrnItem, Trns } from '~/components/trns/types'
 
 import { buildTrnsBulkEdit, buildTrnsBulkEdits } from '~/components/trns/bulkEdits'
-import { TrnType } from '~/components/trns/types'
 
 const day = Date.UTC(2026, 8, 3)
 
 function expense(overrides: Partial<TrnItem> = {}): TrnItem {
   return {
-    amount: 100,
     categoryId: 'food',
+    createdAt: 5,
     date: day,
-    desc: 'Old',
-    enteredAt: 5,
-    type: TrnType.Expense,
+    description: 'Old',
+    fromAmount: 100,
+    fromWalletId: 'cash',
+    type: 'expense',
     updatedAt: 1,
-    walletId: 'cash',
     ...overrides,
-  } as TrnItem
+  }
 }
 
 const transfer: TrnItem = {
-  categoryId: 'transfer',
+  createdAt: 1,
   date: day,
-  expenseAmount: 100,
-  expenseWalletId: 'cash',
-  incomeAmount: 100,
-  incomeWalletId: 'card',
-  type: TrnType.Transfer,
+  fromAmount: 100,
+  fromWalletId: 'cash',
+  toAmount: 100,
+  toWalletId: 'card',
+  type: 'transfer',
   updatedAt: 1,
 }
 
@@ -46,23 +45,23 @@ function build(items: Trns, action: Parameters<typeof buildTrnsBulkEdit>[0]['act
 
 describe('buildTrnsBulkEdit', () => {
   it('sets one trimmed description and timestamp across the batch', () => {
-    const result = build({ a: expense(), b: expense({ desc: 'Other' }) }, { type: 'setDescription', value: '  Shared  ' })
+    const result = build({ a: expense(), b: expense({ description: 'Other' }) }, { type: 'setDescription', value: '  Shared  ' })
 
     expect(result.changedIds).toEqual(['a', 'b'])
-    expect(result.values.a).toMatchObject({ desc: 'Shared', enteredAt: 5, updatedAt: 99 })
-    expect(result.values.b).toMatchObject({ desc: 'Shared', updatedAt: 99 })
+    expect(result.values.a).toMatchObject({ createdAt: 5, description: 'Shared', updatedAt: 99 })
+    expect(result.values.b).toMatchObject({ description: 'Shared', updatedAt: 99 })
   })
 
   it('removes descriptions without changing other transaction fields', () => {
     const result = build({ a: expense() }, { type: 'clearDescription' })
 
-    expect(result.values.a).not.toHaveProperty('desc')
-    expect(result.values.a).toMatchObject({ amount: 100, categoryId: 'food', updatedAt: 99, walletId: 'cash' })
-    expect(trnToRow(result.values.a!, 'u1').desc).toBeNull()
+    expect(result.values.a).not.toHaveProperty('description')
+    expect(result.values.a).toMatchObject({ categoryId: 'food', fromAmount: 100, fromWalletId: 'cash', updatedAt: 99 })
+    expect(trnToRow(result.values.a!, 'u1').description).toBeNull()
   })
 
   it('does not write rows whose value already matches', () => {
-    const result = build({ a: expense({ desc: 'Same' }) }, { type: 'setDescription', value: 'Same' })
+    const result = build({ a: expense({ description: 'Same' }) }, { type: 'setDescription', value: 'Same' })
 
     expect(result.changedIds).toEqual([])
     expect(result.unchangedIds).toEqual(['a'])
@@ -81,7 +80,7 @@ describe('buildTrnsBulkEdit', () => {
     const result = build({ a: expense(), b: transfer }, { type: 'setWallet', value: 'card' })
 
     expect(result.changedIds).toEqual(['a'])
-    expect(result.values.a?.type === TrnType.Transfer ? null : result.values.a?.walletId).toBe('card')
+    expect(result.values.a?.fromWalletId).toBe('card')
     expect(result.ineligible).toEqual([{ id: 'b', reason: 'transfer' }])
   })
 
@@ -90,6 +89,13 @@ describe('buildTrnsBulkEdit', () => {
 
     expect(result.changedIds).toEqual([])
     expect(result.ineligible).toEqual([{ id: 'a', reason: 'invalidWallet' }])
+  })
+
+  it('moves an adjustment to another wallet on its own side and keeps it out of categories', () => {
+    const adjustment: TrnItem = { createdAt: 1, date: day, toAmount: 100, toWalletId: 'cash', type: 'adjustment', updatedAt: 1 }
+
+    expect(build({ a: adjustment }, { type: 'setWallet', value: 'card' }).values.a).toMatchObject({ toWalletId: 'card' })
+    expect(build({ a: adjustment }, { type: 'setCategory', value: 'food' }).ineligible).toEqual([{ id: 'a', reason: 'transfer' }])
   })
 
   it('rejects non-civil dates', () => {
@@ -113,9 +119,9 @@ describe('buildTrnsBulkEdits', () => {
     })
 
     expect(result.changedIds).toEqual(['a', 'b'])
-    expect(result.values.a).toMatchObject({ categoryId: 'travel', desc: 'Trip', updatedAt: 99, walletId: 'card' })
+    expect(result.values.a).toMatchObject({ categoryId: 'travel', description: 'Trip', fromWalletId: 'card', updatedAt: 99 })
     // The transfer takes the description but is skipped by category and wallet.
-    expect(result.values.b).toMatchObject({ categoryId: 'transfer', desc: 'Trip' })
+    expect(result.values.b).toMatchObject({ description: 'Trip', type: 'transfer' })
     expect(result.ineligible).toEqual([{ id: 'b', reason: 'transfer' }, { id: 'b', reason: 'transfer' }])
   })
 

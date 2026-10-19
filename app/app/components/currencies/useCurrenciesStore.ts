@@ -2,13 +2,14 @@ import type { Row } from '~~/services/powersync/transforms'
 
 import localforage from 'localforage'
 import { defineStore } from 'pinia'
+import { rowToItem } from '~~/services/powersync/columns'
 import { getPowerSyncDb, watchTable } from '~~/services/powersync/db'
 import { rowToRates } from '~~/services/powersync/transforms'
-import { civilDayKey } from '~~/utils/date/civil'
 
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 
 import { createToBase, getAmountInRate } from '~/components/amount/getTotal'
+import { setUserCurrencies } from '~/components/amount/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
@@ -26,6 +27,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
   const rates = ref<Rates>({})
 
   let watchController: AbortController | null = null
+  let userCurrenciesWatch: AbortController | null = null
 
   /** Real mode: subscribe to the latest rates row in local SQLite. */
   function initCurrencies(): void {
@@ -33,12 +35,21 @@ export const useCurrenciesStore = defineStore('currencies', () => {
       return
 
     watchController?.abort()
-    watchController = watchTable<Row>('SELECT * FROM rates ORDER BY date DESC LIMIT 1', [], (rows) => {
+    watchController = watchTable<Row>('SELECT * FROM exchange_rates ORDER BY date DESC LIMIT 1', [], (rows) => {
       const r = rows[0] ? rowToRates(rows[0]) : null
       if (r)
         setRates(r)
     })
     logger.log('watching rates')
+
+    // The user's own currencies and edits of built-in ones; a built-in without a row is used as the list has it.
+    userCurrenciesWatch?.abort()
+    userCurrenciesWatch = watchTable<Row>('SELECT * FROM currencies', [], (rows) => {
+      setUserCurrencies(new Map(rows.map((row) => {
+        const item = rowToItem('currencies', row) as { code: string, minorDisplay?: 'always' | 'auto' | 'never', scale?: number, symbol?: string }
+        return [item.code, item]
+      })))
+    })
   }
 
   function setRates(values: Rates) {
@@ -87,7 +98,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
       return null
 
     const db = await getPowerSyncDb()
-    const row = await db.getOptional<Row>('SELECT * FROM rates WHERE date <= ? ORDER BY date DESC LIMIT 1', [civilDayKey(date)])
+    const row = await db.getOptional<Row>('SELECT * FROM exchange_rates WHERE date <= ? ORDER BY date DESC LIMIT 1', [date])
     return row ? rowToRates(row) : null
   }
 
@@ -99,9 +110,9 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     if (isDemo.value || !dates.length)
       return dates.map(() => null)
 
-    const keys = dates.map(civilDayKey)
+    const keys = dates
     const db = await getPowerSyncDb()
-    const rows = await db.getAll<{ date: string, rates: string }>('SELECT date, rates FROM rates WHERE date <= ? ORDER BY date', [keys.reduce((a, b) => a > b ? a : b)])
+    const rows = await db.getAll<{ date: number, rates: string }>('SELECT date, rates FROM exchange_rates WHERE date <= ? ORDER BY date', [Math.max(...keys)])
     const parsed = new Map<number, Rates | null>()
     return keys.map((key) => {
       // Binary search for the last row not after the key.

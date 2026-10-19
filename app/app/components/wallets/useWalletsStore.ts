@@ -9,12 +9,12 @@ import type { TrnId } from '~/components/trns/types'
 import type { WalletId, WalletItem, WalletItemComputed, Wallets, WalletsComputed } from '~/components/wallets/types'
 
 import { getWalletsTotals } from '~/components/amount/getTotal'
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useUserStore } from '~/components/user/useUserStore'
 import { isCreditProduct } from '~/components/wallets/types'
@@ -83,16 +83,16 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   function saveWallet({ id, values }: { id: WalletId, values: WalletItem }) {
     if (!hasItems.value)
-      useUserStore().saveUserBaseCurrency(values.currency)
+      useUserStore().saveUserBaseCurrency(values.currencyCode)
 
     const isNew = !(items.value && id in items.value)
 
     if (isNew) {
       const maxOrder = Object.values(items.value ?? {}).reduce(
-        (max, w) => Math.max(max, w.order ?? 0),
+        (max, w) => Math.max(max, w.sortOrder ?? 0),
         -1,
       )
-      values = { ...values, order: maxOrder + 1 }
+      values = { ...values, sortOrder: maxOrder + 1 }
     }
 
     const prev = items.value
@@ -128,7 +128,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     for (let i = 0; i < ids.length; i++) {
       const walletId = ids[i]!
       if (updated[walletId])
-        updated[walletId] = { ...updated[walletId]!, order: i }
+        updated[walletId] = { ...updated[walletId]!, sortOrder: i }
     }
     setWallets(updated)
 
@@ -141,7 +141,7 @@ export const useWalletsStore = defineStore('wallets', () => {
         .filter(walletId => items.value?.[walletId])
         .map((walletId, index) => ({
           id: walletId,
-          row: walletToRow({ ...items.value![walletId]!, order: index }, resolveWriteUid(uid.value)),
+          row: walletToRow({ ...items.value![walletId]!, sortOrder: index }, resolveWriteUid(uid.value)),
         })),
     ), {
       errorKey: 'wallets.errors.orderFailed',
@@ -156,7 +156,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       return []
 
     return Object.keys(items.value ?? {}).sort(
-      (a, b) => (items.value![a]?.order ?? 0) - (items.value![b]?.order ?? 0),
+      (a, b) => (items.value![a]?.sortOrder ?? 0) - (items.value![b]?.sortOrder ?? 0),
     )
   })
 
@@ -172,19 +172,12 @@ export const useWalletsStore = defineStore('wallets', () => {
       if (!trn)
         continue
 
-      if (trn.type === TrnType.Transfer) {
-        const existing1 = latestDateByWallet.get(trn.expenseWalletId)
-        if (!existing1 || trn.date > existing1)
-          latestDateByWallet.set(trn.expenseWalletId, trn.date)
-
-        const existing2 = latestDateByWallet.get(trn.incomeWalletId)
-        if (!existing2 || trn.date > existing2)
-          latestDateByWallet.set(trn.incomeWalletId, trn.date)
-      }
-      else {
-        const existing = latestDateByWallet.get(trn.walletId)
+      for (const walletId of [trn.fromWalletId, trn.toWalletId]) {
+        if (!walletId)
+          continue
+        const existing = latestDateByWallet.get(walletId)
         if (!existing || trn.date > existing)
-          latestDateByWallet.set(trn.walletId, trn.date)
+          latestDateByWallet.set(walletId, trn.date)
       }
     }
 
@@ -211,7 +204,7 @@ export const useWalletsStore = defineStore('wallets', () => {
       if (!wallet)
         return acc
       const amount = walletTotals.value.get(id) ?? 0
-      const rate = currenciesStore.toBase(1, wallet.currency)
+      const rate = currenciesStore.toBase(1, wallet.currencyCode)
       const prev = prevComputed.get(id)
       const value = prev && prev.source === wallet && prev.value.amount === amount && prev.value.rate === rate
         ? prev.value
@@ -224,7 +217,7 @@ export const useWalletsStore = defineStore('wallets', () => {
     return result
   })
 
-  const currenciesUsed = computed<CurrencyCode[]>(() => [...new Set(sortedIds.value.map(id => items.value![id]!.currency))])
+  const currenciesUsed = computed<CurrencyCode[]>(() => [...new Set(sortedIds.value.map(id => items.value![id]!.currencyCode))])
 
   async function deleteWallet(id: WalletId, trnsIds?: TrnId[]) {
     const prevWallets = items.value
@@ -241,13 +234,14 @@ export const useWalletsStore = defineStore('wallets', () => {
     const loanId = loansStore.loanIdByWalletId.get(id)
     if (loanId)
       loansStore.deleteLoan(loanId)
+    useBankReportsStore().deleteBankReport(id)
 
     if (isDemo.value)
       return
 
     // Real mode: the wallet's transactions must also be deleted from the DB,
     // otherwise the trns watch would re-add them after the optimistic removal.
-    await persistOptimistic(Promise.all([deleteRow('wallets', id), deleteRows('trns', trnsIds ?? [])]), {
+    await persistOptimistic(Promise.all([deleteRow('wallets', id), deleteRows('transactions', trnsIds ?? [])]), {
       errorKey: 'wallets.errors.deleteFailed',
       label: 'deleteWallet',
       logger,
@@ -260,7 +254,7 @@ export const useWalletsStore = defineStore('wallets', () => {
 
   /** A wallet missing for a tick (deleted, not yet synced) reads as the base currency. */
   function currencyOf(walletId: WalletId): CurrencyCode {
-    return items.value?.[walletId]?.currency ?? currenciesStore.base
+    return items.value?.[walletId]?.currencyCode ?? currenciesStore.base
   }
 
   return {

@@ -20,7 +20,7 @@ function matchesLocalType(items: Trns, id: TrnId, filter: StatFeedLocalFilter): 
 }
 
 function matchesDescriptionFilter(items: Trns, id: TrnId, showWithDesc: boolean): boolean {
-  return !showWithDesc || !!items[id]?.desc
+  return !showWithDesc || !!items[id]?.description
 }
 
 function sortIds(ids: readonly string[]) {

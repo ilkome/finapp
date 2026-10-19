@@ -1,7 +1,5 @@
 import type { TrnId, TrnItem, TrnsGetterProps } from '~/components/trns/types'
 
-import { TrnType } from '~/components/trns/types'
-
 export function createTrnMatcher(props: Omit<TrnsGetterProps, 'sort' | 'trnsIds' | 'trnsItems'>) {
   const walletsSet = props.walletsIds?.length ? new Set(props.walletsIds) : null
   const categoriesSet = props.categoriesIds?.length ? new Set(props.categoriesIds) : null
@@ -12,20 +10,17 @@ export function createTrnMatcher(props: Omit<TrnsGetterProps, 'sort' | 'trnsIds'
   return (trn: TrnItem | undefined): trn is TrnItem => {
     if (!trn)
       return false
-    if (typesSet && !typesSet.has(trn.categoryId === 'transfer' ? TrnType.Transfer : trn.type))
+    if (typesSet && !typesSet.has(trn.type))
       return false
     if (start !== undefined && trn.date < start)
       return false
     if (end !== undefined && trn.date > end)
       return false
     if (walletsSet) {
-      const matchesWallet = trn.type === TrnType.Transfer
-        ? walletsSet.has(trn.expenseWalletId) || walletsSet.has(trn.incomeWalletId)
-        : walletsSet.has(trn.walletId)
-      if (!matchesWallet)
+      if (!(trn.fromWalletId && walletsSet.has(trn.fromWalletId)) && !(trn.toWalletId && walletsSet.has(trn.toWalletId)))
         return false
     }
-    if (categoriesSet && !categoriesSet.has(trn.categoryId))
+    if (categoriesSet && !(trn.categoryId && categoriesSet.has(trn.categoryId)))
       return false
     return true
   }

@@ -27,8 +27,8 @@ if (!url || !key || !email) {
 
 const headers = { apikey: key, Authorization: `Bearer ${key}` }
 // Same set as services/powersync/tables.ts (tables.test.ts keeps them in step).
-const USER_TABLES = ['categories', 'loan_schedule_rows', 'loans', 'stat_views', 'trns', 'user_settings', 'wallets']
-const GLOBAL_TABLES = ['rates'] // no userId column
+const USER_TABLES = ['bank_reports', 'categories', 'currencies', 'display_overrides', 'forecast_categories', 'forecast_settings', 'loan_schedule_overrides', 'loans', 'stat_views', 'transactions', 'user_settings', 'wallets']
+const GLOBAL_TABLES = ['exchange_rates'] // no user_id column
 
 const r = await fetch(`${url}/auth/v1/admin/users?per_page=500`, { headers })
 if (!r.ok) {
@@ -48,7 +48,7 @@ console.log(`user ${email} -> ${uid}`)
 const out = { meta: { at: new Date().toISOString(), email, label, uid, url }, tables: {} }
 
 async function dump(table, filtered) {
-  const filter = filtered ? `&userId=eq.${uid}` : ''
+  const filter = filtered ? `&user_id=eq.${uid}` : ''
   // PostgREST caps each response (default 1000), so page until a short page comes back.
   const pageSize = 1000
   const all = []

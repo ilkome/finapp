@@ -20,7 +20,7 @@ const trnsItems = {
   t3: { categoryId: 'restaurants' },
   t4: { categoryId: 'salary' },
   t5: { categoryId: 'transport' },
-  t6: { categoryId: 'transfer' },
+  t6: {},
   t7: { categoryId: 'groceries' },
 }
 

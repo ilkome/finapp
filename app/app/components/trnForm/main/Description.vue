@@ -6,8 +6,8 @@ const trnsFormStore = useTrnsFormStore()
 
 // Written straight into the form: the sheet has no save button, closing it keeps the text.
 const desc = computed({
-  get: () => trnsFormStore.values.desc ?? '',
-  set: (value: string) => { trnsFormStore.values.desc = value },
+  get: () => trnsFormStore.values.description ?? '',
+  set: (value: string) => { trnsFormStore.values.description = value },
 })
 </script>
 
@@ -23,7 +23,7 @@ const desc = computed({
       <UiActionButton class="relative overflow-visible">
         <Icon name="lucide:message-square" size="20" />
         <div
-          v-if="trnsFormStore.values.desc"
+          v-if="trnsFormStore.values.description"
           class="absolute top-0 right-0 aspect-square w-2.5 rounded-full bg-primary"
         />
       </UiActionButton>

@@ -15,7 +15,7 @@ const controller = inject(statViewControllerKey, null)
 const { open: openPanel } = useStatConfigNav()
 const name = ref('')
 const nameInput = useTemplateRef<{ inputRef?: HTMLInputElement }>('nameInput')
-const isAutoEnabled = ref(false)
+const isAutoRuleEnabled = ref(false)
 const isViewsOpen = ref(false)
 const confirm = useConfirm()
 
@@ -40,7 +40,7 @@ function selectionName(entity: 'category' | 'wallet', mode: EntitySelectionMode,
 }
 watch(current, (view) => {
   name.value = view?.name ?? ''
-  isAutoEnabled.value = view?.isAutoEnabled ?? false
+  isAutoRuleEnabled.value = view?.isAutoRuleEnabled ?? false
 }, { immediate: true })
 
 // The name is committed on blur and on close, never while typing: an empty field must stay
@@ -56,8 +56,8 @@ function commitName() {
 onBeforeUnmount(commitName)
 
 function toggleAutoEnabled() {
-  isAutoEnabled.value = !isAutoEnabled.value
-  void controller?.updateMetadata({ isAutoEnabled: isAutoEnabled.value })
+  isAutoRuleEnabled.value = !isAutoRuleEnabled.value
+  void controller?.updateMetadata({ isAutoRuleEnabled: isAutoRuleEnabled.value })
 }
 
 const viewActionItems = computed(() => [
@@ -126,7 +126,7 @@ const viewActionItems = computed(() => [
         hasPanel
         hasToggle
         icon="lucide:wand-sparkles"
-        :isShow="isAutoEnabled"
+        :isShow="isAutoRuleEnabled"
         :title="$t('stat.views.auto')"
         @activate="openPanel('auto')"
         @toggle="toggleAutoEnabled"

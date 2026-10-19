@@ -98,7 +98,7 @@ const items = computed<DropdownMenuItem[][]>(() => {
     v-model:open="open"
     :content="{ align }"
     :items
-   
+
     :ui="{ content: contentClass }"
   >
     <slot />

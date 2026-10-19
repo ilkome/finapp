@@ -11,7 +11,7 @@ describe('category views render from plain JSON', () => {
     const wrapper = mount(LineView, { props: line as any })
     expect(wrapper.text()).toContain('Groceries')
     expect(wrapper.text()).toContain('Food')
-    expect(wrapper.find('[data-amount]').text()).toBe('-320.5 USD')
+    expect(wrapper.find('[data-amount]').text()).toBe('-32050 USD')
     expect(wrapper.findAll('rect')).toHaveLength(4)
     expect(wrapper.attributes('data-stat-category-id')).toBe('groceries')
   })
@@ -27,7 +27,7 @@ describe('category views render from plain JSON', () => {
     const { category, currencyCode, item, maxCategoryValues, parentCategory } = line as any
     const round = mount(RoundView, { props: { category, currencyCode, isShowAmount: true, item, parentCategory } })
     expect(round.text()).toContain('Groceries')
-    expect(round.find('[data-amount]').text()).toBe('-320.5 USD')
+    expect(round.find('[data-amount]').text()).toBe('-32050 USD')
 
     const vertical = mount(VerticalView, { props: { category, item, maxCategoryValues } })
     expect(vertical.attributes('data-stat-category-quick-view')).toBe('groceries')

@@ -2,12 +2,12 @@ import { z } from 'zod/v4'
 
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
-const LOAN_CATEGORY_IDS = new Set(['loanInterest', 'loanFine'])
+const LOAN_CATEGORY_IDS = new Set(['loan_interest', 'loan_fine'])
 
 /**
  * Reserved ids are synthetic categories injected by the store, never real rows: always root,
  * never deleted, never parents. Only name, color and icon are editable, through per-user
- * overrides. 'loanInterest'/'loanFine' are reserved but not system: they are ordinary
+ * overrides. 'loan_interest'/'loan_fine' are reserved but not system: they are ordinary
  * expenses and count in statistics.
  */
 const RESERVED_CATEGORY_IDS = new Set(['transfer', 'adjustment', ...LOAN_CATEGORY_IDS])
@@ -20,6 +20,7 @@ const categoryOverrideSchema = z.object({
   color: z.string().optional().catch(undefined),
   icon: z.string().trim().min(1).optional().catch(undefined),
   name: z.string().trim().min(1).optional().catch(undefined),
+  parentId: z.string().min(1).optional().catch(undefined),
 })
 
 export type CategoryOverride = z.infer<typeof categoryOverrideSchema>
@@ -86,16 +87,6 @@ export function toCategoryOverride(values: CategoryItem, base: CategoryItem): Ca
   return Object.keys(override).length ? override : undefined
 }
 
-/**
- * System categories are synthetic (not real user rows): 'transfer' holds wallet
- * transfers, 'adjustment' holds balance corrections. Their transactions are kept
- * out of category lists, quick selectors and statistics; they surface only in the
- * transactions list under their own tabs.
- */
-export function isSystemCategoryId(id?: CategoryId | null): boolean {
-  return id === 'transfer' || id === 'adjustment'
-}
-
 export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId[]) {
   if (!items)
     return []
@@ -146,11 +137,12 @@ function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, item
 }
 
 /** Reserved categories always sort after the user's own. */
-/** Ids listed in `order` come first in that order; the rest tie (0) so a fallback comparator decides. */
-export function compareByStoredOrder(idA: CategoryId, idB: CategoryId, order: CategoryId[]): number {
-  const a = order.indexOf(idA)
-  const b = order.indexOf(idB)
-  return (a < 0 ? Infinity : a) - (b < 0 ? Infinity : b) || 0
+/**
+ * Ordered categories come first by `sortOrder` (1-based); 0, the column default for a category never ordered, ties
+ * with the rest so a fallback comparator decides.
+ */
+export function compareBySortOrder(a?: { sortOrder?: number }, b?: { sortOrder?: number }): number {
+  return (a?.sortOrder || Infinity) - (b?.sortOrder || Infinity) || 0
 }
 
 export function compareCategoryIds(idA: CategoryId, idB: CategoryId, items: Categories): number {

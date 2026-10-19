@@ -2,22 +2,22 @@
   "currencyCode": "RUB",
   "rows": [
     {
-      "interest": 3000,
+      "interest": 300000,
       "isPaid": true,
       "label": "01.26",
-      "principal": 7000
+      "principal": 700000
     },
     {
-      "interest": 2900,
+      "interest": 290000,
       "isPaid": false,
       "label": "02.26",
-      "principal": 7100
+      "principal": 710000
     },
     {
-      "interest": 2800,
+      "interest": 280000,
       "isPaid": false,
       "label": "03.26",
-      "principal": 7200
+      "principal": 720000
     }
   ]
 }

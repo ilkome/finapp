@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import type { SearchResultItem } from '~/components/search/useSearch'
-import type { TransactionFull, TransferFull, TrnId, TrnItemFull } from '~/components/trns/types'
+import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useSearch } from '~/components/search/useSearch'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -43,22 +42,14 @@ function getTrn(item: SearchResultItem) {
   return trnsStore.computeTrnItem(item.entityId)
 }
 
-function isTransaction(trn: TrnItemFull): trn is TransactionFull {
-  return trn.type !== TrnType.Transfer
-}
-
-function isTransfer(trn: TrnItemFull): trn is TransferFull {
-  return trn.type === TrnType.Transfer
-}
-
-function getTransaction(item: SearchResultItem): TransactionFull | undefined {
+function getTransaction(item: SearchResultItem): TrnItemFull | undefined {
   const trn = getTrn(item)
-  return trn && isTransaction(trn) ? trn : undefined
+  return trn && trn.type !== 'transfer' ? trn : undefined
 }
 
-function getTransfer(item: SearchResultItem): TransferFull | undefined {
+function getTransfer(item: SearchResultItem): TrnItemFull | undefined {
   const trn = getTrn(item)
-  return trn && isTransfer(trn) ? trn : undefined
+  return trn?.type === 'transfer' ? trn : undefined
 }
 
 function openTransaction(item: SearchResultItem) {
@@ -151,10 +142,10 @@ async function handleDeleteConfirm(id: TrnId) {
               {{ getWallet(rawItem as SearchResultItem)?.name }}
             </UiEntityName>
             <div
-              v-if="getWallet(rawItem as SearchResultItem)?.desc"
+              v-if="getWallet(rawItem as SearchResultItem)?.description"
               class="text-2xs leading-none text-muted"
             >
-              {{ getWallet(rawItem as SearchResultItem)?.desc }}
+              {{ getWallet(rawItem as SearchResultItem)?.description }}
             </div>
           </div>
         </div>
@@ -181,23 +172,24 @@ async function handleDeleteConfirm(id: TrnId) {
                 <template v-if="getTransaction(rawItem as SearchResultItem)">
                   <div class="grid grow gap-0.5">
                     <CategoriesName
-                      :category="getTransaction(rawItem as SearchResultItem)!.category"
+                      v-if="getTransaction(rawItem as SearchResultItem)!.category"
+                      :category="getTransaction(rawItem as SearchResultItem)!.category!"
                       :parentCategory="getTransaction(rawItem as SearchResultItem)!.categoryParent"
                       isShowParent
                       stacked
                     />
                     <div class="flex items-center gap-2">
                       <UiEntityName variant="secondary">
-                        {{ getTransaction(rawItem as SearchResultItem)?.wallet?.name }}
+                        {{ (getTransaction(rawItem as SearchResultItem)?.fromWallet ?? getTransaction(rawItem as SearchResultItem)?.toWallet)?.name }}
                       </UiEntityName>
                     </div>
                   </div>
 
                   <Amount
-                    :amount="getTransaction(rawItem as SearchResultItem)!.amount"
-                    :currencyCode="getTransaction(rawItem as SearchResultItem)!.wallet.currency"
-                    :isShowMinus="getTransaction(rawItem as SearchResultItem)?.type === TrnType.Expense"
-                    :isShowPlus="getTransaction(rawItem as SearchResultItem)?.type === TrnType.Income"
+                    :amount="getTransaction(rawItem as SearchResultItem)!.fromAmount ?? getTransaction(rawItem as SearchResultItem)!.toAmount ?? 0"
+                    :currencyCode="(getTransaction(rawItem as SearchResultItem)!.fromWallet ?? getTransaction(rawItem as SearchResultItem)!.toWallet)?.currencyCode ?? ''"
+                    :isShowMinus="!!getTransaction(rawItem as SearchResultItem)?.fromWallet"
+                    :isShowPlus="!getTransaction(rawItem as SearchResultItem)?.fromWallet"
                     :type="getTransaction(rawItem as SearchResultItem)!.type"
                     align="right"
                     class="grow"
@@ -212,26 +204,27 @@ async function handleDeleteConfirm(id: TrnId) {
                   class="grid gap-1"
                 >
                   <div class="flex items-center gap-1 text-sm leading-none text-toned">
-                    <span class="font-semibold">{{ getTransfer(rawItem as SearchResultItem)?.expenseWallet?.name }}</span>
+                    <span class="font-semibold">{{ getTransfer(rawItem as SearchResultItem)?.fromWallet?.name ?? t('trnForm.transfer.outside') }}</span>
                     <Icon name="lucide:move-right" size="16" />
-                    <span class="font-semibold">{{ getTransfer(rawItem as SearchResultItem)?.incomeWallet?.name }}</span>
+                    <span class="font-semibold">{{ getTransfer(rawItem as SearchResultItem)?.toWallet?.name ?? t('trnForm.transfer.outside') }}</span>
                   </div>
 
                   <div class="flex flex-wrap gap-2">
                     <Amount
-                      :amount="getTransfer(rawItem as SearchResultItem)!.expenseAmount"
-                      :colorize="getTransfer(rawItem as SearchResultItem)?.incomeAmount === getTransfer(rawItem as SearchResultItem)?.expenseAmount ? undefined : 'expense'"
-                      :currencyCode="getTransfer(rawItem as SearchResultItem)!.expenseWallet.currency"
-                      :type="TrnType.Expense"
+                      v-if="getTransfer(rawItem as SearchResultItem)!.fromWallet"
+                      :amount="getTransfer(rawItem as SearchResultItem)!.fromAmount ?? 0"
+                      :colorize="getTransfer(rawItem as SearchResultItem)?.toAmount === getTransfer(rawItem as SearchResultItem)?.fromAmount ? undefined : 'expense'"
+                      :currencyCode="getTransfer(rawItem as SearchResultItem)!.fromWallet!.currencyCode"
+                      type="expense"
                       class="flex! items-center gap-2"
                       variant="row"
                     />
 
-                    <template v-if="getTransfer(rawItem as SearchResultItem)?.incomeAmount !== getTransfer(rawItem as SearchResultItem)?.expenseAmount">
+                    <template v-if="getTransfer(rawItem as SearchResultItem)!.toWallet && getTransfer(rawItem as SearchResultItem)?.toAmount !== getTransfer(rawItem as SearchResultItem)?.fromAmount">
                       <Amount
-                        :amount="getTransfer(rawItem as SearchResultItem)!.incomeAmount"
-                        :currencyCode="getTransfer(rawItem as SearchResultItem)!.incomeWallet.currency"
-                        :type="TrnType.Income"
+                        :amount="getTransfer(rawItem as SearchResultItem)!.toAmount ?? 0"
+                        :currencyCode="getTransfer(rawItem as SearchResultItem)!.toWallet!.currencyCode"
+                        type="income"
                         colorize="income"
                         class="flex! items-center gap-2"
                         variant="row"
@@ -242,10 +235,10 @@ async function handleDeleteConfirm(id: TrnId) {
               </div>
 
               <div
-                v-if="getTrn(rawItem as SearchResultItem)?.desc"
+                v-if="getTrn(rawItem as SearchResultItem)?.description"
                 class="text-2xs opacity-80"
               >
-                {{ getTrn(rawItem as SearchResultItem)?.desc }}
+                {{ getTrn(rawItem as SearchResultItem)?.description }}
               </div>
             </div>
           </div>

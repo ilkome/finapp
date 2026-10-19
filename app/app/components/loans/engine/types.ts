@@ -1,7 +1,7 @@
-import type { LoanItem, LoanScheduleRowItem } from '~/components/loans/types'
+import type { LoanItem } from '~/components/loans/types'
 
 export type ScheduleType = 'annuity' | 'differentiated'
-export type OverpaymentMode = 'reducePayment' | 'reduceTerm'
+export type PrepaymentMode = LoanItem['prepaymentMode']
 type RowSource = 'generated' | 'bank' | 'manual'
 /**
  * `payment` is the whole payment that reached the credit wallet; `interest` and `fine` are what the
@@ -11,14 +11,13 @@ export type LoanTrnKind = 'payment' | 'interest' | 'fine'
 type PaymentStatus = 'scheduled' | 'paid' | 'partial' | 'overdue' | 'late'
 
 /** Contract parameters. Every date is a civil day (UTC-midnight ms-epoch). */
-export type LoanParams = Pick<LoanItem, 'firstPaymentDate' | 'interestMethod' | 'lateAfterDays' | 'overpaymentMode' | 'paymentDay' | 'prepayWindowDays' | 'principalAmount' | 'scheduleType' | 'startDate' | 'termMonths'> & {
+export type LoanParams = Pick<LoanItem, 'firstPaymentDate' | 'interestAccrual' | 'lateAfterDays' | 'paymentDayOfMonth' | 'prepaymentMode' | 'prepaymentWindowDays' | 'principalAmount' | 'scheduleType' | 'startDate' | 'termMonths'> & {
+  /** Yearly rate in percent the schedule runs at. */
   annualRate: number
-  /** Decimal places of the loan currency's minor unit (JPY 0, RUB 2, BTC 8). */
-  precision: number
 }
 
 /** A stored row that replaces what the generator would produce for that number. */
-export type ScheduleOverride = Omit<LoanScheduleRowItem, 'loanId' | 'updatedAt'>
+export type ScheduleOverride = Pick<ScheduleRow, 'date' | 'interestPart' | 'paymentNumber' | 'principalPart' | 'totalAmount'> & { source: 'bank' | 'manual' }
 
 export type ScheduleRow = {
   date: number

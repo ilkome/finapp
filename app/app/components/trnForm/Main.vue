@@ -2,12 +2,12 @@
 import type { TabsItem } from '@nuxt/ui'
 
 import type { CategoryId } from '~/components/categories/types'
+import type { TrnType } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useTrnFormSubmit } from '~/components/trnForm/useTrnFormSubmit'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
@@ -30,10 +30,10 @@ const walletId = computed(() =>
 const editedTrnItem = computed(() => trnsFormStore.values.trnId ? trnsStore.computeTrnItem(trnsFormStore.values.trnId) : undefined)
 
 const typeItems = computed<TabsItem[]>(() => [
-  { label: t('money.expense'), value: TrnType.Expense },
-  { label: t('money.income'), value: TrnType.Income },
+  { label: t('money.expense'), value: 'expense' },
+  { label: t('money.income'), value: 'income' },
   // A transfer needs a second wallet to go to.
-  ...(walletsStore.sortedIds.length > 1 ? [{ label: t('trnForm.transferTitle'), value: TrnType.Transfer }] : []),
+  ...(walletsStore.sortedIds.length > 1 ? [{ label: t('trnForm.transferTitle'), value: 'transfer' }] : []),
 ])
 </script>
 
@@ -73,10 +73,9 @@ const typeItems = computed<TabsItem[]>(() => [
       />
 
       <TrnFormMainInput
-        v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
-        :amount="trnsFormStore.values.amount[trnsFormStore.activeAmountIdx]"
+        v-if="trnsFormStore.values.trnType !== 'transfer'"
         :amountRaw="trnsFormStore.values.amountRaw[trnsFormStore.activeAmountIdx]"
-        :highlight="trnsFormStore.values.trnType === TrnType.Expense ? 'expense' : 'income'"
+        :highlight="trnsFormStore.values.trnType === 'expense' ? 'expense' : 'income'"
         :isShowSum="trnsFormStore.shouldShowSum()"
         @change="trnsFormStore.onChangeAmount"
         @submit="submit"
@@ -84,7 +83,7 @@ const typeItems = computed<TabsItem[]>(() => [
 
       <!-- Selected -->
       <TrnFormEntitySelector
-        v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
+        v-if="trnsFormStore.values.trnType !== 'transfer'"
         :categoryId="trnsFormStore.values.categoryId ?? categoriesStore.categoriesIdsForTrnValues[0]"
         :walletId
         @selectCategory="(id: CategoryId) => trnsFormStore.values.categoryId = id"
@@ -92,7 +91,7 @@ const typeItems = computed<TabsItem[]>(() => [
       />
 
       <TrnFormMainAmountTransfer
-        v-if="trnsFormStore.values.trnType === TrnType.Transfer"
+        v-if="trnsFormStore.values.trnType === 'transfer'"
       />
 
       <LoansTrnFormFields v-if="isLoans" />

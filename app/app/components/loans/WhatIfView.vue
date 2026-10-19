@@ -3,19 +3,19 @@ const props = defineProps<{
   currencyCode: string
   extra: number
   interestSaved: number
-  mode: 'reducePayment' | 'reduceTerm'
+  mode: 'reduce_payment' | 'reduce_term'
   /** Preformatted civil day, null when the loan would already be closed. */
   newEndDate: string | null
 }>()
 
 const emit = defineEmits<{
   'update:extra': [value: number]
-  'update:mode': [value: 'reducePayment' | 'reduceTerm']
+  'update:mode': [value: 'reduce_payment' | 'reduce_term']
 }>()
 
 const { t } = useI18n()
 
-const modeItems = computed(() => (['reducePayment', 'reduceTerm'] as const).map(value => ({ label: t(`loans.modes.${value}`), value })))
+const modeItems = computed(() => (['reduce_payment', 'reduce_term'] as const).map(value => ({ label: t(`loans.modes.${value}`), value })))
 </script>
 
 <template>

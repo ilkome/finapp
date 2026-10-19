@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { TrnType } from '~/components/trns/types'
 import { closeAllContextMenus } from '~/composables/useContextMenuRegistry'
 
 const trnsFormStore = useTrnsFormStore()
@@ -29,7 +28,7 @@ watch(isShow, (v) => {
             class="pb-0!"
           />
           <div
-            v-if="trnsFormStore.values.trnType !== TrnType.Transfer"
+            v-if="trnsFormStore.values.trnType !== 'transfer' && trnsFormStore.values.trnType !== 'adjustment'"
             class="grid gap-2 pb-6"
           >
             <TrnFormSelectionCategoriesFast

@@ -8,7 +8,7 @@ describe('loansPortfolioView', () => {
   it('renders the base-currency totals and the open loans, closed ones on demand', async () => {
     const wrapper = mount(LoansPortfolioView, { props: portfolio as any })
 
-    expect(wrapper.find('[data-loan-total="remaining"] [data-amount]').text()).toBe('301000 RUB')
+    expect(wrapper.find('[data-loan-total="remaining"] [data-amount]').text()).toBe('30100000 RUB')
     expect(wrapper.find('[data-loan-total="paidInterest"]').exists()).toBe(false)
 
     const rows = wrapper.findAll('[data-loan-portfolio-item]')

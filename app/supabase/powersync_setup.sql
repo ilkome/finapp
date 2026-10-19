@@ -25,11 +25,16 @@ alter default privileges in schema public grant select on tables to powersync_ro
 -- Publication consumed by PowerSync. Scoped to the finapp tables only.
 drop publication if exists powersync;
 create publication powersync for table
-  public.categories,
   public.wallets,
-  public.trns,
-  public.user_settings,
-  public.stat_views,
+  public.bank_reports,
+  public.categories,
+  public.transactions,
+  public.display_overrides,
   public.loans,
-  public.loan_schedule_rows,
-  public.rates;
+  public.loan_schedule_overrides,
+  public.currencies,
+  public.user_settings,
+  public.forecast_settings,
+  public.forecast_categories,
+  public.stat_views,
+  public.exchange_rates;

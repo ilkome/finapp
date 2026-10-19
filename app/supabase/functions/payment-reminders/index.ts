@@ -7,7 +7,7 @@
 /// <reference path="./import-meta.d.ts" />
 
 import { createClient } from 'jsr:@supabase/supabase-js@2'
-import { rowToLoan, rowToLoanScheduleRow, rowToTrn, rowToWallet } from '~~/services/powersync/transforms.ts'
+import { rowToBankReport, rowToLoan, rowToLoanScheduleOverride, rowToTrn, rowToWallet } from '~~/services/powersync/transforms.ts'
 
 import type { LocaleSlug } from '~/components/locale/types.ts'
 import type { UserReminderInput } from '~/components/loans/paymentReminders.ts'
@@ -57,25 +57,27 @@ const byId = <T>(rows: Row[], map: (row: Row) => T | null) =>
   }))
 
 async function loadUser(userId: string, settings: Row): Promise<UserReminderInput | null> {
-  const wallets = await fetchAll((from, to) => supabase.from('wallets').select('*').eq('userId', userId).in('type', ['credit', 'loan']).range(from, to))
+  const wallets = await fetchAll((from, to) => supabase.from('wallets').select('*').eq('user_id', userId).in('type', ['credit_card', 'loan']).range(from, to))
   if (wallets.length === 0)
     return null
 
   const creditIds = new Set<string>(wallets.map(w => w.id))
   const ids = [...creditIds].join(',')
   // Every wallet a transfer touches is needed for balances, so the counterparties come along.
-  const trns = await fetchAll((from, to) => supabase.from('trns').select('*').eq('userId', userId).or(`walletId.in.(${ids}),incomeWalletId.in.(${ids}),expenseWalletId.in.(${ids})`).range(from, to))
-  const otherIds = new Set(trns.flatMap(t => [t.incomeWalletId, t.expenseWalletId]).filter((id): id is string => !!id && !creditIds.has(id)))
+  const trns = await fetchAll((from, to) => supabase.from('transactions').select('*').eq('user_id', userId).or(`from_wallet_id.in.(${ids}),to_wallet_id.in.(${ids})`).range(from, to))
+  const otherIds = new Set(trns.flatMap(t => [t.from_wallet_id, t.to_wallet_id]).filter((id): id is string => !!id && !creditIds.has(id)))
   const others = otherIds.size === 0
     ? []
-    : await fetchAll((from, to) => supabase.from('wallets').select('*').eq('userId', userId).in('id', [...otherIds]).range(from, to))
-  const loans = await fetchAll((from, to) => supabase.from('loans').select('*').eq('userId', userId).range(from, to))
-  const scheduleRows = await fetchAll((from, to) => supabase.from('loan_schedule_rows').select('*').eq('userId', userId).range(from, to))
+    : await fetchAll((from, to) => supabase.from('wallets').select('*').eq('user_id', userId).in('id', [...otherIds]).range(from, to))
+  const loans = await fetchAll((from, to) => supabase.from('loans').select('*').eq('user_id', userId).range(from, to))
+  const scheduleOverrides = await fetchAll((from, to) => supabase.from('loan_schedule_overrides').select('*').eq('user_id', userId).range(from, to))
+  const bankReports = await fetchAll((from, to) => supabase.from('bank_reports').select('*').eq('user_id', userId).in('id', [...creditIds]).range(from, to))
 
   return {
+    bankReports: byId(bankReports, rowToBankReport),
     loans: byId(loans, rowToLoan),
     locale: (settings.locale as LocaleSlug | null) ?? null,
-    scheduleRows: byId(scheduleRows, rowToLoanScheduleRow),
+    scheduleOverrides: byId(scheduleOverrides, rowToLoanScheduleOverride),
     timezone: settings.timezone ?? null,
     trns: byId(trns, rowToTrn),
     wallets: byId([...wallets, ...others], rowToWallet),
@@ -106,10 +108,10 @@ Deno.serve(async (req) => {
   const failures: string[] = []
 
   try {
-    const users = await fetchAll((from, to) => supabase.from('user_settings').select('*').eq('paymentReminders', true).range(from, to))
+    const users = await fetchAll((from, to) => supabase.from('user_settings').select('*').eq('is_payment_reminders_enabled', true).range(from, to))
 
     for (const settings of users) {
-      const userId = settings.userId as string
+      const userId = settings.user_id as string
       if (!dryRun && !isReminderHour(now, settings.timezone ?? null))
         continue
       try {
@@ -117,8 +119,8 @@ Deno.serve(async (req) => {
         if (!input)
           continue
 
-        const sentRows = await fetchAll((from, to) => supabase.from('payment_reminders_sent').select('walletId, kind, dueDate').eq('userId', userId).range(from, to))
-        const sent = new Set(sentRows.map(r => reminderKeyId({ dueDate: Number(r.dueDate), kind: r.kind, walletId: r.walletId })))
+        const sentRows = await fetchAll((from, to) => supabase.from('payment_reminder_deliveries').select('wallet_id, kind, due_date').eq('user_id', userId).range(from, to))
+        const sent = new Set(sentRows.map(r => reminderKeyId({ dueDate: Number(r.due_date), kind: r.kind, walletId: r.wallet_id })))
 
         for (const push of planUserPushes(input, now, sent, { ignoreHour: dryRun }) ?? []) {
           report.push({ body: push.body, kinds: push.keys.map(k => k.kind), title: push.title, userId, walletId: push.walletId })
@@ -128,9 +130,9 @@ Deno.serve(async (req) => {
             failures.push(`${userId}:${push.walletId}`)
             continue
           }
-          const { error } = await supabase.from('payment_reminders_sent').upsert(
-            push.keys.map(k => ({ dueDate: k.dueDate, kind: k.kind, sentAt: now, userId, walletId: k.walletId })),
-            { ignoreDuplicates: true, onConflict: 'userId,walletId,kind,dueDate' },
+          const { error } = await supabase.from('payment_reminder_deliveries').upsert(
+            push.keys.map(k => ({ due_date: k.dueDate, kind: k.kind, sent_at: now, user_id: userId, wallet_id: k.walletId })),
+            { ignoreDuplicates: true, onConflict: 'user_id,wallet_id,kind,due_date' },
           )
           if (error)
             console.error('record sent failed:', userId, error.message)

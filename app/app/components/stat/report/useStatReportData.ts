@@ -64,9 +64,9 @@ export function projectStatReportSelection(
   const quickSet = quickCategoryIds.length ? new Set(quickCategoryIds) : null
   for (const { categoryId, id } of selected) {
     selectedIds.push(id)
-    if (!effectiveSet || effectiveSet.has(categoryId))
+    if (!effectiveSet || (categoryId !== undefined && effectiveSet.has(categoryId)))
       filteredIds.push(id)
-    if (!quickSet || quickSet.has(categoryId))
+    if (!quickSet || (categoryId !== undefined && quickSet.has(categoryId)))
       quickFilteredIds.push(id)
   }
   return { filteredIds, quickFilteredIds, selectedIds }

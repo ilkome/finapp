@@ -1,23 +1,28 @@
-import { roundTo } from '~~/utils/amount/round'
 import { addCivilDays } from '~~/utils/date/civil'
 
+import type { BankReport } from '~/components/bankReports/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LoanParams, LoanSummary, LoanTrn, ScheduleOverride } from '~/components/loans/engine/types'
-import type { LoanId, LoanItem, LoanScheduleRows } from '~/components/loans/types'
+import type { LoanId, LoanItem, LoanScheduleOverrides } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { currencyMinorUnit } from '~/components/currencies/currencies'
 import { reconcileSchedule } from '~/components/loans/engine/reconcile'
 import { generateSchedule } from '~/components/loans/engine/schedule'
 import { closeSummary, effectiveRateOf, impliedRate, isSettled, owedOf, summarizeLoan } from '~/components/loans/engine/summary'
 
-export function paramsOf(loan: LoanItem, precision = 2): LoanParams {
-  return { ...loan, annualRate: loan.annualRate ?? 0, precision }
+export function paramsOf(loan: LoanItem): LoanParams {
+  return { ...loan, annualRate: loan.annualRatePercent ?? 0 }
 }
 
-/** Group the stored rows once, instead of scanning them again for every loan. */
-export function overridesByLoan(rows: LoanScheduleRows): Map<LoanId, ScheduleOverride[]> {
-  return Map.groupBy(Object.values(rows), row => row.loanId)
+/** Group the stored overrides once, instead of scanning them again for every loan. */
+export function overridesByLoan(overrides: LoanScheduleOverrides): Map<LoanId, ScheduleOverride[]> {
+  const result = new Map<LoanId, ScheduleOverride[]>()
+  for (const { dueDate, interestAmount, loanId, paymentNumber, principalAmount, source, totalAmount } of Object.values(overrides)) {
+    const list = result.get(loanId) ?? []
+    list.push({ date: dueDate, interestPart: interestAmount, paymentNumber, principalPart: principalAmount, source, totalAmount })
+    result.set(loanId, list)
+  }
+  return result
 }
 
 /**
@@ -31,17 +36,17 @@ export function deriveLoan(
   trns: LoanTrn[],
   walletBalance: number,
   today: number,
-  precision = 2,
+  report?: BankReport,
 ): LoanSummary {
   function derive(annualRate: number): LoanSummary {
-    const params = { ...paramsOf(loan, precision), annualRate }
+    const params = { ...paramsOf(loan), annualRate }
     const schedule = generateSchedule(params, overrides)
     return summarizeLoan(params, reconcileSchedule(params, schedule, trns, today), walletBalance)
   }
 
   function open(): LoanSummary {
-    if (loan.annualRate !== null)
-      return derive(loan.annualRate)
+    if (loan.annualRatePercent !== null)
+      return derive(loan.annualRatePercent)
 
     // At 0% a paid row looks short of principal and never settles, so the probe counts every row
     // that received interest.
@@ -55,14 +60,14 @@ export function deriveLoan(
 
   // The bank's own split beats the engine's estimate everywhere the next payment is shown.
   const summary = open()
-  const bankAmount = bankNextPaymentAmount(loan, summary.nextPayment, precision)
+  const bankAmount = bankNextPaymentAmount(report, summary.nextPayment)
   return bankAmount === null ? summary : { ...summary, nextPayment: { ...summary.nextPayment!, amount: bankAmount } }
 }
 
 type DeriveInputs = {
   loan: LoanItem
   overrides: ScheduleOverride[]
-  precision: number
+  report: BankReport | undefined
   summary: LoanSummary
   today: number
   trnsKey: string
@@ -93,23 +98,23 @@ export function createDeriveLoanMemo() {
     trns: LoanTrn[],
     walletBalance: number,
     today: number,
-    precision = 2,
+    report?: BankReport,
   ): LoanSummary => {
     const trnsKey = trns.map(trn => `${trn.id}:${trn.amount}:${trn.date}:${trn.kind}`).join('|')
     const hit = cache.get(loanId)
     if (hit && hit.loan === loan && hit.overrides === overrides && hit.trnsKey === trnsKey
-      && hit.walletBalance === walletBalance && hit.today === today && hit.precision === precision) {
+      && hit.walletBalance === walletBalance && hit.today === today && hit.report === report) {
       return hit.summary
     }
-    const summary = deriveLoan(loan, overrides, trns, walletBalance, today, precision)
-    cache.set(loanId, { loan, overrides, precision, summary, today, trnsKey, walletBalance })
+    const summary = deriveLoan(loan, overrides, trns, walletBalance, today, report)
+    cache.set(loanId, { loan, overrides, report, summary, today, trnsKey, walletBalance })
     return summary
   }, { prune })
 }
 
 /** Contract parameters at the rate the loan is projected at; null when what-if has nothing to run on. */
-export function projectionParams(loan: LoanItem, summary: LoanSummary, precision = 2): LoanParams | null {
-  return summary.projectionRate === null ? null : { ...paramsOf(loan, precision), annualRate: summary.projectionRate }
+export function projectionParams(loan: LoanItem, summary: LoanSummary): LoanParams | null {
+  return summary.projectionRate === null ? null : { ...paramsOf(loan), annualRate: summary.projectionRate }
 }
 
 /**
@@ -117,10 +122,10 @@ export function projectionParams(loan: LoanItem, summary: LoanSummary, precision
  * engine's estimate drifts from it (a bank may charge interest daily on actual/365), and a split for
  * another day is out of date.
  */
-export function bankNextPaymentAmount(loan: LoanItem, next: { date: number } | null, precision = 2): number | null {
-  if (!next || loan.nextPaymentDate !== next.date || loan.nextPaymentPrincipal === undefined || loan.nextPaymentInterest === undefined)
+export function bankNextPaymentAmount(report: BankReport | undefined, next: { date: number } | null): number | null {
+  if (!next || report?.nextPaymentDate !== next.date || report.nextPrincipalAmount === undefined || report.nextInterestAmount === undefined)
     return null
-  return roundTo(loan.nextPaymentPrincipal + loan.nextPaymentInterest, precision)
+  return report.nextPrincipalAmount + report.nextInterestAmount
 }
 
 /**
@@ -156,7 +161,7 @@ export function deriveDue(
         break
       // The next payment carries the bank's amount when it is known.
       const next = summary.nextPayment
-      add(row === unpaid[0] && next?.date === row.date ? next.amount : owedOf(row, currencyMinorUnit(currency)), currency, row.date)
+      add(row === unpaid[0] && next?.date === row.date ? next.amount : owedOf(row), currency, row.date)
       if (row.date >= today)
         dueDate ??= row.date
     }
@@ -168,5 +173,5 @@ export function deriveDue(
     add(item.minPaymentAmount, item.currency, item.minPaymentDate)
   }
 
-  return nearestDate === null ? null : { amount, nearestDate }
+  return nearestDate === null ? null : { amount: Math.round(amount), nearestDate }
 }

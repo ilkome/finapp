@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
+import type { BankReport } from '~/components/bankReports/types'
 import type { UserReminderInput } from '~/components/loans/paymentReminders'
 import type { TrnItem } from '~/components/trns/types'
 
@@ -13,34 +14,39 @@ const atTen = (iso: string) => Date.parse(`${iso}T07:00:00.000Z`)
 
 function card(over: Record<string, unknown> = {}) {
   return walletItemSchema.parse({
-    creditLimit: 100_000,
-    currency: 'RUB',
+    currencyCode: 'RUB',
     name: 'Test card',
-    type: 'credit',
+    type: 'credit_card',
     ...over,
+    creditLimit: (over.type ?? 'credit_card') === 'credit_card' ? 10_000_000 : undefined,
   })
 }
-const cash = walletItemSchema.parse({ currency: 'RUB', name: 'Cash', type: 'cash' })
+const cash = walletItemSchema.parse({ currencyCode: 'RUB', name: 'Cash', type: 'cash' })
 
 function payment(amount: number, date: string): TrnItem {
   return {
-    categoryId: 'transfer',
+    createdAt: 0,
     date: day(date),
-    expenseAmount: amount,
-    expenseWalletId: 'cash',
-    incomeAmount: amount,
-    incomeWalletId: 'card',
-    type: 2,
+    fromAmount: amount,
+    fromWalletId: 'cash',
+    toAmount: amount,
+    toWalletId: 'card',
+    type: 'transfer',
     updatedAt: 0,
-  } as TrnItem
+  }
 }
 
-function input(wallet: Record<string, unknown>, over: Partial<UserReminderInput> = {}): UserReminderInput {
-  return { loans: {}, locale: 'en', scheduleRows: {}, timezone: null, trns: {}, wallets: { card: card(wallet), cash }, ...over }
+const WALLET_FIELDS = new Set(['isArchived', 'name', 'type'])
+
+/** `fields` mixes the card's own fields and its bank report, as a test reads best. */
+function input(fields: Record<string, unknown>, over: Partial<UserReminderInput> = {}): UserReminderInput {
+  const wallet = Object.fromEntries(Object.entries(fields).filter(([key]) => WALLET_FIELDS.has(key)))
+  const report = Object.fromEntries(Object.entries(fields).filter(([key]) => !WALLET_FIELDS.has(key))) as BankReport
+  return { bankReports: { card: report }, loans: {}, locale: 'en', scheduleOverrides: {}, timezone: null, trns: {}, wallets: { card: card(wallet), cash }, ...over }
 }
 
-const min = { minPaymentAmount: 3200, minPaymentDate: day('2026-10-20'), minPaymentUpdatedAt: day('2026-10-01') }
-const grace = { graceAmount: 9000, graceEndDate: day('2026-10-20'), statementDate: day('2026-10-01') }
+const min = { minPaymentAmount: 320_000, minPaymentDueDate: day('2026-10-20'), minPaymentPeriodStartDate: day('2026-10-01') }
+const grace = { graceDebtAmount: 900_000, graceEndDate: day('2026-10-20'), statementDate: day('2026-10-01') }
 
 const plan = (data: UserReminderInput, iso: string, sent: string[] = []) => planUserPushes(data, atTen(iso), new Set(sent))
 
@@ -83,9 +89,9 @@ describe('planUserPushes', () => {
   })
 
   it('skips a minimum that is paid, stale, archived or zero', () => {
-    const paid = input(min, { trns: { t1: payment(3200, '2026-10-05') } })
+    const paid = input(min, { trns: { t1: payment(320_000, '2026-10-05') } })
     expect(plan(paid, '2026-10-17')).toEqual([])
-    expect(plan(input({ ...min, minPaymentUpdatedAt: day('2026-08-01') }), '2026-10-17')).toEqual([])
+    expect(plan(input({ ...min, minPaymentPeriodStartDate: day('2026-08-01') }), '2026-10-17')).toEqual([])
     expect(plan(input({ ...min, isArchived: true }), '2026-10-17')).toEqual([])
     expect(plan(input({ ...min, minPaymentAmount: 0 }), '2026-10-17')).toEqual([])
   })
@@ -103,8 +109,8 @@ describe('planUserPushes', () => {
   })
 
   it('skips interest-free reminders for a zero or fully paid statement debt', () => {
-    expect(plan(input({ ...grace, graceAmount: 0 }), '2026-10-17')).toEqual([])
-    expect(plan(input(grace, { trns: { t1: payment(9000, '2026-10-05') } }), '2026-10-17')).toEqual([])
+    expect(plan(input({ ...grace, graceDebtAmount: 0 }), '2026-10-17')).toEqual([])
+    expect(plan(input(grace, { trns: { t1: payment(900_000, '2026-10-05') } }), '2026-10-17')).toEqual([])
   })
 
   it('reports a missed interest-free period on the day after and on later runs, but not on the day itself', () => {
@@ -112,7 +118,7 @@ describe('planUserPushes', () => {
     expect(plan(data, '2026-10-20')![0]!.keys.map(k => k.kind)).toEqual(['grace'])
     expect(plan(data, '2026-10-21')![0]!.body).toContain('interest-free period ended 20.10')
     expect(plan(data, '2026-10-22')![0]!.keys.map(k => k.kind)).toEqual(['graceMissed'])
-    expect(plan(input(grace, { trns: { t1: payment(9000, '2026-10-05') } }), '2026-10-21')).toEqual([])
+    expect(plan(input(grace, { trns: { t1: payment(900_000, '2026-10-05') } }), '2026-10-21')).toEqual([])
   })
 
   it('does not repeat a reminder whose key was already sent', () => {
@@ -127,19 +133,19 @@ describe('planUserPushes', () => {
   it('reminds about the next unpaid payment of a loan wallet', () => {
     const wallet = { name: 'Test loan', type: 'loan' }
     const loan = loanItemSchema.parse({
-      annualRate: 12,
+      annualRatePercent: 12,
       firstPaymentDate: day('2026-10-20'),
-      paymentDay: 20,
-      principalAmount: 120_000,
+      paymentDayOfMonth: 20,
+      principalAmount: 12_000_000,
       startDate: day('2026-09-20'),
       termMonths: 12,
       walletId: 'card',
     })
-    const data = input(wallet, { loans: { 'loan:card': loan } })
+    const data = input(wallet, { loans: { card: loan } })
     expect(plan(data, '2026-10-16')).toEqual([])
     const [push] = plan(data, '2026-10-17')!
     expect(push).toMatchObject({ keys: [{ dueDate: day('2026-10-20'), kind: 'loan', walletId: 'card' }], title: 'Test loan' })
     expect(push!.body).toMatch(/^by 20\.10: payment /)
-    expect(plan(input({ ...wallet, isArchived: true }, { loans: { 'loan:card': loan } }), '2026-10-17')).toEqual([])
+    expect(plan(input({ ...wallet, isArchived: true }, { loans: { card: loan } }), '2026-10-17')).toEqual([])
   })
 })

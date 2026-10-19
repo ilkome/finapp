@@ -11,11 +11,11 @@ describe('loansUpcomingView', () => {
   it('renders the total, the groups in order and a day sum only for a multi-charge day', () => {
     const wrapper = mount(LoansUpcomingView, { global: { stubs }, props: upcoming as any })
 
-    expect(wrapper.find('[data-loan-upcoming-total]').text()).toBe('28500 RUB')
+    expect(wrapper.find('[data-loan-upcoming-total]').text()).toBe('2850000 RUB')
     expect(wrapper.findAll('[data-loan-upcoming-group]').map(el => el.attributes('data-loan-upcoming-group'))).toEqual(['overdue', 'nearest'])
     expect(wrapper.findAll('[data-loan-upcoming-item]')).toHaveLength(3)
     expect(wrapper.text()).toContain('Principal 18000 / Interest 3000')
-    expect(wrapper.text()).toContain('25000 RUB')
+    expect(wrapper.text()).toContain('2500000 RUB')
   })
 
   it('emits the wallet id of the clicked row', async () => {

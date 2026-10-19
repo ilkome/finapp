@@ -55,10 +55,8 @@ function matchesRoot(rootId: CategoryId) {
 }
 
 const userIds = computed(() => categoriesStore.categoriesRootIds.filter(id => !isReservedCategoryId(id)).filter(matchesRoot))
-// Reserved categories get their own block, transfer included (pickers use the roots without it).
-const systemIds = computed(() => (categoriesStore.categoriesRootIds.length
-  ? [...categoriesStore.categoriesRootIds.filter(isReservedCategoryId), 'transfer']
-  : []).filter(matchesRoot))
+// Reserved categories get their own block.
+const systemIds = computed(() => categoriesStore.categoriesRootIds.filter(isReservedCategoryId).filter(matchesRoot))
 
 function matchingFlat(ids: CategoryId[]) {
   return query.value ? ids.filter(id => nameMatches(id, query.value)) : ids

@@ -3,12 +3,13 @@ import { refDebounced } from '@vueuse/core'
 import { formatByLocale } from '~~/utils/date/civil'
 
 import type { LoanAmortizationRow } from '~/components/loans/AmortizationView.vue'
-import type { OverpaymentMode } from '~/components/loans/engine/types'
+import type { PrepaymentMode } from '~/components/loans/engine/types'
 import type { LoanScheduleRowDraft } from '~/components/loans/ScheduleRowForm.vue'
 import type { LoanScheduleViewRow } from '~/components/loans/ScheduleView.vue'
 import type { WalletId } from '~/components/wallets/types'
 
-import { currencyMinorUnit } from '~/components/currencies/currencies'
+import { amountToMinor, minorToAmount } from '~/components/amount/utils'
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { toCostProps, toScheduleViewRows, toSummaryProps } from '~/components/loans/presenters'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
@@ -24,6 +25,7 @@ const today = useCivilToday()
 const loansStore = useLoansStore()
 const walletsStore = useWalletsStore()
 const trnsFormStore = useTrnsFormStore()
+const bankReportsStore = useBankReportsStore()
 
 // A new formatter per locale: the presenter memoizes formatted dates per formatter.
 const day = computed(() => {
@@ -63,16 +65,16 @@ const summaryProps = computed(() => {
     return null
   const { loan, summary } = found
   // A deleted debit wallet means no balance to compare, not an empty one.
-  const debitBalance = loan.debitWalletId ? walletsStore.itemsComputed[loan.debitWalletId]?.amount ?? null : null
-  return toSummaryProps({ currencyCode: currencyCode.value, day: day.value, debitBalance, loan, summary, today: today.value })
+  const debitBalance = loan.paymentWalletId ? walletsStore.itemsComputed[loan.paymentWalletId]?.amount ?? null : null
+  return toSummaryProps({ bankReport: bankReportsStore.items[props.walletId], currencyCode: currencyCode.value, day: day.value, debitBalance, loan, summary, today: today.value })
 })
 
 const NO_IDS = new Map<number, string>()
 /** Stored overrides of this loan, keyed by payment number - the only rows that can be reset. */
-const overrideIdByNumber = computed(() => (loanId.value && loansStore.scheduleRowIdsByLoanId.get(loanId.value)) || NO_IDS)
+const overrideIdByNumber = computed(() => (loanId.value && loansStore.scheduleOverrideIdsByLoanId.get(loanId.value)) || NO_IDS)
 
-const scheduleRows = computed<LoanScheduleViewRow[]>(() =>
-  toScheduleViewRows(entry.value?.summary.rows ?? [], new Set(overrideIdByNumber.value.keys()), day.value, currencyMinorUnit(currencyCode.value)),
+const scheduleViewRows = computed<LoanScheduleViewRow[]>(() =>
+  toScheduleViewRows(entry.value?.summary.rows ?? [], new Set(overrideIdByNumber.value.keys()), day.value),
 )
 
 const amortizationRows = computed<LoanAmortizationRow[]>(() => (entry.value?.summary.rows ?? []).map(row => ({
@@ -87,10 +89,10 @@ const firstUnpaidIndex = computed(() => entry.value?.summary.firstUnpaidIndex ??
 const costProps = computed(() => toCostProps(cost.value, currencyCode.value, month))
 
 const extra = ref(0)
-const whatIfMode = ref<OverpaymentMode>('reducePayment')
+const whatIfMode = ref<PrepaymentMode>('reduce_payment')
 // Two tail re-solves per run: wait for the user to stop typing.
 const extraDebounced = refDebounced(extra, 250)
-const whatIf = computed(() => loansStore.getWhatIf(props.walletId, extraDebounced.value, whatIfMode.value))
+const whatIf = computed(() => loansStore.getWhatIf(props.walletId, amountToMinor(extraDebounced.value, currencyCode.value), whatIfMode.value))
 
 const editing = ref<LoanScheduleRowDraft | null>(null)
 const isShowLoanForm = ref(false)
@@ -105,9 +107,9 @@ function onEdit(row: LoanScheduleViewRow) {
   editing.value = {
     date: source.date,
     fine: 0,
-    interestPart: source.interestPart,
+    interestPart: minorToAmount(source.interestPart, currencyCode.value),
     paymentNumber: source.paymentNumber,
-    principalPart: source.principalPart,
+    principalPart: minorToAmount(source.principalPart, currencyCode.value),
   }
 }
 
@@ -121,7 +123,7 @@ async function onResetRow(row: LoanScheduleViewRow) {
   })
   const id = confirmed && overrideIdByNumber.value.get(row.paymentNumber)
   if (id)
-    loansStore.deleteScheduleRow(id)
+    loansStore.deleteScheduleOverride(id)
 }
 
 function onPay(paymentNumber: number) {
@@ -130,16 +132,16 @@ function onPay(paymentNumber: number) {
     return
   trnsFormStore.openFormForLoanPayment({
     date: source.date,
-    debitWalletId: entry.value?.loan.debitWalletId,
     interest: Math.max(0, source.interestPart - source.paidInterest),
+    paymentWalletId: entry.value?.loan.paymentWalletId,
     principal: Math.max(0, source.principalPart - source.paidPrincipal),
     walletId: props.walletId,
   })
 }
 
-// The amount is left empty: the reconcile rebuilds the schedule tail by `overpaymentMode` after save.
+// The amount is left empty: the reconcile rebuilds the schedule tail by `prepaymentMode` after save.
 function onPrepay() {
-  trnsFormStore.openFormForLoanPayment({ date: today.value, debitWalletId: entry.value?.loan.debitWalletId, interest: 0, principal: 0, walletId: props.walletId })
+  trnsFormStore.openFormForLoanPayment({ date: today.value, interest: 0, paymentWalletId: entry.value?.loan.paymentWalletId, principal: 0, walletId: props.walletId })
 }
 
 function onPayNext() {
@@ -160,14 +162,14 @@ function onPayNext() {
     />
 
     <LoansWhatIfView
-      v-if="entry && !entry.summary.isClosed && Math.abs(entry.summary.unrecognized) < 0.01 && whatIf"
+      v-if="entry && !entry.summary.isClosed && Math.abs(entry.summary.unrecognized) < 1 && whatIf"
       :currencyCode
       :extra
       :interestSaved="whatIf.interestSaved"
       :mode="whatIfMode"
       :newEndDate="whatIf.newEndDate === null ? null : day(whatIf.newEndDate)"
       @update:extra="(value: number) => extra = value"
-      @update:mode="(value: OverpaymentMode) => whatIfMode = value"
+      @update:mode="(value: PrepaymentMode) => whatIfMode = value"
     />
 
     <div v-else-if="isLoanWallet" class="flex flex-wrap items-center gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-empty>
@@ -241,7 +243,7 @@ function onPayNext() {
       v-if="entry"
       :currencyCode
       :firstUnpaidIndex
-      :rows="scheduleRows"
+      :rows="scheduleViewRows"
       @edit="onEdit"
       @pay="(row: LoanScheduleViewRow) => onPay(row.paymentNumber)"
       @resetRow="onResetRow"
@@ -249,6 +251,7 @@ function onPayNext() {
 
     <LoansScheduleRowEditor
       v-if="editing && loanId"
+      :currencyCode
       :initial="editing"
       :loanId
       :overrideId="overrideIdByNumber.get(editing.paymentNumber)"

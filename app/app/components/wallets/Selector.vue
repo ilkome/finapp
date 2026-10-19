@@ -54,7 +54,7 @@ const selectedWalletsIdsWithCurrency = computed<WalletId[]>(() => {
     const wallet = walletsStore.itemsComputed[id]
     if (!wallet || wallet.isArchived || props.disabledIds?.includes(id))
       return false
-    if (currencyFiltered.value !== 'all' && currencyFiltered.value !== wallet.currency)
+    if (currencyFiltered.value !== 'all' && currencyFiltered.value !== wallet.currencyCode)
       return false
     if (q && !wallet.name.toLowerCase().includes(q))
       return false
