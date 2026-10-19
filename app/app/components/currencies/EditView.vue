@@ -125,7 +125,7 @@ function save() {
         @toggle="form.isManualRate = !form.isManualRate"
       />
       <div v-if="form.isManualRate || !props.isBuiltIn" class="grid grid-cols-2 gap-3">
-        <FormElement>
+        <FormElement class="min-w-0">
           <template #label>
             {{ t('currencies.form.rate', { code: form.code || '?' }) }}
           </template>
@@ -135,12 +135,13 @@ function save() {
             @update:modelValue="form.isManualRate = true"
           />
         </FormElement>
-        <FormElement>
+        <FormElement class="min-w-0">
           <template #label>
             {{ t('currencies.form.rateCurrency') }}
           </template>
           <USelectMenu
             v-model="form.manualRateCurrencyCode"
+            class="w-full"
             data-reka-swipe-ignore
             valueKey="value"
             :items="rateOptions"

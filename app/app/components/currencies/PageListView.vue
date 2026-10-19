@@ -43,7 +43,7 @@ function menuItems(row: CurrencyRow) {
 </script>
 
 <template>
-  <div class="grid gap-3">
+  <div class="grid grid-cols-1 gap-3">
     <div class="flex items-center gap-2">
       <FormInput
         v-model="search"
@@ -74,7 +74,7 @@ function menuItems(row: CurrencyRow) {
           insideClasses="min-h-11!"
           @click="emit('edit', row.code)"
         >
-          <div class="flex items-center justify-between gap-3">
+          <div class="flex min-w-0 grow items-center justify-between gap-3">
             <div class="flex min-w-0 items-center gap-3">
               <div class="w-14 shrink-0 font-medium">
                 {{ row.code }}

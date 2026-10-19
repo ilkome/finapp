@@ -86,8 +86,8 @@ function setTargets(codes: CurrencyCode[]) {
       <UiHeaderTitle>{{ t('currencies.page.title') }}</UiHeaderTitle>
     </UiHeader>
 
-    <div class="grid max-w-4xl grow gap-6 px-2 lg:px-4 2xl:px-8">
-      <section class="grid gap-2">
+    <div class="grid max-w-4xl grow grid-cols-1 gap-6 px-2 lg:px-4 2xl:px-8">
+      <section class="grid grid-cols-1 gap-2">
         <UiTitleSection>{{ t('currencies.converter.title') }}</UiTitleSection>
         <CurrenciesConverterView
           :amount="converterAmount"
@@ -102,7 +102,7 @@ function setTargets(codes: CurrencyCode[]) {
         />
       </section>
 
-      <section class="grid gap-2">
+      <section class="grid grid-cols-1 gap-2">
         <UiTitleSection>{{ t('currencies.page.title') }}</UiTitleSection>
         <CurrenciesPageListView
           :rows

@@ -31,7 +31,7 @@ const dateLabel = computed(() => props.ratesDate === null
 </script>
 
 <template>
-  <div class="grid gap-3">
+  <div class="grid grid-cols-1 gap-3">
     <div class="flex items-center gap-2">
       <FormInput
         class="grow"
