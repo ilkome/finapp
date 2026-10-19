@@ -1,26 +1,28 @@
 // Send a Web Push notification to a user's subscribed devices.
 //
-// Auth: a service_role JWT may target any { userId }; a user JWT may only
+// Auth: the service role key may target any { userId }; a user JWT may only
 // target itself (the body userId is ignored). Dead endpoints (404/410) are
 // pruned. See docs reference for the full design.
 
 import webpush from 'npm:web-push@3.6.7'
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
-function jwtRole(token: string): string | null {
-  try {
-    return JSON.parse(atob(token.split('.')[1])).role ?? null
-  }
-  catch {
-    return null
-  }
-}
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const VAPID_PUBLIC_KEY = Deno.env.get('VAPID_PUBLIC_KEY')!
 const VAPID_PRIVATE_KEY = Deno.env.get('VAPID_PRIVATE_KEY')!
 const VAPID_SUBJECT = Deno.env.get('VAPID_SUBJECT') ?? 'mailto:admin@finapp.ilko.me'
+
+/** Constant-time compare, so the response time does not leak how much of the key matched. */
+function isServiceKey(token: string): boolean {
+  const a = new TextEncoder().encode(token)
+  const b = new TextEncoder().encode(SERVICE_ROLE_KEY)
+  let diff = a.length ^ b.length
+  for (let i = 0; i < b.length; i++)
+    diff |= (a[i] ?? 0) ^ b[i]
+  return diff === 0
+}
 
 webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY)
 
@@ -52,7 +54,7 @@ Deno.serve(async (req) => {
   // Resolve the target user. service_role can target anyone; a user JWT is
   // pinned to its own id regardless of the body.
   let targetUserId: string | undefined
-  if (jwtRole(token) === 'service_role') {
+  if (isServiceKey(token)) {
     targetUserId = payload.userId
   }
   else {
