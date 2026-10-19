@@ -72,9 +72,15 @@ async function loadUser(userId: string, settings: Row): Promise<UserReminderInpu
   const loans = await fetchAll((from, to) => supabase.from('loans').select('*').eq('user_id', userId).range(from, to))
   const scheduleOverrides = await fetchAll((from, to) => supabase.from('loan_schedule_overrides').select('*').eq('user_id', userId).range(from, to))
   const bankReports = await fetchAll((from, to) => supabase.from('bank_reports').select('*').eq('user_id', userId).in('id', [...creditIds]).range(from, to))
+  const currencies = await fetchAll((from, to) => supabase.from('currencies').select('*').eq('user_id', userId).range(from, to))
 
   return {
     bankReports: byId(bankReports, rowToBankReport),
+    currencies: Object.fromEntries(currencies.map(row => [row.code, {
+      minorDisplay: row.minor_display ?? undefined,
+      scale: row.scale ?? undefined,
+      symbol: row.symbol ?? undefined,
+    }])),
     loans: byId(loans, rowToLoan),
     locale: (settings.locale as LocaleSlug | null) ?? null,
     scheduleOverrides: byId(scheduleOverrides, rowToLoanScheduleOverride),

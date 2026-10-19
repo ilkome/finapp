@@ -1,0 +1,38 @@
+{
+  "card": {
+    "currencyCode": "USD",
+    "isCreditShown": true,
+    "report": {
+      "balanceAmount": -125050,
+      "balanceDate": 1791590400000,
+      "graceDebtAmount": 98000,
+      "graceEndDate": 1792022400000,
+      "minPaymentAmount": 5000,
+      "minPaymentDueDate": 1790294400000,
+      "minPaymentPeriodStartDate": 1788220800000,
+      "statementDate": 1788220800000
+    },
+    "walletType": "credit_card"
+  },
+  "loan": {
+    "currencyCode": "USD",
+    "isCreditShown": true,
+    "report": {
+      "debtAmount": 1200000,
+      "debtReportDate": 1791590400000,
+      "nextInterestAmount": 12000,
+      "nextPaymentDate": 1792022400000,
+      "nextPrincipalAmount": 95000
+    },
+    "walletType": "loan"
+  },
+  "plain": {
+    "currencyCode": "USD",
+    "isCreditShown": true,
+    "report": {
+      "balanceAmount": 25000,
+      "balanceDate": 1791590400000
+    },
+    "walletType": "cash"
+  }
+}

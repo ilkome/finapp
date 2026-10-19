@@ -21,6 +21,31 @@ export default {
 
   appName: 'Финапка',
 
+  bankReports: {
+    clear: 'Очистить все',
+    errors: {
+      negative: 'Не может быть отрицательным',
+      required: 'Нужны и сумма, и дата',
+    },
+    fields: {
+      balanceAmount: 'Баланс в банке',
+      balanceDate: 'Баланс на дату',
+      debtAmount: 'Долг по кредиту',
+      debtReportDate: 'Долг на дату',
+      graceDebtAmount: 'Долг для льготного периода',
+      graceEndDate: 'Конец льготного периода',
+      minPaymentAmount: 'Минимальный платеж',
+      minPaymentDueDate: 'Оплатить до',
+      minPaymentPeriodStartDate: 'Начало расчетного периода',
+      nextInterestAmount: 'Проценты в след. платеже',
+      nextPaymentDate: 'Дата след. платежа',
+      nextPrincipalAmount: 'Основной долг в след. платеже',
+      statementDate: 'Дата выписки',
+    },
+    invalid: 'Проверьте данные',
+    title: 'Данные банка',
+  },
+
   base: {
     add: 'Создать',
     addAction: 'Добавить',
@@ -1144,7 +1169,6 @@ export default {
         available: 'Доступно',
         debt: 'Долг',
         limit: 'Лимит',
-        minPaymentDate: 'Оплатить до',
       },
       currencies: {
         label: 'Валюта',

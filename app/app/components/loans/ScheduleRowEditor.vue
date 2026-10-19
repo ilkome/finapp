@@ -23,9 +23,6 @@ const { t } = useI18n()
 const loansStore = useLoansStore()
 
 const draft = ref<LoanScheduleRowDraft>({ ...props.initial })
-// vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
-const isLaptop = useIsLaptop()
 
 function save(close: () => void) {
   const { date, paymentNumber } = draft.value
@@ -48,36 +45,17 @@ function save(close: () => void) {
 </script>
 
 <template>
-  <DefineBody v-slot="{ close }">
-    <LoansScheduleRowForm
-      v-model="draft"
-      @cancel="close"
-      @save="save(close)"
-    />
-  </DefineBody>
-
-  <UiModalWrap
-    v-if="isLaptop"
-    defaultOpen
-    contentClass="max-w-md"
+  <UiSheet
+    modalClass="max-w-md"
     :title="t('loans.editRow')"
-    @after:leave="emit('closed')"
-  >
-    <template #default="{ close }">
-      <ReuseBody :close />
-    </template>
-  </UiModalWrap>
-
-  <Drawer
-    v-else
-    :title="t('loans.editRow')"
-    contentClass="min-h-[50dvh]"
     @closed="emit('closed')"
   >
     <template #default="{ close }">
-      <div class="drawer-body">
-        <ReuseBody :close />
-      </div>
+      <LoansScheduleRowForm
+        v-model="draft"
+        @cancel="close"
+        @save="save(close)"
+      />
     </template>
-  </Drawer>
+  </UiSheet>
 </template>

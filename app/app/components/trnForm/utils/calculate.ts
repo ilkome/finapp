@@ -1,3 +1,5 @@
+import { normalizeAmountText } from '~~/utils/money/parseInput'
+
 import { formatByCurrency } from '~/components/amount/utils'
 
 const config = {
@@ -19,8 +21,11 @@ function splitExpression(value: string): string[] {
   return value.split(/([/*\-+])/).filter(Boolean)
 }
 
+/** Every number of the expression in plain decimal form, so a typed `130,5` is 130.5, not 1305. */
 function sanitizeInput(value: string): string {
-  return String(value).replace(/[ ,]/g, '')
+  return splitExpression(String(value).replace(/\s/g, ''))
+    .map(part => isOperator(part) ? part : normalizeAmountText(part))
+    .join('')
 }
 
 function isOperator(value: string): boolean {
@@ -149,8 +154,9 @@ export function formatInput(value: CalculatorInput): string {
       if (isOperator(part))
         return ` ${part} `
 
-      const isDecimal = part.at(-1) === '.'
-      const [integerPart, decimalPart] = sanitizeInput(part).split('.')
+      const number = sanitizeInput(part)
+      const isDecimal = number.at(-1) === '.'
+      const [integerPart, decimalPart] = number.split('.')
       const formattedInteger = formatByCurrency(integerPart || '', config.separator)
 
       return decimalPart

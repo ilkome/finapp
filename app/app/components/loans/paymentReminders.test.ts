@@ -88,6 +88,17 @@ describe('planUserPushes', () => {
     expect(plan(input(min, { locale: 'ru' }), '2026-10-17')![0]!.body).toMatch(/^до 20\.10: минимум .*3.200/)
   })
 
+  it('formats the amount with the user currency settings', () => {
+    const body = (fields: Record<string, unknown>, over: Partial<UserReminderInput> = {}) => plan(input(fields, over), '2026-10-17')![0]!.body
+    // Built-in without a row: auto drops zero kopecks and uses the built-in symbol.
+    expect(body(min)).toBe('by 20.10: minimum 3,200 ₽')
+    expect(body({ ...min, minPaymentAmount: 320_050 })).toBe('by 20.10: minimum 3,200.50 ₽')
+    expect(body({ ...min, minPaymentAmount: 320_050 }, { currencies: { RUB: { minorDisplay: 'never' } } })).toBe('by 20.10: minimum 3,201 ₽')
+    const wallets = { card: card({ currencyCode: 'GLD' }), cash }
+    expect(body({ ...min, minPaymentAmount: 3200 }, { currencies: { GLD: { scale: 0, symbol: 'g' } }, wallets })).toBe('by 20.10: minimum 3,200 g')
+    expect(body({ ...min, minPaymentAmount: 3200 }, { wallets })).toBe('by 20.10: minimum 3,200 GLD')
+  })
+
   it('skips a minimum that is paid, stale, archived or zero', () => {
     const paid = input(min, { trns: { t1: payment(320_000, '2026-10-05') } })
     expect(plan(paid, '2026-10-17')).toEqual([])

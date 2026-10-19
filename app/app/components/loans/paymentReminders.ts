@@ -1,5 +1,7 @@
+import type { MinorDisplay } from '~~/utils/money/scale'
+
 import { addCivilDays } from '~~/utils/date/civil'
-import { currencyScale, fromMinor } from '~~/utils/money/scale'
+import { currencyScale, formatMinor } from '~~/utils/money/scale'
 
 import type { BankReports } from '~/components/bankReports/types'
 import type { LoanItem, Loans, LoanScheduleOverrides } from '~/components/loans/types'
@@ -8,6 +10,7 @@ import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 
 import { getWalletsTotals } from '~/components/amount/getTotal'
+import { currencies as builtInCurrencies } from '~/components/currencies/currencies'
 import { deriveLoan, overridesByLoan } from '~/components/loans/engine/derive'
 import { collectCreditTrns } from '~/components/loans/engine/ledger'
 import { deriveUpcoming } from '~/components/loans/engine/upcoming'
@@ -25,8 +28,13 @@ const KIND_ORDER: ReminderKind[] = ['loan', 'minPayment', 'grace', 'graceMissed'
 
 export type ReminderKey = { dueDate: number, kind: ReminderKind, walletId: WalletId }
 
+/** The user's `currencies` row for a code: a custom currency or their edit of a built-in one. */
+export type ReminderCurrency = { minorDisplay?: MinorDisplay, scale?: number, symbol?: string }
+
 export type UserReminderInput = {
   bankReports: BankReports
+  /** By currency code; a code without a row formats with the built-in defaults. */
+  currencies?: Record<string, ReminderCurrency>
   loans: Loans
   locale: LocaleSlug | null
   scheduleOverrides: LoanScheduleOverrides
@@ -112,14 +120,18 @@ function dueReminders(input: UserReminderInput, today: number): Reminder[] {
   return result
 }
 
-/** Minor units in the currency's own style; an unknown code falls back to the number and its code. */
-function formatMoney(minor: number, currency: string, locale: LocaleSlug): string {
+const builtInSymbols = new Map(builtInCurrencies.flatMap(c => c.symbol ? [[c.code, c.symbol] as const] : []))
+
+/** Minor units the way the app shows them: the user's display mode and symbol, else the built-in symbol, else the code. */
+function formatMoney(minor: number, code: string, locale: LocaleSlug, currencies: Record<string, ReminderCurrency>): string {
+  const row = currencies[code]
+  // A code with neither a pinned nor a custom scale shows a whole number rather than guessed decimals.
+  let scale = 0
   try {
-    return new Intl.NumberFormat(locale, { currency, style: 'currency' }).format(fromMinor(minor, currencyScale(currency)))
+    scale = currencyScale(code, row?.scale === undefined ? undefined : { [code]: row.scale })
   }
-  catch {
-    return `${fromMinor(minor, 2)} ${currency}`
-  }
+  catch {}
+  return formatMinor(minor, scale, { locale, minorDisplay: row?.minorDisplay ?? 'auto', symbol: row?.symbol || builtInSymbols.get(code) || code })
 }
 
 const formatDay = (date: number) => `${String(new Date(date).getUTCDate()).padStart(2, '0')}.${String(new Date(date).getUTCMonth() + 1).padStart(2, '0')}`
@@ -164,7 +176,7 @@ export function planUserPushes(
     const { dueDate, walletId } = reminders[0]!
     const wallet = input.wallets[walletId] as WalletItem
     const day = formatDay(dueDate)
-    const lines = reminders.map(r => LINES[locale][r.kind](formatMoney(r.amount, wallet.currencyCode, locale), day))
+    const lines = reminders.map(r => LINES[locale][r.kind](formatMoney(r.amount, wallet.currencyCode, locale, input.currencies ?? {}), day))
     const prefix = reminders[0]!.kind === 'graceMissed' ? '' : `${locale === 'ru' ? 'до' : 'by'} ${day}: `
     return {
       body: prefix + lines.join(', '),

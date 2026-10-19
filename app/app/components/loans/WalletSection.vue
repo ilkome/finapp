@@ -96,9 +96,6 @@ const whatIf = computed(() => loansStore.getWhatIf(props.walletId, amountToMinor
 
 const editing = ref<LoanScheduleRowDraft | null>(null)
 const isShowLoanForm = ref(false)
-// vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
-const isLaptop = useIsLaptop()
 
 function onEdit(row: LoanScheduleViewRow) {
   const source = entry.value?.summary.rows.find(item => item.paymentNumber === row.paymentNumber)
@@ -207,35 +204,15 @@ function onPayNext() {
       </UButton>
     </div>
 
-    <DefineBody v-slot="{ close }">
-      <LoansForm :loanId :walletId @afterSave="close" />
-    </DefineBody>
-
-    <template v-if="isShowLoanForm">
-      <UiModalWrap
-        v-if="isLaptop"
-        defaultOpen
-        :title="entry ? t('loans.edit') : t('loans.add')"
-        @after:leave="isShowLoanForm = false"
-      >
-        <template #default="{ close }">
-          <ReuseBody :close />
-        </template>
-      </UiModalWrap>
-
-      <Drawer
-        v-else
-        :title="entry ? t('loans.edit') : t('loans.add')"
-        contentClass="min-h-[50dvh]"
-        @closed="isShowLoanForm = false"
-      >
-        <template #default="{ close }">
-          <div class="drawer-body">
-            <ReuseBody :close />
-          </div>
-        </template>
-      </Drawer>
-    </template>
+    <UiSheet
+      v-if="isShowLoanForm"
+      :title="entry ? t('loans.edit') : t('loans.add')"
+      @closed="isShowLoanForm = false"
+    >
+      <template #default="{ close }">
+        <LoansForm :loanId :walletId @afterSave="close" />
+      </template>
+    </UiSheet>
 
     <LoansAmortizationView v-if="entry" :currencyCode :rows="amortizationRows" />
 

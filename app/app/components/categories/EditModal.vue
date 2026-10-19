@@ -13,9 +13,6 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
-// vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
-const isLaptop = useIsLaptop()
 const categoriesStore = useCategoriesStore()
 
 const category = computed(() =>
@@ -25,34 +22,18 @@ const categoryForm = ref(categoryFormSchema.parse(category.value ?? {}))
 </script>
 
 <template>
-  <DefineBody v-slot="{ close }">
-    <CategoriesForm
-      :categoryId="props.categoryId"
-      :categoryForm="categoryForm"
-      @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
-      @afterSave="close"
-    />
-  </DefineBody>
-
-  <UiModalWrap
-    v-if="isLaptop"
-    defaultOpen
+  <UiSheet
+    ownScroll
     :title="category?.name || t('categories.createNewTitle')"
-    @after:leave="emit('closed')"
-  >
-    <template #default="{ close }">
-      <ReuseBody :close />
-    </template>
-  </UiModalWrap>
-
-  <Drawer
-    v-else
-    :title="category?.name || t('categories.createNewTitle')"
-    contentClass="min-h-[50dvh]"
     @closed="emit('closed')"
   >
     <template #default="{ close }">
-      <ReuseBody :close />
+      <CategoriesForm
+        :categoryId="props.categoryId"
+        :categoryForm="categoryForm"
+        @update="(key: string, value: CategoryItem[keyof CategoryItem]) => (categoryForm as Record<string, any>)[key] = value"
+        @afterSave="close"
+      />
     </template>
-  </Drawer>
+  </UiSheet>
 </template>
