@@ -26,6 +26,15 @@ export function formatTrn(props: TrnFormValuesWithLoan): TrnItem | false {
     }
   }
 
+  if (props.trnType === 'adjustment') {
+    if (!props.walletId)
+      return false
+    // An adjustment keeps the side it was created on: `transferType` holds it in the form.
+    return props.transferType === 'to'
+      ? { ...base, toAmount: props.amount[0], toWalletId: props.walletId }
+      : { ...base, fromAmount: props.amount[0], fromWalletId: props.walletId }
+  }
+
   if (!props.categoryId || !props.walletId)
     return false
 

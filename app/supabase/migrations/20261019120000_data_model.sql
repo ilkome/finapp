@@ -172,26 +172,31 @@ language sql stable as $$ select new_id from id_map where table_name = 'wallets'
 create function pg_temp.category_id(old text) returns uuid
 language sql stable as $$ select new_id from id_map where table_name = 'categories' and old_id = old $$;
 
+-- The new name of a reserved category id, null for any other value.
+create function pg_temp.reserved_ref(old text) returns text
+language sql immutable as $$
+  select case old when 'loanInterest' then 'loan_interest' when 'loanFine' then 'loan_fine' end
+$$;
+
 -- A category reference: reserved ids renamed, the rest mapped.
 create function pg_temp.category_ref(old text) returns text
 language sql stable as $$
-  select case old when 'loanInterest' then 'loan_interest' when 'loanFine' then 'loan_fine'
-    else (select new_id::text from id_map where table_name = 'categories' and old_id = old) end
+  select coalesce(pg_temp.reserved_ref(old), (select new_id::text from id_map where table_name = 'categories' and old_id = old))
 $$;
 
--- Wallet and category ids anywhere in a JSON value (strings and object keys) mapped to the new ids.
+-- Wallet and category ids anywhere in a JSON value (strings and object keys) mapped to the new ids, reserved ids renamed.
 create function pg_temp.remap_json(j jsonb) returns jsonb
 language plpgsql stable as $$
 begin
   case jsonb_typeof(j)
     when 'string' then
-      return coalesce(to_jsonb((select new_id::text from id_map
+      return coalesce(to_jsonb(pg_temp.reserved_ref(j #>> '{}')), to_jsonb((select new_id::text from id_map
         where table_name in ('wallets', 'categories') and old_id = j #>> '{}')), j);
     when 'array' then
       return coalesce((select jsonb_agg(pg_temp.remap_json(e) order by i) from jsonb_array_elements(j) with ordinality a(e, i)), '[]'::jsonb);
     when 'object' then
       return coalesce((select jsonb_object_agg(
-        coalesce((select new_id::text from id_map where table_name in ('wallets', 'categories') and old_id = key), key),
+        coalesce(pg_temp.reserved_ref(key), (select new_id::text from id_map where table_name in ('wallets', 'categories') and old_id = key), key),
         pg_temp.remap_json(value)) from jsonb_each(j)), '{}'::jsonb);
     else
       return j;

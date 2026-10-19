@@ -85,6 +85,24 @@ export function trnWalletDelta(trn: TrnItem, walletId: WalletId): number {
   return (trn.toWalletId === walletId ? trn.toAmount! : 0) - (trn.fromWalletId === walletId ? trn.fromAmount! : 0)
 }
 
+/**
+ * A transfer between `walletId` and another wallet, with `walletId`'s side dropped ("outside the app"), so deleting
+ * the wallet leaves the other wallet's balance as it was. Null for a row that goes with the wallet.
+ */
+export function trnWithoutWallet(trn: TrnItem, walletId: WalletId): TrnItem | null {
+  if (trn.type !== 'transfer' || !trn.fromWalletId || !trn.toWalletId || trn.fromWalletId === trn.toWalletId)
+    return null
+  if (trn.fromWalletId === walletId) {
+    const { fromAmount: _a, fromWalletId: _w, ...rest } = trn
+    return rest
+  }
+  if (trn.toWalletId === walletId) {
+    const { toAmount: _a, toWalletId: _w, ...rest } = trn
+    return rest
+  }
+  return null
+}
+
 export type Trns = Record<TrnId, TrnItem>
 
 export type TrnsGetterProps = {

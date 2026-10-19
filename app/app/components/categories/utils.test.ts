@@ -177,7 +177,7 @@ describe('category overrides', () => {
 
 describe('compareBySortOrder', () => {
   it('puts ordered categories first by sortOrder and leaves the rest to the fallback', () => {
-    const items: Record<string, { sortOrder?: number }> = { a: {}, b: { sortOrder: 0 }, c: {}, d: { sortOrder: 1 } }
+    const items: Record<string, { sortOrder?: number }> = { a: {}, b: { sortOrder: 1 }, c: { sortOrder: 0 }, d: { sortOrder: 2 } }
     const ids = ['d', 'c', 'b', 'a']
     const sorted = ids.toSorted((x, y) => compareBySortOrder(items[x], items[y]) || x.localeCompare(y))
     expect(sorted).toEqual(['b', 'd', 'a', 'c'])

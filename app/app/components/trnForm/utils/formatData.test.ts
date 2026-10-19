@@ -49,4 +49,9 @@ describe('formatTrn', () => {
   it('refuses a transfer without wallets', () => {
     expect(format({ fromWalletId: null, toWalletId: null, trnType: 'transfer' })).toBe(false)
   })
+
+  it('keeps an adjustment on its side and drops the category', () => {
+    expect(format({ trnType: 'adjustment' })).toEqual({ date: 86400000, toAmount: 1000, toWalletId: 'wallet', type: 'adjustment' })
+    expect(format({ transferType: 'from', trnType: 'adjustment' })).toEqual({ date: 86400000, fromAmount: 1000, fromWalletId: 'wallet', type: 'adjustment' })
+  })
 })

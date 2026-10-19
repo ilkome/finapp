@@ -277,6 +277,8 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
       else {
         values.amount = [trn.fromAmount ?? trn.toAmount ?? 0, 0, 0]
         values.walletId = trnWalletId(trn) ?? null
+        if (trn.type === 'adjustment')
+          values.transferType = trn.toWalletId ? 'to' : 'from'
         if (trn.categoryId)
           values.categoryId = trn.categoryId
       }
@@ -301,7 +303,7 @@ export const useTrnsFormStore = defineStore('trnForm', () => {
         showErrorToast('trnForm.errors.selectWallet')
         return
       }
-      if (!values.categoryId || !categoriesStore.items?.[values.categoryId]) {
+      if (values.trnType !== 'adjustment' && (!values.categoryId || !categoriesStore.items?.[values.categoryId])) {
         showErrorToast('trnForm.errors.selectCategory')
         return
       }

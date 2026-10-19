@@ -28,7 +28,7 @@ watch(isShow, (v) => {
             class="pb-0!"
           />
           <div
-            v-if="trnsFormStore.values.trnType !== 'transfer'"
+            v-if="trnsFormStore.values.trnType !== 'transfer' && trnsFormStore.values.trnType !== 'adjustment'"
             class="grid gap-2 pb-6"
           >
             <TrnFormSelectionCategoriesFast

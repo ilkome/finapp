@@ -137,9 +137,12 @@ function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, item
 }
 
 /** Reserved categories always sort after the user's own. */
-/** Categories with a `sortOrder` come first by it; the rest tie (0) so a fallback comparator decides. */
+/**
+ * Ordered categories come first by `sortOrder` (1-based); 0, the column default for a category never ordered, ties
+ * with the rest so a fallback comparator decides.
+ */
 export function compareBySortOrder(a?: { sortOrder?: number }, b?: { sortOrder?: number }): number {
-  return (a?.sortOrder ?? Infinity) - (b?.sortOrder ?? Infinity) || 0
+  return (a?.sortOrder || Infinity) - (b?.sortOrder || Infinity) || 0
 }
 
 export function compareCategoryIds(idA: CategoryId, idB: CategoryId, items: Categories): number {

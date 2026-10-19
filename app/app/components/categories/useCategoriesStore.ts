@@ -216,8 +216,8 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     const prev = rows
     const next = { ...prev }
     const ordered = ids.filter(id => next[id] && !isReservedCategoryId(id))
-    ordered.forEach((id, sortOrder) => {
-      next[id] = { ...next[id]!, sortOrder }
+    ordered.forEach((id, idx) => {
+      next[id] = { ...next[id]!, sortOrder: idx + 1 }
     })
     setCategories(next)
 
