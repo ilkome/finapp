@@ -2,9 +2,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TrnId, Trns } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { isSystemCategoryId } from '~/components/categories/utils'
 import { sortCategoriesByAmount } from '~/components/stat/categories/collectAndGroup'
-import { TrnType } from '~/components/trns/types'
 
 export function getWalletPeriodTotals(options: {
   excludedCategoryIds?: ReadonlySet<CategoryId>
@@ -15,13 +13,13 @@ export function getWalletPeriodTotals(options: {
 
   for (const id of options.trnsIds) {
     const trn = options.trnsItems[id]
-    if (!trn || trn.type === TrnType.Transfer || isSystemCategoryId(trn.categoryId))
-      continue
-    if (options.excludedCategoryIds?.has(trn.categoryId))
+    if (!trn?.categoryId || options.excludedCategoryIds?.has(trn.categoryId))
       continue
 
-    const amount = trn.type === TrnType.Income ? trn.amount : -trn.amount
-    totals[trn.walletId] = (totals[trn.walletId] ?? 0) + amount
+    if (trn.type === 'expense' && trn.fromWalletId)
+      totals[trn.fromWalletId] = (totals[trn.fromWalletId] ?? 0) - (trn.fromAmount ?? 0)
+    else if (trn.type === 'income' && trn.toWalletId)
+      totals[trn.toWalletId] = (totals[trn.toWalletId] ?? 0) + (trn.toAmount ?? 0)
   }
 
   return totals

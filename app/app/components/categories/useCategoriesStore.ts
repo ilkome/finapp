@@ -1,19 +1,19 @@
 import type { Row } from '~~/services/powersync/transforms'
 
 import { useStorage } from '@vueuse/core'
+import { itemToRow, rowToItem } from '~~/services/powersync/columns'
 import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
 import { categoryToRow, rowToCategory } from '~~/services/powersync/transforms'
 
 import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 import type { CategoryOverrides } from '~/components/categories/utils'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { applyCategoryOverrides, compareByStoredOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, isSystemCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareByStoredOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
@@ -24,21 +24,21 @@ import { createLogger } from '~/utils/logger'
 const adjustment: CategoryItem = {
   color: '#64748b',
   icon: 'mdi:plus-minus',
-  isExcludeFromStats: true,
+  isExcludedFromStats: true,
+  isInQuickSelector: false,
+  isInRecent: false,
   name: 'Adjustment',
   parentId: 0,
-  showInLastUsed: false,
-  showInQuickSelector: false,
 }
 
 const transfer: CategoryItem = {
   color: '#64748b',
   icon: 'mdi:repeat',
-  isExcludeFromStats: true,
+  isExcludedFromStats: true,
+  isInQuickSelector: false,
+  isInRecent: false,
   name: 'Transfer',
   parentId: 0,
-  showInLastUsed: false,
-  showInQuickSelector: false,
 }
 
 // Reserved loan categories: shared by every credit product (the product is the credit wallet the
@@ -47,24 +47,30 @@ const transfer: CategoryItem = {
 const loanInterest: CategoryItem = {
   color: '#ef4444',
   icon: 'mdi:percent',
-  isExcludeFromStats: false,
+  isExcludedFromStats: false,
+  isInQuickSelector: false,
+  isInRecent: false,
   name: 'Loan interest',
   parentId: 0,
-  showInLastUsed: false,
-  showInQuickSelector: false,
 }
 
 const loanFine: CategoryItem = {
   color: '#f59e0b',
   icon: 'mdi:alert-circle-outline',
-  isExcludeFromStats: false,
+  isExcludedFromStats: false,
+  isInQuickSelector: false,
+  isInRecent: false,
   name: 'Loan fees',
   parentId: 0,
-  showInLastUsed: false,
-  showInQuickSelector: false,
 }
 
-const syntheticCategories: Record<CategoryId, CategoryItem> = { adjustment, loanFine, loanInterest, transfer }
+// Built-in categories: reserved ids without a row, their look edited through display_overrides.
+const syntheticCategories: Record<CategoryId, CategoryItem> = { loan_fine: loanFine, loan_interest: loanInterest }
+
+/** How transfers and adjustments look in lists; they have no category, their look is edited like one. */
+const trnTypeDefaults: Record<TrnTypeWithLook, CategoryItem> = { adjustment, transfer }
+
+export type TrnTypeWithLook = 'adjustment' | 'transfer'
 
 type CategoriesStore = {
   categoriesForBeParent: ComputedRef<CategoryId[]>
@@ -76,6 +82,8 @@ type CategoriesStore = {
   getChildrenIds: (categoryId: CategoryId) => CategoryId[]
   getChildrenIdsOrParent: (categoryId: CategoryId) => CategoryId[]
   getTransactibleIds: (ids?: CategoryId[]) => CategoryId[]
+  /** The category of an expense or income; the type's look for a transfer or adjustment. */
+  getTrnLook: (trn: Pick<TrnItem, 'categoryId' | 'type'>) => CategoryItem | undefined
   getWithParent: (categoryId: CategoryId) => { category: CategoryItem, parentCategory: CategoryItem | undefined } | null
   hasChildren: (categoryId: CategoryId) => boolean
   hasItems: ComputedRef<boolean>
@@ -92,6 +100,7 @@ type CategoriesStore = {
   setCategories: (values: Categories | null) => void
   setCategoryOverrides: (values: CategoryOverrides) => void
   sidebarCategoryIds: ComputedRef<CategoryId[]>
+  trnTypeLooks: import('vue').ShallowRef<Record<TrnTypeWithLook, CategoryItem>>
 }
 
 const logger = createLogger('categories')
@@ -107,8 +116,17 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   // Last user rows, kept so an overrides or locale change can re-render without a new emission.
   let rows: Categories | null = null
 
+  const trnTypeLooks = shallowRef<Record<TrnTypeWithLook, CategoryItem>>({ ...trnTypeDefaults })
+
   function render(): Categories {
+    trnTypeLooks.value = applyCategoryOverrides(trnTypeDefaults, overrides.value) as Record<TrnTypeWithLook, CategoryItem>
     return { ...rows, ...applyCategoryOverrides(syntheticCategories, overrides.value) } as Categories
+  }
+
+  function getTrnLook(trn: Pick<TrnItem, 'categoryId' | 'type'>): CategoryItem | undefined {
+    if (trn.type === 'transfer' || trn.type === 'adjustment')
+      return trnTypeLooks.value[trn.type]
+    return trn.categoryId ? items.value[trn.categoryId] : undefined
   }
 
   // Localized display names for the synthetic system categories. Set via $i18n
@@ -157,7 +175,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return categoriesIds.value
-      .filter(id => items.value[id]?.parentId === 0 && id !== 'transfer')
+      .filter(id => items.value[id]?.parentId === 0)
       .sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
@@ -167,7 +185,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     if (trns) {
       for (const id in trns) {
         const trn = trns[id]
-        if (trn)
+        if (trn?.categoryId)
           ids.add(trn.categoryId)
       }
     }
@@ -193,7 +211,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return []
 
     return categoriesIds.value
-      .filter(id => items.value[id]?.showInQuickSelector)
+      .filter(id => items.value[id]?.isInQuickSelector)
       .sort((a, b) => compareByStoredOrder(a, b, favoritesOrder.value) || compareCategoryIds(a, b, items.value))
   })
 
@@ -202,10 +220,10 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   }
 
   // Categories excluded from dashboard stats/charts. Includes the two system
-  // categories via their `isExcludeFromStats: true` default. Leaf-only flag, so
+  // categories via their `isExcludedFromStats: true` default. Leaf-only flag, so
   // transaction category ids match directly - no parent->child expansion needed.
   const excludedFromStatsIds = computed<Set<CategoryId>>(() =>
-    new Set(categoriesIds.value.filter(id => items.value[id]?.isExcludeFromStats)),
+    new Set(categoriesIds.value.filter(id => items.value[id]?.isExcludedFromStats)),
   )
 
   const recentCategoriesIds = computed(() => {
@@ -220,7 +238,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     const latestDateByCategory = new Map<CategoryId, number>()
     for (const trnId in trnsItems) {
       const trn = trnsItems[trnId]
-      if (!trn || trn.type === TrnType.Transfer || trn.categoryId === 'adjustment')
+      if (!trn?.categoryId)
         continue
 
       const categoryId = trn.categoryId
@@ -237,7 +255,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
         break
 
       const category = items.value[categoryId]
-      if (!category || !category.showInLastUsed || categoryId === 'transfer' || favoriteIds.has(categoryId))
+      if (!category || !category.isInRecent || favoriteIds.has(categoryId))
         continue
 
       recentIds.push(categoryId)
@@ -273,12 +291,10 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     return ids.sort((a, b) => compareCategoryIds(a, b, items.value))
   })
 
-  const categoriesIdsForTrnValues = computed<CategoryId[]>(() =>
-    transactibleIds.value.filter(id => !isSystemCategoryId(id)),
-  )
+  const categoriesIdsForTrnValues = computed<CategoryId[]>(() => transactibleIds.value)
 
   const debouncedPersist = createDebouncedPersist<Categories>(STORAGE_KEYS.categories)
-  const debouncedPersistOverrides = createDebouncedPersist<CategoryOverrides>(STORAGE_KEYS.categoryOverrides)
+  const debouncedPersistOverrides = createDebouncedPersist<CategoryOverrides>(STORAGE_KEYS.displayOverrides)
 
   /** Real mode: subscribe to local SQLite. setCategories re-adds synthetic entries. */
   function initCategories(): void {
@@ -306,14 +322,14 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     logger.log('watching categories')
 
     overridesWatchController?.abort()
-    let lastOverridesRaw: unknown
-    overridesWatchController = watchTable<Row>('SELECT "categoryOverrides" FROM user_settings LIMIT 1', [], (settings) => {
-      // No row yet means the first sync hasn't landed: keep the primed overrides.
-      // Any user_settings write (locale, timezone) re-emits: skip when the column is unchanged.
-      if (!settings[0] || settings[0].categoryOverrides === lastOverridesRaw)
+    let isFirstOverridesEmit = true
+    overridesWatchController = watchTable<Row>('SELECT * FROM display_overrides', [], (overrideRows) => {
+      // An empty first emission means the first sync hasn't landed: keep the primed overrides.
+      const isFirst = isFirstOverridesEmit
+      isFirstOverridesEmit = false
+      if (isFirst && !overrideRows.length)
         return
-      lastOverridesRaw = settings[0].categoryOverrides
-      setCategoryOverrides(parseCategoryOverrides(lastOverridesRaw))
+      setCategoryOverrides(parseCategoryOverrides(Object.fromEntries(overrideRows.map(row => [row.target_id, rowToItem('display_overrides', row)]))))
     })
   }
 
@@ -342,7 +358,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       debouncedPersistOverrides(values)
     }
     else {
-      persistStoreCache('categoryOverrides', values)
+      persistStoreCache('displayOverrides', values)
       persistStoreCache('categories', items.value)
     }
   }
@@ -354,9 +370,10 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     items.value = render()
   }
 
-  /** Reserved categories have no row: their edits go to the per-user overrides in user_settings. */
+  /** Built-in categories and transaction types have no row: their edits go to display_overrides. */
   function saveReservedCategory(id: CategoryId, values: CategoryItem) {
-    const base = syntheticCategories[id]
+    const kind = id in syntheticCategories ? 'category' : 'transaction_type'
+    const base = syntheticCategories[id] ?? trnTypeDefaults[id as TrnTypeWithLook]
     if (!base)
       return
 
@@ -373,7 +390,11 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return
 
     const userId = resolveWriteUid(uid.value)
-    return persistOptimistic(upsertRow('user_settings', userId, { categoryOverrides: JSON.stringify(next), userId }), {
+    const rowId = `${userId}:${kind}:${id}`
+    const write = override
+      ? upsertRow('display_overrides', rowId, itemToRow('display_overrides', { ...override, createdAt: Date.now(), kind, targetId: id, updatedAt: Date.now(), userId }))
+      : deleteRow('display_overrides', rowId)
+    return persistOptimistic(write, {
       errorKey: 'categories.errors.saveFailed',
       label: 'saveReservedCategory',
       logger,
@@ -529,7 +550,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
       return
 
     // Cascade: delete the category and its transactions; roll both back if the local write failed.
-    return persistOptimistic(Promise.all([deleteRow('categories', id), deleteRows('trns', trnsIds ?? [])]), {
+    return persistOptimistic(Promise.all([deleteRow('categories', id), deleteRows('transactions', trnsIds ?? [])]), {
       errorKey: 'categories.errors.deleteFailed',
       label: 'deleteCategory',
       logger,
@@ -550,6 +571,7 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     getChildrenIds,
     getChildrenIdsOrParent,
     getTransactibleIds,
+    getTrnLook,
     getWithParent,
     hasChildren,
     hasItems,
@@ -566,5 +588,6 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
     setCategories,
     setCategoryOverrides,
     sidebarCategoryIds,
+    trnTypeLooks,
   }
 })

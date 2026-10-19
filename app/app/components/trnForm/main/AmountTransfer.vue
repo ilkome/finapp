@@ -3,31 +3,30 @@ import type { MoneyTypeSlug } from '~/components/amount/types'
 import type { TransferSide } from '~/components/trns/types'
 
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { TrnType } from '~/components/trns/types'
 
 const trnsFormStore = useTrnsFormStore()
 const { t } = useI18n()
 
-const items = ref<Record<MoneyTypeSlug, { amountsIdx: 1 | 2, transferType: TransferSide }>>({
-  expense: {
-    amountsIdx: 1,
-    transferType: 'expense',
-  },
-  income: {
-    amountsIdx: 2,
-    transferType: 'income',
-  },
-})
+const items: Record<MoneyTypeSlug, { amountsIdx: 1 | 2, side: TransferSide }> = {
+  expense: { amountsIdx: 1, side: 'from' },
+  income: { amountsIdx: 2, side: 'to' },
+}
+
+function sideWalletId(side: TransferSide) {
+  return side === 'from' ? trnsFormStore.transferFromWalletId : trnsFormStore.transferToWalletId
+}
+
+function otherWalletIds(side: TransferSide) {
+  const id = sideWalletId(side === 'from' ? 'to' : 'from')
+  return id ? [id] : []
+}
 
 watch(
   () => trnsFormStore.values.trnType,
   (trnType) => {
-    if (trnType === TrnType.Transfer) {
-      if (!trnsFormStore.values.incomeWalletId)
-        trnsFormStore.transferIncomeWalletId && (trnsFormStore.values.incomeWalletId = trnsFormStore.transferIncomeWalletId)
-
-      if (!trnsFormStore.values.expenseWalletId)
-        trnsFormStore.transferExpenseWalletId && (trnsFormStore.values.expenseWalletId = trnsFormStore.transferExpenseWalletId)
+    if (trnType === 'transfer') {
+      trnsFormStore.values.toWalletId ??= trnsFormStore.transferToWalletId ?? null
+      trnsFormStore.values.fromWalletId ??= trnsFormStore.transferFromWalletId ?? null
 
       if (trnsFormStore.values.amount[1] === 0) {
         trnsFormStore.values.amount[1] = trnsFormStore.values.amount[0]
@@ -49,7 +48,6 @@ watch(
     <!-- Same currency: input first, then wallets -->
     <template v-if="trnsFormStore.isSameCurrencyTransfer">
       <TrnFormMainInput
-        :amount="trnsFormStore.values.amount[1]"
         :amountRaw="trnsFormStore.values.amountRaw[1]"
         :isShowSum="trnsFormStore.shouldShowSum()"
         @change="trnsFormStore.onChangeTransferAmountSynced"
@@ -57,12 +55,12 @@ watch(
 
       <div class="flex items-center gap-2 pt-3">
         <TrnFormSelectorWallet
-          v-if="trnsFormStore.transferExpenseWalletId"
-          :disabledWalletIds="trnsFormStore.transferIncomeWalletId ? [trnsFormStore.transferIncomeWalletId] : []"
+          v-if="trnsFormStore.transferFromWalletId"
+          :disabledWalletIds="otherWalletIds('from')"
           :title="t('trnForm.transfer.expenseModal')"
-          :walletId="trnsFormStore.transferExpenseWalletId"
+          :walletId="trnsFormStore.transferFromWalletId"
           class="min-w-0 flex-1"
-          @selected="id => trnsFormStore.onTransferWalletSelected('expense', id)"
+          @selected="id => trnsFormStore.onTransferWalletSelected('from', id)"
         />
 
         <UiActionButton :ariaLabel="$t('wallets.ariaSwitch')" @click="trnsFormStore.switchTransferWallets">
@@ -70,12 +68,12 @@ watch(
         </UiActionButton>
 
         <TrnFormSelectorWallet
-          v-if="trnsFormStore.transferIncomeWalletId"
-          :disabledWalletIds="trnsFormStore.transferExpenseWalletId ? [trnsFormStore.transferExpenseWalletId] : []"
+          v-if="trnsFormStore.transferToWalletId"
+          :disabledWalletIds="otherWalletIds('to')"
           :title="t('trnForm.transfer.incomeModal')"
-          :walletId="trnsFormStore.transferIncomeWalletId"
+          :walletId="trnsFormStore.transferToWalletId"
           class="min-w-0 flex-1"
-          @selected="id => trnsFormStore.onTransferWalletSelected('income', id)"
+          @selected="id => trnsFormStore.onTransferWalletSelected('to', id)"
         />
       </div>
     </template>
@@ -89,14 +87,14 @@ watch(
         <div
           :class="cn(
             '-m-1 grid gap-2 overflow-hidden rounded-sm border border-transparent p-2',
-            trnsFormStore.values.transferType === item.transferType && 'bg-elevated/50',
+            trnsFormStore.values.transferType === item.side && 'bg-elevated/50',
           )"
-          @click="trnsFormStore.onChangeTransferType(item.transferType)"
+          @click="trnsFormStore.values.transferOutside !== item.side && trnsFormStore.onChangeTransferType(item.side)"
         >
           <div class="flex items-center gap-2 whitespace-nowrap">
             <div
               :class="[{
-                'bg-elevated': trnsFormStore.values.transferType === item.transferType,
+                'bg-elevated': trnsFormStore.values.transferType === item.side,
               }]"
               class="flex min-h-11 w-1/2 grow items-center rounded-sm interactive px-3 py-2 text-sm text-highlighted/70 lg:min-h-10.5"
             >
@@ -104,28 +102,36 @@ watch(
             </div>
 
             <TrnFormSelectorWallet
-              v-if="slug === 'income' && trnsFormStore.transferIncomeWalletId"
-              :disabledWalletIds="trnsFormStore.transferExpenseWalletId ? [trnsFormStore.transferExpenseWalletId] : []"
+              v-if="trnsFormStore.values.transferOutside !== item.side && sideWalletId(item.side)"
+              :disabledWalletIds="otherWalletIds(item.side)"
               :title="t(`trnForm.transfer.${slug}Modal`)"
-              :walletId="trnsFormStore.transferIncomeWalletId"
-              @selected="id => trnsFormStore.onTransferWalletSelected('income', id)"
+              :walletId="sideWalletId(item.side)!"
+              @selected="id => trnsFormStore.onTransferWalletSelected(item.side, id)"
             />
 
-            <TrnFormSelectorWallet
-              v-if="slug === 'expense' && trnsFormStore.transferExpenseWalletId"
-              :disabledWalletIds="trnsFormStore.transferIncomeWalletId ? [trnsFormStore.transferIncomeWalletId] : []"
-              :title="t(`trnForm.transfer.${slug}Modal`)"
-              :walletId="trnsFormStore.transferExpenseWalletId"
-              @selected="id => trnsFormStore.onTransferWalletSelected('expense', id)"
+            <UButton
+              v-if="trnsFormStore.values.transferOutside === item.side"
+              :label="t('trnForm.transfer.outside')"
+              color="neutral"
+              variant="soft"
+              @click.stop="trnsFormStore.onTransferOutside(undefined)"
             />
+
+            <UiActionButton
+              v-else-if="!trnsFormStore.values.transferOutside"
+              :ariaLabel="t('trnForm.transfer.outsideAria')"
+              @click.stop="trnsFormStore.onTransferOutside(item.side)"
+            >
+              <Icon name="lucide:globe" size="20" />
+            </UiActionButton>
           </div>
 
           <!-- Input -->
           <TrnFormMainInput
+            v-if="trnsFormStore.values.transferOutside !== item.side"
             :key="item.amountsIdx"
-            :amount="trnsFormStore.values.amount[item.amountsIdx]"
             :amountRaw="trnsFormStore.values.amountRaw[item.amountsIdx]"
-            :highlight="item.transferType"
+            :highlight="slug"
             :isShowSum="trnsFormStore.shouldShowSum()"
             isTransfer
             @change="trnsFormStore.onChangeAmount"
@@ -134,7 +140,7 @@ watch(
 
         <!-- Actions -->
         <div
-          v-if="item.transferType === 'expense'"
+          v-if="item.side === 'from' && !trnsFormStore.values.transferOutside"
           class="flex justify-center gap-1 pt-3 pb-1"
         >
           <UiActionButton :ariaLabel="$t('wallets.ariaSwitch')" @click="trnsFormStore.switchTransferWallets">

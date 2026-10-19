@@ -1,4 +1,3 @@
-import { roundTo } from '~~/utils/amount/round'
 import { startOfMonthCivil } from '~~/utils/date/civil'
 
 import type { PaymentRow } from '~/components/loans/engine/types'
@@ -7,7 +6,7 @@ import { isSettled } from '~/components/loans/engine/summary'
 
 type PrincipalFreeKind = 'holiday' | 'interestOnly'
 
-const cache = new WeakMap<PaymentRow[], { precision: number, result: ReturnType<typeof computePrincipalFree> }>()
+const cache = new WeakMap<PaymentRow[], ReturnType<typeof computePrincipalFree>>()
 
 /**
  * Rows of the calendar months in which the debt does not move: no row of the month carries
@@ -15,17 +14,17 @@ const cache = new WeakMap<PaymentRow[], { precision: number, result: ReturnType<
  * payment, and those must not flag a month that did repay principal. A missing payment has no
  * row and is already counted as overdue.
  */
-export function principalFreeRows(rows: PaymentRow[], precision = 2) {
+export function principalFreeRows(rows: PaymentRow[]) {
   // The summary and the schedule of one wallet section both ask for the same rows.
   const hit = cache.get(rows)
-  if (hit?.precision === precision)
-    return hit.result
-  const result = computePrincipalFree(rows, precision)
-  cache.set(rows, { precision, result })
+  if (hit)
+    return hit
+  const result = computePrincipalFree(rows)
+  cache.set(rows, result)
   return result
 }
 
-function computePrincipalFree(rows: PaymentRow[], precision: number) {
+function computePrincipalFree(rows: PaymentRow[]) {
   const byMonth = Map.groupBy(rows, row => startOfMonthCivil(row.date))
 
   const byRow = new Map<number, PrincipalFreeKind>()
@@ -44,5 +43,5 @@ function computePrincipalFree(rows: PaymentRow[], precision: number) {
     }
   }
 
-  return { byRow, settledInterest: roundTo(settledInterest, precision), settledMonths }
+  return { byRow, settledInterest, settledMonths }
 }

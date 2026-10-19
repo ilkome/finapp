@@ -100,7 +100,7 @@ const { t } = useI18n()
                 <Amount
                   :amount="item.amount"
                   :currencyCode="item.currencyCode"
-                  :type="0"
+                  type="expense"
                   align="right"
                   class="grow"
                   colorize="income"

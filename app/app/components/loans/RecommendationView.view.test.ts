@@ -10,7 +10,7 @@ describe('loansRecommendationView', () => {
 
     expect(wrapper.find('[data-loan-pick="avalanche"]').text()).toContain('Mortgage')
     expect(wrapper.find('[data-loan-pick="snowball"]').text()).toContain('Car loan')
-    expect(wrapper.find('[data-loan-pick="avalanche"] [data-amount]').text()).toBe('64200 RUB')
+    expect(wrapper.find('[data-loan-pick="avalanche"] [data-amount]').text()).toBe('6420000 RUB')
 
     expect(wrapper.find('[data-loan-free-wallet]').exists()).toBe(false)
     await wrapper.find('[data-loan-free-wallets-toggle]').trigger('click')
@@ -32,7 +32,7 @@ describe('loansRecommendationView', () => {
     expect(wrapper.emitted('update:extra')).toEqual([[1000]])
 
     await wrapper.find('[data-loan-extra-all]').trigger('click')
-    expect(wrapper.emitted('update:extra')![1]).toEqual([Math.round(recommendation.freeMoney)])
+    expect(wrapper.emitted('update:extra')![1]).toEqual([Math.round(recommendation.freeMoney / 100)])
   })
 
   it('falls back to a hint when there is nothing to recommend', () => {

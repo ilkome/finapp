@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import type { LoanParams, LoanTrn, LoanTrnKind, OverpaymentMode, ScheduleType } from '~/components/loans/engine/types'
+import type { LoanParams, LoanTrn, LoanTrnKind, PrepaymentMode, ScheduleType } from '~/components/loans/engine/types'
 
 import loanB from '~/components/demo/loans/loan-b.json'
 import { principalFreeRows } from '~/components/loans/engine/principalFree'
@@ -11,13 +11,12 @@ const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
 
 describe('principalFreeRows on loan B', () => {
   const params: LoanParams = {
-    interestMethod: 'monthly',
+    interestAccrual: 'monthly',
     lateAfterDays: 3,
-    precision: 2,
-    prepayWindowDays: 15,
+    prepaymentWindowDays: 15,
     ...loanB.params,
     firstPaymentDate: day(loanB.params.firstPaymentDate),
-    overpaymentMode: loanB.params.overpaymentMode as OverpaymentMode,
+    prepaymentMode: loanB.params.prepaymentMode as PrepaymentMode,
     scheduleType: loanB.params.scheduleType as ScheduleType,
     startDate: day(loanB.params.startDate),
   }

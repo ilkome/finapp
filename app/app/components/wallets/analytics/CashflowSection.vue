@@ -29,7 +29,7 @@ const currenciesStore = useCurrenciesStore()
 const { computeTotalForTrnsIds } = useAmount()
 
 /** Ids of the wallets statistics rows the chart can draw, in the block's order. */
-const ROW_IDS = ['total', 'isWithdrawal', 'isAvailable', 'isAvailableAll', 'cash', 'cashless', 'deposit', 'credit', 'loan', 'crypto', 'debt'] as const
+const ROW_IDS = ['total', 'isWithdrawable', 'isAvailable', 'isAvailableAll', 'cash', 'bank_account', 'deposit', 'credit_card', 'loan', 'crypto', 'debt'] as const
 const CASHFLOW_IDS = ['income', 'expense', 'interest', 'net'] as const
 type CashflowId = typeof CASHFLOW_IDS[number]
 

@@ -347,21 +347,21 @@ async function onSave() {
 
         <UiSwitchItem
           v-if="!hasChildren"
-          :checkboxValue="props.categoryForm.showInQuickSelector"
+          :checkboxValue="props.categoryForm.isInQuickSelector"
           :title="t('categories.form.favoriteCategory')"
-          @toggle="emit('update', 'showInQuickSelector', !props.categoryForm.showInQuickSelector)"
+          @toggle="emit('update', 'isInQuickSelector', !props.categoryForm.isInQuickSelector)"
         />
         <UiSwitchItem
           v-if="!hasChildren"
-          :checkboxValue="props.categoryForm.showInLastUsed"
+          :checkboxValue="props.categoryForm.isInRecent"
           :title="t('categories.form.recentCategory')"
-          @toggle="emit('update', 'showInLastUsed', !props.categoryForm.showInLastUsed)"
+          @toggle="emit('update', 'isInRecent', !props.categoryForm.isInRecent)"
         />
         <UiSwitchItem
           v-if="!hasChildren"
-          :checkboxValue="!!props.categoryForm.isExcludeFromStats"
+          :checkboxValue="!!props.categoryForm.isExcludedFromStats"
           :title="t('categories.form.excludeFromStats')"
-          @toggle="emit('update', 'isExcludeFromStats', !props.categoryForm.isExcludeFromStats)"
+          @toggle="emit('update', 'isExcludedFromStats', !props.categoryForm.isExcludedFromStats)"
         />
       </div>
     </div>

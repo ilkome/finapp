@@ -1,10 +1,9 @@
 import type { TabsItem } from '@nuxt/ui'
 import type { ComputedRef } from 'vue'
 
-import type { TrnId, TrnsListFilterState, TrnsViewType } from '~/components/trns/types'
+import type { TrnId, TrnsListFilterState, TrnsViewType, TrnType } from '~/components/trns/types'
 
 import { getFilteredByTypeIds, getTypeCounts } from '~/components/trns/tabClassification'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 type UseTrnsListFiltersOptions = {
@@ -38,10 +37,10 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
     const isScoped = !!options.primaryType
     const filters: TypeFilter[] = [
       { count: ids.length, isShow: !isScoped || !primaryType, name: t('common.all'), slug: 'all', type: undefined },
-      { count: counts.expense, isShow: options.showExpense.value && (!isScoped || primaryType === 'expense') && counts.expense > 0, name: t('money.expense'), slug: 'expense', type: TrnType.Expense },
-      { count: counts.income, isShow: options.showIncome.value && (!isScoped || primaryType === 'income') && counts.income > 0, name: t('money.income'), slug: 'income', type: TrnType.Income },
-      { count: counts.transfer, isShow: options.showTransfers.value && counts.transfer > 0, name: t('transfer.titleMoney'), slug: 'transfer', type: TrnType.Transfer },
-      { count: counts.adjustment, isShow: counts.adjustment > 0, name: t('trnForm.adjustmentTitle'), slug: 'adjustment', type: undefined },
+      { count: counts.expense, isShow: options.showExpense.value && (!isScoped || primaryType === 'expense') && counts.expense > 0, name: t('money.expense'), slug: 'expense', type: 'expense' },
+      { count: counts.income, isShow: options.showIncome.value && (!isScoped || primaryType === 'income') && counts.income > 0, name: t('money.income'), slug: 'income', type: 'income' },
+      { count: counts.transfer, isShow: options.showTransfers.value && counts.transfer > 0, name: t('transfer.titleMoney'), slug: 'transfer', type: 'transfer' },
+      { count: counts.adjustment, isShow: counts.adjustment > 0, name: t('trnForm.adjustmentTitle'), slug: 'adjustment', type: 'adjustment' },
     ]
     return filters.filter(item => item.isShow)
   }
@@ -85,19 +84,19 @@ export function useTrnsListFilters(options: UseTrnsListFiltersOptions) {
     ? getFilteredByTypeIds(options.descriptionIds.value, trnsStore.items, filterBy.value, selectedTypeFilter.value?.type)
     : filteredByTypeIds.value)
 
-  const isTrnsWithDesc = computed(() => descriptionFilteredByTypeIds.value.some(id => trnsStore.items?.[id]?.desc))
-  const isAllTrnsWithDesc = computed(() => descriptionFilteredByTypeIds.value.every(id => trnsStore.items?.[id]?.desc))
+  const isTrnsWithDesc = computed(() => descriptionFilteredByTypeIds.value.some(id => trnsStore.items?.[id]?.description))
+  const isAllTrnsWithDesc = computed(() => descriptionFilteredByTypeIds.value.every(id => trnsStore.items?.[id]?.description))
 
   const descriptionSelectedIds = computed(() => {
     if (isShowWithDesc.value && isTrnsWithDesc.value)
-      return descriptionFilteredByTypeIds.value.filter(id => trnsStore.items?.[id]?.desc)
+      return descriptionFilteredByTypeIds.value.filter(id => trnsStore.items?.[id]?.description)
 
     return descriptionFilteredByTypeIds.value
   })
 
   const selectedIds = computed(() => {
     if (isShowWithDesc.value && isTrnsWithDesc.value)
-      return filteredByTypeIds.value.filter(id => trnsStore.items?.[id]?.desc)
+      return filteredByTypeIds.value.filter(id => trnsStore.items?.[id]?.description)
 
     return filteredByTypeIds.value
   })

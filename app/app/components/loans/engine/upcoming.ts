@@ -10,7 +10,6 @@ export type UpcomingItem = {
   amount: number
   currency: CurrencyCode
   date: number
-  debitWalletId?: WalletId
   interest?: number
   /** Interest-free period repayment; `amount` is then the statement debt. */
   isGrace?: boolean
@@ -19,6 +18,7 @@ export type UpcomingItem = {
   minAmount?: number
   /** The charge date is already behind us. */
   overdue: boolean
+  paymentWalletId?: WalletId
   principal?: number
   walletId: WalletId
 }
@@ -53,10 +53,10 @@ export function deriveUpcoming(loans: UpcomingLoan[], cards: UpcomingCard[], tod
       amount: next.amount,
       currency,
       date: next.date,
-      debitWalletId: loan.debitWalletId,
       interest: row?.interestPart,
       kind: 'loan',
       overdue: next.date < today,
+      paymentWalletId: loan.paymentWalletId,
       principal: row?.principalPart,
       walletId,
     })

@@ -22,7 +22,7 @@ const viewsById = computed(() => new Map(views.value.map(view => [view.id, view]
 const currentId = computed(() => controller?.activeId.value ?? '')
 function ruleDescription(id: string) {
   const view = viewsById.value.get(id)
-  if (!view?.isAutoEnabled || !view.autoRule)
+  if (!view?.isAutoRuleEnabled || !view.autoRule)
     return ''
   return conditionGroupTitle(view.autoRule)
 }

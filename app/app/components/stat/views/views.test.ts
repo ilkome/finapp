@@ -33,7 +33,7 @@ function view(id: string, sortOrder: number, rule: ConditionGroup = { children: 
     createdAt: 1,
     id,
     isActive: false,
-    isAutoEnabled: true,
+    isAutoRuleEnabled: true,
     name: id,
     scope: 'dashboard' as const,
     sortOrder,

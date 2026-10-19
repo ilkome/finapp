@@ -6,7 +6,6 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildTrnsBulkEdits } from '~/components/trns/bulkEdits'
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showSuccessToast } from '~/composables/useStoreSync'
@@ -30,8 +29,11 @@ const confirm = useConfirm()
 const isCategoryOpen = ref(false)
 const isWalletOpen = ref(false)
 
-// Category and wallet cannot apply to a transfer, so they leave the bar as soon as one is selected.
-const hasTransfer = computed(() => selection.ids.value.some(id => trnsStore.items?.[id]?.type === TrnType.Transfer))
+// A category cannot apply to a transfer or an adjustment, nor a single wallet to a transfer, so both leave the bar as soon as one is selected.
+const hasTransfer = computed(() => selection.ids.value.some((id) => {
+  const type = trnsStore.items?.[id]?.type
+  return type === 'transfer' || type === 'adjustment'
+}))
 
 const stagedDescription = computed(() => description.value.trim())
 const actions = computed<TrnsBulkEdit[]>(() => {
@@ -69,7 +71,7 @@ function stageClearDescription(close: () => void) {
 }
 
 function stageCategory(id: CategoryId, close: () => void) {
-  if (!categoriesStore.isTransactible(id) || id === 'transfer')
+  if (!categoriesStore.isTransactible(id))
     return
 
   categoryId.value = id

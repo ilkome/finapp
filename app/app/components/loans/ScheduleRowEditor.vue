@@ -1,15 +1,18 @@
 <script setup lang="ts">
 import type { LoanScheduleRowDraft } from '~/components/loans/ScheduleRowForm.vue'
-import type { LoanId, LoanScheduleRowId } from '~/components/loans/types'
+import type { LoanId, LoanScheduleOverrideId } from '~/components/loans/types'
 
-import { loanScheduleRowIdFor } from '~/components/loans/types'
+import { amountToMinor } from '~/components/amount/utils'
+import { loanScheduleOverrideIdFor } from '~/components/loans/types'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 
 const props = defineProps<{
+  currencyCode: string
+  /** Amounts as typed: decimals of `currencyCode`. */
   initial: LoanScheduleRowDraft
   loanId: LoanId
   /** The stored row this payment number already has. */
-  overrideId?: LoanScheduleRowId
+  overrideId?: LoanScheduleOverrideId
 }>()
 
 const emit = defineEmits<{
@@ -25,17 +28,19 @@ const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
 const isLaptop = useIsLaptop()
 
 function save(close: () => void) {
-  const { date, fine, interestPart, paymentNumber, principalPart } = draft.value
-  // Rows written before the deterministic id scheme keep their random ids: reuse them so the edit
-  // never creates a duplicate.
-  loansStore.saveScheduleRow(props.overrideId ?? loanScheduleRowIdFor(props.loanId, paymentNumber), {
-    date,
-    interestPart,
+  const { date, paymentNumber } = draft.value
+  const fine = amountToMinor(draft.value.fine, props.currencyCode)
+  const interestAmount = amountToMinor(draft.value.interestPart, props.currencyCode)
+  const principalAmount = amountToMinor(draft.value.principalPart, props.currencyCode)
+  loansStore.saveScheduleOverride(props.overrideId ?? loanScheduleOverrideIdFor(props.loanId, paymentNumber), {
+    createdAt: Date.now(),
+    dueDate: date,
+    interestAmount,
     loanId: props.loanId,
     paymentNumber,
-    principalPart,
+    principalAmount,
     source: 'manual',
-    totalAmount: principalPart + interestPart + fine,
+    totalAmount: principalAmount + interestAmount + fine,
     updatedAt: Date.now(),
   })
   close()

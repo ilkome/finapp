@@ -1,7 +1,7 @@
 {
   "isShowIcon": true,
   "items": [
-    { "amount": -420.5, "isSelected": true, "walletId": "card", "wallet": { "amount": 1520, "color": "#3b82f6", "currency": "USD", "id": "card", "isArchived": false, "name": "Dollar card", "order": 1, "type": "cash" } },
-    { "amount": 300, "isSelected": false, "walletId": "cash", "wallet": { "amount": 80, "color": "#22c55e", "currency": "EUR", "id": "cash", "isArchived": false, "name": "Euro cash", "order": 2, "type": "cash" } }
+    { "amount": -42050, "isSelected": true, "walletId": "card", "wallet": { "amount": 152000, "color": "#3b82f6", "currencyCode": "USD", "id": "card", "isArchived": false, "isExcludedFromTotal": false, "isWithdrawable": true, "name": "Dollar card", "sortOrder": 1, "type": "cash" } },
+    { "amount": 30000, "isSelected": false, "walletId": "cash", "wallet": { "amount": 8000, "color": "#22c55e", "currencyCode": "EUR", "id": "cash", "isArchived": false, "isExcludedFromTotal": false, "isWithdrawable": true, "name": "Euro cash", "sortOrder": 2, "type": "cash" } }
   ]
 }

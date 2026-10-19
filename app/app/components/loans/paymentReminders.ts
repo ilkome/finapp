@@ -1,12 +1,13 @@
 import { addCivilDays } from '~~/utils/date/civil'
+import { currencyScale, fromMinor } from '~~/utils/money/scale'
 
-import type { LoanItem, Loans, LoanScheduleRows } from '~/components/loans/types'
+import type { BankReports } from '~/components/bankReports/types'
+import type { LoanItem, Loans, LoanScheduleOverrides } from '~/components/loans/types'
 import type { LocaleSlug } from '~/components/locale/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId, WalletItem, Wallets } from '~/components/wallets/types'
 
 import { getWalletsTotals } from '~/components/amount/getTotal'
-import { currencyMinorUnit } from '~/components/currencies/currencies'
 import { deriveLoan, overridesByLoan } from '~/components/loans/engine/derive'
 import { collectCreditTrns } from '~/components/loans/engine/ledger'
 import { deriveUpcoming } from '~/components/loans/engine/upcoming'
@@ -25,9 +26,10 @@ const KIND_ORDER: ReminderKind[] = ['loan', 'minPayment', 'grace', 'graceMissed'
 export type ReminderKey = { dueDate: number, kind: ReminderKind, walletId: WalletId }
 
 export type UserReminderInput = {
+  bankReports: BankReports
   loans: Loans
   locale: LocaleSlug | null
-  scheduleRows: LoanScheduleRows
+  scheduleOverrides: LoanScheduleOverrides
   timezone: string | null
   /** Everything the user's credit products touch, transfers in and out included. */
   trns: Record<TrnId, TrnItem>
@@ -73,15 +75,15 @@ function dueReminders(input: UserReminderInput, today: number): Reminder[] {
   const creditIds = new Set(Object.entries(input.wallets).filter(([, wallet]) => isCreditProduct(wallet.type)).map(([id]) => id))
   const trnsByWallet = collectCreditTrns(input.trns, creditIds)
   const totals = getWalletsTotals({ trnsItems: input.trns, walletsItems: input.wallets })
-  const overrides = overridesByLoan(input.scheduleRows)
+  const overrides = overridesByLoan(input.scheduleOverrides)
   const isActive = (walletId: WalletId) => creditIds.has(walletId) && !input.wallets[walletId]!.isArchived
 
   const loanIds = new Set<WalletId>()
   const loans = Object.entries(input.loans).filter(([, loan]) => isActive(loan.walletId)).map(([loanId, loan]) => {
     loanIds.add(loan.walletId)
     const wallet = input.wallets[loan.walletId]!
-    const summary = deriveLoan(loan, overrides.get(loanId) ?? [], trnsByWallet.get(loan.walletId) ?? [], totals.get(loan.walletId) ?? 0, today, currencyMinorUnit(wallet.currency))
-    return { currency: wallet.currency, loan: loan as LoanItem, summary, walletId: loan.walletId }
+    const summary = deriveLoan(loan, overrides.get(loanId) ?? [], trnsByWallet.get(loan.walletId) ?? [], totals.get(loan.walletId) ?? 0, today, input.bankReports[loan.walletId])
+    return { currency: wallet.currencyCode, loan: loan as LoanItem, summary, walletId: loan.walletId }
   })
 
   const result: Reminder[] = deriveUpcoming(loans, [], today)
@@ -89,16 +91,16 @@ function dueReminders(input: UserReminderInput, today: number): Reminder[] {
     .map(item => ({ amount: item.amount, dueDate: item.date, kind: 'loan', walletId: item.walletId }))
 
   for (const [walletId, wallet] of Object.entries(input.wallets)) {
-    if (wallet.type !== 'credit' || !isActive(walletId) || loanIds.has(walletId))
+    if (wallet.type !== 'credit_card' || !isActive(walletId) || loanIds.has(walletId))
       continue
     const trns = trnsByWallet.get(walletId) ?? []
 
-    const min = minPaymentOf(wallet, trns, today)
+    const min = minPaymentOf(wallet, input.bankReports[walletId], trns, today)
     if (min?.status === 'due' && inWindow(min.date))
       result.push({ amount: min.amount, dueDate: min.date, kind: 'minPayment', walletId })
 
     // 'stale' and 'paid' (a zero statement debt included) never reach a reminder.
-    const grace = graceOf(wallet, trns, today)
+    const grace = graceOf(wallet, input.bankReports[walletId], trns, today)
     if (grace?.date == null)
       continue
     if (grace.status === 'due' && inWindow(grace.date))
@@ -110,12 +112,13 @@ function dueReminders(input: UserReminderInput, today: number): Reminder[] {
   return result
 }
 
-function formatAmount(amount: number, currency: string, locale: LocaleSlug): string {
+/** Minor units in the currency's own style; an unknown code falls back to the number and its code. */
+function formatMoney(minor: number, currency: string, locale: LocaleSlug): string {
   try {
-    return new Intl.NumberFormat(locale, { currency, style: 'currency' }).format(amount)
+    return new Intl.NumberFormat(locale, { currency, style: 'currency' }).format(fromMinor(minor, currencyScale(currency)))
   }
   catch {
-    return `${amount} ${currency}`
+    return `${fromMinor(minor, 2)} ${currency}`
   }
 }
 
@@ -161,7 +164,7 @@ export function planUserPushes(
     const { dueDate, walletId } = reminders[0]!
     const wallet = input.wallets[walletId] as WalletItem
     const day = formatDay(dueDate)
-    const lines = reminders.map(r => LINES[locale][r.kind](formatAmount(r.amount, wallet.currency, locale), day))
+    const lines = reminders.map(r => LINES[locale][r.kind](formatMoney(r.amount, wallet.currencyCode, locale), day))
     const prefix = reminders[0]!.kind === 'graceMissed' ? '' : `${locale === 'ru' ? 'до' : 'by'} ${day}: `
     return {
       body: prefix + lines.join(', '),

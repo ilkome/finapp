@@ -10,7 +10,7 @@ export function useCategoryMenuItems() {
   const router = useRouter()
   const categoriesStore = useCategoriesStore()
 
-  function toggleFlag(categoryId: CategoryId, key: 'showInLastUsed' | 'showInQuickSelector') {
+  function toggleFlag(categoryId: CategoryId, key: 'isInRecent' | 'isInQuickSelector') {
     const cat = categoriesStore.items[categoryId]
     if (!cat)
       return
@@ -67,19 +67,19 @@ export function useCategoryMenuItems() {
 
       const items: Item[] = [{
         icon: 'lucide:star',
-        label: cat.showInQuickSelector
+        label: cat.isInQuickSelector
           ? t('categories.actions.removeFromFavorites')
           : t('categories.actions.addToFavorites'),
-        onSelect: () => toggleFlag(categoryId, 'showInQuickSelector'),
+        onSelect: () => toggleFlag(categoryId, 'isInQuickSelector'),
       }]
 
-      if (!cat.showInQuickSelector) {
+      if (!cat.isInQuickSelector) {
         items.push({
           icon: 'lucide:clock',
-          label: cat.showInLastUsed
+          label: cat.isInRecent
             ? t('categories.actions.removeFromRecent')
             : t('categories.actions.addToRecent'),
-          onSelect: () => toggleFlag(categoryId, 'showInLastUsed'),
+          onSelect: () => toggleFlag(categoryId, 'isInRecent'),
         })
       }
 

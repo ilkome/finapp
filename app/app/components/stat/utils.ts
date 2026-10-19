@@ -1,20 +1,17 @@
 import type { SeriesSlug, SeriesSlugSelected, StatReportType } from '~/components/stat/types'
-import type { TrnId, Trns } from '~/components/trns/types'
+import type { TrnId, Trns, TrnType } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { isTransfer, TrnType } from '~/components/trns/types'
-
 export function getTypesMapping(slug: SeriesSlugSelected | StatReportType): TrnType[] {
-  // Transfers stay out of charts and period totals (getTotal keeps them in their own buckets,
-  // matched by categoryId === 'transfer' so both two-leg and single-leg bank-import rows are
-  // covered, and the category breakdown skips system categories). They ARE included in the
+  // Transfers stay out of charts and period totals (getTotal keeps them in their own buckets
+  // and the category breakdown skips trns without a category). They ARE included in the
   // transaction list under the "all"/summary views so TrnsList's "Transfers" tab works; the
   // expense/income tabs stay pure so drilling into a type never mixes transfers in.
   const typeMapping: Record<SeriesSlugSelected | StatReportType, TrnType[]> = {
-    combined: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
-    expense: [TrnType.Expense],
-    income: [TrnType.Income],
-    net: [TrnType.Expense, TrnType.Income, TrnType.Transfer],
+    combined: ['expense', 'income', 'transfer', 'adjustment'],
+    expense: ['expense'],
+    income: ['income'],
+    net: ['expense', 'income', 'transfer', 'adjustment'],
   }
 
   return typeMapping[slug]
@@ -104,13 +101,10 @@ export function getUsedWalletIds(trnsIds: readonly TrnId[], trnsItems: Trns): Wa
     const trn = trnsItems[trnId]
     if (!trn)
       continue
-    if (isTransfer(trn)) {
-      add(trn.expenseWalletId)
-      add(trn.incomeWalletId)
-    }
-    else {
-      add(trn.walletId)
-    }
+    if (trn.fromWalletId)
+      add(trn.fromWalletId)
+    if (trn.toWalletId)
+      add(trn.toWalletId)
   }
 
   return result

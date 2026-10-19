@@ -25,8 +25,8 @@ describe('useTrnsListFilters', () => {
   beforeEach(() => {
     state.items = {
       ...trnsItems,
-      expenseWithDesc: { ...trnsItems.transactionExpenseWalletCashUSD400, desc: 'coffee' },
-      incomeWithDesc: { ...trnsItems.transactionIncomeWalletCashUSD1000, desc: 'salary' },
+      expenseWithDesc: { ...trnsItems.transactionExpenseWalletCashUSD400, description: 'coffee' },
+      incomeWithDesc: { ...trnsItems.transactionIncomeWalletCashUSD1000, description: 'salary' },
     }
   })
 
@@ -57,7 +57,7 @@ describe('useTrnsListFilters', () => {
 
     expect(filters.selectedIds.value).toEqual(ids)
     filters.setFilterBy('expense')
-    expect(filters.selectedIds.value).toEqual(['transactionExpenseWalletCashUSD400', 'adjustmentExpenseWalletCashUSD30'])
+    expect(filters.selectedIds.value).toEqual(['transactionExpenseWalletCashUSD400'])
     filters.setFilterBy('income')
     expect(filters.selectedIds.value).toEqual(['transactionIncomeWalletCashUSD1000'])
     filters.setFilterBy('transfer')
@@ -96,7 +96,7 @@ describe('useTrnsListFilters', () => {
     expect(filters.filterBy.value).toBe('expense')
     expect(filters.realTypesCount.value).toBe(3)
     expect(filters.typeFilterItems.value.map(item => item.value)).toEqual(['expense', 'transfer', 'adjustment'])
-    expect(filters.selectedIds.value).toEqual(['transactionExpenseWalletCashUSD400', 'adjustmentExpenseWalletCashUSD30'])
+    expect(filters.selectedIds.value).toEqual(['transactionExpenseWalletCashUSD400'])
   })
 
   it('shows all, transfers, and adjustments for the net view', () => {

@@ -3,7 +3,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { TrnItem } from '~/components/trns/types'
 
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { AUTH_STORAGE_KEY } from '~/composables/useAuthSession'
 import { toastAddMock } from '~/test-utils/setup-store'
@@ -37,11 +36,11 @@ vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupaba
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 0))
 
 function expense(over: Partial<TrnItem> = {}): TrnItem {
-  return { amount: 100, categoryId: 'food', date: 1700000000000, type: TrnType.Expense, updatedAt: 1, walletId: 'cash', ...over } as TrnItem
+  return { categoryId: 'food', createdAt: 1, date: 1699920000000, fromAmount: 100, fromWalletId: 'cash', type: 'expense', updatedAt: 1, ...over }
 }
 
 function expenseRow(id: string, updatedAt: number, amount = 100) {
-  return { amount, categoryId: 'food', date: 1700000000000, id, type: 0, updatedAt, walletId: 'cash' }
+  return { category_id: 'food', created_at: 1, date: 1699920000000, from_amount: amount, from_wallet_id: 'cash', id, type: 'expense', updated_at: updatedAt }
 }
 
 describe('useTrnsStore', () => {
@@ -63,13 +62,13 @@ describe('useTrnsStore', () => {
       store.initTrns()
 
       expect(h.watchTable).toHaveBeenCalledTimes(1)
-      expect(h.watchTable.mock.calls[0]?.[0]).toBe('SELECT * FROM trns')
+      expect(h.watchTable.mock.calls[0]?.[0]).toBe('SELECT * FROM transactions')
 
       const emit = h.watchCallbacks[0]!
       emit([expenseRow('a', 1), expenseRow('b', 2)])
 
       expect(Object.keys(store.items ?? {})).toEqual(['a', 'b'])
-      expect(store.items?.a).toMatchObject({ amount: 100, categoryId: 'food', type: 0 })
+      expect(store.items?.a).toMatchObject({ categoryId: 'food', fromAmount: 100, type: 'expense' })
     })
 
     it('keeps primed items on an empty FIRST emission (sync not landed yet)', () => {
@@ -77,7 +76,7 @@ describe('useTrnsStore', () => {
       store.initTrns()
       const emit = h.watchCallbacks[0]!
 
-      store.setTrns({ a: { amount: 100, categoryId: 'food', date: 1, type: 0 } } as never)
+      store.setTrns({ a: expense() })
       emit([])
       expect(store.items?.a).toBeDefined()
     })
@@ -120,11 +119,11 @@ describe('useTrnsStore', () => {
       const store = useTrnsStore()
       store.saveTrn({ id: 't1', values: expense() })
 
-      expect(store.items?.t1).toMatchObject({ amount: 100, categoryId: 'food' })
+      expect(store.items?.t1).toMatchObject({ categoryId: 'food', fromAmount: 100 })
       expect(store.items?.t1?.updatedAt).toEqual(expect.any(Number))
 
       await tick()
-      expect(h.upsertRow).toHaveBeenCalledWith('trns', 't1', expect.objectContaining({ amount: 100, userId: 'u1' }))
+      expect(h.upsertRow).toHaveBeenCalledWith('transactions', 't1', expect.objectContaining({ from_amount: 100, user_id: 'u1' }))
     })
 
     it('rolls back to the previous items and toasts when the write fails', async () => {
@@ -161,7 +160,7 @@ describe('useTrnsStore', () => {
       store.saveTrn({ id: 't1', values: expense() })
 
       await tick()
-      expect(h.upsertRow).toHaveBeenCalledWith('trns', 't1', expect.objectContaining({ userId: 'persisted-uid' }))
+      expect(h.upsertRow).toHaveBeenCalledWith('transactions', 't1', expect.objectContaining({ user_id: 'persisted-uid' }))
     })
   })
 
@@ -171,28 +170,28 @@ describe('useTrnsStore', () => {
       store.setTrns({ a: expense(), b: expense() })
 
       const result = await store.saveTrns({
-        a: expense({ desc: 'Shared', updatedAt: 99 }),
-        b: expense({ date: 1700000001000, updatedAt: 99 }),
+        a: expense({ description: 'Shared', updatedAt: 99 }),
+        b: expense({ date: 1700006400000, updatedAt: 99 }),
       })
 
       expect(result).toBe(true)
-      expect(store.items?.a).toMatchObject({ desc: 'Shared', updatedAt: 99 })
-      expect(store.items?.b).toMatchObject({ date: 1700000001000, updatedAt: 99 })
+      expect(store.items?.a).toMatchObject({ description: 'Shared', updatedAt: 99 })
+      expect(store.items?.b).toMatchObject({ date: 1700006400000, updatedAt: 99 })
       expect(h.upsertRows).toHaveBeenCalledTimes(1)
-      expect(h.upsertRows).toHaveBeenCalledWith('trns', [
-        expect.objectContaining({ id: 'a', row: expect.objectContaining({ desc: 'Shared', userId: 'u1' }) }),
-        expect.objectContaining({ id: 'b', row: expect.objectContaining({ date: 1700000001000, userId: 'u1' }) }),
+      expect(h.upsertRows).toHaveBeenCalledWith('transactions', [
+        expect.objectContaining({ id: 'a', row: expect.objectContaining({ description: 'Shared', user_id: 'u1' }) }),
+        expect.objectContaining({ id: 'b', row: expect.objectContaining({ date: 1700006400000, user_id: 'u1' }) }),
       ])
     })
 
-    it('keeps enteredAt of an edited trn and stamps a new one', async () => {
+    it('keeps createdAt of an edited trn and takes the createdAt of a new one', async () => {
       const store = useTrnsStore()
-      store.setTrns({ a: expense({ enteredAt: 5 }) })
+      store.setTrns({ a: expense({ createdAt: 5 }) })
 
-      await store.saveTrns({ a: expense({ desc: 'Edited' }), b: expense() })
+      await store.saveTrns({ a: expense({ createdAt: 7, description: 'Edited' }), b: expense({ createdAt: 9 }) })
 
-      expect(store.items?.a?.enteredAt).toBe(5)
-      expect(store.items?.b?.enteredAt).toBeGreaterThan(5)
+      expect(store.items?.a?.createdAt).toBe(5)
+      expect(store.items?.b?.createdAt).toBe(9)
     })
 
     it('restores the whole batch when the write fails', async () => {
@@ -202,7 +201,7 @@ describe('useTrnsStore', () => {
       const prev = store.items
       h.upsertRows.mockRejectedValueOnce(new Error('boom'))
 
-      const result = await store.saveTrns({ a: expense({ desc: 'Changed', updatedAt: 99 }) })
+      const result = await store.saveTrns({ a: expense({ description: 'Changed', updatedAt: 99 }) })
 
       expect(result).toBe(false)
       expect(store.items).toBe(prev)
@@ -213,8 +212,8 @@ describe('useTrnsStore', () => {
       h.demo.value = true
       const store = useTrnsStore()
 
-      expect(await store.saveTrns({ a: expense({ desc: 'Demo', updatedAt: 99 }) })).toBe(true)
-      expect(store.items?.a?.desc).toBe('Demo')
+      expect(await store.saveTrns({ a: expense({ description: 'Demo', updatedAt: 99 }) })).toBe(true)
+      expect(store.items?.a?.description).toBe('Demo')
       expect(h.upsertRows).not.toHaveBeenCalled()
     })
   })
@@ -229,7 +228,7 @@ describe('useTrnsStore', () => {
       expect(store.items?.t2).toBeDefined()
 
       await tick()
-      expect(h.deleteRow).toHaveBeenCalledWith('trns', 't1')
+      expect(h.deleteRow).toHaveBeenCalledWith('transactions', 't1')
     })
 
     it('restores the deleted trn and toasts when the write fails', async () => {
@@ -266,7 +265,7 @@ describe('useTrnsStore', () => {
 
       expect(deleted).toBe(true)
       expect(Object.keys(store.items ?? {})).toEqual(['t3'])
-      expect(h.deleteRows).toHaveBeenCalledWith('trns', ['t1', 't2'])
+      expect(h.deleteRows).toHaveBeenCalledWith('transactions', ['t1', 't2'])
     })
 
     it('restores the complete batch when deletion fails', async () => {

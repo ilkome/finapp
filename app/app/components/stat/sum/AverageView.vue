@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { SeriesSlugSelected } from '~/components/stat/types'
 
-import { getTrnTypeByAmount, TrnType } from '~/components/trns/types'
+import { getTrnTypeByAmount } from '~/components/trns/types'
 
 const props = defineProps<{
   amount: number
@@ -14,7 +14,7 @@ const { t } = useI18n()
 const amountType = computed(() => {
   if (props.type === 'net')
     return getTrnTypeByAmount(props.amount)
-  return props.type === 'income' ? TrnType.Income : TrnType.Expense
+  return props.type === 'income' ? 'income' : 'expense'
 })
 
 const colorize = computed<'expense' | 'income'>(() => {

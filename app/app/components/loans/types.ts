@@ -6,73 +6,70 @@ import type { WalletId } from '~/components/wallets/types'
 export type LoanId = string
 
 export const loanScheduleTypes = ['annuity', 'differentiated'] as const
-export const loanOverpaymentModes = ['reducePayment', 'reduceTerm'] as const
-export const loanInterestMethods = ['monthly', 'daily'] as const
+export const loanPrepaymentModes = ['reduce_payment', 'reduce_term'] as const
+export const loanInterestAccruals = ['monthly', 'daily'] as const
 
+const isDay = (value: number) => value % 86400000 === 0
+
+// Amounts are integer minor units of the loan wallet's currency; days are civil days (UTC-midnight ms).
 export const loanItemSchema = z.object({
   // null: the bank publishes no contract rate (0 is a real interest-free loan).
-  annualRate: z.number().min(0).nullable().default(null),
-  // The debt the bank reports and when it was read.
-  bankDebtAmount: z.number().optional(),
-  bankDebtUpdatedAt: z.number().optional(),
+  annualRatePercent: z.number().min(0).nullable().default(null),
   // Civil day the user marked the loan closed; set when the bank closed it with a balance gap left.
-  closedDate: z.number().optional(),
+  closedDate: z.number().int().refine(isDay).optional(),
   contractNumber: z.string().default(''),
-  // Wallet the payment is debited from; enables the "not enough money" signal.
-  debitWalletId: z.string().optional(),
-  desc: z.string().default(''),
-  // Civil day (UTC-midnight ms-epoch), stated by the contract - never derived from startDate.
-  firstPaymentDate: z.number().default(() => Date.now()),
+  createdAt: z.number().int().default(() => Date.now()),
+  description: z.string().default(''),
+  // Stated by the contract - never derived from startDate.
+  firstPaymentDate: z.number().int().refine(isDay),
   // How interest accrues: `monthly` is rate / 12, `daily` is actual/actual like most banks.
-  interestMethod: z.enum(loanInterestMethods).default('monthly'),
+  interestAccrual: z.enum(loanInterestAccruals).default('monthly'),
   // Days a payment may come after its due date and still count as on time.
   lateAfterDays: z.number().int().min(0).default(3),
-  // The bank's own split of the next payment (civil day).
-  nextPaymentDate: z.number().optional(),
-  nextPaymentInterest: z.number().optional(),
-  nextPaymentPrincipal: z.number().optional(),
-  overpaymentMode: z.enum(loanOverpaymentModes).default('reducePayment'),
-  paymentDay: z.number().int().min(1).max(31).default(1),
+  paymentDayOfMonth: z.number().int().min(1).max(31).default(1),
+  // Wallet the payment is debited from; enables the "not enough money" signal.
+  paymentWalletId: z.string().optional(),
+  prepaymentMode: z.enum(loanPrepaymentModes).default('reduce_payment'),
   // A payment more than this many days before the next due date is a prepayment, not that payment.
-  prepayWindowDays: z.number().int().min(0).default(15),
-  principalAmount: z.number().default(0),
+  prepaymentWindowDays: z.number().int().min(0).default(15),
+  principalAmount: z.number().int().min(0).default(0),
   scheduleType: z.enum(loanScheduleTypes).default('annuity'),
-  startDate: z.number().default(() => Date.now()),
+  startDate: z.number().int().refine(isDay),
   // Same cap as the form preview: the schedule is generated in a computed on every device.
   termMonths: z.number().int().positive().max(600).default(12),
-  updatedAt: z.number().default(() => Date.now()),
+  updatedAt: z.number().int().default(() => Date.now()),
+  // The loan's id: the loan row has no column of its own for it.
   walletId: z.string().min(1),
 })
 
-// Only imported or hand-edited rows are stored; a generated row is represented by its absence.
-export const loanScheduleRowSchema = z.object({
-  date: z.number(),
-  interestPart: z.number().min(0),
+// Only payments that differ from the generated schedule are stored; a generated one is represented by its absence.
+export const loanScheduleOverrideSchema = z.object({
+  createdAt: z.number().int().default(() => Date.now()),
+  dueDate: z.number().int().refine(isDay),
+  interestAmount: z.number().int().min(0),
   loanId: z.string().min(1),
   paymentNumber: z.number().int().min(1),
-  principalPart: z.number().min(0),
+  principalAmount: z.number().int().min(0),
   source: z.enum(['bank', 'manual']).default('manual'),
-  totalAmount: z.number().min(0),
-  updatedAt: z.number().default(() => Date.now()),
+  totalAmount: z.number().int().min(0),
+  updatedAt: z.number().int().default(() => Date.now()),
 })
 
 export type LoanItem = z.infer<typeof loanItemSchema>
 export type Loans = Record<LoanId, LoanItem>
 
-export type LoanScheduleRowId = string
-export type LoanScheduleRowItem = z.infer<typeof loanScheduleRowSchema>
-export type LoanScheduleRows = Record<LoanScheduleRowId, LoanScheduleRowItem>
+export type LoanScheduleOverrideId = string
+export type LoanScheduleOverrideItem = z.infer<typeof loanScheduleOverrideSchema>
+export type LoanScheduleOverrides = Record<LoanScheduleOverrideId, LoanScheduleOverrideItem>
 
-export function getDefaultLoanItem(walletId: WalletId): LoanItem {
-  return loanItemSchema.parse({ walletId })
+export function getDefaultLoanItem(walletId: WalletId, today: number): LoanItem {
+  return loanItemSchema.parse({ firstPaymentDate: today, startDate: today, walletId })
 }
 
-// Deterministic ids (loan:<walletId>, lsr:<loanId>:<n>), also used by external imports, so offline
-// creates/edits of the same wallet's loan or schedule row on two devices
-// converge to the same row instead of hitting the unique-constraint conflict.
-export const loanIdFor = (walletId: WalletId): LoanId => `loan:${walletId}`
-export function loanScheduleRowIdFor(loanId: LoanId, paymentNumber: number): LoanScheduleRowId {
-  return `lsr:${loanId}:${paymentNumber}`
+// Deterministic ids, so offline creates of the same loan or schedule override on two devices land on one row.
+export const loanIdFor = (walletId: WalletId): LoanId => walletId
+export function loanScheduleOverrideIdFor(loanId: LoanId, paymentNumber: number): LoanScheduleOverrideId {
+  return `${loanId}:${paymentNumber}`
 }
 
 /** Interest of a loan payment: saved as the credit wallet's expense next to the payment transfer. */

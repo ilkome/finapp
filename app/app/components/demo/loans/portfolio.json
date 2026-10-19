@@ -7,11 +7,14 @@
       "effectiveRate": 19.4,
       "isClosed": false,
       "name": "Mortgage",
-      "nextPayment": { "amount": 54000, "date": "15.05.2026" },
+      "nextPayment": {
+        "amount": 5400000,
+        "date": "15.05.2026"
+      },
       "overdueCount": 2,
       "period": null,
       "plannedEndDate": "01.02.2032",
-      "remaining": 301000,
+      "remaining": 30100000,
       "walletId": "w1"
     },
     {
@@ -29,10 +32,10 @@
     }
   ],
   "totals": {
-    "paidFine": 30,
-    "paidInterest": 15000,
-    "paidTotal": 48000,
-    "plannedInterest": 12500,
-    "remaining": 301000
+    "paidFine": 3000,
+    "paidInterest": 1500000,
+    "paidTotal": 4800000,
+    "plannedInterest": 1250000,
+    "remaining": 30100000
   }
 }

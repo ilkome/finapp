@@ -632,7 +632,8 @@ order by r.date, coalesce(r.source, 'unknown'), r."updatedAt" desc;
 
 -- push_subscriptions (server only)
 create table public.push_subscriptions (
-  id uuid primary key,
+  -- Server-only and written by an upsert on endpoint, so the server makes the id.
+  id uuid primary key default gen_random_uuid(),
   user_id uuid not null,
   endpoint text not null,
   p256dh_key text not null,

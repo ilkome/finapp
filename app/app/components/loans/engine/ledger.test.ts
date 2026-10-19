@@ -3,24 +3,23 @@ import { describe, expect, it } from 'vitest'
 import type { TrnItem } from '~/components/trns/types'
 
 import { collectCreditTrns, costOf } from '~/components/loans/engine/ledger'
-import { TrnType } from '~/components/trns/types'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
 const credit = new Set(['credit1'])
 
 function expense(over: Partial<TrnItem>): TrnItem {
-  return ({ amount: 0, categoryId: 'food', date: day('2026-01-10'), type: TrnType.Expense, updatedAt: 1, walletId: 'cash1', ...over }) as TrnItem
+  return ({ categoryId: 'food', createdAt: 1, date: day('2026-01-10'), fromAmount: 1, fromWalletId: 'cash1', type: 'expense', updatedAt: 1, ...over }) as TrnItem
 }
 
 function transfer(over: Partial<TrnItem>): TrnItem {
-  return ({ categoryId: 'transfer', date: day('2026-01-10'), expenseAmount: 0, expenseWalletId: 'cash1', incomeAmount: 0, incomeWalletId: 'cash1', type: TrnType.Transfer, updatedAt: 1, ...over }) as TrnItem
+  return ({ createdAt: 1, date: day('2026-01-10'), fromAmount: 1, fromWalletId: 'cash1', toAmount: 1, toWalletId: 'cash2', type: 'transfer', updatedAt: 1, ...over }) as TrnItem
 }
 
 describe('collectCreditTrns', () => {
   it('takes a transfer INTO a credit wallet as a payment and ignores one going out', () => {
     const out = collectCreditTrns({
-      out: transfer({ expenseAmount: 300, expenseWalletId: 'credit1', incomeAmount: 300 }),
-      repay: transfer({ expenseAmount: 1000, incomeAmount: 1000, incomeWalletId: 'credit1' }),
+      out: transfer({ fromAmount: 300, fromWalletId: 'credit1', toAmount: 300 }),
+      repay: transfer({ fromAmount: 1000, toAmount: 1000, toWalletId: 'credit1' }),
     }, credit)
 
     expect(out.get('credit1')).toEqual([{ amount: 1000, date: day('2026-01-10'), id: 'repay', kind: 'payment' }])
@@ -29,10 +28,10 @@ describe('collectCreditTrns', () => {
 
   it('classifies expenses by their reserved category and skips the rest', () => {
     const out = collectCreditTrns({
-      fine: expense({ amount: 30, categoryId: 'loanFine', walletId: 'credit1' }),
-      food: expense({ amount: 10, walletId: 'credit1' }),
-      interest: expense({ amount: 200, categoryId: 'loanInterest', walletId: 'credit1' }),
-      otherWallet: expense({ amount: 70, categoryId: 'loanInterest', walletId: 'cash1' }),
+      fine: expense({ categoryId: 'loan_fine', fromAmount: 30, fromWalletId: 'credit1' }),
+      food: expense({ fromAmount: 10, fromWalletId: 'credit1' }),
+      interest: expense({ categoryId: 'loan_interest', fromAmount: 200, fromWalletId: 'credit1' }),
+      otherWallet: expense({ categoryId: 'loan_interest', fromAmount: 70, fromWalletId: 'cash1' }),
     }, credit)
 
     expect(out.get('credit1')?.map(t => [t.id, t.kind, t.amount])).toEqual([
@@ -42,7 +41,7 @@ describe('collectCreditTrns', () => {
   })
 
   it('is empty without any credit wallet', () => {
-    const out = collectCreditTrns({ repay: transfer({ incomeAmount: 10, incomeWalletId: 'credit1' }) }, new Set())
+    const out = collectCreditTrns({ repay: transfer({ toAmount: 10, toWalletId: 'credit1' }) }, new Set())
     expect(out.size).toBe(0)
   })
 })

@@ -4,7 +4,7 @@ import type { CategoryGrouping } from '~/components/stat/config/schema'
 import type { ChartSeries, IntervalData, SeriesSlugSelected } from '~/components/stat/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { getParentCategoryIdOrUndefined, isSystemCategoryId } from '~/components/categories/utils'
+import { getParentCategoryIdOrUndefined } from '~/components/categories/utils'
 import { partitionHighlightedItems } from '~/components/stat/chart/highlightedItems'
 import { resolveEChartsSeriesType } from '~/components/stat/chart/types'
 
@@ -105,7 +105,6 @@ export function aggregateCategoryTotals({
   const filterSet = filterCategoriesIds?.length ? new Set(filterCategoriesIds) : undefined
   const isIncluded = (categoryId: CategoryId | undefined): categoryId is CategoryId => (
     !!categoryId
-    && !isSystemCategoryId(categoryId)
     && !excludedCategoriesIds?.has(categoryId)
     && (!filterSet || filterSet.has(categoryId))
   )

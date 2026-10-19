@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { loanIdFor, loanItemSchema, loanScheduleRowIdFor } from '~/components/loans/types'
+import { loanIdFor, loanItemSchema, loanScheduleOverrideIdFor } from '~/components/loans/types'
 
 describe('loanIdFor', () => {
   it('is deterministic per wallet', () => {
@@ -9,19 +9,19 @@ describe('loanIdFor', () => {
   })
 })
 
-describe('loanScheduleRowIdFor', () => {
+describe('loanScheduleOverrideIdFor', () => {
   it('is deterministic per loan and payment number', () => {
-    expect(loanScheduleRowIdFor('loan-1', 3)).toBe(loanScheduleRowIdFor('loan-1', 3))
-    expect(loanScheduleRowIdFor('loan-1', 3)).not.toBe(loanScheduleRowIdFor('loan-1', 4))
-    expect(loanScheduleRowIdFor('loan-1', 3)).not.toBe(loanScheduleRowIdFor('loan-2', 3))
+    expect(loanScheduleOverrideIdFor('loan-1', 3)).toBe(loanScheduleOverrideIdFor('loan-1', 3))
+    expect(loanScheduleOverrideIdFor('loan-1', 3)).not.toBe(loanScheduleOverrideIdFor('loan-1', 4))
+    expect(loanScheduleOverrideIdFor('loan-1', 3)).not.toBe(loanScheduleOverrideIdFor('loan-2', 3))
   })
 })
 
 describe('loanItemSchema', () => {
-  it('keeps a pre-nullable numeric rate and reads a missing or null rate as unknown', () => {
-    expect(loanItemSchema.parse({ annualRate: 0, walletId: 'w' }).annualRate).toBe(0)
-    expect(loanItemSchema.parse({ annualRate: 24.5, walletId: 'w' }).annualRate).toBe(24.5)
-    expect(loanItemSchema.parse({ annualRate: null, walletId: 'w' }).annualRate).toBeNull()
-    expect(loanItemSchema.parse({ walletId: 'w' }).annualRate).toBeNull()
+  it('keeps a numeric rate and reads a missing or null rate as unknown', () => {
+    expect(loanItemSchema.parse({ annualRatePercent: 0, firstPaymentDate: 0, startDate: 0, walletId: 'w' }).annualRatePercent).toBe(0)
+    expect(loanItemSchema.parse({ annualRatePercent: 24.5, firstPaymentDate: 0, startDate: 0, walletId: 'w' }).annualRatePercent).toBe(24.5)
+    expect(loanItemSchema.parse({ annualRatePercent: null, firstPaymentDate: 0, startDate: 0, walletId: 'w' }).annualRatePercent).toBeNull()
+    expect(loanItemSchema.parse({ firstPaymentDate: 0, startDate: 0, walletId: 'w' }).annualRatePercent).toBeNull()
   })
 })

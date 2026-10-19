@@ -1,243 +1,88 @@
-import type { CategoryId, CategoryItem } from '~/components/categories/types'
-import type { Rates } from '~/components/currencies/types'
-import type { LoanItem, LoanScheduleRowItem } from '~/components/loans/types'
-import type { TrnItem } from '~/components/trns/types'
-import type { WalletItem, WalletType } from '~/components/wallets/types'
+import type { z } from 'zod/v4'
 
-import { loanItemSchema, loanScheduleRowSchema } from '~/components/loans/types'
-import { TrnType } from '~/components/trns/types'
+import type { BankReport } from '~/components/bankReports/types'
+import type { CategoryItem } from '~/components/categories/types'
+import type { Rates } from '~/components/currencies/types'
+import type { LoanItem, LoanScheduleOverrideItem } from '~/components/loans/types'
+import type { TrnItem } from '~/components/trns/types'
+import type { WalletItem } from '~/components/wallets/types'
+
+import { bankReportSchema } from '~/components/bankReports/types'
+import { categoryFormSchema } from '~/components/categories/types'
+import { loanItemSchema, loanScheduleOverrideSchema } from '~/components/loans/types'
+import { trnItemSchema } from '~/components/trns/types'
+import { walletItemSchema } from '~/components/wallets/types'
 import { createLogger } from '~/utils/logger'
+
+import type { SyncedTableName } from './columns'
+
+import { itemToRow, rowToItem } from './columns'
 
 // Raw SQLite row: every synced table includes an `id` text primary key.
 export type Row = Record<string, any> & { id: string }
 
-// null updatedAt -> 0 (epoch), never Date.now(): stable across reads so reconcile change-detection works.
 const logger = createLogger('transforms')
 
-const ts = (v: unknown): number => (v == null ? 0 : Number(v))
+/** Null for a row the schema rejects: one bad synced row must not stop every other row of its table. */
+function parse<T>(table: SyncedTableName, schema: z.ZodType<T>, row: Row, extra: Record<string, unknown> = {}): T | null {
+  const parsed = schema.safeParse({ ...rowToItem(table, row), ...extra })
+  if (!parsed.success)
+    logger.error(`skipped invalid ${table} row`, row.id, parsed.error.issues)
+  return parsed.success ? parsed.data : null
+}
+
+/** Item -> row with the owner stamped for RLS; `created_at` is `not null`, so a missing one is now. */
+function toRow(table: SyncedTableName, item: object, userId: string): Record<string, unknown> {
+  const { createdAt, updatedAt } = item as { createdAt?: number, updatedAt?: number }
+  const now = Date.now()
+  return itemToRow(table, { ...item, createdAt: createdAt ?? now, updatedAt: updatedAt ?? now, userId })
+}
 
 // --- read: SQLite row -> Pinia item shape -------------------------------------
 
-export function rowToTrn(row: Row): TrnItem {
-  const type = Number(row.type) as TrnType
-  const base = {
-    date: Number(row.date),
-    updatedAt: ts(row.updatedAt),
-    ...(row.desc ? { desc: row.desc as string } : {}),
-    ...(row.enteredAt != null ? { enteredAt: Number(row.enteredAt) } : {}),
+export const rowToTrn = (row: Row): TrnItem | null => parse('transactions', trnItemSchema, row)
+
+export const rowToWallet = (row: Row): WalletItem | null => parse('wallets', walletItemSchema, row)
+
+export function rowToCategory(row: Row): CategoryItem | null {
+  const item = rowToItem('categories', row)
+  const parsed = categoryFormSchema.safeParse(item)
+  if (!parsed.success) {
+    logger.error('skipped invalid categories row', row.id, parsed.error.issues)
+    return null
   }
-
-  if (type === TrnType.Transfer) {
-    return {
-      ...base,
-      categoryId: 'transfer',
-      expenseAmount: Number(row.expenseAmount),
-      expenseWalletId: row.expenseWalletId,
-      incomeAmount: Number(row.incomeAmount),
-      incomeWalletId: row.incomeWalletId,
-      type,
-    } as TrnItem
-  }
-
-  return {
-    ...base,
-    amount: Number(row.amount),
-    categoryId: row.categoryId,
-    type,
-    walletId: row.walletId,
-  } as TrnItem
+  // A root category has no parent_id; the client keeps 0 as its root sentinel.
+  return { ...parsed.data, createdAt: item.createdAt as number, sortOrder: (item.sortOrder as number) ?? 0, updatedAt: item.updatedAt as number }
 }
 
-export function rowToWallet(row: Row): WalletItem {
-  const base = {
-    color: row.color,
-    currency: row.currency,
-    desc: (row.desc ?? '') as string,
-    isArchived: !!row.isArchived,
-    isExcludeInTotal: !!row.isExcludeInTotal,
-    isWithdrawal: !!row.isWithdrawal,
-    name: row.name,
-    order: Number(row.order ?? 0),
-    updatedAt: ts(row.updatedAt),
-  }
+// A loan's id is its wallet's id.
+export const rowToLoan = (row: Row): LoanItem | null => parse('loans', loanItemSchema, row, { walletId: row.id })
 
-  if (row.type === 'credit') {
-    return {
-      ...base,
-      creditLimit: Number(row.creditLimit ?? 0),
-      type: 'credit',
-      ...(row.graceAmount != null ? { graceAmount: Number(row.graceAmount) } : {}),
-      ...(row.graceEndDate != null ? { graceEndDate: Number(row.graceEndDate) } : {}),
-      ...(row.statementDate != null ? { statementDate: Number(row.statementDate) } : {}),
-      ...(row.minPaymentAmount != null ? { minPaymentAmount: Number(row.minPaymentAmount) } : {}),
-      ...(row.minPaymentDate != null ? { minPaymentDate: Number(row.minPaymentDate) } : {}),
-      ...(row.minPaymentUpdatedAt != null ? { minPaymentUpdatedAt: Number(row.minPaymentUpdatedAt) } : {}),
-    }
-  }
-
-  return { ...base, type: row.type as Exclude<WalletType, 'credit'> }
+export function rowToLoanScheduleOverride(row: Row): LoanScheduleOverrideItem | null {
+  return parse('loan_schedule_overrides', loanScheduleOverrideSchema, row)
 }
 
-export function rowToCategory(row: Row): CategoryItem {
-  return {
-    color: row.color,
-    icon: row.icon,
-    isExcludeFromStats: !!row.isExcludeFromStats,
-    name: row.name,
-    parentId: (row.parentId ?? 0) as CategoryId | 0, // null -> 0 (root sentinel)
-    showInLastUsed: !!row.showInLastUsed,
-    showInQuickSelector: !!row.showInQuickSelector,
-    ...(row.updatedAt != null ? { updatedAt: Number(row.updatedAt) } : {}),
-  }
-}
-
-// SQLite returns null for every unset column, including columns added after the row was
-// written: drop them so the schema defaults and optional fields apply.
-function definedColumns(row: Row): Record<string, unknown> {
-  return Object.fromEntries(Object.entries(row).filter(([, value]) => value != null))
-}
-
-/** Null for a row the schema rejects: one bad synced row must not stop every other loan. */
-export function rowToLoan(row: Row): LoanItem | null {
-  // null is a real value here (no published rate); updatedAt reads null as 0, stable across emits.
-  const parsed = loanItemSchema.safeParse({ ...definedColumns(row), annualRate: row.annualRate ?? null, updatedAt: ts(row.updatedAt) })
-  if (!parsed.success)
-    logger.error('skipped invalid loan row', row.id, parsed.error.issues)
-  return parsed.success ? parsed.data : null
-}
-
-export function rowToLoanScheduleRow(row: Row): LoanScheduleRowItem | null {
-  const parsed = loanScheduleRowSchema.safeParse({ ...definedColumns(row), updatedAt: ts(row.updatedAt) })
-  if (!parsed.success)
-    logger.error('skipped invalid schedule row', row.id, parsed.error.issues)
-  return parsed.success ? parsed.data : null
-}
+export const rowToBankReport = (row: Row): BankReport | null => parse('bank_reports', bankReportSchema, row)
 
 export function rowToRates(row: Row): Rates | null {
-  if (!row?.rates)
-    return null
-  try {
-    return JSON.parse(row.rates as string) as Rates
-  }
-  catch {
-    return null
-  }
+  const rates = rowToItem('exchange_rates', row).rates
+  return rates && typeof rates === 'object' ? rates as Rates : null
 }
 
 // --- write: Pinia item shape -> SQLite row ------------------------------------
-// Booleans -> 0/1, root parentId sentinel (0) -> null, userId stamped for RLS on upload.
 
-export function trnToRow(item: TrnItem, userId: string): Record<string, unknown> {
-  const base = {
-    amount: null as number | null,
-    categoryId: item.categoryId ?? null,
-    date: item.date,
-    desc: item.desc ?? null,
-    enteredAt: item.enteredAt ?? null,
-    expenseAmount: null as number | null,
-    expenseWalletId: null as string | null,
-    incomeAmount: null as number | null,
-    incomeWalletId: null as string | null,
-    type: item.type,
-    updatedAt: item.updatedAt ?? Date.now(),
-    userId,
-    walletId: null as string | null,
-  }
+export const trnToRow = (item: TrnItem, userId: string) => toRow('transactions', item, userId)
 
-  if (item.type === TrnType.Transfer) {
-    return {
-      ...base,
-      categoryId: 'transfer',
-      expenseAmount: item.expenseAmount,
-      expenseWalletId: item.expenseWalletId,
-      incomeAmount: item.incomeAmount,
-      incomeWalletId: item.incomeWalletId,
-    }
-  }
+export const walletToRow = (item: WalletItem, userId: string) => toRow('wallets', item, userId)
 
-  return {
-    ...base,
-    amount: item.amount,
-    walletId: item.walletId,
-  }
+export function categoryToRow(item: CategoryItem, userId: string) {
+  return toRow('categories', { ...item, parentId: item.parentId || undefined }, userId)
 }
 
-export function walletToRow(item: WalletItem, userId: string): Record<string, unknown> {
-  return {
-    color: item.color,
-    creditLimit: item.type === 'credit' ? (item.creditLimit ?? 0) : null,
-    currency: item.currency,
-    desc: item.desc || null,
-    graceAmount: item.type === 'credit' ? (item.graceAmount ?? null) : null,
-    graceEndDate: item.type === 'credit' ? (item.graceEndDate ?? null) : null,
-    isArchived: item.isArchived ? 1 : 0,
-    isExcludeInTotal: item.isExcludeInTotal ? 1 : 0,
-    isWithdrawal: item.isWithdrawal ? 1 : 0,
-    minPaymentAmount: item.type === 'credit' ? (item.minPaymentAmount ?? null) : null,
-    minPaymentDate: item.type === 'credit' ? (item.minPaymentDate ?? null) : null,
-    minPaymentUpdatedAt: item.type === 'credit' ? (item.minPaymentUpdatedAt ?? null) : null,
-    name: item.name,
-    order: Math.round(item.order ?? 0), // integer column - round, don't silently truncate
-    statementDate: item.type === 'credit' ? (item.statementDate ?? null) : null,
-    type: item.type,
-    updatedAt: item.updatedAt ?? Date.now(),
-    userId,
-  }
+export const loanToRow = (item: LoanItem, userId: string) => toRow('loans', item, userId)
+
+export function loanScheduleOverrideToRow(item: LoanScheduleOverrideItem, userId: string) {
+  return toRow('loan_schedule_overrides', item, userId)
 }
 
-export function loanToRow(item: LoanItem, userId: string): Record<string, unknown> {
-  return {
-    annualRate: item.annualRate,
-    // Bank figures pass through untouched, so editing the loan never wipes them.
-    bankDebtAmount: item.bankDebtAmount ?? null,
-    bankDebtUpdatedAt: item.bankDebtUpdatedAt ?? null,
-    closedDate: item.closedDate ?? null,
-    contractNumber: item.contractNumber || null,
-    debitWalletId: item.debitWalletId ?? null,
-    desc: item.desc || null,
-    firstPaymentDate: item.firstPaymentDate,
-    interestMethod: item.interestMethod,
-    lateAfterDays: item.lateAfterDays,
-    nextPaymentDate: item.nextPaymentDate ?? null,
-    nextPaymentInterest: item.nextPaymentInterest ?? null,
-    nextPaymentPrincipal: item.nextPaymentPrincipal ?? null,
-    overpaymentMode: item.overpaymentMode,
-    paymentDay: item.paymentDay,
-    prepayWindowDays: item.prepayWindowDays,
-    principalAmount: item.principalAmount,
-    scheduleType: item.scheduleType,
-    startDate: item.startDate,
-    termMonths: item.termMonths,
-    updatedAt: item.updatedAt ?? Date.now(),
-    userId,
-    walletId: item.walletId,
-  }
-}
-
-export function loanScheduleRowToRow(item: LoanScheduleRowItem, userId: string): Record<string, unknown> {
-  return {
-    date: item.date,
-    interestPart: item.interestPart,
-    loanId: item.loanId,
-    paymentNumber: item.paymentNumber,
-    principalPart: item.principalPart,
-    source: item.source,
-    totalAmount: item.totalAmount,
-    updatedAt: item.updatedAt ?? Date.now(),
-    userId,
-  }
-}
-
-export function categoryToRow(item: CategoryItem, userId: string): Record<string, unknown> {
-  return {
-    color: item.color,
-    icon: item.icon,
-    isExcludeFromStats: item.isExcludeFromStats ? 1 : 0,
-    name: item.name,
-    parentId: item.parentId ? String(item.parentId) : null, // 0/'' root sentinel -> null
-    showInLastUsed: item.showInLastUsed ? 1 : 0,
-    showInQuickSelector: item.showInQuickSelector ? 1 : 0,
-    updatedAt: item.updatedAt ?? Date.now(),
-    userId,
-  }
-}
+export const bankReportToRow = (item: BankReport, userId: string) => toRow('bank_reports', item, userId)

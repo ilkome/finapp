@@ -4,7 +4,6 @@ import { formatByLocale } from '~~/utils/date/civil'
 
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
-import { TrnType } from '~/components/trns/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const { t } = useI18n()
@@ -16,12 +15,12 @@ const walletsStore = useWalletsStore()
 // A new transfer into a loan without its interest is a prepayment: show what it saves before saving.
 const prepayInput = computed(() => {
   const values = trnsFormStore.values
-  const walletId = values.incomeWalletId
-  if (values.trnId || values.trnType !== TrnType.Transfer || !walletId || values.loanInterest?.isEnabled)
+  const walletId = values.toWalletId
+  if (values.trnId || values.trnType !== 'transfer' || !walletId || values.loanInterest?.isEnabled)
     return null
   const amount = values.amount[2] || values.amount[1] || 0
   const loan = loansStore.byWalletId.get(walletId)?.loan
-  return amount > 0 && loan ? { amount, mode: loan.overpaymentMode, walletId } : null
+  return amount > 0 && loan ? { amount, mode: loan.prepaymentMode, walletId } : null
 })
 // Two tail re-solves per run: wait for the user to stop typing the amount.
 const prepayInputDebounced = refDebounced(prepayInput, 250)
@@ -44,7 +43,7 @@ const prepay = computed(() => {
 
 <template>
   <div
-    v-if="trnsFormStore.values.trnType === TrnType.Transfer && trnsFormStore.values.loanInterest"
+    v-if="trnsFormStore.values.trnType === 'transfer' && trnsFormStore.values.loanInterest"
     class="flex items-center gap-2"
   >
     <UiSwitchItem

@@ -2,7 +2,6 @@
 import type { TrnId, TrnItemFull } from '~/components/trns/types'
 
 import { trnsSelectionKey } from '~/components/trns/injectionKeys'
-import { isTransfer } from '~/components/trns/types'
 import { useTrnActions } from '~/components/trns/useTrnActions'
 import { useFeature } from '~/composables/useFeatures'
 
@@ -35,31 +34,24 @@ const contextMenuItems = computed(() => {
     filterItems.push({
       icon: 'hugeicons:folder-library',
       label: t('trns.filter.byCategory'),
-      onSelect: () => actions.filterByCategory(trnItem.categoryId),
+      onSelect: () => actions.filterByCategory(trnItem.categoryId!),
     })
   }
 
   if (!actions.isWalletPage.value) {
-    if (isTransfer(trnItem)) {
-      const expenseWalletId = trnItem.expenseWalletId
-      const incomeWalletId = trnItem.incomeWalletId
+    const sides = [
+      trnItem.fromWalletId && trnItem.fromWallet ? { id: trnItem.fromWalletId, name: trnItem.fromWallet.name } : undefined,
+      trnItem.toWalletId && trnItem.toWallet ? { id: trnItem.toWalletId, name: trnItem.toWallet.name } : undefined,
+    ].filter(side => !!side)
+    if (sides.length > 1) {
       filterItems.push({
-        children: [
-          {
-            label: trnItem.expenseWallet.name,
-            onSelect: () => actions.filterByWallet(expenseWalletId),
-          },
-          {
-            label: trnItem.incomeWallet.name,
-            onSelect: () => actions.filterByWallet(incomeWalletId),
-          },
-        ],
+        children: sides.map(side => ({ label: side.name, onSelect: () => actions.filterByWallet(side.id) })),
         icon: 'hugeicons:wallet-01',
         label: t('trns.filter.byWallet'),
       })
     }
-    else {
-      const walletId = trnItem.walletId
+    else if (sides[0]) {
+      const walletId = sides[0].id
       filterItems.push({
         icon: 'hugeicons:wallet-01',
         label: t('trns.filter.byWallet'),

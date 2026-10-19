@@ -184,12 +184,39 @@ async function wipeLocalDb(): Promise<void> {
   logger.log('local db wiped')
 }
 
+// Changes when the synced tables change shape. Local SQLite of another shape is dropped and synced
+// again from the server; writes still queued in it are lost, as the server would reject them.
+const DATA_SCHEMA = '2026-10-19'
+const DATA_SCHEMA_KEY = 'finapp.dataSchema'
+
+export function isDataSchemaCurrent(): boolean {
+  return localStorage.getItem(DATA_SCHEMA_KEY) === DATA_SCHEMA
+}
+
+export function markDataSchemaCurrent(): void {
+  localStorage.setItem(DATA_SCHEMA_KEY, DATA_SCHEMA)
+}
+
+let _outdatedWipe: Promise<void> | null = null
+
+/** Wipes local SQLite written under another data schema; memoized, so connect and boot share one wipe. */
+export function wipeOutdatedLocalDb(): Promise<void> {
+  _outdatedWipe ??= (async () => {
+    if (isDataSchemaCurrent() || !getLocalDbOwner())
+      return
+    await initializePowerSyncDb()
+    await wipeLocalDb()
+  })()
+  return _outdatedWipe
+}
+
 async function doConnect(client: SupabaseClient, powerSyncUrl: string, userId: string): Promise<void> {
   const [db, { SupabaseConnector }] = await Promise.all([
     getPowerSyncDb(),
     import('./connector'),
   ])
   await initializePowerSyncDb()
+  await wipeOutdatedLocalDb()
   // Cross-user guard: wipe another user's rows before connecting. Fail closed -
   // if the wipe throws we do NOT connect, so the new user can't read stale data.
   const owner = getLocalDbOwner()
@@ -364,7 +391,7 @@ export async function waitForFirstSync(timeoutMs = 30000): Promise<boolean> {
 
 export async function hasAnyLocalData(): Promise<boolean> {
   const db = await getPowerSyncDb()
-  for (const table of ['wallets', 'categories', 'trns'] as const) {
+  for (const table of ['wallets', 'categories', 'transactions'] as const) {
     if (await db.getOptional(`SELECT 1 FROM ${table} LIMIT 1`))
       return true
   }

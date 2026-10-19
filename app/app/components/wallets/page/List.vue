@@ -142,7 +142,7 @@ const {
 } = useWalletsGrouping(selectedWalletsIds, groupedBy)
 
 function isFlagGroup(key: string) {
-  return key === 'isArchived' || key === 'isExcludeInTotal'
+  return key === 'isArchived' || key === 'isExcludedFromTotal'
 }
 
 function hasGroups(groups: Record<string, unknown> | undefined) {

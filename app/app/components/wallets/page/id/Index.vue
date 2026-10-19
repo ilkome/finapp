@@ -33,7 +33,7 @@ const isCredit = computed(() => isCreditProduct(wallet.value?.type))
 const isLoans = useFeature('loans')
 const contextBlockIds = computed<readonly StatContextBlockId[]>(() => [
   'walletBalance',
-  ...(wallet.value?.desc ? ['walletDescription' as const] : []),
+  ...(wallet.value?.description ? ['walletDescription' as const] : []),
   ...(isLoans.value && isCredit.value ? ['walletLoan' as const] : []),
 ])
 const walletDetailHistoryPattern = /^\/wallets\/[^/]+$/
@@ -92,7 +92,7 @@ useHead({ title: wallet.value?.name })
 onActivated(() => trnsFormStore.values.walletId = walletId.value)
 
 const total = computed(() => walletsStore.itemsComputed[walletId.value]?.amount ?? 0)
-const walletCreditLimit = computed(() => wallet.value?.type === 'credit' ? wallet.value.creditLimit : 0)
+const walletCreditLimit = computed(() => wallet.value?.type === 'credit_card' ? wallet.value.creditLimit ?? 0 : 0)
 const balanceItems = computed(() => walletBalanceItems({
   creditLimit: walletCreditLimit.value,
   hasLoan: wallet.value?.type === 'loan',
@@ -179,7 +179,7 @@ async function onClickDelete() {
             :key="item.title"
             :amount="item.amount"
             class="min-w-0 flex-1 basis-0 snap-start snap-always md:w-max md:flex-none md:basis-auto md:snap-none"
-            :currencyCode="wallet.currency"
+            :currencyCode="wallet.currencyCode"
             :title="item.title"
             type="net"
             variant="summary"
@@ -196,7 +196,7 @@ async function onClickDelete() {
           class="px-1 font-primary whitespace-pre text-muted lg:px-0"
           variant="navigation"
         >
-          {{ wallet.desc }}
+          {{ wallet.description }}
         </UiText>
       </template>
     </StatLayout>

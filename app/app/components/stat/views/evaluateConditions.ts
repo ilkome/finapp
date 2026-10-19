@@ -87,5 +87,5 @@ export function findAutomaticView(views: StatView[], context: StatViewContext): 
   const pageContext = pageScopedContext(context)
   return views
     .toSorted((a, b) => a.sortOrder - b.sortOrder)
-    .find(view => view.isAutoEnabled && view.autoRule && evaluateConditionGroup(view.autoRule, pageContext)) ?? null
+    .find(view => view.isAutoRuleEnabled && view.autoRule && evaluateConditionGroup(view.autoRule, pageContext)) ?? null
 }

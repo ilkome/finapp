@@ -4,8 +4,8 @@ import { AppSchema } from '~~/services/powersync/AppSchema'
 import { SYNCED_TABLES } from '~~/services/powersync/tables'
 
 describe('sYNCED_TABLES', () => {
-  it('matches every AppSchema table except the global rates', () => {
-    const schema = AppSchema.tables.map(t => t.name).filter(n => n !== 'rates').sort()
+  it('matches every AppSchema table except the global exchange rates', () => {
+    const schema = AppSchema.tables.map(t => t.name).filter(n => n !== 'exchange_rates').sort()
     expect(schema).toEqual([...SYNCED_TABLES].sort())
   })
 

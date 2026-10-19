@@ -7,8 +7,8 @@ import { SYNCED_TABLES } from './tables'
 // INSERT/UPDATE/DELETE but not `INSERT ... ON CONFLICT`, so upsert = existence check + INSERT/UPDATE.
 
 // Every mutation targets one of these trusted literals (callers never pass user input). The
-// guard hardens the string-interpolated SQL below; column names come from transforms.ts (fixed
-// keys) and row values are always parameterized.
+// guard hardens the string-interpolated SQL below; column names come from the column map (fixed
+// snake_case keys) and row values are always parameterized.
 const WRITABLE_TABLES = new Set<string>(SYNCED_TABLES)
 
 function assertTable(table: string): void {
@@ -27,11 +27,11 @@ async function upsertWith(
   const exists = await ctx.getOptional<{ id: string }>(`SELECT id FROM ${table} WHERE id = ?`, [id])
 
   if (exists) {
-    const sets = cols.map(c => `"${c}" = ?`).join(', ')
+    const sets = cols.map(c => `${c} = ?`).join(', ')
     await ctx.execute(`UPDATE ${table} SET ${sets} WHERE id = ?`, [...cols.map(c => row[c]), id])
   }
   else {
-    const quoted = cols.map(c => `"${c}"`).join(', ')
+    const quoted = cols.join(', ')
     const placeholders = cols.map(() => '?').join(', ')
     await ctx.execute(`INSERT INTO ${table} (id, ${quoted}) VALUES (?, ${placeholders})`, [id, ...cols.map(c => row[c])])
   }
@@ -77,9 +77,9 @@ export async function deleteRows(table: string, ids: string[]): Promise<void> {
 export async function deleteTrnsReferencing(table: 'categories' | 'wallets', id: string): Promise<void> {
   const db = await getPowerSyncDb()
   if (table === 'wallets')
-    await db.execute('DELETE FROM trns WHERE "walletId" = ? OR "expenseWalletId" = ? OR "incomeWalletId" = ?', [id, id, id])
+    await db.execute('DELETE FROM transactions WHERE from_wallet_id = ? OR to_wallet_id = ?', [id, id])
   else
-    await db.execute('DELETE FROM trns WHERE "categoryId" = ?', [id])
+    await db.execute('DELETE FROM transactions WHERE category_id = ?', [id])
 }
 
 /** Upsert several rows in a single write transaction (e.g. wallet reordering). */

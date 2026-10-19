@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { TrnItemFull } from '~/components/trns/types'
 
-import { TrnType } from '~/components/trns/types'
-
 const props = defineProps<{
   compact?: boolean
   date?: string
@@ -15,12 +13,16 @@ const emit = defineEmits<{
 }>()
 
 // One currency and nothing lost on the way: a single amount, on the right like any transaction.
-const isSingleAmount = computed(() => props.trnItem.type === TrnType.Transfer
-  && props.trnItem.expenseAmount === props.trnItem.incomeAmount
-  && props.trnItem.expenseWallet?.currency === props.trnItem.incomeWallet?.currency)
+const isSingleAmount = computed(() => props.trnItem.type === 'transfer'
+  && (!props.trnItem.fromWallet || !props.trnItem.toWallet
+    || (props.trnItem.fromAmount === props.trnItem.toAmount
+      && props.trnItem.fromWallet.currencyCode === props.trnItem.toWallet.currencyCode)))
 // Only a loan contract is repaid by every transfer in; money moved to a credit card is often just a top-up inside
 // its interest-free period, so it stays a plain transfer.
-const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && props.trnItem.incomeWallet?.type === 'loan')
+const isLoanPayment = computed(() => props.trnItem.type === 'transfer' && props.trnItem.toWallet?.type === 'loan')
+const wallet = computed(() => props.trnItem.fromWallet ?? props.trnItem.toWallet)
+const amount = computed(() => props.trnItem.fromAmount ?? props.trnItem.toAmount ?? 0)
+const isOutflow = computed(() => !!props.trnItem.fromWallet)
 </script>
 
 <template>
@@ -33,7 +35,7 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
   >
     <template v-if="!compact" #leftIcon>
       <UiIconBase
-        :name="props.trnItem.category?.icon"
+        :name="props.trnItem.category?.icon ?? ''"
         :color="props.trnItem.category?.color"
         invert
       />
@@ -52,21 +54,21 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
           </UiText>
 
           <div
-            v-if="trnItem.type === TrnType.Transfer"
+            v-if="trnItem.type === 'transfer'"
             class="flex items-center gap-2 text-muted"
           >
             <Icon
-              :name="props.trnItem.category?.icon"
+              :name="props.trnItem.category?.icon ?? ''"
               size="16"
             />
             <UiEntityName variant="compact">
-              {{ isLoanPayment ? $t('trns.types.loanPayment') : trnItem.category.name }}
+              {{ isLoanPayment ? $t('trns.types.loanPayment') : trnItem.category?.name }}
             </UiEntityName>
           </div>
         </template>
 
         <div
-          v-if="trnItem.type !== TrnType.Transfer"
+          v-if="trnItem.type !== 'transfer'"
           class="grid grow gap-1"
         >
           <div
@@ -74,26 +76,27 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
             class="grid grow gap-0.5"
           >
             <CategoriesName
+              v-if="trnItem.category"
               :category="trnItem.category"
             />
           </div>
 
           <div
-            v-if="trnItem.wallet"
+            v-if="wallet"
             class="flex items-center gap-2"
           >
             <UiEntityName variant="secondary">
-              {{ trnItem.wallet.name }}
+              {{ wallet.name }}
             </UiEntityName>
           </div>
         </div>
 
         <Amount
-          v-if="trnItem.type !== TrnType.Transfer"
-          :amount="trnItem.amount"
-          :currencyCode="trnItem.wallet?.currency"
-          :isShowMinus="trnItem.type === TrnType.Expense"
-          :isShowPlus="trnItem.type === TrnType.Income"
+          v-if="trnItem.type !== 'transfer'"
+          :amount
+          :currencyCode="wallet?.currencyCode ?? ''"
+          :isShowMinus="isOutflow"
+          :isShowPlus="!isOutflow"
           :type="trnItem.type"
           align="right"
           class="grow"
@@ -102,15 +105,15 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
         />
 
         <!-- Transfer -->
-        <template v-if="trnItem.type === TrnType.Transfer">
+        <template v-if="trnItem.type === 'transfer'">
           <div class="grid min-w-0 grow gap-1">
             <div class="flex min-w-0 items-center gap-1">
               <UiEntityName>
-                {{ trnItem.expenseWallet.name }}
+                {{ trnItem.fromWallet?.name ?? $t('trnForm.transfer.outside') }}
               </UiEntityName>
               <Icon name="lucide:move-right" size="16" class="shrink-0" />
               <UiEntityName>
-                {{ trnItem.incomeWallet.name }}
+                {{ trnItem.toWallet?.name ?? $t('trnForm.transfer.outside') }}
               </UiEntityName>
             </div>
 
@@ -119,17 +122,17 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
               class="flex flex-wrap gap-2"
             >
               <Amount
-                :amount="trnItem.expenseAmount"
-                :currencyCode="trnItem.expenseWallet.currency"
-                :type="TrnType.Expense"
+                :amount="trnItem.fromAmount ?? 0"
+                :currencyCode="trnItem.fromWallet?.currencyCode ?? ''"
+                type="expense"
                 class="flex! items-center gap-2"
                 colorize="expense"
                 variant="row"
               />
               <Amount
-                :amount="trnItem.incomeAmount"
-                :currencyCode="trnItem.incomeWallet.currency"
-                :type="TrnType.Income"
+                :amount="trnItem.toAmount ?? 0"
+                :currencyCode="trnItem.toWallet?.currencyCode ?? ''"
+                type="income"
                 colorize="income"
                 class="flex! items-center gap-2"
                 variant="row"
@@ -139,9 +142,9 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
 
           <Amount
             v-if="isSingleAmount"
-            :amount="trnItem.expenseAmount"
-            :currencyCode="trnItem.expenseWallet.currency"
-            :type="TrnType.Expense"
+            :amount
+            :currencyCode="wallet?.currencyCode ?? ''"
+            type="transfer"
             align="right"
             class="shrink-0"
             variant="row"
@@ -158,11 +161,11 @@ const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && 
       </UiText>
 
       <UiText
-        v-if="trnItem.desc"
+        v-if="trnItem.description"
         class="opacity-80"
         variant="caption"
       >
-        {{ trnItem.desc }}
+        {{ trnItem.description }}
       </UiText>
     </div>
   </UiElement>

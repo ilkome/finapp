@@ -1,7 +1,7 @@
 {
   "currencyCode": "RUB",
   "extra": 50000,
-  "interestSaved": 64200,
-  "mode": "reduceTerm",
+  "interestSaved": 6420000,
+  "mode": "reduce_term",
   "newEndDate": "01.02.2030"
 }

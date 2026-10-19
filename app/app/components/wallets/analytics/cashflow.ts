@@ -13,7 +13,7 @@ export type CashflowPoints = {
   net: number[]
 }
 
-const INTEREST_CATEGORY_IDS = new Set(['loanFine', 'loanInterest'])
+const INTEREST_CATEGORY_IDS = new Set(['loan_fine', 'loan_interest'])
 
 /** Income, expense, the interest share of the expense and net per interval; transfers and adjustments stay out. */
 export function cashflowPoints(params: {
@@ -26,7 +26,7 @@ export function cashflowPoints(params: {
   const buckets = bucketTrnsByIntervals(trnsItems, trnsIds, intervals, computeTotal)
   const interest = buckets.map(bucket => computeTotal(bucket.trnsIds.filter((id) => {
     const trn = trnsItems[id]
-    return !!trn && 'walletId' in trn && INTEREST_CATEGORY_IDS.has(trn.categoryId)
+    return trn?.type === 'expense' && INTEREST_CATEGORY_IDS.has(trn.categoryId!)
   })).expense)
 
   return {

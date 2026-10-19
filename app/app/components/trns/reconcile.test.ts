@@ -4,15 +4,16 @@ import { describe, expect, it } from 'vitest'
 
 import { reconcileRows, reconcileTrns, rowsToTrns } from '~/components/trns/reconcile'
 
-function expenseRow(id: string, updatedAt: number | null, amount = 100): Row {
+function expenseRow(id: string, updatedAt: number, amount = 100): Row {
   return {
-    amount,
-    categoryId: 'food',
-    date: 1700000000000,
+    category_id: 'food',
+    created_at: 1,
+    date: 1699920000000,
+    from_amount: amount,
+    from_wallet_id: 'cash',
     id,
-    type: 0,
-    updatedAt,
-    walletId: 'cash',
+    type: 'expense',
+    updated_at: updatedAt,
   }
 }
 
@@ -24,7 +25,7 @@ describe('rowsToTrns', () => {
   it('builds a map keyed by id', () => {
     const map = rowsToTrns([expenseRow('a', 1), expenseRow('b', 2)])
     expect(Object.keys(map ?? {})).toEqual(['a', 'b'])
-    expect(map?.a).toMatchObject({ amount: 100 })
+    expect(map?.a).toMatchObject({ fromAmount: 100 })
   })
 })
 
@@ -44,7 +45,7 @@ describe('reconcileTrns', () => {
     expect(next).not.toBe(prev)
     expect(next?.a).toBe(prev.a) // unchanged -> same reference, no rowToTrn
     expect(next?.b).not.toBe(prev.b) // changed -> rebuilt
-    expect(next?.b).toMatchObject({ amount: 999, updatedAt: 3 })
+    expect(next?.b).toMatchObject({ fromAmount: 999, updatedAt: 3 })
   })
 
   it('handles an added row, reusing existing ones', () => {
@@ -69,27 +70,20 @@ describe('reconcileTrns', () => {
     const prev = rowsToTrns([expenseRow('a', 1)])!
     expect(reconcileTrns(prev, [])).toBeNull()
   })
-
-  it('suppresses rows with a null updatedAt (read deterministically as 0)', () => {
-    const prev = rowsToTrns([expenseRow('a', null)])!
-    // null updatedAt reads back as a stable 0 (transforms.ts), so it matches.
-    const next = reconcileTrns(prev, [expenseRow('a', null)])
-    expect(next).toBe(prev)
-  })
 })
 
 describe('reconcileRows', () => {
-  const toItem = (row: { id: string, updatedAt?: number | null }) => ({ id: row.id, ...(row.updatedAt != null ? { updatedAt: row.updatedAt } : {}) })
+  const toItem = (row: { id: string, updated_at?: number | null }) => ({ id: row.id, ...(row.updated_at != null ? { updatedAt: row.updated_at } : {}) })
 
   it('keeps identity when updatedAt is unchanged, including missing timestamps', () => {
-    const rows = [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: null }]
+    const rows = [{ id: 'a', updated_at: 1 }, { id: 'b', updated_at: null }]
     const prev = reconcileRows(null, rows, toItem)!
-    expect(reconcileRows(prev, [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: null }], toItem)).toBe(prev)
+    expect(reconcileRows(prev, [{ id: 'a', updated_at: 1 }, { id: 'b', updated_at: null }], toItem)).toBe(prev)
   })
 
   it('reuses unchanged objects and rebuilds changed ones', () => {
-    const prev = reconcileRows(null, [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: 1 }], toItem)!
-    const next = reconcileRows(prev, [{ id: 'a', updatedAt: 1 }, { id: 'b', updatedAt: 2 }], toItem)!
+    const prev = reconcileRows(null, [{ id: 'a', updated_at: 1 }, { id: 'b', updated_at: 1 }], toItem)!
+    const next = reconcileRows(prev, [{ id: 'a', updated_at: 1 }, { id: 'b', updated_at: 2 }], toItem)!
     expect(next.a).toBe(prev.a)
     expect(next.b).not.toBe(prev.b)
   })

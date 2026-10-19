@@ -4,10 +4,10 @@ import { formatByLocale } from '~~/utils/date/civil'
 import type { LoanId, LoanItem } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { currencyMinorUnit } from '~/components/currencies/currencies'
+import { amountToMinor, minorToAmount } from '~/components/amount/utils'
 import { paramsOf } from '~/components/loans/engine/derive'
 import { generateSchedule } from '~/components/loans/engine/schedule'
-import { getDefaultLoanItem, loanIdFor, loanInterestMethods, loanItemSchema, loanOverpaymentModes, loanScheduleTypes } from '~/components/loans/types'
+import { getDefaultLoanItem, loanIdFor, loanInterestAccruals, loanItemSchema, loanPrepaymentModes, loanScheduleTypes } from '~/components/loans/types'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { showErrorToast } from '~/composables/useStoreSync'
@@ -28,13 +28,13 @@ const walletsStore = useWalletsStore()
 
 const editId = props.loanId ?? loanIdFor(props.walletId)
 const form = ref<LoanItem>({
-  ...getDefaultLoanItem(props.walletId),
+  ...getDefaultLoanItem(props.walletId, useCivilToday().value),
   ...(props.loanId ? loansStore.items[props.loanId] : undefined),
 })
 
 const scheduleTypeOptions = loanScheduleTypes.map(value => ({ label: t(`loans.scheduleTypes.${value}`), value }))
-const overpaymentModeOptions = loanOverpaymentModes.map(value => ({ label: t(`loans.modes.${value}`), value }))
-const interestMethodOptions = loanInterestMethods.map(value => ({ label: t(`loans.interestMethods.${value}`), value }))
+const overpaymentModeOptions = loanPrepaymentModes.map(value => ({ label: t(`loans.modes.${value}`), value }))
+const interestMethodOptions = loanInterestAccruals.map(value => ({ label: t(`loans.interestMethods.${value}`), value }))
 const days = (value: string) => Math.max(0, Math.round(Number(value) || 0))
 const debitWalletOptions = computed(() => [
   { label: t('loans.noDebitWallet'), value: '' },
@@ -52,7 +52,7 @@ const currencyCode = computed(() => walletsStore.currencyOf(props.walletId))
 const preview = computed(() => {
   if (form.value.principalAmount <= 0 || form.value.termMonths < 1 || form.value.termMonths > 600)
     return null
-  const rows = generateSchedule(paramsOf(form.value, currencyMinorUnit(currencyCode.value)))
+  const rows = generateSchedule(paramsOf(form.value))
   if (rows.length === 0)
     return null
   return {
@@ -68,7 +68,7 @@ function onChangeFirstPaymentDate(value: number | null) {
     return
   form.value.firstPaymentDate = value
   // Civil days are UTC midnight, so the UTC day of month is the payment day.
-  form.value.paymentDay = new Date(value).getUTCDate()
+  form.value.paymentDayOfMonth = new Date(value).getUTCDate()
 }
 
 function onSave() {
@@ -100,8 +100,8 @@ function onSave() {
         type="number"
         inputmode="decimal"
         data-loan-form="principalAmount"
-        :modelValue="form.principalAmount || ''"
-        @update:modelValue="(value: string) => form.principalAmount = Number(value) || 0"
+        :modelValue="form.principalAmount ? minorToAmount(form.principalAmount, currencyCode) : ''"
+        @update:modelValue="(value: string) => form.principalAmount = amountToMinor(Number(value) || 0, currencyCode)"
       />
       <UiText v-if="errors.principalAmount" variant="meta" class="pt-1 text-error!">
         {{ errors.principalAmount }}
@@ -116,8 +116,8 @@ function onSave() {
         <FormInput
           type="number"
           inputmode="decimal"
-          :modelValue="form.annualRate === null ? '' : String(form.annualRate)"
-          @update:modelValue="(value: string) => form.annualRate = value.trim() === '' ? null : Number(value) || 0"
+          :modelValue="form.annualRatePercent === null ? '' : String(form.annualRatePercent)"
+          @update:modelValue="(value: string) => form.annualRatePercent = value.trim() === '' ? null : Number(value) || 0"
         />
       </FormElement>
 
@@ -204,8 +204,8 @@ function onSave() {
       </template>
       <FormSelect
         :options="debitWalletOptions"
-        :value="form.debitWalletId ?? ''"
-        @change="(value: string) => form.debitWalletId = value || undefined"
+        :value="form.paymentWalletId ?? ''"
+        @change="(value: string) => form.paymentWalletId = value || undefined"
       />
     </FormElement>
 
@@ -235,8 +235,8 @@ function onSave() {
             <FormInput
               type="number"
               inputmode="numeric"
-              :modelValue="String(form.paymentDay)"
-              @update:modelValue="(value: string) => form.paymentDay = Math.min(31, Math.max(1, Number(value) || 1))"
+              :modelValue="String(form.paymentDayOfMonth)"
+              @update:modelValue="(value: string) => form.paymentDayOfMonth = Math.min(31, Math.max(1, Number(value) || 1))"
             />
           </FormElement>
 
@@ -246,9 +246,9 @@ function onSave() {
             </template>
             <UiTabs
               :items="overpaymentModeOptions"
-              :modelValue="form.overpaymentMode"
+              :modelValue="form.prepaymentMode"
               size="sm"
-              @update:modelValue="(value) => form.overpaymentMode = value as LoanItem['overpaymentMode']"
+              @update:modelValue="(value) => form.prepaymentMode = value as LoanItem['prepaymentMode']"
             />
           </FormElement>
 
@@ -258,9 +258,9 @@ function onSave() {
             </template>
             <UiTabs
               :items="interestMethodOptions"
-              :modelValue="form.interestMethod"
+              :modelValue="form.interestAccrual"
               size="sm"
-              @update:modelValue="(value) => form.interestMethod = value as LoanItem['interestMethod']"
+              @update:modelValue="(value) => form.interestAccrual = value as LoanItem['interestAccrual']"
             />
           </FormElement>
 
@@ -284,8 +284,8 @@ function onSave() {
               <FormInput
                 type="number"
                 inputmode="numeric"
-                :modelValue="String(form.prepayWindowDays)"
-                @update:modelValue="(value: string) => form.prepayWindowDays = days(value)"
+                :modelValue="String(form.prepaymentWindowDays)"
+                @update:modelValue="(value: string) => form.prepaymentWindowDays = days(value)"
               />
             </FormElement>
           </div>
@@ -318,8 +318,8 @@ function onSave() {
             </template>
             <FormTextarea
               :placeholder="t('loans.form.desc')"
-              :modelValue="form.desc"
-              @update:modelValue="(value: string) => form.desc = value"
+              :modelValue="form.description"
+              @update:modelValue="(value: string) => form.description = value"
             />
           </FormElement>
         </div>

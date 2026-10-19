@@ -4,8 +4,11 @@ import { generateId } from '~~/utils/generateId'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletFormKey, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
 
-import { manualMinPaymentDates } from '~/components/loans/minPayment'
-import { walletItemSchema, walletTypes } from '~/components/wallets/types'
+import { amountToMinor, minorToAmount } from '~/components/amount/utils'
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
+import { useLoansStore } from '~/components/loans/useLoansStore'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { isWalletInForecast, walletItemSchema, walletTypes } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
 import { showErrorToast } from '~/composables/useStoreSync'
@@ -22,6 +25,9 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const walletsStore = useWalletsStore()
+const bankReportsStore = useBankReportsStore()
+const loansStore = useLoansStore()
+const trnsStore = useTrnsStore()
 
 const editWalletId = props.walletId ?? generateId()
 const isLoans = useFeature('loans')
@@ -44,14 +50,60 @@ const walletPlaceholder = computed(() => ({
   name: props.walletForm.name ? props.walletForm.name : t('wallets.form.name.label'),
 }))
 
-function onChangeMinPaymentDate(date: number | null) {
-  const fields = manualMinPaymentDates(date)
-  emit('update', 'minPaymentDate', fields.minPaymentDate)
-  emit('update', 'minPaymentUpdatedAt', fields.minPaymentUpdatedAt)
+// Amounts in a wallet's currency would mean something else after a switch.
+const isCurrencyLocked = computed(() => {
+  const id = props.walletId
+  if (!id)
+    return false
+  if (loansStore.items[id] || bankReportsStore.items[id])
+    return true
+  return Object.values(trnsStore.items ?? {}).some(trn => trn.fromWalletId === id || trn.toWalletId === id)
+})
+
+function onOpenCurrencies() {
+  if (isCurrencyLocked.value)
+    showErrorToast('wallets.form.currencies.locked')
+  else
+    modals.value.currencies = true
+}
+
+const creditLimitInput = computed(() => props.walletForm.creditLimit === undefined
+  ? ''
+  : String(minorToAmount(props.walletForm.creditLimit, props.walletForm.currencyCode)))
+
+function onChangeCreditLimit(value: string) {
+  const amount = Number.parseFloat(String(value).replace(',', '.'))
+  emit('update', 'creditLimit', Number.isFinite(amount) && amount > 0 ? amountToMinor(amount, props.walletForm.currencyCode) : undefined)
+}
+
+// The minimum payment is a bank figure: it is saved to the wallet's bank report with the wallet.
+const bankReport = computed(() => bankReportsStore.items[editWalletId])
+const minPayment = ref({
+  amount: bankReport.value?.minPaymentAmount === undefined ? '' : String(minorToAmount(bankReport.value.minPaymentAmount, props.walletForm.currencyCode)),
+  dueDate: bankReport.value?.minPaymentDueDate ?? null,
+  isChanged: false,
+})
+
+function onChangeMinPayment(patch: Partial<{ amount: string, dueDate: number | null }>) {
+  minPayment.value = { ...minPayment.value, ...patch, isChanged: true }
+}
+
+function saveMinPayment() {
+  if (!minPayment.value.isChanged || props.walletForm.type !== 'credit_card')
+    return
+  const amount = Number.parseFloat(minPayment.value.amount.replace(',', '.'))
+  bankReportsStore.saveBankReport(editWalletId, {
+    ...bankReport.value,
+    createdAt: bankReport.value?.createdAt ?? Date.now(),
+    minPaymentAmount: Number.isFinite(amount) && amount > 0 ? amountToMinor(amount, props.walletForm.currencyCode) : undefined,
+    minPaymentDueDate: minPayment.value.dueDate ?? undefined,
+    updatedAt: Date.now(),
+  })
 }
 
 async function onSave() {
-  const values = walletItemSchema.safeParse(props.walletForm)
+  const form = props.walletForm.type === 'credit_card' ? props.walletForm : { ...props.walletForm, creditLimit: undefined }
+  const values = walletItemSchema.safeParse({ ...form, updatedAt: Date.now() })
 
   if (!values.success) {
     showErrorToast('wallets.form.name.error')
@@ -62,6 +114,7 @@ async function onSave() {
     id: editWalletId,
     values: values.data,
   })
+  saveMinPayment()
   emit('afterSave')
 }
 </script>
@@ -86,13 +139,13 @@ async function onSave() {
       </FormElement>
 
       <!-- Currencies -->
-      <UiButtonWithRight @click="modals.currencies = true">
+      <UiButtonWithRight :class="{ 'opacity-60': isCurrencyLocked }" @click="onOpenCurrencies">
         <template #label>
           {{ t('wallets.form.currencies.label') }}
         </template>
 
         <template #value>
-          {{ props.walletForm.currency }}
+          {{ props.walletForm.currencyCode }}
         </template>
       </UiButtonWithRight>
 
@@ -117,8 +170,8 @@ async function onSave() {
         </template>
         <FormTextarea
           :placeholder="t('wallets.form.description.placeholder')"
-          :modelValue="props.walletForm.desc ?? ''"
-          @update:modelValue="(value: string) => emit('update', 'desc', value)"
+          :modelValue="props.walletForm.description ?? ''"
+          @update:modelValue="(value: string) => emit('update', 'description', value)"
         />
       </FormElement>
 
@@ -136,27 +189,27 @@ async function onSave() {
       </div>
 
       <!-- Credit Limit -->
-      <FormElement v-if="props.walletForm.type === 'credit'">
+      <FormElement v-if="props.walletForm.type === 'credit_card'">
         <template #label>
           {{ t('wallets.form.credit.limit') }}
         </template>
         <FormInput
           :placeholder="t('wallets.form.credit.limit')"
-          :modelValue="props.walletForm.creditLimit ?? ''"
-          @update:modelValue="(value: string) => emit('update', 'creditLimit', +value)"
+          :modelValue="creditLimitInput"
+          @update:modelValue="onChangeCreditLimit"
         />
       </FormElement>
 
       <!-- Minimum payment -->
-      <div v-if="isLoans && props.walletForm.type === 'credit'" class="grid grid-cols-2 gap-3">
+      <div v-if="isLoans && props.walletForm.type === 'credit_card'" class="grid grid-cols-2 gap-3">
         <FormElement>
           <template #label>
             {{ t('loans.toPay.minPayment') }}
           </template>
           <FormInput
             :placeholder="t('loans.toPay.minPayment')"
-            :modelValue="props.walletForm.minPaymentAmount ?? ''"
-            @update:modelValue="(value: string) => emit('update', 'minPaymentAmount', +value > 0 ? +value : undefined)"
+            :modelValue="minPayment.amount"
+            @update:modelValue="(value: string) => onChangeMinPayment({ amount: String(value) })"
           />
         </FormElement>
         <FormElement>
@@ -165,9 +218,9 @@ async function onSave() {
           </template>
           <FormDate
             clearable
-            :modelValue="props.walletForm.minPaymentDate ?? null"
+            :modelValue="minPayment.dueDate"
             :title="t('wallets.form.credit.minPaymentDate')"
-            @update:modelValue="onChangeMinPaymentDate"
+            @update:modelValue="(date: number | null) => onChangeMinPayment({ dueDate: date })"
           />
         </FormElement>
       </div>
@@ -176,14 +229,19 @@ async function onSave() {
       <div class="grid gap-1">
         <div>
           <UiSwitchItem
-            :checkboxValue="props.walletForm.isWithdrawal ?? false"
+            :checkboxValue="props.walletForm.isWithdrawable ?? false"
             :title="t('money.options.withdrawal')"
-            @toggle="emit('update', 'isWithdrawal', !props.walletForm.isWithdrawal)"
+            @toggle="emit('update', 'isWithdrawable', !props.walletForm.isWithdrawable)"
           />
           <UiSwitchItem
-            :checkboxValue="props.walletForm.isExcludeInTotal ?? false"
-            :title="t('money.options.isExcludeInTotal')"
-            @toggle="emit('update', 'isExcludeInTotal', !props.walletForm.isExcludeInTotal)"
+            :checkboxValue="isWalletInForecast(props.walletForm)"
+            :title="t('money.options.isInForecast')"
+            @toggle="emit('update', 'isInForecast', !isWalletInForecast(props.walletForm))"
+          />
+          <UiSwitchItem
+            :checkboxValue="props.walletForm.isExcludedFromTotal ?? false"
+            :title="t('money.options.isExcludedFromTotal')"
+            @toggle="emit('update', 'isExcludedFromTotal', !props.walletForm.isExcludedFromTotal)"
           />
           <UiSwitchItem
             :checkboxValue="props.walletForm.isArchived ?? false"
@@ -206,8 +264,8 @@ async function onSave() {
 
   <CurrenciesModal
     v-if="modals.currencies"
-    :activeCode="props.walletForm.currency"
-    @select="(c: CurrencyCode) => emit('update', 'currency', c)"
+    :activeCode="props.walletForm.currencyCode"
+    @select="(c: CurrencyCode) => emit('update', 'currencyCode', c)"
     @close="modals.currencies = false"
   />
 

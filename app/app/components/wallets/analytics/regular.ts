@@ -8,11 +8,8 @@ import type { ToBase } from '~/components/wallets/analytics/balanceHistory'
 import type { AmountMode, RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { WalletId, Wallets } from '~/components/wallets/types'
 
-import { isSystemCategoryId } from '~/components/categories/utils'
-import { TrnType } from '~/components/trns/types'
-
 /** Interest and fines are paid through the loan payment, so counting them here would count them twice. */
-const SKIPPED_CATEGORY_IDS = new Set<CategoryId>(['loanFine', 'loanInterest'])
+const SKIPPED_CATEGORY_IDS = new Set<CategoryId>(['loan_fine', 'loan_interest'])
 
 export type RegularCategory = {
   /** Monthly amount the forecast uses. */
@@ -52,12 +49,16 @@ type SumParams = {
   walletsItems: Wallets
 }
 
-function isCounted(trn: TrnItem, params: SumParams): trn is Extract<TrnItem, { walletId: string }> {
-  return trn.type !== TrnType.Transfer
-    && !!params.walletsItems[trn.walletId]
-    && (!params.walletIds || params.walletIds.has(trn.walletId))
-    && !isSystemCategoryId(trn.categoryId)
-    && !params.excludedCategoryIds.has(trn.categoryId)
+/** The wallet of a counted expense or income; undefined for a trn the forecast leaves out. */
+function countedWalletId(trn: TrnItem, params: SumParams): WalletId | undefined {
+  if (trn.type !== 'expense' && trn.type !== 'income')
+    return undefined
+  const walletId = trn.type === 'expense' ? trn.fromWalletId : trn.toWalletId
+  if (!walletId || !params.walletsItems[walletId] || (params.walletIds && !params.walletIds.has(walletId)))
+    return undefined
+  if (!trn.categoryId || params.excludedCategoryIds.has(trn.categoryId))
+    return undefined
+  return walletId
 }
 
 function monthIndex(months: Range[], date: number): number {
@@ -68,16 +69,19 @@ function monthIndex(months: Range[], date: number): number {
 export function monthlyCategorySpending(params: SumParams): Map<CategoryId, number[]> {
   const result = new Map<CategoryId, number[]>()
   for (const trn of Object.values(params.trnsItems)) {
-    if (!isCounted(trn, params) || trn.type !== TrnType.Expense || SKIPPED_CATEGORY_IDS.has(trn.categoryId))
+    const walletId = trn.type === 'expense' ? countedWalletId(trn, params) : undefined
+    if (!walletId || SKIPPED_CATEGORY_IDS.has(trn.categoryId!))
       continue
     const index = monthIndex(params.months, trn.date)
     if (index < 0)
       continue
-    const categoryId = params.rollUp?.(trn.categoryId) ?? trn.categoryId
+    const categoryId = params.rollUp?.(trn.categoryId!) ?? trn.categoryId!
     const data = result.get(categoryId) ?? Array.from<number>({ length: params.months.length }).fill(0)
-    data[index]! += params.toBase(trn.amount, params.walletsItems[trn.walletId]!.currency)
+    data[index]! += params.toBase(trn.fromAmount!, params.walletsItems[walletId]!.currencyCode)
     result.set(categoryId, data)
   }
+  for (const [categoryId, data] of result)
+    result.set(categoryId, data.map(value => Math.round(value)))
   return result
 }
 
@@ -85,16 +89,17 @@ export function monthlyCategorySpending(params: SumParams): Map<CategoryId, numb
 export function monthlyIncome(params: SumParams): number[] {
   const result = Array.from<number>({ length: params.months.length }).fill(0)
   for (const trn of Object.values(params.trnsItems)) {
-    if (!isCounted(trn, params) || trn.type !== TrnType.Income)
+    const walletId = trn.type === 'income' ? countedWalletId(trn, params) : undefined
+    if (!walletId)
       continue
     const index = monthIndex(params.months, trn.date)
     if (index >= 0)
-      result[index]! += params.toBase(trn.amount, params.walletsItems[trn.walletId]!.currency)
+      result[index]! += params.toBase(trn.toAmount!, params.walletsItems[walletId]!.currencyCode)
   }
-  return result
+  return result.map(value => Math.round(value))
 }
 
-/** A typical month of `values`; zero months count, so a one-off purchase does not look monthly. */
+/** A typical month of `values` in whole minor units; zero months count, so a one-off purchase does not look monthly. */
 export function typicalAmount(values: number[], mode: AmountMode): number {
   if (!values.length)
     return 0
@@ -103,10 +108,10 @@ export function typicalAmount(values: number[], mode: AmountMode): number {
   if (mode === 'max')
     return Math.max(...values)
   if (mode === 'average')
-    return values.reduce((sum, value) => sum + value, 0) / values.length
+    return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
   const sorted = values.toSorted((a, b) => a - b)
   const middle = sorted.length >> 1
-  return sorted.length % 2 ? sorted[middle]! : (sorted[middle - 1]! + sorted[middle]!) / 2
+  return sorted.length % 2 ? sorted[middle]! : Math.round((sorted[middle - 1]! + sorted[middle]!) / 2)
 }
 
 /** Every category with spending in the window, regular or not, plus the manually included ones; largest first. */
@@ -132,7 +137,7 @@ export function detectRegular(params: {
       categoryId,
       detectedAmount,
       isAuto,
-      isRegular: override ? override.state === 'include' : isAuto,
+      isRegular: override?.state ? override.state === 'include' : isAuto,
       monthly: values,
       monthsWithSpending,
       override,

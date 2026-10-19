@@ -4,15 +4,16 @@ import { formatByLocale } from '~~/utils/date/civil'
 
 import type { ChartSeries } from '~/components/stat/types'
 import type { ForecastMonthRow, ForecastScenario } from '~/components/wallets/analytics/ForecastMonthsView.vue'
-import type { AmountMode, RegularOverride } from '~/components/wallets/analytics/forecastSettings'
+import type { AmountMode, CardPaymentMode } from '~/components/wallets/analytics/forecastSettings'
 import type { ObligationRow } from '~/components/wallets/analytics/ObligationsView.vue'
 import type { RegularListItem } from '~/components/wallets/analytics/RegularListView.vue'
 import type { AnalyticsOption } from '~/components/wallets/analytics/SettingsMenu.vue'
 
+import { amountToMinor, minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
-import { amountModes } from '~/components/wallets/analytics/forecastSettings'
+import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { useForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -24,7 +25,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, forecast, income, obligations, regular, runwayOf, settings, startWalletIds, update } = useForecast()
+const { availableWalletIds, categories, forecast, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
@@ -95,25 +96,17 @@ const regularItems = computed<RegularListItem[]>(() => regular.value.map((item) 
   }
 }))
 
-function setOverride(categoryId: string, override: RegularOverride | undefined) {
-  const overrides = { ...settings.value.overrides }
-  if (override)
-    overrides[categoryId] = override
-  else
-    delete overrides[categoryId]
-  update({ overrides })
-}
-
 // The switch flips the category; flipping it back to what detection says drops the manual entry.
 function toggleRegular(categoryId: string) {
   const item = regular.value.find(entry => entry.categoryId === categoryId)
   if (!item)
     return
   const nextRegular = !item.isRegular
-  if (nextRegular === item.isAuto && item.override?.amount === undefined)
-    setOverride(categoryId, undefined)
+  const stored = categories.value[categoryId]
+  if (nextRegular === item.isAuto && stored?.monthlyAmount === undefined)
+    setCategory(categoryId, undefined)
   else
-    setOverride(categoryId, { ...item.override, state: nextRegular ? 'include' : 'exclude' })
+    setCategory(categoryId, { ...stored, isIncluded: nextRegular })
 }
 
 const editingId = ref<string | null>(null)
@@ -121,8 +114,11 @@ const editing = computed(() => regularItems.value.find(item => item.categoryId =
 const draft = ref<{ amount: string, state: 'auto' | 'exclude' | 'include' }>({ amount: '', state: 'auto' })
 
 function openEditor(categoryId: string) {
-  const override = settings.value.overrides[categoryId]
-  draft.value = { amount: override?.amount === undefined ? '' : String(override.amount), state: override?.state ?? 'auto' }
+  const stored = categories.value[categoryId]
+  draft.value = {
+    amount: stored?.monthlyAmount === undefined ? '' : String(minorToAmount(stored.monthlyAmount, stored.currencyCode ?? currenciesStore.base)),
+    state: stored?.isIncluded === undefined ? 'auto' : stored.isIncluded ? 'include' : 'exclude',
+  }
   editingId.value = categoryId
 }
 
@@ -132,28 +128,17 @@ function saveEditor(close: () => void) {
     return
   const amount = Number.parseFloat(draft.value.amount.replace(',', '.'))
   const hasAmount = Number.isFinite(amount) && amount >= 0
+  const base = currenciesStore.base
   if (draft.value.state === 'exclude')
-    setOverride(id, { state: 'exclude' })
+    setCategory(id, { isIncluded: false })
   else if (draft.value.state === 'include' || hasAmount)
-    setOverride(id, { ...(hasAmount ? { amount } : {}), state: 'include' })
+    setCategory(id, { ...(hasAmount ? { currencyCode: base, monthlyAmount: amountToMinor(amount, base) } : {}), isIncluded: draft.value.state === 'include' ? true : undefined })
   else
-    setOverride(id, undefined)
+    setCategory(id, undefined)
   close()
 }
 
 const isWalletsOpen = ref(false)
-function toggleWallet(walletId: string) {
-  const current = new Set(settings.value.walletIds.length ? settings.value.walletIds : startWalletIds.value)
-  if (current.has(walletId))
-    current.delete(walletId)
-  else
-    current.add(walletId)
-  if (!current.size)
-    return
-  // Every wallet picked is the default, stored as an empty list so new wallets join on their own.
-  const ids = availableWalletIds.value.filter(id => current.has(id))
-  update({ walletIds: ids.length === availableWalletIds.value.length ? [] : ids })
-}
 
 const settingsOptions = computed<AnalyticsOption[]>(() => [
   {
@@ -169,50 +154,50 @@ const settingsOptions = computed<AnalyticsOption[]>(() => [
     value: settings.value.horizonMonths,
   },
   {
-    id: 'cardPayment',
-    items: (['min', 'full'] as const).map(value => ({ label: t(`wallets.analytics.forecast.cardPayment.${value}`), value })),
+    id: 'cardPaymentMode',
+    items: cardPaymentModes.map(value => ({ label: t(`wallets.analytics.forecast.cardPayment.${value}`), value })),
     label: t('wallets.analytics.forecast.cardPayment.label'),
-    value: settings.value.cardPayment,
+    value: settings.value.cardPaymentMode,
   },
   {
-    id: 'windowMonths',
+    id: 'historyMonths',
     items: [3, 6, 12].map(value => ({ label: String(value), value })),
     label: t('wallets.analytics.regular.windowMonths'),
-    value: settings.value.windowMonths,
+    value: settings.value.historyMonths,
   },
   {
-    id: 'minMonths',
-    items: Array.from({ length: settings.value.windowMonths }, (_, index) => index + 1)
-      .filter(value => value >= Math.ceil(settings.value.windowMonths / 2))
+    id: 'regularMinMonths',
+    items: Array.from({ length: settings.value.historyMonths }, (_, index) => index + 1)
+      .filter(value => value >= Math.ceil(settings.value.historyMonths / 2))
       .map(value => ({ label: String(value), value })),
     label: t('wallets.analytics.regular.minMonths'),
-    value: Math.min(settings.value.minMonths, settings.value.windowMonths),
+    value: Math.min(settings.value.regularMinMonths, settings.value.historyMonths),
   },
   {
-    id: 'amountMode',
+    id: 'regularAmountMode',
     items: amountModes.map(value => ({ label: t(`wallets.analytics.regular.amountModes.${value}`), value })),
     label: t('wallets.analytics.regular.amountMode'),
-    value: settings.value.amountMode,
+    value: settings.value.regularAmountMode,
   },
   {
-    id: 'groupByParent',
+    id: 'isByParentCategory',
     items: [{ label: t('wallets.analytics.regular.byCategory'), value: 'no' }, { label: t('wallets.analytics.regular.byParent'), value: 'yes' }],
     label: t('wallets.analytics.regular.groupBy'),
-    value: settings.value.groupByParent ? 'yes' : 'no',
+    value: settings.value.isByParentCategory ? 'yes' : 'no',
   },
 ])
 
 function onSetting(id: string, value: number | string) {
   if (id === 'scenario')
     view.value = { ...view.value, scenario: value as ForecastScenario }
-  else if (id === 'groupByParent')
-    update({ groupByParent: value === 'yes' })
-  else if (id === 'windowMonths')
-    update({ minMonths: Math.min(settings.value.minMonths, Number(value)), windowMonths: Number(value) })
-  else if (id === 'amountMode')
-    update({ amountMode: value as AmountMode })
-  else if (id === 'cardPayment')
-    update({ cardPayment: value as 'full' | 'min' })
+  else if (id === 'isByParentCategory')
+    update({ isByParentCategory: value === 'yes' })
+  else if (id === 'historyMonths')
+    update({ historyMonths: Number(value), regularMinMonths: Math.min(settings.value.regularMinMonths, Number(value)) })
+  else if (id === 'regularAmountMode')
+    update({ regularAmountMode: value as AmountMode })
+  else if (id === 'cardPaymentMode')
+    update({ cardPaymentMode: value as CardPaymentMode })
   else
     update({ [id]: Number(value) })
 }
@@ -277,12 +262,12 @@ function onSetting(id: string, value: number | string) {
         {{ t('wallets.analytics.regular.title') }}
       </UiTitleSection>
       <UiText variant="meta" class="px-2 leading-snug!">
-        {{ t('wallets.analytics.regular.hint', { min: Math.min(settings.minMonths, settings.windowMonths), window: settings.windowMonths }) }}
+        {{ t('wallets.analytics.regular.hint', { min: Math.min(settings.regularMinMonths, settings.historyMonths), window: settings.historyMonths }) }}
       </UiText>
       <WalletsAnalyticsRegularListView
         :currencyCode="currenciesStore.base"
         :items="regularItems"
-        :windowMonths="settings.windowMonths"
+        :windowMonths="settings.historyMonths"
         @edit="openEditor"
         @toggle="toggleRegular"
       />
@@ -298,7 +283,7 @@ function onSetting(id: string, value: number | string) {
           <UiText variant="meta" class="leading-snug!">
             {{ t('wallets.analytics.regular.detected') }}
             <Amount :amount="editing.detectedAmount" :currencyCode="currenciesStore.base" :isShowBaseRate="false" class="inline-grid" variant="compact" />
-            · {{ editing.monthsWithSpending }}/{{ settings.windowMonths }}
+            · {{ editing.monthsWithSpending }}/{{ settings.historyMonths }}
           </UiText>
 
           <UiTabs
@@ -314,7 +299,7 @@ function onSetting(id: string, value: number | string) {
             <FormInput
               v-model="draft.amount"
               type="number"
-              :placeholder="String(Math.round(editing.detectedAmount))"
+              :placeholder="String(minorToAmount(editing.detectedAmount, currenciesStore.base))"
             />
           </div>
 
@@ -342,7 +327,7 @@ function onSetting(id: string, value: number | string) {
           :checkboxValue="startWalletIds.includes(walletId)"
           :title="walletsStore.items?.[walletId]?.name ?? walletId"
           trailing
-          @toggle="toggleWallet(walletId)"
+          @toggle="toggleStartWallet(walletId)"
         />
       </div>
     </WalletsAnalyticsEditorSheet>

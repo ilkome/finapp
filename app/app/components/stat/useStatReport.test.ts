@@ -7,8 +7,6 @@ import type { TotalReturns } from '~/components/amount/getTotal'
 import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 import type { IntervalData, StatQuickCategoryFilter } from '~/components/stat/types'
 
-import { TrnType } from '~/components/trns/types'
-
 // ---------------------------------------------------------------------------
 // Stub Nuxt/Vue auto-imports used by useStatReport
 // ---------------------------------------------------------------------------
@@ -52,11 +50,11 @@ vi.mock('~/components/trns/useTrnsStore', () => ({
   useTrnsStore: () => ({
     getStoreTrnsIds: getStoreTrnsIdsMock,
     items: {
-      'in-range': { categoryId: 'cat1', date: 5, type: 0 },
-      'out-of-range': { categoryId: 'cat1', date: 1, type: 0 },
-      't1': { categoryId: 'cat1', date: 1, type: 0 },
-      't2': { categoryId: 'cat1', date: 3, type: 0 },
-      't3': { categoryId: 'cat2', date: 2, type: 0 },
+      'in-range': { categoryId: 'cat1', date: 5, type: 'expense' },
+      'out-of-range': { categoryId: 'cat1', date: 1, type: 'expense' },
+      't1': { categoryId: 'cat1', date: 1, type: 'expense' },
+      't2': { categoryId: 'cat1', date: 3, type: 'expense' },
+      't3': { categoryId: 'cat2', date: 2, type: 'expense' },
     },
   }),
 }))
@@ -301,14 +299,17 @@ describe('useStatReport', () => {
   })
 
   it('hides a single-color summary pie in quick and regular category scopes', () => {
-    const singleColorPie = [
-      { color: 'red', value: 40 },
-      { color: 'red', value: 60 },
-    ]
-    categoryBreakdownMocks.buildCategoriesPieData.mockReturnValue(singleColorPie)
+    categoryBreakdownMocks.buildCategoriesPieData.mockReturnValue([
+      { color: 'red', value: 4000 },
+      { color: 'red', value: 6000 },
+    ])
     const report = createStatReport({ trnsIds: ['t1'] })
 
-    expect(report.summaryCategoryPieData.value.expense).toEqual(singleColorPie)
+    // Base minor units arrive at the chart as decimals of the base currency.
+    expect(report.summaryCategoryPieData.value.expense).toEqual([
+      { color: 'red', value: 40 },
+      { color: 'red', value: 60 },
+    ])
 
     report.onSetCategoryFilter('cat1')
 
@@ -361,7 +362,7 @@ describe('useStatReport', () => {
 
       expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
         trnsIds: walletFilteredIds,
-        trnsTypes: [TrnType.Income],
+        trnsTypes: ['income'],
       }))
       expect(getStoreTrnsIdsMock).toHaveBeenCalledWith(expect.objectContaining({
         categoriesIds: ['cat1'],

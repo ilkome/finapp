@@ -75,13 +75,13 @@ export const StatViewSchema = z.object({
   createdAt: z.number().int().nonnegative(),
   id: z.string().min(1),
   isActive: z.boolean().default(false),
-  isAutoEnabled: z.boolean(),
+  isAutoRuleEnabled: z.boolean(),
   name: z.string().trim().min(1).max(120),
   scope: z.literal('dashboard'),
   sortOrder: z.number().int().nonnegative(),
   updatedAt: z.number().int().nonnegative(),
   userId: z.string().min(1),
 }).superRefine((view, ctx) => {
-  if (view.isAutoEnabled && !view.autoRule)
+  if (view.isAutoRuleEnabled && !view.autoRule)
     ctx.addIssue({ code: 'custom', message: 'Automatic views require a rule', path: ['autoRule'] })
 })

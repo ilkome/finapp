@@ -4,15 +4,15 @@
     "isOverdue": true,
     "monthsLeft": 58,
     "nextDate": "01.10",
-    "payment": 12500
+    "payment": 1250000
   },
   "minPayment": {
-    "amount": 3200,
+    "amount": 320000,
     "date": "25.09",
     "status": "overdue"
   },
   "grace": {
-    "amount": 12000,
+    "amount": 1200000,
     "date": "15.10",
     "statementDate": "05.09",
     "status": "due"

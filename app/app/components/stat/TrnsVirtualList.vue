@@ -11,7 +11,6 @@ import { statPreservedCategoryScrollTopKey, statStickyTopKey } from '~/component
 import { shouldRequestStatHistoryLoad } from '~/components/stat/statFeed'
 import { useStatFeedViewport } from '~/components/stat/useStatFeedViewport'
 import { useStatInfinitePeriods } from '~/components/stat/useStatInfinitePeriods'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsListFilters } from '~/components/trns/useTrnsListFilters'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -111,7 +110,7 @@ function estimateRowHeight(index: number) {
   if (row.type === 'loader' || row.type === 'end')
     return 44
   const transaction = trnsStore.items?.[row.trnId]
-  return transaction?.desc || transaction?.type === TrnType.Transfer ? 88 : 68
+  return transaction?.description || transaction?.type === 'transfer' ? 88 : 68
 }
 
 function onVirtualizerChange(instance: Virtualizer<Window, Element>, sync: boolean) {

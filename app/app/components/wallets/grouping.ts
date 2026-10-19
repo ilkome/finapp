@@ -34,8 +34,8 @@ export const groupingPrimary = (groupedBy: WalletsGroupedBy) => primaryByGroupin
 export const hasSecondaryGrouping = (groupedBy: WalletsGroupedBy) => groupedBy === 'typeCurrency' || groupedBy === 'currencyType'
 
 const groupingStrategies = {
-  currency: { primary: 'currency', secondary: 'type' },
-  type: { primary: 'type', secondary: 'currency' },
+  currency: { primary: 'currencyCode', secondary: 'type' },
+  type: { primary: 'type', secondary: 'currencyCode' },
 } as const
 
 export function groupWalletsByProperty(
@@ -50,7 +50,7 @@ export function groupWalletsByProperty(
 }
 
 // By type, flagged wallets leave their type group for trailing groups, in this order; the first match wins.
-const FLAG_GROUPS = ['isExcludeInTotal', 'isArchived'] as const
+const FLAG_GROUPS = ['isExcludedFromTotal', 'isArchived'] as const
 
 export function buildWalletGroups(
   ids: WalletId[],
@@ -64,7 +64,7 @@ export function buildWalletGroups(
   const strategy = groupingStrategies[groupedBy]
 
   const flagOf = (id: WalletId) => groupedBy === 'type'
-    ? (wallets[id]?.isExcludeInTotal ? 'isExcludeInTotal' : wallets[id]?.isArchived ? 'isArchived' : undefined)
+    ? (wallets[id]?.isExcludedFromTotal ? 'isExcludedFromTotal' : wallets[id]?.isArchived ? 'isArchived' : undefined)
     : undefined
   const primaryGrouped = groupWalletsByProperty(ids.filter(id => !flagOf(id)), wallets, strategy.primary)
   for (const flag of FLAG_GROUPS) {

@@ -183,9 +183,10 @@ export const useUserStore = defineStore('user', () => {
       return
 
     upsertRow('user_settings', uid.value, {
-      baseCurrency: value,
+      base_currency_code: value,
       locale: locale.value,
-      userId: uid.value,
+      updated_at: Date.now(),
+      user_id: uid.value,
     }).catch((e) => {
       logger.error('saveUserBaseCurrency failed', e)
     })
@@ -203,10 +204,11 @@ export const useUserStore = defineStore('user', () => {
       return
 
     upsertRow('user_settings', uid.value, {
-      baseCurrency: baseCurrency.value,
+      base_currency_code: baseCurrency.value,
+      is_payment_reminders_enabled: value ? 1 : 0,
       locale: locale.value,
-      paymentReminders: value ? 1 : 0,
-      userId: uid.value,
+      updated_at: Date.now(),
+      user_id: uid.value,
     }).catch((e) => {
       logger.error('savePaymentReminders failed', e)
     })
@@ -225,9 +227,10 @@ export const useUserStore = defineStore('user', () => {
       return
 
     upsertRow('user_settings', uid.value, {
-      baseCurrency: baseCurrency.value,
+      base_currency_code: baseCurrency.value,
       locale: value,
-      userId: uid.value,
+      updated_at: Date.now(),
+      user_id: uid.value,
     }).catch((e) => {
       logger.error('saveUserLocale failed', e)
     })
@@ -244,19 +247,18 @@ export const useUserStore = defineStore('user', () => {
       const s = rows[0]
       if (!s)
         return
-      if (s.baseCurrency)
-        baseCurrency.value = s.baseCurrency
+      if (s.base_currency_code)
+        baseCurrency.value = s.base_currency_code
       if (s.locale && s.locale !== locale.value) {
         locale.value = s.locale
         useNuxtApp().$i18n.setLocale(s.locale)
       }
-      paymentReminders.value = !(s.paymentReminders === 0 || s.paymentReminders === false)
+      paymentReminders.value = !(s.is_payment_reminders_enabled === 0 || s.is_payment_reminders_enabled === false)
       isSettingsLoaded.value = true
-      // Civil-date model (P0): capture the device timezone so the backfill can map each
-      // stored instant to the right calendar day. Written once / when it changes.
+      // The device timezone, so a server-side writer can map an instant to the user's civil day.
       const deviceTz = new Intl.DateTimeFormat().resolvedOptions().timeZone
       if (deviceTz && s.timezone !== deviceTz && uid.value) {
-        upsertRow('user_settings', uid.value, { timezone: deviceTz, userId: uid.value })
+        upsertRow('user_settings', uid.value, { timezone: deviceTz, updated_at: Date.now(), user_id: uid.value })
           .catch(e => logger.error('capture timezone failed', e))
       }
       persistUserSettings()
@@ -318,7 +320,7 @@ export const useUserStore = defineStore('user', () => {
     walletsStore.setWallets(null)
     const loansStore = useLoansStore()
     loansStore.setLoans({})
-    loansStore.setScheduleRows({})
+    loansStore.setScheduleOverrides({})
     useStatViewsStore().items = []
     useTrnsFormStore().$reset()
     useCookie<boolean>('finapp.isOnboarded').value = false

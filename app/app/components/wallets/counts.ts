@@ -38,7 +38,7 @@ export function computeWalletCounts(params: {
     if (!wallet)
       continue
 
-    const amount = toBase(wallet.amount ?? 0, wallet.currency)
+    const amount = toBase(wallet.amount ?? 0, wallet.currencyCode)
 
     // "Archived" and "not in total" are independent slices: a wallet flagged both shows in both.
     if (wallet.isArchived) {
@@ -46,7 +46,7 @@ export function computeWalletCounts(params: {
       hasArchivedWallet = true
     }
 
-    if (wallet.isExcludeInTotal)
+    if (wallet.isExcludedFromTotal)
       sum.excludeInTotal += amount
 
     // A flagged wallet stays out of every regular row until a matching switch is on, so the
@@ -58,11 +58,11 @@ export function computeWalletCounts(params: {
       sum.total += amount
 
     byType[wallet.type] += amount
-    if (wallet.type === 'credit' && wallet.creditLimit)
-      sum.creditPossible += toBase(wallet.creditLimit, wallet.currency)
+    if (wallet.type === 'credit_card' && wallet.creditLimit)
+      sum.creditPossible += toBase(wallet.creditLimit, wallet.currencyCode)
 
     // A debt is not money to withdraw: credit products join "available" through their own rows, not twice.
-    if (wallet.isWithdrawal && !isCreditProduct(wallet.type))
+    if (wallet.isWithdrawable && !isCreditProduct(wallet.type))
       sum.withdrawal += amount
   }
 
@@ -70,69 +70,69 @@ export function computeWalletCounts(params: {
     archived: {
       id: 'isArchived',
       isShow: hasArchivedWallet,
-      value: sum.archived,
+      value: Math.round(sum.archived),
     },
     // A big loan would keep one combined row always negative, so cards and loans get a row each.
     available: {
       id: 'isAvailable',
-      isShow: sum.withdrawal !== 0 && byType.credit !== 0,
-      value: sum.withdrawal + byType.credit,
+      isShow: sum.withdrawal !== 0 && byType.credit_card !== 0,
+      value: Math.round(sum.withdrawal + byType.credit_card),
     },
     availableAll: {
       id: 'isAvailableAll',
       isShow: sum.withdrawal !== 0 && byType.loan !== 0,
-      value: sum.withdrawal + byType.credit + byType.loan,
+      value: Math.round(sum.withdrawal + byType.credit_card + byType.loan),
+    },
+    bank_account: {
+      id: 'bank_account',
+      isShow: byType.bank_account !== 0,
+      value: Math.round(byType.bank_account),
     },
     cash: {
       id: 'cash',
       isShow: totalWalletsCount > 1 && byType.cash !== 0,
-      value: byType.cash,
+      value: Math.round(byType.cash),
     },
-    cashless: {
-      id: 'cashless',
-      isShow: byType.cashless !== 0,
-      value: byType.cashless,
-    },
-    credit: {
-      id: 'credit',
-      isShow: byType.credit !== 0,
-      secondValue: sum.creditPossible,
-      value: byType.credit,
+    credit_card: {
+      id: 'credit_card',
+      isShow: byType.credit_card !== 0,
+      secondValue: Math.round(sum.creditPossible),
+      value: Math.round(byType.credit_card),
     },
     crypto: {
       id: 'crypto',
       isShow: byType.crypto !== 0,
-      value: byType.crypto,
+      value: Math.round(byType.crypto),
     },
     debt: {
       id: 'debt',
       isShow: byType.debt !== 0,
-      value: byType.debt,
+      value: Math.round(byType.debt),
     },
     deposit: {
       id: 'deposit',
       isShow: byType.deposit !== 0,
-      value: byType.deposit,
+      value: Math.round(byType.deposit),
     },
     excludeInTotal: {
-      id: 'isExcludeInTotal',
+      id: 'isExcludedFromTotal',
       isShow: sum.excludeInTotal !== 0,
-      value: sum.excludeInTotal,
+      value: Math.round(sum.excludeInTotal),
     },
     loan: {
       id: 'loan',
       isShow: byType.loan !== 0,
-      value: byType.loan,
+      value: Math.round(byType.loan),
     },
     total: {
       id: 'total',
       isShow: true,
-      value: sum.total,
+      value: Math.round(sum.total),
     },
     withdrawal: {
-      id: 'isWithdrawal',
+      id: 'isWithdrawable',
       isShow: sum.withdrawal !== 0,
-      value: sum.withdrawal,
+      value: Math.round(sum.withdrawal),
     },
   }
 }
@@ -141,9 +141,9 @@ type StatsFlags = { includeArchived?: boolean, includeExcluded?: boolean }
 
 /** Whether a wallet counts toward totals: each switch adds the wallets carrying its flag, whatever their other flag. */
 export function isCountedInTotals(wallet: WalletItemComputed, flags: StatsFlags = {}): boolean {
-  if (!wallet.isArchived && !wallet.isExcludeInTotal)
+  if (!wallet.isArchived && !wallet.isExcludedFromTotal)
     return true
-  return (wallet.isArchived && !!flags.includeArchived) || (wallet.isExcludeInTotal && !!flags.includeExcluded)
+  return (wallet.isArchived && !!flags.includeArchived) || (wallet.isExcludedFromTotal && !!flags.includeExcluded)
 }
 
 /** Sum in base currency of the wallets that count toward totals. */
@@ -152,9 +152,9 @@ export function sumWalletsInBase(walletIds: WalletId[], wallets: Record<WalletId
   for (const id of walletIds) {
     const wallet = wallets[id]
     if (wallet && isCountedInTotals(wallet, flags))
-      total += toBase(wallet.amount, wallet.currency)
+      total += toBase(wallet.amount, wallet.currencyCode)
   }
-  return total
+  return Math.round(total)
 }
 
 /** Sum in the wallets' own currency (a same-currency group) of the wallets that count toward totals. */

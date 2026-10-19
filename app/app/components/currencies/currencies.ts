@@ -2,7 +2,6 @@ import type { CurrencyCode } from '~/components/currencies/types'
 
 export const currencies: {
   code: CurrencyCode
-  precision?: number
   symbol?: string
 }[] = [{
   code: 'CNH',
@@ -52,7 +51,6 @@ export const currencies: {
   code: 'BSD',
 }, {
   code: 'BTC',
-  precision: 8,
   symbol: '₿',
 }, {
   code: 'BTN',
@@ -98,7 +96,6 @@ export const currencies: {
   code: 'DKK',
 }, {
   code: 'DOGE',
-  precision: 2,
   symbol: 'Ð',
 }, {
   code: 'DOP',
@@ -112,7 +109,6 @@ export const currencies: {
   code: 'ETB',
 }, {
   code: 'ETH',
-  precision: 6,
   symbol: 'Ξ',
 }, {
   code: 'EUR',
@@ -149,11 +145,9 @@ export const currencies: {
   code: 'HUF',
 }, {
   code: 'IDR',
-  precision: 0,
   symbol: 'Rp',
 }, {
   code: 'ILS',
-  precision: 2,
   symbol: '₪',
 }, {
   code: 'INR',
@@ -265,7 +259,6 @@ export const currencies: {
   code: 'RSD',
 }, {
   code: 'RUB',
-  precision: 0,
   symbol: '₽',
 }, {
   code: 'RWF',
@@ -287,7 +280,6 @@ export const currencies: {
   code: 'SLL',
 }, {
   code: 'SOL',
-  precision: 4,
 }, {
   code: 'SOS',
 }, {
@@ -304,7 +296,6 @@ export const currencies: {
   code: 'SZL',
 }, {
   code: 'THB',
-  precision: 0,
   symbol: '฿',
 }, {
   code: 'TJS',
@@ -314,12 +305,10 @@ export const currencies: {
   code: 'TND',
 }, {
   code: 'TON',
-  precision: 2,
 }, {
   code: 'TOP',
 }, {
   code: 'TRY',
-  precision: 2,
   symbol: '₺',
 }, {
   code: 'TTD',
@@ -336,7 +325,6 @@ export const currencies: {
   symbol: '$',
 }, {
   code: 'USDT',
-  precision: 2,
   symbol: '₮',
 }, {
   code: 'USN',
@@ -384,7 +372,6 @@ export const currencies: {
   code: 'XPT',
 }, {
   code: 'XRP',
-  precision: 2,
 }, {
   code: 'XSU',
 }, {
@@ -402,35 +389,3 @@ export const currencies: {
 }, {
   code: 'ZWL',
 }]
-
-const precisionByCode = new Map(currencies.map(c => [c.code, c.precision ?? 2]))
-
-/** Display precision from the list above (RUB shows whole units); 2 when unknown. */
-function currencyPrecision(code: string | undefined): number {
-  return (code ? precisionByCode.get(code) : undefined) ?? 2
-}
-
-// Older engines (Safari < 15.4) lack supportedValuesOf: every code Intl accepts then reads as ISO.
-const isoCodes = typeof Intl.supportedValuesOf === 'function' ? new Set(Intl.supportedValuesOf('currency')) : null
-const minorUnitByCode = new Map<string, number>()
-
-/**
- * Decimal places of the currency's minor unit, for money math (RUB 2, JPY 0, KWD 3). ISO 4217 via
- * Intl; crypto is not in ISO, so it falls back to the list's precision (BTC 8).
- */
-export function currencyMinorUnit(code: string | undefined): number {
-  if (!code)
-    return 2
-  let digits = minorUnitByCode.get(code)
-  if (digits === undefined) {
-    digits = currencyPrecision(code)
-    if (!isoCodes || isoCodes.has(code)) {
-      try {
-        digits = new Intl.NumberFormat('en', { currency: code, style: 'currency' }).resolvedOptions().maximumFractionDigits ?? 2
-      }
-      catch {} // a code longer than three letters (USDT) is not a currency to Intl
-    }
-    minorUnitByCode.set(code, digits)
-  }
-  return digits
-}

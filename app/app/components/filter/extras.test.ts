@@ -4,11 +4,10 @@ import type { ExtrasChipLabels, FilterExtras } from '~/components/filter/extras'
 import type { TrnItem } from '~/components/trns/types'
 
 import { countActiveExtras, createExtrasMatcher, defaultFilterExtras, extrasChips, extrasToQuery, parseFilterExtras } from '~/components/filter/extras'
-import { TrnType } from '~/components/trns/types'
 
 const wallets = {
-  eur: { currency: 'EUR', name: 'Euro cash' },
-  usd: { currency: 'USD', name: 'Dollar card' },
+  eur: { currencyCode: 'EUR', name: 'Euro cash' },
+  usd: { currencyCode: 'USD', name: 'Dollar card' },
 } as any
 
 const categories = {
@@ -19,10 +18,10 @@ const categories = {
 
 const ctx = { baseCurrency: 'USD', categories, rates: { EUR: 0.5, USD: 1 }, wallets }
 
-const expense: TrnItem = { amount: 100, categoryId: 'food', date: 1, desc: 'Weekly Groceries', type: TrnType.Expense, updatedAt: 1, walletId: 'usd' }
-const income: TrnItem = { amount: 300, categoryId: 'salary', date: 1, type: TrnType.Income, updatedAt: 1, walletId: 'eur' }
-const transfer: TrnItem = { categoryId: 'transfer', date: 1, expenseAmount: 50, expenseWalletId: 'usd', incomeAmount: 50, incomeWalletId: 'eur', type: TrnType.Transfer, updatedAt: 1 }
-const adjustment: TrnItem = { amount: 5, categoryId: 'adjustment', date: 1, desc: '  ', type: TrnType.Income, updatedAt: 1, walletId: 'usd' }
+const expense: TrnItem = { categoryId: 'food', createdAt: 1, date: 0, description: 'Weekly Groceries', fromAmount: 10000, fromWalletId: 'usd', type: 'expense', updatedAt: 1 }
+const income: TrnItem = { categoryId: 'salary', createdAt: 1, date: 0, toAmount: 30000, toWalletId: 'eur', type: 'income', updatedAt: 1 }
+const transfer: TrnItem = { createdAt: 1, date: 0, fromAmount: 5000, fromWalletId: 'usd', toAmount: 5000, toWalletId: 'eur', type: 'transfer', updatedAt: 1 }
+const adjustment: TrnItem = { createdAt: 1, date: 0, description: '  ', toAmount: 500, toWalletId: 'usd', type: 'adjustment', updatedAt: 1 }
 
 const labels: ExtrasChipLabels = {
   amount: 'Amount',
@@ -72,8 +71,7 @@ describe('createExtrasMatcher', () => {
     expect([expense, income, transfer, adjustment].filter(createExtrasMatcher(extras({ type: 'expense' }), ctx))).toEqual([expense])
     expect([expense, income, transfer, adjustment].filter(createExtrasMatcher(extras({ type: 'transfer' }), ctx))).toEqual([transfer])
     expect([expense, income, transfer, adjustment].filter(createExtrasMatcher(extras({ type: 'adjustment' }), ctx))).toEqual([adjustment])
-    // matchesTrnViewType keeps adjustments under their underlying type, as /history does
-    expect([expense, income, transfer, adjustment].filter(createExtrasMatcher(extras({ type: 'income' }), ctx))).toEqual([income, adjustment])
+    expect([expense, income, transfer, adjustment].filter(createExtrasMatcher(extras({ type: 'income' }), ctx))).toEqual([income])
   })
 
   it('filters by description presence and text', () => {
@@ -113,12 +111,12 @@ describe('extrasChips', () => {
     expect(chips[1]!.tooltip).toBe(`Search: “${'a'.repeat(30)}”`)
     expect(chips[2]).toMatchObject({ label: '“milk”', patch: { descText: '' }, tooltip: 'Description: “milk”' })
     expect(chips[3]).toMatchObject({ patch: { desc: 'all' }, tooltip: 'Description: Without description' })
-    expect(chips[4]).toMatchObject({ label: '≥ 100.00 $', patch: { amountMax: null, amountMin: null }, tooltip: 'Amount: ≥ 100.00 $' })
+    expect(chips[4]).toMatchObject({ label: '≥ 100 $', patch: { amountMax: null, amountMin: null }, tooltip: 'Amount: ≥ 100 $' })
   })
 
   it('formats two-sided and max-only ranges', () => {
-    expect(extrasChips(extras({ amountMax: 500, amountMin: 100 }), 'USD', labels)[0]!.label).toBe('100.00 - 500.00 $')
-    expect(extrasChips(extras({ amountMax: 500 }), 'USD', labels)[0]!.label).toBe('≤ 500.00 $')
+    expect(extrasChips(extras({ amountMax: 500, amountMin: 100 }), 'USD', labels)[0]!.label).toBe('100 - 500 $')
+    expect(extrasChips(extras({ amountMax: 500 }), 'USD', labels)[0]!.label).toBe('≤ 500 $')
     expect(extrasChips(defaultFilterExtras, 'USD', labels)).toEqual([])
   })
 })

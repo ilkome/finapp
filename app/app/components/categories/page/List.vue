@@ -18,10 +18,8 @@ const router = useRouter()
 const categoriesStore = useCategoriesStore()
 
 const userIds = computed(() => categoriesStore.categoriesRootIds.filter(id => !isReservedCategoryId(id)))
-// Reserved categories get their own section, transfer included (pickers use the roots without it).
-const systemIds = computed(() => categoriesStore.categoriesRootIds.length
-  ? [...categoriesStore.categoriesRootIds.filter(isReservedCategoryId), 'transfer']
-  : [])
+// Reserved categories get their own section.
+const systemIds = computed(() => categoriesStore.categoriesRootIds.filter(isReservedCategoryId))
 const listIds = computed(() => [...userIds.value, ...systemIds.value])
 
 const { folderIcon, isExpanded, toggle, toggleAll } = useCategoriesExpanded('categoriesPage', listIds)

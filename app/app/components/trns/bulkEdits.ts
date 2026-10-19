@@ -4,7 +4,7 @@ import type { CategoryId } from '~/components/categories/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { trnItemSchema, TrnType } from '~/components/trns/types'
+import { trnItemSchema, trnWalletId } from '~/components/trns/types'
 
 export type TrnsBulkEdit
   = | { type: 'setDescription', value: string }
@@ -54,18 +54,18 @@ export function buildTrnsBulkEdit({
       continue
 
     if (action.type === 'setCategory') {
-      if (current.type === TrnType.Transfer || current.categoryId === 'transfer') {
+      if (current.type === 'transfer' || current.type === 'adjustment') {
         result.ineligible.push({ id, reason: 'transfer' })
         continue
       }
-      if (!isCategoryTransactible(action.value) || action.value === 'transfer') {
+      if (!isCategoryTransactible(action.value)) {
         result.ineligible.push({ id, reason: 'invalidCategory' })
         continue
       }
     }
 
     if (action.type === 'setWallet') {
-      if (current.type === TrnType.Transfer) {
+      if (current.type === 'transfer') {
         result.ineligible.push({ id, reason: 'transfer' })
         continue
       }
@@ -77,33 +77,35 @@ export function buildTrnsBulkEdit({
 
     let next = current
     if (action.type === 'setDescription') {
-      next = { ...current, desc: description, updatedAt: now }
+      next = { ...current, description, updatedAt: now }
     }
     else if (action.type === 'clearDescription') {
-      const { desc: _desc, ...withoutDescription } = current
+      const { description: _description, ...withoutDescription } = current
       next = { ...withoutDescription, updatedAt: now }
     }
     else if (action.type === 'setDate') {
       next = { ...current, date: action.value, updatedAt: now }
     }
     else if (action.type === 'setCategory') {
-      next = { ...current, categoryId: action.value, updatedAt: now } as typeof current
+      next = { ...current, categoryId: action.value, updatedAt: now }
     }
     else {
-      if (current.type === TrnType.Transfer)
+      if (current.type === 'transfer')
         throw new Error(`Transfer ${id} cannot use a single wallet`)
-      next = { ...current, updatedAt: now, walletId: action.value }
+      next = current.fromWalletId
+        ? { ...current, fromWalletId: action.value, updatedAt: now }
+        : { ...current, toWalletId: action.value, updatedAt: now }
     }
 
     const isUnchanged = action.type === 'setDescription'
-      ? current.desc === description
+      ? current.description === description
       : action.type === 'clearDescription'
-        ? current.desc === undefined
+        ? current.description === undefined
         : action.type === 'setDate'
           ? current.date === action.value
           : action.type === 'setCategory'
             ? current.categoryId === action.value
-            : current.type !== TrnType.Transfer && current.walletId === action.value
+            : current.type !== 'transfer' && trnWalletId(current) === action.value
 
     if (isUnchanged) {
       result.unchangedIds.push(id)

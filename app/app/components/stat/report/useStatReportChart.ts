@@ -1,18 +1,20 @@
 import type { ComputedRef, Ref } from 'vue'
 
 import type { CategoryId } from '~/components/categories/types'
+import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
 import type { useStatReportData } from '~/components/stat/report/useStatReportData'
 import type { ChartSeries, IntervalData, SeriesSlugSelected, StatReportType } from '~/components/stat/types'
 
+import { minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { buildCashflowPieData, hideSingleColorPie } from '~/components/stat/chart/cashflowPie'
 import { aggregateCategoryTotals, buildCategoriesPieData, buildCategoriesSeries } from '~/components/stat/chart/categoryBreakdown'
 import { resolveEffectiveChartType, shouldUseQuickCategoryCashflowSeries } from '~/components/stat/chart/types'
 import { useStatChart } from '~/components/stat/chart/useStatChart'
 import { applyChartValueDisplay } from '~/components/stat/chart/valueDisplay'
-import { TrnType } from '~/components/trns/types'
 
 export function useStatReportChart(params: {
   data: ReturnType<typeof useStatReportData>
@@ -28,6 +30,9 @@ export function useStatReportChart(params: {
 }) {
   const { t } = useI18n()
   const categoriesStore = useCategoriesStore()
+  const currenciesStore = useCurrenciesStore()
+  // Totals are base minor units; echarts scales and ticks need decimals, so every chart value crosses here.
+  const toChartValue = (minor: number) => minorToAmount(minor, currenciesStore.base)
   const { createAverageMarkLine, createSeriesItem, withMarkArea } = useStatChart()
 
   const categoriesBreakdownType = computed<SeriesSlugSelected>(() => {
@@ -59,9 +64,9 @@ export function useStatReportChart(params: {
       const trn = params.data.trnsItems.value[trnId]
       const type = trn?.type
       const categoryId = trn?.categoryId
-      hasExpense ||= type === TrnType.Expense
-      hasIncome ||= type === TrnType.Income
-      if ((type === TrnType.Expense || type === TrnType.Income) && categoryId)
+      hasExpense ||= type === 'expense'
+      hasIncome ||= type === 'income'
+      if ((type === 'expense' || type === 'income') && categoryId)
         activeCategoryIds.add(categoryId)
     }
     return { activeCategoryCount: activeCategoryIds.size, hasExpense, hasIncome }
@@ -77,7 +82,7 @@ export function useStatReportChart(params: {
   function computeSeriesAverage(typeSlug: SeriesSlugSelected, intervals: IntervalData[]): number | false {
     if (!params.statConfig.config.value.chart.isShowAverage || intervals.length === 0)
       return false
-    return intervals.reduce((total, interval) => total + interval.total[typeSlug], 0) / intervals.length
+    return toChartValue(intervals.reduce((total, interval) => total + interval.total[typeSlug], 0) / intervals.length)
   }
 
   const chartSeries = computed<ChartSeries[]>(() => {
@@ -134,6 +139,7 @@ export function useStatReportChart(params: {
       )
     }
 
+    series = series.map(item => ({ ...item, data: item.data.map(toChartValue) }))
     const displayedSeries = applyChartValueDisplay(series, params.statConfig.config.value.chart.valueDisplay)
     return chartType !== 'pie' && selectedInterval?.start && params.statDate.params.value.intervalSelected >= 0
       ? withMarkArea(displayedSeries, selectedInterval.start, chartType)
@@ -153,8 +159,11 @@ export function useStatReportChart(params: {
       : params.data.intervalsDataWithFilteredCategories.value,
     trnsItems: params.data.trnsItems.value,
   }))
+  function toChartPie(data: CategoryPieDatum[]): CategoryPieDatum[] {
+    return data.map(item => ({ ...item, value: toChartValue(item.value) }))
+  }
   function buildCategoryPieData(type: 'expense' | 'income') {
-    return buildCategoriesPieData({ aggregated: pieAggregated.value, categoriesItems: categoriesStore.items ?? {}, type })
+    return toChartPie(buildCategoriesPieData({ aggregated: pieAggregated.value, categoriesItems: categoriesStore.items ?? {}, type }))
   }
   const summaryCategoryPieData = computed(() => {
     const expense = buildCategoryPieData('expense')
@@ -162,7 +171,7 @@ export function useStatReportChart(params: {
     return {
       expense: params.shouldHideSingleColorSummaryPie.value ? hideSingleColorPie(expense) : expense,
       income: params.shouldHideSingleColorSummaryPie.value ? hideSingleColorPie(income) : income,
-      net: buildCashflowPieData(params.data.rangeTotal.value),
+      net: toChartPie(buildCashflowPieData(params.data.rangeTotal.value)),
     }
   })
   const focusedCategoryPieData = computed(() => {

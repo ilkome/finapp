@@ -82,7 +82,7 @@ export type IntervalData = {
 }
 
 export type StatReportSelectedRecord = {
-  categoryId: CategoryId
+  categoryId?: CategoryId
   id: TrnId
 }
 

@@ -1,20 +1,18 @@
-import { roundTo } from '~~/utils/amount/round'
+import type { LoanParams, LoanSummary, PaymentRow, PrepaymentMode, ScheduleRow, WhatIfResult } from '~/components/loans/engine/types'
 
-import type { LoanParams, LoanSummary, OverpaymentMode, PaymentRow, ScheduleRow, WhatIfResult } from '~/components/loans/engine/types'
-
-import { rebuildTail, roundMoney } from '~/components/loans/engine/schedule'
+import { rebuildTail } from '~/components/loans/engine/schedule'
 
 export function isSettled(row: PaymentRow): boolean {
   return row.status === 'paid' || row.status === 'late'
 }
 
-function sum(params: LoanParams, rows: PaymentRow[], pick: (row: PaymentRow) => number): number {
-  return roundMoney(params, rows.reduce((total, row) => total + pick(row), 0))
+function sum(rows: PaymentRow[], pick: (row: PaymentRow) => number): number {
+  return rows.reduce((total, row) => total + pick(row), 0)
 }
 
 /** What is still owed on a row: its whole amount, less what a partial payment already covered. */
-export function owedOf(row: PaymentRow, precision = 2): number {
-  return roundTo(Math.max(row.totalAmount - Math.max(row.paidPrincipal + row.paidInterest, 0), 0), precision)
+export function owedOf(row: PaymentRow): number {
+  return Math.max(row.totalAmount - Math.max(row.paidPrincipal + row.paidInterest, 0), 0)
 }
 
 /**
@@ -38,7 +36,7 @@ export function effectiveRateOf(rows: PaymentRow[], principalAmount: number, cou
     return 0
 
   const interest = paid.reduce((total, { row }) => total + row.paidInterest, 0)
-  return roundTo((interest / paid.length / avgBalance) * 12 * 100, 2)
+  return Math.round((interest / paid.length / avgBalance) * 12 * 100 * 100) / 100
 }
 
 /**
@@ -50,7 +48,7 @@ export function impliedRate(rows: ScheduleRow[]): number {
   const opening = regular.reduce((total, row) => total + row.remainingBalance + row.principalPart, 0)
   if (opening <= 0)
     return 0
-  return roundTo((regular.reduce((total, row) => total + row.interestPart, 0) / opening) * 12 * 100, 2)
+  return Math.round((regular.reduce((total, row) => total + row.interestPart, 0) / opening) * 12 * 100 * 100) / 100
 }
 
 /**
@@ -77,10 +75,10 @@ export function summarizeLoan(params: LoanParams, rows: PaymentRow[], walletBala
   const paid = rows.filter(isSettled)
   const unpaid = rows.filter(row => !isSettled(row))
 
-  const paidPrincipal = sum(params, rows, row => row.paidPrincipal)
-  const paidInterest = sum(params, rows, row => row.paidInterest)
-  const paidFine = sum(params, rows, row => row.paidFine)
-  const paidTotal = roundMoney(params, paidPrincipal + paidInterest + paidFine)
+  const paidPrincipal = sum(rows, row => row.paidPrincipal)
+  const paidInterest = sum(rows, row => row.paidInterest)
+  const paidFine = sum(rows, row => row.paidFine)
+  const paidTotal = paidPrincipal + paidInterest + paidFine
   const next = unpaid[0]
   const isClosed = unpaid.length === 0 && paid.length > 0
 
@@ -93,19 +91,19 @@ export function summarizeLoan(params: LoanParams, rows: PaymentRow[], walletBala
     interestShare: paidTotal === 0 ? 0 : paidInterest / paidTotal,
     isClosed,
     monthsLeft: unpaid.length,
-    nextPayment: next ? { amount: owedOf(next, params.precision), date: next.date } : null,
+    nextPayment: next ? { amount: owedOf(next), date: next.date } : null,
     overdueCount: rows.filter(row => row.status === 'overdue').length,
     paidFine,
     paidInterest,
     paidPrincipal,
     paidTotal,
     plannedEndDate: unpaid.at(-1)?.date ?? null,
-    plannedInterest: sum(params, unpaid, row => row.interestPart),
-    plannedTotal: sum(params, unpaid, row => row.totalAmount),
+    plannedInterest: sum(unpaid, row => row.interestPart),
+    plannedTotal: sum(unpaid, row => row.totalAmount),
     projectionRate: params.annualRate,
-    remaining: roundMoney(params, -walletBalance),
+    remaining: -walletBalance,
     rows,
-    unrecognized: roundMoney(params, walletBalance + (params.principalAmount - paidPrincipal)),
+    unrecognized: walletBalance + (params.principalAmount - paidPrincipal),
   }
 }
 
@@ -116,7 +114,7 @@ export function whatIf(
   params: LoanParams,
   rows: PaymentRow[],
   extra: number,
-  mode: OverpaymentMode,
+  mode: PrepaymentMode,
 ): WhatIfResult {
   const from = rows.findIndex(row => !isSettled(row))
   if (from < 0)
@@ -128,24 +126,24 @@ export function whatIf(
   // A bank schedule is only fact for the rows already paid: the unpaid ones are the bank's own
   // plan, which the prepayment rewrites, so they are re-solved like generated rows here.
   const plan = tail.map(row => ({ ...row, source: 'generated' as const }))
-  const solve = (start: number) => rebuildTail({ ...params, overpaymentMode: mode }, plan, start, rows[from - 1]?.date)
-  const rebuilt = solve(roundMoney(params, balance - Math.max(0, extra)))
+  const solve = (start: number) => rebuildTail({ ...params, prepaymentMode: mode }, plan, start, rows[from - 1]?.date)
+  const rebuilt = solve(Math.round(balance - Math.max(0, extra)))
 
   // Our re-solve charges interest with the model's accrual while the bank's plan accrues its own
   // way, so the two never agree even with nothing extra paid. Scale the re-solved
   // interest by how far the model is off the plan: no extra saves 0, paying it all off saves the
   // whole planned interest.
-  const planned = sum(params, tail, row => row.interestPart)
+  const planned = sum(tail, row => row.interestPart)
   // The baseline does not depend on `extra`: solve it once per schedule and mode, not per keystroke.
   const baselines = modelBaselines.get(rows) ?? new Map<string, number>()
   modelBaselines.set(rows, baselines)
   const baselineKey = `${mode}:${params.annualRate}`
-  const model = baselines.get(baselineKey) ?? sum(params, solve(balance), row => row.interestPart)
+  const model = baselines.get(baselineKey) ?? sum(solve(balance), row => row.interestPart)
   baselines.set(baselineKey, model)
   const scale = model > 0 ? planned / model : 1
 
   return {
-    interestSaved: roundMoney(params, planned - sum(params, rebuilt, row => row.interestPart) * scale),
+    interestSaved: Math.round(planned - sum(rebuilt, row => row.interestPart) * scale),
     newEndDate: rebuilt.at(-1)?.date ?? null,
   }
 }

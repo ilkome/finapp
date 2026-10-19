@@ -1,20 +1,22 @@
 import localforage from 'localforage'
 import { hasAnyLocalData, waitForFirstSync, waitForLocalDbOwner } from '~~/services/powersync/db'
 
+import type { BankReports } from '~/components/bankReports/types'
 import type { Categories } from '~/components/categories/types'
 import type { Rates } from '~/components/currencies/types'
-import type { Loans, LoanScheduleRows } from '~/components/loans/types'
+import type { Loans, LoanScheduleOverrides } from '~/components/loans/types'
 import type { LoansCache } from '~/components/loans/useLoansStore'
 import type { Trns } from '~/components/trns/types'
 import type { User, UserSettingsCache } from '~/components/user/useUserStore'
 import type { Wallets } from '~/components/wallets/types'
 
+import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { parseCategoryOverrides } from '~/components/categories/utils'
 import { ratesSchema } from '~/components/currencies/types'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
-import { loanItemSchema, loanScheduleRowSchema, parseValidEntries } from '~/components/loans/types'
+import { loanItemSchema, loanScheduleOverrideSchema, parseValidEntries } from '~/components/loans/types'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useStatViewsStore } from '~/components/stat/views/useStatViewsStore'
@@ -23,6 +25,7 @@ import { userSettingsSchema } from '~/components/user/types'
 import { useUserStore } from '~/components/user/useUserStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { getPersistedUid } from '~/composables/useAuthSession'
+import { ensureDataSchema } from '~/composables/useDataSchema'
 import { readStoreCache } from '~/composables/useStoreCache'
 import { unblockPersist } from '~/composables/useStoreSync'
 import { createLogger } from '~/utils/logger'
@@ -46,6 +49,7 @@ export function useInitApp() {
   const categoriesStore = useCategoriesStore()
   const trnsStore = useTrnsStore()
   const loansStore = useLoansStore()
+  const bankReportsStore = useBankReportsStore()
   const statViewsStore = useStatViewsStore()
 
   // True once all three data stores have received their first local-SQLite watch emission (even
@@ -108,6 +112,7 @@ export function useInitApp() {
     categoriesStore.initCategories()
     walletsStore.initWallets()
     loansStore.initLoans()
+    void bankReportsStore.initBankReports()
     trnsStore.initTrns()
   }
 
@@ -118,6 +123,7 @@ export function useInitApp() {
   // primeFromCache only fills `items` (never `isLoaded`), so isHydrated/bootState stay watch-gated.
   function primeStoresFromCache(): Promise<void> {
     primePromise ??= (async () => {
+      await ensureDataSchema()
       const snap = await readStoreCache()
       if (snap) {
         trnsStore.primeFromCache((snap.trns as Trns) ?? null)
@@ -127,7 +133,8 @@ export function useInitApp() {
         currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
         loansStore.primeFromCache((snap.loans as LoansCache) ?? null)
         statViewsStore.primeFromCache((snap.statViews as unknown[]) ?? null)
-        categoriesStore.primeOverridesFromCache(snap.categoryOverrides)
+        categoriesStore.primeOverridesFromCache(snap.displayOverrides)
+        bankReportsStore.primeFromCache((snap.bankReports as BankReports) ?? null)
       }
     })()
     return primePromise
@@ -135,16 +142,16 @@ export function useInitApp() {
 
   // Demo mode keeps its own localforage-backed cache (no backend).
   async function loadDemoFromCache() {
-    const [user, rawUserSettings, rawCurrencies, categories, categoryOverrides, wallets, trns, loans, loanScheduleRows] = await Promise.all([
+    const [user, rawUserSettings, rawCurrencies, categories, displayOverrides, wallets, trns, loans, loanScheduleOverrides] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem(STORAGE_KEYS.userSettings),
       localforage.getItem<{ rates?: unknown }>(STORAGE_KEYS.currencies),
       localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
-      localforage.getItem(STORAGE_KEYS.categoryOverrides),
+      localforage.getItem(STORAGE_KEYS.displayOverrides),
       localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
       localforage.getItem<Trns | null>(STORAGE_KEYS.trns),
       localforage.getItem<Loans | null>(STORAGE_KEYS.loans),
-      localforage.getItem<LoanScheduleRows | null>(STORAGE_KEYS.loanScheduleRows),
+      localforage.getItem<LoanScheduleOverrides | null>(STORAGE_KEYS.loanScheduleOverrides),
     ])
 
     userStore.setUser(user ?? null)
@@ -161,16 +168,18 @@ export function useInitApp() {
       currenciesStore.setRates(rates.data)
 
     walletsStore.setWallets(wallets ?? null)
-    categoriesStore.setCategoryOverrides(parseCategoryOverrides(categoryOverrides))
+    categoriesStore.setCategoryOverrides(parseCategoryOverrides(displayOverrides))
     categoriesStore.setCategories(categories ?? null)
     trnsStore.setTrns(trns ?? null)
     loansStore.setLoans(parseValidEntries(loanItemSchema, loans))
-    loansStore.setScheduleRows(parseValidEntries(loanScheduleRowSchema, loanScheduleRows))
+    loansStore.setScheduleOverrides(parseValidEntries(loanScheduleOverrideSchema, loanScheduleOverrides))
+    await bankReportsStore.initBankReports()
   }
 
   // Offline-first: local PowerSync SQLite is the only data source the UI reads. This arms the live
   // watches; their first emission fills the stores from disk. The server sync runs in the background.
   async function startLocalData() {
+    await ensureDataSchema()
     unblockPersist()
 
     if (useDemo().isDemo.value) {

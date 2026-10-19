@@ -1,11 +1,37 @@
 {
   "backgroundType": "none",
-  "category": { "color": "#e0745a", "icon": "lucide:utensils", "name": "Groceries", "parentId": "food" },
+  "category": {
+    "color": "#e0745a",
+    "icon": "lucide:utensils",
+    "name": "Groceries",
+    "parentId": "food"
+  },
   "currencyCode": "USD",
   "isLines": true,
   "isShowParent": true,
-  "item": { "id": "groceries", "name": "Groceries", "trend": [10, 40, 25, 60], "trnsIds": ["t1", "t2"], "value": -320.5 },
-  "maxCategoryValues": { "expense": 1000, "income": 500 },
-  "parentCategory": { "color": "#c04a30", "icon": "lucide:apple", "name": "Food" },
+  "item": {
+    "id": "groceries",
+    "name": "Groceries",
+    "trend": [
+      1000,
+      4000,
+      2500,
+      6000
+    ],
+    "trnsIds": [
+      "t1",
+      "t2"
+    ],
+    "value": -32050
+  },
+  "maxCategoryValues": {
+    "expense": 100000,
+    "income": 50000
+  },
+  "parentCategory": {
+    "color": "#c04a30",
+    "icon": "lucide:apple",
+    "name": "Food"
+  },
   "trendType": "bar"
 }

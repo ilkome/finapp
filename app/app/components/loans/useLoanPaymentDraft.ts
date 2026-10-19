@@ -1,13 +1,10 @@
-import { roundTo } from '~~/utils/amount/round'
-
 import type { TrnFormValuesWithLoan } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { getAmountInRate } from '~/components/amount/getTotal'
-import { currencyMinorUnit } from '~/components/currencies/currencies'
+import { amountToMinor, minorToAmount } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { evaluateExpression, formatInput } from '~/components/trnForm/utils/calculate'
-import { TrnType } from '~/components/trns/types'
 import { isCreditProduct } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -26,9 +23,9 @@ export function useLoanPaymentDraft(
     () => walletsStore.sortedIds.filter(id => !isCreditProduct(walletsStore.items?.[id]?.type)),
   )
 
-  const isTransferIntoCredit = computed(() => values.trnType === TrnType.Transfer
-    && !!values.incomeWalletId
-    && isCreditProduct(walletsStore.items?.[values.incomeWalletId]?.type))
+  const isTransferIntoCredit = computed(() => values.trnType === 'transfer'
+    && !!values.toWalletId
+    && isCreditProduct(walletsStore.items?.[values.toWalletId]?.type))
 
   // Any new transfer into a credit wallet can carry its interest; off until the user turns it on.
   // Sync flush so `openFormForLoanPayment` can overwrite the draft in the same tick.
@@ -43,7 +40,7 @@ export function useLoanPaymentDraft(
     if (!values.loanInterest)
       return
 
-    values.loanInterest.amount = evaluateExpression(amountRaw)
+    values.loanInterest.amount = amountToMinor(evaluateExpression(amountRaw), values.toWalletId ? walletsStore.currencyOf(values.toWalletId) : undefined)
     values.loanInterest.amountRaw = formatInput(amountRaw)
   }
 
@@ -53,36 +50,36 @@ export function useLoanPaymentDraft(
    */
   function openFormForLoanPayment(params: {
     date: number
-    debitWalletId?: WalletId
     interest: number
+    paymentWalletId?: WalletId
     principal: number
     walletId: WalletId
   }) {
     const recentNonCreditWalletId = walletsStore.recentWalletIds.find(id => nonCreditWalletsIds.value.includes(id))
-    const sourceWalletId = params.debitWalletId ?? recentNonCreditWalletId ?? nonCreditWalletsIds.value[0]
+    const sourceWalletId = params.paymentWalletId ?? recentNonCreditWalletId ?? nonCreditWalletsIds.value[0]
 
     helpers.openFormForCreate()
 
-    values.trnType = TrnType.Transfer
-    values.transferType = 'expense'
-    values.categoryId = 'transfer'
+    values.trnType = 'transfer'
+    values.transferType = 'from'
+    values.categoryId = null
     values.date = params.date
-    values.expenseWalletId = sourceWalletId ?? null
-    values.incomeWalletId = params.walletId
+    values.fromWalletId = sourceWalletId ?? null
+    values.toWalletId = params.walletId
     // The schedule is in the loan currency; a payment from another currency starts at the current
     // rate, and the user corrects it to what the bank actually charged.
-    const loanCurrency = walletsStore.items?.[params.walletId]?.currency
-    const sourceCurrency = sourceWalletId ? walletsStore.items?.[sourceWalletId]?.currency : undefined
-    const total = roundTo(params.principal + params.interest, currencyMinorUnit(loanCurrency))
+    const loanCurrency = walletsStore.items?.[params.walletId]?.currencyCode
+    const sourceCurrency = sourceWalletId ? walletsStore.items?.[sourceWalletId]?.currencyCode : undefined
+    const total = params.principal + params.interest
     const spent = loanCurrency && sourceCurrency
-      ? roundTo(getAmountInRate(total, loanCurrency, sourceCurrency, currenciesStore.rates), currencyMinorUnit(sourceCurrency))
+      ? Math.round(getAmountInRate(total, loanCurrency, sourceCurrency, currenciesStore.rates))
       : total
     values.amount = [0, spent, total]
     // An early repayment opens with no amount: the user types it.
-    const raw = (amount: number) => amount ? formatInput(amount) : ''
-    values.amountRaw = ['', raw(spent), raw(total)]
+    const raw = (amount: number, currencyCode?: string) => amount ? formatInput(minorToAmount(amount, currencyCode)) : ''
+    values.amountRaw = ['', raw(spent, sourceCurrency), raw(total, loanCurrency)]
     values.loanInterest = params.interest > 0
-      ? { amount: params.interest, amountRaw: formatInput(params.interest), isEnabled: true }
+      ? { amount: params.interest, amountRaw: formatInput(minorToAmount(params.interest, loanCurrency)), isEnabled: true }
       : undefined
   }
 

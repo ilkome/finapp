@@ -9,8 +9,11 @@ export function rowsToTrns(rows: Row[]): Trns | null {
   if (!rows.length)
     return null
   const map: Trns = {}
-  for (const row of rows)
-    map[row.id] = rowToTrn(row)
+  for (const row of rows) {
+    const trn = rowToTrn(row)
+    if (trn)
+      map[row.id] = trn
+  }
   return map
 }
 
@@ -34,7 +37,7 @@ export function reconcileRows<T extends { updatedAt?: number }>(
   rowToItem: (row: Row) => T | null,
 ): Record<string, T> | null {
   const old = prev ?? {}
-  const same = (item: T | undefined, row: Row) => !!item && (item.updatedAt ?? 0) === Number(row.updatedAt ?? 0)
+  const same = (item: T | undefined, row: Row) => !!item && (item.updatedAt ?? 0) === Number(row.updated_at ?? 0)
 
   if (rows.length === Object.keys(old).length && rows.every(row => same(old[row.id], row)))
     return prev

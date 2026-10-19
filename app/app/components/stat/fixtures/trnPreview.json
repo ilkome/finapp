@@ -2,24 +2,53 @@
   "canFilterCategory": true,
   "canFilterWallet": true,
   "conversions": [
-    { "currency": "RUB", "now": 15200, "onDate": 12160 },
-    { "currency": "EUR", "now": 140 }
+    {
+      "currency": "RUB",
+      "now": 1520000,
+      "onDate": 1216000
+    },
+    {
+      "currency": "EUR",
+      "now": 14000
+    }
   ],
+  "createdAtLabel": "16 Sep 2026, 18:42",
   "dateLabel": "16 Sep 2026",
-  "enteredAtLabel": "16 Sep 2026, 18:42",
   "hasRatesOnDate": true,
-  "loan": { "kind": "interest", "name": "Car loan", "walletId": "card" },
-  "trnItem": {
-    "amount": 152,
-    "category": { "color": "#e0745a", "icon": "lucide:utensils", "name": "Groceries", "parentId": "food" },
-    "categoryId": "groceries",
-    "date": 1789084800000,
-    "desc": "Weekly groceries",
-    "id": "t1",
-    "type": 0,
-    "updatedAt": 1789084800000,
-    "wallet": { "amount": 1520, "color": "#3b82f6", "currency": "USD", "id": "card", "isArchived": false, "name": "Dollar card", "order": 1, "type": "cash" },
+  "loan": {
+    "kind": "interest",
+    "name": "Car loan",
     "walletId": "card"
+  },
+  "trnItem": {
+    "category": {
+      "color": "#e0745a",
+      "icon": "lucide:utensils",
+      "name": "Groceries",
+      "parentId": "food"
+    },
+    "categoryId": "groceries",
+    "createdAt": 1789084800000,
+    "date": 1789084800000,
+    "description": "Weekly groceries",
+    "fromAmount": 15200,
+    "fromWallet": {
+      "color": "#3b82f6",
+      "createdAt": 1789084800000,
+      "currencyCode": "USD",
+      "description": "",
+      "isArchived": false,
+      "isExcludedFromTotal": false,
+      "isWithdrawable": true,
+      "name": "Dollar card",
+      "sortOrder": 1,
+      "type": "cash",
+      "updatedAt": 1789084800000
+    },
+    "fromWalletId": "card",
+    "id": "t1",
+    "type": "expense",
+    "updatedAt": 1789084800000
   },
   "updatedAtLabel": "17 Sep 2026, 09:10"
 }

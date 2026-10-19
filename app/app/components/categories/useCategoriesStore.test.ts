@@ -5,7 +5,6 @@ import type { Categories, CategoryItem } from '~/components/categories/types'
 import type { TrnItem } from '~/components/trns/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { toastAddMock } from '~/test-utils/setup-store'
 
@@ -32,7 +31,7 @@ vi.mock('~/components/demo/useDemo', () => ({ useDemo: () => ({ isDemo: h.demo }
 vi.mock('~/composables/useSupabase', () => ({ useSupabase: () => ({}), useSupabaseAuth: () => h.auth }))
 
 function category(over: Partial<CategoryItem> = {}): CategoryItem {
-  return { color: '#111', icon: 'mdi:cat', name: 'Food', parentId: 0, showInLastUsed: true, showInQuickSelector: false, ...over }
+  return { color: '#111', icon: 'mdi:cat', isInQuickSelector: false, isInRecent: true, name: 'Food', parentId: 0, ...over }
 }
 
 // The store re-adds the synthetic transfer/adjustment entries on every
@@ -42,11 +41,11 @@ function cats(map: Record<string, CategoryItem>): Categories {
 }
 
 function categoryRow(id: string, over: Record<string, unknown> = {}) {
-  return { color: '#111', icon: 'mdi:cat', id, name: id, parentId: null, showInLastUsed: 1, showInQuickSelector: 0, updatedAt: 1, ...over }
+  return { color: '#111', icon: 'mdi:cat', id, isInQuickSelector: 0, isInRecent: 1, name: id, parentId: null, updatedAt: 1, ...over }
 }
 
 function expense(over: Partial<TrnItem> = {}): TrnItem {
-  return { amount: 100, categoryId: 'c1', date: 1700000000000, type: TrnType.Expense, updatedAt: 1, walletId: 'w1', ...over } as TrnItem
+  return { categoryId: 'c1', createdAt: 1, date: 1699920000000, fromAmount: 100, fromWalletId: 'w1', type: 'expense', updatedAt: 1, ...over }
 }
 
 describe('useCategoriesStore', () => {
@@ -61,14 +60,15 @@ describe('useCategoriesStore', () => {
   })
 
   describe('hydration via watch', () => {
-    it('keeps the synthetic adjustment/transfer entries and tracks hasItems', () => {
+    it('keeps the built-in loan categories, the type looks apart, and tracks hasItems', () => {
       const store = useCategoriesStore()
       expect(store.hasItems).toBe(false) // only synthetic entries present
-      expect(store.items.adjustment).toBeDefined()
-      expect(store.items.transfer).toBeDefined()
+      expect(store.items.transfer).toBeUndefined()
+      expect(store.trnTypeLooks.transfer).toBeDefined()
+      expect(store.getTrnLook({ type: 'adjustment' })).toBe(store.trnTypeLooks.adjustment)
       // Reserved but not excluded from stats: loan interest and fees are real spending.
-      expect(store.items.loanInterest).toMatchObject({ isExcludeFromStats: false })
-      expect(store.items.loanFine).toMatchObject({ isExcludeFromStats: false })
+      expect(store.items.loan_interest?.isExcludedFromStats).toBeFalsy()
+      expect(store.items.loan_fine?.isExcludedFromStats).toBeFalsy()
 
       store.initCategories()
       expect(h.watchTable.mock.calls[0]?.[0]).toBe('SELECT * FROM categories')
@@ -76,19 +76,19 @@ describe('useCategoriesStore', () => {
       h.watchCallbacks[0]!([categoryRow('c1'), categoryRow('c2')])
       expect(store.hasItems).toBe(true)
       expect(store.items.c1).toMatchObject({ icon: 'mdi:cat' })
-      expect(store.items.adjustment).toBeDefined() // synthetic re-added
+      expect(store.items.loan_fine).toBeDefined() // synthetic re-added
 
       // An empty emission after the first one is a genuine wipe and must apply.
       h.watchCallbacks[0]!([])
       expect(store.hasItems).toBe(false)
-      expect(store.items.transfer).toBeDefined()
+      expect(store.items.loan_interest).toBeDefined()
     })
 
     it('keeps primed items on an empty FIRST emission (sync not landed yet)', () => {
       const store = useCategoriesStore()
       store.initCategories()
 
-      store.setCategories({ c1: { color: '', icon: 'mdi:cat', name: 'C1', parentId: 0, showInLastUsed: false, showInQuickSelector: false } } as never)
+      store.setCategories({ c1: { color: '', icon: 'mdi:cat', isInQuickSelector: false, isInRecent: false, name: 'C1', parentId: 0 } } as never)
       h.watchCallbacks[0]!([])
       expect(store.hasItems).toBe(true)
     })
@@ -117,7 +117,7 @@ describe('useCategoriesStore', () => {
 
       expect(store.items.c1).toMatchObject({ name: 'Renamed' })
       expect(h.upsertRows).toHaveBeenCalledWith('categories', expect.arrayContaining([
-        expect.objectContaining({ id: 'c1', row: expect.objectContaining({ name: 'Renamed', userId: 'u1' }) }),
+        expect.objectContaining({ id: 'c1', row: expect.objectContaining({ name: 'Renamed', user_id: 'u1' }) }),
       ]))
     })
 
@@ -148,32 +148,29 @@ describe('useCategoriesStore', () => {
       expect(toastAddMock).toHaveBeenCalledTimes(1)
     })
 
-    it('writes reserved category edits to user_settings overrides, never to categories', async () => {
+    it('writes built-in look edits to display_overrides, never to categories', async () => {
       const store = useCategoriesStore()
       store.setCategories(cats({ c1: category() }))
 
-      await store.saveCategory({ id: 'loanInterest', isUpdateChildCategoriesColor: false, values: category({ name: 'Interest', parentId: 'c1' }) })
+      await store.saveCategory({ id: 'loan_interest', isUpdateChildCategoriesColor: false, values: category({ name: 'Interest', parentId: 'c1' }) })
       await store.saveCategory({ id: 'transfer', isUpdateChildCategoriesColor: false, values: category({ name: 'Moves', parentId: 'c1' }) })
 
       expect(h.upsertRows).not.toHaveBeenCalled()
-      const [table, id, row] = h.upsertRow.mock.calls.at(-1)!
-      expect([table, id]).toEqual(['user_settings', 'u1'])
-      expect(JSON.parse(row.categoryOverrides)).toEqual({
-        loanInterest: { color: '#111', icon: 'mdi:cat', name: 'Interest' },
-        transfer: { color: '#111', icon: 'mdi:cat', name: 'Moves' },
-      })
-      // Reserved categories never leave root.
-      expect(store.items.loanInterest).toMatchObject({ name: 'Interest', parentId: 0 })
-      expect(store.items.transfer).toMatchObject({ name: 'Moves', parentId: 0 })
+      expect(h.upsertRow.mock.calls.map(([table, id, row]) => [table, id, row.target_id, row.name])).toEqual([
+        ['display_overrides', 'u1:category:loan_interest', 'loan_interest', 'Interest'],
+        ['display_overrides', 'u1:transaction_type:transfer', 'transfer', 'Moves'],
+      ])
+      expect(store.items.loan_interest).toMatchObject({ name: 'Interest' })
+      expect(store.trnTypeLooks.transfer).toMatchObject({ name: 'Moves', parentId: 0 })
     })
 
-    it('applies overrides synced from user_settings', () => {
+    it('applies overrides synced from display_overrides', () => {
       const store = useCategoriesStore()
       store.initCategories()
       h.watchCallbacks[0]!([categoryRow('c1')])
-      h.watchCallbacks[1]!([{ categoryOverrides: JSON.stringify({ loanFine: { name: 'Fees' } }) }])
+      h.watchCallbacks[1]!([{ id: 'u1:category:loan_fine', kind: 'category', name: 'Fees', target_id: 'loan_fine' }])
 
-      expect(store.items.loanFine?.name).toBe('Fees')
+      expect(store.items.loan_fine?.name).toBe('Fees')
       expect(store.items.c1).toBeDefined()
     })
 
@@ -201,7 +198,7 @@ describe('useCategoriesStore', () => {
       expect(trnsStore.items?.t1).toBeUndefined()
       expect(trnsStore.items?.t2).toBeDefined()
       expect(h.deleteRow).toHaveBeenCalledWith('categories', 'c1')
-      expect(h.deleteRows).toHaveBeenCalledWith('trns', ['t1'])
+      expect(h.deleteRows).toHaveBeenCalledWith('transactions', ['t1'])
     })
 
     it('restores the category and cascaded trns when the write fails', async () => {
@@ -226,7 +223,7 @@ describe('useCategoriesStore', () => {
       store.setCategories(cats({ c1: category() }))
 
       await store.deleteCategory('adjustment')
-      await store.deleteCategory('loanInterest')
+      await store.deleteCategory('loan_interest')
       await store.deleteCategory('transfer')
       expect(h.deleteRow).not.toHaveBeenCalled()
     })

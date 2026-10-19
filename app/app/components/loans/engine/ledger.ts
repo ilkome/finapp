@@ -1,15 +1,12 @@
-import { roundTo } from '~~/utils/amount/round'
 import { startOfMonthCivil } from '~~/utils/date/civil'
 
 import type { LoanCost, LoanTrn } from '~/components/loans/engine/types'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 import type { WalletId } from '~/components/wallets/types'
 
-import { TrnType } from '~/components/trns/types'
-
 /**
  * One pass over every transaction. A transfer INTO a credit wallet is a payment; a transfer out is
- * spending on the product, so only the income side counts. Interest and fees are expenses of the
+ * spending on the product, so only the to side counts. Interest and fees are expenses of the
  * credit wallet itself in the reserved categories.
  */
 export function collectCreditTrns(
@@ -32,26 +29,25 @@ export function collectCreditTrns(
     if (!trn)
       continue
 
-    if (trn.type === TrnType.Transfer) {
-      if (creditWalletIds.has(trn.incomeWalletId))
-        push(trn.incomeWalletId, { amount: trn.incomeAmount, date: trn.date, id, kind: 'payment' })
+    if (trn.type === 'transfer') {
+      if (trn.toWalletId && trn.toAmount !== undefined && creditWalletIds.has(trn.toWalletId))
+        push(trn.toWalletId, { amount: trn.toAmount, date: trn.date, id, kind: 'payment' })
       continue
     }
 
-    const walletId = trn.walletId
-    if (!creditWalletIds.has(walletId))
+    if (trn.type !== 'expense' || !trn.fromWalletId || trn.fromAmount === undefined || !creditWalletIds.has(trn.fromWalletId))
       continue
-    if (trn.categoryId === 'loanInterest')
-      push(walletId, { amount: trn.amount, date: trn.date, id, kind: 'interest' })
-    else if (trn.categoryId === 'loanFine')
-      push(walletId, { amount: trn.amount, date: trn.date, id, kind: 'fine' })
+    if (trn.categoryId === 'loan_interest')
+      push(trn.fromWalletId, { amount: trn.fromAmount, date: trn.date, id, kind: 'interest' })
+    else if (trn.categoryId === 'loan_fine')
+      push(trn.fromWalletId, { amount: trn.fromAmount, date: trn.date, id, kind: 'fine' })
   }
 
   return result
 }
 
 /** Interest and fees of one credit wallet, totalled and bucketed by civil month. */
-export function costOf(trns: LoanTrn[], precision = 2): LoanCost {
+export function costOf(trns: LoanTrn[]): LoanCost {
   const byMonth = new Map<number, { fine: number, interest: number }>()
   let interest = 0
   let fine = 0
@@ -70,9 +66,9 @@ export function costOf(trns: LoanTrn[], precision = 2): LoanCost {
 
   return {
     byMonth: [...byMonth.entries()]
-      .map(([month, value]) => ({ fine: roundTo(value.fine, precision), interest: roundTo(value.interest, precision), month }))
+      .map(([month, value]) => ({ fine: value.fine, interest: value.interest, month }))
       .sort((a, b) => a.month - b.month),
-    fine: roundTo(fine, precision),
-    interest: roundTo(interest, precision),
+    fine,
+    interest,
   }
 }

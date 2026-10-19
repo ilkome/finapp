@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { UserMenuPanel } from '~/components/layout/useUserMenuData'
 
-import UserMenuPanelBody from '~/components/layout/UserMenuPanelBody.vue'
 import { useDemo } from '~/components/demo/useDemo'
+import UserMenuPanelBody from '~/components/layout/UserMenuPanelBody.vue'
 import { useUserMenuData } from '~/components/layout/useUserMenuData'
 import { showSuccessToast } from '~/composables/useStoreSync'
 

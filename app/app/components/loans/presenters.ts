@@ -1,11 +1,10 @@
-import { roundTo } from '~~/utils/amount/round'
 import { addCivilDays } from '~~/utils/date/civil'
 
+import type { BankReport } from '~/components/bankReports/types'
 import type { LoanCost, LoanSummary, PaymentRow } from '~/components/loans/engine/types'
 import type { LoanScheduleViewRow } from '~/components/loans/ScheduleView.vue'
 import type { LoanItem } from '~/components/loans/types'
 
-import { currencyMinorUnit } from '~/components/currencies/currencies'
 import { bankDebtCheck } from '~/components/loans/engine/bankDebt'
 import { principalFreeRows } from '~/components/loans/engine/principalFree'
 import { URGENT_DAYS } from '~/components/loans/engine/upcoming'
@@ -23,6 +22,7 @@ export function shownEffectiveRate(contractRate: number | null, effectiveRate: n
 }
 
 export function toSummaryProps(params: {
+  bankReport: BankReport | undefined
   currencyCode: string
   day: DayFormatter
   debitBalance: number | null
@@ -30,18 +30,15 @@ export function toSummaryProps(params: {
   summary: LoanSummary
   today: number
 }) {
-  const { currencyCode, day, debitBalance, loan, summary, today } = params
-  const precision = currencyMinorUnit(currencyCode)
+  const { bankReport, currencyCode, day, debitBalance, loan, summary, today } = params
   const next = summary.nextPayment
-  const overpaid = roundTo(summary.paidInterest + summary.paidFine, precision)
-  const principalFree = principalFreeRows(summary.rows, precision)
+  const overpaid = summary.paidInterest + summary.paidFine
+  const principalFree = principalFreeRows(summary.rows)
   // A closed loan has nothing left to reconcile with the bank.
   const bankDebt = summary.isClosed
     ? null
     : bankDebtCheck({
-        bankDebtAmount: loan.bankDebtAmount,
-        bankDebtUpdatedAt: loan.bankDebtUpdatedAt,
-        precision,
+        report: bankReport,
         rows: summary.rows,
         today,
         walletBalance: -summary.remaining,
@@ -50,14 +47,14 @@ export function toSummaryProps(params: {
   return {
     bankDebt: bankDebt && { date: day(bankDebt.updatedAt), diff: bankDebt.diff, isStale: bankDebt.isStale },
     closedDate: summary.closedDate === null ? null : day(summary.closedDate),
-    contractRate: loan.annualRate,
+    contractRate: loan.annualRatePercent,
     currencyCode,
     // Weeks ahead the debit wallet is expected to be short: warn only once the payment is urgent.
     debitShortfall: next && debitBalance !== null && debitBalance < next.amount
       && next.date <= addCivilDays(today, URGENT_DAYS)
-      ? roundTo(next.amount - debitBalance, precision)
+      ? Math.round(next.amount - debitBalance)
       : null,
-    effectiveRate: shownEffectiveRate(loan.annualRate, summary.effectiveRate),
+    effectiveRate: shownEffectiveRate(loan.annualRatePercent, summary.effectiveRate),
     interestMissing: summary.interestMissing,
     isClosed: summary.isClosed,
     monthsLeft: summary.monthsLeft,
@@ -95,8 +92,8 @@ function formatDayCached(ms: number, day: DayFormatter): string {
   return formatted
 }
 
-export function toScheduleViewRows(rows: PaymentRow[], overrideNumbers: Set<number>, day: DayFormatter, precision = 2): LoanScheduleViewRow[] {
-  const principalFree = principalFreeRows(rows, precision).byRow
+export function toScheduleViewRows(rows: PaymentRow[], overrideNumbers: Set<number>, day: DayFormatter): LoanScheduleViewRow[] {
+  const principalFree = principalFreeRows(rows).byRow
   return rows.map((row) => {
     const paid = row.paidPrincipal + row.paidInterest + row.paidFine
     const isSettled = row.status === 'paid' || row.status === 'late' || row.status === 'partial'
@@ -104,7 +101,7 @@ export function toScheduleViewRows(rows: PaymentRow[], overrideNumbers: Set<numb
       amount: isSettled ? paid : row.totalAmount,
       canReset: overrideNumbers.has(row.paymentNumber),
       date: formatDayCached(row.date, day),
-      delta: isSettled ? roundTo(paid - row.totalAmount, precision) : 0,
+      delta: isSettled ? paid - row.totalAmount : 0,
       fine: row.paidFine,
       interest: isSettled ? row.paidInterest : row.interestPart,
       isBank: row.source === 'bank',

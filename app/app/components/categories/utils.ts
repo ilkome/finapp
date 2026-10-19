@@ -2,12 +2,12 @@ import { z } from 'zod/v4'
 
 import type { Categories, CategoryId, CategoryItem } from '~/components/categories/types'
 
-const LOAN_CATEGORY_IDS = new Set(['loanInterest', 'loanFine'])
+const LOAN_CATEGORY_IDS = new Set(['loan_interest', 'loan_fine'])
 
 /**
  * Reserved ids are synthetic categories injected by the store, never real rows: always root,
  * never deleted, never parents. Only name, color and icon are editable, through per-user
- * overrides. 'loanInterest'/'loanFine' are reserved but not system: they are ordinary
+ * overrides. 'loan_interest'/'loan_fine' are reserved but not system: they are ordinary
  * expenses and count in statistics.
  */
 const RESERVED_CATEGORY_IDS = new Set(['transfer', 'adjustment', ...LOAN_CATEGORY_IDS])
@@ -20,6 +20,7 @@ const categoryOverrideSchema = z.object({
   color: z.string().optional().catch(undefined),
   icon: z.string().trim().min(1).optional().catch(undefined),
   name: z.string().trim().min(1).optional().catch(undefined),
+  parentId: z.string().min(1).optional().catch(undefined),
 })
 
 export type CategoryOverride = z.infer<typeof categoryOverrideSchema>
@@ -84,16 +85,6 @@ export function toCategoryOverride(values: CategoryItem, base: CategoryItem): Ca
   if (values.icon && values.icon !== base.icon)
     override.icon = values.icon
   return Object.keys(override).length ? override : undefined
-}
-
-/**
- * System categories are synthetic (not real user rows): 'transfer' holds wallet
- * transfers, 'adjustment' holds balance corrections. Their transactions are kept
- * out of category lists, quick selectors and statistics; they surface only in the
- * transactions list under their own tabs.
- */
-export function isSystemCategoryId(id?: CategoryId | null): boolean {
-  return id === 'transfer' || id === 'adjustment'
 }
 
 export function getTransactibleCategoriesIds(items: Categories, ids?: CategoryId[]) {

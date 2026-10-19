@@ -43,7 +43,7 @@ const grace = computed(() => {
 <template>
   <LoansCardLineView
     v-if="loan || minPayment || grace"
-    :currencyCode="props.wallet.currency"
+    :currencyCode="props.wallet.currencyCode"
     :grace
     :loan
     :minPayment

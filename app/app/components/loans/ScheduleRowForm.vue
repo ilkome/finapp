@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Amounts are decimals as the user types them; the container converts to minor units. */
 export type LoanScheduleRowDraft = {
   date: number
   fine: number

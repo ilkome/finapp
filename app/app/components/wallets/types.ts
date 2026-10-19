@@ -5,49 +5,30 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import { random } from '~/assets/js/emo'
 import { colorsArray } from '~/components/color/colors'
 
-export const walletTypes = ['cash', 'credit', 'loan', 'cashless', 'deposit', 'crypto', 'debt'] as const
+export const walletTypes = ['cash', 'credit_card', 'loan', 'bank_account', 'deposit', 'crypto', 'debt'] as const
 export type WalletType = typeof walletTypes[number]
 
 export type WalletId = string
 
-export type WalletViewTypes = WalletType | 'isAvailable' | 'isAvailableAll' | 'isWithdrawal' | 'isArchived' | 'isExcludeInTotal'
+export type WalletViewTypes = WalletType | 'isAvailable' | 'isAvailableAll' | 'isWithdrawable' | 'isArchived' | 'isExcludedFromTotal'
 
-const walletBaseSchema = z.object({
+export const walletItemSchema = z.object({
   color: z.string().default(() => random(colorsArray)),
-  currency: z.string().default('USD'),
-  desc: z.string().default(''),
+  createdAt: z.number().int().default(() => Date.now()),
+  // Minor units; a credit card's only (the `wallets_credit_limit` constraint).
+  creditLimit: z.number().int().min(0).optional(),
+  currencyCode: z.string().default('USD'),
+  description: z.string().default(''),
   isArchived: z.boolean().default(false),
-  isExcludeInTotal: z.boolean().default(false),
-  isWithdrawal: z.boolean().default(false),
+  isExcludedFromTotal: z.boolean().default(false),
+  // Absent follows isWithdrawable.
+  isInForecast: z.boolean().optional(),
+  isWithdrawable: z.boolean().default(false),
   name: z.string().trim().min(1).default(''),
-  order: z.number().default(0),
-  updatedAt: z.number().default(() => Date.now()),
-})
-
-export const walletItemSchema = z.discriminatedUnion('type', [
-  z.object({
-    ...walletBaseSchema.shape,
-    creditLimit: z.number().default(0),
-    // Statement debt to repay to keep the interest-free period; absent until a sync provides it.
-    graceAmount: z.number().min(0).optional(),
-    // Civil day the interest-free period ends.
-    graceEndDate: z.number().optional(),
-    // Minimum payment summary the bank reports; absent until it is known.
-    minPaymentAmount: z.number().min(0).optional(),
-    // Civil day the minimum is due.
-    minPaymentDate: z.number().optional(),
-    // Civil day the billing period this minimum belongs to STARTED (not the sync run time), so a
-    // payment made early in the period still counts after a later sync overwrites this field.
-    minPaymentUpdatedAt: z.number().optional(),
-    // Civil day of the last statement.
-    statementDate: z.number().optional(),
-    type: z.literal('credit'),
-  }),
-  z.object({
-    ...walletBaseSchema.shape,
-    type: z.enum(walletTypes.filter(t => t !== 'credit')),
-  }),
-])
+  sortOrder: z.number().int().default(0),
+  type: z.enum(walletTypes).default('cash'),
+  updatedAt: z.number().int().default(() => Date.now()),
+}).refine(w => w.creditLimit === undefined || w.type === 'credit_card', 'only a credit card has a credit limit')
 
 export type WalletItem = z.infer<typeof walletItemSchema>
 export type WalletItemComputed = WalletItem & {
@@ -64,11 +45,13 @@ export type WalletsPrimaryGrouping = 'type' | 'currency' | 'none'
 export type WalletsCurrencyFiltered = 'all' | CurrencyCode
 
 /** A credit card or a loan: money owed, not owned. */
-export const isCreditProduct = (type: WalletType | undefined) => type === 'credit' || type === 'loan'
+export const isCreditProduct = (type: WalletType | undefined) => type === 'credit_card' || type === 'loan'
 
 export function getCreditAvailable(creditLimit: number, amount: number): number {
   return creditLimit - Math.abs(amount)
 }
 
-/** Every field of any wallet type, so a form can set a credit-only field (or clear it with undefined). */
-export type WalletFormKey = WalletItem extends infer W ? W extends unknown ? keyof W : never : never
+export type WalletFormKey = keyof WalletItem
+
+/** Whether the wallet's money counts in the forecast: its own switch, else whether it is withdrawable. */
+export const isWalletInForecast = (wallet: WalletItem) => wallet.isInForecast ?? wallet.isWithdrawable

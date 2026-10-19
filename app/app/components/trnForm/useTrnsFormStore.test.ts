@@ -2,8 +2,6 @@ import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
 
-import { TrnType } from '~/components/trns/types'
-
 import { useTrnsFormStore } from './useTrnsFormStore'
 
 // --- Mocks ---
@@ -14,8 +12,8 @@ vi.mock('~/components/categories/useCategoriesStore', () => ({
     items: {
       c1: { name: 'Food' },
       c2: { name: 'Transport' },
-      loanFine: { name: 'Loan fees' },
-      loanInterest: { name: 'Loan interest' },
+      loan_fine: { name: 'Loan fees' },
+      loan_interest: { name: 'Loan interest' },
     },
   }),
 }))
@@ -24,11 +22,13 @@ const h = vi.hoisted(() => ({ recentWalletIds: [] as string[], trns: {} as Recor
 
 vi.mock('~/components/wallets/useWalletsStore', () => ({
   useWalletsStore: () => ({
+    currencyOf(id: string) { return (this.items as Record<string, { currencyCode: string }>)[id]?.currencyCode },
     items: {
-      c1w: { currency: 'USD', name: 'Credit card', type: 'credit' },
-      w1: { currency: 'USD', name: 'Cash', type: 'cash' },
-      w2: { currency: 'USD', name: 'Card', type: 'cashless' },
-      w3: { currency: 'RUB', name: 'Rub card', type: 'cashless' },
+      c1w: { currencyCode: 'USD', name: 'Credit card', type: 'credit_card' },
+      w1: { currencyCode: 'USD', name: 'Cash', type: 'cash' },
+      w2: { currencyCode: 'USD', name: 'Card', type: 'bank_account' },
+      w3: { currencyCode: 'RUB', name: 'Rub card', type: 'bank_account' },
+      w4: { currencyCode: 'JPY', name: 'Yen', type: 'cash' },
     },
     get recentWalletIds() { return h.recentWalletIds },
     sortedIds: ['w1', 'w2', 'c1w'],
@@ -54,10 +54,6 @@ vi.mock('~~/utils/generateId', () => ({
   generateId: () => 'generated-id',
 }))
 
-vi.mock('~/components/amount/utils', () => ({
-  formatByCurrency: (amount: number) => String(amount),
-}))
-
 beforeEach(() => {
   setActivePinia(createPinia())
   h.recentWalletIds = []
@@ -68,7 +64,7 @@ describe('useTrnsFormStore', () => {
   describe('initial state', () => {
     it('has default values', () => {
       const store = useTrnsFormStore()
-      expect(store.values.trnType).toBe(TrnType.Expense)
+      expect(store.values.trnType).toBe('expense')
       expect(store.values.amount).toEqual([0, 0, 0])
       expect(store.values.categoryId).toBeNull()
       expect(store.values.walletId).toBeNull()
@@ -79,27 +75,27 @@ describe('useTrnsFormStore', () => {
   describe('activeAmountIdx', () => {
     it('returns 0 for expense', () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Expense
+      store.values.trnType = 'expense'
       expect(store.activeAmountIdx).toBe(0)
     })
 
     it('returns 0 for income', () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Income
+      store.values.trnType = 'income'
       expect(store.activeAmountIdx).toBe(0)
     })
 
-    it('returns 1 for transfer expense side', () => {
+    it('returns 1 for transfer source side', () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Transfer
-      store.values.transferType = 'expense'
+      store.values.trnType = 'transfer'
+      store.values.transferType = 'from'
       expect(store.activeAmountIdx).toBe(1)
     })
 
-    it('returns 2 for transfer income side', () => {
+    it('returns 2 for transfer target side', () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Transfer
-      store.values.transferType = 'income'
+      store.values.trnType = 'transfer'
+      store.values.transferType = 'to'
       expect(store.activeAmountIdx).toBe(2)
     })
   })
@@ -107,16 +103,16 @@ describe('useTrnsFormStore', () => {
   describe('onChangeTrnType', () => {
     it('changes trnType', () => {
       const store = useTrnsFormStore()
-      store.onChangeTrnType(TrnType.Income)
-      expect(store.values.trnType).toBe(TrnType.Income)
+      store.onChangeTrnType('income')
+      expect(store.values.trnType).toBe('income')
     })
   })
 
   describe('onChangeTransferType', () => {
     it('changes transferType', () => {
       const store = useTrnsFormStore()
-      store.onChangeTransferType('income')
-      expect(store.values.transferType).toBe('income')
+      store.onChangeTransferType('to')
+      expect(store.values.transferType).toBe('to')
     })
   })
 
@@ -124,14 +120,14 @@ describe('useTrnsFormStore', () => {
     it('resets amounts and description but keeps category/wallet', () => {
       const store = useTrnsFormStore()
       store.values.amount = [100, 200, 300]
-      store.values.desc = 'test'
+      store.values.description = 'test'
       store.values.categoryId = 'c1'
       store.values.walletId = 'w1'
 
       store.onClear()
 
       expect(store.values.amount).toEqual([0, 0, 0])
-      expect(store.values.desc).toBeUndefined()
+      expect(store.values.description).toBeUndefined()
       expect(store.values.categoryId).toBe('c1')
       expect(store.values.walletId).toBe('w1')
     })
@@ -143,7 +139,7 @@ describe('useTrnsFormStore', () => {
       store.values.amount = [100, 200, 300]
       store.values.categoryId = 'c1'
       store.values.walletId = 'w1'
-      store.values.trnType = TrnType.Transfer
+      store.values.trnType = 'transfer'
       store.ui.isShow = true
 
       store.$reset()
@@ -151,7 +147,7 @@ describe('useTrnsFormStore', () => {
       expect(store.values.amount).toEqual([0, 0, 0])
       expect(store.values.categoryId).toBeNull()
       expect(store.values.walletId).toBeNull()
-      expect(store.values.trnType).toBe(TrnType.Expense)
+      expect(store.values.trnType).toBe('expense')
       expect(store.ui.isShow).toBe(false)
     })
   })
@@ -187,11 +183,11 @@ describe('useTrnsFormStore', () => {
       store.openFormForCreate()
 
       expect(store.ui.isShow).toBe(true)
-      expect(store.values.trnType).toBe(TrnType.Expense)
+      expect(store.values.trnType).toBe('expense')
       expect(store.values.walletId).toBe('w1')
       expect(store.values.categoryId).toBe('c1')
-      expect(store.values.incomeWalletId).toBe('w1')
-      expect(store.values.expenseWalletId).toBe('w2')
+      expect(store.values.toWalletId).toBe('w1')
+      expect(store.values.fromWalletId).toBe('w2')
     })
   })
 
@@ -208,7 +204,7 @@ describe('useTrnsFormStore', () => {
   describe('onSubmit', () => {
     it('returns error toast when wallet not selected', async () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Expense
+      store.values.trnType = 'expense'
       store.values.walletId = null
 
       const result = await store.onSubmit()
@@ -220,7 +216,7 @@ describe('useTrnsFormStore', () => {
 
     it('returns error toast when category not selected', async () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Expense
+      store.values.trnType = 'expense'
       store.values.walletId = 'w1'
       store.values.categoryId = null
 
@@ -233,26 +229,26 @@ describe('useTrnsFormStore', () => {
 
     it('returns id and values for valid expense', async () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Expense
+      store.values.trnType = 'expense'
       store.values.walletId = 'w1'
       store.values.categoryId = 'c1'
-      store.values.amount = [100, 0, 0]
-      store.values.date = 1700000000000
+      store.onChangeAmount('1.5')
+      store.values.date = 1699920000000
 
       const result = await store.onSubmit()
 
       expect(result).toBeDefined()
       expect(result!.id).toBe('generated-id')
-      expect(result!.values).toBeDefined()
+      expect(result!.values).toMatchObject({ categoryId: 'c1', fromAmount: 150, fromWalletId: 'w1', type: 'expense' })
     })
 
     it('uses existing trnId when editing', async () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Expense
+      store.values.trnType = 'expense'
       store.values.walletId = 'w1'
       store.values.categoryId = 'c1'
-      store.values.amount = [100, 0, 0]
-      store.values.date = 1700000000000
+      store.onChangeAmount('1')
+      store.values.date = 1699920000000
       store.values.trnId = 'existing-trn-id'
 
       const result = await store.onSubmit()
@@ -262,20 +258,70 @@ describe('useTrnsFormStore', () => {
     })
   })
 
+  describe('minor units', () => {
+    it('parses typed amounts in the scale of the wallet currency', () => {
+      const store = useTrnsFormStore()
+      store.values.walletId = 'w4'
+      store.onChangeAmount('1500')
+      expect(store.values.amount[0]).toBe(1500)
+
+      store.values.walletId = 'w1'
+      store.onChangeAmount('12.34')
+      expect(store.values.amount[0]).toBe(1234)
+    })
+
+    it('shows a stored amount as a decimal when editing', () => {
+      h.trns = { t1: { categoryId: 'c1', createdAt: 1, date: 86400000, fromAmount: 1234, fromWalletId: 'w1', type: 'expense', updatedAt: 1 } }
+      const store = useTrnsFormStore()
+
+      store.openFormForEdit('t1')
+
+      expect(store.values.amount[0]).toBe(1234)
+      expect(store.values.amountRaw[0]).toBe('12.34')
+    })
+  })
+
+  describe('transfer outside the app', () => {
+    it('leaves the outside side empty on save', async () => {
+      const store = useTrnsFormStore()
+      store.openFormForCreate()
+      store.values.trnType = 'transfer'
+      store.onTransferOutside('from')
+      store.values.transferType = 'to'
+      store.onChangeAmount('5')
+
+      const result = await store.onSubmit()
+
+      expect(result!.values).toEqual(expect.objectContaining({ toAmount: 500, toWalletId: 'w1', type: 'transfer' }))
+      expect(result!.values.fromWalletId).toBeUndefined()
+    })
+
+    it('opens a one-sided transfer with its outside side marked', () => {
+      h.trns = { t1: { createdAt: 1, date: 86400000, toAmount: 500, toWalletId: 'w2', type: 'transfer', updatedAt: 1 } }
+      const store = useTrnsFormStore()
+
+      store.openFormForEdit('t1')
+
+      expect(store.values.transferOutside).toBe('from')
+      expect(store.transferFromWalletId).toBeUndefined()
+      expect(store.transferToWalletId).toBe('w2')
+    })
+  })
+
   describe('interest of a transfer into a credit wallet', () => {
     it('offers a disabled interest draft for a new transfer into a credit wallet only', () => {
       const store = useTrnsFormStore()
-      store.values.trnType = TrnType.Transfer
-      store.values.incomeWalletId = 'c1w'
+      store.values.trnType = 'transfer'
+      store.values.toWalletId = 'c1w'
       expect(store.values.loanInterest).toEqual({ amount: 0, amountRaw: '', isEnabled: false })
 
-      store.values.incomeWalletId = 'w2'
+      store.values.toWalletId = 'w2'
       expect(store.values.loanInterest).toBeUndefined()
     })
 
     it('is reset by $reset', () => {
       const store = useTrnsFormStore()
-      store.openFormForLoanPayment({ date: 1700000000000, interest: 250, principal: 1000, walletId: 'c1w' })
+      store.openFormForLoanPayment({ date: 1699920000000, interest: 250, principal: 1000, walletId: 'c1w' })
 
       store.$reset()
 
@@ -288,29 +334,29 @@ describe('useTrnsFormStore', () => {
       const store = useTrnsFormStore()
 
       store.openFormForLoanPayment({
-        date: 1700000000000,
+        date: 1699920000000,
         interest: 250,
         principal: 1000,
         walletId: 'c1w',
       })
 
       expect(store.ui.isShow).toBe(true)
-      expect(store.values.trnType).toBe(TrnType.Transfer)
-      expect(store.values.expenseWalletId).toBe('w1')
-      expect(store.values.incomeWalletId).toBe('c1w')
+      expect(store.values.trnType).toBe('transfer')
+      expect(store.values.fromWalletId).toBe('w1')
+      expect(store.values.toWalletId).toBe('c1w')
       expect(store.values.amount).toEqual([0, 1250, 1250])
-      expect(store.values.date).toBe(1700000000000)
+      expect(store.values.date).toBe(1699920000000)
       expect(store.values.loanInterest).toEqual({
         amount: 250,
-        amountRaw: '250',
+        amountRaw: '2.5',
         isEnabled: true,
       })
     })
 
     it('drops an unsaved interest draft when an existing transfer opens', async () => {
-      h.trns = { t1: { date: 1, expenseAmount: 500, expenseWalletId: 'w1', incomeAmount: 500, incomeWalletId: 'c1w', type: TrnType.Transfer, updatedAt: 1 } }
+      h.trns = { t1: { createdAt: 1, date: 86400000, fromAmount: 500, fromWalletId: 'w1', toAmount: 500, toWalletId: 'c1w', type: 'transfer', updatedAt: 1 } }
       const store = useTrnsFormStore()
-      store.openFormForLoanPayment({ date: 1700000000000, interest: 250, principal: 1000, walletId: 'c1w' })
+      store.openFormForLoanPayment({ date: 1699920000000, interest: 250, principal: 1000, walletId: 'c1w' })
       store.ui.isShow = false
 
       store.openFormForEdit('t1')
@@ -324,19 +370,19 @@ describe('useTrnsFormStore', () => {
       const store = useTrnsFormStore()
 
       store.openFormForLoanPayment({
-        date: 1700000000000,
+        date: 1699920000000,
         interest: 0,
         principal: 1000,
         walletId: 'c1w',
       })
 
-      expect(store.values.expenseWalletId).toBe('w2')
+      expect(store.values.fromWalletId).toBe('w2')
     })
 
     it('converts the debit side into the source wallet currency', () => {
       const store = useTrnsFormStore()
 
-      store.openFormForLoanPayment({ date: 1700000000000, debitWalletId: 'w3', interest: 0, principal: 10, walletId: 'c1w' })
+      store.openFormForLoanPayment({ date: 1699920000000, interest: 0, paymentWalletId: 'w3', principal: 10, walletId: 'c1w' })
 
       expect(store.values.amount).toEqual([0, 900, 10])
     })
@@ -345,14 +391,14 @@ describe('useTrnsFormStore', () => {
       const store = useTrnsFormStore()
 
       store.openFormForLoanPayment({
-        date: 1700000000000,
-        debitWalletId: 'w2',
+        date: 1699920000000,
         interest: 0,
+        paymentWalletId: 'w2',
         principal: 500,
         walletId: 'c1w',
       })
 
-      expect(store.values.expenseWalletId).toBe('w2')
+      expect(store.values.fromWalletId).toBe('w2')
       expect(store.values.loanInterest).toBeUndefined()
     })
 
@@ -360,7 +406,7 @@ describe('useTrnsFormStore', () => {
       const store = useTrnsFormStore()
 
       store.openFormForLoanPayment({
-        date: 1700000000000,
+        date: 1699920000000,
         interest: 250,
         principal: 1000,
         walletId: 'c1w',
@@ -369,17 +415,17 @@ describe('useTrnsFormStore', () => {
       const result = await store.onSubmit()
 
       expect(result!.values).toMatchObject({
-        expenseAmount: 1250,
-        expenseWalletId: 'w1',
-        incomeAmount: 1250,
-        incomeWalletId: 'c1w',
-        type: TrnType.Transfer,
+        fromAmount: 1250,
+        fromWalletId: 'w1',
+        toAmount: 1250,
+        toWalletId: 'c1w',
+        type: 'transfer',
       })
       expect(result!.extra!.values).toMatchObject({
-        amount: 250,
-        categoryId: 'loanInterest',
-        type: TrnType.Expense,
-        walletId: 'c1w',
+        categoryId: 'loan_interest',
+        fromAmount: 250,
+        fromWalletId: 'c1w',
+        type: 'expense',
       })
     })
 
@@ -387,7 +433,7 @@ describe('useTrnsFormStore', () => {
       const store = useTrnsFormStore()
 
       store.openFormForLoanPayment({
-        date: 1700000000000,
+        date: 1699920000000,
         interest: 250,
         principal: 1000,
         walletId: 'c1w',
@@ -403,14 +449,14 @@ describe('useTrnsFormStore', () => {
       const store = useTrnsFormStore()
 
       store.openFormForLoanPayment({
-        date: 1700000000000,
+        date: 1699920000000,
         interest: 250,
         principal: 1000,
         walletId: 'c1w',
       })
       store.onChangeLoanInterestAmount('300')
 
-      expect(store.values.loanInterest!.amount).toBe(300)
+      expect(store.values.loanInterest!.amount).toBe(30000)
     })
   })
 

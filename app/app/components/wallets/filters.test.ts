@@ -4,28 +4,28 @@ import type { WalletItemComputed } from '~/components/wallets/types'
 
 import { filterWalletsByCurrency, filterWalletsByViewType } from '~/components/wallets/filters'
 
-function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currency' | 'type'>): WalletItemComputed {
+function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currencyCode' | 'type'>): WalletItemComputed {
   return {
     color: 'blue',
-    desc: '',
+    description: '',
     isArchived: false,
-    isExcludeInTotal: false,
-    isWithdrawal: false,
+    isExcludedFromTotal: false,
+    isWithdrawable: false,
     name: 'Test',
-    order: 0,
+    sortOrder: 0,
     updatedAt: 0,
     ...overrides,
   } as WalletItemComputed
 }
 
 const wallets = {
-  archived: wallet({ amount: 0, currency: 'USD', isArchived: true, type: 'cash' }),
-  creditUSD: wallet({ amount: -100, creditLimit: 5000, currency: 'USD', type: 'credit' }),
-  cryptoBTC: wallet({ amount: 1, currency: 'BTC', type: 'crypto' }),
-  excludeUSD: wallet({ amount: 500, currency: 'USD', isExcludeInTotal: true, type: 'cashless' }),
-  mainRUB: wallet({ amount: 5000, currency: 'RUB', type: 'cashless' }),
-  mainUSD: wallet({ amount: 1000, currency: 'USD', type: 'cashless' }),
-  withdrawalUSD: wallet({ amount: 3000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
+  archived: wallet({ amount: 0, currencyCode: 'USD', isArchived: true, type: 'cash' }),
+  creditUSD: wallet({ amount: -100, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
+  cryptoBTC: wallet({ amount: 1, currencyCode: 'BTC', type: 'crypto' }),
+  excludeUSD: wallet({ amount: 500, currencyCode: 'USD', isExcludedFromTotal: true, type: 'bank_account' }),
+  mainRUB: wallet({ amount: 5000, currencyCode: 'RUB', type: 'bank_account' }),
+  mainUSD: wallet({ amount: 1000, currencyCode: 'USD', type: 'bank_account' }),
+  withdrawalUSD: wallet({ amount: 3000, currencyCode: 'USD', isWithdrawable: true, type: 'bank_account' }),
 } as Record<string, WalletItemComputed>
 
 const allIds = Object.keys(wallets)
@@ -71,23 +71,23 @@ describe('filterWalletsByViewType', () => {
     expect(result).toContain('excludeUSD')
   })
 
-  it('isWithdrawal: returns withdrawal non-archived wallets', () => {
-    const result = filterWalletsByViewType(allIds, wallets, 'isWithdrawal')
+  it('isWithdrawable: returns withdrawal non-archived wallets', () => {
+    const result = filterWalletsByViewType(allIds, wallets, 'isWithdrawable')
     expect(result).toEqual(['withdrawalUSD'])
   })
 
-  it('isWithdrawal: excludes archived withdrawal wallets', () => {
+  it('isWithdrawable: excludes archived withdrawal wallets', () => {
     const walletsWithArchivedWithdrawal = {
       ...wallets,
-      archivedW: wallet({ amount: 0, currency: 'USD', isArchived: true, isWithdrawal: true, type: 'cashless' }),
+      archivedW: wallet({ amount: 0, currencyCode: 'USD', isArchived: true, isWithdrawable: true, type: 'bank_account' }),
     }
     const ids = Object.keys(walletsWithArchivedWithdrawal)
-    const result = filterWalletsByViewType(ids, walletsWithArchivedWithdrawal, 'isWithdrawal')
+    const result = filterWalletsByViewType(ids, walletsWithArchivedWithdrawal, 'isWithdrawable')
     expect(result).not.toContain('archivedW')
   })
 
-  it('isExcludeInTotal: returns excluded wallets', () => {
-    const result = filterWalletsByViewType(allIds, wallets, 'isExcludeInTotal')
+  it('isExcludedFromTotal: returns excluded wallets', () => {
+    const result = filterWalletsByViewType(allIds, wallets, 'isExcludedFromTotal')
     expect(result).toEqual(['excludeUSD'])
   })
 
@@ -105,7 +105,7 @@ describe('filterWalletsByViewType', () => {
   })
 
   it('isAvailable counts cards only, isAvailableAll adds loans', () => {
-    const withLoan = { ...wallets, loanUSD: wallet({ amount: -900, currency: 'USD', type: 'loan' }) }
+    const withLoan = { ...wallets, loanUSD: wallet({ amount: -900, currencyCode: 'USD', type: 'loan' }) }
     const ids = Object.keys(withLoan)
     expect(filterWalletsByViewType(ids, withLoan, 'isAvailable')).not.toContain('loanUSD')
     expect(filterWalletsByViewType(ids, withLoan, 'isAvailableAll')).toContain('loanUSD')
@@ -115,7 +115,7 @@ describe('filterWalletsByViewType', () => {
   it('isAvailable: excludes archived credit wallets', () => {
     const walletsWithArchivedCredit = {
       ...wallets,
-      archivedCredit: wallet({ amount: -50, creditLimit: 1000, currency: 'USD', isArchived: true, type: 'credit' }),
+      archivedCredit: wallet({ amount: -50, creditLimit: 1000, currencyCode: 'USD', isArchived: true, type: 'credit_card' }),
     }
     const ids = Object.keys(walletsWithArchivedCredit)
     const result = filterWalletsByViewType(ids, walletsWithArchivedCredit, 'isAvailable')
@@ -130,7 +130,7 @@ describe('filterWalletsByViewType', () => {
   it('type filter excludes archived wallets', () => {
     const walletsWithActiveCash = {
       ...wallets,
-      activeCash: wallet({ amount: 100, currency: 'USD', type: 'cash' }),
+      activeCash: wallet({ amount: 100, currencyCode: 'USD', type: 'cash' }),
     }
     const ids = Object.keys(walletsWithActiveCash)
     const result = filterWalletsByViewType(ids, walletsWithActiveCash, 'cash')
@@ -138,24 +138,24 @@ describe('filterWalletsByViewType', () => {
     expect(result).not.toContain('archived')
   })
 
-  it('isExcludeInTotal: lists archived ones too, matching the row sum', () => {
+  it('isExcludedFromTotal: lists archived ones too, matching the row sum', () => {
     const walletsWithArchivedExcluded = {
       ...wallets,
-      archivedExcluded: wallet({ amount: 200, currency: 'USD', isArchived: true, isExcludeInTotal: true, type: 'cashless' }),
+      archivedExcluded: wallet({ amount: 200, currencyCode: 'USD', isArchived: true, isExcludedFromTotal: true, type: 'bank_account' }),
     }
     const ids = Object.keys(walletsWithArchivedExcluded)
-    const result = filterWalletsByViewType(ids, walletsWithArchivedExcluded, 'isExcludeInTotal')
+    const result = filterWalletsByViewType(ids, walletsWithArchivedExcluded, 'isExcludedFromTotal')
     expect(result).toContain('excludeUSD')
     expect(result).toContain('archivedExcluded')
   })
 
-  it('cashless: returns cashless wallets', () => {
-    const result = filterWalletsByViewType(allIds, wallets, 'cashless')
+  it('bank_account: returns cashless wallets', () => {
+    const result = filterWalletsByViewType(allIds, wallets, 'bank_account')
     expect(result).toEqual(['excludeUSD', 'mainRUB', 'mainUSD', 'withdrawalUSD'])
   })
 
   it('credit: returns only credit wallets', () => {
-    const result = filterWalletsByViewType(allIds, wallets, 'credit')
+    const result = filterWalletsByViewType(allIds, wallets, 'credit_card')
     expect(result).toEqual(['creditUSD'])
   })
 

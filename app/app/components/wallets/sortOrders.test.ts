@@ -10,16 +10,16 @@ it('keeps stored order, drops stale keys, appends new ones', () => {
 it('orders primary groups, secondary groups and wallets by their own keys', () => {
   const groups = {
     cash: { groups: { RUB: ['r1', 'r2'], USD: ['u1'] }, ids: ['r1', 'r2', 'u1'] },
-    credit: { groups: {}, ids: ['c1', 'c2'] },
+    credit_card: { groups: {}, ids: ['c1', 'c2'] },
   }
   const sorted = sortWalletGroups(groups, 'type', {
-    'type': ['credit', 'cash'],
+    'type': ['credit_card', 'cash'],
     'type/cash': ['USD', 'RUB'],
     'type/cash/RUB': ['r2', 'r1'],
-    'type/credit': ['c2', 'c1'],
+    'type/credit_card': ['c2', 'c1'],
   })
-  expect(Object.keys(sorted)).toEqual(['credit', 'cash'])
+  expect(Object.keys(sorted)).toEqual(['credit_card', 'cash'])
   expect(Object.keys(sorted.cash!.groups!)).toEqual(['USD', 'RUB'])
   expect(sorted.cash!.groups!.RUB).toEqual(['r2', 'r1'])
-  expect(sorted.credit!.ids).toEqual(['c2', 'c1'])
+  expect(sorted.credit_card!.ids).toEqual(['c2', 'c1'])
 })

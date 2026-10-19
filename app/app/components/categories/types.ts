@@ -9,20 +9,22 @@ export type CategoryId = string
 export const categoryFormSchema = z.object({
   color: z.string().default(() => random(colorsArray)),
   icon: z.string().trim().min(1).default(() => random(random(icons))),
-  isExcludeFromStats: z.boolean().optional(),
+  isExcludedFromStats: z.boolean().optional(),
+  isInQuickSelector: z.boolean().default(false),
+  isInRecent: z.boolean().default(true),
   name: z.string().trim().min(1).default(''),
   parentId: z.union([z.string(), z.literal(0)]).default(0),
-  showInLastUsed: z.boolean().default(true),
-  showInQuickSelector: z.boolean().default(false),
 })
 
 export type CategoryForm = z.infer<typeof categoryFormSchema>
 
 export type CategoryItem = CategoryForm & {
+  createdAt?: number
+  sortOrder?: number
   updatedAt?: number
 }
 
-export type Categories = Record<CategoryId, CategoryItem> & Record<'transfer', CategoryItem>
+export type Categories = Record<CategoryId, CategoryItem>
 
 export type AddCategoryParams = {
   id: CategoryId

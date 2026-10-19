@@ -1,164 +1,52 @@
 import { describe, expect, it } from 'vitest'
 
-import type { Transaction, Transfer, TrnFormValues } from '~/components/trns/types'
+import type { TrnFormValues } from '~/components/trns/types'
 
-import { formatTransaction, formatTransfer } from '~/components/trnForm/utils/formatData'
+import { formatTrn } from '~/components/trnForm/utils/formatData'
 
-const valuesBase: TrnFormValues = {
-  amount: [10, 20, 30],
+const values: TrnFormValues = {
+  amount: [1000, 2000, 3000],
   amountRaw: ['10', '20', '30'],
-  categoryId: 'CategoryId',
-  date: 99999,
-  expenseWalletId: 'expenseWalletId',
-  incomeWalletId: 'incomeWalletId',
-  transferType: 'income',
+  categoryId: 'food',
+  date: 86400000,
+  fromWalletId: 'from',
+  toWalletId: 'to',
+  transferType: 'to',
   trnId: 'id',
-  trnType: 2,
-  walletId: 'WalletId',
+  trnType: 'expense',
+  walletId: 'wallet',
 }
 
-const transaction: {
-  generated: Transaction
-  raw: TrnFormValues
-} = {
-  generated: {
-    amount: 10,
-    categoryId: 'CategoryId',
-    date: 99999,
-    type: 0,
-    updatedAt: 1690711427451,
-    walletId: 'WalletId',
-  },
-  raw: {
-    ...valuesBase,
-    transferType: 'income',
-    trnType: 0,
-  },
+function format(over: Partial<TrnFormValues>) {
+  const data = formatTrn({ ...values, ...over })
+  if (!data)
+    return data
+  const { createdAt: _c, updatedAt: _u, ...rest } = data
+  return rest
 }
 
-const transfer: {
-  generated: Transfer
-  raw: TrnFormValues
-} = {
-  generated: {
-    categoryId: 'transfer',
-    date: 99999,
-    expenseAmount: 20,
-    expenseWalletId: 'expenseWalletId',
-    incomeAmount: 30,
-    incomeWalletId: 'incomeWalletId',
-    type: 2,
-    updatedAt: 1690711427451,
-  },
-  raw: {
-    ...valuesBase,
-    transferType: 'income',
-    trnType: 2,
-  },
-}
+describe('formatTrn', () => {
+  it('builds an expense from its wallet', () => {
+    expect(format({})).toEqual({ categoryId: 'food', date: 86400000, fromAmount: 1000, fromWalletId: 'wallet', type: 'expense' })
+  })
 
-const transactions = [{
-  data: {
-    become: {
-      ...transaction.generated,
-    } as Transaction | false,
-    expect: {
-      ...transaction.raw,
-    } as TrnFormValues,
-  },
-  name: 'Format income',
-}, {
-  data: {
-    become: false,
-    expect: {
-      ...transaction.raw,
-      trnType: 2,
-    } as TrnFormValues,
-  },
-  name: 'Format with wrong type',
-}, {
-  data: {
-    become: false,
-    expect: {
-      ...transaction.raw,
-      categoryId: null,
-    } as TrnFormValues,
-  },
-  name: 'Format with missing CategoryId',
-}]
+  it('builds an income into its wallet', () => {
+    expect(format({ description: 'Salary', trnType: 'income' })).toEqual({ categoryId: 'food', date: 86400000, description: 'Salary', toAmount: 1000, toWalletId: 'wallet', type: 'income' })
+  })
 
-const transfers = [{
-  data: {
-    become: {
-      ...transfer.generated,
-    } as Transfer,
-    expect: {
-      ...transfer.raw,
-    } as TrnFormValues,
-  },
-  name: 'Format values',
-}, {
-  data: {
-    become: false,
-    expect: {
-      ...transfer.raw,
-      trnType: 1,
-    } as TrnFormValues,
-  },
-  name: 'Format with wrong type',
-}, {
-  data: {
-    become: false,
-    expect: {
-      ...transfer.raw,
-      expenseWalletId: null,
-    } as TrnFormValues,
-  },
-  name: 'Format with missing expenseWalletId',
-}]
+  it('refuses an expense without a category', () => {
+    expect(format({ categoryId: null })).toBe(false)
+  })
 
-/**
- * Tests
- */
-const tests = [{
-  id: 'transactions',
-  name: 'Format Transaction to put on server',
-  variants: transactions,
-}, {
-  id: 'transfers',
-  name: 'Format Transfer to put on server',
-  variants: transfers,
-}]
+  it('builds a transfer with both sides', () => {
+    expect(format({ trnType: 'transfer' })).toEqual({ date: 86400000, fromAmount: 2000, fromWalletId: 'from', toAmount: 3000, toWalletId: 'to', type: 'transfer' })
+  })
 
-/**
- * Run
- */
-tests.forEach((test) => {
-  describe(test.name, () => {
-    test.variants.forEach((variant) => {
-      it(variant.name, () => {
-        const rawData = test.id === 'transactions'
-          ? formatTransaction(variant.data.expect)
-          : formatTransfer(variant.data.expect)
+  it('leaves the outside side of a transfer empty', () => {
+    expect(format({ transferOutside: 'from', trnType: 'transfer' })).toEqual({ date: 86400000, toAmount: 3000, toWalletId: 'to', type: 'transfer' })
+  })
 
-        // Strip updatedAt (dynamic timestamp) before comparison
-        let data: Omit<Transaction, 'updatedAt'> | Omit<Transfer, 'updatedAt'> | false = rawData
-        if (rawData) {
-          const { updatedAt: _u, ...rest } = rawData
-          data = rest
-        }
-
-        let res: Omit<Transaction, 'updatedAt'> | Omit<Transfer, 'updatedAt'> | false
-        if (variant.data.become && typeof variant.data.become === 'object') {
-          const { updatedAt: _u, ...rest } = variant.data.become
-          res = rest
-        }
-        else {
-          res = false
-        }
-
-        expect(data).toEqual(res)
-      })
-    })
+  it('refuses a transfer without wallets', () => {
+    expect(format({ fromWalletId: null, toWalletId: null, trnType: 'transfer' })).toBe(false)
   })
 })

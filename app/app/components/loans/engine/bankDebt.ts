@@ -1,32 +1,28 @@
-import { roundTo } from '~~/utils/amount/round'
-
+import type { BankReport } from '~/components/bankReports/types'
 import type { PaymentRow } from '~/components/loans/engine/types'
 
 /**
  * The wallet checked against the debt the bank itself reports. `diff` is our debt minus the
- * bank's; within one minor unit of the currency is rounding. Stale when a scheduled payment fell due after the bank
+ * bank's in minor units; one unit either way is rounding. Stale when a scheduled payment fell due after the bank
  * figure was read: the bank number no longer covers that payment.
  */
 export function bankDebtCheck(params: {
-  bankDebtAmount: number | undefined
-  bankDebtUpdatedAt: number | undefined
-  /** Decimal places of the loan currency; 2 when omitted. */
-  precision?: number
+  report: Pick<BankReport, 'debtAmount' | 'debtReportDate'> | undefined
   rows: PaymentRow[]
   today: number
   walletBalance: number
 }) {
-  const { bankDebtAmount, bankDebtUpdatedAt, rows, today, walletBalance } = params
-  if (bankDebtAmount === undefined || bankDebtUpdatedAt === undefined)
+  const { report, rows, today, walletBalance } = params
+  const { debtAmount, debtReportDate } = report ?? {}
+  if (debtAmount === undefined || debtReportDate === undefined)
     return null
 
-  const precision = params.precision ?? 2
-  const diff = roundTo(-walletBalance - bankDebtAmount, precision)
+  const diff = -walletBalance - debtAmount
   const lastDue = rows.findLast(row => row.date <= today)?.date
 
   return {
-    diff: Math.abs(diff) <= 10 ** -precision ? 0 : diff,
-    isStale: lastDue !== undefined && bankDebtUpdatedAt < lastDue,
-    updatedAt: bankDebtUpdatedAt,
+    diff: Math.abs(diff) <= 1 ? 0 : diff,
+    isStale: lastDue !== undefined && debtReportDate < lastDue,
+    updatedAt: debtReportDate,
   }
 }

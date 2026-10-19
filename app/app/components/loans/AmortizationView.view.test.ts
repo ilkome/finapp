@@ -10,7 +10,7 @@ describe('loansAmortizationView', () => {
   it('splits every payment into principal and interest, paid ones at full strength', () => {
     const wrapper = mount(LoansAmortizationView, { global: { stubs: { echarts: VChart } }, props: amortization })
     const option = JSON.parse(wrapper.find('[data-chart]').attributes('data-option')!)
-    expect(option.series.map((item: { data: { value: number }[] }) => item.data.map(bar => bar.value))).toEqual([[7000, 7100, 7200], [3000, 2900, 2800]])
+    expect(option.series.map((item: { data: { value: number }[] }) => item.data.map(bar => bar.value))).toEqual([[700000, 710000, 720000], [300000, 290000, 280000]])
     expect(option.series[0].data.map((bar: { itemStyle: { opacity: number } }) => bar.itemStyle.opacity)).toEqual([1, 0.35, 0.35])
   })
 

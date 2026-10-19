@@ -14,7 +14,6 @@ import { resolveQuickCategorySelection } from '~/components/stat/quickCategorySe
 import { buildSortedStatReportSelection } from '~/components/stat/report/useStatReportData'
 import { useStatReportContext } from '~/components/stat/useStatReportContext'
 import { getTypesMapping } from '~/components/stat/utils'
-import { TrnType } from '~/components/trns/types'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 type Params = {
@@ -47,9 +46,9 @@ export function useStatReportContexts(params: Params) {
     const income: TrnId[] = []
     for (const id of params.trnsIds.value) {
       const type = trnsStore.items?.[id]?.type
-      if (type === TrnType.Expense)
+      if (type === 'expense')
         expense.push(id)
-      else if (type === TrnType.Income)
+      else if (type === 'income')
         income.push(id)
     }
     return { combined: params.trnsIds.value, expense, income }
@@ -71,9 +70,9 @@ export function useStatReportContexts(params: Params) {
     const income: StatReportSelectedRecord[] = []
     for (const record of sharedSelection.value) {
       const type = trnsStore.items?.[record.id]?.type
-      if (type === TrnType.Expense)
+      if (type === 'expense')
         expense.push(record)
-      else if (type === TrnType.Income)
+      else if (type === 'income')
         income.push(record)
     }
     return { combined: sharedSelection.value, expense, income }
@@ -90,8 +89,8 @@ export function useStatReportContexts(params: Params) {
     const transactibleIds = new Set(categoriesStore.getTransactibleIds([categoryId]))
     const selection = resolveQuickCategorySelection({
       categoryId,
-      hasExpense: selectionProjections.value.expense.some(record => transactibleIds.has(record.categoryId)),
-      hasIncome: selectionProjections.value.income.some(record => transactibleIds.has(record.categoryId)),
+      hasExpense: selectionProjections.value.expense.some(record => !!record.categoryId && transactibleIds.has(record.categoryId)),
+      hasIncome: selectionProjections.value.income.some(record => !!record.categoryId && transactibleIds.has(record.categoryId)),
       isSelected: Object.values(quickCategoryFilters).some(filter => filter.categoriesIds.value.includes(categoryId)),
     })
 

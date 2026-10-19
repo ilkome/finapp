@@ -4,22 +4,21 @@ import type { PaymentRow } from '~/components/loans/engine/types'
 import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { TrnType } from '~/components/trns/types'
 import { balanceSeries, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
-import { parseForecastSettings } from '~/components/wallets/analytics/forecastSettings'
+import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { detectRegular, monthlyCategorySpending, previousMonths, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
-const wallet = (type: Wallets[string]['type'], currency = 'RUB') => ({ color: '#000', currency, desc: '', isArchived: false, isExcludeInTotal: false, isWithdrawal: true, name: type, order: 0, type, updatedAt: 0 }) as Wallets[string]
+const wallet = (type: Wallets[string]['type'], currency = 'RUB') => ({ color: '#000', createdAt: 0, currencyCode: currency, description: '', isArchived: false, isExcludedFromTotal: false, isWithdrawable: true, name: type, sortOrder: 0, type, updatedAt: 0 }) as Wallets[string]
 
-const wallets: Wallets = { card: wallet('credit'), cash: wallet('cash'), usd: wallet('cashless', 'USD') }
+const wallets: Wallets = { card: wallet('credit_card'), cash: wallet('cash'), usd: wallet('bank_account', 'USD') }
 const trns: Trns = {
-  a: { amount: 100, categoryId: 'salary', date: day('2026-01-10'), type: TrnType.Income, updatedAt: 0, walletId: 'cash' },
-  b: { amount: 30, categoryId: 'food', date: day('2026-02-05'), type: TrnType.Expense, updatedAt: 0, walletId: 'cash' },
-  c: { categoryId: 'transfer', date: day('2026-02-06'), expenseAmount: 20, expenseWalletId: 'cash', incomeAmount: 2, incomeWalletId: 'usd', type: TrnType.Transfer, updatedAt: 0 },
-  d: { amount: 50, categoryId: 'food', date: day('2026-03-01'), type: TrnType.Expense, updatedAt: 0, walletId: 'card' },
+  a: { categoryId: 'salary', createdAt: 0, date: day('2026-01-10'), toAmount: 100, toWalletId: 'cash', type: 'income', updatedAt: 0 },
+  b: { categoryId: 'food', createdAt: 0, date: day('2026-02-05'), fromAmount: 30, fromWalletId: 'cash', type: 'expense', updatedAt: 0 },
+  c: { createdAt: 0, date: day('2026-02-06'), fromAmount: 20, fromWalletId: 'cash', toAmount: 2, toWalletId: 'usd', type: 'transfer', updatedAt: 0 },
+  d: { categoryId: 'food', createdAt: 0, date: day('2026-03-01'), fromAmount: 50, fromWalletId: 'card', type: 'expense', updatedAt: 0 },
 }
 const ends = [day('2026-01-31'), day('2026-02-28'), day('2026-03-31')]
 const toBase = (amount: number, currency: string) => currency === 'USD' ? amount * 10 : amount
@@ -63,7 +62,7 @@ describe('statisticsRowsSeries', () => {
     const series = statisticsRowsSeries({
       balances: walletBalancesAt(trns, wallets, ends),
       flags: { includeArchived: false, includeExcluded: false },
-      rowIds: ['total', 'credit'],
+      rowIds: ['total', 'credit_card'],
       toBaseAt: () => toBase,
       walletIds: Object.keys(wallets),
       wallets,
@@ -77,8 +76,8 @@ describe('computeShares', () => {
   const params = { groupBy: 'type' as const, toBase, walletIds: Object.keys(computed), wallets: computed }
 
   it('measures assets and debts apart, or every balance by its size', () => {
-    expect(computeShares({ ...params, mode: 'assets' }).items.map(i => [i.id, i.share])).toEqual([['cash', 0.75], ['cashless', 0.25]])
-    expect(computeShares({ ...params, mode: 'debts' }).items.map(i => [i.id, i.signedValue])).toEqual([['credit', -50]])
+    expect(computeShares({ ...params, mode: 'assets' }).items.map(i => [i.id, i.share])).toEqual([['cash', 0.75], ['bank_account', 0.25]])
+    expect(computeShares({ ...params, mode: 'debts' }).items.map(i => [i.id, i.signedValue])).toEqual([['credit_card', -50]])
     expect(computeShares({ ...params, mode: 'all' }).total).toBe(250)
   })
 })
@@ -91,15 +90,15 @@ describe('regular spending', () => {
     ['r2', 'rent', '2026-02-03', 500],
     ['r3', 'rent', '2026-03-03', 520],
     ['t1', 'tv', '2026-03-10', 900],
-    ['i1', 'loanInterest', '2026-03-10', 70],
-  ].map(([id, categoryId, date, amount]) => [id, { amount, categoryId, date: day(date as string), type: TrnType.Expense, updatedAt: 0, walletId: 'cash' }]))
+    ['i1', 'loan_interest', '2026-03-10', 70],
+  ].map(([id, categoryId, date, amount]) => [id, { categoryId, createdAt: 0, date: day(date as string), fromAmount: amount, fromWalletId: 'cash', type: 'expense', updatedAt: 0 }]))
 
   const monthly = monthlyCategorySpending({ excludedCategoryIds: new Set(), months, toBase, trnsItems: spending, walletsItems: wallets })
 
   it('sums by category and month, loan interest left to the loan payment', () => {
     expect(months[0]!.start).toBe(day('2026-01-01'))
     expect(monthly.get('rent')).toEqual([500, 500, 520])
-    expect(monthly.has('loanInterest')).toBe(false)
+    expect(monthly.has('loan_interest')).toBe(false)
   })
 
   it('takes a category spent in enough months, overrides win', () => {
@@ -135,9 +134,9 @@ describe('obligations', () => {
   it('repeats the card minimum until the debt is covered, or pays the statement debt once', () => {
     const minPayment = { amount: 40, date: day('2026-04-20'), status: 'due' as const }
     const base = { debt: 100, grace: null, minPayment, toBase: (v: number) => v, today, until: day('2026-12-31'), walletId: 'card' }
-    expect(cardObligations({ ...base, mode: 'min' }).map(o => o.amount)).toEqual([40, 40, 20])
-    expect(cardObligations({ ...base, grace: { amount: 90, date: day('2026-04-25'), statementDate: null, status: 'due' }, mode: 'full' }).map(o => o.amount)).toEqual([90])
-    expect(cardObligations({ ...base, minPayment: { ...minPayment, status: 'stale' }, mode: 'min' })).toEqual([])
+    expect(cardObligations({ ...base, mode: 'minimum' }).map(o => o.amount)).toEqual([40, 40, 20])
+    expect(cardObligations({ ...base, grace: { amount: 90, date: day('2026-04-25'), statementDate: null, status: 'due' }, mode: 'full_debt' }).map(o => o.amount)).toEqual([90])
+    expect(cardObligations({ ...base, minPayment: { ...minPayment, status: 'stale' }, mode: 'minimum' })).toEqual([])
   })
 })
 
@@ -166,11 +165,22 @@ describe('projectForecast', () => {
   })
 })
 
-describe('parseForecastSettings', () => {
+describe('forecast settings', () => {
   it('fills defaults and resets only a broken field', () => {
-    expect(parseForecastSettings(null).windowMonths).toBe(6)
-    const parsed = parseForecastSettings(JSON.stringify({ horizonMonths: 'x', windowMonths: 3 }))
-    expect(parsed).toMatchObject({ horizonMonths: 12, windowMonths: 3 })
-    expect(parseForecastSettings('{oops').cardPayment).toBe('min')
+    expect(parseForecastSettings(null)).toEqual({ cardPaymentMode: 'minimum', historyMonths: 6, horizonMonths: 12, isByParentCategory: false, regularAmountMode: 'median', regularMinMonths: 5 })
+    expect(parseForecastSettings({ cardPaymentMode: 'min', historyMonths: 3, horizonMonths: 'x' })).toMatchObject({ cardPaymentMode: 'minimum', historyMonths: 3, horizonMonths: 12 })
+  })
+
+  it('reads category rows and turns them into overrides in base currency', () => {
+    const categories = parseForecastCategories([{ categoryId: 'rent', currencyCode: 'USD', monthlyAmount: 40 }, { categoryId: 'tv', isIncluded: false }, { isIncluded: true }])
+    expect(Object.keys(categories)).toEqual(['rent', 'tv'])
+    expect(toRegularOverride(categories.rent!, toBase, 'RUB')).toEqual({ amount: 400 })
+    expect(toRegularOverride(categories.tv!, toBase, 'RUB')).toEqual({ state: 'exclude' })
+    expect(toRegularOverride({ categoryId: 'x' }, toBase, 'RUB')).toBeUndefined()
+  })
+
+  it('keeps detection for an amount-only override', () => {
+    const list = detectRegular({ amountMode: 'median', minMonths: 2, monthly: new Map([['rent', [10, 10]]]), overrides: { rent: { amount: 99 } }, windowMonths: 2 })
+    expect(list[0]).toMatchObject({ amount: 99, isRegular: true })
   })
 })

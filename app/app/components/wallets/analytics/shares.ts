@@ -34,11 +34,11 @@ export function computeShares(params: {
     const wallet = wallets[id]
     if (!wallet)
       continue
-    const amount = toBase(wallet.amount, wallet.currency)
+    const amount = toBase(wallet.amount, wallet.currencyCode)
     // A balance is an asset or a debt by its sign, so an overdrawn debit card counts as a debt.
     if (amount === 0 || (mode === 'assets' && amount < 0) || (mode === 'debts' && amount > 0))
       continue
-    const key = groupBy === 'type' ? wallet.type : groupBy === 'currency' ? wallet.currency : id
+    const key = groupBy === 'type' ? wallet.type : groupBy === 'currency' ? wallet.currencyCode : id
     const group = groups.get(key) ?? { signedValue: 0, walletIds: [] }
     group.signedValue += amount
     group.walletIds.push(id)
@@ -46,7 +46,7 @@ export function computeShares(params: {
   }
 
   const items = [...groups]
-    .map(([id, group]) => ({ id, signedValue: group.signedValue, value: Math.abs(group.signedValue), walletIds: group.walletIds }))
+    .map(([id, group]) => ({ id, signedValue: Math.round(group.signedValue), value: Math.abs(Math.round(group.signedValue)), walletIds: group.walletIds }))
     .filter(item => item.value > 0)
     .sort((a, b) => b.value - a.value)
   const total = items.reduce((sum, item) => sum + item.value, 0)

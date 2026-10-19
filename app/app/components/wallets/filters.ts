@@ -11,7 +11,7 @@ export function filterWalletsByCurrency(
   const ids = Object.keys(wallets)
   if (groupingPrimary(groupedBy) === 'currency' || currencyFilter === 'all')
     return ids
-  return ids.filter(id => wallets[id]?.currency === currencyFilter)
+  return ids.filter(id => wallets[id]?.currencyCode === currencyFilter)
 }
 
 export function filterWalletsByViewType(
@@ -28,15 +28,15 @@ export function filterWalletsByViewType(
     // The flag rows list every wallet in their sum, archived or not.
     if (viewType === 'isArchived')
       return wallet.isArchived
-    if (viewType === 'isExcludeInTotal')
-      return wallet.isExcludeInTotal
+    if (viewType === 'isExcludedFromTotal')
+      return wallet.isExcludedFromTotal
 
     const archivedFilter = showArchived || !wallet.isArchived
 
     switch (viewType) {
-      case 'isWithdrawal': return wallet.isWithdrawal && !isCreditProduct(wallet.type) && archivedFilter
-      case 'isAvailable': return (wallet.type === 'credit' || (wallet.isWithdrawal && !isCreditProduct(wallet.type))) && archivedFilter
-      case 'isAvailableAll': return (isCreditProduct(wallet.type) || wallet.isWithdrawal) && archivedFilter
+      case 'isWithdrawable': return wallet.isWithdrawable && !isCreditProduct(wallet.type) && archivedFilter
+      case 'isAvailable': return (wallet.type === 'credit_card' || (wallet.isWithdrawable && !isCreditProduct(wallet.type))) && archivedFilter
+      case 'isAvailableAll': return (isCreditProduct(wallet.type) || wallet.isWithdrawable) && archivedFilter
       case 'total': return archivedFilter
       default: return wallet.type === viewType && archivedFilter
     }

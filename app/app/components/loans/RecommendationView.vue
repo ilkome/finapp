@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { minorToAmount } from '~/components/amount/utils'
+
 export type LoansRecommendationPick = {
   interestSaved: number
   name: string
@@ -10,9 +12,9 @@ export type LoansRecommendationPick = {
 const props = defineProps<{
   avalanche: LoansRecommendationPick | null
   baseCurrencyCode: string
-  /** Extra payment in the base currency. */
+  /** Extra payment in the base currency as typed: a decimal amount, not minor units. */
   extra: number
-  /** Sum of the picked wallets, in the base currency. */
+  /** Sum of the picked wallets, in minor units of the base currency. */
   freeMoney: number
   snowball: LoansRecommendationPick | null
   wallets: { amount: number, currencyCode: string, isSelected: boolean, name: string, walletId: string }[]
@@ -109,7 +111,7 @@ const picks = computed(() => [
           variant="soft"
           class="shrink-0"
           data-loan-extra-all
-          @click="emit('update:extra', Math.round(props.freeMoney))"
+          @click="emit('update:extra', Math.round(minorToAmount(props.freeMoney, props.baseCurrencyCode)))"
         >
           {{ t('loans.recommendation.allFree') }}
         </UButton>

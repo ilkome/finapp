@@ -1,31 +1,26 @@
-import type { Transaction, Transfer } from '~/components/trns/types'
+import type { TrnItem } from '~/components/trns/types'
 
-import { trnItemSchema, TrnType } from '~/components/trns/types'
+import { trnItemSchema } from '~/components/trns/types'
 
-export function validate(values: Transaction | Transfer): string | null {
-  const result = trnItemSchema.safeParse(values)
-
-  if (!result.success) {
-    const issue = result.error.issues[0]
-
-    if (values.type === TrnType.Transfer) {
-      if (issue?.path?.includes('incomeWalletId') || issue?.path?.includes('expenseWalletId'))
-        return 'trnForm.errors.selectWallet'
-      return 'trnForm.errors.transferAmountEmpty'
-    }
-
-    if (issue?.path?.includes('amount'))
-      return 'trnForm.errors.amountEmpty'
-    if (issue?.path?.includes('walletId'))
-      return 'trnForm.errors.selectWallet'
-    if (issue?.path?.includes('categoryId'))
-      return 'trnForm.errors.selectCategory'
-
-    return 'trnForm.errors.amountEmpty'
-  }
-
-  if (values.type === TrnType.Transfer && values.incomeWalletId === values.expenseWalletId)
+/** The server's check, run before save so a row it would refuse never reaches the upload queue. */
+export function validate(values: TrnItem): string | null {
+  if (values.type === 'transfer' && values.fromWalletId && values.fromWalletId === values.toWalletId)
     return 'trnForm.errors.transferSameWallet'
 
-  return null
+  if (values.type === 'transfer' && !values.fromWalletId && !values.toWalletId)
+    return 'trnForm.errors.selectWallet'
+
+  if ((values.fromWalletId && !(values.fromAmount! > 0)) || (values.toWalletId && !(values.toAmount! > 0)))
+    return values.type === 'transfer' ? 'trnForm.errors.transferAmountEmpty' : 'trnForm.errors.amountEmpty'
+
+  const result = trnItemSchema.safeParse(values)
+  if (result.success)
+    return null
+
+  const path = result.error.issues[0]?.path ?? []
+  if (path.includes('categoryId') || (values.type !== 'transfer' && !values.categoryId))
+    return 'trnForm.errors.selectCategory'
+  if (values.type !== 'transfer' && !values.fromWalletId && !values.toWalletId)
+    return 'trnForm.errors.selectWallet'
+  return 'trnForm.errors.amountEmpty'
 }

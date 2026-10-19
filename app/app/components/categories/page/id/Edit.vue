@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
+import type { TrnTypeWithLook } from '~/components/categories/useCategoriesStore'
 
 import { categoryFormSchema } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -11,7 +12,9 @@ const route = useRoute('categories-id-edit')
 const categoriesStore = useCategoriesStore()
 
 const categoryId = computed<CategoryId>(() => route.params.id)
-const category = computed(() => categoriesStore.items[categoryId.value])
+// A transfer or an adjustment has no category row: its editable look comes from the type looks.
+const category = computed(() => categoriesStore.items[categoryId.value]
+  ?? categoriesStore.trnTypeLooks[categoryId.value as TrnTypeWithLook])
 // On a hard navigation the store hydrates from PowerSync after setup, so
 // `category` is undefined initially - parse `?? {}` to avoid throwing, then
 // re-seed the form once the category arrives (the template gates on `category`).

@@ -7,7 +7,7 @@
           "date": 1788998400000,
           "items": [
             {
-              "amount": 3500,
+              "amount": 350000,
               "currencyCode": "RUB",
               "label": "Loan payment",
               "walletId": "r1",
@@ -26,7 +26,7 @@
           "date": 1789084800000,
           "items": [
             {
-              "amount": 21000,
+              "amount": 2100000,
               "currencyCode": "RUB",
               "desc": "Principal 18000 / Interest 3000",
               "label": "Loan payment",
@@ -34,14 +34,14 @@
               "walletName": "Mortgage"
             },
             {
-              "amount": 4000,
+              "amount": 400000,
               "currencyCode": "RUB",
               "label": "Loan payment",
               "walletId": "r2",
               "walletName": "Installments"
             }
           ],
-          "sum": 25000
+          "sum": 2500000
         }
       ],
       "key": "nearest",
@@ -49,7 +49,7 @@
     }
   ],
   "isOverdue": true,
-  "total": 28500,
+  "total": 2850000,
   "openKeys": [
     "overdue",
     "week",

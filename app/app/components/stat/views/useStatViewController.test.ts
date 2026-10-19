@@ -49,7 +49,7 @@ function makeView(config: MiniItemConfig, overrides: Partial<StatView> = {}): St
     createdAt: 1,
     id: 'view-1',
     isActive: true,
-    isAutoEnabled: false,
+    isAutoRuleEnabled: false,
     name: 'Default',
     scope: 'dashboard',
     sortOrder: 0,
@@ -136,7 +136,7 @@ describe('useStatViewController', () => {
       autoRule: { children: [{ ids: ['cat-1'], kind: 'categorySelection', mode: 'selected' }], operator: 'and' },
       id: 'view-bound',
       isActive: false,
-      isAutoEnabled: true,
+      isAutoRuleEnabled: true,
       name: 'Bound',
       sortOrder: 1,
     })

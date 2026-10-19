@@ -6,7 +6,7 @@ import type { TrnItem, TrnsViewType } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { getAmountInRate } from '~/components/amount/getTotal'
-import { formatAmount, getCurrencySymbol } from '~/components/amount/utils'
+import { amountToMinor, formatAmount, getCurrencySymbol, minorToAmount } from '~/components/amount/utils'
 import { matchesTrnViewType } from '~/components/trns/tabClassification'
 import { trnsViewTypes } from '~/components/trns/types'
 
@@ -118,8 +118,8 @@ function cutLabel(text: string): string {
 }
 
 function formatAmountRange(extras: FilterExtras, currency: CurrencyCode): string {
-  const min = extras.amountMin === null ? null : formatAmount(extras.amountMin, currency)
-  const max = extras.amountMax === null ? null : formatAmount(extras.amountMax, currency)
+  const min = extras.amountMin === null ? null : formatAmount(amountToMinor(extras.amountMin, currency), currency)
+  const max = extras.amountMax === null ? null : formatAmount(amountToMinor(extras.amountMax, currency), currency)
   const range = min !== null && max !== null
     ? `${min} - ${max}`
     : min !== null ? `≥ ${min}` : `≤ ${max}`
@@ -159,7 +159,7 @@ type ExtrasMatcherContext = {
 }
 
 /**
- * Amount is compared unsigned in the base currency, so `min` keeps both large expenses and large incomes.
+ * Amount bounds are decimal units of the base currency (they live in the URL), compared unsigned, so `min` keeps both large expenses and large incomes.
  * Search matches the description, the category path (`Parent / Child`) and the wallet name(s); `descText` matches the description only.
  */
 export function createExtrasMatcher(extras: FilterExtras, ctx: ExtrasMatcherContext): (trn: TrnItem | undefined) => boolean {
@@ -171,22 +171,22 @@ export function createExtrasMatcher(extras: FilterExtras, ctx: ExtrasMatcherCont
   const { amountMax, amountMin, desc, type } = extras
 
   function amountInBase(trn: TrnItem): number {
-    const walletId = 'walletId' in trn ? trn.walletId : trn.expenseWalletId
-    const amount = 'amount' in trn ? trn.amount : trn.expenseAmount
-    const currencyCode = ctx.wallets?.[walletId]?.currency
+    const walletId = trn.fromWalletId ?? trn.toWalletId
+    const amount = trn.fromAmount ?? trn.toAmount ?? 0
+    const currencyCode = walletId ? ctx.wallets?.[walletId]?.currencyCode : undefined
     if (!currencyCode)
-      return amount
-    return getAmountInRate(amount, currencyCode, ctx.baseCurrency, ctx.rates)
+      return minorToAmount(amount, ctx.baseCurrency)
+    return minorToAmount(getAmountInRate(amount, currencyCode, ctx.baseCurrency, ctx.rates), ctx.baseCurrency)
   }
 
   function searchTargets(trn: TrnItem, description: string): string[] {
-    const category = ctx.categories?.[trn.categoryId]
+    const category = trn.categoryId ? ctx.categories?.[trn.categoryId] : undefined
     const parent = category?.parentId ? ctx.categories?.[category.parentId] : undefined
-    const walletIds = 'walletId' in trn ? [trn.walletId] : [trn.expenseWalletId, trn.incomeWalletId]
+    const walletIds = [trn.fromWalletId, trn.toWalletId].filter(id => !!id)
     return [
       description,
       parent ? `${parent.name} / ${category?.name ?? ''}` : category?.name ?? '',
-      ...walletIds.map(id => ctx.wallets?.[id]?.name ?? ''),
+      ...walletIds.map(id => ctx.wallets?.[id!]?.name ?? ''),
     ]
   }
 
@@ -195,7 +195,7 @@ export function createExtrasMatcher(extras: FilterExtras, ctx: ExtrasMatcherCont
       return false
     if (!matchesTrnViewType(trn, type))
       return false
-    const description = (trn.desc ?? '').trim()
+    const description = (trn.description ?? '').trim()
     if (desc === 'with' && !description)
       return false
     if (desc === 'without' && description)

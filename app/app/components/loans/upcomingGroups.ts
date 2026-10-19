@@ -52,7 +52,7 @@ export function groupUpcoming<T extends { amount: number, currency: CurrencyCode
     if (!group)
       return []
     for (const day of group.days)
-      day.sum = day.items.length > 1 ? day.items.reduce((total, item) => total + toBase(item.amount, item.currency), 0) : null
+      day.sum = day.items.length > 1 ? Math.round(day.items.reduce((total, item) => total + toBase(item.amount, item.currency), 0)) : null
     return [group]
   })
 }

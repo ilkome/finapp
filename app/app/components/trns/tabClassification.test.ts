@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest'
 import { trnsItems } from '~~/mocks/trns'
 
 import { getFilteredByTypeIds, getTypeCounts } from '~/components/trns/tabClassification'
-import { TrnType } from '~/components/trns/types'
 
 const allIds = Object.keys(trnsItems)
 
@@ -77,7 +76,7 @@ describe('getFilteredByTypeIds', () => {
       'singleLegTransferExpenseWalletCashUSD50',
       'transactionIncomeWalletCashUSD1000',
     ]
-    const result = getFilteredByTypeIds(ids, trnsItems, 'expense', TrnType.Expense)
+    const result = getFilteredByTypeIds(ids, trnsItems, 'expense', 'expense')
     expect(result).toEqual(['transactionExpenseWalletCashUSD400'])
   })
 
@@ -87,7 +86,7 @@ describe('getFilteredByTypeIds', () => {
       'singleLegTransferIncomeWalletCashUSD60',
       'transactionExpenseWalletCashUSD400',
     ]
-    const result = getFilteredByTypeIds(ids, trnsItems, 'income', TrnType.Income)
+    const result = getFilteredByTypeIds(ids, trnsItems, 'income', 'income')
     expect(result).toEqual(['transactionIncomeWalletCashUSD1000'])
   })
 })

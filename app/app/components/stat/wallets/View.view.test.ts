@@ -9,7 +9,7 @@ describe('statWalletsView', () => {
     const wrapper = mount(StatWalletsView, { props: wallets as any })
     expect(wrapper.text()).toContain('Dollar card')
     expect(wrapper.text()).toContain('Euro cash')
-    expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual(['-420.5 USD', '300 EUR'])
+    expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual(['-42050 USD', '30000 EUR'])
     await wrapper.findAll('.uiElement, [class*="uiElement"]').at(-1)!.trigger('click')
     expect(wrapper.emitted('select')?.at(-1)).toEqual(['cash'])
   })

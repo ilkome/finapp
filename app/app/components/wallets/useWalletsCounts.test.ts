@@ -8,15 +8,15 @@ import { computeWalletCounts, sumWalletsInBase, sumWalletsInOwnCurrency } from '
 const rates = { EUR: 0.96, RUB: 64.75, USD: 1 }
 const toBaseIn = (base: string) => (amount: number, currency: string) => getAmountInRate(amount, currency, base, rates)
 
-function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currency' | 'type'>): WalletItemComputed {
+function wallet(overrides: Partial<WalletItemComputed> & Pick<WalletItemComputed, 'amount' | 'currencyCode' | 'type'>): WalletItemComputed {
   return {
     color: 'blue',
-    desc: '',
+    description: '',
     isArchived: false,
-    isExcludeInTotal: false,
-    isWithdrawal: false,
+    isExcludedFromTotal: false,
+    isWithdrawable: false,
     name: 'Test',
-    order: 0,
+    sortOrder: 0,
     updatedAt: 0,
     ...overrides,
   } as WalletItemComputed
@@ -33,13 +33,13 @@ describe('computeWalletCounts', () => {
 
     expect(result.total!.value).toBe(0)
     expect(result.cash!.value).toBe(0)
-    expect(result.credit!.value).toBe(0)
+    expect(result.credit_card!.value).toBe(0)
     expect(result.total!.isShow).toBe(true)
   })
 
   it('accumulates cash wallet into total', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
     }
 
     const result = computeWalletCounts({
@@ -55,8 +55,8 @@ describe('computeWalletCounts', () => {
 
   it('excludes credit wallets from total', () => {
     const wallets = {
-      w1: wallet({ amount: 500, currency: 'USD', type: 'cashless' }),
-      w2: wallet({ amount: -200, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: 500, currencyCode: 'USD', type: 'bank_account' }),
+      w2: wallet({ amount: -200, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -67,13 +67,13 @@ describe('computeWalletCounts', () => {
     })
 
     expect(result.total!.value).toBe(500)
-    expect(result.credit!.value).toBe(-200)
+    expect(result.credit_card!.value).toBe(-200)
   })
 
-  it('puts isExcludeInTotal wallets into excludeInTotal, not total', () => {
+  it('puts isExcludedFromTotal wallets into excludeInTotal, not total', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 300, currency: 'USD', isExcludeInTotal: true, type: 'cashless' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 300, currencyCode: 'USD', isExcludedFromTotal: true, type: 'bank_account' }),
     }
 
     const result = computeWalletCounts({
@@ -90,8 +90,8 @@ describe('computeWalletCounts', () => {
 
   it('computes available as withdrawal plus the credit balance', () => {
     const wallets = {
-      w1: wallet({ amount: 5000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
-      w2: wallet({ amount: -1000, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: 5000, currencyCode: 'USD', isWithdrawable: true, type: 'bank_account' }),
+      w2: wallet({ amount: -1000, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -108,8 +108,8 @@ describe('computeWalletCounts', () => {
 
   it('an overpaid credit card adds to available instead of subtracting', () => {
     const wallets = {
-      w1: wallet({ amount: 5000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
-      w2: wallet({ amount: 200, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: 5000, currencyCode: 'USD', isWithdrawable: true, type: 'bank_account' }),
+      w2: wallet({ amount: 200, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -124,7 +124,7 @@ describe('computeWalletCounts', () => {
 
   it('converts currencies to base rate', () => {
     const wallets = {
-      w1: wallet({ amount: 6475, currency: 'RUB', type: 'cash' }),
+      w1: wallet({ amount: 6475, currencyCode: 'RUB', type: 'cash' }),
     }
 
     const result = computeWalletCounts({
@@ -140,7 +140,7 @@ describe('computeWalletCounts', () => {
 
   it('converts creditPossible to base currency', () => {
     const wallets = {
-      w1: wallet({ amount: -100, creditLimit: 6475, currency: 'RUB', type: 'credit' }),
+      w1: wallet({ amount: -100, creditLimit: 6475, currencyCode: 'RUB', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -150,13 +150,13 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.credit!.secondValue).toBe(100)
+    expect(result.credit_card!.secondValue).toBe(100)
   })
 
   it('accumulates creditPossible from multiple credit wallets', () => {
     const wallets = {
-      w1: wallet({ amount: -100, creditLimit: 5000, currency: 'USD', type: 'credit' }),
-      w2: wallet({ amount: -200, creditLimit: 3000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: -100, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
+      w2: wallet({ amount: -200, creditLimit: 3000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -166,12 +166,12 @@ describe('computeWalletCounts', () => {
       wallets,
     })
 
-    expect(result.credit!.secondValue).toBe(8000)
+    expect(result.credit_card!.secondValue).toBe(8000)
   })
 
   it('available hidden when no credit wallets', () => {
     const wallets = {
-      w1: wallet({ amount: 5000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
+      w1: wallet({ amount: 5000, currencyCode: 'USD', isWithdrawable: true, type: 'bank_account' }),
     }
 
     const result = computeWalletCounts({
@@ -186,7 +186,7 @@ describe('computeWalletCounts', () => {
 
   it('cash.isShow false when only 1 wallet exists', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
     }
 
     const result = computeWalletCounts({
@@ -201,7 +201,7 @@ describe('computeWalletCounts', () => {
 
   it('cash.isShow false when sum is zero', () => {
     const wallets = {
-      w1: wallet({ amount: 0, currency: 'USD', type: 'cash' }),
+      w1: wallet({ amount: 0, currencyCode: 'USD', type: 'cash' }),
     }
 
     const result = computeWalletCounts({
@@ -216,8 +216,8 @@ describe('computeWalletCounts', () => {
 
   it('archived wallets excluded from total and type sums', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 500, currency: 'USD', isArchived: true, type: 'cashless' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 500, currencyCode: 'USD', isArchived: true, type: 'bank_account' }),
     }
 
     const result = computeWalletCounts({
@@ -230,14 +230,14 @@ describe('computeWalletCounts', () => {
     expect(result.archived!.value).toBe(500)
     expect(result.archived!.isShow).toBe(true)
     expect(result.total!.value).toBe(1000)
-    expect(result.cashless!.value).toBe(0)
+    expect(result.bank_account!.value).toBe(0)
   })
 
   it('archived wallets excluded from withdrawal and available', () => {
     const wallets = {
-      w1: wallet({ amount: 3000, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
-      w2: wallet({ amount: 1000, currency: 'USD', isArchived: true, isWithdrawal: true, type: 'cashless' }),
-      w3: wallet({ amount: -500, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: 3000, currencyCode: 'USD', isWithdrawable: true, type: 'bank_account' }),
+      w2: wallet({ amount: 1000, currencyCode: 'USD', isArchived: true, isWithdrawable: true, type: 'bank_account' }),
+      w3: wallet({ amount: -500, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -253,7 +253,7 @@ describe('computeWalletCounts', () => {
 
   it('archived.isShow false when no archived wallets', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
     }
 
     const result = computeWalletCounts({
@@ -279,12 +279,12 @@ describe('computeWalletCounts', () => {
 
   it('all wallet types accumulated correctly', () => {
     const wallets = {
-      w1: wallet({ amount: 100, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 200, currency: 'USD', type: 'cashless' }),
-      w3: wallet({ amount: 300, currency: 'USD', type: 'crypto' }),
-      w4: wallet({ amount: 400, currency: 'USD', type: 'deposit' }),
-      w5: wallet({ amount: 500, currency: 'USD', type: 'debt' }),
-      w6: wallet({ amount: -600, creditLimit: 10000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: 100, currencyCode: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 200, currencyCode: 'USD', type: 'bank_account' }),
+      w3: wallet({ amount: 300, currencyCode: 'USD', type: 'crypto' }),
+      w4: wallet({ amount: 400, currencyCode: 'USD', type: 'deposit' }),
+      w5: wallet({ amount: 500, currencyCode: 'USD', type: 'debt' }),
+      w6: wallet({ amount: -600, creditLimit: 10000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -295,19 +295,19 @@ describe('computeWalletCounts', () => {
     })
 
     expect(result.cash!.value).toBe(100)
-    expect(result.cashless!.value).toBe(200)
+    expect(result.bank_account!.value).toBe(200)
     expect(result.crypto!.value).toBe(300)
     expect(result.deposit!.value).toBe(400)
     expect(result.debt!.value).toBe(500)
-    expect(result.credit!.value).toBe(-600)
-    expect(result.credit!.secondValue).toBe(10000)
+    expect(result.credit_card!.value).toBe(-600)
+    expect(result.credit_card!.secondValue).toBe(10000)
     // total = 100+200+300+400+500 = 1500 (credit excluded)
     expect(result.total!.value).toBe(1500)
   })
 
-  it('isExcludeInTotal credit wallet goes to excludeInTotal, not credit or total', () => {
+  it('isExcludedFromTotal credit wallet goes to excludeInTotal, not credit or total', () => {
     const wallets = {
-      w1: wallet({ amount: -300, creditLimit: 5000, currency: 'USD', isExcludeInTotal: true, type: 'credit' }),
+      w1: wallet({ amount: -300, creditLimit: 5000, currencyCode: 'USD', isExcludedFromTotal: true, type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -319,33 +319,33 @@ describe('computeWalletCounts', () => {
 
     expect(result.excludeInTotal!.value).toBe(-300)
     expect(result.total!.value).toBe(0)
-    expect(result.credit!.value).toBe(0)
+    expect(result.credit_card!.value).toBe(0)
   })
 
-  it('includeExcludedInStats puts isExcludeInTotal wallets back into total and type rows', () => {
+  it('includeExcludedInStats puts isExcludedFromTotal wallets back into total and type rows', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 300, currency: 'USD', isExcludeInTotal: true, isWithdrawal: true, type: 'cashless' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 300, currencyCode: 'USD', isExcludedFromTotal: true, isWithdrawable: true, type: 'bank_account' }),
     }
 
     const params = { toBase: toBaseIn('USD'), totalWalletsCount: 2, walletIds: ['w1', 'w2'], wallets }
 
     const off = computeWalletCounts(params)
     expect(off.total!.value).toBe(1000)
-    expect(off.cashless!.value).toBe(0)
+    expect(off.bank_account!.value).toBe(0)
     expect(off.withdrawal!.value).toBe(0)
     expect(off.excludeInTotal!.value).toBe(300)
 
     const on = computeWalletCounts({ ...params, includeExcludedInStats: true })
     expect(on.total!.value).toBe(1300)
-    expect(on.cashless!.value).toBe(300)
+    expect(on.bank_account!.value).toBe(300)
     expect(on.withdrawal!.value).toBe(300)
     expect(on.excludeInTotal!.value).toBe(300)
   })
 
   it('a wallet that is both archived and excluded lands in both slices', () => {
     const wallets = {
-      w1: wallet({ amount: 500, currency: 'USD', isArchived: true, isExcludeInTotal: true, type: 'cash' }),
+      w1: wallet({ amount: 500, currencyCode: 'USD', isArchived: true, isExcludedFromTotal: true, type: 'cash' }),
     }
 
     const params = { toBase: toBaseIn('USD'), totalWalletsCount: 1, walletIds: ['w1'], wallets }
@@ -367,8 +367,8 @@ describe('computeWalletCounts', () => {
 
   it('withdrawal wallet with negative amount', () => {
     const wallets = {
-      w1: wallet({ amount: -500, currency: 'USD', isWithdrawal: true, type: 'cashless' }),
-      w2: wallet({ amount: -1000, creditLimit: 5000, currency: 'USD', type: 'credit' }),
+      w1: wallet({ amount: -500, currencyCode: 'USD', isWithdrawable: true, type: 'bank_account' }),
+      w2: wallet({ amount: -1000, creditLimit: 5000, currencyCode: 'USD', type: 'credit_card' }),
     }
 
     const result = computeWalletCounts({
@@ -384,9 +384,9 @@ describe('computeWalletCounts', () => {
 
   it('keeps loans apart from credit cards, out of the total, and counts each debt once in available', () => {
     const wallets = {
-      card: wallet({ amount: -300, creditLimit: 1000, currency: 'USD', type: 'credit' }),
-      cash: wallet({ amount: 1000, currency: 'USD', isWithdrawal: true, type: 'cash' }),
-      loan: wallet({ amount: -500, currency: 'USD', isWithdrawal: true, type: 'loan' }),
+      card: wallet({ amount: -300, creditLimit: 1000, currencyCode: 'USD', type: 'credit_card' }),
+      cash: wallet({ amount: 1000, currencyCode: 'USD', isWithdrawable: true, type: 'cash' }),
+      loan: wallet({ amount: -500, currencyCode: 'USD', isWithdrawable: true, type: 'loan' }),
     }
 
     const result = computeWalletCounts({
@@ -397,7 +397,7 @@ describe('computeWalletCounts', () => {
     })
 
     expect(result.total!.value).toBe(1000)
-    expect(result.credit).toMatchObject({ secondValue: 1000, value: -300 })
+    expect(result.credit_card).toMatchObject({ secondValue: 1000, value: -300 })
     expect(result.loan).toMatchObject({ isShow: true, value: -500 })
     expect(result.withdrawal!.value).toBe(1000)
     expect(result.available!.value).toBe(700)
@@ -408,24 +408,24 @@ describe('computeWalletCounts', () => {
 describe('sumWalletsInBase', () => {
   it('converts wallets counted in totals, honoring the switches', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 6475, currency: 'RUB', isExcludeInTotal: true, type: 'cashless' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 6475, currencyCode: 'RUB', isExcludedFromTotal: true, type: 'bank_account' }),
     }
 
     expect(sumWalletsInBase(['w1', 'w2', 'missing'], wallets, toBaseIn('USD'))).toBe(1000)
     // 1000 + 6475/64.75 = 1100
     expect(sumWalletsInBase(['w1', 'w2'], wallets, toBaseIn('USD'), { includeExcluded: true })).toBe(1100)
-    const archived = { a: wallet({ amount: 300, currency: 'USD', isArchived: true, type: 'cash' }) }
+    const archived = { a: wallet({ amount: 300, currencyCode: 'USD', isArchived: true, type: 'cash' }) }
     expect(sumWalletsInBase(['a'], archived, toBaseIn('USD'))).toBe(0)
     expect(sumWalletsInBase(['a'], archived, toBaseIn('USD'), { includeArchived: true })).toBe(300)
   })
 })
 
 describe('sumWalletsInOwnCurrency', () => {
-  it('sums without conversion, excludes isExcludeInTotal', () => {
+  it('sums without conversion, excludes isExcludedFromTotal', () => {
     const wallets = {
-      w1: wallet({ amount: 1000, currency: 'USD', type: 'cash' }),
-      w2: wallet({ amount: 500, currency: 'USD', isExcludeInTotal: true, type: 'cashless' }),
+      w1: wallet({ amount: 1000, currencyCode: 'USD', type: 'cash' }),
+      w2: wallet({ amount: 500, currencyCode: 'USD', isExcludedFromTotal: true, type: 'bank_account' }),
     }
 
     expect(sumWalletsInOwnCurrency(['w1', 'w2', 'missing'], wallets)).toBe(1000)

@@ -1,58 +1,48 @@
 import { describe, expect, it } from 'vitest'
 
-import type { Transaction, Transfer } from '~/components/trns/types'
+import type { TrnItem } from '~/components/trns/types'
 
 import { validate } from '~/components/trnForm/utils/validate'
-import { TrnType } from '~/components/trns/types'
 
-const now = Date.now()
+const day = 1699920000000
 
-const validTransaction: Transaction = {
-  amount: 100,
-  categoryId: 'food',
-  date: now,
-  type: TrnType.Expense,
-  updatedAt: now,
-  walletId: 'w1',
-}
-
-const validTransfer: Transfer = {
-  categoryId: 'transfer' as const,
-  date: now,
-  expenseAmount: 100,
-  expenseWalletId: 'w1',
-  incomeAmount: 100,
-  incomeWalletId: 'w2',
-  type: TrnType.Transfer,
-  updatedAt: now,
-}
+const expense: TrnItem = { categoryId: 'food', createdAt: 1, date: day, fromAmount: 100, fromWalletId: 'w1', type: 'expense', updatedAt: 1 }
+const transfer: TrnItem = { createdAt: 1, date: day, fromAmount: 100, fromWalletId: 'w1', toAmount: 100, toWalletId: 'w2', type: 'transfer', updatedAt: 1 }
 
 describe('validate', () => {
-  it('returns null for valid transaction', () => {
-    expect(validate(validTransaction)).toBeNull()
+  it('returns null for a valid expense', () => {
+    expect(validate(expense)).toBeNull()
   })
 
   it('returns amountEmpty when amount is 0', () => {
-    expect(validate({ ...validTransaction, amount: 0 })).toBe('trnForm.errors.amountEmpty')
+    expect(validate({ ...expense, fromAmount: 0 })).toBe('trnForm.errors.amountEmpty')
   })
 
-  it('returns selectWallet when walletId is empty', () => {
-    expect(validate({ ...validTransaction, walletId: '' })).toBe('trnForm.errors.selectWallet')
+  it('returns selectWallet when the wallet is missing', () => {
+    expect(validate({ ...expense, fromAmount: undefined, fromWalletId: undefined })).toBe('trnForm.errors.selectWallet')
   })
 
-  it('returns selectCategory when categoryId is empty', () => {
-    expect(validate({ ...validTransaction, categoryId: '' })).toBe('trnForm.errors.selectCategory')
+  it('returns selectCategory when the category is missing', () => {
+    expect(validate({ ...expense, categoryId: undefined })).toBe('trnForm.errors.selectCategory')
   })
 
-  it('returns null for valid transfer', () => {
-    expect(validate(validTransfer)).toBeNull()
+  it('returns null for a valid transfer', () => {
+    expect(validate(transfer)).toBeNull()
+  })
+
+  it('accepts a transfer with one side outside the app', () => {
+    expect(validate({ ...transfer, fromAmount: undefined, fromWalletId: undefined })).toBeNull()
+  })
+
+  it('refuses a transfer with both sides outside the app', () => {
+    expect(validate({ createdAt: 1, date: day, type: 'transfer', updatedAt: 1 })).toBe('trnForm.errors.selectWallet')
   })
 
   it('returns transferSameWallet when wallets are the same', () => {
-    expect(validate({ ...validTransfer, incomeWalletId: 'w1' })).toBe('trnForm.errors.transferSameWallet')
+    expect(validate({ ...transfer, toWalletId: 'w1' })).toBe('trnForm.errors.transferSameWallet')
   })
 
   it('returns transferAmountEmpty when transfer amount is 0', () => {
-    expect(validate({ ...validTransfer, expenseAmount: 0 })).toBe('trnForm.errors.transferAmountEmpty')
+    expect(validate({ ...transfer, fromAmount: 0 })).toBe('trnForm.errors.transferAmountEmpty')
   })
 })

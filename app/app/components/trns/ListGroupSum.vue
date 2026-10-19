@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { TrnType } from '~/components/trns/types'
-
 defineProps<{
   currencyCode: string
   expense: number
@@ -14,7 +12,7 @@ defineProps<{
     :amount="income"
     :currencyCode="currencyCode"
     :isShowBaseRate="false"
-    :type="TrnType.Income"
+    type="income"
     colorize="income"
     variant="row"
   />
@@ -24,7 +22,7 @@ defineProps<{
     :amount="expense"
     :currencyCode="currencyCode"
     :isShowBaseRate="false"
-    :type="TrnType.Expense"
+    type="expense"
     isShowMinus
     variant="row"
   />

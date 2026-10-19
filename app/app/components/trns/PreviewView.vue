@@ -2,8 +2,6 @@
 import type { TrnConversion, TrnTransferRate } from '~/components/trns/preview'
 import type { TrnItemFull } from '~/components/trns/types'
 
-import { TrnType } from '~/components/trns/types'
-
 export type TrnPreviewLoan = {
   kind: 'credit' | 'fine' | 'interest' | 'payment'
   name: string
@@ -14,8 +12,8 @@ const props = defineProps<{
   canFilterCategory: boolean
   canFilterWallet: boolean
   conversions: TrnConversion[]
+  createdAtLabel?: string
   dateLabel: string
-  enteredAtLabel?: string
   /** False when the synced rate history starts after the transaction's day. */
   hasRatesOnDate: boolean
   loan?: TrnPreviewLoan
@@ -34,17 +32,20 @@ const emit = defineEmits<{
   openWallet: [walletId: string]
 }>()
 
-const isTransfer = computed(() => props.trnItem.type === TrnType.Transfer)
-const amount = computed(() => props.trnItem.type === TrnType.Transfer ? props.trnItem.expenseAmount : props.trnItem.amount)
-const currency = computed(() => props.trnItem.type === TrnType.Transfer ? props.trnItem.expenseWallet.currency : props.trnItem.wallet.currency)
-const wallets = computed(() => props.trnItem.type === TrnType.Transfer
-  ? [{ id: props.trnItem.expenseWalletId, name: props.trnItem.expenseWallet.name }, { id: props.trnItem.incomeWalletId, name: props.trnItem.incomeWallet.name }]
-  : [{ id: props.trnItem.walletId, name: props.trnItem.wallet.name }])
-const typeLabel = computed(() => ({
-  [TrnType.Expense]: 'trns.types.expense',
-  [TrnType.Income]: 'trns.types.income',
-  [TrnType.Transfer]: 'trns.types.transfer',
-})[props.trnItem.type])
+const isTransfer = computed(() => props.trnItem.type === 'transfer')
+const ownWallet = computed(() => props.trnItem.fromWallet ?? props.trnItem.toWallet)
+const amount = computed(() => props.trnItem.fromAmount ?? props.trnItem.toAmount ?? 0)
+const isOutflow = computed(() => !!props.trnItem.fromWallet)
+const wallets = computed(() => [
+  props.trnItem.fromWalletId && props.trnItem.fromWallet ? { id: props.trnItem.fromWalletId, name: props.trnItem.fromWallet.name } : undefined,
+  props.trnItem.toWalletId && props.trnItem.toWallet ? { id: props.trnItem.toWalletId, name: props.trnItem.toWallet.name } : undefined,
+].filter(item => !!item))
+const typeLabel = computed(() => `trns.types.${props.trnItem.type}`)
+// A rate is a ratio, not money: a plain number with the precision a rate needs.
+const rateFormat = new Intl.NumberFormat(undefined, { maximumFractionDigits: 4 })
+function formatRate(rate: number) {
+  return `${rateFormat.format(rate)} ${props.transferRate?.to ?? ''}`
+}
 </script>
 
 <template>
@@ -52,12 +53,12 @@ const typeLabel = computed(() => ({
     <!-- Header -->
     <div class="flex items-center gap-3">
       <UiIconBase
-        :name="props.trnItem.category?.icon"
+        :name="props.trnItem.category?.icon ?? ''"
         :color="props.trnItem.category?.color"
         invert
       />
       <div class="grid grow gap-0.5">
-        <CategoriesName :category="props.trnItem.category" />
+        <CategoriesName v-if="props.trnItem.category" :category="props.trnItem.category" />
         <UiText variant="caption" class="opacity-70">
           {{ $t(typeLabel) }} · {{ props.dateLabel }}
         </UiText>
@@ -68,20 +69,20 @@ const typeLabel = computed(() => ({
     <div v-if="!isTransfer" data-preview-amount>
       <Amount
         :amount
-        :currencyCode="currency"
-        :isShowMinus="props.trnItem.type === TrnType.Expense"
-        :isShowPlus="props.trnItem.type === TrnType.Income"
+        :currencyCode="ownWallet?.currencyCode ?? ''"
+        :isShowMinus="isOutflow"
+        :isShowPlus="!isOutflow"
         :type="props.trnItem.type"
         colorize="income"
         variant="display"
       />
     </div>
-    <div v-else-if="props.trnItem.type === TrnType.Transfer" class="grid gap-1" data-preview-amount>
+    <div v-else-if="props.trnItem.type === 'transfer'" class="grid gap-1" data-preview-amount>
       <div class="flex items-center gap-2">
-        <Amount :amount="props.trnItem.expenseAmount" :currencyCode="props.trnItem.expenseWallet.currency" :type="TrnType.Expense" colorize="expense" variant="display" />
-        <template v-if="props.transferRate">
-          <Icon name="lucide:move-right" size="20" />
-          <Amount :amount="props.trnItem.incomeAmount" :currencyCode="props.trnItem.incomeWallet.currency" :type="TrnType.Income" colorize="income" variant="display" />
+        <Amount v-if="props.trnItem.fromWallet" :amount="props.trnItem.fromAmount ?? 0" :currencyCode="props.trnItem.fromWallet.currencyCode" type="expense" colorize="expense" variant="display" />
+        <template v-if="props.trnItem.toWallet && (props.transferRate || !props.trnItem.fromWallet)">
+          <Icon v-if="props.trnItem.fromWallet" name="lucide:move-right" size="20" />
+          <Amount :amount="props.trnItem.toAmount ?? 0" :currencyCode="props.trnItem.toWallet.currencyCode" type="income" colorize="income" variant="display" />
         </template>
       </div>
     </div>
@@ -98,12 +99,12 @@ const typeLabel = computed(() => ({
         </template>
       </dd>
 
-      <template v-if="props.trnItem.desc">
+      <template v-if="props.trnItem.description">
         <dt class="opacity-60">
           {{ $t('trns.fields.description') }}
         </dt>
         <dd data-preview-desc>
-          {{ props.trnItem.desc }}
+          {{ props.trnItem.description }}
         </dd>
       </template>
 
@@ -125,11 +126,11 @@ const typeLabel = computed(() => ({
         </dd>
       </template>
 
-      <template v-if="props.enteredAtLabel">
+      <template v-if="props.createdAtLabel">
         <dt class="opacity-60">
           {{ $t('trns.preview.enteredAt') }}
         </dt>
-        <dd>{{ props.enteredAtLabel }}</dd>
+        <dd>{{ props.createdAtLabel }}</dd>
       </template>
 
       <dt class="opacity-60">
@@ -145,14 +146,14 @@ const typeLabel = computed(() => ({
       </UiText>
       <div class="grid grid-cols-[1fr_auto] gap-x-4 gap-y-1 text-sm">
         <span class="opacity-60">{{ $t('trns.preview.inTransfer') }}</span>
-        <Amount :amount="props.transferRate.transfer" :currencyCode="props.transferRate.to" :precision="4" align="right" variant="row" />
+        <span class="text-right" data-rate>{{ formatRate(props.transferRate.transfer) }}</span>
         <template v-if="props.transferRate.onDate !== undefined">
           <span class="opacity-60">{{ $t('trns.preview.onDate') }}</span>
-          <Amount :amount="props.transferRate.onDate" :currencyCode="props.transferRate.to" :precision="4" align="right" variant="row" />
+          <span class="text-right" data-rate>{{ formatRate(props.transferRate.onDate) }}</span>
         </template>
         <template v-if="props.transferRate.now !== undefined">
           <span class="opacity-60">{{ $t('trns.preview.now') }}</span>
-          <Amount :amount="props.transferRate.now" :currencyCode="props.transferRate.to" :precision="4" align="right" variant="row" />
+          <span class="text-right" data-rate>{{ formatRate(props.transferRate.now) }}</span>
         </template>
       </div>
     </div>

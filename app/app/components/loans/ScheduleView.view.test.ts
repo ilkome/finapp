@@ -10,9 +10,9 @@ describe('loansScheduleView', () => {
     expect(wrapper.findAll('[data-loan-status]').map(el => el.attributes('data-loan-status')))
       .toEqual(['paid', 'partial', 'scheduled', 'scheduled'])
     expect(wrapper.findAll('[data-amount]').map(el => el.text())).toEqual([
-      '12500 RUB',
-      '12507.34 RUB',
-      '12500 RUB',
+      '1250000 RUB',
+      '1250734 RUB',
+      '1250000 RUB',
       '0 RUB',
     ])
     expect(wrapper.findAll('[data-loan-principal-free]').map(el => el.attributes('data-loan-principal-free'))).toEqual(['holiday'])
@@ -22,7 +22,7 @@ describe('loansScheduleView', () => {
     const wrapper = mount(LoansScheduleView, { props: schedule as any })
     await wrapper.find('[data-loan-row="2"]').trigger('click')
 
-    expect(wrapper.find('[data-loan-delta] [data-amount]').text()).toBe('7.34 RUB')
+    expect(wrapper.find('[data-loan-delta] [data-amount]').text()).toBe('734 RUB')
     expect(wrapper.find('[data-loan-status-label]').text()).toBe('loans.status.partial')
     expect(wrapper.text()).toContain('loans.principal')
     expect(wrapper.text()).toContain('loans.pay')

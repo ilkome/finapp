@@ -64,7 +64,7 @@ export type StatView = {
   createdAt: number
   id: string
   isActive: boolean
-  isAutoEnabled: boolean
+  isAutoRuleEnabled: boolean
   name: string
   scope: StatViewScope
   sortOrder: number
