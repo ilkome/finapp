@@ -76,31 +76,6 @@ function onChangeCreditLimit(value: string) {
   emit('update', 'creditLimit', Number.isFinite(amount) && amount > 0 ? amountToMinor(amount, props.walletForm.currencyCode) : undefined)
 }
 
-// The minimum payment is a bank figure: it is saved to the wallet's bank report with the wallet.
-const bankReport = computed(() => bankReportsStore.items[editWalletId])
-const minPayment = ref({
-  amount: bankReport.value?.minPaymentAmount === undefined ? '' : String(minorToAmount(bankReport.value.minPaymentAmount, props.walletForm.currencyCode)),
-  dueDate: bankReport.value?.minPaymentDueDate ?? null,
-  isChanged: false,
-})
-
-function onChangeMinPayment(patch: Partial<{ amount: string, dueDate: number | null }>) {
-  minPayment.value = { ...minPayment.value, ...patch, isChanged: true }
-}
-
-function saveMinPayment() {
-  if (!minPayment.value.isChanged || props.walletForm.type !== 'credit_card')
-    return
-  const amount = Number.parseFloat(minPayment.value.amount.replace(',', '.'))
-  bankReportsStore.saveBankReport(editWalletId, {
-    ...bankReport.value,
-    createdAt: bankReport.value?.createdAt ?? Date.now(),
-    minPaymentAmount: Number.isFinite(amount) && amount > 0 ? amountToMinor(amount, props.walletForm.currencyCode) : undefined,
-    minPaymentDueDate: minPayment.value.dueDate ?? undefined,
-    updatedAt: Date.now(),
-  })
-}
-
 async function onSave() {
   const form = props.walletForm.type === 'credit_card' ? props.walletForm : { ...props.walletForm, creditLimit: undefined }
   const values = walletItemSchema.safeParse({ ...form, updatedAt: Date.now() })
@@ -114,7 +89,6 @@ async function onSave() {
     id: editWalletId,
     values: values.data,
   })
-  saveMinPayment()
   emit('afterSave')
 }
 </script>
@@ -199,31 +173,6 @@ async function onSave() {
           @update:modelValue="onChangeCreditLimit"
         />
       </FormElement>
-
-      <!-- Minimum payment -->
-      <div v-if="isLoans && props.walletForm.type === 'credit_card'" class="grid grid-cols-2 gap-3">
-        <FormElement>
-          <template #label>
-            {{ t('loans.toPay.minPayment') }}
-          </template>
-          <FormInput
-            :placeholder="t('loans.toPay.minPayment')"
-            :modelValue="minPayment.amount"
-            @update:modelValue="(value: string) => onChangeMinPayment({ amount: String(value) })"
-          />
-        </FormElement>
-        <FormElement>
-          <template #label>
-            {{ t('wallets.form.credit.minPaymentDate') }}
-          </template>
-          <FormDate
-            clearable
-            :modelValue="minPayment.dueDate"
-            :title="t('wallets.form.credit.minPaymentDate')"
-            @update:modelValue="(date: number | null) => onChangeMinPayment({ dueDate: date })"
-          />
-        </FormElement>
-      </div>
 
       <!-- Options -->
       <div class="grid gap-1">

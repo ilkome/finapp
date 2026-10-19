@@ -108,9 +108,11 @@ function onClickEdit() {
 const confirm = useConfirm()
 
 const loanActions = shallowRef<InstanceType<typeof LoansWalletActions> | null>(null)
+const isShowBankReport = ref(false)
 
 const menuItems = computed<DropdownMenuItem[][]>(() => [[
   { icon: 'i-lucide-pencil', label: t('base.edit'), onSelect: onClickEdit },
+  { icon: 'i-lucide-building-2', label: t('bankReports.title'), onSelect: () => isShowBankReport.value = true },
   ...(loanActions.value?.menuItems ?? []),
 ], [
   { color: 'error' as const, icon: 'i-lucide-trash-2', label: t('base.delete'), onSelect: onClickDelete },
@@ -162,6 +164,12 @@ async function onClickDelete() {
       v-if="isLoans && wallet.type === 'loan'"
       ref="loanActions"
       :walletId
+    />
+
+    <BankReportsFormSection
+      v-if="isShowBankReport"
+      :walletId
+      @closed="isShowBankReport = false"
     />
 
     <StatLayout

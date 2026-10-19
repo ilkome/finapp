@@ -21,6 +21,27 @@ export default {
 
   appName: 'Finapp',
 
+  bankReports: {
+    clear: 'Clear all',
+    fields: {
+      balanceAmount: 'Bank balance',
+      balanceDate: 'Balance as of',
+      debtAmount: 'Loan debt',
+      debtReportDate: 'Debt as of',
+      graceDebtAmount: 'Grace period debt',
+      graceEndDate: 'Grace period ends',
+      minPaymentAmount: 'Minimum payment',
+      minPaymentDueDate: 'Due date',
+      minPaymentPeriodStartDate: 'Billing period start',
+      nextInterestAmount: 'Next payment interest',
+      nextPaymentDate: 'Next payment date',
+      nextPrincipalAmount: 'Next payment principal',
+      statementDate: 'Statement date',
+    },
+    invalid: 'Set the bank balance together with its date',
+    title: 'Bank figures',
+  },
+
   base: {
     add: 'Create',
     addAction: 'Add',
@@ -1144,7 +1165,6 @@ export default {
         available: 'Available',
         debt: 'Debt',
         limit: 'Limit',
-        minPaymentDate: 'Due date',
       },
       currencies: {
         label: 'Currency',
