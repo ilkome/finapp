@@ -137,11 +137,9 @@ function compareCategoriesByParentAndName(a: CategoryItem, b: CategoryItem, item
 }
 
 /** Reserved categories always sort after the user's own. */
-/** Ids listed in `order` come first in that order; the rest tie (0) so a fallback comparator decides. */
-export function compareByStoredOrder(idA: CategoryId, idB: CategoryId, order: CategoryId[]): number {
-  const a = order.indexOf(idA)
-  const b = order.indexOf(idB)
-  return (a < 0 ? Infinity : a) - (b < 0 ? Infinity : b) || 0
+/** Categories with a `sortOrder` come first by it; the rest tie (0) so a fallback comparator decides. */
+export function compareBySortOrder(a?: { sortOrder?: number }, b?: { sortOrder?: number }): number {
+  return (a?.sortOrder ?? Infinity) - (b?.sortOrder ?? Infinity) || 0
 }
 
 export function compareCategoryIds(idA: CategoryId, idB: CategoryId, items: Categories): number {

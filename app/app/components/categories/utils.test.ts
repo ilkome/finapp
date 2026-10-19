@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { Categories } from '~/components/categories/types'
 
-import { applyCategoryOverrides, compareByStoredOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareBySortOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 
 export const mockCategories: Categories = {
   child1: {
@@ -175,10 +175,11 @@ describe('category overrides', () => {
   })
 })
 
-describe('compareByStoredOrder', () => {
-  it('puts stored ids first in their order and leaves the rest to the fallback', () => {
+describe('compareBySortOrder', () => {
+  it('puts ordered categories first by sortOrder and leaves the rest to the fallback', () => {
+    const items: Record<string, { sortOrder?: number }> = { a: {}, b: { sortOrder: 0 }, c: {}, d: { sortOrder: 1 } }
     const ids = ['d', 'c', 'b', 'a']
-    const sorted = ids.toSorted((x, y) => compareByStoredOrder(x, y, ['b', 'd']) || x.localeCompare(y))
+    const sorted = ids.toSorted((x, y) => compareBySortOrder(items[x], items[y]) || x.localeCompare(y))
     expect(sorted).toEqual(['b', 'd', 'a', 'c'])
   })
 })

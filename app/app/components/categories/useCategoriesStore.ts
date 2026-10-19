@@ -1,6 +1,5 @@
 import type { Row } from '~~/services/powersync/transforms'
 
-import { useStorage } from '@vueuse/core'
 import { itemToRow, rowToItem } from '~~/services/powersync/columns'
 import { watchTable } from '~~/services/powersync/db'
 import { deleteRow, deleteRows, upsertRow, upsertRows } from '~~/services/powersync/mutations'
@@ -10,7 +9,7 @@ import type { AddCategoryParams, Categories, CategoryId, CategoryItem } from '~/
 import type { CategoryOverrides } from '~/components/categories/utils'
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
-import { applyCategoryOverrides, compareByStoredOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
+import { applyCategoryOverrides, compareBySortOrder, compareCategoryIds, computeChildrenDiff, getTransactibleCategoriesIds, isReservedCategoryId, parseCategoryOverrides, toCategoryOverride } from '~/components/categories/utils'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
@@ -204,19 +203,34 @@ export const useCategoriesStore = defineStore('categories', (): CategoriesStore 
   const transactibleIds = computed(() => getTransactibleCategoriesIds(items.value))
   const transactibleIdsSet = computed(() => new Set(transactibleIds.value))
 
-  // ponytail: per-device order, categories have no `order` column; add one if it must sync.
-  const favoritesOrder = useStorage<CategoryId[]>('finapp.categoriesFavoritesOrder', [])
   const favoriteCategoriesIds = computed(() => {
     if (!hasItems.value)
       return []
 
     return categoriesIds.value
       .filter(id => items.value[id]?.isInQuickSelector)
-      .sort((a, b) => compareByStoredOrder(a, b, favoritesOrder.value) || compareCategoryIds(a, b, items.value))
+      .sort((a, b) => compareBySortOrder(items.value[a], items.value[b]) || compareCategoryIds(a, b, items.value))
   })
 
   function saveFavoritesOrder(ids: CategoryId[]) {
-    favoritesOrder.value = ids
+    const prev = rows
+    const next = { ...prev }
+    const ordered = ids.filter(id => next[id] && !isReservedCategoryId(id))
+    ordered.forEach((id, sortOrder) => {
+      next[id] = { ...next[id]!, sortOrder }
+    })
+    setCategories(next)
+
+    if (isDemo.value)
+      return
+
+    const userId = resolveWriteUid(uid.value)
+    void persistOptimistic(upsertRows('categories', ordered.map(id => ({ id, row: categoryToRow(next[id]!, userId) }))), {
+      errorKey: 'categories.errors.saveFailed',
+      label: 'saveFavoritesOrder',
+      logger,
+      rollback: () => setCategories(prev),
+    })
   }
 
   // Categories excluded from dashboard stats/charts. Includes the two system

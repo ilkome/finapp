@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 
-import type { WalletSortOrders } from '~/components/wallets/grouping'
 import type { WalletId, WalletsGroupedBy, WalletType } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
@@ -41,20 +40,16 @@ const { height: currenciesBarHeight } = useElementSize(currenciesBar, undefined,
 const currenciesStore = useCurrenciesStore()
 const isSorting = ref(false)
 // Drags save as they happen; cancel puts back the order the sort started from.
-const sortOrders = useStorage<WalletSortOrders>(WALLET_STORAGE_KEYS.sortOrders, {})
-let sortSnapshot: { ids: WalletId[], sortOrders: WalletSortOrders } | null = null
+let sortSnapshot: WalletId[] | null = null
 
 function startSorting() {
-  sortSnapshot = { ids: [...walletsStore.sortedIds], sortOrders: structuredClone(toRaw(sortOrders.value)) }
+  sortSnapshot = [...walletsStore.sortedIds]
   isSorting.value = true
 }
 
 function cancelSorting() {
-  if (sortSnapshot) {
-    if (sortSnapshot.ids.some((id, index) => id !== walletsStore.sortedIds[index]))
-      walletsStore.saveWalletsOrder(sortSnapshot.ids)
-    sortOrders.value = sortSnapshot.sortOrders
-  }
+  if (sortSnapshot?.some((id, index) => id !== walletsStore.sortedIds[index]))
+    walletsStore.saveWalletsOrder(sortSnapshot)
   sortSnapshot = null
   isSorting.value = false
 }
