@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { BankReportFieldKey, BankReportFields } from '~/components/bankReports/fields'
+import type { BankReportFieldError, BankReportFieldKey, BankReportFields } from '~/components/bankReports/fields'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletType } from '~/components/wallets/types'
 
@@ -7,6 +7,7 @@ import { bankReportFieldGroups, draftToReport, reportToDraft } from '~/component
 
 const props = defineProps<{
   currencyCode: CurrencyCode
+  errors?: Partial<Record<BankReportFieldKey, BankReportFieldError>>
   /** Card and loan fields are behind the `loans` flag; the bank balance is for every wallet. */
   isCreditShown: boolean
   report: BankReportFields
@@ -62,6 +63,13 @@ const groups = computed(() => bankReportFieldGroups.filter(group =>
           :title="t(`bankReports.fields.${field.key}`)"
           @update:modelValue="(value: number | null) => draft[field.key] = value"
         />
+        <p
+          v-if="props.errors?.[field.key]"
+          :data-error="field.key"
+          class="pt-1 text-sm text-error"
+        >
+          {{ t(`bankReports.errors.${props.errors[field.key]}`) }}
+        </p>
       </FormElement>
     </div>
 

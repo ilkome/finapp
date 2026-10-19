@@ -15,9 +15,6 @@ const loansStore = useLoansStore()
 const loanId = computed(() => loansStore.loanIdByWalletId.get(props.walletId))
 
 const isShowLoanForm = ref(false)
-// vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
-const isLaptop = useIsLaptop()
 const confirm = useConfirm()
 
 const menuItems = computed<DropdownMenuItem[]>(() => [
@@ -45,38 +42,18 @@ defineExpose({
 </script>
 
 <template>
-  <DefineBody v-slot="{ close }">
-    <LoansForm
-      :key="loanId ?? 'new'"
-      :loanId
-      :walletId
-      @afterSave="close"
-    />
-  </DefineBody>
-
-  <template v-if="isShowLoanForm">
-    <UiModalWrap
-      v-if="isLaptop"
-      defaultOpen
-      :title="loanId ? t('loans.edit') : t('loans.add')"
-      @after:leave="isShowLoanForm = false"
-    >
-      <template #default="{ close }">
-        <ReuseBody :close />
-      </template>
-    </UiModalWrap>
-
-    <Drawer
-      v-else
-      :title="loanId ? t('loans.edit') : t('loans.add')"
-      contentClass="min-h-[50dvh]"
-      @closed="isShowLoanForm = false"
-    >
-      <template #default="{ close }">
-        <div class="drawer-body">
-          <ReuseBody :close />
-        </div>
-      </template>
-    </Drawer>
-  </template>
+  <UiSheet
+    v-if="isShowLoanForm"
+    :title="loanId ? t('loans.edit') : t('loans.add')"
+    @closed="isShowLoanForm = false"
+  >
+    <template #default="{ close }">
+      <LoansForm
+        :key="loanId ?? 'new'"
+        :loanId
+        :walletId
+        @afterSave="close"
+      />
+    </template>
+  </UiSheet>
 </template>

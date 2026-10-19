@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { BankReportFields } from '~/components/bankReports/fields'
+import type { BankReportFieldError, BankReportFieldKey, BankReportFields } from '~/components/bankReports/fields'
 import type { WalletId } from '~/components/wallets/types'
 
-import { isEmptyReport, pickWalletFields } from '~/components/bankReports/fields'
+import { isEmptyReport, pickWalletFields, reportErrors } from '~/components/bankReports/fields'
 import { bankReportSchema } from '~/components/bankReports/types'
 import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -21,12 +21,10 @@ const { t } = useI18n()
 const bankReportsStore = useBankReportsStore()
 const walletsStore = useWalletsStore()
 const isLoans = useFeature('loans')
-const isLaptop = useIsLaptop()
-// vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
 
 const wallet = computed(() => walletsStore.items?.[props.walletId])
 const stored = computed(() => bankReportsStore.items[props.walletId])
+const errors = ref<Partial<Record<BankReportFieldKey, BankReportFieldError>>>({})
 
 function onSave(fields: BankReportFields, close: () => void) {
   if (!wallet.value)
@@ -36,6 +34,9 @@ function onSave(fields: BankReportFields, close: () => void) {
     onClear(close)
     return
   }
+  errors.value = reportErrors(report)
+  if (Object.keys(errors.value).length)
+    return
   const parsed = bankReportSchema.safeParse({ ...report, createdAt: stored.value?.createdAt })
   if (!parsed.success) {
     showErrorToast('bankReports.invalid')
@@ -52,41 +53,21 @@ function onClear(close: () => void) {
 </script>
 
 <template>
-  <DefineBody v-slot="{ close }">
-    <BankReportsFormView
-      v-if="wallet"
-      :currencyCode="wallet.currencyCode"
-      :isCreditShown="isLoans"
-      :report="stored ?? {}"
-      :walletType="wallet.type"
-      @clear="onClear(close)"
-      @save="(fields: BankReportFields) => onSave(fields, close)"
-    />
-  </DefineBody>
-
-  <UiModalWrap
-    v-if="isLaptop"
-    defaultOpen
+  <UiSheet
     :title="t('bankReports.title')"
-    @after:leave="emit('closed')"
-  >
-    <template #default="{ close }">
-      <div class="px-3 lg:px-4">
-        <ReuseBody :close />
-      </div>
-    </template>
-  </UiModalWrap>
-
-  <Drawer
-    v-else
-    :title="t('bankReports.title')"
-    contentClass="min-h-[50dvh]"
     @closed="emit('closed')"
   >
     <template #default="{ close }">
-      <div class="drawer-body px-3">
-        <ReuseBody :close />
-      </div>
+      <BankReportsFormView
+        v-if="wallet"
+        :currencyCode="wallet.currencyCode"
+        :errors
+        :isCreditShown="isLoans"
+        :report="stored ?? {}"
+        :walletType="wallet.type"
+        @clear="onClear(close)"
+        @save="(fields: BankReportFields) => onSave(fields, close)"
+      />
     </template>
-  </Drawer>
+  </UiSheet>
 </template>

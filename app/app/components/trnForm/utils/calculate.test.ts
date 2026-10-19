@@ -32,10 +32,13 @@ describe('calculator utils', () => {
       expect(evaluateExpression('0.1+0.2')).toBe(0.3)
     })
 
-    it('strips spaces and commas', () => {
+    it('reads typed numbers like every amount field: spaces group, one comma is the decimal point', () => {
       expect(evaluateExpression('2 + 2')).toBe(4)
-      expect(evaluateExpression('1,000+500')).toBe(1500)
+      expect(evaluateExpression('130,5+0,5')).toBe(131)
+      expect(evaluateExpression('1,000.5+500')).toBe(1500.5)
       expect(evaluateExpression('1 000 + 2 000')).toBe(3000)
+      expect(formatInput('1000,5')).toBe('1 000.5')
+      expect(formatInput('130,')).toBe('130.')
     })
 
     it('trailing operator is ignored', () => {

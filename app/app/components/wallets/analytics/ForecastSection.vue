@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
 import { formatByLocale } from '~~/utils/date/civil'
+import { parseAmountInput } from '~~/utils/money/parseInput'
 
 import type { ChartSeries } from '~/components/stat/types'
 import type { ForecastMonthRow, ForecastScenario } from '~/components/wallets/analytics/ForecastMonthsView.vue'
@@ -126,8 +127,8 @@ function saveEditor(close: () => void) {
   const id = editingId.value
   if (!id)
     return
-  const amount = Number.parseFloat(draft.value.amount.replace(',', '.'))
-  const hasAmount = Number.isFinite(amount) && amount >= 0
+  const amount = parseAmountInput(draft.value.amount)
+  const hasAmount = amount !== undefined && amount >= 0
   const base = currenciesStore.base
   if (draft.value.state === 'exclude')
     setCategory(id, { isIncluded: false })
@@ -273,8 +274,9 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
-    <WalletsAnalyticsEditorSheet
+    <UiSheet
       v-if="editing"
+      modalClass="max-w-md"
       :title="editing.name"
       @closed="editingId = null"
     >
@@ -313,10 +315,11 @@ function onSetting(id: string, value: number | string) {
           </div>
         </div>
       </template>
-    </WalletsAnalyticsEditorSheet>
+    </UiSheet>
 
-    <WalletsAnalyticsEditorSheet
+    <UiSheet
       v-if="isWalletsOpen"
+      modalClass="max-w-md"
       :title="t('wallets.analytics.forecast.startWallets')"
       @closed="isWalletsOpen = false"
     >
@@ -330,6 +333,6 @@ function onSetting(id: string, value: number | string) {
           @toggle="toggleStartWallet(walletId)"
         />
       </div>
-    </WalletsAnalyticsEditorSheet>
+    </UiSheet>
   </section>
 </template>

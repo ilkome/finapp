@@ -1,7 +1,15 @@
 <script setup lang="ts">
-const props = defineProps<{
+// One body, two shells: a dialog on a laptop, a bottom drawer on a phone. Opens on mount; `closed` fires after
+// the leave animation, so the parent unmounts it then. The slot gets `close` to dismiss it from inside.
+const props = withDefaults(defineProps<{
+  drawerClass?: string
+  modalClass?: string
+  /** The body scrolls by itself (a form with its own scroller), so the drawer does not wrap it in `drawer-body`. */
+  ownScroll?: boolean
   title: string
-}>()
+}>(), {
+  drawerClass: 'min-h-[50dvh]',
+})
 
 const emit = defineEmits<{
   closed: []
@@ -20,7 +28,7 @@ const isLaptop = useIsLaptop()
   <UiModalWrap
     v-if="isLaptop"
     defaultOpen
-    contentClass="max-w-md"
+    :contentClass="props.modalClass"
     :title="props.title"
     @after:leave="emit('closed')"
   >
@@ -32,11 +40,12 @@ const isLaptop = useIsLaptop()
   <Drawer
     v-else
     :title="props.title"
-    contentClass="min-h-[50dvh]"
+    :contentClass="props.drawerClass"
     @closed="emit('closed')"
   >
     <template #default="{ close }">
-      <div class="drawer-body">
+      <ReuseBody v-if="props.ownScroll" :close />
+      <div v-else class="drawer-body">
         <ReuseBody :close />
       </div>
     </template>

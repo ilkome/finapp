@@ -54,4 +54,8 @@ describe('bankReportsFormView', () => {
   it('hides the card fields behind the loans flag', () => {
     expect(groups(mountView({ ...fixture.card, isCreditShown: false }))).toEqual(['balance'])
   })
+  it('shows an error under the field it belongs to', () => {
+    const wrapper = mountView({ ...fixture.card, errors: { balanceDate: 'required', minPaymentAmount: 'negative' } })
+    expect(wrapper.findAll('[data-error]').map(e => e.attributes('data-error'))).toEqual(['balanceDate', 'minPaymentAmount'])
+  })
 })

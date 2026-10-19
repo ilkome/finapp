@@ -22,13 +22,10 @@ const emit = defineEmits<{
 }>()
 
 const { locale, t } = useI18n()
-const isLaptop = useIsLaptop()
 const currenciesStore = useCurrenciesStore()
 const walletsStore = useWalletsStore()
 const isLoans = useFeature('loans')
 const actions = useTrnActions()
-// vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineBody, ReuseBody] = createReusableTemplate<{ close: any }>()
 
 const ratesOnDate = ref<Rates | null>(null)
 watch(() => props.trnItem.date, async (date) => {
@@ -124,39 +121,22 @@ async function onDelete(close: () => void) {
 </script>
 
 <template>
-  <DefineBody v-slot="{ close }">
-    <TrnsPreviewView
-      v-bind="viewProps"
-      @edit="leaveWith(close, () => actions.edit(props.trnId))"
-      @duplicate="leaveWith(close, () => actions.duplicate(props.trnId))"
-      @delete="onDelete(close)"
-      @filterCategory="leaveWith(close, () => actions.filterByCategory(props.trnItem.categoryId!))"
-      @filterWallet="walletId => leaveWith(close, () => actions.filterByWallet(walletId))"
-      @filterDate="leaveWith(close, () => actions.filterByDate(props.trnItem.date))"
-      @openWallet="walletId => leaveWith(close, () => actions.openWallet(walletId))"
-    />
-  </DefineBody>
-
-  <UiModalWrap
-    v-if="isLaptop"
-    defaultOpen
-    :title="t('trns.preview.title')"
-    @after:leave="onClosed"
-  >
-    <template #default="{ close }">
-      <ReuseBody :close />
-    </template>
-  </UiModalWrap>
-
-  <Drawer
-    v-else
+  <UiSheet
+    drawerClass=""
     :title="t('trns.preview.title')"
     @closed="onClosed"
   >
     <template #default="{ close }">
-      <div class="drawer-body">
-        <ReuseBody :close />
-      </div>
+      <TrnsPreviewView
+        v-bind="viewProps"
+        @edit="leaveWith(close, () => actions.edit(props.trnId))"
+        @duplicate="leaveWith(close, () => actions.duplicate(props.trnId))"
+        @delete="onDelete(close)"
+        @filterCategory="leaveWith(close, () => actions.filterByCategory(props.trnItem.categoryId!))"
+        @filterWallet="walletId => leaveWith(close, () => actions.filterByWallet(walletId))"
+        @filterDate="leaveWith(close, () => actions.filterByDate(props.trnItem.date))"
+        @openWallet="walletId => leaveWith(close, () => actions.openWallet(walletId))"
+      />
     </template>
-  </Drawer>
+  </UiSheet>
 </template>

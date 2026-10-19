@@ -1,3 +1,5 @@
+import { parseAmountInput } from '~~/utils/money/parseInput'
+
 import type { BankReport } from '~/components/bankReports/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletType } from '~/components/wallets/types'
@@ -63,8 +65,8 @@ export function draftToReport(draft: BankReportDraft, currencyCode: CurrencyCode
         report[key] = value
       continue
     }
-    const amount = Number.parseFloat(String(value ?? '').replace(/\s/g, '').replace(',', '.'))
-    if (Number.isFinite(amount))
+    const amount = parseAmountInput(String(value ?? ''))
+    if (amount !== undefined)
       report[key] = amountToMinor(amount, currencyCode)
   }
   return report
@@ -80,4 +82,21 @@ export function pickWalletFields(report: BankReportFields, walletType: WalletTyp
 
 export function isEmptyReport(report: BankReportFields): boolean {
   return Object.values(report).every(value => value === undefined)
+}
+
+export type BankReportFieldError = 'negative' | 'required'
+
+/** What the schema would reject, per field, so the form can point at it; balance amount and day go together. */
+export function reportErrors(report: BankReportFields): Partial<Record<BankReportFieldKey, BankReportFieldError>> {
+  const errors: Partial<Record<BankReportFieldKey, BankReportFieldError>> = {}
+  for (const { key, kind } of allFields) {
+    const value = report[key]
+    if (kind === 'amount' && key !== 'balanceAmount' && value !== undefined && value < 0)
+      errors[key] = 'negative'
+  }
+  if (report.balanceAmount !== undefined && report.balanceDate === undefined)
+    errors.balanceDate = 'required'
+  if (report.balanceAmount === undefined && report.balanceDate !== undefined)
+    errors.balanceAmount = 'required'
+  return errors
 }

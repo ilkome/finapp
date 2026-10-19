@@ -96,6 +96,7 @@ describe('planUserPushes', () => {
     expect(body({ ...min, minPaymentAmount: 320_050 }, { currencies: { RUB: { minorDisplay: 'never' } } })).toBe('by 20.10: minimum 3,201 ₽')
     const wallets = { card: card({ currencyCode: 'GLD' }), cash }
     expect(body({ ...min, minPaymentAmount: 3200 }, { currencies: { GLD: { scale: 0, symbol: 'g' } }, wallets })).toBe('by 20.10: minimum 3,200 g')
+    expect(body({ ...min, minPaymentAmount: 3200 }, { wallets })).toBe('by 20.10: minimum 3,200 GLD')
   })
 
   it('skips a minimum that is paid, stale, archived or zero', () => {

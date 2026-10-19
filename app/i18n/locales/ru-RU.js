@@ -23,6 +23,10 @@ export default {
 
   bankReports: {
     clear: 'Очистить все',
+    errors: {
+      negative: 'Не может быть отрицательным',
+      required: 'Нужны и сумма, и дата',
+    },
     fields: {
       balanceAmount: 'Баланс в банке',
       balanceDate: 'Баланс на дату',
@@ -38,7 +42,7 @@ export default {
       nextPrincipalAmount: 'Основной долг в след. платеже',
       statementDate: 'Дата выписки',
     },
-    invalid: 'Баланс в банке задается вместе с датой',
+    invalid: 'Проверьте данные',
     title: 'Данные банка',
   },
 

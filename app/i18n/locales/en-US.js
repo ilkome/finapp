@@ -23,6 +23,10 @@ export default {
 
   bankReports: {
     clear: 'Clear all',
+    errors: {
+      negative: 'Cannot be negative',
+      required: 'Set both the amount and the date',
+    },
     fields: {
       balanceAmount: 'Bank balance',
       balanceDate: 'Balance as of',
@@ -38,7 +42,7 @@ export default {
       nextPrincipalAmount: 'Next payment principal',
       statementDate: 'Statement date',
     },
-    invalid: 'Set the bank balance together with its date',
+    invalid: 'Check the figures',
     title: 'Bank figures',
   },
 

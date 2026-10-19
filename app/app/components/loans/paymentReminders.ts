@@ -125,7 +125,8 @@ const builtInSymbols = new Map(builtInCurrencies.flatMap(c => c.symbol ? [[c.cod
 /** Minor units the way the app shows them: the user's display mode and symbol, else the built-in symbol, else the code. */
 function formatMoney(minor: number, code: string, locale: LocaleSlug, currencies: Record<string, ReminderCurrency>): string {
   const row = currencies[code]
-  let scale = 2
+  // A code with neither a pinned nor a custom scale shows a whole number rather than guessed decimals.
+  let scale = 0
   try {
     scale = currencyScale(code, row?.scale === undefined ? undefined : { [code]: row.scale })
   }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { generateId } from '~~/utils/generateId'
+import { parseAmountInput } from '~~/utils/money/parseInput'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { WalletFormKey, WalletId, WalletItem, WalletType } from '~/components/wallets/types'
@@ -72,8 +73,8 @@ const creditLimitInput = computed(() => props.walletForm.creditLimit === undefin
   : String(minorToAmount(props.walletForm.creditLimit, props.walletForm.currencyCode)))
 
 function onChangeCreditLimit(value: string) {
-  const amount = Number.parseFloat(String(value).replace(',', '.'))
-  emit('update', 'creditLimit', Number.isFinite(amount) && amount > 0 ? amountToMinor(amount, props.walletForm.currencyCode) : undefined)
+  const amount = parseAmountInput(String(value))
+  emit('update', 'creditLimit', amount !== undefined && amount > 0 ? amountToMinor(amount, props.walletForm.currencyCode) : undefined)
 }
 
 async function onSave() {
