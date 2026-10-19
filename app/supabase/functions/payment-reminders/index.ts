@@ -23,13 +23,14 @@ const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { headers: { 'Content-Type': 'application/json' }, status })
 
-function jwtRole(token: string): string | null {
-  try {
-    return JSON.parse(atob(token.split('.')[1])).role ?? null
-  }
-  catch {
-    return null
-  }
+/** Constant-time compare, so the response time does not leak how much of the key matched. */
+function isServiceKey(token: string): boolean {
+  const a = new TextEncoder().encode(token)
+  const b = new TextEncoder().encode(SERVICE_ROLE_KEY)
+  let diff = a.length ^ b.length
+  for (let i = 0; i < b.length; i++)
+    diff |= (a[i] ?? 0) ^ b[i]
+  return diff === 0
 }
 
 // deno-lint-ignore no-explicit-any
@@ -96,7 +97,7 @@ async function sendPush(userId: string, title: string, body: string): Promise<bo
 
 Deno.serve(async (req) => {
   const token = req.headers.get('Authorization')?.replace(/^Bearer\s+/i, '') ?? ''
-  if (jwtRole(token) !== 'service_role')
+  if (!isServiceKey(token))
     return json({ error: 'service role required' }, 403)
 
   const dryRun = new URL(req.url).searchParams.get('dryRun') === '1'
