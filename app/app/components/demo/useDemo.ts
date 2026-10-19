@@ -143,9 +143,12 @@ export function useDemo() {
     Object.assign(translatedData.wallets[walletCreditRub]!, {
       creditLimit,
       desc: `${locale === 'ru' ? 'Лимит' : 'Credit limit'} ${formatAmount(creditLimit, undefined, { precision: 0 })}`,
+      graceAmount: money(52000, walletCreditRub),
+      graceEndDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth() + 1, 10).getTime(),
       minPaymentAmount: money(8000, walletCreditRub),
       minPaymentDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth(), 25).getTime(),
       minPaymentUpdatedAt: today,
+      statementDate: new UTCDate(cardDue.getFullYear(), cardDue.getMonth() - 1, 25).getTime(),
     })
 
     useUserStore().setUserBaseCurrency(main)

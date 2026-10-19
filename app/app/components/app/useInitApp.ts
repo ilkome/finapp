@@ -152,6 +152,7 @@ export function useInitApp() {
     const userSettings = userSettingsSchema.safeParse(rawUserSettings)
     if (userSettings.success) {
       userStore.setUserBaseCurrency(userSettings.data.baseCurrency)
+      userStore.setPaymentReminders(userSettings.data.paymentReminders)
       if (userSettings.data.locale)
         userStore.setUserLocale(userSettings.data.locale)
     }

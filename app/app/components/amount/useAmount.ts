@@ -14,6 +14,7 @@ export function useAmount() {
 
   function computeTotalForTrnsIds(trnsIds: TrnId[], { excludedCategoriesIds }: { excludedCategoriesIds?: ReadonlySet<CategoryId> } = {}): TotalReturns {
     return getTotal({
+      baseCurrency: currenciesStore.base,
       excludedCategoriesIds,
       toBase: currenciesStore.tryToBase,
       trnsIds,

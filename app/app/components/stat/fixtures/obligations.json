@@ -1,0 +1,8 @@
+{
+  "currencyCode": "USD",
+  "horizonLabel": "for 12 months",
+  "items": [
+    { "color": "#0ea5e9", "horizonTotal": 3600, "kind": "loan", "name": "Car loan", "nextAmount": 300, "nextDateLabel": "25 Oct", "walletId": "car" },
+    { "color": "#e11d48", "horizonTotal": 150, "kind": "card", "name": "Visa", "nextAmount": 50, "nextDateLabel": "1 Nov", "walletId": "visa" }
+  ]
+}

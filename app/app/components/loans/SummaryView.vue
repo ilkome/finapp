@@ -2,7 +2,7 @@
 const props = defineProps<{
   /**
    * The wallet against the debt the bank reports: `diff` is ours minus the bank's, 0 when they
-   * match. Stale when a payment fell due after the bank figure. null until bank sync pushed one.
+   * match. Stale when a payment fell due after the bank figure. null while the bank's figure is unknown.
    */
   bankDebt: { date: string, diff: number, isStale: boolean } | null
   /** Preformatted civil day of the last payment; null while the loan is open. */

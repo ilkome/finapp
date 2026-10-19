@@ -11,7 +11,12 @@
         "status": "overdue"
       },
       "name": "Credit card",
-      "walletId": "r1"
+      "walletId": "r1",
+      "grace": {
+        "amount": 18000,
+        "date": "25.06",
+        "status": "due"
+      }
     },
     {
       "currencyCode": "RUB",
@@ -20,7 +25,12 @@
       "interest": 0,
       "minPayment": null,
       "name": "Installments",
-      "walletId": "r2"
+      "walletId": "r2",
+      "grace": {
+        "amount": 0,
+        "date": null,
+        "status": "paid"
+      }
     }
   ]
 }

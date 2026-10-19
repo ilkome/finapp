@@ -53,6 +53,8 @@ export function createToBase(
 }
 
 type TotalProps = {
+  /** Currency `toBase` converts into; `net` and `sumTransfers` are rounded to its minor unit. */
+  baseCurrency: CurrencyCode
   /** Category ids to drop from income/expense (dashboard "exclude from stats"). Balances never pass this. */
   excludedCategoriesIds?: ReadonlySet<CategoryId>
   /** `undefined` means no rate: the amount is skipped and its currency listed in `missingRates`. */
@@ -77,7 +79,7 @@ export type TotalReturns = {
 
 type Bucket = 'adjustment' | 'expense' | 'expenseTransfers' | 'income' | 'incomeTransfers'
 
-export function getTotal({ excludedCategoriesIds, toBase, trnsIds, trnsItems, walletsItems }: TotalProps): TotalReturns {
+export function getTotal({ baseCurrency, excludedCategoriesIds, toBase, trnsIds, trnsItems, walletsItems }: TotalProps): TotalReturns {
   const totals: Record<Bucket, number> = { adjustment: 0, expense: 0, expenseTransfers: 0, income: 0, incomeTransfers: 0 }
   const missingRates = new Set<CurrencyCode>()
 
@@ -118,11 +120,14 @@ export function getTotal({ excludedCategoriesIds, toBase, trnsIds, trnsItems, wa
       add(isIncome ? 'income' : 'expense', trn.walletId, trn.amount)
   }
 
+  // A difference of float sums that should be zero lands near it (100.10 + 200.70 - 300.80 =
+  // -5.7e-14), and the formatter shows such a value digit by digit. `+ 0` turns `-0` into `0`.
+  const precision = currencyMinorUnit(baseCurrency)
   return {
     ...totals,
     missingRates: [...missingRates],
-    net: totals.income - totals.expense,
-    sumTransfers: totals.incomeTransfers - totals.expenseTransfers,
+    net: roundTo(totals.income - totals.expense, precision) + 0,
+    sumTransfers: roundTo(totals.incomeTransfers - totals.expenseTransfers, precision) + 0,
   }
 }
 

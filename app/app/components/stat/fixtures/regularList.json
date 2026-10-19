@@ -1,0 +1,9 @@
+{
+  "currencyCode": "USD",
+  "items": [
+    { "amount": 900, "categoryId": "rent", "color": "#6366f1", "detectedAmount": 900, "icon": "mdi:home", "isAuto": true, "isOverridden": false, "isRegular": true, "monthsWithSpending": 6, "name": "Rent" },
+    { "amount": 40, "categoryId": "gym", "color": "#f97316", "detectedAmount": 0, "icon": "mdi:dumbbell", "isAuto": false, "isOverridden": true, "isRegular": true, "monthsWithSpending": 0, "name": "Gym", "parentName": "Health" },
+    { "amount": 250, "categoryId": "travel", "color": "#14b8a6", "detectedAmount": 250, "icon": "mdi:airplane", "isAuto": false, "isOverridden": false, "isRegular": false, "monthsWithSpending": 1, "name": "Travel" }
+  ],
+  "windowMonths": 6
+}

@@ -14,7 +14,7 @@ import { loanIdFor, loanItemSchema, loanScheduleRowIdFor, loanScheduleRowSchema 
 import { TrnType } from '~/components/trns/types'
 
 /**
- * A bank schedule as bank sync stores it, every row: the `interestOnly` payments repay no principal
+ * A bank's own schedule stored in full, every row: the `interestOnly` payments repay no principal
  * and push the term out by as many months, like a payment holiday does.
  */
 function bankSchedule(params: LoanParams, interestOnly: number[]): ScheduleOverride[] {

@@ -26,6 +26,7 @@ useSeoMeta({
 
 const walletsStore = useWalletsStore()
 const isLoans = useFeature('loans')
+const isAnalytics = useFeature('walletsAnalytics')
 
 // Same rule as the statistics page: the side column pins below the sticky header only when it fits whole.
 const header = useTemplateRef<{ mainElement: HTMLElement | null }>('header')
@@ -304,6 +305,14 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                   </UiHeaderLink>
 
                   <UiHeaderLink
+                    v-if="isAnalytics"
+                    icon="lucide:chart-line"
+                    @click="() => openAfterMenu(() => router.push('/wallets/analytics'), close)"
+                  >
+                    {{ t('wallets.analytics.title') }}
+                  </UiHeaderLink>
+
+                  <UiHeaderLink
                     v-if="walletsStore.sortedIds.length > 1"
                     icon="lucide:arrow-down-up"
                     @click="() => { startSorting(); close() }"
@@ -430,6 +439,7 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
         <div class="grid content-start gap-3 @xl/page:gap-4 @3xl/main:max-w-sm">
           <LoansDueThisMonth v-if="isLoans" />
+          <WalletsAnalyticsPreviewSection v-if="isAnalytics" />
           <WalletsStatistics
             :isShowList="showStatistics"
             :storageKey="statisticsStorageKey"

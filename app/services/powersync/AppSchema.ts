@@ -25,6 +25,8 @@ const wallets = new Table(
     creditLimit: column.real,
     currency: column.text,
     desc: column.text,
+    graceAmount: column.real,
+    graceEndDate: column.integer, // civil day
     isArchived: column.integer,
     isExcludeInTotal: column.integer,
     isWithdrawal: column.integer,
@@ -33,6 +35,7 @@ const wallets = new Table(
     minPaymentUpdatedAt: column.integer,
     name: column.text,
     order: column.integer,
+    statementDate: column.integer, // civil day
     type: column.text,
     updatedAt: column.integer,
     userId: column.text,
@@ -107,7 +110,9 @@ const loan_schedule_rows = new Table(
 const user_settings = new Table({
   baseCurrency: column.text,
   categoryOverrides: column.text, // JSON-encoded CategoryOverrides
+  forecastSettings: column.text, // JSON-encoded ForecastSettings
   locale: column.text,
+  paymentReminders: column.integer, // boolean; null reads as on
   timezone: column.text, // IANA tz captured at entry; used by the civil-date backfill
   userId: column.text,
 })

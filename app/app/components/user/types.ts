@@ -5,4 +5,5 @@ import { localeSchema } from '~/components/locale/types'
 export const userSettingsSchema = z.object({
   baseCurrency: z.string().min(1).default('USD'),
   locale: localeSchema.optional(),
+  paymentReminders: z.boolean().default(true),
 })

@@ -2,3 +2,7 @@
 
 *storybook.log
 storybook-static
+
+# payment-reminders bundle (pnpm functions:bundle) and the lock deno writes while checking it
+supabase/functions/*/dist
+supabase/functions/*/deno.lock

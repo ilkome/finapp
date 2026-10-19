@@ -1,0 +1,10 @@
+{
+  "currencyCode": "USD",
+  "horizonLabel": "for 12 months",
+  "monthlyIncome": 3000,
+  "monthlyObligations": 450,
+  "monthlyRegular": 1800,
+  "runwayWithIncome": { "dateLabel": null, "durationLabel": null },
+  "runwayWithoutIncome": { "dateLabel": "1 June 2027", "durationLabel": "7 months" },
+  "startBalance": 12000
+}

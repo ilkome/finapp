@@ -88,6 +88,8 @@ describe('wallet minimum payment fields', () => {
       creditLimit: 100000,
       currency: 'RUB',
       desc: '',
+      graceAmount: 51200.5,
+      graceEndDate: 1698710400000,
       isArchived: false,
       isExcludeInTotal: false,
       isWithdrawal: false,
@@ -96,6 +98,7 @@ describe('wallet minimum payment fields', () => {
       minPaymentUpdatedAt: 1693526400000,
       name: 'Installments',
       order: 0,
+      statementDate: 1696032000000,
       type: 'credit',
       updatedAt: 5,
     }
@@ -115,13 +118,13 @@ describe('wallet minimum payment fields', () => {
       type: 'cash',
       updatedAt: 5,
     }
-    expect(walletToRow(cash, 'u1')).toMatchObject({ minPaymentAmount: null, minPaymentDate: null, minPaymentUpdatedAt: null })
+    expect(walletToRow(cash, 'u1')).toMatchObject({ graceAmount: null, graceEndDate: null, minPaymentAmount: null, minPaymentDate: null, minPaymentUpdatedAt: null, statementDate: null })
     expect(rowToWallet({ id: 'w1', ...walletToRow(cash, 'u1') } as never)).toEqual(cash)
   })
 
   it('round-trips a loan wallet without the credit card fields', () => {
     const loan: WalletItem = { color: '#111', currency: 'RUB', desc: '', isArchived: false, isExcludeInTotal: false, isWithdrawal: false, name: 'Loan', order: 0, type: 'loan', updatedAt: 5 }
-    expect(walletToRow(loan, 'u1')).toMatchObject({ creditLimit: null, minPaymentAmount: null, type: 'loan' })
+    expect(walletToRow(loan, 'u1')).toMatchObject({ creditLimit: null, graceAmount: null, minPaymentAmount: null, type: 'loan' })
     expect(rowToWallet({ id: 'w1', ...walletToRow(loan, 'u1') } as never)).toEqual(loan)
   })
 })

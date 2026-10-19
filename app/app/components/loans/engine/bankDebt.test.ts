@@ -9,7 +9,7 @@ const rows = [{ date: day('2026-08-01') }, { date: day('2026-09-01') }, { date: 
 const base = { bankDebtAmount: 251_400.5, bankDebtUpdatedAt: day('2026-09-22'), rows, today: day('2026-09-25') }
 
 describe('bankDebtCheck', () => {
-  it('is null until bank sync pushed a figure', () => {
+  it('is null while the bank figure is unknown', () => {
     expect(bankDebtCheck({ ...base, bankDebtAmount: undefined, walletBalance: -1 })).toBeNull()
   })
 

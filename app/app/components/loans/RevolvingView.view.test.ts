@@ -14,6 +14,9 @@ describe('loansRevolvingView', () => {
     expect(rows[0]!.find('[data-loan-min-status]').attributes('data-loan-min-status')).toBe('overdue')
     expect(rows[0]!.find('[data-loan-revolving-cost]').exists()).toBe(true)
     expect(rows[1]!.find('[data-loan-min-status]').exists()).toBe(false)
+    expect(rows[0]!.find('[data-loan-grace-status]').attributes('data-loan-grace-status')).toBe('due')
+    expect(rows[0]!.find('[data-loan-card-grace]').text()).toContain('loans.grace.until')
+    expect(rows[1]!.find('[data-loan-card-grace]').text()).toContain('loans.grace.none')
     expect(rows[1]!.find('[data-loan-revolving-cost]').exists()).toBe(false)
   })
 

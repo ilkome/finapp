@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import { useUserStore } from '~/components/user/useUserStore'
 import { usePushNotifications } from '~/composables/usePushNotifications'
 import { showErrorToast, showSuccessToast } from '~/composables/useStoreSync'
 
 const { t } = useI18n()
+const userStore = useUserStore()
+const isLoans = useFeature('loans')
 const {
   isBusy,
   isSubscribed,
@@ -58,5 +61,13 @@ async function toggle() {
         {{ t('notifications.permissionDenied') }}
       </div>
     </template>
+
+    <UiSwitchItem
+      v-if="isLoans"
+      class="min-h-10.5 rounded-md!"
+      :checkboxValue="userStore.paymentReminders"
+      :title="t('notifications.paymentReminders')"
+      @toggle="userStore.savePaymentReminders(!userStore.paymentReminders)"
+    />
   </UiSettingsCard>
 </template>

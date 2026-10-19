@@ -1,5 +1,20 @@
 {
   "currencyCode": "RUB",
-  "loan": { "isOverdue": true, "monthsLeft": 58, "nextDate": "01.10", "payment": 12500 },
-  "minPayment": { "amount": 3200, "date": "25.09", "status": "overdue" }
+  "loan": {
+    "isOverdue": true,
+    "monthsLeft": 58,
+    "nextDate": "01.10",
+    "payment": 12500
+  },
+  "minPayment": {
+    "amount": 3200,
+    "date": "25.09",
+    "status": "overdue"
+  },
+  "grace": {
+    "amount": 12000,
+    "date": "15.10",
+    "statementDate": "05.09",
+    "status": "due"
+  }
 }

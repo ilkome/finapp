@@ -113,7 +113,7 @@ export function projectionParams(loan: LoanItem, summary: LoanSummary, precision
 }
 
 /**
- * The bank's own amount for the next payment when bank sync pushed a split for that same day. The
+ * The bank's own amount for the next payment when its split is known for that same day. The
  * engine's estimate drifts from it (a bank may charge interest daily on actual/365), and a split for
  * another day is out of date.
  */
@@ -126,7 +126,7 @@ export function bankNextPaymentAmount(loan: LoanItem, next: { date: number } | n
 /**
  * Loans answer with every row already due but unpaid plus their next scheduled payment (the bank's
  * amount when it has one); revolving products with no schedule answer with the minimum payment
- * their bank sync pushed. Nothing overdue is ever dropped, so the most urgent row always counts.
+ * their bank reports. Nothing overdue is ever dropped, so the most urgent row always counts.
  */
 export function deriveDue(
   entries: Iterable<{ currency: CurrencyCode, summary: LoanSummary, walletId: WalletId }>,
@@ -154,7 +154,7 @@ export function deriveDue(
     for (const row of unpaid) {
       if (dueDate !== null && row.date > dueDate)
         break
-      // The next payment carries the bank's amount when bank sync pushed one.
+      // The next payment carries the bank's amount when it is known.
       const next = summary.nextPayment
       add(row === unpaid[0] && next?.date === row.date ? next.amount : owedOf(row, currencyMinorUnit(currency)), currency, row.date)
       if (row.date >= today)

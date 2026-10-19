@@ -44,6 +44,30 @@ describe('deriveUpcoming', () => {
   })
 })
 
+describe('deriveUpcoming grace', () => {
+  const grace = (amount: number, date: string, status: 'due' | 'overdue' | 'paid' | 'stale' = 'due') => ({ amount, date: day(date), statementDate: null, status })
+  const min = { amount: 500, date: day('2026-09-12'), status: 'due' as const }
+
+  it('shows the larger unpaid grace amount with the minimum as a secondary figure', () => {
+    const [item] = deriveUpcoming([], [{ currency: 'RUB', grace: grace(8000, '2026-10-05'), minPayment: min, walletId: 'c' }], today)
+    expect(item).toMatchObject({ amount: 8000, date: day('2026-10-05'), isGrace: true, minAmount: 500, overdue: false })
+  })
+
+  it('flags an overdue grace and keeps no secondary figure without an open minimum', () => {
+    const [item] = deriveUpcoming([], [{ currency: 'RUB', grace: grace(8000, '2026-09-01', 'overdue'), minPayment: { ...min, status: 'paid' }, walletId: 'c' }], today)
+    expect(item).toMatchObject({ amount: 8000, isGrace: true, overdue: true })
+    expect(item!.minAmount).toBeUndefined()
+  })
+
+  it('falls back to the minimum when grace is paid, stale, zero or not larger', () => {
+    for (const g of [grace(8000, '2026-10-05', 'paid'), grace(8000, '2026-10-05', 'stale'), grace(0, '2026-10-05', 'paid'), grace(500, '2026-10-05')]) {
+      const [item] = deriveUpcoming([], [{ currency: 'RUB', grace: g, minPayment: min, walletId: 'c' }], today)
+      expect(item).toMatchObject({ amount: 500, date: min.date })
+      expect(item!.isGrace).toBeUndefined()
+    }
+  })
+})
+
 describe('urgentWalletIds', () => {
   it('counts overdue charges and the ones due within three days', () => {
     const today = Date.UTC(2026, 9, 8)
