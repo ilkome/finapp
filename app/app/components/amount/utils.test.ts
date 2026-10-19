@@ -1,8 +1,17 @@
 import { describe, expect, it } from 'vitest'
+import { computed } from 'vue'
 
-import { amountToMinor, formatAmount, minorToAmount } from '~/components/amount/utils'
+import { amountToMinor, formatAmount, minorToAmount, setUserCurrencies } from '~/components/amount/utils'
 
 describe('formatAmount', () => {
+  it('re-renders when the user changes a currency', () => {
+    const label = computed(() => formatAmount(123450, 'RUB'))
+    expect(label.value).toBe('1 234.50')
+    setUserCurrencies(new Map([['RUB', { code: 'RUB', minorDisplay: 'never' }]]))
+    expect(label.value).toBe('1 235')
+    setUserCurrencies(new Map())
+  })
+
   it('formats minor units with space thousands and the fraction only when it is not zero', () => {
     expect(formatAmount(123450, 'USD')).toBe('1 234.50')
     expect(formatAmount(123400, 'USD')).toBe('1 234')

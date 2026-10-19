@@ -1,0 +1,7 @@
+{
+  "amount": "100",
+  "options": [{ "code": "RUB", "name": "Russian Ruble" }, { "code": "USD", "name": "US Dollar" }, { "code": "EUR", "name": "Euro" }],
+  "ratesDate": 1792368000000,
+  "results": [{ "code": "RUB", "value": "9 510 ₽" }, { "code": "XAF", "value": null }],
+  "source": "USD"
+}

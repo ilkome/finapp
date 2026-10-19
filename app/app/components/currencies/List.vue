@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
 
-import { currencies } from '~/components/currencies/currencies'
-import { useCurrencyName } from '~/components/currencies/useCurrencyName'
+import { useCurrencyOptions } from '~/components/currencies/useCurrencyOptions'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -15,16 +14,18 @@ const emit = defineEmits<{
 }>()
 
 const walletsStore = useWalletsStore()
-const { getCurrencyName } = useCurrencyName()
+const { options } = useCurrencyOptions()
 
-const all = computed(() => currencies.map(currency => ({ code: currency.code, name: getCurrencyName(currency.code) })))
-const used = computed(() => walletsStore.currenciesUsed.map(code => ({ code, name: getCurrencyName(code) })))
+const used = computed(() => {
+  const codes = new Set(walletsStore.currenciesUsed)
+  return options.value.filter(option => codes.has(option.code))
+})
 </script>
 
 <template>
   <CurrenciesListView
     :active="props.active"
-    :all
+    :all="options"
     :isHideUnused="props.isHideUnused"
     :isShowAllButton="props.isShowAllButton"
     :used

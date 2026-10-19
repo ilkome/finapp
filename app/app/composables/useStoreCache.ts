@@ -14,7 +14,7 @@ import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('cache')
 
-const SLICES = ['bankReports', 'categories', 'displayOverrides', 'loans', 'rates', 'statViews', 'trns', 'user', 'wallets'] as const
+const SLICES = ['bankReports', 'categories', 'currencies', 'displayOverrides', 'loans', 'rates', 'statViews', 'trns', 'user', 'wallets'] as const
 
 type CacheSlice = typeof SLICES[number]
 

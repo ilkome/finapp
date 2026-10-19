@@ -1,3 +1,5 @@
+import { convert } from '~~/utils/money/convert'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
 import type { TrnId, TrnItem, Trns } from '~/components/trns/types'
@@ -48,7 +50,7 @@ export function createToBase(
       onMissing(missing)
       return undefined
     }
-    return amount / from * to * 10 ** (scaleOf(base) - scaleOf(currency))
+    return convert(amount, currency, base, rates, scaleOf)
   }
 }
 

@@ -1,0 +1,8 @@
+{
+  "rows": [
+    { "code": "RUB", "isBase": true, "isCustom": false, "isManualRate": false, "isOwn": false, "minorDisplay": "auto", "name": "Russian Ruble", "rate": null, "symbol": "₽" },
+    { "code": "USD", "isBase": false, "isCustom": false, "isManualRate": false, "isOwn": true, "minorDisplay": "never", "name": "US Dollar", "rate": "95.10", "symbol": "$" },
+    { "code": "PTS", "isBase": false, "isCustom": true, "isManualRate": true, "isOwn": true, "minorDisplay": "auto", "name": "Bonus points", "rate": "0.50" },
+    { "code": "XAF", "isBase": false, "isCustom": false, "isManualRate": false, "isOwn": false, "minorDisplay": "auto", "name": "Central African CFA Franc", "rate": null }
+  ]
+}

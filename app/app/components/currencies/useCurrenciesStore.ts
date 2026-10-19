@@ -1,30 +1,56 @@
 import type { Row } from '~~/services/powersync/transforms'
+import type { ManualRate } from '~~/utils/money/convert'
 
 import localforage from 'localforage'
 import { defineStore } from 'pinia'
-import { rowToItem } from '~~/services/powersync/columns'
+import { itemToRow, rowToItem } from '~~/services/powersync/columns'
 import { getPowerSyncDb, watchTable } from '~~/services/powersync/db'
+import { deleteRow, upsertRow } from '~~/services/powersync/mutations'
 import { rowToRates } from '~~/services/powersync/transforms'
+import { applyManualRates } from '~~/utils/money/convert'
 
-import type { CurrencyCode, Rates } from '~/components/currencies/types'
+import type { CurrencyCode, CurrencyItem, Rates } from '~/components/currencies/types'
 
 import { createToBase, getAmountInRate } from '~/components/amount/getTotal'
 import { setUserCurrencies } from '~/components/amount/utils'
+import { currencyItemSchema, isBuiltInCurrency } from '~/components/currencies/types'
 import { useDemo } from '~/components/demo/useDemo'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { useUserStore } from '~/components/user/useUserStore'
+import { resolveWriteUid } from '~/composables/useAuthSession'
 import { persistStoreCache } from '~/composables/useStoreCache'
-import { isPersistBlocked } from '~/composables/useStoreSync'
+import { isPersistBlocked, persistOptimistic } from '~/composables/useStoreSync'
+import { useSupabaseAuth } from '~/composables/useSupabase'
 import { createLogger } from '~/utils/logger'
 
 const logger = createLogger('currencies')
+
+/** Rows the schema rejects are skipped, so one bad row does not hide the others. */
+export function parseItems(values: unknown[]): Record<CurrencyCode, CurrencyItem> {
+  return Object.fromEntries(values.flatMap((value) => {
+    const parsed = currencyItemSchema.safeParse(value)
+    return parsed.success ? [[parsed.data.code, parsed.data]] : []
+  }))
+}
 
 export const useCurrenciesStore = defineStore('currencies', () => {
   const userStore = useUserStore()
   const { isDemo } = useDemo()
 
+  const { uid } = useSupabaseAuth()
+
   const base = computed(() => userStore.baseCurrency)
-  const rates = ref<Rates>({})
+  const marketRates = shallowRef<Rates>({})
+  /** Civil day of the market rates; null before they load and in demo. */
+  const ratesDate = ref<number | null>(null)
+  /** The user's custom currencies and edits of built-in ones, by code. */
+  const items = shallowRef<Record<CurrencyCode, CurrencyItem>>({})
+
+  const manualRates = computed<Record<CurrencyCode, ManualRate>>(() => Object.fromEntries(Object.values(items.value)
+    .flatMap(c => c.manualRate && c.manualRateCurrencyCode ? [[c.code, { currencyCode: c.manualRateCurrencyCode, rate: c.manualRate }]] : [])))
+
+  /** Market rates with the user's manual rates applied: what every conversion uses. */
+  const rates = computed<Rates>(() => applyManualRates(marketRates.value, manualRates.value) as Rates)
 
   let watchController: AbortController | null = null
   let userCurrenciesWatch: AbortController | null = null
@@ -37,38 +63,88 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     watchController?.abort()
     watchController = watchTable<Row>('SELECT * FROM exchange_rates ORDER BY date DESC LIMIT 1', [], (rows) => {
       const r = rows[0] ? rowToRates(rows[0]) : null
-      if (r)
+      if (r) {
+        ratesDate.value = Number(rows[0]!.date) || null
         setRates(r)
+      }
     })
     logger.log('watching rates')
 
     // The user's own currencies and edits of built-in ones; a built-in without a row is used as the list has it.
     userCurrenciesWatch?.abort()
     userCurrenciesWatch = watchTable<Row>('SELECT * FROM currencies', [], (rows) => {
-      setUserCurrencies(new Map(rows.map((row) => {
-        const item = rowToItem('currencies', row) as { code: string, minorDisplay?: 'always' | 'auto' | 'never', scale?: number, symbol?: string }
-        return [item.code, item]
-      })))
+      setItems(parseItems(rows.map(row => rowToItem('currencies', row))))
     })
   }
 
+  function persistDemo() {
+    if (!isPersistBlocked())
+      localforage.setItem(STORAGE_KEYS.currencies, { items: toRaw(items.value), rates: toRaw(marketRates.value) })
+  }
+
   function setRates(values: Rates) {
-    rates.value = values
+    marketRates.value = values
 
     if (isPersistBlocked())
       return
     // Demo keeps its own localforage key; real mode mirrors rates into the cold-start snapshot.
     if (isDemo.value)
-      localforage.setItem(STORAGE_KEYS.currencies, { rates: values })
+      persistDemo()
     else
       persistStoreCache('rates', toRaw(values)) // plain copy - IndexedDB can't clone a Vue proxy
   }
 
-  /** Cold-start paint: seed rates from the per-user snapshot before the rates watch emits. */
-  function primeFromCache(data: Rates | null): void {
-    if (isDemo.value || !data || Object.keys(rates.value).length)
+  function setItems(values: Record<CurrencyCode, CurrencyItem>) {
+    items.value = values
+    setUserCurrencies(new Map(Object.entries(values)))
+    if (isDemo.value)
+      persistDemo()
+    else if (!isPersistBlocked())
+      persistStoreCache('currencies', values)
+  }
+
+  /** Cold-start paint: seed rates and currencies from the per-user snapshot before the watches emit. */
+  function primeFromCache(data: Rates | null, currencies?: unknown): void {
+    if (isDemo.value)
       return
-    rates.value = data
+    if (data && !Object.keys(marketRates.value).length)
+      marketRates.value = data
+    if (currencies && !Object.keys(items.value).length) {
+      const parsed = parseItems(Object.values(currencies as object))
+      items.value = parsed
+      setUserCurrencies(new Map(Object.entries(parsed)))
+    }
+  }
+
+  /** Saves a custom currency or an edit of a built-in one; an edit that changes nothing deletes the row ("Reset"). */
+  function saveCurrency(item: CurrencyItem) {
+    const now = Date.now()
+    const value = { ...item, createdAt: items.value[item.code]?.createdAt ?? now, updatedAt: now }
+    const isEmptyEdit = isBuiltInCurrency(item.code)
+      && [item.name, item.symbol, item.minorDisplay, item.manualRate].every(v => v === undefined)
+    return isEmptyEdit ? deleteCurrency(item.code) : write(item.code, { ...items.value, [item.code]: value }, value)
+  }
+
+  function deleteCurrency(code: CurrencyCode) {
+    const next = { ...items.value }
+    delete next[code]
+    return write(code, next, null)
+  }
+
+  function write(code: CurrencyCode, next: Record<CurrencyCode, CurrencyItem>, value: CurrencyItem | null) {
+    const prev = items.value
+    setItems(next)
+    if (isDemo.value)
+      return Promise.resolve(true)
+
+    const userId = resolveWriteUid(uid.value)
+    const rowId = `${userId}:${code}`
+    return persistOptimistic(value ? upsertRow('currencies', rowId, itemToRow('currencies', { ...value, userId })) : deleteRow('currencies', rowId), {
+      errorKey: 'currencies.errors.saveFailed',
+      label: 'saveCurrency',
+      logger,
+      rollback: () => setItems(prev),
+    })
   }
 
   const reportedMissing = new Set<CurrencyCode>()
@@ -92,6 +168,11 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     return getAmountInRate(amount, base.value, currencyCode, rates.value)
   }
 
+  /** Past rates price the user's custom currencies the same way as today's. */
+  function withManualRates(values: Rates | null): Rates | null {
+    return values && applyManualRates(values, manualRates.value) as Rates
+  }
+
   /** Rates of the civil day `date` or the closest day before it; `null` when the synced history starts later. Demo keeps no history. */
   async function getRatesOn(date: number): Promise<Rates | null> {
     if (isDemo.value)
@@ -99,7 +180,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
 
     const db = await getPowerSyncDb()
     const row = await db.getOptional<Row>('SELECT * FROM exchange_rates WHERE date <= ? ORDER BY date DESC LIMIT 1', [date])
-    return row ? rowToRates(row) : null
+    return withManualRates(row ? rowToRates(row) : null)
   }
 
   /**
@@ -132,19 +213,25 @@ export const useCurrenciesStore = defineStore('currencies', () => {
       if (found < 0)
         return null
       if (!parsed.has(found))
-        parsed.set(found, rowToRates(rows[found] as unknown as Row))
+        parsed.set(found, withManualRates(rowToRates(rows[found] as unknown as Row)))
       return parsed.get(found)!
     })
   }
 
   return {
     base,
+    deleteCurrency,
     fromBase,
     getRatesOn,
     getRatesOnDates,
     initCurrencies,
+    items,
+    manualRates,
     primeFromCache,
     rates,
+    ratesDate,
+    saveCurrency,
+    setItems,
     setRates,
     toBase,
     tryToBase,
