@@ -1,0 +1,38 @@
+import type { Range } from '~~/utils/date/types'
+
+import type { TotalReturns } from '~/components/amount/getTotal'
+import type { TrnId, Trns } from '~/components/trns/types'
+
+import { bucketTrnsByIntervals } from '~/components/stat/intervals'
+
+export type CashflowPoints = {
+  expense: number[]
+  income: number[]
+  /** Loan interest and fines: ordinary expenses, so already part of `expense`. */
+  interest: number[]
+  net: number[]
+}
+
+const INTEREST_CATEGORY_IDS = new Set(['loanFine', 'loanInterest'])
+
+/** Income, expense, the interest share of the expense and net per interval; transfers and adjustments stay out. */
+export function cashflowPoints(params: {
+  computeTotal: (ids: TrnId[]) => TotalReturns
+  intervals: Range[]
+  trnsIds: TrnId[]
+  trnsItems: Trns
+}): CashflowPoints {
+  const { computeTotal, intervals, trnsIds, trnsItems } = params
+  const buckets = bucketTrnsByIntervals(trnsItems, trnsIds, intervals, computeTotal)
+  const interest = buckets.map(bucket => computeTotal(bucket.trnsIds.filter((id) => {
+    const trn = trnsItems[id]
+    return !!trn && 'walletId' in trn && INTEREST_CATEGORY_IDS.has(trn.categoryId)
+  })).expense)
+
+  return {
+    expense: buckets.map(bucket => bucket.total.expense),
+    income: buckets.map(bucket => bucket.total.income),
+    interest,
+    net: buckets.map(bucket => bucket.total.net),
+  }
+}

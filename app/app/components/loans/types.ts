@@ -12,7 +12,7 @@ export const loanInterestMethods = ['monthly', 'daily'] as const
 export const loanItemSchema = z.object({
   // null: the bank publishes no contract rate (0 is a real interest-free loan).
   annualRate: z.number().min(0).nullable().default(null),
-  // Pushed by bank sync: the debt the bank reports and when it was read.
+  // The debt the bank reports and when it was read.
   bankDebtAmount: z.number().optional(),
   bankDebtUpdatedAt: z.number().optional(),
   // Civil day the user marked the loan closed; set when the bank closed it with a balance gap left.
@@ -27,7 +27,7 @@ export const loanItemSchema = z.object({
   interestMethod: z.enum(loanInterestMethods).default('monthly'),
   // Days a payment may come after its due date and still count as on time.
   lateAfterDays: z.number().int().min(0).default(3),
-  // Pushed by bank sync: the bank's own split of the next payment (civil day).
+  // The bank's own split of the next payment (civil day).
   nextPaymentDate: z.number().optional(),
   nextPaymentInterest: z.number().optional(),
   nextPaymentPrincipal: z.number().optional(),

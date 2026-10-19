@@ -16,7 +16,7 @@ import { createDeriveLoanMemo, deriveDue, overridesByLoan, projectionParams } fr
 import { collectCreditTrns, costOf } from '~/components/loans/engine/ledger'
 import { whatIf } from '~/components/loans/engine/summary'
 import { deriveUpcoming, urgentWalletIds } from '~/components/loans/engine/upcoming'
-import { minPaymentOf } from '~/components/loans/minPayment'
+import { graceOf, minPaymentOf } from '~/components/loans/minPayment'
 import { loanItemSchema, loanScheduleRowSchema } from '~/components/loans/types'
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
@@ -169,12 +169,18 @@ export const useLoansStore = defineStore('loans', () => {
     return found ? [[walletId, found] as const] : []
   })))
 
+  const graceByWalletId = computed(() => new Map([...creditWalletIds.value].flatMap((walletId) => {
+    const wallet = walletsStore.items?.[walletId]
+    const found = wallet && graceOf(wallet, trnsByCreditWallet.value.get(walletId) ?? [], today.value)
+    return found ? [[walletId, found] as const] : []
+  })))
+
   const upcoming = computed(() => deriveUpcoming(
     [...byWalletId.value].map(([walletId, { loan, summary }]) => ({ currency: walletsStore.currencyOf(walletId), loan, summary, walletId })),
     [...creditWalletIds.value].flatMap((walletId) => {
       const wallet = walletsStore.items?.[walletId]
       return wallet?.type === 'credit' && !wallet.isArchived && !loanIdByWalletId.value.has(walletId)
-        ? [{ currency: wallet.currency, minPayment: minPaymentByWalletId.value.get(walletId) ?? null, walletId }]
+        ? [{ currency: wallet.currency, grace: graceByWalletId.value.get(walletId) ?? null, minPayment: minPaymentByWalletId.value.get(walletId) ?? null, walletId }]
         : []
     }),
     today.value,
@@ -189,7 +195,15 @@ export const useLoansStore = defineStore('loans', () => {
       if (loanIdByWalletId.value.has(walletId))
         continue
       const wallet = walletsStore.items?.[walletId]
-      if (wallet?.type !== 'credit' || !wallet.minPaymentAmount || wallet.minPaymentDate == null)
+      if (wallet?.type !== 'credit')
+        continue
+      // An overdue interest-free repayment counts like an overdue loan row, in place of a smaller minimum.
+      const grace = graceByWalletId.value.get(walletId)
+      if (grace?.status === 'overdue' && grace.date != null && grace.amount > (wallet.minPaymentAmount ?? 0)) {
+        revolving.push({ currency: wallet.currency, minPaymentAmount: grace.amount, minPaymentDate: grace.date, walletId })
+        continue
+      }
+      if (!wallet.minPaymentAmount || wallet.minPaymentDate == null)
         continue
       // A minimum already met this period is nothing left to pay.
       if (minPaymentByWalletId.value.get(walletId)?.status === 'paid')
@@ -305,6 +319,7 @@ export const useLoansStore = defineStore('loans', () => {
     deleteScheduleRow,
     dueThisMonth,
     getWhatIf,
+    graceByWalletId,
     initLoans,
     items,
     loanIdByWalletId,

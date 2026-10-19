@@ -6,6 +6,8 @@ export type LoansRevolvingViewItem = {
   /** Debt on the card, as a positive number. */
   debt: number
   fine: number
+  /** Interest-free period line; null when no sync reported one. */
+  grace?: { amount: number, date: string | null, status: MinPaymentStatus } | null
   interest: number
   minPayment: { amount: number, date: string, status: MinPaymentStatus } | null
   name: string
@@ -48,7 +50,7 @@ const { t } = useI18n()
           />
         </div>
 
-        <LoansCardLineView :currencyCode="item.currencyCode" :loan="null" :minPayment="item.minPayment" />
+        <LoansCardLineView :currencyCode="item.currencyCode" :grace="item.grace" :loan="null" :minPayment="item.minPayment" />
 
         <div v-if="item.interest || item.fine" class="flex flex-wrap items-baseline gap-x-1.5" data-loan-revolving-cost>
           <UiText v-if="item.interest" variant="meta">

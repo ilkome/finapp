@@ -37,7 +37,7 @@ describe('toSummaryProps', () => {
     expect(props.debitShortfall).toBeNull()
   })
 
-  it('checks the wallet against the bank debt when bank sync pushed one', () => {
+  it('checks the wallet against the bank debt when the bank reports one', () => {
     const props = toSummaryProps({
       currencyCode: 'RUB',
       day,

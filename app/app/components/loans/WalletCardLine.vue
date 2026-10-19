@@ -33,12 +33,18 @@ const minPayment = computed(() => {
   const found = loansStore.minPaymentByWalletId.get(props.walletId)
   return found ? { ...found, date: formatByLocale(found.date, 'dd.MM', dateLocale.value) } : null
 })
+
+const grace = computed(() => {
+  const found = loansStore.graceByWalletId.get(props.walletId)
+  return found ? { amount: found.amount, date: found.date === null ? null : formatByLocale(found.date, 'dd.MM', dateLocale.value), status: found.status } : null
+})
 </script>
 
 <template>
   <LoansCardLineView
-    v-if="loan || minPayment"
+    v-if="loan || minPayment || grace"
     :currencyCode="props.wallet.currency"
+    :grace
     :loan
     :minPayment
   />

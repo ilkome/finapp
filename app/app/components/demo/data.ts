@@ -730,7 +730,7 @@ export type DemoIncomeRule = {
 export type DemoLoan = {
   /** null: the bank publishes no rate; the schedule then comes from the bank, built at `bankRate`. */
   annualRate: number | null
-  /** Bank sync pushed the debt it reports, so the loan checks the wallet against it. */
+  /** The bank's reported debt is known, so the loan checks the wallet against it. */
   bankDebt?: boolean
   bankRate?: number
   /** This payment is skipped and paid together with the next one, plus a late fee. */

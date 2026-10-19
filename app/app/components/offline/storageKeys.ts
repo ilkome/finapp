@@ -2,6 +2,7 @@ export const STORAGE_KEYS = {
   categories: 'finapp.categories',
   categoryOverrides: 'finapp.categoryOverrides',
   currencies: 'finapp.currencies',
+  forecastSettings: 'finapp.forecastSettings',
   loans: 'finapp.loans',
   loanScheduleRows: 'finapp.loanScheduleRows',
   trns: 'finapp.trns',

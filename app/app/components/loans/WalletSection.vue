@@ -41,6 +41,16 @@ const isLoanWallet = computed(() => walletsStore.items?.[props.walletId]?.type =
 
 const minPayment = computed(() => loansStore.minPaymentByWalletId.get(props.walletId) ?? null)
 
+const grace = computed(() => {
+  const found = loansStore.graceByWalletId.get(props.walletId)
+  return found && {
+    amount: found.amount,
+    date: found.date === null ? null : day.value(found.date),
+    statementDate: found.statementDate === null ? null : day.value(found.statementDate),
+    status: found.status,
+  }
+})
+
 function onPayMin() {
   const found = minPayment.value
   if (found)
@@ -175,15 +185,16 @@ function onPayNext() {
       </UButton>
     </div>
 
-    <div v-else-if="minPayment" class="flex flex-wrap items-center gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-card-pay>
+    <div v-else-if="minPayment || grace" class="flex flex-wrap items-center gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-card-pay>
       <LoansCardLineView
         class="grow"
         :currencyCode
+        :grace
         :loan="null"
-        :minPayment="{ ...minPayment, date: day(minPayment.date) }"
+        :minPayment="minPayment && { ...minPayment, date: day(minPayment.date) }"
       />
       <UButton
-        v-if="minPayment.status !== 'paid'"
+        v-if="minPayment && minPayment.status !== 'paid'"
         color="neutral"
         icon="i-lucide-banknote"
         size="sm"

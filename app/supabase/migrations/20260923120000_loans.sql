@@ -18,13 +18,13 @@ create table public.loans (
   -- Set by the user when the bank closed the loan with a balance gap left; null while it is open.
   "closedDate" bigint,
   -- Reconciliation settings; null = client default, see loanItemSchema,
-  -- so bank sync never has to write them.
+  -- so a writer that does not know them never has to set them.
   "interestMethod" text,
   "lateAfterDays" integer,
   "prepayWindowDays" integer,
   "contractNumber" text,
   "desc" text,
-  -- The bank's own figures, pushed by bank sync: the debt to reconcile the wallet against and the
+  -- The bank's own figures: the debt to reconcile the wallet against and the
   -- bank's split of the next payment.
   "bankDebtAmount" double precision,
   "bankDebtUpdatedAt" bigint,
@@ -77,7 +77,7 @@ create policy "loan_schedule_rows_owner" on public.loan_schedule_rows for all to
   with check ((select auth.uid())::text = "userId");
 alter publication powersync add table public.loan_schedule_rows;
 
--- Minimum payment summary pushed by bank sync for revolving credit wallets.
+-- Minimum payment summary the bank reports for revolving credit wallets.
 alter table public.wallets add column if not exists "minPaymentAmount" double precision;
 alter table public.wallets add column if not exists "minPaymentDate" bigint;
 alter table public.wallets add column if not exists "minPaymentUpdatedAt" bigint;

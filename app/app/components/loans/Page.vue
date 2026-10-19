@@ -174,11 +174,13 @@ const revolvingItems = computed<LoansRevolvingViewItem[]>(() => revolvingWalletI
 
   const cost = loansStore.costByWalletId.get(walletId) ?? { byMonth: [], fine: 0, interest: 0 }
   const minPayment = loansStore.minPaymentByWalletId.get(walletId) ?? null
+  const grace = loansStore.graceByWalletId.get(walletId) ?? null
 
   return {
     currencyCode: wallet.currency,
     debt: Math.abs(wallet.amount),
     fine: cost.fine,
+    grace: grace && { amount: grace.amount, date: grace.date === null ? null : formatByLocale(grace.date, 'dd.MM', dateLocale.value), status: grace.status },
     interest: cost.interest,
     minPayment: minPayment && { ...minPayment, date: formatByLocale(minPayment.date, 'dd.MM', dateLocale.value) },
     name: wallet.name,
@@ -193,14 +195,16 @@ const upcomingGroups = computed<LoansUpcomingViewGroup[]>(() => groupUpcoming(lo
       const wallet = walletsStore.items?.[item.walletId]
       if (!wallet)
         return []
-      const desc = item.principal === undefined || item.interest === undefined
-        ? undefined
-        : `${t('loans.principal')} ${formatAmount(item.principal, wallet.currency)} · ${t('loans.interest')} ${formatAmount(item.interest, wallet.currency)}`
+      let desc: string | undefined
+      if (item.principal !== undefined && item.interest !== undefined)
+        desc = `${t('loans.principal')} ${formatAmount(item.principal, wallet.currency)} · ${t('loans.interest')} ${formatAmount(item.interest, wallet.currency)}`
+      else if (item.minAmount !== undefined)
+        desc = `${t('loans.minPaymentShort')} ${formatAmount(item.minAmount, wallet.currency)}`
       return [{
         amount: item.amount,
         currencyCode: wallet.currency,
         desc,
-        label: t(item.kind === 'card' ? 'loans.toPay.minPayment' : 'loans.toPay.payment'),
+        label: t(item.isGrace ? 'loans.toPay.grace' : item.kind === 'card' ? 'loans.toPay.minPayment' : 'loans.toPay.payment'),
         walletId: item.walletId,
         walletName: wallet.name,
       }]

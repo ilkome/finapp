@@ -3,6 +3,15 @@ import type { MinPaymentStatus } from '~/components/loans/minPayment'
 
 const props = defineProps<{
   currencyCode: string
+  /** Interest-free period line; null when no sync reported one. */
+  grace?: {
+    amount: number
+    /** Preformatted end day; null when nothing is left to repay. */
+    date: string | null
+    /** Preformatted last statement day; the "next statement" hint shows only when set. */
+    statementDate?: string | null
+    status: MinPaymentStatus
+  } | null
   /** A loan's own line; wallets without a `loans` row pass null and rely on `minPayment`. */
   loan: {
     isClosed?: boolean
@@ -83,5 +92,33 @@ const minPaymentStatusClass: Record<MinPaymentStatus, string> = {
         {{ t('loans.by') }} {{ props.minPayment.date }}
       </UiText>
     </div>
+
+    <div v-if="props.grace" class="flex flex-wrap items-center gap-x-1.5" data-loan-card-grace>
+      <span
+        class="size-1.5 shrink-0 rounded-full"
+        :class="minPaymentStatusClass[props.grace.status]"
+        :data-loan-grace-status="props.grace.status"
+      />
+      <UiText v-if="props.grace.amount === 0 || !props.grace.date" variant="meta">
+        {{ t('loans.grace.none') }}
+      </UiText>
+      <template v-else>
+        <UiText variant="meta">
+          {{ t('loans.grace.until', { date: props.grace.date }) }}
+        </UiText>
+        <Amount
+          :amount="props.grace.amount"
+          :currencyCode="props.currencyCode"
+          :isShowBaseRate="false"
+          :isShowSymbol="false"
+          align="left"
+          variant="secondary"
+        />
+      </template>
+    </div>
+
+    <UiText v-if="props.grace?.statementDate" variant="meta" data-loan-card-statement>
+      {{ t('loans.grace.nextStatement', { date: props.grace.statementDate }) }}
+    </UiText>
   </div>
 </template>

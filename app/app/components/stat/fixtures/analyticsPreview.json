@@ -1,0 +1,7 @@
+{
+  "change": -400,
+  "changeLabel": "Last 6 months",
+  "currencyCode": "USD",
+  "points": [5000, 4800, 4900, 4700, 4650, 4600],
+  "runway": { "dateLabel": "1 June 2027", "durationLabel": "7 months" }
+}

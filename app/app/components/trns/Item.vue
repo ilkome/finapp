@@ -2,7 +2,6 @@
 import type { TrnItemFull } from '~/components/trns/types'
 
 import { TrnType } from '~/components/trns/types'
-import { isCreditProduct } from '~/components/wallets/types'
 
 const props = defineProps<{
   compact?: boolean
@@ -19,7 +18,9 @@ const emit = defineEmits<{
 const isSingleAmount = computed(() => props.trnItem.type === TrnType.Transfer
   && props.trnItem.expenseAmount === props.trnItem.incomeAmount
   && props.trnItem.expenseWallet?.currency === props.trnItem.incomeWallet?.currency)
-const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && isCreditProduct(props.trnItem.incomeWallet?.type))
+// Only a loan contract is repaid by every transfer in; money moved to a credit card is often just a top-up inside
+// its interest-free period, so it stays a plain transfer.
+const isLoanPayment = computed(() => props.trnItem.type === TrnType.Transfer && props.trnItem.incomeWallet?.type === 'loan')
 </script>
 
 <template>

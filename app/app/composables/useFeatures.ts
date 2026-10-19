@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core'
 // Features still in development stay hidden until the user turns them on in Settings on this
 // device. A flag hides UI entry points only, never data, sync or calculations, so turning it
 // off cannot lose or change anything. Drop the flag and its checks once the feature ships.
-export const featureIds = ['loans', 'emailSignIn', 'trnPreview'] as const
+export const featureIds = ['loans', 'emailSignIn', 'trnPreview', 'walletsAnalytics'] as const
 type FeatureId = typeof featureIds[number]
 
 const FEATURES_KEY = 'finapp.features'
@@ -11,6 +11,7 @@ const featureDefaults: Record<FeatureId, boolean> = {
   emailSignIn: false,
   loans: false,
   trnPreview: false,
+  walletsAnalytics: false,
 }
 
 // One ref and one storage listener per tab, created on first use, not one per call site.

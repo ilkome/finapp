@@ -91,10 +91,46 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     return row ? rowToRates(row) : null
   }
 
+  /**
+   * `getRatesOn` for many civil days with one query: each entry is the rates of that day or the
+   * closest day before it, `null` before the synced history. Only the picked rows are parsed.
+   */
+  async function getRatesOnDates(dates: number[]): Promise<(Rates | null)[]> {
+    if (isDemo.value || !dates.length)
+      return dates.map(() => null)
+
+    const keys = dates.map(civilDayKey)
+    const db = await getPowerSyncDb()
+    const rows = await db.getAll<{ date: string, rates: string }>('SELECT date, rates FROM rates WHERE date <= ? ORDER BY date', [keys.reduce((a, b) => a > b ? a : b)])
+    const parsed = new Map<number, Rates | null>()
+    return keys.map((key) => {
+      // Binary search for the last row not after the key.
+      let lo = 0
+      let hi = rows.length - 1
+      let found = -1
+      while (lo <= hi) {
+        const mid = (lo + hi) >> 1
+        if (rows[mid]!.date <= key) {
+          found = mid
+          lo = mid + 1
+        }
+        else {
+          hi = mid - 1
+        }
+      }
+      if (found < 0)
+        return null
+      if (!parsed.has(found))
+        parsed.set(found, rowToRates(rows[found] as unknown as Row))
+      return parsed.get(found)!
+    })
+  }
+
   return {
     base,
     fromBase,
     getRatesOn,
+    getRatesOnDates,
     initCurrencies,
     primeFromCache,
     rates,

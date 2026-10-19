@@ -1,6 +1,13 @@
 export const WALLET_STORAGE_KEYS = {
   activeCurrency: 'finapp.wallets-active-currency',
   activeType: 'finapp.wallets-active-type',
+  analyticsBalance: 'finapp.wallets-analytics-balance',
+  analyticsCashflow: 'finapp.wallets-analytics-cashflow',
+  analyticsForecast: 'finapp.wallets-analytics-forecast',
+  analyticsPeriod: 'finapp.wallets-analytics-period',
+  analyticsRange: 'finapp.wallets-analytics-range',
+  analyticsRates: 'finapp.wallets-analytics-rates',
+  analyticsShares: 'finapp.wallets-analytics-shares',
   groupedBy: 'finapp.wallets-groupedBy',
   includeArchivedInStats: 'finapp.wallets-include-archived-in-stats',
   includeExcludedInStats: 'finapp.wallets-include-excluded-in-stats',

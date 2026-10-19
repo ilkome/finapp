@@ -67,7 +67,7 @@ describe('loansSummaryView', () => {
     expect(wrapper.find('[data-loan-warning="principalFree"]').text()).toContain('24657.69')
   })
 
-  it('shows the bank debt check only once bank sync pushed a figure', async () => {
+  it('shows the bank debt check only once the bank figure is known', async () => {
     const wrapper = mount(LoansSummaryView, { props: summary as any })
     expect(wrapper.find('[data-loan-bank-debt]').exists()).toBe(false)
     await wrapper.setProps({ bankDebt: { date: '22.09.2026', diff: 0, isStale: false } })

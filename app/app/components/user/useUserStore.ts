@@ -33,6 +33,7 @@ export type User = {
 export type UserSettingsCache = {
   baseCurrency?: CurrencyCode
   locale?: LocaleSlug
+  paymentReminders?: boolean
   user?: User | null
 }
 
@@ -58,6 +59,7 @@ export const useUserStore = defineStore('user', () => {
   const isSigningOut = ref(false)
   const baseCurrency = ref<CurrencyCode>('USD')
   const locale = ref<LocaleSlug>('en')
+  const paymentReminders = ref(true)
   const isSettingsLoaded = ref(false)
 
   let watchController: AbortController | null = null
@@ -131,6 +133,7 @@ export const useUserStore = defineStore('user', () => {
       localforage.setItem(STORAGE_KEYS.userSettings, {
         baseCurrency: baseCurrency.value,
         locale: locale.value,
+        paymentReminders: paymentReminders.value,
       })
       return
     }
@@ -148,6 +151,7 @@ export const useUserStore = defineStore('user', () => {
     persistStoreCache('user', {
       baseCurrency: baseCurrency.value,
       locale: locale.value,
+      paymentReminders: paymentReminders.value,
       user: toRaw(user.value),
     } satisfies UserSettingsCache)
   }
@@ -160,6 +164,7 @@ export const useUserStore = defineStore('user', () => {
       user.value = data.user
     if (data.baseCurrency)
       baseCurrency.value = data.baseCurrency
+    paymentReminders.value = data.paymentReminders !== false
     if (data.locale && data.locale !== locale.value) {
       locale.value = data.locale
       useNuxtApp().$i18n.setLocale(data.locale)
@@ -183,6 +188,27 @@ export const useUserStore = defineStore('user', () => {
       userId: uid.value,
     }).catch((e) => {
       logger.error('saveUserBaseCurrency failed', e)
+    })
+  }
+
+  function setPaymentReminders(value: boolean) {
+    paymentReminders.value = value
+    persistUserSettings()
+  }
+
+  function savePaymentReminders(value: boolean) {
+    setPaymentReminders(value)
+
+    if (isDemo.value || !uid.value)
+      return
+
+    upsertRow('user_settings', uid.value, {
+      baseCurrency: baseCurrency.value,
+      locale: locale.value,
+      paymentReminders: value ? 1 : 0,
+      userId: uid.value,
+    }).catch((e) => {
+      logger.error('savePaymentReminders failed', e)
     })
   }
 
@@ -224,6 +250,7 @@ export const useUserStore = defineStore('user', () => {
         locale.value = s.locale
         useNuxtApp().$i18n.setLocale(s.locale)
       }
+      paymentReminders.value = !(s.paymentReminders === 0 || s.paymentReminders === false)
       isSettingsLoaded.value = true
       // Civil-date model (P0): capture the device timezone so the backfill can map each
       // stored instant to the right calendar day. Written once / when it changes.
@@ -327,10 +354,13 @@ export const useUserStore = defineStore('user', () => {
     isSettingsLoaded,
     isSigningOut,
     locale,
+    paymentReminders,
     primeFromCache,
     removeAllUserData,
+    savePaymentReminders,
     saveUserBaseCurrency,
     saveUserLocale,
+    setPaymentReminders,
     setUser,
     setUserBaseCurrency,
     setUserLocale,

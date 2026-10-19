@@ -1,0 +1,15 @@
+{
+  "unstable": [
+    "sloppy-imports"
+  ],
+  "imports": {
+    "~/": "../../../app/",
+    "~~/": "../../../",
+    "date-fns": "npm:date-fns@4",
+    "date-fns/": "npm:/date-fns@4/",
+    "@date-fns/utc": "npm:@date-fns/utc@2",
+    "@internationalized/date": "npm:@internationalized/date@3",
+    "zod/v4": "npm:zod@4/v4",
+    "vue": "npm:vue@3"
+  }
+}

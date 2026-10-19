@@ -1,0 +1,9 @@
+{
+  "currencyCode": "USD",
+  "items": [
+    { "color": "#3b82f6", "count": 2, "id": "cash", "name": "Cash", "share": 0.75, "signedValue": 1500 },
+    { "color": "#22c55e", "count": 1, "id": "deposit", "name": "Deposits", "share": 0.25, "signedValue": 500 }
+  ],
+  "totalLabel": "Total",
+  "totalValue": 2000
+}

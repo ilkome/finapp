@@ -4,7 +4,7 @@ import { trnsItems } from '~~/mocks/trns'
 import { walletsItems } from '~~/mocks/wallets'
 
 import type { CurrencyCode, Rates } from '~/components/currencies/types'
-import type { TrnId } from '~/components/trns/types'
+import type { TrnId, TrnItem } from '~/components/trns/types'
 
 import { createToBase, getAmountInRate, getTotal, getWalletsTotals, MissingRateError } from '~/components/amount/getTotal'
 import { TrnType } from '~/components/trns/types'
@@ -32,6 +32,7 @@ describe('total of Transactions', () => {
     const trnsIds: TrnId[] = []
 
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
@@ -55,6 +56,7 @@ describe('total of Transactions', () => {
     const toBase = toBaseFixture(rates, 'USD')
 
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase,
       trnsIds,
       trnsItems,
@@ -63,7 +65,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.81081081081081)
     expect(total.expense).toEqual(0)
-    expect(total.net).toEqual(10.81081081081081)
+    expect(total.net).toEqual(10.81)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -74,6 +76,7 @@ describe('total of Transactions', () => {
     const toBase = toBaseFixture(rates, 'EUR')
 
     const total = getTotal({
+      baseCurrency: 'EUR',
       toBase,
       trnsIds,
       trnsItems,
@@ -82,7 +85,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.383135135135134)
     expect(total.expense).toEqual(0)
-    expect(total.net).toEqual(10.383135135135134)
+    expect(total.net).toEqual(10.38)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -96,6 +99,7 @@ describe('total of Transactions', () => {
     const toBase = toBaseFixture(rates, 'USD')
 
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase,
       trnsIds,
       trnsItems,
@@ -118,6 +122,7 @@ describe('total of Transactions', () => {
     const toBase = toBaseFixture(rates, 'EUR')
 
     const total = getTotal({
+      baseCurrency: 'EUR',
       toBase,
       trnsIds,
       trnsItems,
@@ -126,7 +131,7 @@ describe('total of Transactions', () => {
 
     expect(total.income).toEqual(10.383135135135134)
     expect(total.expense).toEqual(384.176)
-    expect(total.net).toEqual(-373.79286486486484)
+    expect(total.net).toEqual(-373.79)
     expect(total.incomeTransfers).toEqual(0)
     expect(total.expenseTransfers).toEqual(0)
     expect(total.sumTransfers).toEqual(0)
@@ -139,6 +144,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
@@ -158,6 +164,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      baseCurrency: 'USD',
       excludedCategoriesIds: new Set(['expense']),
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
@@ -177,6 +184,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      baseCurrency: 'USD',
       excludedCategoriesIds: new Set(['transfer', 'adjustment']),
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
@@ -198,6 +206,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
@@ -218,6 +227,7 @@ describe('total of Transactions', () => {
     ]
 
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds,
       trnsItems,
@@ -230,6 +240,30 @@ describe('total of Transactions', () => {
     expect(total.incomeTransfers).toEqual(40)
     expect(total.expenseTransfers).toEqual(40)
     expect(total.sumTransfers).toEqual(0)
+  })
+
+  it('rounds net and the transfer balance to the base currency, so equal sides give exactly 0', () => {
+    // 100.10 + 200.70 sums to 300.79999999999995 in floating point.
+    const trn = (type: TrnType.Expense | TrnType.Income, amount: number): TrnItem => ({ amount, categoryId: 'category1', date: 1, type, updatedAt: 1, walletId: 'walletCashUSD' })
+    const transfer = (incomeAmount: number, expenseAmount: number): TrnItem => ({ categoryId: 'transfer', date: 1, expenseAmount, expenseWalletId: 'walletCreditUSD', incomeAmount, incomeWalletId: 'walletCashUSD', type: TrnType.Transfer, updatedAt: 1 })
+
+    const total = getTotal({
+      baseCurrency: 'USD',
+      toBase: toBaseFixture(rates, 'USD'),
+      trnsIds: ['i1', 'i2', 'e', 't1', 't2'],
+      trnsItems: {
+        e: trn(TrnType.Expense, 300.8),
+        i1: trn(TrnType.Income, 100.1),
+        i2: trn(TrnType.Income, 200.7),
+        t1: transfer(100.1, 300.8),
+        t2: transfer(200.7, 0),
+      },
+      walletsItems,
+    })
+
+    expect(total.income).not.toBe(total.expense)
+    expect(Object.is(total.net, 0)).toBe(true)
+    expect(Object.is(total.sumTransfers, 0)).toBe(true)
   })
 })
 
@@ -262,6 +296,7 @@ describe('createToBase', () => {
 
   it('getTotal excludes an amount without a rate and lists its currency', () => {
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase: prod({ USD: 1 }),
       trnsIds: ['transactionIncomeWalletOneRUB700', 'transactionIncomeWalletCashUSD1000'],
       trnsItems,
@@ -275,6 +310,7 @@ describe('createToBase', () => {
 describe('getTotal orphan trns', () => {
   it('skips an income/expense whose wallet is missing', () => {
     const total = getTotal({
+      baseCurrency: 'USD',
       toBase: toBaseFixture(rates, 'USD'),
       trnsIds: ['orphan'],
       trnsItems: { orphan: { amount: 100, categoryId: 'category1', date: 1, type: TrnType.Expense, updatedAt: 1, walletId: 'missingWallet' } },

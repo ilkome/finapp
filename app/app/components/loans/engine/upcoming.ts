@@ -2,7 +2,7 @@ import { addCivilDays } from '~~/utils/date/civil'
 
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LoanSummary } from '~/components/loans/engine/types'
-import type { MinPaymentStatus } from '~/components/loans/minPayment'
+import type { GraceLine, MinPaymentStatus } from '~/components/loans/minPayment'
 import type { LoanItem } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -12,7 +12,11 @@ export type UpcomingItem = {
   date: number
   debitWalletId?: WalletId
   interest?: number
+  /** Interest-free period repayment; `amount` is then the statement debt. */
+  isGrace?: boolean
   kind: 'card' | 'loan'
+  /** The minimum payment shown beside a grace amount. */
+  minAmount?: number
   /** The charge date is already behind us. */
   overdue: boolean
   principal?: number
@@ -22,6 +26,7 @@ export type UpcomingItem = {
 export type UpcomingLoan = { currency: CurrencyCode, loan: LoanItem, summary: LoanSummary, walletId: WalletId }
 export type UpcomingCard = {
   currency: CurrencyCode
+  grace?: GraceLine | null
   minPayment: { amount: number, date: number, status: MinPaymentStatus } | null
   walletId: WalletId
 }
@@ -57,7 +62,21 @@ export function deriveUpcoming(loans: UpcomingLoan[], cards: UpcomingCard[], tod
     })
   }
 
-  for (const { currency, minPayment, walletId } of cards) {
+  for (const { currency, grace, minPayment, walletId } of cards) {
+    const isOpenMin = !!minPayment && minPayment.status !== 'paid' && minPayment.status !== 'stale'
+    if (grace?.date != null && (grace.status === 'due' || grace.status === 'overdue') && grace.amount > (isOpenMin ? minPayment.amount : 0)) {
+      items.push({
+        amount: grace.amount,
+        currency,
+        date: grace.date,
+        isGrace: true,
+        kind: 'card',
+        minAmount: isOpenMin ? minPayment.amount : undefined,
+        overdue: grace.date < today,
+        walletId,
+      })
+      continue
+    }
     if (!minPayment || minPayment.status === 'paid' || minPayment.status === 'stale')
       continue
     items.push({ amount: minPayment.amount, currency, date: minPayment.date, kind: 'card', overdue: minPayment.date < today, walletId })

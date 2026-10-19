@@ -28,13 +28,19 @@ export const walletItemSchema = z.discriminatedUnion('type', [
   z.object({
     ...walletBaseSchema.shape,
     creditLimit: z.number().default(0),
-    // Minimum payment summary pushed by bank sync; absent until a sync provides it.
+    // Statement debt to repay to keep the interest-free period; absent until a sync provides it.
+    graceAmount: z.number().min(0).optional(),
+    // Civil day the interest-free period ends.
+    graceEndDate: z.number().optional(),
+    // Minimum payment summary the bank reports; absent until it is known.
     minPaymentAmount: z.number().min(0).optional(),
     // Civil day the minimum is due.
     minPaymentDate: z.number().optional(),
     // Civil day the billing period this minimum belongs to STARTED (not the sync run time), so a
     // payment made early in the period still counts after a later sync overwrites this field.
     minPaymentUpdatedAt: z.number().optional(),
+    // Civil day of the last statement.
+    statementDate: z.number().optional(),
     type: z.literal('credit'),
   }),
   z.object({

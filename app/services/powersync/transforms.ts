@@ -66,6 +66,9 @@ export function rowToWallet(row: Row): WalletItem {
       ...base,
       creditLimit: Number(row.creditLimit ?? 0),
       type: 'credit',
+      ...(row.graceAmount != null ? { graceAmount: Number(row.graceAmount) } : {}),
+      ...(row.graceEndDate != null ? { graceEndDate: Number(row.graceEndDate) } : {}),
+      ...(row.statementDate != null ? { statementDate: Number(row.statementDate) } : {}),
       ...(row.minPaymentAmount != null ? { minPaymentAmount: Number(row.minPaymentAmount) } : {}),
       ...(row.minPaymentDate != null ? { minPaymentDate: Number(row.minPaymentDate) } : {}),
       ...(row.minPaymentUpdatedAt != null ? { minPaymentUpdatedAt: Number(row.minPaymentUpdatedAt) } : {}),
@@ -165,6 +168,8 @@ export function walletToRow(item: WalletItem, userId: string): Record<string, un
     creditLimit: item.type === 'credit' ? (item.creditLimit ?? 0) : null,
     currency: item.currency,
     desc: item.desc || null,
+    graceAmount: item.type === 'credit' ? (item.graceAmount ?? null) : null,
+    graceEndDate: item.type === 'credit' ? (item.graceEndDate ?? null) : null,
     isArchived: item.isArchived ? 1 : 0,
     isExcludeInTotal: item.isExcludeInTotal ? 1 : 0,
     isWithdrawal: item.isWithdrawal ? 1 : 0,
@@ -173,6 +178,7 @@ export function walletToRow(item: WalletItem, userId: string): Record<string, un
     minPaymentUpdatedAt: item.type === 'credit' ? (item.minPaymentUpdatedAt ?? null) : null,
     name: item.name,
     order: Math.round(item.order ?? 0), // integer column - round, don't silently truncate
+    statementDate: item.type === 'credit' ? (item.statementDate ?? null) : null,
     type: item.type,
     updatedAt: item.updatedAt ?? Date.now(),
     userId,
@@ -182,7 +188,7 @@ export function walletToRow(item: WalletItem, userId: string): Record<string, un
 export function loanToRow(item: LoanItem, userId: string): Record<string, unknown> {
   return {
     annualRate: item.annualRate,
-    // Bank figures pass through untouched, so editing the loan never wipes what bank sync pushed.
+    // Bank figures pass through untouched, so editing the loan never wipes them.
     bankDebtAmount: item.bankDebtAmount ?? null,
     bankDebtUpdatedAt: item.bankDebtUpdatedAt ?? null,
     closedDate: item.closedDate ?? null,
