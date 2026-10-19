@@ -1,0 +1,8 @@
+{
+  "defaults": { "name": "PTS" },
+  "isBuiltIn": false,
+  "isNew": false,
+  "rateCurrencies": [{ "code": "RUB", "name": "Russian Ruble" }, { "code": "USD", "name": "US Dollar" }],
+  "usedByWallets": ["Loyalty card"],
+  "value": { "code": "PTS", "manualRate": 0.5, "manualRateCurrencyCode": "RUB", "name": "Bonus points", "scale": 0 }
+}

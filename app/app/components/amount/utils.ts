@@ -2,17 +2,19 @@ import type { MinorDisplay } from '~~/utils/money/scale'
 
 import { currencyScale, toMinor } from '~~/utils/money/scale'
 
-import type { CurrencyCode } from '~/components/currencies/types'
+import type { CurrencyCode, CurrencyItem } from '~/components/currencies/types'
 
 import { currencies } from '~/components/currencies/currencies'
 
 const currencyMap = new Map(currencies.map(c => [c.code, c]))
 
-/** The user's custom currencies (code -> scale and display), set by the currencies store. */
-let userCurrencies: ReadonlyMap<CurrencyCode, { minorDisplay?: MinorDisplay, scale?: number, symbol?: string }> = new Map()
+/** The user's custom currencies and edits of built-in ones, set by the currencies store. */
+let userCurrencies: ReadonlyMap<CurrencyCode, CurrencyItem> = new Map()
+let customScales: Readonly<Record<CurrencyCode, number>> = {}
 
 export function setUserCurrencies(values: typeof userCurrencies) {
   userCurrencies = values
+  customScales = Object.fromEntries([...values].flatMap(([code, c]) => c.scale === undefined ? [] : [[code, c.scale]]))
 }
 
 /** Scale of a currency for display and input; a code nobody knows displays as 2 decimals instead of breaking a page. */
@@ -20,7 +22,7 @@ export function scaleOf(currencyCode: CurrencyCode | undefined): number {
   if (!currencyCode)
     return 2
   try {
-    return currencyScale(currencyCode, Object.fromEntries([...userCurrencies].flatMap(([code, c]) => c.scale === undefined ? [] : [[code, c.scale]])))
+    return currencyScale(currencyCode, customScales)
   }
   catch {
     return 2

@@ -14,7 +14,7 @@ import { useBankReportsStore } from '~/components/bankReports/useBankReportsStor
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { parseCategoryOverrides } from '~/components/categories/utils'
 import { ratesSchema } from '~/components/currencies/types'
-import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { parseItems as parseCurrencyItems, useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
 import { loanItemSchema, loanScheduleOverrideSchema, parseValidEntries } from '~/components/loans/types'
 import { useLoansStore } from '~/components/loans/useLoansStore'
@@ -130,7 +130,7 @@ export function useInitApp() {
         categoriesStore.primeFromCache((snap.categories as Categories) ?? null)
         walletsStore.primeFromCache((snap.wallets as Wallets) ?? null)
         userStore.primeFromCache((snap.user as UserSettingsCache) ?? null)
-        currenciesStore.primeFromCache((snap.rates as Rates) ?? null)
+        currenciesStore.primeFromCache((snap.rates as Rates) ?? null, snap.currencies)
         loansStore.primeFromCache((snap.loans as LoansCache) ?? null)
         statViewsStore.primeFromCache((snap.statViews as unknown[]) ?? null)
         categoriesStore.primeOverridesFromCache(snap.displayOverrides)
@@ -145,7 +145,7 @@ export function useInitApp() {
     const [user, rawUserSettings, rawCurrencies, categories, displayOverrides, wallets, trns, loans, loanScheduleOverrides] = await Promise.all([
       localforage.getItem<User | null>(STORAGE_KEYS.user),
       localforage.getItem(STORAGE_KEYS.userSettings),
-      localforage.getItem<{ rates?: unknown }>(STORAGE_KEYS.currencies),
+      localforage.getItem<{ items?: unknown, rates?: unknown }>(STORAGE_KEYS.currencies),
       localforage.getItem<Categories | null>(STORAGE_KEYS.categories),
       localforage.getItem(STORAGE_KEYS.displayOverrides),
       localforage.getItem<Wallets | null>(STORAGE_KEYS.wallets),
@@ -166,6 +166,7 @@ export function useInitApp() {
     const rates = ratesSchema.safeParse(rawCurrencies?.rates)
     if (rates.success)
       currenciesStore.setRates(rates.data)
+    currenciesStore.setItems(parseCurrencyItems(Object.values(rawCurrencies?.items ?? {})))
 
     walletsStore.setWallets(wallets ?? null)
     categoriesStore.setCategoryOverrides(parseCategoryOverrides(displayOverrides))
