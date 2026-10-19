@@ -3,7 +3,7 @@
 # Sync rules (edition 3 / Sync Streams). Restart the PowerSync service to apply changes.
 #
 # `auth.user_id()` is the Supabase user id (uuid as text) from the validated JWT.
-# Columns are camelCase to match the Postgres schema, so they are double-quoted.
+# A table also has to be in the `powersync` publication, or this line syncs nothing.
 
 config:
   edition: 3
@@ -13,16 +13,21 @@ streams:
   user_data:
     auto_subscribe: true
     queries:
-      - SELECT * FROM categories WHERE "userId" = auth.user_id()
-      - SELECT * FROM wallets WHERE "userId" = auth.user_id()
-      - SELECT * FROM trns WHERE "userId" = auth.user_id()
-      - SELECT * FROM user_settings WHERE "userId" = auth.user_id()
-      - SELECT * FROM stat_views WHERE "userId" = auth.user_id()
-      - SELECT * FROM loans WHERE "userId" = auth.user_id()
-      - SELECT * FROM loan_schedule_rows WHERE "userId" = auth.user_id()
+      - SELECT * FROM wallets WHERE user_id = auth.user_id()
+      - SELECT * FROM bank_reports WHERE user_id = auth.user_id()
+      - SELECT * FROM categories WHERE user_id = auth.user_id()
+      - SELECT * FROM transactions WHERE user_id = auth.user_id()
+      - SELECT * FROM display_overrides WHERE user_id = auth.user_id()
+      - SELECT * FROM loans WHERE user_id = auth.user_id()
+      - SELECT * FROM loan_schedule_overrides WHERE user_id = auth.user_id()
+      - SELECT * FROM currencies WHERE user_id = auth.user_id()
+      - SELECT * FROM user_settings WHERE user_id = auth.user_id()
+      - SELECT * FROM forecast_settings WHERE user_id = auth.user_id()
+      - SELECT * FROM forecast_categories WHERE user_id = auth.user_id()
+      - SELECT * FROM stat_views WHERE user_id = auth.user_id()
 
   # Global exchange rates: shared across all users.
-  rates:
+  exchange_rates:
     auto_subscribe: true
     queries:
-      - SELECT * FROM rates
+      - SELECT * FROM exchange_rates
