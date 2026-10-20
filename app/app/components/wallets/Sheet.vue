@@ -60,12 +60,18 @@ function openWallet() {
 
       <LoansWalletSection v-if="isLoans && isCredit" :walletId isCompact />
 
-      <!-- The drawer is as tall as its top snap point: the footer rides up to the visible bottom of the collapsed one. -->
+      <!-- The drawer is as tall as its top snap point and hangs its bleed below the screen. The footer
+           cancels the snap offset and the drag, so it stays at the screen bottom; on release it eases
+           with the drawer's own transition, so the two still add up to zero. -->
       <div
         :class="isLaptop
           ? 'sticky bottom-0 grid gap-2 bg-default pt-2'
-          : 'absolute inset-x-0 bottom-0 z-10 grid gap-2 bg-default px-3 py-2 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)]'"
-        :style="isLaptop ? undefined : 'transform: translateY(calc(-1 * var(--drawer-snap-lift, 0px)))'"
+          : 'absolute inset-x-0 z-10 grid gap-2 bg-default px-3 pt-2 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] group-data-[swiping]/drawer:transition-none'"
+        :style="isLaptop ? undefined : {
+          bottom: 'var(--bleed, 0px)',
+          paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))',
+          transform: 'translateY(calc(-1 * (var(--drawer-snap-lift, 0px) + var(--drawer-swipe-lift, 0px))))',
+        }"
       >
         <UButton
           block
