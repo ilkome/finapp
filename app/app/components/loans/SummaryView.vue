@@ -125,9 +125,9 @@ const notices = computed(() => {
       </UiText>
     </div>
 
-    <div
+    <UiCard
       v-if="props.nextPayment"
-      class="flex items-center gap-3 rounded-sm bg-elevated/30 px-3 py-2"
+      class="flex items-center gap-3"
       data-loan-next-payment
     >
       <div class="grid gap-0.5">
@@ -160,7 +160,7 @@ const notices = computed(() => {
           {{ t('loans.pay') }}
         </UButton>
       </div>
-    </div>
+    </UiCard>
 
     <UAlert
       v-for="notice in notices"

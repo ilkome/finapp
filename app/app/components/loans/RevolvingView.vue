@@ -37,9 +37,9 @@ const { t } = useI18n()
     >
       <div class="grid min-w-0 grow gap-1">
         <div class="flex flex-wrap items-baseline gap-2">
-          <UiText variant="navigation">
+          <UiEntityName>
             {{ item.name }}
-          </UiText>
+          </UiEntityName>
           <Amount
             :amount="item.debt"
             :currencyCode="item.currencyCode"

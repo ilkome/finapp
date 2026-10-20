@@ -16,11 +16,7 @@ const isOverdue = computed(() => !!loansStore.dueThisMonth && loansStore.dueThis
 </script>
 
 <template>
-  <NuxtLink v-if="loansStore.dueThisMonth" to="/loans" class="grid gap-1 rounded-sm interactive bg-elevated/30 px-3 py-2" data-loan-due>
-    <UiText variant="caption">
-      {{ t('loans.dueThisMonth') }}
-    </UiText>
-
+  <UiCard v-if="loansStore.dueThisMonth" to="/loans" chevron="right" :title="t('loans.dueThisMonth')" data-loan-due>
     <div class="flex flex-wrap items-baseline gap-x-2">
       <Amount
         :amount="loansStore.dueThisMonth.amount"
@@ -38,5 +34,5 @@ const isOverdue = computed(() => !!loansStore.dueThisMonth && loansStore.dueThis
         {{ t('loans.overdue') }}
       </UBadge>
     </div>
-  </NuxtLink>
+  </UiCard>
 </template>

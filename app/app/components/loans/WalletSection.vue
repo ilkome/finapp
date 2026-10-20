@@ -169,7 +169,7 @@ function onPayNext() {
       @update:mode="(value: PrepaymentMode) => whatIfMode = value"
     />
 
-    <div v-else-if="isLoanWallet" class="flex flex-wrap items-center gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-empty>
+    <UiCard v-else-if="isLoanWallet" class="flex flex-wrap items-center gap-2" data-loan-empty>
       <UiText variant="meta" class="grow">
         {{ t('loans.emptyHint') }}
       </UiText>
@@ -182,9 +182,9 @@ function onPayNext() {
       >
         {{ t('loans.add') }}
       </UButton>
-    </div>
+    </UiCard>
 
-    <div v-else-if="minPayment || grace" class="flex flex-wrap items-center gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-card-pay>
+    <UiCard v-else-if="minPayment || grace" class="flex flex-wrap items-center gap-2" data-loan-card-pay>
       <LoansCardLineView
         class="grow"
         :currencyCode
@@ -202,7 +202,7 @@ function onPayNext() {
       >
         {{ t('loans.pay') }}
       </UButton>
-    </div>
+    </UiCard>
 
     <UiSheet
       v-if="isShowLoanForm"

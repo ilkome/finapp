@@ -8,10 +8,7 @@ const props = withDefaults(defineProps<{
 </script>
 
 <template>
-  <div class="rounded-sm bg-elevated/30 px-3 py-2">
-    <UiText variant="caption">
-      {{ props.title }}
-    </UiText>
+  <UiCard :title="props.title">
     <Amount
       :amount="props.amount"
       :currencyCode="props.currencyCode"
@@ -19,5 +16,5 @@ const props = withDefaults(defineProps<{
       align="left"
       variant="summary"
     />
-  </div>
+  </UiCard>
 </template>

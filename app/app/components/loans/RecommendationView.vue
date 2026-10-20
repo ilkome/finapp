@@ -118,14 +118,14 @@ const picks = computed(() => [
       </div>
     </div>
 
-    <UiText v-if="picks.length === 0" variant="meta">
+    <UiEmpty v-if="picks.length === 0">
       {{ t('loans.recommendation.empty') }}
-    </UiText>
+    </UiEmpty>
 
-    <div
+    <UiCard
       v-for="item in picks"
       :key="item.key"
-      class="grid gap-1 rounded-sm bg-elevated/30 px-3 py-2"
+
       :data-loan-pick="item.key"
     >
       <UiText variant="caption">
@@ -156,6 +156,6 @@ const picks = computed(() => [
       <UiText variant="meta">
         {{ t(`loans.recommendation.${item.key}Hint`) }}
       </UiText>
-    </div>
+    </UiCard>
   </div>
 </template>

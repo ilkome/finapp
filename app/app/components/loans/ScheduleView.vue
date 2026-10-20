@@ -78,7 +78,7 @@ const statusClass: Record<LoanScheduleViewRow['status'], string> = {
       >
         <button
           type="button"
-          class="-mx-2 flex w-[calc(100%+1rem)] items-center gap-2 rounded-sm px-2 py-0.5 text-left"
+          class="-mx-2 flex w-[calc(100%+1rem)] items-center gap-2 rounded-sm interactive px-2 py-0.5 text-left"
           :class="row.paymentNumber === currentNumber && 'bg-elevated/40'"
           :aria-expanded="expanded === row.paymentNumber"
           :data-loan-current="row.paymentNumber === currentNumber || undefined"
