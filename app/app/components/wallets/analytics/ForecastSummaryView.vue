@@ -47,7 +47,7 @@ const scenarios = computed(() => [
         <UiText variant="caption" class="grow">
           {{ t('wallets.analytics.forecast.startBalance') }}
         </UiText>
-        <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
+        <Icon name="lucide:ellipsis" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
       </div>
       <Amount
         :amount="props.startBalance"

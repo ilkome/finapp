@@ -162,6 +162,7 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
         </div>
         <WalletsAnalyticsSharesView
           :currencyCode="currenciesStore.base"
+          :isRowSheet="activeGroup.groupBy !== 'wallet'"
           :items="activeGroup.rows"
           :totalLabel="t('wallets.analytics.shares.total')"
           :totalValue="activeGroup.totalValue"

@@ -94,7 +94,7 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
             variant="row"
           />
 
-          <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
+          <Icon name="lucide:ellipsis" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
           <USwitch
             :modelValue="item.isRegular"
             size="sm"
