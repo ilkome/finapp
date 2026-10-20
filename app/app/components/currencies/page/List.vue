@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useStorage } from '@vueuse/core'
+import { StorageSerializers, useStorage } from '@vueuse/core'
 import { convert } from '~~/utils/money/convert'
 
 import type { CurrencyRow } from '~/components/currencies/PageListView.vue'
@@ -62,11 +62,11 @@ async function onDelete(close: () => void) {
 
 // Converter: device state (rule 5)
 const converterSource = useStorage<CurrencyCode>('finapp.converter.source', '')
-const converterTargets = useStorage<CurrencyCode[] | null>('finapp.converter.targets', null)
+const converterTargets = useStorage<CurrencyCode[] | null>('finapp.converter.targets', null, undefined, { onError: () => {}, serializer: StorageSerializers.object })
 const converterAmount = ref('100')
 
 const source = computed(() => converterSource.value || currenciesStore.base)
-const targets = computed(() => (converterTargets.value ?? walletsStore.currenciesUsed).filter(code => code !== source.value))
+const targets = computed(() => (Array.isArray(converterTargets.value) ? converterTargets.value : walletsStore.currenciesUsed).filter(code => code !== source.value))
 const results = computed(() => {
   const amount = amountToMinor(evaluateExpression(converterAmount.value), source.value)
   return targets.value.map((code) => {
