@@ -1,9 +1,12 @@
 import { addCivilDays, addCivilMonths, lastDayOfMonthCivil, startOfMonthCivil } from '~~/utils/date/civil'
 
+import type { CategoryId } from '~/components/categories/types'
 import type { PaymentRow } from '~/components/loans/engine/types'
 import type { GraceLine, MinPaymentStatus } from '~/components/loans/minPayment'
-import type { CardPaymentMode } from '~/components/wallets/analytics/forecastSettings'
+import type { AmountMode, CardPaymentMode, RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { WalletId } from '~/components/wallets/types'
+
+import { detectRegular } from '~/components/wallets/analytics/regular'
 
 const DAY = 86_400_000
 
@@ -75,6 +78,57 @@ export function cardObligations(params: {
   return result
 }
 
+/** Months with income the detection needs, as a share of the window. */
+const SCHEDULE_MIN_SHARE = 0.5
+/** A pay day that wanders further than this from its median is no schedule. */
+const SCHEDULE_MAX_SPREAD_DAYS = 5
+/** An income at least this share of its month counts as one part of the pay. */
+const PART_MIN_SHARE = 0.25
+
+export type IncomePart = {
+  /** Day of the month, 1-based; a short month pays on its last day. */
+  day: number
+  share: number
+}
+
+const dayOfMonth = (date: number) => new Date(date).getUTCDate()
+function medianOf(values: number[]) {
+  const sorted = values.toSorted((a, b) => a - b)
+  const middle = sorted.length >> 1
+  return sorted.length % 2 ? sorted[middle]! : (sorted[middle - 1]! + sorted[middle]!) / 2
+}
+
+/**
+ * Typical pay days from the income of the history window: per month the large incomes (parts of the pay), the
+ * usual number of parts, then the median day and share of each part. Too few months with income, or a pay day
+ * that wanders, gives null: the forecast then spreads income over the month.
+ */
+export function incomeSchedule(months: { amount: number, date: number }[][]): IncomePart[] | null {
+  const withIncome = months.filter(entries => entries.some(entry => entry.amount > 0))
+  if (!months.length || withIncome.length < Math.max(2, months.length * SCHEDULE_MIN_SHARE))
+    return null
+  const parts = withIncome.map((entries) => {
+    const total = entries.reduce((sum, entry) => sum + entry.amount, 0)
+    return entries
+      .filter(entry => entry.amount >= total * PART_MIN_SHARE)
+      .toSorted((a, b) => a.date - b.date)
+      .map(entry => ({ day: dayOfMonth(entry.date), share: entry.amount / total }))
+  })
+  const count = Math.round(medianOf(parts.map(list => list.length)))
+  const regular = parts.filter(list => list.length === count)
+  if (!count || regular.length < withIncome.length * SCHEDULE_MIN_SHARE)
+    return null
+  const schedule = Array.from({ length: count }, (_, index) => {
+    const days = regular.map(list => list[index]!.day)
+    const day = Math.round(medianOf(days))
+    return { day, share: medianOf(regular.map(list => list[index]!.share)), spread: Math.max(...days.map(value => Math.abs(value - day))) }
+  })
+  if (schedule.some(part => part.spread > SCHEDULE_MAX_SPREAD_DAYS))
+    return null
+  const shareSum = schedule.reduce((sum, part) => sum + part.share, 0)
+  return schedule.map(part => ({ day: part.day, share: part.share / shareSum }))
+}
+
 type ForecastMonth = {
   endWithIncome: number
   endWithoutIncome: number
@@ -84,17 +138,37 @@ type ForecastMonth = {
   start: number
 }
 
+export type ForecastScenario = {
+  events?: { amount: number, date: number }[]
+  incomeFactor?: number
+  spendingFactor?: number
+}
+
+/** Why both scenarios end on the same day, when they do. */
+export type ForecastCoincidence = 'arrived' | 'afterRunOut' | 'belowZero'
+
 export type ForecastResult = {
+  coincidence: ForecastCoincidence | null
   months: ForecastMonth[]
+  /** Civil day of the next expected income; null without a pay-day schedule or income. */
+  nextIncomeDate: number | null
   /** Civil day the money runs out in each scenario; null when it lasts past the horizon. */
   runwayWithIncome: number | null
   runwayWithoutIncome: number | null
   startBalance: number
 }
 
+/** `amount` over `days` in whole minor units, the remainder on the first days. */
+function spread(amount: number, days: number): number[] {
+  const base = Math.floor(amount / days)
+  const rest = amount - base * days
+  return Array.from({ length: days }, (_, index) => base + (index < rest ? 1 : 0))
+}
+
 /**
- * Month-by-month projection from `startBalance`. The current month counts only what is still
- * ahead: regular spending and income less what already happened, obligations from today on.
+ * Day-by-day projection from `startBalance`: obligations on their dates, income on the pay days of `schedule`
+ * (spread over the month without one), regular spending spread per day. The current month counts only what is
+ * still ahead. The run-out day is the first day the balance goes below zero; a day's income lands before its outflow.
  */
 export function projectForecast(params: {
   horizonMonths: number
@@ -102,12 +176,17 @@ export function projectForecast(params: {
   incomeThisMonth: number
   obligations: Obligation[]
   regular: { amount: number, spentThisMonth: number }[]
+  /** A temporary what-if: one-off moves (income positive) and factors on regular spending and income. */
+  scenario?: ForecastScenario
+  schedule?: IncomePart[] | null
   startBalance: number
   today: number
 }): ForecastResult {
-  const { horizonMonths, income, incomeThisMonth, obligations, regular, startBalance, today } = params
-  const regularMonthly = regular.reduce((sum, item) => sum + item.amount, 0)
-  const regularLeftNow = regular.reduce((sum, item) => sum + Math.max(0, item.amount - item.spentThisMonth), 0)
+  const { horizonMonths, incomeThisMonth, obligations, regular, schedule, startBalance, today } = params
+  const { events = [], incomeFactor = 1, spendingFactor = 1 } = params.scenario ?? {}
+  const income = params.income * incomeFactor
+  const regularMonthly = Math.round(regular.reduce((sum, item) => sum + item.amount, 0) * spendingFactor)
+  const regularLeftNow = Math.round(regular.reduce((sum, item) => sum + Math.max(0, item.amount * spendingFactor - item.spentThisMonth), 0))
   const firstMonth = startOfMonthCivil(today)
 
   const months: ForecastMonth[] = []
@@ -115,35 +194,112 @@ export function projectForecast(params: {
   let withoutIncome = startBalance
   let runwayWithIncome: number | null = startBalance < 0 ? today : null
   let runwayWithoutIncome: number | null = startBalance < 0 ? today : null
+  let nextIncomeDate: number | null = null
 
   for (let index = 0; index < horizonMonths; index++) {
     const start = addCivilMonths(firstMonth, index)
     const end = lastDayOfMonthCivil(start)
     const from = index === 0 ? today : start
-    const monthObligations = obligations
-      .filter(item => item.date >= start && item.date <= end)
-      .reduce((sum, item) => sum + item.amount, 0)
-    const monthRegular = index === 0 ? regularLeftNow : regularMonthly
-    const monthIncome = index === 0 ? Math.max(0, income - incomeThisMonth) : income
-    const outflow = monthObligations + monthRegular
+    const days = Math.round((end - from) / DAY) + 1
+    const monthDays = Math.round((end - start) / DAY) + 1
 
-    const nextWithIncome = withIncome - outflow + monthIncome
-    const nextWithoutIncome = withoutIncome - outflow
-    runwayWithIncome ??= runOutDay(withIncome, nextWithIncome, from, end)
-    runwayWithoutIncome ??= runOutDay(withoutIncome, nextWithoutIncome, from, end)
-    withIncome = nextWithIncome
-    withoutIncome = nextWithoutIncome
+    const outflow = Array.from<number>({ length: days }).fill(0)
+    let monthObligations = 0
+    for (const item of obligations) {
+      if (item.date >= from && item.date <= end) {
+        outflow[Math.round((item.date - from) / DAY)]! += item.amount
+        monthObligations += item.amount
+      }
+    }
+    // A one-off move counts in both scenarios: it is planned, not income the scenario leaves out.
+    for (const event of events) {
+      if (event.date >= from && event.date <= end)
+        outflow[Math.round((event.date - from) / DAY)]! -= event.amount
+    }
+    const monthRegular = index === 0 ? regularLeftNow : regularMonthly
+    spread(monthRegular, days).forEach((amount, day) => outflow[day]! += amount)
+
+    const monthIncome = Math.round(index === 0 ? Math.max(0, income - incomeThisMonth) : income)
+    const inflow = Array.from<number>({ length: days }).fill(0)
+    if (schedule?.length) {
+      // Each part on its day; this month's parts already paid are what `incomeThisMonth` covers.
+      let left = monthIncome
+      for (const part of schedule) {
+        const day = Math.min(part.day, monthDays) - 1 - (monthDays - days)
+        if (day < 0 || left <= 0)
+          continue
+        const amount = part === schedule.at(-1) ? left : Math.min(left, Math.round(income * part.share))
+        inflow[day]! += amount
+        left -= amount
+      }
+    }
+    else {
+      spread(monthIncome, days).forEach((amount, day) => inflow[day]! += amount)
+    }
+
+    for (let day = 0; day < days; day++) {
+      const date = addCivilDays(from, day)
+      if (inflow[day]! > 0 && schedule?.length && nextIncomeDate === null && date > today)
+        nextIncomeDate = date
+      withIncome += inflow[day]! - outflow[day]!
+      withoutIncome -= outflow[day]!
+      if (runwayWithIncome === null && withIncome < 0)
+        runwayWithIncome = date
+      if (runwayWithoutIncome === null && withoutIncome < 0)
+        runwayWithoutIncome = date
+    }
 
     months.push({ endWithIncome: withIncome, endWithoutIncome: withoutIncome, income: monthIncome, obligations: monthObligations, regular: monthRegular, start })
   }
 
-  return { months, runwayWithIncome, runwayWithoutIncome, startBalance }
+  let coincidence: ForecastCoincidence | null = null
+  if (runwayWithIncome !== null && runwayWithIncome === runwayWithoutIncome) {
+    coincidence = startBalance < 0
+      ? 'belowZero'
+      : income > 0 && incomeThisMonth >= income && runwayWithIncome <= lastDayOfMonthCivil(today)
+        ? 'arrived'
+        : 'afterRunOut'
+  }
+
+  return { coincidence, months, nextIncomeDate, runwayWithIncome, runwayWithoutIncome, startBalance }
 }
 
-/** Day inside [from, end] the balance crosses zero, spending spread evenly over the days. */
-function runOutDay(before: number, after: number, from: number, end: number): number | null {
-  if (before < 0 || after >= 0)
-    return null
-  const days = Math.round((end - from) / DAY) + 1
-  return addCivilDays(from, Math.min(days - 1, Math.floor(before / (before - after) * days)))
+/**
+ * Months of cover at each point: the start-wallet balance there over the monthly outflow known at that time, so a
+ * past month is not judged by today's spending. The outflow is the regular spending detected over the history
+ * window ending at the point plus the debt payments actually made in that window, per month.
+ * `spending` and `debtPayments` run over one contiguous list of months; `windowEnds` index into it (inclusive).
+ */
+export function coverTrend(params: {
+  amountMode: AmountMode
+  balances: number[]
+  debtPayments: number[]
+  minMonths: number
+  overrides: Record<CategoryId, RegularOverride>
+  spending: Map<CategoryId, number[]>
+  windowEnds: number[]
+  windowMonths: number
+}): (number | null)[] {
+  const { amountMode, balances, debtPayments, minMonths, overrides, spending, windowEnds, windowMonths } = params
+  return windowEnds.map((end, index) => {
+    const start = Math.max(0, end - windowMonths + 1)
+    const monthly = new Map([...spending].map(([categoryId, data]) => [categoryId, data.slice(start, end + 1)] as const))
+    const regular = detectRegular({ amountMode, minMonths, monthly, overrides, windowMonths })
+      .filter(item => item.isRegular)
+      .reduce((sum, item) => sum + item.amount, 0)
+    const debt = debtPayments.slice(start, end + 1).reduce((sum, value) => sum + value, 0) / windowMonths
+    const outflow = regular + debt
+    return outflow > 0 ? balances[index]! / outflow : null
+  })
+}
+
+/** Days ahead the upcoming-payments summary sums over. */
+export const UPCOMING_DAYS = 30
+
+/** The next mandatory payment and the total due within `days` from today. */
+export function upcomingPayments(obligations: Obligation[], today: number, days = UPCOMING_DAYS) {
+  const until = addCivilDays(today, days)
+  const due = obligations.filter(item => item.date >= today && item.date <= until)
+  const next = obligations.filter(item => item.date >= today).toSorted((a, b) => a.date - b.date)[0] ?? null
+  return { next, total: due.reduce((sum, item) => sum + item.amount, 0) }
 }

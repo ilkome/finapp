@@ -62,6 +62,8 @@ export type ChartSeries = {
   color?: string
   data: number[]
   icon?: string
+  /** A faded dashed copy for comparison (the previous period); never stacked. */
+  isGhost?: boolean
   markArea?: {
     data: [{ xAxis: string }, { xAxis: string }][]
     itemStyle: { borderWidth: number, color: string, opacity: number }
@@ -69,6 +71,7 @@ export type ChartSeries = {
   markedArea?: 'markedArea'
   markLine?: Record<string, unknown>
   markLineValueType?: SeriesSlug
+  markPoint?: Record<string, unknown>
   name: string
   showValueType?: boolean
   type: AxisChartType

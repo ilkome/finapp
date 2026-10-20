@@ -243,6 +243,14 @@ describe('resolveChartTooltipPosition', () => {
   })
 })
 
+describe('buildChartSeries ghost', () => {
+  it('draws a ghost dashed and out of the stack', () => {
+    const [ghost] = buildChartSeries([{ ...baseSeries, data: [1, 2], isGhost: true }, { ...baseSeries, data: [3, 4] }], 'line', { isGradient: true, isShowPoints: false, isSkipZero: false, isSmooth: false }) as { lineStyle: { type: string }, stack: unknown }[]
+    expect(ghost!.lineStyle.type).toBe('dashed')
+    expect(ghost!.stack).toBe(false)
+  })
+})
+
 describe('resolveChartScale', () => {
   it('creates three lines from zero to the maximum for upward values', () => {
     expect(resolveChartScale([{ ...baseSeries, data: [20, 100] }])).toEqual({
@@ -284,6 +292,29 @@ describe('resolveChartScale', () => {
       { ...baseSeries, data: [60, 20] },
       { ...baseSeries, data: [40, 30] },
     ], 'line', { isGradient: false, isShowPoints: false, isSkipZero: false, isSmooth: false })).toEqual({ interval: 50, max: 100, min: 0 })
+  })
+
+  it('fits an all-positive line far from zero', () => {
+    const scale = resolveChartScale([{ ...baseSeries, data: [1_000_000, 1_050_000] }], 'line', undefined, true, 'fit')
+    expect(scale.min).toBeGreaterThan(900_000)
+    expect(scale.max).toBeGreaterThanOrEqual(1_050_000)
+    expect(scale.max).toBeLessThanOrEqual(1_100_000)
+  })
+
+  it('fits an all-negative line without reaching zero', () => {
+    const scale = resolveChartScale([{ ...baseSeries, data: [-500, -400] }], 'line', undefined, true, 'fit')
+    expect(scale.max).toBeLessThan(0)
+    expect(scale.min).toBeLessThanOrEqual(-500)
+  })
+
+  it('keeps zero inside a fit scale that crosses it', () => {
+    const scale = resolveChartScale([{ ...baseSeries, data: [-50, 200] }], 'line', undefined, true, 'fit')
+    expect(scale.min).toBeLessThan(0)
+    expect(scale.max).toBeGreaterThan(200)
+  })
+
+  it('keeps bars anchored at zero in fit mode', () => {
+    expect(resolveChartScale([{ ...baseSeries, data: [20, 100] }], 'bar', undefined, true, 'fit')).toEqual({ interval: 50, max: 100, min: 0 })
   })
 
   it('reserves less space for short labels', () => {

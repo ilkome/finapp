@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "color": "#3b82f6", "currencyCode": "USD", "dateLabel": "12 Oct", "diff": -1500, "id": "bank", "name": "Bank" },
+    { "color": "#ef4444", "currencyCode": "EUR", "dateLabel": "3 Sep", "diff": 200, "id": "card", "name": "Card" }
+  ]
+}

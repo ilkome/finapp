@@ -63,7 +63,10 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
           :lineWidth="index === group.items.length - 1 ? 0 : 3"
           insideClasses="min-h-11!"
           :data-regular-item="item.categoryId"
+          role="button"
+          tabindex="0"
           @click="emit('edit', item.categoryId)"
+          @keydown.self.enter.space.prevent="emit('edit', item.categoryId)"
         >
           <template #leftIcon>
             <div class="flex size-7 items-center justify-center rounded-full" :style="{ background: item.color }">
@@ -91,6 +94,7 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
             variant="row"
           />
 
+          <Icon name="lucide:ellipsis" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
           <USwitch
             :modelValue="item.isRegular"
             size="sm"

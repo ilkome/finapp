@@ -54,3 +54,14 @@ export function shouldUseQuickCategoryCashflowSeries(options: {
     && options.hasBothCashflowTypes
     && (options.chartType === 'bar' || options.chartType === 'pie')
 }
+
+/** One line of a chart tooltip; `amount` is a decimal, as the chart draws it. */
+export type ChartTooltipRow = {
+  amount: number
+  color?: string
+  description?: string
+  icon?: string
+  key: string
+  name: string
+  value?: number | null
+}

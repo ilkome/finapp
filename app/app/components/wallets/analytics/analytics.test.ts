@@ -4,10 +4,10 @@ import type { PaymentRow } from '~/components/loans/engine/types'
 import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { balanceSeries, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
-import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast, upcomingPayments } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
-import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
+import { currentMonth, detectRegular, incomeOutsideStart, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
@@ -30,6 +30,60 @@ describe('walletBalancesAt', () => {
       { cash: 50, usd: 2 },
       { card: -50, cash: 50, usd: 2 },
     ])
+  })
+
+  it('counts a move inside the first interval in the period change', () => {
+    // Range starts in January: the opening point is the day before it, so the January income is part of the change.
+    const points = walletBalancesAt(trns, wallets, [day('2026-01-01') - 1, ...ends])
+    const [series] = splitOpening(balanceSeries({ balances: points, breakdown: 'total', scope: 'net', toBaseAt: () => toBase, walletIds: ['cash'], wallets }))
+    expect(series!.data).toHaveLength(ends.length)
+    expect(periodChange(series!)).toBe(50)
+  })
+})
+
+describe('balanceExtremes', () => {
+  const params = { toBaseOn: () => toBase, trnsItems: trns, walletIds: ['cash', 'usd'], wallets }
+
+  it('finds the daily low between two interval ends', () => {
+    // Feb 1: 100, Feb 4: 60, Feb 5: 30 (low), Feb 6: a transfer keeps 30, Feb 20: 60. The month end alone reads 60.
+    const extra: Trns = { ...trns, e: { categoryId: 'salary', createdAt: 0, date: day('2026-02-20'), toAmount: 30, toWalletId: 'cash', type: 'income', updatedAt: 0 }, f: { categoryId: 'food', createdAt: 0, date: day('2026-02-04'), fromAmount: 40, fromWalletId: 'cash', type: 'expense', updatedAt: 0 } }
+    const result = balanceExtremes({ ...params, rangeEnd: day('2026-02-28'), rangeStart: day('2026-02-01'), trnsItems: extra })
+    expect(result.min).toEqual({ date: day('2026-02-05'), value: 30 })
+    expect(result.max).toEqual({ date: day('2026-02-01'), value: 100 })
+  })
+
+  it('takes the all-time high from before the range', () => {
+    const result = balanceExtremes({ ...params, rangeEnd: day('2026-03-31'), rangeStart: day('2026-03-01') })
+    expect(result.ath).toEqual({ date: day('2026-01-10'), value: 100 })
+    expect(result.max).toEqual({ date: day('2026-03-01'), value: 70 })
+  })
+})
+
+describe('changeDecomposition', () => {
+  it('splits the change into flows, revaluation and other, adding up to it', () => {
+    // USD worth 10 at the opening, 10 after January, 12 after February, 15 after March.
+    const rates = [10, 10, 12, 15]
+    const toBaseAtPoint = (index: number) => (amount: number, currency: string) => currency === 'USD' ? amount * rates[index]! : amount
+    const extra: Trns = { ...trns, e: { createdAt: 0, date: day('2026-03-02'), fromAmount: 5, fromWalletId: 'cash', type: 'adjustment', updatedAt: 0 } }
+    const result = changeDecomposition({
+      excludedCategoryIds: new Set(),
+      intervals: ends.map((end, index) => ({ end, start: index ? ends[index - 1]! + 1 : day('2026-01-01') })),
+      pointBalances: walletBalancesAt(extra, wallets, [day('2026-01-01') - 1, ...ends]),
+      toBaseAtPoint,
+      trnsIds: Object.keys(extra),
+      trnsItems: extra,
+      walletIds: ['cash', 'usd'],
+      wallets,
+    })
+    // Flows: +100 salary, -30 food. Other: the transfer -20 + 2 USD at 12 = +4, the adjustment -5. USD 2 held from 12 to 15: +6.
+    expect(result).toEqual({ change: 75, flows: 70, other: -1, revaluation: 6 })
+    expect(result.flows + result.other + result.revaluation).toBe(result.change)
+  })
+})
+
+describe('changeSeries', () => {
+  it('measures the first change from the opening value', () => {
+    expect(changeSeries([{ data: [120, 90], id: 'a', opening: 100 }])[0]!.data).toEqual([20, -30])
   })
 })
 
@@ -78,7 +132,15 @@ describe('computeShares', () => {
   it('measures assets and debts apart, or every balance by its size', () => {
     expect(computeShares({ ...params, mode: 'assets' }).items.map(i => [i.id, i.share])).toEqual([['cash', 0.75], ['bank_account', 0.25]])
     expect(computeShares({ ...params, mode: 'debts' }).items.map(i => [i.id, i.signedValue])).toEqual([['credit_card', -50]])
-    expect(computeShares({ ...params, mode: 'all' }).total).toBe(250)
+    expect(computeShares({ ...params, mode: 'gross' }).total).toBe(250)
+  })
+
+  it('reads a mixed-sign group in every mode', () => {
+    const mixed = { card: { ...wallets.card!, amount: -80_000 }, cash: { ...wallets.cash!, amount: 100_000 } }
+    const run = (mode: 'gross' | 'net' | 'split') => computeShares({ groupBy: 'currency', mode, toBase, walletIds: ['cash', 'card'], wallets: mixed })
+    expect(run('gross').items.map(i => i.value)).toEqual([180_000])
+    expect(run('net').items.map(i => [i.value, i.signedValue])).toEqual([[20_000, 20_000]])
+    expect(run('split').items.map(i => [i.id, i.value])).toEqual([['RUB:assets', 100_000], ['RUB:debts', 80_000]])
   })
 })
 
@@ -106,7 +168,7 @@ describe('regular spending', () => {
 
   it('splits one pass into the window and the current month, income included', () => {
     expect(monthly.has('food')).toBe(false)
-    expect(sliceMonthlySums(all, -1)).toEqual({ income: [0], spending: new Map([['food', [30]]]) })
+    expect(sliceMonthlySums(all, -1)).toEqual({ income: [0], incomeEntries: [[]], spending: new Map([['food', [30]]]) })
     expect(sliceMonthlySums(all, 0, -1).income).toEqual([0, 3000, 0])
   })
 
@@ -169,8 +231,81 @@ describe('projectForecast', () => {
     expect(result.runwayWithoutIncome).toBe(day('2026-06-01'))
   })
 
+  it('runs out before a pay day after an obligation, not by the month average', () => {
+    // Loan 400 on May 5, salary 1000 on May 10, start 300: short on May 5 with or without income.
+    const result = projectForecast({
+      horizonMonths: 2,
+      income: 1000,
+      incomeThisMonth: 1000,
+      obligations: [{ amount: 400, date: day('2026-05-05'), kind: 'loan', walletId: 'loan' }],
+      regular: [],
+      schedule: [{ day: 10, share: 1 }],
+      startBalance: 300,
+      today,
+    })
+    expect(result.runwayWithoutIncome).toBe(day('2026-05-05'))
+    expect(result.runwayWithIncome).toBe(day('2026-05-05'))
+    expect(result.coincidence).toBe('afterRunOut')
+    expect(result.nextIncomeDate).toBe(day('2026-05-10'))
+    expect(result.months[1]!.endWithIncome).toBe(900)
+  })
+
+  it('returns the base result for an empty what-if, and moves the run-out for a one-off expense', () => {
+    const params = { horizonMonths: 3, income: 300, incomeThisMonth: 0, obligations: [], regular: [{ amount: 300, spentThisMonth: 0 }], startBalance: 500, today }
+    const base = projectForecast(params)
+    expect(projectForecast({ ...params, scenario: {} })).toEqual(base)
+    const spent = projectForecast({ ...params, scenario: { events: [{ amount: -400, date: day('2026-04-20') }] } })
+    expect(spent.runwayWithoutIncome!).toBeLessThan(base.runwayWithoutIncome!)
+    expect(projectForecast({ ...params, scenario: { spendingFactor: 0.5 } }).months[1]!.regular).toBe(150)
+  })
+
   it('has run out already with a negative start', () => {
     expect(projectForecast({ horizonMonths: 1, income: 0, incomeThisMonth: 0, obligations: [], regular: [], startBalance: -1, today }).runwayWithoutIncome).toBe(today)
+  })
+})
+
+describe('coverTrend', () => {
+  const base = { amountMode: 'median' as const, minMonths: 2, overrides: {}, windowMonths: 3 }
+
+  it('is not moved by a one-off expense, the median keeps the outflow', () => {
+    const covers = coverTrend({ ...base, balances: [3000, 3000], debtPayments: [0, 0, 0, 0], spending: new Map([['food', [100, 100, 100, 5000]]]), windowEnds: [2, 3] })
+    expect(covers).toEqual([30, 30])
+  })
+
+  it('rises once a loan is paid off', () => {
+    const covers = coverTrend({ ...base, balances: [1200, 1200], debtPayments: [300, 300, 300, 0, 0, 0], spending: new Map([['food', [100, 100, 100, 100, 100, 100]]]), windowEnds: [2, 5] })
+    expect(covers).toEqual([3, 12])
+  })
+})
+
+describe('upcomingPayments', () => {
+  it('finds the next payment and sums the next days', () => {
+    const today = day('2026-04-16')
+    const result = upcomingPayments([
+      { amount: 100, date: day('2026-05-20'), kind: 'loan', walletId: 'a' },
+      { amount: 50, date: day('2026-04-20'), kind: 'card', walletId: 'b' },
+      { amount: 70, date: day('2026-05-10'), kind: 'loan', walletId: 'a' },
+    ], today, 30)
+    expect(result.next).toMatchObject({ amount: 50, walletId: 'b' })
+    expect(result.total).toBe(120)
+  })
+})
+
+describe('incomeSchedule', () => {
+  const month = (...entries: [string, number][]) => entries.map(([iso, amount]) => ({ amount, date: day(iso) }))
+
+  it('finds a single pay day', () => {
+    expect(incomeSchedule([month(['2026-01-10', 1000]), month(['2026-02-11', 1000], ['2026-02-20', 50]), month(['2026-03-09', 1000])])).toEqual([{ day: 10, share: 1 }])
+  })
+
+  it('finds a pay that comes in two parts', () => {
+    const schedule = incomeSchedule([month(['2026-01-05', 400], ['2026-01-20', 600]), month(['2026-02-05', 400], ['2026-02-20', 600]), month(['2026-03-06', 400], ['2026-03-21', 600])])
+    expect(schedule!.map(part => part.day)).toEqual([5, 20])
+    expect(schedule![0]!.share).toBeCloseTo(0.4)
+  })
+
+  it('gives no schedule for irregular income, so the forecast spreads it', () => {
+    expect(incomeSchedule([month(['2026-01-02', 1000]), month(['2026-02-25', 1000]), month(['2026-03-14', 1000])])).toBeNull()
   })
 })
 
@@ -191,5 +326,18 @@ describe('forecast settings', () => {
   it('keeps detection for an amount-only override', () => {
     const list = detectRegular({ amountMode: 'median', minMonths: 2, monthly: new Map([['rent', [10, 10]]]), overrides: { rent: { amount: 99 } }, windowMonths: 2 })
     expect(list[0]).toMatchObject({ amount: 99, isRegular: true })
+  })
+})
+
+describe('incomeOutsideStart', () => {
+  it('lists counted wallets with income in the window that the forecast does not start from', () => {
+    const items: Trns = {
+      a: { categoryId: 'salary', createdAt: 0, date: day('2026-01-10'), toAmount: 100, toWalletId: 'cash', type: 'income', updatedAt: 0 },
+      b: { categoryId: 'salary', createdAt: 0, date: day('2026-01-12'), toAmount: 30, toWalletId: 'usd', type: 'income', updatedAt: 0 },
+      c: { categoryId: 'salary', createdAt: 0, date: day('2025-06-01'), toAmount: 999, toWalletId: 'card', type: 'income', updatedAt: 0 },
+    }
+    const params = { excludedCategoryIds: new Set<string>(), months: [{ end: day('2026-01-31'), start: day('2026-01-01') }], toBase, trnsItems: items, walletsItems: wallets }
+    expect(incomeOutsideStart(params, new Set())).toEqual(['usd', 'cash'])
+    expect(incomeOutsideStart(params, new Set(['usd']))).toEqual(['cash'])
   })
 })

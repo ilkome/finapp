@@ -3,6 +3,7 @@ import type { Period } from '~~/utils/date/types'
 import defu from 'defu'
 
 import type { LocaleSlug } from '~/components/locale/types'
+import type { ChartScaleMode } from '~/components/stat/chart/options'
 import type { AxisChartType } from '~/components/stat/chart/types'
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
@@ -10,14 +11,19 @@ import type { ChartSeries } from '~/components/stat/types'
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { buildChartGuideMarkLine, buildChartSeries, createBaseOption, resolveCenteredBarGeometry, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 
+/** Narrower screens are touch: hover tooltips there would cover the chart a tap selects in. */
+const TOOLTIP_MIN_VIEWPORT = 500
+
 export function buildAxisChartOption({
   chartConfig,
   chartType = 'line',
   endValue,
   isPannable = false,
   isShowMaxRange = false,
+  isTooltipOnTap = false,
   locale,
   period,
+  scaleMode,
   series,
   startValue,
   viewportWidth,
@@ -28,8 +34,11 @@ export function buildAxisChartOption({
   endValue?: number
   isPannable?: boolean
   isShowMaxRange?: boolean
+  /** Tap opens the tooltip on phones instead of hiding it; the tooltip takes pointer input for its links. */
+  isTooltipOnTap?: boolean
   locale: LocaleSlug
   period: Period
+  scaleMode?: ChartScaleMode
   series: ChartSeries[]
   startValue?: number
   viewportWidth: number
@@ -53,7 +62,7 @@ export function buildAxisChartOption({
   const activeIntervalIndex = activeIntervalKey === undefined
     ? -1
     : xAxisLabels.findIndex(label => `${label}` === activeIntervalKey)
-  const scale = resolveChartScale(visibleSeries, chartType, lineOptions, isBarGrouped)
+  const scale = resolveChartScale(visibleSeries, chartType, lineOptions, isBarGrouped, scaleMode)
   const averages = isShowAverage ? resolveChartSeriesAverages(visibleSeries) : []
   const visibleAverages = averages.filter((value): value is number => value !== undefined)
   const guideAverage = visibleAverages.length === 1 ? visibleAverages[0] : undefined
@@ -253,7 +262,12 @@ export function buildAxisChartOption({
   yAxis.axisPointer.label.formatter = (props: { value: number }) => formatChartAmount(+props.value) ?? ''
 
   const tooltip = data.tooltip as Record<string, any>
-  tooltip.show = viewportWidth >= 500
+  const isWide = viewportWidth >= TOOLTIP_MIN_VIEWPORT
+  tooltip.show = isWide || isTooltipOnTap
+  if (isTooltipOnTap) {
+    tooltip.enterable = true
+    tooltip.triggerOn = isWide ? 'mousemove|click' : 'click'
+  }
   tooltip.position = (
     point: [number, number],
     _params: unknown,

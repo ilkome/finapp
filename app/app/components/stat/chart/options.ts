@@ -191,8 +191,21 @@ export function resolveChartTooltipValue(value: unknown): number | null {
   return null
 }
 
-export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartType, line = defaultLineChartOptions, isBarGrouped = true) {
-  const values = isStackedAxisChartType(chartType, line, isBarGrouped)
+/** `zero` anchors the scale at zero; `fit` hugs the data so a slow-moving line is not drawn flat. */
+export type ChartScaleMode = 'fit' | 'zero'
+
+/** Share of the data range added above and below a `fit` scale. */
+const FIT_SCALE_PADDING = 0.1
+
+/** Smallest 1, 2 or 5 times a power of ten that is not below `raw`. */
+function niceStep(raw: number) {
+  const power = 10 ** Math.floor(Math.log10(raw))
+  return ([1, 2, 5, 10].find(factor => factor * power >= raw) ?? 10) * power
+}
+
+export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartType, line = defaultLineChartOptions, isBarGrouped = true, mode: ChartScaleMode = 'zero') {
+  const isStacked = isStackedAxisChartType(chartType, line, isBarGrouped)
+  const values = isStacked
     ? Array.from({ length: Math.max(0, ...series.map(item => item.data.length)) }, (_, index) => {
         const pointValues = series.map(item => item.data[index] ?? 0).filter(Number.isFinite)
         return [
@@ -201,6 +214,11 @@ export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartTy
         ]
       }).flat()
     : series.flatMap(item => item.data).filter(Number.isFinite)
+
+  // A bar drawn from a non-zero baseline misstates its size, so bars always keep zero.
+  if (mode === 'fit' && chartType !== 'bar')
+    return resolveFitScale(isStacked ? stackedExtremes(values) : values)
+
   const max = Math.max(0, ...values.map(Math.abs))
 
   if (max === 0)
@@ -209,6 +227,26 @@ export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartTy
   return values.some(value => value < 0)
     ? { interval: max, max, min: -max }
     : { interval: max / 2, max, min: 0 }
+}
+
+/** Stacked values come as (positive sum, negative sum) pairs; an empty negative side is not data. */
+function stackedExtremes(values: number[]) {
+  const hasNegative = values.some(value => value < 0)
+  return values.filter((value, index) => index % 2 === 0 || hasNegative)
+}
+
+function resolveFitScale(values: number[]) {
+  if (!values.length)
+    return { interval: 0.5, max: 1, min: 0 }
+  let min = Math.min(...values)
+  let max = Math.max(...values)
+  const padding = (max - min || Math.abs(max) || 1) * FIT_SCALE_PADDING
+  min = min >= 0 && min - padding < 0 ? 0 : min - padding
+  max = max <= 0 && max + padding > 0 ? 0 : max + padding
+  const step = niceStep((max - min) / 2)
+  min = Math.floor(min / step) * step
+  max = Math.ceil(max / step) * step
+  return { interval: (max - min) / 2, max, min }
 }
 
 export function resolveChartAverage(series: ChartSeries[]) {
@@ -371,6 +409,24 @@ export function buildChartSeries(
           stack: false,
           symbol: 'none',
           type: seriesType,
+        }
+      }
+
+      if (item.isGhost) {
+        return {
+          ...defu(defaultSeriesConfig, item),
+          areaStyle: { opacity: 0 },
+          data,
+          emphasis: { disabled: true },
+          itemStyle: { opacity: 0.35 },
+          label: defaultSeriesConfig.label,
+          lineStyle: { ...defaultSeriesConfig.lineStyle, opacity: 0.6, type: 'dashed' as const },
+          showSymbol: false,
+          smooth: isLine ? line.isSmooth : false,
+          stack: false,
+          symbol: 'none',
+          type: seriesType,
+          z: 1,
         }
       }
 

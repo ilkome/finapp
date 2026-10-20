@@ -9,7 +9,7 @@ import VChart from 'vue-echarts'
 import type { SimplePieDatum } from '~/components/stat/chart/simplePie'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { buildSimplePieData } from '~/components/stat/chart/simplePie'
+import { buildSimplePieData, resolvePieWindow } from '~/components/stat/chart/simplePie'
 
 type PieTooltipParam = {
   color: string
@@ -20,16 +20,21 @@ type PieTooltipParam = {
 }
 
 const {
+  centerLabel,
   endValue,
   isDonut = true,
+  isRoundIcon = false,
   isShowLabels = true,
   isShowPercent = false,
   series,
   startValue,
   xAxisLabels,
 } = defineProps<{
+  /** Text in the donut hole, e.g. the formatted total. */
+  centerLabel?: string
   endValue?: number
   isDonut?: boolean
+  isRoundIcon?: boolean
   isShowLabels?: boolean
   isShowPercent?: boolean
   series: ChartSeries[]
@@ -39,6 +44,8 @@ const {
 
 const emit = defineEmits<{
   select: []
+  /** A slice was tapped, by its name. */
+  selectSlice: [name: string]
 }>()
 
 use([PieChart, SVGRenderer, TooltipComponent])
@@ -112,14 +119,8 @@ function distributePieLabels(labels: PieLabelCandidate[], chartHeight: number) {
 }
 
 const pieData = computed(() => {
-  const startIndex = xAxisLabels.indexOf(startValue ?? -1)
-  const endIndex = xAxisLabels.indexOf(endValue ?? -1)
-  return buildSimplePieData(
-    series,
-    startIndex >= 0 ? startIndex : 0,
-    endIndex >= startIndex ? endIndex : Number.POSITIVE_INFINITY,
-    otherLabel.value,
-  )
+  const { endIndex, startIndex } = resolvePieWindow(xAxisLabels, startValue, endValue)
+  return buildSimplePieData(series, startIndex, endIndex, otherLabel.value)
 })
 const hasData = computed(() => pieData.value.length > 0)
 const chartAriaLabel = computed(() => {
@@ -266,9 +267,15 @@ function pieTooltipRows(param: PieTooltipParam) {
     :aria-label="chartAriaLabel"
     @click="emit('select')"
   >
-    <VChart :option :updateOptions="{ notMerge: true }" autoresize style="overflow: visible">
+    <VChart
+      :option
+      :updateOptions="{ notMerge: true }"
+      autoresize
+      style="overflow: visible"
+      @click="(params: { name?: string }) => params.name && emit('selectSlice', params.name)"
+    >
       <template #tooltip="params">
-        <StatChartAxisTooltip :rows="pieTooltipRows(params as PieTooltipParam)" />
+        <StatChartAxisTooltip :isRoundIcon :rows="pieTooltipRows(params as PieTooltipParam)" />
       </template>
     </VChart>
 
@@ -276,6 +283,13 @@ function pieTooltipRows(param: PieTooltipParam) {
       class="pointer-events-none absolute inset-0"
       aria-hidden="true"
     >
+      <div
+        v-if="centerLabel && isDonut"
+        class="absolute inset-0 flex items-center justify-center px-[30%] text-center font-secondary text-sm leading-tight text-highlighted"
+        data-pie-center
+      >
+        {{ centerLabel }}
+      </div>
       <div
         v-for="(item, index) in piePercentLabels"
         :key="`percent-${index}`"

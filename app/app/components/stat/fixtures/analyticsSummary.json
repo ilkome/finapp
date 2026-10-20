@@ -1,0 +1,8 @@
+{
+  "currencyCode": "USD",
+  "items": [
+    { "id": "savingsRate", "label": "Savings rate", "text": "25%" },
+    { "amount": 1200, "caption": "March 2026", "id": "best", "label": "Best interval" },
+    { "amount": -300, "caption": "-12%", "id": "prevNet", "isShowPlus": true, "label": "Net vs previous" }
+  ]
+}

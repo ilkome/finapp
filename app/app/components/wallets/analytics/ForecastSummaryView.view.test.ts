@@ -15,6 +15,12 @@ describe('walletsAnalyticsForecastSummaryView', () => {
     expect(wrapper.emitted('editWallets')).toHaveLength(1)
   })
 
+  it('shows the next income and why the scenarios coincide', () => {
+    const wrapper = mount(ForecastSummaryView, { props: { ...summary, nextIncomeLabel: '10 November', note: 'Income comes after the run-out date' } as any })
+    expect(wrapper.find('[data-forecast-next-income]').text()).toContain('10 November')
+    expect(wrapper.find('[data-forecast-note]').text()).toContain('after the run-out')
+  })
+
   it('says the money is already short when the run-out day has come', () => {
     const wrapper = mount(ForecastSummaryView, { props: { ...summary, runwayWithoutIncome: { dateLabel: '18 October 2026', durationLabel: null } } as any })
     expect(wrapper.find('[data-forecast-runway="withoutIncome"]').text()).toContain('wallets.analytics.forecast.runOut')

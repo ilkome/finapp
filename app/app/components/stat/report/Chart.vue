@@ -42,6 +42,7 @@ function onChangePeriod(period: Period) {
     v-if="ctx.shouldShowAmounts.value"
     :chartConfig="ctx.params.statConfig.config.value.chart"
     :chartType="ctx.effectiveChartType.value"
+    :isRoundIcon="ctx.params.statConfig.config.value.categories.list.isRoundIcon"
     :isShowMaxRange="statDate.params.value.isShowMaxRange"
     :panOffset="statDate.params.value.rangePanOffset"
     :period="statDate.params.value.granularityBy"

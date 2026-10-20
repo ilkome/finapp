@@ -1,8 +1,9 @@
+import { createSharedComposable } from '@vueuse/core'
 import { differenceInCalendarDays, differenceInMonths } from 'date-fns'
 import { addCivilMonths, formatByLocale, lastDayOfMonthCivil, u } from '~~/utils/date/civil'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { Obligation } from '~/components/wallets/analytics/forecast'
+import type { ForecastScenario, Obligation } from '~/components/wallets/analytics/forecast'
 import type { RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { ForecastRunway } from '~/components/wallets/analytics/ForecastSummaryView.vue'
 import type { WalletId } from '~/components/wallets/types'
@@ -11,14 +12,22 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
+import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
-import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
+import { currentMonth, detectRegular, incomeOutsideStart, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
 import { useForecastSettingsStore } from '~/components/wallets/analytics/useForecastSettingsStore'
 import { isCreditProduct, isWalletInForecast } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCivilToday } from '~/composables/useCivilToday'
+
+/** Month ends the cover trend looks back over. */
+const COVER_TREND_MONTHS = 12
+
+/** A runway up to this long reads in days, a longer one in months. */
+const RUNWAY_DAYS_LIMIT = 60
 
 /** Regular spending, obligations and the month-by-month forecast built from the synced settings. */
 export function useForecast() {
@@ -35,10 +44,13 @@ export function useForecast() {
 
   const settings = computed(() => settingsStore.settings)
 
-  /** Wallets the forecast can start from; credit products come in through their obligations. */
-  const availableWalletIds = computed<WalletId[]>(() => walletsStore.sortedIds.filter((id) => {
+  /**
+   * Wallets the forecast can start from: the ones counted in totals (archived and not-in-total wallets only when their
+   * switches are on); credit products come in through their obligations.
+   */
+  const availableWalletIds = computed<WalletId[]>(() => countedWalletIds.value.filter((id) => {
     const wallet = walletsStore.items?.[id]
-    return !!wallet && !wallet.isArchived && !isCreditProduct(wallet.type)
+    return !!wallet && !isCreditProduct(wallet.type)
   }))
   const startWalletIds = computed<WalletId[]>(() =>
     availableWalletIds.value.filter(id => isWalletInForecast(walletsStore.items![id]!)))
@@ -72,6 +84,8 @@ export function useForecast() {
 
   const sumParams = computed(() => ({
     excludedCategoryIds: categoriesStore.excludedFromStatsIds,
+    // Income outside the start wallets would raise the projection without the money being in the start balance.
+    incomeWalletIds: new Set(startWalletIds.value),
     rollUp,
     toBase: currenciesStore.toBase,
     trnsItems: trnsStore.items ?? {},
@@ -85,6 +99,13 @@ export function useForecast() {
     return { thisMonth: sliceMonthlySums(all, -1), window: sliceMonthlySums(all, 0, -1) }
   })
 
+  /** Start-wallet candidates that get income the forecast leaves out; the forecast offers to add them. */
+  const incomeOutsideWalletIds = computed(() => {
+    const available = new Set(availableWalletIds.value)
+    return incomeOutsideStart({ ...sumParams.value, months: previousMonths(today.value, settings.value.historyMonths) }, new Set(startWalletIds.value))
+      .filter(id => available.has(id))
+  })
+
   const regular = computed(() => detectRegular({
     amountMode: settings.value.regularAmountMode,
     minMonths: settings.value.regularMinMonths,
@@ -92,6 +113,10 @@ export function useForecast() {
     overrides: overrides.value,
     windowMonths: settings.value.historyMonths,
   }))
+  const regularIds = computed(() => new Set(regular.value.filter(item => item.isRegular).map(item => item.categoryId)))
+  /** Whether a category's spending is regular, folded the way the detection folds it. */
+  const isRegularCategory = (categoryId: CategoryId) => regularIds.value.has(rollUp(categoryId))
+
   const spentThisMonth = computed(() => sums.value.thisMonth.spending)
 
   const income = computed(() => typicalAmount(sums.value.window.income, settings.value.regularAmountMode))
@@ -126,7 +151,9 @@ export function useForecast() {
     return result.sort((a, b) => a.date - b.date)
   })
 
-  const forecast = computed(() => projectForecast({
+  const schedule = computed(() => incomeSchedule(sums.value.window.incomeEntries))
+
+  const forecastParams = computed(() => ({
     horizonMonths: settings.value.horizonMonths,
     income: income.value,
     incomeThisMonth: incomeThisMonth.value,
@@ -134,9 +161,43 @@ export function useForecast() {
     regular: regular.value
       .filter(item => item.isRegular)
       .map(item => ({ amount: item.amount, spentThisMonth: spentThisMonth.value.get(item.categoryId)?.[0] ?? 0 })),
+    schedule: schedule.value,
     startBalance: startBalance.value,
     today: today.value,
   }))
+  const forecast = computed(() => projectForecast(forecastParams.value))
+  /** The forecast under a temporary what-if; nothing is saved. */
+  const forecastWith = (scenario: ForecastScenario) => projectForecast({ ...forecastParams.value, scenario })
+
+  /** Months of cover at the last month ends and today, each with the outflow known then. */
+  const cover = computed(() => {
+    const window = settings.value.historyMonths
+    const months = previousMonths(today.value, COVER_TREND_MONTHS + window - 1)
+    const trnsItems = trnsStore.items ?? {}
+    const wallets = walletsStore.items ?? {}
+    const points = [...months.slice(window - 1).map(month => month.end), today.value]
+    const balances = walletBalancesAt(trnsItems, wallets, points).map(point => Math.round(startWalletIds.value
+      .reduce((sum, id) => sum + currenciesStore.toBase(point[id] ?? 0, wallets[id]!.currencyCode), 0)))
+    const lastIndex = months.length - 1
+    const values = coverTrend({
+      amountMode: settings.value.regularAmountMode,
+      balances,
+      debtPayments: debtPaymentsPoints({
+        intervals: months,
+        toBaseAt: () => currenciesStore.toBase,
+        trnsIds: Object.keys(trnsItems),
+        trnsItems,
+        walletIds: new Set(startWalletIds.value),
+        wallets,
+      }),
+      minMonths: settings.value.regularMinMonths,
+      overrides: overrides.value,
+      spending: monthlySums({ ...sumParams.value, months }).spending,
+      windowEnds: points.map((_, index) => Math.min(window - 1 + index, lastIndex)),
+      windowMonths: window,
+    })
+    return { labels: [...months.slice(window - 1).map(month => month.start), today.value], values }
+  })
 
   /** Labels of a run-out day: the date and how long until it; no duration once it is today or past. */
   function runwayOf(date: number | null): ForecastRunway {
@@ -148,15 +209,19 @@ export function useForecast() {
       dateLabel: formatByLocale(date, 'd MMMM yyyy', dateLocale.value),
       durationLabel: days <= 0
         ? null
-        : months >= 1 ? `${months} ${t('dates.month.plural', months)}` : `${days} ${t('dates.day.plural', days)}`,
+        : days > RUNWAY_DAYS_LIMIT && months >= 1 ? `${months} ${t('dates.month.plural', months)}` : `${days} ${t('dates.day.plural', days)}`,
     }
   }
 
   return {
     availableWalletIds,
     categories: computed(() => settingsStore.categories),
+    cover,
     forecast,
+    forecastWith,
     income,
+    incomeOutsideWalletIds,
+    isRegularCategory,
     obligations,
     regular,
     runwayOf,
@@ -168,3 +233,6 @@ export function useForecast() {
     update: settingsStore.update,
   }
 }
+
+/** One forecast for every section of a page that reads it; it lives while one of them is mounted. */
+export const useSharedForecast = createSharedComposable(useForecast)

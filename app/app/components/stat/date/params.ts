@@ -69,6 +69,7 @@ const queryParamsSchema = z.object({
     .transform(val => Number(val))
     .pipe(z.number().int().nonnegative())
     .optional(),
+  customDateBy: z.enum(periods).optional(),
   granularityBy: z.enum(periods).optional(),
   granularityDuration: z
     .string()
@@ -158,9 +159,10 @@ export function parseStatDateQueryParams(queryParams: Partial<StatDateParamsQuer
 
   if (data.customDate !== undefined) {
     const date = u(data.customDate)
+    const by = data.customDateBy ?? 'day'
     result.customDate = {
-      end: getEndOf(date, 'day').getTime(),
-      start: getStartOf(date, 'day').getTime(),
+      end: getEndOf(date, by).getTime(),
+      start: getStartOf(date, by).getTime(),
     }
   }
   if (data.granularityBy !== undefined)

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { ChartSeries } from '~/components/stat/types'
 
-import { buildSimplePieData } from '~/components/stat/chart/simplePie'
+import { buildSimplePieData, resolvePieWindow } from '~/components/stat/chart/simplePie'
 
 const series: ChartSeries[] = [{
   color: 'red',
@@ -62,5 +62,15 @@ describe('buildSimplePieData', () => {
       { color: 'color-2', name: 'Category 2', value: 20 },
       { color: 'var(--ui-text-dimmed)', icon: 'lucide:ellipsis', name: 'Other', value: 15 },
     ])
+  })
+})
+
+describe('resolvePieWindow', () => {
+  it('spans the whole series without a window', () => {
+    expect(resolvePieWindow([0])).toEqual({ endIndex: Number.POSITIVE_INFINITY, startIndex: 0 })
+  })
+
+  it('resolves a window by its interval keys', () => {
+    expect(resolvePieWindow([10, 20, 30], 20, 30)).toEqual({ endIndex: 2, startIndex: 1 })
   })
 })

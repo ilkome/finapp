@@ -7,8 +7,11 @@ import type { SharesGroupBy, SharesMode, SharesSort } from '~/components/wallets
 import type { AnalyticsShareRow } from '~/components/wallets/analytics/SharesView.vue'
 import type { WalletId } from '~/components/wallets/types'
 
+import { formatAmount } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { computeShares } from '~/components/wallets/analytics/shares'
+import { pieShapeOptions } from '~/components/stat/config/schema'
+import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -24,53 +27,74 @@ const isChartMountReady = useIdleMount()
 
 const options = useStorage(WALLET_STORAGE_KEYS.analyticsShares, {
   groupBy: 'type' as SharesGroupBy,
+  isShowLabels: false,
+  isShowPercent: true,
   mode: 'assets' as SharesMode,
+  pieShape: 'donut' as typeof pieShapeOptions[number],
   sort: 'amount' as SharesSort,
 }, localStorage, { mergeDefaults: true })
 
-const shares = computed(() => computeShares({
-  groupBy: options.value.groupBy,
-  mode: options.value.mode,
-  toBase: currenciesStore.toBase,
-  walletIds: props.walletIds,
-  wallets: walletsStore.itemsComputed,
-}))
+// Stored before the modes were split; `gross` reads the same way.
+const mode = computed<SharesMode>(() => sharesModes.includes(options.value.mode) ? options.value.mode : 'gross')
 
-function nameOf(id: string) {
-  if (options.value.groupBy === 'type')
-    return t(`money.types.${id}`)
-  if (options.value.groupBy === 'wallet')
-    return walletsStore.items?.[id]?.name ?? id
-  return id
+const groupBys: SharesGroupBy[] = ['type', 'currency', 'wallet']
+
+function nameOf(itemId: string, groupBy: SharesGroupBy) {
+  const [id = itemId, side] = mode.value === 'split' ? itemId.split(':') : [itemId]
+  const name = groupBy === 'type' ? t(`money.types.${id}`) : groupBy === 'wallet' ? walletsStore.items?.[id]?.name ?? id : id
+  return side ? `${name} · ${t(`wallets.analytics.shares.modes.${side}`)}` : name
 }
 
-const rows = computed<AnalyticsShareRow[]>(() => {
-  const list = shares.value.items.map(item => ({
+const groups = computed(() => groupBys.map((groupBy) => {
+  const shares = computeShares({
+    groupBy,
+    mode: mode.value,
+    toBase: currenciesStore.toBase,
+    walletIds: props.walletIds,
+    wallets: walletsStore.itemsComputed,
+  })
+  const list: AnalyticsShareRow[] = shares.items.map(item => ({
     color: item.color,
-    count: options.value.groupBy === 'wallet' ? undefined : item.walletIds.length,
+    count: groupBy === 'wallet' ? undefined : item.walletIds.length,
     id: item.id,
-    name: nameOf(item.id),
+    name: nameOf(item.id, groupBy),
     share: item.share,
     signedValue: item.signedValue,
   }))
-  return options.value.sort === 'name' ? list.sort((a, b) => a.name.localeCompare(b.name)) : list
-})
+  const rows = options.value.sort === 'name' ? list.sort((a, b) => a.name.localeCompare(b.name)) : list
+  return {
+    groupBy,
+    pieSeries: toChartSeries(rows.map(row => ({ color: row.color, data: [Math.abs(row.signedValue)], name: row.name, type: 'bar' as const })), currenciesStore.base) as ChartSeries[],
+    rows,
+    shares,
+    totalValue: mode.value === 'gross' || mode.value === 'split' ? shares.total : rows.reduce((sum, row) => sum + row.signedValue, 0),
+  }
+}))
 
-const pieSeries = computed<ChartSeries[]>(() => rows.value.map(row => ({ color: row.color, data: [Math.abs(row.signedValue)], name: row.name, type: 'bar' })))
+// A breakdown with a single slice says nothing; it gets no tab.
+const visibleGroups = computed(() => groups.value.filter(group => group.rows.length > 1))
+const activeGroup = computed(() => visibleGroups.value.find(group => group.groupBy === options.value.groupBy) ?? visibleGroups.value[0])
+const groupItems = computed(() => visibleGroups.value.map(group => ({ label: t(`wallets.analytics.breakdown.${group.groupBy}`), value: group.groupBy })))
 
 const settings = computed<AnalyticsOption[]>(() => [
   {
-    id: 'groupBy',
-    items: (['type', 'currency', 'wallet'] as const).map(value => ({ label: t(`wallets.analytics.breakdown.${value}`), value })),
-    label: t('wallets.analytics.breakdown.label'),
-    value: options.value.groupBy,
+    id: 'mode',
+    items: sharesModes.map(value => ({ label: t(`wallets.analytics.shares.modes.${value}`), value })),
+    label: t('wallets.analytics.shares.modes.label'),
+    value: mode.value,
   },
   {
-    id: 'mode',
-    items: (['assets', 'debts', 'all'] as const).map(value => ({ label: t(`wallets.analytics.shares.modes.${value}`), value })),
-    label: t('wallets.analytics.shares.modes.label'),
-    value: options.value.mode,
+    id: 'pieShape',
+    items: pieShapeOptions.map(value => ({ label: t(`stat.view.pieShape.${value}.label`), value })),
+    label: t('stat.view.pieShape.title'),
+    value: options.value.pieShape,
   },
+  ...(['isShowLabels', 'isShowPercent'] as const).map(id => ({
+    id,
+    items: (['off', 'on'] as const).map(value => ({ label: t(`wallets.analytics.include.${value}`), value })),
+    label: t(`stat.config.chart.pie.${id === 'isShowLabels' ? 'showLabels' : 'showPercent'}`),
+    value: options.value[id] ? 'on' : 'off',
+  })),
   {
     id: 'sort',
     items: (['amount', 'name'] as const).map(value => ({ label: t(`wallets.analytics.sort.${value}`), value })),
@@ -80,17 +104,35 @@ const settings = computed<AnalyticsOption[]>(() => [
 ])
 
 function onSetting(id: string, value: number | string) {
-  options.value = { ...options.value, [id]: value }
+  const isSwitch = id === 'isShowLabels' || id === 'isShowPercent'
+  options.value = { ...options.value, [id]: isSwitch ? value === 'on' : value }
 }
 
-function onSelect(id: string) {
-  if (options.value.groupBy === 'wallet')
-    router.push(`/wallets/${id}`)
+const open = ref<{ groupBy: SharesGroupBy, id: string } | null>(null)
+const openGroup = computed(() => {
+  const item = open.value && groups.value.find(group => group.groupBy === open.value!.groupBy)?.shares.items.find(entry => entry.id === open.value!.id)
+  return item && {
+    name: nameOf(item.id, open.value!.groupBy),
+    wallets: item.walletIds.map(id => ({ amount: walletsStore.itemsComputed[id]?.amount ?? 0, currencyCode: walletsStore.itemsComputed[id]?.currencyCode ?? currenciesStore.base, id, name: walletsStore.items?.[id]?.name ?? id })),
+  }
+})
+
+function onSelect(id: string, groupBy: SharesGroupBy) {
+  if (groupBy === 'wallet')
+    router.push(`/wallets/${id.split(':')[0]}`)
+  else
+    open.value = { groupBy, id }
+}
+
+function onSelectSlice(name: string, groupBy: SharesGroupBy) {
+  const row = groups.value.find(group => group.groupBy === groupBy)?.rows.find(item => item.name === name)
+  if (row)
+    onSelect(row.id, groupBy)
 }
 </script>
 
 <template>
-  <section class="grid min-w-0 content-start gap-3" data-analytics-shares-section>
+  <section class="grid min-w-0 content-start gap-3 @3xl/page:col-span-2" data-analytics-shares-section>
     <div class="flex items-center gap-2">
       <UiTitleSection class="grow">
         {{ t('wallets.analytics.shares.title') }}
@@ -103,8 +145,8 @@ function onSelect(id: string) {
     </div>
 
     <UiTabs
-      :items="settings[1]!.items"
-      :modelValue="options.mode"
+      :items="settings[0]!.items"
+      :modelValue="mode"
       size="xs"
       variant="flat"
       :grow="false"
@@ -113,28 +155,65 @@ function onSelect(id: string) {
       @update:modelValue="value => onSetting('mode', value)"
     />
 
-    <div v-if="rows.length > 1" class="mx-auto h-48 w-full max-w-xs">
-      <LazyStatChartSimplePieView
-        v-if="isChartMountReady"
-        isDonut
-        :isShowLabels="false"
-        isShowPercent
-        :series="pieSeries"
-        :xAxisLabels="[0]"
-      />
-    </div>
+    <template v-if="activeGroup">
+      <div class="grid content-start gap-3 @3xl/page:grid-cols-[minmax(0,18rem)_1fr] @3xl/page:items-start @3xl/page:gap-8" :data-shares-group="activeGroup.groupBy">
+        <div class="grid gap-3">
+          <div class="mx-auto h-48 w-full max-w-xs">
+            <LazyStatChartSimplePieView
+              v-if="isChartMountReady"
+              :isDonut="options.pieShape === 'donut'"
+              :isShowLabels="options.isShowLabels"
+              :isShowPercent="options.isShowPercent"
+              :centerLabel="options.pieShape === 'donut' ? formatAmount(activeGroup.totalValue, currenciesStore.base) : undefined"
+              :series="activeGroup.pieSeries"
+              :xAxisLabels="[0]"
+              @selectSlice="name => onSelectSlice(name, activeGroup!.groupBy)"
+            />
+          </div>
+          <UiTabs
+            v-if="groupItems.length > 1"
+            :items="groupItems"
+            :modelValue="activeGroup.groupBy"
+            size="sm"
+            data-shares-group-tabs
+            @update:modelValue="value => onSetting('groupBy', value)"
+          />
+        </div>
+        <WalletsAnalyticsSharesView
+          :currencyCode="currenciesStore.base"
+          :isRowSheet="activeGroup.groupBy !== 'wallet'"
+          :items="activeGroup.rows"
+          :totalLabel="t('wallets.analytics.shares.total')"
+          :totalValue="activeGroup.totalValue"
+          @select="id => onSelect(id, activeGroup!.groupBy)"
+        />
+      </div>
+    </template>
 
-    <WalletsAnalyticsSharesView
-      v-if="rows.length"
-      :currencyCode="currenciesStore.base"
-      :items="rows"
-      :totalLabel="t('wallets.analytics.shares.total')"
-      :totalValue="options.mode === 'all' ? shares.total : rows.reduce((sum, row) => sum + row.signedValue, 0)"
-      @select="onSelect"
-    />
-
-    <UiText v-else variant="meta" class="px-2">
+    <UiText v-if="!visibleGroups.length" variant="meta" class="px-2">
       {{ t('wallets.analytics.shares.empty') }}
     </UiText>
+
+    <UiSheet
+      v-if="openGroup"
+      modalClass="max-w-md"
+      :title="openGroup.name"
+      @closed="open = null"
+    >
+      <div class="grid pb-3">
+        <UiElement
+          v-for="wallet in openGroup.wallets"
+          :key="wallet.id"
+          :data-share-wallet="wallet.id"
+          @click="router.push(`/wallets/${wallet.id}`)"
+        >
+          <div class="min-w-0 grow truncate text-sm">
+            {{ wallet.name }}
+          </div>
+          <Amount :amount="wallet.amount" :currencyCode="wallet.currencyCode" variant="row" />
+          <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
+        </UiElement>
+      </div>
+    </UiSheet>
   </section>
 </template>

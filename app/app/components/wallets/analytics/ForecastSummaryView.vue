@@ -14,6 +14,10 @@ const props = defineProps<{
   monthlyIncome: number
   monthlyObligations: number
   monthlyRegular: number
+  /** Expected date of the next income, formatted; absent without a pay-day schedule. */
+  nextIncomeLabel?: string | null
+  /** Why both scenarios run out on the same day. */
+  note?: string | null
   runwayWithIncome: ForecastRunway
   runwayWithoutIncome: ForecastRunway
   startBalance: number
@@ -39,9 +43,12 @@ const scenarios = computed(() => [
       data-forecast-start
       @click="emit('editWallets')"
     >
-      <UiText variant="caption">
-        {{ t('wallets.analytics.forecast.startBalance') }}
-      </UiText>
+      <div class="flex items-center gap-2">
+        <UiText variant="caption" class="grow">
+          {{ t('wallets.analytics.forecast.startBalance') }}
+        </UiText>
+        <Icon name="lucide:ellipsis" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
+      </div>
       <Amount
         :amount="props.startBalance"
         :currencyCode="props.currencyCode"
@@ -82,6 +89,10 @@ const scenarios = computed(() => [
       </div>
     </div>
 
+    <UiText v-if="props.note" variant="meta" class="px-2 leading-snug!" data-forecast-note>
+      {{ props.note }}
+    </UiText>
+
     <div class="grid gap-1 rounded-md bg-elevated/30 px-3 py-2.5">
       <UiText variant="caption" class="pb-1">
         {{ t('wallets.analytics.forecast.perMonth') }}
@@ -99,6 +110,9 @@ const scenarios = computed(() => [
         {{ t('wallets.analytics.forecast.income') }}
         <Amount :amount="props.monthlyIncome" :currencyCode="props.currencyCode" :isShowBaseRate="false" isShowPlus variant="row" />
       </div>
+      <UiText v-if="props.nextIncomeLabel" variant="meta" data-forecast-next-income>
+        {{ t('wallets.analytics.forecast.nextIncome') }} {{ props.nextIncomeLabel }}
+      </UiText>
     </div>
   </div>
 </template>

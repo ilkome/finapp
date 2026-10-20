@@ -1,21 +1,11 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
+import type { ChartTooltipRow } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartTooltipLabel, resolveChartTooltipAmount, resolveChartValueType } from '~/components/stat/chart/format'
 import { filterChartTooltipParams, resolveChartTooltipSeries, resolveChartTooltipValue, sortChartTooltipParams } from '~/components/stat/chart/options'
-import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
-
-type ChartTooltipRow = {
-  amount: number
-  color?: string
-  description?: string
-  icon?: string
-  key: string
-  name: string
-  value?: number | null
-}
 
 type TooltipParam = {
   color: string
@@ -28,6 +18,10 @@ type TooltipParam = {
 type RawTooltipParam = Omit<TooltipParam, 'value'> & { value: number | [unknown, number] | null }
 
 const props = defineProps<{
+  /** Category icons drawn round, as the stat list draws them. */
+  isRoundIcon?: boolean
+  /** Caption of a link under the rows; the tooltip emits `link` when it is tapped. */
+  linkLabel?: string
   params?: unknown
   period?: Period
   rows?: ChartTooltipRow[]
@@ -35,10 +29,12 @@ const props = defineProps<{
   title?: string
 }>()
 
+const emit = defineEmits<{
+  link: []
+}>()
+
 const { locale } = useI18n()
-const statConfig = useStatConfigCtx()
 const isDev = import.meta.dev
-const isRoundCategoryIcon = computed(() => statConfig.categories.value.list.isRoundIcon)
 const tooltipParams = computed<TooltipParam[]>(() => (Array.isArray(props.params) ? props.params as RawTooltipParam[] : []).map(param => ({
   ...param,
   value: resolveChartTooltipValue(param.value),
@@ -100,7 +96,7 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
       >
         <div class="flex min-w-8 items-center justify-center">
           <UiIconBase
-            v-if="row.icon && isRoundCategoryIcon"
+            v-if="row.icon && props.isRoundIcon"
             :color="row.color"
             :name="row.icon"
             class="w-7!"
@@ -144,5 +140,16 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
     >
       {{ $t('trns.noTrns') }}
     </div>
+
+    <button
+      v-if="props.linkLabel"
+      type="button"
+      class="flex w-full items-center justify-between gap-2 border-t border-accented px-3 py-2 text-sm text-primary"
+      data-stat-chart-tooltip-link
+      @click.stop="emit('link')"
+    >
+      {{ props.linkLabel }}
+      <Icon name="lucide:chevron-right" size="16" />
+    </button>
   </div>
 </template>
