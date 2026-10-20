@@ -9,6 +9,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { formatAmount } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { pieShapeOptions } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -26,7 +27,10 @@ const isChartMountReady = useIdleMount()
 
 const options = useStorage(WALLET_STORAGE_KEYS.analyticsShares, {
   groupBy: 'type' as SharesGroupBy,
+  isShowLabels: false,
+  isShowPercent: true,
   mode: 'assets' as SharesMode,
+  pieShape: 'donut' as typeof pieShapeOptions[number],
   sort: 'amount' as SharesSort,
 }, localStorage, { mergeDefaults: true })
 
@@ -80,6 +84,18 @@ const settings = computed<AnalyticsOption[]>(() => [
     value: mode.value,
   },
   {
+    id: 'pieShape',
+    items: pieShapeOptions.map(value => ({ label: t(`stat.view.pieShape.${value}.label`), value })),
+    label: t('stat.view.pieShape.title'),
+    value: options.value.pieShape,
+  },
+  ...(['isShowLabels', 'isShowPercent'] as const).map(id => ({
+    id,
+    items: (['off', 'on'] as const).map(value => ({ label: t(`wallets.analytics.include.${value}`), value })),
+    label: t(`stat.config.chart.pie.${id === 'isShowLabels' ? 'showLabels' : 'showPercent'}`),
+    value: options.value[id] ? 'on' : 'off',
+  })),
+  {
     id: 'sort',
     items: (['amount', 'name'] as const).map(value => ({ label: t(`wallets.analytics.sort.${value}`), value })),
     label: t('wallets.analytics.sort.label'),
@@ -88,7 +104,8 @@ const settings = computed<AnalyticsOption[]>(() => [
 ])
 
 function onSetting(id: string, value: number | string) {
-  options.value = { ...options.value, [id]: value }
+  const isSwitch = id === 'isShowLabels' || id === 'isShowPercent'
+  options.value = { ...options.value, [id]: isSwitch ? value === 'on' : value }
 }
 
 const open = ref<{ groupBy: SharesGroupBy, id: string } | null>(null)
@@ -139,25 +156,27 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
     />
 
     <template v-if="activeGroup">
-      <UiTabs
-        v-if="groupItems.length > 1"
-        :items="groupItems"
-        :modelValue="activeGroup.groupBy"
-        size="sm"
-        data-shares-group-tabs
-        @update:modelValue="value => onSetting('groupBy', value)"
-      />
       <div class="grid content-start gap-3 @3xl/page:grid-cols-[minmax(0,18rem)_1fr] @3xl/page:items-start @3xl/page:gap-8" :data-shares-group="activeGroup.groupBy">
-        <div class="mx-auto h-48 w-full max-w-xs">
-          <LazyStatChartSimplePieView
-            v-if="isChartMountReady"
-            isDonut
-            :isShowLabels="false"
-            isShowPercent
-            :centerLabel="formatAmount(activeGroup.totalValue, currenciesStore.base)"
-            :series="activeGroup.pieSeries"
-            :xAxisLabels="[0]"
-            @selectSlice="name => onSelectSlice(name, activeGroup!.groupBy)"
+        <div class="grid gap-3">
+          <div class="mx-auto h-48 w-full max-w-xs">
+            <LazyStatChartSimplePieView
+              v-if="isChartMountReady"
+              :isDonut="options.pieShape === 'donut'"
+              :isShowLabels="options.isShowLabels"
+              :isShowPercent="options.isShowPercent"
+              :centerLabel="options.pieShape === 'donut' ? formatAmount(activeGroup.totalValue, currenciesStore.base) : undefined"
+              :series="activeGroup.pieSeries"
+              :xAxisLabels="[0]"
+              @selectSlice="name => onSelectSlice(name, activeGroup!.groupBy)"
+            />
+          </div>
+          <UiTabs
+            v-if="groupItems.length > 1"
+            :items="groupItems"
+            :modelValue="activeGroup.groupBy"
+            size="sm"
+            data-shares-group-tabs
+            @update:modelValue="value => onSetting('groupBy', value)"
           />
         </div>
         <WalletsAnalyticsSharesView
