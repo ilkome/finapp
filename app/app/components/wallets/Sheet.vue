@@ -18,6 +18,7 @@ const { t } = useI18n()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 const isLoans = useFeature('loans')
+const isShowStat = ref(false)
 
 const wallet = computed(() => walletsStore.items?.[props.walletId])
 const isCredit = computed(() => isCreditProduct(wallet.value?.type))
@@ -57,14 +58,32 @@ function openWallet() {
 
       <LoansWalletSection v-if="isLoans && isCredit" :walletId isCompact />
 
-      <UButton
-        block
-        size="xl"
-        icon="i-lucide-wallet"
-        @click="openWallet"
-      >
-        {{ t('wallets.analytics.openWallet') }}
-      </UButton>
+      <div class="sticky bottom-0 grid gap-2 bg-default pt-2">
+        <UButton
+          block
+          color="neutral"
+          size="xl"
+          variant="soft"
+          icon="i-lucide-chart-no-axes-combined"
+          @click="isShowStat = true"
+        >
+          {{ t('stat.title') }}
+        </UButton>
+        <UButton
+          block
+          size="xl"
+          icon="i-lucide-wallet"
+          @click="openWallet"
+        >
+          {{ t('wallets.analytics.openWallet') }}
+        </UButton>
+      </div>
+
+      <StatSheet
+        v-if="isShowStat"
+        :walletId
+        @closed="isShowStat = false"
+      />
     </div>
   </UiSheet>
 </template>

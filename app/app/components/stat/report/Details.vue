@@ -5,7 +5,7 @@ import type { StatReportContext } from '~/components/stat/report/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCategoryViews, collectRoundCategoryIds } from '~/components/stat/categories/categoryViews'
-import { statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
+import { statCategorySheetKey, statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/statFeed'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -23,6 +23,7 @@ const { computeTotalForTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
+const openCategorySheet = inject(statCategorySheetKey, null)
 const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
 const { height: categoriesHeight } = useElementSize(categoriesBreakdown)
 const { height: viewportHeight } = useWindowSize()
@@ -66,6 +67,10 @@ function preserveScroll(scrollTop: number | null) {
 }
 
 function onSetCategoryFilter(categoryId: string) {
+  if (openCategorySheet) {
+    openCategorySheet(categoryId)
+    return
+  }
   preserveScroll(document.scrollingElement?.scrollTop ?? 0)
   props.ctx.onSetCategoryFilter(categoryId)
 }

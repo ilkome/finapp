@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import type { Range } from '~~/utils/date/types'
 
+import type { CategoryId } from '~/components/categories/types'
+import type { StatDateParams } from '~/components/stat/date/types'
+
+import { extrasToQuery } from '~/components/filter/extras'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { calculateBestGranularityBy } from '~/components/stat/date/params'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
+import { statSheetDateParams } from '~/components/stat/date/sheetParams'
+import { statCategorySheetKey } from '~/components/stat/injectionKeys'
 import { useStatPageHost } from '~/components/stat/page/useStatPageHost'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
@@ -59,6 +65,16 @@ const { hiddenPanels } = useStatPageViews({
   trnsIds,
 })
 
+const categorySheet = shallowRef<{ categoryId: CategoryId, config: unknown, date: Partial<StatDateParams>, filterQuery: Record<string, string | string[] | undefined> } | null>(null)
+provide(statCategorySheetKey, (categoryId) => {
+  categorySheet.value = {
+    categoryId,
+    config: structuredClone(toRaw(statConfig.config.value)),
+    date: statSheetDateParams(statDate.params.value, contextRange.value, Date.now()),
+    filterQuery: { filterWallets: filter.walletsIds.value, ...extrasToQuery(filter.extras.value) },
+  }
+})
+
 watch(filter.categoriesIds, () => {
   statConfig.config.value.categories.isShowEmpty = filter.categoriesIds.value.length > 0
 })
@@ -87,5 +103,12 @@ watch(filter.categoriesIds, () => {
         <LoansDueThisMonth class="max-w-sm" />
       </template>
     </StatLayout>
+
+    <StatSheet
+      v-if="categorySheet"
+      :key="categorySheet.categoryId"
+      v-bind="categorySheet"
+      @closed="categorySheet = null"
+    />
   </UiPage>
 </template>
