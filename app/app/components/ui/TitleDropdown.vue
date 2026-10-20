@@ -7,7 +7,7 @@ const { isActive = false } = defineProps<{
 <template>
   <UiText
     as="div"
-    class="flex min-h-9 min-w-9 grow-0! items-center gap-1 theme-rounded-control interactive bg-elevated px-3 pr-2! pb-0"
+    class="flex min-h-9 min-w-9 items-center gap-1 theme-rounded-control interactive bg-elevated px-3 pr-2! pb-0"
     variant="control"
   >
     <slot />

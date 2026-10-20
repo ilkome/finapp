@@ -73,7 +73,6 @@ const isLaptop = useIsLaptop()
         <div class="flex items-center gap-2">
           <DrawerOrDropdown
             v-model:open="isOpen"
-            class="justify-self-start"
             :collapsedSnap="500"
           >
             <template #trigger="{ isActive }">

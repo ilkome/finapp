@@ -23,11 +23,9 @@ const childrenViewItems = computed(() => ['list', 'grid'].map(value => ({
 </script>
 
 <template>
-  <!-- An icon trigger: the wrapper's default grow would push its toolbar neighbours apart. -->
   <DrawerOrDropdown
     v-model:open="isOpen"
     align="end"
-    class="grow-0!"
     isShowCloseBtn
     popoverBodyClass="md:pb-3!"
     popoverContentClass="z-[80] w-80 max-w-[calc(100vw-1rem)]"

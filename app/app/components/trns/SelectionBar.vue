@@ -164,7 +164,7 @@ watch(description, (value) => {
 
     <DrawerOrDropdown
       v-model:open="isDescriptionOpen"
-      class="flex shrink-0 grow-0 snap-start gap-1"
+      class="flex shrink-0 snap-start gap-1"
       :title="t('trns.bulk.description')"
       isShowCloseBtn
       keyboardTrigger
@@ -189,7 +189,7 @@ watch(description, (value) => {
     <DrawerOrDropdown
       v-if="!hasTransfer"
       v-model:open="isCategoryOpen"
-      class="flex shrink-0 grow-0 snap-start gap-1"
+      class="flex shrink-0 snap-start gap-1"
       :collapsedSnap="500"
       :title="t('trns.bulk.category')"
       isShowCloseBtn
@@ -219,7 +219,7 @@ watch(description, (value) => {
     <DrawerOrDropdown
       v-if="!hasTransfer"
       v-model:open="isWalletOpen"
-      class="flex shrink-0 grow-0 snap-start gap-1"
+      class="flex shrink-0 snap-start gap-1"
       :collapsedSnap="500"
       :title="t('trns.bulk.wallet')"
       isShowCloseBtn
@@ -247,7 +247,7 @@ watch(description, (value) => {
 
     <FormDate
       v-model="date"
-      class="flex shrink-0 grow-0 snap-start gap-1"
+      class="flex shrink-0 snap-start gap-1"
       clearable
       :placeholder="t('trns.bulk.date')"
       :title="t('trns.bulk.date')"
