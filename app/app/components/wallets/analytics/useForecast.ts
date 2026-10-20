@@ -3,7 +3,7 @@ import { differenceInCalendarDays, differenceInMonths } from 'date-fns'
 import { addCivilMonths, formatByLocale, lastDayOfMonthCivil, u } from '~~/utils/date/civil'
 
 import type { CategoryId } from '~/components/categories/types'
-import type { Obligation } from '~/components/wallets/analytics/forecast'
+import type { ForecastScenario, Obligation } from '~/components/wallets/analytics/forecast'
 import type { RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { ForecastRunway } from '~/components/wallets/analytics/ForecastSummaryView.vue'
 import type { WalletId } from '~/components/wallets/types'
@@ -143,7 +143,7 @@ export function useForecast() {
 
   const schedule = computed(() => incomeSchedule(sums.value.window.incomeEntries))
 
-  const forecast = computed(() => projectForecast({
+  const forecastParams = computed(() => ({
     horizonMonths: settings.value.horizonMonths,
     income: income.value,
     incomeThisMonth: incomeThisMonth.value,
@@ -155,6 +155,9 @@ export function useForecast() {
     startBalance: startBalance.value,
     today: today.value,
   }))
+  const forecast = computed(() => projectForecast(forecastParams.value))
+  /** The forecast under a temporary what-if; nothing is saved. */
+  const forecastWith = (scenario: ForecastScenario) => projectForecast({ ...forecastParams.value, scenario })
 
   /** Months of cover at the last month ends and today, each with the outflow known then. */
   const cover = computed(() => {
@@ -205,6 +208,7 @@ export function useForecast() {
     categories: computed(() => settingsStore.categories),
     cover,
     forecast,
+    forecastWith,
     income,
     isRegularCategory,
     obligations,

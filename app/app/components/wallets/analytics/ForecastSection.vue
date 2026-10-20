@@ -29,7 +29,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, categories, cover, forecast, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useSharedForecast()
+const { availableWalletIds, categories, cover, forecast, forecastWith, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useSharedForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
@@ -201,6 +201,26 @@ function saveEditor(close: () => void) {
 
 const isWalletsOpen = ref(false)
 
+// What-if: temporary edits, never saved.
+const whatIf = ref({ amount: '', date: '', incomePercent: '', kind: 'expense' as 'expense' | 'income', spendingPercent: '' })
+const whatIfScenario = computed(() => {
+  const amount = parseAmountInput(whatIf.value.amount)
+  const date = whatIf.value.date ? Date.parse(`${whatIf.value.date}T00:00:00Z`) : Number.NaN
+  const factor = (value: string) => {
+    const percent = parseAmountInput(value)
+    return percent === undefined ? undefined : 1 + percent / 100
+  }
+  const minor = amount && Number.isFinite(date) ? amountToMinor(Math.abs(amount), currenciesStore.base) : 0
+  return {
+    events: minor ? [{ amount: whatIf.value.kind === 'income' ? minor : -minor, date }] : [],
+    incomeFactor: factor(whatIf.value.incomePercent),
+    spendingFactor: factor(whatIf.value.spendingPercent),
+  }
+})
+const isWhatIfSet = computed(() => !!whatIfScenario.value.events.length || whatIfScenario.value.incomeFactor !== undefined || whatIfScenario.value.spendingFactor !== undefined)
+const whatIfResult = computed(() => isWhatIfSet.value ? forecastWith(whatIfScenario.value) : null)
+const runwayLabel = (date: number | null) => runwayOf(date).dateLabel ?? t('wallets.analytics.forecast.enough')
+
 const settingsOptions = computed<AnalyticsOption[]>(() => [
   {
     id: 'scenario',
@@ -299,6 +319,37 @@ function onSetting(id: string, value: number | string) {
       :startBalance="forecast.startBalance"
       @editWallets="isWalletsOpen = true"
     />
+
+    <details class="grid gap-2 rounded-md bg-elevated/30 px-3 py-2.5" data-analytics-what-if>
+      <summary class="cursor-pointer text-sm text-toned">
+        {{ t('wallets.analytics.whatIf.title') }}
+      </summary>
+      <div class="grid gap-2 pt-2">
+        <UiTabs
+          v-model="whatIf.kind"
+          :items="(['expense', 'income'] as const).map(value => ({ label: t(`wallets.analytics.whatIf.${value}`), value }))"
+          size="xs"
+          variant="flat"
+          :grow="false"
+          :itemGrow="false"
+          align="left"
+        />
+        <div class="grid grid-cols-2 gap-2">
+          <FormInput v-model="whatIf.amount" type="number" :placeholder="t('wallets.analytics.whatIf.amount')" />
+          <input v-model="whatIf.date" type="date" class="rounded-md bg-default px-2 text-sm ring ring-default" :aria-label="t('wallets.analytics.whatIf.date')">
+          <FormInput v-model="whatIf.spendingPercent" type="number" :placeholder="t('wallets.analytics.whatIf.spendingPercent')" />
+          <FormInput v-model="whatIf.incomePercent" type="number" :placeholder="t('wallets.analytics.whatIf.incomePercent')" />
+        </div>
+        <div v-if="whatIfResult" class="grid gap-1 text-sm" data-what-if-result>
+          <div>
+            {{ t('wallets.analytics.forecast.withoutIncome') }}: {{ runwayLabel(forecast.runwayWithoutIncome) }} → {{ runwayLabel(whatIfResult.runwayWithoutIncome) }}
+          </div>
+          <div>
+            {{ t('wallets.analytics.forecast.withIncome') }}: {{ runwayLabel(forecast.runwayWithIncome) }} → {{ runwayLabel(whatIfResult.runwayWithIncome) }}
+          </div>
+        </div>
+      </div>
+    </details>
 
     <div class="min-h-44 min-w-0">
       <LazyStatChartAxisView

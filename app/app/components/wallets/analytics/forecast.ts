@@ -138,6 +138,12 @@ type ForecastMonth = {
   start: number
 }
 
+export type ForecastScenario = {
+  events?: { amount: number, date: number }[]
+  incomeFactor?: number
+  spendingFactor?: number
+}
+
 /** Why both scenarios end on the same day, when they do. */
 export type ForecastCoincidence = 'arrived' | 'afterRunOut' | 'belowZero'
 
@@ -170,13 +176,17 @@ export function projectForecast(params: {
   incomeThisMonth: number
   obligations: Obligation[]
   regular: { amount: number, spentThisMonth: number }[]
+  /** A temporary what-if: one-off moves (income positive) and factors on regular spending and income. */
+  scenario?: ForecastScenario
   schedule?: IncomePart[] | null
   startBalance: number
   today: number
 }): ForecastResult {
-  const { horizonMonths, income, incomeThisMonth, obligations, regular, schedule, startBalance, today } = params
-  const regularMonthly = Math.round(regular.reduce((sum, item) => sum + item.amount, 0))
-  const regularLeftNow = Math.round(regular.reduce((sum, item) => sum + Math.max(0, item.amount - item.spentThisMonth), 0))
+  const { horizonMonths, incomeThisMonth, obligations, regular, schedule, startBalance, today } = params
+  const { events = [], incomeFactor = 1, spendingFactor = 1 } = params.scenario ?? {}
+  const income = params.income * incomeFactor
+  const regularMonthly = Math.round(regular.reduce((sum, item) => sum + item.amount, 0) * spendingFactor)
+  const regularLeftNow = Math.round(regular.reduce((sum, item) => sum + Math.max(0, item.amount * spendingFactor - item.spentThisMonth), 0))
   const firstMonth = startOfMonthCivil(today)
 
   const months: ForecastMonth[] = []
@@ -200,6 +210,11 @@ export function projectForecast(params: {
         outflow[Math.round((item.date - from) / DAY)]! += item.amount
         monthObligations += item.amount
       }
+    }
+    // A one-off move counts in both scenarios: it is planned, not income the scenario leaves out.
+    for (const event of events) {
+      if (event.date >= from && event.date <= end)
+        outflow[Math.round((event.date - from) / DAY)]! -= event.amount
     }
     const monthRegular = index === 0 ? regularLeftNow : regularMonthly
     spread(monthRegular, days).forEach((amount, day) => outflow[day]! += amount)

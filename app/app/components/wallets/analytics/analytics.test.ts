@@ -250,6 +250,15 @@ describe('projectForecast', () => {
     expect(result.months[1]!.endWithIncome).toBe(900)
   })
 
+  it('returns the base result for an empty what-if, and moves the run-out for a one-off expense', () => {
+    const params = { horizonMonths: 3, income: 300, incomeThisMonth: 0, obligations: [], regular: [{ amount: 300, spentThisMonth: 0 }], startBalance: 500, today }
+    const base = projectForecast(params)
+    expect(projectForecast({ ...params, scenario: {} })).toEqual(base)
+    const spent = projectForecast({ ...params, scenario: { events: [{ amount: -400, date: day('2026-04-20') }] } })
+    expect(spent.runwayWithoutIncome!).toBeLessThan(base.runwayWithoutIncome!)
+    expect(projectForecast({ ...params, scenario: { spendingFactor: 0.5 } }).months[1]!.regular).toBe(150)
+  })
+
   it('has run out already with a negative start', () => {
     expect(projectForecast({ horizonMonths: 1, income: 0, incomeThisMonth: 0, obligations: [], regular: [], startBalance: -1, today }).runwayWithoutIncome).toBe(today)
   })
