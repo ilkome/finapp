@@ -1207,9 +1207,13 @@ export default {
           caption: 'Money in and out over the period',
           title: 'Cash flow',
         },
-        now: {
-          caption: 'Today\'s balances and plans, whatever period is picked',
-          title: 'Now',
+        forecast: {
+          caption: 'Today\'s money and where it lasts, whatever period is picked',
+          title: 'Forecast',
+        },
+        structure: {
+          caption: 'How today\'s balances split by type, currency and wallet',
+          title: 'Structure',
         },
       },
       hide: 'Hide',

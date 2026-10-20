@@ -36,7 +36,7 @@ function onWalletOption(id: string, value: number | string) {
   (id === 'includeArchived' ? includeArchived : includeExcluded).value = value === 'on'
 }
 
-const tabIds = ['capital', 'flow', 'now'] as const
+const tabIds = ['capital', 'flow', 'forecast', 'structure'] as const
 type TabId = typeof tabIds[number]
 const route = useRoute()
 const router = useRouter()
@@ -73,8 +73,8 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <template #after>
         <div class="flex max-w-5xl flex-wrap items-center gap-2 px-2 lg:px-4 2xl:px-8" data-analytics-range>
-          <!-- "Now" shows today's snapshot: the period controls do not drive it. -->
-          <template v-if="tab !== 'now'">
+          <!-- Forecast and structure are today's snapshot: the period controls do not drive them. -->
+          <template v-if="tab === 'capital' || tab === 'flow'">
             <UiTabs
               :items="rangeItems"
               :modelValue="base.rangeId.value"
@@ -148,10 +148,8 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
         <WalletsAnalyticsCashflowSection :base />
         <WalletsAnalyticsMoversSection :base />
       </template>
-      <template v-else>
-        <WalletsAnalyticsForecastSection />
-        <WalletsAnalyticsSharesSection :walletIds="base.walletIds.value" />
-      </template>
+      <WalletsAnalyticsForecastSection v-else-if="tab === 'forecast'" class="@3xl/page:col-span-2" />
+      <WalletsAnalyticsSharesSection v-else :walletIds="base.walletIds.value" />
     </div>
   </UiPage>
 </template>

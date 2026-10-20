@@ -25,6 +25,7 @@ const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
 
 const options = useStorage(WALLET_STORAGE_KEYS.analyticsShares, {
+  groupBy: 'type' as SharesGroupBy,
   mode: 'assets' as SharesMode,
   sort: 'amount' as SharesSort,
 }, localStorage, { mergeDefaults: true })
@@ -32,7 +33,6 @@ const options = useStorage(WALLET_STORAGE_KEYS.analyticsShares, {
 // Stored before the modes were split; `gross` reads the same way.
 const mode = computed<SharesMode>(() => sharesModes.includes(options.value.mode) ? options.value.mode : 'gross')
 
-// Every breakdown is shown one after another, so comparing them needs no switching.
 const groupBys: SharesGroupBy[] = ['type', 'currency', 'wallet']
 
 function nameOf(itemId: string, groupBy: SharesGroupBy) {
@@ -67,8 +67,10 @@ const groups = computed(() => groupBys.map((groupBy) => {
   }
 }))
 
-// A breakdown with a single slice says nothing; it is hidden.
+// A breakdown with a single slice says nothing; it gets no tab.
 const visibleGroups = computed(() => groups.value.filter(group => group.rows.length > 1))
+const activeGroup = computed(() => visibleGroups.value.find(group => group.groupBy === options.value.groupBy) ?? visibleGroups.value[0])
+const groupItems = computed(() => visibleGroups.value.map(group => ({ label: t(`wallets.analytics.breakdown.${group.groupBy}`), value: group.groupBy })))
 
 const settings = computed<AnalyticsOption[]>(() => [
   {
@@ -136,38 +138,37 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       @update:modelValue="value => onSetting('mode', value)"
     />
 
-    <div class="grid gap-6 @3xl/page:grid-cols-3">
-      <div
-        v-for="(group, index) in visibleGroups"
-        :key="group.groupBy"
-        class="grid content-start gap-3"
-        :class="index > 0 && 'border-t border-default/60 pt-3 @3xl/page:border-t-0 @3xl/page:pt-0'"
-        :data-shares-group="group.groupBy"
-      >
-        <UiText variant="caption" class="px-2">
-          {{ t(`wallets.analytics.breakdown.${group.groupBy}`) }}
-        </UiText>
+    <template v-if="activeGroup">
+      <UiTabs
+        v-if="groupItems.length > 1"
+        :items="groupItems"
+        :modelValue="activeGroup.groupBy"
+        size="sm"
+        data-shares-group-tabs
+        @update:modelValue="value => onSetting('groupBy', value)"
+      />
+      <div class="grid content-start gap-3 @3xl/page:grid-cols-[minmax(0,18rem)_1fr] @3xl/page:items-start @3xl/page:gap-8" :data-shares-group="activeGroup.groupBy">
         <div class="mx-auto h-48 w-full max-w-xs">
           <LazyStatChartSimplePieView
             v-if="isChartMountReady"
             isDonut
             :isShowLabels="false"
             isShowPercent
-            :centerLabel="formatAmount(group.totalValue, currenciesStore.base)"
-            :series="group.pieSeries"
+            :centerLabel="formatAmount(activeGroup.totalValue, currenciesStore.base)"
+            :series="activeGroup.pieSeries"
             :xAxisLabels="[0]"
-            @selectSlice="name => onSelectSlice(name, group.groupBy)"
+            @selectSlice="name => onSelectSlice(name, activeGroup!.groupBy)"
           />
         </div>
         <WalletsAnalyticsSharesView
           :currencyCode="currenciesStore.base"
-          :items="group.rows"
+          :items="activeGroup.rows"
           :totalLabel="t('wallets.analytics.shares.total')"
-          :totalValue="group.totalValue"
-          @select="id => onSelect(id, group.groupBy)"
+          :totalValue="activeGroup.totalValue"
+          @select="id => onSelect(id, activeGroup!.groupBy)"
         />
       </div>
-    </div>
+    </template>
 
     <UiText v-if="!visibleGroups.length" variant="meta" class="px-2">
       {{ t('wallets.analytics.shares.empty') }}

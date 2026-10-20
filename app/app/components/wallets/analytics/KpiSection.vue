@@ -57,7 +57,7 @@ const safety = computed(() => {
     return { caption: t('wallets.analytics.kpi.beyondHorizon'), text: t('wallets.analytics.forecast.enough') }
   // Income landing outside the forecast's wallets is the usual reason for a short runway; point at the hint.
   const outside = incomeOutsideWalletIds.value.length
-    ? { caption: t('wallets.analytics.kpi.incomeOutside'), captionTo: { hash: '#analytics-forecast', query: { tab: 'now' } }, isWarning: true }
+    ? { caption: t('wallets.analytics.kpi.incomeOutside'), captionTo: { hash: '#analytics-forecast', query: { tab: 'forecast' } }, isWarning: true }
     : {}
   if (runway <= today.value)
     return { ...outside, text: t('wallets.analytics.forecast.runOut') }
