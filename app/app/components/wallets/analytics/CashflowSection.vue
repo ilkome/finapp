@@ -11,6 +11,7 @@ import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
+import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
 import { cashflowPoints } from '~/components/wallets/analytics/cashflow'
@@ -152,7 +153,7 @@ function onSetting(id: string, value: number | string) {
         :chartConfig
         :chartType="chartConfig.type"
         :period="props.base.effectivePeriod.value"
-        :series="chartSeries"
+        :series="toChartSeries(chartSeries, currenciesStore.base)"
         :xAxisLabels="props.base.xAxisLabels.value"
       />
     </div>

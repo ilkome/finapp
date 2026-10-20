@@ -14,6 +14,7 @@ import { amountToMinor, minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
+import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { useForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -236,7 +237,7 @@ function onSetting(id: string, value: number | string) {
         :chartConfig
         chartType="line"
         period="month"
-        :series="chartSeries"
+        :series="toChartSeries(chartSeries, currenciesStore.base)"
         :xAxisLabels="forecast.months.map(month => month.start)"
       />
     </div>

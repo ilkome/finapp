@@ -8,6 +8,7 @@ import type { AnalyticsShareRow } from '~/components/wallets/analytics/SharesVie
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares } from '~/components/wallets/analytics/shares'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -56,7 +57,7 @@ const rows = computed<AnalyticsShareRow[]>(() => {
   return options.value.sort === 'name' ? list.sort((a, b) => a.name.localeCompare(b.name)) : list
 })
 
-const pieSeries = computed<ChartSeries[]>(() => rows.value.map(row => ({ color: row.color, data: [Math.abs(row.signedValue)], name: row.name, type: 'bar' })))
+const pieSeries = computed<ChartSeries[]>(() => toChartSeries(rows.value.map(row => ({ color: row.color, data: [Math.abs(row.signedValue)], name: row.name, type: 'bar' })), currenciesStore.base))
 
 const settings = computed<AnalyticsOption[]>(() => [
   {
