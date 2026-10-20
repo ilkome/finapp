@@ -9,6 +9,7 @@ import { sortCategoriesByAmount } from '~/components/stat/categories/collectAndG
 import { filterFocusedCategories, projectCategorySelection, resolveFocusedParentId } from '~/components/stat/categories/focusedCategories'
 import { useStatCategoryRows } from '~/components/stat/categories/useStatCategoryRows'
 import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
+import { statInSheetKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
   baseCategoryViews: CategoryViews
@@ -28,6 +29,7 @@ const emit = defineEmits<{
 
 const categoriesStore = useCategoriesStore()
 const statConfig = useStatConfigCtx()
+const isInSheet = inject(statInSheetKey, false)
 
 const grouping = computed(() => statConfig.categories.value.round.grouping)
 const isShowFavorites = computed(() => statConfig.categories.value.round.isShowFavorites)
@@ -124,7 +126,7 @@ const transitionScope = useId()
 
 function onSetCategoryFilter(categoryId: CategoryId) {
   const nextId = selectedIdByVisibleId.value.get(categoryId) ?? categoryId
-  if (props.isOpensSheet)
+  if (props.isOpensSheet || isInSheet)
     emit('setCategoryFilter', nextId)
   else
     runViewTransition(() => emit('setCategoryFilter', nextId))

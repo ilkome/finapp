@@ -7,7 +7,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
-import { statCategorySheetKey, statStickyNavKey, statStickyTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
+import { statCategorySheetKey, statInSheetKey, statStickyNavKey, statStickyTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -35,6 +35,7 @@ const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 
 provide(statCategorySheetKey, null)
+provide(statInSheetKey, true)
 provide(statStickyNavKey, false)
 provide(statStickyTopKey, ref(0))
 // The sheet scrolls by itself, so the window-scroll virtual feed cannot run in it.
