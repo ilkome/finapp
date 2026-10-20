@@ -11,6 +11,8 @@ export type CurrencyRow = {
   isManualRate: boolean
   /** The user's custom currency or an edited built-in one. */
   isOwn: boolean
+  /** A wallet holds it; such currencies are listed first, under their own title. */
+  isUsed?: boolean
   minorDisplay: NonNullable<CurrencyItem['minorDisplay']>
   name: string
   /** Units of the base currency per one unit, already formatted; null when there is no rate. */
@@ -33,6 +35,15 @@ const { t } = useI18n()
 
 const search = ref('')
 const list = computed(() => props.rows.filter(row => matchesCurrency(search.value, row.code, row.name)))
+const groups = computed(() => {
+  const used = list.value.filter(row => row.isUsed)
+  if (!used.length)
+    return [{ id: 'all', rows: list.value, title: null }]
+  return [
+    { id: 'used', rows: used, title: t('currencies.page.used') },
+    { id: 'others', rows: list.value.filter(row => !row.isUsed), title: t('currencies.page.others') },
+  ].filter(group => group.rows.length)
+})
 
 function menuItems(row: CurrencyRow) {
   return [[
@@ -58,13 +69,16 @@ function menuItems(row: CurrencyRow) {
       />
     </div>
 
-    <div v-if="list.length === 0" class="py-6 text-center text-sm text-muted">
+    <UiEmpty v-if="list.length === 0">
       {{ t('currencies.list.notFound') }}
-    </div>
+    </UiEmpty>
 
-    <div>
+    <div v-for="group in groups" :key="group.id" class="grid" :data-currency-group="group.id">
+      <UiTitleSection v-if="group.title" class="px-2 pb-1">
+        {{ group.title }}
+      </UiTitleSection>
       <UiContextMenuMy
-        v-for="row in list"
+        v-for="row in group.rows"
         :key="row.code"
         :items="menuItems(row)"
       >
@@ -74,30 +88,24 @@ function menuItems(row: CurrencyRow) {
           insideClasses="min-h-11!"
           @click="emit('edit', row.code)"
         >
-          <div class="flex min-w-0 grow items-center justify-between gap-3">
-            <div class="flex min-w-0 items-center gap-3">
-              <div class="w-14 shrink-0 font-medium">
-                {{ row.code }}
-              </div>
-              <div class="truncate text-sm text-muted">
-                <span v-if="row.name !== row.code">{{ row.name }}</span>
-                <span v-if="row.symbol" class="ml-1 opacity-60">{{ row.symbol }}</span>
-                <span v-if="row.minorDisplay !== 'auto'" class="ml-2 text-xs opacity-60">
-                  {{ t(`currencies.form.minorDisplay.${row.minorDisplay}`) }}
-                </span>
-              </div>
-            </div>
-
-            <div class="shrink-0 text-right text-sm tabular-nums">
-              <span v-if="row.isBase" class="text-xs text-muted opacity-60">
-                {{ t('currencies.base') }}
-              </span>
-              <template v-else-if="row.rate !== null">
-                <span v-if="row.isManualRate" class="mr-1 text-xs text-muted">{{ t('currencies.form.manualShort') }}</span>
-                {{ row.rate }}
-              </template>
-              <span v-else class="text-xs text-muted">{{ t('currencies.converter.noRate') }}</span>
-            </div>
+          <div class="w-12 shrink-0 font-medium">
+            {{ row.code }}
+          </div>
+          <div class="grid min-w-0 grow gap-1">
+            <UiEntityName>{{ row.name }}</UiEntityName>
+            <UiEntityName v-if="row.symbol || row.minorDisplay !== 'auto'" variant="secondary">
+              {{ [row.symbol, row.minorDisplay !== 'auto' && t(`currencies.form.minorDisplay.${row.minorDisplay}`)].filter(Boolean).join(' · ') }}
+            </UiEntityName>
+          </div>
+          <div class="shrink-0 text-right text-sm tabular-nums">
+            <span v-if="row.isBase" class="text-xs text-muted opacity-60">
+              {{ t('currencies.base') }}
+            </span>
+            <template v-else-if="row.rate !== null">
+              <span v-if="row.isManualRate" class="mr-1 text-xs text-muted">{{ t('currencies.form.manualShort') }}</span>
+              {{ row.rate }}
+            </template>
+            <span v-else class="text-xs text-muted">{{ t('currencies.converter.noRate') }}</span>
           </div>
         </UiElement>
       </UiContextMenuMy>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { uniqueElementsBy } from '~~/utils/simple'
+import { moveItem, uniqueElementsBy } from '~~/utils/simple'
 
 describe('uniqueElementsBy', () => {
   it('extracts unique values of a property', () => {
@@ -31,5 +31,18 @@ describe('uniqueElementsBy', () => {
     obj.own = { currency: 'USD' }
 
     expect(uniqueElementsBy(obj, 'currency')).toEqual(['USD'])
+  })
+})
+
+describe('moveItem', () => {
+  it('shifts an item by the offset', () => {
+    expect(moveItem(['a', 'b', 'c'], 'a', 1)).toEqual(['b', 'a', 'c'])
+    expect(moveItem(['a', 'b', 'c'], 'c', -2)).toEqual(['c', 'a', 'b'])
+  })
+
+  it('keeps the order when the item is missing or would leave the list', () => {
+    expect(moveItem(['a', 'b'], 'a', -1)).toEqual(['a', 'b'])
+    expect(moveItem(['a', 'b'], 'b', 1)).toEqual(['a', 'b'])
+    expect(moveItem(['a', 'b'], 'x', 1)).toEqual(['a', 'b'])
   })
 })

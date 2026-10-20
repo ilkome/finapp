@@ -27,3 +27,8 @@ export function matchesCurrency(search: string, code: CurrencyCode, name: string
   const query = search.trim().toLowerCase()
   return !query || code.toLowerCase().includes(query) || name.toLowerCase().includes(query)
 }
+
+/** A rate with enough decimals to stay readable: tiny rates (a weak currency in a strong base) keep more digits. */
+export function formatRate(rate: number): string {
+  return rate.toFixed(rate < 0.01 ? 6 : rate < 1 ? 4 : 2)
+}

@@ -198,6 +198,9 @@ export default {
     base: 'Base currency',
     converter: {
       add: 'Add currency',
+      drag: 'Drag currency',
+      moveDown: 'Move down',
+      moveUp: 'Move up',
       noRate: 'No rate',
       ratesOn: 'Rates on {date}',
       title: 'Converter',
@@ -239,8 +242,10 @@ export default {
       showAll: 'Show all wallets',
     },
     page: {
+      others: 'Other currencies',
       setBase: 'Set as base currency',
       title: 'Currencies',
+      used: 'In your wallets',
     },
     select: 'Select currency',
   },
