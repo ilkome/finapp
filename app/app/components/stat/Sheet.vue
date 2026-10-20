@@ -104,7 +104,7 @@ const { hiddenPanels } = useStatPageViews({
 <template>
   <UiSheet
     :title
-    drawerClass="h-[90dvh]"
+    :collapsedSnap="500"
     modalClass="sm:max-w-3xl"
     @closed="emit('closed')"
   >

@@ -265,6 +265,7 @@ function onPayNext() {
     <UiSheet
       v-if="openPart"
       :title="openPart === 'schedule' ? t('loans.schedule') : t('loans.cost')"
+      :collapsedSnap="500"
       @closed="openPart = null"
     >
       <div class="grid gap-4 pb-4">

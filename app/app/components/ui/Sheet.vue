@@ -2,6 +2,8 @@
 // One body, two shells: a dialog on a laptop, a bottom drawer on a phone. Opens on mount; `closed` fires after
 // the leave animation, so the parent unmounts it then. The slot gets `close` to dismiss it from inside.
 const props = withDefaults(defineProps<{
+  /** The drawer opens at this height and expands by swipe or scroll; see `Drawer`. */
+  collapsedSnap?: number
   drawerClass?: string
   modalClass?: string
   /** The body scrolls by itself (a form with its own scroller), so the drawer does not wrap it in `drawer-body`. */
@@ -40,6 +42,7 @@ const isLaptop = useIsLaptop()
   <Drawer
     v-else
     :title="props.title"
+    :collapsedSnap="props.collapsedSnap"
     :contentClass="props.drawerClass"
     @closed="emit('closed')"
   >

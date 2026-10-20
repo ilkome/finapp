@@ -43,6 +43,7 @@ function openWallet() {
   <UiSheet
     v-if="wallet"
     :title="wallet.name"
+    :collapsedSnap="500"
     @closed="emit('closed')"
   >
     <div class="grid gap-4 pb-4" data-analytics-wallet-sheet>
