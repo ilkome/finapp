@@ -134,6 +134,9 @@ const changeChartSeries = computed<ChartSeries[]>(() => {
 })
 const changeChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: true, isShowScale: true, type: 'bar' as const }))
 
+// No wallets or no moves at all: empty axes would only look like a flat zero balance.
+const isEmpty = computed(() => !scopeWalletIds.value.length || series.value.every(item => !item.opening && item.data.every(value => value === 0)))
+
 const legend = computed<AnalyticsLegendItem[]>(() => series.value.map(item => ({
   color: item.color ?? 'var(--ui-text-muted)',
   id: item.id,
@@ -196,7 +199,11 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
-    <div class="min-h-44 min-w-0">
+    <UiText v-if="isEmpty" variant="meta" class="px-2" data-analytics-empty>
+      {{ t(scopeWalletIds.length ? 'wallets.analytics.empty.noTrns' : 'wallets.analytics.empty.noWallets') }}
+    </UiText>
+
+    <div v-else class="min-h-44 min-w-0">
       <LazyStatChartAxisView
         isTooltipOnTap
         scaleMode="fit"
@@ -209,7 +216,7 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
-    <div class="min-h-28 min-w-0">
+    <div v-if="!isEmpty" class="min-h-28 min-w-0">
       <UiText variant="caption" class="px-2">
         {{ t('wallets.analytics.balance.changePerInterval') }}
       </UiText>
@@ -224,6 +231,7 @@ function onSetting(id: string, value: number | string) {
     </div>
 
     <WalletsAnalyticsLegendView
+      v-if="!isEmpty"
       :currencyCode="currenciesStore.base"
       :items="legend"
       :isToggleable="legend.length > 1"
@@ -231,7 +239,7 @@ function onSetting(id: string, value: number | string) {
     />
 
     <WalletsAnalyticsSummaryTilesView
-      v-if="summary.length"
+      v-if="!isEmpty && summary.length"
       :currencyCode="currenciesStore.base"
       :items="summary"
     />

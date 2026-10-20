@@ -198,6 +198,8 @@ const summary = computed<SummaryTile[]>(() => {
   return tiles
 })
 
+const isEmpty = computed(() => isRows.value ? !rows.value.length : !trnsIds.value.length)
+
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
   const sum = item.data.reduce((total, value) => total + value, 0)
   return {
@@ -268,7 +270,11 @@ function onSetting(id: string, value: number | string) {
       @update:modelValue="value => onSetting('mode', value)"
     />
 
-    <div class="min-h-44 min-w-0">
+    <UiText v-if="isEmpty" variant="meta" class="px-2" data-analytics-empty>
+      {{ t('wallets.analytics.empty.noTrns') }}
+    </UiText>
+
+    <div v-else class="min-h-44 min-w-0">
       <LazyStatChartAxisView
         isTooltipOnTap
         :scaleMode="isRows ? 'fit' : 'zero'"
@@ -282,6 +288,7 @@ function onSetting(id: string, value: number | string) {
     </div>
 
     <WalletsAnalyticsLegendView
+      v-if="!isEmpty"
       :currencyCode="currenciesStore.base"
       :items="legend"
       isToggleable
@@ -289,7 +296,7 @@ function onSetting(id: string, value: number | string) {
     />
 
     <WalletsAnalyticsSummaryTilesView
-      v-if="!isRows"
+      v-if="!isRows && !isEmpty"
       :currencyCode="currenciesStore.base"
       :items="summary"
     />

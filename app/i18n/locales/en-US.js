@@ -1107,6 +1107,10 @@ export default {
         label: 'Chart type',
         line: 'Line',
       },
+      empty: {
+        noTrns: 'No transactions in this period',
+        noWallets: 'No wallets to count',
+      },
       errors: {
         saveFailed: 'Could not save the forecast settings',
       },
