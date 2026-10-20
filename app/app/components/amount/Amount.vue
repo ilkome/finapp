@@ -68,7 +68,7 @@ const currenciesStore = useCurrenciesStore()
         :align="align"
         :amount="formatAmount(amount, currencyCode)"
         :isShowMinus="isShowMinus"
-        :isShowPlus="isShowPlus"
+        :isShowPlus="isShowPlus && amount > 0"
         :isShowSymbol="isShowSymbol"
         :symbol="getCurrencySymbol(currencyCode)"
       />
@@ -78,7 +78,7 @@ const currenciesStore = useCurrenciesStore()
         :align="align"
         :amount="formatAmount(currenciesStore.toBase(amount, currencyCode), currenciesStore.base)"
         :isShowMinus="isShowMinus"
-        :isShowPlus="isShowPlus"
+        :isShowPlus="isShowPlus && amount > 0"
         :isShowSymbol="isShowSymbol"
         :symbol="getCurrencySymbol(currenciesStore.base)"
         class="text-xs opacity-70"
