@@ -7,13 +7,15 @@ const props = defineProps<{
   interest: number
   /** Off where the same totals already sit next to it. */
   isHideTotals?: boolean
+  /** Every month at once, with no toggle. */
+  isShowAll?: boolean
 }>()
 
 const { t } = useI18n()
 
 const RECENT = 6
 const isShowAll = ref(false)
-const shownMonths = computed(() => isShowAll.value ? props.byMonth : props.byMonth.slice(-RECENT))
+const shownMonths = computed(() => props.isShowAll || isShowAll.value ? props.byMonth : props.byMonth.slice(-RECENT))
 </script>
 
 <template>
@@ -66,7 +68,7 @@ const shownMonths = computed(() => isShowAll.value ? props.byMonth : props.byMon
     </div>
 
     <UButton
-      v-if="props.byMonth.length > RECENT"
+      v-if="!props.isShowAll && props.byMonth.length > RECENT"
       class="justify-self-start"
       color="neutral"
       size="xs"

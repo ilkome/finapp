@@ -16,6 +16,8 @@ import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  /** The summary alone; the schedule and the cost open in their own sheets from title rows. */
+  isCompact?: boolean
   walletId: WalletId
 }>()
 
@@ -141,6 +143,15 @@ function onPrepay() {
   trnsFormStore.openFormForLoanPayment({ date: today.value, interest: 0, paymentWalletId: entry.value?.loan.paymentWalletId, principal: 0, walletId: props.walletId })
 }
 
+const [DefineSchedule, ReuseSchedule] = createReusableTemplate()
+const [DefineCost, ReuseCost] = createReusableTemplate()
+const openPart = ref<'cost' | 'schedule' | null>(null)
+const compactParts = computed(() => entry.value ? [{ id: 'schedule' as const, title: t('loans.schedule') }] : [])
+const costTotal = computed(() => costProps.value.interest + costProps.value.fine)
+const costTrnsIds = computed(() => (loansStore.trnsByCreditWallet.get(props.walletId) ?? [])
+  .filter(trn => trn.kind !== 'payment')
+  .map(trn => trn.id))
+
 function onPayNext() {
   const row = entry.value?.summary.rows[firstUnpaidIndex.value]
   if (row)
@@ -149,6 +160,23 @@ function onPayNext() {
 </script>
 
 <template>
+  <DefineSchedule>
+    <LoansAmortizationView :currencyCode :rows="amortizationRows" />
+
+    <LoansScheduleView
+      :currencyCode
+      :firstUnpaidIndex
+      :rows="scheduleViewRows"
+      @edit="onEdit"
+      @pay="(row: LoanScheduleViewRow) => onPay(row.paymentNumber)"
+      @resetRow="onResetRow"
+    />
+  </DefineSchedule>
+
+  <DefineCost>
+    <LoansCostView v-bind="costProps" :isHideTotals="!!entry && !props.isCompact" />
+  </DefineCost>
+
   <div class="grid gap-4">
     <LoansSummaryView
       v-if="summaryProps"
@@ -159,7 +187,7 @@ function onPayNext() {
     />
 
     <LoansWhatIfView
-      v-if="entry && !entry.summary.isClosed && Math.abs(entry.summary.unrecognized) < 1 && whatIf"
+      v-if="!props.isCompact && entry && !entry.summary.isClosed && Math.abs(entry.summary.unrecognized) < 1 && whatIf"
       :currencyCode
       :extra
       :interestSaved="whatIf.interestSaved"
@@ -214,17 +242,65 @@ function onPayNext() {
       </template>
     </UiSheet>
 
-    <LoansAmortizationView v-if="entry" :currencyCode :rows="amortizationRows" />
+    <div
+      v-if="props.isCompact && costProps.byMonth.length"
+      class="flex items-center gap-2 rounded-md bg-elevated/30 interactive px-3 py-2"
+      role="button"
+      tabindex="0"
+      data-loan-compact-cost
+      @click="openPart = 'cost'"
+      @keydown.self.enter.space.prevent="openPart = 'cost'"
+    >
+      <div class="grid grow gap-1">
+        <UiText variant="caption">
+          {{ t('loans.cost') }}
+        </UiText>
+        <Amount :amount="costTotal" :currencyCode />
+      </div>
+      <Icon name="lucide:chevron-right" size="18" class="shrink-0 text-muted" />
+    </div>
 
-    <LoansScheduleView
-      v-if="entry"
-      :currencyCode
-      :firstUnpaidIndex
-      :rows="scheduleViewRows"
-      @edit="onEdit"
-      @pay="(row: LoanScheduleViewRow) => onPay(row.paymentNumber)"
-      @resetRow="onResetRow"
-    />
+    <div v-if="props.isCompact && compactParts.length" class="-mx-3 grid">
+      <div
+        v-for="part in compactParts"
+        :key="part.id"
+        class="flex min-h-11 items-center gap-2 rounded-md interactive px-3"
+        role="button"
+        tabindex="0"
+        :data-loan-compact-part="part.id"
+        @click="openPart = part.id"
+        @keydown.self.enter.space.prevent="openPart = part.id"
+      >
+        <span class="grow font-tertiary text-base font-semibold text-toned">{{ part.title }}</span>
+        <Icon name="lucide:ellipsis" size="20" class="shrink-0 text-muted" />
+      </div>
+    </div>
+
+    <template v-if="!props.isCompact">
+      <ReuseSchedule v-if="entry" />
+      <ReuseCost v-if="costProps.byMonth.length" />
+    </template>
+
+    <UiSheet
+      v-if="openPart"
+      :title="openPart === 'schedule' ? t('loans.schedule') : t('loans.cost')"
+      :collapsedSnap="500"
+      @closed="openPart = null"
+    >
+      <div class="grid content-start gap-4 pb-4">
+        <ReuseSchedule v-if="openPart === 'schedule'" />
+        <template v-else>
+          <LoansCostView v-bind="costProps" isShowAll />
+          <TrnsList
+            :trnsIds="costTrnsIds"
+            :size="Math.max(costTrnsIds.length, 1)"
+            isShowDates
+            isShowExpense
+            isShowGroupSum
+          />
+        </template>
+      </div>
+    </UiSheet>
 
     <LoansScheduleRowEditor
       v-if="editing && loanId"
@@ -234,7 +310,5 @@ function onPayNext() {
       :overrideId="overrideIdByNumber.get(editing.paymentNumber)"
       @closed="editing = null"
     />
-
-    <LoansCostView v-if="costProps.byMonth.length" v-bind="costProps" :isHideTotals="!!entry" />
   </div>
 </template>

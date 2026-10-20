@@ -168,6 +168,7 @@ export const ConfigSchema = z.object({
   }),
   date: z.object({
     isPinned: z.boolean(),
+    isResetInRange: z.boolean().default(false),
     isShow: z.boolean().default(true),
     isShowNavigation: z.boolean(),
     isShowQuick: z.boolean(),
@@ -272,6 +273,7 @@ export const defaultConfig: MiniItemConfig = {
 
   date: {
     isPinned: true,
+    isResetInRange: false,
     isShow: true,
     isShowNavigation: true,
     isShowQuick: false,

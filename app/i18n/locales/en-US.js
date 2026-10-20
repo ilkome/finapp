@@ -253,6 +253,7 @@ export default {
   dates: {
     calendar: {
       calendar: 'Calendar',
+      custom: 'Custom',
       granularity: 'Grouped by',
       presets: 'Presets',
     },
@@ -326,7 +327,16 @@ export default {
     cost: 'Cost of credit',
     delete: 'Delete loan',
     deltaVsPlan: 'Delta vs plan',
-    dueThisMonth: 'Due within a month',
+    dueAfterNextMonth: 'Due in two months',
+    dueNextMonth: 'Due next month',
+    dueSheet: {
+      grace: 'To avoid interest',
+      loans: 'Loans',
+      minimumInterest: 'Interest if paying minimum',
+      minPayments: 'Minimum payments',
+      total: 'At least',
+    },
+    dueThisMonth: 'Due this month',
     early: 'early',
     edit: 'Edit loan',
     editRow: 'Edit payment',
@@ -527,7 +537,7 @@ export default {
       isExcludedFromTotal: 'Not included in total',
       isWithdrawable: 'Withdrawal',
       loan: 'Loans',
-      total: 'Total',
+      total: 'At least',
     },
     typesHint: {
       bank_account: 'Total across cards and bank accounts',
@@ -609,6 +619,13 @@ export default {
   stat: {
     average: {
       forLast: 'for the last periods',
+      per: {
+        day: 'Average per day',
+        month: 'Average per month',
+        week: 'Average per week',
+        year: 'Average per year',
+      },
+      perMany: 'Average per',
     },
     catButtons: {
       isLines: 'Amount lines',
@@ -704,6 +721,7 @@ export default {
       },
       navigation: {
         pin: 'Pin while scrolling',
+        resetInRange: 'Reset the period from the period button',
         showButtons: 'Show navigation buttons',
         title: 'Period selection',
       },
@@ -749,6 +767,9 @@ export default {
           period: 'For period',
         },
       },
+    },
+    sum: {
+      for: 'For',
     },
     title: 'Dashboard',
     view: {
@@ -1092,7 +1113,7 @@ export default {
       breakdown: {
         currency: 'Currency',
         label: 'Breakdown',
-        total: 'Total',
+        total: 'At least',
         type: 'Type',
         wallet: 'Wallet',
       },
@@ -1170,6 +1191,15 @@ export default {
           full_debt: 'Whole debt',
           label: 'Credit card payment',
           minimum: 'Minimum',
+        },
+        cards: {
+          horizonTitle: 'Credit cards',
+          interest: 'interest',
+          interestFree: 'Interest-free',
+          minimum: 'By minimum',
+          overpay: 'Interest by minimum',
+          rateUnknown: 'rate unknown',
+          title: 'Cards:',
         },
         coincidence: {
           afterRunOut: 'Both scenarios run out on the same day: the next income comes after it.',
@@ -1253,6 +1283,7 @@ export default {
         title: 'Mandatory payments',
       },
       openTrns: 'Transactions',
+      openWallet: 'Open wallet',
       other: 'Other',
       preview: {
         change: 'Last {n} months',
@@ -1314,7 +1345,7 @@ export default {
           split: 'Split',
         },
         title: 'Shares',
-        total: 'Total',
+        total: 'At least',
       },
       show: 'Show',
       sort: {
@@ -1322,6 +1353,7 @@ export default {
         label: 'Sort',
         name: 'By name',
       },
+      summary: 'Summary',
       table: {
         caption: 'Share is of assets for a wallet with money and of debts for a wallet that owes',
         change: 'Change',
@@ -1355,6 +1387,9 @@ export default {
     },
     ariaSwitch: 'Switch wallets',
     createNewTitle: 'New wallet',
+    currency: {
+      title: 'Currency',
+    },
     errors: {
       deleteFailed: 'Failed to delete wallet',
       orderFailed: 'Failed to save wallet order',

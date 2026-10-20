@@ -5,11 +5,13 @@ import type { SeriesSlug } from '~/components/stat/types'
 
 import { resolveSplitChartSelection } from '~/components/stat/chart/splitChartSelection'
 import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
-import { statDateKey } from '~/components/stat/injectionKeys'
+import { statDateKey, statInSheetKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{ contexts: StatReportContexts }>()
 const statConfig = useStatConfigCtx()
 const statDate = inject(statDateKey)!
+// A sheet picks the period in its footer date button, not in a strip under the chart.
+const isInSheet = inject(statInSheetKey, false)
 const quickRangeIds = computed(() => {
   const selected = new Set(statConfig.date.value.quickRangeIds)
   return statConfig.date.value.quickRangeOrderIds.filter(id => selected.has(id))
@@ -57,7 +59,7 @@ function onSelectSplitChart(type: SeriesSlug, intervalKey?: number) {
       </div>
     </template>
     <div
-      v-if="statConfig.date.value.isShowQuick"
+      v-if="statConfig.date.value.isShowQuick && !isInSheet"
       class="-mx-2 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-2 items-center overflow-x-auto px-2 py-px lg:-mx-4 lg:scroll-px-4 lg:px-4 2xl:-mx-8 2xl:scroll-px-8 2xl:px-8"
       data-stat-chart-quick-ranges
     >

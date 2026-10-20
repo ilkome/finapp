@@ -21,12 +21,13 @@ import { UPCOMING_DAYS, upcomingPayments, whatIfScenario } from '~/components/wa
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
 const { t } = useI18n()
-const router = useRouter()
+const walletSheet = useWalletSheet()
 const dateLocale = useDateLocale()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
@@ -427,7 +428,7 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
         :currencyCode="currenciesStore.base"
         :horizonLabel
         :items="obligationRows"
-        @select="walletId => router.push(`/wallets/${walletId}`)"
+        @select="walletId => walletSheet = walletId"
       />
     </div>
 

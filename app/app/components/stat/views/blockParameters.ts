@@ -63,6 +63,7 @@ export const BLOCK_RULE_PARAMETERS: Record<StatBlockPanelId, BlockRuleParameterD
     visibility,
     { id: 'date.isPinned', paths: ['date.isPinned'], titleKey: 'stat.config.navigation.pin' },
     { id: 'date.isShowNavigation', paths: ['date.isShowNavigation'], titleKey: 'stat.config.navigation.showButtons' },
+    { id: 'date.isResetInRange', paths: ['date.isResetInRange'], titleKey: 'stat.config.navigation.resetInRange' },
   ],
   statAverage: [
     visibility,

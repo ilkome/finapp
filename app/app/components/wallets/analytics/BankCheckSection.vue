@@ -8,6 +8,7 @@ import { useBankReportsStore } from '~/components/bankReports/useBankReportsStor
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { bankMismatches } from '~/components/wallets/analytics/bankCheck'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -15,7 +16,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const router = useRouter()
+const walletSheet = useWalletSheet()
 const dateLocale = useDateLocale()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
@@ -43,6 +44,6 @@ const rows = computed<BankCheckRow[]>(() => {
     <UiText variant="meta" class="px-2">
       {{ t('wallets.analytics.bankCheck.caption') }}
     </UiText>
-    <WalletsAnalyticsBankCheckView :baseCurrencyCode="currenciesStore.base" :items="rows" @select="id => router.push(`/wallets/${id}`)" />
+    <WalletsAnalyticsBankCheckView :baseCurrencyCode="currenciesStore.base" :items="rows" @select="id => walletSheet = id" />
   </section>
 </template>

@@ -1,4 +1,5 @@
 import type { MaybeRefOrGetter } from 'vue'
+import type { LocationQueryRaw } from 'vue-router'
 
 import type { TrnId, TrnsGetterProps } from '~/components/trns/types'
 
@@ -14,6 +15,8 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 export function useStatPageFilter(options: {
   canFilterCategories?: boolean
   canFilterWallets?: boolean
+  /** An in-memory filter seeded from this query: neither the URL nor storage keep it. */
+  localQuery?: LocationQueryRaw
   storage?: Storage
   storageKey: MaybeRefOrGetter<string>
 }) {
@@ -21,8 +24,10 @@ export function useStatPageFilter(options: {
   const filter = useFilter({
     canFilterCategories: options.canFilterCategories,
     canFilterWallets: options.canFilterWallets,
+    localQuery: options.localQuery,
   })
-  useStatFilterStorage({ filter, storage: options.storage, storageKey: options.storageKey })
+  if (!options.localQuery)
+    useStatFilterStorage({ filter, storage: options.storage, storageKey: options.storageKey })
   const applyExtras = useFilterExtrasMatcher(filter)
 
   /** Page-specific props win over the drawer selection (a wallet page passes its own `walletsIds`). */

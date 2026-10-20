@@ -20,6 +20,7 @@ const switchPanels: Partial<Record<StatBlockPanelId, { path: StatConfigBooleanPa
   navigation: [
     { path: 'date.isPinned', title: t('stat.config.navigation.pin') },
     { path: 'date.isShowNavigation', title: t('stat.config.navigation.showButtons') },
+    { path: 'date.isResetInRange', title: t('stat.config.navigation.resetInRange') },
   ],
   summary: [
     { path: 'summary.isPinned', title: t('stat.config.summary.pin') },

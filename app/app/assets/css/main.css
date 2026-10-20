@@ -123,6 +123,8 @@
   /* Reka registers the snap offset as non-inheriting. Content pinned to the visible bottom of a
      collapsed drawer (a footer) reads this inherited copy, which changes only on a snap. */
   --drawer-snap-lift: var(--drawer-snap-point-offset, 0px);
+  /* The live drag the same way, for a footer held at the screen bottom while the drawer moves. */
+  --drawer-swipe-lift: var(--drawer-swipe-movement-y, 0px);
   transform-origin: 50% 0;
   transition-duration: 450ms;
   transition-property: transform, scale, translate;

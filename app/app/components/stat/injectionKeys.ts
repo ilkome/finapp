@@ -1,5 +1,6 @@
 import type { InjectionKey, Ref } from 'vue'
 
+import type { CategoryId } from '~/components/categories/types'
 import type { StatContextBlockId } from '~/components/stat/config/schema'
 import type { StatConfigProvider } from '~/components/stat/config/types'
 import type { StatDateProvider } from '~/components/stat/date/types'
@@ -18,6 +19,10 @@ export const statContextBlockIdsKey: InjectionKey<Readonly<Ref<readonly StatCont
 export const statHiddenPanelsKey: InjectionKey<readonly StatBlockPanelId[]> = Symbol('statHiddenPanels')
 export const statHistoryAvailableKey: InjectionKey<Ref<boolean>> = Symbol('statHistoryAvailable')
 export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController>> = Symbol('statViewController')
+/** Set by a page whose category cloud opens a category's stat sheet instead of filtering; a sheet resets it. */
+export const statCategorySheetKey: InjectionKey<((categoryId: CategoryId) => void) | null> = Symbol('statCategorySheet')
+/** A stat sheet over a page: document-wide view transitions would draw their snapshots above it. */
+export const statInSheetKey: InjectionKey<boolean> = Symbol('statInSheet')
 export const statCanSplitKey: InjectionKey<Ref<boolean>> = Symbol('statCanSplit')
 export const statPreservedCategoryScrollTopKey: InjectionKey<Ref<number | null>> = Symbol('statPreservedCategoryScrollTop')
 export const statStickyNavKey: InjectionKey<boolean> = Symbol('statStickyNav')

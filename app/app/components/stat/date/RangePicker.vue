@@ -3,12 +3,16 @@ import type { Range } from '~~/utils/date/types'
 
 import { useStorage } from '@vueuse/core'
 
-import type { Grouped } from '~/components/stat/date/types'
+import type { Grouped, StatDateParams } from '~/components/stat/date/types'
 import type { StatDateRangeOption } from '~/components/stat/date/useRangeOptions'
 
 import { STAT_STORAGE_KEYS } from '~/components/stat/constants'
 import { useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
 import { statDateKey } from '~/components/stat/injectionKeys'
+
+defineProps<{
+  isSheet?: boolean
+}>()
 
 const emit = defineEmits<{
   close: []
@@ -29,6 +33,15 @@ function onSelectGranularityBy(granularityBy: Grouped['granularityBy']) {
   statDate.setGranularity({ granularityBy, granularityDuration: 1 })
 }
 
+function onSelectRangeBy(rangeBy: StatDateParams['rangeBy']) {
+  statDate.setRangeByPeriod({
+    granularityBy: statDate.params.value.granularityBy,
+    granularityDuration: statDate.params.value.granularityDuration,
+    rangeBy,
+    rangeDuration: statDate.params.value.rangeDuration,
+  })
+}
+
 function onSetRangeByCalendar(range: Range) {
   statDate.setRangeByCalendar(range)
 }
@@ -41,11 +54,13 @@ function onSetRangeByCalendar(range: Range) {
       granularityBy: statDate.params.value.granularityBy,
       granularityDuration: statDate.params.value.granularityDuration,
     }"
+    :isSheet
     :options
     :params="statDate.params.value"
     :range="statDate.range.value"
     @close="emit('close')"
     @selectGranularityBy="onSelectGranularityBy"
+    @selectRangeBy="onSelectRangeBy"
     @selectRange="onSelectRange"
     @setGranularityDuration="statDate.setGranularityDuration"
     @setRangeByCalendar="onSetRangeByCalendar"

@@ -1,3 +1,5 @@
+import type { LocationQuery, LocationQueryRaw } from 'vue-router'
+
 import type { CategoryId } from '~/components/categories/types'
 import type { FilterExtras } from '~/components/filter/extras'
 import type { WalletId } from '~/components/wallets/types'
@@ -6,9 +8,12 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { countActiveExtras, extrasToQuery, parseFilterExtras } from '~/components/filter/extras'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
+type QuerySource = { query: LocationQuery }
+type QueryTarget = { push: (to: { query: LocationQueryRaw }) => unknown }
+
 function createQueryFilter<T extends string>(
-  route: ReturnType<typeof useRoute>,
-  router: ReturnType<typeof useRouter>,
+  route: QuerySource,
+  router: QueryTarget,
   queryKey: string,
   validateFn?: (id: T) => boolean,
 ) {
@@ -73,9 +78,14 @@ function createQueryFilter<T extends string>(
 export function useFilter(options: {
   canFilterCategories?: boolean
   canFilterWallets?: boolean
+  /** Keeps the filter in memory, seeded from this query, instead of the URL (a stat sheet over a page). */
+  localQuery?: LocationQueryRaw
 } = {}) {
-  const router = useRouter()
-  const route = useRoute()
+  const local = options.localQuery && reactive<QuerySource>({ query: options.localQuery as LocationQuery })
+  const route: QuerySource = local || useRoute()
+  const router: QueryTarget = local
+    ? { push: ({ query }) => local.query = query as LocationQuery }
+    : useRouter()
   const categoriesStore = useCategoriesStore()
   const walletsStore = useWalletsStore()
   const canFilterCategories = options.canFilterCategories ?? true

@@ -10,8 +10,8 @@ type PickCtx<K extends keyof StatReportContext, P extends keyof StatReportContex
  * Details keeps the full context because it hands it to the trns feed.
  */
 export type StatSumsCtx = PickCtx<
-  'averageTotal' | 'effectiveChartType' | 'filteredType' | 'focusedCategoryPieData' | 'isCategoryFocus' | 'onClickSumItemWrap' | 'rangeTotal' | 'selectedTypeForSum' | 'shouldShowAmounts' | 'summaryCategoryPieData',
-  'categoryId' | 'statConfig' | 'walletId'
+  'averageTotal' | 'effectiveChartType' | 'filteredType' | 'focusedCategoryPieData' | 'fullRangeTotal' | 'isCategoryFocus' | 'onClickSumItemWrap' | 'rangeTotal' | 'selectedTypeForSum' | 'shouldShowAmounts' | 'summaryCategoryPieData',
+  'categoryId' | 'statConfig' | 'statDate' | 'walletId'
 >
 
 export type StatChartCtx = PickCtx<

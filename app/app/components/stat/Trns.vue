@@ -4,7 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { StatReportContext } from '~/components/stat/report/types'
 import type { TrnId } from '~/components/trns/types'
 
-import { statHistoryAvailableKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
+import { statHistoryAvailableKey, statInSheetKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { resolveCurrentPeriodEmptyKey } from '~/components/stat/statFeed'
 
 const props = defineProps<{
@@ -15,6 +15,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const isInSheet = inject(statInSheetKey, false)
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 const isHistoryAvailable = inject(statHistoryAvailableKey, computed(() => true))
 
@@ -70,6 +71,12 @@ const currentPeriodEmptyLabel = computed(() => props.ctx
           v-if="isVirtualEnabled && ctx"
           :ctx="ctx"
           :class="isShowTitle && !isQuickCategoryFocused && 'pt-2'"
+        />
+
+        <StatSheetTrns
+          v-else-if="isInSheet && ctx"
+          :ctx
+          :selectedTrnsIds
         />
 
         <TrnsList

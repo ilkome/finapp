@@ -236,12 +236,10 @@ export function useStatReportData(params: {
   const selectedTrnsIds = computed(() => selection.value.selectedIds)
   const selectedAndFilteredTrnsIds = computed(() => selection.value.filteredIds)
   const selectedAndQuickFilteredTrnsIds = computed(() => selection.value.quickFilteredIds)
-  const rangeTotal = computed(() => {
-    const ids = isIntervalSelected.value
-      ? intervalsDataWithFilteredCategories.value[params.statDate.params.value.intervalSelected]?.trnsIds
-      : rangeTrnsIdsWithFilteredCategories.value
-    return computeTotalForStat(ids ?? [])
-  })
+  const fullRangeTotal = computed(() => computeTotalForStat(rangeTrnsIdsWithFilteredCategories.value))
+  const rangeTotal = computed(() => isIntervalSelected.value
+    ? computeTotalForStat(intervalsDataWithFilteredCategories.value[params.statDate.params.value.intervalSelected]?.trnsIds ?? [])
+    : fullRangeTotal.value)
   const averageTotal = computed(() => {
     if (differenceInDays(params.statDate.range.value.end, params.statDate.range.value.start) < 2)
       return
@@ -256,6 +254,7 @@ export function useStatReportData(params: {
     averageTotal,
     chartIntervalsDataWithFilteredCategories,
     computeTotalForTrnsIds,
+    fullRangeTotal,
     intervalsDataWithFilteredCategories,
     isIntervalSelected,
     isPeriodOneDay,

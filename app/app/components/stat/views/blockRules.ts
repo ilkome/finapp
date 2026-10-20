@@ -217,7 +217,7 @@ export function resolveConfigUpdatePanel<K extends keyof MiniItemConfig>(
   if (key === 'wallets')
     return 'wallets'
   if (key === 'date')
-    return 'isPinned' in value || 'isShow' in value || 'isShowNavigation' in value ? 'navigation' : 'chart'
+    return 'isPinned' in value || 'isShow' in value || 'isShowNavigation' in value || 'isResetInRange' in value ? 'navigation' : 'chart'
   if (key === 'categories') {
     if ('round' in value)
       return 'catsRound'

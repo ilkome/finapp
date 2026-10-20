@@ -5,6 +5,7 @@ const props = defineProps<{
   contentClass?: string
   overlayClass?: string
   title: string
+  titleIcon?: { color?: string, name: string }
 }>()
 </script>
 
@@ -15,8 +16,11 @@ const props = defineProps<{
   >
     <template #content="{ close }">
       <div class="relative flex max-h-[85dvh] flex-col overflow-hidden">
-        <UiTitleModal hasClose>
+        <UiTitleModal hasClose :icon="props.titleIcon">
           {{ props.title }}
+          <template v-if="$slots.titleActions" #actions>
+            <slot name="titleActions" />
+          </template>
         </UiTitleModal>
 
         <UiButtonClose @click="close" />

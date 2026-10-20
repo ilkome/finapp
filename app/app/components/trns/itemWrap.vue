@@ -10,6 +10,7 @@ defineOptions({ inheritAttrs: false })
 const props = defineProps<{
   compact?: boolean
   date?: string
+  isShowCategory?: boolean
   trnId: TrnId
   trnItem: TrnItemFull
 }>()
@@ -126,6 +127,7 @@ async function duplicate() {
   <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
     <TrnsItem
       :compact="props.compact"
+      :isShowCategory="props.isShowCategory"
       :isActive="isSelected || isShowPreview"
       :trnItem
       :date

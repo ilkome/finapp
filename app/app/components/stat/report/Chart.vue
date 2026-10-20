@@ -3,7 +3,7 @@ import type { Period } from '~~/utils/date/types'
 
 import type { StatChartCtx } from '~/components/stat/report/types'
 
-import { statDateKey } from '~/components/stat/injectionKeys'
+import { statDateKey, statInSheetKey } from '~/components/stat/injectionKeys'
 import { useTrnsFormStore } from '~/components/trnForm/useTrnsFormStore'
 
 const props = defineProps<{
@@ -15,6 +15,8 @@ const emit = defineEmits<{
 }>()
 
 const statDate = inject(statDateKey)!
+// A sheet carries the chart settings in its title.
+const isInSheet = inject(statInSheetKey, false)
 const trnsFormStore = useTrnsFormStore()
 
 const window = computed(() => ({
@@ -57,7 +59,7 @@ function onChangePeriod(period: Period) {
     @previewEnd="ctx.chartWindow.commitPreview()"
     @select="emit('select')"
   >
-    <template #settings>
+    <template v-if="!isInSheet" #settings>
       <StatChartSettingsPopover />
     </template>
   </StatChartView>

@@ -10,7 +10,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { filterKey } from '~/components/filter/injectionKeys'
 import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
-import { statCanSplitKey, statContentWidthKey, statContextBlockIdsKey, statDateKey, statHistoryAvailableKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
+import { statCanSplitKey, statContentWidthKey, statContextBlockIdsKey, statDateKey, statHistoryAvailableKey, statInSheetKey, statStickyNavKey, statStickyTopKey, statTrnsViewStateKey } from '~/components/stat/injectionKeys'
 import { resolveStatLayoutBlocks } from '~/components/stat/layout/blocks'
 import SplitContexts from '~/components/stat/layout/SplitContexts'
 import { useStatPinnedOffsets } from '~/components/stat/layout/useStatPinnedOffsets'
@@ -24,6 +24,8 @@ const props = withDefaults(defineProps<{
   hasChildren?: boolean
   hiddenPanels?: StatBlockPanelId[]
   initialFilteredType?: SeriesSlugSelected
+  /** The host renders the date and filter row itself (a sheet pins it to its bottom). */
+  isNavigationOutside?: boolean
   isShowSearch?: boolean
   lockSingleTypeLayout?: boolean
   preCategoriesIds?: CategoryId[]
@@ -45,6 +47,8 @@ const statConfig = useStatConfigCtx()
 const statDate = inject(statDateKey)!
 const trnsViewState = inject(statTrnsViewStateKey)!
 const hostStickyNavigation = inject(statStickyNavKey, false)
+// A sheet's body already pads its edges.
+const isInSheet = inject(statInSheetKey, false)
 const stickyTop = inject(statStickyTopKey, ref(0))
 const canSplit = inject(statCanSplitKey, ref(false))
 const contentWidth = inject(statContentWidthKey, null)
@@ -100,7 +104,17 @@ const layout = computed(() => resolveStatLayoutBlocks({
   showWallets: props.showWallets,
 }))
 const orderedBlocks = computed(() => layout.value.orderedBlocks)
-const layoutEntries = computed(() => layout.value.entries)
+// A sheet renders its own date row, and always shows the sums under the chart whatever the page's order.
+const layoutEntries = computed(() => {
+  if (!props.isNavigationOutside)
+    return layout.value.entries
+  const entries = layout.value.entries.filter(entry => entry.block !== 'navigation')
+  const summaryAt = entries.findIndex(entry => entry.block === 'summary')
+  const chartAt = entries.findIndex(entry => entry.block === 'chart')
+  if (summaryAt >= 0 && summaryAt < chartAt)
+    entries.splice(chartAt, 0, ...entries.splice(summaryAt, 1))
+  return entries
+})
 const { navigationIsPinned, navigationStickyTop, setNavigationElement, setSummaryElement, summaryIsPinned, summaryStickyTop } = useStatPinnedOffsets({ hostStickyNavigation, orderedBlocks, statConfig, stickyTop })
 
 watchEffect(() => {
@@ -115,7 +129,8 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
 <template>
   <div
     ref="statLayout"
-    class="grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-2 px-2 pb-24 stat-layout lg:gap-5 lg:px-4 2xl:px-8"
+    class="grid max-w-7xl min-w-0 grid-cols-[minmax(0,1fr)] gap-2 pb-24 stat-layout lg:gap-5"
+    :class="!isInSheet && 'px-2 lg:px-4 2xl:px-8'"
     :data-stat-chart-layout="statConfig.chart.value.layout"
     :data-stat-page-layout="statConfig.page.value.layout"
     :data-stat-report-context-count="isDev ? statDevMetrics.reportContextCount.value : undefined"
@@ -147,6 +162,7 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
         :style="navigationIsPinned ? { top: `${navigationStickyTop}px` } : undefined"
       >
         <StatDateFilterRow
+          :isResetInRange="statConfig.date.value.isResetInRange"
           :isShowNavigation="statConfig.date.value.isShowNavigation"
           :isShowSearch="props.isShowSearch"
         />

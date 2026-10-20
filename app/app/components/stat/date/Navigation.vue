@@ -9,6 +9,8 @@ import {
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const props = withDefaults(defineProps<{
+  /** The period button resets the period on its first tap, so the arrows drop their reset button. */
+  isResetInRange?: boolean
   isShowButtons?: boolean
 }>(), {
   isShowButtons: true,
@@ -58,7 +60,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
   <StatDateNavigationView
     :isEnd
     :isShowArrows="props.isShowButtons && isShowNav && !statDate.params.value.customDate"
-    :isShowHome="isShowNavHome"
+    :isShowHome="isShowNavHome && !props.isResetInRange"
     :isStart
     @changeDate="changeDate"
   >
@@ -66,7 +68,7 @@ function changeDate(way: 'next' | 'prev' | 'today') {
       <slot name="tools" />
     </template>
     <template #range>
-      <StatDateRangeButton />
+      <StatDateRangeButton :isReset="props.isResetInRange && isShowNavHome" />
     </template>
     <slot />
   </StatDateNavigationView>

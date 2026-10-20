@@ -7,6 +7,7 @@ import type { AnalyticsOption } from '~/components/wallets/analytics/SettingsMen
 import type { RatesMode } from '~/components/wallets/analytics/useAnalyticsBase'
 
 import { analyticsRanges, useAnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
+import { provideWalletSheet } from '~/components/wallets/useWalletSheet'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 
 const { t } = useI18n()
@@ -60,6 +61,8 @@ watch(() => route.hash, async (hash) => {
   await nextTick()
   document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 }, { immediate: true })
+
+const walletSheet = provideWalletSheet()
 
 const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wallets.analytics.ranges.${value}`), value })))
 </script>
@@ -151,5 +154,12 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
       <WalletsAnalyticsForecastSection v-else-if="tab === 'forecast'" class="@3xl/page:col-span-2" />
       <WalletsAnalyticsSharesSection v-else :walletIds="base.walletIds.value" />
     </div>
+
+    <WalletsSheet
+      v-if="walletSheet"
+      :key="walletSheet"
+      :walletId="walletSheet"
+      @closed="walletSheet = null"
+    />
   </UiPage>
 </template>

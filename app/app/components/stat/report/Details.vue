@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import type { StatReportBlockId } from '~/components/stat/config/schema'
 import type { StatReportContext } from '~/components/stat/report/types'
+import type { SeriesSlugSelected } from '~/components/stat/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { buildCategoryViews, collectRoundCategoryIds } from '~/components/stat/categories/categoryViews'
-import { statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
+import { statCategorySheetKey, statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/statFeed'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
@@ -23,6 +24,7 @@ const { computeTotalForTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
 const trnsStore = useTrnsStore()
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
+const openCategorySheet = inject(statCategorySheetKey, null)
 const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
 const { height: categoriesHeight } = useElementSize(categoriesBreakdown)
 const { height: viewportHeight } = useWindowSize()
@@ -65,7 +67,18 @@ function preserveScroll(scrollTop: number | null) {
   }, 1000)
 }
 
+function onOpenCategory(categoryId: string, filteredType?: SeriesSlugSelected) {
+  if (openCategorySheet)
+    openCategorySheet(categoryId)
+  else
+    props.ctx.onOpenCategory(categoryId, filteredType)
+}
+
 function onSetCategoryFilter(categoryId: string) {
+  if (openCategorySheet) {
+    openCategorySheet(categoryId)
+    return
+  }
   preserveScroll(document.scrollingElement?.scrollTop ?? 0)
   props.ctx.onSetCategoryFilter(categoryId)
 }
@@ -97,6 +110,7 @@ onBeforeUnmount(() => {
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"
     :focusedCategoryId="ctx.filteredParentCategoryId.value"
     :isOneCategory="ctx.isOneCategory.value"
+    :isOpensSheet="!!openCategorySheet"
     :preCategoriesIds="ctx.params.preCategoriesIds?.value"
     @clickCategory="ctx.onClickCategory"
     @setCategoryFilter="onSetCategoryFilter"
@@ -131,9 +145,9 @@ onBeforeUnmount(() => {
           :storageKey="ctx.statItemStorageKey.value"
           :type="ctx.params.type.value ?? 'net'"
           @clickCategory="ctx.onClickCategory"
-          @openCategory="ctx.onOpenCategory"
+          @openCategory="onOpenCategory"
           @setChildCategoryFilter="onSetChildCategoryFilter"
-          @setCategoryFilter="ctx.onSetCategoryFilter"
+          @setCategoryFilter="onSetCategoryFilter"
         />
       </div>
 

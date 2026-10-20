@@ -12,6 +12,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { pieShapeOptions } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -21,7 +22,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const router = useRouter()
+const walletSheet = useWalletSheet()
 const { requestDelete } = useWalletDelete()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
@@ -123,7 +124,7 @@ const openGroup = computed(() => {
 
 function onSelect(id: string, groupBy: SharesGroupBy) {
   if (groupBy === 'wallet')
-    router.push(`/wallets/${id.split(':')[0]}`)
+    walletSheet.value = id.split(':')[0]!
   else
     open.value = { groupBy, id }
 }
