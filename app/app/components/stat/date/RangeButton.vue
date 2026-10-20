@@ -3,6 +3,8 @@ import { statDateRangeLabel } from '~/components/stat/date/rangeLabelText'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
+  /** Full width, the chevron at the far end. */
+  isBlock?: boolean
   /** The first tap returns to the default period instead of opening the picker. */
   isReset?: boolean
 }>()
@@ -34,14 +36,14 @@ const label = computed(() => statDateRangeLabel({
     :title="t('dates.select')"
     popoverContentClass="md:w-max md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
-    class="flex gap-1"
+    :class="props.isBlock ? 'grid' : 'flex gap-1'"
     isShowCloseBtn
     keyboardTrigger
   >
     <template #trigger="{ isActive }">
-      <UiTitleDropdown data-stat-date-range :isActive>
+      <UiTitleDropdown data-stat-date-range :class="props.isBlock && 'w-full'" :isActive>
         <Icon v-if="props.isReset" name="lucide:rotate-ccw" size="14" class="shrink-0 text-muted" :aria-label="t('base.reset')" />
-        <div class="flex items-center gap-1 leading-none text-nowrap capitalize">
+        <div class="flex items-center gap-1 leading-none text-nowrap capitalize" :class="props.isBlock && 'grow'">
           {{ label }}
         </div>
       </UiTitleDropdown>

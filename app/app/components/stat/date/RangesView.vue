@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<{
   presetUnit?: 'day' | 'month' | 'year'
   size?: 'md' | 'sm' | 'xs'
   tabsClass?: string
+  /** `text`: plain labels sized to their text, for a capsule strip (the wallets currency filter). */
+  variant?: 'flat' | 'text'
   vertical?: boolean
   view: StatDateRangeView | 'all'
 }>(), { size: 'sm' })
@@ -62,10 +64,11 @@ function onSelect(id: string | number) {
       v-if="tabItems.length"
       :align="props.vertical ? 'left' : 'center'"
       :class="cn(props.vertical && 'flex-col overflow-visible', props.tabsClass)"
-      :grow="!props.vertical"
+      :grow="!props.vertical && props.variant !== 'text'"
       :itemClass="props.itemClass"
+      :itemGrow="props.variant !== 'text'"
       :size
-      variant="flat"
+      :variant="props.variant ?? 'flat'"
       :items="tabItems"
       :modelValue="selectedId"
       @update:modelValue="onSelect"

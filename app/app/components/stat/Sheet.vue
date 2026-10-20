@@ -134,21 +134,21 @@ const { hiddenPanels } = useStatPageViews({
       />
 
       <UiSheetFooter>
-        <div class="-mx-3 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-3 items-center overflow-x-auto px-3 py-px">
-          <StatDateRanges
-            class="shrink-0"
-            itemClass="snap-start snap-always"
-            size="xs"
-            :optionIds="quickRangeIds"
-            :statDate
-            tabsClass="overflow-visible! bg-transparent! p-0!"
-            view="all"
-          />
+        <!-- The same capsule as the currency filter in the wallets drawer. -->
+        <div class="swiper-no-swiping w-full touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden">
+          <div class="h-9 w-max min-w-max overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
+            <StatDateRanges
+              class="h-full"
+              :optionIds="quickRangeIds"
+              :statDate
+              tabsClass="h-full w-max min-w-max overflow-visible! px-3 *:h-full"
+              variant="text"
+              view="all"
+            />
+          </div>
         </div>
-        <div class="flex min-w-0 items-center gap-2">
-          <StatDateRangeButton :isReset="isRangeReset" />
-          <StatFilterButton />
-        </div>
+        <StatDateRangeButton isBlock :isReset="isRangeReset" />
+        <StatFilterButton isBlock />
       </UiSheetFooter>
     </div>
   </UiSheet>

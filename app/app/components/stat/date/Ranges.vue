@@ -12,6 +12,8 @@ const props = withDefaults(defineProps<{
   size?: 'md' | 'sm' | 'xs'
   statDate: StatDateProvider
   tabsClass?: string
+  /** `text`: plain labels sized to their text, for a capsule strip (the wallets currency filter). */
+  variant?: 'flat' | 'text'
   vertical?: boolean
   view: StatDateRangeView | 'all'
 }>(), { size: 'sm' })
@@ -41,6 +43,7 @@ function onSelect(item: StatDateRangeOption) {
     :presetUnit="props.presetUnit"
     :size="props.size"
     :tabsClass="props.tabsClass"
+    :variant="props.variant"
     :vertical="props.vertical"
     :view="props.view"
     @select="onSelect"
