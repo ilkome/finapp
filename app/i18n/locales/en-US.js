@@ -1064,6 +1064,9 @@ export default {
         changePerInterval: 'Change per interval',
         down: 'Down',
         max: 'High of the period',
+        milestone: 'Next milestone',
+        milestoneBy: 'at this pace by',
+        milestoneNoPace: 'not growing over the period',
         min: 'Low of the period',
         net: 'Net worth',
         parts: {
@@ -1140,6 +1143,7 @@ export default {
       errors: {
         saveFailed: 'Could not save the forecast settings',
       },
+      exportCsv: 'Download CSV',
       forecast: {
         cardPayment: {
           full_debt: 'Whole debt',

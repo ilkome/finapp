@@ -20,6 +20,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
 import { cashflowPoints, debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
 import { expenseAnomalies, incomeStability, intervalStats, PACE_WINDOW, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows, cashflowTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -270,6 +271,13 @@ const savingsSeries = computed<ChartSeries[]>(() => {
 })
 const savingsChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: false, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }))
 
+function exportCsv() {
+  const period = props.base.effectivePeriod.value
+  const labels = props.base.intervals.value.map(interval => formatChartTooltipLabel(interval.start, period, locale.value))
+  const title = t(isRows.value ? 'wallets.analytics.cashflow.modes.rows' : 'wallets.analytics.cashflow.title')
+  downloadCsv(title, toCsv(labels, toChartSeries(all.value.map(item => ({ ...item, type: 'line' as const })), currenciesStore.base)))
+}
+
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
   const sum = item.data.reduce((total, value) => total + value, 0)
   return {
@@ -321,6 +329,15 @@ function onSetting(id: string, value: number | string) {
       <UiTitleSection class="grow">
         {{ t(isRows ? 'wallets.analytics.cashflow.modes.rows' : 'wallets.analytics.cashflow.title') }}
       </UiTitleSection>
+      <UButton
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        icon="lucide:download"
+        :aria-label="t('wallets.analytics.exportCsv')"
+        data-analytics-export
+        @click="exportCsv"
+      />
       <WalletsAnalyticsSettingsMenu
         v-if="settings.length"
         :options="settings"

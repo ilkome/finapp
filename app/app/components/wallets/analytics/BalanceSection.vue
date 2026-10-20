@@ -13,10 +13,13 @@ import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsB
 import { formatAmount, minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
+import { MONTH_MS, nextMilestone } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { isCreditProduct } from '~/components/wallets/types'
@@ -26,7 +29,7 @@ const props = defineProps<{
   base: AnalyticsBase
 }>()
 
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const router = useRouter()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
@@ -109,8 +112,18 @@ const summary = computed<SummaryTile[]>(() => {
   ]
   const dateOf = (date: number) => formatByLocale(date, 'd MMM yyyy', dateLocale.value)
   const now = series.value.reduce((sum, item) => sum + (item.data.at(-1) ?? 0), 0)
+  const { end, start } = props.base.range.value
+  const change = series.value.reduce((sum, item) => sum + periodChange(item), 0)
+  const milestone = nextMilestone(now, change / ((end - start) / MONTH_MS), end)
+  const milestoneTile: SummaryTile = {
+    amount: milestone.target,
+    caption: milestone.date === null ? t('wallets.analytics.balance.milestoneNoPace') : `${t('wallets.analytics.balance.milestoneBy')} ${formatByLocale(milestone.date, 'LLLL yyyy', dateLocale.value)}`,
+    id: 'milestone',
+    label: t('wallets.analytics.balance.milestone'),
+  }
   return [
     ...parts,
+    milestoneTile,
     ...(min ? [{ amount: min.value, caption: dateOf(min.date), id: 'min', label: t('wallets.analytics.balance.min') }] : []),
     ...(max ? [{ amount: max.value, caption: dateOf(max.date), id: 'max', label: t('wallets.analytics.balance.max') }] : []),
     ...(ath
@@ -157,6 +170,12 @@ const changeChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: t
 
 // No wallets or no moves at all: empty axes would only look like a flat zero balance.
 const isEmpty = computed(() => !scopeWalletIds.value.length || series.value.every(item => !item.opening && item.data.every(value => value === 0)))
+
+function exportCsv() {
+  const period = props.base.effectivePeriod.value
+  const labels = props.base.intervals.value.map(interval => formatChartTooltipLabel(interval.start, period, locale.value))
+  downloadCsv(t('wallets.analytics.balance.title'), toCsv(labels, toChartSeries(chartSeries.value, currenciesStore.base)))
+}
 
 const legend = computed<AnalyticsLegendItem[]>(() => series.value.map(item => ({
   color: item.color ?? 'var(--ui-text-muted)',
@@ -213,6 +232,15 @@ function onSetting(id: string, value: number | string) {
       <UiTitleSection class="grow">
         {{ t('wallets.analytics.balance.title') }}
       </UiTitleSection>
+      <UButton
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        icon="lucide:download"
+        :aria-label="t('wallets.analytics.exportCsv')"
+        data-analytics-export
+        @click="exportCsv"
+      />
       <WalletsAnalyticsSettingsMenu
         :options="settings"
         :title="t('wallets.analytics.balance.title')"

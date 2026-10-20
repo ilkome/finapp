@@ -95,3 +95,13 @@ export function incomeStability(income: number[], fullCount: number) {
     return null
   return { max: Math.max(...full), median: median(full), min: Math.min(...full), share: full.filter(value => value > 0).length / full.length }
 }
+
+/** Average civil month, for paces per month. */
+export const MONTH_MS = 30.44 * 86_400_000
+
+/** The next round number above `value` (half of its order of magnitude as the step) and when the pace reaches it. */
+export function nextMilestone(value: number, monthlyPace: number, today: number): { date: number | null, target: number } {
+  const step = Math.max(1, 10 ** Math.floor(Math.log10(Math.max(1, Math.abs(value)))) / 2)
+  const target = (Math.floor(value / step) + 1) * step
+  return { date: monthlyPace > 0 ? Math.round(today + (target - value) / monthlyPace * MONTH_MS) : null, target }
+}

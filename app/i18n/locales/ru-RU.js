@@ -1064,6 +1064,9 @@ export default {
         changePerInterval: 'Изменение за интервал',
         down: 'Вниз',
         max: 'Максимум периода',
+        milestone: 'Следующий рубеж',
+        milestoneBy: 'в этом темпе к',
+        milestoneNoPace: 'за период не растёт',
         min: 'Минимум периода',
         net: 'Чистый капитал',
         parts: {
@@ -1140,6 +1143,7 @@ export default {
       errors: {
         saveFailed: 'Не удалось сохранить настройки прогноза',
       },
+      exportCsv: 'Скачать CSV',
       forecast: {
         cardPayment: {
           full_debt: 'Весь долг',

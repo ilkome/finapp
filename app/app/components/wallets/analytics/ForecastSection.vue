@@ -15,6 +15,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useForecast } from '~/components/wallets/analytics/useForecast'
@@ -101,6 +102,18 @@ const coverTooltipRows = computed(() => cover.value.values.map((value, index) =>
   name: t('wallets.analytics.cover.months'),
 }]))
 const coverChartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
+
+function exportCsv() {
+  const months = forecast.value.months
+  const series = [
+    { data: months.map(m => m.endWithoutIncome), name: t('wallets.analytics.forecast.withoutIncome') },
+    { data: months.map(m => m.endWithIncome), name: t('wallets.analytics.forecast.withIncome') },
+    { data: months.map(m => -m.regular), name: t('wallets.analytics.forecast.regular') },
+    { data: months.map(m => -m.obligations), name: t('wallets.analytics.forecast.obligations') },
+    { data: months.map(m => m.income), name: t('wallets.analytics.forecast.income') },
+  ]
+  downloadCsv(t('wallets.analytics.forecast.title'), toCsv(monthRows.value.map(row => row.label), toChartSeries(series.map(item => ({ ...item, type: 'line' as const })), currenciesStore.base)))
+}
 
 const chartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
 
@@ -257,6 +270,15 @@ function onSetting(id: string, value: number | string) {
       <UiTitleSection class="grow">
         {{ t('wallets.analytics.forecast.title') }}
       </UiTitleSection>
+      <UButton
+        color="neutral"
+        variant="ghost"
+        size="sm"
+        icon="lucide:download"
+        :aria-label="t('wallets.analytics.exportCsv')"
+        data-analytics-export
+        @click="exportCsv"
+      />
       <WalletsAnalyticsSettingsMenu
         :options="settingsOptions"
         :title="t('wallets.analytics.forecast.title')"

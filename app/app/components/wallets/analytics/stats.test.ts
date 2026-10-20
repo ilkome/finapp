@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, paceOf, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
+import { expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, nextMilestone, paceOf, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
 
@@ -56,5 +56,15 @@ describe('expenseAnomalies', () => {
 describe('incomeStability', () => {
   it('reads the share of intervals with income and its spread', () => {
     expect(incomeStability([1000, 0, 1200, 1100, 5], 4)).toEqual({ max: 1200, median: 1050, min: 0, share: 0.75 })
+  })
+})
+
+describe('nextMilestone', () => {
+  it('finds the next round number and the date at the pace', () => {
+    const today = Date.UTC(2026, 0, 1)
+    const result = nextMilestone(1_230_000, 90_000, today)
+    expect(result.target).toBe(1_500_000)
+    expect(result.date).toBeGreaterThan(Date.UTC(2026, 2, 1))
+    expect(nextMilestone(1_230_000, -5, today).date).toBeNull()
   })
 })
