@@ -15,7 +15,7 @@ const desc = computed({
   <DrawerOrDropdown
     :open="trnsFormStore.modal.description"
     :title="t('trnForm.description.title')"
-    class="shrink-0 grow-0!"
+    class="shrink-0"
     isShowCloseBtn
     @update:open="value => value ? trnsFormStore.openTrnFormModal('description') : trnsFormStore.closeTrnFormModal('description')"
   >

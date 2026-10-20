@@ -18,7 +18,7 @@ const label = computed(() => statDateRangeLabel({
     :title="t('dates.select')"
     popoverContentClass="md:w-max md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
-    class="flex grow-0 gap-1"
+    class="flex gap-1"
     isShowCloseBtn
     keyboardTrigger
   >

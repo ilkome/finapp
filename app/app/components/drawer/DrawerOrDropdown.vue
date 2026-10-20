@@ -61,7 +61,7 @@ function close() {
     :ui="{
       content: cn('z-50 overflow-hidden', props.popoverContentClass),
     }"
-    class="popoverGroup grow overflow-hidden"
+    class="popoverGroup overflow-hidden"
   >
     <slot name="trigger" :isActive="open" />
 
@@ -81,7 +81,6 @@ function close() {
 
   <div
     v-else
-    class="grow"
     :role="props.keyboardTrigger ? 'button' : undefined"
     :tabindex="props.keyboardTrigger ? 0 : undefined"
     @click="open = true"

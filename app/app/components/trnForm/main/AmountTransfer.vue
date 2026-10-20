@@ -106,6 +106,7 @@ watch(
               :disabledWalletIds="otherWalletIds(item.side)"
               :title="t(`trnForm.transfer.${slug}Modal`)"
               :walletId="sideWalletId(item.side)!"
+              class="grow"
               @selected="id => trnsFormStore.onTransferWalletSelected(item.side, id)"
             />
 
