@@ -5,6 +5,7 @@ import { debounce } from 'es-toolkit'
 
 import type { BlockRule, ConditionGroup, StatBlockPanelId } from '~/components/stat/views/types'
 
+import { STAT_STORAGE_KEYS } from '~/components/stat/constants'
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { cloneBlockRule } from '~/components/stat/views/blockRules'
 import { useStatConditionTitles } from '~/components/stat/views/useConditionTitles'
@@ -20,7 +21,7 @@ const controller = inject(statViewControllerKey)!
 const expandedId = ref<string | null>(null)
 // The default settings are the block's main content, so they start open and only a manual
 // collapse hides them; the choice is per block and outlives the session.
-const isDefaultExpanded = useStorage(`finapp.statConfig.defaultRuleExpanded.${props.panel}`, true)
+const isDefaultExpanded = useStorage(`${STAT_STORAGE_KEYS.defaultRuleExpandedPrefix}.${props.panel}`, true)
 let syncingFromStore = false
 const [sortParent, rules] = useDragAndDrop([] as BlockRule[], {
   dragHandle: '.blockRuleSortHandle',

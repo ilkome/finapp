@@ -8,6 +8,7 @@ import { normalizeStatConfigBlockOrder } from '~/components/stat/config/schema'
 import { isStatConfigRuleNav, useStatConfigNav } from '~/components/stat/config/useStatConfigNav'
 import { useStatConfigOverlay } from '~/components/stat/config/useStatConfigOverlay'
 import { useStatConfigAvailablePanels } from '~/components/stat/config/useStatConfigPanels'
+import { STAT_STORAGE_KEYS } from '~/components/stat/constants'
 import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
@@ -42,7 +43,7 @@ const pageLayoutItems = computed(() => ['combined', 'split'].map(value => ({
 
 // Which way the block settings are listed is a habit, not a property of the view - it outlives
 // both the session and whichever view happens to be active.
-const groupBy = useStorage<'blocks' | 'rules'>('finapp.statConfig.groupBy', 'blocks')
+const groupBy = useStorage<'blocks' | 'rules'>(STAT_STORAGE_KEYS.configGroupBy, 'blocks')
 const groupByItems = computed(() => (['blocks', 'rules'] as const).map(value => ({
   label: t(`stat.views.groupBy.${value}`),
   value,

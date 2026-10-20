@@ -37,6 +37,9 @@ async function enableDemo() {
   router.push('/dashboard')
 }
 
+// Nuxt UI passes extra fields through to the item slots.
+type UserMenuItem = DropdownMenuItem & { chip?: string, radius?: number, value?: string }
+
 function optionItems(groups: UserMenuGroup[]): DropdownMenuItem[][] {
   return groups.map(group => group.options.map(option => ({
     checked: option.checked,
@@ -119,25 +122,25 @@ const items = computed<DropdownMenuItem[][]>(() => {
     </template>
 
     <template #sub-trailing="{ item }">
-      <span class="text-xs font-normal text-dimmed capitalize">{{ (item as any).value }}</span>
+      <span class="text-xs font-normal text-dimmed capitalize">{{ (item as UserMenuItem).value }}</span>
       <UIcon name="lucide:chevron-right" class="size-4 shrink-0 text-muted" />
     </template>
 
     <template #swatch-leading="{ item }">
       <span class="flex size-5 shrink-0 justify-center">
-        <span v-if="(item as any).chip === BLACK_PRIMARY" class="size-5 shrink-0 rounded-full bg-black dark:bg-white" />
+        <span v-if="(item as UserMenuItem).chip === BLACK_PRIMARY" class="size-5 shrink-0 rounded-full bg-black dark:bg-white" />
         <span
-          v-else-if="(item as any).chip"
+          v-else-if="(item as UserMenuItem).chip"
           class="size-5 shrink-0 rounded-full bg-(--chip-light) dark:bg-(--chip-dark)"
           :style="{
-            '--chip-light': `var(--color-${swatchPalette((item as any).chip)}-500)`,
-            '--chip-dark': `var(--color-${swatchPalette((item as any).chip)}-400)`,
+            '--chip-light': `var(--color-${swatchPalette((item as UserMenuItem).chip!)}-500)`,
+            '--chip-dark': `var(--color-${swatchPalette((item as UserMenuItem).chip!)}-400)`,
           }"
         />
         <span
           v-else
           class="size-5 shrink-0 bg-elevated ring-1 ring-accented"
-          :style="{ borderRadius: `${(item as any).radius}rem` }"
+          :style="{ borderRadius: `${(item as UserMenuItem).radius}rem` }"
         />
       </span>
     </template>
