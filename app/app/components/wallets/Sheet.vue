@@ -19,8 +19,6 @@ const router = useRouter()
 const walletsStore = useWalletsStore()
 const isLoans = useFeature('loans')
 const isShowStat = ref(false)
-// On a phone the balance tiles open the statistics, so the button only takes space there.
-const isLaptop = useIsLaptop()
 
 const wallet = computed(() => walletsStore.items?.[props.walletId])
 const isCredit = computed(() => isCreditProduct(wallet.value?.type))
@@ -56,8 +54,6 @@ function openWallet() {
           :title="item.title"
           type="net"
           variant="summary"
-          class="interactive"
-          @click="isShowStat = true"
         />
       </div>
 
@@ -65,7 +61,6 @@ function openWallet() {
 
       <div class="sticky bottom-0 grid gap-2 bg-default pt-2">
         <UButton
-          v-if="isLaptop"
           block
           color="neutral"
           size="xl"
