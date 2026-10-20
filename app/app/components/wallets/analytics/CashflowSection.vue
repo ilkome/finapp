@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { u } from '~~/utils/date/civil'
+import { addCivilYears, u } from '~~/utils/date/civil'
 import { getEndOf } from '~~/utils/date/period'
 
 import type { AxisChartType } from '~/components/stat/chart/types'
@@ -11,7 +11,7 @@ import type { SummaryTile } from '~/components/wallets/analytics/SummaryTilesVie
 import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
 
 import { getTotal } from '~/components/amount/getTotal'
-import { formatAmount } from '~/components/amount/utils'
+import { formatAmount, minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { formatChartTooltipLabel } from '~/components/stat/chart/format'
@@ -20,7 +20,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
 import { cashflowPoints, debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
-import { intervalStats, PACE_WINDOW, paceOf } from '~/components/wallets/analytics/stats'
+import { expenseAnomalies, incomeStability, intervalStats, PACE_WINDOW, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows, cashflowTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -101,30 +101,33 @@ const all = computed(() => isRows.value
   ? rows.value.map(row => ({ color: row.color!, data: row.data, id: row.id, name: t(`money.types.${row.id}`), opening: row.opening }))
   : CASHFLOW_IDS.map(id => ({ color: colors[id], data: cashflow.value[id], id, name: t(`wallets.analytics.cashflow.${id}`), opening: undefined as number | undefined })))
 
+const anomalies = computed(() => isRows.value ? [] : expenseAnomalies(cashflow.value.expense, props.base.fullCount.value))
+
 const chartSeries = computed<ChartSeries[]>(() => all.value
   .filter(item => !hidden.value.has(item.id))
-  .map(item => ({ color: item.color, data: item.data, name: item.name, type: isRows.value ? 'line' : options.value.chartType })))
+  .map(item => ({
+    color: item.color,
+    data: item.data,
+    markPoint: item.id === 'expense' && anomalies.value.length
+      ? { data: anomalies.value.map(index => ({ coord: [index, minorToAmount(item.data[index]!, currenciesStore.base)] })), label: { show: false }, symbol: 'pin', symbolSize: 16 }
+      : undefined,
+    name: item.name,
+    type: isRows.value ? 'line' : options.value.chartType,
+  })))
 
-const tooltipRows = computed(() => isRows.value
-  ? balanceTooltipRows({
-      changeLabel: t('wallets.analytics.balance.change'),
-      currencyCode: currenciesStore.base,
-      series: all.value.filter(item => !hidden.value.has(item.id)),
-    })
-  : cashflowTooltipRows({
-      colors: { ...colors, toDebts: 'var(--ui-text-muted)' },
-      currencyCode: currenciesStore.base,
-      labels: {
-        expense: t('wallets.analytics.cashflow.expense'),
-        income: t('wallets.analytics.cashflow.income'),
-        interest: t('wallets.analytics.cashflow.interest'),
-        net: t('wallets.analytics.cashflow.net'),
-        savingsRate: t('wallets.analytics.cashflow.savingsRate'),
-        toDebts: t('wallets.analytics.cashflow.toDebts'),
-      },
-      points: cashflow.value,
-      toDebts: toDebts.value,
-    }))
+/** The same intervals a year earlier; for the year interval that is just the previous bar. */
+const lastYear = computed(() => {
+  if (isRows.value || props.base.effectivePeriod.value === 'year')
+    return null
+  const intervals = props.base.intervals.value.map(interval => ({ end: addCivilYears(interval.end, -1), start: addCivilYears(interval.start, -1) }))
+  const range = { end: intervals.at(-1)?.end ?? 0, start: intervals[0]?.start ?? 0 }
+  return cashflowPoints({
+    computeTotal: ids => totalOf(ids, props.base.tryToBaseAt(-1)),
+    intervals,
+    trnsIds: trnsStore.getStoreTrnsIds({ dates: range, walletsIds: props.base.walletIds.value }),
+    trnsItems: trnsStore.items ?? {},
+  })
+})
 
 // The rates right before the range price the previous period: one rate set for the whole compare.
 const previous = computed(() => {
@@ -155,6 +158,51 @@ const pace = computed(() => {
   })])) as Record<'expense' | 'income', ReturnType<typeof paceOf>>
 })
 
+const tooltipRows = computed(() => isRows.value
+  ? balanceTooltipRows({
+      changeLabel: t('wallets.analytics.balance.change'),
+      currencyCode: currenciesStore.base,
+      series: all.value.filter(item => !hidden.value.has(item.id)),
+    })
+  : cashflowTooltipRows({
+      colors: { ...colors, toDebts: 'var(--ui-text-muted)' },
+      currencyCode: currenciesStore.base,
+      labels: {
+        expense: t('wallets.analytics.cashflow.expense'),
+        income: t('wallets.analytics.cashflow.income'),
+        interest: t('wallets.analytics.cashflow.interest'),
+        net: t('wallets.analytics.cashflow.net'),
+        savingsRate: t('wallets.analytics.cashflow.savingsRate'),
+        toDebts: t('wallets.analytics.cashflow.toDebts'),
+      },
+      points: cashflow.value,
+      toDebts: toDebts.value,
+    }).map((rows, index) => {
+      const money = (value: number) => formatAmount(value, currenciesStore.base)
+      const extra: typeof rows = []
+      const year = lastYear.value
+      if (year && (year.income[index] || year.expense[index])) {
+        extra.push({
+          amount: minorToAmount(year.net[index]!, currenciesStore.base),
+          color: 'var(--ui-text-dimmed)',
+          description: `${t('wallets.analytics.cashflow.income')} ${money(year.income[index]!)} · ${t('wallets.analytics.cashflow.expense')} ${money(year.expense[index]!)}`,
+          key: 'yoy',
+          name: t('wallets.analytics.cashflow.yearAgo'),
+        })
+      }
+      // The unfinished interval draws its real value; the estimate for the whole of it goes here.
+      if (index === props.base.fullCount.value && pace.value) {
+        extra.push({
+          amount: -minorToAmount(pace.value.expense.estimate, currenciesStore.base),
+          color: colors.expense,
+          description: t('wallets.analytics.cashflow.inProgress'),
+          key: 'estimate',
+          name: t('wallets.analytics.cashflow.expenseEstimate'),
+        })
+      }
+      return [...rows, ...extra]
+    }))
+
 const summary = computed<SummaryTile[]>(() => {
   const points = cashflow.value
   const period = props.base.effectivePeriod.value
@@ -182,6 +230,15 @@ const summary = computed<SummaryTile[]>(() => {
       label: t('wallets.analytics.cashflow.soFar'),
     })
   }
+  const stability = incomeStability(points.income, props.base.fullCount.value)
+  if (stability) {
+    tiles.push({
+      caption: `${money(stability.min)} · ${money(stability.median)} · ${money(stability.max)}`,
+      id: 'incomeStability',
+      label: t('wallets.analytics.cashflow.incomeStability'),
+      text: formatPercent(stability.share),
+    })
+  }
   if (previous.value) {
     const now = { expense: sumOf(points.expense), income, net }
     for (const id of ['income', 'expense', 'net'] as const) {
@@ -200,6 +257,18 @@ const summary = computed<SummaryTile[]>(() => {
 })
 
 const isEmpty = computed(() => isRows.value ? !rows.value.length : !trnsIds.value.length)
+
+// Full intervals only: a half-finished one has half its income.
+const savingsSeries = computed<ChartSeries[]>(() => {
+  const count = props.base.fullCount.value
+  const { rates, rolling } = savingsRateTrend(cashflow.value.income.slice(0, count), cashflow.value.net.slice(0, count))
+  const percent = (values: (number | null)[]) => values.map(value => value === null ? Number.NaN : Math.round(value * 100))
+  return [
+    { color: 'var(--ui-primary)', data: percent(rates), name: t('wallets.analytics.cashflow.savingsRateTitle'), type: 'line' },
+    { color: 'var(--ui-text-dimmed)', data: percent(rolling), name: t('wallets.analytics.cashflow.rollingAverage'), type: 'line' },
+  ]
+})
+const savingsChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: false, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }))
 
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
   const sum = item.data.reduce((total, value) => total + value, 0)
@@ -297,6 +366,23 @@ function onSetting(id: string, value: number | string) {
       isToggleable
       @toggle="toggle"
     />
+
+    <div v-if="!isRows && !isEmpty && props.base.fullCount.value > 1" class="grid min-w-0 gap-1" data-analytics-savings-rate>
+      <UiText variant="caption" class="px-2">
+        {{ t('wallets.analytics.cashflow.savingsRateTrend') }}
+      </UiText>
+      <div class="min-h-32 min-w-0">
+        <LazyStatChartAxisView
+          isTooltipOnTap
+          scaleMode="fit"
+          :chartConfig="savingsChartConfig"
+          chartType="line"
+          :period="props.base.effectivePeriod.value"
+          :series="savingsSeries"
+          :xAxisLabels="props.base.xAxisLabels.value.slice(0, props.base.fullCount.value)"
+        />
+      </div>
+    </div>
 
     <WalletsAnalyticsSummaryTilesView
       v-if="!isRows && !isEmpty"

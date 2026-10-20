@@ -58,3 +58,40 @@ export function paceOf(params: {
     expectedByNow: median(window.map(item => item.byNow)),
   }
 }
+
+/** Intervals the savings-rate trend averages over. */
+export const ROLLING_WINDOW = 3
+/** The savings-rate chart is clamped to ±this share: a small income makes the rate explode. */
+export const SAVINGS_RATE_CLAMP = 1
+/** Expense this many times the median is an anomaly. */
+export const ANOMALY_FACTOR = 1.5
+
+/** Rolling mean over the last `window` values; null until a value exists in the window. */
+export function rollingMean(values: (number | null)[], window = ROLLING_WINDOW): (number | null)[] {
+  return values.map((_, index) => {
+    const slice = values.slice(Math.max(0, index - window + 1), index + 1).filter((value): value is number => value !== null)
+    return slice.length ? slice.reduce((sum, value) => sum + value, 0) / slice.length : null
+  })
+}
+
+/** Savings rate per interval (null without income) and its rolling mean, clamped for drawing. */
+export function savingsRateTrend(income: number[], net: number[]) {
+  const clamp = (value: number | null) => value === null ? null : Math.max(-SAVINGS_RATE_CLAMP, Math.min(SAVINGS_RATE_CLAMP, value))
+  const rates = income.map((value, index) => value > 0 ? net[index]! / value : null)
+  return { rates: rates.map(clamp), rolling: rollingMean(rates).map(clamp) }
+}
+
+/** Full intervals whose expense exceeds the median of the full ones by `ANOMALY_FACTOR`. */
+export function expenseAnomalies(expense: number[], fullCount: number): number[] {
+  const full = expense.slice(0, fullCount)
+  const threshold = median(full) * ANOMALY_FACTOR
+  return threshold > 0 ? full.flatMap((value, index) => value > threshold ? [index] : []) : []
+}
+
+/** How regular income is over the full intervals: the share with any, and its spread. */
+export function incomeStability(income: number[], fullCount: number) {
+  const full = income.slice(0, fullCount)
+  if (!full.length)
+    return null
+  return { max: Math.max(...full), median: median(full), min: Math.min(...full), share: full.filter(value => value > 0).length / full.length }
+}

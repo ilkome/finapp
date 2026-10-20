@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { intervalStats, isLastIntervalPartial, paceOf } from '~/components/wallets/analytics/stats'
+import { expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, paceOf, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
 
@@ -32,5 +32,29 @@ describe('paceOf', () => {
 
   it('scales by days with too little history', () => {
     expect(paceOf({ actual: 300, elapsedShare: 0.25, past: [{ byNow: 1, total: 2 }] })).toEqual({ estimate: 1200 })
+  })
+})
+
+describe('savingsRateTrend', () => {
+  it('leaves intervals without income empty and clamps a tiny income', () => {
+    const { rates, rolling } = savingsRateTrend([100, 0, 1, 200], [50, -30, -500, 100])
+    expect(rates).toEqual([0.5, null, -1, 0.5])
+    expect(rolling[1]).toBe(0.5)
+  })
+
+  it('averages over the window', () => {
+    expect(rollingMean([1, 2, 3, 4], 2)).toEqual([1, 1.5, 2.5, 3.5])
+  })
+})
+
+describe('expenseAnomalies', () => {
+  it('flags full intervals well above the median, not the current one', () => {
+    expect(expenseAnomalies([100, 100, 400, 100, 900], 4)).toEqual([2])
+  })
+})
+
+describe('incomeStability', () => {
+  it('reads the share of intervals with income and its spread', () => {
+    expect(incomeStability([1000, 0, 1200, 1100, 5], 4)).toEqual({ max: 1200, median: 1050, min: 0, share: 0.75 })
   })
 })
