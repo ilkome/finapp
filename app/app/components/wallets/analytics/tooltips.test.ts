@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
+import { debtPaymentsPoints, splitExpense } from '~/components/wallets/analytics/cashflow'
 import { balanceTooltipRows, cashflowTooltipRows, forecastTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
@@ -79,5 +79,24 @@ describe('debtPaymentsPoints', () => {
       walletIds: new Set(['cash', 'card', 'loan', 'other']),
       wallets,
     })).toEqual([300, 20])
+  })
+})
+
+describe('splitExpense', () => {
+  it('puts regular categories and loan interest in fixed, the rest in flexible', () => {
+    const trns = {
+      a: { categoryId: 'rent', date: day('2026-01-02'), fromAmount: 500, type: 'expense' },
+      b: { categoryId: 'loan_interest', date: day('2026-01-03'), fromAmount: 50, type: 'expense' },
+      c: { categoryId: 'food', date: day('2026-01-04'), fromAmount: 200, type: 'expense' },
+    } as unknown as Trns
+    const computeTotal = (ids: string[]) => ({ expense: ids.reduce((sum, id) => sum + (trns[id]!.fromAmount ?? 0), 0) }) as never
+    expect(splitExpense({
+      computeTotal,
+      expense: [750],
+      intervals: [{ end: day('2026-01-31'), start: day('2026-01-01') }],
+      isFixedCategory: id => id === 'rent',
+      trnsIds: Object.keys(trns),
+      trnsItems: trns,
+    })).toEqual({ fixed: [550], flexible: [200] })
   })
 })

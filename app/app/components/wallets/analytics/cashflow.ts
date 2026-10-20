@@ -68,3 +68,24 @@ export function debtPaymentsPoints(params: {
   }
   return result.map(Math.round)
 }
+
+/**
+ * Expense per interval split into fixed (regular categories and loan interest and fines, which the regular
+ * detection never sees) and flexible: the rest, the part a user can act on.
+ */
+export function splitExpense(params: {
+  computeTotal: (ids: TrnId[], index: number) => TotalReturns
+  expense: number[]
+  intervals: Range[]
+  isFixedCategory: (categoryId: string) => boolean
+  trnsIds: TrnId[]
+  trnsItems: Trns
+}): { fixed: number[], flexible: number[] } {
+  const { computeTotal, expense, intervals, isFixedCategory, trnsIds, trnsItems } = params
+  const fixedIds = trnsIds.filter((id) => {
+    const trn = trnsItems[id]
+    return trn?.type === 'expense' && !!trn.categoryId && (INTEREST_CATEGORY_IDS.has(trn.categoryId) || isFixedCategory(trn.categoryId))
+  })
+  const fixed = cashflowPoints({ computeTotal, intervals, trnsIds: fixedIds, trnsItems }).expense
+  return { fixed, flexible: expense.map((value, index) => value - fixed[index]!) }
+}

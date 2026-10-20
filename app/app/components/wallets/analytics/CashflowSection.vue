@@ -18,11 +18,12 @@ import { formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
-import { cashflowPoints, debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
+import { cashflowPoints, debtPaymentsPoints, splitExpense } from '~/components/wallets/analytics/cashflow'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
 import { cumulative, expenseAnomalies, incomeStability, intervalStats, PACE_CURVE_WINDOW, PACE_WINDOW, paceCurve, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows, cashflowTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
+import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -41,17 +42,21 @@ const currenciesStore = useCurrenciesStore()
 const ROW_IDS = ['total', 'isWithdrawable', 'isAvailable', 'isAvailableAll', 'cash', 'bank_account', 'deposit', 'credit_card', 'loan', 'crypto', 'debt'] as const
 const DAY_MS = 86_400_000
 const CASHFLOW_IDS = ['income', 'expense', 'interest', 'net'] as const
-type CashflowId = typeof CASHFLOW_IDS[number]
+const SPLIT_IDS = ['income', 'fixed', 'flexible', 'interest', 'net'] as const
+type CashflowId = typeof CASHFLOW_IDS[number] | 'fixed' | 'flexible'
 
 const options = useStorage(WALLET_STORAGE_KEYS.analyticsCashflow, {
   chartType: 'bar' as AxisChartType,
   hidden: [] as string[],
+  isSplitExpense: false,
   mode: 'cashflow' as 'cashflow' | 'rows',
   rowsHidden: [] as string[],
 }, localStorage, { mergeDefaults: true })
 
 const colors: Record<CashflowId, string> = {
   expense: 'var(--color-expense-1)',
+  fixed: 'var(--color-expense-2)',
+  flexible: 'var(--color-expense-1)',
   income: 'var(--color-income-1)',
   interest: 'var(--ui-warning)',
   net: 'var(--ui-primary)',
@@ -77,6 +82,18 @@ const cashflow = computed(() => cashflowPoints({
   trnsItems: trnsStore.items ?? {},
 }))
 
+const { isRegularCategory } = useSharedForecast()
+const split = computed(() => options.value.isSplitExpense
+  ? splitExpense({
+      computeTotal: (ids, index) => totalOf(ids, props.base.tryToBaseAt(index)),
+      expense: cashflow.value.expense,
+      intervals: props.base.intervals.value,
+      isFixedCategory: isRegularCategory,
+      trnsIds: trnsIds.value,
+      trnsItems: trnsStore.items ?? {},
+    })
+  : null)
+
 const toDebts = computed(() => debtPaymentsPoints({
   intervals: props.base.intervals.value,
   toBaseAt: props.base.toBaseAt,
@@ -101,7 +118,13 @@ const hidden = computed(() => new Set(options.value[hiddenKey.value]))
 
 const all = computed(() => isRows.value
   ? rows.value.map(row => ({ color: row.color!, data: row.data, id: row.id, name: t(`money.types.${row.id}`), opening: row.opening }))
-  : CASHFLOW_IDS.map(id => ({ color: colors[id], data: cashflow.value[id], id, name: t(`wallets.analytics.cashflow.${id}`), opening: undefined as number | undefined })))
+  : (split.value ? SPLIT_IDS : CASHFLOW_IDS).map(id => ({
+      color: colors[id],
+      data: id === 'fixed' || id === 'flexible' ? split.value![id] : cashflow.value[id],
+      id,
+      name: t(`wallets.analytics.cashflow.${id}`),
+      opening: undefined as number | undefined,
+    })))
 
 const anomalies = computed(() => isRows.value ? [] : expenseAnomalies(cashflow.value.expense, props.base.fullCount.value))
 
@@ -182,6 +205,11 @@ const tooltipRows = computed(() => isRows.value
     }).map((rows, index) => {
       const money = (value: number) => formatAmount(value, currenciesStore.base)
       const extra: typeof rows = []
+      if (split.value) {
+        const expenseRow = rows.find(row => row.key === 'expense')
+        if (expenseRow)
+          expenseRow.description = `${t('wallets.analytics.cashflow.fixed')} ${money(split.value.fixed[index]!)} · ${t('wallets.analytics.cashflow.flexible')} ${money(split.value.flexible[index]!)}`
+      }
       const year = lastYear.value
       if (year && (year.income[index] || year.expense[index])) {
         extra.push({
@@ -350,15 +378,23 @@ const modeItems = computed(() => (['cashflow', 'rows'] as const).map(value => ({
 // Balances only read as lines, so the type switch is for the cashflow mode.
 const settings = computed<AnalyticsOption[]>(() => isRows.value
   ? []
-  : [{
-      id: 'chartType',
-      items: (['bar', 'line'] as const).map(value => ({ label: t(`wallets.analytics.chartType.${value}`), value })),
-      label: t('wallets.analytics.chartType.label'),
-      value: options.value.chartType,
-    }])
+  : [
+      {
+        id: 'chartType',
+        items: (['bar', 'line'] as const).map(value => ({ label: t(`wallets.analytics.chartType.${value}`), value })),
+        label: t('wallets.analytics.chartType.label'),
+        value: options.value.chartType,
+      },
+      {
+        id: 'isSplitExpense',
+        items: [{ label: t('wallets.analytics.cashflow.expense'), value: 'no' }, { label: t('wallets.analytics.cashflow.splitExpense'), value: 'yes' }],
+        label: t('wallets.analytics.cashflow.expenseView'),
+        value: options.value.isSplitExpense ? 'yes' : 'no',
+      },
+    ])
 
 function onSetting(id: string, value: number | string) {
-  options.value = { ...options.value, [id]: value }
+  options.value = { ...options.value, [id]: id === 'isSplitExpense' ? value === 'yes' : value }
 }
 </script>
 

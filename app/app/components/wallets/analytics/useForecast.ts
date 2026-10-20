@@ -103,6 +103,10 @@ export function useForecast() {
     overrides: overrides.value,
     windowMonths: settings.value.historyMonths,
   }))
+  const regularIds = computed(() => new Set(regular.value.filter(item => item.isRegular).map(item => item.categoryId)))
+  /** Whether a category's spending is regular, folded the way the detection folds it. */
+  const isRegularCategory = (categoryId: CategoryId) => regularIds.value.has(rollUp(categoryId))
+
   const spentThisMonth = computed(() => sums.value.thisMonth.spending)
 
   const income = computed(() => typicalAmount(sums.value.window.income, settings.value.regularAmountMode))
@@ -202,6 +206,7 @@ export function useForecast() {
     cover,
     forecast,
     income,
+    isRegularCategory,
     obligations,
     regular,
     runwayOf,
