@@ -7,6 +7,7 @@ import type { SharesGroupBy, SharesMode, SharesSort } from '~/components/wallets
 import type { AnalyticsShareRow } from '~/components/wallets/analytics/SharesView.vue'
 import type { WalletId } from '~/components/wallets/types'
 
+import { formatAmount } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
@@ -93,9 +94,28 @@ function onSetting(id: string, value: number | string) {
   options.value = { ...options.value, [id]: value }
 }
 
+const totalValue = computed(() => mode.value === 'gross' || mode.value === 'split' ? shares.value.total : rows.value.reduce((sum, row) => sum + row.signedValue, 0))
+
+const openId = ref<string | null>(null)
+const openGroup = computed(() => {
+  const item = shares.value.items.find(entry => entry.id === openId.value)
+  return item && {
+    name: nameOf(item.id),
+    wallets: item.walletIds.map(id => ({ amount: walletsStore.itemsComputed[id]?.amount ?? 0, currencyCode: walletsStore.itemsComputed[id]?.currencyCode ?? currenciesStore.base, id, name: walletsStore.items?.[id]?.name ?? id })),
+  }
+})
+
 function onSelect(id: string) {
   if (options.value.groupBy === 'wallet')
     router.push(`/wallets/${id.split(':')[0]}`)
+  else
+    openId.value = id
+}
+
+function onSelectSlice(name: string) {
+  const row = rows.value.find(item => item.name === name)
+  if (row)
+    onSelect(row.id)
 }
 </script>
 
@@ -129,8 +149,10 @@ function onSelect(id: string) {
         isDonut
         :isShowLabels="false"
         isShowPercent
+        :centerLabel="formatAmount(totalValue, currenciesStore.base)"
         :series="pieSeries"
         :xAxisLabels="[0]"
+        @selectSlice="onSelectSlice"
       />
     </div>
 
@@ -139,12 +161,33 @@ function onSelect(id: string) {
       :currencyCode="currenciesStore.base"
       :items="rows"
       :totalLabel="t('wallets.analytics.shares.total')"
-      :totalValue="mode === 'gross' || mode === 'split' ? shares.total : rows.reduce((sum, row) => sum + row.signedValue, 0)"
+      :totalValue
       @select="onSelect"
     />
 
     <UiText v-else variant="meta" class="px-2">
       {{ t('wallets.analytics.shares.empty') }}
     </UiText>
+
+    <UiSheet
+      v-if="openGroup"
+      modalClass="max-w-md"
+      :title="openGroup.name"
+      @closed="openId = null"
+    >
+      <div class="grid pb-3">
+        <UiElement
+          v-for="wallet in openGroup.wallets"
+          :key="wallet.id"
+          :data-share-wallet="wallet.id"
+          @click="router.push(`/wallets/${wallet.id}`)"
+        >
+          <div class="min-w-0 grow truncate text-sm">
+            {{ wallet.name }}
+          </div>
+          <Amount :amount="wallet.amount" :currencyCode="wallet.currencyCode" variant="row" />
+        </UiElement>
+      </div>
+    </UiSheet>
   </section>
 </template>

@@ -20,6 +20,7 @@ type PieTooltipParam = {
 }
 
 const {
+  centerLabel,
   endValue,
   isDonut = true,
   isRoundIcon = false,
@@ -29,6 +30,8 @@ const {
   startValue,
   xAxisLabels,
 } = defineProps<{
+  /** Text in the donut hole, e.g. the formatted total. */
+  centerLabel?: string
   endValue?: number
   isDonut?: boolean
   isRoundIcon?: boolean
@@ -41,6 +44,8 @@ const {
 
 const emit = defineEmits<{
   select: []
+  /** A slice was tapped, by its name. */
+  selectSlice: [name: string]
 }>()
 
 use([PieChart, SVGRenderer, TooltipComponent])
@@ -262,7 +267,13 @@ function pieTooltipRows(param: PieTooltipParam) {
     :aria-label="chartAriaLabel"
     @click="emit('select')"
   >
-    <VChart :option :updateOptions="{ notMerge: true }" autoresize style="overflow: visible">
+    <VChart
+      :option
+      :updateOptions="{ notMerge: true }"
+      autoresize
+      style="overflow: visible"
+      @click="(params: { name?: string }) => params.name && emit('selectSlice', params.name)"
+    >
       <template #tooltip="params">
         <StatChartAxisTooltip :isRoundIcon :rows="pieTooltipRows(params as PieTooltipParam)" />
       </template>
@@ -272,6 +283,13 @@ function pieTooltipRows(param: PieTooltipParam) {
       class="pointer-events-none absolute inset-0"
       aria-hidden="true"
     >
+      <div
+        v-if="centerLabel && isDonut"
+        class="absolute inset-0 flex items-center justify-center px-[30%] text-center font-secondary text-sm leading-tight text-highlighted"
+        data-pie-center
+      >
+        {{ centerLabel }}
+      </div>
       <div
         v-for="(item, index) in piePercentLabels"
         :key="`percent-${index}`"
