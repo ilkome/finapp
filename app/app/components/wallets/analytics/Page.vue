@@ -67,6 +67,7 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <WalletsAnalyticsBalanceSection :base />
       <WalletsAnalyticsCashflowSection :base />
+      <WalletsAnalyticsMoversSection :base />
       <WalletsAnalyticsDebtSection v-if="isLoans" :base />
 
       <!-- Snapshots of today: the range tabs above do not drive them. -->

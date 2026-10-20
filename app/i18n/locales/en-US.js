@@ -1200,6 +1200,10 @@ export default {
       },
       missingRates: 'No exchange rate for {currencies}: these wallets are left out of the charts.',
       missingRatesLink: 'Set rates',
+      movers: {
+        caption: 'Spending against the same days of the previous period',
+        title: 'Top movers',
+      },
       now: {
         caption: 'Today\'s balances and plans, whatever range is picked above',
         title: 'Now',
