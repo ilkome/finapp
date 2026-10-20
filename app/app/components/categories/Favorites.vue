@@ -4,6 +4,7 @@ import { useStorage } from '@vueuse/core'
 import type { FavoritesSection } from '~/components/categories/FavoritesView.vue'
 import type { CategoryId } from '~/components/categories/types'
 
+import { CATEGORY_STORAGE_KEYS } from '~/components/categories/constants'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCategoryDelete } from '~/components/categories/useCategoryDelete'
 import { useCategoryMenuItems } from '~/components/categories/useCategoryMenuItems'
@@ -32,7 +33,7 @@ const isLaptop = useIsLaptop()
 // The quick grid follows the form sheets' view settings.
 const { backgroundType, isRoundIcon } = useCategoriesViewSettings('form')
 // The quick grid folds its sections on its own, apart from the form sheets' blocks.
-const blocksOpen = useStorage<Record<string, boolean>>('finapp.categoriesQuickOpen', {}, localStorage, { mergeDefaults: true })
+const blocksOpen = useStorage<Record<string, boolean>>(CATEGORY_STORAGE_KEYS.quickOpen, {}, localStorage, { mergeDefaults: true })
 const collapsedKeys = computed(() => Object.keys(blocksOpen.value).filter(key => blocksOpen.value[key] === false))
 
 const editingCategoryId = ref<CategoryId | null>(null)

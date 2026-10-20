@@ -154,6 +154,7 @@ function onRowClick(e: Event) {
         type="button"
         class="-mr-1 flex size-9 shrink-0 items-center justify-center rounded-sm text-muted hover:bg-elevated/50"
         :aria-label="t('base.toggleExpand')"
+        :aria-expanded="props.isExpanded"
         @click="onToggleClick"
       >
         <Icon
