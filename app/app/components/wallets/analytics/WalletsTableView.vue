@@ -27,6 +27,9 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+/** Rows shown before "Show all". */
+const COLLAPSED_ROWS = 8
+const isExpanded = ref(false)
 const sort = ref<{ isAsc: boolean, key: SortKey }>({ isAsc: false, key: 'value' })
 
 const sorted = computed(() => props.items.toSorted((a, b) => {
@@ -34,6 +37,8 @@ const sorted = computed(() => props.items.toSorted((a, b) => {
   const order = key === 'name' ? a.name.localeCompare(b.name) : a[key] - b[key]
   return isAsc ? order : -order
 }))
+
+const visible = computed(() => isExpanded.value ? sorted.value : sorted.value.slice(0, COLLAPSED_ROWS))
 
 function setSort(key: SortKey) {
   sort.value = { isAsc: sort.value.key === key ? !sort.value.isAsc : key === 'name', key }
@@ -79,9 +84,9 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
     </div>
 
     <UiElement
-      v-for="(item, index) in sorted"
+      v-for="(item, index) in visible"
       :key="item.id"
-      :lineWidth="index === sorted.length - 1 ? 0 : 3"
+      :lineWidth="index === visible.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-wallet-row="item.id"
       role="button"
@@ -104,5 +109,17 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
         {{ Math.round(item.share * 100) }}%
       </UiText>
     </UiElement>
+
+    <UButton
+      v-if="sorted.length > COLLAPSED_ROWS"
+      color="neutral"
+      variant="link"
+      size="sm"
+      class="justify-self-start px-3"
+      data-wallets-table-toggle
+      @click="isExpanded = !isExpanded"
+    >
+      {{ isExpanded ? t('wallets.analytics.hide') : t('wallets.analytics.table.showAll', { count: sorted.length }) }}
+    </UButton>
   </div>
 </template>

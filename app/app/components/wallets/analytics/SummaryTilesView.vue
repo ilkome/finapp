@@ -5,6 +5,8 @@ export type SummaryTile = {
   /** Minor units; a tile without it shows `text`. */
   amount?: number
   caption?: string
+  /** In-page anchor the caption links to. */
+  captionHref?: string
   id: string
   isShowPlus?: boolean
   /** The caption reads as a warning. */
@@ -14,13 +16,15 @@ export type SummaryTile = {
 }
 
 const props = defineProps<{
+  /** Tiles per row on a wide page; pick one that divides the tile count so no tile is left alone. */
+  columns?: 3 | 4
   currencyCode: CurrencyCode
   items: SummaryTile[]
 }>()
 </script>
 
 <template>
-  <div class="grid grid-cols-2 gap-2 @xl/page:grid-cols-3" data-analytics-summary>
+  <div class="grid grid-cols-2 gap-2" :class="props.columns === 4 ? '@xl/page:grid-cols-4' : '@xl/page:grid-cols-3'" data-analytics-summary>
     <div
       v-for="item in props.items"
       :key="item.id"
@@ -43,7 +47,10 @@ const props = defineProps<{
         {{ item.text }}
       </div>
       <UiText v-if="item.caption" variant="meta" class="leading-snug!" :class="item.isWarning && 'text-warning!'">
-        {{ item.caption }}
+        <a v-if="item.captionHref" :href="item.captionHref" class="underline underline-offset-2">{{ item.caption }}</a>
+        <template v-else>
+          {{ item.caption }}
+        </template>
       </UiText>
     </div>
   </div>

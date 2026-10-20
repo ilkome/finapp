@@ -22,7 +22,7 @@ const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const { forecast, runwayOf, today } = useSharedForecast()
+const { forecast, incomeOutsideWalletIds, runwayOf, today } = useSharedForecast()
 
 const total = computed(() => splitOpening(balanceSeries({
   balances: props.base.pointBalances.value,
@@ -55,22 +55,26 @@ const safety = computed(() => {
   const runway = forecast.value.runwayWithoutIncome
   if (runway === null)
     return { caption: t('wallets.analytics.kpi.beyondHorizon'), text: t('wallets.analytics.forecast.enough') }
+  // Income landing outside the forecast's wallets is the usual reason for a short runway; point at the hint.
+  const outside = incomeOutsideWalletIds.value.length
+    ? { caption: t('wallets.analytics.kpi.incomeOutside'), captionHref: '#analytics-forecast', isWarning: true }
+    : {}
   if (runway <= today.value)
-    return { text: t('wallets.analytics.forecast.runOut') }
+    return { ...outside, text: t('wallets.analytics.forecast.runOut') }
   const months = (runway - today.value) / MONTH_MS
-  return { caption: runwayOf(runway).dateLabel ?? undefined, text: `${Math.round(months * 10) / 10}` }
+  return { caption: runwayOf(runway).dateLabel ?? undefined, ...outside, text: `${Math.round(months * 10) / 10}` }
 })
 
 const tiles = computed<SummaryTile[]>(() => [
   { amount: total.value?.data.at(-1) ?? 0, id: 'netWorth', label: t('wallets.analytics.balance.net') },
   { amount: total.value ? periodChange(total.value) : 0, id: 'change', isShowPlus: true, label: t('wallets.analytics.kpi.change') },
   { id: 'savingsRate', label: t('wallets.analytics.cashflow.savingsRateTitle'), text: formatPercent(savingsRate(flows.value.net, flows.value.income)) },
-  { caption: safety.value.caption, id: 'safety', label: t('wallets.analytics.kpi.safety'), text: safety.value.text },
+  { ...safety.value, id: 'safety', label: t('wallets.analytics.kpi.safety'), text: safety.value.text },
 ])
 </script>
 
 <template>
   <section class="min-w-0 @3xl/page:col-span-2" data-analytics-kpi>
-    <WalletsAnalyticsSummaryTilesView :currencyCode="currenciesStore.base" :items="tiles" />
+    <WalletsAnalyticsSummaryTilesView :currencyCode="currenciesStore.base" :columns="4" :items="tiles" />
   </section>
 </template>

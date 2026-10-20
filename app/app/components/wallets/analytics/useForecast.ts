@@ -44,10 +44,13 @@ export function useForecast() {
 
   const settings = computed(() => settingsStore.settings)
 
-  /** Wallets the forecast can start from; credit products come in through their obligations. */
-  const availableWalletIds = computed<WalletId[]>(() => walletsStore.sortedIds.filter((id) => {
+  /**
+   * Wallets the forecast can start from: the ones counted in totals (archived and not-in-total wallets only when their
+   * switches are on); credit products come in through their obligations.
+   */
+  const availableWalletIds = computed<WalletId[]>(() => countedWalletIds.value.filter((id) => {
     const wallet = walletsStore.items?.[id]
-    return !!wallet && !wallet.isArchived && !isCreditProduct(wallet.type)
+    return !!wallet && !isCreditProduct(wallet.type)
   }))
   const startWalletIds = computed<WalletId[]>(() =>
     availableWalletIds.value.filter(id => isWalletInForecast(walletsStore.items![id]!)))

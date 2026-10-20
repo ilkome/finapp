@@ -3,6 +3,7 @@ export const WALLET_STORAGE_KEYS = {
   activeType: 'finapp.wallets-active-type',
   analyticsBalance: 'finapp.wallets-analytics-balance',
   analyticsCashflow: 'finapp.wallets-analytics-cashflow',
+  analyticsCollapsed: 'finapp.wallets-analytics-collapsed',
   analyticsForecast: 'finapp.wallets-analytics-forecast',
   analyticsPeriod: 'finapp.wallets-analytics-period',
   analyticsRange: 'finapp.wallets-analytics-range',

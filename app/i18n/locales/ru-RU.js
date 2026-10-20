@@ -1106,7 +1106,7 @@ export default {
         interest: 'Проценты и штрафы',
         medianNet: 'Нетто, медиана за интервал',
         modes: {
-          cashflow: 'Доходы и расходы',
+          cashflow: 'Итоги',
           rows: 'Пункты статистики',
         },
         net: 'Итого',
@@ -1209,6 +1209,10 @@ export default {
         },
       },
       hide: 'Скрыть',
+      include: {
+        off: 'Нет',
+        on: 'Да',
+      },
       insights: {
         expensePace: {
           down: 'Расходы этого интервала идут на {percent}% ниже обычного',
@@ -1220,6 +1224,7 @@ export default {
       kpi: {
         beyondHorizon: 'дольше горизонта прогноза',
         change: 'Изменение за период',
+        incomeOutside: 'доход вне прогноза',
         safety: 'Месяцев запаса',
       },
       missingRates: 'Нет курса для {currencies}: эти кошельки не попали в графики.',
@@ -1308,10 +1313,12 @@ export default {
         name: 'По названию',
       },
       table: {
+        caption: 'Доля считается среди активов или среди долгов, по знаку остатка',
         change: 'Изм.',
         changeFull: 'Изменение за период',
         name: 'Кошелёк',
         share: 'Доля',
+        showAll: 'Показать все ({count})',
         title: 'Кошельки',
         trend: {
           down: 'Динамика: снижение {percent}',
@@ -1325,6 +1332,7 @@ export default {
         next: 'Ближайший платёж',
         total: 'К оплате за {days} дней',
       },
+      walletsSettings: 'Кошельки в аналитике',
       whatIf: {
         amount: 'Разовая сумма',
         date: 'Дата',

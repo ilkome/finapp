@@ -298,7 +298,7 @@ function onSetting(id: string, value: number | string) {
 </script>
 
 <template>
-  <section class="grid min-w-0 content-start gap-4" data-analytics-forecast>
+  <section id="analytics-forecast" class="grid min-w-0 scroll-mt-28 content-start gap-4" data-analytics-forecast>
     <div class="flex items-center gap-2">
       <UiTitleSection class="grow">
         {{ t('wallets.analytics.forecast.title') }}

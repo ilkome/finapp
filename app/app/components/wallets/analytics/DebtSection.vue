@@ -63,7 +63,7 @@ const tiles = computed<SummaryTile[]>(() => {
   const { items, total } = utilization.value
   return [
     { amount: -totalDebt.value, id: 'debt', label: t('wallets.analytics.debts.total') },
-    { amount: -interestPaid.value, id: 'interest', label: t('wallets.analytics.debts.interest') },
+    { amount: interestPaid.value, id: 'interest', label: t('wallets.analytics.debts.interest') },
     ...(nearestPayoff.value
       ? [{ caption: nearestPayoff.value.name, id: 'payoff', label: t('wallets.analytics.debts.payoff'), text: formatByLocale(nearestPayoff.value.date, 'd MMM yyyy', dateLocale.value) }]
       : []),

@@ -300,8 +300,9 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
+    <!-- A lone net-worth row repeats the KPI header above the page. -->
     <WalletsAnalyticsLegendView
-      v-if="!isEmpty"
+      v-if="!isEmpty && (legend.length > 1 || options.scope !== 'net')"
       :currencyCode="currenciesStore.base"
       :items="legend"
       :isToggleable="legend.length > 1"

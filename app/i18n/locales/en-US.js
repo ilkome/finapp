@@ -1106,7 +1106,7 @@ export default {
         interest: 'Interest and fines',
         medianNet: 'Net, median per interval',
         modes: {
-          cashflow: 'Income and expense',
+          cashflow: 'Totals',
           rows: 'Statistics rows',
         },
         net: 'Net',
@@ -1209,6 +1209,10 @@ export default {
         },
       },
       hide: 'Hide',
+      include: {
+        off: 'No',
+        on: 'Yes',
+      },
       insights: {
         expensePace: {
           down: 'Expenses of this interval are heading {percent}% below the usual',
@@ -1220,6 +1224,7 @@ export default {
       kpi: {
         beyondHorizon: 'past the forecast horizon',
         change: 'Change for the period',
+        incomeOutside: 'income is outside the forecast',
         safety: 'Months of safety',
       },
       missingRates: 'No exchange rate for {currencies}: these wallets are left out of the charts.',
@@ -1308,10 +1313,12 @@ export default {
         name: 'By name',
       },
       table: {
+        caption: 'Share is of assets for a wallet with money and of debts for a wallet that owes',
         change: 'Change',
         changeFull: 'Change for the period',
         name: 'Wallet',
         share: 'Share',
+        showAll: 'Show all ({count})',
         title: 'Wallets',
         trend: {
           down: 'Trend: down {percent}',
@@ -1325,6 +1332,7 @@ export default {
         next: 'Next payment',
         total: 'Due in {days} days',
       },
+      walletsSettings: 'Wallets in the analytics',
       whatIf: {
         amount: 'One-off amount',
         date: 'Date',
