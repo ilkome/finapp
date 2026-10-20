@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
-import { addCivilYears, u } from '~~/utils/date/civil'
+import { addCivilDays, addCivilYears, u } from '~~/utils/date/civil'
 import { getEndOf } from '~~/utils/date/period'
 
 import type { AxisChartType } from '~/components/stat/chart/types'
@@ -21,7 +21,7 @@ import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/w
 import { cashflowPoints, debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
-import { expenseAnomalies, incomeStability, intervalStats, PACE_WINDOW, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
+import { cumulative, expenseAnomalies, incomeStability, intervalStats, PACE_CURVE_WINDOW, PACE_WINDOW, paceCurve, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows, cashflowTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -39,6 +39,7 @@ const currenciesStore = useCurrenciesStore()
 
 /** Ids of the wallets statistics rows the chart can draw, in the block's order. */
 const ROW_IDS = ['total', 'isWithdrawable', 'isAvailable', 'isAvailableAll', 'cash', 'bank_account', 'deposit', 'credit_card', 'loan', 'crypto', 'debt'] as const
+const DAY_MS = 86_400_000
 const CASHFLOW_IDS = ['income', 'expense', 'interest', 'net'] as const
 type CashflowId = typeof CASHFLOW_IDS[number]
 
@@ -278,6 +279,44 @@ function exportCsv() {
   downloadCsv(title, toCsv(labels, toChartSeries(all.value.map(item => ({ ...item, type: 'line' as const })), currenciesStore.base)))
 }
 
+/** Cumulative expense of the current interval by day against the typical curve of past ones. */
+const spendingPace = computed(() => {
+  const { effectivePeriod, fullCount, intervals } = props.base
+  const current = intervals.value[fullCount.value]
+  if (isRows.value || !current || effectivePeriod.value === 'day')
+    return null
+  const length = Math.round((getEndOf(u(current.start), effectivePeriod.value).getTime() - current.start) / DAY_MS)
+  const past = intervals.value.slice(Math.max(0, fullCount.value - PACE_CURVE_WINDOW), fullCount.value)
+  if (!past.length)
+    return null
+  const days = (interval: { end: number, start: number }) => Array.from({ length: Math.round((interval.end - interval.start) / DAY_MS) }, (_, day) => {
+    const start = addCivilDays(interval.start, day)
+    return { end: start + DAY_MS - 1, start }
+  })
+  const daily = (list: { end: number, start: number }[], index: (day: number) => number) => cashflowPoints({
+    computeTotal: (ids, day) => totalOf(ids, props.base.tryToBaseAt(index(day))),
+    intervals: list,
+    trnsIds: trnsIds.value,
+    trnsItems: trnsStore.items ?? {},
+  }).expense
+  const offset = fullCount.value - past.length
+  const curves = past.map((interval, index) => cumulative(daily(days(interval), () => offset + index)))
+  const actual = cumulative(daily(days(current), () => fullCount.value))
+  const curve = paceCurve(curves, length)
+  const labels = Array.from({ length }, (_, day) => addCivilDays(current.start, day))
+  const pad = (values: number[]) => labels.map((_, day) => day < values.length ? values[day]! : Number.NaN)
+  return {
+    labels,
+    series: [
+      { color: 'var(--ui-text-dimmed)', data: curve.p75, name: t('wallets.analytics.cashflow.pace.p75'), type: 'line' as const },
+      { color: 'var(--ui-text-muted)', data: curve.median, name: t('wallets.analytics.cashflow.pace.median'), type: 'line' as const },
+      { color: 'var(--ui-text-dimmed)', data: curve.p25, name: t('wallets.analytics.cashflow.pace.p25'), type: 'line' as const },
+      { color: colors.expense, data: pad(actual), name: t('wallets.analytics.cashflow.pace.current'), type: 'line' as const },
+    ],
+  }
+})
+const paceChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: false, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: false, isSmooth: false }, type: 'line' as const }))
+
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
   const sum = item.data.reduce((total, value) => total + value, 0)
   return {
@@ -383,6 +422,22 @@ function onSetting(id: string, value: number | string) {
       isToggleable
       @toggle="toggle"
     />
+
+    <div v-if="spendingPace && !isEmpty" class="grid min-w-0 gap-1" data-analytics-spending-pace>
+      <UiText variant="caption" class="px-2">
+        {{ t('wallets.analytics.cashflow.pace.title') }}
+      </UiText>
+      <div class="min-h-32 min-w-0">
+        <LazyStatChartAxisView
+          isTooltipOnTap
+          :chartConfig="paceChartConfig"
+          chartType="line"
+          period="day"
+          :series="toChartSeries(spendingPace.series, currenciesStore.base)"
+          :xAxisLabels="spendingPace.labels"
+        />
+      </div>
+    </div>
 
     <div v-if="!isRows && !isEmpty && props.base.fullCount.value > 1" class="grid min-w-0 gap-1" data-analytics-savings-rate>
       <UiText variant="caption" class="px-2">

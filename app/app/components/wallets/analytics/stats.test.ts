@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, nextMilestone, paceOf, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
+import { cumulative, expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, nextMilestone, paceCurve, paceOf, quantile, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
 
@@ -66,5 +66,13 @@ describe('nextMilestone', () => {
     expect(result.target).toBe(1_500_000)
     expect(result.date).toBeGreaterThan(Date.UTC(2026, 2, 1))
     expect(nextMilestone(1_230_000, -5, today).date).toBeNull()
+  })
+})
+
+describe('paceCurve', () => {
+  it('takes the median and band of cumulative curves, a short month held at its end', () => {
+    const past = [cumulative([10, 0, 0]), cumulative([0, 10, 5]), cumulative([20, 0])]
+    expect(paceCurve(past, 3)).toEqual({ median: [10, 10, 15], p25: [5, 10, 12.5].map(Math.round), p75: [15, 15, 18] })
+    expect(quantile([1, 2, 3, 4], 0.5)).toBe(2.5)
   })
 })

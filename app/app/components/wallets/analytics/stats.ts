@@ -105,3 +105,36 @@ export function nextMilestone(value: number, monthlyPace: number, today: number)
   const target = (Math.floor(value / step) + 1) * step
   return { date: monthlyPace > 0 ? Math.round(today + (target - value) / monthlyPace * MONTH_MS) : null, target }
 }
+
+/** Past full intervals the spending-pace curve is drawn from. */
+export const PACE_CURVE_WINDOW = 6
+
+/** Linear-interpolated quantile, `q` in [0, 1]. */
+export function quantile(values: number[], q: number): number {
+  if (!values.length)
+    return 0
+  const sorted = values.toSorted((a, b) => a - b)
+  const position = (sorted.length - 1) * q
+  const low = Math.floor(position)
+  return sorted[low]! + (sorted[Math.min(low + 1, sorted.length - 1)]! - sorted[low]!) * (position - low)
+}
+
+/** Cumulative running sums of per-day amounts. */
+export function cumulative(values: number[]): number[] {
+  let sum = 0
+  return values.map(value => sum += value)
+}
+
+/**
+ * The typical cumulative curve of past intervals by day: median and the p25-p75 band. A shorter interval
+ * (February) keeps its last value for the days it does not have.
+ */
+export function paceCurve(past: number[][], length: number) {
+  const at = (curve: number[], day: number) => curve[Math.min(day, curve.length - 1)] ?? 0
+  const days = Array.from({ length }, (_, day) => past.map(curve => at(curve, day)))
+  return {
+    median: days.map(values => Math.round(quantile(values, 0.5))),
+    p25: days.map(values => Math.round(quantile(values, 0.25))),
+    p75: days.map(values => Math.round(quantile(values, 0.75))),
+  }
+}

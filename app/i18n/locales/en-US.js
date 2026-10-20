@@ -1103,6 +1103,13 @@ export default {
           rows: 'Statistics rows',
         },
         net: 'Net',
+        pace: {
+          current: 'This interval',
+          median: 'Usually',
+          p25: 'Lower quartile',
+          p75: 'Upper quartile',
+          title: 'Spending pace, cumulative',
+        },
         rollingAverage: 'Rolling average',
         savingsRate: 'savings rate',
         savingsRateTitle: 'Savings rate',
