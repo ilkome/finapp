@@ -55,7 +55,9 @@ const safety = computed(() => {
   const runway = forecast.value.runwayWithoutIncome
   if (runway === null)
     return { caption: t('wallets.analytics.kpi.beyondHorizon'), text: t('wallets.analytics.forecast.enough') }
-  const months = Math.max(0, (runway - today.value) / MONTH_MS)
+  if (runway <= today.value)
+    return { text: t('wallets.analytics.forecast.runOut') }
+  const months = (runway - today.value) / MONTH_MS
   return { caption: runwayOf(runway).dateLabel ?? undefined, text: `${Math.round(months * 10) / 10}` }
 })
 

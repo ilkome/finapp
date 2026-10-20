@@ -6,7 +6,7 @@ import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsB
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { topMovers } from '~/components/wallets/analytics/movers'
+import { isOneOff, topMovers } from '~/components/wallets/analytics/movers'
 import { formatPercent } from '~/components/wallets/analytics/tooltips'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -24,15 +24,18 @@ const currenciesStore = useCurrenciesStore()
 /** Expense per root category; `toBaseOf` prices a trn by the rates of its interval. */
 function spendingByCategory(dates: { end: number, start: number }, toBaseOf: (date: number) => (amount: number, currency: string) => number) {
   const result = new Map<CategoryId, number>()
+  const largest = new Map<CategoryId, number>()
   const items = trnsStore.items ?? {}
   for (const id of trnsStore.getStoreTrnsIds({ dates, walletsIds: props.base.walletIds.value })) {
     const trn = items[id]
     if (trn?.type !== 'expense' || !trn.categoryId || !trn.fromWalletId || categoriesStore.excludedFromStatsIds.has(trn.categoryId))
       continue
     const rootId = categoriesStore.items[trn.categoryId]?.parentId || trn.categoryId
-    result.set(rootId, (result.get(rootId) ?? 0) + toBaseOf(trn.date)(trn.fromAmount ?? 0, walletsStore.currencyOf(trn.fromWalletId)))
+    const amount = toBaseOf(trn.date)(trn.fromAmount ?? 0, walletsStore.currencyOf(trn.fromWalletId))
+    result.set(rootId, (result.get(rootId) ?? 0) + amount)
+    largest.set(rootId, Math.max(largest.get(rootId) ?? 0, amount))
   }
-  return result
+  return { largest, totals: result }
 }
 
 const movers = computed(() => {
@@ -41,7 +44,10 @@ const movers = computed(() => {
     return []
   const current = spendingByCategory(props.base.range.value, date => props.base.toBaseAt(props.base.intervals.value.findIndex(interval => date <= interval.end)))
   const previous = spendingByCategory(previousRange, () => props.base.toBaseAt(-1))
-  return topMovers(current, previous)
+  return topMovers(current.totals, previous.totals).map(item => ({
+    ...item,
+    isOneOff: isOneOff(item, { current: current.largest.get(item.id) ?? 0, previous: previous.largest.get(item.id) ?? 0 }),
+  }))
 })
 
 const rows = computed<MoverRow[]>(() => movers.value.map((item) => {
@@ -53,6 +59,7 @@ const rows = computed<MoverRow[]>(() => movers.value.map((item) => {
     deltaLabel: item.share === undefined ? undefined : `${item.share > 0 ? '+' : ''}${formatPercent(item.share)}`,
     icon: category?.icon ?? 'lucide:circle',
     id: item.id,
+    isOneOff: item.isOneOff,
     name: category?.name ?? item.id,
   }
 }))

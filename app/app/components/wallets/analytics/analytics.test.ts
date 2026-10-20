@@ -7,7 +7,7 @@ import type { Wallets } from '~/components/wallets/types'
 import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast, upcomingPayments } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
-import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
+import { currentMonth, detectRegular, incomeOutsideStart, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
@@ -326,5 +326,18 @@ describe('forecast settings', () => {
   it('keeps detection for an amount-only override', () => {
     const list = detectRegular({ amountMode: 'median', minMonths: 2, monthly: new Map([['rent', [10, 10]]]), overrides: { rent: { amount: 99 } }, windowMonths: 2 })
     expect(list[0]).toMatchObject({ amount: 99, isRegular: true })
+  })
+})
+
+describe('incomeOutsideStart', () => {
+  it('lists counted wallets with income in the window that the forecast does not start from', () => {
+    const items: Trns = {
+      a: { categoryId: 'salary', createdAt: 0, date: day('2026-01-10'), toAmount: 100, toWalletId: 'cash', type: 'income', updatedAt: 0 },
+      b: { categoryId: 'salary', createdAt: 0, date: day('2026-01-12'), toAmount: 30, toWalletId: 'usd', type: 'income', updatedAt: 0 },
+      c: { categoryId: 'salary', createdAt: 0, date: day('2025-06-01'), toAmount: 999, toWalletId: 'card', type: 'income', updatedAt: 0 },
+    }
+    const params = { excludedCategoryIds: new Set<string>(), months: [{ end: day('2026-01-31'), start: day('2026-01-01') }], toBase, trnsItems: items, walletsItems: wallets }
+    expect(incomeOutsideStart(params, new Set())).toEqual(['usd', 'cash'])
+    expect(incomeOutsideStart(params, new Set(['usd']))).toEqual(['cash'])
   })
 })

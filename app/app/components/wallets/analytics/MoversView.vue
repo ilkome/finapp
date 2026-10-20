@@ -9,6 +9,8 @@ export type MoverRow = {
   deltaLabel?: string
   icon: string
   id: string
+  /** One trn makes most of the change. */
+  isOneOff?: boolean
   name: string
 }
 
@@ -20,6 +22,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   select: [id: string]
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -37,8 +41,9 @@ const emit = defineEmits<{
     >
       <Icon :name="item.icon" size="18" :style="{ color: item.color }" class="shrink-0" />
 
-      <div class="min-w-0 grow truncate text-sm leading-none text-muted">
-        {{ item.name }}
+      <div class="flex min-w-0 grow items-center gap-2 text-sm leading-none text-muted">
+        <span class="truncate">{{ item.name }}</span>
+        <UBadge v-if="item.isOneOff" color="neutral" variant="subtle" size="sm" :label="t('wallets.analytics.movers.oneOff')" data-mover-one-off />
       </div>
 
       <div class="grid justify-items-end gap-1 pr-1">

@@ -8,6 +8,8 @@ describe('walletsAnalyticsMoversView', () => {
   it('lists the movers with their change and opens one', async () => {
     const wrapper = mount(MoversView, { props: movers })
     expect(wrapper.find('[data-mover="food"]').text()).toContain('+50%')
+    expect(wrapper.find('[data-mover="food"] [data-mover-one-off]').exists()).toBe(false)
+    expect(wrapper.find('[data-mover="gym"] [data-mover-one-off]').exists()).toBe(true)
     await wrapper.find('[data-mover="gym"]').trigger('click')
     expect(wrapper.emitted('select')).toEqual([['gym']])
   })

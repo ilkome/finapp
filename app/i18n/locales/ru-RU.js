@@ -1175,6 +1175,8 @@ export default {
         horizon: 'на',
         horizonMonths: 'Горизонт, месяцев',
         income: 'Доходы',
+        incomeOutside: 'Доход приходит на кошельки вне прогноза: {wallets}',
+        incomeOutsideAdd: 'Добавить в прогноз',
         nextIncome: 'Следующий доход примерно',
         obligations: 'Кредиты',
         perMonth: 'Обычный месяц',
@@ -1224,6 +1226,7 @@ export default {
       missingRatesLink: 'Указать курсы',
       movers: {
         caption: 'Траты против тех же дней прошлого периода',
+        oneOff: 'разово',
         title: 'Что изменилось сильнее всего',
       },
       now: {

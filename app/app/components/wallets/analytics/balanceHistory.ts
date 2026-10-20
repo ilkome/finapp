@@ -2,7 +2,7 @@ import type { CurrencyCode } from '~/components/currencies/types'
 import type { Trns } from '~/components/trns/types'
 import type { WalletId, WalletItemComputed, Wallets, WalletType } from '~/components/wallets/types'
 
-import { colorsWithoutShades } from '~/components/color/colors'
+import { colors } from '~/components/color/colors'
 import { computeWalletCounts } from '~/components/wallets/counts'
 import { isCreditProduct, walletTypes } from '~/components/wallets/types'
 
@@ -21,7 +21,9 @@ export type AnalyticsSeries = {
 }
 
 /** One readable colour per series: the 500 shade of every palette hue. */
-export const seriesPalette: string[] = colorsWithoutShades.map(group => group[1]!).filter(Boolean)
+// Neighbouring hues are far apart so adjacent series and slices stay distinguishable; grays are left out.
+const PALETTE_HUES = ['blue', 'orange', 'emerald', 'violet', 'rose', 'amber', 'cyan', 'lime', 'fuchsia', 'teal', 'red', 'indigo', 'yellow', 'sky', 'pink', 'green', 'purple'] as const
+export const seriesPalette: string[] = PALETTE_HUES.map(hue => colors[hue][500])
 
 export const OTHER_SERIES_ID = 'other'
 

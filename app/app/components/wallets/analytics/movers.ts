@@ -18,3 +18,15 @@ export function topMovers(current: Map<CategoryId, number>, previous: Map<Catego
     .sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta))
     .slice(0, count)
 }
+
+/** Share of the change, and of that period's spending, one trn must reach to count as a one-off. */
+export const ONE_OFF_SHARE = 0.5
+
+/**
+ * Whether a single trn explains the change: the largest trn of the period that grew is most of that period's
+ * spending in the category and most of the change.
+ */
+export function isOneOff(mover: Mover, largest: { current: number, previous: number }): boolean {
+  const [total, trn] = mover.delta > 0 ? [mover.current, largest.current] : [mover.previous, largest.previous]
+  return trn >= ONE_OFF_SHARE * total && trn >= ONE_OFF_SHARE * Math.abs(mover.delta)
+}

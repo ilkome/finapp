@@ -91,6 +91,19 @@ export type MonthlySums = {
 }
 
 /** Expense per category and income per month in one pass over the trns, aligned with `months`. */
+/** Wallets that received counted income in `months` but are outside `startWalletIds`, the largest first. */
+export function incomeOutsideStart(params: SumParams, startWalletIds: ReadonlySet<WalletId>): WalletId[] {
+  const totals = new Map<WalletId, number>()
+  const scope = { ...params, incomeWalletIds: params.walletIds }
+  for (const trn of Object.values(params.trnsItems)) {
+    const walletId = trn.type === 'income' ? countedWalletId(trn, scope) : undefined
+    if (!walletId || startWalletIds.has(walletId) || monthIndex(params.months, trn.date) < 0)
+      continue
+    totals.set(walletId, (totals.get(walletId) ?? 0) + params.toBase(trn.toAmount!, params.walletsItems[walletId]!.currencyCode))
+  }
+  return [...totals].sort((a, b) => b[1] - a[1]).map(([id]) => id)
+}
+
 export function monthlySums(params: SumParams): MonthlySums {
   const length = params.months.length
   const spending = new Map<CategoryId, number[]>()

@@ -16,7 +16,7 @@ import { walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
 import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
-import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
+import { currentMonth, detectRegular, incomeOutsideStart, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
 import { useForecastSettingsStore } from '~/components/wallets/analytics/useForecastSettingsStore'
 import { isCreditProduct, isWalletInForecast } from '~/components/wallets/types'
@@ -94,6 +94,13 @@ export function useForecast() {
     const months = [...previousMonths(today.value, settings.value.historyMonths), currentMonth(today.value)]
     const all = monthlySums({ ...sumParams.value, months })
     return { thisMonth: sliceMonthlySums(all, -1), window: sliceMonthlySums(all, 0, -1) }
+  })
+
+  /** Start-wallet candidates that get income the forecast leaves out; the forecast offers to add them. */
+  const incomeOutsideWalletIds = computed(() => {
+    const available = new Set(availableWalletIds.value)
+    return incomeOutsideStart({ ...sumParams.value, months: previousMonths(today.value, settings.value.historyMonths) }, new Set(startWalletIds.value))
+      .filter(id => available.has(id))
   })
 
   const regular = computed(() => detectRegular({
@@ -210,6 +217,7 @@ export function useForecast() {
     forecast,
     forecastWith,
     income,
+    incomeOutsideWalletIds,
     isRegularCategory,
     obligations,
     regular,

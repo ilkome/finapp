@@ -31,7 +31,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, categories, cover, forecast, forecastWith, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
+const { availableWalletIds, categories, cover, forecast, forecastWith, income, incomeOutsideWalletIds, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
@@ -318,6 +318,16 @@ function onSetting(id: string, value: number | string) {
         @change="onSetting"
       />
     </div>
+
+    <UAlert
+      v-if="incomeOutsideWalletIds.length"
+      color="info"
+      variant="subtle"
+      icon="lucide:info"
+      :title="t('wallets.analytics.forecast.incomeOutside', { wallets: incomeOutsideWalletIds.map(id => walletsStore.items?.[id]?.name ?? id).join(', ') })"
+      :actions="[{ label: t('wallets.analytics.forecast.incomeOutsideAdd'), color: 'info', variant: 'link', onClick: () => incomeOutsideWalletIds.forEach(toggleStartWallet) }]"
+      data-analytics-income-outside
+    />
 
     <WalletsAnalyticsForecastSummaryView
       :currencyCode="currenciesStore.base"

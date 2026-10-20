@@ -1175,6 +1175,8 @@ export default {
         horizon: 'for',
         horizonMonths: 'Horizon, months',
         income: 'Income',
+        incomeOutside: 'Income arrives in wallets outside the forecast: {wallets}',
+        incomeOutsideAdd: 'Add to the forecast',
         nextIncome: 'Next income about',
         obligations: 'Loans',
         perMonth: 'Typical month',
@@ -1224,6 +1226,7 @@ export default {
       missingRatesLink: 'Set rates',
       movers: {
         caption: 'Spending against the same days of the previous period',
+        oneOff: 'one-off',
         title: 'Top movers',
       },
       now: {
