@@ -1058,9 +1058,16 @@ export default {
   wallets: {
     analytics: {
       balance: {
+        ath: 'All-time high',
+        belowAth: 'below by',
         change: 'change',
+        changePerInterval: 'Change per interval',
+        down: 'Down',
+        max: 'High of the period',
+        min: 'Low of the period',
         net: 'Net worth',
         title: 'Balance',
+        up: 'Up',
       },
       breakdown: {
         currency: 'Currency',

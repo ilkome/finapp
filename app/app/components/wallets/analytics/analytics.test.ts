@@ -4,7 +4,7 @@ import type { PaymentRow } from '~/components/loans/engine/types'
 import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { balanceSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { balanceExtremes, balanceSeries, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
@@ -38,6 +38,30 @@ describe('walletBalancesAt', () => {
     const [series] = splitOpening(balanceSeries({ balances: points, breakdown: 'total', scope: 'net', toBaseAt: () => toBase, walletIds: ['cash'], wallets }))
     expect(series!.data).toHaveLength(ends.length)
     expect(periodChange(series!)).toBe(50)
+  })
+})
+
+describe('balanceExtremes', () => {
+  const params = { toBaseOn: () => toBase, trnsItems: trns, walletIds: ['cash', 'usd'], wallets }
+
+  it('finds the daily low between two interval ends', () => {
+    // Feb 1: 100, Feb 4: 60, Feb 5: 30 (low), Feb 6: a transfer keeps 30, Feb 20: 60. The month end alone reads 60.
+    const extra: Trns = { ...trns, e: { categoryId: 'salary', createdAt: 0, date: day('2026-02-20'), toAmount: 30, toWalletId: 'cash', type: 'income', updatedAt: 0 }, f: { categoryId: 'food', createdAt: 0, date: day('2026-02-04'), fromAmount: 40, fromWalletId: 'cash', type: 'expense', updatedAt: 0 } }
+    const result = balanceExtremes({ ...params, rangeEnd: day('2026-02-28'), rangeStart: day('2026-02-01'), trnsItems: extra })
+    expect(result.min).toEqual({ date: day('2026-02-05'), value: 30 })
+    expect(result.max).toEqual({ date: day('2026-02-01'), value: 100 })
+  })
+
+  it('takes the all-time high from before the range', () => {
+    const result = balanceExtremes({ ...params, rangeEnd: day('2026-03-31'), rangeStart: day('2026-03-01') })
+    expect(result.ath).toEqual({ date: day('2026-01-10'), value: 100 })
+    expect(result.max).toEqual({ date: day('2026-03-01'), value: 70 })
+  })
+})
+
+describe('changeSeries', () => {
+  it('measures the first change from the opening value', () => {
+    expect(changeSeries([{ data: [120, 90], id: 'a', opening: 100 }])[0]!.data).toEqual([20, -30])
   })
 })
 

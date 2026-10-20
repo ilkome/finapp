@@ -1058,9 +1058,16 @@ export default {
   wallets: {
     analytics: {
       balance: {
+        ath: 'Исторический максимум',
+        belowAth: 'ниже на',
         change: 'изм.',
+        changePerInterval: 'Изменение за интервал',
+        down: 'Вниз',
+        max: 'Максимум периода',
+        min: 'Минимум периода',
         net: 'Чистый капитал',
         title: 'Баланс',
+        up: 'Вверх',
       },
       breakdown: {
         currency: 'Валюта',

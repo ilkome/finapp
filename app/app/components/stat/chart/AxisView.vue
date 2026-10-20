@@ -2,7 +2,7 @@
 import type { Period } from '~~/utils/date/types'
 
 import { BarChart, CustomChart, LineChart } from 'echarts/charts'
-import { DataZoomInsideComponent, GridComponent, MarkAreaComponent, MarkLineComponent, TooltipComponent } from 'echarts/components'
+import { DataZoomInsideComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
@@ -61,7 +61,7 @@ const emit = defineEmits<{
   previewEnd: []
 }>()
 
-use([BarChart, CustomChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, SVGRenderer, TooltipComponent])
+use([BarChart, CustomChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, MarkPointComponent, SVGRenderer, TooltipComponent])
 
 const { locale, t } = useI18n()
 const { width: viewportWidth } = useWindowSize()

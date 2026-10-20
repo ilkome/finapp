@@ -144,3 +144,82 @@ export function statisticsRowsSeries(params: {
   })
   return rowIds.map((id, index) => ({ color: seriesPalette[index % seriesPalette.length], data: data.get(id)!, id }))
 }
+
+type DayValue = { date: number, value: number }
+
+/**
+ * Daily walk of the scope total in base currency: the low and the high inside [rangeStart, rangeEnd], which interval
+ * ends miss (the day before salary), and the all-time high over the whole history. The total only changes on days
+ * with moves, so only those days (and the range start) are priced, each by `toBaseOn` of its day.
+ */
+export function balanceExtremes(params: {
+  rangeEnd: number
+  rangeStart: number
+  toBaseOn: (date: number) => ToBase
+  trnsItems: Trns
+  walletIds: WalletId[]
+  wallets: Wallets
+}): { ath: DayValue | null, max: DayValue | null, min: DayValue | null } {
+  const { rangeEnd, rangeStart, toBaseOn, trnsItems, wallets } = params
+  const scope = new Set(params.walletIds.filter(id => wallets[id]))
+  const moves: { amount: number, date: number, walletId: WalletId }[] = []
+  for (const trn of Object.values(trnsItems)) {
+    if (trn.date > rangeEnd)
+      continue
+    if (trn.toWalletId && scope.has(trn.toWalletId))
+      moves.push({ amount: trn.toAmount!, date: trn.date, walletId: trn.toWalletId })
+    if (trn.fromWalletId && scope.has(trn.fromWalletId))
+      moves.push({ amount: -trn.fromAmount!, date: trn.date, walletId: trn.fromWalletId })
+  }
+  moves.sort((a, b) => a.date - b.date)
+
+  const running: Record<WalletId, number> = {}
+  const totalOn = (date: number) => {
+    const toBase = toBaseOn(date)
+    let sum = 0
+    for (const id in running)
+      sum += toBase(running[id]!, wallets[id]!.currencyCode)
+    return Math.round(sum)
+  }
+
+  let ath: DayValue | null = null
+  let max: DayValue | null = null
+  let min: DayValue | null = null
+  const visit = (date: number) => {
+    const point = { date, value: totalOn(date) }
+    if (!ath || point.value > ath.value)
+      ath = point
+    if (date < rangeStart)
+      return
+    if (!max || point.value > max.value)
+      max = point
+    if (!min || point.value < min.value)
+      min = point
+  }
+
+  let index = 0
+  let isStartVisited = false
+  while (index < moves.length) {
+    const date = moves[index]!.date
+    if (!isStartVisited && date > rangeStart) {
+      visit(rangeStart)
+      isStartVisited = true
+    }
+    while (index < moves.length && moves[index]!.date === date) {
+      const move = moves[index]!
+      running[move.walletId] = (running[move.walletId] ?? 0) + move.amount
+      index++
+    }
+    visit(date)
+    if (date >= rangeStart)
+      isStartVisited = true
+  }
+  if (!isStartVisited)
+    visit(rangeStart)
+  return { ath, max, min }
+}
+
+/** Change of each series per point, the first one from the opening value. */
+export function changeSeries(series: AnalyticsSeries[]): AnalyticsSeries[] {
+  return series.map(item => ({ ...item, data: item.data.map((value, index) => value - (index ? item.data[index - 1]! : item.opening ?? value)) }))
+}

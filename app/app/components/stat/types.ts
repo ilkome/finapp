@@ -69,6 +69,7 @@ export type ChartSeries = {
   markedArea?: 'markedArea'
   markLine?: Record<string, unknown>
   markLineValueType?: SeriesSlug
+  markPoint?: Record<string, unknown>
   name: string
   showValueType?: boolean
   type: AxisChartType
