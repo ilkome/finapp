@@ -80,20 +80,20 @@ const shownItems = computed(() => isShowClosed.value ? [...openItems.value, ...c
       </UiText>
     </div>
 
-    <div v-if="props.items.length === 0" class="flex flex-wrap items-center gap-2" data-loan-portfolio-empty>
-      <UiText variant="meta" class="grow">
-        {{ t('loans.portfolio.empty') }}
-      </UiText>
-      <UButton
-        color="neutral"
-        icon="i-lucide-landmark"
-        size="sm"
-        to="/wallets/new?type=loan&returnBack=1"
-        variant="soft"
-      >
-        {{ t('loans.add') }}
-      </UButton>
-    </div>
+    <UiEmpty v-if="props.items.length === 0" class="px-0" data-loan-portfolio-empty>
+      {{ t('loans.portfolio.empty') }}
+      <template #action>
+        <UButton
+          color="neutral"
+          icon="i-lucide-landmark"
+          size="sm"
+          to="/wallets/new?type=loan&returnBack=1"
+          variant="soft"
+        >
+          {{ t('loans.add') }}
+        </UButton>
+      </template>
+    </UiEmpty>
 
     <div class="grid">
       <UiElement
@@ -106,9 +106,9 @@ const shownItems = computed(() => isShowClosed.value ? [...openItems.value, ...c
       >
         <div class="grid min-w-0 grow gap-0.5">
           <div class="flex items-baseline gap-2">
-            <UiText variant="navigation" class="truncate">
+            <UiEntityName>
               {{ item.name }}
-            </UiText>
+            </UiEntityName>
 
             <LoansStatusBadges :isClosed="item.isClosed" :overdueCount="item.overdueCount" />
 

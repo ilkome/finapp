@@ -1,7 +1,49 @@
 {
   "currencyCode": "USD",
   "items": [
-    { "change": 120, "color": "#3b82f6", "id": "cash", "name": "Cash", "share": 0.3, "spark": [100, 150, 220], "value": 220 },
-    { "change": -40, "color": "#ef4444", "id": "bank", "name": "Bank", "share": 0.7, "spark": [560, 540, 520], "value": 520 }
+    {
+      "change": 120,
+      "color": "#3b82f6",
+      "id": "cash",
+      "name": "Cash",
+      "share": 0.3,
+      "spark": [
+        100,
+        150,
+        220
+      ],
+      "value": 220,
+      "wallet": {
+        "amount": 220,
+        "color": "#3b82f6",
+        "currencyCode": "USD",
+        "isArchived": false,
+        "name": "Cash",
+        "sortOrder": 1,
+        "type": "cash"
+      }
+    },
+    {
+      "change": -40,
+      "color": "#ef4444",
+      "id": "bank",
+      "name": "Bank",
+      "share": 0.7,
+      "spark": [
+        560,
+        540,
+        520
+      ],
+      "value": 520,
+      "wallet": {
+        "amount": 520,
+        "color": "#ef4444",
+        "currencyCode": "USD",
+        "isArchived": false,
+        "name": "Bank",
+        "sortOrder": 1,
+        "type": "cash"
+      }
+    }
   ]
 }

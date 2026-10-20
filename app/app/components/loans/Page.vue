@@ -12,6 +12,7 @@ import type { WalletId } from '~/components/wallets/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { amountToMinor, formatAmount } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { LOAN_STORAGE_KEYS } from '~/components/loans/constants'
 import { incomeWindow, debtToIncome as toDebtToIncome } from '~/components/loans/debtToIncome'
 import { paramsOf, projectionParams } from '~/components/loans/engine/derive'
 import { derivePortfolio, recommend } from '~/components/loans/engine/portfolio'
@@ -54,7 +55,7 @@ const freeMoneyWalletIds = computed<WalletId[]>(() =>
     }))
 
 // An empty list means "all of them", so a fresh user gets a sensible default without a write.
-const pickedWalletIds = useStorage<WalletId[]>('loans.recommendation.walletIds', [])
+const pickedWalletIds = useStorage<WalletId[]>(LOAN_STORAGE_KEYS.recommendationWalletIds, [])
 const selectedWalletIds = computed<WalletId[]>(() => {
   const picked = new Set(pickedWalletIds.value)
   return picked.size === 0 ? freeMoneyWalletIds.value : freeMoneyWalletIds.value.filter(id => picked.has(id))
@@ -67,7 +68,7 @@ const freeMoney = computed(() => Math.round(selectedWalletIds.value.reduce((tota
 }, 0)))
 
 // Starts at 0: all free money would close every loan today and make the picks meaningless.
-const extra = useStorage('loans.recommendation.extra', 0)
+const extra = useStorage(LOAN_STORAGE_KEYS.recommendationExtra, 0)
 
 const loans = computed<PortfolioLoan[]>(() => [...loansStore.byWalletId].map(([walletId, { loan, summary }]) => {
   return {
@@ -213,7 +214,7 @@ const upcomingGroups = computed<LoansUpcomingViewGroup[]>(() => groupUpcoming(lo
   label: group.key === 'nearest' ? '' : t(`loans.toPay.${group.key}`),
 })))
 
-const upcomingOpen = Object.fromEntries(['overdue', 'week', 'month', 'later'].map(key => [key, useStorage(`finapp.loans-to-pay-${key}`, true)]))
+const upcomingOpen = Object.fromEntries(['overdue', 'week', 'month', 'later'].map(key => [key, useStorage(`${LOAN_STORAGE_KEYS.upcomingOpenPrefix}-${key}`, true)]))
 const upcomingOpenKeys = computed(() => Object.keys(upcomingOpen).filter(key => upcomingOpen[key]!.value))
 
 const debtToIncome = computed(() => {

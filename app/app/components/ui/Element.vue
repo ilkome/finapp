@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const props = defineProps<{
+  /** Trailing marker: `right` navigates, `more` opens a sheet. A row with one and no `to` is a keyboard button. */
+  chevron?: 'more' | 'right'
   insideClasses?: string
   isActive?: boolean
   lineWidth?: number
@@ -12,6 +14,14 @@ const emit = defineEmits<{
 
 const NuxtLink = resolveComponent('NuxtLink')
 const slots = useSlots()
+const isButton = computed(() => !!props.chevron && !props.to)
+
+function onKeydown(e: KeyboardEvent) {
+  if (e.target !== e.currentTarget)
+    return
+  e.preventDefault()
+  emit('click', e)
+}
 
 const elementClasses = computed(() => cn(
   'uiElement -my-0.25 flex min-h-10.5 grow items-center gap-3 overflow-hidden rounded-md border border-transparent interactive px-2 py-1.5',
@@ -29,7 +39,10 @@ const elementClasses = computed(() => cn(
     :is="props.to ? NuxtLink : 'div'"
     :to="props.to"
     :class="{ uiElementLink: props.to }"
+    :role="isButton ? 'button' : undefined"
+    :tabindex="isButton ? 0 : undefined"
     @click="(e: Event) => emit('click', e)"
+    @keydown.enter.space="(e: KeyboardEvent) => isButton && onKeydown(e)"
   >
     <div :class="elementClasses">
       <div
@@ -40,6 +53,13 @@ const elementClasses = computed(() => cn(
       </div>
 
       <slot name="default" />
+      <Icon
+        v-if="props.chevron"
+        :name="props.chevron === 'more' ? 'lucide:ellipsis' : 'lucide:chevron-right'"
+        size="16"
+        class="shrink-0 text-dimmed"
+        aria-hidden="true"
+      />
       <slot name="line" />
     </div>
 

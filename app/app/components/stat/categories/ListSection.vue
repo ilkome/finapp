@@ -68,13 +68,13 @@ const isListShown = useStorage(`${props.storageKey}-${props.type}-list`, true)
     class="w-full @3xl/main:max-w-md"
   >
     <div v-if="isShowTitle" class="flex items-center justify-between">
-      <UiTitleCollapse
-        class="grow"
+      <UiTitleDropRight
         :isShown="isListShown"
+        :title="t('stat.config.categories.list.title')"
         @click="isListShown = !isListShown"
       >
-        {{ t('stat.config.categories.list.title') }} {{ (!isListShown && categoriesWithData.length > 0) ? categoriesWithData.length : '' }}
-      </UiTitleCollapse>
+        <span v-if="categoriesWithData.length > 0" class="text-xs leading-none tracking-wide text-dimmed">{{ categoriesWithData.length }}</span>
+      </UiTitleDropRight>
 
       <div
         v-if="isListShown"

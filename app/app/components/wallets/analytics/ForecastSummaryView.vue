@@ -37,18 +37,13 @@ const scenarios = computed(() => [
 
 <template>
   <div class="grid gap-3" data-forecast-summary>
-    <button
-      type="button"
-      class="grid gap-1 rounded-md interactive bg-elevated/30 px-3 py-2.5 text-left"
+    <UiCard
+      as="button"
+      chevron="more"
+      :title="t('wallets.analytics.forecast.startBalance')"
       data-forecast-start
       @click="emit('editWallets')"
     >
-      <div class="flex items-center gap-2">
-        <UiText variant="caption" class="grow">
-          {{ t('wallets.analytics.forecast.startBalance') }}
-        </UiText>
-        <Icon name="lucide:ellipsis" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
-      </div>
       <Amount
         :amount="props.startBalance"
         :currencyCode="props.currencyCode"
@@ -56,19 +51,16 @@ const scenarios = computed(() => [
         align="left"
         variant="summary"
       />
-    </button>
+    </UiCard>
 
     <div class="grid grid-cols-2 gap-2">
-      <div
+      <UiCard
         v-for="scenario in scenarios"
         :key="scenario.id"
-        class="grid content-start gap-1.5 rounded-md bg-elevated/30 px-3 py-2.5"
+        class="gap-1.5"
+        :title="scenario.title"
         :data-forecast-runway="scenario.id"
       >
-        <UiText variant="caption">
-          {{ scenario.title }}
-        </UiText>
-
         <template v-if="scenario.runway.dateLabel">
           <div class="text-base leading-none font-semibold" :class="scenario.runway.durationLabel ? 'text-highlighted' : 'text-error'">
             {{ scenario.runway.durationLabel ?? t('wallets.analytics.forecast.runOut') }}
@@ -86,18 +78,14 @@ const scenarios = computed(() => [
             {{ props.horizonLabel }}
           </UiText>
         </template>
-      </div>
+      </UiCard>
     </div>
 
     <UiText v-if="props.note" variant="meta" class="px-2 leading-snug!" data-forecast-note>
       {{ props.note }}
     </UiText>
 
-    <div class="grid gap-1 rounded-md bg-elevated/30 px-3 py-2.5">
-      <UiText variant="caption" class="pb-1">
-        {{ t('wallets.analytics.forecast.perMonth') }}
-      </UiText>
-
+    <UiCard :title="t('wallets.analytics.forecast.perMonth')">
       <div class="flex items-center justify-between gap-3 text-sm text-muted">
         {{ t('wallets.analytics.forecast.regular') }}
         <Amount :amount="-props.monthlyRegular" :currencyCode="props.currencyCode" :isShowBaseRate="false" variant="row" />
@@ -113,6 +101,6 @@ const scenarios = computed(() => [
       <UiText v-if="props.nextIncomeLabel" variant="meta" data-forecast-next-income>
         {{ t('wallets.analytics.forecast.nextIncome') }} {{ props.nextIncomeLabel }}
       </UiText>
-    </div>
+    </UiCard>
   </div>
 </template>

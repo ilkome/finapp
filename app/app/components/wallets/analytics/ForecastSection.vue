@@ -4,6 +4,7 @@ import { formatByLocale } from '~~/utils/date/civil'
 import { parseAmountInput } from '~~/utils/money/parseInput'
 
 import type { ChartSeries } from '~/components/stat/types'
+import type { WhatIfInput } from '~/components/wallets/analytics/forecast'
 import type { ForecastMonthRow, ForecastScenario } from '~/components/wallets/analytics/ForecastMonthsView.vue'
 import type { AmountMode, CardPaymentMode } from '~/components/wallets/analytics/forecastSettings'
 import type { ObligationRow } from '~/components/wallets/analytics/ObligationsView.vue'
@@ -14,15 +15,15 @@ import type { SummaryTile } from '~/components/wallets/analytics/SummaryTilesVie
 import { amountToMinor, minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
-import { defaultConfig } from '~/components/stat/config/schema'
-import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { pointLineChartConfig, toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
-import { UPCOMING_DAYS, upcomingPayments } from '~/components/wallets/analytics/forecast'
+import { UPCOMING_DAYS, upcomingPayments, whatIfScenario } from '~/components/wallets/analytics/forecast'
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -30,6 +31,7 @@ const dateLocale = useDateLocale()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const categoriesView = useCategoriesViewSettings()
 const isChartMountReady = useIdleMount()
 const { availableWalletIds, categories, cover, forecast, forecastWith, income, incomeOutsideWalletIds, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
 
@@ -103,7 +105,6 @@ const coverTooltipRows = computed(() => cover.value.values.map((value, index) =>
   key: 'cover',
   name: t('wallets.analytics.cover.months'),
 }]))
-const coverChartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
 
 function exportCsv() {
   const months = forecast.value.months
@@ -117,8 +118,6 @@ function exportCsv() {
   downloadCsv(t('wallets.analytics.forecast.title'), toCsv(monthRows.value.map(row => row.label), toChartSeries(series.map(item => ({ ...item, type: 'line' as const })), currenciesStore.base)))
 }
 
-const chartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
-
 const obligationRows = computed<ObligationRow[]>(() => {
   const byWallet = new Map<string, ObligationRow>()
   for (const item of obligations.value) {
@@ -127,35 +126,34 @@ const obligationRows = computed<ObligationRow[]>(() => {
       row.horizonTotal += item.amount
       continue
     }
-    const wallet = walletsStore.items?.[item.walletId]
+    const wallet = walletsStore.itemsComputed[item.walletId]
+    if (!wallet)
+      continue
     byWallet.set(item.walletId, {
-      color: wallet?.color ?? 'var(--ui-text-muted)',
       horizonTotal: item.amount,
-      kind: item.kind,
-      name: wallet?.name ?? item.walletId,
       nextAmount: item.amount,
       nextDateLabel: formatByLocale(item.date, 'd MMM', dateLocale.value),
+      wallet,
       walletId: item.walletId,
     })
   }
   return [...byWallet.values()]
 })
 
-const regularItems = computed<RegularListItem[]>(() => regular.value.map((item) => {
+const regularItems = computed<RegularListItem[]>(() => regular.value.flatMap((item) => {
   const category = categoriesStore.items[item.categoryId]
-  const parentId = category?.parentId
+  if (!category)
+    return []
   return {
     amount: item.amount,
+    category,
     categoryId: item.categoryId,
-    color: category?.color ?? 'var(--ui-text-muted)',
     detectedAmount: item.detectedAmount,
-    icon: category?.icon ?? 'lucide:circle',
     isAuto: item.isAuto,
     isOverridden: !!item.override,
     isRegular: item.isRegular,
     monthsWithSpending: item.monthsWithSpending,
-    name: category?.name ?? item.categoryId,
-    parentName: parentId ? categoriesStore.items[parentId]?.name : undefined,
+    parentCategory: typeof category.parentId === 'string' ? categoriesStore.items[category.parentId] : undefined,
   }
 }))
 
@@ -215,23 +213,9 @@ const upcomingTiles = computed<SummaryTile[]>(() => {
 const isWalletsOpen = ref(false)
 
 // What-if: temporary edits, never saved.
-const whatIf = ref({ amount: '', date: '', incomePercent: '', kind: 'expense' as 'expense' | 'income', spendingPercent: '' })
-const whatIfScenario = computed(() => {
-  const amount = parseAmountInput(whatIf.value.amount)
-  const date = whatIf.value.date ? Date.parse(`${whatIf.value.date}T00:00:00Z`) : Number.NaN
-  const factor = (value: string) => {
-    const percent = parseAmountInput(value)
-    return percent === undefined ? undefined : 1 + percent / 100
-  }
-  const minor = amount && Number.isFinite(date) ? amountToMinor(Math.abs(amount), currenciesStore.base) : 0
-  return {
-    events: minor ? [{ amount: whatIf.value.kind === 'income' ? minor : -minor, date }] : [],
-    incomeFactor: factor(whatIf.value.incomePercent),
-    spendingFactor: factor(whatIf.value.spendingPercent),
-  }
-})
-const isWhatIfSet = computed(() => !!whatIfScenario.value.events.length || whatIfScenario.value.incomeFactor !== undefined || whatIfScenario.value.spendingFactor !== undefined)
-const whatIfResult = computed(() => isWhatIfSet.value ? forecastWith(whatIfScenario.value) : null)
+const whatIf = ref<WhatIfInput>({ amount: '', date: '', incomePercent: '', kind: 'expense', spendingPercent: '' })
+const whatIfInput = computed(() => whatIfScenario(whatIf.value, parseAmountInput, amount => amountToMinor(amount, currenciesStore.base)))
+const whatIfResult = computed(() => whatIfInput.value && forecastWith(whatIfInput.value))
 const runwayLabel = (date: number | null) => runwayOf(date).dateLabel ?? t('wallets.analytics.forecast.enough')
 
 const settingsOptions = computed<AnalyticsOption[]>(() => [
@@ -297,8 +281,9 @@ function onSetting(id: string, value: number | string) {
 }
 
 const openParts = useStorage(WALLET_STORAGE_KEYS.analyticsForecastOpen, { months: false, regular: false }, localStorage, { mergeDefaults: true })
-function onPartToggle(id: keyof typeof openParts.value, event: Event) {
-  openParts.value = { ...openParts.value, [id]: (event.target as HTMLDetailsElement).open }
+const isWhatIfOpen = ref(false)
+function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
+  openParts.value = { ...openParts.value, [id]: isOpen }
 }
 </script>
 
@@ -348,43 +333,43 @@ function onPartToggle(id: keyof typeof openParts.value, event: Event) {
       @editWallets="isWalletsOpen = true"
     />
 
-    <details class="grid gap-2 rounded-md bg-elevated/30 px-3 py-2.5" data-analytics-what-if>
-      <summary class="cursor-pointer text-sm text-toned">
-        {{ t('wallets.analytics.whatIf.title') }}
-      </summary>
-      <div class="grid gap-2 pt-2">
-        <UiTabs
-          v-model="whatIf.kind"
-          :items="(['expense', 'income'] as const).map(value => ({ label: t(`wallets.analytics.whatIf.${value}`), value }))"
-          size="xs"
-          variant="flat"
-          :grow="false"
-          :itemGrow="false"
-          align="left"
-        />
-        <div class="grid grid-cols-2 gap-2">
-          <FormInput v-model="whatIf.amount" type="number" :placeholder="t('wallets.analytics.whatIf.amount')" />
-          <input v-model="whatIf.date" type="date" class="rounded-md bg-default px-2 text-sm ring ring-default" :aria-label="t('wallets.analytics.whatIf.date')">
-          <FormInput v-model="whatIf.spendingPercent" type="number" :placeholder="t('wallets.analytics.whatIf.spendingPercent')" />
-          <FormInput v-model="whatIf.incomePercent" type="number" :placeholder="t('wallets.analytics.whatIf.incomePercent')" />
-        </div>
-        <div v-if="whatIfResult" class="grid gap-1 text-sm" data-what-if-result>
-          <div>
-            {{ t('wallets.analytics.forecast.withoutIncome') }}: {{ runwayLabel(forecast.runwayWithoutIncome) }} → {{ runwayLabel(whatIfResult.runwayWithoutIncome) }}
+    <UCollapsible v-model:open="isWhatIfOpen" data-analytics-what-if>
+      <UiTitleDropRight :isShown="isWhatIfOpen" class="-mx-1" :title="t('wallets.analytics.whatIf.title')" />
+      <template #content>
+        <UiCard class="gap-2">
+          <UiTabs
+            v-model="whatIf.kind"
+            :items="(['expense', 'income'] as const).map(value => ({ label: t(`wallets.analytics.whatIf.${value}`), value }))"
+            size="xs"
+            variant="flat"
+            :grow="false"
+            :itemGrow="false"
+            align="left"
+          />
+          <div class="grid grid-cols-2 gap-2">
+            <FormInput v-model="whatIf.amount" type="number" :placeholder="t('wallets.analytics.whatIf.amount')" />
+            <FormInput v-model="whatIf.date" type="date" :aria-label="t('wallets.analytics.whatIf.date')" />
+            <FormInput v-model="whatIf.spendingPercent" type="number" :placeholder="t('wallets.analytics.whatIf.spendingPercent')" />
+            <FormInput v-model="whatIf.incomePercent" type="number" :placeholder="t('wallets.analytics.whatIf.incomePercent')" />
           </div>
-          <div>
-            {{ t('wallets.analytics.forecast.withIncome') }}: {{ runwayLabel(forecast.runwayWithIncome) }} → {{ runwayLabel(whatIfResult.runwayWithIncome) }}
+          <div v-if="whatIfResult" class="grid gap-1 text-sm" data-what-if-result>
+            <div>
+              {{ t('wallets.analytics.forecast.withoutIncome') }}: {{ runwayLabel(forecast.runwayWithoutIncome) }} → {{ runwayLabel(whatIfResult.runwayWithoutIncome) }}
+            </div>
+            <div>
+              {{ t('wallets.analytics.forecast.withIncome') }}: {{ runwayLabel(forecast.runwayWithIncome) }} → {{ runwayLabel(whatIfResult.runwayWithIncome) }}
+            </div>
           </div>
-        </div>
-      </div>
-    </details>
+        </UiCard>
+      </template>
+    </UCollapsible>
 
     <div class="min-h-44 min-w-0">
       <LazyStatChartAxisView
         v-if="isChartMountReady"
         isTooltipOnTap
         scaleMode="fit"
-        :chartConfig
+        :chartConfig="pointLineChartConfig"
         chartType="line"
         period="month"
         :series="toChartSeries(chartSeries, currenciesStore.base)"
@@ -402,7 +387,7 @@ function onPartToggle(id: keyof typeof openParts.value, event: Event) {
           v-if="isChartMountReady"
           isTooltipOnTap
           scaleMode="fit"
-          :chartConfig="coverChartConfig"
+          :chartConfig="pointLineChartConfig"
           chartType="line"
           period="month"
           :series="coverSeries"
@@ -413,17 +398,16 @@ function onPartToggle(id: keyof typeof openParts.value, event: Event) {
     </div>
 
     <!-- Details the summary above already sums up: closed until asked for. -->
-    <details class="group grid gap-2" :open="openParts.months" data-forecast-months @toggle="onPartToggle('months', $event)">
-      <summary class="flex cursor-default list-none items-center gap-2 rounded-md interactive px-2 py-1.5 [&::-webkit-details-marker]:hidden">
-        <span class="grow text-sm font-semibold">{{ t('wallets.analytics.forecast.byMonth') }}</span>
-        <Icon name="lucide:chevron-down" size="16" class="text-muted transition-transform group-open:rotate-180" />
-      </summary>
-      <WalletsAnalyticsForecastMonthsView
-        :currencyCode="currenciesStore.base"
-        :rows="monthRows"
-        :scenario="view.scenario"
-      />
-    </details>
+    <UCollapsible :open="openParts.months" data-forecast-months @update:open="value => setPart('months', value)">
+      <UiTitleDropRight :isShown="openParts.months" class="-mx-1" :title="t('wallets.analytics.forecast.byMonth')" />
+      <template #content>
+        <WalletsAnalyticsForecastMonthsView
+          :currencyCode="currenciesStore.base"
+          :rows="monthRows"
+          :scenario="view.scenario"
+        />
+      </template>
+    </UCollapsible>
 
     <div class="grid gap-2">
       <div class="flex items-center gap-2">
@@ -447,30 +431,32 @@ function onPartToggle(id: keyof typeof openParts.value, event: Event) {
       />
     </div>
 
-    <details class="group grid gap-2" :open="openParts.regular" data-forecast-regular @toggle="onPartToggle('regular', $event)">
-      <summary class="flex cursor-default list-none items-center gap-2 rounded-md interactive px-2 py-1.5 [&::-webkit-details-marker]:hidden">
-        <span class="grow text-sm font-semibold">{{ t('wallets.analytics.regular.title') }}</span>
-        <UiText variant="caption">
-          {{ regularItems.length }}
-        </UiText>
-        <Icon name="lucide:chevron-down" size="16" class="text-muted transition-transform group-open:rotate-180" />
-      </summary>
-      <UiText variant="meta" class="px-2 leading-snug!">
-        {{ t('wallets.analytics.regular.hint', { min: Math.min(settings.regularMinMonths, settings.historyMonths), window: settings.historyMonths }) }}
-      </UiText>
-      <WalletsAnalyticsRegularListView
-        :currencyCode="currenciesStore.base"
-        :items="regularItems"
-        :windowMonths="settings.historyMonths"
-        @edit="openEditor"
-        @toggle="toggleRegular"
-      />
-    </details>
+    <UCollapsible :open="openParts.regular" data-forecast-regular @update:open="value => setPart('regular', value)">
+      <UiTitleDropRight :isShown="openParts.regular" class="-mx-1" :title="t('wallets.analytics.regular.title')">
+        <span class="text-xs leading-none tracking-wide text-dimmed">{{ regularItems.length }}</span>
+      </UiTitleDropRight>
+      <template #content>
+        <div class="grid gap-2">
+          <UiText variant="meta" class="px-2 leading-snug!">
+            {{ t('wallets.analytics.regular.hint', { min: Math.min(settings.regularMinMonths, settings.historyMonths), window: settings.historyMonths }) }}
+          </UiText>
+          <WalletsAnalyticsRegularListView
+            :backgroundType="categoriesView.backgroundType.value"
+            :isRoundIcon="categoriesView.isRoundIcon.value"
+            :currencyCode="currenciesStore.base"
+            :items="regularItems"
+            :windowMonths="settings.historyMonths"
+            @edit="openEditor"
+            @toggle="toggleRegular"
+          />
+        </div>
+      </template>
+    </UCollapsible>
 
     <UiSheet
       v-if="editing"
       modalClass="max-w-md"
-      :title="editing.name"
+      :title="editing.category.name"
       @closed="editingId = null"
     >
       <template #default="{ close }">
@@ -516,15 +502,26 @@ function onPartToggle(id: keyof typeof openParts.value, event: Event) {
       :title="t('wallets.analytics.forecast.startWallets')"
       @closed="isWalletsOpen = false"
     >
-      <div class="grid pb-3">
-        <UiSwitchItem
+      <div class="grid gap-1 pb-3">
+        <WalletsRow
           v-for="walletId in availableWalletIds"
           :key="walletId"
-          :checkboxValue="startWalletIds.includes(walletId)"
-          :title="walletsStore.items?.[walletId]?.name ?? walletId"
-          trailing
-          @toggle="toggleStartWallet(walletId)"
-        />
+          :baseCurrencyCode="currenciesStore.base"
+          class="items-center pr-2"
+          :data-start-wallet="walletId"
+          :wallet="walletsStore.itemsComputed[walletId]!"
+          :walletId
+          @click="toggleStartWallet(walletId)"
+        >
+          <template #after>
+            <USwitch
+              :modelValue="startWalletIds.includes(walletId)"
+              :aria-label="walletsStore.items?.[walletId]?.name"
+              size="sm"
+              @update:modelValue="toggleStartWallet(walletId)"
+            />
+          </template>
+        </WalletsRow>
       </div>
     </UiSheet>
   </section>

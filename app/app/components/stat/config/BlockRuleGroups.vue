@@ -43,12 +43,8 @@ const groups = computed(() => {
       @activate="openPanel(statConfigRuleNavPanel(group.condition))"
     />
 
-    <UiText
-      v-if="!groups.length"
-      class="px-3 py-4"
-      variant="caption"
-    >
+    <UiEmpty v-if="!groups.length">
       {{ t('stat.views.blockRules.emptyView') }}
-    </UiText>
+    </UiEmpty>
   </div>
 </template>

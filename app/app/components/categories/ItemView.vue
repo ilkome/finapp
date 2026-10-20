@@ -2,10 +2,15 @@
 import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 import type { CategoryId, CategoryItem } from '~/components/categories/types'
 
+// The context-menu root renders no element of its own, so attrs (data hooks) go to the row.
+defineOptions({ inheritAttrs: false })
+
 const props = defineProps<{
   activeItemId?: string | 0 | false | null
   category: CategoryItem
   categoryId: CategoryId
+  /** Trailing marker of `UiElement`; makes a row without `to` a keyboard button. */
+  chevron?: 'more' | 'right'
   childrenCount?: number
   class?: string
   contextMenuItems?: ContextMenuItem[][]
@@ -68,6 +73,7 @@ function onRowClick(e: Event) {
   <UiContextMenuMy :items="props.contextMenuItems" :disabled="!props.contextMenuItems">
     <UiElement
       v-if="props.leftMenuButton && props.category"
+      v-bind="$attrs"
       :isActive="isActive"
       :class="props.class"
       class="[&_.uiElementLine]:block!"
@@ -121,12 +127,14 @@ function onRowClick(e: Event) {
 
     <UiElement
       v-else-if="props.category"
+      v-bind="$attrs"
       :isActive="isActive"
       :class="props.class"
       class="[&_.uiElementLine]:block!"
       :lineWidth="props.lineWidth"
       :insideClasses="`min-h-[46px] ${props.insideClasses ?? ''}`"
       :to="props.to"
+      :chevron="props.chevron"
       @click="(e: Event) => emit('click', e)"
     >
       <template #leftIcon>
@@ -149,11 +157,15 @@ function onRowClick(e: Event) {
         />
       </div>
 
+      <!-- Row-specific columns (analytics lists). -->
+      <slot name="append" />
+
       <button
         v-if="showRightChevron"
         type="button"
         class="-mr-1 flex size-9 shrink-0 items-center justify-center rounded-sm text-muted hover:bg-elevated/50"
         :aria-label="t('base.toggleExpand')"
+        :aria-expanded="props.isExpanded"
         @click="onToggleClick"
       >
         <Icon

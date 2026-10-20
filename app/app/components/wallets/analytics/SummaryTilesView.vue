@@ -25,15 +25,12 @@ const props = defineProps<{
 
 <template>
   <div class="grid grid-cols-2 gap-2" :class="props.columns === 4 ? '@xl/page:grid-cols-4' : '@xl/page:grid-cols-3'" data-analytics-summary>
-    <div
+    <UiCard
       v-for="item in props.items"
       :key="item.id"
-      class="grid content-start gap-1 rounded-md bg-elevated/30 px-3 py-2"
+      :title="item.label"
       :data-summary-tile="item.id"
     >
-      <UiText variant="caption">
-        {{ item.label }}
-      </UiText>
       <Amount
         v-if="item.amount !== undefined"
         :amount="item.amount"
@@ -54,6 +51,6 @@ const props = defineProps<{
           {{ item.caption }}
         </template>
       </UiText>
-    </div>
+    </UiCard>
   </div>
 </template>

@@ -2,7 +2,7 @@
 const props = defineProps<{
   modelValue: string | number
   placeholder?: string
-  type?: 'text' | 'number' | 'color'
+  type?: 'color' | 'date' | 'number' | 'text'
 }>()
 
 const emit = defineEmits<{

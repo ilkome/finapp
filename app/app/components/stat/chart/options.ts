@@ -4,6 +4,7 @@ import type { TooltipComponentOption } from 'echarts/components'
 import type { ComposeOption } from 'echarts/core'
 
 import defu from 'defu'
+import { mean, sum } from 'es-toolkit'
 
 import type { AxisChartType, LineChartOptions } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
@@ -209,8 +210,8 @@ export function resolveChartScale(series: ChartSeries[], chartType?: AxisChartTy
     ? Array.from({ length: Math.max(0, ...series.map(item => item.data.length)) }, (_, index) => {
         const pointValues = series.map(item => item.data[index] ?? 0).filter(Number.isFinite)
         return [
-          pointValues.filter(value => value > 0).reduce((total, value) => total + value, 0),
-          pointValues.filter(value => value < 0).reduce((total, value) => total + value, 0),
+          sum(pointValues.filter(value => value > 0)),
+          sum(pointValues.filter(value => value < 0)),
         ]
       }).flat()
     : series.flatMap(item => item.data).filter(Number.isFinite)
@@ -259,11 +260,11 @@ export function resolveChartSeriesAverages(series: ChartSeries[]) {
       return undefined
 
     if (source.averageMode === 'series')
-      return source.data.reduce((total, value) => total + value, 0) / source.data.length
+      return mean(source.data)
 
     const stackSeries = series.filter(item => !item.markedArea && item.icon)
     const totals = Array.from({ length: source.data.length }, (_, index) => stackSeries.reduce((total, item) => total + (item.data[index] ?? 0), 0))
-    return totals.reduce((total, value) => total + value, 0) / source.data.length
+    return sum(totals) / source.data.length
   })
 }
 

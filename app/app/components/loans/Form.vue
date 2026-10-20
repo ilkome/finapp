@@ -175,7 +175,7 @@ function onSave() {
       />
     </FormElement>
 
-    <div v-if="preview" class="grid grid-cols-3 gap-2 rounded-sm bg-elevated/30 px-3 py-2" data-loan-form-preview>
+    <UiCard v-if="preview" class="grid-cols-3 gap-2" data-loan-form-preview>
       <div class="grid">
         <UiText variant="caption">
           {{ form.scheduleType === 'annuity' ? t('loans.form.payment') : t('loans.form.firstPayment') }}
@@ -196,7 +196,7 @@ function onSave() {
           {{ preview.endDate }}
         </UiText>
       </div>
-    </div>
+    </UiCard>
 
     <FormElement>
       <template #label>
@@ -210,21 +210,7 @@ function onSave() {
     </FormElement>
 
     <UCollapsible v-model:open="isShowAdvanced">
-      <button
-        type="button"
-        class="-mx-3 flex min-h-10.5 w-[calc(100%+1.5rem)] items-center gap-1 rounded-md interactive px-3 text-left"
-        :aria-expanded="isShowAdvanced"
-        data-loan-form-advanced
-      >
-        <UiTitleSection>
-          {{ t('loans.form.advanced') }}
-        </UiTitleSection>
-        <Icon
-          :name="isShowAdvanced ? 'lucide:chevron-down' : 'lucide:chevron-right'"
-          class="shrink-0 text-muted"
-          size="18"
-        />
-      </button>
+      <UiTitleDropRight :isShown="isShowAdvanced" class="-mx-3" :title="t('loans.form.advanced')" data-loan-form-advanced />
 
       <template #content>
         <div class="grid gap-4 pt-3">

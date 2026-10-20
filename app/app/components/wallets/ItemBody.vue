@@ -9,6 +9,8 @@ const props = defineProps<{
   amount?: number
   /** Base currency the rate is shown against; the rate row is hidden without it. */
   baseCurrencyCode?: string
+  /** Trailing marker of `UiElement`; makes a row without `to` a keyboard button. */
+  chevron?: 'more' | 'right'
   compact?: boolean
   insideClasses?: string
   isSelected?: boolean
@@ -49,6 +51,7 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
     :insideClasses="`${props.insideClasses ?? ''} min-h-[46px]`"
     :lineWidth="props.lineWidth"
     :to="props.to"
+    :chevron="props.chevron"
     :class="classes"
     @click="emit('click', props.walletId)"
   >
@@ -137,6 +140,9 @@ const displayAmount = computed(() => props.amount ?? props.wallet.amount)
           variant="row"
         />
       </div>
+
+      <!-- Row-specific columns after the balance (analytics tables). -->
+      <slot name="append" />
     </template>
 
     <!-- Alternative -->

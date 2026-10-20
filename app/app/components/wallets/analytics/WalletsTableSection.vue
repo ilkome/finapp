@@ -33,7 +33,7 @@ const rows = computed<WalletTableRow[]>(() => {
   const totals = { assets: sideTotal(false), debts: sideTotal(true) }
   return series
     // Nothing now and nothing moved in the period: the row says nothing.
-    .filter(item => (item.data.at(-1) ?? 0) !== 0 || periodChange(item) !== 0)
+    .filter(item => walletsStore.itemsComputed[item.id] && ((item.data.at(-1) ?? 0) !== 0 || periodChange(item) !== 0))
     .map((item) => {
       const value = item.data.at(-1) ?? 0
       const total = value < 0 ? totals.debts : totals.assets
@@ -45,6 +45,7 @@ const rows = computed<WalletTableRow[]>(() => {
         share: total ? Math.abs(value) / total : 0,
         spark: item.data,
         value,
+        wallet: walletsStore.itemsComputed[item.id]!,
       }
     })
 })

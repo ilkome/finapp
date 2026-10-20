@@ -2,6 +2,8 @@
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { ForecastRunway } from '~/components/wallets/analytics/ForecastSummaryView.vue'
 
+import { sparklinePoints } from '~/components/wallets/analytics/chartSeries'
+
 const props = defineProps<{
   /** Balance change over the preview window. */
   change: number
@@ -20,30 +22,21 @@ const { t } = useI18n()
 
 const path = computed(() => {
   const values = props.points
-  if (values.length < 2)
-    return ''
-  const min = Math.min(...values)
-  const span = Math.max(...values) - min || 1
-  return values
-    .map((value, index) => `${index ? 'L' : 'M'}${(index / (values.length - 1) * 100).toFixed(2)},${(28 - (value - min) / span * 26).toFixed(2)}`)
+  return sparklinePoints(values, 100, 30, 2)
+    .map(([x, y], index) => `${index ? 'L' : 'M'}${x.toFixed(2)},${y.toFixed(2)}`)
     .join(' ')
 })
 </script>
 
 <template>
-  <button
-    type="button"
-    class="grid gap-2 rounded-sm interactive bg-elevated/30 px-3 py-2 text-left"
+  <UiCard
+    as="button"
+    chevron="right"
+    class="gap-2"
+    :title="t('wallets.analytics.title')"
     data-analytics-preview
     @click="emit('click')"
   >
-    <div class="flex items-center gap-2">
-      <UiText variant="caption" class="grow">
-        {{ t('wallets.analytics.title') }}
-      </UiText>
-      <Icon name="lucide:chevron-right" size="16" class="text-muted" />
-    </div>
-
     <svg
       v-if="path"
       viewBox="0 0 100 30"
@@ -84,5 +77,5 @@ const path = computed(() => {
         </template>
       </UiText>
     </div>
-  </button>
+  </UiCard>
 </template>

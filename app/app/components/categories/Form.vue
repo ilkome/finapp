@@ -4,6 +4,7 @@ import { generateId } from '~~/utils/generateId'
 import type { CategoryForm, CategoryId } from '~/components/categories/types'
 
 import icons from '~/assets/js/icons'
+import { candidatesCount, childCandidateGroups, filterCandidateGroups, hasDuplicateNames, isNameTaken } from '~/components/categories/children'
 import { categoryFormSchema } from '~/components/categories/types'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isReservedCategoryId } from '~/components/categories/utils'
@@ -63,102 +64,15 @@ const canHaveChildren = computed(() =>
   || (!!props.categoryId && categoriesStore.categoriesForBeParent.includes(props.categoryId)),
 )
 
-const rootsWithOwnChildren = computed<Set<CategoryId>>(() => {
-  const items = categoriesStore.items
-  const out = new Set<CategoryId>()
-  for (const cid of Object.keys(items)) {
-    const pid = items[cid]?.parentId
-    if (pid && typeof pid === 'string')
-      out.add(pid)
-  }
-  return out
-})
-
-const childrenCandidateIds = computed<CategoryId[]>(() => {
-  const items = categoriesStore.items
-  const roots = rootsWithOwnChildren.value
-  const result: CategoryId[] = []
-  for (const id of Object.keys(items)) {
-    if (isReservedCategoryId(id) || id === editCategoryId)
-      continue
-    const cat = items[id]
-    if (!cat)
-      continue
-    // Currently our child → include so it appears and can be removed
-    if (cat.parentId === editCategoryId) {
-      result.push(id)
-      continue
-    }
-    // Root category: adoptable only if it has no own children
-    if (cat.parentId === 0) {
-      if (!roots.has(id))
-        result.push(id)
-      continue
-    }
-    // Child of another root: can be reparented
-    result.push(id)
-  }
-  return result
-})
-
-type CandidateGroup = 'current' | 'fromOther' | 'freeRoot'
-
-const candidateGroups = computed<Record<CandidateGroup, CategoryId[]>>(() => {
-  const items = categoriesStore.items
-  const groups: Record<CandidateGroup, CategoryId[]> = { current: [], freeRoot: [], fromOther: [] }
-  for (const id of childrenCandidateIds.value) {
-    const cat = items[id]
-    if (!cat)
-      continue
-    if (prevChildIds.value.includes(id))
-      groups.current.push(id)
-    else if (cat.parentId === 0)
-      groups.freeRoot.push(id)
-    else
-      groups.fromOther.push(id)
-  }
-  const byName = (a: CategoryId, b: CategoryId) =>
-    (items[a]?.name ?? '').localeCompare(items[b]?.name ?? '')
-  groups.current.sort(byName)
-  groups.freeRoot.sort(byName)
-  groups.fromOther.sort(byName)
-  return groups
-})
-
+const candidateGroups = computed(() => childCandidateGroups(categoriesStore.items, editCategoryId, prevChildIds.value))
 const childrenSearch = ref('')
-
-const filteredCandidateGroups = computed(() => {
-  const q = childrenSearch.value.trim().toLowerCase()
-  if (!q)
-    return candidateGroups.value
-  const items = categoriesStore.items
-  const match = (id: CategoryId) => {
-    const cat = items[id]
-    if (!cat)
-      return false
-    const parentName = typeof cat.parentId === 'string' ? items[cat.parentId]?.name ?? '' : ''
-    return cat.name.toLowerCase().includes(q) || parentName.toLowerCase().includes(q)
-  }
-  const g = candidateGroups.value
-  return {
-    current: g.current.filter(match),
-    freeRoot: g.freeRoot.filter(match),
-    fromOther: g.fromOther.filter(match),
-  }
-})
-
-function getParentName(id: CategoryId): string {
-  const cat = categoriesStore.items[id]
-  if (!cat || cat.parentId === 0 || typeof cat.parentId !== 'string')
-    return ''
-  return categoriesStore.items[cat.parentId]?.name ?? ''
-}
+const filteredCandidateGroups = computed(() => filterCandidateGroups(candidateGroups.value, categoriesStore.items, childrenSearch.value))
 
 const isAllowManageChildren = computed(() =>
   !isReserved
   && isRootCategory.value
   && canHaveChildren.value
-  && (childrenCandidateIds.value.length > 0 || prevChildIds.value.length > 0),
+  && (candidatesCount(candidateGroups.value) > 0 || prevChildIds.value.length > 0),
 )
 
 watch(() => props.categoryForm.parentId, (parentId) => {
@@ -224,28 +138,10 @@ async function onSave() {
     return
   }
 
-  for (const id of Object.keys(categoriesStore.items)) {
-    const cat = categoriesStore.items[id]
-    if (cat && cat.name === parsed.data.name && cat.parentId === parsed.data.parentId && id !== editCategoryId) {
-      showErrorToast('categories.form.name.exist')
-      return
-    }
-  }
-
-  // Validate uniqueness of names within the new children set
-  if (isAllowManageChildren.value) {
-    const finalChildren = selectedChildIds.value
-    const names = new Map<string, string>()
-    for (const cid of finalChildren) {
-      const cat = categoriesStore.items[cid]
-      if (!cat)
-        continue
-      if (names.has(cat.name)) {
-        showErrorToast('categories.form.name.exist')
-        return
-      }
-      names.set(cat.name, cid)
-    }
+  const isChildrenNameClash = isAllowManageChildren.value && hasDuplicateNames(categoriesStore.items, selectedChildIds.value)
+  if (isNameTaken(categoriesStore.items, parsed.data.name, parsed.data.parentId, editCategoryId) || isChildrenNameClash) {
+    showErrorToast('categories.form.name.exist')
+    return
   }
 
   await categoriesStore.saveCategory({
@@ -490,70 +386,12 @@ async function onSave() {
 
     <template #default="{ close }">
       <div class="drawer-body">
-        <div
-          v-if="childrenCandidateIds.length === 0"
-          class="p-4 text-center text-muted"
-        >
-          {{ t('categories.form.children.noCandidates') }}
-        </div>
-
-        <template v-else>
-          <template
-            v-for="group in (['current', 'freeRoot', 'fromOther'] as const)"
-            :key="group"
-          >
-            <div
-              v-if="filteredCandidateGroups[group].length > 0"
-              class="pb-2"
-            >
-              <div class="px-3 pt-2 pb-1 text-xs tracking-wide text-muted uppercase">
-                {{ t(`categories.form.children.group.${group}`) }}
-              </div>
-
-              <button
-                v-for="id in filteredCandidateGroups[group]"
-                :key="id"
-                type="button"
-                :aria-pressed="selectedChildIds.includes(id)"
-                :class="cn('flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition hover:bg-elevated/50', selectedChildIds.includes(id) && 'bg-elevated/30')"
-                @click="toggleChildSelection(id)"
-              >
-                <div :class="cn('flex size-5 shrink-0 items-center justify-center rounded border transition', selectedChildIds.includes(id) ? 'border-primary bg-primary' : 'border-default')">
-                  <Icon
-                    v-if="selectedChildIds.includes(id)"
-                    name="mdi:check"
-                    size="14"
-                    class="text-icon-primary"
-                  />
-                </div>
-
-                <UiIconBase
-                  :color="categoriesStore.items[id]?.color"
-                  :name="categoriesStore.items[id]?.icon ?? ''"
-                  invert
-                />
-
-                <CategoriesName
-                  stacked
-                  :category="categoriesStore.items[id]!"
-                  :parentCategory="id ? categoriesStore.items[categoriesStore.items[id]?.parentId as CategoryId] : undefined"
-                  :isShowParent="!!getParentName(id)"
-                />
-              </button>
-            </div>
-          </template>
-
-          <div
-            v-if="
-              filteredCandidateGroups.current.length === 0
-                && filteredCandidateGroups.freeRoot.length === 0
-                && filteredCandidateGroups.fromOther.length === 0
-            "
-            class="p-4 text-center text-muted"
-          >
-            {{ t('categories.form.children.noMatches') }}
-          </div>
-        </template>
+        <CategoriesFormChildrenList
+          :groups="filteredCandidateGroups"
+          :hasCandidates="candidatesCount(candidateGroups) > 0"
+          :selectedIds="selectedChildIds"
+          @toggle="toggleChildSelection"
+        />
       </div>
 
       <div class="drawer-footer">

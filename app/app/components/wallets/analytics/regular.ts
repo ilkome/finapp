@@ -1,5 +1,6 @@
 import type { Range } from '~~/utils/date/types'
 
+import { mean } from 'es-toolkit'
 import { addCivilMonths, lastDayOfMonthCivil, startOfMonthCivil } from '~~/utils/date/civil'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -156,7 +157,7 @@ export function typicalAmount(values: number[], mode: AmountMode): number {
   if (mode === 'max')
     return Math.max(...values)
   if (mode === 'average')
-    return Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)
+    return Math.round(mean(values))
   const sorted = values.toSorted((a, b) => a - b)
   const middle = sorted.length >> 1
   return sorted.length % 2 ? sorted[middle]! : Math.round((sorted[middle - 1]! + sorted[middle]!) / 2)

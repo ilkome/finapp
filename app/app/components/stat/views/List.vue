@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
+import { moveItem } from '~~/utils/simple'
 
 import { statViewControllerKey } from '~/components/stat/injectionKeys'
 import { isAdaptiveViewId } from '~/components/stat/views/adaptiveView'
@@ -34,15 +35,7 @@ function selectView(id: string) {
 }
 
 function moveView(id: string, direction: -1 | 1) {
-  const index = sortedViewIds.value.indexOf(id)
-  const target = index + direction
-  if (index < 0 || target < 0 || target >= sortedViewIds.value.length)
-    return
-  const next = [...sortedViewIds.value]
-  const current = next[index]!
-  next[index] = next[target]!
-  next[target] = current
-  sortedViewIds.value = next
+  sortedViewIds.value = moveItem(sortedViewIds.value, id, direction)
 }
 
 function duplicate(id: string) {

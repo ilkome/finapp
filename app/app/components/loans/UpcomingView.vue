@@ -66,9 +66,7 @@ const { t } = useI18n()
       @update:open="(value: boolean) => emit('toggle', group.key, value)"
     >
       <!-- The nearest day already prints its date in the day row below. -->
-      <UiTitleCollapse v-if="group.key !== 'nearest'" :isShown="props.openKeys.includes(group.key)" :class="group.key === 'overdue' && 'text-error'">
-        {{ group.label }}
-      </UiTitleCollapse>
+      <UiTitleDropRight v-if="group.key !== 'nearest'" :isError="group.key === 'overdue'" :isShown="props.openKeys.includes(group.key)" :title="group.label" />
 
       <template #content>
         <div v-for="day in group.days" :key="day.date">

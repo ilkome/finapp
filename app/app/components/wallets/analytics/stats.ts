@@ -1,5 +1,6 @@
 import type { Period, Range } from '~~/utils/date/types'
 
+import { mean } from 'es-toolkit'
 import { u } from '~~/utils/date/civil'
 import { getEndOf } from '~~/utils/date/period'
 
@@ -30,7 +31,7 @@ export function intervalStats(values: number[], fullCount: number) {
       worstIndex = index
   })
   return {
-    average: Math.round(full.reduce((sum, value) => sum + value, 0) / full.length),
+    average: Math.round(mean(full)),
     bestIndex,
     median: median(full),
     worstIndex,
@@ -70,7 +71,7 @@ export const ANOMALY_FACTOR = 1.5
 export function rollingMean(values: (number | null)[], window = ROLLING_WINDOW): (number | null)[] {
   return values.map((_, index) => {
     const slice = values.slice(Math.max(0, index - window + 1), index + 1).filter((value): value is number => value !== null)
-    return slice.length ? slice.reduce((sum, value) => sum + value, 0) / slice.length : null
+    return slice.length ? mean(slice) : null
   })
 }
 
@@ -137,4 +138,10 @@ export function paceCurve(past: number[][], length: number) {
     p25: days.map(values => Math.round(quantile(values, 0.25))),
     p75: days.map(values => Math.round(quantile(values, 0.75))),
   }
+}
+
+/** Change against the previous period: the delta, and its share of the previous value (undefined when that was zero). */
+export function periodDelta(now: number, before: number): { delta: number, share: number | undefined } {
+  const delta = now - before
+  return { delta, share: before ? delta / Math.abs(before) : undefined }
 }

@@ -13,6 +13,7 @@ import { pieShapeOptions } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
+import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -21,6 +22,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const router = useRouter()
+const { requestDelete } = useWalletDelete()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
@@ -60,6 +62,8 @@ const groups = computed(() => groupBys.map((groupBy) => {
     name: nameOf(item.id, groupBy),
     share: item.share,
     signedValue: item.signedValue,
+    // Split mode lists a wallet once per side, so those rows keep the plain look with the side in the name.
+    wallet: groupBy === 'wallet' && mode.value !== 'split' ? walletsStore.itemsComputed[item.id] : undefined,
   }))
   const rows = options.value.sort === 'name' ? list.sort((a, b) => a.name.localeCompare(b.name)) : list
   return {
@@ -113,7 +117,7 @@ const openGroup = computed(() => {
   const item = open.value && groups.value.find(group => group.groupBy === open.value!.groupBy)?.shares.items.find(entry => entry.id === open.value!.id)
   return item && {
     name: nameOf(item.id, open.value!.groupBy),
-    wallets: item.walletIds.map(id => ({ amount: walletsStore.itemsComputed[id]?.amount ?? 0, currencyCode: walletsStore.itemsComputed[id]?.currencyCode ?? currenciesStore.base, id, name: walletsStore.items?.[id]?.name ?? id })),
+    walletIds: item.walletIds.filter(id => walletsStore.itemsComputed[id]),
   }
 })
 
@@ -190,9 +194,9 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       </div>
     </template>
 
-    <UiText v-if="!visibleGroups.length" variant="meta" class="px-2">
+    <UiEmpty v-if="!visibleGroups.length">
       {{ t('wallets.analytics.shares.empty') }}
-    </UiText>
+    </UiEmpty>
 
     <UiSheet
       v-if="openGroup"
@@ -200,19 +204,14 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       :title="openGroup.name"
       @closed="open = null"
     >
-      <div class="grid pb-3">
-        <UiElement
-          v-for="wallet in openGroup.wallets"
-          :key="wallet.id"
-          :data-share-wallet="wallet.id"
-          @click="router.push(`/wallets/${wallet.id}`)"
-        >
-          <div class="min-w-0 grow truncate text-sm">
-            {{ wallet.name }}
-          </div>
-          <Amount :amount="wallet.amount" :currencyCode="wallet.currencyCode" variant="row" />
-          <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
-        </UiElement>
+      <div class="grid gap-1 pb-3">
+        <WalletsPageListItem
+          v-for="walletId in openGroup.walletIds"
+          :key="walletId"
+          :data-share-wallet="walletId"
+          :walletId
+          @delete="requestDelete"
+        />
       </div>
     </UiSheet>
   </section>

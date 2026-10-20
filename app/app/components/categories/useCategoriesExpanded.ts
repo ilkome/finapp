@@ -4,6 +4,8 @@ import { useStorage } from '@vueuse/core'
 
 import type { CategoryId } from '~/components/categories/types'
 
+import { CATEGORY_STORAGE_KEYS } from '~/components/categories/constants'
+
 type CategoryState = { show: boolean }
 type CategoriesState = Record<CategoryId, CategoryState>
 
@@ -17,7 +19,7 @@ export function useCategoriesExpanded(
     {} as CategoriesState,
   )
   const defaultExpanded = options.persistDefault
-    ? useStorage(`finapp.categoriesOpenedDefault:${storageKey}`, false)
+    ? useStorage(`${CATEGORY_STORAGE_KEYS.openedDefaultPrefix}:${storageKey}`, false)
     : ref(false)
 
   function isExpanded(id: CategoryId) {

@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
 export type BankCheckRow = {
-  color: string
-  currencyCode: CurrencyCode
   /** The bank's balance day, formatted. */
   dateLabel: string
   /** Bank minus calculated, in the wallet's currency. */
   diff: number
-  id: string
-  name: string
+  id: WalletId
+  wallet: WalletItemComputed
 }
 
-defineProps<{
+const props = defineProps<{
+  baseCurrencyCode: CurrencyCode
   items: BankCheckRow[]
 }>()
 
@@ -22,29 +22,25 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="grid rounded-md bg-elevated/30 py-px" data-analytics-bank-check>
-    <UiElement
-      v-for="(item, index) in items"
+  <div class="grid gap-1" data-analytics-bank-check>
+    <WalletsRow
+      v-for="item in props.items"
       :key="item.id"
-      :lineWidth="index === items.length - 1 ? 0 : 3"
-      insideClasses="min-h-11!"
+      :baseCurrencyCode="props.baseCurrencyCode"
+      chevron="right"
       :data-bank-row="item.id"
-      role="button"
-      tabindex="0"
+      :wallet="item.wallet"
+      :walletId="item.id"
       @click="emit('select', item.id)"
-      @keydown.enter.space.prevent="emit('select', item.id)"
     >
-      <div class="size-2.5 shrink-0 rounded-full" :style="{ background: item.color }" />
-      <div class="grid min-w-0 grow gap-1">
-        <div class="truncate text-sm leading-none text-muted">
-          {{ item.name }}
+      <template #append>
+        <div class="grid justify-items-end gap-1">
+          <Amount :amount="item.diff" :currencyCode="item.wallet.currencyCode" :isShowBaseRate="false" isShowPlus variant="row" />
+          <UiText variant="caption">
+            {{ item.dateLabel }}
+          </UiText>
         </div>
-        <UiText variant="caption">
-          {{ item.dateLabel }}
-        </UiText>
-      </div>
-      <Amount :amount="item.diff" :currencyCode="item.currencyCode" :isShowBaseRate="false" isShowPlus variant="row" />
-      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
-    </UiElement>
+      </template>
+    </WalletsRow>
   </div>
 </template>

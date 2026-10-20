@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { WalletId, WalletItemComputed } from '~/components/wallets/types'
 
+import { sparklinePoints } from '~/components/wallets/analytics/chartSeries'
 import { formatPercent } from '~/components/wallets/analytics/tooltips'
 
 export type WalletTableRow = {
   change: number
   color: string
-  id: string
+  id: WalletId
+  /** For sorting by name. */
   name: string
   /** Share of the scope's total by size, 0..1. */
   share: number
   /** Balance per interval end, for the sparkline. */
   spark: number[]
+  /** Balance in the base currency, for sorting by size. */
   value: number
+  wallet: WalletItemComputed
 }
 
 type SortKey = 'change' | 'name' | 'share' | 'value'
@@ -47,11 +52,7 @@ function setSort(key: SortKey) {
 const SPARK_WIDTH = 56
 const SPARK_HEIGHT = 18
 function sparkPoints(values: number[]) {
-  if (values.length < 2)
-    return ''
-  const min = Math.min(...values)
-  const range = Math.max(...values) - min || 1
-  return values.map((value, index) => `${(index / (values.length - 1) * SPARK_WIDTH).toFixed(1)},${(SPARK_HEIGHT - (value - min) / range * SPARK_HEIGHT).toFixed(1)}`).join(' ')
+  return sparklinePoints(values, SPARK_WIDTH, SPARK_HEIGHT).map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ')
 }
 
 function sparkLabel(values: number[]) {
@@ -65,52 +66,46 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
 </script>
 
 <template>
-  <div class="grid rounded-md bg-elevated/30 py-px" data-analytics-wallets-table>
-    <div class="flex items-center gap-2 px-3 py-1.5 text-xs text-muted" role="row">
+  <div class="grid gap-1" data-analytics-wallets-table>
+    <div class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 px-3 py-1.5 text-xs text-muted" role="toolbar" :aria-label="t('wallets.analytics.sort.label')">
       <button
         v-for="column in columns"
         :key="column"
         type="button"
         class="flex items-center gap-0.5"
-        :class="column === 'name' ? 'grow text-left' : 'w-16 justify-end'"
+        :class="sort.key === column && 'text-toned'"
         :aria-label="column === 'change' ? t('wallets.analytics.table.changeFull') : undefined"
-        :aria-sort="sort.key === column ? (sort.isAsc ? 'ascending' : 'descending') : 'none'"
+        :aria-pressed="sort.key === column"
         :data-sort="column"
         @click="setSort(column)"
       >
         {{ t(`wallets.analytics.table.${column}`) }}
         <Icon v-if="sort.key === column" :name="sort.isAsc ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="12" />
       </button>
-      <div class="w-4 shrink-0" aria-hidden="true" />
     </div>
 
-    <UiElement
-      v-for="(item, index) in visible"
+    <WalletsRow
+      v-for="item in visible"
       :key="item.id"
-      :lineWidth="index === visible.length - 1 ? 0 : 3"
-      insideClasses="min-h-11!"
+      :baseCurrencyCode="props.currencyCode"
+      chevron="right"
       :data-wallet-row="item.id"
-      role="button"
-      tabindex="0"
+      :wallet="item.wallet"
+      :walletId="item.id"
       @click="emit('select', item.id)"
-      @keydown.enter.space.prevent="emit('select', item.id)"
     >
-      <div class="size-2.5 shrink-0 rounded-full" :style="{ background: item.color }" />
-      <div class="min-w-0 grow truncate text-sm leading-none text-muted">
-        {{ item.name }}
-      </div>
-      <svg :width="SPARK_WIDTH" :height="SPARK_HEIGHT" class="shrink-0" role="img" :aria-label="sparkLabel(item.spark)">
-        <polyline :points="sparkPoints(item.spark)" fill="none" :stroke="item.color" stroke-width="1.5" />
-      </svg>
-      <div class="grid w-24 justify-items-end gap-1 pr-1">
-        <Amount :amount="item.value" :currencyCode="props.currencyCode" :isShowBaseRate="false" variant="row" />
-        <Amount :amount="item.change" :currencyCode="props.currencyCode" :isShowBaseRate="false" isShowPlus variant="secondary" />
-      </div>
-      <UiText variant="caption" class="w-10 shrink-0 text-right">
-        {{ Math.round(item.share * 100) }}%
-      </UiText>
-      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
-    </UiElement>
+      <template #append>
+        <svg :width="SPARK_WIDTH" :height="SPARK_HEIGHT" class="shrink-0" role="img" :aria-label="sparkLabel(item.spark)">
+          <polyline :points="sparkPoints(item.spark)" fill="none" :stroke="item.color" stroke-width="1.5" />
+        </svg>
+        <div class="grid w-16 shrink-0 justify-items-end gap-1">
+          <Amount :amount="item.change" :currencyCode="props.currencyCode" :isShowBaseRate="false" isShowPlus variant="secondary" />
+          <UiText variant="caption">
+            {{ Math.round(item.share * 100) }}%
+          </UiText>
+        </div>
+      </template>
+    </WalletsRow>
 
     <UButton
       v-if="sorted.length > COLLAPSED_ROWS"

@@ -1,3 +1,4 @@
+import { sum } from 'es-toolkit'
 import { addCivilDays, addCivilMonths, lastDayOfMonthCivil, startOfMonthCivil } from '~~/utils/date/civil'
 
 import type { CategoryId } from '~/components/categories/types'
@@ -144,6 +145,35 @@ export type ForecastScenario = {
   spendingFactor?: number
 }
 
+export type WhatIfInput = {
+  amount: string
+  /** `YYYY-MM-DD` from a date field; empty when unset. */
+  date: string
+  incomePercent: string
+  kind: 'expense' | 'income'
+  spendingPercent: string
+}
+
+/**
+ * The what-if form as a scenario; null when nothing is set.
+ * A one-off needs both an amount and a date; percents change income or spending by that much.
+ */
+export function whatIfScenario(input: WhatIfInput, parse: (value: string) => number | undefined, toMinor: (amount: number) => number): ForecastScenario | null {
+  const amount = parse(input.amount)
+  const date = input.date ? Date.parse(`${input.date}T00:00:00Z`) : Number.NaN
+  const factor = (value: string) => {
+    const percent = parse(value)
+    return percent === undefined ? undefined : 1 + percent / 100
+  }
+  const minor = amount && Number.isFinite(date) ? toMinor(Math.abs(amount)) : 0
+  const scenario = {
+    events: minor ? [{ amount: input.kind === 'income' ? minor : -minor, date }] : [],
+    incomeFactor: factor(input.incomePercent),
+    spendingFactor: factor(input.spendingPercent),
+  }
+  return scenario.events.length || scenario.incomeFactor !== undefined || scenario.spendingFactor !== undefined ? scenario : null
+}
+
 /** Why both scenarios end on the same day, when they do. */
 export type ForecastCoincidence = 'arrived' | 'afterRunOut' | 'belowZero'
 
@@ -287,7 +317,7 @@ export function coverTrend(params: {
     const regular = detectRegular({ amountMode, minMonths, monthly, overrides, windowMonths })
       .filter(item => item.isRegular)
       .reduce((sum, item) => sum + item.amount, 0)
-    const debt = debtPayments.slice(start, end + 1).reduce((sum, value) => sum + value, 0) / windowMonths
+    const debt = sum(debtPayments.slice(start, end + 1)) / windowMonths
     const outflow = regular + debt
     return outflow > 0 ? balances[index]! / outflow : null
   })

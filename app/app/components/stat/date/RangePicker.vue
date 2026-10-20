@@ -6,6 +6,7 @@ import { useStorage } from '@vueuse/core'
 import type { Grouped } from '~/components/stat/date/types'
 import type { StatDateRangeOption } from '~/components/stat/date/useRangeOptions'
 
+import { STAT_STORAGE_KEYS } from '~/components/stat/constants'
 import { useStatDateRangeOptions } from '~/components/stat/date/useRangeOptions'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
@@ -14,7 +15,7 @@ const emit = defineEmits<{
 }>()
 
 const statDate = inject(statDateKey)!
-const isGranularityOpen = useStorage('finapp.stat-date-granularity', true)
+const isGranularityOpen = useStorage(STAT_STORAGE_KEYS.dateGranularityOpen, true)
 const { options } = useStatDateRangeOptions()
 
 function onSelectRange(option: StatDateRangeOption) {

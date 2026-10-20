@@ -9,6 +9,7 @@ import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { isOneOff, topMovers } from '~/components/wallets/analytics/movers'
 import { formatPercent } from '~/components/wallets/analytics/tooltips'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
 const props = defineProps<{
   base: AnalyticsBase
@@ -20,6 +21,7 @@ const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const categoriesView = useCategoriesViewSettings()
 
 /** Expense per root category; `toBaseOf` prices a trn by the rates of its interval. */
 function spendingByCategory(dates: { end: number, start: number }, toBaseOf: (date: number) => (amount: number, currency: string) => number) {
@@ -50,17 +52,18 @@ const movers = computed(() => {
   }))
 })
 
-const rows = computed<MoverRow[]>(() => movers.value.map((item) => {
+const rows = computed<MoverRow[]>(() => movers.value.flatMap((item) => {
   const category = categoriesStore.items[item.id]
+  if (!category)
+    return []
   return {
-    color: category?.color ?? 'var(--ui-text-muted)',
+    category,
     current: Math.round(item.current),
     delta: Math.round(item.delta),
     deltaLabel: item.share === undefined ? undefined : `${item.share > 0 ? '+' : ''}${formatPercent(item.share)}`,
-    icon: category?.icon ?? 'lucide:circle',
     id: item.id,
     isOneOff: item.isOneOff,
-    name: category?.name ?? item.id,
+    parentCategory: typeof category.parentId === 'string' ? categoriesStore.items[category.parentId] : undefined,
   }
 }))
 </script>
@@ -74,6 +77,8 @@ const rows = computed<MoverRow[]>(() => movers.value.map((item) => {
       {{ t('wallets.analytics.movers.caption') }}
     </UiText>
     <WalletsAnalyticsMoversView
+      :backgroundType="categoriesView.backgroundType.value"
+      :isRoundIcon="categoriesView.isRoundIcon.value"
       :currencyCode="currenciesStore.base"
       :items="rows"
       @select="id => router.push(`/categories/${id}`)"

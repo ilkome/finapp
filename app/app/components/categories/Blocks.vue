@@ -5,6 +5,7 @@ import type { CategoryListRow } from '~/components/categories/ListView.vue'
 import type { CategoryId } from '~/components/categories/types'
 import type { CategoriesViewScope } from '~/composables/useCategoriesViewSettings'
 
+import { CATEGORY_STORAGE_KEYS } from '~/components/categories/constants'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { isReservedCategoryId } from '~/components/categories/utils'
 import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
@@ -35,7 +36,7 @@ const { backgroundType, childrenView, isRoundIcon, isShowChildrenCount } = useCa
 
 type CategoriesBlock = 'all' | 'favorites' | 'recent' | 'system'
 // Each scope (page, form sheets) remembers its own open blocks, like its view settings.
-const blocksOpen = useStorage<Record<CategoriesBlock, boolean>>(props.scope === 'form' ? 'finapp.categoriesBlocksOpen.form' : 'finapp.categoriesBlocksOpen', { all: true, favorites: true, recent: true, system: true }, localStorage, { mergeDefaults: true })
+const blocksOpen = useStorage<Record<CategoriesBlock, boolean>>(props.scope === 'form' ? CATEGORY_STORAGE_KEYS.blocksOpenForm : CATEGORY_STORAGE_KEYS.blocksOpen, { all: true, favorites: true, recent: true, system: true }, localStorage, { mergeDefaults: true })
 
 const query = computed(() => (props.searchQuery ?? '').trim().toLowerCase())
 
