@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { sum } from 'es-toolkit'
+
 import type { SummaryTile } from '~/components/wallets/analytics/SummaryTilesView.vue'
 import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
 
@@ -46,7 +48,6 @@ const flows = computed(() => {
     trnsIds: trnsStore.getStoreTrnsIds({ dates: props.base.range.value, walletsIds: props.base.walletIds.value }),
     trnsItems: trnsStore.items ?? {},
   })
-  const sum = (values: number[]) => values.reduce((acc, value) => acc + value, 0)
   return { income: sum(points.income), net: sum(points.net) }
 })
 

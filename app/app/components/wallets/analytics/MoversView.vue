@@ -31,13 +31,11 @@ const { t } = useI18n()
     <UiElement
       v-for="(item, index) in props.items"
       :key="item.id"
+      chevron="right"
       :lineWidth="index === props.items.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-mover="item.id"
-      role="button"
-      tabindex="0"
       @click="emit('select', item.id)"
-      @keydown.enter.space.prevent="emit('select', item.id)"
     >
       <Icon :name="item.icon" size="18" :style="{ color: item.color }" class="shrink-0" />
 
@@ -55,7 +53,6 @@ const { t } = useI18n()
           </UiText>
         </div>
       </div>
-      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
   </div>
 </template>

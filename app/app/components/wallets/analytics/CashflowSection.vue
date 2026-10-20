@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useStorage } from '@vueuse/core'
+import { sum } from 'es-toolkit'
 import { addCivilDays, addCivilYears, u } from '~~/utils/date/civil'
 import { getEndOf } from '~~/utils/date/period'
 
@@ -19,10 +20,10 @@ import { defaultConfig } from '~/components/stat/config/schema'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
 import { cashflowPoints, debtPaymentsPoints, splitExpense } from '~/components/wallets/analytics/cashflow'
-import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { pointLineChartConfig, toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
 import { buildInsights } from '~/components/wallets/analytics/insights'
-import { cumulative, expenseAnomalies, incomeStability, intervalStats, PACE_CURVE_WINDOW, PACE_WINDOW, paceCurve, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
+import { cumulative, expenseAnomalies, incomeStability, intervalStats, PACE_CURVE_WINDOW, PACE_WINDOW, paceCurve, paceOf, periodDelta, savingsRateTrend } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows, cashflowTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -65,7 +66,6 @@ const colors: Record<CashflowId, string> = {
 }
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ dates: props.base.range.value, walletsIds: props.base.walletIds.value }))
-const sumOf = (values: number[]) => values.reduce((total, value) => total + value, 0)
 function totalOf(ids: string[], toBase: ReturnType<typeof props.base.tryToBaseAt>) {
   return getTotal({
     excludedCategoriesIds: categoriesStore.excludedFromStatsIds,
@@ -263,8 +263,8 @@ const summary = computed<SummaryTile[]>(() => {
   const period = props.base.effectivePeriod.value
   const labelOf = (index: number) => formatChartTooltipLabel(props.base.intervals.value[index]!.start, period, locale.value)
   const money = (value: number) => formatAmount(value, currenciesStore.base)
-  const income = sumOf(points.income)
-  const net = sumOf(points.net)
+  const income = sum(points.income)
+  const net = sum(points.net)
   const stats = intervalStats(points.net, props.base.fullCount.value)
   const tiles: SummaryTile[] = [{ id: 'savingsRate', label: t('wallets.analytics.cashflow.savingsRateTitle'), text: formatPercent(savingsRate(net, income)) }]
   if (stats) {
@@ -295,13 +295,12 @@ const summary = computed<SummaryTile[]>(() => {
     })
   }
   if (previous.value) {
-    const now = { expense: sumOf(points.expense), income, net }
+    const now = { expense: sum(points.expense), income, net }
     for (const id of ['income', 'expense', 'net'] as const) {
-      const before = previous.value[id]
-      const delta = now[id] - before
+      const { delta, share } = periodDelta(now[id], previous.value[id])
       tiles.push({
         amount: delta,
-        caption: before ? `${delta > 0 ? '+' : ''}${formatPercent(delta / Math.abs(before))}` : undefined,
+        caption: share === undefined ? undefined : `${delta > 0 ? '+' : ''}${formatPercent(share)}`,
         id: `previous-${id}`,
         isShowPlus: true,
         label: t(`wallets.analytics.cashflow.vsPrevious.${id}`),
@@ -323,7 +322,7 @@ const savingsSeries = computed<ChartSeries[]>(() => {
     { color: 'var(--ui-text-dimmed)', data: percent(rolling), name: t('wallets.analytics.cashflow.rollingAverage'), type: 'line' },
   ]
 })
-const savingsChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: false, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }))
+const savingsChartConfig = { ...pointLineChartConfig, isGrouped: false }
 
 function exportCsv() {
   const period = props.base.effectivePeriod.value
@@ -374,7 +373,6 @@ const insights = computed(() => {
   if (isRows.value)
     return []
   const points = cashflow.value
-  const sum = (values: number[]) => values.reduce((total, value) => total + value, 0)
   const before = previous.value
   return buildInsights({
     expenseEstimate: pace.value?.expense.estimate,
@@ -391,7 +389,7 @@ const insights = computed(() => {
 })
 
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
-  const sum = item.data.reduce((total, value) => total + value, 0)
+  const total = sum(item.data)
   return {
     color: item.color,
     id: item.id,
@@ -399,8 +397,8 @@ const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
     name: item.name,
     // Rows are balances: the last point and its change; flows are a sum and its per-period average.
     secondLabel: t(isRows.value ? 'wallets.analytics.balance.change' : 'wallets.analytics.cashflow.average'),
-    secondValue: isRows.value ? periodChange(item) : (item.data.length ? sum / item.data.length : 0),
-    value: isRows.value ? item.data.at(-1) ?? 0 : sum,
+    secondValue: isRows.value ? periodChange(item) : (item.data.length ? total / item.data.length : 0),
+    value: isRows.value ? item.data.at(-1) ?? 0 : total,
   }
 }))
 
@@ -472,12 +470,14 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
-    <ul v-if="insights.length" class="grid gap-1 rounded-md bg-elevated/30 px-3 py-2 text-sm text-toned" data-analytics-insights>
-      <li v-for="insight in insights" :key="insight" class="flex gap-2">
-        <Icon name="lucide:lightbulb" size="16" class="mt-0.5 shrink-0 text-warning" />
-        {{ insight }}
-      </li>
-    </ul>
+    <UiCard v-if="insights.length" data-analytics-insights>
+      <ul class="grid gap-1 text-sm text-toned">
+        <li v-for="insight in insights" :key="insight" class="flex gap-2">
+          <Icon name="lucide:lightbulb" size="16" class="mt-0.5 shrink-0 text-warning" />
+          {{ insight }}
+        </li>
+      </ul>
+    </UiCard>
 
     <UiTabs
       :items="modeItems"

@@ -26,25 +26,22 @@ const emit = defineEmits<{
     <UiElement
       v-for="(item, index) in items"
       :key="item.id"
+      chevron="right"
       :lineWidth="index === items.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-bank-row="item.id"
-      role="button"
-      tabindex="0"
       @click="emit('select', item.id)"
-      @keydown.enter.space.prevent="emit('select', item.id)"
     >
       <div class="size-2.5 shrink-0 rounded-full" :style="{ background: item.color }" />
       <div class="grid min-w-0 grow gap-1">
-        <div class="truncate text-sm leading-none text-muted">
+        <UiEntityName>
           {{ item.name }}
-        </div>
+        </UiEntityName>
         <UiText variant="caption">
           {{ item.dateLabel }}
         </UiText>
       </div>
       <Amount :amount="item.diff" :currencyCode="item.currencyCode" :isShowBaseRate="false" isShowPlus variant="row" />
-      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
   </div>
 </template>

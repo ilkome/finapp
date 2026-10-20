@@ -33,13 +33,11 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`
       <UiElement
         v-for="(item, index) in props.items"
         :key="item.id"
+        :chevron="props.isRowSheet ? 'more' : 'right'"
         :lineWidth="index === props.items.length - 1 ? 0 : 3"
         insideClasses="min-h-10!"
         :data-share-item="item.id"
-        role="button"
-        tabindex="0"
         @click="emit('select', item.id)"
-        @keydown.enter.space.prevent="emit('select', item.id)"
       >
         <div class="size-2.5 shrink-0 rounded-full" :style="{ background: item.color }" />
 
@@ -59,7 +57,6 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`
           class="pr-1"
           variant="row"
         />
-        <Icon :name="props.isRowSheet ? 'lucide:ellipsis' : 'lucide:chevron-right'" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
       </UiElement>
 
       <div class="flex items-center gap-3 px-3 py-2.5">

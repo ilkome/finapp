@@ -60,13 +60,11 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
         <UiElement
           v-for="(item, index) in group.items"
           :key="item.categoryId"
+          chevron="more"
           :lineWidth="index === group.items.length - 1 ? 0 : 3"
           insideClasses="min-h-11!"
           :data-regular-item="item.categoryId"
-          role="button"
-          tabindex="0"
           @click="emit('edit', item.categoryId)"
-          @keydown.self.enter.space.prevent="emit('edit', item.categoryId)"
         >
           <template #leftIcon>
             <div class="flex size-7 items-center justify-center rounded-full" :style="{ background: item.color }">
@@ -75,9 +73,9 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
           </template>
 
           <div class="grid min-w-0 grow gap-1">
-            <div class="truncate text-sm leading-none text-toned">
+            <UiEntityName>
               {{ item.name }}
-            </div>
+            </UiEntityName>
             <div class="flex items-center gap-1.5 text-2xs leading-none text-muted">
               <span v-if="item.parentName" class="truncate">{{ item.parentName }} ·</span>
               <span>{{ item.monthsWithSpending }}/{{ props.windowMonths }}</span>
@@ -93,8 +91,6 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
             :isShowBaseRate="false"
             variant="row"
           />
-
-          <Icon name="lucide:ellipsis" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
           <USwitch
             :modelValue="item.isRegular"
             size="sm"
@@ -114,8 +110,8 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
       </div>
     </template>
 
-    <UiText v-if="!props.items.length" variant="meta" class="px-2">
+    <UiEmpty v-if="!props.items.length">
       {{ t('wallets.analytics.regular.empty') }}
-    </UiText>
+    </UiEmpty>
   </div>
 </template>

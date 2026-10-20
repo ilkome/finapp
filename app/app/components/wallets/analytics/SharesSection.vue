@@ -113,7 +113,7 @@ const openGroup = computed(() => {
   const item = open.value && groups.value.find(group => group.groupBy === open.value!.groupBy)?.shares.items.find(entry => entry.id === open.value!.id)
   return item && {
     name: nameOf(item.id, open.value!.groupBy),
-    wallets: item.walletIds.map(id => ({ amount: walletsStore.itemsComputed[id]?.amount ?? 0, currencyCode: walletsStore.itemsComputed[id]?.currencyCode ?? currenciesStore.base, id, name: walletsStore.items?.[id]?.name ?? id })),
+    walletIds: item.walletIds.filter(id => walletsStore.itemsComputed[id]),
   }
 })
 
@@ -190,9 +190,9 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       </div>
     </template>
 
-    <UiText v-if="!visibleGroups.length" variant="meta" class="px-2">
+    <UiEmpty v-if="!visibleGroups.length">
       {{ t('wallets.analytics.shares.empty') }}
-    </UiText>
+    </UiEmpty>
 
     <UiSheet
       v-if="openGroup"
@@ -201,18 +201,17 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       @closed="open = null"
     >
       <div class="grid pb-3">
-        <UiElement
-          v-for="wallet in openGroup.wallets"
-          :key="wallet.id"
-          :data-share-wallet="wallet.id"
-          @click="router.push(`/wallets/${wallet.id}`)"
-        >
-          <div class="min-w-0 grow truncate text-sm">
-            {{ wallet.name }}
-          </div>
-          <Amount :amount="wallet.amount" :currencyCode="wallet.currencyCode" variant="row" />
-          <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
-        </UiElement>
+        <WalletsItem
+          v-for="walletId in openGroup.walletIds"
+          :key="walletId"
+          :data-share-wallet="walletId"
+          :baseCurrencyCode="currenciesStore.base"
+          :wallet="walletsStore.itemsComputed[walletId]!"
+          :walletId
+          isShowIcon
+          isShowCreditLimit
+          @click="router.push(`/wallets/${walletId}`)"
+        />
       </div>
     </UiSheet>
   </section>

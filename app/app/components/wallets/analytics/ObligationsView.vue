@@ -30,13 +30,11 @@ const { t } = useI18n()
     <UiElement
       v-for="(item, index) in props.items"
       :key="item.walletId"
+      chevron="right"
       :lineWidth="index === props.items.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-obligation="item.walletId"
-      role="button"
-      tabindex="0"
       @click="emit('select', item.walletId)"
-      @keydown.enter.space.prevent="emit('select', item.walletId)"
     >
       <template #leftIcon>
         <div class="flex size-7 items-center justify-center rounded-full" :style="{ background: item.color }">
@@ -45,9 +43,9 @@ const { t } = useI18n()
       </template>
 
       <div class="grid min-w-0 grow gap-1">
-        <div class="truncate text-sm leading-none text-toned">
+        <UiEntityName>
           {{ item.name }}
-        </div>
+        </UiEntityName>
         <div class="flex items-center gap-1 text-2xs leading-none text-muted">
           {{ item.nextDateLabel }}
           <Amount :amount="item.nextAmount" :currencyCode="props.currencyCode" :isShowBaseRate="false" variant="secondary" />
@@ -60,11 +58,10 @@ const { t } = useI18n()
           {{ props.horizonLabel }}
         </UiText>
       </div>
-      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
   </div>
 
-  <UiText v-else variant="meta" class="px-2" data-obligations-empty>
+  <UiEmpty v-else data-obligations-empty>
     {{ t('wallets.analytics.obligations.empty') }}
-  </UiText>
+  </UiEmpty>
 </template>

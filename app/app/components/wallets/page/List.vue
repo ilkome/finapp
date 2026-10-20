@@ -55,8 +55,6 @@ function cancelSorting() {
 }
 const isLaptop = useIsLaptop()
 // vueuse types a binding as a prop option, so a function type must stay `any`.
-const [DefineStatBody, ReuseStatBody] = createReusableTemplate()
-const [DefineStatHint, ReuseStatHint] = createReusableTemplate()
 const isOpen = ref(false)
 const isStatSideOpen = ref(false)
 
@@ -89,7 +87,7 @@ const showArchived = useStorage<boolean>(WALLET_STORAGE_KEYS.showArchived, false
 const showStatistics = useStorage<boolean>(WALLET_STORAGE_KEYS.showStatistics, true)
 const includeArchivedInStats = useStorage<boolean>(WALLET_STORAGE_KEYS.includeArchivedInStats, false)
 const includeExcludedInStats = useStorage<boolean>(WALLET_STORAGE_KEYS.includeExcludedInStats, false)
-const isShowGroupCount = useStorage<boolean>('finapp.walletsShowGroupCount', false, localStorage, {
+const isShowGroupCount = useStorage<boolean>(WALLET_STORAGE_KEYS.showGroupCount, false, localStorage, {
   mergeDefaults: true,
 })
 
@@ -146,79 +144,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 </script>
 
 <template>
-  <DefineStatHint>
-    <UPopover
-      :content="{ align: 'end', avoidCollisions: false, collisionPadding: 8, side: 'bottom', sideOffset: 4 }"
-      :ui="{ content: 'z-[80] w-80 max-w-[calc(100vw-1rem)]' }"
-    >
-      <button
-        type="button"
-        :aria-label="t('statistics.hints')"
-        class="ml-auto flex size-8 items-center justify-center rounded-sm text-muted group-hover:bg-accented hover:bg-accented"
-        @click.stop
-      >
-        <Icon name="lucide:info" size="18" />
-      </button>
-
-      <template #content>
-        <div
-          class="scroller grid gap-3 overflow-y-auto p-3"
-          style="max-height: var(--reka-popper-available-height, 60dvh)"
-        >
-          <div v-for="row in statistics.hintRows.value" :key="row.id">
-            <UiText variant="navigation">
-              {{ row.title }}
-            </UiText>
-
-            <UiText variant="meta" class="pt-1 leading-snug!">
-              {{ row.hint }}
-            </UiText>
-          </div>
-        </div>
-      </template>
-    </UPopover>
-  </DefineStatHint>
-
-  <DefineStatBody>
-    <UiSwitchItem
-      :checkboxValue="showStatistics"
-      :title="t('wallets.options.showStatistics')"
-      trailing
-      @toggle="showStatistics = !showStatistics"
-    />
-
-    <div v-if="statistics.pinnedRows.value.length" class="grid gap-1">
-      <UiText variant="meta" class="px-2">
-        {{ t('statistics.pinned') }}
-      </UiText>
-
-      <WalletsStatisticsSortGroup
-        :items="statistics.pinnedRows.value"
-        :pinnedIds="statistics.pinnedIds.value"
-        showPin
-        @togglePinned="statistics.togglePinned"
-        @update="statistics.reorderPinned"
-      />
-    </div>
-
-    <div class="grid gap-1">
-      <UiText variant="meta" class="px-2">
-        {{ t('statistics.list') }}
-      </UiText>
-
-      <WalletsStatisticsSortGroup
-        :hiddenIds="statistics.hiddenIds.value"
-        :items="statistics.listRows.value"
-        :pinnedIds="statistics.pinnedIds.value"
-        showHide
-        showPin
-        @toggleHidden="statistics.toggleHidden"
-        @togglePinned="statistics.togglePinned"
-        @update="statistics.reorderList"
-      />
-    </div>
-  </DefineStatBody>
-
   <UiPage>
     <UiHeader ref="header" actionsAfterTitle>
       <UiHeaderTitle>
@@ -288,10 +213,10 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                     :title="t('base.previous')"
                     @back="showMenuPanel('root')"
                   >
-                    <ReuseStatHint />
+                    <WalletsPageStatisticsHint :statistics />
                   </UiPanelBack>
 
-                  <ReuseStatBody />
+                  <WalletsPageStatisticsSettings v-model:showStatistics="showStatistics" :statistics />
                 </div>
 
                 <div v-else class="py-3 md:-mx-2 md:py-1">
@@ -330,9 +255,9 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                       <div class="grid gap-3">
                         <div class="flex items-center px-2">
                           <span class="grow text-sm font-medium text-toned">{{ t('statistics.title') }}</span>
-                          <ReuseStatHint />
+                          <WalletsPageStatisticsHint :statistics />
                         </div>
-                        <ReuseStatBody />
+                        <WalletsPageStatisticsSettings v-model:showStatistics="showStatistics" :statistics />
                       </div>
                     </template>
                   </SideMenu>
@@ -353,32 +278,12 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
                   <div aria-hidden="true" class="mx-2 my-1 h-px bg-elevated/50" />
 
-                  <div>
-                    <UiSwitchItem
-                      :checkboxValue="showArchived"
-                      :title="t('wallets.options.showArchived')"
-                      trailing
-                      @toggle="showArchived = !showArchived"
-                    />
-                    <UiSwitchItem
-                      :checkboxValue="includeArchivedInStats"
-                      :title="t('wallets.options.includeArchivedInStats')"
-                      trailing
-                      @toggle="includeArchivedInStats = !includeArchivedInStats"
-                    />
-                    <UiSwitchItem
-                      :checkboxValue="includeExcludedInStats"
-                      :title="t('wallets.options.includeExcludedInStats')"
-                      trailing
-                      @toggle="includeExcludedInStats = !includeExcludedInStats"
-                    />
-                    <UiSwitchItem
-                      :checkboxValue="isShowGroupCount"
-                      :title="t('wallets.options.showGroupCount')"
-                      trailing
-                      @toggle="isShowGroupCount = !isShowGroupCount"
-                    />
-                  </div>
+                  <WalletsPageListOptions
+                    v-model:includeArchivedInStats="includeArchivedInStats"
+                    v-model:includeExcludedInStats="includeExcludedInStats"
+                    v-model:isShowGroupCount="isShowGroupCount"
+                    v-model:showArchived="showArchived"
+                  />
                 </div>
               </div>
             </template>

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { cumulative, expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, nextMilestone, paceCurve, paceOf, quantile, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
+import { cumulative, expenseAnomalies, incomeStability, intervalStats, isLastIntervalPartial, nextMilestone, paceCurve, paceOf, periodDelta, quantile, rollingMean, savingsRateTrend } from '~/components/wallets/analytics/stats'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00Z`)
 
@@ -74,5 +74,16 @@ describe('paceCurve', () => {
     const past = [cumulative([10, 0, 0]), cumulative([0, 10, 5]), cumulative([20, 0])]
     expect(paceCurve(past, 3)).toEqual({ median: [10, 10, 15], p25: [5, 10, 12.5].map(Math.round), p75: [15, 15, 18] })
     expect(quantile([1, 2, 3, 4], 0.5)).toBe(2.5)
+  })
+})
+
+describe('periodDelta', () => {
+  it('measures the share against the size of the previous value', () => {
+    expect(periodDelta(150, 100)).toEqual({ delta: 50, share: 0.5 })
+    expect(periodDelta(-50, -100)).toEqual({ delta: 50, share: 0.5 })
+  })
+
+  it('has no share when the previous value was zero', () => {
+    expect(periodDelta(30, 0)).toEqual({ delta: 30, share: undefined })
   })
 })

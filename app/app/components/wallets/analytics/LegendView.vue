@@ -42,9 +42,9 @@ const emit = defineEmits<{
         :style="{ background: item.isHidden ? 'transparent' : item.color }"
       />
 
-      <div class="min-w-0 grow truncate text-sm leading-none text-muted">
+      <UiEntityName class="grow">
         {{ item.name }}
-      </div>
+      </UiEntityName>
 
       <div class="grid justify-items-end gap-1 pr-1">
         <Amount
