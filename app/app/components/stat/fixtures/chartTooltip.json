@@ -1,0 +1,14 @@
+{
+  "params": [
+    { "color": "#0a0", "dataIndex": 0, "name": "1767225600000", "seriesIndex": 0, "seriesName": "Income", "value": 1200 },
+    { "color": "#a00", "dataIndex": 0, "name": "1767225600000", "seriesIndex": 1, "seriesName": "Expense", "value": 300 }
+  ],
+  "period": "month",
+  "series": [
+    { "color": "#0a0", "data": [1200], "name": "Income", "type": "bar" },
+    { "color": "#a00", "data": [300], "name": "Expense", "type": "bar" }
+  ],
+  "rows": [
+    { "amount": 500, "color": "#00a", "description": "40%", "icon": "lucide:wallet", "key": "cash", "name": "Cash", "value": 500 }
+  ]
+}

@@ -22,6 +22,7 @@ type PieTooltipParam = {
 const {
   endValue,
   isDonut = true,
+  isRoundIcon = false,
   isShowLabels = true,
   isShowPercent = false,
   series,
@@ -30,6 +31,7 @@ const {
 } = defineProps<{
   endValue?: number
   isDonut?: boolean
+  isRoundIcon?: boolean
   isShowLabels?: boolean
   isShowPercent?: boolean
   series: ChartSeries[]
@@ -268,7 +270,7 @@ function pieTooltipRows(param: PieTooltipParam) {
   >
     <VChart :option :updateOptions="{ notMerge: true }" autoresize style="overflow: visible">
       <template #tooltip="params">
-        <StatChartAxisTooltip :rows="pieTooltipRows(params as PieTooltipParam)" />
+        <StatChartAxisTooltip :isRoundIcon :rows="pieTooltipRows(params as PieTooltipParam)" />
       </template>
     </VChart>
 

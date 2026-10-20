@@ -8,6 +8,7 @@ import type { ChartSeries } from '~/components/stat/types'
 const props = defineProps<{
   chartConfig: MiniItemConfig['chart']
   chartType: ChartType
+  isRoundIcon?: boolean
   isShowMaxRange?: boolean
   panOffset?: number
   period: Period
@@ -70,6 +71,7 @@ const axisChartType = computed<AxisChartType>(() => props.chartType === 'pie' ? 
         v-if="isChartMountReady && props.chartType === 'pie'"
         :endValue="props.window?.endValue"
         :isDonut="props.chartConfig.pie.shape === 'donut'"
+        :isRoundIcon="props.isRoundIcon"
         :isShowLabels="props.chartConfig.pie.isShowLabels"
         :isShowPercent="props.chartConfig.pie.isShowPercent"
         :series="props.series"
@@ -85,6 +87,7 @@ const axisChartType = computed<AxisChartType>(() => props.chartType === 'pie' ? 
         :commitCount="props.window?.commitCount"
         :endValue="props.window?.endValue"
         :isPannable="props.window?.isPannable"
+        :isRoundIcon="props.isRoundIcon"
         :isShowMaxRange="props.isShowMaxRange"
         :panOffset="props.panOffset"
         :period="props.period"

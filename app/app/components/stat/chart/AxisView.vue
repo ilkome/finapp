@@ -21,6 +21,7 @@ const {
   commitCount = 0,
   endValue,
   isPannable = false,
+  isRoundIcon = false,
   isShowMaxRange = false,
   panOffset = 0,
   period,
@@ -35,6 +36,7 @@ const {
   commitCount?: number
   endValue?: number
   isPannable?: boolean
+  isRoundIcon?: boolean
   isShowMaxRange?: boolean
   panOffset?: number
   period: Period
@@ -128,7 +130,7 @@ const {
       @datazoom="onDataZoom"
     >
       <template #tooltip="params">
-        <StatChartAxisTooltip :params :period :series />
+        <StatChartAxisTooltip :isRoundIcon :params :period :series />
       </template>
     </VChart>
   </div>

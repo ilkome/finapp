@@ -5,7 +5,6 @@ import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartTooltipLabel, resolveChartTooltipAmount, resolveChartValueType } from '~/components/stat/chart/format'
 import { filterChartTooltipParams, resolveChartTooltipSeries, resolveChartTooltipValue, sortChartTooltipParams } from '~/components/stat/chart/options'
-import { useStatConfigCtx } from '~/components/stat/config/useStatConfigCtx'
 
 type ChartTooltipRow = {
   amount: number
@@ -28,6 +27,8 @@ type TooltipParam = {
 type RawTooltipParam = Omit<TooltipParam, 'value'> & { value: number | [unknown, number] | null }
 
 const props = defineProps<{
+  /** Category icons drawn round, as the stat list draws them. */
+  isRoundIcon?: boolean
   params?: unknown
   period?: Period
   rows?: ChartTooltipRow[]
@@ -36,9 +37,7 @@ const props = defineProps<{
 }>()
 
 const { locale } = useI18n()
-const statConfig = useStatConfigCtx()
 const isDev = import.meta.dev
-const isRoundCategoryIcon = computed(() => statConfig.categories.value.list.isRoundIcon)
 const tooltipParams = computed<TooltipParam[]>(() => (Array.isArray(props.params) ? props.params as RawTooltipParam[] : []).map(param => ({
   ...param,
   value: resolveChartTooltipValue(param.value),
@@ -100,7 +99,7 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
       >
         <div class="flex min-w-8 items-center justify-center">
           <UiIconBase
-            v-if="row.icon && isRoundCategoryIcon"
+            v-if="row.icon && props.isRoundIcon"
             :color="row.color"
             :name="row.icon"
             class="w-7!"
