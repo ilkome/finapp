@@ -2,7 +2,7 @@
 import { useFilterSummary } from '~/components/filter/useFilterSummary'
 
 const props = defineProps<{
-  /** Full width, the chevron at the far end. */
+  /** A full-width button, styled like the other sheet footer buttons. */
   isBlock?: boolean
 }>()
 
@@ -19,8 +19,18 @@ const isFilterOpen = ref(false)
     keyboardTrigger
   >
     <template #trigger="{ isActive }">
-      <UiTitleDropdown :class="props.isBlock && 'w-full'" :isActive>
-        <span class="text-nowrap" :class="props.isBlock && 'grow truncate'">{{ summaryText }}</span>
+      <UButton
+        v-if="props.isBlock"
+        block
+        color="neutral"
+        size="xl"
+        variant="soft"
+        icon="i-lucide-filter"
+      >
+        <span class="truncate">{{ summaryText }}</span>
+      </UButton>
+      <UiTitleDropdown v-else :isActive>
+        <span class="text-nowrap">{{ summaryText }}</span>
       </UiTitleDropdown>
     </template>
 

@@ -3,7 +3,7 @@ import { statDateRangeLabel } from '~/components/stat/date/rangeLabelText'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
 const props = defineProps<{
-  /** Full width, the chevron at the far end. */
+  /** A full-width button, styled like the other sheet footer buttons. */
   isBlock?: boolean
   /** The first tap returns to the default period instead of opening the picker. */
   isReset?: boolean
@@ -41,9 +41,21 @@ const label = computed(() => statDateRangeLabel({
     keyboardTrigger
   >
     <template #trigger="{ isActive }">
-      <UiTitleDropdown data-stat-date-range :class="props.isBlock && 'w-full'" :isActive>
+      <UButton
+        v-if="props.isBlock"
+        block
+        color="neutral"
+        size="xl"
+        variant="soft"
+        :icon="props.isReset ? 'i-lucide-rotate-ccw' : 'i-lucide-calendar-range'"
+        class="capitalize"
+        data-stat-date-range
+      >
+        {{ label }}
+      </UButton>
+      <UiTitleDropdown v-else data-stat-date-range :isActive>
         <Icon v-if="props.isReset" name="lucide:rotate-ccw" size="14" class="shrink-0 text-muted" :aria-label="t('base.reset')" />
-        <div class="flex items-center gap-1 leading-none text-nowrap capitalize" :class="props.isBlock && 'grow'">
+        <div class="flex items-center gap-1 leading-none text-nowrap capitalize">
           {{ label }}
         </div>
       </UiTitleDropdown>

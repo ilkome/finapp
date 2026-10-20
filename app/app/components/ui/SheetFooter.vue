@@ -9,13 +9,13 @@ const isLaptop = useIsLaptop()
 <template>
   <div
     v-if="isLaptop"
-    class="sticky bottom-0 z-10 grid gap-2 bg-default pt-2"
+    class="sticky bottom-0 z-10 grid gap-2 bg-default px-[10%] pt-2"
   >
     <slot />
   </div>
   <div
     v-else
-    class="absolute inset-x-0 z-10 grid gap-2 bg-default px-3 pt-2 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] group-data-[swiping]/drawer:transition-none"
+    class="absolute inset-x-0 z-10 grid gap-2 bg-default px-[10%] pt-2 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)] group-data-[swiping]/drawer:transition-none"
     :style="{
       bottom: 'var(--bleed, 0px)',
       paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))',
