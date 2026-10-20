@@ -23,6 +23,7 @@ const {
   isPannable = false,
   isRoundIcon = false,
   isShowMaxRange = false,
+  isTooltipOnTap = false,
   panOffset = 0,
   period,
   series,
@@ -38,6 +39,7 @@ const {
   isPannable?: boolean
   isRoundIcon?: boolean
   isShowMaxRange?: boolean
+  isTooltipOnTap?: boolean
   panOffset?: number
   period: Period
   series: ChartSeries[]
@@ -74,6 +76,7 @@ const option = computed(() => buildAxisChartOption({
   endValue,
   isPannable,
   isShowMaxRange,
+  isTooltipOnTap,
   locale: locale.value,
   period,
   series,

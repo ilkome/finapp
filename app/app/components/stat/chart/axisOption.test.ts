@@ -59,4 +59,11 @@ describe('buildAxisChartOption', () => {
     const guide = series.find(item => item.name === 'scale-guides')
     expect(guide?.markLine).toBeDefined()
   })
+
+  it('hides the tooltip on phones unless it opens on tap', () => {
+    expect((buildOption({ viewportWidth: 375 }).tooltip as { show: boolean }).show).toBe(false)
+    const tap = buildOption({ isTooltipOnTap: true, viewportWidth: 375 }).tooltip as Record<string, unknown>
+    expect(tap).toMatchObject({ enterable: true, show: true, triggerOn: 'click' })
+    expect((buildOption({ isTooltipOnTap: true }).tooltip as Record<string, unknown>).triggerOn).toBe('mousemove|click')
+  })
 })
