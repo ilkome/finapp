@@ -36,11 +36,30 @@ function onWalletOption(id: string, value: number | string) {
   (id === 'includeArchived' ? includeArchived : includeExcluded).value = value === 'on'
 }
 
-// Collapsed groups are not mounted, so their sections are not computed either.
-const collapsed = useStorage(WALLET_STORAGE_KEYS.analyticsCollapsed, { capital: false, flow: false, now: false }, localStorage, { mergeDefaults: true })
-function toggleGroup(id: keyof typeof collapsed.value) {
-  collapsed.value = { ...collapsed.value, [id]: !collapsed.value[id] }
+const tabIds = ['capital', 'flow', 'now'] as const
+type TabId = typeof tabIds[number]
+const route = useRoute()
+const router = useRouter()
+// The URL keeps the tab for back navigation; the device remembers the last one for a bare visit.
+const lastTab = useStorage<TabId>(WALLET_STORAGE_KEYS.analyticsTab, 'capital')
+const tab = computed<TabId>(() => {
+  const value = route.query.tab
+  return tabIds.includes(value as TabId) ? value as TabId : tabIds.includes(lastTab.value) ? lastTab.value : 'capital'
+})
+const tabItems = computed(() => tabIds.map(value => ({ label: t(`wallets.analytics.groups.${value}.title`), value })))
+
+function setTab(value: TabId) {
+  lastTab.value = value
+  router.replace({ query: { ...route.query, tab: value } })
 }
+
+// A link into another tab (the KPI's forecast hint) lands before that tab renders; scroll once it has.
+watch(() => route.hash, async (hash) => {
+  if (!hash)
+    return
+  await nextTick()
+  document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}, { immediate: true })
 
 const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wallets.analytics.ranges.${value}`), value })))
 </script>
@@ -54,31 +73,34 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <template #after>
         <div class="flex max-w-5xl flex-wrap items-center gap-2 px-2 lg:px-4 2xl:px-8" data-analytics-range>
-          <UiTabs
-            :items="rangeItems"
-            :modelValue="base.rangeId.value"
-            size="sm"
-            :grow="false"
-            @update:modelValue="value => base.rangeId.value = value as typeof base.rangeId.value"
-          />
-          <StatChartIntervalSelect
-            :period="base.effectivePeriod.value"
-            :range="base.range.value"
-            @changePeriod="(value: Period) => base.period.value = value"
-          />
-          <UiText variant="caption" class="ml-1">
-            {{ t('wallets.analytics.rates.label') }}:
-          </UiText>
-          <UiTabs
-            :items="ratesItems"
-            :modelValue="base.ratesMode.value"
-            size="xs"
-            variant="flat"
-            :grow="false"
-            :itemGrow="false"
-            :aria-label="t('wallets.analytics.rates.label')"
-            @update:modelValue="value => base.ratesMode.value = value as RatesMode"
-          />
+          <!-- "Now" shows today's snapshot: the period controls do not drive it. -->
+          <template v-if="tab !== 'now'">
+            <UiTabs
+              :items="rangeItems"
+              :modelValue="base.rangeId.value"
+              size="sm"
+              :grow="false"
+              @update:modelValue="value => base.rangeId.value = value as typeof base.rangeId.value"
+            />
+            <StatChartIntervalSelect
+              :period="base.effectivePeriod.value"
+              :range="base.range.value"
+              @changePeriod="(value: Period) => base.period.value = value"
+            />
+            <UiText variant="caption" class="ml-1">
+              {{ t('wallets.analytics.rates.label') }}:
+            </UiText>
+            <UiTabs
+              :items="ratesItems"
+              :modelValue="base.ratesMode.value"
+              size="xs"
+              variant="flat"
+              :grow="false"
+              :itemGrow="false"
+              :aria-label="t('wallets.analytics.rates.label')"
+              @update:modelValue="value => base.ratesMode.value = value as RatesMode"
+            />
+          </template>
           <WalletsAnalyticsSettingsMenu
             class="ml-auto"
             :options="walletOptions"
@@ -103,38 +125,30 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <WalletsAnalyticsKpiSection :base />
 
-      <WalletsAnalyticsGroupTitle
-        :title="t('wallets.analytics.groups.capital.title')"
-        :caption="t('wallets.analytics.groups.capital.caption')"
-        :isCollapsed="collapsed.capital"
-        @toggle="toggleGroup('capital')"
-      />
-      <template v-if="!collapsed.capital">
+      <div class="grid gap-1 @3xl/page:col-span-2" data-analytics-tabs>
+        <UiTabs
+          :items="tabItems"
+          :modelValue="tab"
+          size="sm"
+          @update:modelValue="value => setTab(value as TabId)"
+        />
+        <UiText variant="meta" class="px-2">
+          {{ t(`wallets.analytics.groups.${tab}.caption`) }}
+        </UiText>
+      </div>
+
+      <!-- Only the open tab is mounted, so the others are not computed. -->
+      <template v-if="tab === 'capital'">
         <WalletsAnalyticsBalanceSection :base />
         <WalletsAnalyticsWalletsTableSection :base />
         <WalletsAnalyticsDebtSection v-if="isLoans" :base />
         <WalletsAnalyticsBankCheckSection :base />
       </template>
-
-      <WalletsAnalyticsGroupTitle
-        :title="t('wallets.analytics.groups.flow.title')"
-        :caption="t('wallets.analytics.groups.flow.caption')"
-        :isCollapsed="collapsed.flow"
-        @toggle="toggleGroup('flow')"
-      />
-      <template v-if="!collapsed.flow">
+      <template v-else-if="tab === 'flow'">
         <WalletsAnalyticsCashflowSection :base />
         <WalletsAnalyticsMoversSection :base />
       </template>
-
-      <!-- Snapshots of today: the range tabs above do not drive them. -->
-      <WalletsAnalyticsGroupTitle
-        :title="t('wallets.analytics.now.title')"
-        :caption="t('wallets.analytics.now.caption')"
-        :isCollapsed="collapsed.now"
-        @toggle="toggleGroup('now')"
-      />
-      <template v-if="!collapsed.now">
+      <template v-else>
         <WalletsAnalyticsForecastSection />
         <WalletsAnalyticsSharesSection :walletIds="base.walletIds.value" />
       </template>

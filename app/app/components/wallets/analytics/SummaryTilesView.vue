@@ -5,8 +5,8 @@ export type SummaryTile = {
   /** Minor units; a tile without it shows `text`. */
   amount?: number
   caption?: string
-  /** In-page anchor the caption links to. */
-  captionHref?: string
+  /** Route location the caption links to. */
+  captionTo?: { hash?: string, query?: Record<string, string> }
   id: string
   isShowPlus?: boolean
   /** The caption reads as a warning. */
@@ -47,7 +47,9 @@ const props = defineProps<{
         {{ item.text }}
       </div>
       <UiText v-if="item.caption" variant="meta" class="leading-snug!" :class="item.isWarning && 'text-warning!'">
-        <a v-if="item.captionHref" :href="item.captionHref" class="underline underline-offset-2">{{ item.caption }}</a>
+        <NuxtLink v-if="item.captionTo" :to="item.captionTo" class="underline underline-offset-2">
+          {{ item.caption }}
+        </NuxtLink>
         <template v-else>
           {{ item.caption }}
         </template>

@@ -1207,6 +1207,10 @@ export default {
           caption: 'Money in and out over the period',
           title: 'Cash flow',
         },
+        now: {
+          caption: 'Today\'s balances and plans, whatever period is picked',
+          title: 'Now',
+        },
       },
       hide: 'Hide',
       include: {
@@ -1233,10 +1237,6 @@ export default {
         caption: 'Spending against the same days of the previous period',
         oneOff: 'one-off',
         title: 'Top movers',
-      },
-      now: {
-        caption: 'Today\'s balances and plans, whatever range is picked above',
-        title: 'Now',
       },
       obligations: {
         empty: 'No mandatory payments',
