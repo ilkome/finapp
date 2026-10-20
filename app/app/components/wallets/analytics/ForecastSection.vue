@@ -407,11 +407,18 @@ function onSetting(id: string, value: number | string) {
       </div>
     </div>
 
-    <WalletsAnalyticsForecastMonthsView
-      :currencyCode="currenciesStore.base"
-      :rows="monthRows"
-      :scenario="view.scenario"
-    />
+    <!-- Details the summary above already sums up: closed until asked for. -->
+    <details class="group grid gap-2" data-forecast-months>
+      <summary class="flex cursor-default list-none items-center gap-2 rounded-md interactive px-2 py-1.5 [&::-webkit-details-marker]:hidden">
+        <span class="grow text-sm font-semibold">{{ t('wallets.analytics.forecast.byMonth') }}</span>
+        <Icon name="lucide:chevron-down" size="16" class="text-muted transition-transform group-open:rotate-180" />
+      </summary>
+      <WalletsAnalyticsForecastMonthsView
+        :currencyCode="currenciesStore.base"
+        :rows="monthRows"
+        :scenario="view.scenario"
+      />
+    </details>
 
     <div class="grid gap-2">
       <div class="flex items-center gap-2">
@@ -435,10 +442,14 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
-    <div class="grid gap-2">
-      <UiTitleSection size="sm">
-        {{ t('wallets.analytics.regular.title') }}
-      </UiTitleSection>
+    <details class="group grid gap-2" data-forecast-regular>
+      <summary class="flex cursor-default list-none items-center gap-2 rounded-md interactive px-2 py-1.5 [&::-webkit-details-marker]:hidden">
+        <span class="grow text-sm font-semibold">{{ t('wallets.analytics.regular.title') }}</span>
+        <UiText variant="caption">
+          {{ regularItems.length }}
+        </UiText>
+        <Icon name="lucide:chevron-down" size="16" class="text-muted transition-transform group-open:rotate-180" />
+      </summary>
       <UiText variant="meta" class="px-2 leading-snug!">
         {{ t('wallets.analytics.regular.hint', { min: Math.min(settings.regularMinMonths, settings.historyMonths), window: settings.historyMonths }) }}
       </UiText>
@@ -449,7 +460,7 @@ function onSetting(id: string, value: number | string) {
         @edit="openEditor"
         @toggle="toggleRegular"
       />
-    </div>
+    </details>
 
     <UiSheet
       v-if="editing"

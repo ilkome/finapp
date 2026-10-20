@@ -1160,6 +1160,7 @@ export default {
       },
       exportCsv: 'Скачать CSV',
       forecast: {
+        byMonth: 'По месяцам',
         cardPayment: {
           full_debt: 'Весь долг',
           label: 'Платеж по кредитной карте',
