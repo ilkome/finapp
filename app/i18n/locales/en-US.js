@@ -1174,10 +1174,12 @@ export default {
       shares: {
         empty: 'No wallets with a balance',
         modes: {
-          all: 'All',
           assets: 'Assets',
           debts: 'Debts',
+          gross: 'Gross',
           label: 'Show',
+          net: 'Net',
+          split: 'Split',
         },
         title: 'Shares',
         total: 'Total',

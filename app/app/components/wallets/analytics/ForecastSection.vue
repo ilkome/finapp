@@ -232,9 +232,9 @@ function onSetting(id: string, value: number | string) {
 
     <div class="min-h-44 min-w-0">
       <LazyStatChartAxisView
+        v-if="isChartMountReady"
         isTooltipOnTap
         scaleMode="fit"
-        v-if="isChartMountReady"
         :chartConfig
         chartType="line"
         period="month"

@@ -1174,10 +1174,12 @@ export default {
       shares: {
         empty: 'Нет кошельков с балансом',
         modes: {
-          all: 'Все',
           assets: 'Активы',
           debts: 'Долги',
+          gross: 'Брутто',
           label: 'Показывать',
+          net: 'Нетто',
+          split: 'Раздельно',
         },
         title: 'Доли',
         total: 'Всего',

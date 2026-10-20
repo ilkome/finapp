@@ -9,7 +9,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
-import { computeShares } from '~/components/wallets/analytics/shares'
+import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -29,15 +29,24 @@ const options = useStorage(WALLET_STORAGE_KEYS.analyticsShares, {
   sort: 'amount' as SharesSort,
 }, localStorage, { mergeDefaults: true })
 
+// Stored before the modes were split; `gross` reads the same way.
+const mode = computed<SharesMode>(() => sharesModes.includes(options.value.mode) ? options.value.mode : 'gross')
+
 const shares = computed(() => computeShares({
   groupBy: options.value.groupBy,
-  mode: options.value.mode,
+  mode: mode.value,
   toBase: currenciesStore.toBase,
   walletIds: props.walletIds,
   wallets: walletsStore.itemsComputed,
 }))
 
-function nameOf(id: string) {
+function nameOf(itemId: string) {
+  const [id = itemId, side] = mode.value === 'split' ? itemId.split(':') : [itemId]
+  const name = groupNameOf(id)
+  return side ? `${name} · ${t(`wallets.analytics.shares.modes.${side}`)}` : name
+}
+
+function groupNameOf(id: string) {
   if (options.value.groupBy === 'type')
     return t(`money.types.${id}`)
   if (options.value.groupBy === 'wallet')
@@ -68,9 +77,9 @@ const settings = computed<AnalyticsOption[]>(() => [
   },
   {
     id: 'mode',
-    items: (['assets', 'debts', 'all'] as const).map(value => ({ label: t(`wallets.analytics.shares.modes.${value}`), value })),
+    items: sharesModes.map(value => ({ label: t(`wallets.analytics.shares.modes.${value}`), value })),
     label: t('wallets.analytics.shares.modes.label'),
-    value: options.value.mode,
+    value: mode.value,
   },
   {
     id: 'sort',
@@ -86,7 +95,7 @@ function onSetting(id: string, value: number | string) {
 
 function onSelect(id: string) {
   if (options.value.groupBy === 'wallet')
-    router.push(`/wallets/${id}`)
+    router.push(`/wallets/${id.split(':')[0]}`)
 }
 </script>
 
@@ -105,7 +114,7 @@ function onSelect(id: string) {
 
     <UiTabs
       :items="settings[1]!.items"
-      :modelValue="options.mode"
+      :modelValue="mode"
       size="xs"
       variant="flat"
       :grow="false"
@@ -130,7 +139,7 @@ function onSelect(id: string) {
       :currencyCode="currenciesStore.base"
       :items="rows"
       :totalLabel="t('wallets.analytics.shares.total')"
-      :totalValue="options.mode === 'all' ? shares.total : rows.reduce((sum, row) => sum + row.signedValue, 0)"
+      :totalValue="mode === 'gross' || mode === 'split' ? shares.total : rows.reduce((sum, row) => sum + row.signedValue, 0)"
       @select="onSelect"
     />
 

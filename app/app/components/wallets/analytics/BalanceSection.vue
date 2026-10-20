@@ -10,8 +10,8 @@ import type { AnalyticsBase, RatesMode } from '~/components/wallets/analytics/us
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
-import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { balanceSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
+import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 

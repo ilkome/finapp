@@ -3,11 +3,10 @@ import type { Period } from '~~/utils/date/types'
 import defu from 'defu'
 
 import type { LocaleSlug } from '~/components/locale/types'
+import type { ChartScaleMode } from '~/components/stat/chart/options'
 import type { AxisChartType } from '~/components/stat/chart/types'
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
-
-import type { ChartScaleMode } from '~/components/stat/chart/options'
 
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { buildChartGuideMarkLine, buildChartSeries, createBaseOption, resolveCenteredBarGeometry, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'

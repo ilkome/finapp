@@ -86,7 +86,15 @@ describe('computeShares', () => {
   it('measures assets and debts apart, or every balance by its size', () => {
     expect(computeShares({ ...params, mode: 'assets' }).items.map(i => [i.id, i.share])).toEqual([['cash', 0.75], ['bank_account', 0.25]])
     expect(computeShares({ ...params, mode: 'debts' }).items.map(i => [i.id, i.signedValue])).toEqual([['credit_card', -50]])
-    expect(computeShares({ ...params, mode: 'all' }).total).toBe(250)
+    expect(computeShares({ ...params, mode: 'gross' }).total).toBe(250)
+  })
+
+  it('reads a mixed-sign group in every mode', () => {
+    const mixed = { card: { ...wallets.card!, amount: -80_000 }, cash: { ...wallets.cash!, amount: 100_000 } }
+    const run = (mode: 'gross' | 'net' | 'split') => computeShares({ groupBy: 'currency', mode, toBase, walletIds: ['cash', 'card'], wallets: mixed })
+    expect(run('gross').items.map(i => i.value)).toEqual([180_000])
+    expect(run('net').items.map(i => [i.value, i.signedValue])).toEqual([[20_000, 20_000]])
+    expect(run('split').items.map(i => [i.id, i.value])).toEqual([['RUB:assets', 100_000], ['RUB:debts', 80_000]])
   })
 })
 
