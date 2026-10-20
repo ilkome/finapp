@@ -10,7 +10,7 @@ describe('walletsAnalyticsMoversView', () => {
     expect(wrapper.find('[data-mover="food"]').text()).toContain('+50%')
     expect(wrapper.find('[data-mover="food"] [data-mover-one-off]').exists()).toBe(false)
     expect(wrapper.find('[data-mover="gym"] [data-mover-one-off]').exists()).toBe(true)
-    await wrapper.find('[data-mover="gym"]').trigger('click')
+    await wrapper.find('[data-mover="gym"] .uiElement').trigger('click')
     expect(wrapper.emitted('select')).toEqual([['gym']])
   })
 })

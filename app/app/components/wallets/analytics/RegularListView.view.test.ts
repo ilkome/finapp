@@ -23,7 +23,7 @@ describe('walletsAnalyticsRegularListView', () => {
     const wrapper = mount(RegularListView, { global: { stubs }, props: regular as any })
     await wrapper.find('[data-regular-item="rent"] [data-switch]').trigger('click')
     expect(wrapper.emitted('toggle')).toEqual([['rent']])
-    await wrapper.find('[data-regular-item="rent"]').trigger('click')
+    await wrapper.find('[data-regular-item="rent"] .uiElement').trigger('click')
     expect(wrapper.emitted('edit')).toEqual([['rent']])
   })
 })

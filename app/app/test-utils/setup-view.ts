@@ -40,6 +40,7 @@ const modules = import.meta.glob<{ default: Component }>([
   '!~/components/ui/Header.vue',
   '!~/components/ui/SideMenu.vue',
   '~/components/categories/Name.vue',
+  '~/components/categories/RowView.vue',
   '~/components/loans/StatCell.vue',
   '~/components/loans/StatusBadges.vue',
   '~/components/form/Element.vue',

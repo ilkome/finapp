@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CategoryItem } from '~/components/categories/types'
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { RowBackgroundType } from '~/components/ui/RowBackground.vue'
 
 export type MoverRow = {
   category: CategoryItem
@@ -15,7 +16,10 @@ export type MoverRow = {
 }
 
 const props = defineProps<{
+  /** Category rows follow the categories view setting. */
+  backgroundType?: RowBackgroundType
   currencyCode: CurrencyCode
+  isRoundIcon?: boolean
   items: MoverRow[]
 }>()
 
@@ -27,18 +31,17 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div class="grid rounded-md bg-elevated/30 py-px" data-analytics-movers>
-    <CategoriesItemView
-      v-for="(item, index) in props.items"
+  <div class="grid gap-1" data-analytics-movers>
+    <CategoriesRowView
+      v-for="item in props.items"
       :key="item.id"
       :category="item.category"
       :categoryId="item.id"
       chevron="right"
       :data-mover="item.id"
-      isShowParent
-      :lineWidth="index === props.items.length - 1 ? 0 : 1"
+      :backgroundType="props.backgroundType"
+      :isRoundIcon="props.isRoundIcon"
       :parentCategory="item.parentCategory"
-      stacked
       @click="emit('select', item.id)"
     >
       <template #append>
@@ -53,6 +56,6 @@ const { t } = useI18n()
           </div>
         </div>
       </template>
-    </CategoriesItemView>
+    </CategoriesRowView>
   </div>
 </template>

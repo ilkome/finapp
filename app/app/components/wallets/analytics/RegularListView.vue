@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { CategoryItem } from '~/components/categories/types'
 import type { CurrencyCode } from '~/components/currencies/types'
+import type { RowBackgroundType } from '~/components/ui/RowBackground.vue'
 
 export type RegularListItem = {
   amount: number
@@ -17,7 +18,10 @@ export type RegularListItem = {
 }
 
 const props = defineProps<{
+  /** Category rows follow the categories view setting. */
+  backgroundType?: RowBackgroundType
   currencyCode: CurrencyCode
+  isRoundIcon?: boolean
   items: RegularListItem[]
   windowMonths: number
 }>()
@@ -53,20 +57,19 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
 
       <div
         v-if="group.items.length && (group.id === 'regular' || isShowOthers)"
-        class="grid rounded-md bg-elevated/30 py-px"
+        class="grid gap-1"
         :data-regular-group="group.id"
       >
-        <CategoriesItemView
-          v-for="(item, index) in group.items"
+        <CategoriesRowView
+          v-for="item in group.items"
           :key="item.categoryId"
           :category="item.category"
           :categoryId="item.categoryId"
           chevron="more"
           :data-regular-item="item.categoryId"
-          isShowParent
-          :lineWidth="index === group.items.length - 1 ? 0 : 1"
+          :backgroundType="props.backgroundType"
+          :isRoundIcon="props.isRoundIcon"
           :parentCategory="item.parentCategory"
-          stacked
           @click="emit('edit', item.categoryId)"
         >
           <template #append>
@@ -93,7 +96,7 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
               @update:modelValue="emit('toggle', item.categoryId)"
             />
           </template>
-        </CategoriesItemView>
+        </CategoriesRowView>
 
         <div v-if="group.id === 'regular'" class="flex items-center gap-3 px-3 py-2.5">
           <UiText variant="meta" class="grow">

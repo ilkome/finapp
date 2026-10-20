@@ -23,6 +23,7 @@ import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -30,6 +31,7 @@ const dateLocale = useDateLocale()
 const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
+const categoriesView = useCategoriesViewSettings()
 const isChartMountReady = useIdleMount()
 const { availableWalletIds, categories, cover, forecast, forecastWith, income, incomeOutsideWalletIds, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
 
@@ -439,6 +441,8 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
             {{ t('wallets.analytics.regular.hint', { min: Math.min(settings.regularMinMonths, settings.historyMonths), window: settings.historyMonths }) }}
           </UiText>
           <WalletsAnalyticsRegularListView
+            :backgroundType="categoriesView.backgroundType.value"
+            :isRoundIcon="categoriesView.isRoundIcon.value"
             :currencyCode="currenciesStore.base"
             :items="regularItems"
             :windowMonths="settings.historyMonths"
