@@ -13,6 +13,7 @@ import { availableGranularities } from '~/components/stat/chart/granularity'
 import { getIntervalsInRange } from '~/components/stat/date/params'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { isLastIntervalPartial } from '~/components/wallets/analytics/stats'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { isCountedInTotals } from '~/components/wallets/counts'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -80,6 +81,14 @@ export function useAnalyticsBase() {
   }))
 
   const intervals = computed(() => getIntervalsInRange({ granularityBy: effectivePeriod.value, granularityDuration: 1, range: range.value }))
+  /** Intervals before the current one, unless today closes the last interval. Statistics over intervals use only these. */
+  const fullCount = computed(() => intervals.value.length - (isLastIntervalPartial(intervals.value, effectivePeriod.value) ? 1 : 0))
+
+  /** The same span right before the range, to date: as many days as have passed in this one. Null for `all`. */
+  const previousRange = computed<Range | null>(() => months.value
+    ? { end: addCivilMonths(range.value.end, -months.value), start: addCivilMonths(range.value.start, -months.value) }
+    : null)
+
   const ends = computed(() => intervals.value.map(interval => Math.min(interval.end, range.value.end)))
   const xAxisLabels = computed(() => intervals.value.map(interval => interval.start))
   /** The day before the range, then every interval end: the opening point is the base of every period change. */
@@ -126,10 +135,12 @@ export function useAnalyticsBase() {
     effectivePeriod,
     ends,
     flags,
+    fullCount,
     intervals,
     missingCurrencies,
     period,
     pointBalances: allBalances,
+    previousRange,
     range,
     rangeId,
     ratesMode,
