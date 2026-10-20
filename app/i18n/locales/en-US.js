@@ -1196,6 +1196,16 @@ export default {
         withoutIncome: 'No income',
         withoutIncomeShort: 'no income',
       },
+      groups: {
+        capital: {
+          caption: 'What you own and owe, and how it changed over the period',
+          title: 'Capital',
+        },
+        flow: {
+          caption: 'Money in and out over the period',
+          title: 'Cash flow',
+        },
+      },
       hide: 'Hide',
       insights: {
         expensePace: {

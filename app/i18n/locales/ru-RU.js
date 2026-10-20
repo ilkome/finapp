@@ -1196,6 +1196,16 @@ export default {
         withoutIncome: 'Без доходов',
         withoutIncomeShort: 'без дохода',
       },
+      groups: {
+        capital: {
+          caption: 'Что есть и сколько должен, и как это менялось за период',
+          title: 'Капитал',
+        },
+        flow: {
+          caption: 'Сколько пришло и ушло за период',
+          title: 'Денежный поток',
+        },
+      },
       hide: 'Скрыть',
       insights: {
         expensePace: {

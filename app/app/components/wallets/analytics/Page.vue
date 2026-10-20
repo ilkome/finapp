@@ -65,22 +65,18 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <WalletsAnalyticsKpiSection :base />
 
+      <WalletsAnalyticsGroupTitle :title="t('wallets.analytics.groups.capital.title')" :caption="t('wallets.analytics.groups.capital.caption')" />
       <WalletsAnalyticsBalanceSection :base />
+      <WalletsAnalyticsWalletsTableSection :base />
+      <WalletsAnalyticsDebtSection v-if="isLoans" :base />
+      <WalletsAnalyticsBankCheckSection :base />
+
+      <WalletsAnalyticsGroupTitle :title="t('wallets.analytics.groups.flow.title')" :caption="t('wallets.analytics.groups.flow.caption')" />
       <WalletsAnalyticsCashflowSection :base />
       <WalletsAnalyticsMoversSection :base />
-      <WalletsAnalyticsWalletsTableSection :base />
-      <WalletsAnalyticsBankCheckSection :base />
-      <WalletsAnalyticsDebtSection v-if="isLoans" :base />
 
       <!-- Snapshots of today: the range tabs above do not drive them. -->
-      <div class="grid gap-1 border-t border-default pt-6 @3xl/page:col-span-2" data-analytics-now>
-        <UiTitleSection>
-          {{ t('wallets.analytics.now.title') }}
-        </UiTitleSection>
-        <UiText variant="meta" class="px-2">
-          {{ t('wallets.analytics.now.caption') }}
-        </UiText>
-      </div>
+      <WalletsAnalyticsGroupTitle :title="t('wallets.analytics.now.title')" :caption="t('wallets.analytics.now.caption')" />
       <WalletsAnalyticsForecastSection />
       <WalletsAnalyticsSharesSection :walletIds="base.walletIds.value" />
     </div>
