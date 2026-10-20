@@ -261,9 +261,9 @@ onBeforeUnmount(() => {
             v-else-if="row.type === 'historyDivider'"
             class="grid gap-1 pt-3"
           >
-            <UiTitleCollapse isHideArrow>
+            <UiTitleSection class="px-3">
               <h3>{{ t('trns.previous') }}</h3>
-            </UiTitleCollapse>
+            </UiTitleSection>
 
             <TrnsListTypeTabs
               v-if="isShowTypeTabs"

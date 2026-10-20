@@ -210,9 +210,7 @@ function onSave() {
     </FormElement>
 
     <UCollapsible v-model:open="isShowAdvanced">
-      <UiTitleCollapse :isShown="isShowAdvanced" class="-mx-3" data-loan-form-advanced>
-        {{ t('loans.form.advanced') }}
-      </UiTitleCollapse>
+      <UiTitleDropRight :isShown="isShowAdvanced" class="-mx-3" :title="t('loans.form.advanced')" data-loan-form-advanced />
 
       <template #content>
         <div class="grid gap-4 pt-3">

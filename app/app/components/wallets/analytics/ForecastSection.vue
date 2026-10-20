@@ -333,9 +333,7 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
     />
 
     <UCollapsible v-model:open="isWhatIfOpen" data-analytics-what-if>
-      <UiTitleCollapse :isShown="isWhatIfOpen" class="-mx-1">
-        {{ t('wallets.analytics.whatIf.title') }}
-      </UiTitleCollapse>
+      <UiTitleDropRight :isShown="isWhatIfOpen" class="-mx-1" :title="t('wallets.analytics.whatIf.title')" />
       <template #content>
         <UiCard class="gap-2">
           <UiTabs
@@ -400,9 +398,7 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
 
     <!-- Details the summary above already sums up: closed until asked for. -->
     <UCollapsible :open="openParts.months" data-forecast-months @update:open="value => setPart('months', value)">
-      <UiTitleCollapse :isShown="openParts.months" class="-mx-1">
-        {{ t('wallets.analytics.forecast.byMonth') }}
-      </UiTitleCollapse>
+      <UiTitleDropRight :isShown="openParts.months" class="-mx-1" :title="t('wallets.analytics.forecast.byMonth')" />
       <template #content>
         <WalletsAnalyticsForecastMonthsView
           :currencyCode="currenciesStore.base"
@@ -435,9 +431,9 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
     </div>
 
     <UCollapsible :open="openParts.regular" data-forecast-regular @update:open="value => setPart('regular', value)">
-      <UiTitleCollapse :isShown="openParts.regular" class="-mx-1">
-        {{ t('wallets.analytics.regular.title') }} {{ openParts.regular ? '' : regularItems.length }}
-      </UiTitleCollapse>
+      <UiTitleDropRight :isShown="openParts.regular" class="-mx-1" :title="t('wallets.analytics.regular.title')">
+        <span class="text-xs leading-none tracking-wide text-dimmed">{{ regularItems.length }}</span>
+      </UiTitleDropRight>
       <template #content>
         <div class="grid gap-2">
           <UiText variant="meta" class="px-2 leading-snug!">

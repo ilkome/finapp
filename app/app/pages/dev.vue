@@ -84,10 +84,6 @@ const tabsScrollItems = Array.from({ length: 15 }, (_, i) => ({ label: `Item ${i
               UiText caption
             </UiText>
 
-            <UiTitleCollapse>
-              UiTitleCollapse
-            </UiTitleCollapse>
-
             <UiTitleDropRight>
               UiTitleDropRight
             </UiTitleDropRight>

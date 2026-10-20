@@ -3,6 +3,8 @@ import { onLongPress } from '@vueuse/core'
 
 const props = defineProps<{
   // Nested groups drop the toned color so they read under their parent.
+  /** Title reads as an alert (overdue and the like). */
+  isError?: boolean
   isNested?: boolean
   isShown?: boolean
   title?: string
@@ -37,12 +39,12 @@ function onClick() {
     tabindex="0"
     :aria-expanded="props.isShown"
     @click="onClick"
-    @keydown.self.enter.space.prevent="emit('click')"
+    @keydown.self.enter.space.prevent="(e: KeyboardEvent) => (e.currentTarget as HTMLElement).click()"
   >
     <div
       v-if="props.title"
       class="font-tertiary text-base leading-none font-semibold"
-      :class="!props.isNested && 'text-toned!'"
+      :class="props.isError ? 'text-error!' : !props.isNested && 'text-toned!'"
     >
       {{ props.title }}
     </div>
