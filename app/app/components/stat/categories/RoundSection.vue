@@ -16,6 +16,8 @@ const props = defineProps<{
   filteredCategoriesIds: CategoryId[]
   focusedCategoryId?: CategoryId
   isOneCategory?: boolean
+  /** A click opens a sheet: a view transition would lift the chips above it while it slides in. */
+  isOpensSheet?: boolean
   preCategoriesIds?: CategoryId[]
 }>()
 
@@ -122,7 +124,10 @@ const transitionScope = useId()
 
 function onSetCategoryFilter(categoryId: CategoryId) {
   const nextId = selectedIdByVisibleId.value.get(categoryId) ?? categoryId
-  runViewTransition(() => emit('setCategoryFilter', nextId))
+  if (props.isOpensSheet)
+    emit('setCategoryFilter', nextId)
+  else
+    runViewTransition(() => emit('setCategoryFilter', nextId))
 }
 </script>
 

@@ -102,6 +102,7 @@ onBeforeUnmount(() => {
     :filteredCategoriesIds="ctx.filteredCategoriesIds.value"
     :focusedCategoryId="ctx.filteredParentCategoryId.value"
     :isOneCategory="ctx.isOneCategory.value"
+    :isOpensSheet="!!openCategorySheet"
     :preCategoriesIds="ctx.params.preCategoriesIds?.value"
     @clickCategory="ctx.onClickCategory"
     @setCategoryFilter="onSetCategoryFilter"
