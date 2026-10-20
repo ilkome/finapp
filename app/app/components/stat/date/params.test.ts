@@ -31,6 +31,11 @@ describe('parseStatDateQueryParams', () => {
     })
   })
 
+  it('widens a custom date to its interval', () => {
+    const result = parseStatDateQueryParams({ customDate: `${Date.UTC(2026, 7, 19)}`, customDateBy: 'month' }, base)
+    expect(result.customDate).toEqual({ end: Date.UTC(2026, 7, 31, 23, 59, 59, 999), start: Date.UTC(2026, 7, 1) })
+  })
+
   it('merges granularityBy and granularityDuration', () => {
     const result = parseStatDateQueryParams({ granularityBy: 'week', granularityDuration: '2' }, base)
     expect(result.granularityBy).toBe('week')

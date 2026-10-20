@@ -26,6 +26,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const router = useRouter()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
@@ -211,8 +212,10 @@ function onSetting(id: string, value: number | string) {
         :chartType="options.chartType"
         :period="props.base.effectivePeriod.value"
         :series="toChartSeries(chartSeries, currenciesStore.base)"
+        :tooltipLinkLabel="t('wallets.analytics.openTrns')"
         :tooltipRows
         :xAxisLabels="props.base.xAxisLabels.value"
+        @tooltipLink="index => router.push(props.base.historyLocation(index))"
       />
     </div>
 

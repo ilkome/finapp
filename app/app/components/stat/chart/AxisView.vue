@@ -30,6 +30,7 @@ const {
   scaleMode,
   series,
   startValue,
+  tooltipLinkLabel,
   tooltipRows,
   tooltipTitles,
   xAxisLabels,
@@ -49,6 +50,8 @@ const {
   scaleMode?: ChartScaleMode
   series: ChartSeries[]
   startValue?: number
+  /** A link in the tooltip; tapping it emits `tooltipLink` with the data index. */
+  tooltipLinkLabel?: string
   /** Precomputed tooltip lines per data index; without them the tooltip lists the series values. */
   tooltipRows?: ChartTooltipRow[][]
   tooltipTitles?: string[]
@@ -59,6 +62,7 @@ const emit = defineEmits<{
   click: [intervalKey: number]
   preview: [startValue: number, endValue: number]
   previewEnd: []
+  tooltipLink: [dataIndex: number]
 }>()
 
 use([BarChart, CustomChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, MarkPointComponent, SVGRenderer, TooltipComponent])
@@ -153,6 +157,8 @@ const {
           :rows="tooltipRows?.[tooltipIndex(params)]"
           :series
           :title="tooltipTitles?.[tooltipIndex(params)]"
+          :linkLabel="tooltipLinkLabel"
+          @link="emit('tooltipLink', tooltipIndex(params))"
         />
       </template>
     </VChart>

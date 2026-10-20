@@ -20,11 +20,17 @@ type RawTooltipParam = Omit<TooltipParam, 'value'> & { value: number | [unknown,
 const props = defineProps<{
   /** Category icons drawn round, as the stat list draws them. */
   isRoundIcon?: boolean
+  /** Caption of a link under the rows; the tooltip emits `link` when it is tapped. */
+  linkLabel?: string
   params?: unknown
   period?: Period
   rows?: ChartTooltipRow[]
   series?: ChartSeries[]
   title?: string
+}>()
+
+const emit = defineEmits<{
+  link: []
 }>()
 
 const { locale } = useI18n()
@@ -134,5 +140,16 @@ const title = computed(() => props.title ?? (tooltipParams.value[0] && props.per
     >
       {{ $t('trns.noTrns') }}
     </div>
+
+    <button
+      v-if="props.linkLabel"
+      type="button"
+      class="flex w-full items-center justify-between gap-2 border-t border-accented px-3 py-2 text-sm text-primary"
+      data-stat-chart-tooltip-link
+      @click.stop="emit('link')"
+    >
+      {{ props.linkLabel }}
+      <Icon name="lucide:chevron-right" size="16" />
+    </button>
   </div>
 </template>

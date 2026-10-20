@@ -127,6 +127,22 @@ export function useAnalyticsBase() {
     .map(id => walletsStore.items?.[id]?.currencyCode)
     .filter((code): code is string => !!code && currenciesStore.tryToBase(1, code) === undefined))])
 
+  /** History of the interval at `index`; wallets go along only when the scope leaves some out. */
+  function historyLocation(index: number) {
+    const interval = intervals.value[index]
+    const by = effectivePeriod.value
+    const isScoped = walletIds.value.length < walletsStore.sortedIds.length
+    return {
+      path: '/history',
+      query: {
+        customDate: `${interval?.start ?? range.value.start}`,
+        customDateBy: by,
+        granularityBy: by === 'year' ? 'month' as const : 'day' as const,
+        ...(isScoped ? { filterWallets: walletIds.value } : {}),
+      },
+    }
+  }
+
   /** `toBaseAt` over `pointBalances`: index 0 is the opening point. */
   const toBaseAtPoint = (index: number) => toBaseAt(index - 1)
 
@@ -136,6 +152,7 @@ export function useAnalyticsBase() {
     ends,
     flags,
     fullCount,
+    historyLocation,
     intervals,
     missingCurrencies,
     period,

@@ -1161,6 +1161,7 @@ export default {
         empty: 'Обязательных платежей нет',
         title: 'Обязательные платежи',
       },
+      openTrns: 'Операции',
       other: 'Остальные',
       preview: {
         change: 'За {n} мес.',

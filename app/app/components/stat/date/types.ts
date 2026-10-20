@@ -16,6 +16,8 @@ export type StatDateParams = {
 
 export type StatDateParamsQuery = {
   customDate: string
+  /** Widens `customDate` from its day to its interval of this period. */
+  customDateBy: Period
   granularityBy: Period
   granularityDuration: string
   intervalSelected: string

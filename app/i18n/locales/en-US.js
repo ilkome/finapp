@@ -1161,6 +1161,7 @@ export default {
         empty: 'No mandatory payments',
         title: 'Mandatory payments',
       },
+      openTrns: 'Transactions',
       other: 'Other',
       preview: {
         change: 'Last {n} months',
