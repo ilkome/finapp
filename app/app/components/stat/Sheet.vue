@@ -6,6 +6,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
+import { isShowNavHome } from '~/components/stat/date/navigationPredicates'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
 import { statCategorySheetKey, statInSheetKey, statStickyNavKey, statStickyTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
@@ -86,6 +87,13 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
   filter,
 })
 
+const quickRangeIds = computed(() => {
+  const selected = new Set(statConfig.config.value.date.quickRangeIds)
+  return statConfig.config.value.date.quickRangeOrderIds.filter(id => selected.has(id))
+})
+const isRangeReset = computed(() => statConfig.config.value.date.isResetInRange
+  && isShowNavHome(statDate.params.value, statDate.range.value, new Date()))
+
 const contextRange = computed(() => resolveStatSelectionRange(
   statDate.range.value,
   statDate.selectedInterval.value,
@@ -110,7 +118,7 @@ const { hiddenPanels } = useStatPageViews({
     modalClass="sm:max-w-3xl"
     @closed="emit('closed')"
   >
-    <div class="content-start pb-20 md:pb-4" data-stat-sheet>
+    <div class="content-start pb-32 md:pb-4" data-stat-sheet>
       <StatLayout
         :categoryId
         :hiddenPanels
@@ -126,10 +134,21 @@ const { hiddenPanels } = useStatPageViews({
       />
 
       <UiSheetFooter>
-        <StatDateFilterRow
-          :isResetInRange="statConfig.config.value.date.isResetInRange"
-          :isShowNavigation="statConfig.config.value.date.isShowNavigation"
-        />
+        <div class="-mx-3 scroll-strip flex min-w-0 snap-x snap-mandatory scroll-px-3 items-center overflow-x-auto px-3 py-px">
+          <StatDateRanges
+            class="shrink-0"
+            itemClass="snap-start snap-always"
+            size="xs"
+            :optionIds="quickRangeIds"
+            :statDate
+            tabsClass="overflow-visible! bg-transparent! p-0!"
+            view="all"
+          />
+        </div>
+        <div class="flex min-w-0 items-center gap-2">
+          <StatDateRangeButton :isReset="isRangeReset" />
+          <StatFilterButton />
+        </div>
       </UiSheetFooter>
     </div>
   </UiSheet>
