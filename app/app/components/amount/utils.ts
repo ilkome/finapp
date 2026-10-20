@@ -1,5 +1,6 @@
 import type { MinorDisplay } from '~~/utils/money/scale'
 
+import { shallowRef } from 'vue'
 import { currencyScale, toMinor } from '~~/utils/money/scale'
 
 import type { CurrencyCode, CurrencyItem } from '~/components/currencies/types'
@@ -8,13 +9,13 @@ import { currencies } from '~/components/currencies/currencies'
 
 const currencyMap = new Map(currencies.map(c => [c.code, c]))
 
-/** The user's custom currencies and edits of built-in ones, set by the currencies store. */
-let userCurrencies: ReadonlyMap<CurrencyCode, CurrencyItem> = new Map()
-let customScales: Readonly<Record<CurrencyCode, number>> = {}
+/** The user's custom currencies and edits of built-in ones, set by the currencies store; reactive so rendered amounts follow an edit. */
+const userCurrencies = shallowRef<ReadonlyMap<CurrencyCode, CurrencyItem>>(new Map())
+const customScales = shallowRef<Readonly<Record<CurrencyCode, number>>>({})
 
-export function setUserCurrencies(values: typeof userCurrencies) {
-  userCurrencies = values
-  customScales = Object.fromEntries([...values].flatMap(([code, c]) => c.scale === undefined ? [] : [[code, c.scale]]))
+export function setUserCurrencies(values: ReadonlyMap<CurrencyCode, CurrencyItem>) {
+  userCurrencies.value = values
+  customScales.value = Object.fromEntries([...values].flatMap(([code, c]) => c.scale === undefined ? [] : [[code, c.scale]]))
 }
 
 /** Scale of a currency for display and input; a code nobody knows displays as 2 decimals instead of breaking a page. */
@@ -22,7 +23,7 @@ export function scaleOf(currencyCode: CurrencyCode | undefined): number {
   if (!currencyCode)
     return 2
   try {
-    return currencyScale(currencyCode, customScales)
+    return currencyScale(currencyCode, customScales.value)
   }
   catch {
     return 2
@@ -47,7 +48,7 @@ const grouping = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 })
  */
 export function formatAmount(minor: number, currencyCode?: CurrencyCode, { minorDisplay }: { minorDisplay?: MinorDisplay } = {}): string {
   const scale = scaleOf(currencyCode)
-  const display = minorDisplay ?? userCurrencies.get(currencyCode ?? '')?.minorDisplay ?? 'auto'
+  const display = minorDisplay ?? userCurrencies.value.get(currencyCode ?? '')?.minorDisplay ?? 'auto'
   const unit = 10 ** scale
   let abs = Math.round(Math.abs(minor))
   if (display === 'never')
@@ -62,7 +63,7 @@ export function formatAmount(minor: number, currencyCode?: CurrencyCode, { minor
 export function getCurrencySymbol(currencyCode?: CurrencyCode) {
   if (!currencyCode)
     return ''
-  return userCurrencies.get(currencyCode)?.symbol ?? currencyMap.get(currencyCode)?.symbol ?? currencyCode
+  return userCurrencies.value.get(currencyCode)?.symbol ?? currencyMap.get(currencyCode)?.symbol ?? currencyCode
 }
 
 export function formatByCurrency(value: string, separator: string) {
