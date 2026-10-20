@@ -5,7 +5,7 @@ import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
-import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast, upcomingPayments } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
@@ -275,6 +275,19 @@ describe('coverTrend', () => {
   it('rises once a loan is paid off', () => {
     const covers = coverTrend({ ...base, balances: [1200, 1200], debtPayments: [300, 300, 300, 0, 0, 0], spending: new Map([['food', [100, 100, 100, 100, 100, 100]]]), windowEnds: [2, 5] })
     expect(covers).toEqual([3, 12])
+  })
+})
+
+describe('upcomingPayments', () => {
+  it('finds the next payment and sums the next days', () => {
+    const today = day('2026-04-16')
+    const result = upcomingPayments([
+      { amount: 100, date: day('2026-05-20'), kind: 'loan', walletId: 'a' },
+      { amount: 50, date: day('2026-04-20'), kind: 'card', walletId: 'b' },
+      { amount: 70, date: day('2026-05-10'), kind: 'loan', walletId: 'a' },
+    ], today, 30)
+    expect(result.next).toMatchObject({ amount: 50, walletId: 'b' })
+    expect(result.total).toBe(120)
   })
 })
 

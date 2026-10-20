@@ -1291,6 +1291,10 @@ export default {
         name: 'По названию',
       },
       title: 'Аналитика',
+      upcoming: {
+        next: 'Ближайший платёж',
+        total: 'К оплате за {days} дней',
+      },
       whatIf: {
         amount: 'Разовая сумма',
         date: 'Дата',

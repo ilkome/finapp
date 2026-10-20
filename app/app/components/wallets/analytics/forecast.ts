@@ -292,3 +292,14 @@ export function coverTrend(params: {
     return outflow > 0 ? balances[index]! / outflow : null
   })
 }
+
+/** Days ahead the upcoming-payments summary sums over. */
+export const UPCOMING_DAYS = 30
+
+/** The next mandatory payment and the total due within `days` from today. */
+export function upcomingPayments(obligations: Obligation[], today: number, days = UPCOMING_DAYS) {
+  const until = addCivilDays(today, days)
+  const due = obligations.filter(item => item.date >= today && item.date <= until)
+  const next = obligations.filter(item => item.date >= today).toSorted((a, b) => a.date - b.date)[0] ?? null
+  return { next, total: due.reduce((sum, item) => sum + item.amount, 0) }
+}

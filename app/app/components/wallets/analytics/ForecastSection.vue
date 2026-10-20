@@ -9,6 +9,7 @@ import type { AmountMode, CardPaymentMode } from '~/components/wallets/analytics
 import type { ObligationRow } from '~/components/wallets/analytics/ObligationsView.vue'
 import type { RegularListItem } from '~/components/wallets/analytics/RegularListView.vue'
 import type { AnalyticsOption } from '~/components/wallets/analytics/SettingsMenu.vue'
+import type { SummaryTile } from '~/components/wallets/analytics/SummaryTilesView.vue'
 
 import { amountToMinor, minorToAmount } from '~/components/amount/utils'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -16,6 +17,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
+import { UPCOMING_DAYS, upcomingPayments } from '~/components/wallets/analytics/forecast'
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
@@ -29,7 +31,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, categories, cover, forecast, forecastWith, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useSharedForecast()
+const { availableWalletIds, categories, cover, forecast, forecastWith, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
@@ -198,6 +200,17 @@ function saveEditor(close: () => void) {
     setCategory(id, undefined)
   close()
 }
+
+const upcoming = computed(() => upcomingPayments(obligations.value, today.value))
+const upcomingTiles = computed<SummaryTile[]>(() => {
+  const { next, total } = upcoming.value
+  if (!next)
+    return []
+  return [
+    { amount: -next.amount, caption: `${formatByLocale(next.date, 'd MMMM', dateLocale.value)} · ${walletsStore.items?.[next.walletId]?.name ?? ''}`, id: 'nextPayment', label: t('wallets.analytics.upcoming.next') },
+    { amount: -total, id: 'upcomingTotal', label: t('wallets.analytics.upcoming.total', { days: UPCOMING_DAYS }) },
+  ]
+})
 
 const isWalletsOpen = ref(false)
 
@@ -391,9 +404,19 @@ function onSetting(id: string, value: number | string) {
     />
 
     <div class="grid gap-2">
-      <UiTitleSection size="sm">
-        {{ t('wallets.analytics.obligations.title') }}
-      </UiTitleSection>
+      <div class="flex items-center gap-2">
+        <UiTitleSection size="sm" class="grow">
+          {{ t('wallets.analytics.obligations.title') }}
+        </UiTitleSection>
+        <UButton to="/loans" color="neutral" variant="link" size="sm" trailingIcon="lucide:chevron-right">
+          {{ t('wallets.analytics.debts.open') }}
+        </UButton>
+      </div>
+      <WalletsAnalyticsSummaryTilesView
+        v-if="upcomingTiles.length"
+        :currencyCode="currenciesStore.base"
+        :items="upcomingTiles"
+      />
       <WalletsAnalyticsObligationsView
         :currencyCode="currenciesStore.base"
         :horizonLabel

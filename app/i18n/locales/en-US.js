@@ -1291,6 +1291,10 @@ export default {
         name: 'By name',
       },
       title: 'Analytics',
+      upcoming: {
+        next: 'Next payment',
+        total: 'Due in {days} days',
+      },
       whatIf: {
         amount: 'One-off amount',
         date: 'Date',
