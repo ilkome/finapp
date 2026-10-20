@@ -1192,6 +1192,7 @@ export default {
         withoutIncome: 'Без доходов',
         withoutIncomeShort: 'без дохода',
       },
+      hide: 'Скрыть',
       kpi: {
         beyondHorizon: 'дольше горизонта прогноза',
         change: 'Изменение за период',
@@ -1212,6 +1213,8 @@ export default {
       preview: {
         change: 'За {n} мес.',
       },
+      previousOverlay: 'Прошлый период',
+      previousPeriod: 'прошлый период',
       ranges: {
         '1y': 'Год',
         '3y': '3 года',
@@ -1269,6 +1272,7 @@ export default {
         title: 'Доли',
         total: 'Всего',
       },
+      show: 'Показать',
       sort: {
         amount: 'По сумме',
         label: 'Сортировка',

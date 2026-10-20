@@ -16,7 +16,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
+import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, OTHER_SERIES_ID, periodChange, splitOpening, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
 import { MONTH_MS, nextMilestone } from '~/components/wallets/analytics/stats'
@@ -41,6 +41,7 @@ const options = useStorage(WALLET_STORAGE_KEYS.analyticsBalance, {
   breakdown: 'total' as BalanceBreakdown,
   chartType: 'line' as AxisChartType,
   hidden: [] as string[],
+  isShowPrevious: false,
   scope: 'net' as BalanceScope,
 }, localStorage, { mergeDefaults: true })
 
@@ -151,9 +152,21 @@ const athMarkPoint = computed(() => {
   }
 })
 
-const chartSeries = computed<ChartSeries[]>(() => series.value
-  .filter(item => !hidden.value.has(item.id))
-  .map((item, index) => ({ color: item.color, data: item.data, markPoint: index ? undefined : athMarkPoint.value, name: nameOf(item.id, item.name), type: options.value.chartType })))
+/** The scope total over the previous period's interval ends, priced by the rates right before this range. */
+const previousTotal = computed(() => {
+  const intervals = props.base.previousIntervals.value
+  if (!options.value.isShowPrevious || !intervals)
+    return null
+  const balances = walletBalancesAt(trnsStore.items ?? {}, walletsStore.items ?? {}, intervals.map(interval => interval.end))
+  return balanceSeries({ balances, breakdown: 'total', scope: options.value.scope, toBaseAt: () => props.base.toBaseAt(-1), walletIds: props.base.walletIds.value, wallets: walletsStore.items ?? {} })[0]?.data ?? null
+})
+
+const chartSeries = computed<ChartSeries[]>(() => [
+  ...series.value
+    .filter(item => !hidden.value.has(item.id))
+    .map((item, index) => ({ color: item.color, data: item.data, markPoint: index ? undefined : athMarkPoint.value, name: nameOf(item.id, item.name), type: options.value.chartType })),
+  ...(previousTotal.value ? [{ color: 'var(--ui-text-muted)', data: previousTotal.value, isGhost: true, name: t('wallets.analytics.previousPeriod'), type: 'line' as const }] : []),
+])
 
 /** Change per interval: up and down bars for the total, the breakdown's own colours otherwise. */
 const changeChartSeries = computed<ChartSeries[]>(() => {
@@ -219,10 +232,16 @@ const settings = computed<AnalyticsOption[]>(() => [
     label: t('wallets.analytics.chartType.label'),
     value: options.value.chartType,
   },
+  {
+    id: 'isShowPrevious',
+    items: [{ label: t('wallets.analytics.hide'), value: 'no' }, { label: t('wallets.analytics.show'), value: 'yes' }],
+    label: t('wallets.analytics.previousOverlay'),
+    value: options.value.isShowPrevious ? 'yes' : 'no',
+  },
 ])
 
 function onSetting(id: string, value: number | string) {
-  options.value = { ...options.value, hidden: id === 'breakdown' ? [] : options.value.hidden, [id]: value }
+  options.value = { ...options.value, hidden: id === 'breakdown' ? [] : options.value.hidden, [id]: id === 'isShowPrevious' ? value === 'yes' : value }
 }
 </script>
 

@@ -48,6 +48,7 @@ type CashflowId = typeof CASHFLOW_IDS[number] | 'fixed' | 'flexible'
 const options = useStorage(WALLET_STORAGE_KEYS.analyticsCashflow, {
   chartType: 'bar' as AxisChartType,
   hidden: [] as string[],
+  isShowPrevious: false,
   isSplitExpense: false,
   mode: 'cashflow' as 'cashflow' | 'rows',
   rowsHidden: [] as string[],
@@ -128,7 +129,30 @@ const all = computed(() => isRows.value
 
 const anomalies = computed(() => isRows.value ? [] : expenseAnomalies(cashflow.value.expense, props.base.fullCount.value))
 
-const chartSeries = computed<ChartSeries[]>(() => all.value
+/** The same intervals of the previous period, to date, priced by the rates right before this range. */
+const previousPoints = computed(() => {
+  const intervals = props.base.previousIntervals.value
+  const range = props.base.previousRange.value
+  if (isRows.value || !options.value.isShowPrevious || !intervals || !range)
+    return null
+  return cashflowPoints({
+    computeTotal: ids => totalOf(ids, props.base.tryToBaseAt(-1)),
+    intervals,
+    trnsIds: trnsStore.getStoreTrnsIds({ dates: range, walletsIds: props.base.walletIds.value }),
+    trnsItems: trnsStore.items ?? {},
+  })
+})
+
+const ghostSeries = computed<ChartSeries[]>(() => {
+  const points = previousPoints.value
+  if (!points)
+    return []
+  return (['income', 'expense', 'net'] as const)
+    .filter(id => !hidden.value.has(id) && all.value.some(item => item.id === id))
+    .map(id => ({ color: colors[id], data: points[id], isGhost: true, name: `${t(`wallets.analytics.cashflow.${id}`)} · ${t('wallets.analytics.previousPeriod')}`, type: 'line' as const }))
+})
+
+const chartSeries = computed<ChartSeries[]>(() => [...all.value
   .filter(item => !hidden.value.has(item.id))
   .map(item => ({
     color: item.color,
@@ -137,8 +161,8 @@ const chartSeries = computed<ChartSeries[]>(() => all.value
       ? { data: anomalies.value.map(index => ({ coord: [index, minorToAmount(item.data[index]!, currenciesStore.base)] })), label: { show: false }, symbol: 'pin', symbolSize: 16 }
       : undefined,
     name: item.name,
-    type: isRows.value ? 'line' : options.value.chartType,
-  })))
+    type: isRows.value ? 'line' as const : options.value.chartType,
+  })), ...ghostSeries.value])
 
 /** The same intervals a year earlier; for the year interval that is just the previous bar. */
 const lastYear = computed(() => {
@@ -391,10 +415,16 @@ const settings = computed<AnalyticsOption[]>(() => isRows.value
         label: t('wallets.analytics.cashflow.expenseView'),
         value: options.value.isSplitExpense ? 'yes' : 'no',
       },
+      {
+        id: 'isShowPrevious',
+        items: [{ label: t('wallets.analytics.hide'), value: 'no' }, { label: t('wallets.analytics.show'), value: 'yes' }],
+        label: t('wallets.analytics.previousOverlay'),
+        value: options.value.isShowPrevious ? 'yes' : 'no',
+      },
     ])
 
 function onSetting(id: string, value: number | string) {
-  options.value = { ...options.value, [id]: id === 'isSplitExpense' ? value === 'yes' : value }
+  options.value = { ...options.value, [id]: id === 'isSplitExpense' || id === 'isShowPrevious' ? value === 'yes' : value }
 }
 </script>
 

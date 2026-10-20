@@ -1192,6 +1192,7 @@ export default {
         withoutIncome: 'No income',
         withoutIncomeShort: 'no income',
       },
+      hide: 'Hide',
       kpi: {
         beyondHorizon: 'past the forecast horizon',
         change: 'Change for the period',
@@ -1212,6 +1213,8 @@ export default {
       preview: {
         change: 'Last {n} months',
       },
+      previousOverlay: 'Previous period',
+      previousPeriod: 'previous period',
       ranges: {
         '1y': 'Year',
         '3y': '3 years',
@@ -1269,6 +1272,7 @@ export default {
         title: 'Shares',
         total: 'Total',
       },
+      show: 'Show',
       sort: {
         amount: 'By amount',
         label: 'Sort',

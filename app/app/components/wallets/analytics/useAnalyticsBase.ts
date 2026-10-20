@@ -89,6 +89,11 @@ export function useAnalyticsBase() {
     ? { end: addCivilMonths(range.value.end, -months.value), start: addCivilMonths(range.value.start, -months.value) }
     : null)
 
+  /** The intervals shifted back by the range length, to date like `previousRange`. Null for `all`. */
+  const previousIntervals = computed<Range[] | null>(() => months.value
+    ? intervals.value.map(interval => ({ end: addCivilMonths(interval.end, -months.value!), start: addCivilMonths(interval.start, -months.value!) }))
+    : null)
+
   const ends = computed(() => intervals.value.map(interval => Math.min(interval.end, range.value.end)))
   const xAxisLabels = computed(() => intervals.value.map(interval => interval.start))
   /** The day before the range, then every interval end: the opening point is the base of every period change. */
@@ -157,6 +162,7 @@ export function useAnalyticsBase() {
     missingCurrencies,
     period,
     pointBalances: allBalances,
+    previousIntervals,
     previousRange,
     range,
     rangeId,

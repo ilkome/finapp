@@ -412,6 +412,24 @@ export function buildChartSeries(
         }
       }
 
+      if (item.isGhost) {
+        return {
+          ...defu(defaultSeriesConfig, item),
+          areaStyle: { opacity: 0 },
+          data,
+          emphasis: { disabled: true },
+          itemStyle: { opacity: 0.35 },
+          label: defaultSeriesConfig.label,
+          lineStyle: { ...defaultSeriesConfig.lineStyle, opacity: 0.6, type: 'dashed' as const },
+          showSymbol: false,
+          smooth: isLine ? line.isSmooth : false,
+          stack: false,
+          symbol: 'none',
+          type: seriesType,
+          z: 1,
+        }
+      }
+
       return {
         ...defu(defaultSeriesConfig, item),
         areaStyle: isLine && line.isGradient ? defaultSeriesConfig.areaStyle : { opacity: 0 },
