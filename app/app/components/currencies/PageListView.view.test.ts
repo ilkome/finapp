@@ -25,4 +25,12 @@ describe('currenciesPageListView', () => {
     await wrapper.find('button').trigger('click')
     expect(wrapper.emitted('add')).toHaveLength(1)
   })
+  it('lists the currencies held by wallets first, under their own title', () => {
+    const rows = props.rows.map((row: any, index: number) => ({ ...row, isUsed: index === props.rows.length - 1 }))
+    const wrapper = mount(PageListView, { props: { rows } })
+    const used = wrapper.find('[data-currency-group="used"]')
+    expect(used.text()).toContain('currencies.page.used')
+    expect(used.text()).toContain(rows.at(-1).code)
+    expect(wrapper.find('[data-currency-group="others"]').exists()).toBe(true)
+  })
 })

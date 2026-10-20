@@ -46,9 +46,9 @@ const list = computed(() => {
 
     <div class="mt-3 flex scroller-block flex-col gap-6 overflow-y-auto py-px pb-3">
       <template v-if="list.length === 0">
-        <div class="py-3 text-center">
+        <UiEmpty>
           {{ t('currencies.list.notFound') }}
-        </div>
+        </UiEmpty>
       </template>
 
       <div v-if="props.isShowAllButton">

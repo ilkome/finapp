@@ -198,6 +198,9 @@ export default {
     base: 'Основная валюта',
     converter: {
       add: 'Добавить валюту',
+      drag: 'Перетащить валюту',
+      moveDown: 'Ниже',
+      moveUp: 'Выше',
       noRate: 'Нет курса',
       ratesOn: 'Курсы на {date}',
       title: 'Конвертер',
@@ -239,8 +242,10 @@ export default {
       showAll: 'Показать все кошельки',
     },
     page: {
+      others: 'Остальные валюты',
       setBase: 'Сделать основной валютой',
       title: 'Валюты',
+      used: 'В ваших кошельках',
     },
     select: 'Выбрать валюту',
   },

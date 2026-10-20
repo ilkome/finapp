@@ -1,5 +1,9 @@
 <script setup lang="ts">
+import { useDragAndDrop } from '@formkit/drag-and-drop/vue'
+
 import type { CurrencyCode } from '~/components/currencies/types'
+
+import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
 const props = defineProps<{
   amount: string
@@ -14,7 +18,9 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'addTarget': [code: CurrencyCode]
+  'moveTarget': [code: CurrencyCode, offset: -1 | 1]
   'removeTarget': [code: CurrencyCode]
+  'reorderTargets': [codes: CurrencyCode[]]
   'update:amount': [value: string]
   'update:source': [code: CurrencyCode]
 }>()
@@ -25,6 +31,29 @@ const sourceOptions = computed(() => props.options.map(c => ({ label: c.code, va
 const addOptions = computed(() => props.options
   .filter(c => c.code !== props.source && !props.results.some(r => r.code === c.code))
   .map(c => ({ label: c.name === c.code ? c.code : `${c.code} - ${c.name}`, value: c.code })))
+const [targetsParent, sortedCodes] = useDragAndDrop([] as CurrencyCode[], {
+  dragHandle: '.converterHandle',
+  plugins: [sortInsertLine()],
+})
+const resultsByCode = computed(() => new Map(props.results.map(result => [result.code, result])))
+const sortedResults = computed(() => sortedCodes.value.flatMap(code => resultsByCode.value.get(code) ?? []))
+watch(() => props.results.map(result => result.code), (codes) => {
+  sortedCodes.value = codes
+}, { immediate: true })
+watch(sortedCodes, (codes) => {
+  if (codes.some((code, index) => code !== props.results[index]?.code))
+    emit('reorderTargets', [...codes])
+})
+
+function menuItems(code: CurrencyCode, index: number) {
+  return [[
+    { disabled: index === 0, icon: 'lucide:arrow-up', label: t('currencies.converter.moveUp'), onSelect: () => emit('moveTarget', code, -1) },
+    { disabled: index === props.results.length - 1, icon: 'lucide:arrow-down', label: t('currencies.converter.moveDown'), onSelect: () => emit('moveTarget', code, 1) },
+  ], [
+    { color: 'error' as const, icon: 'lucide:trash-2', label: t('base.delete'), onSelect: () => emit('removeTarget', code) },
+  ]]
+}
+
 const dateLabel = computed(() => props.ratesDate === null
   ? null
   : new Intl.DateTimeFormat(locale?.value, { dateStyle: 'medium', timeZone: 'UTC' }).format(props.ratesDate))
@@ -50,28 +79,34 @@ const dateLabel = computed(() => props.ratesDate === null
       />
     </div>
 
-    <div>
-      <div
-        v-for="result in props.results"
+    <div ref="targetsParent">
+      <UiContextMenuMy
+        v-for="(result, index) in sortedResults"
         :key="result.code"
-        class="flex min-h-10 items-center justify-between gap-3 border-b border-default/50 text-sm"
+        :items="menuItems(result.code, index)"
       >
-        <div class="font-medium">
-          {{ result.code }}
+        <div
+          class="flex min-h-10 items-center gap-2 border-b border-default/50 text-sm"
+          :data-converter-row="result.code"
+        >
+          <div
+            class="converterHandle -ml-1 flex size-8 shrink-0 cursor-grab items-center justify-center rounded-sm text-dimmed hover:bg-elevated/50 active:cursor-grabbing"
+            :aria-label="t('currencies.converter.drag')"
+          >
+            <Icon name="lucide:grip-vertical" size="16" />
+          </div>
+          <div class="grow font-medium">
+            {{ result.code }}
+          </div>
+          <div class="flex items-center gap-2 tabular-nums">
+            <span v-if="result.value !== null">{{ result.value }}</span>
+            <span v-else class="text-xs text-muted">{{ t('currencies.converter.noRate') }}</span>
+            <UDropdownMenu :content="{ align: 'end' }" :items="menuItems(result.code, index)">
+              <UiTriggerButton icon="lucide:ellipsis-vertical" :title="t('base.moreOptions')" />
+            </UDropdownMenu>
+          </div>
         </div>
-        <div class="flex items-center gap-2 tabular-nums">
-          <span v-if="result.value !== null">{{ result.value }}</span>
-          <span v-else class="text-xs text-muted">{{ t('currencies.converter.noRate') }}</span>
-          <UButton
-            icon="lucide:x"
-            size="xs"
-            variant="ghost"
-            color="neutral"
-            :aria-label="t('base.delete')"
-            @click="emit('removeTarget', result.code)"
-          />
-        </div>
-      </div>
+      </UiContextMenuMy>
     </div>
 
     <div class="flex items-center justify-between gap-2">
