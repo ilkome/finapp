@@ -1,9 +1,12 @@
 import { addCivilDays, addCivilMonths, lastDayOfMonthCivil, startOfMonthCivil } from '~~/utils/date/civil'
 
+import type { CategoryId } from '~/components/categories/types'
 import type { PaymentRow } from '~/components/loans/engine/types'
 import type { GraceLine, MinPaymentStatus } from '~/components/loans/minPayment'
-import type { CardPaymentMode } from '~/components/wallets/analytics/forecastSettings'
+import type { AmountMode, CardPaymentMode, RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { WalletId } from '~/components/wallets/types'
+
+import { detectRegular } from '~/components/wallets/analytics/regular'
 
 const DAY = 86_400_000
 
@@ -244,4 +247,33 @@ export function projectForecast(params: {
   }
 
   return { coincidence, months, nextIncomeDate, runwayWithIncome, runwayWithoutIncome, startBalance }
+}
+
+/**
+ * Months of cover at each point: the start-wallet balance there over the monthly outflow known at that time, so a
+ * past month is not judged by today's spending. The outflow is the regular spending detected over the history
+ * window ending at the point plus the debt payments actually made in that window, per month.
+ * `spending` and `debtPayments` run over one contiguous list of months; `windowEnds` index into it (inclusive).
+ */
+export function coverTrend(params: {
+  amountMode: AmountMode
+  balances: number[]
+  debtPayments: number[]
+  minMonths: number
+  overrides: Record<CategoryId, RegularOverride>
+  spending: Map<CategoryId, number[]>
+  windowEnds: number[]
+  windowMonths: number
+}): (number | null)[] {
+  const { amountMode, balances, debtPayments, minMonths, overrides, spending, windowEnds, windowMonths } = params
+  return windowEnds.map((end, index) => {
+    const start = Math.max(0, end - windowMonths + 1)
+    const monthly = new Map([...spending].map(([categoryId, data]) => [categoryId, data.slice(start, end + 1)] as const))
+    const regular = detectRegular({ amountMode, minMonths, monthly, overrides, windowMonths })
+      .filter(item => item.isRegular)
+      .reduce((sum, item) => sum + item.amount, 0)
+    const debt = debtPayments.slice(start, end + 1).reduce((sum, value) => sum + value, 0) / windowMonths
+    const outflow = regular + debt
+    return outflow > 0 ? balances[index]! / outflow : null
+  })
 }

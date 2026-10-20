@@ -1115,6 +1115,10 @@ export default {
         label: 'Chart type',
         line: 'Line',
       },
+      cover: {
+        months: 'months',
+        title: 'Months of cover without income',
+      },
       empty: {
         noTrns: 'No transactions in this period',
         noWallets: 'No wallets to count',

@@ -5,7 +5,7 @@ import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
-import { cardObligations, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
@@ -252,6 +252,20 @@ describe('projectForecast', () => {
 
   it('has run out already with a negative start', () => {
     expect(projectForecast({ horizonMonths: 1, income: 0, incomeThisMonth: 0, obligations: [], regular: [], startBalance: -1, today }).runwayWithoutIncome).toBe(today)
+  })
+})
+
+describe('coverTrend', () => {
+  const base = { amountMode: 'median' as const, minMonths: 2, overrides: {}, windowMonths: 3 }
+
+  it('is not moved by a one-off expense, the median keeps the outflow', () => {
+    const covers = coverTrend({ ...base, balances: [3000, 3000], debtPayments: [0, 0, 0, 0], spending: new Map([['food', [100, 100, 100, 5000]]]), windowEnds: [2, 3] })
+    expect(covers).toEqual([30, 30])
+  })
+
+  it('rises once a loan is paid off', () => {
+    const covers = coverTrend({ ...base, balances: [1200, 1200], debtPayments: [300, 300, 300, 0, 0, 0], spending: new Map([['food', [100, 100, 100, 100, 100, 100]]]), windowEnds: [2, 5] })
+    expect(covers).toEqual([3, 12])
   })
 })
 

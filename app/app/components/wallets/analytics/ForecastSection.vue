@@ -28,7 +28,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, categories, forecast, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useForecast()
+const { availableWalletIds, categories, cover, forecast, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
@@ -88,6 +88,19 @@ const tooltipRows = computed(() => {
     runOut: { withIncome: monthOf(forecast.value.runwayWithIncome), withoutIncome: monthOf(forecast.value.runwayWithoutIncome) },
   })
 })
+
+const coverSeries = computed<ChartSeries[]>(() => [{ color: 'var(--ui-primary)', data: cover.value.values.map(value => value === null ? 0 : Math.round(value * 10) / 10), name: t('wallets.analytics.cover.title'), type: 'line' }])
+const coverTooltipRows = computed(() => cover.value.values.map((value, index) => [{
+  amount: value === null ? 0 : Math.round(value * 10) / 10,
+  color: 'var(--ui-primary)',
+  // The last point is today: its forecast runway also counts the obligation schedule.
+  description: index === cover.value.values.length - 1 && forecast.value.runwayWithoutIncome !== null
+    ? `${t('wallets.analytics.forecast.until')} ${formatByLocale(forecast.value.runwayWithoutIncome, 'd MMMM yyyy', dateLocale.value)}`
+    : undefined,
+  key: 'cover',
+  name: t('wallets.analytics.cover.months'),
+}]))
+const coverChartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
 
 const chartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
 
@@ -277,6 +290,25 @@ function onSetting(id: string, value: number | string) {
         :tooltipRows
         :xAxisLabels="forecast.months.map(month => month.start)"
       />
+    </div>
+
+    <div class="grid min-w-0 gap-1" data-analytics-cover>
+      <UiText variant="caption" class="px-2">
+        {{ t('wallets.analytics.cover.title') }}
+      </UiText>
+      <div class="min-h-40 min-w-0">
+        <LazyStatChartAxisView
+          v-if="isChartMountReady"
+          isTooltipOnTap
+          scaleMode="fit"
+          :chartConfig="coverChartConfig"
+          chartType="line"
+          period="month"
+          :series="coverSeries"
+          :tooltipRows="coverTooltipRows"
+          :xAxisLabels="cover.labels"
+        />
+      </div>
     </div>
 
     <WalletsAnalyticsForecastMonthsView

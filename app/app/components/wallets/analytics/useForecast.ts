@@ -11,7 +11,9 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { cardObligations, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
+import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
@@ -19,6 +21,9 @@ import { useForecastSettingsStore } from '~/components/wallets/analytics/useFore
 import { isCreditProduct, isWalletInForecast } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCivilToday } from '~/composables/useCivilToday'
+
+/** Month ends the cover trend looks back over. */
+const COVER_TREND_MONTHS = 12
 
 /** A runway up to this long reads in days, a longer one in months. */
 const RUNWAY_DAYS_LIMIT = 60
@@ -146,6 +151,36 @@ export function useForecast() {
     today: today.value,
   }))
 
+  /** Months of cover at the last month ends and today, each with the outflow known then. */
+  const cover = computed(() => {
+    const window = settings.value.historyMonths
+    const months = previousMonths(today.value, COVER_TREND_MONTHS + window - 1)
+    const trnsItems = trnsStore.items ?? {}
+    const wallets = walletsStore.items ?? {}
+    const points = [...months.slice(window - 1).map(month => month.end), today.value]
+    const balances = walletBalancesAt(trnsItems, wallets, points).map(point => Math.round(startWalletIds.value
+      .reduce((sum, id) => sum + currenciesStore.toBase(point[id] ?? 0, wallets[id]!.currencyCode), 0)))
+    const lastIndex = months.length - 1
+    const values = coverTrend({
+      amountMode: settings.value.regularAmountMode,
+      balances,
+      debtPayments: debtPaymentsPoints({
+        intervals: months,
+        toBaseAt: () => currenciesStore.toBase,
+        trnsIds: Object.keys(trnsItems),
+        trnsItems,
+        walletIds: new Set(startWalletIds.value),
+        wallets,
+      }),
+      minMonths: settings.value.regularMinMonths,
+      overrides: overrides.value,
+      spending: monthlySums({ ...sumParams.value, months }).spending,
+      windowEnds: points.map((_, index) => Math.min(window - 1 + index, lastIndex)),
+      windowMonths: window,
+    })
+    return { labels: [...months.slice(window - 1).map(month => month.start), today.value], values }
+  })
+
   /** Labels of a run-out day: the date and how long until it; no duration once it is today or past. */
   function runwayOf(date: number | null): ForecastRunway {
     if (date === null)
@@ -163,6 +198,7 @@ export function useForecast() {
   return {
     availableWalletIds,
     categories: computed(() => settingsStore.categories),
+    cover,
     forecast,
     income,
     obligations,
