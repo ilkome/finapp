@@ -7,6 +7,8 @@ import type { AxisChartType } from '~/components/stat/chart/types'
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
 
+import type { ChartScaleMode } from '~/components/stat/chart/options'
+
 import { formatChartAmount, formatChartAxisLabel, formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { buildChartGuideMarkLine, buildChartSeries, createBaseOption, resolveCenteredBarGeometry, resolveChartScale, resolveChartScaleWidth, resolveChartSeriesAverages, resolveChartTooltipPosition } from '~/components/stat/chart/options'
 
@@ -22,6 +24,7 @@ export function buildAxisChartOption({
   isTooltipOnTap = false,
   locale,
   period,
+  scaleMode,
   series,
   startValue,
   viewportWidth,
@@ -36,6 +39,7 @@ export function buildAxisChartOption({
   isTooltipOnTap?: boolean
   locale: LocaleSlug
   period: Period
+  scaleMode?: ChartScaleMode
   series: ChartSeries[]
   startValue?: number
   viewportWidth: number
@@ -59,7 +63,7 @@ export function buildAxisChartOption({
   const activeIntervalIndex = activeIntervalKey === undefined
     ? -1
     : xAxisLabels.findIndex(label => `${label}` === activeIntervalKey)
-  const scale = resolveChartScale(visibleSeries, chartType, lineOptions, isBarGrouped)
+  const scale = resolveChartScale(visibleSeries, chartType, lineOptions, isBarGrouped, scaleMode)
   const averages = isShowAverage ? resolveChartSeriesAverages(visibleSeries) : []
   const visibleAverages = averages.filter((value): value is number => value !== undefined)
   const guideAverage = visibleAverages.length === 1 ? visibleAverages[0] : undefined

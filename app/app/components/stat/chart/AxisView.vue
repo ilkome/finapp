@@ -7,6 +7,7 @@ import { use } from 'echarts/core'
 import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
+import type { ChartScaleMode } from '~/components/stat/chart/options'
 import type { AxisChartType } from '~/components/stat/chart/types'
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
@@ -26,6 +27,7 @@ const {
   isTooltipOnTap = false,
   panOffset = 0,
   period,
+  scaleMode,
   series,
   startValue,
   xAxisLabels,
@@ -42,6 +44,7 @@ const {
   isTooltipOnTap?: boolean
   panOffset?: number
   period: Period
+  scaleMode?: ChartScaleMode
   series: ChartSeries[]
   startValue?: number
   xAxisLabels: number[]
@@ -79,6 +82,7 @@ const option = computed(() => buildAxisChartOption({
   isTooltipOnTap,
   locale: locale.value,
   period,
+  scaleMode,
   series,
   startValue,
   viewportWidth: viewportWidth.value,
