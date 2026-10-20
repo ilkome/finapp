@@ -16,6 +16,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
+import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -56,6 +57,25 @@ const chartSeries = computed<ChartSeries[]>(() => [
     ? [{ color: 'var(--color-income-1)', data: forecast.value.months.map(m => m.endWithIncome), name: t('wallets.analytics.forecast.withIncome'), type: 'line' as const }]
     : []),
 ])
+const tooltipRows = computed(() => {
+  const months = forecast.value.months
+  const monthOf = (day: number | null) => day === null ? -1 : months.findLastIndex(month => month.start <= day)
+  return forecastTooltipRows({
+    colors: { income: 'var(--color-income-1)', obligations: 'var(--ui-warning)', regular: 'var(--color-expense-1)', withIncome: 'var(--color-income-1)', withoutIncome: 'var(--color-expense-1)' },
+    currencyCode: currenciesStore.base,
+    labels: {
+      income: t('wallets.analytics.forecast.income'),
+      obligations: t('wallets.analytics.forecast.obligations'),
+      regular: t('wallets.analytics.forecast.regular'),
+      runOut: t('wallets.analytics.forecast.runsOut'),
+      withIncome: t('wallets.analytics.forecast.withIncome'),
+      withoutIncome: t('wallets.analytics.forecast.withoutIncome'),
+    },
+    months,
+    runOut: { withIncome: monthOf(forecast.value.runwayWithIncome), withoutIncome: monthOf(forecast.value.runwayWithoutIncome) },
+  })
+})
+
 const chartConfig = { ...defaultConfig.chart, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: true, isSmooth: false }, type: 'line' as const }
 
 const obligationRows = computed<ObligationRow[]>(() => {
@@ -239,6 +259,7 @@ function onSetting(id: string, value: number | string) {
         chartType="line"
         period="month"
         :series="toChartSeries(chartSeries, currenciesStore.base)"
+        :tooltipRows
         :xAxisLabels="forecast.months.map(month => month.start)"
       />
     </div>

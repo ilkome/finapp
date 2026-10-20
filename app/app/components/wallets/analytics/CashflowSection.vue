@@ -13,8 +13,9 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
-import { cashflowPoints } from '~/components/wallets/analytics/cashflow'
+import { cashflowPoints, debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { balanceTooltipRows, cashflowTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -62,6 +63,15 @@ const cashflow = computed(() => cashflowPoints({
   trnsItems: trnsStore.items ?? {},
 }))
 
+const toDebts = computed(() => debtPaymentsPoints({
+  intervals: props.base.intervals.value,
+  toBaseAt: props.base.toBaseAt,
+  trnsIds: trnsIds.value,
+  trnsItems: trnsStore.items ?? {},
+  walletIds: new Set(props.base.walletIds.value),
+  wallets: walletsStore.items ?? {},
+}))
+
 const rows = computed(() => splitOpening(statisticsRowsSeries({
   balances: props.base.pointBalances.value,
   flags: props.base.flags.value,
@@ -82,6 +92,27 @@ const all = computed(() => isRows.value
 const chartSeries = computed<ChartSeries[]>(() => all.value
   .filter(item => !hidden.value.has(item.id))
   .map(item => ({ color: item.color, data: item.data, name: item.name, type: isRows.value ? 'line' : options.value.chartType })))
+
+const tooltipRows = computed(() => isRows.value
+  ? balanceTooltipRows({
+      changeLabel: t('wallets.analytics.balance.change'),
+      currencyCode: currenciesStore.base,
+      series: all.value.filter(item => !hidden.value.has(item.id)),
+    })
+  : cashflowTooltipRows({
+      colors: { ...colors, toDebts: 'var(--ui-text-muted)' },
+      currencyCode: currenciesStore.base,
+      labels: {
+        expense: t('wallets.analytics.cashflow.expense'),
+        income: t('wallets.analytics.cashflow.income'),
+        interest: t('wallets.analytics.cashflow.interest'),
+        net: t('wallets.analytics.cashflow.net'),
+        savingsRate: t('wallets.analytics.cashflow.savingsRate'),
+        toDebts: t('wallets.analytics.cashflow.toDebts'),
+      },
+      points: cashflow.value,
+      toDebts: toDebts.value,
+    }))
 
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
   const sum = item.data.reduce((total, value) => total + value, 0)
@@ -161,6 +192,7 @@ function onSetting(id: string, value: number | string) {
         :chartType="chartConfig.type"
         :period="props.base.effectivePeriod.value"
         :series="toChartSeries(chartSeries, currenciesStore.base)"
+        :tooltipRows
         :xAxisLabels="props.base.xAxisLabels.value"
       />
     </div>

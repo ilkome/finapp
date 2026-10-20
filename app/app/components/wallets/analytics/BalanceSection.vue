@@ -12,6 +12,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { balanceSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
+import { balanceTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -53,6 +54,15 @@ const hidden = computed(() => new Set(options.value.hidden))
 const chartSeries = computed<ChartSeries[]>(() => series.value
   .filter(item => !hidden.value.has(item.id))
   .map(item => ({ color: item.color, data: item.data, name: nameOf(item.id, item.name), type: options.value.chartType })))
+
+const tooltipRows = computed(() => balanceTooltipRows({
+  changeLabel: t('wallets.analytics.balance.change'),
+  currencyCode: currenciesStore.base,
+  series: series.value
+    .filter(item => !hidden.value.has(item.id))
+    .map(item => ({ ...item, name: nameOf(item.id, item.name) })),
+  total: options.value.breakdown === 'total' ? undefined : { color: 'var(--ui-text-highlighted)', name: t('money.types.total') },
+}))
 
 const legend = computed<AnalyticsLegendItem[]>(() => series.value.map(item => ({
   color: item.color ?? 'var(--ui-text-muted)',
@@ -124,6 +134,7 @@ function onSetting(id: string, value: number | string) {
         :chartType="options.chartType"
         :period="props.base.effectivePeriod.value"
         :series="toChartSeries(chartSeries, currenciesStore.base)"
+        :tooltipRows
         :xAxisLabels="props.base.xAxisLabels.value"
       />
     </div>

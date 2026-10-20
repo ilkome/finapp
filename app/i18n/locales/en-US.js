@@ -1079,7 +1079,9 @@ export default {
           rows: 'Statistics rows',
         },
         net: 'Net',
+        savingsRate: 'savings rate',
         title: 'Income and expense',
+        toDebts: 'of net, to debts',
       },
       chartType: {
         bar: 'Bars',
@@ -1104,6 +1106,7 @@ export default {
         perMonth: 'Typical month',
         regular: 'Regular spending',
         runOut: 'Already short',
+        runsOut: 'money runs out',
         scenarios: {
           both: 'Both',
           label: 'Scenarios',

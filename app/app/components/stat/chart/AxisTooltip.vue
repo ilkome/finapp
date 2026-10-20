@@ -1,20 +1,11 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
+import type { ChartTooltipRow } from '~/components/stat/chart/types'
 import type { ChartSeries, SeriesSlug } from '~/components/stat/types'
 
 import { formatChartAmount, formatChartTooltipLabel, resolveChartTooltipAmount, resolveChartValueType } from '~/components/stat/chart/format'
 import { filterChartTooltipParams, resolveChartTooltipSeries, resolveChartTooltipValue, sortChartTooltipParams } from '~/components/stat/chart/options'
-
-type ChartTooltipRow = {
-  amount: number
-  color?: string
-  description?: string
-  icon?: string
-  key: string
-  name: string
-  value?: number | null
-}
 
 type TooltipParam = {
   color: string

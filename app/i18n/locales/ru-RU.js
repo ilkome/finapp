@@ -1079,7 +1079,9 @@ export default {
           rows: 'Пункты статистики',
         },
         net: 'Итого',
+        savingsRate: 'норма сбережений',
         title: 'Доходы и расходы',
+        toDebts: 'из них на долги',
       },
       chartType: {
         bar: 'Столбцы',
@@ -1104,6 +1106,7 @@ export default {
         perMonth: 'Обычный месяц',
         regular: 'Регулярные траты',
         runOut: 'Уже не хватает',
+        runsOut: 'деньги закончатся',
         scenarios: {
           both: 'Оба',
           label: 'Сценарии',

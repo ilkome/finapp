@@ -8,7 +8,7 @@ import { SVGRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { ChartScaleMode } from '~/components/stat/chart/options'
-import type { AxisChartType } from '~/components/stat/chart/types'
+import type { AxisChartType, ChartTooltipRow } from '~/components/stat/chart/types'
 import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
 
@@ -30,6 +30,8 @@ const {
   scaleMode,
   series,
   startValue,
+  tooltipRows,
+  tooltipTitles,
   xAxisLabels,
 } = defineProps<{
   bufferSize?: number
@@ -47,6 +49,9 @@ const {
   scaleMode?: ChartScaleMode
   series: ChartSeries[]
   startValue?: number
+  /** Precomputed tooltip lines per data index; without them the tooltip lists the series values. */
+  tooltipRows?: ChartTooltipRow[][]
+  tooltipTitles?: string[]
   xAxisLabels: number[]
 }>()
 
@@ -72,6 +77,10 @@ const chartAriaLabel = computed(() => {
     .join(', ')
   return names ? `${t('chart.label')}: ${names}` : t('chart.label')
 })
+
+function tooltipIndex(params: unknown): number {
+  return (Array.isArray(params) ? params[0]?.dataIndex : undefined) ?? -1
+}
 
 const option = computed(() => buildAxisChartOption({
   chartConfig,
@@ -137,7 +146,14 @@ const {
       @datazoom="onDataZoom"
     >
       <template #tooltip="params">
-        <StatChartAxisTooltip :isRoundIcon :params :period :series />
+        <StatChartAxisTooltip
+          :isRoundIcon
+          :params
+          :period
+          :rows="tooltipRows?.[tooltipIndex(params)]"
+          :series
+          :title="tooltipTitles?.[tooltipIndex(params)]"
+        />
       </template>
     </VChart>
   </div>
