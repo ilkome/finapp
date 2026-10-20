@@ -9,7 +9,7 @@ describe('walletsAnalyticsObligationsView', () => {
     const wrapper = mount(ObligationsView, { props: obligations as any })
     expect(wrapper.find('[data-obligation="car"]').text()).toContain('25 Oct')
     expect(wrapper.find('[data-obligation="car"]').text()).toContain('-3600 USD')
-    await wrapper.find('[data-obligation="visa"]').trigger('click')
+    await wrapper.find('[data-obligation="visa"] .uiElement').trigger('click')
     expect(wrapper.emitted('select')).toEqual([['visa']])
   })
 

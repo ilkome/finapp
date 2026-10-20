@@ -1,20 +1,19 @@
 <script setup lang="ts">
+import type { CategoryItem } from '~/components/categories/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 
 export type RegularListItem = {
   amount: number
+  category: CategoryItem
   categoryId: string
-  color: string
   detectedAmount: number
-  icon: string
   /** Detected as regular, before any manual change. */
   isAuto: boolean
   /** Included, excluded or amount set by hand. */
   isOverridden: boolean
   isRegular: boolean
   monthsWithSpending: number
-  name: string
-  parentName?: string
+  parentCategory?: CategoryItem
 }
 
 const props = defineProps<{
@@ -57,49 +56,44 @@ const total = computed(() => regular.value.reduce((sum, item) => sum + item.amou
         class="grid rounded-md bg-elevated/30 py-px"
         :data-regular-group="group.id"
       >
-        <UiElement
+        <CategoriesItemView
           v-for="(item, index) in group.items"
           :key="item.categoryId"
+          :category="item.category"
+          :categoryId="item.categoryId"
           chevron="more"
-          :lineWidth="index === group.items.length - 1 ? 0 : 3"
-          insideClasses="min-h-11!"
           :data-regular-item="item.categoryId"
+          isShowParent
+          :lineWidth="index === group.items.length - 1 ? 0 : 1"
+          :parentCategory="item.parentCategory"
+          stacked
           @click="emit('edit', item.categoryId)"
         >
-          <template #leftIcon>
-            <div class="flex size-7 items-center justify-center rounded-full" :style="{ background: item.color }">
-              <Icon :name="item.icon" size="16" class="text-white" />
+          <template #append>
+            <div class="grid justify-items-end gap-1">
+              <Amount
+                :amount="item.amount"
+                :currencyCode="props.currencyCode"
+                :isShowBaseRate="false"
+                variant="row"
+              />
+              <div class="flex items-center gap-1.5 text-2xs leading-none text-muted">
+                <UBadge v-if="item.isOverridden" color="neutral" variant="soft" size="sm">
+                  {{ t('wallets.analytics.regular.manual') }}
+                </UBadge>
+                <span>{{ item.monthsWithSpending }}/{{ props.windowMonths }}</span>
+              </div>
             </div>
+            <USwitch
+              :modelValue="item.isRegular"
+              size="sm"
+              :aria-label="t('wallets.analytics.regular.toggle')"
+              data-regular-switch
+              @click.stop
+              @update:modelValue="emit('toggle', item.categoryId)"
+            />
           </template>
-
-          <div class="grid min-w-0 grow gap-1">
-            <UiEntityName>
-              {{ item.name }}
-            </UiEntityName>
-            <div class="flex items-center gap-1.5 text-2xs leading-none text-muted">
-              <span v-if="item.parentName" class="truncate">{{ item.parentName }} ·</span>
-              <span>{{ item.monthsWithSpending }}/{{ props.windowMonths }}</span>
-              <UBadge v-if="item.isOverridden" color="neutral" variant="soft" size="sm">
-                {{ t('wallets.analytics.regular.manual') }}
-              </UBadge>
-            </div>
-          </div>
-
-          <Amount
-            :amount="item.amount"
-            :currencyCode="props.currencyCode"
-            :isShowBaseRate="false"
-            variant="row"
-          />
-          <USwitch
-            :modelValue="item.isRegular"
-            size="sm"
-            :aria-label="t('wallets.analytics.regular.toggle')"
-            data-regular-switch
-            @click.stop
-            @update:modelValue="emit('toggle', item.categoryId)"
-          />
-        </UiElement>
+        </CategoriesItemView>
 
         <div v-if="group.id === 'regular'" class="flex items-center gap-3 px-3 py-2.5">
           <UiText variant="meta" class="grow">

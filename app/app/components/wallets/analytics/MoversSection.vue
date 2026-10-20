@@ -50,17 +50,18 @@ const movers = computed(() => {
   }))
 })
 
-const rows = computed<MoverRow[]>(() => movers.value.map((item) => {
+const rows = computed<MoverRow[]>(() => movers.value.flatMap((item) => {
   const category = categoriesStore.items[item.id]
+  if (!category)
+    return []
   return {
-    color: category?.color ?? 'var(--ui-text-muted)',
+    category,
     current: Math.round(item.current),
     delta: Math.round(item.delta),
     deltaLabel: item.share === undefined ? undefined : `${item.share > 0 ? '+' : ''}${formatPercent(item.share)}`,
-    icon: category?.icon ?? 'lucide:circle',
     id: item.id,
     isOneOff: item.isOneOff,
-    name: category?.name ?? item.id,
+    parentCategory: typeof category.parentId === 'string' ? categoriesStore.items[category.parentId] : undefined,
   }
 }))
 </script>

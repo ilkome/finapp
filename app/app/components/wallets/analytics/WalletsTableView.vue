@@ -66,7 +66,7 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
 </script>
 
 <template>
-  <div class="grid rounded-md bg-elevated/30 py-px" data-analytics-wallets-table>
+  <div class="grid gap-1" data-analytics-wallets-table>
     <div class="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 px-3 py-1.5 text-xs text-muted" role="toolbar" :aria-label="t('wallets.analytics.sort.label')">
       <button
         v-for="column in columns"
@@ -84,17 +84,12 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
       </button>
     </div>
 
-    <WalletsItem
-      v-for="(item, index) in visible"
+    <WalletsRow
+      v-for="item in visible"
       :key="item.id"
       :baseCurrencyCode="props.currencyCode"
       chevron="right"
       :data-wallet-row="item.id"
-      isShowBaseRate
-      isShowCreditLimit
-      isShowIcon
-      isShowRate
-      :lineWidth="index === visible.length - 1 ? 0 : 1"
       :wallet="item.wallet"
       :walletId="item.id"
       @click="emit('select', item.id)"
@@ -110,7 +105,7 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
           </UiText>
         </div>
       </template>
-    </WalletsItem>
+    </WalletsRow>
 
     <UButton
       v-if="sorted.length > COLLAPSED_ROWS"

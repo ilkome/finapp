@@ -25,18 +25,13 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <div v-if="props.items.length" class="grid rounded-md bg-elevated/30 py-px" data-obligations>
-    <WalletsItem
-      v-for="(item, index) in props.items"
+  <div v-if="props.items.length" class="grid gap-1" data-obligations>
+    <WalletsRow
+      v-for="item in props.items"
       :key="item.walletId"
       :baseCurrencyCode="props.currencyCode"
       chevron="right"
       :data-obligation="item.walletId"
-      isShowBaseRate
-      isShowCreditLimit
-      isShowIcon
-      isShowRate
-      :lineWidth="index === props.items.length - 1 ? 0 : 1"
       :wallet="item.wallet"
       :walletId="item.walletId"
       @click="emit('select', item.walletId)"
@@ -53,7 +48,7 @@ const { t } = useI18n()
           </UiText>
         </div>
       </template>
-    </WalletsItem>
+    </WalletsRow>
   </div>
 
   <UiEmpty v-else data-obligations-empty>

@@ -204,7 +204,7 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       :title="openGroup.name"
       @closed="open = null"
     >
-      <div class="grid pb-3">
+      <div class="grid gap-1 pb-3">
         <WalletsPageListItem
           v-for="walletId in openGroup.walletIds"
           :key="walletId"

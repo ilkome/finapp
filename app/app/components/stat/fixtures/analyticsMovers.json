@@ -2,22 +2,32 @@
   "currencyCode": "USD",
   "items": [
     {
-      "color": "#ef4444",
       "current": 300,
       "delta": 100,
       "deltaLabel": "+50%",
-      "icon": "lucide:utensils",
       "id": "food",
-      "name": "Food"
+      "category": {
+        "color": "#ef4444",
+        "icon": "lucide:utensils",
+        "name": "Food",
+        "parentId": 0,
+        "showInLastUsed": true,
+        "showInQuickSelector": false
+      }
     },
     {
-      "color": "#3b82f6",
       "current": 0,
       "delta": -120,
-      "icon": "lucide:dumbbell",
       "id": "gym",
-      "name": "Gym",
-      "isOneOff": true
+      "isOneOff": true,
+      "category": {
+        "color": "#3b82f6",
+        "icon": "lucide:dumbbell",
+        "name": "Gym",
+        "parentId": 0,
+        "showInLastUsed": true,
+        "showInQuickSelector": false
+      }
     }
   ]
 }

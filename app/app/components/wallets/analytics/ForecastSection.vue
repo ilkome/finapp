@@ -138,21 +138,20 @@ const obligationRows = computed<ObligationRow[]>(() => {
   return [...byWallet.values()]
 })
 
-const regularItems = computed<RegularListItem[]>(() => regular.value.map((item) => {
+const regularItems = computed<RegularListItem[]>(() => regular.value.flatMap((item) => {
   const category = categoriesStore.items[item.categoryId]
-  const parentId = category?.parentId
+  if (!category)
+    return []
   return {
     amount: item.amount,
+    category,
     categoryId: item.categoryId,
-    color: category?.color ?? 'var(--ui-text-muted)',
     detectedAmount: item.detectedAmount,
-    icon: category?.icon ?? 'lucide:circle',
     isAuto: item.isAuto,
     isOverridden: !!item.override,
     isRegular: item.isRegular,
     monthsWithSpending: item.monthsWithSpending,
-    name: category?.name ?? item.categoryId,
-    parentName: parentId ? categoriesStore.items[parentId]?.name : undefined,
+    parentCategory: typeof category.parentId === 'string' ? categoriesStore.items[category.parentId] : undefined,
   }
 }))
 
@@ -453,7 +452,7 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
     <UiSheet
       v-if="editing"
       modalClass="max-w-md"
-      :title="editing.name"
+      :title="editing.category.name"
       @closed="editingId = null"
     >
       <template #default="{ close }">
@@ -499,32 +498,26 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
       :title="t('wallets.analytics.forecast.startWallets')"
       @closed="isWalletsOpen = false"
     >
-      <div class="grid pb-3">
-        <UiRowBackground
+      <div class="grid gap-1 pb-3">
+        <WalletsRow
           v-for="walletId in availableWalletIds"
           :key="walletId"
-          class="flex items-center gap-2 pr-2"
-          type="standard"
+          :baseCurrencyCode="currenciesStore.base"
+          class="items-center pr-2"
           :data-start-wallet="walletId"
+          :wallet="walletsStore.itemsComputed[walletId]!"
+          :walletId
+          @click="toggleStartWallet(walletId)"
         >
-          <WalletsItem
-            class="min-w-0 grow"
-            :baseCurrencyCode="currenciesStore.base"
-            :wallet="walletsStore.itemsComputed[walletId]!"
-            :walletId
-            isShowBaseRate
-            isShowCreditLimit
-            isShowIcon
-            isShowRate
-            @click="toggleStartWallet(walletId)"
-          />
-          <USwitch
-            :modelValue="startWalletIds.includes(walletId)"
-            :aria-label="walletsStore.items?.[walletId]?.name"
-            size="sm"
-            @update:modelValue="toggleStartWallet(walletId)"
-          />
-        </UiRowBackground>
+          <template #after>
+            <USwitch
+              :modelValue="startWalletIds.includes(walletId)"
+              :aria-label="walletsStore.items?.[walletId]?.name"
+              size="sm"
+              @update:modelValue="toggleStartWallet(walletId)"
+            />
+          </template>
+        </WalletsRow>
       </div>
     </UiSheet>
   </section>

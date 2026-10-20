@@ -32,18 +32,14 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`
 
 <template>
   <div class="grid gap-2" data-analytics-shares>
-    <div class="grid rounded-md bg-elevated/30 py-px">
+    <!-- Wallet rows carry their own background, like the wallets list; group rows share one. -->
+    <div :class="props.items.some(item => item.wallet) ? 'grid gap-1' : 'grid rounded-md bg-elevated/30 py-px'">
       <template v-for="(item, index) in props.items" :key="item.id">
-        <WalletsItem
+        <WalletsRow
           v-if="item.wallet"
           :baseCurrencyCode="props.currencyCode"
           :chevron="props.isRowSheet ? 'more' : 'right'"
           :data-share-item="item.id"
-          isShowBaseRate
-          isShowCreditLimit
-          isShowIcon
-          isShowRate
-          :lineWidth="index === props.items.length - 1 ? 0 : 1"
           :wallet="item.wallet"
           :walletId="item.id as WalletId"
           @click="emit('select', item.id)"
@@ -53,7 +49,7 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`
               {{ percent(item.share) }}
             </div>
           </template>
-        </WalletsItem>
+        </WalletsRow>
         <UiElement
           v-else
           :chevron="props.isRowSheet ? 'more' : 'right'"

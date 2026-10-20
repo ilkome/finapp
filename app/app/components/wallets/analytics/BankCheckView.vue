@@ -22,18 +22,13 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="grid rounded-md bg-elevated/30 py-px" data-analytics-bank-check>
-    <WalletsItem
-      v-for="(item, index) in props.items"
+  <div class="grid gap-1" data-analytics-bank-check>
+    <WalletsRow
+      v-for="item in props.items"
       :key="item.id"
       :baseCurrencyCode="props.baseCurrencyCode"
       chevron="right"
       :data-bank-row="item.id"
-      isShowBaseRate
-      isShowCreditLimit
-      isShowIcon
-      isShowRate
-      :lineWidth="index === props.items.length - 1 ? 0 : 1"
       :wallet="item.wallet"
       :walletId="item.id"
       @click="emit('select', item.id)"
@@ -46,6 +41,6 @@ const emit = defineEmits<{
           </UiText>
         </div>
       </template>
-    </WalletsItem>
+    </WalletsRow>
   </div>
 </template>

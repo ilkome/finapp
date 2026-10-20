@@ -46,6 +46,7 @@ const modules = import.meta.glob<{ default: Component }>([
   '~/components/form/Input.vue',
   '~/components/form/Switch.vue',
   '~/components/wallets/Item*.vue',
+  '~/components/wallets/Row.vue',
   '~/components/wallets/Icon.vue',
   '~/components/trns/Item.vue',
   '~/components/trns/ListGroupSum.vue',

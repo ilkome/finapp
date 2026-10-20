@@ -25,19 +25,15 @@ const contextMenuItems = computed(() => [
 </script>
 
 <template>
-  <UiRowBackground class="group flex items-stretch" type="standard">
-    <WalletsSortHandle v-if="props.isSort" />
-    <WalletsItem
-      class="min-w-0 grow"
-      :wallet="walletsStore.itemsComputed[props.walletId]!"
-      :walletId="props.walletId"
-      :contextMenuItems="contextMenuItems"
-      isShowBaseRate
-      isShowCreditLimit
-      isShowIcon
-      :baseCurrencyCode="currenciesStore.base"
-      isShowRate
-      :to="`/wallets/${props.walletId}`"
-    />
-  </UiRowBackground>
+  <WalletsRow
+    :baseCurrencyCode="currenciesStore.base"
+    :contextMenuItems
+    :to="`/wallets/${props.walletId}`"
+    :wallet="walletsStore.itemsComputed[props.walletId]!"
+    :walletId="props.walletId"
+  >
+    <template v-if="props.isSort" #before>
+      <WalletsSortHandle />
+    </template>
+  </WalletsRow>
 </template>
