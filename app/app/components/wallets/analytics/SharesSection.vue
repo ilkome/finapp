@@ -191,6 +191,7 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
             {{ wallet.name }}
           </div>
           <Amount :amount="wallet.amount" :currencyCode="wallet.currencyCode" variant="row" />
+          <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
         </UiElement>
       </div>
     </UiSheet>

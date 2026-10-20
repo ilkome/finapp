@@ -33,7 +33,10 @@ const { t } = useI18n()
       :lineWidth="index === props.items.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-obligation="item.walletId"
+      role="button"
+      tabindex="0"
       @click="emit('select', item.walletId)"
+      @keydown.enter.space.prevent="emit('select', item.walletId)"
     >
       <template #leftIcon>
         <div class="flex size-7 items-center justify-center rounded-full" :style="{ background: item.color }">
@@ -57,6 +60,7 @@ const { t } = useI18n()
           {{ props.horizonLabel }}
         </UiText>
       </div>
+      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
   </div>
 

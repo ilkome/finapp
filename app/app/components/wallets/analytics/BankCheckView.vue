@@ -44,6 +44,7 @@ const emit = defineEmits<{
         </UiText>
       </div>
       <Amount :amount="item.diff" :currencyCode="item.currencyCode" :isShowBaseRate="false" isShowPlus variant="row" />
+      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
   </div>
 </template>

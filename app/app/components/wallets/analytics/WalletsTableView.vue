@@ -81,6 +81,7 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
         {{ t(`wallets.analytics.table.${column}`) }}
         <Icon v-if="sort.key === column" :name="sort.isAsc ? 'lucide:chevron-up' : 'lucide:chevron-down'" size="12" />
       </button>
+      <div class="w-4 shrink-0" aria-hidden="true" />
     </div>
 
     <UiElement
@@ -108,6 +109,7 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
       <UiText variant="caption" class="w-10 shrink-0 text-right">
         {{ Math.round(item.share * 100) }}%
       </UiText>
+      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
 
     <UButton

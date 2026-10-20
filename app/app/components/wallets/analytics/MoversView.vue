@@ -55,6 +55,7 @@ const { t } = useI18n()
           </UiText>
         </div>
       </div>
+      <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
     </UiElement>
   </div>
 </template>

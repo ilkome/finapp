@@ -43,9 +43,12 @@ const scenarios = computed(() => [
       data-forecast-start
       @click="emit('editWallets')"
     >
-      <UiText variant="caption">
-        {{ t('wallets.analytics.forecast.startBalance') }}
-      </UiText>
+      <div class="flex items-center gap-2">
+        <UiText variant="caption" class="grow">
+          {{ t('wallets.analytics.forecast.startBalance') }}
+        </UiText>
+        <Icon name="lucide:chevron-right" size="16" class="shrink-0 text-dimmed" aria-hidden="true" />
+      </div>
       <Amount
         :amount="props.startBalance"
         :currencyCode="props.currencyCode"
