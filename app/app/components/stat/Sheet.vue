@@ -126,7 +126,10 @@ const { hiddenPanels } = useStatPageViews({
       />
 
       <UiSheetFooter>
-        <StatDateFilterRow :isShowNavigation="statConfig.config.value.date.isShowNavigation" />
+        <StatDateFilterRow
+          :isResetInRange="statConfig.config.value.date.isResetInRange"
+          :isShowNavigation="statConfig.config.value.date.isShowNavigation"
+        />
       </UiSheetFooter>
     </div>
   </UiSheet>

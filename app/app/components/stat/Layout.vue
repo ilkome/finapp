@@ -151,6 +151,7 @@ watch(contextualMaxRange, range => emit('contextualMaxRange', range), { immediat
         :style="navigationIsPinned ? { top: `${navigationStickyTop}px` } : undefined"
       >
         <StatDateFilterRow
+          :isResetInRange="statConfig.date.value.isResetInRange"
           :isShowNavigation="statConfig.date.value.isShowNavigation"
           :isShowSearch="props.isShowSearch"
         />

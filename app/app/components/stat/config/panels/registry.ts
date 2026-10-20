@@ -63,6 +63,7 @@ export const PANELS: Record<Exclude<StatConfigPanelId, 'root'>, PanelDef> = {
       target.date.isPinned = source.date.isPinned
       target.date.isShow = source.date.isShow
       target.date.isShowNavigation = source.date.isShowNavigation
+      target.date.isResetInRange = source.date.isResetInRange
     },
     titleKey: 'stat.config.navigation.title',
   },

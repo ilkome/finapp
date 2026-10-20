@@ -3,6 +3,7 @@ import { filterKey } from '~/components/filter/injectionKeys'
 import { useFilterSummary } from '~/components/filter/useFilterSummary'
 
 const props = withDefaults(defineProps<{
+  isResetInRange?: boolean
   isShowNavigation?: boolean
   isShowSearch?: boolean
 }>(), {
@@ -15,7 +16,7 @@ const isFilterOpen = ref(false)
 </script>
 
 <template>
-  <StatDateNavigation :isShowButtons="isShowNavigation">
+  <StatDateNavigation :isResetInRange="props.isResetInRange" :isShowButtons="props.isShowNavigation">
     <template v-if="props.isShowSearch" #tools>
       <FilterSearchToggle />
     </template>

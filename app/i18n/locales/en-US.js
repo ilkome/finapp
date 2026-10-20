@@ -704,6 +704,7 @@ export default {
       },
       navigation: {
         pin: 'Pin while scrolling',
+        resetInRange: 'Reset the period from the period button',
         showButtons: 'Show navigation buttons',
         title: 'Period selection',
       },

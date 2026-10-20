@@ -73,6 +73,7 @@ const defaultConfig: MiniItemConfig = {
   },
   date: {
     isPinned: true,
+    isResetInRange: false,
     isShow: true,
     isShowNavigation: true,
     isShowQuick: false,

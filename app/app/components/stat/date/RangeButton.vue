@@ -2,8 +2,24 @@
 import { statDateRangeLabel } from '~/components/stat/date/rangeLabelText'
 import { statDateKey } from '~/components/stat/injectionKeys'
 
+const props = defineProps<{
+  /** The first tap returns to the default period instead of opening the picker. */
+  isReset?: boolean
+}>()
+
 const { locale, t } = useI18n()
 const statDate = inject(statDateKey)!
+
+const isOpen = computed({
+  get: () => statDate.modal.value.dateSelector,
+  set: (value) => {
+    if (value && props.isReset) {
+      statDate.goHome()
+      return
+    }
+    statDate.modal.value.dateSelector = value
+  },
+})
 
 const label = computed(() => statDateRangeLabel({
   intervalsInRange: statDate.intervalsInRange.value,
@@ -14,7 +30,7 @@ const label = computed(() => statDateRangeLabel({
 
 <template>
   <DrawerOrDropdown
-    v-model:open="statDate.modal.value.dateSelector"
+    v-model:open="isOpen"
     :title="t('dates.select')"
     popoverContentClass="md:w-max md:max-w-[calc(100vw-1rem)]"
     :unmountOnHide="false"
@@ -24,6 +40,7 @@ const label = computed(() => statDateRangeLabel({
   >
     <template #trigger="{ isActive }">
       <UiTitleDropdown data-stat-date-range :isActive>
+        <Icon v-if="props.isReset" name="lucide:rotate-ccw" size="14" class="shrink-0 text-muted" :aria-label="t('base.reset')" />
         <div class="flex items-center gap-1 leading-none text-nowrap capitalize">
           {{ label }}
         </div>

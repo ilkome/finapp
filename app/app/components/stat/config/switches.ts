@@ -26,6 +26,7 @@ export type StatConfigBooleanPath
     | 'chart.pie.isShowLabels'
     | 'chart.pie.isShowPercent'
     | 'date.isPinned'
+    | 'date.isResetInRange'
     | 'date.isShowNavigation'
     | 'date.isShowQuick'
     | 'summary.isShowTotal'
@@ -130,6 +131,10 @@ export const STAT_CONFIG_BOOLEAN_OPERATIONS: Record<StatConfigBooleanPath, Boole
   'date.isPinned': {
     get: config => config.date.isPinned,
     set: (provider, value) => provider.updateConfig('date', { isPinned: value }),
+  },
+  'date.isResetInRange': {
+    get: config => config.date.isResetInRange,
+    set: (provider, value) => provider.updateConfig('date', { isResetInRange: value }),
   },
   'date.isShowNavigation': {
     get: config => config.date.isShowNavigation,
