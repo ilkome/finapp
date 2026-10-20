@@ -1181,6 +1181,11 @@ export default {
         withoutIncome: 'No income',
         withoutIncomeShort: 'no income',
       },
+      kpi: {
+        beyondHorizon: 'past the forecast horizon',
+        change: 'Change for the period',
+        safety: 'Months of safety',
+      },
       missingRates: 'No exchange rate for {currencies}: these wallets are left out of the charts.',
       missingRatesLink: 'Set rates',
       now: {

@@ -63,6 +63,8 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
         data-analytics-missing-rates
       />
 
+      <WalletsAnalyticsKpiSection :base />
+
       <WalletsAnalyticsBalanceSection :base />
       <WalletsAnalyticsCashflowSection :base />
       <WalletsAnalyticsDebtSection v-if="isLoans" :base />

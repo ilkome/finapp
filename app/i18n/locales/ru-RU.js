@@ -1181,6 +1181,11 @@ export default {
         withoutIncome: 'Без доходов',
         withoutIncomeShort: 'без дохода',
       },
+      kpi: {
+        beyondHorizon: 'дольше горизонта прогноза',
+        change: 'Изменение за период',
+        safety: 'Месяцев запаса',
+      },
       missingRates: 'Нет курса для {currencies}: эти кошельки не попали в графики.',
       missingRatesLink: 'Указать курсы',
       now: {

@@ -1,3 +1,4 @@
+import { createSharedComposable } from '@vueuse/core'
 import { differenceInCalendarDays, differenceInMonths } from 'date-fns'
 import { addCivilMonths, formatByLocale, lastDayOfMonthCivil, u } from '~~/utils/date/civil'
 
@@ -212,3 +213,6 @@ export function useForecast() {
     update: settingsStore.update,
   }
 }
+
+/** One forecast for every section of a page that reads it; it lives while one of them is mounted. */
+export const useSharedForecast = createSharedComposable(useForecast)

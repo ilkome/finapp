@@ -18,7 +18,7 @@ import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
-import { useForecast } from '~/components/wallets/analytics/useForecast'
+import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -29,7 +29,7 @@ const walletsStore = useWalletsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, categories, cover, forecast, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useForecast()
+const { availableWalletIds, categories, cover, forecast, income, obligations, regular, runwayOf, setCategory, settings, startWalletIds, toggleStartWallet, update } = useSharedForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
