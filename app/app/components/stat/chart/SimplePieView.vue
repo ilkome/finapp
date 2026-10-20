@@ -9,7 +9,7 @@ import VChart from 'vue-echarts'
 import type { SimplePieDatum } from '~/components/stat/chart/simplePie'
 import type { ChartSeries } from '~/components/stat/types'
 
-import { buildSimplePieData } from '~/components/stat/chart/simplePie'
+import { buildSimplePieData, resolvePieWindow } from '~/components/stat/chart/simplePie'
 
 type PieTooltipParam = {
   color: string
@@ -114,14 +114,8 @@ function distributePieLabels(labels: PieLabelCandidate[], chartHeight: number) {
 }
 
 const pieData = computed(() => {
-  const startIndex = xAxisLabels.indexOf(startValue ?? -1)
-  const endIndex = xAxisLabels.indexOf(endValue ?? -1)
-  return buildSimplePieData(
-    series,
-    startIndex >= 0 ? startIndex : 0,
-    endIndex >= startIndex ? endIndex : Number.POSITIVE_INFINITY,
-    otherLabel.value,
-  )
+  const { endIndex, startIndex } = resolvePieWindow(xAxisLabels, startValue, endValue)
+  return buildSimplePieData(series, startIndex, endIndex, otherLabel.value)
 })
 const hasData = computed(() => pieData.value.length > 0)
 const chartAriaLabel = computed(() => {

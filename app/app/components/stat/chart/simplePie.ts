@@ -11,6 +11,13 @@ export type SimplePieDatum = {
   valueType?: 'expense' | 'income'
 }
 
+/** Index window of the visible interval keys; a missing key means the whole series on that side. */
+export function resolvePieWindow(xAxisLabels: number[], startValue?: number, endValue?: number) {
+  const startIndex = Math.max(0, xAxisLabels.indexOf(startValue ?? -1))
+  const endIndex = xAxisLabels.indexOf(endValue ?? -1)
+  return { endIndex: endIndex >= startIndex ? endIndex : Number.POSITIVE_INFINITY, startIndex }
+}
+
 export function buildSimplePieData(
   series: ChartSeries[],
   startIndex = 0,
