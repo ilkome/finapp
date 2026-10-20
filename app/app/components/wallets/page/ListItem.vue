@@ -3,6 +3,7 @@ import type { WalletId } from '~/components/wallets/types'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useWalletMenuItems } from '~/components/wallets/useWalletMenuItems'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -17,6 +18,7 @@ const emit = defineEmits<{
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const m = useWalletMenuItems()
+const walletSheet = useWalletSheet()
 
 const contextMenuItems = computed(() => [
   [m.edit(props.walletId)],
@@ -28,9 +30,9 @@ const contextMenuItems = computed(() => [
   <WalletsRow
     :baseCurrencyCode="currenciesStore.base"
     :contextMenuItems
-    :to="`/wallets/${props.walletId}`"
     :wallet="walletsStore.itemsComputed[props.walletId]!"
     :walletId="props.walletId"
+    @click="walletSheet = props.walletId"
   >
     <template v-if="props.isSort" #before>
       <WalletsSortHandle />

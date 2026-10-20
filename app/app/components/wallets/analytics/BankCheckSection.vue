@@ -8,7 +8,7 @@ import { useBankReportsStore } from '~/components/bankReports/useBankReportsStor
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { bankMismatches } from '~/components/wallets/analytics/bankCheck'
-import { useWalletSheet } from '~/components/wallets/analytics/useWalletSheet'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{

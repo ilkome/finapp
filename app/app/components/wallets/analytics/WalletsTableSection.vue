@@ -4,7 +4,7 @@ import type { WalletTableRow } from '~/components/wallets/analytics/WalletsTable
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { balanceSeries, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
-import { useWalletSheet } from '~/components/wallets/analytics/useWalletSheet'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{

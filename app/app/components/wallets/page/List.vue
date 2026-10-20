@@ -12,11 +12,13 @@ import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
 import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
 import { useWalletsStatistics } from '~/components/wallets/useWalletsStatistics'
+import { provideWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
 
 const { t } = useI18n()
 const router = useRouter()
+const walletSheet = provideWalletSheet()
 
 useSeoMeta({
   ogTitle: t('wallets.name'),
@@ -498,5 +500,12 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         </div>
       </div>
     </div>
+
+    <WalletsSheet
+      v-if="walletSheet"
+      :key="walletSheet"
+      :walletId="walletSheet"
+      @closed="walletSheet = null"
+    />
   </UiPage>
 </template>
