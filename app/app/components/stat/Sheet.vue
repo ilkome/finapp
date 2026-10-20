@@ -135,7 +135,8 @@ const { hiddenPanels } = useStatPageViews({
 
       <UiSheetFooter>
         <!-- The same capsule as the currency filter in the wallets drawer. -->
-        <div class="swiper-no-swiping w-full touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain [&::-webkit-scrollbar]:hidden">
+        <!-- Full width despite the footer inset: 12.5% of the inset box is the footer's 10%. -->
+        <div class="swiper-no-swiping -mx-[12.5%] touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain px-3 [&::-webkit-scrollbar]:hidden">
           <div class="h-9 w-max min-w-max overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
             <StatDateRanges
               class="h-full"
