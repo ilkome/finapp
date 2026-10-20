@@ -223,3 +223,56 @@ export function balanceExtremes(params: {
 export function changeSeries(series: AnalyticsSeries[]): AnalyticsSeries[] {
   return series.map(item => ({ ...item, data: item.data.map((value, index) => value - (index ? item.data[index - 1]! : item.opening ?? value)) }))
 }
+
+/**
+ * The balance change of the scope split into flows (counted income less expense), revaluation of foreign-currency
+ * balances and other moves (adjustments, transfers to wallets outside the scope, excluded categories). Every move
+ * is priced by the rates of its interval's end, the same set its balance uses, so the parts add up to the change.
+ * `pointBalances` / `toBaseAtPoint` start at the opening point; `intervals` follow it.
+ */
+export function changeDecomposition(params: {
+  excludedCategoryIds: ReadonlySet<string>
+  intervals: { end: number, start: number }[]
+  pointBalances: Record<WalletId, number>[]
+  toBaseAtPoint: (index: number) => ToBase
+  trnsIds: string[]
+  trnsItems: Trns
+  walletIds: WalletId[]
+  wallets: Wallets
+}): { change: number, flows: number, other: number, revaluation: number } {
+  const { excludedCategoryIds, intervals, pointBalances, toBaseAtPoint, trnsIds, trnsItems, wallets } = params
+  const scope = new Set(params.walletIds.filter(id => wallets[id]))
+  const valueAt = (index: number, id: WalletId, balance: number) => toBaseAtPoint(index)(balance, wallets[id]!.currencyCode)
+
+  let change = 0
+  let revaluation = 0
+  for (const id of scope) {
+    change += valueAt(pointBalances.length - 1, id, pointBalances.at(-1)?.[id] ?? 0) - valueAt(0, id, pointBalances[0]?.[id] ?? 0)
+    // What the balance held through each interval gained or lost when the rates moved.
+    for (let index = 1; index < pointBalances.length; index++) {
+      const held = pointBalances[index - 1]![id] ?? 0
+      if (held)
+        revaluation += valueAt(index, id, held) - valueAt(index - 1, id, held)
+    }
+  }
+
+  let moves = 0
+  let flows = 0
+  for (const trnId of trnsIds) {
+    const trn = trnsItems[trnId]
+    const index = trn ? intervals.findIndex(interval => trn.date >= interval.start && trn.date <= interval.end) : -1
+    if (!trn || index < 0)
+      continue
+    const isFlow = (trn.type === 'income' || trn.type === 'expense') && !excludedCategoryIds.has(trn.categoryId!)
+    for (const [walletId, amount] of [[trn.toWalletId, trn.toAmount], [trn.fromWalletId, trn.fromAmount === undefined ? undefined : -trn.fromAmount]] as const) {
+      if (!walletId || amount === undefined || !scope.has(walletId))
+        continue
+      const value = valueAt(index + 1, walletId, amount)
+      moves += value
+      if (isFlow)
+        flows += value
+    }
+  }
+
+  return { change: Math.round(change), flows: Math.round(flows), other: Math.round(moves - flows), revaluation: Math.round(revaluation) }
+}

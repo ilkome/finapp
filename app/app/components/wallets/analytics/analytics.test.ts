@@ -4,7 +4,7 @@ import type { PaymentRow } from '~/components/loans/engine/types'
 import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { balanceExtremes, balanceSeries, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { cardObligations, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
@@ -56,6 +56,28 @@ describe('balanceExtremes', () => {
     const result = balanceExtremes({ ...params, rangeEnd: day('2026-03-31'), rangeStart: day('2026-03-01') })
     expect(result.ath).toEqual({ date: day('2026-01-10'), value: 100 })
     expect(result.max).toEqual({ date: day('2026-03-01'), value: 70 })
+  })
+})
+
+describe('changeDecomposition', () => {
+  it('splits the change into flows, revaluation and other, adding up to it', () => {
+    // USD worth 10 at the opening, 10 after January, 12 after February, 15 after March.
+    const rates = [10, 10, 12, 15]
+    const toBaseAtPoint = (index: number) => (amount: number, currency: string) => currency === 'USD' ? amount * rates[index]! : amount
+    const extra: Trns = { ...trns, e: { createdAt: 0, date: day('2026-03-02'), fromAmount: 5, fromWalletId: 'cash', type: 'adjustment', updatedAt: 0 } }
+    const result = changeDecomposition({
+      excludedCategoryIds: new Set(),
+      intervals: ends.map((end, index) => ({ end, start: index ? ends[index - 1]! + 1 : day('2026-01-01') })),
+      pointBalances: walletBalancesAt(extra, wallets, [day('2026-01-01') - 1, ...ends]),
+      toBaseAtPoint,
+      trnsIds: Object.keys(extra),
+      trnsItems: extra,
+      walletIds: ['cash', 'usd'],
+      wallets,
+    })
+    // Flows: +100 salary, -30 food. Other: the transfer -20 + 2 USD at 12 = +4, the adjustment -5. USD 2 held from 12 to 15: +6.
+    expect(result).toEqual({ change: 75, flows: 70, other: -1, revaluation: 6 })
+    expect(result.flows + result.other + result.revaluation).toBe(result.change)
   })
 })
 

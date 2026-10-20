@@ -11,10 +11,11 @@ import type { SummaryTile } from '~/components/wallets/analytics/SummaryTilesVie
 import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
 
 import { formatAmount, minorToAmount } from '~/components/amount/utils'
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { balanceExtremes, balanceSeries, changeSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
+import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { balanceTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
@@ -30,6 +31,7 @@ const router = useRouter()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const trnsStore = useTrnsStore()
+const categoriesStore = useCategoriesStore()
 const dateLocale = useDateLocale()
 
 const options = useStorage(WALLET_STORAGE_KEYS.analyticsBalance, {
@@ -86,11 +88,29 @@ const extremes = computed(() => balanceExtremes({
   wallets: walletsStore.items ?? {},
 }))
 
+const decomposition = computed(() => changeDecomposition({
+  excludedCategoryIds: categoriesStore.excludedFromStatsIds,
+  intervals: props.base.intervals.value,
+  pointBalances: props.base.pointBalances.value,
+  toBaseAtPoint: props.base.toBaseAtPoint,
+  trnsIds: trnsStore.getStoreTrnsIds({ dates: props.base.range.value, walletsIds: scopeWalletIds.value }),
+  trnsItems: trnsStore.items ?? {},
+  walletIds: scopeWalletIds.value,
+  wallets: walletsStore.items ?? {},
+}))
+
 const summary = computed<SummaryTile[]>(() => {
   const { ath, max, min } = extremes.value
+  const { flows, other, revaluation } = decomposition.value
+  const parts: SummaryTile[] = [
+    { amount: flows, caption: t('wallets.analytics.balance.parts.flowsHint'), id: 'flows', isShowPlus: true, label: t('wallets.analytics.balance.parts.flows') },
+    ...(revaluation ? [{ amount: revaluation, caption: t('wallets.analytics.balance.parts.revaluationHint'), id: 'revaluation', isShowPlus: true, label: t('wallets.analytics.balance.parts.revaluation') }] : []),
+    ...(other ? [{ amount: other, caption: t('wallets.analytics.balance.parts.otherHint'), id: 'other', isShowPlus: true, label: t('wallets.analytics.balance.parts.other') }] : []),
+  ]
   const dateOf = (date: number) => formatByLocale(date, 'd MMM yyyy', dateLocale.value)
   const now = series.value.reduce((sum, item) => sum + (item.data.at(-1) ?? 0), 0)
   return [
+    ...parts,
     ...(min ? [{ amount: min.value, caption: dateOf(min.date), id: 'min', label: t('wallets.analytics.balance.min') }] : []),
     ...(max ? [{ amount: max.value, caption: dateOf(max.date), id: 'max', label: t('wallets.analytics.balance.max') }] : []),
     ...(ath
