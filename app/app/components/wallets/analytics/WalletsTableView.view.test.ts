@@ -6,7 +6,7 @@ import WalletsTableView from '~/components/wallets/analytics/WalletsTableView.vu
 
 describe('walletsAnalyticsWalletsTableView', () => {
   it('sorts by a column and opens a wallet', async () => {
-    const wrapper = mount(WalletsTableView, { props: table })
+    const wrapper = mount(WalletsTableView, { props: table as any })
     const order = () => wrapper.findAll('[data-wallet-row]').map(row => row.attributes('data-wallet-row'))
     expect(order()).toEqual(['bank', 'cash'])
     await wrapper.find('[data-sort="change"]').trigger('click')

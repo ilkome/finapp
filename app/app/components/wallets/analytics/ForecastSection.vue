@@ -124,14 +124,14 @@ const obligationRows = computed<ObligationRow[]>(() => {
       row.horizonTotal += item.amount
       continue
     }
-    const wallet = walletsStore.items?.[item.walletId]
+    const wallet = walletsStore.itemsComputed[item.walletId]
+    if (!wallet)
+      continue
     byWallet.set(item.walletId, {
-      color: wallet?.color ?? 'var(--ui-text-muted)',
       horizonTotal: item.amount,
-      kind: item.kind,
-      name: wallet?.name ?? item.walletId,
       nextAmount: item.amount,
       nextDateLabel: formatByLocale(item.date, 'd MMM', dateLocale.value),
+      wallet,
       walletId: item.walletId,
     })
   }
@@ -500,14 +500,31 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
       @closed="isWalletsOpen = false"
     >
       <div class="grid pb-3">
-        <UiSwitchItem
+        <UiRowBackground
           v-for="walletId in availableWalletIds"
           :key="walletId"
-          :checkboxValue="startWalletIds.includes(walletId)"
-          :title="walletsStore.items?.[walletId]?.name ?? walletId"
-          trailing
-          @toggle="toggleStartWallet(walletId)"
-        />
+          class="flex items-center gap-2 pr-2"
+          type="standard"
+          :data-start-wallet="walletId"
+        >
+          <WalletsItem
+            class="min-w-0 grow"
+            :baseCurrencyCode="currenciesStore.base"
+            :wallet="walletsStore.itemsComputed[walletId]!"
+            :walletId
+            isShowBaseRate
+            isShowCreditLimit
+            isShowIcon
+            isShowRate
+            @click="toggleStartWallet(walletId)"
+          />
+          <USwitch
+            :modelValue="startWalletIds.includes(walletId)"
+            :aria-label="walletsStore.items?.[walletId]?.name"
+            size="sm"
+            @update:modelValue="toggleStartWallet(walletId)"
+          />
+        </UiRowBackground>
       </div>
     </UiSheet>
   </section>

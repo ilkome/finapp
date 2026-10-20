@@ -13,6 +13,7 @@ import { pieShapeOptions } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
+import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -21,6 +22,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const router = useRouter()
+const { requestDelete } = useWalletDelete()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 const isChartMountReady = useIdleMount()
@@ -60,6 +62,8 @@ const groups = computed(() => groupBys.map((groupBy) => {
     name: nameOf(item.id, groupBy),
     share: item.share,
     signedValue: item.signedValue,
+    // Split mode lists a wallet once per side, so those rows keep the plain look with the side in the name.
+    wallet: groupBy === 'wallet' && mode.value !== 'split' ? walletsStore.itemsComputed[item.id] : undefined,
   }))
   const rows = options.value.sort === 'name' ? list.sort((a, b) => a.name.localeCompare(b.name)) : list
   return {
@@ -201,16 +205,12 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
       @closed="open = null"
     >
       <div class="grid pb-3">
-        <WalletsItem
+        <WalletsPageListItem
           v-for="walletId in openGroup.walletIds"
           :key="walletId"
           :data-share-wallet="walletId"
-          :baseCurrencyCode="currenciesStore.base"
-          :wallet="walletsStore.itemsComputed[walletId]!"
           :walletId
-          isShowIcon
-          isShowCreditLimit
-          @click="router.push(`/wallets/${walletId}`)"
+          @delete="requestDelete"
         />
       </div>
     </UiSheet>

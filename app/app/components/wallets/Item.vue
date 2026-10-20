@@ -13,6 +13,8 @@ const props = defineProps<{
   // so it reaches the body in the context-menu branch, whose root is a
   // renderless ContextMenuRoot that would otherwise swallow it.
   bodyClass?: string
+  /** Trailing marker of `UiElement`; makes a row without `to` a keyboard button. */
+  chevron?: 'more' | 'right'
   compact?: boolean
   contextMenuItems?: ContextMenuItem[][]
   insideClasses?: string
@@ -42,8 +44,16 @@ const bodyProps = computed(() => {
 
 <template>
   <UiContextMenuMy v-if="props.contextMenuItems" :items="props.contextMenuItems">
-    <WalletsItemBody v-bind="bodyProps" @click="emit('click', $event)" />
+    <WalletsItemBody v-bind="bodyProps" @click="emit('click', $event)">
+      <template v-if="$slots.append" #append>
+        <slot name="append" />
+      </template>
+    </WalletsItemBody>
   </UiContextMenuMy>
 
-  <WalletsItemBody v-else v-bind="bodyProps" @click="emit('click', $event)" />
+  <WalletsItemBody v-else v-bind="bodyProps" @click="emit('click', $event)">
+    <template v-if="$slots.append" #append>
+      <slot name="append" />
+    </template>
+  </WalletsItemBody>
 </template>
