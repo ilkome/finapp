@@ -1077,6 +1077,13 @@ export default {
           revaluation: 'Курсы валют',
           revaluationHint: 'переоценка валютных остатков',
         },
+        table: {
+          change: 'Изм.',
+          name: 'Кошелёк',
+          share: 'Доля',
+          title: 'Кошельки',
+          value: 'Остаток',
+        },
         title: 'Баланс',
         up: 'Вверх',
       },

@@ -1077,6 +1077,13 @@ export default {
           revaluation: 'Exchange rates',
           revaluationHint: 'revaluation of foreign-currency balances',
         },
+        table: {
+          change: 'Change',
+          name: 'Wallet',
+          share: 'Share',
+          title: 'Wallets',
+          value: 'Balance',
+        },
         title: 'Balance',
         up: 'Up',
       },
