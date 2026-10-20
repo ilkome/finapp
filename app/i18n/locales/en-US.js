@@ -1119,6 +1119,14 @@ export default {
         months: 'months',
         title: 'Months of cover without income',
       },
+      debts: {
+        interest: 'Interest and fines for the period',
+        open: 'Loans',
+        payoff: 'Nearest payoff',
+        title: 'Debts',
+        total: 'Debt now',
+        utilization: 'Card limit used',
+      },
       empty: {
         noTrns: 'No transactions in this period',
         noWallets: 'No wallets to count',

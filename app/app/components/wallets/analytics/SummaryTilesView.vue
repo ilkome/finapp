@@ -7,6 +7,8 @@ export type SummaryTile = {
   caption?: string
   id: string
   isShowPlus?: boolean
+  /** The caption reads as a warning. */
+  isWarning?: boolean
   label: string
   text?: string
 }
@@ -40,7 +42,7 @@ const props = defineProps<{
       <div v-else class="text-base leading-none font-semibold text-highlighted">
         {{ item.text }}
       </div>
-      <UiText v-if="item.caption" variant="meta" class="leading-snug!">
+      <UiText v-if="item.caption" variant="meta" class="leading-snug!" :class="item.isWarning && 'text-warning!'">
         {{ item.caption }}
       </UiText>
     </div>

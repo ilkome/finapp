@@ -13,6 +13,7 @@ useSeoMeta({
 })
 
 const base = useAnalyticsBase()
+const isLoans = useFeature('loans')
 const ratesItems = computed(() => (['historical', 'current'] as const).map(value => ({ label: t(`wallets.analytics.rates.${value}`), value })))
 const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wallets.analytics.ranges.${value}`), value })))
 </script>
@@ -64,6 +65,7 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <WalletsAnalyticsBalanceSection :base />
       <WalletsAnalyticsCashflowSection :base />
+      <WalletsAnalyticsDebtSection v-if="isLoans" :base />
 
       <!-- Snapshots of today: the range tabs above do not drive them. -->
       <div class="grid gap-1 border-t border-default pt-6 @3xl/page:col-span-2" data-analytics-now>
