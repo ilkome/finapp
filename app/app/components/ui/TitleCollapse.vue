@@ -9,9 +9,12 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div
+  <component
+    :is="props.isHideArrow ? 'div' : 'button'"
+    :type="props.isHideArrow ? undefined : 'button'"
+    :aria-expanded="props.isHideArrow ? undefined : props.isShown"
     :class="cn(
-      'flex min-h-10.5 min-w-10.5 grow items-center gap-2 rounded-full px-3 pb-0 font-tertiary! text-base! leading-none font-semibold tracking-wide',
+      'flex min-h-10.5 min-w-10.5 grow items-center gap-2 rounded-full px-3 pb-0 text-left font-tertiary! text-base! leading-none font-semibold tracking-wide',
       !props.isHideArrow && 'interactive',
     )"
     @click="emit('click')"
@@ -23,5 +26,5 @@ const emit = defineEmits<{
       size="22"
       :class="cn('-ml-1')"
     />
-  </div>
+  </component>
 </template>

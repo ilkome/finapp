@@ -33,7 +33,11 @@ function onClick() {
   <div
     ref="root"
     class="flex min-h-9.5 min-w-10.5 grow items-center gap-1 rounded-md interactive px-3 pb-0"
+    role="button"
+    tabindex="0"
+    :aria-expanded="props.isShown"
     @click="onClick"
+    @keydown.self.enter.space.prevent="emit('click')"
   >
     <div
       v-if="props.title"
