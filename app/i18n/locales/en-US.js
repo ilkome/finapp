@@ -1193,6 +1193,14 @@ export default {
         withoutIncomeShort: 'no income',
       },
       hide: 'Hide',
+      insights: {
+        expensePace: {
+          down: 'Expenses of this interval are heading {percent}% below the usual',
+          up: 'Expenses of this interval are heading {percent}% above the usual',
+        },
+        interestShare: 'Interest and fines took {percent}% of the expenses',
+        savingsRate: 'Savings rate went from {from}% to {to}% against the previous period',
+      },
       kpi: {
         beyondHorizon: 'past the forecast horizon',
         change: 'Change for the period',

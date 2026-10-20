@@ -1193,6 +1193,14 @@ export default {
         withoutIncomeShort: 'без дохода',
       },
       hide: 'Скрыть',
+      insights: {
+        expensePace: {
+          down: 'Расходы этого интервала идут на {percent}% ниже обычного',
+          up: 'Расходы этого интервала идут на {percent}% выше обычного',
+        },
+        interestShare: 'Проценты и штрафы заняли {percent}% расходов',
+        savingsRate: 'Норма сбережений изменилась с {from}% до {to}% к прошлому периоду',
+      },
       kpi: {
         beyondHorizon: 'дольше горизонта прогноза',
         change: 'Изменение за период',

@@ -21,6 +21,7 @@ import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/w
 import { cashflowPoints, debtPaymentsPoints, splitExpense } from '~/components/wallets/analytics/cashflow'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { downloadCsv, toCsv } from '~/components/wallets/analytics/export'
+import { buildInsights } from '~/components/wallets/analytics/insights'
 import { cumulative, expenseAnomalies, incomeStability, intervalStats, PACE_CURVE_WINDOW, PACE_WINDOW, paceCurve, paceOf, savingsRateTrend } from '~/components/wallets/analytics/stats'
 import { balanceTooltipRows, cashflowTooltipRows, formatPercent, savingsRate } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
@@ -369,6 +370,26 @@ const spendingPace = computed(() => {
 })
 const paceChartConfig = computed(() => ({ ...defaultConfig.chart, isGrouped: false, isShowScale: true, line: { ...defaultConfig.chart.line, isShowPoints: false, isSmooth: false }, type: 'line' as const }))
 
+const insights = computed(() => {
+  if (isRows.value)
+    return []
+  const points = cashflow.value
+  const sum = (values: number[]) => values.reduce((total, value) => total + value, 0)
+  const before = previous.value
+  return buildInsights({
+    expenseEstimate: pace.value?.expense.estimate,
+    expenseMedian: intervalStats(points.expense, props.base.fullCount.value)?.median,
+    expenseTotal: sum(points.expense),
+    interestTotal: sum(points.interest),
+    savingsRateNow: savingsRate(sum(points.net), sum(points.income)),
+    savingsRatePrevious: before ? savingsRate(before.net, before.income) : undefined,
+  }).map((insight) => {
+    if (insight.id === 'expensePace')
+      return t(`wallets.analytics.insights.expensePace.${insight.percent > 0 ? 'up' : 'down'}`, { percent: Math.abs(insight.percent) })
+    return t(`wallets.analytics.insights.${insight.id}`, insight)
+  })
+})
+
 const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
   const sum = item.data.reduce((total, value) => total + value, 0)
   return {
@@ -450,6 +471,13 @@ function onSetting(id: string, value: number | string) {
         @change="onSetting"
       />
     </div>
+
+    <ul v-if="insights.length" class="grid gap-1 rounded-md bg-elevated/30 px-3 py-2 text-sm text-toned" data-analytics-insights>
+      <li v-for="insight in insights" :key="insight" class="flex gap-2">
+        <Icon name="lucide:lightbulb" size="16" class="mt-0.5 shrink-0 text-warning" />
+        {{ insight }}
+      </li>
+    </ul>
 
     <UiTabs
       :items="modeItems"
