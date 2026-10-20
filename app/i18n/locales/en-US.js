@@ -1253,6 +1253,7 @@ export default {
         title: 'Mandatory payments',
       },
       openTrns: 'Transactions',
+      openWallet: 'Open wallet',
       other: 'Other',
       preview: {
         change: 'Last {n} months',

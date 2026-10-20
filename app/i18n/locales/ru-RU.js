@@ -1253,6 +1253,7 @@ export default {
         title: 'Обязательные платежи',
       },
       openTrns: 'Операции',
+      openWallet: 'Перейти в кошелёк',
       other: 'Остальные',
       preview: {
         change: 'За {n} мес.',

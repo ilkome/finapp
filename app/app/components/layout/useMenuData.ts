@@ -27,6 +27,7 @@ export function useMenuData() {
   const categoriesStore = useCategoriesStore()
   const loansStore = useLoansStore()
   const isLoans = useFeature('loans')
+  const isAnalytics = useFeature('walletsAnalytics')
   const { isSearchOpen } = useSearch()
   const route = useRoute()
 
@@ -52,6 +53,12 @@ export function useMenuData() {
         icon: 'lucide:chart-no-axes-combined',
         name: t('stat.title'),
       },
+      ...(isAnalytics.value && {
+        analytics: {
+          icon: 'lucide:chart-line',
+          name: t('wallets.analytics.title'),
+        },
+      }),
       wallets: {
         icon: 'hugeicons:wallet-01',
         name: t('wallets.name'),
@@ -95,6 +102,7 @@ export function useMenuData() {
     wallets: items.value.wallets!,
     categories: items.value.categories!,
     dashboard: items.value.dashboard!,
+    ...(items.value.analytics && { analytics: items.value.analytics }),
   }))
 
   const menuItem = computed<MenuItem>(() => ({
@@ -102,7 +110,7 @@ export function useMenuData() {
     name: t('base.menu'),
   }))
 
-  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'search', 'dashboard'])
+  const bottomKeys = new Set(['wallets', 'categories', 'trnForm', 'search', 'dashboard', 'analytics'])
   const itemsModal = computed<Record<string, MenuItem>>(() =>
     Object.fromEntries(
       Object.entries(items.value).filter(([key]) => !bottomKeys.has(key)),
@@ -132,11 +140,13 @@ export function useMenuData() {
       return
     }
 
-    navigateTo(`/${menuId}`)
+    navigateTo(menuId === 'analytics' ? '/wallets/analytics' : `/${menuId}`)
   }
 
+  // The analytics page lives under /wallets, so its route name also contains `wallets`.
   function checkIsActive(menuId: string) {
-    return (route.name as string).includes(menuId)
+    const name = route.name as string
+    return name === 'wallets-analytics' ? menuId === 'analytics' : name.includes(menuId)
   }
 
   return {

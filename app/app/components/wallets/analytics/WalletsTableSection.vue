@@ -4,6 +4,7 @@ import type { WalletTableRow } from '~/components/wallets/analytics/WalletsTable
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { balanceSeries, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
+import { useWalletSheet } from '~/components/wallets/analytics/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
@@ -11,7 +12,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const router = useRouter()
+const walletSheet = useWalletSheet()
 const walletsStore = useWalletsStore()
 const currenciesStore = useCurrenciesStore()
 
@@ -62,7 +63,7 @@ const rows = computed<WalletTableRow[]>(() => {
     <WalletsAnalyticsWalletsTableView
       :currencyCode="currenciesStore.base"
       :items="rows"
-      @select="id => router.push(`/wallets/${id}`)"
+      @select="id => walletSheet = id"
     />
   </section>
 </template>
