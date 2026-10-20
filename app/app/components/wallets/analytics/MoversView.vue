@@ -30,7 +30,10 @@ const emit = defineEmits<{
       :lineWidth="index === props.items.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-mover="item.id"
+      role="button"
+      tabindex="0"
       @click="emit('select', item.id)"
+      @keydown.enter.space.prevent="emit('select', item.id)"
     >
       <Icon :name="item.icon" size="18" :style="{ color: item.color }" class="shrink-0" />
 

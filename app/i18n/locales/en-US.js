@@ -1296,9 +1296,15 @@ export default {
       },
       table: {
         change: 'Change',
+        changeFull: 'Change for the period',
         name: 'Wallet',
         share: 'Share',
         title: 'Wallets',
+        trend: {
+          down: 'Trend: down {percent}',
+          flat: 'Trend: flat',
+          up: 'Trend: up {percent}',
+        },
         value: 'Balance',
       },
       title: 'Analytics',

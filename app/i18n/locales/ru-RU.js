@@ -1296,9 +1296,15 @@ export default {
       },
       table: {
         change: 'Изм.',
+        changeFull: 'Изменение за период',
         name: 'Кошелёк',
         share: 'Доля',
         title: 'Кошельки',
+        trend: {
+          down: 'Динамика: снижение {percent}',
+          flat: 'Динамика: без изменений',
+          up: 'Динамика: рост {percent}',
+        },
         value: 'Остаток',
       },
       title: 'Аналитика',

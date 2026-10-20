@@ -29,7 +29,10 @@ const emit = defineEmits<{
       :lineWidth="index === items.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-bank-row="item.id"
+      role="button"
+      tabindex="0"
       @click="emit('select', item.id)"
+      @keydown.enter.space.prevent="emit('select', item.id)"
     >
       <div class="size-2.5 shrink-0 rounded-full" :style="{ background: item.color }" />
       <div class="grid min-w-0 grow gap-1">

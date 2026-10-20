@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
 
+import { formatPercent } from '~/components/wallets/analytics/tooltips'
+
 export type WalletTableRow = {
   change: number
   color: string
@@ -47,6 +49,13 @@ function sparkPoints(values: number[]) {
   return values.map((value, index) => `${(index / (values.length - 1) * SPARK_WIDTH).toFixed(1)},${(SPARK_HEIGHT - (value - min) / range * SPARK_HEIGHT).toFixed(1)}`).join(' ')
 }
 
+function sparkLabel(values: number[]) {
+  const first = values[0] ?? 0
+  const last = values.at(-1) ?? 0
+  const trend = last > first ? 'up' : last < first ? 'down' : 'flat'
+  return t(`wallets.analytics.table.trend.${trend}`, { percent: first ? formatPercent(Math.abs((last - first) / first)) : '' })
+}
+
 const columns: SortKey[] = ['name', 'value', 'change', 'share']
 </script>
 
@@ -59,6 +68,7 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
         type="button"
         class="flex items-center gap-0.5"
         :class="column === 'name' ? 'grow text-left' : 'w-16 justify-end'"
+        :aria-label="column === 'change' ? t('wallets.analytics.table.changeFull') : undefined"
         :aria-sort="sort.key === column ? (sort.isAsc ? 'ascending' : 'descending') : 'none'"
         :data-sort="column"
         @click="setSort(column)"
@@ -74,13 +84,16 @@ const columns: SortKey[] = ['name', 'value', 'change', 'share']
       :lineWidth="index === sorted.length - 1 ? 0 : 3"
       insideClasses="min-h-11!"
       :data-wallet-row="item.id"
+      role="button"
+      tabindex="0"
       @click="emit('select', item.id)"
+      @keydown.enter.space.prevent="emit('select', item.id)"
     >
       <div class="size-2.5 shrink-0 rounded-full" :style="{ background: item.color }" />
       <div class="min-w-0 grow truncate text-sm leading-none text-muted">
         {{ item.name }}
       </div>
-      <svg :width="SPARK_WIDTH" :height="SPARK_HEIGHT" class="shrink-0" aria-hidden="true">
+      <svg :width="SPARK_WIDTH" :height="SPARK_HEIGHT" class="shrink-0" role="img" :aria-label="sparkLabel(item.spark)">
         <polyline :points="sparkPoints(item.spark)" fill="none" :stroke="item.color" stroke-width="1.5" />
       </svg>
       <div class="grid w-24 justify-items-end gap-1 pr-1">
