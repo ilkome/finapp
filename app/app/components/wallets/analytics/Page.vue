@@ -64,7 +64,17 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
 
       <WalletsAnalyticsBalanceSection :base />
       <WalletsAnalyticsCashflowSection :base />
-      <WalletsAnalyticsForecastSection class="@3xl/page:row-span-2" />
+
+      <!-- Snapshots of today: the range tabs above do not drive them. -->
+      <div class="grid gap-1 border-t border-default pt-6 @3xl/page:col-span-2" data-analytics-now>
+        <UiTitleSection>
+          {{ t('wallets.analytics.now.title') }}
+        </UiTitleSection>
+        <UiText variant="meta" class="px-2">
+          {{ t('wallets.analytics.now.caption') }}
+        </UiText>
+      </div>
+      <WalletsAnalyticsForecastSection />
       <WalletsAnalyticsSharesSection :walletIds="base.walletIds.value" />
     </div>
   </UiPage>

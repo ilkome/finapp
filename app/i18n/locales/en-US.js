@@ -1153,6 +1153,10 @@ export default {
       },
       missingRates: 'No exchange rate for {currencies}: these wallets are left out of the charts.',
       missingRatesLink: 'Set rates',
+      now: {
+        caption: 'Today\'s balances and plans, whatever range is picked above',
+        title: 'Now',
+      },
       obligations: {
         empty: 'No mandatory payments',
         title: 'Mandatory payments',
