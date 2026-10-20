@@ -2,6 +2,8 @@
 // A close button is positioned by the host (UiButtonClose); `hasClose` keeps the row clear of it.
 const props = defineProps<{
   hasClose?: boolean
+  /** An entity icon before the title, in its color. */
+  icon?: { color?: string, name: string }
 }>()
 
 const emit = defineEmits<{
@@ -17,6 +19,7 @@ const emit = defineEmits<{
     )"
     @click="(e: Event) => emit('click', e)"
   >
+    <UiIconBase v-if="props.icon" :name="props.icon.name" :color="props.icon.color" invert class="mr-1 shrink-0" />
     <div class="min-w-0 grow">
       <slot />
     </div>

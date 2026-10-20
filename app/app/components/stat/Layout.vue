@@ -25,6 +25,8 @@ const props = withDefaults(defineProps<{
   hiddenPanels?: StatBlockPanelId[]
   initialFilteredType?: SeriesSlugSelected
   isShowSearch?: boolean
+  /** The host renders the date and filter row itself (a sheet pins it to its bottom). */
+  isNavigationOutside?: boolean
   lockSingleTypeLayout?: boolean
   preCategoriesIds?: CategoryId[]
   reportType?: StatReportType
@@ -100,7 +102,9 @@ const layout = computed(() => resolveStatLayoutBlocks({
   showWallets: props.showWallets,
 }))
 const orderedBlocks = computed(() => layout.value.orderedBlocks)
-const layoutEntries = computed(() => layout.value.entries)
+const layoutEntries = computed(() => props.isNavigationOutside
+  ? layout.value.entries.filter(entry => entry.block !== 'navigation')
+  : layout.value.entries)
 const { navigationIsPinned, navigationStickyTop, setNavigationElement, setSummaryElement, summaryIsPinned, summaryStickyTop } = useStatPinnedOffsets({ hostStickyNavigation, orderedBlocks, statConfig, stickyTop })
 
 watchEffect(() => {

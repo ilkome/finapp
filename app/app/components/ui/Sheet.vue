@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<{
   /** The body scrolls by itself (a form with its own scroller), so the drawer does not wrap it in `drawer-body`. */
   ownScroll?: boolean
   title: string
+  titleIcon?: { color?: string, name: string }
 }>(), {
   drawerClass: 'min-h-[50dvh]',
 })
@@ -32,6 +33,7 @@ const isLaptop = useIsLaptop()
     defaultOpen
     :contentClass="props.modalClass"
     :title="props.title"
+    :titleIcon="props.titleIcon"
     @after:leave="emit('closed')"
   >
     <template #default="{ close }">
@@ -42,6 +44,7 @@ const isLaptop = useIsLaptop()
   <Drawer
     v-else
     :title="props.title"
+    :titleIcon="props.titleIcon"
     :collapsedSnap="props.collapsedSnap"
     :contentClass="props.drawerClass"
     @closed="emit('closed')"

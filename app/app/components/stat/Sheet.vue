@@ -47,9 +47,9 @@ const storageKey = isSeeded
   ? `stat-sheet-${props.categoryId ? 'category' : 'wallet'}-${props.categoryId ?? props.walletId}`
   : props.categoryId ? `page-${props.categoryId}` : `${props.walletId}`
 
-const title = computed(() => props.categoryId
-  ? categoriesStore.items[props.categoryId]?.name ?? ''
-  : walletsStore.items?.[props.walletId!]?.name ?? '')
+const category = computed(() => props.categoryId ? categoriesStore.items[props.categoryId] : undefined)
+const title = computed(() => category.value?.name ?? walletsStore.items?.[props.walletId!]?.name ?? '')
+const titleIcon = computed(() => category.value && { color: category.value.color, name: category.value.icon })
 
 const { filter, filterTrnsIds } = useStatPageFilter({
   canFilterCategories: !props.categoryId,
@@ -105,11 +105,12 @@ const { hiddenPanels } = useStatPageViews({
 <template>
   <UiSheet
     :title
+    :titleIcon
     :collapsedSnap="500"
     modalClass="sm:max-w-3xl"
     @closed="emit('closed')"
   >
-    <div class="content-start pb-4" data-stat-sheet>
+    <div class="content-start pb-20 md:pb-4" data-stat-sheet>
       <StatLayout
         :categoryId
         :hiddenPanels
@@ -121,7 +122,12 @@ const { hiddenPanels } = useStatPageViews({
         :walletId
         :hasChildren="!!walletId"
         :showWallets="!!categoryId"
+        isNavigationOutside
       />
+
+      <UiSheetFooter>
+        <StatDateFilterRow :isShowNavigation="statConfig.config.value.date.isShowNavigation" />
+      </UiSheetFooter>
     </div>
   </UiSheet>
 </template>

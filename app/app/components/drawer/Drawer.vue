@@ -15,6 +15,7 @@ const props = defineProps<{
   // Live-preview mode: no overlay, the page stays scrollable and clickable; closes by swipe, Escape or Back.
   isPassthrough?: boolean
   title?: string
+  titleIcon?: { color?: string, name: string }
 }>()
 
 const emit = defineEmits<{
@@ -145,7 +146,7 @@ function expandOnWheel(event: WheelEvent) {
         <div class="drawer-content">
           <div v-if="props.title || $slots.header">
             <DrawerTitle v-if="props.title" asChild>
-              <UiTitleModal>{{ props.title }}</UiTitleModal>
+              <UiTitleModal :icon="props.titleIcon">{{ props.title }}</UiTitleModal>
             </DrawerTitle>
             <slot name="header" />
           </div>
