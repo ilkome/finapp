@@ -4,6 +4,7 @@ export const WALLET_STORAGE_KEYS = {
   analyticsBalance: 'finapp.wallets-analytics-balance',
   analyticsCashflow: 'finapp.wallets-analytics-cashflow',
   analyticsForecast: 'finapp.wallets-analytics-forecast',
+  analyticsForecastOpen: 'finapp.wallets-analytics-forecast-open',
   analyticsPeriod: 'finapp.wallets-analytics-period',
   analyticsRange: 'finapp.wallets-analytics-range',
   analyticsRates: 'finapp.wallets-analytics-rates',

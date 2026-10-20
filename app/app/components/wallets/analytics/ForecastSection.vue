@@ -295,6 +295,11 @@ function onSetting(id: string, value: number | string) {
   else
     update({ [id]: Number(value) })
 }
+
+const openParts = useStorage(WALLET_STORAGE_KEYS.analyticsForecastOpen, { months: false, regular: false }, localStorage, { mergeDefaults: true })
+function onPartToggle(id: keyof typeof openParts.value, event: Event) {
+  openParts.value = { ...openParts.value, [id]: (event.target as HTMLDetailsElement).open }
+}
 </script>
 
 <template>
@@ -408,7 +413,7 @@ function onSetting(id: string, value: number | string) {
     </div>
 
     <!-- Details the summary above already sums up: closed until asked for. -->
-    <details class="group grid gap-2" data-forecast-months>
+    <details class="group grid gap-2" :open="openParts.months" data-forecast-months @toggle="onPartToggle('months', $event)">
       <summary class="flex cursor-default list-none items-center gap-2 rounded-md interactive px-2 py-1.5 [&::-webkit-details-marker]:hidden">
         <span class="grow text-sm font-semibold">{{ t('wallets.analytics.forecast.byMonth') }}</span>
         <Icon name="lucide:chevron-down" size="16" class="text-muted transition-transform group-open:rotate-180" />
@@ -442,7 +447,7 @@ function onSetting(id: string, value: number | string) {
       />
     </div>
 
-    <details class="group grid gap-2" data-forecast-regular>
+    <details class="group grid gap-2" :open="openParts.regular" data-forecast-regular @toggle="onPartToggle('regular', $event)">
       <summary class="flex cursor-default list-none items-center gap-2 rounded-md interactive px-2 py-1.5 [&::-webkit-details-marker]:hidden">
         <span class="grow text-sm font-semibold">{{ t('wallets.analytics.regular.title') }}</span>
         <UiText variant="caption">
