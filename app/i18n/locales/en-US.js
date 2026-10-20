@@ -1087,6 +1087,10 @@ export default {
         title: 'Balance',
         up: 'Up',
       },
+      bankCheck: {
+        caption: 'Wallets where the bank\'s balance differs from the calculated one on the bank\'s day. Tap to open the wallet.',
+        title: 'Bank check',
+      },
       breakdown: {
         currency: 'Currency',
         label: 'Breakdown',
