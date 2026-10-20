@@ -268,7 +268,7 @@ function onPayNext() {
       :collapsedSnap="500"
       @closed="openPart = null"
     >
-      <div class="grid gap-4 pb-4">
+      <div class="grid content-start gap-4 pb-4">
         <ReuseSchedule v-if="openPart === 'schedule'" />
         <ReuseCost v-else />
       </div>

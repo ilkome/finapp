@@ -108,7 +108,7 @@ const { hiddenPanels } = useStatPageViews({
     modalClass="sm:max-w-3xl"
     @closed="emit('closed')"
   >
-    <div class="pb-4" data-stat-sheet>
+    <div class="content-start pb-4" data-stat-sheet>
       <StatLayout
         :categoryId
         :hiddenPanels

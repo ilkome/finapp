@@ -19,6 +19,7 @@ const router = useRouter()
 const walletsStore = useWalletsStore()
 const isLoans = useFeature('loans')
 const isShowStat = ref(false)
+const isLaptop = useIsLaptop()
 
 const wallet = computed(() => walletsStore.items?.[props.walletId])
 const isCredit = computed(() => isCreditProduct(wallet.value?.type))
@@ -44,7 +45,7 @@ function openWallet() {
     :collapsedSnap="500"
     @closed="emit('closed')"
   >
-    <div class="grid gap-4 pb-4" data-analytics-wallet-sheet>
+    <div class="grid content-start gap-4 pb-32 md:pb-4" data-analytics-wallet-sheet>
       <div class="grid grid-cols-[repeat(auto-fit,minmax(7rem,1fr))] gap-2">
         <StatSumItemView
           v-for="item in balanceItems"
@@ -59,7 +60,13 @@ function openWallet() {
 
       <LoansWalletSection v-if="isLoans && isCredit" :walletId isCompact />
 
-      <div class="sticky bottom-0 grid gap-2 bg-default pt-2">
+      <!-- The drawer is as tall as its top snap point: the footer rides up to the visible bottom of the collapsed one. -->
+      <div
+        :class="isLaptop
+          ? 'sticky bottom-0 grid gap-2 bg-default pt-2'
+          : 'absolute inset-x-0 bottom-0 z-10 grid gap-2 bg-default px-3 py-2 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)]'"
+        :style="isLaptop ? undefined : 'transform: translateY(calc(-1 * var(--drawer-snap-lift, 0px)))'"
+      >
         <UButton
           block
           color="neutral"
