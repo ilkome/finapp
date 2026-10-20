@@ -146,10 +146,11 @@ function onPrepay() {
 const [DefineSchedule, ReuseSchedule] = createReusableTemplate()
 const [DefineCost, ReuseCost] = createReusableTemplate()
 const openPart = ref<'cost' | 'schedule' | null>(null)
-const compactParts = computed(() => [
-  ...(entry.value ? [{ id: 'schedule' as const, title: t('loans.schedule') }] : []),
-  ...(costProps.value.byMonth.length ? [{ id: 'cost' as const, title: t('loans.cost') }] : []),
-])
+const compactParts = computed(() => entry.value ? [{ id: 'schedule' as const, title: t('loans.schedule') }] : [])
+const costTotal = computed(() => costProps.value.interest + costProps.value.fine)
+const costTrnsIds = computed(() => (loansStore.trnsByCreditWallet.get(props.walletId) ?? [])
+  .filter(trn => trn.kind !== 'payment')
+  .map(trn => trn.id))
 
 function onPayNext() {
   const row = entry.value?.summary.rows[firstUnpaidIndex.value]
@@ -241,6 +242,24 @@ function onPayNext() {
       </template>
     </UiSheet>
 
+    <div
+      v-if="props.isCompact && costProps.byMonth.length"
+      class="flex items-center gap-2 rounded-md bg-elevated/30 interactive px-3 py-2"
+      role="button"
+      tabindex="0"
+      data-loan-compact-cost
+      @click="openPart = 'cost'"
+      @keydown.self.enter.space.prevent="openPart = 'cost'"
+    >
+      <div class="grid grow gap-1">
+        <UiText variant="caption">
+          {{ t('loans.cost') }}
+        </UiText>
+        <Amount :amount="costTotal" :currencyCode />
+      </div>
+      <Icon name="lucide:chevron-right" size="18" class="shrink-0 text-muted" />
+    </div>
+
     <div v-if="props.isCompact && compactParts.length" class="-mx-3 grid">
       <div
         v-for="part in compactParts"
@@ -270,7 +289,16 @@ function onPayNext() {
     >
       <div class="grid content-start gap-4 pb-4">
         <ReuseSchedule v-if="openPart === 'schedule'" />
-        <ReuseCost v-else />
+        <template v-else>
+          <LoansCostView v-bind="costProps" isShowAll />
+          <TrnsList
+            :trnsIds="costTrnsIds"
+            :size="Math.max(costTrnsIds.length, 1)"
+            isShowDates
+            isShowExpense
+            isShowGroupSum
+          />
+        </template>
       </div>
     </UiSheet>
 
