@@ -11,7 +11,7 @@ import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { cardObligations, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
@@ -19,6 +19,9 @@ import { useForecastSettingsStore } from '~/components/wallets/analytics/useFore
 import { isCreditProduct, isWalletInForecast } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCivilToday } from '~/composables/useCivilToday'
+
+/** A runway up to this long reads in days, a longer one in months. */
+const RUNWAY_DAYS_LIMIT = 60
 
 /** Regular spending, obligations and the month-by-month forecast built from the synced settings. */
 export function useForecast() {
@@ -72,6 +75,8 @@ export function useForecast() {
 
   const sumParams = computed(() => ({
     excludedCategoryIds: categoriesStore.excludedFromStatsIds,
+    // Income outside the start wallets would raise the projection without the money being in the start balance.
+    incomeWalletIds: new Set(startWalletIds.value),
     rollUp,
     toBase: currenciesStore.toBase,
     trnsItems: trnsStore.items ?? {},
@@ -126,6 +131,8 @@ export function useForecast() {
     return result.sort((a, b) => a.date - b.date)
   })
 
+  const schedule = computed(() => incomeSchedule(sums.value.window.incomeEntries))
+
   const forecast = computed(() => projectForecast({
     horizonMonths: settings.value.horizonMonths,
     income: income.value,
@@ -134,6 +141,7 @@ export function useForecast() {
     regular: regular.value
       .filter(item => item.isRegular)
       .map(item => ({ amount: item.amount, spentThisMonth: spentThisMonth.value.get(item.categoryId)?.[0] ?? 0 })),
+    schedule: schedule.value,
     startBalance: startBalance.value,
     today: today.value,
   }))
@@ -148,7 +156,7 @@ export function useForecast() {
       dateLabel: formatByLocale(date, 'd MMMM yyyy', dateLocale.value),
       durationLabel: days <= 0
         ? null
-        : months >= 1 ? `${months} ${t('dates.month.plural', months)}` : `${days} ${t('dates.day.plural', days)}`,
+        : days > RUNWAY_DAYS_LIMIT && months >= 1 ? `${months} ${t('dates.month.plural', months)}` : `${days} ${t('dates.day.plural', days)}`,
     }
   }
 

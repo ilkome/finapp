@@ -49,14 +49,27 @@ const monthRows = computed<ForecastMonthRow[]>(() => forecast.value.months.map(m
   regular: month.regular,
 })))
 
-const chartSeries = computed<ChartSeries[]>(() => [
-  ...(view.value.scenario !== 'withIncome'
-    ? [{ color: 'var(--color-expense-1)', data: forecast.value.months.map(m => m.endWithoutIncome), name: t('wallets.analytics.forecast.withoutIncome'), type: 'line' as const }]
-    : []),
-  ...(view.value.scenario !== 'withoutIncome'
-    ? [{ color: 'var(--color-income-1)', data: forecast.value.months.map(m => m.endWithIncome), name: t('wallets.analytics.forecast.withIncome'), type: 'line' as const }]
-    : []),
-])
+/** Month the money runs out in, marked on its line, and the zero line it crosses. */
+function runOutMarks(runway: number | null, data: number[]) {
+  const index = runway === null ? -1 : forecast.value.months.findLastIndex(month => month.start <= runway)
+  return {
+    markLine: { data: [{ yAxis: 0 }], label: { show: false }, lineStyle: { color: 'var(--color-expense-1)', opacity: 0.4, type: 'dashed' }, silent: true, symbol: 'none' },
+    markPoint: index < 0 ? undefined : { data: [{ coord: [index, minorToAmount(data[index] ?? 0, currenciesStore.base)] }], label: { show: false }, symbol: 'pin', symbolSize: 18 },
+  }
+}
+
+const chartSeries = computed<ChartSeries[]>(() => {
+  const withoutIncome = forecast.value.months.map(m => m.endWithoutIncome)
+  const withIncome = forecast.value.months.map(m => m.endWithIncome)
+  return [
+    ...(view.value.scenario !== 'withIncome'
+      ? [{ color: 'var(--color-expense-1)', data: withoutIncome, name: t('wallets.analytics.forecast.withoutIncome'), type: 'line' as const, ...runOutMarks(forecast.value.runwayWithoutIncome, withoutIncome) }]
+      : []),
+    ...(view.value.scenario !== 'withoutIncome'
+      ? [{ color: 'var(--color-income-1)', data: withIncome, name: t('wallets.analytics.forecast.withIncome'), type: 'line' as const, ...runOutMarks(forecast.value.runwayWithIncome, withIncome) }]
+      : []),
+  ]
+})
 const tooltipRows = computed(() => {
   const months = forecast.value.months
   const monthOf = (day: number | null) => day === null ? -1 : months.findLastIndex(month => month.start <= day)
@@ -244,6 +257,8 @@ function onSetting(id: string, value: number | string) {
       :monthlyIncome="income"
       :monthlyObligations="typicalMonth?.obligations ?? 0"
       :monthlyRegular="typicalMonth?.regular ?? 0"
+      :nextIncomeLabel="forecast.nextIncomeDate === null ? null : formatByLocale(forecast.nextIncomeDate, 'd MMMM', dateLocale)"
+      :note="forecast.coincidence ? t(`wallets.analytics.forecast.coincidence.${forecast.coincidence}`) : null"
       :runwayWithIncome="runwayOf(forecast.runwayWithIncome)"
       :runwayWithoutIncome="runwayOf(forecast.runwayWithoutIncome)"
       :startBalance="forecast.startBalance"

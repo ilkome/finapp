@@ -5,7 +5,7 @@ import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { balanceExtremes, balanceSeries, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
-import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { cardObligations, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
@@ -146,7 +146,7 @@ describe('regular spending', () => {
 
   it('splits one pass into the window and the current month, income included', () => {
     expect(monthly.has('food')).toBe(false)
-    expect(sliceMonthlySums(all, -1)).toEqual({ income: [0], spending: new Map([['food', [30]]]) })
+    expect(sliceMonthlySums(all, -1)).toEqual({ income: [0], incomeEntries: [[]], spending: new Map([['food', [30]]]) })
     expect(sliceMonthlySums(all, 0, -1).income).toEqual([0, 3000, 0])
   })
 
@@ -209,8 +209,45 @@ describe('projectForecast', () => {
     expect(result.runwayWithoutIncome).toBe(day('2026-06-01'))
   })
 
+  it('runs out before a pay day after an obligation, not by the month average', () => {
+    // Loan 400 on May 5, salary 1000 on May 10, start 300: short on May 5 with or without income.
+    const result = projectForecast({
+      horizonMonths: 2,
+      income: 1000,
+      incomeThisMonth: 1000,
+      obligations: [{ amount: 400, date: day('2026-05-05'), kind: 'loan', walletId: 'loan' }],
+      regular: [],
+      schedule: [{ day: 10, share: 1 }],
+      startBalance: 300,
+      today,
+    })
+    expect(result.runwayWithoutIncome).toBe(day('2026-05-05'))
+    expect(result.runwayWithIncome).toBe(day('2026-05-05'))
+    expect(result.coincidence).toBe('afterRunOut')
+    expect(result.nextIncomeDate).toBe(day('2026-05-10'))
+    expect(result.months[1]!.endWithIncome).toBe(900)
+  })
+
   it('has run out already with a negative start', () => {
     expect(projectForecast({ horizonMonths: 1, income: 0, incomeThisMonth: 0, obligations: [], regular: [], startBalance: -1, today }).runwayWithoutIncome).toBe(today)
+  })
+})
+
+describe('incomeSchedule', () => {
+  const month = (...entries: [string, number][]) => entries.map(([iso, amount]) => ({ amount, date: day(iso) }))
+
+  it('finds a single pay day', () => {
+    expect(incomeSchedule([month(['2026-01-10', 1000]), month(['2026-02-11', 1000], ['2026-02-20', 50]), month(['2026-03-09', 1000])])).toEqual([{ day: 10, share: 1 }])
+  })
+
+  it('finds a pay that comes in two parts', () => {
+    const schedule = incomeSchedule([month(['2026-01-05', 400], ['2026-01-20', 600]), month(['2026-02-05', 400], ['2026-02-20', 600]), month(['2026-03-06', 400], ['2026-03-21', 600])])
+    expect(schedule!.map(part => part.day)).toEqual([5, 20])
+    expect(schedule![0]!.share).toBeCloseTo(0.4)
+  })
+
+  it('gives no schedule for irregular income, so the forecast spreads it', () => {
+    expect(incomeSchedule([month(['2026-01-02', 1000]), month(['2026-02-25', 1000]), month(['2026-03-14', 1000])])).toBeNull()
   })
 })
 
