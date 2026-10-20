@@ -15,7 +15,7 @@ export function bucketTrnsByIntervals(
   trnsItems: Record<TrnId, TrnItem>,
   trnsIds: TrnId[],
   intervalsInRange: Range[],
-  computeTotal: (ids: TrnId[]) => TotalReturns,
+  computeTotal: (ids: TrnId[], index: number) => TotalReturns,
 ): IntervalData[] {
   if (!intervalsInRange.length)
     return []
@@ -46,7 +46,7 @@ export function bucketTrnsByIntervals(
 
   return intervalsInRange.map((range, i) => ({
     range,
-    total: computeTotal(buckets[i]!),
+    total: computeTotal(buckets[i]!, i),
     trnsIds: buckets[i]!,
   }))
 }

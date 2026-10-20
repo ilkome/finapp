@@ -18,6 +18,8 @@ import { isCountedInTotals } from '~/components/wallets/counts'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCivilToday } from '~/composables/useCivilToday'
 
+type TryToBase = (amount: number, currency: string) => number | undefined
+
 export const analyticsRanges = ['6m', '1y', '3y', 'all'] as const
 export type AnalyticsRange = typeof analyticsRanges[number]
 export type RatesMode = 'current' | 'historical'
@@ -94,22 +96,30 @@ export function useAnalyticsBase() {
       historicalRates.value = rates
   }, { immediate: true })
 
-  /** Converter for the interval at `index` (-1 is the opening point): its historical rates when on and known, today's otherwise. */
-  function toBaseAt(index: number): ToBase {
+  /** Converter for the interval at `index` (-1 is the opening point): its historical rates when on and known, today's otherwise; undefined without a rate. */
+  function tryToBaseAt(index: number): TryToBase {
     const rates = ratesMode.value === 'historical' ? historicalRates.value[index + 1] : null
     const base = currenciesStore.base
     if (!rates || !rates[base])
-      return currenciesStore.toBase
+      return currenciesStore.tryToBase
     return (amount, currency) => currency === base
       ? amount
-      : rates[currency] ? getAmountInRate(amount, currency, base, rates) : currenciesStore.toBase(amount, currency)
+      : rates[currency] ? getAmountInRate(amount, currency, base, rates) : currenciesStore.tryToBase(amount, currency)
   }
+
+  /** `tryToBaseAt` with a missing rate as 0; the page warns about those currencies. */
+  function toBaseAt(index: number): ToBase {
+    const tryToBase = tryToBaseAt(index)
+    return (amount, currency) => tryToBase(amount, currency) ?? 0
+  }
+
+  /** Currencies of the counted wallets without a rate today: every section drops them, the page says so. */
+  const missingCurrencies = computed(() => [...new Set(walletIds.value
+    .map(id => walletsStore.items?.[id]?.currencyCode)
+    .filter((code): code is string => !!code && currenciesStore.tryToBase(1, code) === undefined))])
 
   /** `toBaseAt` over `pointBalances`: index 0 is the opening point. */
   const toBaseAtPoint = (index: number) => toBaseAt(index - 1)
-
-  // Sections get the base as a prop, so they switch the mode through a function, not the ref.
-  const setRatesMode = (mode: RatesMode) => ratesMode.value = mode
 
   return {
     balances,
@@ -117,14 +127,15 @@ export function useAnalyticsBase() {
     ends,
     flags,
     intervals,
+    missingCurrencies,
     period,
     pointBalances: allBalances,
     range,
     rangeId,
     ratesMode,
-    setRatesMode,
     toBaseAt,
     toBaseAtPoint,
+    tryToBaseAt,
     walletIds,
     xAxisLabels,
   }

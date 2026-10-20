@@ -17,17 +17,18 @@ const INTEREST_CATEGORY_IDS = new Set(['loan_fine', 'loan_interest'])
 
 /** Income, expense, the interest share of the expense and net per interval; transfers and adjustments stay out. */
 export function cashflowPoints(params: {
-  computeTotal: (ids: TrnId[]) => TotalReturns
+  /** `index` is the interval, so a total can use that interval's rates. */
+  computeTotal: (ids: TrnId[], index: number) => TotalReturns
   intervals: Range[]
   trnsIds: TrnId[]
   trnsItems: Trns
 }): CashflowPoints {
   const { computeTotal, intervals, trnsIds, trnsItems } = params
   const buckets = bucketTrnsByIntervals(trnsItems, trnsIds, intervals, computeTotal)
-  const interest = buckets.map(bucket => computeTotal(bucket.trnsIds.filter((id) => {
+  const interest = buckets.map((bucket, index) => computeTotal(bucket.trnsIds.filter((id) => {
     const trn = trnsItems[id]
     return trn?.type === 'expense' && INTEREST_CATEGORY_IDS.has(trn.categoryId!)
-  })).expense)
+  }), index).expense)
 
   return {
     expense: buckets.map(bucket => bucket.total.expense),

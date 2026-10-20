@@ -6,7 +6,7 @@ import type { ChartSeries } from '~/components/stat/types'
 import type { BalanceBreakdown, BalanceScope } from '~/components/wallets/analytics/balanceHistory'
 import type { AnalyticsLegendItem } from '~/components/wallets/analytics/LegendView.vue'
 import type { AnalyticsOption } from '~/components/wallets/analytics/SettingsMenu.vue'
-import type { AnalyticsBase, RatesMode } from '~/components/wallets/analytics/useAnalyticsBase'
+import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
 
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
@@ -96,19 +96,10 @@ const settings = computed<AnalyticsOption[]>(() => [
     label: t('wallets.analytics.chartType.label'),
     value: options.value.chartType,
   },
-  {
-    id: 'rates',
-    items: (['historical', 'current'] as const).map(value => ({ label: t(`wallets.analytics.rates.${value}`), value })),
-    label: t('wallets.analytics.rates.label'),
-    value: props.base.ratesMode.value,
-  },
 ])
 
 function onSetting(id: string, value: number | string) {
-  if (id === 'rates')
-    props.base.setRatesMode(value as RatesMode)
-  else
-    options.value = { ...options.value, hidden: id === 'breakdown' ? [] : options.value.hidden, [id]: value }
+  options.value = { ...options.value, hidden: id === 'breakdown' ? [] : options.value.hidden, [id]: value }
 }
 </script>
 

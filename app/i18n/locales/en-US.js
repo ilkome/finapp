@@ -1119,6 +1119,8 @@ export default {
         withoutIncome: 'No income',
         withoutIncomeShort: 'no income',
       },
+      missingRates: 'No exchange rate for {currencies}: these wallets are left out of the charts.',
+      missingRatesLink: 'Set rates',
       obligations: {
         empty: 'No mandatory payments',
         title: 'Mandatory payments',

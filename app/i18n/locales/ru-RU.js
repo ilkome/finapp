@@ -1119,6 +1119,8 @@ export default {
         withoutIncome: 'Без доходов',
         withoutIncomeShort: 'без дохода',
       },
+      missingRates: 'Нет курса для {currencies}: эти кошельки не попали в графики.',
+      missingRatesLink: 'Указать курсы',
       obligations: {
         empty: 'Обязательных платежей нет',
         title: 'Обязательные платежи',

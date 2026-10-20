@@ -7,7 +7,7 @@ import type { AnalyticsLegendItem } from '~/components/wallets/analytics/LegendV
 import type { AnalyticsOption } from '~/components/wallets/analytics/SettingsMenu.vue'
 import type { AnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
 
-import { useAmount } from '~/components/amount/useAmount'
+import { getTotal } from '~/components/amount/getTotal'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
@@ -27,7 +27,6 @@ const walletsStore = useWalletsStore()
 const trnsStore = useTrnsStore()
 const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
-const { computeTotalForTrnsIds } = useAmount()
 
 /** Ids of the wallets statistics rows the chart can draw, in the block's order. */
 const ROW_IDS = ['total', 'isWithdrawable', 'isAvailable', 'isAvailableAll', 'cash', 'bank_account', 'deposit', 'credit_card', 'loan', 'crypto', 'debt'] as const
@@ -49,8 +48,15 @@ const colors: Record<CashflowId, string> = {
 }
 
 const trnsIds = computed(() => trnsStore.getStoreTrnsIds({ dates: props.base.range.value, walletsIds: props.base.walletIds.value }))
+// Each interval's flows use its own rates, the same set as its balance.
 const cashflow = computed(() => cashflowPoints({
-  computeTotal: ids => computeTotalForTrnsIds(ids, { excludedCategoriesIds: categoriesStore.excludedFromStatsIds }),
+  computeTotal: (ids, index) => getTotal({
+    excludedCategoriesIds: categoriesStore.excludedFromStatsIds,
+    toBase: props.base.tryToBaseAt(index),
+    trnsIds: ids,
+    trnsItems: trnsStore.items ?? {},
+    walletsItems: walletsStore.items ?? {},
+  }),
   intervals: props.base.intervals.value,
   trnsIds: trnsIds.value,
   trnsItems: trnsStore.items ?? {},

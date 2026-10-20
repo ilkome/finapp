@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Period } from '~~/utils/date/types'
 
+import type { RatesMode } from '~/components/wallets/analytics/useAnalyticsBase'
+
 import { analyticsRanges, useAnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
 
 const { t } = useI18n()
@@ -11,6 +13,7 @@ useSeoMeta({
 })
 
 const base = useAnalyticsBase()
+const ratesItems = computed(() => (['historical', 'current'] as const).map(value => ({ label: t(`wallets.analytics.rates.${value}`), value })))
 const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wallets.analytics.ranges.${value}`), value })))
 </script>
 
@@ -36,7 +39,28 @@ const rangeItems = computed(() => analyticsRanges.map(value => ({ label: t(`wall
           :range="base.range.value"
           @changePeriod="(value: Period) => base.period.value = value"
         />
+        <UiTabs
+          :items="ratesItems"
+          :modelValue="base.ratesMode.value"
+          size="xs"
+          variant="flat"
+          :grow="false"
+          :itemGrow="false"
+          :aria-label="t('wallets.analytics.rates.label')"
+          @update:modelValue="value => base.ratesMode.value = value as RatesMode"
+        />
       </div>
+
+      <UAlert
+        v-if="base.missingCurrencies.value.length"
+        class="@3xl/page:col-span-2"
+        color="warning"
+        variant="subtle"
+        icon="lucide:triangle-alert"
+        :title="t('wallets.analytics.missingRates', { currencies: base.missingCurrencies.value.join(', ') })"
+        :actions="[{ label: t('wallets.analytics.missingRatesLink'), to: '/currencies', variant: 'link', color: 'warning' }]"
+        data-analytics-missing-rates
+      />
 
       <WalletsAnalyticsBalanceSection :base />
       <WalletsAnalyticsCashflowSection :base />
