@@ -13,7 +13,7 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
-import { statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
+import { periodChange, splitOpening, statisticsRowsSeries } from '~/components/wallets/analytics/balanceHistory'
 import { cashflowPoints } from '~/components/wallets/analytics/cashflow'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
@@ -56,22 +56,22 @@ const cashflow = computed(() => cashflowPoints({
   trnsItems: trnsStore.items ?? {},
 }))
 
-const rows = computed(() => statisticsRowsSeries({
-  balances: props.base.balances.value,
+const rows = computed(() => splitOpening(statisticsRowsSeries({
+  balances: props.base.pointBalances.value,
   flags: props.base.flags.value,
   rowIds: [...ROW_IDS],
-  toBaseAt: props.base.toBaseAt,
+  toBaseAt: props.base.toBaseAtPoint,
   walletIds: props.base.walletIds.value,
   wallets: walletsStore.items ?? {},
-}).filter(row => row.data.some(value => value !== 0)))
+})).filter(row => row.data.some(value => value !== 0)))
 
 const isRows = computed(() => options.value.mode === 'rows')
 const hiddenKey = computed(() => isRows.value ? 'rowsHidden' : 'hidden')
 const hidden = computed(() => new Set(options.value[hiddenKey.value]))
 
 const all = computed(() => isRows.value
-  ? rows.value.map(row => ({ color: row.color!, data: row.data, id: row.id, name: t(`money.types.${row.id}`) }))
-  : CASHFLOW_IDS.map(id => ({ color: colors[id], data: cashflow.value[id], id, name: t(`wallets.analytics.cashflow.${id}`) })))
+  ? rows.value.map(row => ({ color: row.color!, data: row.data, id: row.id, name: t(`money.types.${row.id}`), opening: row.opening }))
+  : CASHFLOW_IDS.map(id => ({ color: colors[id], data: cashflow.value[id], id, name: t(`wallets.analytics.cashflow.${id}`), opening: undefined as number | undefined })))
 
 const chartSeries = computed<ChartSeries[]>(() => all.value
   .filter(item => !hidden.value.has(item.id))
@@ -86,7 +86,7 @@ const legend = computed<AnalyticsLegendItem[]>(() => all.value.map((item) => {
     name: item.name,
     // Rows are balances: the last point and its change; flows are a sum and its per-period average.
     secondLabel: t(isRows.value ? 'wallets.analytics.balance.change' : 'wallets.analytics.cashflow.average'),
-    secondValue: isRows.value ? (item.data.at(-1) ?? 0) - (item.data[0] ?? 0) : (item.data.length ? sum / item.data.length : 0),
+    secondValue: isRows.value ? periodChange(item) : (item.data.length ? sum / item.data.length : 0),
     value: isRows.value ? item.data.at(-1) ?? 0 : sum,
   }
 }))

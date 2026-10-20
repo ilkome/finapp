@@ -16,6 +16,8 @@ export type AnalyticsSeries = {
   data: number[]
   id: string
   name?: string
+  /** Value right before the first point: the base of the period change. */
+  opening?: number
 }
 
 /** One readable colour per series: the 500 shade of every palette hue. */
@@ -100,6 +102,16 @@ export function balanceSeries(params: {
     id,
     name: breakdown === 'wallet' && id !== OTHER_SERIES_ID ? wallets[id]?.name : undefined,
   }))
+}
+
+/** Series built over (opening point, ...interval ends): the opening value moves out of `data`. */
+export function splitOpening(series: AnalyticsSeries[]): AnalyticsSeries[] {
+  return series.map(item => ({ ...item, data: item.data.slice(1), opening: item.data[0] ?? 0 }))
+}
+
+/** Change for the period: the last point against the balance right before the period. */
+export function periodChange(item: AnalyticsSeries): number {
+  return (item.data.at(-1) ?? 0) - (item.opening ?? item.data[0] ?? 0)
 }
 
 /** Rows of the wallets statistics block (total, available, credit, ...), one point per interval end. */

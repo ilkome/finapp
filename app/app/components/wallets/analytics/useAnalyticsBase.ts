@@ -2,7 +2,7 @@ import type { Period, Range } from '~~/utils/date/types'
 
 import { useStorage } from '@vueuse/core'
 import { addCivilMonths, startOfMonthCivil, u } from '~~/utils/date/civil'
-import { getEndOf } from '~~/utils/date/period'
+import { getEndOf, getStartOf } from '~~/utils/date/period'
 
 import type { Rates } from '~/components/currencies/types'
 import type { ToBase } from '~/components/wallets/analytics/balanceHistory'
@@ -58,7 +58,7 @@ export function useAnalyticsBase() {
   })
 
   const months = computed(() => rangeId.value === 'all' ? undefined : rangeMonths[rangeId.value])
-  const range = computed<Range>(() => ({
+  const rawRange = computed<Range>(() => ({
     end: getEndOf(u(today.value), 'day').getTime(),
     start: months.value
       ? addCivilMonths(startOfMonthCivil(today.value), 1 - months.value)
@@ -67,27 +67,36 @@ export function useAnalyticsBase() {
 
   // A stored period the range no longer allows falls back to the coarsest one it does.
   const effectivePeriod = computed<Period>(() => {
-    const allowed = availableGranularities(period.value, range.value)
+    const allowed = availableGranularities(period.value, rawRange.value)
     return allowed.includes(period.value) ? period.value : allowed.at(-1) ?? 'day'
   })
+
+  // The start moves back to the start of its interval, so the first interval is a full one.
+  const range = computed<Range>(() => ({
+    end: rawRange.value.end,
+    start: getStartOf(u(rawRange.value.start), effectivePeriod.value).getTime(),
+  }))
 
   const intervals = computed(() => getIntervalsInRange({ granularityBy: effectivePeriod.value, granularityDuration: 1, range: range.value }))
   const ends = computed(() => intervals.value.map(interval => Math.min(interval.end, range.value.end)))
   const xAxisLabels = computed(() => intervals.value.map(interval => interval.start))
-  const balances = computed(() => walletBalancesAt(trnsStore.items ?? {}, walletsStore.items ?? {}, ends.value))
+  /** The day before the range, then every interval end: the opening point is the base of every period change. */
+  const pointDates = computed(() => [range.value.start - 1, ...ends.value])
+  const allBalances = computed(() => walletBalancesAt(trnsStore.items ?? {}, walletsStore.items ?? {}, pointDates.value))
+  const balances = computed(() => allBalances.value.slice(1))
 
   const historicalRates = shallowRef<(Rates | null)[]>([])
   let request = 0
-  watch([ends, ratesMode], async () => {
+  watch([pointDates, ratesMode], async () => {
     const current = ++request
-    const rates = ratesMode.value === 'historical' ? await currenciesStore.getRatesOnDates(ends.value) : []
+    const rates = ratesMode.value === 'historical' ? await currenciesStore.getRatesOnDates(pointDates.value) : []
     if (current === request)
       historicalRates.value = rates
   }, { immediate: true })
 
-  /** Converter for the interval at `index`: its historical rates when on and known, today's otherwise. */
+  /** Converter for the interval at `index` (-1 is the opening point): its historical rates when on and known, today's otherwise. */
   function toBaseAt(index: number): ToBase {
-    const rates = ratesMode.value === 'historical' ? historicalRates.value[index] : null
+    const rates = ratesMode.value === 'historical' ? historicalRates.value[index + 1] : null
     const base = currenciesStore.base
     if (!rates || !rates[base])
       return currenciesStore.toBase
@@ -95,6 +104,9 @@ export function useAnalyticsBase() {
       ? amount
       : rates[currency] ? getAmountInRate(amount, currency, base, rates) : currenciesStore.toBase(amount, currency)
   }
+
+  /** `toBaseAt` over `pointBalances`: index 0 is the opening point. */
+  const toBaseAtPoint = (index: number) => toBaseAt(index - 1)
 
   // Sections get the base as a prop, so they switch the mode through a function, not the ref.
   const setRatesMode = (mode: RatesMode) => ratesMode.value = mode
@@ -105,12 +117,14 @@ export function useAnalyticsBase() {
     ends,
     flags,
     intervals,
+    pointBalances: allBalances,
     period,
     range,
     rangeId,
     ratesMode,
     setRatesMode,
     toBaseAt,
+    toBaseAtPoint,
     walletIds,
     xAxisLabels,
   }

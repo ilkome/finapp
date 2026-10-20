@@ -11,7 +11,7 @@ import type { AnalyticsBase, RatesMode } from '~/components/wallets/analytics/us
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { defaultConfig } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
-import { balanceSeries, OTHER_SERIES_ID } from '~/components/wallets/analytics/balanceHistory'
+import { balanceSeries, OTHER_SERIES_ID, periodChange, splitOpening } from '~/components/wallets/analytics/balanceHistory'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
@@ -30,14 +30,14 @@ const options = useStorage(WALLET_STORAGE_KEYS.analyticsBalance, {
   scope: 'net' as BalanceScope,
 }, localStorage, { mergeDefaults: true })
 
-const series = computed(() => balanceSeries({
-  balances: props.base.balances.value,
+const series = computed(() => splitOpening(balanceSeries({
+  balances: props.base.pointBalances.value,
   breakdown: options.value.breakdown,
   scope: options.value.scope,
-  toBaseAt: props.base.toBaseAt,
+  toBaseAt: props.base.toBaseAtPoint,
   walletIds: props.base.walletIds.value,
   wallets: walletsStore.items ?? {},
-}))
+})))
 
 function nameOf(id: string, name?: string) {
   if (name)
@@ -60,7 +60,7 @@ const legend = computed<AnalyticsLegendItem[]>(() => series.value.map(item => ({
   isHidden: hidden.value.has(item.id),
   name: nameOf(item.id, item.name),
   secondLabel: t('wallets.analytics.balance.change'),
-  secondValue: (item.data.at(-1) ?? 0) - (item.data[0] ?? 0),
+  secondValue: periodChange(item),
   value: item.data.at(-1) ?? 0,
 })))
 

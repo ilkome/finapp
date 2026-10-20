@@ -4,7 +4,7 @@ import type { PaymentRow } from '~/components/loans/engine/types'
 import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
-import { balanceSeries, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
+import { balanceSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { cardObligations, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
@@ -30,6 +30,14 @@ describe('walletBalancesAt', () => {
       { cash: 50, usd: 2 },
       { card: -50, cash: 50, usd: 2 },
     ])
+  })
+
+  it('counts a move inside the first interval in the period change', () => {
+    // Range starts in January: the opening point is the day before it, so the January income is part of the change.
+    const points = walletBalancesAt(trns, wallets, [day('2026-01-01') - 1, ...ends])
+    const [series] = splitOpening(balanceSeries({ balances: points, breakdown: 'total', scope: 'net', toBaseAt: () => toBase, walletIds: ['cash'], wallets }))
+    expect(series!.data).toHaveLength(ends.length)
+    expect(periodChange(series!)).toBe(50)
   })
 })
 
