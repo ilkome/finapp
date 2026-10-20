@@ -29,7 +29,7 @@ function spendingByCategory(dates: { end: number, start: number }, toBaseOf: (da
     const trn = items[id]
     if (trn?.type !== 'expense' || !trn.categoryId || !trn.fromWalletId || categoriesStore.excludedFromStatsIds.has(trn.categoryId))
       continue
-    const rootId = String(categoriesStore.items[trn.categoryId]?.parentId ?? trn.categoryId)
+    const rootId = categoriesStore.items[trn.categoryId]?.parentId || trn.categoryId
     result.set(rootId, (result.get(rootId) ?? 0) + toBaseOf(trn.date)(trn.fromAmount ?? 0, walletsStore.currencyOf(trn.fromWalletId)))
   }
   return result
