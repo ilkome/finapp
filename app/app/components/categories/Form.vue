@@ -427,14 +427,6 @@ async function onSave() {
           @click="id => onParentSelect(id, close)"
         />
       </div>
-
-      <div class="drawer-footer">
-        <UiButtonAccent
-          @click="close"
-        >
-          {{ t('base.apply') }}
-        </UiButtonAccent>
-      </div>
     </template>
   </Drawer>
 </template>
