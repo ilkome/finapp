@@ -76,6 +76,7 @@ const tileClass = 'flex min-h-10.5 min-w-min flex-1 items-center interactive @2x
         :averageTotal="props.single.averageByPeriod"
         class="flex min-h-10.5 w-full min-w-min items-center"
         :currencyCode="props.currencyCode"
+        :title="props.single.title"
         :type="props.single.type"
         variant="summary"
         @click="emit('clickAverage')"
@@ -84,6 +85,7 @@ const tileClass = 'flex min-h-10.5 min-w-min flex-1 items-center interactive @2x
           v-if="props.single.average !== undefined"
           :amount="props.single.average"
           :currencyCode="props.currencyCode"
+          :label="props.single.averageLabel"
           :type="props.single.type"
         />
 

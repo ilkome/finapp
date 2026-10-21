@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { CalendarDate } from '@internationalized/date'
 import type { TabsItem } from '@nuxt/ui'
-import type { Range } from '~~/utils/date/types'
+import type { Period, Range } from '~~/utils/date/types'
 
 import { calendarNavButton, getUCalendarCivilDate, getUCalendarToday, parseUCalendarDate } from '~~/utils/date/calendar'
 import { u } from '~~/utils/date/civil'
@@ -12,6 +12,8 @@ import type { StatDateRangeOption } from '~/components/stat/date/useRangeOptions
 
 const props = defineProps<{
   granularity: Grouped
+  /** The stat sheet: every period as a button, the calendar and a custom range on their own screens. */
+  isSheet?: boolean
   options: StatDateRangeOption[]
   params: StatDateRangeParams
   range: Range
@@ -21,6 +23,7 @@ const emit = defineEmits<{
   close: []
   selectGranularityBy: [granularityBy: Grouped['granularityBy']]
   selectRange: [option: StatDateRangeOption]
+  selectRangeBy: [rangeBy: Period]
   setGranularityDuration: [duration: number]
   setRangeByCalendar: [range: Range]
   setRangeDuration: [duration: number]
@@ -31,6 +34,8 @@ const isGranularityOpen = defineModel<boolean>('isGranularityOpen', { default: t
 const { t } = useI18n()
 
 const viewTab = ref<'presets' | 'calendar'>('presets')
+const sheetView = ref<'calendar' | 'custom' | null>(null)
+const [DefineCalendar, ReuseCalendar] = createReusableTemplate()
 const viewTabItems = computed<TabsItem[]>(() => [
   { label: t('dates.calendar.presets'), value: 'presets' },
   { label: t('dates.calendar.calendar'), value: 'calendar' },
@@ -58,6 +63,11 @@ function onSelectRange(value: { end?: CalendarDate, start?: CalendarDate } | nul
   emit('close')
 }
 
+const rangeByItems = computed<TabsItem[]>(() => (['day', 'week', 'month', 'year'] as const).map(by => ({
+  label: t(`dates.${by}.simple`),
+  value: by,
+})))
+
 function onSelectOption(option: StatDateRangeOption) {
   emit('selectRange', option)
   emit('close')
@@ -65,8 +75,24 @@ function onSelectOption(option: StatDateRangeOption) {
 </script>
 
 <template>
+  <DefineCalendar>
+    <!-- @vue-ignore -->
+    <UCalendar
+      v-model="dateRange"
+      :prevMonth="calendarNavButton"
+      :nextMonth="calendarNavButton"
+      :prevYear="calendarNavButton"
+      :nextYear="calendarNavButton"
+      :maxValue="getUCalendarToday()"
+      :numberOfMonths="2"
+      range
+      @update:modelValue="onSelectRange"
+    />
+  </DefineCalendar>
+
   <div>
     <UiTabs
+      v-if="!isSheet"
       v-model="viewTab"
       isEqual
       class="mb-2"
@@ -74,7 +100,43 @@ function onSelectOption(option: StatDateRangeOption) {
     />
 
     <div
-      v-if="viewTab === 'presets'"
+      v-if="isSheet"
+      class="grid grid-cols-2 gap-2 pt-2"
+    >
+      <UButton
+        v-for="option in options"
+        :key="option.id"
+        class="justify-center rounded-md"
+        color="neutral"
+        variant="soft"
+        @click="onSelectOption(option)"
+      >
+        {{ option.label }}
+      </UButton>
+      <UButton
+        class="justify-center rounded-md"
+        color="neutral"
+        icon="i-lucide-calendar-range"
+        variant="soft"
+        @click="sheetView = 'calendar'"
+      >
+        {{ t('dates.calendar.calendar') }}
+      </UButton>
+      <UButton
+        class="justify-center rounded-md"
+        color="neutral"
+        icon="i-lucide-sliders-horizontal"
+        variant="soft"
+        @click="sheetView = 'custom'"
+      >
+        {{ t('dates.calendar.custom') }}
+      </UButton>
+    </div>
+
+    <ReuseCalendar v-else-if="viewTab === 'calendar'" />
+
+    <div
+      v-else-if="viewTab === 'presets'"
       class="grid gap-4 pt-2"
     >
       <!-- Presets -->
@@ -148,18 +210,42 @@ function onSelectOption(option: StatDateRangeOption) {
       </UCollapsible>
     </div>
 
-    <!-- @vue-ignore -->
-    <UCalendar
-      v-if="viewTab === 'calendar'"
-      v-model="dateRange"
-      :prevMonth="calendarNavButton"
-      :nextMonth="calendarNavButton"
-      :prevYear="calendarNavButton"
-      :nextYear="calendarNavButton"
-      :maxValue="getUCalendarToday()"
-      :numberOfMonths="2"
-      range
-      @update:modelValue="onSelectRange"
-    />
+    <UiSheet v-if="sheetView === 'calendar'" :title="t('dates.calendar.calendar')" @closed="sheetView = null">
+      <div class="pb-3">
+        <ReuseCalendar />
+      </div>
+    </UiSheet>
+
+    <UiSheet v-if="sheetView === 'custom'" :title="t('dates.calendar.custom')" @closed="sheetView = null">
+      <div
+        class="grid gap-3 pb-3"
+      >
+        <UiTabs
+          size="xs"
+          :items="rangeByItems"
+          :modelValue="props.params.rangeBy"
+          @update:modelValue="emit('selectRangeBy', $event as Period)"
+        />
+        <UiNumberStepper
+          :modelValue="props.params.rangeDuration"
+          :min="1"
+          @update:modelValue="emit('setRangeDuration', $event)"
+        />
+        <UiEntityName>
+          {{ t('dates.calendar.granularity') }}
+        </UiEntityName>
+        <UiTabs
+          size="xs"
+          :items="granularityItems"
+          :modelValue="props.granularity.granularityBy"
+          @update:modelValue="emit('selectGranularityBy', $event as Grouped['granularityBy'])"
+        />
+        <UiNumberStepper
+          :modelValue="props.granularity.granularityDuration"
+          :min="1"
+          @update:modelValue="emit('setGranularityDuration', $event)"
+        />
+      </div>
+    </UiSheet>
   </div>
 </template>

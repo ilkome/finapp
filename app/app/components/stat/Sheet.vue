@@ -37,7 +37,8 @@ const trnsStore = useTrnsStore()
 
 provide(statCategorySheetKey, null)
 provide(statInSheetKey, true)
-provide(statStickyNavKey, false)
+// The summary pins under the floating title, as on the page under its header.
+provide(statStickyNavKey, true)
 provide(statStickyTopKey, ref(0))
 // The sheet scrolls by itself, so the window-scroll virtual feed cannot run in it.
 provide(statVirtualFeedKey, false)
@@ -87,10 +88,6 @@ const { contentWidth, statConfig, statDate } = useStatPageProviders({
   filter,
 })
 
-const quickRangeIds = computed(() => {
-  const selected = new Set(statConfig.config.value.date.quickRangeIds)
-  return statConfig.config.value.date.quickRangeOrderIds.filter(id => selected.has(id))
-})
 const isRangeReset = computed(() => statConfig.config.value.date.isResetInRange
   && isShowNavHome(statDate.params.value, statDate.range.value, new Date()))
 
@@ -115,10 +112,16 @@ const { hiddenPanels } = useStatPageViews({
     :title
     :titleIcon
     :collapsedSnap="500"
+    isTitleOverlay
     modalClass="sm:max-w-3xl"
     @closed="emit('closed')"
   >
-    <div class="content-start pb-32 md:pb-4" data-stat-sheet>
+    <template #titleActions>
+      <StatChartSettingsPopover />
+    </template>
+
+    <!-- The compact floating title has almost no bottom padding; this evens the gap under it with the one above. -->
+    <div class="content-start pt-4 pb-32 md:pb-4" data-stat-sheet>
       <StatLayout
         :categoryId
         :hiddenPanels
@@ -134,22 +137,11 @@ const { hiddenPanels } = useStatPageViews({
       />
 
       <UiSheetFooter>
-        <!-- The same capsule as the currency filter in the wallets drawer. -->
         <!-- Full width despite the footer inset: 12.5% of the inset box is the footer's 10%. -->
-        <div class="swiper-no-swiping -mx-[12.5%] touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain px-3 [&::-webkit-scrollbar]:hidden">
-          <div class="h-9 w-max min-w-max overflow-hidden rounded-full border border-default/80 bg-default/20 shadow-lg backdrop-blur-xl dark:bg-neutral-800/50">
-            <StatDateRanges
-              class="h-full"
-              :optionIds="quickRangeIds"
-              :statDate
-              tabsClass="h-full w-max min-w-max overflow-visible! px-3 *:h-full"
-              variant="text"
-              view="all"
-            />
-          </div>
+        <div class="mx-[-12.5%] grid grid-cols-2 gap-2 px-3">
+          <StatFilterButton isBlock />
+          <StatDateRangeButton isBlock :isReset="isRangeReset" />
         </div>
-        <StatDateRangeButton isBlock :isReset="isRangeReset" />
-        <StatFilterButton isBlock />
       </UiSheetFooter>
     </div>
   </UiSheet>

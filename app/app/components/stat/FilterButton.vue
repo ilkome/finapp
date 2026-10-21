@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useFilterSummary } from '~/components/filter/useFilterSummary'
+import { sheetGlassClass } from '~/components/ui/sheetGlass'
 
 const props = defineProps<{
   /** A full-width button, styled like the other sheet footer buttons. */
@@ -22,6 +23,7 @@ const isFilterOpen = ref(false)
       <UButton
         v-if="props.isBlock"
         block
+        class="h-auto flex-col gap-1 rounded-md py-2 text-sm font-normal" :class="[sheetGlassClass]"
         color="neutral"
         size="xl"
         variant="soft"

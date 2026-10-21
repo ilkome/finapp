@@ -2,6 +2,7 @@
 import type { WalletId } from '~/components/wallets/types'
 
 import { walletBalanceItems } from '~/components/loans/walletBalanceItems'
+import { sheetGlassClass } from '~/components/ui/sheetGlass'
 import { isCreditProduct } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
@@ -65,6 +66,7 @@ function openWallet() {
           color="neutral"
           size="xl"
           variant="soft"
+          :class="sheetGlassClass"
           icon="i-lucide-chart-no-axes-combined"
           @click="isShowStat = true"
         >

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { statDateRangeLabel } from '~/components/stat/date/rangeLabelText'
 import { statDateKey } from '~/components/stat/injectionKeys'
+import { sheetGlassClass } from '~/components/ui/sheetGlass'
 
 const props = defineProps<{
   /** A full-width button, styled like the other sheet footer buttons. */
@@ -48,7 +49,7 @@ const label = computed(() => statDateRangeLabel({
         size="xl"
         variant="soft"
         :icon="props.isReset ? 'i-lucide-rotate-ccw' : 'i-lucide-calendar-range'"
-        class="capitalize"
+        class="h-auto flex-col gap-1 rounded-md py-2 text-sm font-normal normal-case" :class="[sheetGlassClass]"
         data-stat-date-range
       >
         {{ label }}
@@ -64,6 +65,7 @@ const label = computed(() => statDateRangeLabel({
     <template #content="{ close }">
       <StatDateRangePicker
         class="min-w-0 pb-2 md:min-w-90.5 md:pb-0"
+        :isSheet="props.isBlock"
         @close="close"
       />
     </template>

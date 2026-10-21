@@ -14,6 +14,8 @@ const props = defineProps<{
   forceMount?: boolean
   // Live-preview mode: no overlay, the page stays scrollable and clickable; closes by swipe, Escape or Back.
   isPassthrough?: boolean
+  // The title row floats over the body, so scrolled content passes under its blur; the body pads itself by `--drawer-title-h`.
+  isTitleOverlay?: boolean
   title?: string
   titleIcon?: { color?: string, name: string }
 }>()
@@ -65,6 +67,10 @@ onBeforeUnmount(() => {
   if (isPassthroughOpen.value)
     document.documentElement.removeAttribute('data-drawer-passthrough')
 })
+
+const titleBox = useTemplateRef<HTMLElement>('titleBox')
+const { height: measuredTitleHeight } = useElementSize(titleBox, undefined, { box: 'border-box' })
+const titleHeight = computed(() => props.isTitleOverlay ? measuredTitleHeight.value : 0)
 
 const snapPoints = computed(() => props.collapsedSnap === undefined ? undefined : [props.collapsedSnap, TOP_SNAP])
 
@@ -143,12 +149,19 @@ function expandOnWheel(event: WheelEvent) {
       >
         <DrawerHandle class="absolute top-1.5 left-1/2 z-30 h-1 w-8 -translate-x-1/2 rounded-sm bg-inverted" />
 
-        <div class="drawer-content">
-          <div v-if="props.title || $slots.header">
-            <DrawerTitle v-if="props.title" asChild>
-              <UiTitleModal :icon="props.titleIcon">{{ props.title }}</UiTitleModal>
-            </DrawerTitle>
-            <slot name="header" />
+        <div class="drawer-content" :style="props.isTitleOverlay ? { '--drawer-title-h': `${titleHeight}px` } : undefined">
+          <div v-if="props.title || $slots.header" :class="props.isTitleOverlay && 'relative z-20 h-0'">
+            <div ref="titleBox" :class="props.isTitleOverlay && 'absolute inset-x-0 top-0'">
+              <DrawerTitle v-if="props.title" asChild>
+                <UiTitleModal :icon="props.titleIcon" :isCompact="props.isTitleOverlay">
+                  {{ props.title }}
+                  <template v-if="$slots.titleActions" #actions>
+                    <slot name="titleActions" />
+                  </template>
+                </UiTitleModal>
+              </DrawerTitle>
+              <slot name="header" />
+            </div>
           </div>
           <!-- reka requires a title for screen readers even when the drawer shows none. -->
           <DrawerTitle v-if="!props.title" class="sr-only" />

@@ -8,8 +8,11 @@ import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown
 
 import { formatChartAmount } from '~/components/stat/chart/format'
 
-const { pieData, typeLabel } = defineProps<{
+const { isStatic = false, pieData, sizeClass = 'size-12', typeLabel } = defineProps<{
+  /** No entrance and no update animation. */
+  isStatic?: boolean
   pieData: CategoryPieDatum[]
+  sizeClass?: string
   typeLabel: string
 }>()
 
@@ -23,7 +26,7 @@ const isInitialRender = ref(true)
 const total = computed(() => pieData.reduce((acc, item) => acc + item.value, 0))
 const hasData = computed(() => total.value > 0)
 const option = computed(() => ({
-  animation: !isInitialRender.value,
+  animation: !isStatic && !isInitialRender.value,
   animationDurationUpdate: 300,
   series: [{
     data: pieData.map(item => ({ itemStyle: { color: item.color }, value: item.value })),
@@ -43,7 +46,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div v-if="hasData" class="size-12 shrink-0 cursor-default **:cursor-default!" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total)}`">
+  <div v-if="hasData" :class="sizeClass" class="shrink-0 cursor-default **:cursor-default!" role="img" :aria-label="`${typeLabel}: ${formatChartAmount(total)}`">
     <VChart :option :updateOptions="{ notMerge: true }" autoresize />
   </div>
 </template>

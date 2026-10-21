@@ -36,7 +36,8 @@ const { t } = useI18n()
     @keydown.space.prevent="(e: Event) => emit('click', e)"
   >
     <div :class="props.variant === 'summary' ? 'flex w-full items-center gap-5' : 'flex items-end gap-5'">
-      <div class="grid min-w-0 gap-1">
+      <!-- A custom caption (a sheet's span) is read whole; the average beside it gives way instead. -->
+      <div class="grid min-w-0 gap-1" :class="props.title && 'w-max shrink-0'">
         <UiText variant="caption" class="truncate">
           {{ props.title ?? t(`money.${props.type}`) }}
         </UiText>

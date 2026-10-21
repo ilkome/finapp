@@ -253,6 +253,7 @@ export default {
   dates: {
     calendar: {
       calendar: 'Календарь',
+      custom: 'Свои',
       granularity: 'Группировка',
       presets: 'Пресеты',
     },
@@ -326,7 +327,16 @@ export default {
     cost: 'Стоимость кредита',
     delete: 'Удалить кредит',
     deltaVsPlan: 'Отклонение от плана',
-    dueThisMonth: 'К оплате в ближайший месяц',
+    dueAfterNextMonth: 'К оплате через месяц',
+    dueNextMonth: 'К оплате в следующем месяце',
+    dueSheet: {
+      grace: 'Чтобы без процентов',
+      loans: 'Кредиты',
+      minimumInterest: 'Проценты при минимуме',
+      minPayments: 'Минимальные платежи',
+      total: 'Минимум',
+    },
+    dueThisMonth: 'К оплате в этом месяце',
     early: 'досрочно',
     edit: 'Изменить кредит',
     editRow: 'Правка платежа',
@@ -527,7 +537,7 @@ export default {
       isExcludedFromTotal: 'Не учитываемые в общем балансе',
       isWithdrawable: 'Доступные для снятия',
       loan: 'Кредиты',
-      total: 'Всего',
+      total: 'Минимум',
     },
     typesHint: {
       bank_account: 'Сумма карт и банковских счетов',
@@ -609,6 +619,13 @@ export default {
   stat: {
     average: {
       forLast: 'за прошлые периоды',
+      per: {
+        day: 'В среднем в день',
+        month: 'В среднем в месяц',
+        week: 'В среднем в неделю',
+        year: 'В среднем в год',
+      },
+      perMany: 'В среднем за',
     },
     catButtons: {
       isLines: 'Линии сумм',
@@ -750,6 +767,9 @@ export default {
           period: 'За период',
         },
       },
+    },
+    sum: {
+      for: 'За',
     },
     title: 'Статистика',
     view: {
@@ -1172,6 +1192,15 @@ export default {
           label: 'Платеж по кредитной карте',
           minimum: 'Минимальный',
         },
+        cards: {
+          horizonTitle: 'Кредитные карты',
+          interest: 'проценты',
+          interestFree: 'Без процентов',
+          minimum: 'По минимуму',
+          overpay: 'Проценты по минимуму',
+          rateUnknown: 'ставка неизвестна',
+          title: 'Карты:',
+        },
         coincidence: {
           afterRunOut: 'Сценарии совпадают: следующий доход придёт уже после этой даты.',
           arrived: 'Сценарии совпадают: доход этого месяца уже пришёл.',
@@ -1316,7 +1345,7 @@ export default {
           split: 'Раздельно',
         },
         title: 'Доли',
-        total: 'Всего',
+        total: 'Минимум',
       },
       show: 'Показать',
       sort: {
@@ -1324,6 +1353,7 @@ export default {
         label: 'Сортировка',
         name: 'По названию',
       },
+      summary: 'Сводка',
       table: {
         caption: 'Доля считается среди активов или среди долгов, по знаку остатка',
         change: 'Изм.',
@@ -1357,6 +1387,9 @@ export default {
     },
     ariaSwitch: 'Поменять кошельки',
     createNewTitle: 'Добавление кошелька',
+    currency: {
+      title: 'Валюта',
+    },
     errors: {
       deleteFailed: 'Не удалось удалить кошелек',
       orderFailed: 'Не удалось сохранить порядок кошельков',

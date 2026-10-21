@@ -168,8 +168,8 @@ export const ConfigSchema = z.object({
   }),
   date: z.object({
     isPinned: z.boolean(),
-    isShow: z.boolean().default(true),
     isResetInRange: z.boolean().default(false),
+    isShow: z.boolean().default(true),
     isShowNavigation: z.boolean(),
     isShowQuick: z.boolean(),
     quickRangeIds: z.array(z.enum(quickRangeOptionIds)).transform((ids) => {

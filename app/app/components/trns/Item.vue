@@ -5,6 +5,8 @@ const props = defineProps<{
   compact?: boolean
   date?: string
   isActive?: boolean
+  /** The compact row names its category (small icon and name), which it hides by default. */
+  isShowCategory?: boolean
   trnItem: TrnItemFull
 }>()
 
@@ -66,6 +68,16 @@ const isOutflow = computed(() => !!props.trnItem.fromWallet)
             </UiEntityName>
           </div>
         </template>
+
+        <div
+          v-if="compact && isShowCategory && trnItem.type !== 'transfer' && trnItem.category"
+          class="flex shrink-0 items-center gap-2 text-muted"
+        >
+          <Icon :name="trnItem.category.icon" size="16" />
+          <UiEntityName variant="compact">
+            {{ trnItem.category.name }}
+          </UiEntityName>
+        </div>
 
         <div
           v-if="trnItem.type !== 'transfer'"

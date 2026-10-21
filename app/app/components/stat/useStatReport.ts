@@ -107,6 +107,7 @@ export function useStatReport(params: UseStatReportParams) {
     filteredChildCategoryId,
     filteredType,
     focusedCategoryPieData: chart.focusedCategoryPieData,
+    fullRangeTotal: data.fullRangeTotal,
     isPeriodOneDay: data.isPeriodOneDay,
     onClickSumItem,
     onSetCategoryFilter,

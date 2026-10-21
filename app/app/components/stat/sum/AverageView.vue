@@ -6,6 +6,7 @@ import { getTrnTypeByAmount } from '~/components/trns/types'
 const props = defineProps<{
   amount: number
   currencyCode: string
+  label?: string
   type: SeriesSlugSelected
 }>()
 
@@ -27,8 +28,13 @@ const colorize = computed<'expense' | 'income'>(() => {
 <template>
   <div class="grid w-full grow gap-1">
     <UiText class="leading-3! text-nowrap" variant="caption">
-      {{ t('money.average') }}
-      <br>{{ t('stat.average.forLast') }}
+      <template v-if="props.label">
+        {{ props.label }}
+      </template>
+      <template v-else>
+        {{ t('money.average') }}
+        <br>{{ t('stat.average.forLast') }}
+      </template>
     </UiText>
 
     <Amount

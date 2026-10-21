@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { StatReportBlockId } from '~/components/stat/config/schema'
 import type { StatReportContext } from '~/components/stat/report/types'
+import type { SeriesSlugSelected } from '~/components/stat/types'
 
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
@@ -64,6 +65,13 @@ function preserveScroll(scrollTop: number | null) {
     preservedCategoryScrollTop.value = null
     preserveScrollTimer = null
   }, 1000)
+}
+
+function onOpenCategory(categoryId: string, filteredType?: SeriesSlugSelected) {
+  if (openCategorySheet)
+    openCategorySheet(categoryId)
+  else
+    props.ctx.onOpenCategory(categoryId, filteredType)
 }
 
 function onSetCategoryFilter(categoryId: string) {
@@ -137,9 +145,9 @@ onBeforeUnmount(() => {
           :storageKey="ctx.statItemStorageKey.value"
           :type="ctx.params.type.value ?? 'net'"
           @clickCategory="ctx.onClickCategory"
-          @openCategory="ctx.onOpenCategory"
+          @openCategory="onOpenCategory"
           @setChildCategoryFilter="onSetChildCategoryFilter"
-          @setCategoryFilter="ctx.onSetCategoryFilter"
+          @setCategoryFilter="onSetCategoryFilter"
         />
       </div>
 

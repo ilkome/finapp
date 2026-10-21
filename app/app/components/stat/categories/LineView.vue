@@ -178,7 +178,7 @@ function onAmountClick(e: MouseEvent) {
           'pr-0': isBarPlus && isShowBackground,
           'pr-2': !isShowTrend || (isBarPlus && !isShowBackground),
         }"
-        class="-my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm pl-2"
+        class="isolate -my-1.5 flex min-w-12 shrink-0 items-center justify-end self-stretch rounded-sm pl-2"
         @click="onAmountClick"
         @pointerdown.stop
       >
