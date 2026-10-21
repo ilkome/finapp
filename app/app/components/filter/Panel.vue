@@ -186,7 +186,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                   <div v-show="!searchQuery" class="grid min-h-0 flex-1 pt-0.5 [&_.scroller-block]:pt-0!">
                     <WalletsSelector
                       v-if="slide === 'wallet'"
-                      ref="walletsSelector"
+                      :ref="(el: any) => walletsSelector = el"
                       :activeItemId="isSelectMode ? props.activeWalletId : undefined"
                       :autofocus="false"
                       groupingMenu
@@ -199,7 +199,7 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                     />
                     <CategoriesSelectorModal
                       v-else
-                      ref="categoriesSelector"
+                      :ref="(el: any) => categoriesSelector = el"
                       :activeItemId="isSelectMode ? props.activeCategoryId : undefined"
                       :autofocus="false"
                       hideHeader
