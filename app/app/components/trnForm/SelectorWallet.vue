@@ -16,8 +16,6 @@ const emit = defineEmits<{
 const walletsStore = useWalletsStore()
 
 const isShow = ref(false)
-
-const isLaptop = useIsLaptop()
 </script>
 
 <template>
@@ -44,7 +42,6 @@ const isLaptop = useIsLaptop()
         :hide="close"
         :activeItemId="props.walletId"
         :disabledIds="props.disabledWalletIds"
-        :filterAtTop="isLaptop"
         withHeader
         class="min-w-80"
         @selected="(id: WalletId) => emit('selected', id)"

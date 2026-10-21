@@ -13,9 +13,7 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 const props = defineProps<{
   activeItemId?: WalletId
   autofocus?: boolean
-  currencyAboveAction?: boolean
   disabledIds?: WalletId[]
-  filterAtTop?: boolean
   // Group rows by type / currency; the host renders `WalletsGroupMenu` and drives `setGroupedBy`.
   groupingMenu?: boolean
   hide?: () => void
@@ -149,6 +147,7 @@ onMounted(focusSearch)
 watch(() => props.autofocus, focusSearch)
 
 defineExpose({
+  currencyFiltered,
   groupedBy,
   groupsStatus,
   setGroupedBy: (value: WalletsGroupedBy) => { groupedBy.value = value },
@@ -173,6 +172,12 @@ defineExpose({
         class="m-0 min-h-10.5 w-0 min-w-0 flex-1 rounded-md border border-transparent bg-elevated/30 px-4 py-2 text-base font-normal outline-none placeholder:text-muted hover:bg-elevated/50 focus:border-primary focus:bg-elevated/50"
         :placeholder="t('wallets.search.placeholder')"
       >
+      <WalletsCurrencyButton
+        v-if="walletsStore.currenciesUsed.length > 1"
+        :currenciesUsed="walletsStore.currenciesUsed"
+        :currencyFiltered
+        @select="code => currencyFiltered = code"
+      />
       <UiActionButton
         :ariaLabel="t('wallets.new')"
         @click="onClickNew"
@@ -183,13 +188,7 @@ defineExpose({
 
     <div class="relative grid min-h-0 flex-1 overflow-hidden">
       <div
-        class="h-full scroller-block space-y-1 overflow-y-auto px-3 py-px"
-        :class="{
-          'pt-2': !(props.filterAtTop && walletsStore.currenciesUsed.length > 1),
-          'pb-28!': props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
-          'pb-16': !props.currencyAboveAction && !props.filterAtTop && walletsStore.currenciesUsed.length > 1,
-          'pt-12': props.filterAtTop && walletsStore.currenciesUsed.length > 1,
-        }"
+        class="h-full scroller-block space-y-1 overflow-y-auto px-3 py-px pt-2"
       >
         <div
           v-if="hasNoMatches"
@@ -263,34 +262,6 @@ defineExpose({
           </template>
         </UCollapsible>
       </div>
-
-      <template v-if="walletsStore.currenciesUsed.length > 1">
-        <div
-          v-if="!props.currencyAboveAction"
-          class="pointer-events-none absolute left-0 z-10 h-12 w-full"
-          :class="props.filterAtTop
-            ? 'top-0'
-            : props.currencyAboveAction ? 'bottom-14' : 'bottom-0'"
-          :style="props.filterAtTop
-            ? 'background: linear-gradient(to top, transparent, var(--ui-bg))'
-            : 'background: linear-gradient(to bottom, transparent, var(--ui-bg))'"
-        />
-        <div
-          class="pointer-events-none absolute left-0 z-20 w-full"
-          :class="props.filterAtTop
-            ? 'top-0'
-            : props.currencyAboveAction ? 'bottom-14 transition-transform duration-450 ease-[cubic-bezier(0.32,0.72,0,1)]' : 'bottom-2'"
-          :style="props.currencyAboveAction && !props.filterAtTop ? 'transform: translateY(calc(-1 * var(--drawer-snap-lift, 0px)))' : undefined"
-        >
-          <div class="swiper-no-swiping pointer-events-auto w-full touch-pan-x scrollbar-none overflow-x-auto overscroll-x-contain px-2 [&::-webkit-scrollbar]:hidden">
-            <WalletsCurrencies
-              :currencyFiltered
-              menuStyle
-              @selectFilterCurrency="code => currencyFiltered = code"
-            />
-          </div>
-        </div>
-      </template>
     </div>
 
     <WalletsEditModal
