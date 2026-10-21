@@ -29,10 +29,8 @@ const path = computed(() => {
 </script>
 
 <template>
-  <UiCard
-    as="button"
-    chevron="right"
-    class="gap-2"
+  <WalletsPageLinkCard
+    class="h-full grid-rows-[auto_1fr_auto]"
     :title="t('wallets.analytics.title')"
     data-analytics-preview
     @click="emit('click')"
@@ -41,7 +39,7 @@ const path = computed(() => {
       v-if="path"
       viewBox="0 0 100 30"
       preserveAspectRatio="none"
-      class="h-8 w-full overflow-visible"
+      class="h-14 w-full self-center overflow-visible"
       aria-hidden="true"
     >
       <path
@@ -77,5 +75,5 @@ const path = computed(() => {
         </template>
       </UiText>
     </div>
-  </UiCard>
+  </WalletsPageLinkCard>
 </template>
