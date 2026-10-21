@@ -6,7 +6,7 @@ import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 
 import theme from '#build/ui/context-menu'
 import { useAppConfig } from '#imports'
-import { closeOtherContextMenus, registerContextMenu } from '~/composables/useContextMenuRegistry'
+import { closeOtherContextMenus, registerContextMenu, setContextMenuOpen } from '~/composables/useContextMenuRegistry'
 
 // Workaround: @nuxt/ui 4.6+ declares pressOpenDelay but never forwards it to reka-ui ContextMenuRoot.
 const props = withDefaults(defineProps<{
@@ -44,11 +44,13 @@ const RegistryBridge = defineComponent({
       const unregister = registerContextMenu(close)
       onBeforeUnmount(() => {
         unregister()
+        setContextMenuOpen(close, false)
         window.removeEventListener('scroll', close, { capture: true })
       })
     })
 
     watch(ctx.open, (v) => {
+      setContextMenuOpen(close, v)
       if (v) {
         closeOtherContextMenus(close)
         window.addEventListener('scroll', close, { capture: true, once: true, passive: true })
