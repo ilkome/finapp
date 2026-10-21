@@ -1,8 +1,30 @@
 {
   "currencyCode": "USD",
   "rows": [
-    { "endWithIncome": 11400, "endWithoutIncome": 10600, "income": 800, "key": 1792195200000, "label": "October 2026", "obligations": 0, "regular": 1400 },
-    { "endWithIncome": 11150, "endWithoutIncome": -1250, "income": 3000, "key": 1794873600000, "label": "November 2026", "obligations": 450, "regular": 1800 }
+    {
+      "endWithIncome": 11400,
+      "endWithoutIncome": 10600,
+      "income": 800,
+      "key": 1792195200000,
+      "label": "October 2026",
+      "obligations": 0,
+      "regular": 1400
+    },
+    {
+      "endWithIncome": 11150,
+      "endWithoutIncome": -1250,
+      "income": 3000,
+      "key": 1794873600000,
+      "label": "November 2026",
+      "obligations": 450,
+      "regular": 1800,
+      "cards": {
+        "interest": 120,
+        "interestFree": 900,
+        "isRateUnknown": false,
+        "minimum": 420
+      }
+    }
   ],
   "scenario": "both"
 }

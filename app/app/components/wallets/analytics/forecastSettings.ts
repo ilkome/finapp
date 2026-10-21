@@ -16,8 +16,8 @@ export type RegularOverride = {
 
 // `.catch` per field: one bad value from an older or newer client resets only itself.
 const forecastSettingsSchema = z.object({
-  /** Card obligation: the minimum payment every month, or the whole statement debt once. */
-  cardPaymentMode: z.enum(cardPaymentModes).default('minimum').catch('minimum'),
+  /** Card obligation: the whole statement debt once (no interest), or the minimum payment every month with its interest. */
+  cardPaymentMode: z.enum(cardPaymentModes).default('full_debt').catch('full_debt'),
   historyMonths: z.number().int().min(1).max(24).default(6).catch(6),
   horizonMonths: z.number().int().min(1).max(60).default(12).catch(12),
   /** Detect on parent categories, children summed in. */

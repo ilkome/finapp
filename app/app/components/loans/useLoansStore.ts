@@ -13,8 +13,8 @@ import type { WalletId } from '~/components/wallets/types'
 import { useBankReportsStore } from '~/components/bankReports/useBankReportsStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { useDemo } from '~/components/demo/useDemo'
-import { createDeriveLoanMemo, deriveDue, overridesByLoan, projectionParams } from '~/components/loans/engine/derive'
-import { collectCreditTrns, costOf } from '~/components/loans/engine/ledger'
+import { createDeriveLoanMemo, deriveDue, deriveDueByMonth, overridesByLoan, projectionParams } from '~/components/loans/engine/derive'
+import { CARD_RATE_MONTHS, collectCreditTrns, costOf, impliedAnnualRate } from '~/components/loans/engine/ledger'
 import { whatIf } from '~/components/loans/engine/summary'
 import { deriveUpcoming, urgentWalletIds } from '~/components/loans/engine/upcoming'
 import { graceOf, minPaymentOf } from '~/components/loans/minPayment'
@@ -22,6 +22,7 @@ import { loanItemSchema, loanScheduleOverrideSchema } from '~/components/loans/t
 import { STORAGE_KEYS } from '~/components/offline/storageKeys'
 import { reconcileRows } from '~/components/trns/reconcile'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
+import { walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { isCreditProduct } from '~/components/wallets/types'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { resolveWriteUid } from '~/composables/useAuthSession'
@@ -164,6 +165,27 @@ export const useLoansStore = defineStore('loans', () => {
     [...creditWalletIds.value].map(walletId => [walletId, costOf(trnsByCreditWallet.value.get(walletId) ?? [])]),
   ))
 
+  /** Annual rate each credit card's charged interest implies; a card that never charged interest is left out. */
+  const cardRateByWalletId = computed(() => {
+    const months = new Map<WalletId, { interest: number, month: number }[]>()
+    for (const walletId of creditWalletIds.value) {
+      if (walletsStore.items?.[walletId]?.type !== 'credit_card')
+        continue
+      const charged = (costByWalletId.value.get(walletId)?.byMonth ?? []).filter(item => item.interest > 0).slice(-CARD_RATE_MONTHS)
+      if (charged.length)
+        months.set(walletId, charged)
+    }
+    if (!months.size)
+      return new Map<WalletId, number>()
+    // The debt a month started with: the balance the day before it.
+    const starts = [...new Set([...months.values()].flat().map(item => item.month))].sort((a, b) => a - b)
+    const balances = walletBalancesAt(trnsStore.items ?? {}, walletsStore.items ?? {}, starts.map(month => month - 86_400_000))
+    return new Map([...months].flatMap(([walletId, charged]) => {
+      const rate = impliedAnnualRate(charged.map(item => ({ debt: -(balances[starts.indexOf(item.month)]?.[walletId] ?? 0), interest: item.interest })))
+      return rate === null ? [] : [[walletId, rate] as const]
+    }))
+  })
+
   /** One minimum-payment line per credit wallet; the card line, sections and totals all read it. */
   const minPaymentByWalletId = computed(() => new Map([...creditWalletIds.value].flatMap((walletId) => {
     const wallet = walletsStore.items?.[walletId]
@@ -190,8 +212,8 @@ export const useLoansStore = defineStore('loans', () => {
 
   const urgentIds = computed(() => urgentWalletIds(upcoming.value, today.value))
 
-  const dueThisMonth = computed<{ amount: number, nearestDate: number } | null>(() => {
-    const revolving: { currency: CurrencyCode, minPaymentAmount: number, minPaymentDate: number, walletId: WalletId }[] = []
+  const dueInputs = computed(() => {
+    const revolving: { currency: CurrencyCode, isGrace?: boolean, minPaymentAmount: number, minPaymentDate: number, walletId: WalletId }[] = []
 
     for (const walletId of creditWalletIds.value) {
       if (loanIdByWalletId.value.has(walletId))
@@ -203,7 +225,7 @@ export const useLoansStore = defineStore('loans', () => {
       // An overdue interest-free repayment counts like an overdue loan row, in place of a smaller minimum.
       const grace = graceByWalletId.value.get(walletId)
       if (grace?.status === 'overdue' && grace.date != null && grace.amount > (report?.minPaymentAmount ?? 0)) {
-        revolving.push({ currency: wallet.currencyCode, minPaymentAmount: grace.amount, minPaymentDate: grace.date, walletId })
+        revolving.push({ currency: wallet.currencyCode, isGrace: true, minPaymentAmount: grace.amount, minPaymentDate: grace.date, walletId })
         continue
       }
       if (!report?.minPaymentAmount || report.minPaymentDueDate === undefined)
@@ -214,17 +236,24 @@ export const useLoansStore = defineStore('loans', () => {
       revolving.push({ currency: wallet.currencyCode, minPaymentAmount: report.minPaymentAmount, minPaymentDate: report.minPaymentDueDate, walletId })
     }
 
-    return deriveDue(
-      [...byWalletId.value].map(([walletId, { summary }]) => ({
+    return {
+      entries: [...byWalletId.value].map(([walletId, { summary }]) => ({
         currency: walletsStore.currencyOf(walletId),
         summary,
         walletId,
       })),
       revolving,
-      today.value,
-      currenciesStore.toBase,
-    )
+    }
   })
+
+  const dueThisMonth = computed(() => deriveDue(dueInputs.value.entries, dueInputs.value.revolving, today.value, currenciesStore.toBase))
+
+  const dueGraces = computed(() => [...graceByWalletId.value].flatMap(([walletId, grace]) =>
+    grace.date !== null && grace.amount > 0 && (grace.status === 'due' || grace.status === 'overdue')
+      ? [{ amount: grace.amount, currency: walletsStore.currencyOf(walletId), date: grace.date, walletId }]
+      : []))
+
+  const dueByMonth = computed(() => deriveDueByMonth(dueInputs.value.entries, dueInputs.value.revolving, today.value, currenciesStore.toBase, dueGraces.value))
 
   function saveLoan(id: LoanId, values: LoanItem) {
     if (!loanItemSchema.safeParse(values).success) {
@@ -317,9 +346,11 @@ export const useLoansStore = defineStore('loans', () => {
 
   return {
     byWalletId,
+    cardRateByWalletId,
     costByWalletId,
     deleteLoan,
     deleteScheduleOverride,
+    dueByMonth,
     dueThisMonth,
     getWhatIf,
     graceByWalletId,

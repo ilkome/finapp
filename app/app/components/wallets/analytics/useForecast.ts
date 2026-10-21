@@ -14,7 +14,7 @@ import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
 import { debtPaymentsPoints } from '~/components/wallets/analytics/cashflow'
-import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
+import { cardPaths, coverTrend, incomeSchedule, loanObligations, projectForecast } from '~/components/wallets/analytics/forecast'
 import { toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, incomeOutsideStart, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { useCountedWalletIds } from '~/components/wallets/analytics/useAnalyticsBase'
@@ -124,30 +124,38 @@ export function useForecast() {
 
   const until = computed(() => lastDayOfMonthCivil(addCivilMonths(today.value, settings.value.horizonMonths - 1)))
 
+  /** Both payment paths of every active credit card, whichever the forecast follows. */
+  const cards = computed(() => {
+    const loanWalletIds = new Set(loansStore.byWalletId.keys())
+    return walletsStore.sortedIds.flatMap((walletId) => {
+      const wallet = walletsStore.itemsComputed[walletId]
+      if (wallet?.type !== 'credit_card' || wallet.isArchived || loanWalletIds.has(walletId))
+        return []
+      const annualRate = loansStore.cardRateByWalletId.get(walletId) ?? null
+      const paths = cardPaths({
+        annualRate,
+        debt: Math.max(0, -wallet.amount),
+        grace: loansStore.graceByWalletId.get(walletId) ?? null,
+        minPayment: loansStore.minPaymentByWalletId.get(walletId) ?? null,
+        toBase: amount => currenciesStore.toBase(amount, wallet.currencyCode),
+        today: today.value,
+        until: until.value,
+        walletId,
+      })
+      return paths.interestFree.length || paths.minimum.length ? [{ ...paths, hasRate: annualRate !== null, walletId }] : []
+    })
+  })
+
   const obligations = computed<Obligation[]>(() => {
     const result: Obligation[] = []
-    const loanWalletIds = new Set(loansStore.byWalletId.keys())
     for (const [walletId, { summary }] of loansStore.byWalletId) {
       if (walletsStore.items?.[walletId]?.isArchived)
         continue
       const currency = walletsStore.currencyOf(walletId)
       result.push(...loanObligations({ rows: summary.rows, toBase: amount => currenciesStore.toBase(amount, currency), today: today.value, until: until.value, walletId }))
     }
-    for (const walletId of walletsStore.sortedIds) {
-      const wallet = walletsStore.itemsComputed[walletId]
-      if (wallet?.type !== 'credit_card' || wallet.isArchived || loanWalletIds.has(walletId))
-        continue
-      result.push(...cardObligations({
-        debt: Math.max(0, -wallet.amount),
-        grace: loansStore.graceByWalletId.get(walletId) ?? null,
-        minPayment: loansStore.minPaymentByWalletId.get(walletId) ?? null,
-        mode: settings.value.cardPaymentMode,
-        toBase: amount => currenciesStore.toBase(amount, wallet.currencyCode),
-        today: today.value,
-        until: until.value,
-        walletId,
-      }))
-    }
+    for (const card of cards.value)
+      result.push(...(settings.value.cardPaymentMode === 'full_debt' ? card.interestFree : card.minimum))
     return result.sort((a, b) => a.date - b.date)
   })
 
@@ -215,6 +223,7 @@ export function useForecast() {
 
   return {
     availableWalletIds,
+    cards,
     categories: computed(() => settingsStore.categories),
     cover,
     forecast,

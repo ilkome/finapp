@@ -542,7 +542,7 @@ create table public.forecast_settings (
   history_months integer not null default 6,
   regular_min_months integer not null default 5,
   regular_amount_mode text not null default 'median',
-  card_payment_mode text not null default 'minimum',
+  card_payment_mode text not null default 'full_debt',
   is_by_parent_category boolean not null default false,
   created_at bigint not null default (extract(epoch from now()) * 1000)::bigint,
   updated_at bigint not null default (extract(epoch from now()) * 1000)::bigint,

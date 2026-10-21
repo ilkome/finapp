@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { TrnItem } from '~/components/trns/types'
 
-import { collectCreditTrns, costOf } from '~/components/loans/engine/ledger'
+import { collectCreditTrns, costOf, impliedAnnualRate } from '~/components/loans/engine/ledger'
 
 const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
 const credit = new Set(['credit1'])
@@ -65,5 +65,15 @@ describe('costOf', () => {
 
   it('answers zeros for a wallet with no cost', () => {
     expect(costOf([])).toEqual({ byMonth: [], fine: 0, interest: 0 })
+  })
+})
+
+describe('impliedAnnualRate', () => {
+  it('annualizes the interest of charged months over their starting debt', () => {
+    expect(impliedAnnualRate([{ debt: 1000, interest: 20 }, { debt: 1000, interest: 0 }, { debt: 0, interest: 5 }])).toBeCloseTo(0.24)
+  })
+
+  it('is null when no month charged interest on a debt', () => {
+    expect(impliedAnnualRate([{ debt: 1000, interest: 0 }])).toBeNull()
   })
 })

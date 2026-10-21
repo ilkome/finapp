@@ -72,3 +72,18 @@ export function costOf(trns: LoanTrn[]): LoanCost {
     interest,
   }
 }
+
+/** Months of charged interest the implied card rate looks back over. */
+export const CARD_RATE_MONTHS = 12
+
+/**
+ * Annual rate a card's charged interest implies: the interest of the months that charged any over the debt
+ * those months started with. Null when no month charged interest on a debt.
+ */
+export function impliedAnnualRate(months: { debt: number, interest: number }[]): number | null {
+  const charged = months.filter(month => month.interest > 0 && month.debt > 0)
+  const debt = charged.reduce((total, month) => total + month.debt, 0)
+  if (!debt)
+    return null
+  return charged.reduce((total, month) => total + month.interest, 0) / debt * 12
+}

@@ -4,7 +4,7 @@ import { formatByLocale } from '~~/utils/date/civil'
 import { parseAmountInput } from '~~/utils/money/parseInput'
 
 import type { ChartSeries } from '~/components/stat/types'
-import type { WhatIfInput } from '~/components/wallets/analytics/forecast'
+import type { Obligation, WhatIfInput } from '~/components/wallets/analytics/forecast'
 import type { ForecastMonthRow, ForecastScenario } from '~/components/wallets/analytics/ForecastMonthsView.vue'
 import type { AmountMode, CardPaymentMode } from '~/components/wallets/analytics/forecastSettings'
 import type { ObligationRow } from '~/components/wallets/analytics/ObligationsView.vue'
@@ -21,8 +21,8 @@ import { UPCOMING_DAYS, upcomingPayments, whatIfScenario } from '~/components/wa
 import { amountModes, cardPaymentModes } from '~/components/wallets/analytics/forecastSettings'
 import { forecastTooltipRows } from '~/components/wallets/analytics/tooltips'
 import { useSharedForecast } from '~/components/wallets/analytics/useForecast'
-import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useCategoriesViewSettings } from '~/composables/useCategoriesViewSettings'
 
@@ -34,7 +34,7 @@ const categoriesStore = useCategoriesStore()
 const currenciesStore = useCurrenciesStore()
 const categoriesView = useCategoriesViewSettings()
 const isChartMountReady = useIdleMount()
-const { availableWalletIds, categories, cover, forecast, forecastWith, income, incomeOutsideWalletIds, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
+const { availableWalletIds, cards, categories, cover, forecast, forecastWith, income, incomeOutsideWalletIds, obligations, regular, runwayOf, setCategory, settings, startWalletIds, today, toggleStartWallet, update } = useSharedForecast()
 
 const view = useStorage(WALLET_STORAGE_KEYS.analyticsForecast, {
   scenario: 'both' as ForecastScenario,
@@ -45,7 +45,41 @@ const horizonLabel = computed(() => `${t('wallets.analytics.forecast.horizon')} 
 // The first full month speaks for a typical one; the current month is only what is left of it.
 const typicalMonth = computed(() => forecast.value.months[1] ?? forecast.value.months[0])
 
-const monthRows = computed<ForecastMonthRow[]>(() => forecast.value.months.map(month => ({
+/** Card payments of each forecast month by both paths. */
+const monthCards = computed(() => forecast.value.months.map((month, index) => {
+  const end = forecast.value.months[index + 1]?.start ?? Infinity
+  const inMonth = (items: Obligation[]) => items.filter(item => item.date >= month.start && item.date < end)
+  let found = false
+  const result = { interest: 0, interestFree: 0, isRateUnknown: false, minimum: 0 }
+  for (const card of cards.value) {
+    const free = inMonth(card.interestFree)
+    const min = inMonth(card.minimum)
+    found ||= free.length > 0 || min.length > 0
+    result.interestFree += free.reduce((total, item) => total + item.amount, 0)
+    result.minimum += min.reduce((total, item) => total + item.amount, 0)
+    result.interest += min.reduce((total, item) => total + (item.interest ?? 0), 0)
+    result.isRateUnknown ||= min.length > 0 && !card.hasRate
+  }
+  return found ? result : null
+}))
+
+const cardTiles = computed<SummaryTile[]>(() => {
+  const rows = monthCards.value.filter(row => row !== null)
+  if (!rows.length)
+    return []
+  const total = (key: 'interest' | 'interestFree' | 'minimum') => rows.reduce((sum, row) => sum + row[key], 0)
+  const interest = total('interest')
+  return [
+    { amount: -total('interestFree'), id: 'cardsInterestFree', label: t('wallets.analytics.forecast.cards.interestFree') },
+    { amount: -total('minimum'), id: 'cardsMinimum', label: t('wallets.analytics.forecast.cards.minimum') },
+    interest || !rows.some(row => row.isRateUnknown)
+      ? { amount: -interest, id: 'cardsInterest', label: t('wallets.analytics.forecast.cards.overpay') }
+      : { id: 'cardsInterest', label: t('wallets.analytics.forecast.cards.overpay'), text: t('wallets.analytics.forecast.cards.rateUnknown') },
+  ]
+})
+
+const monthRows = computed<ForecastMonthRow[]>(() => forecast.value.months.map((month, index) => ({
+  cards: monthCards.value[index],
   endWithIncome: month.endWithIncome,
   endWithoutIncome: month.endWithoutIncome,
   income: month.income,
@@ -424,6 +458,16 @@ function setPart(id: keyof typeof openParts.value, isOpen: boolean) {
         :currencyCode="currenciesStore.base"
         :items="upcomingTiles"
       />
+      <div v-if="cardTiles.length" class="grid gap-1" data-forecast-cards>
+        <UiText variant="caption" class="px-2">
+          {{ t('wallets.analytics.forecast.cards.horizonTitle') }} · {{ horizonLabel }}
+        </UiText>
+        <WalletsAnalyticsSummaryTilesView
+          :columns="3"
+          :currencyCode="currenciesStore.base"
+          :items="cardTiles"
+        />
+      </div>
       <WalletsAnalyticsObligationsView
         :currencyCode="currenciesStore.base"
         :horizonLabel
