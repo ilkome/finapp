@@ -180,7 +180,9 @@ export default defineNuxtConfig({
         'mdi:github',
         'mdi:play-box-outline',
       ],
-      scan: true,
+      // The default globs skip `.ts`, where options, registries and composables name their icons; a missed
+      // icon is fetched and inserted as its own style sheet at first use, which restyles the whole page.
+      scan: { globInclude: ['**/*.{vue,ts,tsx,jsx,md,yml,yaml}'] },
     },
     collections: ['hugeicons', 'lucide', 'mdi'],
   },

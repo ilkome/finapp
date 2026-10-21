@@ -5,8 +5,10 @@ import type { TrnId } from '~/components/trns/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { takeGroupRows } from '~/components/stat/sheetTrnsChunk'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useDateFormats } from '~/composables/useDateFormats'
+import { useRenderBudget } from '~/composables/useRenderBudget'
 
 /**
  * The transactions of a stat sheet: one heading per chart period (the transactions' date heading, the period's first day), the rows under it plain and tight with a
@@ -44,11 +46,18 @@ const groups = computed(() => {
     .filter(group => group.ids.length)
     .toReversed()
 })
+
+const ROWS_CHUNK = 40
+const { budget: rowsBudget, reset: resetRows } = useRenderBudget(ROWS_CHUNK, useTemplateRef<HTMLElement>('sentinel'), '.drawer-body')
+const shownGroups = computed(() => takeGroupRows(groups.value, rowsBudget.value))
+const hasMore = computed(() => groups.value.reduce((sum, group) => sum + group.ids.length, 0) > rowsBudget.value)
+// Another period, category or filter starts from the top; an edited row does not.
+watch(() => groups.value.map(group => group.key).join(), resetRows)
 </script>
 
 <template>
   <div class="grid gap-3 pt-2">
-    <section v-for="group in groups" :key="group.key" data-stat-sheet-period>
+    <section v-for="group in shownGroups" :key="group.key" data-stat-sheet-period>
       <TrnsDateRowView
         :currencyCode="currenciesStore.base"
         :date="group.date"
@@ -67,5 +76,6 @@ const groups = computed(() => {
         :trnItem="trnsStore.computeTrnItem(id)!"
       />
     </section>
+    <div v-if="hasMore" :key="rowsBudget" ref="sentinel" class="h-px" />
   </div>
 </template>

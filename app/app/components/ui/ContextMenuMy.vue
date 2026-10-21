@@ -6,13 +6,14 @@ import type { ContextMenuItem } from '#ui/components/ContextMenu.vue'
 
 import theme from '#build/ui/context-menu'
 import { useAppConfig } from '#imports'
-import { closeOtherContextMenus, registerContextMenu } from '~/composables/useContextMenuRegistry'
+import { closeOtherContextMenus, registerContextMenu, setContextMenuOpen } from '~/composables/useContextMenuRegistry'
 
 // Workaround: @nuxt/ui 4.6+ declares pressOpenDelay but never forwards it to reka-ui ContextMenuRoot.
 const props = withDefaults(defineProps<{
   descriptionKey?: string
   disabled?: boolean
-  items?: ContextMenuItem[][]
+  // A getter builds the items only when the menu first opens: long lists render a menu per row.
+  items?: ContextMenuItem[][] | (() => ContextMenuItem[][])
   labelKey?: string
   modal?: boolean
   portal?: boolean | string
@@ -44,11 +45,13 @@ const RegistryBridge = defineComponent({
       const unregister = registerContextMenu(close)
       onBeforeUnmount(() => {
         unregister()
+        setContextMenuOpen(close, false)
         window.removeEventListener('scroll', close, { capture: true })
       })
     })
 
     watch(ctx.open, (v) => {
+      setContextMenuOpen(close, v)
       if (v) {
         closeOtherContextMenus(close)
         window.addEventListener('scroll', close, { capture: true, once: true, passive: true })
@@ -62,6 +65,17 @@ const RegistryBridge = defineComponent({
   },
 })
 
+// Content mounts on the first open and stays for the exit animation: a row that is never pressed
+// renders only its trigger.
+const wasOpened = ref(false)
+function onOpen(value: boolean) {
+  if (value)
+    wasOpened.value = true
+  emit('update:open', value)
+}
+
+const items = computed(() => toValue(props.items))
+
 const appConfig = useAppConfig()
 const ui = computed(() => tv({
   extend: tv(theme as any),
@@ -73,15 +87,16 @@ const ui = computed(() => tv({
   <ContextMenuRoot
     :modal="props.modal"
     :pressOpenDelay="props.pressOpenDelay"
-    @update:open="(v) => emit('update:open', v)"
+    @update:open="onOpen"
   >
     <RegistryBridge />
     <ContextMenuTrigger asChild data-context-trigger :disabled="props.disabled">
       <slot />
     </ContextMenuTrigger>
     <UContextMenuContent
+      v-if="wasOpened"
       class="max-w-72"
-      :items="props.items"
+      :items="items"
       :portal="props.portal"
       :labelKey="props.labelKey"
       :descriptionKey="props.descriptionKey"

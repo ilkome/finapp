@@ -70,6 +70,7 @@ const dateLabel = computed(() => props.ratesDate === null
         @update:modelValue="(value: string) => emit('update:amount', value)"
       />
       <USelectMenu
+        virtualize
         class="w-28"
         data-reka-swipe-ignore
         valueKey="value"
@@ -111,6 +112,7 @@ const dateLabel = computed(() => props.ratesDate === null
 
     <div class="flex items-center justify-between gap-2">
       <USelectMenu
+        virtualize
         data-reka-swipe-ignore
         valueKey="value"
         :items="addOptions"

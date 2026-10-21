@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
 
+import { useRenderBudget } from '~/composables/useRenderBudget'
+
 export type CurrencyOption = {
   code: CurrencyCode
   name: string
@@ -33,6 +35,11 @@ const list = computed(() => {
   return searchable.filter(currency =>
     currency.name.toLowerCase().includes(search) || currency.code.toLowerCase().includes(search))
 })
+
+const LIST_CHUNK = 40
+const { budget, reset } = useRenderBudget(LIST_CHUNK, useTemplateRef<HTMLElement>('sentinel'), '.scroller-block')
+const shownList = computed(() => list.value.slice(0, budget.value))
+watch(searchInput, reset)
 </script>
 
 <template>
@@ -96,7 +103,7 @@ const list = computed(() => {
 
       <div v-if="!props.isHideUnused && list.length > 0">
         <UiElement
-          v-for="currency in list"
+          v-for="currency in shownList"
           :key="currency.code"
           :isActive="currency.code === props.active"
           :lineWidth="6"
@@ -112,6 +119,7 @@ const list = computed(() => {
             </div>
           </div>
         </UiElement>
+        <div v-if="list.length > budget" :key="budget" ref="sentinel" class="h-px" />
       </div>
     </div>
   </div>

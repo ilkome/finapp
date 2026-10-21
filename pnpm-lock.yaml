@@ -222,6 +222,12 @@ importers:
       '@iconify-json/mdi':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify/utils':
+        specifier: ^3.1.7
+        version: 3.1.7
+      '@iconify/vue':
+        specifier: ^5.0.3
+        version: 5.0.3(vue@3.5.43(typescript@6.0.3))
       '@internationalized/date':
         specifier: ^3.12.4
         version: 3.12.4

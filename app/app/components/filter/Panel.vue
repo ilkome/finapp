@@ -104,6 +104,31 @@ function selectCategory(id: CategoryId) {
 const sliderRef = ref<HTMLElement | null>(null)
 const { activeTabIdx, goToTab } = useSwiperTabs(sliderRef, isSelectMode.value ? slides.value.indexOf(props.initialSlide) : 0)
 
+// Only the open slide renders with the drawer, so its slide-in stays smooth; the others mount once
+// it has slid in, one per frame so no single frame holds them all, or all at once on the first touch
+// of the slider or a tab pick. A dialog renders all.
+const mountedSlides = reactive(new Set([activeTabIdx.value]))
+watch(activeTabIdx, idx => mountedSlides.add(idx))
+function mountAllSlides() {
+  slides.value.forEach((_, idx) => mountedSlides.add(idx))
+}
+function mountNextSlide() {
+  const idx = slides.value.findIndex((_, i) => !mountedSlides.has(i))
+  if (idx === -1)
+    return
+  mountedSlides.add(idx)
+  requestAnimationFrame(() => setTimeout(mountNextSlide))
+}
+onMounted(() => {
+  const drawer = sliderRef.value?.closest('.drawer')
+  if (!drawer)
+    return mountAllSlides()
+  useEventListener(drawer, 'animationend', (event: AnimationEvent) => {
+    if (event.animationName === 'drawer-slide-in')
+      mountNextSlide()
+  })
+})
+
 const tabItems = computed<TabsItem[]>(() => slides.value.map((slide, index) => ({
   label: t(slide === 'wallet' ? 'wallets.title' : slide === 'category' ? 'categories.title' : 'base.filtersMore'),
   value: index,
@@ -149,15 +174,17 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
         <div
           ref="sliderRef"
           class="swiper size-full min-h-0 min-w-0 overflow-hidden"
+          @pointerdown.once="mountAllSlides"
         >
           <div class="swiper-wrapper">
             <div
-              v-for="slide in slides"
+              v-for="(slide, idx) in slides"
               :key="slide"
               class="swiper-slide size-full"
             >
+              <template v-if="!mountedSlides.has(idx)" />
               <FilterMoreForm
-                v-if="slide === 'more'"
+                v-else-if="slide === 'more'"
                 :modelValue="draft!.pendingExtras.value" @update:modelValue="v => draft!.pendingExtras.value = v"
               />
               <template v-else>

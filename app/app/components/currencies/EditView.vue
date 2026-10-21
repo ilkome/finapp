@@ -141,6 +141,7 @@ function save() {
           </template>
           <USelectMenu
             v-model="form.manualRateCurrencyCode"
+            virtualize
             class="w-full"
             data-reka-swipe-ignore
             valueKey="value"

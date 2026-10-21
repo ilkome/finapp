@@ -353,7 +353,8 @@ async function onSave() {
             :style="{ background: props.categoryForm.color }"
             @click="emit('update', 'icon', icon)"
           >
-            <Icon :name="icon" size="20" />
+            <!-- Inline SVG: css mode inserts one rule per icon on first open, and each insert restyles the whole page. -->
+            <Icon :name="icon" mode="svg" size="20" />
           </div>
         </div>
       </div>

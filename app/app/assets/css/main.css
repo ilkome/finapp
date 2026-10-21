@@ -51,7 +51,7 @@
 
   /* Reka forces `pointer-events: auto` inline on every context-menu trigger so a right-click can
      jump between them; while a menu is open the rows behind it must stay inert instead. */
-  body:has([role='menu'][data-state='open']) [data-context-trigger] {
+  :root[data-context-menu-open] [data-context-trigger] {
     pointer-events: none !important;
   }
 }
@@ -164,6 +164,16 @@
   }
 }
 
+/* A blur under an overlay is barely seen but costs the GPU every animation frame: a third of the
+   dropped frames in a drawer chain on the phone. Listed classes, not `[class*=blur]`: an attribute
+   selector would make each state change restyle the whole subtree. */
+.drawer[data-nested-drawer-open],
+.drawer-indent[data-active] {
+  & :is(.backdrop-blur, .backdrop-blur-xl, .max-md\:backdrop-blur-xl) {
+    backdrop-filter: none !important;
+  }
+}
+
 .drawer-overlay {
   opacity: calc(1 - var(--drawer-progress, 0));
 
@@ -200,9 +210,6 @@
   .drawer-indent {
     background: var(--ui-bg);
     position: relative;
-    /* Outside the active state, so the page scales back around the same point instead of the middle
-       of the whole page. */
-    transform-origin: 50% var(--drawer-scroll-y, 0px);
     transition-duration: 450ms;
     transition-property: scale, translate;
     transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
