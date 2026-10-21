@@ -71,28 +71,6 @@ const minPaymentStatusClass: Record<MinPaymentStatus, string> = {
       </UBadge>
     </div>
 
-    <div v-if="props.minPayment" class="flex items-center gap-1.5" data-loan-card-min>
-      <span
-        class="size-1.5 shrink-0 rounded-full"
-        :class="minPaymentStatusClass[props.minPayment.status]"
-        :data-loan-min-status="props.minPayment.status"
-      />
-      <UiText variant="meta">
-        {{ t('loans.minPaymentShort') }}
-      </UiText>
-      <Amount
-        :amount="props.minPayment.amount"
-        :currencyCode="props.currencyCode"
-        :isShowBaseRate="false"
-        :isShowSymbol="false"
-        align="left"
-        variant="secondary"
-      />
-      <UiText variant="meta">
-        {{ t('loans.by') }} {{ props.minPayment.date }}
-      </UiText>
-    </div>
-
     <div v-if="props.grace" class="flex flex-wrap items-center gap-x-1.5" data-loan-card-grace>
       <span
         class="size-1.5 shrink-0 rounded-full"
@@ -120,5 +98,26 @@ const minPaymentStatusClass: Record<MinPaymentStatus, string> = {
     <UiText v-if="props.grace?.statementDate" variant="meta" data-loan-card-statement>
       {{ t('loans.grace.nextStatement', { date: props.grace.statementDate }) }}
     </UiText>
+    <div v-if="props.minPayment" class="flex items-center gap-1.5" data-loan-card-min>
+      <span
+        class="size-1.5 shrink-0 rounded-full"
+        :class="minPaymentStatusClass[props.minPayment.status]"
+        :data-loan-min-status="props.minPayment.status"
+      />
+      <UiText variant="meta">
+        {{ t('loans.minPaymentShort') }}
+      </UiText>
+      <Amount
+        :amount="props.minPayment.amount"
+        :currencyCode="props.currencyCode"
+        :isShowBaseRate="false"
+        :isShowSymbol="false"
+        align="left"
+        variant="secondary"
+      />
+      <UiText variant="meta">
+        {{ t('loans.by') }} {{ props.minPayment.date }}
+      </UiText>
+    </div>
   </div>
 </template>
