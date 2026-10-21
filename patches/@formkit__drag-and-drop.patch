@@ -1,0 +1,28 @@
+diff --git a/index.cjs b/index.cjs
+index 85c8026f1d98253cb359ee2d3a2d6860aeea4802..dbfa520440fbc5c0246eccc8ed170d664d1fe3cc 100644
+--- a/index.cjs
++++ b/index.cjs
+@@ -2531,7 +2531,8 @@ function moveNode(state2, justStarted = false) {
+   const startTop = state2.startTop ?? 0;
+   const currentScrollX = window.scrollX ?? 0;
+   const currentScrollY = window.scrollY ?? 0;
+-  const translateX = x - startLeft + currentScrollX;
++  state2.lockX ??= x;
++  const translateX = state2.lockX - startLeft + currentScrollX;
+   const translateY = y - startTop + currentScrollY;
+   state2.clonedDraggedNode.style.transform = `translate3d(${translateX}px, ${translateY}px, 0px)`;
+   if (justStarted) {
+diff --git a/index.mjs b/index.mjs
+index 06306f0a54b24d485be37981e429b6707dbab5c6..f125a7c9f469427d53d49376bd6c25229d822e7b 100644
+--- a/index.mjs
++++ b/index.mjs
+@@ -2441,7 +2441,8 @@ function moveNode(state2, justStarted = false) {
+   const startTop = state2.startTop ?? 0;
+   const currentScrollX = window.scrollX ?? 0;
+   const currentScrollY = window.scrollY ?? 0;
+-  const translateX = x - startLeft + currentScrollX;
++  state2.lockX ??= x;
++  const translateX = state2.lockX - startLeft + currentScrollX;
+   const translateY = y - startTop + currentScrollY;
+   state2.clonedDraggedNode.style.transform = `translate3d(${translateX}px, ${translateY}px, 0px)`;
+   if (justStarted) {
