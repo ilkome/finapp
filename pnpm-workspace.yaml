@@ -7,6 +7,7 @@ overrides:
   esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
 
 patchedDependencies:
+  '@formkit/drag-and-drop': patches/@formkit__drag-and-drop.patch
   # Swipe toasts right to dismiss while they stay on the left (swipe direction is hardwired to position).
   '@nuxt/ui@4.11.3': patches/@nuxt__ui@4.11.3.patch
   # Drawer: swipes start on buttons and honor data-reka-swipe-ignore (unovue/reka-ui#2982), 60px sequential

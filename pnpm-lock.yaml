@@ -166,6 +166,7 @@ overrides:
   esbuild@>=0.27.3 <0.28.1: '>=0.28.1'
 
 patchedDependencies:
+  '@formkit/drag-and-drop': 3ba5ce39c7411f3ba897d0b6a2488509b35a24133f914257e64cb5108e3db943
   '@nuxt/ui@4.11.3': 18b2c7876ac8ac4b1cbb0b14ff40552c6ce3904f4c089d6f2f76fe5abcf68acf
   reka-ui@2.10.5: d3c54bdb15c5ff0c6627dfdee623af93962592d43262c521597889e50337377c
 
@@ -217,7 +218,7 @@ importers:
         version: 2.1.1
       '@formkit/drag-and-drop':
         specifier: ^0.6.1
-        version: 0.6.1
+        version: 0.6.1(patch_hash=3ba5ce39c7411f3ba897d0b6a2488509b35a24133f914257e64cb5108e3db943)
       '@iconify-json/mdi':
         specifier: ^1.2.3
         version: 1.2.3
@@ -12257,7 +12258,7 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@formkit/drag-and-drop@0.6.1': {}
+  '@formkit/drag-and-drop@0.6.1(patch_hash=3ba5ce39c7411f3ba897d0b6a2488509b35a24133f914257e64cb5108e3db943)': {}
 
   '@hono/node-server@2.1.1(hono@4.13.9)':
     dependencies:
