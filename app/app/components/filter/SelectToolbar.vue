@@ -5,6 +5,8 @@ import type CategoriesSelectorModal from '~/components/categories/SelectorModal.
 import type WalletsSelector from '~/components/wallets/Selector.vue'
 import type { WalletsGroupedBy } from '~/components/wallets/types'
 
+import { useWalletsStore } from '~/components/wallets/useWalletsStore'
+
 // Controls under the tabs of the entity sheets (transaction form picker and stat filter): the
 // same set the wallets and categories pages offer, scoped to the active slide. Left to right:
 // expand / collapse, view, more.
@@ -19,6 +21,7 @@ const emit = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const walletsStore = useWalletsStore()
 
 // One query for both slides: the panel shows the shared results under whichever toolbar has it open.
 const search = defineModel<string>('search', { default: '' })
@@ -81,6 +84,12 @@ const moreItems = computed<DropdownMenuItem[][]>(() => [[{
         :icon="walletFolderIcon"
         :title="t('base.toggleFolders')"
         @click="wallets.toggleAllGroups()"
+      />
+      <WalletsCurrencyButton
+        v-if="walletsStore.currenciesUsed.length > 1"
+        :currenciesUsed="walletsStore.currenciesUsed"
+        :currencyFiltered="wallets.currencyFiltered"
+        @select="code => wallets!.currencyFiltered = code"
       />
       <WalletsGroupMenu
         :groupedBy="wallets.groupedBy"

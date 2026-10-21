@@ -189,7 +189,6 @@ const headerTitle = computed(() => props.title ?? (isSelectMode.value
                       ref="walletsSelector"
                       :activeItemId="isSelectMode ? props.activeWalletId : undefined"
                       :autofocus="false"
-                      :currencyAboveAction="!isSelectMode"
                       groupingMenu
                       :storageScope="isSelectMode ? 'select' : 'filter'"
                       hideHeader
