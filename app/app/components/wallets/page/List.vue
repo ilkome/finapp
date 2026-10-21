@@ -11,8 +11,8 @@ import { useWalletDelete } from '~/components/wallets/useWalletDelete'
 import { useWalletsCounts } from '~/components/wallets/useWalletsCounts'
 import { useWalletsFilter } from '~/components/wallets/useWalletsFilter'
 import { useWalletsGrouping } from '~/components/wallets/useWalletsGrouping'
-import { useWalletsStatistics } from '~/components/wallets/useWalletsStatistics'
 import { provideWalletSheet } from '~/components/wallets/useWalletSheet'
+import { useWalletsStatistics } from '~/components/wallets/useWalletsStatistics'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 import { useFeature } from '~/composables/useFeatures'
 
@@ -59,6 +59,7 @@ const isLaptop = useIsLaptop()
 // vueuse types a binding as a prop option, so a function type must stay `any`.
 const isOpen = ref(false)
 const isStatSideOpen = ref(false)
+const isSummaryOpen = ref(false)
 
 // Statistics settings are a panel of this same menu, the way the user menu nests its panels -
 // a second popover or sheet on top of the menu is neither the house pattern nor safe on touch.
@@ -227,14 +228,6 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
                   </UiHeaderLink>
 
                   <UiHeaderLink
-                    v-if="isAnalytics"
-                    icon="lucide:chart-line"
-                    @click="() => openAfterMenu(() => router.push('/wallets/analytics'), close)"
-                  >
-                    {{ t('wallets.analytics.title') }}
-                  </UiHeaderLink>
-
-                  <UiHeaderLink
                     v-if="walletsStore.sortedIds.length > 1"
                     icon="lucide:arrow-down-up"
                     @click="() => { startSorting(); close() }"
@@ -341,8 +334,13 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
 
         <div class="grid content-start gap-3 @xl/page:gap-4 @3xl/main:max-w-sm">
           <LoansDueThisMonth v-if="isLoans" />
-          <WalletsAnalyticsPreviewSection v-if="isAnalytics" />
+          <WalletsAnalyticsPreviewSection v-if="isAnalytics && isLaptop" />
+          <UiTileGrid v-if="isAnalytics && !isLaptop" class="pb-6">
+            <WalletsAnalyticsPreviewSection />
+            <WalletsPageSummaryTile @click="isSummaryOpen = true" />
+          </UiTileGrid>
           <WalletsStatistics
+            v-else
             :isShowList="showStatistics"
             :storageKey="statisticsStorageKey"
             :activeType="walletViewType"
@@ -500,6 +498,8 @@ function hasGroups(groups: Record<string, unknown> | undefined) {
         </div>
       </div>
     </div>
+
+    <WalletsPageSummarySheet v-if="isSummaryOpen" @closed="isSummaryOpen = false" />
 
     <WalletsSheet
       v-if="walletSheet"

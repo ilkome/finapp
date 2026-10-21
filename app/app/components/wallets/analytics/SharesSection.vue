@@ -12,12 +12,14 @@ import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { pieShapeOptions } from '~/components/stat/config/schema'
 import { toChartSeries } from '~/components/wallets/analytics/chartSeries'
 import { computeShares, sharesModes } from '~/components/wallets/analytics/shares'
-import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
 import { useWalletDelete } from '~/components/wallets/useWalletDelete'
+import { useWalletSheet } from '~/components/wallets/useWalletSheet'
 import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 const props = defineProps<{
+  /** A host that shows the title and the settings menu itself (a sheet header) hides the section's own. */
+  isHeaderless?: boolean
   walletIds: WalletId[]
 }>()
 
@@ -72,7 +74,8 @@ const groups = computed(() => groupBys.map((groupBy) => {
     pieSeries: toChartSeries(rows.map(row => ({ color: row.color, data: [Math.abs(row.signedValue)], name: row.name, type: 'bar' as const })), currenciesStore.base) as ChartSeries[],
     rows,
     shares,
-    totalValue: mode.value === 'gross' || mode.value === 'split' ? shares.total : rows.reduce((sum, row) => sum + row.signedValue, 0),
+    // The rows show signed amounts, so the total is their signed sum; `shares.total` is the pie's size-based denominator.
+    totalValue: rows.reduce((sum, row) => sum + row.signedValue, 0),
   }
 }))
 
@@ -113,6 +116,8 @@ function onSetting(id: string, value: number | string) {
   options.value = { ...options.value, [id]: isSwitch ? value === 'on' : value }
 }
 
+defineExpose({ onSetting, settings })
+
 const open = ref<{ groupBy: SharesGroupBy, id: string } | null>(null)
 const openGroup = computed(() => {
   const item = open.value && groups.value.find(group => group.groupBy === open.value!.groupBy)?.shares.items.find(entry => entry.id === open.value!.id)
@@ -138,7 +143,7 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
 
 <template>
   <section class="grid min-w-0 content-start gap-3 @3xl/page:col-span-2" data-analytics-shares-section>
-    <div class="flex items-center gap-2">
+    <div v-if="!props.isHeaderless" class="flex items-center gap-2">
       <UiTitleSection class="grow">
         {{ t('wallets.analytics.shares.title') }}
       </UiTitleSection>

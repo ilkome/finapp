@@ -7,8 +7,8 @@ import type { AnalyticsOption } from '~/components/wallets/analytics/SettingsMen
 import type { RatesMode } from '~/components/wallets/analytics/useAnalyticsBase'
 
 import { analyticsRanges, useAnalyticsBase } from '~/components/wallets/analytics/useAnalyticsBase'
-import { provideWalletSheet } from '~/components/wallets/useWalletSheet'
 import { WALLET_STORAGE_KEYS } from '~/components/wallets/constants'
+import { provideWalletSheet } from '~/components/wallets/useWalletSheet'
 
 const { t } = useI18n()
 
