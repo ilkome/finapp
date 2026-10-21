@@ -1,7 +1,18 @@
 <script setup lang="ts">
 import type { CurrencyCode } from '~/components/currencies/types'
 
+export type ForecastMonthCards = {
+  /** Interest the minimum path adds this month; 0 with `isRateUnknown`. */
+  interest: number
+  interestFree: number
+  /** A card paid by the minimum has never charged interest, so its rate is unknown. */
+  isRateUnknown: boolean
+  minimum: number
+}
+
 export type ForecastMonthRow = {
+  /** Card payments this month by either path; null without any. */
+  cards?: ForecastMonthCards | null
   endWithIncome: number
   endWithoutIncome: number
   income: number
@@ -76,6 +87,23 @@ const { t } = useI18n()
           {{ t('wallets.analytics.forecast.income') }}
           <Amount :amount="row.income" :currencyCode="props.currencyCode" :isShowBaseRate="false" isShowPlus variant="secondary" />
         </span>
+      </div>
+
+      <div v-if="row.cards" class="flex flex-wrap gap-x-3 gap-y-1 text-2xs leading-none text-muted" data-forecast-month-cards>
+        <span>{{ t('wallets.analytics.forecast.cards.title') }}</span>
+        <span class="flex items-center gap-1">
+          {{ t('wallets.analytics.forecast.cards.interestFree') }}
+          <Amount :amount="-row.cards.interestFree" :currencyCode="props.currencyCode" :isShowBaseRate="false" variant="secondary" />
+        </span>
+        <span class="flex items-center gap-1">
+          {{ t('wallets.analytics.forecast.cards.minimum') }}
+          <Amount :amount="-row.cards.minimum" :currencyCode="props.currencyCode" :isShowBaseRate="false" variant="secondary" />
+        </span>
+        <span v-if="row.cards.interest" class="flex items-center gap-1 text-warning" data-forecast-month-interest>
+          {{ t('wallets.analytics.forecast.cards.interest') }}
+          <Amount :amount="-row.cards.interest" :currencyCode="props.currencyCode" :isShowBaseRate="false" variant="secondary" />
+        </span>
+        <span v-if="row.cards.isRateUnknown">{{ t('wallets.analytics.forecast.cards.rateUnknown') }}</span>
       </div>
     </div>
   </div>

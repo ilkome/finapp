@@ -4,7 +4,7 @@ import { addCivilDays, addCivilMonths, lastDayOfMonthCivil, startOfMonthCivil } 
 import type { CategoryId } from '~/components/categories/types'
 import type { PaymentRow } from '~/components/loans/engine/types'
 import type { GraceLine, MinPaymentStatus } from '~/components/loans/minPayment'
-import type { AmountMode, CardPaymentMode, RegularOverride } from '~/components/wallets/analytics/forecastSettings'
+import type { AmountMode, RegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import type { WalletId } from '~/components/wallets/types'
 
 import { detectRegular } from '~/components/wallets/analytics/regular'
@@ -15,6 +15,8 @@ const DAY = 86_400_000
 export type Obligation = {
   amount: number
   date: number
+  /** Card interest a minimum payment carries, already inside `amount`. */
+  interest?: number
   kind: 'card' | 'loan'
   walletId: WalletId
 }
@@ -39,44 +41,65 @@ export function loanObligations(params: {
     .filter(item => item.amount > 0)
 }
 
-/**
- * Card payments up to `until`: the minimum every month until the debt is covered, or the
- * statement debt once (`full_debt`). A stale or missing summary gives nothing: there is no date to pay by.
- */
-export function cardObligations(params: {
+/** Interest a month adds to a card debt at an annual rate. */
+export function monthlyInterest(debt: number, annualRate: number | null): number {
+  return annualRate === null ? 0 : Math.round(debt * annualRate / 12)
+}
+
+export type CardPaths = {
+  /** Interest-free path: the grace debt once by its end day, or the whole debt once by the minimum's day. */
+  interestFree: Obligation[]
+  /**
+   * Minimum path: the minimum every month until the debt is covered, each month carrying the interest the
+   * debt left over adds; without a known rate the interest is 0.
+   */
+  minimum: Obligation[]
+}
+
+/** Both ways to pay a card up to `until`. A stale or missing summary gives nothing: there is no date to pay by. */
+export function cardPaths(params: {
+  annualRate: number | null
   debt: number
   grace: GraceLine | null
   minPayment: { amount: number, date: number, status: MinPaymentStatus } | null
-  mode: CardPaymentMode
   toBase: (amount: number) => number
   today: number
   until: number
   walletId: WalletId
-}): Obligation[] {
-  const { debt, grace, minPayment, mode, toBase, today, until, walletId } = params
-  const at = (amount: number, date: number): Obligation => ({ amount: Math.round(toBase(amount)), date: Math.max(date, today), kind: 'card', walletId })
+}): CardPaths {
+  const { annualRate, debt, grace, minPayment, toBase, today, until, walletId } = params
+  const at = (amount: number, date: number, interest?: number): Obligation => ({
+    amount: Math.round(toBase(amount)),
+    date: Math.max(date, today),
+    ...(interest === undefined ? {} : { interest: Math.round(toBase(interest)) }),
+    kind: 'card',
+    walletId,
+  })
 
-  if (mode === 'full_debt') {
-    if (grace?.date != null && (grace.status === 'due' || grace.status === 'overdue') && grace.amount > 0)
-      return grace.date <= until ? [at(grace.amount, grace.date)] : []
-    if (minPayment && (minPayment.status === 'due' || minPayment.status === 'overdue') && debt > 0)
-      return minPayment.date <= until ? [at(debt, minPayment.date)] : []
-    return []
+  const interestFree: Obligation[] = []
+  if (grace?.date != null && (grace.status === 'due' || grace.status === 'overdue') && grace.amount > 0) {
+    if (grace.date <= until)
+      interestFree.push(at(grace.amount, grace.date))
+  }
+  else if (minPayment && (minPayment.status === 'due' || minPayment.status === 'overdue') && debt > 0 && minPayment.date <= until) {
+    interestFree.push(at(debt, minPayment.date))
   }
 
-  if (!minPayment || minPayment.status === 'stale' || minPayment.amount <= 0)
-    return []
-  const result: Obligation[] = []
-  // A paid minimum means the next one falls a month later.
-  let date = minPayment.status === 'paid' ? addCivilMonths(minPayment.date, 1) : minPayment.date
-  let left = debt
-  while (left > 0 && date <= until) {
-    const amount = Math.min(minPayment.amount, left)
-    result.push(at(amount, date))
-    left -= amount
-    date = addCivilMonths(date, 1)
+  const minimum: Obligation[] = []
+  if (minPayment && minPayment.status !== 'stale' && minPayment.amount > 0) {
+    // A paid minimum means the next one falls a month later.
+    let date = minPayment.status === 'paid' ? addCivilMonths(minPayment.date, 1) : minPayment.date
+    let left = debt
+    while (left > 0 && date <= until) {
+      const interest = monthlyInterest(left, annualRate)
+      const principal = Math.min(minPayment.amount, left)
+      minimum.push(at(principal + interest, date, interest))
+      left -= principal
+      date = addCivilMonths(date, 1)
+    }
   }
-  return result
+
+  return { interestFree, minimum }
 }
 
 /** Months with income the detection needs, as a share of the window. */

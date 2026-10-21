@@ -4,7 +4,7 @@ import type { BankReport } from '~/components/bankReports/types'
 import type { ScheduleOverride } from '~/components/loans/engine/types'
 import type { LoanItem, LoanScheduleOverrideItem } from '~/components/loans/types'
 
-import { bankNextPaymentAmount, createDeriveLoanMemo, deriveDue, deriveLoan, overridesByLoan, paramsOf, projectionParams } from '~/components/loans/engine/derive'
+import { bankNextPaymentAmount, createDeriveLoanMemo, deriveDue, deriveDueByMonth, deriveLoan, overridesByLoan, paramsOf, projectionParams } from '~/components/loans/engine/derive'
 
 const round2 = Math.round
 const day = (iso: string) => Date.parse(`${iso}T00:00:00.000Z`)
@@ -288,5 +288,30 @@ describe('createDeriveLoanMemo', () => {
     const first = derive('l1', loan, overrides, [payment], -1_100_000, day('2026-02-01'))
     derive.prune(new Set())
     expect(derive('l1', loan, overrides, [payment], -1_100_000, day('2026-02-01'))).not.toBe(first)
+  })
+})
+
+describe('deriveDueByMonth', () => {
+  const today = day('2026-09-23')
+  const row = (date: string, totalAmount: number, status = 'scheduled') => ({ date: day(date), paidInterest: 0, paidPrincipal: 0, status, totalAmount })
+  const entry = (rows: object[]) => ({ currency: 'USD', summary: { isClosed: false, rows }, walletId: 'credit1' } as any)
+
+  it('splits by calendar month, keeps overdue in this one and drops months past the third', () => {
+    const rows = [row('2026-09-10', 10, 'overdue'), row('2026-09-28', 20), row('2026-10-05', 30), row('2026-11-05', 40), row('2026-12-05', 50)]
+    expect(deriveDueByMonth([entry(rows)], [{ currency: 'USD', minPaymentAmount: 5, minPaymentDate: day('2026-10-20'), walletId: 'c2' }], today)).toMatchObject({
+      afterNextMonth: { amount: 40, nearestDate: day('2026-11-05') },
+      nextMonth: { amount: 35, items: [{ date: day('2026-10-05'), kind: 'loan' }, { amount: 5, kind: 'card', walletId: 'c2' }], nearestDate: day('2026-10-05') },
+      thisMonth: { amount: 30, nearestDate: day('2026-09-10') },
+    })
+  })
+
+  it('pays the whole grace debt in place of the card minimum for the interest-free sum', () => {
+    const revolving = [{ currency: 'USD', minPaymentAmount: 5, minPaymentDate: day('2026-10-20'), walletId: 'c2' }]
+    const graces = [{ amount: 100, currency: 'USD', date: day('2026-10-20'), walletId: 'c2' }]
+    expect(deriveDueByMonth([], revolving, today, undefined, graces).nextMonth).toMatchObject({ amount: 5, noInterestAmount: 100, noInterestItems: [{ amount: 100, isGrace: true, minAmount: 5 }] })
+  })
+
+  it('answers null for an empty month', () => {
+    expect(deriveDueByMonth([], [], today)).toEqual({ afterNextMonth: null, nextMonth: null, thisMonth: null })
   })
 })

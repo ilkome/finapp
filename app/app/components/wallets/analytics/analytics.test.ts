@@ -5,7 +5,7 @@ import type { Trns } from '~/components/trns/types'
 import type { Wallets } from '~/components/wallets/types'
 
 import { balanceExtremes, balanceSeries, changeDecomposition, changeSeries, periodChange, splitOpening, statisticsRowsSeries, walletBalancesAt } from '~/components/wallets/analytics/balanceHistory'
-import { cardObligations, coverTrend, incomeSchedule, loanObligations, projectForecast, upcomingPayments } from '~/components/wallets/analytics/forecast'
+import { cardPaths, coverTrend, incomeSchedule, loanObligations, projectForecast, upcomingPayments } from '~/components/wallets/analytics/forecast'
 import { parseForecastCategories, parseForecastSettings, toRegularOverride } from '~/components/wallets/analytics/forecastSettings'
 import { currentMonth, detectRegular, incomeOutsideStart, monthlySums, previousMonths, sliceMonthlySums, typicalAmount } from '~/components/wallets/analytics/regular'
 import { computeShares } from '~/components/wallets/analytics/shares'
@@ -204,10 +204,17 @@ describe('obligations', () => {
 
   it('repeats the card minimum until the debt is covered, or pays the statement debt once', () => {
     const minPayment = { amount: 40, date: day('2026-04-20'), status: 'due' as const }
-    const base = { debt: 100, grace: null, minPayment, toBase: (v: number) => v, today, until: day('2026-12-31'), walletId: 'card' }
-    expect(cardObligations({ ...base, mode: 'minimum' }).map(o => o.amount)).toEqual([40, 40, 20])
-    expect(cardObligations({ ...base, grace: { amount: 90, date: day('2026-04-25'), statementDate: null, status: 'due' }, mode: 'full_debt' }).map(o => o.amount)).toEqual([90])
-    expect(cardObligations({ ...base, minPayment: { ...minPayment, status: 'stale' }, mode: 'minimum' })).toEqual([])
+    const base = { annualRate: null, debt: 100, grace: null, minPayment, toBase: (v: number) => v, today, until: day('2026-12-31'), walletId: 'card' }
+    expect(cardPaths(base).minimum.map(o => o.amount)).toEqual([40, 40, 20])
+    expect(cardPaths(base).interestFree.map(o => o.amount)).toEqual([100])
+    expect(cardPaths({ ...base, grace: { amount: 90, date: day('2026-04-25'), statementDate: null, status: 'due' } }).interestFree.map(o => o.amount)).toEqual([90])
+    expect(cardPaths({ ...base, minPayment: { ...minPayment, status: 'stale' } })).toEqual({ interestFree: [], minimum: [] })
+  })
+
+  it('adds the interest the leftover debt carries to every minimum', () => {
+    const minPayment = { amount: 400, date: day('2026-04-20'), status: 'due' as const }
+    const paths = cardPaths({ annualRate: 0.24, debt: 1000, grace: null, minPayment, toBase: v => v, today, until: day('2026-12-31'), walletId: 'card' })
+    expect(paths.minimum.map(o => [o.amount, o.interest])).toEqual([[420, 20], [412, 12], [204, 4]])
   })
 })
 
@@ -311,8 +318,8 @@ describe('incomeSchedule', () => {
 
 describe('forecast settings', () => {
   it('fills defaults and resets only a broken field', () => {
-    expect(parseForecastSettings(null)).toEqual({ cardPaymentMode: 'minimum', historyMonths: 6, horizonMonths: 12, isByParentCategory: false, regularAmountMode: 'median', regularMinMonths: 5 })
-    expect(parseForecastSettings({ cardPaymentMode: 'min', historyMonths: 3, horizonMonths: 'x' })).toMatchObject({ cardPaymentMode: 'minimum', historyMonths: 3, horizonMonths: 12 })
+    expect(parseForecastSettings(null)).toEqual({ cardPaymentMode: 'full_debt', historyMonths: 6, horizonMonths: 12, isByParentCategory: false, regularAmountMode: 'median', regularMinMonths: 5 })
+    expect(parseForecastSettings({ cardPaymentMode: 'min', historyMonths: 3, horizonMonths: 'x' })).toMatchObject({ cardPaymentMode: 'full_debt', historyMonths: 3, horizonMonths: 12 })
   })
 
   it('reads category rows and turns them into overrides in base currency', () => {

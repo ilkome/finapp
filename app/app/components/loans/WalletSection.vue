@@ -55,10 +55,17 @@ const grace = computed(() => {
   }
 })
 
+// Repaying the grace debt avoids the interest, so it comes before the minimum.
+const payAmount = computed(() => {
+  const found = loansStore.graceByWalletId.get(props.walletId)
+  if (found && found.amount > 0 && (found.status === 'due' || found.status === 'overdue'))
+    return found.amount
+  return minPayment.value && minPayment.value.status !== 'paid' ? minPayment.value.amount : null
+})
+
 function onPayMin() {
-  const found = minPayment.value
-  if (found)
-    trnsFormStore.openFormForLoanPayment({ date: today.value, interest: 0, principal: found.amount, walletId: props.walletId })
+  if (payAmount.value !== null)
+    trnsFormStore.openFormForLoanPayment({ date: today.value, interest: 0, principal: payAmount.value, walletId: props.walletId })
 }
 
 const summaryProps = computed(() => {
@@ -221,7 +228,7 @@ function onPayNext() {
         :minPayment="minPayment && { ...minPayment, date: day(minPayment.date) }"
       />
       <UButton
-        v-if="minPayment && minPayment.status !== 'paid'"
+        v-if="payAmount !== null"
         color="neutral"
         icon="i-lucide-banknote"
         size="sm"
@@ -244,7 +251,7 @@ function onPayNext() {
 
     <div
       v-if="props.isCompact && costProps.byMonth.length"
-      class="flex items-center gap-2 rounded-md bg-elevated/30 interactive px-3 py-2"
+      class="flex items-center gap-2 rounded-md interactive bg-elevated/30 px-3 py-2"
       role="button"
       tabindex="0"
       data-loan-compact-cost

@@ -10,14 +10,14 @@ import type { LoansUpcomingViewGroup } from '~/components/loans/UpcomingView.vue
 import type { WalletId } from '~/components/wallets/types'
 
 import { useAmount } from '~/components/amount/useAmount'
-import { amountToMinor, formatAmount } from '~/components/amount/utils'
+import { amountToMinor } from '~/components/amount/utils'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
 import { LOAN_STORAGE_KEYS } from '~/components/loans/constants'
 import { incomeWindow, debtToIncome as toDebtToIncome } from '~/components/loans/debtToIncome'
 import { paramsOf, projectionParams } from '~/components/loans/engine/derive'
 import { derivePortfolio, recommend } from '~/components/loans/engine/portfolio'
 import { shownEffectiveRate } from '~/components/loans/presenters'
-import { groupUpcoming } from '~/components/loans/upcomingGroups'
+import { groupUpcoming, toUpcomingViewItem } from '~/components/loans/upcomingGroups'
 import { useLoansStore } from '~/components/loans/useLoansStore'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { filterWalletsByViewType } from '~/components/wallets/filters'
@@ -192,21 +192,7 @@ const upcomingGroups = computed<LoansUpcomingViewGroup[]>(() => groupUpcoming(lo
     date,
     items: items.flatMap((item) => {
       const wallet = walletsStore.items?.[item.walletId]
-      if (!wallet)
-        return []
-      let desc: string | undefined
-      if (item.principal !== undefined && item.interest !== undefined)
-        desc = `${t('loans.principal')} ${formatAmount(item.principal, wallet.currencyCode)} · ${t('loans.interest')} ${formatAmount(item.interest, wallet.currencyCode)}`
-      else if (item.minAmount !== undefined)
-        desc = `${t('loans.minPaymentShort')} ${formatAmount(item.minAmount, wallet.currencyCode)}`
-      return [{
-        amount: item.amount,
-        currencyCode: wallet.currencyCode,
-        desc,
-        label: t(item.isGrace ? 'loans.toPay.grace' : item.kind === 'card' ? 'loans.toPay.minPayment' : 'loans.toPay.payment'),
-        walletId: item.walletId,
-        walletName: wallet.name,
-      }]
+      return wallet ? [toUpcomingViewItem(item, wallet, t)] : []
     }),
     sum,
   })),

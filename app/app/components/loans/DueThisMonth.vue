@@ -11,28 +11,55 @@ const currenciesStore = useCurrenciesStore()
 
 const today = useCivilToday()
 
-// The nearest date is the oldest unpaid row, so a past one means something is overdue.
-const isOverdue = computed(() => !!loansStore.dueThisMonth && loansStore.dueThisMonth.nearestDate < today.value)
+// With this month paid off, the card pair looks one month further ahead.
+const blocks = computed(() => {
+  const { afterNextMonth, nextMonth, thisMonth } = loansStore.dueByMonth
+  const months = [
+    { due: thisMonth, key: 'this', title: t('loans.dueThisMonth') },
+    { due: nextMonth, key: 'next', title: t('loans.dueNextMonth') },
+    { due: afterNextMonth, key: 'afterNext', title: t('loans.dueAfterNextMonth') },
+  ]
+  return thisMonth ? months.slice(0, 2) : months.slice(1)
+})
+const shown = computed(() => blocks.value.flatMap(block => block.due ? [{ ...block, due: block.due }] : []))
+const openKey = ref<string | null>(null)
+const opened = computed(() => shown.value.find(block => block.key === openKey.value))
 </script>
 
 <template>
-  <UiCard v-if="loansStore.dueThisMonth" to="/loans" chevron="right" :title="t('loans.dueThisMonth')" data-loan-due>
-    <div class="flex flex-wrap items-baseline gap-x-2">
-      <Amount
-        :amount="loansStore.dueThisMonth.amount"
-        :currencyCode="currenciesStore.base"
-        :isShowBaseRate="false"
-        align="left"
-        variant="summary"
-      />
+  <UiTileGrid v-if="shown.length">
+    <WalletsPageLinkCard
+      v-for="{ due, key, title } in shown"
+      :key
+      class="h-full"
+      :title
+      :data-loan-due="key"
+      @click="openKey = key"
+    >
+      <div class="flex flex-wrap items-baseline gap-x-2">
+        <Amount
+          :amount="due.noInterestAmount"
+          :currencyCode="currenciesStore.base"
+          :isShowBaseRate="false"
+          align="left"
+          variant="summary"
+        />
 
-      <UiText variant="meta" :class="isOverdue && 'text-error!'">
-        {{ t('loans.by') }} {{ formatByLocale(loansStore.dueThisMonth.nearestDate, 'dd.MM', dateLocale) }}
-      </UiText>
+        <UiText variant="meta" :class="due.nearestDate < today && 'text-error!'">
+          {{ t('loans.by') }} {{ formatByLocale(due.nearestDate, 'dd.MM', dateLocale) }}
+        </UiText>
 
-      <UBadge v-if="isOverdue" color="error" variant="soft" size="sm" data-loan-due-overdue>
-        {{ t('loans.overdue') }}
-      </UBadge>
-    </div>
-  </UiCard>
+        <UBadge v-if="due.nearestDate < today" color="error" variant="soft" size="sm" data-loan-due-overdue>
+          {{ t('loans.overdue') }}
+        </UBadge>
+      </div>
+    </WalletsPageLinkCard>
+
+    <LoansDueSheet
+      v-if="opened"
+      :due="opened.due"
+      :title="opened.title"
+      @closed="openKey = null"
+    />
+  </UiTileGrid>
 </template>

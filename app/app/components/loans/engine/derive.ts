@@ -1,8 +1,9 @@
-import { addCivilDays } from '~~/utils/date/civil'
+import { addCivilDays, addCivilMonths, startOfMonthCivil } from '~~/utils/date/civil'
 
 import type { BankReport } from '~/components/bankReports/types'
 import type { CurrencyCode } from '~/components/currencies/types'
 import type { LoanParams, LoanSummary, LoanTrn, ScheduleOverride } from '~/components/loans/engine/types'
+import type { UpcomingItem } from '~/components/loans/engine/upcoming'
 import type { LoanId, LoanItem, LoanScheduleOverrides } from '~/components/loans/types'
 import type { WalletId } from '~/components/wallets/types'
 
@@ -174,4 +175,72 @@ export function deriveDue(
   }
 
   return nearestDate === null ? null : { amount: Math.round(amount), nearestDate }
+}
+
+type Due = { amount: number, nearestDate: number }
+
+/** One charge of a month, shaped like an upcoming item so the same rows render it. */
+export type DueItem = Pick<UpcomingItem, 'amount' | 'currency' | 'date' | 'interest' | 'isGrace' | 'kind' | 'minAmount' | 'principal' | 'walletId'>
+/** `noInterestItems` pay every card's whole grace debt due that month in place of its minimum. */
+export type DueMonth = Due & { items: DueItem[], noInterestAmount: number, noInterestItems: DueItem[] }
+
+/**
+ * Unpaid amounts split by calendar month: the current one (overdue rows included) and the two after it.
+ * The bank's amount replaces the engine's for the single next payment, as in `deriveDue`.
+ */
+export function deriveDueByMonth(
+  entries: Iterable<{ currency: CurrencyCode, summary: LoanSummary, walletId: WalletId }>,
+  revolving: { currency: CurrencyCode, isGrace?: boolean, minPaymentAmount: number, minPaymentDate: number, walletId: WalletId }[],
+  today: number,
+  toBase: (amount: number, currencyCode: CurrencyCode) => number = amount => amount,
+  graces: { amount: number, currency: CurrencyCode, date: number, walletId: WalletId }[] = [],
+): { afterNextMonth: DueMonth | null, nextMonth: DueMonth | null, thisMonth: DueMonth | null } {
+  const ends = [1, 2, 3].map(n => addCivilMonths(startOfMonthCivil(today), n))
+  const sums = ends.map(() => ({ amount: 0, graces: [] as typeof graces, items: [] as DueItem[] }))
+  const monthOf = (date: number) => sums[ends.findIndex(end => date < end)]
+
+  function add(item: DueItem) {
+    const sum = monthOf(item.date)
+    if (!sum)
+      return
+    sum.amount += toBase(item.amount, item.currency)
+    sum.items.push(item)
+  }
+
+  for (const grace of graces)
+    monthOf(grace.date)?.graces.push(grace)
+
+  for (const { currency, summary, walletId } of entries) {
+    if (summary.isClosed)
+      continue
+    const unpaid = summary.rows.filter(row => !isSettled(row))
+    const next = summary.nextPayment
+    for (const row of unpaid) {
+      const amount = row === unpaid[0] && next?.date === row.date ? next.amount : owedOf(row)
+      add({ amount, currency, date: row.date, interest: row.interestPart, kind: 'loan', principal: row.principalPart, walletId })
+    }
+  }
+
+  for (const item of revolving)
+    add({ amount: item.minPaymentAmount, currency: item.currency, date: item.minPaymentDate, isGrace: item.isGrace, kind: 'card', walletId: item.walletId })
+
+  const [thisMonth, nextMonth, afterNextMonth] = sums.map(({ amount, graces: monthGraces, items }) => {
+    if (!items.length && !monthGraces.length)
+      return null
+    const graceIds = new Set(monthGraces.map(grace => grace.walletId))
+    const noInterestItems: DueItem[] = [
+      ...items.filter(item => !graceIds.has(item.walletId)),
+      ...monthGraces.map(grace => ({
+        ...grace,
+        isGrace: true,
+        kind: 'card' as const,
+        minAmount: items.find(item => item.walletId === grace.walletId && !item.isGrace)?.amount,
+      })),
+    ].sort((a, b) => a.date - b.date)
+    const noInterest = noInterestItems.reduce((total, item) => total + toBase(item.amount, item.currency), 0)
+    items.sort((a, b) => a.date - b.date)
+    const nearestDate = Math.min(...items.map(item => item.date), ...monthGraces.map(grace => grace.date))
+    return { amount: Math.round(amount), items, nearestDate, noInterestAmount: Math.round(noInterest), noInterestItems }
+  })
+  return { afterNextMonth: afterNextMonth!, nextMonth: nextMonth!, thisMonth: thisMonth! }
 }
