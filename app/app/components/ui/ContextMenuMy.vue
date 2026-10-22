@@ -12,7 +12,8 @@ import { closeOtherContextMenus, registerContextMenu, setContextMenuOpen } from 
 const props = withDefaults(defineProps<{
   descriptionKey?: string
   disabled?: boolean
-  items?: ContextMenuItem[][]
+  // A getter builds the items only when the menu first opens: long lists render a menu per row.
+  items?: ContextMenuItem[][] | (() => ContextMenuItem[][])
   labelKey?: string
   modal?: boolean
   portal?: boolean | string
@@ -64,6 +65,17 @@ const RegistryBridge = defineComponent({
   },
 })
 
+// Content mounts on the first open and stays for the exit animation: a row that is never pressed
+// renders only its trigger.
+const wasOpened = ref(false)
+function onOpen(value: boolean) {
+  if (value)
+    wasOpened.value = true
+  emit('update:open', value)
+}
+
+const items = computed(() => toValue(props.items))
+
 const appConfig = useAppConfig()
 const ui = computed(() => tv({
   extend: tv(theme as any),
@@ -75,15 +87,16 @@ const ui = computed(() => tv({
   <ContextMenuRoot
     :modal="props.modal"
     :pressOpenDelay="props.pressOpenDelay"
-    @update:open="(v) => emit('update:open', v)"
+    @update:open="onOpen"
   >
     <RegistryBridge />
     <ContextMenuTrigger asChild data-context-trigger :disabled="props.disabled">
       <slot />
     </ContextMenuTrigger>
     <UContextMenuContent
+      v-if="wasOpened"
       class="max-w-72"
-      :items="props.items"
+      :items="items"
       :portal="props.portal"
       :labelKey="props.labelKey"
       :descriptionKey="props.descriptionKey"

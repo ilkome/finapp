@@ -124,7 +124,7 @@ async function duplicate() {
 </script>
 
 <template>
-  <UiContextMenuMy v-bind="$attrs" :items="contextMenuItems">
+  <UiContextMenuMy v-bind="$attrs" :items="() => contextMenuItems">
     <TrnsItem
       :compact="props.compact"
       :isShowCategory="props.isShowCategory"
