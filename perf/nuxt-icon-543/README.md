@@ -49,6 +49,10 @@ Raw: `results/repro-phone.jsonl`, `results/repro-desktop.jsonl`.
 
 ## Real app, phone
 
+The account in these runs: 5032 transactions over 12 years, 166 categories (145 of them children,
+131 distinct icons), 26 wallets. The three category sheets opened in `switch` list 34, 316 and 570
+transactions.
+
 Insert of one icon-style rule into the running app (1265-1293 elements), median of 7, ms
 (`results/app-insert.jsonl`):
 
@@ -67,7 +71,7 @@ new icon (`StyleRecalc` invalidations with reason `PropertyRegistration` on `<ht
 
 ### Before / after the workaround
 
-Two scenarios driven over CDP with real input on the phone, real data, interleaved runs (before,
+Two scenarios driven over CDP with real input on the phone, on that account, interleaved runs (before,
 after, before, after). `full`: 16 steps through a chain of nested drawers. `switch`: open and close
 three category sheets, then the first again. Sums over the steps, ms (`results/app-scenario-*.json`):
 
