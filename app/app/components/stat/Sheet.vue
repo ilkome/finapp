@@ -2,13 +2,14 @@
 import type { CategoryId } from '~/components/categories/types'
 import type { StatDateParams } from '~/components/stat/date/types'
 import type { StatReportType } from '~/components/stat/types'
+import type { StatBlockPanelId } from '~/components/stat/views/types'
 import type { WalletId } from '~/components/wallets/types'
 
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useStatPageFilter } from '~/components/filter/useStatPageFilter'
 import { isShowNavHome } from '~/components/stat/date/navigationPredicates'
 import { resolveStatSelectionRange } from '~/components/stat/date/selectionRange'
-import { statCategorySheetKey, statInSheetKey, statStickyNavKey, statStickyTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
+import { statCategorySheetKey, statConfigOverlayOwnerKey, statHiddenPanelsKey, statInSheetKey, statStickyNavKey, statStickyTopKey, statViewControllerKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { useStatPageProviders } from '~/components/stat/useStatPageProviders'
 import { useStatPageViews } from '~/components/stat/views/useStatPageViews'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
@@ -16,8 +17,9 @@ import { useWalletsStore } from '~/components/wallets/useWalletsStore'
 
 /**
  * A category's or a wallet's statistics in a sheet over the current page. With `date` it is a view of
- * the page that opened it (its config, wallets filter and selected period) kept for this session only;
- * without it, a wallet's own page settings.
+ * the page that opened it (its wallets filter and selected period, and for a wallet its config) kept for
+ * this session only; without it, a wallet's own page settings. Every category sheet shares one config of
+ * its own, kept on the device and edited from its view settings; the page's views do not apply to it.
  */
 const props = defineProps<{
   categoryId?: CategoryId
@@ -43,6 +45,7 @@ provide(statStickyTopKey, ref(0))
 // The sheet scrolls by itself, so the window-scroll virtual feed cannot run in it.
 provide(statVirtualFeedKey, false)
 
+const isCategory = !!props.categoryId
 const isSeeded = !!props.date
 const storage = isSeeded ? sessionStorage : localStorage
 const storageKey = isSeeded
@@ -76,7 +79,9 @@ const singleTrnType = computed<StatReportType | null>(() => {
 
 const isLoanWallet = !!props.walletId && walletsStore.items?.[props.walletId]?.type === 'loan'
 const { contentWidth, statConfig, statDate } = useStatPageProviders({
-  config: { initialConfig: props.config, storage, storageKey, storageQuery: {} },
+  config: isCategory
+    ? { storage: localStorage, storageKey: 'stat-sheet-category', storageQuery: {} }
+    : { initialConfig: props.config, storage, storageKey, storageQuery: {} },
   date: {
     // A loan moves once a month over years, as on its wallet page.
     initParams: props.date ?? (isLoanWallet ? { granularityBy: 'month', isShowMaxRange: true } : undefined),
@@ -96,15 +101,25 @@ const contextRange = computed(() => resolveStatSelectionRange(
   statDate.selectedInterval.value,
   statDate.params.value.intervalSelected,
 ))
-const { hiddenPanels } = useStatPageViews({
-  categoryId: () => props.categoryId,
-  contentWidth,
-  filter,
-  range: contextRange,
-  statConfig,
-  trnsIds,
-  walletId: () => props.walletId,
-})
+// The date row sits in the footer, so its block has nothing to set here.
+const categoryHiddenPanels: StatBlockPanelId[] = ['navigation']
+if (isCategory) {
+  // The page that opened the sheet provides its own views; they must not reach this config.
+  provide(statViewControllerKey, null)
+  provide(statHiddenPanelsKey, categoryHiddenPanels)
+  provide(statConfigOverlayOwnerKey, useId())
+}
+const hiddenPanels = isCategory
+  ? computed(() => categoryHiddenPanels)
+  : useStatPageViews({
+    categoryId: () => props.categoryId,
+    contentWidth,
+    filter,
+    range: contextRange,
+    statConfig,
+    trnsIds,
+    walletId: () => props.walletId,
+  }).hiddenPanels
 </script>
 
 <template>
@@ -117,7 +132,10 @@ const { hiddenPanels } = useStatPageViews({
     @closed="emit('closed')"
   >
     <template #titleActions>
-      <StatChartSettingsPopover />
+      <StatConfigModal v-if="isCategory">
+        <StatConfigView isShared />
+      </StatConfigModal>
+      <StatChartSettingsPopover v-else />
     </template>
 
     <!-- The compact floating title has almost no bottom padding; this evens the gap under it with the one above. -->

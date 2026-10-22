@@ -12,6 +12,11 @@ import { STAT_STORAGE_KEYS } from '~/components/stat/constants'
 import { statBaseConfigKey, statCanSplitKey, statConfigKey } from '~/components/stat/injectionKeys'
 import { sortInsertLine } from '~/components/ui/sortInsertLine'
 
+const props = defineProps<{
+  /** A config shared outside the page's views (category sheets): no views, no rules. */
+  isShared?: boolean
+}>()
+
 const { t } = useI18n()
 const { isOpen: isConfigOpen } = useStatConfigOverlay()
 const statConfig = inject(statBaseConfigKey)!
@@ -83,7 +88,7 @@ watch(isConfigOpen, (isOpen) => {
     class="statConfigPanel grid min-w-0"
     :class="width < 767 && 'pb-6'"
   >
-    <StatViewsManagement />
+    <StatViewsManagement v-if="!props.isShared" />
     <template v-if="canSplit">
       <div class="-mt-px rounded-lg border border-transparent">
         <StatConfigFieldRow :title="t('stat.view.pageLayout.title')">
@@ -108,7 +113,7 @@ watch(isConfigOpen, (isOpen) => {
       @activate="openPanel('statAverage')"
     />
 
-    <div class="py-3">
+    <div v-if="!props.isShared" class="py-3">
       <UiTabs
         :items="groupByItems"
         :modelValue="groupBy"
@@ -118,7 +123,7 @@ watch(isConfigOpen, (isOpen) => {
     </div>
 
     <!-- v-show, not v-if: unmounting the list would tear down the drag-and-drop parent. -->
-    <div v-show="groupBy === 'blocks'" ref="blockSortParent" class="grid min-w-0">
+    <div v-show="props.isShared || groupBy === 'blocks'" ref="blockSortParent" class="grid min-w-0">
       <StatConfigBlock
         v-for="(panel, index) in sortedBlockIds"
         :key="panel"
@@ -130,7 +135,7 @@ watch(isConfigOpen, (isOpen) => {
     </div>
 
     <StatConfigBlockRuleGroups
-      v-if="groupBy === 'rules'"
+      v-if="!props.isShared && groupBy === 'rules'"
       :panels="availablePanels"
     />
   </div>

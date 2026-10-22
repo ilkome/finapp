@@ -18,7 +18,8 @@ export const statContextBlockIdsKey: InjectionKey<Readonly<Ref<readonly StatCont
 /** Panels a page never renders; the settings drawer skips them too. */
 export const statHiddenPanelsKey: InjectionKey<readonly StatBlockPanelId[]> = Symbol('statHiddenPanels')
 export const statHistoryAvailableKey: InjectionKey<Ref<boolean>> = Symbol('statHistoryAvailable')
-export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController>> = Symbol('statViewController')
+// null: a config outside the page's views (category sheets) shuts out the page's controller.
+export const statViewControllerKey: InjectionKey<ReturnType<typeof import('~/components/stat/views/useStatViewController').useStatViewController> | null> = Symbol('statViewController')
 /** Set by a page whose category cloud opens a category's stat sheet instead of filtering; a sheet resets it. */
 export const statCategorySheetKey: InjectionKey<((categoryId: CategoryId) => void) | null> = Symbol('statCategorySheet')
 /** A stat sheet over a page: document-wide view transitions would draw their snapshots above it. */
