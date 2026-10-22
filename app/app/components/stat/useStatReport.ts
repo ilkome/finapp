@@ -4,10 +4,13 @@ import type { CategoryId } from '~/components/categories/types'
 import type { SeriesSlugSelected, UseStatReportParams } from '~/components/stat/types'
 import type { TrnsListFilterState } from '~/components/trns/types'
 
+import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
+import { buildCategoryViews } from '~/components/stat/categories/categoryViews'
 import { useStatChartWindow } from '~/components/stat/chart/useStatChartWindow'
 import { useStatReportChart } from '~/components/stat/report/useStatReportChart'
 import { useStatReportData } from '~/components/stat/report/useStatReportData'
 import { statDevMetrics } from '~/components/stat/statDevMetrics'
+import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 export function normalizeSelectedSeries(value: unknown): SeriesSlugSelected {
   if (value === 'expense' || value === 'income' || value === 'net')
@@ -75,6 +78,18 @@ export function useStatReport(params: UseStatReportParams) {
     type: params.type,
   })
 
+  // One per report: every category block of the page (cloud, list, columns) reads it.
+  const categoriesStore = useCategoriesStore()
+  const trnsStore = useTrnsStore()
+  const categoryViews = computed(() => buildCategoryViews({
+    categoriesItems: categoriesStore.items,
+    computeValue: ids => data.computeTotalForTrnsIds(ids).net,
+    excludedCategoriesIds: data.statExcludedIds.value,
+    intervals: data.intervalsDataWithFilteredCategories.value,
+    trnsIds: data.selectedTrnsIds.value,
+    trnsItems: trnsStore.items ?? {},
+  }))
+
   function onSetCategoryFilter(categoryId: CategoryId) {
     if (params.quickCategoryFilter?.setCategoryFilter) {
       params.quickCategoryFilter.setCategoryFilter(categoryId)
@@ -97,6 +112,7 @@ export function useStatReport(params: UseStatReportParams) {
 
   return {
     averageTotal: data.averageTotal,
+    categoryViews,
     chartSeries: chart.chartSeries,
     chartWindow,
     chartXAxisLabels: chart.chartXAxisLabels,

@@ -63,10 +63,10 @@ test.describe('Stat / dashboard smoke', () => {
     const statRoot = page.locator('.\\@container\\/stat').first()
     await expect(statRoot).toBeVisible({ timeout: 15_000 })
 
-    // §2 Chart renders: echarts uses SVGRenderer, so it mounts an <svg> element.
+    // §2 Chart renders: echarts uses CanvasRenderer, so it mounts a <canvas> element.
     // Give the idle-mount delay (useIdleMount) up to 10s to resolve.
-    const chartSvg = statRoot.locator('svg').first()
-    await expect(chartSvg).toBeVisible({ timeout: 10_000 })
+    const chartCanvas = statRoot.locator('canvas').first()
+    await expect(chartCanvas).toBeVisible({ timeout: 10_000 })
 
     // §3 Type switching: Expense, then Income, then back to everything.
     const expenseTile = page.getByRole('button', { name: T.expense }).first()

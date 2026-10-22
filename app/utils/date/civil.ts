@@ -32,9 +32,11 @@ export function epochToCivilParts(ms: number): { day: number, month: number, yea
   return { day: d.getDate(), month: d.getMonth(), year: d.getFullYear() }
 }
 
-/** Snap any instant to the UTC-midnight of its UTC calendar day. */
+const DAY_MS = 86_400_000
+
+/** Snap any instant to the UTC-midnight of its UTC calendar day. UTC has no DST, so a day is always `DAY_MS`. */
 export function civilDayStart(ms: number): number {
-  return startOfDay(u(ms)).getTime()
+  return ms - (((ms % DAY_MS) + DAY_MS) % DAY_MS)
 }
 
 /** Today's civil day, captured in the user's local timezone. */

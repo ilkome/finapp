@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Period, Range } from '~~/utils/date/types'
 
+import { afterNextPaint } from '~~/utils/afterNextPaint'
+
 import { availableGranularities } from '~/components/stat/chart/granularity'
 
 const props = defineProps<{
@@ -21,6 +23,18 @@ const labels: Record<Period, string> = {
   year: 'dates.year.simple',
 }
 
+// The stat page recomputes in the task that applies a grouping, so the pick is shown from here and
+// emitted after it paints (and after the menu starts closing).
+const pending = shallowRef<Period>()
+watch(() => props.period, () => pending.value = undefined)
+function onPick(value: Period) {
+  pending.value = value
+  afterNextPaint(() => {
+    if (pending.value === value)
+      emit('changePeriod', value)
+  })
+}
+
 const availableIntervals = computed(() =>
   availableGranularities(props.period, props.range).map(value => ({
     label: t(labels[value]),
@@ -33,13 +47,13 @@ const availableIntervals = computed(() =>
   <USelect
     v-if="availableIntervals.length > 1"
     data-reka-swipe-ignore
-    :modelValue="period"
+    :modelValue="pending ?? period"
     :items="availableIntervals"
     :ui="{
       base: 'ring-0 text-muted text-2xs hover:bg-elevated',
       trailingIcon: 'size-4',
       content: 'w-24',
     }"
-    @update:modelValue="emit('changePeriod', $event as Period)"
+    @update:modelValue="onPick($event as Period)"
   />
 </template>

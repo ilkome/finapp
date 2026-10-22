@@ -8,7 +8,6 @@ import type { useStatInfinitePeriods } from '~/components/stat/useStatInfinitePe
 import {
   isSameStatFeedScope,
   normalizeStatFeedScope,
-  resolveStatFeedScrollTop,
   resolveStatPeriodTransition,
   resolveStatStickyBottom,
 } from '~/components/stat/statFeed'
@@ -258,7 +257,8 @@ export function useStatFeedViewport(params: {
     }
     isReconciling.value = true
     const scroller = document.scrollingElement
-    const landingScrollTop = resolveStatFeedScrollTop(params.preservedCategoryScrollTop.value, scroller?.scrollTop ?? 0, false) ?? 0
+    // Not `scroller.scrollTop`: reading it here forces a layout in the middle of the update that reset the feed.
+    const landingScrollTop = params.preservedCategoryScrollTop.value ?? 0
     try {
       activePeriodScrollDirection = null
       activePeriodInputDirection = null

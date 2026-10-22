@@ -31,6 +31,8 @@ describe('civil-day helpers', () => {
   it('civilDayStart snaps any instant to its UTC calendar day', () => {
     expect(civilDayStart(Date.UTC(2024, 2, 15, 23, 59))).toBe(Date.UTC(2024, 2, 15))
     expect(civilDayStart(Date.UTC(2024, 2, 15, 0, 0, 0, 1))).toBe(Date.UTC(2024, 2, 15))
+    expect(civilDayStart(Date.UTC(2024, 2, 15))).toBe(Date.UTC(2024, 2, 15))
+    expect(civilDayStart(Date.UTC(1969, 11, 31, 12))).toBe(Date.UTC(1969, 11, 31))
   })
 
   it('civilDayKey formats YYYY-MM-DD in UTC', () => {

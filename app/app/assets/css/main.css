@@ -49,8 +49,7 @@
     pointer-events: auto !important;
   }
 
-  /* Reka forces `pointer-events: auto` inline on every context-menu trigger so a right-click can
-     jump between them; while a menu is open the rows behind it must stay inert instead. */
+  /* While a menu is open the rows behind it stay inert, even where a row sets its own pointer events. */
   :root[data-context-menu-open] [data-context-trigger] {
     pointer-events: none !important;
   }

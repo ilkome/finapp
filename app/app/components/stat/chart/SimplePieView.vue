@@ -3,12 +3,13 @@ import { useElementSize } from '@vueuse/core'
 import { PieChart } from 'echarts/charts'
 import { TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
-import { SVGRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { SimplePieDatum } from '~/components/stat/chart/simplePie'
 import type { ChartSeries } from '~/components/stat/types'
 
+import { resolveChartCss } from '~/components/stat/chart/cssValues'
 import { buildSimplePieData, resolvePieWindow } from '~/components/stat/chart/simplePie'
 
 type PieTooltipParam = {
@@ -48,7 +49,7 @@ const emit = defineEmits<{
   selectSlice: [name: string]
 }>()
 
-use([PieChart, SVGRenderer, TooltipComponent])
+use([PieChart, CanvasRenderer, TooltipComponent])
 
 const { t } = useI18n()
 const { width: viewportWidth } = useWindowSize()
@@ -192,7 +193,7 @@ const piePercentLabels = computed<PiePercentLabel[]>(() => {
     }]
   })
 })
-const option = computed(() => ({
+const option = computed(() => resolveChartCss({
   animation: true,
   animationDuration: 0,
   animationDurationUpdate: 0,

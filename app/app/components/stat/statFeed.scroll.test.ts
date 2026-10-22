@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { canApplyStatLoadResult, canStickStatCategories, findStatPeriodOffsetForDate, isStatCategoriesPinned, mergeStatOffsets, resolveCurrentPeriodEmptyKey, resolveStatFeedScrollTop, resolveStatPeriodTransition, resolveStatScrollRangeOffset, resolveStatStickyBottom, resolveVisibleStatPeriodOffset, shouldRequestStatHistoryLoad } from '~/components/stat/statFeed'
+import { canApplyStatLoadResult, canStickStatCategories, findStatPeriodOffsetForDate, isStatCategoriesPinned, mergeStatOffsets, resolveCurrentPeriodEmptyKey, resolveStatPeriodTransition, resolveStatScrollRangeOffset, resolveStatStickyBottom, resolveVisibleStatPeriodOffset, shouldRequestStatHistoryLoad } from '~/components/stat/statFeed'
 
 describe('canStickStatCategories', () => {
   it('allows sticky categories only when the complete list fits below the fixed content', () => {
@@ -19,20 +19,6 @@ describe('resolveCurrentPeriodEmptyKey', () => {
   it('uses the active stat tab outside summary', () => {
     expect(resolveCurrentPeriodEmptyKey('expense', 'net')).toBe('trns.noExpenses')
     expect(resolveCurrentPeriodEmptyKey('income', 'net')).toBe('trns.noIncome')
-  })
-})
-
-describe('resolveStatFeedScrollTop', () => {
-  it('preserves the current position when a transaction tab changes', () => {
-    expect(resolveStatFeedScrollTop(null, 840, true)).toBe(840)
-  })
-
-  it('keeps the category position when both preservation modes apply', () => {
-    expect(resolveStatFeedScrollTop(720, 840, true)).toBe(720)
-  })
-
-  it('allows report changes to reset the page', () => {
-    expect(resolveStatFeedScrollTop(null, 840, false)).toBeNull()
   })
 })
 

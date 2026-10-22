@@ -164,6 +164,12 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     return tryToBase(amount, currencyCode) ?? 0
   }
 
+  // Exposed as constant getters, not actions: Pinia wraps every function a store returns in an action
+  // (arguments copied, two Sets, subscribers called), which costs more than the conversion it wraps,
+  // and totals convert every transaction.
+  const toBaseFn = computed(() => toBase)
+  const tryToBaseFn = computed(() => tryToBase)
+
   function fromBase(amount: number, currencyCode: CurrencyCode): number {
     return getAmountInRate(amount, base.value, currencyCode, rates.value)
   }
@@ -233,7 +239,7 @@ export const useCurrenciesStore = defineStore('currencies', () => {
     saveCurrency,
     setItems,
     setRates,
-    toBase,
-    tryToBase,
+    toBase: toBaseFn,
+    tryToBase: tryToBaseFn,
   }
 })

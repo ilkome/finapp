@@ -4,7 +4,7 @@ import type { Period } from '~~/utils/date/types'
 import { BarChart, CustomChart, LineChart } from 'echarts/charts'
 import { DataZoomInsideComponent, GridComponent, MarkAreaComponent, MarkLineComponent, MarkPointComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
-import { SVGRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { ChartScaleMode } from '~/components/stat/chart/options'
@@ -13,6 +13,7 @@ import type { MiniItemConfig } from '~/components/stat/config/schema'
 import type { ChartSeries } from '~/components/stat/types'
 
 import { buildAxisChartOption } from '~/components/stat/chart/axisOption'
+import { resolveChartCss } from '~/components/stat/chart/cssValues'
 import { formatChartAmount, formatChartTooltipLabel } from '~/components/stat/chart/format'
 import { useAxisChartPan } from '~/components/stat/chart/useAxisChartPan'
 
@@ -66,14 +67,14 @@ const emit = defineEmits<{
   tooltipLink: [dataIndex: number]
 }>()
 
-use([BarChart, CustomChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, MarkPointComponent, SVGRenderer, TooltipComponent])
+use([BarChart, CustomChart, DataZoomInsideComponent, GridComponent, LineChart, MarkAreaComponent, MarkLineComponent, MarkPointComponent, CanvasRenderer, TooltipComponent])
 
 const { locale, t } = useI18n()
 const { width: viewportWidth } = useWindowSize()
 const isDev = import.meta.dev
 const chartRef = ref()
 
-// The chart is an SVG the screen reader can't read; label it as an image and
+// The chart is a canvas the screen reader can't read; label it as an image and
 // expose its numbers in a visually hidden table.
 const chartAriaLabel = computed(() => {
   const names = series
@@ -83,16 +84,22 @@ const chartAriaLabel = computed(() => {
   return names ? `${t('chart.label')}: ${names}` : t('chart.label')
 })
 
-const tableRows = computed(() => xAxisLabels.map((date, index) => ({
-  label: tooltipTitles?.[index] ?? formatChartTooltipLabel(date, period, locale.value),
-  values: series.map(item => formatChartAmount(item.data[index])),
-})))
+// The table holds what the chart shows: a pannable chart keeps a buffer of periods around its window.
+const tableRows = computed(() => {
+  const start = xAxisLabels.indexOf(startValue ?? -1)
+  const end = xAxisLabels.indexOf(endValue ?? -1)
+  const [from, to] = isPannable && start >= 0 && end >= start ? [start, end + 1] : [0, xAxisLabels.length]
+  return xAxisLabels.slice(from, to).map((date, offset) => ({
+    label: tooltipTitles?.[from + offset] ?? formatChartTooltipLabel(date, period, locale.value),
+    values: series.map(item => formatChartAmount(item.data[from + offset])),
+  }))
+})
 
 function tooltipIndex(params: unknown): number {
   return (Array.isArray(params) ? params[0]?.dataIndex : undefined) ?? -1
 }
 
-const option = computed(() => buildAxisChartOption({
+const option = computed(() => resolveChartCss(buildAxisChartOption({
   chartConfig,
   chartType,
   endValue,
@@ -106,7 +113,7 @@ const option = computed(() => buildAxisChartOption({
   startValue,
   viewportWidth: viewportWidth.value,
   xAxisLabels,
-}))
+})))
 
 const {
   onClickChart,

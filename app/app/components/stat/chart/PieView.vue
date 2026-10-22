@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { PieChart } from 'echarts/charts'
 import { use } from 'echarts/core'
-import { SVGRenderer } from 'echarts/renderers'
+import { CanvasRenderer } from 'echarts/renderers'
 import VChart from 'vue-echarts'
 
 import type { CategoryPieDatum } from '~/components/stat/chart/categoryBreakdown'
 
+import { resolveChartCss } from '~/components/stat/chart/cssValues'
 import { formatChartAmount } from '~/components/stat/chart/format'
 
 const { isStatic = false, pieData, sizeClass = 'size-12', typeLabel } = defineProps<{
@@ -18,14 +19,14 @@ const { isStatic = false, pieData, sizeClass = 'size-12', typeLabel } = definePr
 
 use([
   PieChart,
-  SVGRenderer,
+  CanvasRenderer,
 ])
 
 // Avoid entrance animation while enabling transitions for subsequent data updates.
 const isInitialRender = ref(true)
 const total = computed(() => pieData.reduce((acc, item) => acc + item.value, 0))
 const hasData = computed(() => total.value > 0)
-const option = computed(() => ({
+const option = computed(() => resolveChartCss({
   animation: !isStatic && !isInitialRender.value,
   animationDurationUpdate: 300,
   series: [{

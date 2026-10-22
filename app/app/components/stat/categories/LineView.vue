@@ -47,7 +47,7 @@ const barStyle = computed(() =>
 const sparklineHeight = 40
 const sparklineWidth = computed(() => getCategorySparklineWidth(props.item.trend?.length ?? 0))
 const sparklinePoints = computed(() => {
-  const values = props.item.trend ?? []
+  const values = props.trendType === 'line' ? props.item.trend ?? [] : []
   const padding = 2
   if (values.length === 0)
     return ''
@@ -72,22 +72,24 @@ const sparklineBars = computed(() => {
   const gap = 2
   const max = Math.max(...values, 0)
   if (max === 0)
-    return []
+    return null
 
   const barWidth = Math.min(3, Math.max(1, (sparklineWidth.value - gap * Math.max(0, values.length - 1)) / values.length))
   const barsWidth = barWidth * values.length + gap * Math.max(0, values.length - 1)
   const startX = sparklineWidth.value - barsWidth
   const maxBarHeight = sparklineHeight * 0.9
-  return values.map((value, index) => {
+  // Two paths, not a rect per bar: a daily range has hundreds of periods in every category row.
+  let filled = ''
+  let empty = ''
+  values.forEach((value, index) => {
     const barHeight = value === 0 ? 1 : Math.max(2, value / max * maxBarHeight)
-    return {
-      height: barHeight,
-      opacity: value === 0 ? 0.2 : 1,
-      width: barWidth,
-      x: startX + index * (barWidth + gap),
-      y: sparklineHeight - barHeight,
-    }
+    const bar = `M${startX + index * (barWidth + gap)} ${sparklineHeight - barHeight}h${barWidth}v${barHeight}h${-barWidth}z`
+    if (value === 0)
+      empty += bar
+    else
+      filled += bar
   })
+  return { empty, filled }
 })
 
 const longPressRef = ref(null)
@@ -192,7 +194,7 @@ function onAmountClick(e: MouseEvent) {
           colorize="income"
         />
         <svg
-          v-if="sparklinePoints && isShowTrend"
+          v-if="props.item.trend?.length && isShowTrend"
           aria-hidden="true"
           :class="{
             'col-start-1 row-start-1 opacity-30': isBarPlus,
@@ -214,18 +216,9 @@ function onAmountClick(e: MouseEvent) {
             stroke-width="1.5"
             vector-effect="non-scaling-stroke"
           />
-          <template v-else>
-            <rect
-              v-for="(bar, index) in sparklineBars"
-              :key="index"
-              :fill="props.category.color"
-              :height="bar.height"
-              :opacity="bar.opacity"
-              rx="1"
-              :width="bar.width"
-              :x="bar.x"
-              :y="bar.y"
-            />
+          <template v-else-if="sparklineBars">
+            <path :d="sparklineBars.filled" :fill="props.category.color" />
+            <path :d="sparklineBars.empty" :fill="props.category.color" opacity="0.2" />
           </template>
         </svg>
       </div>

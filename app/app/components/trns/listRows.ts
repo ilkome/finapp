@@ -1,4 +1,4 @@
-import { getStartOf } from '~~/utils/date/period'
+import { civilDayStart } from '~~/utils/date/civil'
 
 import type { TrnId, TrnItem } from '~/components/trns/types'
 
@@ -21,7 +21,7 @@ export function buildTrnsDisplayRows(
     if (!trn)
       continue
 
-    const date = getStartOf(new Date(trn.date), 'day').getTime()
+    const date = civilDayStart(trn.date)
     if (date !== currentDate) {
       currentDate = date
       currentHeader = {

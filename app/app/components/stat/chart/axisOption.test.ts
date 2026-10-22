@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { buildAxisChartOption } from '~/components/stat/chart/axisOption'
+import { resolveCssValues } from '~/components/stat/chart/cssValues'
 import rawChartFixture from '~/components/stat/fixtures/chart.json'
 
 type Options = Parameters<typeof buildAxisChartOption>[0]
@@ -65,5 +66,20 @@ describe('buildAxisChartOption', () => {
     const tap = buildOption({ isTooltipOnTap: true, viewportWidth: 375 }).tooltip as Record<string, unknown>
     expect(tap).toMatchObject({ enterable: true, show: true, triggerOn: 'click' })
     expect((buildOption({ isTooltipOnTap: true }).tooltip as Record<string, unknown>).triggerOn).toBe('mousemove|click')
+  })
+
+  it('paints the selected period with its resolved color: the canvas cannot read a CSS variable', () => {
+    const key = `${chartFixture.xAxisLabels[1]}`
+    const marked = { data: [], markArea: { data: [[{ xAxis: key }, { xAxis: key }]] }, markedArea: 'markedArea', name: '', type: 'line' }
+    const option = resolveCssValues(buildOption({ series: [...chartFixture.series, marked] as Options['series'] }), () => 'rgb(1,2,3)')
+    const active = (option.series as Array<{ itemStyle?: { color: string }, name?: string, renderItem?: (...args: any[]) => { style: { fill: string } } }>)
+      .find(item => item.name === 'active-period')!
+    expect(active.itemStyle?.color).toBe('rgb(1,2,3)')
+    const shape = active.renderItem!({ coordSys: { height: 100, y: 0 } }, {
+      coord: ([index]: number[]) => [index! * 10, 0],
+      value: () => 1,
+      visual: () => active.itemStyle!.color,
+    })
+    expect(shape.style.fill).toBe('rgb(1,2,3)')
   })
 })

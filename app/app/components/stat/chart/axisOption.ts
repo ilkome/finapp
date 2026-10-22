@@ -177,10 +177,12 @@ export function buildAxisChartOption({
         axisOverlay: true,
         coordinateSystem: 'cartesian2d',
         data: [[activeIntervalIndex, 0]],
+        itemStyle: { color: 'var(--ui-bg-elevated)' },
         name: 'active-period',
         renderItem: (params: { coordSys: { height: number, y: number } }, api: {
           coord: (value: unknown[]) => number[]
           value: (dimension: number) => unknown
+          visual: (key: 'color') => string
         }) => {
           const dataIndex = Number(api.value(0))
           const [centerX = 0] = api.coord([dataIndex, 0])
@@ -197,7 +199,9 @@ export function buildAxisChartOption({
               x: centerX - width / 2,
               y: params.coordSys.y,
             },
-            style: { fill: 'var(--ui-bg-elevated)' },
+            // The color comes from `itemStyle`: a plain option value is resolved for the canvas, a
+            // `renderItem` result is not.
+            style: { fill: api.visual('color') },
             type: 'rect',
           }
         },

@@ -12,7 +12,7 @@ describe('category views render from plain JSON', () => {
     expect(wrapper.text()).toContain('Groceries')
     expect(wrapper.text()).toContain('Food')
     expect(wrapper.find('[data-amount]').text()).toBe('-32050 USD')
-    expect(wrapper.findAll('rect')).toHaveLength(4)
+    expect(wrapper.findAll('path').map(path => path.attributes('d')).join('').match(/M/g)).toHaveLength(4)
     expect(wrapper.attributes('data-stat-category-id')).toBe('groceries')
   })
 

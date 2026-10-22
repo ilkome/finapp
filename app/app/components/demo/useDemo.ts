@@ -50,6 +50,14 @@ function createRandom(): () => number {
   }
 }
 
+// Performance runs need a history the size of a real account. A run sets `window.__finappDemoScale`
+// before the app boots (like the seed): N times the years, the transactions and the categories the
+// rules spend in (each gets N - 1 copies). Without it the demo stays as it is.
+function readScale(): number {
+  const scale = import.meta.client ? (window as { __finappDemoScale?: number }).__finappDemoScale : undefined
+  return scale && scale > 1 ? Math.floor(scale) : 1
+}
+
 /** Pick a random item from an array using weighted probabilities. */
 function weightedPick<T extends { weight: number }>(rules: T[]): T {
   const totalWeight = rules.reduce((sum, r) => sum + r.weight, 0)
@@ -99,6 +107,7 @@ export function useDemo() {
 
   async function generateDemoData(locale: LocaleSlug) {
     random = createRandom()
+    const scale = readScale()
     await localforage.clear()
     // Freshly generated data is of the current schema; the boot check must not drop it as outdated.
     markDataSchemaCurrent()
@@ -158,12 +167,23 @@ export function useDemo() {
       updatedAt: today,
     }
 
+    const categoryCopies = new Map<string, string[]>()
+    if (scale > 1) {
+      for (const id of new Set([...expenseRules, ...incomeRules].map(rule => rule.categoryId))) {
+        const base = translatedData.categories[id]!
+        const ids = Array.from({ length: scale - 1 }, (_, n) => `${id}_${n + 2}`)
+        ids.forEach((copyId, n) => translatedData.categories[copyId] = { ...base, name: `${base.name} ${n + 2}` })
+        categoryCopies.set(id, [id, ...ids])
+      }
+    }
+    const categoryOf = (id: string) => scale > 1 ? randItem(categoryCopies.get(id) ?? [id]) : id
+
     useUserStore().setUserBaseCurrency(main)
     currenciesStore.setRates(currencies)
     categoriesStore.setCategories(translatedData.categories)
     walletsStore.setWallets(translatedData.wallets)
 
-    const startDate = subYears(startOfYear(new Date()), config.subtractYears).getTime()
+    const startDate = subYears(startOfYear(new Date()), config.subtractYears * scale).getTime()
     const endDate = Date.now()
     // Everyday expenses are paid from the main-currency wallets; the foreign and crypto wallets are
     // only reached by transfers and the rules that name them.
@@ -173,7 +193,7 @@ export function useDemo() {
     let trnIndex = 0
 
     // --- Expenses (with seasonality) ---
-    for (let i = 0; i < config.expenseCount; i++) {
+    for (let i = 0; i < config.expenseCount * scale; i++) {
       const rule = weightedPick(expenseRules)
       let date = startDate + random() * (endDate - startDate)
 
@@ -192,7 +212,7 @@ export function useDemo() {
       const desc = rule.desc ? rule.desc[locale] : undefined
 
       trns[trnIndex++] = {
-        categoryId: rule.categoryId,
+        categoryId: categoryOf(rule.categoryId),
         createdAt: date,
         date,
         ...(desc ? { description: desc } : {}),
@@ -260,7 +280,7 @@ export function useDemo() {
 
     // Other income (freelance, investments, cashback)
     const salaryMonths = Math.floor((endDate - startDate) / (30 * 24 * 60 * 60 * 1000))
-    const remainingIncome = config.incomeCount - salaryMonths
+    const remainingIncome = config.incomeCount * scale - salaryMonths
     for (let i = 0; i < Math.max(0, remainingIncome); i++) {
       const rule = weightedPick(incomeRules)
       const walletId = rule.walletIds ? randItem(rule.walletIds) : walletDebitRub
@@ -269,7 +289,7 @@ export function useDemo() {
 
       const date = startDate + random() * (endDate - startDate)
       trns[trnIndex++] = {
-        categoryId: rule.categoryId,
+        categoryId: categoryOf(rule.categoryId),
         createdAt: date,
         date,
         ...(desc ? { description: desc } : {}),
@@ -281,7 +301,7 @@ export function useDemo() {
     }
 
     // --- Transfers ---
-    for (let i = 0; i < config.transferCount; i++) {
+    for (let i = 0; i < config.transferCount * scale; i++) {
       const rule = weightedPick(transferRules)
       const fromAmount = money(randInt(rule.amountMin, rule.amountMax), rule.expenseWalletId)
       const desc = rule.desc ? rule.desc[locale] : undefined
@@ -301,7 +321,7 @@ export function useDemo() {
     }
 
     // --- Adjustments ---
-    for (let i = 0; i < config.adjustmentsCount; i++) {
+    for (let i = 0; i < config.adjustmentsCount * scale; i++) {
       const walletId = randItem(spendingWalletIds)
       const amount = money(randInt(1000, 20000), walletId)
       const side = random() < 0.5 ? { toAmount: amount, toWalletId: walletId } : { fromAmount: amount, fromWalletId: walletId }

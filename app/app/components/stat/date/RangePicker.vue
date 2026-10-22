@@ -2,6 +2,7 @@
 import type { Range } from '~~/utils/date/types'
 
 import { useStorage } from '@vueuse/core'
+import { afterNextPaint } from '~~/utils/afterNextPaint'
 
 import type { Grouped, StatDateParams } from '~/components/stat/date/types'
 import type { StatDateRangeOption } from '~/components/stat/date/useRangeOptions'
@@ -22,11 +23,15 @@ const statDate = inject(statDateKey)!
 const isGranularityOpen = useStorage(STAT_STORAGE_KEYS.dateGranularityOpen, true)
 const { options } = useStatDateRangeOptions()
 
+// A preset or a calendar range closes the drawer in the same task: the stat page recomputes after
+// the first closing frame, so the close animation starts at once.
 function onSelectRange(option: StatDateRangeOption) {
-  if (option.view === 'maximum')
-    statDate.setMaxRange(option.isSkipEmpty)
-  else
-    statDate.setRangeByPeriod({ ...option.range, label: option.label })
+  afterNextPaint(() => {
+    if (option.view === 'maximum')
+      statDate.setMaxRange(option.isSkipEmpty)
+    else
+      statDate.setRangeByPeriod({ ...option.range, label: option.label })
+  })
 }
 
 function onSelectGranularityBy(granularityBy: Grouped['granularityBy']) {
@@ -43,7 +48,7 @@ function onSelectRangeBy(rangeBy: StatDateParams['rangeBy']) {
 }
 
 function onSetRangeByCalendar(range: Range) {
-  statDate.setRangeByCalendar(range)
+  afterNextPaint(() => statDate.setRangeByCalendar(range))
 }
 </script>
 

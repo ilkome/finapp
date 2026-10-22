@@ -3,12 +3,10 @@ import type { StatReportBlockId } from '~/components/stat/config/schema'
 import type { StatReportContext } from '~/components/stat/report/types'
 import type { SeriesSlugSelected } from '~/components/stat/types'
 
-import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
-import { buildCategoryViews, collectRoundCategoryIds } from '~/components/stat/categories/categoryViews'
+import { collectRoundCategoryIds } from '~/components/stat/categories/categoryViews'
 import { statCategorySheetKey, statPreservedCategoryScrollTopKey, statVirtualFeedKey } from '~/components/stat/injectionKeys'
 import { canStickStatCategories, isStatCategoriesPinned } from '~/components/stat/statFeed'
-import { useTrnsStore } from '~/components/trns/useTrnsStore'
 
 const props = defineProps<{
   block: StatReportBlockId
@@ -20,9 +18,7 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const config = computed(() => props.ctx.params.statConfig.config.value)
-const { computeTotalForTrnsIds } = useAmount()
 const categoriesStore = useCategoriesStore()
-const trnsStore = useTrnsStore()
 const isVirtualFeedHost = inject(statVirtualFeedKey, false)
 const openCategorySheet = inject(statCategorySheetKey, null)
 const categoriesBreakdown = useTemplateRef<HTMLElement>('categoriesBreakdown')
@@ -31,14 +27,7 @@ const { height: viewportHeight } = useWindowSize()
 const preservedCategoryScrollTop = inject(statPreservedCategoryScrollTopKey, shallowRef<number | null>(null))
 let preserveScrollTimer: ReturnType<typeof setTimeout> | null = null
 const isTwoColumnLayout = computed(() => props.isTwoColumnLayout ?? props.ctx.shouldUseTwoColumnLayout.value)
-const baseCategoryViews = computed(() => buildCategoryViews({
-  categoriesItems: categoriesStore.items,
-  computeValue: ids => computeTotalForTrnsIds(ids).net,
-  excludedCategoriesIds: props.ctx.statExcludedIds.value,
-  intervals: props.ctx.effectiveIntervals.value,
-  trnsIds: props.ctx.selectedTrnsIds.value,
-  trnsItems: trnsStore.items ?? {},
-}))
+const baseCategoryViews = props.ctx.categoryViews
 const quickCategoryViews = computed(() => props.ctx.filteredCategoriesIds.value.length === 0
   ? baseCategoryViews.value
   : undefined)
@@ -193,4 +182,3 @@ onBeforeUnmount(() => {
     </div>
   </Drawer>
 </template>
-    :baseCategoryViews
