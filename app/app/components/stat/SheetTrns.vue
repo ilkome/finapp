@@ -5,6 +5,7 @@ import type { TrnId } from '~/components/trns/types'
 import { useAmount } from '~/components/amount/useAmount'
 import { useCategoriesStore } from '~/components/categories/useCategoriesStore'
 import { useCurrenciesStore } from '~/components/currencies/useCurrenciesStore'
+import { takeGroupRows } from '~/components/stat/sheetTrnsChunk'
 import { useTrnsStore } from '~/components/trns/useTrnsStore'
 import { useDateFormats } from '~/composables/useDateFormats'
 
@@ -44,11 +45,29 @@ const groups = computed(() => {
     .filter(group => group.ids.length)
     .toReversed()
 })
+
+// Rows mount in chunks: every period at once is most of the sheet's DOM and stalls its opening frame.
+// The sentinel remounts with each chunk, so a fresh observation reports it again while it is still near.
+const ROWS_CHUNK = 40
+const rowsBudget = ref(ROWS_CHUNK)
+const shownGroups = computed(() => takeGroupRows(groups.value, rowsBudget.value))
+const hasMore = computed(() => groups.value.reduce((sum, group) => sum + group.ids.length, 0) > rowsBudget.value)
+// Another period, category or filter starts from the top; an edited row does not.
+watch(() => groups.value.map(group => group.key).join(), () => rowsBudget.value = ROWS_CHUNK)
+
+const sentinel = useTemplateRef<HTMLElement>('sentinel')
+// The margin reaches a screen ahead only against the drawer's own scroller: the viewport would see
+// the sentinel already clipped by it. A dialog on wider screens observes against the viewport.
+const scroller = computed(() => sentinel.value?.closest<HTMLElement>('.drawer-body') ?? undefined)
+useIntersectionObserver(sentinel, ([entry]) => {
+  if (entry?.isIntersecting)
+    rowsBudget.value += ROWS_CHUNK
+}, { root: scroller, rootMargin: '0px 0px 100% 0px' })
 </script>
 
 <template>
   <div class="grid gap-3 pt-2">
-    <section v-for="group in groups" :key="group.key" data-stat-sheet-period>
+    <section v-for="group in shownGroups" :key="group.key" data-stat-sheet-period>
       <TrnsDateRowView
         :currencyCode="currenciesStore.base"
         :date="group.date"
@@ -67,5 +86,6 @@ const groups = computed(() => {
         :trnItem="trnsStore.computeTrnItem(id)!"
       />
     </section>
+    <div v-if="hasMore" :key="rowsBudget" ref="sentinel" class="h-px" />
   </div>
 </template>
