@@ -200,9 +200,6 @@
   .drawer-indent {
     background: var(--ui-bg);
     position: relative;
-    /* Outside the active state, so the page scales back around the same point instead of the middle
-       of the whole page. */
-    transform-origin: 50% var(--drawer-scroll-y, 0px);
     transition-duration: 450ms;
     transition-property: scale, translate;
     transition-timing-function: cubic-bezier(0.32, 0.72, 0, 1);

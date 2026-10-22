@@ -54,8 +54,10 @@ watch(open, (value) => {
     // Reopened before the exit ended: the pending work is due now.
     runAfterClosed()
     unregister ??= registerDrawer(close)
-    // The scaled page background pivots on the viewport, which sits this far down the scroll-locked page.
-    document.documentElement.style.setProperty('--drawer-scroll-y', `${window.scrollY}px`)
+    // The scaled page pivots on the viewport, which sits this far down the scroll-locked page. Set on the
+    // page itself, not as a variable on the root: an inherited value restyles the whole document. It stays
+    // after close, so the page scales back around the same point.
+    document.querySelector<HTMLElement>('.drawer-indent')?.style.setProperty('transform-origin', `50% ${window.scrollY}px`)
     return
   }
   unregister?.()
