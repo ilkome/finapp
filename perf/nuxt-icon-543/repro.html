@@ -1,0 +1,137 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width" />
+<title>Style insert cost: @property and insert position</title>
+<!-- What @nuxt/icon (css mode) does on the client for each icon it has not shown yet: it inserts one
+     <style> with the icon rule in a cascade layer. This page times that insert with a forced style
+     recalc, inserted before the first stylesheet (current behavior) or appended (nuxt/icon#543), on a
+     page whose CSS does or does not contain an @property rule (Tailwind v4 emits several). -->
+<style>
+  @layer theme, base, components, utilities;
+</style>
+<style>
+  @layer base {
+    .row {
+      display: flex;
+      gap: 4px;
+      padding: 2px;
+    }
+    .cell {
+      color: #333;
+    }
+  }
+</style>
+<pre id="out">running...</pre>
+<div id="rows"></div>
+<script>
+  const NODES = Number(new URLSearchParams(location.search).get('nodes') || 2000)
+  const RUNS = 8
+  const rows = document.getElementById('rows')
+  for (let i = 0; i < NODES / 4; i++)
+    rows.insertAdjacentHTML(
+      'beforeend',
+      '<div class="row"><span class="cell">a</span><span class="cell">b</span><span class="cell">c</span></div>',
+    )
+
+  const iconCss = (i) =>
+    `@layer base { :where(.i-test\\:icon${i}){display:inline-block;width:1em;height:1em;background-color:currentColor;-webkit-mask-image:var(--svg);mask-image:var(--svg);-webkit-mask-size:100% 100%;mask-size:100% 100%;--svg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L2 22h20z'/%3E%3C/svg%3E")} }`
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+  const force = () => document.body.offsetTop
+  const median = (a) => [...a].sort((x, y) => x - y)[a.length >> 1]
+  let n = 0
+
+  async function time(position) {
+    const out = []
+    for (let r = 0; r < RUNS; r++) {
+      const style = document.createElement('style')
+      style.textContent = iconCss(n++)
+      await sleep(50)
+      force()
+      const t0 = performance.now()
+      if (position === 'first')
+        document.head.insertBefore(style, document.head.querySelector('style, link[rel="stylesheet"]'))
+      else document.head.appendChild(style)
+      force()
+      out.push(performance.now() - t0)
+    }
+    return +median(out).toFixed(2)
+  }
+
+  // Page CSS before the inserts: `none`, one `@property` (`property`), the same `@property` in two sheets
+  // as Tailwind v4 chunks emit it (`dupProperty`), or a `@font-face` (`fontFace`).
+  const VARIANTS = {
+    none: [],
+    property: ['@property --x { syntax: "<number>"; inherits: false; initial-value: 0 }'],
+    dupProperty: [
+      '@property --x { syntax: "<number>"; inherits: false; initial-value: 0 }',
+      '@property --x { syntax: "<number>"; inherits: false; initial-value: 0 }',
+    ],
+    fontFace: ['@font-face { font-family: f; src: local(Arial) }'],
+    // A registered property that the elements set, as Tailwind v4 utilities do (`--tw-translate-x` ...).
+    propertyUsed: [
+      '@property --x { syntax: "<number>"; inherits: false; initial-value: 0 }',
+      '.cell { --x: 1; translate: calc(var(--x) * 1px) 0 }',
+    ],
+    usedNoProperty: ['.cell { --x: 1; translate: calc(var(--x) * 1px) 0 }'],
+    // A property registered from JS (reka-ui's Drawer does it for its swipe variables), with and without
+    // an @property rule in the page CSS.
+    jsRegistered: [],
+    jsAndCss: ['@property --x { syntax: "<number>"; inherits: false; initial-value: 0 }'],
+    // Style sheets passed in `window.__css` (a real app's CSS), optionally without its @property rules.
+    external: [],
+    externalNoProperty: [],
+    // The same plus one adopted style sheet (vue-echarts adopts one), or plus reka-ui's JS registrations.
+    externalAdopted: [],
+    externalJs: [],
+    // One adopted style sheet and nothing else (vue-echarts adopts one for its element).
+    adopted: [],
+    // The first icon @nuxt/icon mounts goes before every stylesheet, so its `@layer base` block now
+    // precedes the page's own layer order statement.
+    iconFirst: [],
+  }
+
+  async function main() {
+    const variant = new URLSearchParams(location.search).get('variant') || window.__variant || 'none'
+    // A real app's static DOM passed in `window.__body` replaces the synthetic rows.
+    if (window.__body) {
+      document.getElementById('rows').innerHTML = window.__body
+      document.documentElement.className = 'dark'
+    }
+    if (variant === 'externalAdopted' || variant === 'adopted') {
+      const adopted = new CSSStyleSheet()
+      adopted.replaceSync('x-chart { display: block }')
+      document.adoptedStyleSheets = [adopted]
+    }
+    if (variant === 'externalJs') {
+      for (const name of ['--drawer-swipe-movement-x', '--drawer-swipe-movement-y', '--drawer-snap-point-offset'])
+        CSS.registerProperty({ name, syntax: '<length>', inherits: false, initialValue: '0px' })
+    }
+    const external = variant.startsWith('external') ? window.__css : []
+    const sheets = [
+      ...VARIANTS[variant],
+      ...external.map((css) => (variant === 'externalNoProperty' ? css.replace(/@property[^{]+\{[^}]*\}/g, '') : css)),
+    ]
+    for (const css of sheets) {
+      const sheet = document.createElement('style')
+      sheet.textContent = css
+      document.head.appendChild(sheet)
+    }
+    if (variant === 'jsRegistered' || variant === 'jsAndCss')
+      CSS.registerProperty({ name: '--y', syntax: '<number>', inherits: false, initialValue: '0' })
+    if (variant === 'iconFirst') {
+      const sheet = document.createElement('style')
+      sheet.textContent = iconCss(n++)
+      document.head.prepend(sheet)
+    }
+    await sleep(100)
+    const result = {
+      variant,
+      nodes: document.getElementsByTagName('*').length,
+      first: await time('first'),
+      append: await time('append'),
+    }
+    document.getElementById('out').textContent = JSON.stringify(result, null, 2)
+    window.__result = result
+  }
+  main()
+</script>

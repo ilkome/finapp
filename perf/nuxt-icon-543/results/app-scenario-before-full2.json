@@ -1,0 +1,265 @@
+[
+  {
+    "frames": 88,
+    "dropped": 23,
+    "maxGap": 283,
+    "loafSum": 402,
+    "loafMax": 288,
+    "loafs": [
+      "71@288",
+      "371@64",
+      "437@50"
+    ],
+    "dom": 2275,
+    "script": 20,
+    "layout": 29,
+    "style": 234,
+    "task": 522,
+    "label": "1 open category sheet"
+  },
+  {
+    "frames": 87,
+    "dropped": 18,
+    "maxGap": 224,
+    "loafSum": 341,
+    "loafMax": 210,
+    "loafs": [
+      "65@210",
+      "328@69",
+      "759@62"
+    ],
+    "dom": 2543,
+    "script": 16,
+    "layout": 39,
+    "style": 167,
+    "task": 467,
+    "label": "2 all wallets"
+  },
+  {
+    "frames": 96,
+    "dropped": 12,
+    "maxGap": 216,
+    "loafSum": 212,
+    "loafMax": 212,
+    "loafs": [
+      "89@212"
+    ],
+    "dom": 2603,
+    "script": 17,
+    "layout": 2,
+    "style": 198,
+    "task": 391,
+    "label": "3 add wallet"
+  },
+  {
+    "frames": 98,
+    "dropped": 10,
+    "maxGap": 150,
+    "loafSum": 158,
+    "loafMax": 158,
+    "loafs": [
+      "83@158"
+    ],
+    "dom": 3780,
+    "script": 17,
+    "layout": 5,
+    "style": 121,
+    "task": 331,
+    "label": "4 currency"
+  },
+  {
+    "frames": 70,
+    "dropped": 7,
+    "maxGap": 58,
+    "loafSum": 144,
+    "loafMax": 76,
+    "loafs": [
+      "14@68",
+      "530@76"
+    ],
+    "dom": 2603,
+    "script": 9,
+    "layout": 0,
+    "style": 129,
+    "task": 243,
+    "label": "5 close currency"
+  },
+  {
+    "frames": 94,
+    "dropped": 7,
+    "maxGap": 116,
+    "loafSum": 0,
+    "loafMax": 0,
+    "loafs": [],
+    "dom": 2943,
+    "script": 18,
+    "layout": 2,
+    "style": 95,
+    "task": 288,
+    "label": "6 color"
+  },
+  {
+    "frames": 71,
+    "dropped": 5,
+    "maxGap": 75,
+    "loafSum": 151,
+    "loafMax": 81,
+    "loafs": [
+      "15@81",
+      "543@70"
+    ],
+    "dom": 2603,
+    "script": 11,
+    "layout": 0,
+    "style": 124,
+    "task": 256,
+    "label": "7 close color"
+  },
+  {
+    "frames": 78,
+    "dropped": 25,
+    "maxGap": 233,
+    "loafSum": 464,
+    "loafMax": 239,
+    "loafs": [
+      "71@133",
+      "664@239",
+      "944@92"
+    ],
+    "dom": 2273,
+    "script": 31,
+    "layout": 41,
+    "style": 211,
+    "task": 671,
+    "label": "8 page filter"
+  },
+  {
+    "frames": 102,
+    "dropped": 1,
+    "maxGap": 33,
+    "loafSum": 0,
+    "loafMax": 0,
+    "loafs": [],
+    "dom": 2273,
+    "script": 18,
+    "layout": 0,
+    "style": 17,
+    "task": 189,
+    "label": "9 categories tab"
+  },
+  {
+    "frames": 94,
+    "dropped": 13,
+    "maxGap": 199,
+    "loafSum": 203,
+    "loafMax": 203,
+    "loafs": [
+      "79@203"
+    ],
+    "dom": 2332,
+    "script": 15,
+    "layout": 2,
+    "style": 194,
+    "task": 375,
+    "label": "10 add category"
+  },
+  {
+    "frames": 98,
+    "dropped": 8,
+    "maxGap": 134,
+    "loafSum": 136,
+    "loafMax": 136,
+    "loafs": [
+      "66@136"
+    ],
+    "dom": 2660,
+    "script": 13,
+    "layout": 2,
+    "style": 98,
+    "task": 298,
+    "label": "11 parent picker"
+  },
+  {
+    "frames": 97,
+    "dropped": 6,
+    "maxGap": 75,
+    "loafSum": 155,
+    "loafMax": 95,
+    "loafs": [
+      "55@60",
+      "558@95"
+    ],
+    "dom": 2326,
+    "script": 12,
+    "layout": 1,
+    "style": 136,
+    "task": 301,
+    "label": "12 pick parent"
+  },
+  {
+    "frames": 99,
+    "dropped": 10,
+    "maxGap": 158,
+    "loafSum": 161,
+    "loafMax": 161,
+    "loafs": [
+      "73@161"
+    ],
+    "dom": 3157,
+    "script": 18,
+    "layout": 3,
+    "style": 94,
+    "task": 355,
+    "label": "13 icon picker"
+  },
+  {
+    "frames": 69,
+    "dropped": 8,
+    "maxGap": 67,
+    "loafSum": 137,
+    "loafMax": 72,
+    "loafs": [
+      "14@65",
+      "529@72"
+    ],
+    "dom": 2326,
+    "script": 9,
+    "layout": 0,
+    "style": 117,
+    "task": 251,
+    "label": "14 close icon"
+  },
+  {
+    "frames": 101,
+    "dropped": 5,
+    "maxGap": 100,
+    "loafSum": 100,
+    "loafMax": 100,
+    "loafs": [
+      "84@100"
+    ],
+    "dom": 2674,
+    "script": 16,
+    "layout": 1,
+    "style": 92,
+    "task": 265,
+    "label": "15 color picker"
+  },
+  {
+    "frames": 71,
+    "dropped": 9,
+    "maxGap": 75,
+    "loafSum": 147,
+    "loafMax": 80,
+    "loafs": [
+      "13@80",
+      "546@67"
+    ],
+    "dom": 2326,
+    "script": 11,
+    "layout": 0,
+    "style": 122,
+    "task": 255,
+    "label": "16 close color"
+  }
+]

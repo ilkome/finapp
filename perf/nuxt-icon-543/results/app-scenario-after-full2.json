@@ -1,0 +1,257 @@
+[
+  {
+    "frames": 94,
+    "dropped": 16,
+    "maxGap": 193,
+    "loafSum": 289,
+    "loafMax": 207,
+    "loafs": [
+      "83@207",
+      "321@82"
+    ],
+    "dom": 2223,
+    "script": 23,
+    "layout": 10,
+    "style": 96,
+    "task": 390,
+    "label": "1 open category sheet"
+  },
+  {
+    "frames": 94,
+    "dropped": 9,
+    "maxGap": 142,
+    "loafSum": 145,
+    "loafMax": 145,
+    "loafs": [
+      "45@145"
+    ],
+    "dom": 2488,
+    "script": 20,
+    "layout": 12,
+    "style": 54,
+    "task": 325,
+    "label": "2 all wallets"
+  },
+  {
+    "frames": 93,
+    "dropped": 6,
+    "maxGap": 83,
+    "loafSum": 85,
+    "loafMax": 85,
+    "loafs": [
+      "60@85"
+    ],
+    "dom": 2547,
+    "script": 16,
+    "layout": 3,
+    "style": 53,
+    "task": 228,
+    "label": "3 add wallet"
+  },
+  {
+    "frames": 94,
+    "dropped": 7,
+    "maxGap": 92,
+    "loafSum": 92,
+    "loafMax": 92,
+    "loafs": [
+      "74@92"
+    ],
+    "dom": 3724,
+    "script": 16,
+    "layout": 5,
+    "style": 56,
+    "task": 277,
+    "label": "4 currency"
+  },
+  {
+    "frames": 72,
+    "dropped": 4,
+    "maxGap": 34,
+    "loafSum": 54,
+    "loafMax": 54,
+    "loafs": [
+      "507@54"
+    ],
+    "dom": 2547,
+    "script": 9,
+    "layout": 0,
+    "style": 65,
+    "task": 201,
+    "label": "5 close currency"
+  },
+  {
+    "frames": 99,
+    "dropped": 3,
+    "maxGap": 50,
+    "loafSum": 0,
+    "loafMax": 0,
+    "loafs": [],
+    "dom": 2887,
+    "script": 17,
+    "layout": 2,
+    "style": 34,
+    "task": 217,
+    "label": "6 color"
+  },
+  {
+    "frames": 68,
+    "dropped": 8,
+    "maxGap": 67,
+    "loafSum": 67,
+    "loafMax": 67,
+    "loafs": [
+      "546@67"
+    ],
+    "dom": 2547,
+    "script": 9,
+    "layout": 0,
+    "style": 52,
+    "task": 194,
+    "label": "7 close color"
+  },
+  {
+    "frames": 123,
+    "dropped": 19,
+    "maxGap": 166,
+    "loafSum": 341,
+    "loafMax": 184,
+    "loafs": [
+      "79@87",
+      "603@184",
+      "821@70"
+    ],
+    "dom": 2197,
+    "script": 37,
+    "layout": 29,
+    "style": 96,
+    "task": 587,
+    "label": "8 page filter"
+  },
+  {
+    "frames": 101,
+    "dropped": 4,
+    "maxGap": 42,
+    "loafSum": 59,
+    "loafMax": 59,
+    "loafs": [
+      "37@59"
+    ],
+    "dom": 2197,
+    "script": 18,
+    "layout": 0,
+    "style": 18,
+    "task": 208,
+    "label": "9 categories tab"
+  },
+  {
+    "frames": 96,
+    "dropped": 9,
+    "maxGap": 91,
+    "loafSum": 167,
+    "loafMax": 92,
+    "loafs": [
+      "50@92",
+      "172@75"
+    ],
+    "dom": 2256,
+    "script": 16,
+    "layout": 2,
+    "style": 61,
+    "task": 276,
+    "label": "10 add category"
+  },
+  {
+    "frames": 98,
+    "dropped": 8,
+    "maxGap": 100,
+    "loafSum": 88,
+    "loafMax": 88,
+    "loafs": [
+      "85@88"
+    ],
+    "dom": 2584,
+    "script": 14,
+    "layout": 2,
+    "style": 42,
+    "task": 274,
+    "label": "11 parent picker"
+  },
+  {
+    "frames": 99,
+    "dropped": 2,
+    "maxGap": 34,
+    "loafSum": 0,
+    "loafMax": 0,
+    "loafs": [],
+    "dom": 2250,
+    "script": 18,
+    "layout": 1,
+    "style": 50,
+    "task": 283,
+    "label": "12 pick parent"
+  },
+  {
+    "frames": 121,
+    "dropped": 5,
+    "maxGap": 100,
+    "loafSum": 104,
+    "loafMax": 104,
+    "loafs": [
+      "80@104"
+    ],
+    "dom": 3081,
+    "script": 16,
+    "layout": 3,
+    "style": 30,
+    "task": 323,
+    "label": "13 icon picker"
+  },
+  {
+    "frames": 127,
+    "dropped": 7,
+    "maxGap": 67,
+    "loafSum": 147,
+    "loafMax": 95,
+    "loafs": [
+      "510@52",
+      "2134@95"
+    ],
+    "dom": 2250,
+    "script": 19,
+    "layout": 0,
+    "style": 56,
+    "task": 448,
+    "label": "14 close icon"
+  },
+  {
+    "frames": 96,
+    "dropped": 3,
+    "maxGap": 57,
+    "loafSum": 53,
+    "loafMax": 53,
+    "loafs": [
+      "84@53"
+    ],
+    "dom": 2598,
+    "script": 15,
+    "layout": 2,
+    "style": 27,
+    "task": 228,
+    "label": "15 color picker"
+  },
+  {
+    "frames": 78,
+    "dropped": 2,
+    "maxGap": 41,
+    "loafSum": 0,
+    "loafMax": 0,
+    "loafs": [],
+    "dom": 2250,
+    "script": 12,
+    "layout": 0,
+    "style": 52,
+    "task": 201,
+    "label": "16 close color"
+  }
+]

@@ -1,0 +1,135 @@
+[
+  {
+    "frames": 121,
+    "dropped": 11,
+    "maxGap": 175,
+    "loafSum": 178,
+    "loafMax": 178,
+    "loafs": [
+      "62@178"
+    ],
+    "dom": 2223,
+    "script": 25,
+    "layout": 9,
+    "style": 94,
+    "task": 402,
+    "label": "open cat #1"
+  },
+  {
+    "frames": 72,
+    "dropped": 7,
+    "maxGap": 67,
+    "loafSum": 128,
+    "loafMax": 68,
+    "loafs": [
+      "15@60",
+      "115@68"
+    ],
+    "dom": 1266,
+    "script": 17,
+    "layout": 0,
+    "style": 57,
+    "task": 187,
+    "label": "close cat #1"
+  },
+  {
+    "frames": 126,
+    "dropped": 11,
+    "maxGap": 142,
+    "loafSum": 143,
+    "loafMax": 143,
+    "loafs": [
+      "82@143"
+    ],
+    "dom": 2293,
+    "script": 28,
+    "layout": 8,
+    "style": 57,
+    "task": 404,
+    "label": "open cat #2"
+  },
+  {
+    "frames": 65,
+    "dropped": 12,
+    "maxGap": 100,
+    "loafSum": 248,
+    "loafMax": 102,
+    "loafs": [
+      "18@54",
+      "92@102",
+      "194@92"
+    ],
+    "dom": 1266,
+    "script": 13,
+    "layout": 0,
+    "style": 55,
+    "task": 187,
+    "label": "close cat #2"
+  },
+  {
+    "frames": 121,
+    "dropped": 13,
+    "maxGap": 159,
+    "loafSum": 162,
+    "loafMax": 162,
+    "loafs": [
+      "85@162"
+    ],
+    "dom": 2294,
+    "script": 24,
+    "layout": 9,
+    "style": 61,
+    "task": 497,
+    "label": "open cat #3"
+  },
+  {
+    "frames": 66,
+    "dropped": 10,
+    "maxGap": 106,
+    "loafSum": 171,
+    "loafMax": 94,
+    "loafs": [
+      "105@77",
+      "185@94"
+    ],
+    "dom": 1266,
+    "script": 10,
+    "layout": 0,
+    "style": 56,
+    "task": 166,
+    "label": "close cat #3"
+  },
+  {
+    "frames": 123,
+    "dropped": 11,
+    "maxGap": 142,
+    "loafSum": 140,
+    "loafMax": 140,
+    "loafs": [
+      "70@140"
+    ],
+    "dom": 2223,
+    "script": 25,
+    "layout": 9,
+    "style": 61,
+    "task": 359,
+    "label": "open cat #1"
+  },
+  {
+    "frames": 68,
+    "dropped": 8,
+    "maxGap": 77,
+    "loafSum": 127,
+    "loafMax": 71,
+    "loafs": [
+      "16@56",
+      "119@71"
+    ],
+    "dom": 1266,
+    "script": 12,
+    "layout": 0,
+    "style": 53,
+    "task": 177,
+    "label": "close cat #1"
+  }
+]

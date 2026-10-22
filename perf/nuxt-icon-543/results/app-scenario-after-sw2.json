@@ -1,0 +1,132 @@
+[
+  {
+    "frames": 122,
+    "dropped": 13,
+    "maxGap": 191,
+    "loafSum": 254,
+    "loafMax": 202,
+    "loafs": [
+      "77@202",
+      "324@52"
+    ],
+    "dom": 2223,
+    "script": 27,
+    "layout": 10,
+    "style": 97,
+    "task": 414,
+    "label": "open cat #1"
+  },
+  {
+    "frames": 73,
+    "dropped": 8,
+    "maxGap": 68,
+    "loafSum": 83,
+    "loafMax": 83,
+    "loafs": [
+      "118@83"
+    ],
+    "dom": 1266,
+    "script": 20,
+    "layout": 0,
+    "style": 55,
+    "task": 227,
+    "label": "close cat #1"
+  },
+  {
+    "frames": 132,
+    "dropped": 10,
+    "maxGap": 157,
+    "loafSum": 164,
+    "loafMax": 164,
+    "loafs": [
+      "212@164"
+    ],
+    "dom": 2293,
+    "script": 29,
+    "layout": 10,
+    "style": 60,
+    "task": 393,
+    "label": "open cat #2"
+  },
+  {
+    "frames": 68,
+    "dropped": 8,
+    "maxGap": 58,
+    "loafSum": 73,
+    "loafMax": 73,
+    "loafs": [
+      "97@73"
+    ],
+    "dom": 1266,
+    "script": 11,
+    "layout": 0,
+    "style": 55,
+    "task": 170,
+    "label": "close cat #2"
+  },
+  {
+    "frames": 129,
+    "dropped": 10,
+    "maxGap": 174,
+    "loafSum": 172,
+    "loafMax": 172,
+    "loafs": [
+      "71@172"
+    ],
+    "dom": 2294,
+    "script": 27,
+    "layout": 10,
+    "style": 62,
+    "task": 489,
+    "label": "open cat #3"
+  },
+  {
+    "frames": 70,
+    "dropped": 8,
+    "maxGap": 67,
+    "loafSum": 97,
+    "loafMax": 97,
+    "loafs": [
+      "91@97"
+    ],
+    "dom": 1266,
+    "script": 12,
+    "layout": 0,
+    "style": 60,
+    "task": 178,
+    "label": "close cat #3"
+  },
+  {
+    "frames": 165,
+    "dropped": 9,
+    "maxGap": 131,
+    "loafSum": 146,
+    "loafMax": 146,
+    "loafs": [
+      "181@146"
+    ],
+    "dom": 2223,
+    "script": 35,
+    "layout": 8,
+    "style": 59,
+    "task": 419,
+    "label": "open cat #1"
+  },
+  {
+    "frames": 67,
+    "dropped": 11,
+    "maxGap": 91,
+    "loafSum": 152,
+    "loafMax": 89,
+    "loafs": [
+      "94@89",
+      "187@63"
+    ],
+    "dom": 1266,
+    "script": 11,
+    "layout": 0,
+    "style": 54,
+    "task": 168,
+    "label": "close cat #1"
+  }
+]
