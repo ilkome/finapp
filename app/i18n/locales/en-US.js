@@ -1335,6 +1335,7 @@ export default {
         net: 'With debts',
       },
       shares: {
+        bar: 'Bar',
         empty: 'No wallets with a balance',
         modes: {
           assets: 'Assets',

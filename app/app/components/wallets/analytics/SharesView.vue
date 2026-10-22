@@ -19,6 +19,8 @@ const props = defineProps<{
   /** A row opens a sheet (ellipsis) rather than another page (chevron). */
   isRowSheet?: boolean
   items: AnalyticsShareRow[]
+  /** The row picked on the chart, marked in the list. */
+  selectedId?: string
   totalLabel: string
   totalValue: number
 }>()
@@ -40,6 +42,7 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`
           :baseCurrencyCode="props.currencyCode"
           :chevron="props.isRowSheet ? 'more' : 'right'"
           :data-share-item="item.id"
+          :class="{ 'ring-2 ring-accented': item.id === props.selectedId }"
           :wallet="item.wallet"
           :walletId="item.id as WalletId"
           @click="emit('select', item.id)"
@@ -55,6 +58,7 @@ const percent = (share: number) => `${Math.round(share * 1000) / 10}%`
           :chevron="props.isRowSheet ? 'more' : 'right'"
           :lineWidth="index === props.items.length - 1 ? 0 : 3"
           insideClasses="min-h-10!"
+          :class="{ 'rounded-md bg-elevated': item.id === props.selectedId }"
           :data-share-item="item.id"
           @click="emit('select', item.id)"
         >

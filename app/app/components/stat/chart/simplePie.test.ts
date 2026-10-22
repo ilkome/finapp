@@ -62,6 +62,7 @@ describe('buildSimplePieData', () => {
       { color: 'color-2', name: 'Category 2', value: 20 },
       { color: 'var(--ui-text-dimmed)', icon: 'lucide:ellipsis', name: 'Other', value: 15 },
     ])
+    expect(buildSimplePieData(categorySeries, 0, 0, 'Other', Number.POSITIVE_INFINITY)).toHaveLength(7)
   })
 })
 

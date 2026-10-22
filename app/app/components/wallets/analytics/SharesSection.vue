@@ -35,12 +35,18 @@ const options = useStorage(WALLET_STORAGE_KEYS.analyticsShares, {
   isShowLabels: false,
   isShowPercent: true,
   mode: 'assets' as SharesMode,
-  pieShape: 'donut' as typeof pieShapeOptions[number],
+  pieShape: 'donut' as ChartShape,
   sort: 'amount' as SharesSort,
 }, localStorage, { mergeDefaults: true })
 
 // Stored before the modes were split; `gross` reads the same way.
 const mode = computed<SharesMode>(() => sharesModes.includes(options.value.mode) ? options.value.mode : 'gross')
+
+type ChartShape = typeof pieShapeOptions[number] | 'bar'
+const chartShapes: ChartShape[] = [...pieShapeOptions, 'bar']
+
+/** Smaller slices are named only in the list below the chart. */
+const LABEL_MIN_SHARE = 0.04
 
 const groupBys: SharesGroupBy[] = ['type', 'currency', 'wallet']
 
@@ -93,7 +99,7 @@ const settings = computed<AnalyticsOption[]>(() => [
   },
   {
     id: 'pieShape',
-    items: pieShapeOptions.map(value => ({ label: t(`stat.view.pieShape.${value}.label`), value })),
+    items: chartShapes.map(value => ({ label: value === 'bar' ? t('wallets.analytics.shares.bar') : t(`stat.view.pieShape.${value}.label`), value })),
     label: t('stat.view.pieShape.title'),
     value: options.value.pieShape,
   },
@@ -134,11 +140,24 @@ function onSelect(id: string, groupBy: SharesGroupBy) {
     open.value = { groupBy, id }
 }
 
-function onSelectSlice(name: string, groupBy: SharesGroupBy) {
-  const row = groups.value.find(group => group.groupBy === groupBy)?.rows.find(item => item.name === name)
-  if (row)
-    onSelect(row.id, groupBy)
+// A tapped slice is shown in the donut's hole and marked in the list; tapping it again shows the total.
+const selectedId = ref<string | null>(null)
+const selectedRow = computed(() => activeGroup.value?.rows.find(row => row.id === selectedId.value))
+watch(() => [activeGroup.value?.groupBy, mode.value], () => selectedId.value = null)
+
+function toggleSelected(id: string) {
+  selectedId.value = selectedId.value === id ? null : id
 }
+
+function onSelectSlice(name: string) {
+  const row = activeGroup.value?.rows.find(item => item.name === name)
+  if (row)
+    toggleSelected(row.id)
+}
+
+const chartLabel = computed(() => selectedRow.value
+  ? `${selectedRow.value.name}\n${formatAmount(selectedRow.value.signedValue, currenciesStore.base)}`
+  : formatAmount(activeGroup.value?.totalValue ?? 0, currenciesStore.base))
 </script>
 
 <template>
@@ -168,16 +187,37 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
     <template v-if="activeGroup">
       <div class="grid content-start gap-3 @3xl/page:grid-cols-[minmax(0,18rem)_1fr] @3xl/page:items-start @3xl/page:gap-8" :data-shares-group="activeGroup.groupBy">
         <div class="grid gap-3">
-          <div class="mx-auto h-48 w-full max-w-xs">
+          <div v-if="options.pieShape === 'bar'" class="grid gap-2" data-shares-bar>
+            <div class="text-center font-secondary text-sm leading-tight whitespace-pre-line text-highlighted">
+              {{ chartLabel }}
+            </div>
+            <div class="flex h-8 w-full gap-px overflow-hidden rounded-md">
+              <button
+                v-for="row in activeGroup.rows"
+                :key="row.id"
+                type="button"
+                class="min-w-0.5 basis-0 transition-opacity"
+                :class="selectedId && selectedId !== row.id ? 'opacity-40' : ''"
+                :style="{ background: row.color, flexGrow: row.share }"
+                :aria-label="row.name"
+                :data-shares-bar-item="row.id"
+                @click="toggleSelected(row.id)"
+              />
+            </div>
+          </div>
+          <div v-else class="h-48 w-full">
             <LazyStatChartSimplePieView
               v-if="isChartMountReady"
+              isAllSlices
+              isStaticOnMount
               :isDonut="options.pieShape === 'donut'"
               :isShowLabels="options.isShowLabels"
               :isShowPercent="options.isShowPercent"
-              :centerLabel="options.pieShape === 'donut' ? formatAmount(activeGroup.totalValue, currenciesStore.base) : undefined"
+              :centerLabel="options.pieShape === 'donut' ? chartLabel : undefined"
+              :labelMinShare="LABEL_MIN_SHARE"
               :series="activeGroup.pieSeries"
               :xAxisLabels="[0]"
-              @selectSlice="name => onSelectSlice(name, activeGroup!.groupBy)"
+              @selectSlice="onSelectSlice"
             />
           </div>
           <UiTabs
@@ -193,6 +233,7 @@ function onSelectSlice(name: string, groupBy: SharesGroupBy) {
           :currencyCode="currenciesStore.base"
           :isRowSheet="activeGroup.groupBy !== 'wallet'"
           :items="activeGroup.rows"
+          :selectedId="selectedId ?? undefined"
           :totalLabel="t('wallets.analytics.shares.total')"
           :totalValue="activeGroup.totalValue"
           @select="id => onSelect(id, activeGroup!.groupBy)"

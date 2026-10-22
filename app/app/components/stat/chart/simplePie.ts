@@ -23,6 +23,7 @@ export function buildSimplePieData(
   startIndex = 0,
   endIndex = Number.POSITIVE_INFINITY,
   otherName = 'Other',
+  limit?: number,
 ): SimplePieDatum[] {
   const data = series
     .filter(item => !item.markedArea)
@@ -63,6 +64,7 @@ export function buildSimplePieData(
     getMagnitude: item => item.value,
     isRemainder: item => item.icon === 'lucide:ellipsis' || item.name === otherName,
     items: data,
+    limit,
   })
   const otherValue = remainder.reduce((total, item) => total + item.value, 0)
 

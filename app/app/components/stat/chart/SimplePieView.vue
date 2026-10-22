@@ -23,10 +23,13 @@ type PieTooltipParam = {
 const {
   centerLabel,
   endValue,
+  isAllSlices = false,
   isDonut = true,
   isRoundIcon = false,
   isShowLabels = true,
   isShowPercent = false,
+  isStaticOnMount = false,
+  labelMinShare,
   series,
   startValue,
   xAxisLabels,
@@ -34,10 +37,16 @@ const {
   /** Text in the donut hole, e.g. the formatted total. */
   centerLabel?: string
   endValue?: number
+  /** Every slice drawn, none folded into "other". */
+  isAllSlices?: boolean
   isDonut?: boolean
   isRoundIcon?: boolean
   isShowLabels?: boolean
   isShowPercent?: boolean
+  /** The first render does not animate (a chart opened in a sheet); later data changes do. */
+  isStaticOnMount?: boolean
+  /** Only slices at least this share of the total get a label, and a side whose labels would overlap gets none. */
+  labelMinShare?: number
   series: ChartSeries[]
   startValue?: number
   xAxisLabels: number[]
@@ -59,8 +68,10 @@ const otherLabel = computed(() => t('stat.config.chart.other'))
 
 type PieLabel = {
   color?: string
-  icon: string
+  icon?: string
   label: string
+  /** 2 when the name wraps; a side with no room for that keeps every name on one line, cut. */
+  lines: number
   maxWidth: number
   side: 'left' | 'right'
   x: number
@@ -79,7 +90,20 @@ type PiePercentLabel = {
 }
 
 const PIE_LABEL_HALF_HEIGHT = 10
+/** Distance between the centers of two one-line labels; a two-line label adds half of it on each side. */
 const PIE_LABEL_VERTICAL_GAP = 24
+/** Label padding, marker and gap around the text, in px. */
+const PIE_LABEL_CHROME = 26
+
+let measureContext: CanvasRenderingContext2D | null | undefined
+/** 2 when the name needs the label's second line at this width. */
+function labelLines(label: string, maxWidth: number, font: string) {
+  measureContext ??= document.createElement('canvas').getContext('2d')
+  if (!measureContext)
+    return 1
+  measureContext.font = font
+  return measureContext.measureText(label).width > maxWidth - PIE_LABEL_CHROME ? 2 : 1
+}
 
 function distributePieLabels(labels: PieLabelCandidate[], chartHeight: number) {
   const minY = PIE_LABEL_HALF_HEIGHT
@@ -93,15 +117,21 @@ function distributePieLabels(labels: PieLabelCandidate[], chartHeight: number) {
     if (sideLabels.length === 0)
       continue
 
-    const gap = sideLabels.length > 1
-      ? Math.min(PIE_LABEL_VERTICAL_GAP, (maxY - minY) / (sideLabels.length - 1))
-      : PIE_LABEL_VERTICAL_GAP
+    const gapsOf = () => sideLabels.map((label, index) => index === 0 ? 0 : PIE_LABEL_VERTICAL_GAP / 2 * (sideLabels[index - 1]!.lines + label.lines))
+    let gaps = gapsOf()
+    let totalGap = gaps.reduce((sum, gap) => sum + gap, 0)
+    if (totalGap > maxY - minY && sideLabels.some(label => label.lines > 1)) {
+      sideLabels.forEach(label => label.lines = 1)
+      gaps = gapsOf()
+      totalGap = gaps.reduce((sum, gap) => sum + gap, 0)
+    }
+    const scale = totalGap > maxY - minY ? (maxY - minY) / totalGap : 1
 
     sideLabels[0]!.y = Math.max(minY, sideLabels[0]!.desiredY)
     for (let index = 1; index < sideLabels.length; index++) {
       const previous = sideLabels[index - 1]!
       const current = sideLabels[index]!
-      current.y = Math.max(current.desiredY, previous.y + gap)
+      current.y = Math.max(current.desiredY, previous.y + gaps[index]! * scale)
     }
 
     const last = sideLabels.at(-1)!
@@ -112,7 +142,7 @@ function distributePieLabels(labels: PieLabelCandidate[], chartHeight: number) {
     for (let index = sideLabels.length - 2; index >= 0; index--) {
       const current = sideLabels[index]!
       const next = sideLabels[index + 1]!
-      current.y = Math.min(current.y, next.y - gap)
+      current.y = Math.min(current.y, next.y - gaps[index + 1]! * scale)
     }
   }
 
@@ -121,8 +151,10 @@ function distributePieLabels(labels: PieLabelCandidate[], chartHeight: number) {
 
 const pieData = computed(() => {
   const { endIndex, startIndex } = resolvePieWindow(xAxisLabels, startValue, endValue)
-  return buildSimplePieData(series, startIndex, endIndex, otherLabel.value)
+  return buildSimplePieData(series, startIndex, endIndex, otherLabel.value, isAllSlices ? Number.POSITIVE_INFINITY : undefined)
 })
+const isAnimated = ref(!isStaticOnMount)
+watch(pieData, () => isAnimated.value = true)
 const hasData = computed(() => pieData.value.length > 0)
 const chartAriaLabel = computed(() => {
   const names = pieData.value.map(item => item.name).join(', ')
@@ -141,29 +173,37 @@ const pieLabels = computed<PieLabel[]>(() => {
   const centerX = chartSize.width.value / 2
   const centerY = chartSize.height.value / 2
   let startAngle = -Math.PI / 2
+  const font = `12px ${getComputedStyle(chartRef.value!).fontFamily}`
 
-  const labels = pieData.value.map<PieLabelCandidate>((item, index) => {
+  const candidates = pieData.value.map<PieLabelCandidate>((item, index) => {
     const angle = (item.value / total) * Math.PI * 2
     const middleAngle = startAngle + angle / 2
     startAngle += angle
     const side = Math.cos(middleAngle) < 0 ? 'left' : 'right'
     const x = centerX + (side === 'left' ? -1 : 1) * (radius + 10)
+    const maxWidth = Math.max(32, side === 'left' ? x - 4 : chartSize.width.value - x - 4)
 
     return {
       color: item.color,
       desiredY: centerY + Math.sin(middleAngle) * markerRadius,
-      icon: item.icon ?? 'lucide:folder',
+      icon: item.icon,
       index,
       label: item.name,
-      maxWidth: Math.max(32, side === 'left' ? x - 4 : chartSize.width.value - x - 4),
+      lines: labelLines(item.name, maxWidth, font),
+      maxWidth,
       side,
       x,
       y: 0,
     }
   })
+  const labels = labelMinShare === undefined ? candidates : candidates.filter(label => pieData.value[label.index]!.value / total >= labelMinShare)
+  const fits = (side: PieLabel['side']) => (labels.filter(label => label.side === side).length - 1) * PIE_LABEL_VERTICAL_GAP <= chartSize.height.value - PIE_LABEL_HALF_HEIGHT * 2
+  const shown = labelMinShare === undefined ? labels : labels.filter(label => fits(label.side))
 
-  return distributePieLabels(labels, chartSize.height.value)
+  return distributePieLabels(shown, chartSize.height.value)
 })
+// The donut's inner radius is the series' inner `radius` of half the smaller side, less a margin.
+const holeWidth = computed(() => Math.min(chartSize.width.value, chartSize.height.value) * 0.54 * 0.9)
 const piePercentLabels = computed<PiePercentLabel[]>(() => {
   if (!isShowPercent || !hasData.value || !chartSize.width.value || !chartSize.height.value)
     return []
@@ -194,7 +234,7 @@ const piePercentLabels = computed<PiePercentLabel[]>(() => {
   })
 })
 const option = computed(() => resolveChartCss({
-  animation: true,
+  animation: isAnimated.value,
   animationDuration: 0,
   animationDurationUpdate: 0,
   series: [{
@@ -286,10 +326,10 @@ function pieTooltipRows(param: PieTooltipParam) {
     >
       <div
         v-if="centerLabel && isDonut"
-        class="absolute inset-0 flex items-center justify-center px-[30%] text-center font-secondary text-sm leading-tight text-highlighted"
+        class="absolute inset-0 flex items-center justify-center text-center font-secondary text-sm leading-tight whitespace-pre-line text-highlighted"
         data-pie-center
       >
-        {{ centerLabel }}
+        <span class="line-clamp-3" :style="{ maxWidth: `${holeWidth}px` }">{{ centerLabel }}</span>
       </div>
       <div
         v-for="(item, index) in piePercentLabels"
@@ -304,14 +344,15 @@ function pieTooltipRows(param: PieTooltipParam) {
         v-for="(item, index) in pieLabels"
         :key="`${item.label}-${index}`"
         data-pie-label
-        class="absolute flex -translate-y-1/2 items-center gap-2 overflow-hidden rounded-sm bg-default/85 px-1.5 py-0.5 text-xs whitespace-nowrap text-highlighted"
+        class="absolute flex -translate-y-1/2 items-center gap-2 overflow-hidden rounded-sm bg-default/85 px-1.5 py-0.5 text-xs text-highlighted"
         :class="item.side === 'left' ? '-translate-x-full' : ''"
         :style="{ left: `${item.x}px`, maxWidth: `${item.maxWidth}px`, top: `${item.y}px` }"
       >
-        <span class="shrink-0" aria-hidden="true">
+        <span v-if="item.icon" class="shrink-0" aria-hidden="true">
           <Icon :name="item.icon" :style="{ color: item.color ?? 'var(--ui-text-highlighted)' }" size="12" />
         </span>
-        <span class="truncate">{{ item.label }}</span>
+        <span v-else class="size-2 shrink-0 rounded-full" :style="{ background: item.color ?? 'var(--ui-text-highlighted)' }" aria-hidden="true" />
+        <span class="min-w-0 leading-tight" :class="item.lines > 1 ? 'line-clamp-2' : 'truncate'">{{ item.label }}</span>
       </div>
     </div>
   </div>

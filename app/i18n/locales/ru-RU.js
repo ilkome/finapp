@@ -1335,6 +1335,7 @@ export default {
         net: 'С долгами',
       },
       shares: {
+        bar: 'Полоса',
         empty: 'Нет кошельков с балансом',
         modes: {
           assets: 'Активы',
